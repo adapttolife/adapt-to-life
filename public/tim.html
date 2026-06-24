@@ -4,20 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light only">
-<title>The Hustle &amp; Heart Fund — Adapt To Life</title>
-<meta name="description" content="The Hustle and Heart Fund covers the equipment, travel, and training that keep adaptive athletes in the game. Every dollar goes to an athlete.">
-<link rel="canonical" href="https://adapttolife.org/hustle-and-heart">
+<title>Tim Gruensfelder — Adapt To Life</title>
+<meta name="description" content="Tim Gruensfelder. All hustle, all heart. The athlete the Hustle and Heart Fund is named for.">
+<link rel="canonical" href="https://adapttolife.org/tim">
 <link rel="icon" type="image/svg+xml" href="/images/atl-logo.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
 <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
 <meta property="og:type" content="website">
-<meta property="og:title" content="The Hustle &amp; Heart Fund — Adapt To Life">
-<meta property="og:description" content="The Hustle and Heart Fund covers the equipment, travel, and training that keep adaptive athletes in the game. Every dollar goes to an athlete.">
+<meta property="og:title" content="Tim Gruensfelder — Adapt To Life">
+<meta property="og:description" content="Tim Gruensfelder. All hustle, all heart. The athlete the Hustle and Heart Fund is named for.">
 <meta property="og:image" content="https://adapttolife.org/images/og-image.jpg">
-<meta property="og:url" content="https://adapttolife.org/hustle-and-heart">
+<meta property="og:url" content="https://adapttolife.org/tim">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="The Hustle &amp; Heart Fund — Adapt To Life">
-<meta name="twitter:description" content="The Hustle and Heart Fund covers the equipment, travel, and training that keep adaptive athletes in the game. Every dollar goes to an athlete.">
+<meta name="twitter:title" content="Tim Gruensfelder — Adapt To Life">
+<meta name="twitter:description" content="Tim Gruensfelder. All hustle, all heart. The athlete the Hustle and Heart Fund is named for.">
 <meta name="twitter:image" content="https://adapttolife.org/images/og-image.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -295,6 +295,29 @@
     .field-row{ grid-template-columns:1fr; }
   }
 
+  /* ---- tim page: gold accent + dark anchors ---- */
+  :root{ --gold:#D4A843; --gold-press:#BE9233; --ink-warm:#16140F; }
+  .tim-hero{ background:var(--ink-warm); color:#F7F4EE; padding-top:clamp(4rem,8vw,7rem); padding-bottom:clamp(3.4rem,6vw,5rem); }
+  .tim-hero .eyebrow{ color:var(--gold); }
+  .tim-hero h1{ font-size:clamp(2.6rem,8vw,6rem); font-weight:900; color:#fff; max-width:14ch; margin-top:1.2rem; }
+  .tim-hero h1 .gold{ color:var(--gold); }
+  .tim-hero .startline{ background:var(--gold); margin:1.9rem 0; }
+  .tim-hero .ph-sub{ color:#cfc9bd; max-width:46ch; }
+  .tim-hero .tim-years{ color:#9c968a; margin-top:1.6rem; }
+  .tim-page .startline{ background:var(--gold); }
+  .tim-page .eyebrow{ color:var(--gold); }
+  .tim-page .tl-item{ border-top-color:var(--gold); }
+  .tim-page .tim-bigquote{ border-left-color:var(--gold); }
+  .tim-pullquote{ font-family:"Archivo",sans-serif; font-weight:900; font-size:clamp(1.7rem,5vw,3.2rem); line-height:1.08; letter-spacing:0.01em; text-transform:uppercase; color:var(--gold); max-width:16ch; margin:clamp(2.2rem,4.5vw,3.4rem) 0; }
+  .timeline.tim-tl{ margin-top:clamp(2rem,4vw,3rem); }
+  .tim-cta{ background:var(--ink-warm); border-top:4px solid var(--gold); padding-top:var(--section-y); padding-bottom:var(--section-y); text-align:center; }
+  .tim-cta .eyebrow{ color:var(--gold); }
+  .tim-cta h2{ font-size:clamp(2rem,5.2vw,3.8rem); font-weight:900; color:#fff; max-width:18ch; margin:1.2rem auto 1.4rem; }
+  .tim-cta .startline{ background:var(--gold); margin:0 auto 1.6rem; }
+  .tim-cta .sub{ color:#cfc9bd; max-width:42ch; margin:0 auto 2.2rem; }
+  .btn.gold{ background:var(--gold); border-color:var(--gold); color:var(--ink-warm); }
+  .btn.gold:hover{ background:var(--gold-press); border-color:var(--gold-press); transform:translateY(-2px); }
+
   /* ---- dark anchors (shared) ---- */
   :root{ --ink-warm:#16140F; }
   .hero.dark, .page-hero.dark, .closing.dark{ background:var(--ink-warm); color:#F7F4EE; }
@@ -324,7 +347,7 @@
   .card:hover,.tier:hover,.cover-card:hover{ box-shadow:0 24px 60px -30px rgba(20,16,9,0.55); }
 </style>
 </head>
-<body>
+<body class="tim-page">
 
 <header class="nav" id="nav">
   <div class="wrap nav-inner">
@@ -355,93 +378,53 @@
 
 <main>
 
-  <section class="page-hero dark">
+  <section class="tim-hero">
     <div class="wrap">
-      <span class="eyebrow reveal">The Hustle &amp; Heart Fund</span>
-      <h1 class="reveal">Every dollar goes to an athlete</h1>
+      <span class="eyebrow reveal">In memory</span>
+      <h1 class="reveal">Tim <span class="gold">Gruensfelder</span></h1>
       <div class="startline reveal"></div>
-      <p class="ph-sub reveal">Named for Tim Gruensfelder, the Hustle &amp; Heart Fund covers the equipment, travel, and training that keep adaptive athletes in the game.</p>
-    </div>
-  </section>
-
-  <section class="band-mist">
-    <div class="wrap narrow">
-      <span class="eyebrow reveal">Why this exists</span>
-      <h2 class="sec-h2 reveal">The cost of playing</h2>
-      <div class="startline reveal"></div>
-      <p class="body-p reveal">A sport wheelchair costs between $3,000 and $8,000. A tournament entry and hotel might run $500 to $3,500. Monthly coaching sessions add up to $150 to $800 over a season. These aren't luxury expenses. They're the baseline cost of participation.</p>
-      <p class="body-p reveal">Most adaptive athletes don't quit because they lose interest. They quit because they can't afford to keep playing. The talent is there. The drive is there. The funding isn't.</p>
-      <p class="body-p emph reveal">That's what we fix.</p>
-    </div>
-  </section>
-
-  <section class="band-paper">
-    <div class="wrap">
-      <div class="work-head reveal">
-        <span class="eyebrow">What we cover</span>
-        <h2 class="sec-h2">Where your dollar goes</h2>
-      </div>
-      <div class="cover-grid">
-        <div class="cover-card"><span class="cover-amt">$200 to $8,000</span><h3>Equipment</h3><p>Sport wheelchairs, racing chairs, adaptive tennis chairs, protective gear, maintenance and repair. The tools athletes need to compete.</p></div>
-        <div class="cover-card"><span class="cover-amt">$500 to $3,500</span><h3>Travel</h3><p>Tournament registration, transportation, lodging, and meals. Getting athletes to the competitions where they belong.</p></div>
-        <div class="cover-card"><span class="cover-amt">$150 to $800</span><h3>Training</h3><p>Coaching sessions, skills clinics, program fees, and gym memberships. The ongoing investment that turns participation into performance.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="band-mist">
-    <div class="wrap">
-      <div class="work-head reveal">
-        <span class="eyebrow">How it works</span>
-        <h2 class="sec-h2">From application to the court</h2>
-      </div>
-      <div class="steps-grid">
-        <div class="step"><span class="step-n">01</span><h3>Apply</h3><p>Athletes or programs submit a grant application. Takes less than 15 minutes.</p></div>
-        <div class="step"><span class="step-n">02</span><h3>Review</h3><p>Our leadership team reviews every application. We verify need, confirm costs, and assess impact.</p></div>
-        <div class="step"><span class="step-n">03</span><h3>Approve</h3><p>Approved grants are funded directly. No middlemen. No unnecessary delays.</p></div>
-        <div class="step"><span class="step-n">04</span><h3>Deploy</h3><p>Payment goes directly to the vendor or service provider. The athlete gets on the court.</p></div>
-      </div>
+      <p class="ph-sub reveal">All hustle. All heart. The athlete who set the standard for how the game should be played.</p>
+      <p class="tim-years reveal">1996 &mdash; 2018</p>
     </div>
   </section>
 
   <section class="band-paper">
     <div class="wrap narrow">
-      <span class="eyebrow reveal">Our promise</span>
-      <h2 class="sec-h2 reveal">Accountability is the standard</h2>
+      <span class="eyebrow reveal">His story</span>
+      <h2 class="sec-h2 reveal">The kid who never quit</h2>
       <div class="startline reveal"></div>
-      <h3 class="promise-h reveal">100% of fund donations go to athletes</h3>
-      <p class="body-p reveal">Administrative costs are covered separately. When you give to the Hustle &amp; Heart Fund, every dollar reaches an athlete. No overhead deductions from your donation.</p>
-      <p class="body-p reveal">We pay vendors directly, not the athlete. This protects both the donor and the athlete, and ensures funds are used for their intended purpose. Every grant is reviewed, documented, and tracked.</p>
-      <p class="body-p reveal">We don't compete with existing programs. We fund what they can't. Many adaptive sports organizations operate under accounting constraints that prevent sport specific or athlete specific fundraising. The Hustle &amp; Heart Fund fills that gap, covering the individual costs that program budgets weren't designed to handle.</p>
+      <p class="body-p reveal">Tim Gruensfelder was a competitor from the start. Cancer as a kid changed his body. It didn't change what drove him. Most stories would stop there. His didn't.</p>
+      <p class="body-p reveal">Tim found wheelchair basketball, and on the court he found what the sport gives you when everything else gets stripped away: an identity, a community, and a reason to show up every day. He wasn't the most talented player in the gym. He was the hardest working one. Every loose ball. Every sprint. Every drill. Tim played like he understood something the rest of us were still figuring out.</p>
+      <p class="tim-pullquote reveal">All hustle. All heart.</p>
+      <div class="timeline tim-tl">
+        <div class="tl-item"><span class="tl-tag">Childhood</span><p>Grew up a competitor. Cancer changed the game but never the player. Found wheelchair basketball and never looked back.</p></div>
+        <div class="tl-item"><span class="tl-tag">The athlete</span><p>Became the teammate everyone wanted on their side. Not because of his stats, but because of his effort. He made the players around him better by refusing to let up.</p></div>
+        <div class="tl-item"><span class="tl-tag">The scholar</span><p>Earned a college scholarship. Proved that adaptive sports aren't just recreation. They're a pathway to education, opportunity, and a life beyond the court.</p></div>
+        <div class="tl-item"><span class="tl-tag">2018</span><p>The cancer came back. Tim passed away at 22. What he left on the court: a family, a community, and a standard that every athlete after him plays to.</p></div>
+      </div>
     </div>
   </section>
 
   <section class="band-mist">
-    <div class="wrap">
-      <div class="work-head reveal">
-        <span class="eyebrow">Partner with us</span>
-        <h2 class="sec-h2">Fund the mission</h2>
-      </div>
-      <p class="body-p reveal" style="max-width:54ch">Your investment puts athletes on the court. Every tier includes impact reporting so you see exactly where your dollars land.</p>
-      <div class="tiers-grid">
-        <div class="tier"><span class="tier-amt">$1,000</span><span class="tier-name">Teammate</span><p>Logo on website, social media recognition, quarterly impact updates.</p></div>
-        <div class="tier reveal featured"><span class="tier-flag">Most popular</span><span class="tier-amt">$5,000</span><span class="tier-name">Coach</span><p>Everything in Teammate, plus printed materials recognition, invitation to annual events, and direct athlete impact stories.</p></div>
-        <div class="tier"><span class="tier-amt">$10,000+</span><span class="tier-name">Champion</span><p>Everything in Coach, plus featured partner spotlight, speaking opportunity, and naming rights for grant cycles.</p></div>
-      </div>
-      <p class="tiers-note reveal">Custom partnerships welcome. If it serves athletes, we're interested. <a class="textlink" href="/contact">Get in touch <span class="arrow">&rarr;</span></a></p>
+    <div class="wrap narrow">
+      <span class="eyebrow reveal">His legacy</span>
+      <h2 class="sec-h2 reveal">What Tim left behind</h2>
+      <div class="startline reveal"></div>
+      <p class="body-p reveal">After Tim passed, his family did something remarkable. They created the Timmy G Classic, an annual wheelchair basketball tournament that keeps his spirit on the court. His father Bob and the entire Gruensfelder family made sure Tim's energy would outlast his time.</p>
+      <p class="body-p reveal">When we built the Hustle and Heart Fund, naming it after anyone else never crossed our minds. Tim is the reason this fund exists. He showed us that the difference between playing and watching is often just money, and that talent and heart are never the things in short supply.</p>
+      <p class="body-p reveal">Every athlete we deploy carries a piece of what Tim represented: the belief that showing up, competing, and refusing to quit is worth funding. Worth protecting. Worth fighting for.</p>
+      <blockquote class="tim-bigquote reveal">The fund exists because Tim showed us what happens when an athlete gets the chance to play.</blockquote>
+      <p class="body-p reveal">Tim set the standard. The athletes who come after him will have more chances to meet it because of what he built in this community. That's not a memorial. That's a mission.</p>
     </div>
   </section>
 
-  <section class="closing dark">
+  <section class="tim-cta">
     <div class="wrap">
-      <span class="eyebrow reveal">Ready when you are</span>
-      <h2 class="reveal">Ready to put an athlete on the court?</h2>
+      <span class="eyebrow reveal">Carry it forward</span>
+      <h2 class="reveal">Put the next athlete on the court</h2>
       <div class="startline reveal"></div>
-      <p class="sub reveal">The equipment is expensive. The impact is priceless. Your donation covers the gap between wanting to play and actually playing.</p>
-      <div class="closing-actions reveal">
-        <a href="/contact" class="btn">Donate now</a>
-        <a href="/tim" class="btn ghost">Read Tim's story</a>
-      </div>
+      <p class="sub reveal">Every dollar given to the Hustle and Heart Fund puts another athlete on the court, in Tim's name.</p>
+      <a href="/hustle-and-heart" class="btn gold reveal">Learn about the fund <span class="arrow">&rarr;</span></a>
     </div>
   </section>
 

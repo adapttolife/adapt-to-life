@@ -371,8 +371,10 @@
               </select>
             </div>
             <div class="field"><label for="msg">Message</label><textarea id="msg" name="msg" rows="5"></textarea></div>
+            <input type="text" name="company" id="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
             <button type="submit" class="btn">Send message</button>
-            <p class="form-note">This opens your email app with your message ready to send.</p>
+            <p class="form-status" id="formStatus" role="status" aria-live="polite" style="margin-top:.9rem;font-weight:600"></p>
+            <p class="form-note">We'll reply at the email you provide.</p>
           </form>
         </div>
       </div>
@@ -446,16 +448,38 @@
   (function(){
     var f = document.getElementById('contactForm');
     if(!f) return;
+    var statusEl = document.getElementById('formStatus');
+    var btn = f.querySelector('button[type="submit"]');
+    function v(id){ var el=document.getElementById(id); return el ? el.value.trim() : ''; }
+    function setStatus(msg, ok){
+      if(!statusEl) return;
+      statusEl.textContent = msg;
+      statusEl.style.color = ok ? '#2e7d32' : '#c0392b';
+    }
     f.addEventListener('submit', function(e){
       e.preventDefault();
-      function v(id){ var el=document.getElementById(id); return el ? el.value.trim() : ''; }
-      var name = (v('fn') + ' ' + v('ln')).trim();
-      var subject = name ? ('Website message from ' + name) : 'Website message';
-      var body = 'Name: ' + v('fn') + ' ' + v('ln') + '\n'
-               + 'Email: ' + v('em') + '\n'
-               + 'Reaching out as: ' + v('rsn') + '\n\n'
-               + v('msg');
-      window.location.href = 'mailto:hello@adapttolife.org?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+      if(v('company')) return; // honeypot: silently drop bots
+      if(!v('em')){ setStatus('Please enter your email so we can reply.', false); return; }
+      var payload = { fn:v('fn'), ln:v('ln'), em:v('em'), rsn:v('rsn'), msg:v('msg') };
+      var orig = btn ? btn.textContent : '';
+      if(btn){ btn.disabled = true; btn.textContent = 'Sending...'; }
+      setStatus('', true);
+      fetch('/api/contact', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      })
+      .then(function(r){ return r.json().catch(function(){ return { ok:r.ok }; }); })
+      .then(function(d){
+        if(d && d.ok){
+          f.reset();
+          setStatus("Thanks — we got your message and will be in touch.", true);
+        } else {
+          setStatus((d && d.error) || 'Something went wrong. Please email hello@adapttolife.org.', false);
+        }
+      })
+      .catch(function(){ setStatus('Network error. Please email hello@adapttolife.org.', false); })
+      .then(function(){ if(btn){ btn.disabled = false; btn.textContent = orig; } });
     });
   })();
 </script>

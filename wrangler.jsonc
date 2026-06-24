@@ -1,10 +1,22 @@
 {
-  // Cloudflare Workers — static assets only (no server code).
-  // Deploys the contents of ./public to the existing `adapt-to-life` Worker,
-  // served at https://adapt-to-life.alec-af3.workers.dev
+  // Cloudflare Worker for Adapt To Life.
+  // Serves the static site from ./public and handles POST /api/contact in src/index.js,
+  // writing leads to Airtable. Published to the `adapt-to-life` Worker at
+  // https://adapt-to-life.alec-af3.workers.dev
   "name": "adapt-to-life",
   "compatibility_date": "2026-06-24",
+  "main": "src/index.js",
   "assets": {
-    "directory": "./public"
+    "directory": "./public",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    // Non-secret config. The Airtable token is set separately as a secret:
+    //   cfrun wrangler secret put AIRTABLE_TOKEN
+    "AIRTABLE_BASE_ID": "appVPKDdwnOG5qkYG",
+    "AIRTABLE_TABLE_ID": "tblhJaZtMY37K7Uio"
   }
 }

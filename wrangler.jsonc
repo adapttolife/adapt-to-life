@@ -1,0 +1,10 @@
+{
+  // Cloudflare Workers — static assets only (no server code).
+  // Deploys the contents of ./public to the existing `adapt-to-life` Worker,
+  // served at https://adapt-to-life.alec-af3.workers.dev
+  "name": "adapt-to-life",
+  "compatibility_date": "2026-06-24",
+  "assets": {
+    "directory": "./public"
+  }
+}

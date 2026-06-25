@@ -17,6 +17,7 @@
     // Non-secret config. The Airtable token is set separately as a secret:
     //   cfrun wrangler secret put AIRTABLE_TOKEN
     "AIRTABLE_BASE_ID": "appVPKDdwnOG5qkYG",
-    "AIRTABLE_TABLE_ID": "tblhJaZtMY37K7Uio"
+    "AIRTABLE_TABLE_ID": "tblhJaZtMY37K7Uio",
+    "AIRTABLE_APPLICATIONS_TABLE_ID": "tbl1Aiy8CId6hIzF6"
   }
 }

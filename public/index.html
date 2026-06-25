@@ -4,246 +4,36 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light only">
-<title>Adapt To Life — Your Place in Adaptive Sports</title>
+<title>Adapt To Life | Your Place in Adaptive Sports</title>
 <meta name="description" content="Adapt To Life funds the equipment, training, and travel that get adaptive athletes off the sidelines and into the game.">
 <link rel="canonical" href="https://adapttolife.org/">
 <link rel="icon" type="image/svg+xml" href="/images/atl-logo.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
 <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Adapt To Life — Your Place in Adaptive Sports">
+<meta property="og:title" content="Adapt To Life | Your Place in Adaptive Sports">
 <meta property="og:description" content="We fund the equipment, training, and travel that get adaptive athletes off the sidelines and into the game.">
 <meta property="og:image" content="https://adapttolife.org/images/og-image.jpg">
 <meta property="og:url" content="https://adapttolife.org/">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Adapt To Life — Your Place in Adaptive Sports">
+<meta name="twitter:title" content="Adapt To Life | Your Place in Adaptive Sports">
 <meta name="twitter:description" content="We fund the equipment, training, and travel that get adaptive athletes off the sidelines and into the game.">
 <meta name="twitter:image" content="https://adapttolife.org/images/og-image.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    color-scheme: only light;
-    --ink:#1A1A1A; --orange:#E85D04; --orange-press:#C44E03;
-    --paper:#FFFFFF; --mist:#F5F4F2; --hairline:#E6E3DE; --muted:#6E6B65;
-    --section-y: clamp(4.5rem, 9vw, 8rem); --wrap: 1180px; --gutter: clamp(1.25rem, 4vw, 2.5rem);
-  }
-  *{ box-sizing:border-box; margin:0; padding:0; }
-  html{ -webkit-text-size-adjust:100%; scroll-behavior:smooth; }
-  body{ background:var(--paper); color:var(--ink); font-family:"Hanken Grotesk", system-ui, sans-serif;
-    font-size:clamp(1.02rem, 0.6vw + 0.9rem, 1.18rem); line-height:1.62; -webkit-font-smoothing:antialiased;
-    text-rendering:optimizeLegibility; overflow-x:hidden; }
-  a{ color:inherit; text-decoration:none; }
-  img{ max-width:100%; display:block; }
-  .wrap{ width:100%; max-width:var(--wrap); margin:0 auto; padding-left:var(--gutter); padding-right:var(--gutter); }
-  h1,h2,h3{ font-family:"Archivo", system-ui, sans-serif; font-weight:800; line-height:1.02; letter-spacing:-0.02em; }
-  .eyebrow{ font-family:"Space Mono", monospace; font-size:0.74rem; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--orange); display:inline-block; }
-  .eyebrow.ink{ color:var(--muted); }
-  .btn{ display:inline-flex; align-items:center; gap:0.55rem; font-family:"Archivo", sans-serif; font-weight:700; font-size:0.98rem; letter-spacing:0.01em;
-    padding:0.95rem 1.6rem; background:var(--orange); color:#fff; border:2px solid var(--orange); border-radius:2px;
-    transition:background .18s ease, transform .18s ease, border-color .18s ease, color .18s ease; cursor:pointer; }
-  .btn:hover{ background:var(--orange-press); border-color:var(--orange-press); transform:translateY(-2px); }
-  .btn.ghost{ background:transparent; color:var(--ink); border-color:var(--ink); }
-  .btn.ghost:hover{ background:var(--ink); color:#fff; transform:translateY(-2px); }
-  .textlink{ font-family:"Archivo", sans-serif; font-weight:700; font-size:0.96rem; border-bottom:2px solid var(--orange); padding-bottom:2px; transition:color .15s ease; }
-  .textlink:hover{ color:var(--orange); }
-  .arrow{ display:inline-block; transition:transform .18s ease; }
-  .textlink:hover .arrow, .card:hover .arrow{ transform:translateX(4px); }
-  .startline{ height:6px; width:96px; background:var(--orange); border-radius:2px; }
-
-  .nav{ position:sticky; top:0; z-index:50; background:rgba(255,255,255,0.92); backdrop-filter:saturate(140%) blur(8px); border-bottom:1px solid transparent; transition:border-color .2s ease, box-shadow .2s ease; }
-  .nav.scrolled{ border-bottom-color:var(--hairline); box-shadow:0 1px 0 rgba(0,0,0,0.02); }
-  .nav-inner{ display:flex; align-items:center; justify-content:space-between; height:70px; }
-  .brand{ display:flex; align-items:center; gap:0.6rem; font-family:"Archivo", sans-serif; font-weight:900; font-size:1.18rem; letter-spacing:-0.02em; }
-  .brand-mark{ width:14px; height:14px; background:var(--orange); border-radius:2px; flex:none; }
-  .founder-img{ width:100%; height:100%; object-fit:cover; object-position:center 20%; display:block; }
-  .brand-logo{ height:38px; width:auto; flex:none; display:block; }
-  .nav-links{ display:flex; align-items:center; gap:1.7rem; }
-  .nav-links a.lk{ font-size:0.92rem; font-weight:500; color:var(--ink); opacity:0.82; transition:opacity .15s ease; }
-  .nav-links a.lk:hover{ opacity:1; }
-  .nav-cta{ font-family:"Archivo", sans-serif; font-weight:700; font-size:0.9rem; background:var(--orange); color:#fff; padding:0.6rem 1.15rem; border-radius:2px; transition:background .18s ease; }
-  .nav-cta:hover{ background:var(--orange-press); }
-  .menu-btn{ display:none; background:none; border:none; cursor:pointer; padding:0.4rem; }
-  .menu-btn span{ display:block; width:24px; height:2px; background:var(--ink); margin:5px 0; transition:transform .2s ease, opacity .2s ease; }
-  .mobile-menu{ display:none; }
-
-  .hero{ padding-top:clamp(3.5rem, 7vw, 6rem); padding-bottom:var(--section-y); }
-  .hero h1{ font-size:clamp(2.85rem, 8.4vw, 6.6rem); font-weight:900; max-width:15ch; margin-top:1.4rem; }
-  .hero h1 .hit{ color:var(--orange); }
-  .hero .startline{ margin:2rem 0 1.9rem; }
-  .hero .sub{ font-size:clamp(1.15rem, 1.1vw + 1rem, 1.5rem); line-height:1.5; color:#33312e; max-width:44ch; font-weight:400; }
-  .hero .actions{ display:flex; flex-wrap:wrap; align-items:center; gap:1rem 1.2rem; margin-top:2.4rem; }
-
-  .stats{ background:var(--paper); border-top:1px solid var(--hairline); border-bottom:1px solid var(--hairline); }
-  .stats-inner{ display:grid; grid-template-columns:repeat(3,1fr); }
-  .stat{ padding:clamp(1.9rem,4.2vw,3rem) 1rem; text-align:center; border-left:1px solid var(--hairline); }
-  .stat:first-child{ border-left:none; }
-  .stat .num{ font-family:"Archivo", sans-serif; font-weight:900; font-size:clamp(2.5rem,5.4vw,3.7rem); color:var(--orange); line-height:1; letter-spacing:-0.02em; }
-  .stat .lbl{ font-family:"Space Mono", monospace; font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); margin-top:0.75rem; }
-
-  .founder{ background:var(--mist); border-top:1px solid var(--hairline); padding-top:var(--section-y); padding-bottom:var(--section-y); }
-  .founder-grid{ display:grid; grid-template-columns:0.82fr 1.18fr; gap:clamp(2rem, 5vw, 4.5rem); align-items:center; }
-  .founder-photo{ position:relative; aspect-ratio:4/5; border-radius:3px; overflow:hidden; background:linear-gradient(160deg,#ece9e4 0%, #e2ddd6 100%); border:1px solid var(--hairline); display:flex; align-items:flex-end; justify-content:flex-start; }
-  .founder-photo::after{ content:""; position:absolute; left:0; bottom:0; height:6px; width:60%; background:var(--orange); }
-  .founder-photo .ph{ font-family:"Space Mono", monospace; font-size:0.7rem; letter-spacing:0.14em; text-transform:uppercase; color:#8a857d; padding:1rem 1.1rem; position:relative; z-index:2; }
-  .founder-body h2{ font-size:clamp(1.7rem, 2.4vw, 2.5rem); margin:1rem 0 1.3rem; max-width:18ch; }
-  .founder-body p.lead{ font-size:clamp(1.08rem, 0.6vw + 0.95rem, 1.28rem); line-height:1.55; color:#2c2a27; }
-  .founder-sign{ margin-top:1.6rem; font-family:"Archivo", sans-serif; }
-  .founder-sign .name{ font-weight:800; font-size:1.05rem; }
-  .founder-sign .role{ font-family:"Space Mono", monospace; font-size:0.76rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-top:0.2rem; }
-
-  .belief{ background:var(--paper); border-top:1px solid var(--hairline); padding-top:var(--section-y); padding-bottom:var(--section-y); }
-  .belief h2{ font-size:clamp(1.9rem,3.6vw,3.2rem); margin:1rem 0 0; max-width:20ch; }
-  .belief .startline{ margin:1.8rem 0; }
-  .belief p{ color:#2c2a27; max-width:54ch; font-size:clamp(1.08rem,0.6vw+0.95rem,1.3rem); line-height:1.55; }
-  .founder-team{ margin-top:1.6rem; display:inline-block; }
-  .work{ background:var(--mist); border-top:1px solid var(--hairline); padding-top:var(--section-y); padding-bottom:var(--section-y); }
-  .work-head{ max-width:40ch; margin-bottom:clamp(2.2rem,4vw,3.4rem); }
-  .work-head h2{ font-size:clamp(1.9rem, 3.2vw, 3.1rem); margin-top:1rem; }
-  .cards{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(1.25rem, 2.5vw, 2rem); }
-  .card{ position:relative; background:var(--paper); border:1px solid var(--hairline); border-radius:4px; padding:clamp(1.6rem, 2.6vw, 2.4rem); padding-top:clamp(2rem, 2.8vw, 2.7rem); display:flex; flex-direction:column; transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
-  .card::before{ content:""; position:absolute; top:0; left:clamp(1.6rem,2.6vw,2.4rem); width:54px; height:6px; background:var(--orange); border-radius:0 0 2px 2px; }
-  .card:hover{ transform:translateY(-4px); box-shadow:0 18px 40px -22px rgba(26,26,26,0.4); border-color:#d8d3cb; }
-  .card .tag{ font-family:"Space Mono", monospace; font-size:0.7rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); }
-  .card h3{ font-size:clamp(1.45rem, 2vw, 1.95rem); font-weight:800; margin:0.55rem 0 0.9rem; }
-  .card p{ color:#403d39; margin-bottom:1.6rem; }
-  .card .go{ margin-top:auto; }
-
-  .quote{ background:var(--paper); border-top:1px solid var(--hairline); padding-top:var(--section-y); padding-bottom:var(--section-y); }
-  .quote .startline{ margin-bottom:1.9rem; }
-  .quote blockquote{ font-family:"Archivo", sans-serif; font-weight:600; font-size:clamp(1.32rem,2.5vw,2.1rem); line-height:1.36; letter-spacing:-0.01em; max-width:46rem; color:var(--ink); }
-  .quote .qname{ display:block; font-family:"Archivo", sans-serif; font-weight:800; font-size:1.05rem; margin-top:1.9rem; }
-  .quote .qrole{ display:block; font-family:"Space Mono", monospace; font-size:0.76rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-top:0.28rem; }
-
-  .send5{ background:var(--mist); border-top:1px solid var(--hairline); padding-top:var(--section-y); padding-bottom:var(--section-y); }
-  .send5 h2{ font-size:clamp(1.9rem, 3.8vw, 3.3rem); margin:1rem 0 1.1rem; }
-  .send5 .intro{ color:#2c2a27; max-width:52ch; margin-bottom:2.3rem; }
-  .progress-wrap{ max-width:640px; margin-bottom:2.5rem; }
-  .progress-labels{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:0.7rem; font-family:"Space Mono", monospace; }
-  .progress-labels .raised{ font-size:1.18rem; font-weight:700; color:var(--ink); }
-  .progress-labels .goal{ font-size:0.85rem; color:var(--muted); }
-  .progress-bar{ height:14px; background:#e8e3dc; border-radius:8px; overflow:hidden; }
-  .progress-bar .fill{ height:100%; width:22%; background:var(--orange); border-radius:8px; }
-  .send5-stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:1.5rem; margin-bottom:2.4rem; max-width:760px; }
-  .send5-stats .n{ font-family:"Archivo", sans-serif; font-weight:900; font-size:clamp(1.55rem,3vw,2.25rem); color:var(--ink); line-height:1; letter-spacing:-0.01em; }
-  .send5-stats .l{ font-family:"Space Mono", monospace; font-size:0.68rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-top:0.5rem; }
-
-  .public{ background:var(--paper); border-top:1px solid var(--hairline); padding-top:var(--section-y); padding-bottom:var(--section-y); }
-  .public-grid{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(2rem,5vw,4rem); align-items:end; }
-  .public h2{ font-size:clamp(1.9rem, 3.2vw, 3rem); margin:1rem 0 1.2rem; max-width:16ch; }
-  .public p{ color:#2c2a27; max-width:42ch; }
-  .public .links{ display:flex; flex-direction:column; gap:1.1rem; align-items:flex-start; }
-  .public .links .startline{ margin-bottom:0.4rem; }
-
-  .closing{ background:var(--mist); border-top:1px solid var(--hairline); padding-top:var(--section-y); padding-bottom:var(--section-y); text-align:center; }
-  .closing h2{ font-size:clamp(2.2rem, 5.6vw, 4.4rem); font-weight:900; max-width:18ch; margin:1.2rem auto 1.6rem; }
-  .closing .startline{ margin:0 auto; }
-  .closing .sub{ color:var(--muted); max-width:40ch; margin:0 auto 2.2rem; }
-
-  .footer{ background:var(--paper); border-top:3px solid var(--ink); padding-top:clamp(3rem,6vw,4.5rem); padding-bottom:2.5rem; }
-  .footer-top{ display:grid; grid-template-columns:1.5fr 1fr 1fr; gap:2.5rem; }
-  .footer .brand{ margin-bottom:0.9rem; }
-  .footer .tagline{ color:var(--muted); max-width:30ch; font-size:0.95rem; margin-bottom:1.2rem; }
-  .footer .legal{ color:#9a958d; font-size:0.78rem; line-height:1.5; max-width:42ch; }
-  .footer .col h4{ font-family:"Space Mono", monospace; font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); font-weight:700; margin-bottom:1rem; }
-  .footer .col a{ display:block; font-size:0.96rem; color:var(--ink); opacity:0.82; margin-bottom:0.65rem; transition:opacity .15s ease, color .15s ease; }
-  .footer .col a:hover{ opacity:1; color:var(--orange); }
-  .footer-bottom{ display:flex; flex-wrap:wrap; justify-content:space-between; gap:1rem; margin-top:clamp(2.5rem,5vw,3.5rem); padding-top:1.4rem; border-top:1px solid var(--hairline); font-size:0.85rem; color:var(--muted); }
-
-  .reveal{ opacity:0; transform:translateY(12px); transition:opacity .5s ease-out, transform .5s ease-out; }
-  .reveal.in{ opacity:1; transform:none; }
-
-  @media (max-width: 860px){
-    .nav-links{ display:none; }
-    .menu-btn{ display:block; }
-    .nav.open .menu-btn span:nth-child(1){ transform:translateY(7px) rotate(45deg); }
-    .nav.open .menu-btn span:nth-child(2){ opacity:0; }
-    .nav.open .menu-btn span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }
-    .mobile-menu{ display:block; max-height:0; overflow:hidden; background:var(--paper); border-bottom:1px solid var(--hairline); transition:max-height .28s ease; }
-    .nav.open .mobile-menu{ max-height:520px; }
-    .mobile-menu .mwrap{ display:flex; flex-direction:column; padding:0.8rem 0 1.4rem; }
-    .mobile-menu a{ padding:0.8rem 0; font-size:1.05rem; font-weight:600; border-bottom:1px solid var(--hairline); }
-    .mobile-menu a.m-cta{ color:var(--orange); border-bottom:none; }
-    .founder-grid{ grid-template-columns:1fr; gap:2.2rem; }
-    .founder-photo{ max-width:340px; }
-    .cards{ grid-template-columns:1fr; }
-    .public-grid{ grid-template-columns:1fr; gap:2.2rem; }
-    .footer-top{ grid-template-columns:1fr 1fr; gap:2rem; }
-    .footer .brandcol{ grid-column:1 / -1; }
-  }
-  @media (max-width: 560px){
-    .stats-inner{ grid-template-columns:1fr; }
-    .stat{ border-left:none; border-top:1px solid var(--hairline); }
-    .stat:first-child{ border-top:none; }
-    .send5-stats{ grid-template-columns:repeat(2,1fr); gap:1.6rem 1.2rem; }
-  }
-  @media (max-width: 480px){
-    .footer-top{ grid-template-columns:1fr; }
-    .hero .actions .btn{ width:100%; justify-content:center; }
-  }
-  @media (prefers-reduced-motion: reduce){
-    *{ scroll-behavior:auto !important; }
-    .reveal{ opacity:1; transform:none; transition:none; }
-    .btn, .card, .arrow{ transition:none; }
-  }
-
-  /* ---- home impact bar ---- */
-  .impact{ background:var(--paper); border-top:1px solid var(--hairline); border-bottom:1px solid var(--hairline); padding-top:var(--section-y); padding-bottom:var(--section-y); }
-  .impact-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(1.4rem,2.6vw,2.4rem); margin-top:clamp(1.8rem,3.4vw,2.6rem); }
-  .impact-n{ font-family:"Archivo",sans-serif; font-weight:900; font-size:clamp(2.1rem,4.4vw,3.2rem); color:var(--orange); line-height:1; letter-spacing:-0.02em; }
-  .impact-l{ color:#403d39; font-size:0.98rem; line-height:1.45; margin-top:0.7rem; max-width:22ch; }
-  @media (max-width:860px){ .impact-grid{ grid-template-columns:1fr 1fr; gap:2rem 1.5rem; } }
-  @media (max-width:480px){ .impact-grid{ grid-template-columns:1fr; } }
-
-  /* ---- dark anchors (shared) ---- */
-  :root{ --ink-warm:#16140F; }
-  .hero.dark, .page-hero.dark, .closing.dark{ background:var(--ink-warm); color:#F7F4EE; }
-  .hero.dark h1, .page-hero.dark h1, .closing.dark h2{ color:#fff; }
-  .hero.dark .sub, .page-hero.dark .ph-sub, .closing.dark .sub{ color:#cfc9bd; }
-  .closing.dark .btn.ghost, .hero.dark .btn.ghost, .page-hero.dark .btn.ghost{ color:#fff; border-color:rgba(255,255,255,0.55); }
-  .closing.dark .btn.ghost:hover, .hero.dark .btn.ghost:hover, .page-hero.dark .btn.ghost:hover{ background:#fff; color:var(--ink-warm); border-color:#fff; }
-  .footer{ background:var(--ink-warm); border-top:3px solid var(--orange); }
-  .footer .brand{ color:#fff; }
-  .footer .tagline{ color:#b8b2a6; }
-  .footer .legal{ color:#7c766c; }
-  .footer .col h4{ color:#9c968a; }
-  .footer .col a{ color:#e8e4dc; }
-  .footer .col a:hover{ color:var(--orange); }
-  .footer-bottom{ color:#9c968a; border-top-color:rgba(255,255,255,0.12); }
-  .footer .brand-logo path[fill="#1A1A1A"]{ fill:#F7F4EE; }
-
-  /* ---- craft polish (shared) ---- */
-  h1,h2,h3{ text-wrap:balance; }
-  p,.body-p,.ph-sub,.sub,.lead,.intro{ text-wrap:pretty; }
-  .stat .num,.send5-stats .n,.impact-n,.tier-amt,.step-n,.tim-years,.progress-labels{ font-variant-numeric:tabular-nums; }
-  .hero h1,.page-hero h1,.closing h2,.tim-hero h1{ letter-spacing:-0.03em; }
-  ::selection{ background:var(--orange); color:#fff; }
-  .hero.dark,.page-hero.dark,.closing.dark,.tim-hero,.tim-cta,.footer{
-    background-color:var(--ink-warm);
-    background-image:radial-gradient(130% 110% at 15% -10%, #23201a 0%, #1a1712 46%, #16140F 100%); }
-  .card:hover,.tier:hover,.cover-card:hover{ box-shadow:0 24px 60px -30px rgba(20,16,9,0.55); }
-  /* ---- home: editorial statement + community strip ---- */
-  .belief.statement{ padding-top:clamp(5rem,10vw,9rem); padding-bottom:clamp(5rem,10vw,9rem); }
-  .belief.statement h2{ font-size:clamp(2.5rem,6vw,5rem); max-width:16ch; letter-spacing:-0.035em; line-height:0.98; }
-  .belief.statement p{ max-width:52ch; margin-top:clamp(1.8rem,3vw,2.6rem); margin-left:auto; color:#403d39; font-size:clamp(1.1rem,0.7vw+0.95rem,1.4rem); }
-  .community{ background:var(--paper); border-top:1px solid var(--hairline); border-bottom:1px solid var(--hairline); padding:clamp(2.6rem,5vw,4rem) 0; }
-  .community-label{ font-family:"Space Mono",monospace; font-size:0.72rem; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); text-align:center; margin-bottom:1.5rem; }
-  .community-row{ display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:clamp(1.4rem,4vw,3.4rem); }
-  .community-row span{ font-family:"Archivo",sans-serif; font-weight:800; font-size:clamp(1rem,1.4vw,1.3rem); color:#9a958d; letter-spacing:-0.01em; transition:color .15s ease; }
-  .community-row span:hover{ color:var(--ink); }
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/site.css">
 </head>
 <body>
 
-<header class="nav" id="nav">
+<header class="nav over-dark" id="nav">
   <div class="wrap nav-inner">
     <a href="/" class="brand"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="217.61900000000003 211.68400000000003 1485.031 1351.756" class="brand-logo" aria-hidden="true"><path fill="#1A1A1A" d="M359.579 1424.07C374.643 1414 419.843 1314.91 429.93 1293.87L494.424 1159.36L747.066 640.99L855.497 418.881C869.352 390.403 883.808 362.487 897.593 333.689C907.159 313.705 908.44 287.493 891.747 270.443C890.687 269.361 891.226 270.404 890.726 268.488C910.256 266.684 954.763 268.012 976.132 267.978L1027.73 267.866C1050.43 267.823 1069.15 266.862 1090.2 276.699C1100.08 280.969 1119.05 295.115 1124.15 305.089C1149.4 354.497 1171.67 409.57 1192.51 460.73C1207.12 496.586 1223.18 529.721 1237.07 564.893C1231.2 560.008 1227.44 557.269 1221.08 553.015C1215.99 557.591 1208.19 556.729 1206.65 548.966C1204.79 547.116 1205.4 548.172 1205.09 545.604C1202.88 544.392 1200.58 543.344 1198.22 542.469C1149.51 524.158 1115.69 536.668 1071.87 556.467C1061.68 531.46 1047.28 493.022 1034.45 468.477C1033.54 466.745 1031.36 466.995 1029.72 467.026C1023.63 472.302 1006.14 511.519 1002.14 520.975C1003.99 526.438 1006.21 532.816 1000.42 535.761C999.73 535.161 999.042 534.562 998.355 533.963L995.587 534.913C991.934 541.165 989.114 547.012 986.003 553.541C978.262 569.79 970.036 585.78 962.167 602.001L905.887 716.678C898.157 732.102 890.506 749.961 882.211 764.818C876.619 774.834 855.527 783.028 844.283 790.778C773.508 839.563 722.902 906.96 712.074 994.461C711.238 1005.28 710.874 1016.13 710.985 1026.98C711.392 1036.24 711.6 1041.55 713.301 1050.54C715.147 1038.12 716.538 1026.66 719.061 1014.08C747.026 874.746 884.594 776.948 1019.67 757.989C1033.35 756.07 1049.34 754.641 1062.97 756.691C1081.24 759.401 1097.61 769.443 1108.31 784.498C1141.91 831.239 1107.16 895.887 1082.84 938.981C1070.16 961.44 1046.9 999.023 1064.37 1024.25C1065.51 1025.88 1066.68 1027.48 1067.88 1029.06C1029.44 1044.14 983.182 1035.86 967.927 993.161C952.577 950.192 964.659 904.334 977.615 862.526C961.687 864.778 939.913 868.607 925.08 873.993C873.313 892.788 825.45 928.17 793.2 972.628C749.701 1032.59 718.718 1102.16 686.859 1168.46L592.531 1364.34L560.696 1430.8C552.425 1448.47 540.172 1482.34 521.933 1491.44C510.331 1497.23 486.702 1496.02 473.295 1496.02L419.601 1496C373.568 1495.97 318.065 1497.35 272.619 1495.53C299.416 1479.6 313.334 1471.82 336.26 1449.95C339.189 1443.65 341.78 1440.96 345.75 1435.2L345.227 1435.64C348.674 1430.56 353.897 1426.19 359.579 1424.07Z"/><path fill="#E85D04" d="M1223.86 1142.69C1176.21 1128.49 1149.97 1142.58 1105.3 1157.83C1041.84 1179.5 949.416 1199.66 909.488 1127.93C889.272 1092.07 895.318 1042.58 907.061 1004.78C914.066 982.224 931.884 938.201 945.531 918.31C934.727 976.648 943.073 1045.11 1012.53 1058.92C1038.79 1064.14 1062.99 1055.23 1087.54 1047.14C1140.35 1029.01 1197.18 1006.46 1254.03 1017.1C1289.1 1023.67 1325.25 1046.46 1345.49 1076.01C1378.24 1123.85 1397.19 1180.53 1418.23 1234.13C1449.55 1314.65 1503.74 1418.16 1580.23 1464.25C1583.85 1463.21 1589.98 1461.73 1593.37 1463.58C1593.59 1466.23 1593.34 1466.46 1592.66 1469.09C1597.56 1472.29 1602.54 1473.68 1604.16 1477.79L1605.97 1478.39C1614.43 1480.9 1616.3 1478.09 1622.66 1479.72C1624.28 1482.72 1623.84 1483.16 1624 1486.81C1629.15 1489.52 1640.46 1493.28 1647.65 1496.74C1624.41 1497.19 1603.55 1498.32 1580.39 1494.33C1449.33 1471.77 1372.44 1370.93 1312.08 1261.29C1291.38 1223.68 1275.14 1182.88 1244.5 1153.99C1244.37 1153.96 1226.28 1143.89 1223.86 1142.69Z"/><path fill="#1A1A1A" d="M884.091 997.18C881.573 1003.22 879.168 1009.32 876.877 1015.45C872.103 1043.72 864.64 1071.51 871.609 1100.69C845.46 1128.65 828.491 1154.6 818.826 1192.32C816.984 1199.52 813.918 1213.11 813.959 1220.49C812.475 1231.51 813.015 1240.82 812.825 1251.85C813.263 1255.26 813.858 1259.12 814.152 1262.51C818.588 1268.64 815.637 1265.16 817.476 1272.58L823.121 1273.27C826.428 1279.35 820.905 1285.89 821.677 1290.17C823.045 1297.75 828.009 1303.4 827.331 1312.28C828.661 1322.63 848.459 1349.98 855.865 1358.19C974.653 1489.9 1172.27 1374.81 1159.6 1211.15C1158.54 1197.39 1153.77 1184.05 1152.5 1171.07C1155.27 1168.58 1160.94 1166.68 1164.64 1165.81C1190.31 1159.76 1205.22 1161.47 1227.84 1175.44C1232.07 1176.61 1233.16 1176.71 1237.48 1175.98L1239.62 1177.38C1241.92 1188.43 1245.64 1205.53 1243.89 1216.31C1241.99 1240.23 1243.24 1264.11 1237.58 1287.96C1220.89 1358.2 1179.19 1421.17 1118.06 1459.72C1060.12 1496.36 989.975 1508.44 923.115 1493.29C902.176 1488.53 882.13 1480.26 863.152 1469.87C743.322 1404.25 701.651 1254.69 756.971 1132.59C783.05 1075.03 819.264 1037.28 872.458 1004.19C876.447 1001.9 880.284 999.778 884.091 997.18Z"/><path fill="#1A1A1A" d="M1132.43 581.791C1182.17 578.689 1225.06 616.367 1228.39 666.087C1231.72 715.808 1194.24 758.871 1144.53 762.432C1094.5 766.016 1051.1 728.237 1047.74 678.192C1044.39 628.146 1082.37 584.914 1132.43 581.791Z"/></svg>Adapt To Life</a>
     <nav class="nav-links">
-      <a class="lk" href="/about">Our Story</a>
-      <a class="lk" href="/hustle-and-heart">Hustle &amp; Heart</a>
+      <a class="lk" href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
       <a class="lk" href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
-      <a class="lk" href="/transparency">Transparency</a>
+      <a class="lk" href="/about">Our Story</a>
+      <a class="lk featured" href="/apply">Grant Application</a>
       <a class="nav-cta" href="/hustle-and-heart">Fund an athlete</a>
     </nav>
     <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
@@ -252,12 +42,12 @@
   </div>
   <div class="mobile-menu">
     <div class="wrap mwrap">
-      <a href="/about">Our Story</a>
-      <a href="/hustle-and-heart">Hustle &amp; Heart</a>
+      <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
       <a href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
-      <a href="/transparency">Transparency</a>
+      <a href="/about">Our Story</a>
       <a href="/roadmap">Roadmap</a>
       <a href="/contact">Contact</a>
+      <a href="/apply">Grant Application</a>
       <a class="m-cta" href="/hustle-and-heart">Fund an athlete &rarr;</a>
     </div>
   </div>
@@ -265,74 +55,59 @@
 
 <main>
 
-  <section class="hero dark">
+  <!-- 1 · HERO — A designed startline -->
+  <section class="hero dark hero-startline">
     <div class="wrap">
       <span class="eyebrow reveal">Made by athletes, for athletes</span>
-      <h1 class="reveal">Your place in <span class="hit">adaptive sports.</span></h1>
-      <div class="startline reveal"></div>
-      <p class="sub reveal">We fund the equipment, training, and travel that get adaptive athletes off the sidelines and into the game. Not someday. Now.</p>
+      <h1 class="serif display reveal">Your place in <em class="italic">adaptive sports.</em></h1>
+      <p class="lead sub reveal">Two things keep adaptive athletes on the sidelines: what it costs, and finding it at all. We're taking down both, and we're just getting started.</p>
       <div class="actions reveal">
-        <a href="/hustle-and-heart" class="btn">Fund an athlete</a>
-        <a href="#send5" class="btn ghost">Send 5 to the US Open</a>
+        <a href="/hustle-and-heart" class="btn">Donate</a>
+        <a href="/roadmap" class="btn ghost">Follow the build <span class="arrow">&rarr;</span></a>
       </div>
+      <div class="startline-hero" aria-hidden="true"></div>
     </div>
   </section>
 
-  <section class="belief statement">
-    <div class="wrap">
-      <h2 class="reveal">Access to sport is a right, not a privilege.</h2>
-      <p class="reveal">The barriers are not scarcity. They are a chair nobody could afford, a trip nobody funded, a gym membership that ran out. That makes them solvable. No adaptive athlete sits out because of money, and the path from injury to the playing field is clear, funded, and walked next to people who have been there.</p>
+  <!-- 2 · BELIEF — large serif reading moment -->
+  <section class="band-lg statement-block">
+    <div class="wrap reading">
+      <hr class="tick orange reveal">
+      <h2 class="serif statement italic reveal">Access to sport is a right, not a privilege.</h2>
+      <p class="prose reveal">The barriers aren't scarcity. They're a chair nobody could afford, a trip nobody funded, a program nobody could find. They're solvable. That's the whole job.</p>
     </div>
   </section>
 
-  <section class="work">
+  <!-- 3 · THE TWO PIECES — barrier-led -->
+  <section class="band tint">
     <div class="wrap">
-      <div class="work-head reveal">
-        <span class="eyebrow">What we do</span>
-        <h2>Two programs, one mission.</h2>
+      <div class="reveal sec-head">
+        <span class="eyebrow orange">Where we start</span>
+        <h2 class="serif h2" style="margin-top:0.8rem;">We clear the path into the game, one barrier at a time.</h2>
+        <p class="prose" style="margin-top:1rem;">Every athlete hits the same barriers. We take them down in order, starting with the two that stop people first.</p>
       </div>
-      <div class="cards">
-        <div class="card">
-          <span class="tag">Removing the money barrier</span>
-          <h3>Hustle &amp; Heart Fund</h3>
-          <p>Adaptive equipment is brutally expensive. A racing chair or a sit ski can cost more than a car. We give direct grants so money is not the reason an athlete stops.</p>
-          <a href="/hustle-and-heart" class="textlink go">Explore the fund <span class="arrow">&rarr;</span></a>
+      <div class="progs">
+        <div class="prog reveal">
+          <span class="tag">The cost barrier</span>
+          <h3 class="serif h3">Hustle &amp; Heart Fund</h3>
+          <p>Adaptive gear is brutally expensive. A racing chair can cost more than a car. We help cover those costs so money is never the reason someone stops.</p>
+          <a href="/hustle-and-heart" class="textlink go">See what's happening now <span class="arrow">&rarr;</span></a>
         </div>
-        <div class="card">
-          <span class="tag">Removing the access barrier</span>
-          <h3>Adaptive Sports Near Me</h3>
-          <p>You cannot play a sport you cannot find. A free, open directory of adaptive programs across the country, so an athlete can find what is near them. No logins. No paywalls.</p>
-          <a href="/adaptive-sports-near-me" class="textlink go">Learn more <span class="arrow">&rarr;</span></a>
+        <div class="prog reveal">
+          <span class="tag">The access barrier</span>
+          <h3 class="serif h3">Adaptive Sports Near Me</h3>
+          <p>You can't play what you can't find. We're building a free, open directory of adaptive programs nationwide, with no logins and no paywalls.</p>
+          <a href="/adaptive-sports-near-me" class="textlink go">Adaptive Sports Near Me <span class="arrow">&rarr;</span></a>
         </div>
       </div>
+      <p class="prose reveal sec-head" style="margin-top:clamp(2.4rem,4.5vw,3.4rem);">This is where we start. As we grow, we take on the next barrier, and the next.</p>
     </div>
   </section>
 
-  <section class="community">
-    <div class="wrap">
-      <p class="community-label">Part of the adaptive sports community</p>
-      <div class="community-row">
-        <span>Move United</span>
-        <span>AMP Adaptive Sports</span>
-        <span>US Open Pickleball</span>
-        <span>Stand Up and Play</span>
-      </div>
-    </div>
-  </section>
-
-  <section class="band-paper">
-    <div class="wrap narrow">
-      <span class="eyebrow reveal">Why "Hustle &amp; Heart"</span>
-      <h2 class="sec-h2 reveal">The fund carries Tim Gruensfelder's name.</h2>
-      <div class="startline reveal"></div>
-      <p class="body-p reveal">Tim was the hardest working player in every gym he rolled into. Cancer changed his body, but never what drove him. He set the standard for how the game should be played, and he is the reason this fund exists. When we talk about the community we serve, Tim is who we mean.</p>
-      <a href="/tim" class="textlink reveal" style="display:inline-block;">Read Tim's story <span class="arrow">&rarr;</span></a>
-    </div>
-  </section>
-
-  <section class="quote">
-    <div class="wrap">
-      <div class="startline reveal"></div>
+  <!-- 4 · ATHLETE VOICE — proof it changes a real life (light) -->
+  <section class="bigquote band">
+    <div class="wrap reading">
+      <hr class="tick orange reveal">
       <blockquote class="reveal">"A year ago I couldn't get through a day without my cane. Now I can play pickleball, keep up with my kid, and choose how I move. The chair didn't fix me. It gave me options I didn't have before."</blockquote>
       <div class="reveal">
         <span class="qname">Brian Liss</span>
@@ -341,75 +116,63 @@
     </div>
   </section>
 
-  <section class="send5" id="send5">
-    <div class="wrap">
-      <span class="eyebrow reveal">Next up</span>
-      <h2 class="reveal">Send 5 to the US Open</h2>
-      <p class="intro reveal">Every April, the best adaptive pickleball players in the country compete at the US Open in Naples, Florida. In 2027, we are sending five athletes. No one pays out of pocket.</p>
-      <div class="progress-wrap reveal">
-        <div class="progress-labels"><span class="raised">$3,850 raised</span><span class="goal">$17,500 goal</span></div>
-        <div class="progress-bar"><div class="fill"></div></div>
-      </div>
-      <div class="send5-stats reveal">
-        <div class="s"><div class="n">$3,500</div><div class="l">Per athlete</div></div>
-        <div class="s"><div class="n">5</div><div class="l">Athletes</div></div>
-        <div class="s"><div class="n">$0</div><div class="l">Out of pocket</div></div>
-        <div class="s"><div class="n">$17.5K</div><div class="l">Total goal</div></div>
-      </div>
-      <a href="/hustle-and-heart" class="btn reveal">Donate to Send 5</a>
+  <!-- 5 · TIM — dark cinematic band, gold reverence (photo-ready) -->
+  <section class="dark band-lg">
+    <div class="wrap reading">
+      <span class="eyebrow gold reveal">Why "Hustle &amp; Heart"</span>
+      <h2 class="serif statement italic reveal" style="margin-top:1rem;">The fund carries Tim Gruensfelder's name.</h2>
+      <hr class="tick gold reveal">
+      <p class="prose reveal">Tim was the hardest-working player in every gym he rolled into. Cancer changed his body, never what drove him. He set the standard for how the game should be played, and he's the reason this fund exists.</p>
+      <a href="/tim" class="textlink reveal" style="margin-top:1.6rem;">Read Tim's story <span class="arrow">&rarr;</span></a>
     </div>
   </section>
 
-  <section class="founder">
+  <!-- 6 · THE MORE WE GROW — north-star team band (light) -->
+  <section class="steward band">
     <div class="wrap narrow">
-      <span class="eyebrow ink reveal">How we are built</span>
-      <h2 class="sec-h2 reveal">The more we grow, the more we give.</h2>
-      <div class="startline reveal"></div>
-      <p class="body-p reveal">Adapt To Life is not one person. It is a team of athletes, coaches, and people who have lived this, who came together to build what should have existed a long time ago. We are building it so that one hundred percent of every dollar given to the fund reaches an athlete. Our operating costs are covered separately, on purpose, so giving is never reduced by overhead. We are early, and we are building the infrastructure to do this at scale.</p>
-      <blockquote class="pullquote reveal">I got into this because someone handed me a brochure when I was six. Now it is our turn to be that for the next athlete.<span class="qname">Alec Tranel</span><span class="qrole">Founder &amp; Executive Director</span></blockquote>
-      <a href="/about" class="textlink reveal" style="display:inline-block; margin-top:1.6rem;">Meet the team <span class="arrow">&rarr;</span></a>
-    </div>
-  </section>
-
-  <section class="public">
-    <div class="wrap">
-      <div class="public-grid">
-        <div class="reveal">
-          <span class="eyebrow">Building in the open</span>
-          <h2>We are building this in public.</h2>
-          <p>Here is our roadmap, and here is exactly where every dollar goes. No overhead is pulled from athlete grants. Watch us build.</p>
-        </div>
-        <div class="links reveal">
-          <div class="startline"></div>
-          <a href="/roadmap" class="textlink">See the roadmap <span class="arrow">&rarr;</span></a>
-          <a href="/transparency" class="textlink">Open accounting <span class="arrow">&rarr;</span></a>
-        </div>
+      <span class="eyebrow orange reveal">How we're built</span>
+      <h2 class="serif statement italic reveal" style="margin-top:1rem;">The more we grow, the more we give.</h2>
+      <p class="prose reveal">Adapt To Life isn't one person. It's a team of athletes and coaches who've lived this and came together to build what should have existed long ago. One hundred percent of every dollar to the fund reaches an athlete. Overhead is covered separately, on purpose. We're just getting started, and that's the point.</p>
+      <blockquote class="pullquote reveal">I got into this because someone handed me a brochure when I was six. Now it's our turn to be that for the next athlete.</blockquote>
+      <div class="reveal" style="margin-top:1.1rem;">
+        <span class="qname">Alec Tranel</span>
+        <span class="qrole">Founder &amp; Executive Director</span>
       </div>
+      <a href="/about" class="textlink reveal" style="margin-top:1.7rem;">Meet the team <span class="arrow">&rarr;</span></a>
     </div>
   </section>
 
-  <section class="impact">
+  <!-- 10 · IMPACT — light, big serif numerals -->
+  <section class="band tint">
     <div class="wrap">
-      <div class="work-head reveal">
-        <span class="eyebrow">Your impact</span>
-        <h2>What your dollar buys</h2>
+      <div class="reveal sec-head">
+        <span class="eyebrow orange">Your impact</span>
+        <h2 class="serif h2" style="margin-top:0.8rem;">What your dollar buys</h2>
       </div>
       <div class="impact-grid">
-        <div class="impact-item"><div class="impact-n">$3,500</div><div class="impact-l">Sends one athlete to nationals</div></div>
-        <div class="impact-item"><div class="impact-n">$500</div><div class="impact-l">Three months of facility access</div></div>
-        <div class="impact-item"><div class="impact-n">$200</div><div class="impact-l">A set of competition tires</div></div>
-        <div class="impact-item"><div class="impact-n">0%</div><div class="impact-l">Of your donation goes to admin</div></div>
+        <div class="reveal"><div class="impact-n">$3,500</div><div class="impact-l">Sends one athlete to nationals</div></div>
+        <div class="reveal"><div class="impact-n">$500</div><div class="impact-l">Three months of facility access</div></div>
+        <div class="reveal"><div class="impact-n">$200</div><div class="impact-l">A set of competition tires</div></div>
+        <div class="reveal"><div class="impact-n">0%</div><div class="impact-l">Goes to admin or overhead</div></div>
       </div>
+      <p class="reveal sec-head" style="margin-top:clamp(1.8rem,3.4vw,2.6rem);"><a href="/about#promise" class="textlink">See how every dollar works <span class="arrow">&rarr;</span></a></p>
     </div>
   </section>
 
-  <section class="closing dark">
-    <div class="wrap">
-      <span class="eyebrow reveal">Be the someone</span>
-      <h2 class="reveal">Be the someone for the next athlete.</h2>
-      <div class="startline reveal"></div>
-      <p class="sub reveal" style="margin-top:1.6rem;">Every grant goes straight to an athlete. Equipment, training, travel, paid direct to the source.</p>
-      <a href="/hustle-and-heart" class="btn reveal">Fund an athlete</a>
+  <!-- PHOTO BAND — coaching, cinematic full-bleed (constant in both heroes) -->
+  <section class="photoband" aria-label="A wheelchair basketball clinic">
+    <div class="photoband-img" style="background-image:url('/images/coaching-opt2.webp')"></div>
+  </section>
+
+  <!-- 11 · CLOSING — dark CTA -->
+  <section class="closing dark band-lg">
+    <div class="wrap center">
+      <span class="eyebrow orange reveal">Your turn</span>
+      <h2 class="serif display reveal">Be the reason the next athlete plays.</h2>
+      <p class="lead sub reveal">Every dollar you give goes to an athlete's costs: equipment, training, and travel.</p>
+      <div class="actions reveal">
+        <a href="/hustle-and-heart" class="btn">Donate</a>
+      </div>
     </div>
   </section>
 
@@ -430,11 +193,11 @@
         <a href="/tim">Tim&#39;s Story</a>
         <a href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
         <a href="/roadmap">Roadmap</a>
-        <a href="/transparency">Transparency</a>
       </div>
       <div class="col">
         <h4>Get involved</h4>
         <a href="/hustle-and-heart">Donate</a>
+        <a href="/apply">Grant Application</a>
         <a href="#">Join the list</a>
         <a href="/contact">Contact</a>
         <a href="mailto:hello@adapttolife.org">hello@adapttolife.org</a>

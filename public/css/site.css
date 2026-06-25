@@ -17,7 +17,8 @@
   --ink:#1C1A15;            /* primary text on light */
   --ink-soft:#3C382F;       /* body prose */
   --muted:#6E6B62;          /* labels, captions */
-  --ink-warm:#16140F;       /* dark band base */
+  --ink-warm:#0C0C0E;       /* dark band base — crisp near-black (was warm brown) */
+  --charcoal:#19191C;       /* raised dark surface */
   --canvas:#FBFAF6;         /* warm-white page background */
   --paper:#FFFFFF;          /* cards / raised surfaces */
   --sand:#F4EEE1;           /* warm tinted surface, for gentle section depth */
@@ -147,7 +148,7 @@ p{ text-wrap:pretty; }
    background; transparent here would show the white canvas behind it) */
 .nav.over-dark:not(.scrolled){
   background-color:var(--ink-warm);
-  background-image:radial-gradient(130% 240% at 18% -120%, #2a261e 0%, #1c1812 48%, #16140F 100%);
+  background-image:none;
 }
 .nav.over-dark:not(.scrolled) .brand{ color:var(--cream); }
 .nav.over-dark:not(.scrolled) .nav-links a.lk{ color:var(--cream); opacity:0.82; }
@@ -167,8 +168,9 @@ section{ position:relative; }
 .dark{
   color:var(--cream);
   background-color:var(--ink-warm);
-  background-image:radial-gradient(58% 52% at 90% 116%, var(--orange-bloom) 0%, transparent 66%),
-                   radial-gradient(130% 120% at 18% -12%, #2a261e 0%, #1c1812 48%, #16140F 100%);
+  /* crisp near-black + subtle orange/gold atmosphere (no brown) */
+  background-image:radial-gradient(ellipse 72% 60% at 80% 26%, rgba(232,87,42,0.11) 0%, transparent 62%),
+                   radial-gradient(ellipse 60% 72% at 8% 104%, rgba(212,168,67,0.045) 0%, transparent 60%);
 }
 .dark h1,.dark h2,.dark h3{ color:#fff; }
 .dark .prose,.dark .lead{ color:var(--cream-mute); }
@@ -262,7 +264,7 @@ section{ position:relative; }
 
 /* ---- footer (dark) ------------------------------------------------------- */
 .footer{ color:var(--cream); padding-top:clamp(3.5rem,7vw,5rem); padding-bottom:2.5rem; border-top:3px solid var(--orange);
-  background-color:var(--ink-warm); background-image:radial-gradient(130% 120% at 18% -12%, #2a261e 0%, #1c1812 48%, #16140F 100%); }
+  background-color:var(--ink-warm); background-image:radial-gradient(ellipse 70% 95% at 86% -10%, rgba(232,87,42,0.07) 0%, transparent 56%); }
 .footer-top{ display:grid; grid-template-columns:1.6fr 1fr 1fr; gap:2.5rem; }
 .footer .brand{ color:#fff; margin-bottom:0.9rem; }
 .footer .brand-logo path[fill="#1A1A1A"]{ fill:var(--cream); }
@@ -408,3 +410,14 @@ a.info-v{ border-bottom:1.5px solid var(--orange); padding-bottom:1px; }
 .startline-hero::before{ content:""; position:absolute; top:0; bottom:0; left:0; right:100%; background:var(--orange); box-shadow:0 0 20px -1px rgba(232,87,42,0.7); border-radius:3px; animation:drawline 1.5s 0.6s cubic-bezier(.2,.7,.2,1) forwards; }
 @keyframes drawline{ to{ right:0; } }
 @media (prefers-reduced-motion: reduce){ .startline-hero::before{ right:0; animation:none; } }
+
+/* Home hero — atmosphere only: crisp black + orange/gold glow, bold type */
+.hero-atmos{
+  background-image:
+    radial-gradient(ellipse 60% 84% at 84% 48%, rgba(232,87,42,0.20) 0%, rgba(232,87,42,0.05) 40%, transparent 64%),
+    radial-gradient(ellipse 48% 62% at 102% 102%, rgba(212,168,67,0.06) 0%, transparent 58%);
+}
+.hero-atmos .display{ max-width:15ch; font-size:clamp(3.1rem,7.4vw,6rem); }
+.hero-atmos .sub{ max-width:48ch; }
+.hero-atmos .startline-hero{ width:min(460px,82%); }
+

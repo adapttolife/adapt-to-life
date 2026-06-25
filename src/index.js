@@ -57,6 +57,8 @@ async function handleContact(request, env) {
   const type = str(data.rsn);
   const message = str(data.msg);
   const name = `${firstName} ${lastName}`.trim();
+  // Optional client-supplied attribution (e.g. an ambassador page). Capped; falls back to the default.
+  const source = str(data.source).slice(0, 80);
 
   if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
     return json({ ok: false, error: "A valid email is required." }, 422);
@@ -70,7 +72,7 @@ async function handleContact(request, env) {
     Email: email,
     Message: message,
     Status: "New",
-    Source: "Website — contact form",
+    Source: source || "Website — contact form",
   };
   if (LEAD_TYPES.includes(type)) fields.Type = type;
 

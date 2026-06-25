@@ -22,6 +22,13 @@ export default {
       return handleContact(request, env);
     }
 
+    if (url.pathname === "/api/apply") {
+      if (request.method !== "POST") {
+        return json({ ok: false, error: "Method not allowed" }, 405);
+      }
+      return handleApply(request, env);
+    }
+
     // Everything else: the static site.
     return env.ASSETS.fetch(request);
   },
@@ -87,6 +94,69 @@ async function handleContact(request, env) {
 
   if (!res.ok) {
     console.error("Airtable error", res.status, await safeText(res));
+    return json({ ok: false, error: "Could not save right now. Please email hello@adapttolife.org." }, 502);
+  }
+
+  return json({ ok: true });
+}
+
+async function handleApply(request, env) {
+  let data;
+  try {
+    const ct = request.headers.get("content-type") || "";
+    data = ct.includes("application/json")
+      ? await request.json()
+      : Object.fromEntries(await request.formData());
+  } catch {
+    return json({ ok: false, error: "Could not read your submission." }, 400);
+  }
+
+  // Honeypot — bots fill the hidden "company" field. Accept silently, store nothing.
+  if (str(data.company)) return json({ ok: true });
+
+  const name = `${str(data.fn)} ${str(data.ln)}`.trim();
+  const email = str(data.em);
+
+  if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    return json({ ok: false, error: "A valid email is required." }, 422);
+  }
+  if (!name) {
+    return json({ ok: false, error: "Please add your name." }, 422);
+  }
+
+  const fields = {
+    Name: name,
+    Email: email,
+    Phone: str(data.phone),
+    Sport: str(data.sport),
+    Location: str(data.location),
+    Need: str(data.need),
+    "Estimated Cost": str(data.cost),
+    About: str(data.about),
+    Status: "New",
+    Source: "Website — apply form",
+  };
+
+  let res;
+  try {
+    res = await fetch(
+      `https://api.airtable.com/v0/${env.AIRTABLE_BASE_ID}/${env.AIRTABLE_APPLICATIONS_TABLE_ID}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${env.AIRTABLE_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ records: [{ fields }], typecast: true }),
+      }
+    );
+  } catch (err) {
+    console.error("Airtable apply request failed:", err);
+    return json({ ok: false, error: "Could not save right now. Please email hello@adapttolife.org." }, 502);
+  }
+
+  if (!res.ok) {
+    console.error("Airtable apply error", res.status, await safeText(res));
     return json({ ok: false, error: "Could not save right now. Please email hello@adapttolife.org." }, 502);
   }
 

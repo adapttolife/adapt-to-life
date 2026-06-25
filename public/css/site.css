@@ -288,9 +288,10 @@ section{ position:relative; }
   .nav.open .menu-btn span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }
   .mobile-menu{ display:block; max-height:0; overflow:hidden; background:var(--canvas); border-bottom:1px solid var(--hairline); transition:max-height .28s ease; }
   .nav.open .mobile-menu{ max-height:560px; }
-  .mobile-menu .mwrap{ display:flex; flex-direction:column; padding:0.8rem 0 1.4rem; }
+  .mobile-menu .mwrap{ display:flex; flex-direction:column; padding:0.8rem var(--gutter) 1.4rem; }
   .mobile-menu a{ padding:0.8rem 0; font-size:1.05rem; font-weight:600; color:var(--ink); border-bottom:1px solid var(--hairline); }
   .mobile-menu a.m-cta{ color:var(--orange); border-bottom:none; }
+  .mobile-menu a.featured{ color:var(--orange-ink); }
   /* keep mobile menu legible even when nav is over-dark (open panel is light) */
   .nav.over-dark.open{ background:var(--canvas); background-image:none; }
   .nav.over-dark.open .menu-btn span{ background:var(--ink); }

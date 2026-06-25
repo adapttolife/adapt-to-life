@@ -6,6 +6,14 @@
   "name": "adapt-to-life",
   "compatibility_date": "2026-06-24",
   "main": "src/index.js",
+  // Live custom domains (apex + www). Cloudflare manages DNS + TLS for these.
+  "routes": [
+    { "pattern": "adapttolife.org", "custom_domain": true },
+    { "pattern": "www.adapttolife.org", "custom_domain": true }
+  ],
+  // Keep the workers.dev URL + version preview URLs for staging / A-B work.
+  "workers_dev": true,
+  "preview_urls": true,
   "assets": {
     "directory": "./public",
     "binding": "ASSETS"

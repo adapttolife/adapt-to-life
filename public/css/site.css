@@ -275,6 +275,18 @@ section{ position:relative; }
 .footer .col a:hover{ opacity:1; color:var(--orange); }
 .footer-bottom{ display:flex; flex-wrap:wrap; justify-content:space-between; gap:1rem; margin-top:clamp(2.5rem,5vw,3.5rem); padding-top:1.4rem; border-top:1px solid rgba(255,255,255,0.12); font-size:0.85rem; color:var(--cream-faint); }
 
+/* footer inline subscribe */
+.foot-sub{ margin:0 0 1.3rem; max-width:32ch; }
+.foot-sub-label{ display:block; font-family:"Space Mono", monospace; font-size:0.7rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--cream-faint); font-weight:700; margin-bottom:0.6rem; }
+.foot-sub-row{ display:flex; gap:0.5rem; }
+.foot-sub-input{ flex:1; min-width:0; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.18); border-radius:8px; padding:0.6rem 0.75rem; color:var(--cream); font-size:0.95rem; }
+.foot-sub-input::placeholder{ color:var(--cream-faint); }
+.foot-sub-input:focus{ outline:none; border-color:var(--orange); background:rgba(255,255,255,0.09); }
+.foot-sub-btn{ flex:none; background:var(--orange); color:#fff; border:none; border-radius:8px; padding:0 1rem; font-size:1.15rem; line-height:1; font-weight:700; cursor:pointer; transition:background .15s ease; }
+.foot-sub-btn:hover{ background:var(--orange-hot); }
+.foot-sub-btn:disabled{ opacity:0.6; cursor:default; }
+.foot-sub-msg{ font-size:0.8rem; margin:0.55rem 0 0; min-height:1em; color:var(--cream-mute); }
+
 /* ---- reveal animation ---------------------------------------------------- */
 .reveal{ opacity:0; transform:translateY(14px); transition:opacity .6s ease-out, transform .6s ease-out; }
 .reveal.in{ opacity:1; transform:none; }

@@ -29,6 +29,13 @@ export default {
       return handleApply(request, env);
     }
 
+    if (url.pathname === "/api/subscribe") {
+      if (request.method !== "POST") {
+        return json({ ok: false, error: "Method not allowed" }, 405);
+      }
+      return handleSubscribe(request, env);
+    }
+
     // Everything else: the static site.
     return env.ASSETS.fetch(request);
   },
@@ -160,6 +167,67 @@ async function handleApply(request, env) {
   if (!res.ok) {
     console.error("Airtable apply error", res.status, await safeText(res));
     return json({ ok: false, error: "Could not save right now. Please email hello@adapttolife.org." }, 502);
+  }
+
+  return json({ ok: true });
+}
+
+// Newsletter / email capture -> beehiiv. API key + publication id are Worker secrets.
+async function handleSubscribe(request, env) {
+  let data;
+  try {
+    const ct = request.headers.get("content-type") || "";
+    data = ct.includes("application/json")
+      ? await request.json()
+      : Object.fromEntries(await request.formData());
+  } catch {
+    return json({ ok: false, error: "Could not read your submission." }, 400);
+  }
+
+  // Honeypot — bots fill the hidden "company" field. Accept silently, do nothing.
+  if (str(data.company)) return json({ ok: true });
+
+  const email = str(data.em);
+  if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    return json({ ok: false, error: "Please enter a valid email." }, 422);
+  }
+
+  if (!env.BEEHIIV_API_KEY || !env.BEEHIIV_PUBLICATION_ID) {
+    console.error("beehiiv not configured (missing API key or publication id)");
+    return json({ ok: false, error: "Sign-up is temporarily unavailable. Please email hello@adapttolife.org." }, 503);
+  }
+
+  // Optional client attribution (e.g. "subscribe-page", "footer", an event name).
+  const source = str(data.source).slice(0, 80) || "adapttolife.org";
+
+  let res;
+  try {
+    res = await fetch(
+      `https://api.beehiiv.com/v2/publications/${env.BEEHIIV_PUBLICATION_ID}/subscriptions`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${env.BEEHIIV_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          reactivate_existing: true,
+          send_welcome_email: true,
+          utm_source: source,
+          utm_medium: "website",
+          referring_site: "adapttolife.org",
+        }),
+      }
+    );
+  } catch (err) {
+    console.error("beehiiv request failed:", err);
+    return json({ ok: false, error: "Could not sign you up right now. Please email hello@adapttolife.org." }, 502);
+  }
+
+  if (!res.ok) {
+    console.error("beehiiv error", res.status, await safeText(res));
+    return json({ ok: false, error: "Could not sign you up right now. Please email hello@adapttolife.org." }, 502);
   }
 
   return json({ ok: true });

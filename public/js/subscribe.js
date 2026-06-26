@@ -18,12 +18,14 @@
       if (hp && hp.value) return; // honeypot
       var em = emEl ? emEl.value.trim() : "";
       if (!em) { setStatus("Please enter your email.", false); return; }
+      var tokenEl = f.querySelector('[name="cf-turnstile-response"]');
+      var token = tokenEl ? tokenEl.value : "";
       if (btn) btn.disabled = true;
       setStatus("", true);
       fetch("/api/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ em: em, source: source }),
+        body: JSON.stringify({ em: em, source: source, cf_token: token }),
       })
         .then(function (r) { return r.json().catch(function () { return { ok: r.ok }; }); })
         .then(function (d) {

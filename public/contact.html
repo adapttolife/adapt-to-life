@@ -97,6 +97,7 @@
             </div>
             <div class="field"><label for="msg">Message</label><textarea id="msg" name="msg" rows="5"></textarea></div>
             <input type="text" name="company" id="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+            <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only" style="margin-bottom:1rem;"></div>
             <button type="submit" class="btn">Send message</button>
             <p class="form-status" id="formStatus" role="status" aria-live="polite" style="margin-top:.9rem;font-weight:600"></p>
             <p class="form-note">We'll reply at the email you provide.</p>
@@ -121,6 +122,7 @@
             <button class="foot-sub-btn" type="submit" aria-label="Join the list">&rarr;</button>
           </div>
           <input type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only"></div>
           <p class="foot-sub-msg" role="status" aria-live="polite"></p>
         </form>
         <p class="legal">Adapt To Life is a registered 501(c)(3) nonprofit organization. Donations are tax-deductible to the extent allowed by law. EIN 41-3213344.</p>
@@ -196,7 +198,8 @@
       e.preventDefault();
       if(v('company')) return; // honeypot: silently drop bots
       if(!v('em')){ setStatus('Please enter your email so we can reply.', false); return; }
-      var payload = { fn:v('fn'), ln:v('ln'), em:v('em'), rsn:v('rsn'), msg:v('msg') };
+      var tk=f.querySelector('[name="cf-turnstile-response"]');
+      var payload = { fn:v('fn'), ln:v('ln'), em:v('em'), rsn:v('rsn'), msg:v('msg'), cf_token: tk?tk.value:'' };
       var orig = btn ? btn.textContent : '';
       if(btn){ btn.disabled = true; btn.textContent = 'Sending...'; }
       setStatus('', true);
@@ -221,5 +224,6 @@
 </script>
 
 <script src="/js/subscribe.js" defer></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </body>
 </html>

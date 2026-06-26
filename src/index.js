@@ -58,6 +58,10 @@ async function handleContact(request, env) {
   // Honeypot — bots fill the hidden "company" field. Accept silently, store nothing.
   if (str(data.company)) return json({ ok: true });
 
+  if (!(await verifyTurnstile(env, str(data.cf_token), request.headers.get("CF-Connecting-IP")))) {
+    return json({ ok: false, error: "Verification failed. Please reload the page and try again." }, 403);
+  }
+
   const firstName = str(data.fn);
   const lastName = str(data.ln);
   const email = str(data.em);
@@ -123,6 +127,10 @@ async function handleApply(request, env) {
   // Honeypot — bots fill the hidden "company" field. Accept silently, store nothing.
   if (str(data.company)) return json({ ok: true });
 
+  if (!(await verifyTurnstile(env, str(data.cf_token), request.headers.get("CF-Connecting-IP")))) {
+    return json({ ok: false, error: "Verification failed. Please reload the page and try again." }, 403);
+  }
+
   const name = `${str(data.fn)} ${str(data.ln)}`.trim();
   const email = str(data.em);
 
@@ -187,6 +195,10 @@ async function handleSubscribe(request, env) {
   // Honeypot — bots fill the hidden "company" field. Accept silently, do nothing.
   if (str(data.company)) return json({ ok: true });
 
+  if (!(await verifyTurnstile(env, str(data.cf_token), request.headers.get("CF-Connecting-IP")))) {
+    return json({ ok: false, error: "Verification failed. Please reload the page and try again." }, 403);
+  }
+
   const email = str(data.em);
   if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
     return json({ ok: false, error: "Please enter a valid email." }, 422);
@@ -231,6 +243,25 @@ async function handleSubscribe(request, env) {
   }
 
   return json({ ok: true });
+}
+
+// Cloudflare Turnstile server-side verification. Fail-open if no secret is configured
+// (so a missing binding never hard-breaks the forms); fail-closed on a bad/absent token.
+async function verifyTurnstile(env, token, ip) {
+  if (!env.TURNSTILE_SECRET_KEY) return true;
+  if (!token) return false;
+  try {
+    const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ secret: env.TURNSTILE_SECRET_KEY, response: token, remoteip: ip || undefined }),
+    });
+    const data = await res.json();
+    return !!data.success;
+  } catch (err) {
+    console.error("turnstile verify failed:", err);
+    return false;
+  }
 }
 
 function str(v) {

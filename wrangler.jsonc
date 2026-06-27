@@ -9,7 +9,8 @@
   // Live custom domains (apex + www). Cloudflare manages DNS + TLS for these.
   "routes": [
     { "pattern": "adapttolife.org", "custom_domain": true },
-    { "pattern": "www.adapttolife.org", "custom_domain": true }
+    { "pattern": "www.adapttolife.org", "custom_domain": true },
+    { "pattern": "sign.adapttolife.org", "custom_domain": true }
   ],
   // Keep the workers.dev URL + version preview URLs for staging / A-B work.
   "workers_dev": true,
@@ -26,6 +27,22 @@
     //   cfrun wrangler secret put AIRTABLE_TOKEN
     "AIRTABLE_BASE_ID": "appVPKDdwnOG5qkYG",
     "AIRTABLE_TABLE_ID": "tblhJaZtMY37K7Uio",
-    "AIRTABLE_APPLICATIONS_TABLE_ID": "tbl1Aiy8CId6hIzF6"
+    "AIRTABLE_APPLICATIONS_TABLE_ID": "tbl1Aiy8CId6hIzF6",
+    // Compliance mirror: signed releases land in the Airtable "Waivers" table.
+    "AIRTABLE_WAIVERS_TABLE_ID": "tbl51GcteN2lAbyN9",
+    // Google Shared Drive ("Adapt To Life") for the signed-release archive.
+    // The service account JSON is a secret: cfrun wrangler secret put GOOGLE_SA_JSON
+    "WAIVERS_DRIVE_ID": "0AIG-pWrds0g7Uk9PVA"
+  },
+  // Signed-waiver storage: PDFs in R2, the signing record index in D1.
+  "r2_buckets": [
+    { "binding": "WAIVERS_BUCKET", "bucket_name": "atl-waivers" }
+  ],
+  "d1_databases": [
+    { "binding": "WAIVERS_DB", "database_name": "atl-waivers", "database_id": "d34c2394-57f8-44ca-9089-c4569557dbb1" }
+  ],
+  // Compliance archive runs every 10 minutes: push new signed releases to Drive.
+  "triggers": {
+    "crons": ["*/10 * * * *"]
   }
 }

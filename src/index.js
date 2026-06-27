@@ -2,6 +2,8 @@
 // Serves the static site (env.ASSETS) and handles form submissions at /api/contact,
 // writing leads to Airtable. The Airtable token stays server-side (Worker secret).
 
+import { handleWaiver, handleWaiverDownload, handleWaiverVerify, handleWaiverDoc, runDriveBacklog } from "./waiver.js";
+
 const LEAD_TYPES = [
   "An athlete interested in funding",
   "A program or organization",
@@ -14,6 +16,12 @@ const LEAD_TYPES = [
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+
+    // Signing hub: sign.adapttolife.org is the one place to sign the universal release.
+    // Both site footers link here (?source=atl|asnm). Bare visits land on the release.
+    if (url.hostname === "sign.adapttolife.org" && url.pathname === "/") {
+      return Response.redirect(`${url.origin}/waiver${url.search}`, 302);
+    }
 
     if (url.pathname === "/api/contact") {
       if (request.method !== "POST") {
@@ -36,8 +44,31 @@ export default {
       return handleSubscribe(request, env);
     }
 
+    // Waiver e-signature: POST to sign, GET /api/waiver/:id to download the signed PDF.
+    if (url.pathname === "/api/waiver") {
+      if (request.method !== "POST") {
+        return json({ ok: false, error: "Method not allowed" }, 405);
+      }
+      return handleWaiver(request, env);
+    }
+    if (url.pathname === "/api/waiver/doc") {
+      return handleWaiverDoc(request, env);
+    }
+    if (url.pathname.startsWith("/api/waiver/")) {
+      const rest = url.pathname.slice("/api/waiver/".length);
+      if (rest.endsWith("/verify")) {
+        return handleWaiverVerify(request, env, rest.slice(0, -"/verify".length));
+      }
+      return handleWaiverDownload(request, env, rest);
+    }
+
     // Everything else: the static site.
     return env.ASSETS.fetch(request);
+  },
+
+  // Cron: archive newly signed releases to the Shared Drive (compliance backlog).
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(runDriveBacklog(env));
   },
 };
 

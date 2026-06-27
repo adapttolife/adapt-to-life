@@ -12,7 +12,7 @@ import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 // the same object). Editing the wording here changes both, and bumping VERSION
 // records exactly which text each signer agreed to (also changes doc_sha256).
 // ---------------------------------------------------------------------------
-const VERSION = "media-release-2026-06-27-v2";
+const VERSION = "media-release-2026-06-27-v3";
 
 // ONE universal release for the whole organization. Adapt To Life NFP is the legal
 // entity; Adaptive Sports Near Me and everything else sit underneath it, so a single
@@ -31,7 +31,7 @@ const DOC = {
     "By signing below, you give Adapt To Life NFP permission to take and use photos, video, and recordings of you (or your child) from our programs and activities. Please read it. It explains how the materials may be used, your consent to sign electronically, and how to withdraw permission.",
   sections: [
     { h: "Who this is with", p: [
-      "Adapt To Life NFP is an Illinois not-for-profit corporation, tax exempt under Section 501(c)(3) of the Internal Revenue Code (EIN 41-3213344). This release covers Adapt To Life NFP and all of its programs, projects, and initiatives, including Adaptive Sports Near Me (adaptivesportsnearme.com), now and in the future, along with its successors, assigns, and anyone it authorizes such as staff, volunteers, contractors, partners, and sponsors.",
+      "Adapt To Life NFP is an Illinois not-for-profit corporation, tax-exempt under Section 501(c)(3) of the Internal Revenue Code (EIN 41-3213344). This release covers Adapt To Life NFP and all of its programs, projects, and initiatives, including Adaptive Sports Near Me (adaptivesportsnearme.com), now and in the future, along with its successors, assigns, and anyone it authorizes such as staff, volunteers, contractors, partners, and sponsors.",
       "In this release, \"Materials\" means photographs, video, film, and audio recordings of the participant, together with the participant's name, image, likeness, and voice.",
     ]},
     { h: "Permission to record and use", p: [
@@ -45,7 +45,7 @@ const DOC = {
       "I understand the Materials may identify the participant as a person with a disability or as someone who takes part in adaptive sports programs, and I consent to their use on that basis.",
     ]},
     { h: "Release of claims", p: [
-      "I release Adapt To Life NFP, and its directors, officers, employees, volunteers, and those it authorizes, from any claim arising out of the authorized recording, use, or publication of the Materials. This includes any claim for invasion of privacy, right of publicity, defamation, false light, or emotional distress, and any claim based on how the Materials are edited or used.",
+      "I release Adapt To Life NFP and its directors, officers, employees, volunteers, and those it authorizes from any claim arising out of the authorized recording, use, or publication of the Materials. This includes any claim for invasion of privacy, right of publicity, defamation, false light, or emotional distress, and any claim based on how the Materials are edited or used.",
     ]},
     { h: "If I am signing for a minor", p: [
       "If the participant is under 18, I confirm that I am the participant's parent or legal guardian, that I have authority to grant these rights on the participant's behalf, and that I am signing for the participant. I understand a minor cannot grant these rights alone. This release binds the participant, me, and our heirs.",

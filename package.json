@@ -1,0 +1,23 @@
+{
+  "name": "adapt-to-life",
+  "version": "1.0.0",
+  "description": "Marketing site for **Adapt To Life — Your Place in Adaptive Sports**, deployed on Cloudflare Workers. Serves a static site plus one form-capture API route.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/coldcrippy/adapt-to-life.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/coldcrippy/adapt-to-life/issues"
+  },
+  "homepage": "https://github.com/coldcrippy/adapt-to-life#readme",
+  "dependencies": {
+    "pdf-lib": "^1.17.1"
+  }
+}

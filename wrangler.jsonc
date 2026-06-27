@@ -32,14 +32,21 @@
     "AIRTABLE_WAIVERS_TABLE_ID": "tbl51GcteN2lAbyN9",
     // Google Shared Drive ("Adapt To Life") for the signed-release archive.
     // The service account JSON is a secret: cfrun wrangler secret put GOOGLE_SA_JSON
-    "WAIVERS_DRIVE_ID": "0AIG-pWrds0g7Uk9PVA"
+    "WAIVERS_DRIVE_ID": "0AIG-pWrds0g7Uk9PVA",
+    // Spec 32 agent email. RESEND_API_KEY + AGENT_MAIL_TOKEN (MCP bearer) are secrets.
+    "AGENT_MAIL_DOMAIN": "agents.adapttolife.org",
+    "AIRTABLE_AGENT_MAIL_TABLE_ID": "tbliDyb8sAiA8JY0c"
   },
   // Signed-waiver storage: PDFs in R2, the signing record index in D1.
   "r2_buckets": [
-    { "binding": "WAIVERS_BUCKET", "bucket_name": "atl-waivers" }
+    { "binding": "WAIVERS_BUCKET", "bucket_name": "atl-waivers" },
+    // Spec 32 agent email: raw .eml + attachments.
+    { "binding": "AGENT_MAIL_BUCKET", "bucket_name": "agent-mail" }
   ],
   "d1_databases": [
-    { "binding": "WAIVERS_DB", "database_name": "atl-waivers", "database_id": "d34c2394-57f8-44ca-9089-c4569557dbb1" }
+    { "binding": "WAIVERS_DB", "database_name": "atl-waivers", "database_id": "d34c2394-57f8-44ca-9089-c4569557dbb1" },
+    // Spec 32 agent email: threads/messages/inboxes (source of truth).
+    { "binding": "AGENT_MAIL_DB", "database_name": "agent-mail", "database_id": "8609089a-7d9c-4d46-a527-d7f00c5ca050" }
   ],
   // Compliance archive runs every 10 minutes: push new signed releases to Drive.
   "triggers": {

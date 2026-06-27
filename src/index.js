@@ -3,6 +3,7 @@
 // writing leads to Airtable. The Airtable token stays server-side (Worker secret).
 
 import { handleWaiver, handleWaiverDownload, handleWaiverVerify, handleWaiverDoc, runDriveBacklog } from "./waiver.js";
+import { handleEmail, handleAgentMailApi } from "./agent_mail.js";
 
 const LEAD_TYPES = [
   "An athlete interested in funding",
@@ -62,6 +63,11 @@ export default {
       return handleWaiverDownload(request, env, rest);
     }
 
+    // Spec 32 agent email: authenticated API the agentos MCP calls (list/read/reply/status).
+    if (url.pathname.startsWith("/api/agent-mail/")) {
+      return handleAgentMailApi(request, env, url);
+    }
+
     // Everything else: the static site.
     return env.ASSETS.fetch(request);
   },
@@ -69,6 +75,11 @@ export default {
   // Cron: archive newly signed releases to the Shared Drive (compliance backlog).
   async scheduled(event, env, ctx) {
     ctx.waitUntil(runDriveBacklog(env));
+  },
+
+  // Spec 32 agent email: inbound mail for *@agents.adapttolife.org (Cloudflare Email Routing).
+  async email(message, env, ctx) {
+    await handleEmail(message, env, ctx);
   },
 };
 

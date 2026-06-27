@@ -34,8 +34,8 @@
     // The service account JSON is a secret: cfrun wrangler secret put GOOGLE_SA_JSON
     "WAIVERS_DRIVE_ID": "0AIG-pWrds0g7Uk9PVA",
     // Spec 32 agent email. RESEND_API_KEY + AGENT_MAIL_TOKEN (MCP bearer) are secrets.
-    // AIRTABLE_AGENT_MAIL_TABLE_ID is set once the "Agent Mail" table exists (T04).
-    "AGENT_MAIL_DOMAIN": "agents.adapttolife.org"
+    "AGENT_MAIL_DOMAIN": "agents.adapttolife.org",
+    "AIRTABLE_AGENT_MAIL_TABLE_ID": "tbliDyb8sAiA8JY0c"
   },
   // Signed-waiver storage: PDFs in R2, the signing record index in D1.
   "r2_buckets": [

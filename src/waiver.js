@@ -164,6 +164,14 @@ export async function handleWaiver(request, env) {
     console.error("waiver Airtable mirror failed:", err);
   }
 
+  // Email a copy of the signed PDF to the signer (and the org), from hello@adapttolife.org.
+  // Best-effort; never blocks the signer. Active once RESEND_API_KEY is set.
+  try {
+    await sendReceiptEmail(env, { to: email, pdfBytes, name, doc, isMinor, minorName });
+  } catch (err) {
+    console.error("waiver email failed:", err);
+  }
+
   return json({ ok: true, id, download: `/api/waiver/${id}`, verify: `/api/waiver/${id}/verify` });
 }
 
@@ -335,6 +343,49 @@ async function mirrorToAirtable(env, r) {
     body: JSON.stringify({ records: [{ fields }], typecast: true }),
   });
   if (!res.ok) console.error("Airtable waivers create error", res.status, await res.text().catch(() => ""));
+}
+
+// Email the signed PDF to the signer (and a copy to the org), from hello@adapttolife.org.
+// Uses Resend (HTTP API). Sender domain is verified in Resend via DKIM + a send.
+// subdomain, so Google Workspace mail on the root domain is unaffected.
+async function sendReceiptEmail(env, { to, pdfBytes, name, doc, isMinor, minorName }) {
+  if (!env.RESEND_API_KEY) { console.error("RESEND_API_KEY not set; skipping receipt email"); return; }
+  const who = isMinor ? `${minorName} (signed by ${name})` : name;
+  const subject = `Your signed ${doc.org} release`;
+  const text =
+    `Hi ${name},\n\n` +
+    `Thank you. Your ${doc.title} with ${doc.org} is attached as a signed PDF for your records.\n\n` +
+    `Participant: ${who}\n\n` +
+    `If you ever want to withdraw permission for future use, just reply to this email or write to hello@adapttolife.org.\n\n` +
+    `With gratitude,\n${doc.org}\n501(c)(3) nonprofit · EIN 41-3213344`;
+  const html =
+    `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#0C0C0E">` +
+    `<p>Hi ${esc(name)},</p>` +
+    `<p>Thank you. Your <strong>${esc(doc.title)}</strong> with ${esc(doc.org)} is attached as a signed PDF for your records.</p>` +
+    `<p style="color:#3a3a3e"><strong>Participant:</strong> ${esc(who)}</p>` +
+    `<p>If you ever want to withdraw permission for future use, just reply to this email or write to <a href="mailto:hello@adapttolife.org">hello@adapttolife.org</a>.</p>` +
+    `<p style="margin-top:24px;color:#6b6b70">With gratitude,<br>${esc(doc.org)}<br>501(c)(3) nonprofit · EIN 41-3213344</p>` +
+    `</div>`;
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      from: "Adapt To Life <hello@adapttolife.org>",
+      to: [to],
+      bcc: ["hello@adapttolife.org"],
+      reply_to: "hello@adapttolife.org",
+      subject, text, html,
+      attachments: [{ filename: "adapt-to-life-release.pdf", content: bytesToB64(pdfBytes) }],
+    }),
+  });
+  if (!res.ok) console.error("resend error", res.status, await res.text().catch(() => ""));
+}
+
+function esc(s) { return String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+function bytesToB64(bytes) {
+  let s = ""; const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) s += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+  return btoa(s);
 }
 
 // ---------------------------------------------------------------------------

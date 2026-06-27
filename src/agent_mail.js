@@ -160,8 +160,16 @@ async function apiReply(env, body) {
   const subject = /^re:/i.test(thread.subject || "") ? thread.subject : `Re: ${thread.subject || ""}`.trim();
   const inReplyTo = last ? last.message_id : null;
 
+  // Resend free plan verifies one domain (the apex). Until agents.adapttolife.org is
+  // verified in Resend, send from the verified parent and set Reply-To to the real inbox
+  // so replies route back to the agent. Flip AGENT_MAIL_SEND_DOMAIN once the subdomain is verified.
+  const sendDomain = env.AGENT_MAIL_SEND_DOMAIN || "adapttolife.org";
+  const localPart = String(thread.inbox).split("@")[0];
+  const fromAddr = `${localPart}@${sendDomain}`;
+
   const sent = await resendSend(env, {
-    from: thread.inbox,
+    from: fromAddr,
+    replyTo: thread.inbox,
     to,
     subject,
     text: body_text,
@@ -175,7 +183,7 @@ async function apiReply(env, body) {
       `INSERT INTO messages (id, thread_id, direction, from_addr, to_addr, subject, body_text, message_id, in_reply_to)
        VALUES (?, ?, 'out', ?, ?, ?, ?, ?, ?)`
     )
-    .bind(msgId, thread_id, thread.inbox, to, subject, body_text, sent.id || null, inReplyTo)
+    .bind(msgId, thread_id, fromAddr, to, subject, body_text, sent.id || null, inReplyTo)
     .run();
   await db.prepare(`UPDATE threads SET status = 'replied', last_at = datetime('now') WHERE id = ?`).bind(thread_id).run();
 
@@ -207,9 +215,10 @@ async function apiSetStatus(env, body) {
 
 // ───────────────────────── outbound (Resend) ─────────────────────────
 
-async function resendSend(env, { from, to, subject, text, html, inReplyTo }) {
+async function resendSend(env, { from, replyTo, to, subject, text, html, inReplyTo }) {
   if (!env.RESEND_API_KEY) throw new Error("RESEND_API_KEY not configured");
   const payload = { from, to, subject, text };
+  if (replyTo) payload.reply_to = replyTo;
   if (html) payload.html = html;
   if (inReplyTo) payload.headers = { "In-Reply-To": inReplyTo, References: inReplyTo };
 

@@ -33,7 +33,8 @@
     // Google Shared Drive ("Adapt To Life") for the signed-release archive.
     // The service account JSON is a secret: cfrun wrangler secret put GOOGLE_SA_JSON
     "WAIVERS_DRIVE_ID": "0AIG-pWrds0g7Uk9PVA",
-    // Spec 32 agent email. RESEND_API_KEY + AGENT_MAIL_TOKEN (MCP bearer) are secrets.
+    // Spec 32 agent email. AGENT_MAIL_TOKEN (MCP bearer) is a secret. Outbound mail uses
+    // the SEND_EMAIL binding below (Cloudflare Email Sending) — no API key.
     "AGENT_MAIL_DOMAIN": "agents.adapttolife.org",
     "AIRTABLE_AGENT_MAIL_TABLE_ID": "tbliDyb8sAiA8JY0c"
   },
@@ -47,6 +48,13 @@
     { "binding": "WAIVERS_DB", "database_name": "atl-waivers", "database_id": "d34c2394-57f8-44ca-9089-c4569557dbb1" },
     // Spec 32 agent email: threads/messages/inboxes (source of truth).
     { "binding": "AGENT_MAIL_DB", "database_name": "agent-mail", "database_id": "8609089a-7d9c-4d46-a527-d7f00c5ca050" }
+  ],
+  // Outbound email via Cloudflare Email Sending (native binding, no API key). Used by
+  // src/email.js cfSend for agent replies + waiver receipts. Sender domains
+  // (agents.adapttolife.org + the apex) are onboarded to Email Service; no recipient
+  // restriction attribute, so the Worker can send to arbitrary recipients (Workers Paid).
+  "send_email": [
+    { "name": "SEND_EMAIL" }
   ],
   // Compliance archive runs every 10 minutes: push new signed releases to Drive.
   "triggers": {

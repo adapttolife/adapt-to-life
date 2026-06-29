@@ -5,6 +5,7 @@
 // and return an unguessable download link. No external server, no SMTP.
 
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
+import { cfSend } from "./email.js";
 
 // ---------------------------------------------------------------------------
 // Document model — SINGLE SOURCE OF TRUTH for both the on-screen text and the
@@ -165,7 +166,7 @@ export async function handleWaiver(request, env) {
   }
 
   // Email a copy of the signed PDF to the signer (and the org), from hello@adapttolife.org.
-  // Best-effort; never blocks the signer. Active once RESEND_API_KEY is set.
+  // Best-effort; never blocks the signer. Sent via the SEND_EMAIL binding.
   try {
     await sendReceiptEmail(env, { to: email, pdfBytes, name, doc, isMinor, minorName });
   } catch (err) {
@@ -346,10 +347,11 @@ async function mirrorToAirtable(env, r) {
 }
 
 // Email the signed PDF to the signer (and a copy to the org), from hello@adapttolife.org.
-// Uses Resend (HTTP API). Sender domain is verified in Resend via DKIM + a send.
-// subdomain, so Google Workspace mail on the root domain is unaffected.
+// Uses Cloudflare Email Sending (src/email.js cfSend). The apex is onboarded to Email
+// Service via SPF/DKIM TXT records only — no MX change — so Google Workspace mail on the
+// root domain is unaffected. Best-effort: a send failure never blocks signing.
 async function sendReceiptEmail(env, { to, pdfBytes, name, doc, isMinor, minorName }) {
-  if (!env.RESEND_API_KEY) { console.error("RESEND_API_KEY not set; skipping receipt email"); return; }
+  if (!env.SEND_EMAIL) { console.error("SEND_EMAIL binding not configured; skipping receipt email"); return; }
   const who = isMinor ? `${minorName} (signed by ${name})` : name;
   const subject = `Your signed ${doc.org} release`;
   const text =
@@ -366,19 +368,20 @@ async function sendReceiptEmail(env, { to, pdfBytes, name, doc, isMinor, minorNa
     `<p>If you ever want to withdraw permission for future use, just reply to this email or write to <a href="mailto:hello@adapttolife.org">hello@adapttolife.org</a>.</p>` +
     `<p style="margin-top:24px;color:#6b6b70">With gratitude,<br>${esc(doc.org)}<br>501(c)(3) nonprofit · EIN 41-3213344</p>` +
     `</div>`;
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
+  try {
+    await cfSend(env, {
       from: "Adapt To Life <hello@adapttolife.org>",
-      to: [to],
-      bcc: ["hello@adapttolife.org"],
-      reply_to: "hello@adapttolife.org",
+      to,
+      bcc: "hello@adapttolife.org",
+      replyTo: "hello@adapttolife.org",
       subject, text, html,
-      attachments: [{ filename: "adapt-to-life-release.pdf", content: bytesToB64(pdfBytes) }],
-    }),
-  });
-  if (!res.ok) console.error("resend error", res.status, await res.text().catch(() => ""));
+      attachments: [
+        { filename: "adapt-to-life-release.pdf", content: bytesToB64(pdfBytes), type: "application/pdf", disposition: "attachment" },
+      ],
+    });
+  } catch (err) {
+    console.error("receipt email failed:", err);
+  }
 }
 
 function esc(s) { return String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }

@@ -5,10 +5,11 @@
 //   handleAgentMailApi(request, env, url) authenticated HTTP API the agentos MCP calls
 //
 // Source of truth: D1 (env.AGENT_MAIL_DB) for threads/messages; R2 (env.AGENT_MAIL_BUCKET) for raw .eml.
-// Humans read a write-through Airtable mirror (never on the agent hot path). Outbound via Resend.
-// Patterns reused from src/waiver.js (Resend) and src/index.js (Airtable REST).
+// Humans read a write-through Airtable mirror (never on the agent hot path). Outbound via
+// Cloudflare Email Sending (src/email.js cfSend). Airtable REST patterns reused from src/index.js.
 
 import PostalMime from "postal-mime";
+import { cfSend } from "./email.js";
 
 const STATUSES = ["new", "agent_working", "needs_review", "human", "replied", "resolved"];
 
@@ -160,21 +161,17 @@ async function apiReply(env, body) {
   const subject = /^re:/i.test(thread.subject || "") ? thread.subject : `Re: ${thread.subject || ""}`.trim();
   const inReplyTo = last ? last.message_id : null;
 
-  // Resend free plan verifies one domain (the apex). Until agents.adapttolife.org is
-  // verified in Resend, send from the verified parent and set Reply-To to the real inbox
-  // so replies route back to the agent. Flip AGENT_MAIL_SEND_DOMAIN once the subdomain is verified.
-  const sendDomain = env.AGENT_MAIL_SEND_DOMAIN || "adapttolife.org";
-  const localPart = String(thread.inbox).split("@")[0];
-  const fromAddr = `${localPart}@${sendDomain}`;
+  // Send natively as the agent's own inbox on agents.adapttolife.org (the subdomain is
+  // onboarded to Cloudflare Email Sending), so replies thread straight back to the agent.
+  const fromAddr = thread.inbox;
 
-  const sent = await resendSend(env, {
+  const sent = await cfSend(env, {
     from: fromAddr,
-    replyTo: thread.inbox,
     to,
     subject,
     text: body_text,
     html: body_html || undefined,
-    inReplyTo,
+    headers: inReplyTo ? { "In-Reply-To": inReplyTo, References: inReplyTo } : undefined,
   });
 
   const msgId = crypto.randomUUID();
@@ -211,24 +208,6 @@ async function apiSetStatus(env, body) {
 
   const updated = await db.prepare(`SELECT id AS thread_id, status, assigned_agent FROM threads WHERE id = ?`).bind(thread_id).first();
   return jsonResp({ outcome: "ok", data: updated });
-}
-
-// ───────────────────────── outbound (Resend) ─────────────────────────
-
-async function resendSend(env, { from, replyTo, to, subject, text, html, inReplyTo }) {
-  if (!env.RESEND_API_KEY) throw new Error("RESEND_API_KEY not configured");
-  const payload = { from, to, subject, text };
-  if (replyTo) payload.reply_to = replyTo;
-  if (html) payload.html = html;
-  if (inReplyTo) payload.headers = { "In-Reply-To": inReplyTo, References: inReplyTo };
-
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-  if (!res.ok) throw new Error(`Resend error ${res.status}: ${await safeText(res)}`);
-  return res.json();
 }
 
 // ───────────────────────── human mirror (Airtable) ─────────────────────────

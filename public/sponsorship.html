@@ -4,25 +4,50 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light only">
-<title>Stay in the game | Adapt To Life</title>
-<meta name="description" content="Join the Adapt To Life list for the vision, the roadmap, events, and the work as it happens.">
-<link rel="canonical" href="https://adapttolife.org/subscribe">
-<link rel="icon" type="image/svg+xml" href="/images/atl-logo.svg">
+<title>Sponsorship | Adapt To Life</title>
+<meta name="description" content="Sponsor adaptive athletes. Partnerships from community level to founding level, each funding real equipment, travel, and training, with recognition where the community is watching.">
+<link rel="canonical" href="https://adapttolife.org/sponsorship">
+<link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
 <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Stay in the game | Adapt To Life">
-<meta property="og:description" content="Join the Adapt To Life list for the vision, the roadmap, events, and the work as it happens.">
+<meta property="og:title" content="Sponsorship | Adapt To Life">
+<meta property="og:description" content="Put your business behind adaptive athletes. Partnerships from community level to founding level, each funding real equipment, travel, and training.">
 <meta property="og:image" content="https://adapttolife.org/images/og-image.jpg">
-<meta property="og:url" content="https://adapttolife.org/subscribe">
+<meta property="og:url" content="https://adapttolife.org/sponsorship">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Stay in the game | Adapt To Life">
-<meta name="twitter:description" content="Join the Adapt To Life list for the vision, the roadmap, events, and the work as it happens.">
+<meta name="twitter:title" content="Sponsorship | Adapt To Life">
+<meta name="twitter:description" content="Put your business behind adaptive athletes. Partnerships from community level to founding level.">
 <meta name="twitter:image" content="https://adapttolife.org/images/og-image.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
+<style>
+  /* Sponsorship page — tier ladder */
+  .tier-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:clamp(1.1rem,2.4vw,1.7rem); margin-top:clamp(2.4rem,4vw,3.2rem); }
+  .tier{ display:flex; flex-direction:column; border:1.5px solid #e3e0d9; border-radius:16px; padding:1.6rem 1.4rem; background:#fff; }
+  .tier.is-popular{ border-color:var(--orange); box-shadow:0 18px 44px rgba(232,93,4,0.13); }
+  .tier-flag{ font-family:'Space Mono',monospace; font-size:0.7rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--orange); min-height:1rem; }
+  .tier-price{ font-family:'Newsreader',serif; font-size:2rem; line-height:1; margin:0.25rem 0 0; color:#1A1A1A; }
+  .tier-price small{ font-size:0.9rem; color:#6b6b6b; font-family:'Hanken Grotesk',sans-serif; }
+  .tier-name{ font-family:'Hanken Grotesk',sans-serif; font-weight:700; font-size:1.05rem; margin:0.5rem 0 0.2rem; color:#1A1A1A; }
+  .tier-line{ font-family:'Hanken Grotesk',sans-serif; font-size:0.9rem; color:#6b6b6b; margin:0 0 1rem; }
+  .tier-benefits{ list-style:none; padding:0; margin:0 0 1.4rem; display:flex; flex-direction:column; gap:0.5rem; flex:1; }
+  .tier-benefits li{ position:relative; padding-left:1.3rem; font-family:'Hanken Grotesk',sans-serif; font-size:0.9rem; color:#333; line-height:1.4; }
+  .tier-benefits li::before{ content:""; position:absolute; left:0; top:0.5em; width:7px; height:7px; border-radius:50%; background:var(--orange); }
+  .tier .btn{ width:100%; text-align:center; }
+  .founding{ margin-top:clamp(1.1rem,2.4vw,1.7rem); border-radius:16px; padding:clamp(1.8rem,4vw,2.6rem); background:#1A1A1A; color:#fff; display:grid; grid-template-columns:1.15fr 0.85fr; gap:clamp(1.4rem,3vw,2.4rem); align-items:center; }
+  @media (max-width:760px){ .founding{ grid-template-columns:1fr; } }
+  .founding .tier-flag{ color:var(--orange); }
+  .founding .tier-price{ color:#fff; font-size:2.4rem; }
+  .founding .tier-name{ color:#fff; }
+  .founding .tier-line{ color:rgba(255,255,255,0.7); }
+  .founding .tier-benefits li{ color:rgba(255,255,255,0.82); }
+  .deploys{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:clamp(1.2rem,3vw,2rem); margin-top:clamp(2.2rem,4vw,3rem); }
+  .deploys .impact-n{ font-size:clamp(1.6rem,4vw,2.1rem); }
+  .tax-note{ font-family:'Hanken Grotesk',sans-serif; font-size:0.9rem; color:#6b6b6b; max-width:60ch; line-height:1.55; }
+</style>
 </head>
 <body>
 
@@ -46,7 +71,7 @@
       <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
       <a href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
       <a href="/about">Our Story</a>
-            <a class="featured" href="/apply">Grant Application</a>
+      <a class="featured" href="/apply">Grant Application</a>
       <a href="/sponsorship">Sponsor</a>
       <a class="m-cta" href="/donate">Donate &rarr;</a>
     </div>
@@ -55,25 +80,170 @@
 
 <main>
 
-  <section class="hero dark">
+  <!-- HERO -->
+  <section class="hero dark hero-atmos">
     <div class="wrap">
-      <span class="eyebrow reveal">Newsletter</span>
-      <h1 class="serif display reveal">Stay in the game.</h1>
-      <p class="lead sub reveal">The vision, the roadmap, the athletes, and the events, straight from us as the work happens. Real updates, no noise.</p>
+      <span class="eyebrow orange reveal">Partner with Adapt To Life</span>
+      <h1 class="serif display reveal">Sponsor the next generation of <em class="italic" style="color:var(--orange)">adaptive athletes.</em></h1>
+      <p class="lead sub reveal">Put your business behind athletes who refuse to sit on the sidelines. Every partnership funds real equipment, travel, and training, and puts your name where the community is paying attention.</p>
+      <div class="actions reveal">
+        <a href="#tiers" class="btn">See the levels <span class="arrow">&rarr;</span></a>
+        <a href="/contact" class="btn ghost">Talk to us</a>
+      </div>
     </div>
   </section>
 
+  <!-- WHY SPONSOR -->
+  <section class="band tint">
+    <div class="wrap">
+      <div class="reveal sec-head">
+        <span class="eyebrow orange">Why partner with us</span>
+        <h2 class="serif h2" style="margin-top:0.8rem;">Your brand, on the right side of the game.</h2>
+      </div>
+      <div class="progs" style="margin-top:clamp(2.4rem,4vw,3.4rem);">
+        <div class="prog reveal">
+          <span class="tag">Real impact</span>
+          <h3 class="serif h3">Dollars that reach athletes</h3>
+          <p>Your sponsorship funds the equipment, travel, and training that budgets miss. We document every grant, so you see where it lands.</p>
+        </div>
+        <div class="prog reveal">
+          <span class="tag">Real visibility</span>
+          <h3 class="serif h3">Seen where it counts</h3>
+          <p>Recognition on our site, at our events, across social, and on the gear that gets athletes back in the game.</p>
+        </div>
+        <div class="prog reveal">
+          <span class="tag">Real alignment</span>
+          <h3 class="serif h3">Stand for access</h3>
+          <p>Accessibility and community are values your customers can see. Partnership makes them visible, and credible.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE LADDER -->
+  <section class="band" id="tiers">
+    <div class="wrap">
+      <div class="reveal sec-head">
+        <span class="eyebrow orange">Sponsorship levels</span>
+        <h2 class="serif h2" style="margin-top:0.8rem;">Find your level. Then aim higher.</h2>
+        <p class="prose" style="max-width:56ch; margin-top:1rem;">Every sponsor is on the team. Where you go from there is up to you. Each level builds on the one before it, and every tier comes with impact reporting so you see exactly what your partnership funds.</p>
+      </div>
+
+      <div class="tier-grid">
+        <div class="tier reveal">
+          <span class="tier-flag">&nbsp;</span>
+          <div class="tier-price">$500</div>
+          <div class="tier-name">Teammate</div>
+          <p class="tier-line">Where every partner starts.</p>
+          <ul class="tier-benefits">
+            <li>Your name or logo on our supporters wall</li>
+            <li>A thank-you across our social channels</li>
+            <li>Quarterly impact reports</li>
+          </ul>
+          <a href="/contact" class="btn ghost">Become a Teammate</a>
+        </div>
+
+        <div class="tier reveal">
+          <span class="tier-flag">&nbsp;</span>
+          <div class="tier-price">$2,500</div>
+          <div class="tier-name">Coach</div>
+          <p class="tier-line">Get your brand in the picture.</p>
+          <ul class="tier-benefits">
+            <li>Everything in Teammate</li>
+            <li>Logo on our donate page</li>
+            <li>A named athlete-impact story each year</li>
+          </ul>
+          <a href="/contact" class="btn ghost">Become a Coach</a>
+        </div>
+
+        <div class="tier reveal is-popular">
+          <span class="tier-flag">Most chosen</span>
+          <div class="tier-price">$10,000</div>
+          <div class="tier-name">Captain</div>
+          <p class="tier-line">Lead from the front.</p>
+          <ul class="tier-benefits">
+            <li>Everything in Coach</li>
+            <li>Presence at our events, a booth or banner</li>
+            <li>A co-branded social feature</li>
+            <li>Funds roughly three athletes for a season</li>
+          </ul>
+          <a href="/contact" class="btn">Become a Captain</a>
+        </div>
+
+        <div class="tier reveal">
+          <span class="tier-flag">&nbsp;</span>
+          <div class="tier-price">$25,000</div>
+          <div class="tier-name">Champion</div>
+          <p class="tier-line">Put your name on the mission.</p>
+          <ul class="tier-benefits">
+            <li>Everything in Captain</li>
+            <li>Presenting recognition on a program or event</li>
+            <li>A speaking moment at an event</li>
+            <li>An annual impact briefing for your team</li>
+            <li>Funds a full squad's gear</li>
+          </ul>
+          <a href="/contact" class="btn ghost">Become a Champion</a>
+        </div>
+      </div>
+
+      <!-- FOUNDING PARTNER — the anchor tier -->
+      <div class="founding reveal">
+        <div>
+          <span class="tier-flag">Limited founding partnerships</span>
+          <div class="tier-price">$50,000<small>&nbsp;and up</small></div>
+          <div class="tier-name">Founding Partner</div>
+          <p class="tier-line">Build something athletes remember.</p>
+          <a href="/contact" class="btn" style="margin-top:0.6rem;">Start the conversation</a>
+        </div>
+        <ul class="tier-benefits">
+          <li>Everything in Champion</li>
+          <li>Naming rights on a grant cycle or season</li>
+          <li>Premier placement across site, events, and press</li>
+          <li>A press announcement of the partnership</li>
+          <li>A hand-built, multi-year impact partnership</li>
+        </ul>
+      </div>
+
+      <p class="prose reveal" style="margin-top:2rem;">Want something else? In-kind equipment, services or space, employer matching, donor-advised funds, and six-figure multi-year commitments are all welcome. If it serves athletes, we are interested. <a class="textlink" href="/contact">Design a custom partnership <span class="arrow">&rarr;</span></a></p>
+    </div>
+  </section>
+
+  <!-- WHAT IT DEPLOYS -->
+  <section class="band tint">
+    <div class="wrap">
+      <div class="reveal sec-head">
+        <span class="eyebrow orange">What it deploys</span>
+        <h2 class="serif h2" style="margin-top:0.8rem;">Every level moves real athletes.</h2>
+      </div>
+      <div class="deploys">
+        <div class="reveal"><div class="impact-n">$500</div><div class="impact-l">A set of racing wheels</div></div>
+        <div class="reveal"><div class="impact-n">$2,500</div><div class="impact-l">A season of coaching</div></div>
+        <div class="reveal"><div class="impact-n">$10,000</div><div class="impact-l">Three athletes, fully equipped</div></div>
+        <div class="reveal"><div class="impact-n">$25,000</div><div class="impact-l">A full squad's gear</div></div>
+        <div class="reveal"><div class="impact-n">$50,000</div><div class="impact-l">A region's grant cycle</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAX / TRUST -->
   <section class="band">
-    <div class="wrap narrow">
-      <form id="subscribeForm" class="contact-form reveal" novalidate>
-        <div class="field"><label for="em">Email</label><input id="em" name="em" type="email" autocomplete="email" placeholder="you@example.com"></div>
-        <input type="text" name="company" id="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
-        <input type="hidden" id="src" value="subscribe-page">
-        <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only" style="margin-bottom:1rem;"></div>
-        <button type="submit" class="btn">Join the list</button>
-        <p class="form-status" id="formStatus" role="status" aria-live="polite" style="margin-top:.9rem;font-weight:600"></p>
-        <p class="form-note">No spam. Unsubscribe anytime.</p>
-      </form>
+    <div class="wrap reading">
+      <span class="eyebrow orange reveal">Good to know</span>
+      <h2 class="serif h3 reveal" style="margin-top:0.7rem;">Recognized, documented, deductible.</h2>
+      <p class="tax-note reveal" style="margin-top:1rem;">Adapt To Life is a recognized 501(c)(3) nonprofit (EIN 41-3213344). Sponsorships may be tax-deductible to the extent allowed by law, and we provide documentation for every partnership. Because some levels include benefits, check with your tax advisor on the deductible portion.</p>
+    </div>
+  </section>
+
+  <!-- CLOSING -->
+  <section class="closing dark band-lg">
+    <div class="wrap center">
+      <span class="eyebrow orange reveal">Let's talk</span>
+      <h2 class="serif display reveal">Put your name behind the next athlete.</h2>
+      <p class="lead sub reveal">Tell us which level fits, or bring an idea of your own. We will build the rest with you.</p>
+      <div class="actions reveal" style="gap:0.9rem 1rem; flex-wrap:wrap;">
+        <a href="/contact" class="btn">Become a sponsor</a>
+        <a href="/donate" class="btn ghost">Give a one-time gift</a>
+      </div>
     </div>
   </section>
 
@@ -103,7 +273,7 @@
         <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
         <a href="/tim">Tim&#39;s Story</a>
         <a href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
-                <a href="/roadmap">Roadmap</a>
+        <a href="/roadmap">Roadmap</a>
       </div>
       <div class="col">
         <h4>Get involved</h4>
@@ -152,34 +322,6 @@
         });
       });
     }
-  })();
-</script>
-<script>
-  (function(){
-    var f = document.getElementById('subscribeForm');
-    if(!f) return;
-    var statusEl = document.getElementById('formStatus');
-    var btn = f.querySelector('button[type="submit"]');
-    function v(id){ var el=document.getElementById(id); return el ? el.value.trim() : ''; }
-    function setStatus(msg, ok){ if(!statusEl) return; statusEl.textContent = msg; statusEl.style.color = ok ? '#2e7d32' : '#c0392b'; }
-    f.addEventListener('submit', function(e){
-      e.preventDefault();
-      if(v('company')) return;
-      if(!v('em')){ setStatus('Please enter your email.', false); return; }
-      var tk=f.querySelector('[name="cf-turnstile-response"]');
-      var payload = { em:v('em'), source:v('src'), cf_token: tk?tk.value:'' };
-      var orig = btn ? btn.textContent : '';
-      if(btn){ btn.disabled = true; btn.textContent = 'Joining...'; }
-      setStatus('', true);
-      fetch('/api/subscribe', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) })
-      .then(function(r){ return r.json().catch(function(){ return { ok:r.ok }; }); })
-      .then(function(d){
-        if(d && d.ok){ f.reset(); setStatus("You're in. Watch your inbox.", true); }
-        else { setStatus((d && d.error) || 'Something went wrong. Please email hello@adapttolife.org.', false); }
-      })
-      .catch(function(){ setStatus('Network error. Please email hello@adapttolife.org.', false); })
-      .then(function(){ if(btn){ btn.disabled = false; btn.textContent = orig; } });
-    });
   })();
 </script>
 

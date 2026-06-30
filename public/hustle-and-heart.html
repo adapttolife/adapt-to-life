@@ -23,6 +23,22 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
+<script async src="https://widgets.givebutter.com/latest.umd.cjs?acct=7FsgcjXFnW6fabQn"></script>
+<style>
+  .give-split{ display:grid; grid-template-columns:1.02fr 0.98fr; gap:clamp(2rem,5vw,4rem); align-items:center; text-align:left; }
+  @media (max-width:880px){ .give-split{ grid-template-columns:1fr; gap:2.2rem; } }
+  .give-split .thermo{ max-width:none; margin:1.4rem 0 0; }
+  .give-split .thermo-row{ justify-content:flex-start; }
+  .give-split-form givebutter-giving-form{ display:block; width:100%; }
+  .thermo{ max-width:540px; margin:1.8rem auto 0; }
+  .thermo-row{ display:flex; align-items:baseline; gap:0.5rem; justify-content:center; flex-wrap:wrap; }
+  .thermo-raised{ font-family:"Newsreader",serif; font-size:clamp(2.1rem,5vw,2.9rem); line-height:1; color:#fff; }
+  .thermo-goal{ font-family:"Hanken Grotesk",sans-serif; color:rgba(255,255,255,0.6); font-size:0.95rem; }
+  .thermo-track{ display:block; height:10px; border-radius:999px; background:rgba(255,255,255,0.14); margin-top:0.9rem; overflow:hidden; }
+  .thermo-fill{ display:block; height:100%; width:0; border-radius:999px; background:linear-gradient(90deg,#E85D04,#ff9a4d); transition:width 1.3s cubic-bezier(.2,.8,.2,1); }
+  .thermo-link{ display:inline-block; margin-top:1.05rem; font-family:"Hanken Grotesk",sans-serif; font-weight:600; color:var(--orange); text-decoration:none; }
+  .thermo-link:hover{ text-decoration:underline; }
+</style>
 </head>
 <body>
 
@@ -34,7 +50,8 @@
       <a class="lk" href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
       <a class="lk" href="/about">Our Story</a>
       <a class="lk featured" href="/apply">Grant Application</a>
-      <a class="nav-cta" href="/hustle-and-heart">Donate</a>
+      <a class="lk" href="/sponsorship">Sponsor</a>
+      <a class="nav-cta" href="/donate">Donate</a>
     </nav>
     <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
       <span></span><span></span><span></span>
@@ -46,7 +63,8 @@
       <a href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
       <a href="/about">Our Story</a>
             <a class="featured" href="/apply">Grant Application</a>
-      <a class="m-cta" href="/hustle-and-heart">Donate &rarr;</a>
+      <a href="/sponsorship">Sponsor</a>
+      <a class="m-cta" href="/donate">Donate &rarr;</a>
     </div>
   </div>
 </header>
@@ -62,7 +80,7 @@
           <h1 class="serif display reveal">Every dollar goes to an <em class="italic">athlete.</em></h1>
           <p class="lead sub reveal">Adaptive gear can cost more than a car. We cover the equipment, travel, and training that keep athletes in the game. Named for how <a href="/tim" class="textlink">Tim Gruensfelder</a> played: all hustle, all heart.</p>
           <div class="actions reveal">
-            <a href="/contact" class="btn">Donate</a>
+            <a href="/donate" class="btn">Donate</a>
             <a href="/apply" class="btn ghost">Apply for a grant</a>
           </div>
         </div>
@@ -92,7 +110,7 @@
           <span class="eyebrow orange">For supporters</span>
           <h3 class="serif h3">Want to put someone in the game?</h3>
           <p>Your gift goes straight to an athlete's real costs. One hundred percent reaches them, and you see where it lands.</p>
-          <a href="/contact" class="btn">Donate</a>
+          <a href="/donate" class="btn">Donate</a>
         </div>
       </div>
     </div>
@@ -178,44 +196,42 @@
     </div>
   </section>
 
-  <!-- 6 · PARTNER TIERS (light) -->
+  <!-- 6 · PARTNER WITH US (light) -->
   <section class="band">
     <div class="wrap">
       <div class="reveal sec-head">
         <span class="eyebrow orange">Partner with us</span>
-        <h2 class="serif h2" style="margin-top:0.8rem;">Fund the mission.</h2>
-        <p class="prose" style="max-width:52ch; margin-top:1rem;">Back the fund and put athletes on the court. Every tier comes with impact reporting, so you see exactly where your dollars land.</p>
+        <h2 class="serif h2" style="margin-top:0.8rem;">Businesses, get in the game.</h2>
+        <p class="prose" style="max-width:54ch; margin-top:1rem;">Sponsor the fund and put your name behind athletes. Partnerships run from community level to founding level, each with impact reporting so you see exactly where your dollars land.</p>
       </div>
-      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:clamp(1.6rem,4vw,3.5rem); margin-top:clamp(2.4rem,4vw,3.4rem);">
-        <div class="prog reveal">
-          <span class="tag">$1,000</span>
-          <h3 class="serif h3">Teammate</h3>
-          <p>Website and social recognition, plus quarterly impact updates.</p>
-        </div>
-        <div class="prog reveal">
-          <span class="tag" style="color:var(--orange);">$5,000 &middot; Most popular</span>
-          <h3 class="serif h3">Coach</h3>
-          <p>Everything in Teammate, plus event invitations and direct athlete impact stories.</p>
-        </div>
-        <div class="prog reveal">
-          <span class="tag">$10,000+</span>
-          <h3 class="serif h3">Champion</h3>
-          <p>Everything in Coach, plus a partner spotlight, a speaking spot, and naming rights for grant cycles.</p>
-        </div>
+      <div class="actions reveal" style="margin-top:1.8rem; display:flex; gap:0.9rem 1rem; flex-wrap:wrap; justify-content:center;">
+        <a href="/sponsorship" class="btn">See sponsorship levels <span class="arrow">&rarr;</span></a>
+        <a href="/contact" class="btn ghost">Talk to us</a>
       </div>
-      <p class="prose reveal" style="margin-top:2rem;">Custom partnerships welcome. If it serves athletes, we're interested. <a class="textlink" href="/contact">Get in touch <span class="arrow">&rarr;</span></a></p>
     </div>
   </section>
 
-  <!-- 7 · CLOSING (dark) -->
-  <section class="closing dark band-lg">
-    <div class="wrap center">
-      <span class="eyebrow orange reveal">Ready when you are</span>
-      <h2 class="serif display reveal">Put an athlete on the court.</h2>
-      <p class="lead sub reveal">The gear is expensive. The shot at playing isn't optional. Your gift covers the gap.</p>
-      <div class="actions reveal" style="gap:0.9rem 1rem; flex-wrap:wrap;">
-        <a href="/contact" class="btn">Donate</a>
-        <a href="/tim" class="btn ghost">Read Tim's story</a>
+  <!-- 7 · GIVE MOMENT (dark) — capture the gift at the emotional peak, no detour -->
+  <section class="closing dark band-lg give-moment">
+    <div class="wrap">
+      <div class="give-split">
+        <div class="give-split-text reveal">
+          <span class="eyebrow orange">Your turn</span>
+          <h2 class="serif h2" style="margin-top:0.7rem;">Put an athlete on the court.</h2>
+          <p class="lead sub" style="margin-top:1rem;">The gear is expensive. The shot at playing isn't optional. Your gift covers the gap, and one hundred percent reaches an athlete.</p>
+          <div class="thermo" data-thermo>
+            <div class="thermo-row">
+              <span class="thermo-raised" data-thermo-raised>$0</span>
+              <span class="thermo-goal">raised of our $25,000 goal</span>
+            </div>
+            <div class="thermo-track"><span class="thermo-fill" data-thermo-fill></span></div>
+            <a href="/roadmap" class="thermo-link">See what we're building <span class="arrow">&rarr;</span></a>
+          </div>
+          <a href="/tim" class="textlink" style="margin-top:1.4rem; color:#fff; border-color:var(--orange);">Read Tim's story <span class="arrow">&rarr;</span></a>
+        </div>
+        <div class="give-split-form reveal">
+          <givebutter-giving-form campaign="IXM5DR"></givebutter-giving-form>
+        </div>
       </div>
     </div>
   </section>
@@ -250,7 +266,8 @@
       </div>
       <div class="col">
         <h4>Get involved</h4>
-        <a href="/hustle-and-heart">Donate</a>
+        <a href="/donate">Donate</a>
+        <a href="/sponsorship">Sponsor us</a>
         <a href="/apply">Grant Application</a>
         <a href="https://sign.adapttolife.org/waiver?source=atl">Sign waiver</a>
         <a href="/subscribe">Join the list</a>
@@ -294,6 +311,22 @@
         });
       });
     }
+  })();
+</script>
+
+<script>
+  (function(){
+    var box = document.querySelector('[data-thermo]'); if(!box) return;
+    var fill = box.querySelector('[data-thermo-fill]');
+    var amt = box.querySelector('[data-thermo-raised]');
+    var goalEl = box.querySelector('.thermo-goal');
+    fetch('/api/raised').then(function(r){ return r.json(); }).then(function(d){
+      var raised = Number(d.raised) || 0, goal = Number(d.goal) || 25000;
+      var pct = goal > 0 ? Math.max(0, Math.min(100, raised / goal * 100)) : 0;
+      amt.textContent = '$' + raised.toLocaleString('en-US');
+      if (goalEl) { goalEl.textContent = 'raised of our $' + goal.toLocaleString('en-US') + ' goal'; }
+      requestAnimationFrame(function(){ setTimeout(function(){ fill.style.width = pct.toFixed(1) + '%'; }, 120); });
+    }).catch(function(){});
   })();
 </script>
 

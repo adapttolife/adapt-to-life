@@ -36,7 +36,10 @@
     // Spec 32 agent email. AGENT_MAIL_TOKEN (MCP bearer) is a secret. Outbound mail uses
     // the SEND_EMAIL binding below (Cloudflare Email Sending) — no API key.
     "AGENT_MAIL_DOMAIN": "agents.adapttolife.org",
-    "AIRTABLE_AGENT_MAIL_TABLE_ID": "tbliDyb8sAiA8JY0c"
+    "AIRTABLE_AGENT_MAIL_TABLE_ID": "tbliDyb8sAiA8JY0c",
+    // Fundraising thermometer: Givebutter campaign + offline (in-person) gifts. API key is a secret.
+    "GIVEBUTTER_CAMPAIGN_ID": "683765",
+    "OFFLINE_RAISED": "0"
   },
   // Signed-waiver storage: PDFs in R2, the signing record index in D1.
   "r2_buckets": [
@@ -59,5 +62,20 @@
   // Compliance archive runs every 10 minutes: push new signed releases to Drive.
   "triggers": {
     "crons": ["*/10 * * * *"]
+  },
+  // Staging preview: a separate Worker (adapt-to-life-staging) on workers.dev for
+  // design review before promoting to production. Front-end only — no data bindings
+  // and no cron — so staging can never touch prod Airtable / D1 / R2 / email.
+  "env": {
+    "staging": {
+      "name": "adapt-to-life-staging",
+      "workers_dev": true,
+      "vars": { "GIVEBUTTER_CAMPAIGN_ID": "683765", "OFFLINE_RAISED": "0" },
+      // CRITICAL: empty routes overrides the inherited production routes, so a
+      // staging deploy can never reassign the live apex domains to this Worker.
+      "routes": [],
+      "assets": { "directory": "./public", "binding": "ASSETS" },
+      "triggers": { "crons": [] }
+    }
   }
 }

@@ -36,7 +36,10 @@
     // Spec 32 agent email. AGENT_MAIL_TOKEN (MCP bearer) is a secret. Outbound mail uses
     // the SEND_EMAIL binding below (Cloudflare Email Sending) — no API key.
     "AGENT_MAIL_DOMAIN": "agents.adapttolife.org",
-    "AIRTABLE_AGENT_MAIL_TABLE_ID": "tbliDyb8sAiA8JY0c"
+    "AIRTABLE_AGENT_MAIL_TABLE_ID": "tbliDyb8sAiA8JY0c",
+    // Fundraising thermometer: Givebutter campaign + offline (in-person) gifts. API key is a secret.
+    "GIVEBUTTER_CAMPAIGN_ID": "683765",
+    "OFFLINE_RAISED": "0"
   },
   // Signed-waiver storage: PDFs in R2, the signing record index in D1.
   "r2_buckets": [
@@ -67,6 +70,7 @@
     "staging": {
       "name": "adapt-to-life-staging",
       "workers_dev": true,
+      "vars": { "GIVEBUTTER_CAMPAIGN_ID": "683765", "OFFLINE_RAISED": "0" },
       // CRITICAL: empty routes overrides the inherited production routes, so a
       // staging deploy can never reassign the live apex domains to this Worker.
       "routes": [],

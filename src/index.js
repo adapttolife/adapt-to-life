@@ -45,6 +45,11 @@ export default {
       return handleSubscribe(request, env);
     }
 
+    // Public fundraising total for the site thermometer (Givebutter live + offline gifts).
+    if (url.pathname === "/api/raised") {
+      return handleRaised(request, env);
+    }
+
     // Waiver e-signature: POST to sign, GET /api/waiver/:id to download the signed PDF.
     if (url.pathname === "/api/waiver") {
       if (request.method !== "POST") {
@@ -285,6 +290,39 @@ async function handleSubscribe(request, env) {
   }
 
   return json({ ok: true });
+}
+
+// Public fundraising total for the site thermometer: Givebutter's live "raised" for the
+// campaign plus an offline figure we control (in-person gifts). Cached 60s at the edge.
+async function handleRaised(request, env) {
+  const campaignId = env.GIVEBUTTER_CAMPAIGN_ID || "683765";
+  const offline = Number(env.OFFLINE_RAISED) || 0;
+  let online = 0;
+  let goal = 0;
+  try {
+    if (env.GIVEBUTTER_API_KEY) {
+      const r = await fetch(`https://api.givebutter.com/v1/campaigns/${campaignId}`, {
+        headers: { Authorization: `Bearer ${env.GIVEBUTTER_API_KEY}`, Accept: "application/json" },
+        cf: { cacheTtl: 60, cacheEverything: true },
+      });
+      if (r.ok) {
+        const d = await r.json();
+        online = Number(d.raised) || 0;
+        goal = Number(d.goal) || 0;
+      }
+    }
+  } catch (err) {
+    console.error("givebutter raised fetch failed:", err);
+  }
+  const body = JSON.stringify({
+    raised: online + offline,
+    online,
+    offline,
+    goal: goal || Number(env.RAISED_GOAL) || 25000,
+  });
+  return new Response(body, {
+    headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=60" },
+  });
 }
 
 // Cloudflare Turnstile server-side verification. Fail-open if no secret is configured

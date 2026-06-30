@@ -23,8 +23,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
+<script async src="https://widgets.givebutter.com/latest.umd.cjs?acct=7FsgcjXFnW6fabQn"></script>
 <style>
-  .give-moment .gb-actions{ display:flex; gap:0.9rem 1rem; flex-wrap:wrap; justify-content:center; align-items:center; margin-top:1.6rem; }
+  .give-embed{ max-width:520px; margin:1.8rem auto 0; text-align:left; }
   .thermo{ max-width:540px; margin:1.8rem auto 0; }
   .thermo-row{ display:flex; align-items:baseline; gap:0.5rem; justify-content:center; flex-wrap:wrap; }
   .thermo-raised{ font-family:"Newsreader",serif; font-size:clamp(2.1rem,5vw,2.9rem); line-height:1; color:#fff; }
@@ -220,10 +221,10 @@
         <div class="thermo-track"><span class="thermo-fill" data-thermo-fill></span></div>
         <a href="/roadmap" class="thermo-link">See what we're building <span class="arrow">&rarr;</span></a>
       </div>
-      <div class="gb-actions reveal">
-        <a href="/donate" class="btn">Donate now</a>
-        <a href="/tim" class="btn ghost">Read Tim's story</a>
+      <div class="give-embed reveal">
+        <givebutter-giving-form campaign="IXM5DR"></givebutter-giving-form>
       </div>
+      <a href="/tim" class="textlink reveal" style="margin-top:1.4rem; color:#fff; border-color:var(--orange);">Read Tim's story <span class="arrow">&rarr;</span></a>
     </div>
   </section>
 

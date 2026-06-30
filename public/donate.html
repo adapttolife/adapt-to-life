@@ -95,36 +95,12 @@
           </ul>
         </div>
 
-        <!-- GIVE PANEL ---------------------------------------------------------
-          This is the branded donation picker. When the Givebutter "Hustle &
-          Heart Fund" campaign exists, either:
-            (A) set GB.url below to the campaign URL — the picker hands off to
-                Givebutter's secure checkout with the amount + frequency, or
-            (B) replace this panel with Givebutter's embedded giving form for
-                inline Apple Pay / Google Pay (drop the loader in <head>):
-                  <script async src="https://widgets.givebutter.com/latest.umd.cjs?acct=ACCOUNT_ID"></script>
-                  <givebutter-giving-form campaign="CAMPAIGN_CODE"></givebutter-giving-form>
-        -------------------------------------------------------------------- -->
+        <!-- GIVE PANEL — Givebutter embedded giving form (campaign IXM5DR,
+             account 7FsgcjXFnW6fabQn). Renders once the campaign is published. -->
+        <script async src="https://widgets.givebutter.com/latest.umd.cjs?acct=7FsgcjXFnW6fabQn"></script>
         <div class="give-panel reveal" id="givePanel">
-          <div class="gp-toggle" role="tablist" aria-label="Gift frequency">
-            <button class="gp-freq is-on" type="button" data-freq="once" role="tab" aria-selected="true">One-time</button>
-            <button class="gp-freq" type="button" data-freq="monthly" role="tab" aria-selected="false">Monthly</button>
-          </div>
-          <div class="gp-amounts" id="gpAmounts">
-            <button class="gp-amt" type="button" data-amt="25">$25</button>
-            <button class="gp-amt is-on" type="button" data-amt="100">$100</button>
-            <button class="gp-amt" type="button" data-amt="250">$250</button>
-            <button class="gp-amt" type="button" data-amt="500">$500</button>
-            <button class="gp-amt" type="button" data-amt="1000">$1,000</button>
-            <button class="gp-amt gp-other" type="button" data-amt="other">Other</button>
-          </div>
-          <div class="gp-custom" id="gpCustom" hidden>
-            <span class="gp-cur">$</span>
-            <input id="gpCustomInput" inputmode="numeric" pattern="[0-9]*" placeholder="Amount" aria-label="Custom amount">
-          </div>
-          <a class="btn gp-give" id="gpGive" href="#">Donate <span id="gpGiveAmt">$100</span></a>
-          <p class="gp-wallets">Apple Pay, Google Pay, PayPal, or card</p>
-          <p class="gp-note">A secure donation page opens to finish your gift.</p>
+          <givebutter-giving-form campaign="IXM5DR"></givebutter-giving-form>
+          <p class="gp-note">Secure checkout by Givebutter &middot; 100% reaches an athlete.</p>
         </div>
       </div>
     </div>
@@ -275,56 +251,7 @@
   })();
 </script>
 
-<script>
-  // Give panel — branded amount/frequency picker that hands off to Givebutter.
-  (function(){
-    // Set GB.url to the Givebutter campaign URL when the campaign is live
-    // (e.g. "https://givebutter.com/hustle-and-heart"). account/campaign are for
-    // the embedded-widget route. Until then the button points at a placeholder.
-    var GB = { url: "https://givebutter.com/REPLACE_ME", account: "", campaign: "" };
-    var panel = document.getElementById('givePanel');
-    if(!panel) return;
-    var freq = 'once', amt = '100';
-    var giveBtn = document.getElementById('gpGive');
-    var giveAmt = document.getElementById('gpGiveAmt');
-    var custom = document.getElementById('gpCustom');
-    var customInput = document.getElementById('gpCustomInput');
-    function fmt(n){ return '$' + (Number(n)||0).toLocaleString('en-US'); }
-    function chosenAmount(){
-      if(amt === 'other'){ return Math.max(0, parseInt(customInput.value, 10) || 0); }
-      return parseInt(amt, 10) || 0;
-    }
-    function sync(){
-      var a = chosenAmount();
-      giveAmt.textContent = a ? fmt(a) : '';
-      try {
-        var u = new URL(GB.url);
-        if(a){ u.searchParams.set('amount', a); }
-        u.searchParams.set('frequency', freq === 'monthly' ? 'monthly' : 'once');
-        giveBtn.setAttribute('href', u.toString());
-      } catch(e){ giveBtn.setAttribute('href', GB.url); }
-    }
-    panel.querySelectorAll('.gp-freq').forEach(function(b){
-      b.addEventListener('click', function(){
-        panel.querySelectorAll('.gp-freq').forEach(function(x){ x.classList.remove('is-on'); x.setAttribute('aria-selected','false'); });
-        b.classList.add('is-on'); b.setAttribute('aria-selected','true');
-        freq = b.getAttribute('data-freq'); sync();
-      });
-    });
-    panel.querySelectorAll('.gp-amt').forEach(function(b){
-      b.addEventListener('click', function(){
-        panel.querySelectorAll('.gp-amt').forEach(function(x){ x.classList.remove('is-on'); });
-        b.classList.add('is-on');
-        amt = b.getAttribute('data-amt');
-        if(amt === 'other'){ custom.hidden = false; customInput.focus(); }
-        else { custom.hidden = true; }
-        sync();
-      });
-    });
-    if(customInput){ customInput.addEventListener('input', sync); }
-    sync();
-  })();
-</script>
+<!-- Donation form is the embedded Givebutter giving form above; no custom JS needed. -->
 
 <script src="/js/subscribe.js" defer></script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>

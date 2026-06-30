@@ -222,10 +222,9 @@
         <a href="/roadmap" class="thermo-link">See what we're building <span class="arrow">&rarr;</span></a>
       </div>
       <div class="gb-actions reveal">
-        <a href="/donate" class="btn" data-gb-popup>Donate now</a>
+        <givebutter-button campaign="IXM5DR">Donate now</givebutter-button>
         <a href="/tim" class="btn ghost">Read Tim's story</a>
       </div>
-      <givebutter-button campaign="IXM5DR" id="gbHidden" aria-hidden="true" tabindex="-1" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;"></givebutter-button>
     </div>
   </section>
 
@@ -321,15 +320,6 @@
       requestAnimationFrame(function(){ setTimeout(function(){ fill.style.width = pct.toFixed(1) + '%'; }, 120); });
     }).catch(function(){});
   })();
-</script>
-
-<script>
-  document.addEventListener('click', function(e){
-    var t = e.target.closest && e.target.closest('[data-gb-popup]'); if(!t) return;
-    var gb = document.getElementById('gbHidden');
-    var inner = gb && gb.querySelector('a,button');
-    if(inner){ e.preventDefault(); inner.click(); }
-  });
 </script>
 
 <script src="/js/subscribe.js" defer></script>

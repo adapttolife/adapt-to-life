@@ -4,25 +4,50 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light only">
-<title>Stay in the game | Adapt To Life</title>
-<meta name="description" content="Join the Adapt To Life list for the vision, the roadmap, events, and the work as it happens.">
-<link rel="canonical" href="https://adapttolife.org/subscribe">
-<link rel="icon" type="image/svg+xml" href="/images/atl-logo.svg">
+<title>Donate | Adapt To Life</title>
+<meta name="description" content="Your gift covers the equipment, travel, and training that keep adaptive athletes in the game. One hundred percent reaches an athlete. Adapt To Life is a 501(c)(3).">
+<link rel="canonical" href="https://adapttolife.org/donate">
+<link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
 <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Stay in the game | Adapt To Life">
-<meta property="og:description" content="Join the Adapt To Life list for the vision, the roadmap, events, and the work as it happens.">
+<meta property="og:title" content="Donate | Adapt To Life">
+<meta property="og:description" content="Your gift covers the equipment, travel, and training that keep adaptive athletes in the game. One hundred percent reaches an athlete.">
 <meta property="og:image" content="https://adapttolife.org/images/og-image.jpg">
-<meta property="og:url" content="https://adapttolife.org/subscribe">
+<meta property="og:url" content="https://adapttolife.org/donate">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Stay in the game | Adapt To Life">
-<meta name="twitter:description" content="Join the Adapt To Life list for the vision, the roadmap, events, and the work as it happens.">
+<meta name="twitter:title" content="Donate | Adapt To Life">
+<meta name="twitter:description" content="Your gift covers the equipment, travel, and training that keep adaptive athletes in the game.">
 <meta name="twitter:image" content="https://adapttolife.org/images/og-image.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
+<style>
+  /* Donate page — give panel */
+  .give-hero{ padding-top:clamp(7rem,12vw,9.5rem); padding-bottom:clamp(2.6rem,7vw,5rem); }
+  .give-grid{ display:grid; grid-template-columns:1.05fr 0.95fr; gap:clamp(2rem,5vw,4rem); align-items:center; }
+  @media (max-width:880px){ .give-grid{ grid-template-columns:1fr; gap:1.8rem; } }
+  .give-assure{ list-style:none; padding:0; margin:1.5rem 0 0; display:flex; flex-wrap:wrap; gap:0.5rem 1.4rem; }
+  .give-assure li{ font-family:'Hanken Grotesk',sans-serif; font-size:0.88rem; color:rgba(255,255,255,0.72); }
+  .give-assure .ga-k{ color:#fff; font-weight:600; }
+  .give-panel{ background:#fff; border-radius:18px; padding:clamp(1.3rem,3vw,1.9rem); box-shadow:0 24px 60px rgba(0,0,0,0.34); }
+  .gp-toggle{ display:flex; background:#f1efea; border-radius:999px; padding:4px; gap:4px; }
+  .gp-freq{ flex:1; border:0; background:transparent; border-radius:999px; padding:0.7rem 1rem; font-family:'Hanken Grotesk',sans-serif; font-weight:600; font-size:0.95rem; color:#1A1A1A; cursor:pointer; }
+  .gp-freq.is-on{ background:#1A1A1A; color:#fff; }
+  .gp-amounts{ display:grid; grid-template-columns:repeat(3,1fr); gap:0.55rem; margin-top:1rem; }
+  @media (max-width:360px){ .gp-amounts{ grid-template-columns:repeat(2,1fr); } }
+  .gp-amt{ border:1.5px solid #e3e0d9; background:#fff; border-radius:12px; padding:0.9rem 0.3rem; font-family:'Hanken Grotesk',sans-serif; font-weight:600; font-size:1.02rem; color:#1A1A1A; cursor:pointer; transition:border-color .15s, background .15s, color .15s; min-height:52px; }
+  .gp-amt:hover{ border-color:#1A1A1A; }
+  .gp-amt.is-on{ border-color:var(--orange); background:var(--orange); color:#fff; }
+  .gp-custom{ display:flex; align-items:center; margin-top:0.6rem; border:1.5px solid #e3e0d9; border-radius:12px; padding:0 0.9rem; }
+  .gp-custom .gp-cur{ font-family:'Hanken Grotesk',sans-serif; font-weight:600; color:#1A1A1A; font-size:1.1rem; }
+  .gp-custom input{ flex:1; border:0; outline:0; padding:0.9rem 0.5rem; font-family:'Hanken Grotesk',sans-serif; font-size:1.1rem; background:transparent; }
+  .gp-give{ display:flex; align-items:center; justify-content:center; gap:0.45rem; width:100%; margin-top:1rem; }
+  .gp-wallets{ text-align:center; font-family:'Hanken Grotesk',sans-serif; font-size:0.82rem; color:#6b6b6b; margin:0.8rem 0 0; }
+  .gp-note{ text-align:center; font-family:'Hanken Grotesk',sans-serif; font-size:0.76rem; color:#9a9a9a; margin:0.3rem 0 0; }
+  .give-ways{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:clamp(1.6rem,4vw,3.2rem); margin-top:clamp(2.4rem,4vw,3.4rem); }
+</style>
 </head>
 <body>
 
@@ -46,7 +71,7 @@
       <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
       <a href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
       <a href="/about">Our Story</a>
-            <a class="featured" href="/apply">Grant Application</a>
+      <a class="featured" href="/apply">Grant Application</a>
       <a href="/sponsorship">Sponsor</a>
       <a class="m-cta" href="/donate">Donate &rarr;</a>
     </div>
@@ -55,25 +80,120 @@
 
 <main>
 
-  <section class="hero dark">
+  <!-- HERO + GIVE PANEL -->
+  <section class="hero dark give-hero">
     <div class="wrap">
-      <span class="eyebrow reveal">Newsletter</span>
-      <h1 class="serif display reveal">Stay in the game.</h1>
-      <p class="lead sub reveal">The vision, the roadmap, the athletes, and the events, straight from us as the work happens. Real updates, no noise.</p>
+      <div class="give-grid">
+        <div class="give-intro">
+          <span class="eyebrow orange reveal">Your turn</span>
+          <h1 class="serif display reveal">Put an athlete <em class="italic" style="color:var(--orange)">in the game.</em></h1>
+          <p class="lead sub reveal">Adaptive gear can cost more than a car. Your gift covers the equipment, travel, and training that keep athletes competing. One hundred percent reaches an athlete.</p>
+          <ul class="give-assure reveal">
+            <li><span class="ga-k">100%</span> reaches an athlete</li>
+            <li><span class="ga-k">Secure</span> checkout</li>
+            <li><span class="ga-k">Tax-deductible</span> &middot; EIN 41-3213344</li>
+          </ul>
+        </div>
+
+        <!-- GIVE PANEL ---------------------------------------------------------
+          This is the branded donation picker. When the Givebutter "Hustle &
+          Heart Fund" campaign exists, either:
+            (A) set GB.url below to the campaign URL — the picker hands off to
+                Givebutter's secure checkout with the amount + frequency, or
+            (B) replace this panel with Givebutter's embedded giving form for
+                inline Apple Pay / Google Pay (drop the loader in <head>):
+                  <script async src="https://widgets.givebutter.com/latest.umd.cjs?acct=ACCOUNT_ID"></script>
+                  <givebutter-giving-form campaign="CAMPAIGN_CODE"></givebutter-giving-form>
+        -------------------------------------------------------------------- -->
+        <div class="give-panel reveal" id="givePanel">
+          <div class="gp-toggle" role="tablist" aria-label="Gift frequency">
+            <button class="gp-freq is-on" type="button" data-freq="once" role="tab" aria-selected="true">One-time</button>
+            <button class="gp-freq" type="button" data-freq="monthly" role="tab" aria-selected="false">Monthly</button>
+          </div>
+          <div class="gp-amounts" id="gpAmounts">
+            <button class="gp-amt" type="button" data-amt="25">$25</button>
+            <button class="gp-amt is-on" type="button" data-amt="100">$100</button>
+            <button class="gp-amt" type="button" data-amt="250">$250</button>
+            <button class="gp-amt" type="button" data-amt="500">$500</button>
+            <button class="gp-amt" type="button" data-amt="1000">$1,000</button>
+            <button class="gp-amt gp-other" type="button" data-amt="other">Other</button>
+          </div>
+          <div class="gp-custom" id="gpCustom" hidden>
+            <span class="gp-cur">$</span>
+            <input id="gpCustomInput" inputmode="numeric" pattern="[0-9]*" placeholder="Amount" aria-label="Custom amount">
+          </div>
+          <a class="btn gp-give" id="gpGive" href="#">Donate <span id="gpGiveAmt">$100</span></a>
+          <p class="gp-wallets">Apple Pay, Google Pay, PayPal, or card</p>
+          <p class="gp-note">A secure donation page opens to finish your gift.</p>
+        </div>
+      </div>
     </div>
   </section>
 
+  <!-- IMPACT -->
+  <section class="band tint">
+    <div class="wrap">
+      <div class="reveal sec-head">
+        <span class="eyebrow orange">Your impact</span>
+        <h2 class="serif h2" style="margin-top:0.8rem;">What your gift covers</h2>
+      </div>
+      <div class="impact-grid">
+        <div class="reveal"><div class="impact-n">$3,500</div><div class="impact-l">Sends one athlete to nationals</div></div>
+        <div class="reveal"><div class="impact-n">$500</div><div class="impact-l">Three months of facility access</div></div>
+        <div class="reveal"><div class="impact-n">$200</div><div class="impact-l">A set of competition tires</div></div>
+        <div class="reveal"><div class="impact-n">0%</div><div class="impact-l">Goes to admin or overhead</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE PROMISE -->
+  <section class="band-lg statement-block">
+    <div class="wrap reading">
+      <span class="eyebrow orange reveal">Our promise</span>
+      <h2 class="serif statement italic reveal" style="margin-top:0.9rem;">One hundred percent reaches the athlete.</h2>
+      <p class="prose reveal">Overhead is covered separately, on purpose. We fund the real costs of competing and document every grant, so you can see exactly where your gift lands.</p>
+    </div>
+  </section>
+
+  <!-- MORE WAYS TO GIVE -->
   <section class="band">
-    <div class="wrap narrow">
-      <form id="subscribeForm" class="contact-form reveal" novalidate>
-        <div class="field"><label for="em">Email</label><input id="em" name="em" type="email" autocomplete="email" placeholder="you@example.com"></div>
-        <input type="text" name="company" id="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
-        <input type="hidden" id="src" value="subscribe-page">
-        <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only" style="margin-bottom:1rem;"></div>
-        <button type="submit" class="btn">Join the list</button>
-        <p class="form-status" id="formStatus" role="status" aria-live="polite" style="margin-top:.9rem;font-weight:600"></p>
-        <p class="form-note">No spam. Unsubscribe anytime.</p>
-      </form>
+    <div class="wrap">
+      <div class="reveal sec-head">
+        <span class="eyebrow orange">More ways to give</span>
+        <h2 class="serif h2" style="margin-top:0.8rem;">Give the way that fits you.</h2>
+      </div>
+      <div class="give-ways">
+        <div class="prog reveal">
+          <span class="tag">Monthly</span>
+          <h3 class="serif h3">Become a sustaining giver</h3>
+          <p>A recurring gift keeps athletes funded all year. Choose Monthly above and give what works for you.</p>
+        </div>
+        <div class="prog reveal">
+          <span class="tag">Business</span>
+          <h3 class="serif h3">Sponsor the mission</h3>
+          <p>Put your company behind athletes and get recognized for it. Partnerships from community level to founding level.</p>
+          <a href="/sponsorship" class="textlink go">See sponsorship <span class="arrow">&rarr;</span></a>
+        </div>
+        <div class="prog reveal">
+          <span class="tag">Other</span>
+          <h3 class="serif h3">Stock, DAF, or employer match</h3>
+          <p>Giving stock, a donor-advised fund, or a company match goes further. We will help you set it up.</p>
+          <a href="/contact" class="textlink go">Talk to us <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLOSING -->
+  <section class="closing dark band-lg">
+    <div class="wrap center">
+      <span class="eyebrow orange reveal">Be the reason</span>
+      <h2 class="serif display reveal">Be the reason the next athlete plays.</h2>
+      <p class="lead sub reveal">Every dollar covers an athlete's real costs: equipment, training, and travel.</p>
+      <div class="actions reveal">
+        <a href="#givePanel" class="btn">Give now</a>
+        <a href="/tim" class="btn ghost">Read Tim's story</a>
+      </div>
     </div>
   </section>
 
@@ -103,7 +223,7 @@
         <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
         <a href="/tim">Tim&#39;s Story</a>
         <a href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
-                <a href="/roadmap">Roadmap</a>
+        <a href="/roadmap">Roadmap</a>
       </div>
       <div class="col">
         <h4>Get involved</h4>
@@ -154,32 +274,55 @@
     }
   })();
 </script>
+
 <script>
+  // Give panel — branded amount/frequency picker that hands off to Givebutter.
   (function(){
-    var f = document.getElementById('subscribeForm');
-    if(!f) return;
-    var statusEl = document.getElementById('formStatus');
-    var btn = f.querySelector('button[type="submit"]');
-    function v(id){ var el=document.getElementById(id); return el ? el.value.trim() : ''; }
-    function setStatus(msg, ok){ if(!statusEl) return; statusEl.textContent = msg; statusEl.style.color = ok ? '#2e7d32' : '#c0392b'; }
-    f.addEventListener('submit', function(e){
-      e.preventDefault();
-      if(v('company')) return;
-      if(!v('em')){ setStatus('Please enter your email.', false); return; }
-      var tk=f.querySelector('[name="cf-turnstile-response"]');
-      var payload = { em:v('em'), source:v('src'), cf_token: tk?tk.value:'' };
-      var orig = btn ? btn.textContent : '';
-      if(btn){ btn.disabled = true; btn.textContent = 'Joining...'; }
-      setStatus('', true);
-      fetch('/api/subscribe', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) })
-      .then(function(r){ return r.json().catch(function(){ return { ok:r.ok }; }); })
-      .then(function(d){
-        if(d && d.ok){ f.reset(); setStatus("You're in. Watch your inbox.", true); }
-        else { setStatus((d && d.error) || 'Something went wrong. Please email hello@adapttolife.org.', false); }
-      })
-      .catch(function(){ setStatus('Network error. Please email hello@adapttolife.org.', false); })
-      .then(function(){ if(btn){ btn.disabled = false; btn.textContent = orig; } });
+    // Set GB.url to the Givebutter campaign URL when the campaign is live
+    // (e.g. "https://givebutter.com/hustle-and-heart"). account/campaign are for
+    // the embedded-widget route. Until then the button points at a placeholder.
+    var GB = { url: "https://givebutter.com/REPLACE_ME", account: "", campaign: "" };
+    var panel = document.getElementById('givePanel');
+    if(!panel) return;
+    var freq = 'once', amt = '100';
+    var giveBtn = document.getElementById('gpGive');
+    var giveAmt = document.getElementById('gpGiveAmt');
+    var custom = document.getElementById('gpCustom');
+    var customInput = document.getElementById('gpCustomInput');
+    function fmt(n){ return '$' + (Number(n)||0).toLocaleString('en-US'); }
+    function chosenAmount(){
+      if(amt === 'other'){ return Math.max(0, parseInt(customInput.value, 10) || 0); }
+      return parseInt(amt, 10) || 0;
+    }
+    function sync(){
+      var a = chosenAmount();
+      giveAmt.textContent = a ? fmt(a) : '';
+      try {
+        var u = new URL(GB.url);
+        if(a){ u.searchParams.set('amount', a); }
+        u.searchParams.set('frequency', freq === 'monthly' ? 'monthly' : 'once');
+        giveBtn.setAttribute('href', u.toString());
+      } catch(e){ giveBtn.setAttribute('href', GB.url); }
+    }
+    panel.querySelectorAll('.gp-freq').forEach(function(b){
+      b.addEventListener('click', function(){
+        panel.querySelectorAll('.gp-freq').forEach(function(x){ x.classList.remove('is-on'); x.setAttribute('aria-selected','false'); });
+        b.classList.add('is-on'); b.setAttribute('aria-selected','true');
+        freq = b.getAttribute('data-freq'); sync();
+      });
     });
+    panel.querySelectorAll('.gp-amt').forEach(function(b){
+      b.addEventListener('click', function(){
+        panel.querySelectorAll('.gp-amt').forEach(function(x){ x.classList.remove('is-on'); });
+        b.classList.add('is-on');
+        amt = b.getAttribute('data-amt');
+        if(amt === 'other'){ custom.hidden = false; customInput.focus(); }
+        else { custom.hidden = true; }
+        sync();
+      });
+    });
+    if(customInput){ customInput.addEventListener('input', sync); }
+    sync();
   })();
 </script>
 

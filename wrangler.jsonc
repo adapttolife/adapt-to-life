@@ -59,5 +59,19 @@
   // Compliance archive runs every 10 minutes: push new signed releases to Drive.
   "triggers": {
     "crons": ["*/10 * * * *"]
+  },
+  // Staging preview: a separate Worker (adapt-to-life-staging) on workers.dev for
+  // design review before promoting to production. Front-end only — no data bindings
+  // and no cron — so staging can never touch prod Airtable / D1 / R2 / email.
+  "env": {
+    "staging": {
+      "name": "adapt-to-life-staging",
+      "workers_dev": true,
+      // CRITICAL: empty routes overrides the inherited production routes, so a
+      // staging deploy can never reassign the live apex domains to this Worker.
+      "routes": [],
+      "assets": { "directory": "./public", "binding": "ASSETS" },
+      "triggers": { "crons": [] }
+    }
   }
 }

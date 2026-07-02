@@ -85,23 +85,20 @@
             </div>
             <div class="field"><label for="em">Email</label><input id="em" name="em" type="email" autocomplete="email"></div>
             <div class="field">
-              <label for="rsn">I'm reaching out as...</label>
+              <label for="rsn">What's this about?</label>
               <select id="rsn" name="rsn">
                 <option value="">Select one</option>
-                <option>An athlete interested in funding</option>
-                <option>A business interested in sponsoring</option>
-                <option>A donor with a question</option>
-                <option>Suggesting a program for the directory</option>
-                <option>A program or organization</option>
-                <option>A volunteer</option>
-                <option>Media or press</option>
+                <option>Funding for an athlete</option>
+                <option>Giving or sponsoring</option>
+                <option>A program for the directory</option>
+                <option>Volunteering</option>
                 <option>Something else</option>
               </select>
             </div>
             <div class="field"><label for="msg">Message</label><textarea id="msg" name="msg" rows="5"></textarea></div>
             <script>
               (function(){
-                var map = { athlete:'An athlete interested in funding', sponsor:'A business interested in sponsoring', donor:'A donor with a question', program:'Suggesting a program for the directory' };
+                var map = { athlete:'Funding for an athlete', sponsor:'Giving or sponsoring', donor:'Giving or sponsoring', program:'A program for the directory' };
                 var q = new URLSearchParams(location.search).get('rsn');
                 var sel = document.getElementById('rsn');
                 if(q && map[q] && sel){ sel.value = map[q]; }

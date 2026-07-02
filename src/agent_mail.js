@@ -165,6 +165,9 @@ export async function handleAgentMailApi(request, env, url) {
     if (request.method === "POST" && path === "reply") {
       return await apiReply(env, await request.json(), caller);
     }
+    if (request.method === "POST" && path === "send") {
+      return await apiSend(env, await request.json(), caller);
+    }
     if (request.method === "POST" && path === "status") {
       return await apiSetStatus(env, await request.json(), caller);
     }
@@ -323,6 +326,82 @@ async function apiReply(env, body, caller) {
 
   await mirrorThread(env, db, thread_id).catch((e) => console.error("agent-mail mirror failed:", e));
   return jsonResp({ outcome: "ok", data: { message_id: sent.id || null } });
+}
+
+// Agent-initiated outbound (Spec 33): a new thread that STARTS with an outgoing
+// message — reports, digests, agent→agent handoffs. Scope mirrors /reply: an
+// agent may send only AS an inbox it owns. threads.from_addr stays the
+// counterparty (here the recipient), matching what /list shows for inbound.
+async function apiSend(env, body, caller) {
+  const { from, to, subject, body_text, body_html } = body || {};
+  if (!to || !subject || !body_text) return jsonResp({ outcome: "error", error: "to, subject, body_text required" }, 422);
+  const toAddr = String(to).toLowerCase().trim();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(toAddr)) return jsonResp({ outcome: "error", error: "to must be a single email address" }, 422);
+
+  const db = env.AGENT_MAIL_DB;
+  let fromAddr = String(from || "").toLowerCase().trim();
+  if (caller.operator) {
+    if (!fromAddr) return jsonResp({ outcome: "error", error: "operator sends must name a from inbox" }, 422);
+    const ib = await db.prepare(`SELECT 1 AS ok FROM inboxes WHERE address = ?`).bind(fromAddr).first();
+    if (!ib) return jsonResp({ outcome: "error", error: "from is not a registered inbox" }, 422);
+  } else {
+    const { results } = await db.prepare(`SELECT address FROM inboxes WHERE default_agent = ?`).bind(caller.agent).all();
+    const owned = (results || []).map((r) => r.address);
+    if (!fromAddr) {
+      if (owned.length !== 1) {
+        return jsonResp({ outcome: "error", error: `you own ${owned.length} inboxes; pass from as one of: ${owned.join(", ")}` }, 422);
+      }
+      fromAddr = owned[0];
+    } else if (!owned.includes(fromAddr)) {
+      return forbidden();
+    }
+  }
+
+  const sentLastHour = await db
+    .prepare(
+      `SELECT COUNT(*) AS inbox_n FROM messages m JOIN threads t ON t.id = m.thread_id
+       WHERE t.inbox = ? AND m.direction = 'out' AND m.created_at > datetime('now', '-1 hour')`
+    )
+    .bind(fromAddr)
+    .first();
+  if ((sentLastHour?.inbox_n || 0) >= SEND_LIMITS.perInboxPerHour) {
+    return jsonResp(
+      { outcome: "error", error: `outbound rate limit: ${SEND_LIMITS.perInboxPerHour}/inbox/hour; try later or flag needs_review` },
+      429
+    );
+  }
+
+  // Stamp our own Message-ID and store it: without it the recipient's reply
+  // References only ids we never recorded, and would open a brand-new thread
+  // instead of stitching back into this one (findOrCreateThread matches message_id).
+  const messageId = `<${crypto.randomUUID()}@${fromAddr.split("@")[1]}>`;
+  await cfSend(env, {
+    from: fromAddr,
+    to: toAddr,
+    subject,
+    text: body_text,
+    html: body_html || undefined,
+    headers: { "Message-ID": messageId },
+  });
+
+  const assigned = caller.agent
+    || (await db.prepare(`SELECT default_agent FROM inboxes WHERE address = ?`).bind(fromAddr).first())?.default_agent
+    || null;
+  const threadId = crypto.randomUUID();
+  await db
+    .prepare(`INSERT INTO threads (id, inbox, assigned_agent, status, subject, from_addr) VALUES (?, ?, ?, 'replied', ?, ?)`)
+    .bind(threadId, fromAddr, assigned, subject, toAddr)
+    .run();
+  await db
+    .prepare(
+      `INSERT INTO messages (id, thread_id, direction, from_addr, to_addr, subject, body_text, message_id)
+       VALUES (?, ?, 'out', ?, ?, ?, ?, ?)`
+    )
+    .bind(crypto.randomUUID(), threadId, fromAddr, toAddr, subject, body_text, messageId)
+    .run();
+
+  await mirrorThread(env, db, threadId).catch((e) => console.error("agent-mail mirror failed:", e));
+  return jsonResp({ outcome: "ok", data: { thread_id: threadId, message_id: messageId } });
 }
 
 async function apiSetStatus(env, body, caller) {

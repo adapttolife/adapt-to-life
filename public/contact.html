@@ -98,10 +98,26 @@
             <div class="field"><label for="msg">Message</label><textarea id="msg" name="msg" rows="5"></textarea></div>
             <script>
               (function(){
+                var params = new URLSearchParams(location.search);
                 var map = { athlete:'Funding for an athlete', sponsor:'Giving or sponsoring', donor:'Giving or sponsoring', program:'A program for the directory' };
-                var q = new URLSearchParams(location.search).get('rsn');
+                var q = params.get('rsn');
                 var sel = document.getElementById('rsn');
                 if(q && map[q] && sel){ sel.value = map[q]; }
+                // Topic-aware opener + message prompt, so the page knows why you came.
+                var re = params.get('re');
+                var leads = {
+                  stock: ['Gifts of stock and securities: tell us what you&#x27;re considering, and we&#x27;ll coordinate the transfer details with you and your advisor.', 'e.g. I&#x27;m considering donating appreciated shares this year...'],
+                  legacy: ['Planning a legacy gift: tell us what you have in mind, and we&#x27;ll make it simple, with your advisor in the loop.', 'e.g. I&#x27;d like to name Adapt To Life in my will or as a beneficiary...'],
+                  match: ['Employer matching: tell us your employer, and we&#x27;ll handle the paperwork on our side.', 'e.g. My employer is ... and they match charitable gifts.']
+                };
+                if(!re && q === 'sponsor') re = 'sponsor';
+                leads.sponsor = ['Sponsorship: tell us your level or your idea, and we&#x27;ll come back with next steps and recognition details.', 'e.g. We&#x27;re interested in the Captain level...'];
+                if(re && leads[re]){
+                  var lead = document.querySelector('.hero .sub');
+                  if(lead){ lead.innerHTML = leads[re][0]; }
+                  var msg = document.getElementById('msg');
+                  if(msg){ msg.placeholder = leads[re][1]; }
+                }
               })();
             </script>
             <input type="text" name="company" id="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">

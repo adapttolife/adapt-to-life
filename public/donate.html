@@ -85,6 +85,7 @@
              account 7FsgcjXFnW6fabQn). Renders once the campaign is published. -->
         <script async src="https://widgets.givebutter.com/latest.umd.cjs?acct=7FsgcjXFnW6fabQn"></script>
         <div class="give-panel reveal" id="givePanel">
+          <p id="intentChip" hidden style="margin:0 0 0.9rem; padding:0.8rem 1rem; background:#fff5ec; border:1px solid rgba(232,93,4,0.35); border-radius:12px; font-family:'Hanken Grotesk',sans-serif; font-size:0.9rem; color:#7a431c; line-height:1.5;"></p>
           <givebutter-giving-form campaign="IXM5DR"></givebutter-giving-form>
           <p class="gp-note">Secure checkout by Givebutter &middot; 100% reaches the athlete.</p>
         </div>
@@ -233,7 +234,18 @@
   })();
 </script>
 
-<!-- Donation form is the embedded Givebutter giving form above; no custom JS needed. -->
+<script>
+  (function(){
+    var chip = document.getElementById('intentChip'); if(!chip) return;
+    var map = {
+      monthly: 'You&#x27;re setting up a monthly gift: choose Monthly at the top of the form, set it once, and you keep athletes in the game all season.',
+      daf: 'Giving from a donor-advised fund? Recommend a grant to Adapt To Life, EIN 41-3213344. Many DAFs also appear right in the form&#x27;s payment options.',
+      tribute: 'Giving in someone&#x27;s honor or memory: add their name in the form&#x27;s note and we&#x27;ll make sure it counts.'
+    };
+    var q = new URLSearchParams(location.search).get('intent');
+    if(q && map[q]){ chip.innerHTML = map[q]; chip.hidden = false; }
+  })();
+</script>
 
 <script src="/js/subscribe.js" defer></script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>

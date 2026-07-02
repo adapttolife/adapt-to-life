@@ -238,9 +238,9 @@
   (function(){
     var chip = document.getElementById('intentChip'); if(!chip) return;
     var map = {
-      monthly: 'You&#x27;re setting up a monthly gift: choose Monthly at the top of the form, set it once, and you keep athletes in the game all season.',
-      daf: 'Giving from a donor-advised fund? Recommend a grant to Adapt To Life, EIN 41-3213344. Many DAFs also appear right in the form&#x27;s payment options.',
-      tribute: 'Giving in someone&#x27;s honor or memory: add their name in the form&#x27;s note and we&#x27;ll make sure it counts.'
+      monthly: 'You’re setting up a monthly gift: choose Monthly at the top of the form, set it once, and you keep athletes in the game all season.',
+      daf: 'Giving from a donor-advised fund? Recommend a grant to Adapt To Life, EIN 41-3213344. Many DAFs also appear right in the form’s payment options.',
+      tribute: 'Giving in someone’s honor or memory: add their name in the form’s note and we’ll make sure it counts.'
     };
     var q = new URLSearchParams(location.search).get('intent');
     if(q && map[q]){ chip.innerHTML = map[q]; chip.hidden = false; }

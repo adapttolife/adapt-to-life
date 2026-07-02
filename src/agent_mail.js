@@ -17,6 +17,56 @@ const STATUSES = ["new", "agent_working", "needs_review", "human", "replied", "r
 // loop through the admin lane is still a loop.
 const SEND_LIMITS = { perThreadPerHour: 5, perInboxPerHour: 20 };
 
+// Outbound attachments. API callers pass base64; the Email Sending binding wants
+// raw bytes. The platform caps the whole outbound message at 5 MiB — 4 MiB of
+// decoded attachment bytes leaves room for body + MIME overhead. Executable
+// types are refused: agents send reports and data files, never programs.
+const OUT_ATTACHMENT_LIMITS = { count: 4, totalBytes: 4 * 1024 * 1024 };
+const OUT_ATTACHMENT_BLOCKED = /\.(exe|dll|bat|cmd|com|scr|jar|msi|ps1|sh|vbs|js|apk|html?)$/i;
+
+// Validate + decode API attachments ([{filename, content_b64, type?}]) into the
+// cfSend shape. Returns { list, note } on success ({ list: undefined } when the
+// field is absent), or { error: <422 message> } on bad input. `note` is a short
+// human-readable suffix recorded with the message body so attachments are
+// visible in thread reads and the Airtable mirror without a schema change.
+function decodeOutAttachments(raw) {
+  if (raw === undefined || raw === null) return { list: undefined, note: "" };
+  if (!Array.isArray(raw) || raw.length === 0) {
+    return { error: "attachments must be a non-empty array of {filename, content_b64, type?}" };
+  }
+  if (raw.length > OUT_ATTACHMENT_LIMITS.count) {
+    return { error: `at most ${OUT_ATTACHMENT_LIMITS.count} attachments per message` };
+  }
+  const list = [];
+  const names = [];
+  let total = 0;
+  for (const a of raw) {
+    const filename = String((a && a.filename) || "").trim().replace(/[/\\]/g, "_").slice(0, 120);
+    if (!filename || !(a && a.content_b64)) return { error: "each attachment needs filename and content_b64" };
+    if (OUT_ATTACHMENT_BLOCKED.test(filename)) return { error: `attachment type not allowed: ${filename}` };
+    let bytes;
+    try {
+      const bin = atob(String(a.content_b64).replace(/\s+/g, ""));
+      bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    } catch {
+      return { error: `attachment ${filename}: content_b64 is not valid base64` };
+    }
+    total += bytes.byteLength;
+    if (total > OUT_ATTACHMENT_LIMITS.totalBytes) {
+      return { error: `attachments exceed ${OUT_ATTACHMENT_LIMITS.totalBytes} decoded bytes total` };
+    }
+    list.push({
+      filename,
+      content: bytes.buffer,
+      type: String((a && a.type) || "application/octet-stream"),
+      disposition: "attachment",
+    });
+    names.push(`${filename} (${(bytes.byteLength / 1024).toFixed(1)} KB)`);
+  }
+  return { list, note: `\n\n[attachments: ${names.join(", ")}]` };
+}
+
 // Spec 33 loop prevention: machine-generated mail (bounces, auto-replies,
 // out-of-office, no-reply senders) is archived like everything else but is never
 // a valid reply target — replying to an auto-responder is how mail loops start.
@@ -278,8 +328,10 @@ async function apiAttachments(env, messageId, caller) {
 }
 
 async function apiReply(env, body, caller) {
-  const { thread_id, body_text, body_html } = body || {};
+  const { thread_id, body_text, body_html, attachments } = body || {};
   if (!thread_id || !body_text) return jsonResp({ outcome: "error", error: "thread_id and body_text required" }, 422);
+  const att = decodeOutAttachments(attachments);
+  if (att.error) return jsonResp({ outcome: "error", error: att.error }, 422);
 
   const db = env.AGENT_MAIL_DB;
   const thread = await db.prepare(`SELECT * FROM threads WHERE id = ?`).bind(thread_id).first();
@@ -330,6 +382,7 @@ async function apiReply(env, body, caller) {
     text: body_text,
     html: body_html || undefined,
     headers: inReplyTo ? { "In-Reply-To": inReplyTo, References: inReplyTo } : undefined,
+    attachments: att.list,
   });
 
   const msgId = crypto.randomUUID();
@@ -338,7 +391,7 @@ async function apiReply(env, body, caller) {
       `INSERT INTO messages (id, thread_id, direction, from_addr, to_addr, subject, body_text, message_id, in_reply_to)
        VALUES (?, ?, 'out', ?, ?, ?, ?, ?, ?)`
     )
-    .bind(msgId, thread_id, fromAddr, to, subject, body_text, sent.id || null, inReplyTo)
+    .bind(msgId, thread_id, fromAddr, to, subject, body_text + att.note, sent.id || null, inReplyTo)
     .run();
   await db.prepare(`UPDATE threads SET status = 'replied', last_at = datetime('now') WHERE id = ?`).bind(thread_id).run();
 
@@ -351,8 +404,10 @@ async function apiReply(env, body, caller) {
 // agent may send only AS an inbox it owns. threads.from_addr stays the
 // counterparty (here the recipient), matching what /list shows for inbound.
 async function apiSend(env, body, caller) {
-  const { from, to, subject, body_text, body_html } = body || {};
+  const { from, to, subject, body_text, body_html, attachments } = body || {};
   if (!to || !subject || !body_text) return jsonResp({ outcome: "error", error: "to, subject, body_text required" }, 422);
+  const att = decodeOutAttachments(attachments);
+  if (att.error) return jsonResp({ outcome: "error", error: att.error }, 422);
   const toAddr = String(to).toLowerCase().trim();
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(toAddr)) return jsonResp({ outcome: "error", error: "to must be a single email address" }, 422);
 
@@ -398,6 +453,7 @@ async function apiSend(env, body, caller) {
     subject,
     text: body_text,
     html: body_html || undefined,
+    attachments: att.list,
   });
 
   const assigned = caller.agent
@@ -413,7 +469,7 @@ async function apiSend(env, body, caller) {
       `INSERT INTO messages (id, thread_id, direction, from_addr, to_addr, subject, body_text)
        VALUES (?, ?, 'out', ?, ?, ?, ?)`
     )
-    .bind(crypto.randomUUID(), threadId, fromAddr, toAddr, subject, body_text)
+    .bind(crypto.randomUUID(), threadId, fromAddr, toAddr, subject, body_text + att.note)
     .run();
 
   await mirrorThread(env, db, threadId).catch((e) => console.error("agent-mail mirror failed:", e));

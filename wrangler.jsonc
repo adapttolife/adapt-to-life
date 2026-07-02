@@ -70,7 +70,7 @@
     "staging": {
       "name": "adapt-to-life-staging",
       "workers_dev": true,
-      "vars": { "GIVEBUTTER_CAMPAIGN_ID": "683765", "OFFLINE_RAISED": "0" },
+      "vars": { "GIVEBUTTER_CAMPAIGN_ID": "683765", "OFFLINE_RAISED": "0", "STAGING": "1" },
       // CRITICAL: empty routes overrides the inherited production routes, so a
       // staging deploy can never reassign the live apex domains to this Worker.
       "routes": [],

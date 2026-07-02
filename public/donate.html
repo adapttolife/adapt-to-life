@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light only">
 <title>Donate | Adapt To Life</title>
-<meta name="description" content="Your gift covers the equipment, travel, and training that keep adaptive athletes in the game. One hundred percent reaches an athlete. Adapt To Life is a 501(c)(3).">
+<meta name="description" content="Your gift covers the equipment, travel, and training that keep adaptive athletes in the game. One hundred percent reaches the athlete. Adapt To Life is a 501(c)(3).">
 <link rel="canonical" href="https://adapttolife.org/donate">
-<link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+<link rel="icon" type="image/svg+xml" href="/images/atl-logo.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
 <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Donate | Adapt To Life">
-<meta property="og:description" content="Your gift covers the equipment, travel, and training that keep adaptive athletes in the game. One hundred percent reaches an athlete.">
+<meta property="og:description" content="Your gift covers the equipment, travel, and training that keep adaptive athletes in the game. One hundred percent reaches the athlete.">
 <meta property="og:image" content="https://adapttolife.org/images/og-image.jpg">
 <meta property="og:url" content="https://adapttolife.org/donate">
 <meta name="twitter:card" content="summary_large_image">
@@ -33,7 +33,8 @@
   .give-assure .ga-k{ color:#fff; font-weight:600; }
   .give-panel{ background:#fff; border-radius:18px; padding:clamp(1.3rem,3vw,1.9rem); box-shadow:0 24px 60px rgba(0,0,0,0.34); }
   .gp-note{ text-align:center; font-family:'Hanken Grotesk',sans-serif; font-size:0.76rem; color:#9a9a9a; margin:0.3rem 0 0; }
-  .give-ways{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:clamp(1.6rem,4vw,3.2rem); margin-top:clamp(2.4rem,4vw,3.4rem); }
+  .give-ways{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(1.6rem,2.6vw,2.4rem) clamp(1.6rem,3vw,2.8rem); margin-top:clamp(2.2rem,3.6vw,3rem); }
+  @media (max-width:679px){ .give-ways{ grid-template-columns:1fr; } }
 </style>
 </head>
 <body>
@@ -46,7 +47,6 @@
       <a class="lk" href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
       <a class="lk" href="/about">Our Story</a>
       <a class="lk featured" href="/apply">Grant Application</a>
-      <a class="lk" href="/sponsorship">Sponsor</a>
       <a class="nav-cta" href="/donate">Donate</a>
     </nav>
     <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
@@ -59,7 +59,6 @@
       <a href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
       <a href="/about">Our Story</a>
       <a class="featured" href="/apply">Grant Application</a>
-      <a href="/sponsorship">Sponsor</a>
       <a class="m-cta" href="/donate">Donate &rarr;</a>
     </div>
   </div>
@@ -74,9 +73,9 @@
         <div class="give-intro">
           <span class="eyebrow orange reveal">Your turn</span>
           <h1 class="serif display reveal">Put an athlete <em class="italic" style="color:var(--orange)">in the game.</em></h1>
-          <p class="lead sub reveal">Adaptive gear can cost more than a car. Your gift covers the equipment, travel, and training that keep athletes competing. One hundred percent reaches an athlete.</p>
+          <p class="lead sub reveal">Adaptive gear can cost more than a car. Your gift covers the equipment, travel, and training that keep athletes competing. One hundred percent reaches the athlete.</p>
           <ul class="give-assure reveal">
-            <li><span class="ga-k">100%</span> reaches an athlete</li>
+            <li><a href="/about#promise" style="color:inherit; text-decoration:none; border-bottom:1px dotted rgba(255,255,255,0.45);"><span class="ga-k">100%</span> reaches the athlete</a></li>
             <li><span class="ga-k">Secure</span> checkout</li>
             <li><span class="ga-k">Tax-deductible</span> &middot; EIN 41-3213344</li>
           </ul>
@@ -87,7 +86,7 @@
         <script async src="https://widgets.givebutter.com/latest.umd.cjs?acct=7FsgcjXFnW6fabQn"></script>
         <div class="give-panel reveal" id="givePanel">
           <givebutter-giving-form campaign="IXM5DR"></givebutter-giving-form>
-          <p class="gp-note">Secure checkout by Givebutter &middot; 100% reaches an athlete.</p>
+          <p class="gp-note">Secure checkout by Givebutter &middot; 100% reaches the athlete.</p>
         </div>
       </div>
     </div>
@@ -106,15 +105,6 @@
         <div class="reveal"><div class="impact-n">$200</div><div class="impact-l">A set of competition tires</div></div>
         <div class="reveal"><div class="impact-n">0%</div><div class="impact-l">Goes to admin or overhead</div></div>
       </div>
-    </div>
-  </section>
-
-  <!-- THE PROMISE -->
-  <section class="band-lg statement-block">
-    <div class="wrap reading">
-      <span class="eyebrow orange reveal">Our promise</span>
-      <h2 class="serif statement italic reveal" style="margin-top:0.9rem;">One hundred percent reaches the athlete.</h2>
-      <p class="prose reveal">Overhead is covered separately, on purpose. We fund the real costs of competing and document every grant, so you can see exactly where your gift lands.</p>
     </div>
   </section>
 
@@ -138,6 +128,11 @@
           <a href="/sponsorship" class="textlink go">See sponsorship <span class="arrow">&rarr;</span></a>
         </div>
         <div class="prog reveal">
+          <span class="tag">Tribute</span>
+          <h3 class="serif h3">In honor or memory</h3>
+          <p>Give in the name of someone who belongs in the game. Add their name in the donation note and we'll make sure it counts.</p>
+        </div>
+        <div class="prog reveal">
           <span class="tag">Other</span>
           <h3 class="serif h3">Stock, DAF, or employer match</h3>
           <p>Giving stock, a donor-advised fund, or a company match goes further. We will help you set it up.</p>
@@ -147,15 +142,14 @@
     </div>
   </section>
 
-  <!-- CLOSING -->
+  <!-- CLOSING — finish the gift -->
   <section class="closing dark band-lg">
     <div class="wrap center">
-      <span class="eyebrow orange reveal">Be the reason</span>
-      <h2 class="serif display reveal">Be the reason the next athlete plays.</h2>
-      <p class="lead sub reveal">Every dollar covers an athlete's real costs: equipment, training, and travel.</p>
+      <span class="eyebrow orange reveal">Almost there</span>
+      <h2 class="serif display reveal">Finish your gift.</h2>
+      <p class="lead sub reveal">It takes about a minute, and it covers an athlete's real costs: equipment, travel, and training.</p>
       <div class="actions reveal">
-        <a href="#givePanel" class="btn">Give now</a>
-        <a href="/tim" class="btn ghost">Read Tim's story</a>
+        <a href="#givePanel" class="btn">Donate</a>
       </div>
     </div>
   </section>
@@ -178,7 +172,7 @@
           <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only"></div>
           <p class="foot-sub-msg" role="status" aria-live="polite"></p>
         </form>
-        <p class="legal">Adapt To Life is a registered 501(c)(3) nonprofit organization. Donations are tax-deductible to the extent allowed by law. EIN 41-3213344.</p>
+        <p class="legal">Adapt To Life is a recognized 501(c)(3) nonprofit organization. Donations are tax-deductible to the extent allowed by law. EIN 41-3213344.</p>
       </div>
       <div class="col">
         <h4>Organization</h4>

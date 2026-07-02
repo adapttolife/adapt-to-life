@@ -32,9 +32,9 @@
   .give-split-form givebutter-giving-form{ display:block; width:100%; }
   .thermo{ max-width:540px; margin:1.8rem auto 0; }
   .thermo-row{ display:flex; align-items:baseline; gap:0.5rem; justify-content:center; flex-wrap:wrap; }
-  .thermo-raised{ font-family:"Newsreader",serif; font-size:clamp(2.1rem,5vw,2.9rem); line-height:1; color:#fff; }
+  .thermo-raised{ font-family:"Newsreader",serif; font-size:clamp(2.4rem,6vw,3.4rem); line-height:1; color:#fff; }
   .thermo-goal{ font-family:"Hanken Grotesk",sans-serif; color:rgba(255,255,255,0.6); font-size:0.95rem; }
-  .thermo-track{ display:block; height:10px; border-radius:999px; background:rgba(255,255,255,0.14); margin-top:0.9rem; overflow:hidden; }
+  .thermo-track{ display:block; height:14px; border-radius:999px; background:rgba(255,255,255,0.14); margin-top:1rem; overflow:hidden; }
   .thermo-fill{ display:block; height:100%; width:0; border-radius:999px; background:linear-gradient(90deg,#E85D04,#ff9a4d); transition:width 1.3s cubic-bezier(.2,.8,.2,1); }
   .thermo-link{ display:inline-block; margin-top:1.05rem; font-family:"Hanken Grotesk",sans-serif; font-weight:600; color:var(--orange); text-decoration:none; }
   .thermo-link:hover{ text-decoration:underline; }
@@ -50,7 +50,6 @@
       <a class="lk" href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
       <a class="lk" href="/about">Our Story</a>
       <a class="lk featured" href="/apply">Grant Application</a>
-      <a class="lk" href="/sponsorship">Sponsor</a>
       <a class="nav-cta" href="/donate">Donate</a>
     </nav>
     <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
@@ -63,7 +62,6 @@
       <a href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
       <a href="/about">Our Story</a>
             <a class="featured" href="/apply">Grant Application</a>
-      <a href="/sponsorship">Sponsor</a>
       <a class="m-cta" href="/donate">Donate &rarr;</a>
     </div>
   </div>
@@ -91,46 +89,14 @@
     </div>
   </section>
 
-  <!-- 1b · TWO SIDES OF THE FUND (light — the give/get loop) -->
-  <section class="band tint">
+
+  <!-- 2 · THE COST (merged — the hook + what your dollar covers) -->
+  <section class="band-lg">
     <div class="wrap">
       <div class="reveal sec-head">
-        <span class="eyebrow orange">Two sides of one fund</span>
-        <h2 class="serif h2" style="margin-top:0.8rem;">It works both ways.</h2>
-        <p class="prose" style="margin-top:1rem;">People give so athletes can play. Athletes play, and become the reason the next person gives. Pick your side.</p>
-      </div>
-      <div class="paths">
-        <div class="path reveal">
-          <span class="eyebrow orange">For athletes</span>
-          <h3 class="serif h3">Need a hand getting in the game?</h3>
-          <p>Tell us what's standing between you and your sport. We cover the gear, travel, and training that budgets miss.</p>
-          <a href="/apply" class="btn">Apply for a grant</a>
-        </div>
-        <div class="path reveal">
-          <span class="eyebrow orange">For supporters</span>
-          <h3 class="serif h3">Want to put someone in the game?</h3>
-          <p>Your gift goes straight to an athlete's real costs. One hundred percent reaches them, and you see where it lands.</p>
-          <a href="/donate" class="btn">Donate</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 2 · THE COST (light reading) -->
-  <section class="band-lg statement-block">
-    <div class="wrap reading">
-      <span class="eyebrow orange reveal">The cost of playing</span>
-      <h2 class="serif statement italic reveal" style="margin-top:0.9rem;">Most athletes don't quit because they lose interest. They quit because they can't afford to stay in.</h2>
-      <p class="prose reveal">A sport wheelchair runs $3,000 to $8,000. A tournament entry and hotel, $500 to $3,500. Coaching across a season, $150 to $800. None of it is luxury. It's the price of showing up. The talent and the drive are already there. The funding isn't. That's the gap we close.</p>
-    </div>
-  </section>
-
-  <!-- 3 · WHAT YOUR DOLLAR COVERS (light) -->
-  <section class="band">
-    <div class="wrap">
-      <div class="reveal sec-head">
-        <span class="eyebrow orange">What your dollar covers</span>
-        <h2 class="serif h2" style="margin-top:0.8rem;">Equipment, travel, training.</h2>
+        <span class="eyebrow orange">The cost of playing</span>
+        <h2 class="serif statement italic" style="margin-top:0.9rem;">The athletes we meet don't quit because they lose interest. They quit because they can't afford to stay in.</h2>
+        <p class="prose" style="margin-top:1rem;">None of it is luxury. It's the price of showing up, and the drive is already there. Here's the gap we close.</p>
       </div>
       <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:clamp(1.6rem,4vw,3.5rem); margin-top:clamp(2.4rem,4vw,3.4rem);">
         <div class="prog reveal">
@@ -152,82 +118,50 @@
     </div>
   </section>
 
-  <!-- 4 · HOW IT WORKS (dark punctuation) -->
-  <section class="dark band-lg">
-    <div class="wrap">
-      <div class="reveal sec-head">
-        <span class="eyebrow orange">How it works</span>
-        <h2 class="serif statement reveal" style="margin-top:0.9rem;">From application to the court.</h2>
-      </div>
-      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:clamp(1.6rem,3.5vw,3rem); margin-top:clamp(2.6rem,4.5vw,3.6rem);">
-        <div class="reveal">
-          <span class="serif" style="color:var(--orange); font-size:1.6rem;">01</span>
-          <h3 class="serif h3" style="margin:0.5rem 0 0.5rem;">Apply</h3>
-          <p class="prose">Submit a grant application. It only takes a few minutes.</p>
-        </div>
-        <div class="reveal">
-          <span class="serif" style="color:var(--orange); font-size:1.6rem;">02</span>
-          <h3 class="serif h3" style="margin:0.5rem 0 0.5rem;">Review</h3>
-          <p class="prose">We verify the need and confirm the real costs.</p>
-        </div>
-        <div class="reveal">
-          <span class="serif" style="color:var(--orange); font-size:1.6rem;">03</span>
-          <h3 class="serif h3" style="margin:0.5rem 0 0.5rem;">Approve</h3>
-          <p class="prose">Approved grants are funded directly. No middlemen, no delays.</p>
-        </div>
-        <div class="reveal">
-          <span class="serif" style="color:var(--orange); font-size:1.6rem;">04</span>
-          <h3 class="serif h3" style="margin:0.5rem 0 0.5rem;">Deploy</h3>
-          <p class="prose">We cover the cost. The athlete gets on the court.</p>
-        </div>
-      </div>
-      <div class="actions reveal" style="display:flex; justify-content:center; margin-top:clamp(2.6rem,4.5vw,3.6rem);">
-        <a href="/apply" class="btn">Apply for a grant</a>
-      </div>
-    </div>
-  </section>
 
-  <!-- 5 · THE PROMISE (light — the single 100% mention) -->
-  <section class="band-lg statement-block">
+  <!-- 2b · PROOF — the athlete this fund exists for -->
+  <section class="bigquote band">
     <div class="wrap reading">
-      <span class="eyebrow orange reveal">Our promise</span>
-      <h2 class="serif statement italic reveal" style="margin-top:0.9rem;">One hundred percent reaches the athlete.</h2>
-      <p class="prose reveal">Overhead is covered separately, on purpose. We fund the real costs of competing and document every grant. Whether we reimburse an athlete or cover a cost on their behalf, the money is tracked and used for exactly what it was given for. We don't replace existing programs; we fund the individual costs their budgets were never built to carry.</p>
+      <hr class="tick orange reveal">
+      <blockquote class="reveal">"A year ago I couldn't get through a day without my cane. Now I can play pickleball, keep up with my kid, and choose how I move. The chair didn't fix me. It gave me options I didn't have before."</blockquote>
+      <div class="reveal">
+        <span class="qname">Brian Liss</span>
+        <span class="qrole">Adaptive Athlete</span>
+      </div>
     </div>
   </section>
 
-  <!-- 6 · PARTNER WITH US (light) -->
-  <section class="band">
-    <div class="wrap">
-      <div class="reveal sec-head">
-        <span class="eyebrow orange">Partner with us</span>
-        <h2 class="serif h2" style="margin-top:0.8rem;">Businesses, get in the game.</h2>
-        <p class="prose" style="max-width:54ch; margin-top:1rem;">Sponsor the fund and put your name behind athletes. Partnerships run from community level to founding level, each with impact reporting so you see exactly where your dollars land.</p>
-      </div>
-      <div class="actions reveal" style="margin-top:1.8rem; display:flex; gap:0.9rem 1rem; flex-wrap:wrap; justify-content:center;">
-        <a href="/sponsorship" class="btn">See sponsorship levels <span class="arrow">&rarr;</span></a>
-        <a href="/contact" class="btn ghost">Talk to us</a>
-      </div>
+  <!-- 3 · THE PROMISE (one line; the full statement lives on /about#promise) -->
+  <section class="band tint statement-block">
+    <div class="wrap reading">
+      <hr class="tick orange reveal">
+      <h2 class="serif statement italic reveal">One hundred percent reaches the athlete.</h2>
+      <p class="prose reveal">Overhead is covered separately, on purpose. <a class="textlink" href="/about#promise">How every dollar works <span class="arrow">&rarr;</span></a></p>
     </div>
   </section>
+
 
   <!-- 7 · GIVE MOMENT (dark) — capture the gift at the emotional peak, no detour -->
   <section class="closing dark band-lg give-moment">
     <div class="wrap">
       <div class="give-split">
         <div class="give-split-text reveal">
+          <hr class="tick orange" style="margin:0 0 1rem;">
           <span class="eyebrow orange">Your turn</span>
-          <h2 class="serif h2" style="margin-top:0.7rem;">Put an athlete on the court.</h2>
-          <p class="lead sub" style="margin-top:1rem;">The gear is expensive. The shot at playing isn't optional. Your gift covers the gap, and one hundred percent reaches an athlete.</p>
+          <h2 class="serif statement" style="margin-top:0.7rem;">Put an athlete on the court.</h2>
+          <p class="lead sub" style="margin-top:1rem;">The gear is expensive. The shot at playing isn't optional. Your gift covers the gap, and one hundred percent reaches the athlete.</p>
           <div class="thermo" data-thermo>
             <div class="thermo-row">
               <span class="thermo-raised" data-thermo-raised>$0</span>
-              <span class="thermo-goal">raised of our $25,000 goal</span>
+              <span class="thermo-goal">raised of our $17,500 goal</span>
             </div>
             <div class="thermo-track"><span class="thermo-fill" data-thermo-fill></span></div>
             <a href="/roadmap" class="thermo-link">See what we're building <span class="arrow">&rarr;</span></a>
           </div>
-          <a href="/tim" class="textlink" style="margin-top:1.4rem; color:#fff; border-color:var(--orange);">Read Tim's story <span class="arrow">&rarr;</span></a>
+          <div style="margin-top:1.4rem; display:flex; gap:0.6rem 1.6rem; flex-wrap:wrap;">
+            <a href="/tim" class="textlink" style="color:#fff; border-color:var(--orange);">Read Tim's story <span class="arrow">&rarr;</span></a>
+            <a href="/sponsorship" class="textlink" style="color:#fff; border-color:var(--orange);">A business? Sponsor the fund <span class="arrow">&rarr;</span></a>
+          </div>
         </div>
         <div class="give-split-form reveal">
           <givebutter-giving-form campaign="IXM5DR"></givebutter-giving-form>
@@ -254,7 +188,7 @@
           <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only"></div>
           <p class="foot-sub-msg" role="status" aria-live="polite"></p>
         </form>
-        <p class="legal">Adapt To Life is a registered 501(c)(3) nonprofit organization. Donations are tax-deductible to the extent allowed by law. EIN 41-3213344.</p>
+        <p class="legal">Adapt To Life is a recognized 501(c)(3) nonprofit organization. Donations are tax-deductible to the extent allowed by law. EIN 41-3213344.</p>
       </div>
       <div class="col">
         <h4>Organization</h4>
@@ -321,7 +255,7 @@
     var amt = box.querySelector('[data-thermo-raised]');
     var goalEl = box.querySelector('.thermo-goal');
     fetch('/api/raised').then(function(r){ return r.json(); }).then(function(d){
-      var raised = Number(d.raised) || 0, goal = Number(d.goal) || 25000;
+      var raised = Number(d.raised) || 0, goal = Number(d.goal) || 17500;
       var pct = goal > 0 ? Math.max(0, Math.min(100, raised / goal * 100)) : 0;
       amt.textContent = '$' + raised.toLocaleString('en-US');
       if (goalEl) { goalEl.textContent = 'raised of our $' + goal.toLocaleString('en-US') + ' goal'; }

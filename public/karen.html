@@ -34,7 +34,6 @@
       <a class="lk" href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
       <a class="lk" href="/about">Our Story</a>
       <a class="lk featured" href="/apply">Grant Application</a>
-      <a class="lk" href="/sponsorship">Sponsor</a>
       <a class="nav-cta" href="/donate">Donate</a>
     </nav>
     <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
@@ -47,7 +46,6 @@
       <a href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
       <a href="/about">Our Story</a>
             <a class="featured" href="/apply">Grant Application</a>
-      <a href="/sponsorship">Sponsor</a>
       <a class="m-cta" href="/donate">Donate &rarr;</a>
     </div>
   </div>
@@ -92,7 +90,7 @@
       <h2 class="serif display reveal" style="margin-top:1rem;">Helping people find their sport.</h2>
       <p class="lead sub reveal" style="margin-top:1.2rem;">The hardest part is often just knowing where to start. Karen is helping connect athletes to programs near them through Adaptive Sports Near Me, a free national directory, and helping grow the network of people who guide others in, so no one has to find their way alone.</p>
       <div class="actions reveal" style="display:flex; justify-content:center; margin-top:2.2rem;">
-        <a href="https://adaptivesportsnearme.com" class="btn" target="_blank" rel="noopener">Find adaptive sports near you <span class="arrow">&rarr;</span></a>
+        <a href="https://adaptivesportsnearme.com" class="btn" target="_blank" rel="noopener">Visit the directory <span class="arrow">&rarr;</span></a>
       </div>
     </div>
   </section>
@@ -132,6 +130,7 @@
             <div class="field"><label for="msg">Anything you'd like us to know? (optional)</label><textarea id="msg" name="msg" rows="4"></textarea></div>
             <input type="text" name="company" id="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
             <input type="hidden" id="src" value="Karen Atkinson page">
+            <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only" style="margin-bottom:1rem;"></div>
             <button type="submit" class="btn">Send</button>
             <p class="form-status" id="formStatus" role="status" aria-live="polite" style="margin-top:.9rem;font-weight:600"></p>
             <p class="form-note">We'll reply at the email you provide.</p>
@@ -159,7 +158,7 @@
           <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only"></div>
           <p class="foot-sub-msg" role="status" aria-live="polite"></p>
         </form>
-        <p class="legal">Adapt To Life is a registered 501(c)(3) nonprofit organization. Donations are tax-deductible to the extent allowed by law. EIN 41-3213344.</p>
+        <p class="legal">Adapt To Life is a recognized 501(c)(3) nonprofit organization. Donations are tax-deductible to the extent allowed by law. EIN 41-3213344.</p>
       </div>
       <div class="col">
         <h4>Organization</h4>
@@ -234,7 +233,8 @@
       e.preventDefault();
       if(v('company')) return; // honeypot: silently drop bots
       if(!v('em')){ setStatus('Please enter your email so we can reply.', false); return; }
-      var payload = { fn:v('fn'), em:v('em'), rsn:v('rsn'), msg:v('msg'), source:v('src') };
+      var tk = f.querySelector('[name="cf-turnstile-response"]');
+      var payload = { fn:v('fn'), em:v('em'), rsn:v('rsn'), msg:v('msg'), source:v('src'), cf_token: tk ? tk.value : '' };
       var orig = btn ? btn.textContent : '';
       if(btn){ btn.disabled = true; btn.textContent = 'Sending...'; }
       setStatus('', true);

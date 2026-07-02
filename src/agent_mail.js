@@ -136,10 +136,38 @@ export async function handleEmail(message, env, ctx) {
   ctx.waitUntil(mirrorThread(env, db, thread.id).catch((e) => console.error("agent-mail mirror failed:", e)));
 
   // Spec 47 mail bell: wake the owning agent's Hermes webhook gateway — push,
-  // not poll. Machine mail (bounces/auto-replies) is archived but never rings.
+  // not poll. Machine mail (bounces/auto-replies) is archived but never rings,
+  // and neither do senders outside the allowlist: unknown/spam mail is captured
+  // silently (D1 + mirror) instead of spending agent tokens on a wake. This is
+  // a token-protection layer, not a security boundary — From is spoofable; the
+  // reply gates (Spec 33) remain the line that matters for outbound.
   if (!machine && thread.assigned_agent) {
-    ctx.waitUntil(ringBell(env, thread.assigned_agent, { inbox, thread_id: thread.id, from: fromAddr, subject, message_uuid: msgId })
-      .catch((e) => console.error("agent-mail bell failed:", e)));
+    if (await senderAllowed(db, fromAddr)) {
+      ctx.waitUntil(ringBell(env, thread.assigned_agent, { inbox, thread_id: thread.id, from: fromAddr, subject, message_uuid: msgId })
+        .catch((e) => console.error("agent-mail bell failed:", e)));
+    } else {
+      console.log(`agent-mail: bell suppressed — sender not allowlisted: ${fromAddr} → ${inbox}`);
+    }
+  }
+}
+
+// D1 `allowed_senders`: pattern is an exact lowercase address ('nick@example.com')
+// or a domain suffix ('@example.com'). Operator-managed via wrangler d1 execute.
+// Fails CLOSED for the bell but never for ingestion: any lookup error means "no
+// ring" — the mail is already archived by the time this runs.
+async function senderAllowed(db, fromAddr) {
+  try {
+    const addr = String(fromAddr || "").toLowerCase().trim();
+    const at = addr.indexOf("@");
+    if (at < 0) return false;
+    const row = await db
+      .prepare(`SELECT 1 AS ok FROM allowed_senders WHERE pattern = ? OR pattern = ?`)
+      .bind(addr, addr.slice(at))
+      .first();
+    return !!row;
+  } catch (e) {
+    console.error("agent-mail allowlist lookup failed (bell suppressed):", e);
+    return false;
   }
 }
 

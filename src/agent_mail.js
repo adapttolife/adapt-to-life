@@ -80,9 +80,41 @@ async function findOrCreateThread(db, { inbox, fromAddr, subject, inReplyTo }) {
 
 // ───────────────────────── HTTP API (for the MCP) ─────────────────────────
 
-export async function handleAgentMailApi(request, env, url) {
+// Callers are either the OPERATOR (the AGENT_MAIL_TOKEN worker secret — admin
+// tooling, sees everything) or an AGENT (per-agent token; only its SHA-256 hash
+// lives in agent_tokens, the plaintext stays in that agent's 1Password vault +
+// profile .env). Agent scope is a trust-domain boundary enforced here, in SQL —
+// the inbox query param is a filter, never an authority claim.
+async function resolveCaller(request, env) {
   const auth = request.headers.get("Authorization") || "";
-  if (!env.AGENT_MAIL_TOKEN || auth !== `Bearer ${env.AGENT_MAIL_TOKEN}`) {
+  if (!auth.startsWith("Bearer ")) return null;
+  const token = auth.slice("Bearer ".length).trim();
+  if (!token) return null;
+  if (env.AGENT_MAIL_TOKEN && token === env.AGENT_MAIL_TOKEN) return { operator: true, agent: null };
+  const row = await env.AGENT_MAIL_DB
+    .prepare(`SELECT agent FROM agent_tokens WHERE token_hash = ?`)
+    .bind(await sha256Hex(token))
+    .first();
+  return row ? { operator: false, agent: row.agent } : null;
+}
+
+// Operator: always. Agent: threads assigned to it, or on an inbox it owns
+// (default_agent) — covers handoffs in both directions.
+async function callerOwnsThread(env, caller, thread) {
+  if (caller.operator) return true;
+  if (thread.assigned_agent === caller.agent) return true;
+  const ib = await env.AGENT_MAIL_DB
+    .prepare(`SELECT 1 AS ok FROM inboxes WHERE address = ? AND default_agent = ?`)
+    .bind(thread.inbox, caller.agent)
+    .first();
+  return !!ib;
+}
+
+const forbidden = () => jsonResp({ outcome: "error", error: "forbidden: outside your inbox scope" }, 403);
+
+export async function handleAgentMailApi(request, env, url) {
+  const caller = await resolveCaller(request, env);
+  if (!caller) {
     return jsonResp({ outcome: "error", error: "unauthorized" }, 401);
   }
 
@@ -90,19 +122,19 @@ export async function handleAgentMailApi(request, env, url) {
 
   try {
     if (request.method === "GET" && path === "list") {
-      return await apiList(env, url);
+      return await apiList(env, url, caller);
     }
     if (request.method === "GET" && path.startsWith("thread/")) {
-      return await apiRead(env, path.slice("thread/".length));
+      return await apiRead(env, path.slice("thread/".length), caller);
     }
     if (request.method === "GET" && path.startsWith("attachments/")) {
-      return await apiAttachments(env, path.slice("attachments/".length));
+      return await apiAttachments(env, path.slice("attachments/".length), caller);
     }
     if (request.method === "POST" && path === "reply") {
-      return await apiReply(env, await request.json());
+      return await apiReply(env, await request.json(), caller);
     }
     if (request.method === "POST" && path === "status") {
-      return await apiSetStatus(env, await request.json());
+      return await apiSetStatus(env, await request.json(), caller);
     }
     return jsonResp({ outcome: "error", error: "not found" }, 404);
   } catch (err) {
@@ -111,13 +143,25 @@ export async function handleAgentMailApi(request, env, url) {
   }
 }
 
-async function apiList(env, url) {
+async function apiList(env, url, caller) {
   const inbox = url.searchParams.get("inbox");
   const status = url.searchParams.get("status");
   const limit = Math.min(parseInt(url.searchParams.get("limit") || "20", 10) || 20, 100);
 
   const where = [];
   const binds = [];
+  if (!caller.operator) {
+    if (inbox) {
+      const owned = await env.AGENT_MAIL_DB
+        .prepare(`SELECT 1 AS ok FROM inboxes WHERE address = ? AND default_agent = ?`)
+        .bind(inbox.toLowerCase(), caller.agent)
+        .first();
+      if (!owned) return forbidden();
+    } else {
+      where.push("(inbox IN (SELECT address FROM inboxes WHERE default_agent = ?) OR assigned_agent = ?)");
+      binds.push(caller.agent, caller.agent);
+    }
+  }
   if (inbox) { where.push("inbox = ?"); binds.push(inbox.toLowerCase()); }
   if (status) { where.push("status = ?"); binds.push(status); }
   const sql =
@@ -130,10 +174,11 @@ async function apiList(env, url) {
   return jsonResp({ outcome: "ok", data: results || [] });
 }
 
-async function apiRead(env, threadId) {
+async function apiRead(env, threadId, caller) {
   const db = env.AGENT_MAIL_DB;
   const thread = await db.prepare(`SELECT * FROM threads WHERE id = ?`).bind(threadId).first();
   if (!thread) return jsonResp({ outcome: "error", error: "thread not found" }, 404);
+  if (!(await callerOwnsThread(env, caller, thread))) return forbidden();
   const { results } = await db
     .prepare(
       `SELECT id, direction, from_addr AS "from", to_addr AS "to", subject, body_text, r2_key, created_at
@@ -149,10 +194,12 @@ async function apiRead(env, threadId) {
 // Spec 42: lets a skill pull a forwarded receipt PDF/image for filing.
 const MAX_ATTACHMENTS_BYTES = 8 * 1024 * 1024;
 
-async function apiAttachments(env, messageId) {
+async function apiAttachments(env, messageId, caller) {
   const db = env.AGENT_MAIL_DB;
-  const msg = await db.prepare(`SELECT r2_key FROM messages WHERE id = ?`).bind(messageId).first();
+  const msg = await db.prepare(`SELECT r2_key, thread_id FROM messages WHERE id = ?`).bind(messageId).first();
   if (!msg) return jsonResp({ outcome: "error", error: "message not found" }, 404);
+  const thread = await db.prepare(`SELECT * FROM threads WHERE id = ?`).bind(msg.thread_id).first();
+  if (thread && !(await callerOwnsThread(env, caller, thread))) return forbidden();
   if (!msg.r2_key) return jsonResp({ outcome: "error", error: "message has no archived raw copy (outbound message?)" }, 404);
 
   const obj = await env.AGENT_MAIL_BUCKET.get(msg.r2_key);
@@ -177,13 +224,14 @@ async function apiAttachments(env, messageId) {
   return jsonResp({ outcome: "ok", data: { message_id: messageId, count: attachments.length, attachments } });
 }
 
-async function apiReply(env, body) {
+async function apiReply(env, body, caller) {
   const { thread_id, body_text, body_html } = body || {};
   if (!thread_id || !body_text) return jsonResp({ outcome: "error", error: "thread_id and body_text required" }, 422);
 
   const db = env.AGENT_MAIL_DB;
   const thread = await db.prepare(`SELECT * FROM threads WHERE id = ?`).bind(thread_id).first();
   if (!thread) return jsonResp({ outcome: "error", error: "thread not found" }, 404);
+  if (!(await callerOwnsThread(env, caller, thread))) return forbidden();
   if (thread.status === "human") {
     return jsonResp({ outcome: "error", error: "thread is owned by a human; agent reply refused" }, 409);
   }
@@ -224,14 +272,15 @@ async function apiReply(env, body) {
   return jsonResp({ outcome: "ok", data: { message_id: sent.id || null } });
 }
 
-async function apiSetStatus(env, body) {
+async function apiSetStatus(env, body, caller) {
   const { thread_id, status, assigned_agent } = body || {};
   if (!thread_id || !STATUSES.includes(status)) {
     return jsonResp({ outcome: "error", error: `status must be one of ${STATUSES.join("|")}` }, 422);
   }
   const db = env.AGENT_MAIL_DB;
-  const thread = await db.prepare(`SELECT id FROM threads WHERE id = ?`).bind(thread_id).first();
+  const thread = await db.prepare(`SELECT * FROM threads WHERE id = ?`).bind(thread_id).first();
   if (!thread) return jsonResp({ outcome: "error", error: "thread not found" }, 404);
+  if (!(await callerOwnsThread(env, caller, thread))) return forbidden();
 
   if (assigned_agent !== undefined && assigned_agent !== null) {
     await db.prepare(`UPDATE threads SET status = ?, assigned_agent = ?, last_at = datetime('now') WHERE id = ?`)
@@ -286,6 +335,10 @@ async function mirrorThread(env, db, threadId) {
 
 function isoDay() {
   return new Date().toISOString().slice(0, 10);
+}
+async function sha256Hex(s) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 function bytesToB64(bytes) {
   let bin = "";

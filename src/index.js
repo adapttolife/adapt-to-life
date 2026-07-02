@@ -24,6 +24,11 @@ export default {
       return Response.redirect(`${url.origin}/waiver${url.search}`, 302);
     }
 
+    // Staging-only review tour: /review walks the latest iteration. Production redirects home.
+    if ((url.pathname === "/review" || url.pathname === "/review.html") && env.STAGING !== "1") {
+      return Response.redirect(`${url.origin}/`, 302);
+    }
+
     if (url.pathname === "/api/contact") {
       if (request.method !== "POST") {
         return json({ ok: false, error: "Method not allowed" }, 405);

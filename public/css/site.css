@@ -35,8 +35,8 @@
   --narrow:620px;          /* tightest column */
 
   /* vertical rhythm — varied, not one global value */
-  --pad:clamp(4.25rem, 7.5vw, 6.5rem);
-  --pad-lg:clamp(5.5rem, 9.5vw, 8.5rem);
+  --pad:clamp(3.75rem, 6.5vw, 5.5rem);
+  --pad-lg:clamp(4.75rem, 8vw, 7rem);
   --pad-sm:clamp(3rem, 6vw, 4.75rem);
 
   --gutter:clamp(1.25rem, 4vw, 2.5rem);
@@ -190,7 +190,7 @@ section{ position:relative; }
 .dark.has-bg > .wrap{ position:relative; z-index:1; }
 
 /* ---- hero ---------------------------------------------------------------- */
-.hero{ padding-top:clamp(7rem, 16vh, 11rem); padding-bottom:clamp(5rem, 11vw, 8.5rem); }
+.hero{ padding-top:clamp(6.5rem, 14vh, 9.5rem); padding-bottom:clamp(4rem, 8.5vw, 6.5rem); }
 .hero .display{ max-width:16ch; margin-top:1.5rem; }
 .hero .sub{ max-width:46ch; margin-top:1.7rem; }
 .hero .actions{ display:flex; flex-wrap:wrap; align-items:center; gap:0.9rem 1rem; margin-top:2.4rem; }

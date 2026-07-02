@@ -7,10 +7,12 @@ import { handleEmail, handleAgentMailApi } from "./agent_mail.js";
 
 const LEAD_TYPES = [
   "An athlete interested in funding",
+  "A business interested in sponsoring",
+  "A donor with a question",
+  "Suggesting a program for the directory",
   "A program or organization",
-  "A potential donor or sponsor",
-  "Media or press",
   "A volunteer",
+  "Media or press",
   "Something else",
 ];
 

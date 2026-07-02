@@ -72,8 +72,9 @@
           <div class="quick-links">
             <span class="ql-head">Quick links</span>
             <a class="textlink" href="/donate">Donate <span class="arrow">&rarr;</span></a>
+            <a class="textlink" href="/apply">Apply for a grant <span class="arrow">&rarr;</span></a>
+            <a class="textlink" href="/sponsorship">Sponsorship levels <span class="arrow">&rarr;</span></a>
             <a class="textlink" href="/about">Our story <span class="arrow">&rarr;</span></a>
-            <a class="textlink" href="/tim">Tim's story <span class="arrow">&rarr;</span></a>
           </div>
         </div>
         <div class="contact-form-wrap reveal">
@@ -88,14 +89,24 @@
               <select id="rsn" name="rsn">
                 <option value="">Select one</option>
                 <option>An athlete interested in funding</option>
+                <option>A business interested in sponsoring</option>
+                <option>A donor with a question</option>
+                <option>Suggesting a program for the directory</option>
                 <option>A program or organization</option>
-                <option>A potential donor or sponsor</option>
-                <option>Media or press</option>
                 <option>A volunteer</option>
+                <option>Media or press</option>
                 <option>Something else</option>
               </select>
             </div>
             <div class="field"><label for="msg">Message</label><textarea id="msg" name="msg" rows="5"></textarea></div>
+            <script>
+              (function(){
+                var map = { athlete:'An athlete interested in funding', sponsor:'A business interested in sponsoring', donor:'A donor with a question', program:'Suggesting a program for the directory' };
+                var q = new URLSearchParams(location.search).get('rsn');
+                var sel = document.getElementById('rsn');
+                if(q && map[q] && sel){ sel.value = map[q]; }
+              })();
+            </script>
             <input type="text" name="company" id="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
             <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only" style="margin-bottom:1rem;"></div>
             <button type="submit" class="btn">Send message</button>

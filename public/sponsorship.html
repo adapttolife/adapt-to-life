@@ -48,7 +48,9 @@
   .deploys{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:clamp(1.2rem,3vw,2rem); margin-top:clamp(2.2rem,4vw,3rem); }
   .deploys .impact-n{ font-size:clamp(1.6rem,4vw,2.1rem); }
   .tax-note{ font-family:'Hanken Grotesk',sans-serif; font-size:0.9rem; color:#6b6b6b; max-width:60ch; line-height:1.55; }
-  #claim givebutter-giving-form{ display:block; width:100%; max-width:560px; margin:0 auto; }
+  .claim-split{ display:grid; grid-template-columns:1.02fr 0.98fr; gap:clamp(2rem,5vw,4rem); align-items:center; }
+  @media (max-width:880px){ .claim-split{ grid-template-columns:1fr; gap:1.8rem; } }
+  .claim-split givebutter-giving-form{ display:block; width:100%; }
   @media (min-width:880px){ .progs{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
   /* sponsor scoreboard */
   .thermo{ max-width:560px; margin:1.6rem auto 0; }
@@ -240,15 +242,17 @@
   <!-- CLAIM YOUR LEVEL — pay in place; the conversation is optional, not required -->
   <section class="band tint" id="claim">
     <div class="wrap">
-      <div class="reveal sec-head">
-        <span class="eyebrow orange">Claim your level</span>
-        <h2 class="serif h2" style="margin-top:0.8rem;">Back it right here, right now.</h2>
-        <p class="prose" style="max-width:52ch; margin-top:1rem;">Enter your level's amount and pay by card, bank, or Apple Pay. Your sponsorship lands on the scoreboard above, and we follow up on recognition and reporting.</p>
+      <div class="claim-split">
+        <div class="reveal">
+          <span class="eyebrow orange">Claim your level</span>
+          <h2 class="serif h2" style="margin-top:0.8rem;">Back it right here, right now.</h2>
+          <p class="prose" style="max-width:48ch; margin-top:1rem;">Enter your level's amount and pay by card, bank, or Apple Pay. Your sponsorship lands on the scoreboard above, and we follow up on recognition and reporting.</p>
+          <p style="margin-top:1.4rem; font-family:'Hanken Grotesk',sans-serif; font-size:0.9rem; color:#6b6b6b;">Prefer an invoice, or want to design something custom first? <a class="textlink" href="/contact?rsn=sponsor">Talk to us <span class="arrow">&rarr;</span></a></p>
+        </div>
+        <div class="reveal">
+          <givebutter-giving-form campaign="MNL0JS"></givebutter-giving-form>
+        </div>
       </div>
-      <div class="reveal" style="margin-top:clamp(1.8rem,3vw,2.4rem);">
-        <givebutter-giving-form campaign="MNL0JS"></givebutter-giving-form>
-      </div>
-      <p class="reveal sec-head" style="margin-top:1.6rem; font-family:'Hanken Grotesk',sans-serif; font-size:0.9rem; color:#6b6b6b;">Prefer an invoice, or want to design something custom first? <a class="textlink" href="/contact?rsn=sponsor">Talk to us <span class="arrow">&rarr;</span></a></p>
     </div>
   </section>
 

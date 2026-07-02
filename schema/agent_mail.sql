@@ -43,3 +43,16 @@ CREATE INDEX IF NOT EXISTS idx_messages_thread ON messages(thread_id, created_at
 INSERT OR IGNORE INTO inboxes (address, kind, default_agent) VALUES
   ('hello@agents.adapttolife.org', 'shared', 'julia'),
   ('julia@agents.adapttolife.org', 'agent',  'julia');
+
+-- Per-agent API tokens (Spec 33 hardening, 2026-07-02). One token per AGENT (an
+-- agent may own several inboxes). Only the SHA-256 hex of the token lands here;
+-- the plaintext lives in that agent's own 1Password vault ('Agent Mail Token')
+-- and its profile .env. The AGENT_MAIL_TOKEN worker secret remains the unscoped
+-- OPERATOR credential. Rotation: insert the new hash, update vault + .env,
+-- delete the old row.
+CREATE TABLE IF NOT EXISTS agent_tokens (
+  token_hash TEXT PRIMARY KEY,                    -- sha256 hex of the bearer token
+  agent      TEXT NOT NULL,                       -- e.g. 'julia'
+  note       TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);

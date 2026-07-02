@@ -4,37 +4,31 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light only">
-<title>Donate | Adapt To Life</title>
-<meta name="description" content="Your gift covers the equipment, travel, and training that keep adaptive athletes in the game. One hundred percent reaches the athlete. Adapt To Life is a 501(c)(3).">
-<link rel="canonical" href="https://adapttolife.org/donate">
+<title>Ways to Give | Adapt To Life</title>
+<meta name="description" content="Monthly giving, sponsorships, donor-advised funds, stock, bequests, employer matching, and tribute gifts. Every way to put an athlete in the game.">
+<link rel="canonical" href="https://adapttolife.org/ways-to-give">
 <link rel="icon" type="image/svg+xml" href="/images/atl-logo.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
 <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Donate | Adapt To Life">
-<meta property="og:description" content="Your gift covers the equipment, travel, and training that keep adaptive athletes in the game. One hundred percent reaches the athlete.">
+<meta property="og:title" content="Ways to Give | Adapt To Life">
+<meta property="og:description" content="Monthly giving, sponsorships, donor-advised funds, stock, bequests, employer matching, and tribute gifts. Every way to put an athlete in the game.">
 <meta property="og:image" content="https://adapttolife.org/images/og-image.jpg">
-<meta property="og:url" content="https://adapttolife.org/donate">
+<meta property="og:url" content="https://adapttolife.org/ways-to-give">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Donate | Adapt To Life">
-<meta name="twitter:description" content="Your gift covers the equipment, travel, and training that keep adaptive athletes in the game.">
+<meta name="twitter:title" content="Ways to Give | Adapt To Life">
+<meta name="twitter:description" content="Every way to put an athlete in the game, from a monthly gift to a legacy.">
 <meta name="twitter:image" content="https://adapttolife.org/images/og-image.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
 <style>
-  /* Donate page — give panel */
-  .give-hero{ padding-top:clamp(7rem,12vw,9.5rem); padding-bottom:clamp(2.6rem,7vw,5rem); }
-  .give-grid{ display:grid; grid-template-columns:1.05fr 0.95fr; gap:clamp(2rem,5vw,4rem); align-items:center; }
-  @media (max-width:880px){ .give-grid{ grid-template-columns:1fr; gap:1.8rem; } }
-  .give-assure{ list-style:none; padding:0; margin:1.5rem 0 0; display:flex; flex-wrap:wrap; gap:0.5rem 1.4rem; }
-  .give-assure li{ font-family:'Hanken Grotesk',sans-serif; font-size:0.88rem; color:rgba(255,255,255,0.72); }
-  .give-assure .ga-k{ color:#fff; font-weight:600; }
-  .give-panel{ background:#fff; border-radius:18px; padding:clamp(1.3rem,3vw,1.9rem); box-shadow:0 24px 60px rgba(0,0,0,0.34); }
-  .gp-note{ text-align:center; font-family:'Hanken Grotesk',sans-serif; font-size:0.76rem; color:#9a9a9a; margin:0.3rem 0 0; }
-  .give-ways{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(1.6rem,2.6vw,2.4rem) clamp(1.6rem,3vw,2.8rem); margin-top:clamp(2.2rem,3.6vw,3rem); }
-  @media (max-width:679px){ .give-ways{ grid-template-columns:1fr; } }
+  .ways{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(1.4rem,2.6vw,2.2rem); margin-top:clamp(2.2rem,3.6vw,3rem); }
+  @media (max-width:679px){ .ways{ grid-template-columns:1fr; } }
+  .way{ display:flex; flex-direction:column; border:1.5px solid #e3e0d9; border-radius:16px; padding:1.5rem 1.4rem; background:#fff; }
+  .way p{ flex:1; }
+  .way .textlink{ margin-top:0.9rem; }
 </style>
 </head>
 <body>
@@ -66,90 +60,89 @@
 
 <main>
 
-  <!-- HERO + GIVE PANEL -->
-  <section class="hero dark give-hero">
+  <!-- HERO -->
+  <section class="hero dark">
     <div class="wrap">
-      <div class="give-grid">
-        <div class="give-intro">
-          <span class="eyebrow orange reveal">Your turn</span>
-          <h1 class="serif display reveal">Put an athlete <em class="italic" style="color:var(--orange)">in the game.</em></h1>
-          <p class="lead sub reveal">Adaptive gear can cost more than a car. Your gift covers the equipment, travel, and training that keep athletes competing. One hundred percent reaches the athlete.</p>
-          <ul class="give-assure reveal">
-            <li><a href="/about#promise" style="color:inherit; text-decoration:none; border-bottom:1px dotted rgba(255,255,255,0.45);"><span class="ga-k">100%</span> reaches the athlete</a></li>
-            <li><span class="ga-k">Secure</span> checkout</li>
-            <li><span class="ga-k">Tax-deductible</span> &middot; EIN 41-3213344</li>
-          </ul>
-        </div>
-
-        <!-- GIVE PANEL — Givebutter embedded giving form (campaign IXM5DR,
-             account 7FsgcjXFnW6fabQn). Renders once the campaign is published. -->
-        <script async src="https://widgets.givebutter.com/latest.umd.cjs?acct=7FsgcjXFnW6fabQn"></script>
-        <div class="give-panel reveal" id="givePanel">
-          <givebutter-giving-form campaign="IXM5DR"></givebutter-giving-form>
-          <p class="gp-note">Secure checkout by Givebutter &middot; 100% reaches the athlete.</p>
-        </div>
+      <span class="eyebrow orange reveal">Ways to give</span>
+      <h1 class="serif display reveal">Give the way that <em class="italic" style="color:var(--orange)">fits your life.</em></h1>
+      <p class="lead sub reveal">A monthly gift, a sponsorship, a donor-advised fund, a line in your will. Every path below ends the same way: an athlete gets in the game, and one hundred percent reaches the athlete.</p>
+      <div class="actions reveal">
+        <a href="/donate" class="btn">Donate</a>
+        <a href="/contact?rsn=donor" class="btn ghost">Talk to us</a>
       </div>
     </div>
   </section>
 
-  <!-- IMPACT -->
-  <section class="band tint">
-    <div class="wrap">
-      <div class="reveal sec-head">
-        <span class="eyebrow orange">Your impact</span>
-        <h2 class="serif h2" style="margin-top:0.8rem;">What your gift covers</h2>
-      </div>
-      <div class="impact-grid">
-        <div class="reveal"><div class="impact-n">$3,500</div><div class="impact-l">Sends one athlete to nationals</div></div>
-        <div class="reveal"><div class="impact-n">$500</div><div class="impact-l">Three months of facility access</div></div>
-        <div class="reveal"><div class="impact-n">$200</div><div class="impact-l">A set of competition tires</div></div>
-        <div class="reveal"><div class="impact-n">0%</div><div class="impact-l">Goes to admin or overhead</div></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- MORE WAYS TO GIVE -->
+  <!-- THE SIX WAYS -->
   <section class="band">
     <div class="wrap">
       <div class="reveal sec-head">
-        <span class="eyebrow orange">More ways to give</span>
-        <h2 class="serif h2" style="margin-top:0.8rem;">Give the way that fits you.</h2>
+        <span class="eyebrow orange">Beyond the donate button</span>
+        <h2 class="serif h2" style="margin-top:0.8rem;">Six ways to go further.</h2>
       </div>
-      <div class="give-ways">
-        <div class="prog reveal">
+      <div class="ways">
+        <div class="way reveal">
           <span class="tag">Monthly</span>
           <h3 class="serif h3">Become a sustaining giver</h3>
-          <p>A recurring gift keeps athletes funded all year. Choose Monthly above and give what works for you.</p>
+          <p>A monthly gift keeps athletes funded all season, not just on the day you felt generous. Choose Monthly in the giving form and set it once.</p>
+          <a class="textlink" href="/donate">Donate monthly <span class="arrow">&rarr;</span></a>
         </div>
-        <div class="prog reveal">
+        <div class="way reveal">
           <span class="tag">Business</span>
           <h3 class="serif h3">Sponsor the mission</h3>
-          <p>Put your company behind athletes and get recognized for it. Partnerships from community level to founding level.</p>
-          <a href="/sponsorship" class="textlink go">See sponsorship <span class="arrow">&rarr;</span></a>
+          <p>Put your business behind athletes with levels that unlock real things, from a set of racing wheels to a region's grant cycle.</p>
+          <a class="textlink" href="/sponsorship">See sponsorship levels <span class="arrow">&rarr;</span></a>
         </div>
-        <div class="prog reveal">
-          <span class="tag">Tribute</span>
-          <h3 class="serif h3">In honor or memory</h3>
-          <p>Give in the name of someone who belongs in the game. Add their name in the donation note and we'll make sure it counts.</p>
+        <div class="way reveal">
+          <span class="tag">DAF</span>
+          <h3 class="serif h3">Donor-advised funds</h3>
+          <p>Recommend a grant to Adapt To Life (EIN 41-3213344) from Fidelity Charitable, Schwab Charitable, or any donor-advised fund.</p>
+          <a class="textlink" href="/donate">Give from your DAF <span class="arrow">&rarr;</span></a>
         </div>
-        <div class="prog reveal">
-          <span class="tag">Other</span>
-          <h3 class="serif h3">Stock, DAF, or employer match</h3>
-          <p>Giving stock, a donor-advised fund, a company match, or a legacy gift goes further. Every path lives on one page.</p>
-          <a href="/ways-to-give" class="textlink go">See all the ways to give <span class="arrow">&rarr;</span></a>
+        <div class="way reveal">
+          <span class="tag">Stock</span>
+          <h3 class="serif h3">Stock &amp; securities</h3>
+          <p>Appreciated stock can give more to athletes and cost you less at tax time. Tell us what you're considering and we'll coordinate the transfer details with you.</p>
+          <a class="textlink" href="/contact?rsn=donor">Start the conversation <span class="arrow">&rarr;</span></a>
         </div>
+        <div class="way reveal">
+          <span class="tag">Legacy</span>
+          <h3 class="serif h3">Bequests &amp; beneficiary designations</h3>
+          <p>Name Adapt To Life in your will, or as a beneficiary of an IRA, 401(k), or life insurance policy. One sentence today; athletes in the game for years.</p>
+          <a class="textlink" href="/contact?rsn=donor">Plan a legacy gift <span class="arrow">&rarr;</span></a>
+        </div>
+        <div class="way reveal">
+          <span class="tag">Match</span>
+          <h3 class="serif h3">Employer matching</h3>
+          <p>Many employers match charitable gifts, doubling what reaches athletes. Ask HR whether yours does, then send the match our way.</p>
+          <a class="textlink" href="/contact?rsn=donor">Set up a match <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
+      <p class="prose reveal" style="margin-top:2rem; font-size:0.95rem; color:#6b6b6b; max-width:62ch;">Adapt To Life is a recognized 501(c)(3) nonprofit (EIN 41-3213344). Gifts may be tax-deductible to the extent allowed by law; for stock, DAF, and legacy gifts, your tax or estate advisor can confirm what fits your situation.</p>
+    </div>
+  </section>
+
+  <!-- TRIBUTE (the heart) -->
+  <section class="dark band-lg">
+    <div class="wrap reading">
+      <span class="eyebrow gold reveal">In honor, in memory</span>
+      <h2 class="serif statement italic reveal" style="margin-top:1rem;">Give in someone's name.</h2>
+      <p class="prose reveal">This whole fund is named for how Tim played. Give in honor of someone who belongs in the game, or in memory of someone who never left it, and add their name in the donation note. We'll make sure it counts.</p>
+      <div class="actions reveal" style="margin-top:1.8rem;">
+        <a href="/donate" class="btn">Give a tribute gift</a>
+        <a href="/tim" class="btn ghost">Read Tim's story</a>
       </div>
     </div>
   </section>
 
-  <!-- CLOSING — finish the gift -->
-  <section class="closing dark band-lg">
+  <!-- CLOSING -->
+  <section class="closing band-lg">
     <div class="wrap center">
-      <span class="eyebrow orange reveal">Almost there</span>
-      <h2 class="serif display reveal">Finish your gift.</h2>
-      <p class="lead sub reveal">It takes about a minute, and it covers an athlete's real costs: equipment, travel, and training.</p>
-      <div class="actions reveal">
-        <a href="#givePanel" class="btn">Donate</a>
+      <span class="eyebrow orange reveal">Not sure which fits?</span>
+      <h2 class="serif h2 reveal">Tell us what you're thinking.</h2>
+      <p class="lead sub reveal" style="color:var(--ink-soft);">Two minutes with us and you'll know the smartest way to give. No pressure, no pitch.</p>
+      <div class="actions reveal" style="justify-content:center;">
+        <a href="/contact?rsn=donor" class="btn">Talk to us</a>
       </div>
     </div>
   </section>
@@ -232,8 +225,6 @@
     }
   })();
 </script>
-
-<!-- Donation form is the embedded Givebutter giving form above; no custom JS needed. -->
 
 <script src="/js/subscribe.js" defer></script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>

@@ -4,6 +4,7 @@
 
 import { handleWaiver, handleWaiverDownload, handleWaiverVerify, handleWaiverDoc, runDriveBacklog } from "./waiver.js";
 import { handleEmail, handleAgentMailApi } from "./agent_mail.js";
+import { handleGivebutterWebhook } from "./givebutter.js";
 
 const LEAD_TYPES = [
   "Funding for an athlete",
@@ -14,7 +15,7 @@ const LEAD_TYPES = [
 ];
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
     // Signing hub: sign.adapttolife.org is the one place to sign the universal release.
@@ -52,6 +53,11 @@ export default {
     // Public fundraising total for the site thermometer (Givebutter live + offline gifts).
     if (url.pathname === "/api/raised") {
       return handleRaised(request, env);
+    }
+
+    // Spec 38 Phase 2: Givebutter webhook -> Airtable Donations row + thank-you email.
+    if (url.pathname === "/api/givebutter-webhook") {
+      return handleGivebutterWebhook(request, env, ctx);
     }
 
     // Waiver e-signature: POST to sign, GET /api/waiver/:id to download the signed PDF.
@@ -299,7 +305,10 @@ async function handleSubscribe(request, env) {
 // Public fundraising total for the site thermometer: Givebutter's live "raised" for the
 // campaign plus an offline figure we control (in-person gifts). Cached 60s at the edge.
 async function handleRaised(request, env) {
-  const campaignId = env.GIVEBUTTER_CAMPAIGN_ID || "683765";
+  const wantSponsors = new URL(request.url).searchParams.get("c") === "sponsors";
+  const campaignId = wantSponsors
+    ? (env.GIVEBUTTER_SPONSOR_CAMPAIGN_ID || "685049")
+    : (env.GIVEBUTTER_CAMPAIGN_ID || "683765");
   const offline = Number(env.OFFLINE_RAISED) || 0;
   let online = 0;
   let goal = 0;
@@ -322,7 +331,7 @@ async function handleRaised(request, env) {
     raised: online + offline,
     online,
     offline,
-    goal: goal || Number(env.RAISED_GOAL) || 17500,
+    goal: goal || Number(env.RAISED_GOAL) || (wantSponsors ? 50000 : 17500),
   });
   return new Response(body, {
     headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=60" },

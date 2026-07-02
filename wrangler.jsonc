@@ -42,7 +42,10 @@
     "AIRTABLE_AGENT_MAIL_TABLE_ID": "tbliDyb8sAiA8JY0c",
     // Fundraising thermometer: Givebutter campaign + offline (in-person) gifts. API key is a secret.
     "GIVEBUTTER_CAMPAIGN_ID": "683765",
-    "OFFLINE_RAISED": "0"
+    "GIVEBUTTER_SPONSOR_CAMPAIGN_ID": "685049",
+    "OFFLINE_RAISED": "0",
+    // Spec 38 Phase 2: webhook writes gifts here. GIVEBUTTER_WEBHOOK_SECRET is a secret.
+    "AIRTABLE_DONATIONS_TABLE_ID": "tblIkk69LdMfHJMG7"
   },
   // Signed-waiver storage: PDFs in R2, the signing record index in D1.
   "r2_buckets": [
@@ -70,6 +73,24 @@
   // design review before promoting to production. Front-end only — no data bindings
   // and no cron — so staging can never touch prod Airtable / D1 / R2 / email.
   "env": {
+    // Phase 2+3 build env: its own worker + link, same fences as staging.
+    "next": {
+      "name": "adapt-to-life-next",
+      "workers_dev": true,
+      "vars": {
+        "GIVEBUTTER_CAMPAIGN_ID": "683765",
+        "GIVEBUTTER_SPONSOR_CAMPAIGN_ID": "685049",
+        "OFFLINE_RAISED": "0",
+        "STAGING": "1",
+        "AIRTABLE_BASE_ID": "appVPKDdwnOG5qkYG",
+        "AIRTABLE_DONATIONS_TABLE_ID": "tblIkk69LdMfHJMG7"
+      },
+      "routes": [],
+      "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": ["/review", "/review.html"] },
+      // Phase 2 loop-testing needs real sends; D1/R2/cron stay off this env.
+      "send_email": [ { "name": "SEND_EMAIL" } ],
+      "triggers": { "crons": [] }
+    },
     "staging": {
       "name": "adapt-to-life-staging",
       "workers_dev": true,

@@ -26,13 +26,14 @@
 <style>
   /* AMP spotlight — mural backdrop + scrapbook prints */
   .amp-mural{ position:relative; overflow:hidden; }
-  .amp-bg{ position:absolute; inset:0; background-image:url('/images/karen-waterskiing.jpg'); background-size:cover; background-position:center 38%; opacity:0.18; filter:saturate(0.85); }
+  .amp-bg{ position:absolute; inset:0; background-image:url('/images/karen-waterskiing.jpg'); background-size:cover; background-position:center 92%; opacity:0.22; filter:saturate(0.85); }
   .amp-bg::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(26,26,26,0.72), rgba(26,26,26,0.28) 45%, rgba(26,26,26,0.78)); }
   .amp-wrap{ position:relative; display:grid; grid-template-columns:1.02fr 0.98fr; gap:clamp(2.2rem,5vw,4.5rem); align-items:center; }
   @media (max-width:880px){ .amp-wrap{ grid-template-columns:1fr; } }
   .amp-prints{ position:relative; display:grid; }
   .amp-print{ grid-area:1 / 1; display:block; background:#fdfcf9; padding:12px 12px 12px; box-shadow:0 24px 55px rgba(0,0,0,0.5); text-decoration:none; transition:transform .25s ease, box-shadow .25s ease; }
   .amp-print img{ display:block; width:100%; height:auto; }
+  .amp-print.p2 img{ aspect-ratio:3/3.4; object-fit:cover; object-position:43% 24%; }
   .amp-cap{ display:block; margin-top:10px; font-family:'Space Mono',monospace; font-size:0.72rem; letter-spacing:0.04em; color:#4a463f; text-align:center; }
   .amp-print.p1{ width:min(60%,280px); justify-self:start; transform:rotate(-4deg); z-index:1; }
   .amp-print.p2{ width:min(84%,390px); justify-self:end; margin-top:clamp(7rem,13vw,10rem); transform:rotate(3deg); z-index:2; }

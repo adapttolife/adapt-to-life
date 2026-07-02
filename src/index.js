@@ -323,7 +323,7 @@ async function handleRaised(request, env) {
     raised: online + offline,
     online,
     offline,
-    goal: goal || Number(env.RAISED_GOAL) || 25000,
+    goal: goal || Number(env.RAISED_GOAL) || 17500,
   });
   return new Response(body, {
     headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=60" },

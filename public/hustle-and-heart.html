@@ -95,7 +95,7 @@
     <div class="wrap">
       <div class="reveal sec-head">
         <span class="eyebrow orange">The cost of playing</span>
-        <h2 class="serif statement italic" style="margin-top:0.9rem;">Most athletes don't quit because they lose interest. They quit because they can't afford to stay in.</h2>
+        <h2 class="serif statement italic" style="margin-top:0.9rem;">The athletes we meet don't quit because they lose interest. They quit because they can't afford to stay in.</h2>
         <p class="prose" style="margin-top:1rem;">None of it is luxury. It's the price of showing up, and the drive is already there. Here's the gap we close.</p>
       </div>
       <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:clamp(1.6rem,4vw,3.5rem); margin-top:clamp(2.4rem,4vw,3.4rem);">
@@ -149,7 +149,7 @@
           <hr class="tick orange" style="margin:0 0 1rem;">
           <span class="eyebrow orange">Your turn</span>
           <h2 class="serif statement" style="margin-top:0.7rem;">Put an athlete on the court.</h2>
-          <p class="lead sub" style="margin-top:1rem;">The gear is expensive. The shot at playing isn't optional. Your gift covers the gap, and one hundred percent reaches an athlete.</p>
+          <p class="lead sub" style="margin-top:1rem;">The gear is expensive. The shot at playing isn't optional. Your gift covers the gap, and one hundred percent reaches the athlete.</p>
           <div class="thermo" data-thermo>
             <div class="thermo-row">
               <span class="thermo-raised" data-thermo-raised>$0</span>
@@ -255,7 +255,7 @@
     var amt = box.querySelector('[data-thermo-raised]');
     var goalEl = box.querySelector('.thermo-goal');
     fetch('/api/raised').then(function(r){ return r.json(); }).then(function(d){
-      var raised = Number(d.raised) || 0, goal = Number(d.goal) || 25000;
+      var raised = Number(d.raised) || 0, goal = Number(d.goal) || 17500;
       var pct = goal > 0 ? Math.max(0, Math.min(100, raised / goal * 100)) : 0;
       amt.textContent = '$' + raised.toLocaleString('en-US');
       if (goalEl) { goalEl.textContent = 'raised of our $' + goal.toLocaleString('en-US') + ' goal'; }

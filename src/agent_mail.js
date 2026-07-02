@@ -13,6 +13,37 @@ import { cfSend } from "./email.js";
 
 const STATUSES = ["new", "agent_working", "needs_review", "human", "replied", "resolved"];
 
+// Spec 33 outbound caps. Applied to every caller (operator included): a runaway
+// loop through the admin lane is still a loop.
+const SEND_LIMITS = { perThreadPerHour: 5, perInboxPerHour: 20 };
+
+// Spec 33 loop prevention: machine-generated mail (bounces, auto-replies,
+// out-of-office, no-reply senders) is archived like everything else but is never
+// a valid reply target — replying to an auto-responder is how mail loops start.
+// Returns a short reason string, or null for human mail.
+export function classifyMachine(parsed, fromAddr) {
+  const headers = {};
+  for (const h of parsed.headers || []) headers[String(h.key).toLowerCase()] = String(h.value || "");
+
+  const autoSubmitted = headers["auto-submitted"];
+  if (autoSubmitted && autoSubmitted.trim().toLowerCase() !== "no") return "auto-submitted";
+  const precedence = (headers["precedence"] || "").trim().toLowerCase();
+  if (["bulk", "junk", "auto_reply", "list"].includes(precedence)) return `precedence:${precedence}`;
+  if ("x-auto-response-suppress" in headers) return "x-auto-response-suppress";
+  if ("x-autoreply" in headers || "x-autorespond" in headers) return "x-autoreply";
+
+  const local = String(fromAddr || "").toLowerCase().split("@")[0];
+  if (/^(mailer-daemon|postmaster|bounce|bounces)$/.test(local) || /(^|[-._])(no-?reply|do-?not-?reply)([-._]|$)/.test(local)) {
+    return "sender:" + local;
+  }
+
+  const subject = String(parsed.subject || "");
+  if (/^(auto:|automatic reply|out of office|autoreply)/i.test(subject) || /delivery status notification|undeliverable|mail delivery failed/i.test(subject)) {
+    return "subject:auto";
+  }
+  return null;
+}
+
 // ───────────────────────── inbound ─────────────────────────
 
 export async function handleEmail(message, env, ctx) {
@@ -35,14 +66,15 @@ export async function handleEmail(message, env, ctx) {
 
   const db = env.AGENT_MAIL_DB;
   const thread = await findOrCreateThread(db, { inbox, fromAddr, subject, inReplyTo });
+  const machine = classifyMachine(parsed, fromAddr);
 
   const msgId = crypto.randomUUID();
   await db
     .prepare(
-      `INSERT INTO messages (id, thread_id, direction, from_addr, to_addr, subject, body_text, r2_key, message_id, in_reply_to)
-       VALUES (?, ?, 'in', ?, ?, ?, ?, ?, ?, ?)`
+      `INSERT INTO messages (id, thread_id, direction, from_addr, to_addr, subject, body_text, r2_key, message_id, in_reply_to, is_machine)
+       VALUES (?, ?, 'in', ?, ?, ?, ?, ?, ?, ?, ?)`
     )
-    .bind(msgId, thread.id, fromAddr, inbox, subject, parsed.text || "", r2Key, messageId, inReplyTo)
+    .bind(msgId, thread.id, fromAddr, inbox, subject, parsed.text || "", r2Key, messageId, inReplyTo, machine ? 1 : 0)
     .run();
 
   await db
@@ -241,6 +273,27 @@ async function apiReply(env, body, caller) {
     .prepare(`SELECT * FROM messages WHERE thread_id = ? AND direction = 'in' ORDER BY created_at DESC LIMIT 1`)
     .bind(thread_id)
     .first();
+  if (last && last.is_machine) {
+    return jsonResp({ outcome: "error", error: "last inbound is machine-generated (bounce/auto-reply); reply refused to prevent a mail loop" }, 409);
+  }
+
+  const sentLastHour = await db
+    .prepare(
+      `SELECT
+         SUM(CASE WHEN m.thread_id = ? THEN 1 ELSE 0 END) AS thread_n,
+         COUNT(*) AS inbox_n
+       FROM messages m JOIN threads t ON t.id = m.thread_id
+       WHERE t.inbox = ? AND m.direction = 'out' AND m.created_at > datetime('now', '-1 hour')`
+    )
+    .bind(thread_id, thread.inbox)
+    .first();
+  if ((sentLastHour?.thread_n || 0) >= SEND_LIMITS.perThreadPerHour || (sentLastHour?.inbox_n || 0) >= SEND_LIMITS.perInboxPerHour) {
+    return jsonResp(
+      { outcome: "error", error: `outbound rate limit: ${SEND_LIMITS.perThreadPerHour}/thread/hour, ${SEND_LIMITS.perInboxPerHour}/inbox/hour; try later or flag needs_review` },
+      429
+    );
+  }
+
   const to = last ? last.from_addr : thread.from_addr;
   const subject = /^re:/i.test(thread.subject || "") ? thread.subject : `Re: ${thread.subject || ""}`.trim();
   const inReplyTo = last ? last.message_id : null;

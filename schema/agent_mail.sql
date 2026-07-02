@@ -35,9 +35,12 @@ CREATE TABLE IF NOT EXISTS messages (
   r2_key      TEXT,                               -- pointer to raw .eml / attachments in R2
   message_id  TEXT,                               -- RFC822 Message-ID (threading)
   in_reply_to TEXT,                               -- In-Reply-To / References stitching
+  is_machine  INTEGER NOT NULL DEFAULT 0,         -- Spec 33 loop guard: bounce/auto-reply/no-reply inbound; never a reply target
   created_at  TEXT NOT NULL DEFAULT (datetime('now'))
 );
 CREATE INDEX IF NOT EXISTS idx_messages_thread ON messages(thread_id, created_at);
+-- Migration for deployments created before is_machine (run once):
+--   ALTER TABLE messages ADD COLUMN is_machine INTEGER NOT NULL DEFAULT 0;
 
 -- Seed the v1 inboxes (idempotent).
 INSERT OR IGNORE INTO inboxes (address, kind, default_agent) VALUES

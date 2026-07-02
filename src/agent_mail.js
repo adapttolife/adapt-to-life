@@ -95,6 +95,9 @@ export async function handleAgentMailApi(request, env, url) {
     if (request.method === "GET" && path.startsWith("thread/")) {
       return await apiRead(env, path.slice("thread/".length));
     }
+    if (request.method === "GET" && path.startsWith("attachments/")) {
+      return await apiAttachments(env, path.slice("attachments/".length));
+    }
     if (request.method === "POST" && path === "reply") {
       return await apiReply(env, await request.json());
     }
@@ -133,12 +136,45 @@ async function apiRead(env, threadId) {
   if (!thread) return jsonResp({ outcome: "error", error: "thread not found" }, 404);
   const { results } = await db
     .prepare(
-      `SELECT direction, from_addr AS "from", to_addr AS "to", subject, body_text, r2_key, created_at
+      `SELECT id, direction, from_addr AS "from", to_addr AS "to", subject, body_text, r2_key, created_at
        FROM messages WHERE thread_id = ? ORDER BY created_at ASC`
     )
     .bind(threadId)
     .all();
   return jsonResp({ outcome: "ok", data: { thread, messages: results || [] } });
+}
+
+// Attachments of one inbound message, extracted on demand from the archived raw
+// .eml in R2 (attachments are never stored separately — the .eml is the archive).
+// Spec 42: lets a skill pull a forwarded receipt PDF/image for filing.
+const MAX_ATTACHMENTS_BYTES = 8 * 1024 * 1024;
+
+async function apiAttachments(env, messageId) {
+  const db = env.AGENT_MAIL_DB;
+  const msg = await db.prepare(`SELECT r2_key FROM messages WHERE id = ?`).bind(messageId).first();
+  if (!msg) return jsonResp({ outcome: "error", error: "message not found" }, 404);
+  if (!msg.r2_key) return jsonResp({ outcome: "error", error: "message has no archived raw copy (outbound message?)" }, 404);
+
+  const obj = await env.AGENT_MAIL_BUCKET.get(msg.r2_key);
+  if (!obj) return jsonResp({ outcome: "error", error: "raw message missing from R2 archive" }, 404);
+  const parsed = await PostalMime.parse(await obj.arrayBuffer());
+
+  let total = 0;
+  const attachments = [];
+  for (const att of parsed.attachments || []) {
+    const bytes = new Uint8Array(att.content instanceof ArrayBuffer ? att.content : att.content || []);
+    total += bytes.byteLength;
+    if (total > MAX_ATTACHMENTS_BYTES) {
+      return jsonResp({ outcome: "error", error: `attachments exceed ${MAX_ATTACHMENTS_BYTES} bytes total` }, 413);
+    }
+    attachments.push({
+      filename: att.filename || "attachment.bin",
+      type: att.mimeType || "application/octet-stream",
+      size: bytes.byteLength,
+      content_b64: bytesToB64(bytes),
+    });
+  }
+  return jsonResp({ outcome: "ok", data: { message_id: messageId, count: attachments.length, attachments } });
 }
 
 async function apiReply(env, body) {
@@ -250,6 +286,14 @@ async function mirrorThread(env, db, threadId) {
 
 function isoDay() {
   return new Date().toISOString().slice(0, 10);
+}
+function bytesToB64(bytes) {
+  let bin = "";
+  const chunk = 0x8000; // avoid call-stack limits on large parts
+  for (let i = 0; i < bytes.length; i += chunk) {
+    bin += String.fromCharCode(...bytes.subarray(i, i + chunk));
+  }
+  return btoa(bin);
 }
 function jsonResp(obj, status = 200) {
   return new Response(JSON.stringify(obj), {

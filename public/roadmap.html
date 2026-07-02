@@ -23,6 +23,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
+<style>
+  /* Roadmap cards: 3-across on desktop (6/3/3 = full rows, no orphans) */
+  @media (min-width:880px){ .progs{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
+</style>
 </head>
 <body>
 
@@ -91,15 +95,11 @@
         </div>
         <div class="reveal">
           <span class="eyebrow">This site</span>
-          <p class="prose" style="margin-top:0.5rem;">Our home on the web, including the Hustle &amp; Heart Fund and a clear account of where every dollar goes.</p>
+          <p class="prose" style="margin-top:0.5rem;">Our home on the web, with secure online giving so anyone can back the fund in a few taps.</p>
         </div>
         <div class="reveal">
           <span class="eyebrow">501(c)(3) nonprofit</span>
           <p class="prose" style="margin-top:0.5rem;">Recognized by the IRS as a 501(c)(3) public charity. Donations are tax-deductible to the extent allowed by law. <a href="/docs/adapt-to-life-501c3-determination-letter.pdf" class="textlink" target="_blank" rel="noopener">See the IRS letter <span class="arrow">&rarr;</span></a></p>
-        </div>
-        <div class="reveal">
-          <span class="eyebrow">Online giving</span>
-          <p class="prose" style="margin-top:0.5rem;">Secure online donations are live, so anyone can back the fund in a few taps.</p>
         </div>
         <div class="reveal">
           <span class="eyebrow">Adaptive Sports Near Me</span>

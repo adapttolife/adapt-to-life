@@ -33,7 +33,8 @@
   .give-assure .ga-k{ color:#fff; font-weight:600; }
   .give-panel{ background:#fff; border-radius:18px; padding:clamp(1.3rem,3vw,1.9rem); box-shadow:0 24px 60px rgba(0,0,0,0.34); }
   .gp-note{ text-align:center; font-family:'Hanken Grotesk',sans-serif; font-size:0.76rem; color:#9a9a9a; margin:0.3rem 0 0; }
-  .give-ways{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:clamp(1.6rem,4vw,3.2rem); margin-top:clamp(2.4rem,4vw,3.4rem); }
+  .give-ways{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(1.6rem,2.6vw,2.4rem) clamp(1.6rem,3vw,2.8rem); margin-top:clamp(2.2rem,3.6vw,3rem); }
+  @media (max-width:679px){ .give-ways{ grid-template-columns:1fr; } }
 </style>
 </head>
 <body>

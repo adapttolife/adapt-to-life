@@ -96,6 +96,24 @@ async function findOrCreateThread(db, { inbox, fromAddr, subject, inReplyTo }) {
     if (prior) return prior;
   }
 
+  // Fallback stitch by subject + counterparty. Needed for replies to
+  // agent-INITIATED mail: Email Sending forbids a custom Message-ID, so we never
+  // learn the id the reply's References chain points at. A recent thread on this
+  // inbox with the same counterparty and the same bare subject is that conversation.
+  const bare = bareSubject(subject);
+  if (bare) {
+    const { results } = await db
+      .prepare(
+        `SELECT * FROM threads WHERE inbox = ? AND from_addr = ? AND last_at > datetime('now', '-30 days')
+         ORDER BY last_at DESC LIMIT 25`
+      )
+      .bind(inbox, fromAddr)
+      .all();
+    for (const t of results || []) {
+      if (bareSubject(t.subject) === bare) return t;
+    }
+  }
+
   const id = crypto.randomUUID();
   // New thread: owner defaults to the inbox's default_agent (per-agent inbox = that agent;
   // shared inbox = the router default). Unknown inboxes still capture mail, unrouted.
@@ -371,17 +389,15 @@ async function apiSend(env, body, caller) {
     );
   }
 
-  // Stamp our own Message-ID and store it: without it the recipient's reply
-  // References only ids we never recorded, and would open a brand-new thread
-  // instead of stitching back into this one (findOrCreateThread matches message_id).
-  const messageId = `<${crypto.randomUUID()}@${fromAddr.split("@")[1]}>`;
+  // Email Sending forbids a custom Message-ID (whitelist + X-* only), so we
+  // cannot know the id the recipient's reply will reference — replies stitch by
+  // the subject+counterparty fallback in findOrCreateThread instead.
   await cfSend(env, {
     from: fromAddr,
     to: toAddr,
     subject,
     text: body_text,
     html: body_html || undefined,
-    headers: { "Message-ID": messageId },
   });
 
   const assigned = caller.agent
@@ -394,14 +410,14 @@ async function apiSend(env, body, caller) {
     .run();
   await db
     .prepare(
-      `INSERT INTO messages (id, thread_id, direction, from_addr, to_addr, subject, body_text, message_id)
-       VALUES (?, ?, 'out', ?, ?, ?, ?, ?)`
+      `INSERT INTO messages (id, thread_id, direction, from_addr, to_addr, subject, body_text)
+       VALUES (?, ?, 'out', ?, ?, ?, ?)`
     )
-    .bind(crypto.randomUUID(), threadId, fromAddr, toAddr, subject, body_text, messageId)
+    .bind(crypto.randomUUID(), threadId, fromAddr, toAddr, subject, body_text)
     .run();
 
   await mirrorThread(env, db, threadId).catch((e) => console.error("agent-mail mirror failed:", e));
-  return jsonResp({ outcome: "ok", data: { thread_id: threadId, message_id: messageId } });
+  return jsonResp({ outcome: "ok", data: { thread_id: threadId } });
 }
 
 async function apiSetStatus(env, body, caller) {
@@ -465,6 +481,9 @@ async function mirrorThread(env, db, threadId) {
 
 // ───────────────────────── helpers ─────────────────────────
 
+function bareSubject(s) {
+  return String(s || "").replace(/^\s*((re|fwd?)\s*:\s*)+/i, "").trim().toLowerCase();
+}
 function isoDay() {
   return new Date().toISOString().slice(0, 10);
 }

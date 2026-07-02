@@ -23,6 +23,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
+<script async src="https://widgets.givebutter.com/latest.umd.cjs?acct=7FsgcjXFnW6fabQn"></script>
 <style>
   /* Sponsorship page — tier ladder */
   .tier-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:clamp(1.1rem,2.4vw,1.7rem); margin-top:clamp(2.4rem,4vw,3.2rem); }
@@ -47,6 +48,7 @@
   .deploys{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:clamp(1.2rem,3vw,2rem); margin-top:clamp(2.2rem,4vw,3rem); }
   .deploys .impact-n{ font-size:clamp(1.6rem,4vw,2.1rem); }
   .tax-note{ font-family:'Hanken Grotesk',sans-serif; font-size:0.9rem; color:#6b6b6b; max-width:60ch; line-height:1.55; }
+  #claim givebutter-giving-form{ display:block; width:100%; max-width:560px; margin:0 auto; }
   @media (min-width:880px){ .progs{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
   /* sponsor scoreboard */
   .thermo{ max-width:560px; margin:1.6rem auto 0; }
@@ -163,7 +165,7 @@
             <li>Quarterly impact reports</li>
             <li>Covers a set of racing wheels</li>
           </ul>
-          <a href="/contact?rsn=sponsor" class="btn ghost">Become a Teammate</a>
+          <a href="#claim" class="btn ghost">Become a Teammate</a>
         </div>
 
         <div class="tier reveal">
@@ -177,7 +179,7 @@
             <li>A named athlete-impact story each year</li>
             <li>Covers a season of coaching</li>
           </ul>
-          <a href="/contact?rsn=sponsor" class="btn ghost">Become a Coach</a>
+          <a href="#claim" class="btn ghost">Become a Coach</a>
         </div>
 
         <div class="tier reveal is-popular">
@@ -191,7 +193,7 @@
             <li>A co-branded social feature</li>
             <li>Funds roughly three athletes for a season</li>
           </ul>
-          <a href="/contact?rsn=sponsor" class="btn">Become a Captain</a>
+          <a href="#claim" class="btn">Become a Captain</a>
         </div>
 
         <div class="tier reveal">
@@ -206,7 +208,7 @@
             <li>An annual impact briefing for your team</li>
             <li>Funds a full squad's gear</li>
           </ul>
-          <a href="/contact?rsn=sponsor" class="btn ghost">Become a Champion</a>
+          <a href="#claim" class="btn ghost">Become a Champion</a>
         </div>
       </div>
 
@@ -217,7 +219,7 @@
           <div class="tier-price">$50,000<small>&nbsp;and up</small></div>
           <div class="tier-name">Founding Partner</div>
           <p class="tier-line">Build something athletes remember.</p>
-          <a href="/contact?rsn=sponsor" class="btn" style="margin-top:0.6rem;">Start the conversation</a>
+          <a href="#claim" class="btn" style="margin-top:0.6rem;">Claim Founding Partner</a>
         </div>
         <ul class="tier-benefits">
           <li>Everything in Champion</li>
@@ -234,6 +236,21 @@
     </div>
   </section>
 
+
+  <!-- CLAIM YOUR LEVEL — pay in place; the conversation is optional, not required -->
+  <section class="band tint" id="claim">
+    <div class="wrap">
+      <div class="reveal sec-head">
+        <span class="eyebrow orange">Claim your level</span>
+        <h2 class="serif h2" style="margin-top:0.8rem;">Back it right here, right now.</h2>
+        <p class="prose" style="max-width:52ch; margin-top:1rem;">Enter your level's amount and pay by card, bank, or Apple Pay. Your sponsorship lands on the scoreboard above, and we follow up on recognition and reporting.</p>
+      </div>
+      <div class="reveal" style="margin-top:clamp(1.8rem,3vw,2.4rem);">
+        <givebutter-giving-form campaign="MNL0JS"></givebutter-giving-form>
+      </div>
+      <p class="reveal sec-head" style="margin-top:1.6rem; font-family:'Hanken Grotesk',sans-serif; font-size:0.9rem; color:#6b6b6b;">Prefer an invoice, or want to design something custom first? <a class="textlink" href="/contact?rsn=sponsor">Talk to us <span class="arrow">&rarr;</span></a></p>
+    </div>
+  </section>
 
   <!-- CLOSING -->
   <section class="closing dark band-lg">

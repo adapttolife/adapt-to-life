@@ -84,6 +84,35 @@ export async function handleEmail(message, env, ctx) {
 
   // Mirror to the human cockpit (best-effort; never blocks ingestion).
   ctx.waitUntil(mirrorThread(env, db, thread.id).catch((e) => console.error("agent-mail mirror failed:", e)));
+
+  // Spec 47 mail bell: wake the owning agent's Hermes webhook gateway — push,
+  // not poll. Machine mail (bounces/auto-replies) is archived but never rings.
+  if (!machine && thread.assigned_agent) {
+    ctx.waitUntil(ringBell(env, thread.assigned_agent, { inbox, thread_id: thread.id, from: fromAddr, subject, message_uuid: msgId })
+      .catch((e) => console.error("agent-mail bell failed:", e)));
+  }
+}
+
+// POST a signed "you've got mail" event to bell-<agent>.alectranel.com. Best
+// effort by design (Spec 47 decision 7): a missed bell means the mail waits for
+// the next touch — ingestion and the D1 record are never at risk.
+async function ringBell(env, agent, { inbox, thread_id, from, subject, message_uuid }) {
+  let secrets = {};
+  try { secrets = JSON.parse(env.MAIL_BELL_SECRETS || "{}"); } catch { /* unset or malformed = no bells */ }
+  const secret = secrets[agent];
+  if (!secret) return; // agent has no bell (e.g. julio, pull-only)
+
+  const body = JSON.stringify({ event: "mail.received", agent, inbox, thread_id, from, subject });
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const sig = [...new Uint8Array(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(body)))]
+    .map((b) => b.toString(16).padStart(2, "0")).join("");
+
+  const res = await fetch(`https://bell-${agent}.alectranel.com/webhooks/agent-mail`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-Webhook-Signature": sig, "X-Request-ID": message_uuid },
+    body,
+  });
+  if (!res.ok) console.error(`agent-mail bell ${agent}: HTTP ${res.status} ${await res.text().catch(() => "")}`);
 }
 
 async function findOrCreateThread(db, { inbox, fromAddr, subject, inReplyTo }) {

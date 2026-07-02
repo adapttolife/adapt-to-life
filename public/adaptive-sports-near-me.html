@@ -33,17 +33,18 @@
   .amp-prints{ position:relative; display:grid; }
   .amp-print{ grid-area:1 / 1; display:block; background:#fdfcf9; padding:12px 12px 12px; box-shadow:0 24px 55px rgba(0,0,0,0.5); text-decoration:none; transition:transform .25s ease, box-shadow .25s ease; }
   .amp-print img{ display:block; width:100%; height:auto; }
+  .amp-print.p1 img{ aspect-ratio:3/3.4; object-fit:cover; object-position:50% 28%; }
   .amp-print.p2 img{ aspect-ratio:3/3.4; object-fit:cover; object-position:43% 24%; }
   .amp-cap{ display:block; margin-top:10px; font-family:'Space Mono',monospace; font-size:0.72rem; letter-spacing:0.04em; color:#4a463f; text-align:center; }
-  .amp-print.p1{ width:min(60%,280px); justify-self:start; transform:rotate(-4deg); z-index:1; }
-  .amp-print.p2{ width:min(84%,390px); justify-self:end; margin-top:clamp(7rem,13vw,10rem); transform:rotate(3deg); z-index:2; }
+  .amp-print.p1{ width:min(86%,390px); justify-self:start; transform:rotate(-4deg); z-index:1; }
+  .amp-print.p2{ width:min(86%,390px); justify-self:end; margin-top:clamp(5.5rem,10vw,8rem); transform:rotate(3deg); z-index:2; }
   .amp-print::before{ content:""; position:absolute; top:-13px; left:50%; width:88px; height:26px; transform:translateX(-50%) rotate(-2deg); background:rgba(255,255,255,0.3); box-shadow:0 2px 6px rgba(0,0,0,0.12); }
   .amp-print.p2::before{ transform:translateX(-50%) rotate(2.5deg); }
   .amp-print:hover{ transform:rotate(0) translateY(-6px); z-index:3; box-shadow:0 32px 65px rgba(0,0,0,0.6); }
   .amp-note{ display:block; margin-top:1.1rem; font-family:'Space Mono',monospace; font-size:0.7rem; letter-spacing:0.05em; color:rgba(255,255,255,0.55); text-align:right; }
   @media (max-width:880px){
-    .amp-print.p1{ width:min(74%,300px); }
-    .amp-print.p2{ width:min(94%,370px); margin-top:clamp(9rem,46vw,13rem); }
+    .amp-print.p1{ width:min(94%,370px); }
+    .amp-print.p2{ width:min(94%,370px); margin-top:clamp(7rem,36vw,10rem); }
     .amp-note{ text-align:center; }
   }
   @media (prefers-reduced-motion: reduce){ .amp-print{ transition:none; } }

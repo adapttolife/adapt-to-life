@@ -23,6 +23,30 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
+<style>
+  /* AMP spotlight — mural backdrop + scrapbook prints */
+  .amp-mural{ position:relative; overflow:hidden; }
+  .amp-bg{ position:absolute; inset:0; background-image:url('/images/alec-waterskiing.jpg'); background-size:cover; background-position:center 38%; opacity:0.18; filter:saturate(0.85); }
+  .amp-bg::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(26,26,26,0.72), rgba(26,26,26,0.28) 45%, rgba(26,26,26,0.78)); }
+  .amp-wrap{ position:relative; display:grid; grid-template-columns:1.02fr 0.98fr; gap:clamp(2.2rem,5vw,4.5rem); align-items:center; }
+  @media (max-width:880px){ .amp-wrap{ grid-template-columns:1fr; } }
+  .amp-prints{ position:relative; display:grid; }
+  .amp-print{ grid-area:1 / 1; display:block; background:#fdfcf9; padding:12px 12px 12px; box-shadow:0 24px 55px rgba(0,0,0,0.5); text-decoration:none; transition:transform .25s ease, box-shadow .25s ease; }
+  .amp-print img{ display:block; width:100%; height:auto; }
+  .amp-cap{ display:block; margin-top:10px; font-family:'Space Mono',monospace; font-size:0.72rem; letter-spacing:0.04em; color:#4a463f; text-align:center; }
+  .amp-print.p1{ width:min(72%,330px); justify-self:start; transform:rotate(-4deg); z-index:1; }
+  .amp-print.p2{ width:min(72%,330px); justify-self:end; margin-top:clamp(9rem,16vw,12rem); transform:rotate(3deg); z-index:2; }
+  .amp-print::before{ content:""; position:absolute; top:-13px; left:50%; width:88px; height:26px; transform:translateX(-50%) rotate(-2deg); background:rgba(255,255,255,0.3); box-shadow:0 2px 6px rgba(0,0,0,0.12); }
+  .amp-print.p2::before{ transform:translateX(-50%) rotate(2.5deg); }
+  .amp-print:hover{ transform:rotate(0) translateY(-6px); z-index:3; box-shadow:0 32px 65px rgba(0,0,0,0.6); }
+  .amp-note{ display:block; margin-top:1.1rem; font-family:'Space Mono',monospace; font-size:0.7rem; letter-spacing:0.05em; color:rgba(255,255,255,0.55); text-align:right; }
+  @media (max-width:880px){
+    .amp-print.p1{ width:min(86%,340px); }
+    .amp-print.p2{ width:min(86%,340px); margin-top:clamp(10rem,52vw,14rem); }
+    .amp-note{ text-align:center; }
+  }
+  @media (prefers-reduced-motion: reduce){ .amp-print{ transition:none; } }
+</style>
 </head>
 <body>
 
@@ -76,20 +100,30 @@
     </div>
   </section>
 
-  <!-- PROGRAM VIGNETTE (dark punctuation) — Watyski water-ski photos become clickable imagery here when they arrive -->
-  <section class="dark band-lg">
-    <div class="wrap reading">
-      <span class="eyebrow reveal">A program in the directory</span>
-      <h2 class="serif statement reveal" style="margin-top:1rem;">AMP Adaptive Sports</h2>
-      <p class="eyebrow reveal" style="margin-top:0.9rem;">Elkhorn, Wisconsin</p>
-      <p class="prose reveal" style="margin-top:1.2rem;">AMP gets athletes out on the water, water skiing on a lake most people just drive past. Local, specific, and life-changing for whoever finds it. Multiply that by every town with a program nobody knows about, and you understand why this has to exist.</p>
-      <div class="reveal" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1rem; margin-top:1.8rem;">
-        <a href="https://adaptivemobilityproviders.org" target="_blank" rel="noopener" aria-label="Alec adaptive water skiing with AMP; opens AMP's website"><div class="photo-frame"><img src="/images/alec-waterskiing.jpg" alt="Alec adaptive water skiing with AMP" loading="lazy" style="width:100%; height:280px; object-fit:cover;"></div></a>
-        <a href="https://adaptivemobilityproviders.org" target="_blank" rel="noopener" aria-label="Karen adaptive water skiing with AMP; opens AMP's website"><div class="photo-frame"><img src="/images/karen-waterskiing.jpg" alt="Karen adaptive water skiing with AMP" loading="lazy" style="width:100%; height:280px; object-fit:cover;"></div></a>
+  <!-- PROGRAM VIGNETTE — AMP spotlight: mural backdrop, scrapbook prints, everything clicks to AMP -->
+  <section class="dark band-lg amp-mural">
+    <div class="amp-bg" aria-hidden="true"></div>
+    <div class="wrap amp-wrap">
+      <div class="amp-text">
+        <span class="eyebrow reveal">A program in the directory</span>
+        <h2 class="serif statement reveal" style="margin-top:1rem;">AMP Adaptive Sports</h2>
+        <p class="eyebrow reveal" style="margin-top:0.9rem;">Elkhorn, Wisconsin</p>
+        <p class="prose reveal" style="margin-top:1.2rem;">AMP gets athletes out on the water, water skiing on a lake most people just drive past. Local, specific, and life-changing for whoever finds it. Multiply that by every town with a program nobody knows about, and you understand why this has to exist.</p>
+        <p class="prose reveal" style="margin-top:1rem;">We didn't just put AMP in the directory. We got in the water.</p>
+        <a href="https://adaptivemobilityproviders.org" target="_blank" rel="noopener" class="textlink reveal" style="margin-top:1.4rem; color:#fff; border-color:var(--orange);">Visit AMP Adaptive Sports <span class="arrow">&rarr;</span></a>
       </div>
-      <p class="reveal" style="margin-top:0.9rem; font-family:'Hanken Grotesk',sans-serif; font-size:0.85rem; color:rgba(255,255,255,0.65);">That's our own Alec and Karen on the water with AMP. Tap a photo to pay them a visit.</p>
-      <a href="https://adaptivemobilityproviders.org" target="_blank" rel="noopener" class="textlink reveal" style="margin-top:1rem; color:#fff; border-color:var(--orange);">Visit AMP Adaptive Sports <span class="arrow">&rarr;</span></a>
+      <div class="amp-prints reveal">
+        <a class="amp-print p1" href="https://adaptivemobilityproviders.org" target="_blank" rel="noopener" aria-label="Alec adaptive water skiing with AMP; opens AMP's website">
+          <img src="/images/alec-waterskiing.jpg" alt="Alec adaptive water skiing with AMP" loading="lazy">
+          <span class="amp-cap">Alec &middot; on the water with AMP</span>
+        </a>
+        <a class="amp-print p2" href="https://adaptivemobilityproviders.org" target="_blank" rel="noopener" aria-label="Karen adaptive water skiing with AMP; opens AMP's website">
+          <img src="/images/karen-waterskiing.jpg" alt="Karen adaptive water skiing with AMP" loading="lazy">
+          <span class="amp-cap">Karen &middot; Lauderdale Lakes</span>
+        </a>
+      </div>
     </div>
+    <div class="wrap"><span class="amp-note">tap a print to visit AMP &rarr;</span></div>
   </section>
 
   <!-- HOW IT WORKS (light) -->

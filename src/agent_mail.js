@@ -132,6 +132,17 @@ export async function handleEmail(message, env, ctx) {
     .bind(thread.id)
     .run();
 
+  // Inbox locks: an inbox with `inbox_locks` rows accepts WORKING mail only from
+  // its listed senders. Everyone else's mail is still captured and mirrored (the
+  // record never drops), but the thread lands `resolved` — out of the agent's
+  // working list and never a bell. This guards decision inboxes (e.g. Stingel's,
+  // where inbound drives actions): spam and strangers can't enter the loop.
+  const lockedOut = await lockedOutSender(db, inbox, fromAddr);
+  if (lockedOut) {
+    await db.prepare(`UPDATE threads SET status = 'resolved' WHERE id = ?`).bind(thread.id).run();
+    console.log(`agent-mail: locked inbox ${inbox} — quarantined sender ${fromAddr}`);
+  }
+
   // Mirror to the human cockpit (best-effort; never blocks ingestion).
   ctx.waitUntil(mirrorThread(env, db, thread.id).catch((e) => console.error("agent-mail mirror failed:", e)));
 
@@ -141,13 +152,31 @@ export async function handleEmail(message, env, ctx) {
   // silently (D1 + mirror) instead of spending agent tokens on a wake. This is
   // a token-protection layer, not a security boundary — From is spoofable; the
   // reply gates (Spec 33) remain the line that matters for outbound.
-  if (!machine && thread.assigned_agent) {
+  if (!machine && thread.assigned_agent && !lockedOut) {
     if (await senderAllowed(db, fromAddr)) {
       ctx.waitUntil(ringBell(env, thread.assigned_agent, { inbox, thread_id: thread.id, from: fromAddr, subject, message_uuid: msgId })
         .catch((e) => console.error("agent-mail bell failed:", e)));
     } else {
       console.log(`agent-mail: bell suppressed — sender not allowlisted: ${fromAddr} → ${inbox}`);
     }
+  }
+}
+
+// True when `inbox` has lock rows and `fromAddr` matches none of them (exact
+// address or '@domain' suffix, same pattern language as allowed_senders). An
+// unlocked inbox (no rows) is never locked out. Lookup errors quarantine (the
+// mail is already captured; never admit a sender into a locked loop on doubt).
+async function lockedOutSender(db, inbox, fromAddr) {
+  try {
+    const { results } = await db.prepare(`SELECT pattern FROM inbox_locks WHERE inbox = ?`).bind(inbox).all();
+    if (!results || !results.length) return false;
+    const addr = String(fromAddr || "").toLowerCase().trim();
+    const at = addr.indexOf("@");
+    const domain = at >= 0 ? addr.slice(at) : "";
+    return !results.some((r) => r.pattern === addr || (domain && r.pattern === domain));
+  } catch (e) {
+    console.error("agent-mail inbox_locks lookup failed (quarantining):", e);
+    return true;
   }
 }
 

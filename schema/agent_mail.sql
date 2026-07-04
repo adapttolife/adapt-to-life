@@ -31,7 +31,9 @@ CREATE TABLE IF NOT EXISTS messages (
   from_addr   TEXT NOT NULL,
   to_addr     TEXT NOT NULL,
   subject     TEXT,
-  body_text   TEXT,                               -- plain-text body (HTML/raw lives in R2)
+  body_text   TEXT,                               -- plain-text body (raw .eml lives in R2)
+  body_markdown TEXT,                             -- Spec 53: outbound markdown as composed by the agent (NULL for inbound / legacy sends)
+  body_html   TEXT,                               -- Spec 53: rendered (or explicitly supplied) reading-view HTML; the archive keeps what was actually sent
   r2_key      TEXT,                               -- pointer to raw .eml / attachments in R2
   message_id  TEXT,                               -- RFC822 Message-ID (threading)
   in_reply_to TEXT,                               -- In-Reply-To / References stitching
@@ -41,6 +43,9 @@ CREATE TABLE IF NOT EXISTS messages (
 CREATE INDEX IF NOT EXISTS idx_messages_thread ON messages(thread_id, created_at);
 -- Migration for deployments created before is_machine (run once):
 --   ALTER TABLE messages ADD COLUMN is_machine INTEGER NOT NULL DEFAULT 0;
+-- Migration for deployments created before body_markdown/body_html (Spec 53, run once):
+--   ALTER TABLE messages ADD COLUMN body_markdown TEXT;
+--   ALTER TABLE messages ADD COLUMN body_html TEXT;
 
 -- Seed the v1 inboxes (idempotent).
 INSERT OR IGNORE INTO inboxes (address, kind, default_agent) VALUES

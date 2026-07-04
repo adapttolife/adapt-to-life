@@ -10,6 +10,7 @@
 
 import PostalMime from "postal-mime";
 import { cfSend } from "./email.js";
+import { renderMarkdown, deriveText } from "./md_render.js";
 
 const STATUSES = ["new", "agent_working", "needs_review", "human", "replied", "resolved"];
 
@@ -65,6 +66,18 @@ function decodeOutAttachments(raw) {
     names.push(`${filename} (${(bytes.byteLength / 1024).toFixed(1)} KB)`);
   }
   return { list, note: `\n\n[attachments: ${names.join(", ")}]` };
+}
+
+// Spec 53 — email house style: body_markdown is the default register for
+// ordinary agent mail. When present, the Worker renders reading-view HTML and
+// derives the plain-text fallback at this one choke point, so every agent and
+// harness inherits the same polish. Explicit body_html/body_text always win
+// (the report register — Scorecard weekly, Cheech weekly-report — ships its
+// own reviewed HTML and is untouched by this).
+function resolveMarkdownBody({ body_text, body_html, body_markdown }) {
+  const html = body_html != null ? body_html : (body_markdown ? renderMarkdown(body_markdown) : body_html);
+  const text = body_text != null ? body_text : (body_markdown ? deriveText(body_markdown) : body_text);
+  return { body_text: text, body_html: html };
 }
 
 // Spec 33 loop prevention: machine-generated mail (bounces, auto-replies,
@@ -370,7 +383,7 @@ async function apiRead(env, threadId, caller) {
   if (!(await callerOwnsThread(env, caller, thread))) return forbidden();
   const { results } = await db
     .prepare(
-      `SELECT id, direction, from_addr AS "from", to_addr AS "to", subject, body_text, r2_key, created_at
+      `SELECT id, direction, from_addr AS "from", to_addr AS "to", subject, body_text, body_markdown, body_html, r2_key, created_at
        FROM messages WHERE thread_id = ? ORDER BY created_at ASC`
     )
     .bind(threadId)
@@ -414,8 +427,9 @@ async function apiAttachments(env, messageId, caller) {
 }
 
 async function apiReply(env, body, caller) {
-  const { thread_id, body_text, body_html, attachments } = body || {};
-  if (!thread_id || !body_text) return jsonResp({ outcome: "error", error: "thread_id and body_text required" }, 422);
+  const { thread_id, body_markdown, attachments } = body || {};
+  const { body_text, body_html } = resolveMarkdownBody(body || {});
+  if (!thread_id || !body_text) return jsonResp({ outcome: "error", error: "thread_id and body_text (or body_markdown) required" }, 422);
   const att = decodeOutAttachments(attachments);
   if (att.error) return jsonResp({ outcome: "error", error: att.error }, 422);
 
@@ -474,10 +488,10 @@ async function apiReply(env, body, caller) {
   const msgId = crypto.randomUUID();
   await db
     .prepare(
-      `INSERT INTO messages (id, thread_id, direction, from_addr, to_addr, subject, body_text, message_id, in_reply_to)
-       VALUES (?, ?, 'out', ?, ?, ?, ?, ?, ?)`
+      `INSERT INTO messages (id, thread_id, direction, from_addr, to_addr, subject, body_text, body_markdown, body_html, message_id, in_reply_to)
+       VALUES (?, ?, 'out', ?, ?, ?, ?, ?, ?, ?, ?)`
     )
-    .bind(msgId, thread_id, fromAddr, to, subject, body_text + att.note, sent.id || null, inReplyTo)
+    .bind(msgId, thread_id, fromAddr, to, subject, body_text + att.note, body_markdown || null, body_html || null, sent.id || null, inReplyTo)
     .run();
   await db.prepare(`UPDATE threads SET status = 'replied', last_at = datetime('now') WHERE id = ?`).bind(thread_id).run();
 
@@ -490,8 +504,9 @@ async function apiReply(env, body, caller) {
 // agent may send only AS an inbox it owns. threads.from_addr stays the
 // counterparty (here the recipient), matching what /list shows for inbound.
 async function apiSend(env, body, caller) {
-  const { from, to, subject, body_text, body_html, attachments } = body || {};
-  if (!to || !subject || !body_text) return jsonResp({ outcome: "error", error: "to, subject, body_text required" }, 422);
+  const { from, to, subject, body_markdown, attachments } = body || {};
+  const { body_text, body_html } = resolveMarkdownBody(body || {});
+  if (!to || !subject || !body_text) return jsonResp({ outcome: "error", error: "to, subject, and body_text (or body_markdown) required" }, 422);
   const att = decodeOutAttachments(attachments);
   if (att.error) return jsonResp({ outcome: "error", error: att.error }, 422);
   const toAddr = String(to).toLowerCase().trim();
@@ -552,10 +567,10 @@ async function apiSend(env, body, caller) {
     .run();
   await db
     .prepare(
-      `INSERT INTO messages (id, thread_id, direction, from_addr, to_addr, subject, body_text)
-       VALUES (?, ?, 'out', ?, ?, ?, ?)`
+      `INSERT INTO messages (id, thread_id, direction, from_addr, to_addr, subject, body_text, body_markdown, body_html)
+       VALUES (?, ?, 'out', ?, ?, ?, ?, ?, ?)`
     )
-    .bind(crypto.randomUUID(), threadId, fromAddr, toAddr, subject, body_text + att.note)
+    .bind(crypto.randomUUID(), threadId, fromAddr, toAddr, subject, body_text + att.note, body_markdown || null, body_html || null)
     .run();
 
   await mirrorThread(env, db, threadId).catch((e) => console.error("agent-mail mirror failed:", e));

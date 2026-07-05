@@ -192,8 +192,10 @@ function renderBody(mdText) {
 export function renderMarkdown(md) {
   const rendered = renderBody(String(md == null ? "" : md));
   return (
+    // Explicit background (2026-07-05): dark-mode clients auto-invert emails that
+    // declare none — keeps the reading-view card white deterministically.
     '<div style="font-family:-apple-system,\'Segoe UI\',Helvetica,Arial,sans-serif;' +
-    'font-size:15px;color:#1a1a1a;max-width:720px">' +
+    'font-size:15px;color:#1a1a1a;background:#ffffff;max-width:720px;padding:4px 2px">' +
     rendered +
     "</div>"
   );

@@ -10,7 +10,7 @@
 
 import PostalMime from "postal-mime";
 import { cfSend } from "./email.js";
-import { renderMarkdown, deriveText } from "./md_render.js";
+import { resolveMarkdownBody } from "./md_render.js";
 
 const STATUSES = ["new", "agent_working", "needs_review", "human", "replied", "resolved"];
 
@@ -74,11 +74,6 @@ function decodeOutAttachments(raw) {
 // harness inherits the same polish. Explicit body_html/body_text always win
 // (the report register — Scorecard weekly, Cheech weekly-report — ships its
 // own reviewed HTML and is untouched by this).
-function resolveMarkdownBody({ body_text, body_html, body_markdown }) {
-  const html = body_html != null ? body_html : (body_markdown ? renderMarkdown(body_markdown) : body_html);
-  const text = body_text != null ? body_text : (body_markdown ? deriveText(body_markdown) : body_text);
-  return { body_text: text, body_html: html };
-}
 
 // Spec 33 loop prevention: machine-generated mail (bounces, auto-replies,
 // out-of-office, no-reply senders) is archived like everything else but is never

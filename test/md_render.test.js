@@ -106,3 +106,27 @@ test("deriveText: empty/nullish input yields an empty string, never throws", () 
   assert.equal(deriveText(null), "");
   assert.equal(deriveText(undefined), "");
 });
+
+// ── APPROVED BASELINE (Alec, 2026-07-05, spec-55 thread c3de4a22) ────────────
+// "this email is absolutely perfect… i love the rich text formatting."
+// The exact style constants below ARE the fleet email standard — the baseline
+// under every per-person preference, agent↔agent mail included (Spec 53
+// as-built). Changing any of them fails this test ON PURPOSE: that is a
+// regression against an explicit operator sign-off, not a refactor.
+test("renderMarkdown: approved-baseline styles are pinned verbatim", () => {
+  const html = renderMarkdown(FIXTURE);
+  const BASELINE = [
+    // wrapper: font stack, 15px, near-black text, white card, 720px measure
+    "font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;color:#1a1a1a;background:#ffffff;max-width:720px;padding:4px 2px",
+    'h1 style="font-size:22px;margin:24px 0 8px"',
+    'h2 style="font-size:18px;border-bottom:1px solid #ddd;padding-bottom:4px;margin:24px 0 8px"',
+    'p style="margin:10px 0;line-height:1.55"',
+    'code style="background:#f6f8fa;padding:1px 4px;border-radius:3px;font-size:13px"',
+    'th style="border:1px solid #ddd;padding:6px 8px;text-align:left;vertical-align:top;background:#f6f8fa"',
+    'td style="border:1px solid #ddd;padding:6px 8px;text-align:left;vertical-align:top"',
+    'style="color:#0b57d0"',
+  ];
+  for (const fragment of BASELINE) {
+    assert.ok(html.includes(fragment), `approved baseline fragment missing: ${fragment}`);
+  }
+});

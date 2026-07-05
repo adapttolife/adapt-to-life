@@ -2,7 +2,7 @@
 // dependencies (node's built-in test runner + assert).
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { renderMarkdown, deriveText } from "../src/md_render.js";
+import { renderMarkdown, deriveText, resolveMarkdownBody } from "../src/md_render.js";
 
 const FIXTURE = [
   "# Heading One",
@@ -129,4 +129,24 @@ test("renderMarkdown: approved-baseline styles are pinned verbatim", () => {
   for (const fragment of BASELINE) {
     assert.ok(html.includes(fragment), `approved baseline fragment missing: ${fragment}`);
   }
+});
+
+test("resolveMarkdownBody: body_text-only sends render by default (2026-07-05 hardening)", () => {
+  const { body_html, body_text } = resolveMarkdownBody({ body_text: "plain reply\n\nwith **bold**" });
+  assert.ok(body_html, "body_text-only must produce rendered html");
+  assert.ok(body_html.includes("background:#ffffff"), "renders in the approved baseline wrapper");
+  assert.match(body_html, /<strong>bold<\/strong>/);
+  assert.equal(body_text, "plain reply\n\nwith **bold**");
+});
+
+test("resolveMarkdownBody: explicit body_html still wins (report register untouched)", () => {
+  const custom = "<div>REPORT</div>";
+  const { body_html } = resolveMarkdownBody({ body_text: "t", body_html: custom, body_markdown: "# nope" });
+  assert.equal(body_html, custom);
+});
+
+test("resolveMarkdownBody: body_markdown renders and derives text", () => {
+  const { body_html, body_text } = resolveMarkdownBody({ body_markdown: "# Hi\n\n- a" });
+  assert.match(body_html, /<h1[^>]*>Hi<\/h1>/);
+  assert.ok(body_text.includes("Hi"));
 });

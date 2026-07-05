@@ -207,3 +207,14 @@ export function renderMarkdown(md) {
 export function deriveText(md) {
   return String(md == null ? "" : md).trim();
 }
+
+// Every outbound email renders by construction (Alec, 2026-07-05 hardening):
+// no explicit body_html -> the standard render applies to whatever body exists
+// (markdown preferred, plain text otherwise — plain text is valid markdown).
+// Explicit body_html (the report register) always wins, unchanged.
+export function resolveMarkdownBody({ body_text, body_html, body_markdown }) {
+  const source = body_markdown != null ? body_markdown : body_text;
+  const html = body_html != null ? body_html : (source ? renderMarkdown(source) : undefined);
+  const text = body_text != null ? body_text : (body_markdown ? deriveText(body_markdown) : undefined);
+  return { body_text: text, body_html: html };
+}

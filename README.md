@@ -61,3 +61,5 @@ npx wrangler dev
 ## Provenance
 
 This repo was reconstructed from the live deployment (the only source that existed at the time). Because the Worker serves static assets with no server code, the captured files are byte-identical to what was deployed.
+
+<!-- Workers Builds connected 2026-07-06 (Spec 59 AC4 drill) -->

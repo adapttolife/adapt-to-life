@@ -24,7 +24,7 @@ test("```js fence still renders <pre> exactly as before (not chart)", () => {
 
 // ── bar ────────────────────────────────────────────────────────────────────
 
-test("bar: title + source render, max value gets width:92%, display override honored", () => {
+test("bar: title + source render, max value gets width=92% (kit idiom: attribute + nbsp), display override honored", () => {
   const html = renderMarkdown(
     chartMd([
       "type: bar",
@@ -37,7 +37,9 @@ test("bar: title + source render, max value gets width:92%, display override hon
   );
   assert.match(html, /Escalations by ticker/);
   assert.match(html, /Source: escalation log, 2026-07-11/);
-  assert.match(html, /width:92%/); // NVDA is the max
+  // Kit idiom pinned on purpose: HTML width ATTRIBUTE (Outlook honors
+  // attributes, not td CSS widths) and &nbsp; content (empty <td>s collapse).
+  assert.match(html, /<td width="92%"[^>]*>&nbsp;<\/td>/); // NVDA is the max
   assert.match(html, />12 tickets<\/td>/); // display-override cell used
   assert.match(html, />8<\/td>/); // raw value shown when no override
   assert.equal(html.includes("Chart degraded"), false);

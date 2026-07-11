@@ -111,13 +111,21 @@ function renderBar(dataLines) {
       const value = values[idx];
       const display = cells[2] !== undefined ? cells[2] : cells[1];
       const pct = max === 0 || value === 0 ? 0 : Math.max(2, Math.round((value / max) * 92));
+      // Email-kit idiom, deliberately: &nbsp; in every cell (empty <td>s
+      // collapse to zero height in Outlook and some Gmail modes; font-size:2px
+      // keeps the nbsp invisible while line-height:16px sets the bar height),
+      // and the HTML width ATTRIBUTE on the bar cell (Outlook's Word engine
+      // honors attributes, not td CSS widths).
+      const barCells =
+        pct === 0
+          ? "<td>&nbsp;</td>"
+          : `<td width="${pct}%" style="background-color:${BLUE};font-size:2px;line-height:16px;border-radius:0 4px 4px 0">&nbsp;</td><td>&nbsp;</td>`;
       return (
         "<tr>" +
         `<td style="${BAR_LABEL_STYLE}">${cells[0]}</td>` +
         '<td style="width:100%">' +
         `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse"><tr>` +
-        `<td style="background-color:${BLUE};font-size:2px;line-height:16px;border-radius:0 4px 4px 0;width:${pct}%"></td>` +
-        "<td></td>" +
+        barCells +
         "</tr></table>" +
         "</td>" +
         `<td style="${BAR_VALUE_STYLE}">${display}</td>` +
@@ -153,7 +161,8 @@ function renderStat(dataLines) {
       "</td>"
     );
   });
-  const spacer = '<td style="width:12px"></td>';
+  // Kit idiom: attribute width + &nbsp; so the spacer survives Outlook.
+  const spacer = '<td width="12" style="font-size:0">&nbsp;</td>';
   return {
     ok: true,
     html: `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse"><tr>${tiles.join(spacer)}</tr></table>`,

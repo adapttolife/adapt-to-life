@@ -34,7 +34,7 @@ const TABLE_STYLE = "border-collapse:collapse;width:100%;margin:10px 0;font-size
 const CELL_STYLE = "border:1px solid #ddd;padding:6px 8px;text-align:left;vertical-align:top";
 
 const BAR_LABEL_STYLE = "font-weight:600;color:" + INK + ";font-size:13px;padding:3px 8px 3px 0;white-space:nowrap";
-const BAR_VALUE_STYLE = "text-align:right;color:" + SECONDARY + ";font-size:13px;padding-left:8px";
+const BAR_VALUE_STYLE = "text-align:right;color:" + SECONDARY + ";font-size:13px;padding-left:8px;white-space:nowrap";
 const STAT_TILE_STYLE = "padding:12px 14px;border:1px solid " + HAIRLINE + ";border-radius:8px;vertical-align:top";
 const HEAT_HEADER_STYLE = "background-color:" + HEADER_BG + ";font-weight:700;color:" + INK + ";border:1px solid " + HAIRLINE + ";padding:6px 10px";
 const HEAT_ROWLABEL_STYLE = "font-weight:600;color:" + INK + ";border:1px solid " + HAIRLINE + ";padding:6px 10px";

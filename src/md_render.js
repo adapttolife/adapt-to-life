@@ -13,6 +13,12 @@
 //   renderMarkdown(md) -> reading-view HTML (wrapped in the outer div)
 //   deriveText(md)     -> plain-ish text fallback (the raw markdown, trimmed —
 //                          acceptable per Spec 53's contract)
+//
+// Spec 70 P1: a ```chart fence (info string exactly "chart") renders via
+// chart_render.js's renderChart() instead of <pre> — every other fence
+// (empty info, "js", anything else) keeps the stock <pre> behavior.
+
+import { renderChart } from "./chart_render.js";
 
 const CODE_BLOCK_STYLE =
   "font-family:ui-monospace,Menlo,monospace;font-size:13px;line-height:1.45;" +
@@ -99,6 +105,7 @@ function renderBody(mdText) {
     const stripped = escLines[i].trim();
 
     if (stripped.startsWith("```")) {
+      const fenceInfo = stripped.slice(3).trim().toLowerCase();
       i += 1;
       const codeBuf = [];
       while (i < n && !escLines[i].trim().startsWith("```")) {
@@ -106,7 +113,11 @@ function renderBody(mdText) {
         i += 1;
       }
       if (i < n) i += 1; // consume closing fence
-      out.push(`<pre style="${CODE_BLOCK_STYLE}">${codeBuf.join("\n")}</pre>`);
+      if (fenceInfo === "chart") {
+        out.push(renderChart(codeBuf));
+      } else {
+        out.push(`<pre style="${CODE_BLOCK_STYLE}">${codeBuf.join("\n")}</pre>`);
+      }
       continue;
     }
 

@@ -64,3 +64,20 @@ CREATE TABLE IF NOT EXISTS agent_tokens (
   note       TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
+
+-- Spec 33 §6 — send-failure ledger (2026-07-12). One row per FAILED outbound
+-- step on the agent-mail lanes: route 'cfSend' (Email Sending), 'mirror'
+-- (Airtable cockpit write-through), 'bell' (Spec 47 webhook wake). Inserts are
+-- fail-open by contract — recording never breaks the send it rides on. The
+-- fleet watchdog polls GET /api/agent-mail/send-failures?since=<epoch>
+-- (operator token) every 15 min and pages one bullet per row.
+-- Migration for existing deployments (run once — the whole file is idempotent):
+--   cfrun wrangler d1 execute agent-mail --remote --file=schema/agent_mail.sql
+CREATE TABLE IF NOT EXISTS send_failures (
+  id      TEXT PRIMARY KEY,                       -- uuid
+  ts      INTEGER NOT NULL,                       -- epoch seconds (the watchdog's cursor)
+  route   TEXT NOT NULL,                          -- 'cfSend' | 'mirror' | 'bell'
+  to_addr TEXT,                                   -- counterparty: recipient / inbox / agent name
+  error   TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_send_failures_ts ON send_failures(ts);

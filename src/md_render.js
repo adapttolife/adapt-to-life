@@ -43,6 +43,12 @@ const ITALIC_RE = /(?<!\*)\*([^*\n]+?)\*(?!\*)/g;
 const CODE_RE = /`([^`]+?)`/g;
 const ORDERED_RE = /^\d+\.\s/;
 const ORDERED_STRIP_RE = /^\d+\.\s+/;
+// Task-list bullets ("- [x] done" / "- [ ] open"). The vault register leaks
+// these into email otherwise -- a raw "[x]" token is exactly the "straight up
+// markdown" Spec 53 exists to prevent (Alec, 2026-07-12).
+const TASK_RE = /^\[( |x|X)\]\s+/;
+const TASK_DONE_MARK = '<span style="color:#1a7f37">\u2713</span> ';
+const TASK_OPEN_MARK = '<span style="color:#888">\u2610</span> ';
 
 function escapeHtml(s) {
   return String(s)
@@ -163,7 +169,11 @@ function renderBody(mdText) {
     if (stripped.startsWith("- ")) {
       const items = [];
       while (i < n && escLines[i].trim().startsWith("- ")) {
-        items.push(inline(escLines[i].trim().slice(2)));
+        let body = escLines[i].trim().slice(2);
+        const task = body.match(TASK_RE);
+        if (task) body = body.replace(TASK_RE, "");
+        const mark = task ? (task[1] === " " ? TASK_OPEN_MARK : TASK_DONE_MARK) : "";
+        items.push(mark + inline(body));
         i += 1;
       }
       out.push(`<ul style="${LIST_STYLE}">${items.map((it) => `<li style="${LI_STYLE}">${it}</li>`).join("")}</ul>`);

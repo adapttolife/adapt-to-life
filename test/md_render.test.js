@@ -150,3 +150,12 @@ test("resolveMarkdownBody: body_markdown renders and derives text", () => {
   assert.match(body_html, /<h1[^>]*>Hi<\/h1>/);
   assert.ok(body_text.includes("Hi"));
 });
+
+test("renderMarkdown: task-list bullets render check/box marks, never literal [x]", () => {
+  const html = renderMarkdown("- [x] shipped the thing\n- [ ] still open\n- plain item");
+  assert.match(html, /<span style="color:#1a7f37">\u2713<\/span> shipped the thing/);
+  assert.match(html, /<span style="color:#888">\u2610<\/span> still open/);
+  assert.match(html, /<li[^>]*>plain item<\/li>/);
+  assert.doesNotMatch(html, /\[x\]/);
+  assert.doesNotMatch(html, /\[ \]/);
+});

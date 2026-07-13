@@ -168,7 +168,15 @@ export async function handleEmail(message, env, ctx) {
   // a token-protection layer, not a security boundary — From is spoofable; the
   // reply gates (Spec 33) remain the line that matters for outbound.
   if (!machine && thread.assigned_agent && !lockedOut) {
-    if (await senderAllowed(db, fromAddr)) {
+    // Self-echo guard (Spec 80, found live 2026-07-13): an agent's reply to a
+    // fleet sibling stitches (References) back into its OWN thread as inbound
+    // and would re-ring its own bell — one paid turn per reply that decides
+    // "do nothing" (Charlie's Opus turn caught its echo; the class is
+    // structural). Your own address arriving in your own inbox is never a
+    // wake-worthy event.
+    if (String(fromAddr || "").toLowerCase().trim() === inbox) {
+      console.log(`agent-mail: bell suppressed — self-echo: ${fromAddr} → ${inbox}`);
+    } else if (await senderAllowed(db, fromAddr)) {
       const bellAgent = thread.assigned_agent;
       ctx.waitUntil(ringBell(env, bellAgent, { inbox, thread_id: thread.id, from: fromAddr, subject, message_uuid: msgId })
         .catch(async (e) => {

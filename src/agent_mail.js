@@ -432,14 +432,17 @@ async function apiSendFailures(env, url, caller) {
 // happen?); this is the one query that catches a silently-dead bell, a wedged
 // spool, or a failed turn on ANY inbox, in the current architecture and the
 // next one. Operator token only. Excludes statuses that wait on humans by
-// design (needs_review, human) — those are somebody's job already.
+// design (needs_review, human) — those are somebody's job already — and
+// ownerless threads (assigned_agent NULL): report sinks like dmarc@ receive
+// mail nobody answers; an unanswered thread is only a failure when an agent
+// owns it (first live probe surfaced exactly this class, 2026-07-13).
 async function apiStaleThreads(env, url, caller) {
   if (!caller.operator) return forbidden();
   const hours = Math.min(Math.max(parseInt(url.searchParams.get("hours") || "4", 10) || 4, 1), 168);
   const { results } = await env.AGENT_MAIL_DB
     .prepare(
       `SELECT id AS thread_id, inbox, assigned_agent, status, subject, from_addr, last_at
-       FROM threads WHERE status IN ('new', 'agent_working') AND last_at < datetime('now', ?)
+       FROM threads WHERE status IN ('new', 'agent_working') AND assigned_agent IS NOT NULL AND last_at < datetime('now', ?)
        ORDER BY last_at ASC LIMIT 100`
     )
     .bind(`-${hours} hours`)

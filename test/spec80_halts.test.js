@@ -76,6 +76,7 @@ test("stale-threads: operator gets rows; default window binds -4 hours", async (
   const sel = db.calls.find((c) => /FROM threads WHERE status IN/.test(c.sql));
   assert.ok(sel, "stale select ran");
   assert.match(sel.sql, /status IN \('new', 'agent_working'\)/);
+  assert.match(sel.sql, /assigned_agent IS NOT NULL/, "ownerless report sinks (dmarc@) never count as unanswered agent work");
   assert.deepEqual(sel.args, ["-4 hours"]);
 });
 

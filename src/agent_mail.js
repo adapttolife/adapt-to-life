@@ -16,7 +16,11 @@ const STATUSES = ["new", "agent_working", "needs_review", "human", "replied", "r
 
 // Spec 33 outbound caps. Applied to every caller (operator included): a runaway
 // loop through the admin lane is still a loop.
-const SEND_LIMITS = { perThreadPerHour: 5, perInboxPerHour: 20 };
+// Spec 80 adds the TERMINAL halt the hourly throttle lacks: fleet agents are
+// bell-allowlisted both ways, so two agents replying forever is a slow-motion
+// loop the hourly cap only paces. Past repliesPerThreadPerDay the thread flips
+// needs_review — a human ends the conversation, not a faster retry.
+const SEND_LIMITS = { perThreadPerHour: 5, perInboxPerHour: 20, repliesPerThreadPerDay: 6 };
 
 // Outbound attachments. API callers pass base64; the Email Sending binding wants
 // raw bytes. The platform caps the whole outbound message at 5 MiB — 4 MiB of
@@ -354,6 +358,9 @@ export async function handleAgentMailApi(request, env, url) {
     if (request.method === "GET" && path === "send-failures") {
       return await apiSendFailures(env, url, caller);
     }
+    if (request.method === "GET" && path === "stale-threads") {
+      return await apiStaleThreads(env, url, caller);
+    }
     if (request.method === "GET" && path.startsWith("thread/")) {
       return await apiRead(env, path.slice("thread/".length), caller);
     }
@@ -416,6 +423,26 @@ async function apiSendFailures(env, url, caller) {
   const { results } = await env.AGENT_MAIL_DB
     .prepare(`SELECT id, ts, route, to_addr, error FROM send_failures WHERE ts > ? ORDER BY ts ASC LIMIT 200`)
     .bind(since)
+    .all();
+  return jsonResp({ outcome: "ok", data: results || [] });
+}
+
+// Spec 80 — the fleet watchdog's OUTCOME rung: threads no agent has answered.
+// Process liveness (is the bell up?) is not artifact truth (did the reply
+// happen?); this is the one query that catches a silently-dead bell, a wedged
+// spool, or a failed turn on ANY inbox, in the current architecture and the
+// next one. Operator token only. Excludes statuses that wait on humans by
+// design (needs_review, human) — those are somebody's job already.
+async function apiStaleThreads(env, url, caller) {
+  if (!caller.operator) return forbidden();
+  const hours = Math.min(Math.max(parseInt(url.searchParams.get("hours") || "4", 10) || 4, 1), 168);
+  const { results } = await env.AGENT_MAIL_DB
+    .prepare(
+      `SELECT id AS thread_id, inbox, assigned_agent, status, subject, from_addr, last_at
+       FROM threads WHERE status IN ('new', 'agent_working') AND last_at < datetime('now', ?)
+       ORDER BY last_at ASC LIMIT 100`
+    )
+    .bind(`-${hours} hours`)
     .all();
   return jsonResp({ outcome: "ok", data: results || [] });
 }
@@ -507,6 +534,22 @@ async function apiReply(env, body, caller) {
   if ((sentLastHour?.thread_n || 0) >= SEND_LIMITS.perThreadPerHour || (sentLastHour?.inbox_n || 0) >= SEND_LIMITS.perInboxPerHour) {
     return jsonResp(
       { outcome: "error", error: `outbound rate limit: ${SEND_LIMITS.perThreadPerHour}/thread/hour, ${SEND_LIMITS.perInboxPerHour}/inbox/hour; try later or flag needs_review` },
+      429
+    );
+  }
+
+  // Spec 80 ping-pong halt: the hourly cap paces a loop, this ends it. The Nth
+  // same-day reply flips the thread to a human and refuses — terminal, not a
+  // retry-later. status flips BEFORE the refusal so a caller that ignores the
+  // 429 finds the thread already out of its hands.
+  const sentToday = await db
+    .prepare(`SELECT COUNT(*) AS n FROM messages WHERE thread_id = ? AND direction = 'out' AND created_at > datetime('now', 'start of day')`)
+    .bind(thread_id)
+    .first();
+  if ((sentToday?.n || 0) >= SEND_LIMITS.repliesPerThreadPerDay) {
+    await db.prepare(`UPDATE threads SET status = 'needs_review' WHERE id = ?`).bind(thread_id).run();
+    return jsonResp(
+      { outcome: "error", error: `ping-pong halt (Spec 80): ${SEND_LIMITS.repliesPerThreadPerDay} agent replies on this thread today — thread flipped to needs_review; a human continues it` },
       429
     );
   }

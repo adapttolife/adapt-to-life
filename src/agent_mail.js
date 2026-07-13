@@ -172,10 +172,14 @@ export async function handleEmail(message, env, ctx) {
     // fleet sibling stitches (References) back into its OWN thread as inbound
     // and would re-ring its own bell — one paid turn per reply that decides
     // "do nothing" (Charlie's Opus turn caught its echo; the class is
-    // structural). Your own address arriving in your own inbox is never a
-    // wake-worthy event.
-    if (String(fromAddr || "").toLowerCase().trim() === inbox) {
-      console.log(`agent-mail: bell suppressed — self-echo: ${fromAddr} → ${inbox}`);
+    // structural). Compare against THREAD.inbox, not the envelope `inbox`:
+    // the echo arrives addressed to the sibling (to=julia@) but stitches into
+    // the replier's thread, and the bell fires on thread.assigned_agent — the
+    // envelope-address compare shipped first and missed exactly this (wire
+    // check 3; Charlie's second turn flagged it). A message FROM the thread's
+    // own address is never a wake-worthy event on that thread.
+    if (String(fromAddr || "").toLowerCase().trim() === String(thread.inbox || "").toLowerCase()) {
+      console.log(`agent-mail: bell suppressed — self-echo: ${fromAddr} on thread ${thread.id} (${thread.inbox})`);
     } else if (await senderAllowed(db, fromAddr)) {
       const bellAgent = thread.assigned_agent;
       ctx.waitUntil(ringBell(env, bellAgent, { inbox, thread_id: thread.id, from: fromAddr, subject, message_uuid: msgId })

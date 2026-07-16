@@ -13,9 +13,9 @@ Score each 1–3. This is a guide for consistency, not a cutoff.
 | **Need** — is cost the real barrier? | Nice-to-have; other funding exists | Real cost, some other options | Cost is the only thing keeping them out |
 | **Use** — will the gear/trip actually get used? | Unclear intent or readiness | Willing, some plan | Ready now, clear place to compete/train |
 | **Cost reasonableness** — is the ask honest? | No sense of cost, or inflated | Ballpark, unverified | Real quote or tight estimate |
-| **Fit to mission** — adaptive sport, our region | Outside scope | Adjacent | Squarely adaptive-sport, in region |
+| **Fit to mission** — adaptive sport | Not a sport need | Adjacent | Squarely adaptive-sport |
 
-**Region:** we fund athletes across Northern Illinois and Southern Wisconsin. Out-of-region applications are read and logged (they tell us where demand is) but not funded yet. Say so warmly.
+**Reach:** no geographic limit. We fund adaptive athletes wherever they are (Alec, 2026-07-16). Location is captured for our own map of demand, never as a filter.
 
 ## 2. Approval-stage checklist (finalists only)
 

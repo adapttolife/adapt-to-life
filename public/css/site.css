@@ -310,7 +310,7 @@ section{ position:relative; }
 .footer .col h4{ font-family:"Space Mono", monospace; font-size:0.7rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--cream-faint); font-weight:700; margin-bottom:1rem; }
 .footer .col a{ display:block; font-size:0.95rem; color:var(--cream); opacity:0.82; margin-bottom:0.65rem; transition:opacity .15s ease, color .15s ease; }
 .footer .col a:hover{ opacity:1; color:var(--orange); }
-.footer-bottom{ display:flex; flex-wrap:wrap; justify-content:space-between; gap:1rem; margin-top:clamp(2.5rem,5vw,3.5rem); padding-top:1.4rem; border-top:1px solid rgba(255,255,255,0.12); font-size:0.85rem; color:var(--cream-faint); }
+.footer-bottom{ display:flex; flex-wrap:wrap; justify-content:flex-end; gap:1rem; margin-top:clamp(2.5rem,5vw,3.5rem); padding-top:1.4rem; border-top:1px solid rgba(255,255,255,0.12); font-size:0.85rem; color:var(--cream-faint); }
 
 /* footer inline subscribe */
 .foot-sub{ margin:0 0 1.3rem; max-width:32ch; }

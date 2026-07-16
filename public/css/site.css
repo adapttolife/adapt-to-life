@@ -207,6 +207,56 @@ section{ position:relative; }
 .prog p{ color:var(--ink-soft); margin-bottom:1.4rem; }
 .prog .go{ margin-top:auto; align-self:flex-start; }
 
+/* ---- scope: what we fund / what we don't --------------------------------- */
+.scope{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(1.2rem,2.6vw,1.8rem);
+  max-width:920px; margin:clamp(2.2rem,4vw,3rem) auto 0; }
+.scope-col{ background:var(--paper); border:1px solid var(--hairline); border-radius:18px;
+  padding:clamp(1.7rem,3.2vw,2.3rem); box-shadow:0 18px 40px -30px rgba(28,26,21,0.28); }
+.scope-head{ font-family:"Space Mono", monospace; font-size:0.72rem; letter-spacing:0.16em;
+  text-transform:uppercase; font-weight:700; }
+.scope-col.yes .scope-head{ color:var(--orange-ink); }
+.scope-col.no .scope-head{ color:var(--muted); }
+.scope-list{ list-style:none; margin:1.15rem 0 0; padding:0; }
+.scope-list li{ position:relative; padding-left:1.7rem; margin-bottom:0.9rem;
+  color:var(--ink-soft); line-height:1.5; }
+.scope-list li:last-child{ margin-bottom:0; }
+.scope-list li::before{ position:absolute; left:0; top:0; font-family:"Space Mono", monospace; font-weight:700; }
+.scope-col.yes .scope-list li::before{ content:"\2713"; color:var(--orange-ink); } /* check */
+.scope-col.no .scope-list li::before{ content:"\2212"; color:var(--muted); }        /* minus */
+@media (max-width:720px){ .scope{ grid-template-columns:1fr; } }
+
+/* ---- eligibility cue (compact self-check beside the apply form) ----------- */
+.elig-cue{ margin-top:1.9rem; padding:clamp(1.3rem,3vw,1.7rem); background:var(--sand);
+  border:1px solid var(--hairline); border-radius:16px; }
+.elig-head{ font-family:"Space Mono", monospace; font-size:0.72rem; letter-spacing:0.16em;
+  text-transform:uppercase; font-weight:700; color:var(--orange-ink); }
+.elig-list{ list-style:none; margin:0.9rem 0 0; padding:0; }
+.elig-list li{ position:relative; padding-left:1.6rem; margin-bottom:0.55rem;
+  color:var(--ink); font-size:0.98rem; line-height:1.45; }
+.elig-list li:last-child{ margin-bottom:0; }
+.elig-list li::before{ content:"\2713"; position:absolute; left:0; top:0;
+  font-family:"Space Mono", monospace; font-weight:700; color:var(--orange-ink); }
+.elig-no{ margin:1rem 0 0; color:var(--muted); font-size:0.92rem; line-height:1.5; }
+
+/* ---- faq (native <details>, zero JS) ------------------------------------- */
+.faq{ border-top:1px solid var(--hairline); }
+.faq-item{ border-bottom:1px solid var(--hairline); }
+.faq-item summary{
+  list-style:none; cursor:pointer; position:relative;
+  padding:1.15rem 2.4rem 1.15rem 0;
+  font-family:"Hanken Grotesk", sans-serif; font-weight:600; font-size:1.06rem; color:var(--ink);
+  transition:color .15s ease;
+}
+.faq-item summary::-webkit-details-marker{ display:none; }
+.faq-item summary::after{
+  content:"+"; position:absolute; right:0.15rem; top:50%; transform:translateY(-50%);
+  font-family:"Space Mono", monospace; font-size:1.35rem; font-weight:400; color:var(--orange-ink);
+  transition:color .15s ease;
+}
+.faq-item[open] summary::after{ content:"\2212"; } /* minus sign when open */
+.faq-item summary:hover{ color:var(--orange-ink); }
+.faq-item p{ color:var(--ink-soft); margin:0 0 1.25rem; max-width:60ch; }
+
 /* ---- big editorial pull-quote (light) ------------------------------------ */
 .bigquote blockquote{ font-family:"Newsreader", serif; font-style:italic; font-weight:400;
   font-size:clamp(1.6rem, 3.4vw, 2.6rem); line-height:1.28; letter-spacing:-0.01em;
@@ -273,7 +323,7 @@ section{ position:relative; }
 .footer .col h4{ font-family:"Space Mono", monospace; font-size:0.7rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--cream-faint); font-weight:700; margin-bottom:1rem; }
 .footer .col a{ display:block; font-size:0.95rem; color:var(--cream); opacity:0.82; margin-bottom:0.65rem; transition:opacity .15s ease, color .15s ease; }
 .footer .col a:hover{ opacity:1; color:var(--orange); }
-.footer-bottom{ display:flex; flex-wrap:wrap; justify-content:space-between; gap:1rem; margin-top:clamp(2.5rem,5vw,3.5rem); padding-top:1.4rem; border-top:1px solid rgba(255,255,255,0.12); font-size:0.85rem; color:var(--cream-faint); }
+.footer-bottom{ display:flex; flex-wrap:wrap; justify-content:flex-end; gap:1rem; margin-top:clamp(2.5rem,5vw,3.5rem); padding-top:1.4rem; border-top:1px solid rgba(255,255,255,0.12); font-size:0.85rem; color:var(--cream-faint); }
 
 /* footer inline subscribe */
 .foot-sub{ margin:0 0 1.3rem; max-width:32ch; }

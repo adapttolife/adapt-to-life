@@ -42,7 +42,11 @@ _Roadmap: Beehiiv (newsletter / "Join the list") and Givebutter (donations) are 
 
 ## Editing content
 
-Edit the relevant `.html` file under `public/`. CSS is inline within each page; fonts load from Google Fonts.
+Edit the relevant `.html` file under `public/`. CSS is shared in `public/css/site.css`; fonts load from Google Fonts.
+
+## Fund & grant process
+
+The Hustle & Heart Fund pages are `public/hustle-and-heart.html` (the fund explainer — includes the "How we decide", "What the fund is for", and FAQ sections) and `public/apply.html` (the application form → `POST /api/apply`). The internal grant review rubric — scoring criteria, approval-stage checklist, and the direct-to-vendor payment policy (adopted from the Kelly Brush Foundation model) — lives in [`docs/grant-review-rubric.md`](docs/grant-review-rubric.md). The public "how we decide / what we don't fund" copy and that rubric are kept in sync on purpose.
 
 ## Deploy
 
@@ -50,6 +54,13 @@ This repo deploys to the existing `adapt-to-life` Worker. The Cloudflare API tok
 
 ```sh
 cfrun npx wrangler deploy
+```
+
+Staging preview first (front-end only — no data bindings, no cron — so it can never touch prod Airtable/D1/R2/email):
+
+```sh
+cfrun npx wrangler deploy --env staging
+# → https://adapt-to-life-staging.alec-af3.workers.dev
 ```
 
 Preview locally without deploying:

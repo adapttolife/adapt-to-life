@@ -125,8 +125,16 @@ function renderBody(mdText, opts) {
       }
       if (i < n) i += 1; // consume closing fence
       if (fenceInfo === "chart") {
-        const image = opts && opts.chartImages ? opts.chartImages[chartIndex] : undefined;
-        out.push(renderChart(codeBuf, image));
+        // Spec 70 P3: opts.chartRenderer lets another surface (the report
+        // viewer page) render chart blocks its own way while reusing THIS
+        // walk — one markdown parser, per-surface chart output.
+        const custom = opts && opts.chartRenderer;
+        if (custom) {
+          out.push(custom(codeBuf, chartIndex));
+        } else {
+          const image = opts && opts.chartImages ? opts.chartImages[chartIndex] : undefined;
+          out.push(renderChart(codeBuf, image));
+        }
         chartIndex += 1;
       } else {
         out.push(`<pre style="${CODE_BLOCK_STYLE}">${codeBuf.join("\n")}</pre>`);

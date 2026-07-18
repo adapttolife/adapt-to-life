@@ -12,6 +12,7 @@ import PostalMime from "postal-mime";
 import { cfSend } from "./email.js";
 import { resolveMarkdownBody } from "./md_render.js";
 import { renderMarkdownChartPngs } from "./chart_png.js";
+import { reportFooterHtml } from "./report_view.js";
 
 const STATUSES = ["new", "agent_working", "needs_review", "human", "replied", "resolved"];
 
@@ -598,6 +599,14 @@ async function apiReply(env, body, caller) {
   // onboarded to Cloudflare Email Sending), so replies thread straight back to the agent.
   const fromAddr = thread.inbox;
 
+  // Spec 70 P3: mint the D1 message id BEFORE composing/sending, so the
+  // interactive-report permalink (HMAC of this id) can ride the email footer.
+  // Footer appears only in the markdown register, only with chart blocks,
+  // only when REPORT_LINK_SECRET exists — "" otherwise, never an error.
+  const msgId = crypto.randomUUID();
+  const footer = await reportFooterHtml(env, body, msgId);
+  const htmlOut = body_html ? body_html + footer : undefined;
+
   let sent;
   try {
     sent = await cfSend(env, {
@@ -605,7 +614,7 @@ async function apiReply(env, body, caller) {
       to,
       subject,
       text: body_text,
-      html: body_html || undefined,
+      html: htmlOut,
       headers: inReplyTo ? { "In-Reply-To": inReplyTo, References: inReplyTo } : undefined,
       attachments: mergeAttachments(att.list, chartPngs.attachments),
     });
@@ -615,13 +624,12 @@ async function apiReply(env, body, caller) {
     throw e;
   }
 
-  const msgId = crypto.randomUUID();
   await db
     .prepare(
       `INSERT INTO messages (id, thread_id, direction, from_addr, to_addr, subject, body_text, body_markdown, body_html, message_id, in_reply_to)
        VALUES (?, ?, 'out', ?, ?, ?, ?, ?, ?, ?, ?)`
     )
-    .bind(msgId, thread_id, fromAddr, to, subject, body_text + att.note, body_markdown || null, body_html || null, sent.id || null, inReplyTo)
+    .bind(msgId, thread_id, fromAddr, to, subject, body_text + att.note, body_markdown || null, htmlOut || null, sent.id || null, inReplyTo)
     .run();
   await db.prepare(`UPDATE threads SET status = 'replied', last_at = datetime('now') WHERE id = ?`).bind(thread_id).run();
 
@@ -679,6 +687,12 @@ async function apiSend(env, body, caller) {
     );
   }
 
+  // Spec 70 P3: mint the D1 message id BEFORE the send — the interactive-
+  // report footer link is an HMAC of this id (same contract as /reply).
+  const msgId = crypto.randomUUID();
+  const footer = await reportFooterHtml(env, body, msgId);
+  const htmlOut = body_html ? body_html + footer : undefined;
+
   // Email Sending forbids a custom Message-ID (whitelist + X-* only), so we
   // cannot know the id the recipient's reply will reference — replies stitch by
   // the subject+counterparty fallback in findOrCreateThread instead.
@@ -688,7 +702,7 @@ async function apiSend(env, body, caller) {
       to: toAddr,
       subject,
       text: body_text,
-      html: body_html || undefined,
+      html: htmlOut,
       attachments: mergeAttachments(att.list, chartPngs.attachments),
     });
   } catch (e) {
@@ -710,7 +724,7 @@ async function apiSend(env, body, caller) {
       `INSERT INTO messages (id, thread_id, direction, from_addr, to_addr, subject, body_text, body_markdown, body_html)
        VALUES (?, ?, 'out', ?, ?, ?, ?, ?, ?)`
     )
-    .bind(crypto.randomUUID(), threadId, fromAddr, toAddr, subject, body_text + att.note, body_markdown || null, body_html || null)
+    .bind(msgId, threadId, fromAddr, toAddr, subject, body_text + att.note, body_markdown || null, htmlOut || null)
     .run();
 
   await mirrorThread(env, db, threadId).catch(async (e) => {

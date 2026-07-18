@@ -23,6 +23,7 @@ import { renderMarkdown } from "./md_render.js";
 import {
   renderChart,
   parseChart,
+  parseBarChart,
   parsePngChart,
   PNG_CHART_TYPES,
   SERIES_COLORS,
@@ -162,21 +163,22 @@ function escapeHtml(s) {
     .replace(/'/g, "&#x27;");
 }
 
-const NUM_RE = /^-?\d+(\.\d+)?$/;
-
-// bar grammar (same rules chart_render.js renderBar enforces): 2-3 cells,
-// numeric non-negative value, optional display string.
-function parseBarRows(dataLines) {
-  const rows = [];
-  for (const line of dataLines) {
-    const cells = line.split("|").map((c) => c.trim());
-    if (cells.length < 2 || cells.length > 3) return null;
-    if (!NUM_RE.test(cells[1])) return null;
-    const value = parseFloat(cells[1]);
-    if (value < 0) return null;
-    rows.push([cells[0], value, cells[2] !== undefined ? cells[2] : cells[1]]);
+// Bar payload for the interactive runtime — parseBarChart (the ONE bar
+// grammar, shared with the email renderer) decides single vs stacked vs
+// shade; anything it rejects falls back to renderChart's degrade table.
+//   single:  { type:"bar", rows:[[label, value, display]], shades?:[hex] }
+//   stacked: { type:"bar", stacked:true, names:[..], rows:[[label,[v..],total]] }
+function barPayload(headers, dataLines) {
+  if (dataLines.length === 0) return null;
+  const parsed = parseBarChart(headers, dataLines);
+  if (!parsed.ok) return null;
+  const bar = parsed.bar;
+  if (bar.stacked) {
+    return { type: "bar", stacked: true, names: bar.names, rows: bar.rows.map((r) => [r.label, r.values, r.total]) };
   }
-  return rows.length ? rows : null;
+  const payload = { type: "bar", rows: bar.rows.map((r) => [r.label, r.value, r.display]) };
+  if (bar.shadeColors) payload.shades = bar.shadeColors;
+  return payload;
 }
 
 // The chartRenderer hook for renderMarkdown on the viewer page. bar/line/
@@ -194,8 +196,7 @@ function pageChartRenderer(escapedLines) {
 
     let payload = null;
     if (type === "bar") {
-      const rows = parseBarRows(dataLines);
-      if (rows) payload = { type: "bar", rows };
+      payload = barPayload(headers, dataLines);
     } else if (PNG_CHART_TYPES.includes(type)) {
       const parsed = parsePngChart(headers, dataLines);
       if (parsed.ok) {
@@ -287,7 +288,25 @@ const RUNTIME_SCRIPT = `
     return { lo: lo, hi: out[out.length - 1], ticks: out };
   }
 
+  // Legend row (shared by stacked bars and multi-series line/scatter):
+  // fixed-slot chips, so legend color always equals mark color.
+  function legendRow(host, names) {
+    var lg = document.createElement("div");
+    lg.className = "legend";
+    names.forEach(function (nm, s) {
+      var item = document.createElement("span");
+      var sw = document.createElement("span");
+      sw.className = "sw";
+      sw.style.background = COLORS[s % COLORS.length];
+      item.appendChild(sw);
+      item.appendChild(document.createTextNode(nm));
+      lg.appendChild(item);
+    });
+    host.appendChild(lg);
+  }
+
   function drawBar(host, d) {
+    if (d.stacked) return drawStack(host, d);
     var W = 640, labelW = 180, valW = 76, rowH = 26;
     var rows = d.rows;
     var H = rows.length * rowH + 6;
@@ -299,11 +318,45 @@ const RUNTIME_SCRIPT = `
       var lab = elt("text", { x: labelW - 8, y: yTop + rowH / 2 + 4, "text-anchor": "end", "font-size": 13, "font-weight": 600, fill: INK }, svg);
       lab.textContent = r[0];
       var bw = max > 0 && r[1] > 0 ? Math.max(2, (r[1] / max) * (W - labelW - valW - 16)) : 0;
-      if (bw > 0) elt("rect", { x: labelW, y: yTop + 5, width: bw, height: rowH - 10, rx: 3, fill: COLORS[0] }, svg);
+      // shade: value encoding rides in as a per-row fill; labels stay INK/SEC
+      // text — a label never wears the series color.
+      var fill = (d.shades && d.shades[i]) || COLORS[0];
+      if (bw > 0) elt("rect", { x: labelW, y: yTop + 5, width: bw, height: rowH - 10, rx: 3, fill: fill }, svg);
       var val = elt("text", { x: labelW + bw + 8, y: yTop + rowH / 2 + 4, "font-size": 12, fill: SEC }, svg);
       val.textContent = r[2];
       var hot = elt("rect", { x: 0, y: yTop, width: W, height: rowH, fill: "transparent" }, svg);
       hover(hot, r[0] + ": " + r[2]);
+    });
+    host.appendChild(svg);
+  }
+
+  // Horizontal stacked bars: segments in fixed slot order with a 2px gap,
+  // per-segment hover tooltip ("NameA: 2.4"), ONE total per bar at the end
+  // in INK — never a number on every segment.
+  function drawStack(host, d) {
+    var W = 640, labelW = 180, valW = 76, rowH = 26, GAP = 2;
+    if (d.names && d.names.length > 1) legendRow(host, d.names);
+    var rows = d.rows;
+    var H = rows.length * rowH + 6;
+    var svg = elt("svg", { viewBox: "0 0 " + W + " " + H, width: "100%", role: "img" });
+    var maxT = 0;
+    rows.forEach(function (r) { if (r[2] > maxT) maxT = r[2]; });
+    var avail = W - labelW - valW - 16;
+    rows.forEach(function (r, i) {
+      var yTop = 3 + i * rowH;
+      var lab = elt("text", { x: labelW - 8, y: yTop + rowH / 2 + 4, "text-anchor": "end", "font-size": 13, "font-weight": 600, fill: INK }, svg);
+      lab.textContent = r[0];
+      var x = labelW;
+      r[1].forEach(function (v, s) {
+        if (!(v > 0) || maxT <= 0) return;
+        var w = Math.max(1, (v / maxT) * avail);
+        var seg = elt("rect", { x: x, y: yTop + 5, width: w, height: rowH - 10, fill: COLORS[s % COLORS.length] }, svg);
+        hover(seg, d.names[s] + ": " + fmt(v));
+        x += w + GAP;
+      });
+      var totalX = x > labelW ? x - GAP + 8 : labelW + 8;
+      var val = elt("text", { x: totalX, y: yTop + rowH / 2 + 4, "font-size": 12, "font-weight": 600, fill: INK }, svg);
+      val.textContent = fmt(r[2]);
     });
     host.appendChild(svg);
   }
@@ -358,20 +411,7 @@ const RUNTIME_SCRIPT = `
         hover(hot, name + xLabel + ": " + fmt(v));
       });
     });
-    if (d.names && d.names.length > 1) {
-      var lg = document.createElement("div");
-      lg.className = "legend";
-      d.names.forEach(function (nm, s) {
-        var item = document.createElement("span");
-        var sw = document.createElement("span");
-        sw.className = "sw";
-        sw.style.background = COLORS[s % COLORS.length];
-        item.appendChild(sw);
-        item.appendChild(document.createTextNode(nm));
-        lg.appendChild(item);
-      });
-      host.appendChild(lg);
-    }
+    if (d.names && d.names.length > 1) legendRow(host, d.names);
     host.appendChild(svg);
   }
 

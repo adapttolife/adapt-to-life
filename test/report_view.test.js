@@ -206,6 +206,53 @@ test("viewer: happy path — page, charts, tooltip runtime, security headers", a
   assert.ok(!/<link/.test(html), "no external stylesheets/fonts");
 });
 
+test("viewer: stacked bar becomes an interactive payload with per-segment tooltips and a fixed-slot legend", async () => {
+  const md = [
+    "```chart",
+    "type: bar",
+    "title: Pipeline by stage",
+    "source: CRM, 2026-07-18",
+    "series: New | Renewal",
+    "Q1 | 2.4 | 1.2",
+    "Q2 | 3 | 2",
+    "```",
+  ].join("\n");
+  const token = await makeReportToken(SECRET, MSG_ID);
+  const env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: viewerDb({ ...ROW, body_markdown: md }) };
+  const html = await (await view(env, token)).text();
+
+  // The embedded payload: stacked flag, raw names for textContent tooltips,
+  // rows as [label, [segments...], total].
+  assert.match(html, /"type":"bar","stacked":true,"names":\["New","Renewal"\]/);
+  assert.match(html, /\["Q1",\[2\.4,1\.2\],3\.6\]/);
+  assert.match(html, /\["Q2",\[3,2\],5\]/);
+
+  // The runtime draws per-segment hover tooltips ("NameA: 2.4"), a shared
+  // fixed-slot legend, and ONE total per bar in INK.
+  assert.match(html, /hover\(seg, d\.names\[s\] \+ ": " \+ fmt\(v\)\)/);
+  assert.match(html, /function legendRow\(/);
+  assert.match(html, /legendRow\(host, d\.names\)/);
+  assert.match(html, /"font-weight": 600, fill: INK \}, svg\);\n\s*val\.textContent = fmt\(r\[2\]\)/);
+
+  // The page palette is the fixed 6-slot categorical set, in slot order.
+  assert.match(html, /var COLORS = \["#2a78d6","#008300","#e87ba4","#eda100","#1baf7a","#eb6834"\]/);
+});
+
+test("viewer: shade bar payload embeds the per-row ramp colors; invalid shade+multi-series degrades on the page", async () => {
+  const shadeMd = "```chart\ntype: bar\nsource: s\nshade: value\nA | 1\nB | 12\n```";
+  const token = await makeReportToken(SECRET, MSG_ID);
+  let env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: viewerDb({ ...ROW, body_markdown: shadeMd }) };
+  let html = await (await view(env, token)).text();
+  assert.match(html, /"shades":\["#cde2fb","#0d366b"\]/, "min→lightest, max→darkest ramp stops embedded");
+  assert.match(html, /d\.shades && d\.shades\[i\]/, "runtime paints bars from the embedded shades");
+
+  const badMd = "```chart\ntype: bar\nsource: s\nshade: value\nseries: A | B\nQ1 | 1 | 2\nQ2 | 3 | 4\n```";
+  env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: viewerDb({ ...ROW, body_markdown: badMd }) };
+  html = await (await view(env, token)).text();
+  assert.match(html, /Chart degraded \(shade requires a single-series bar\)/);
+  assert.ok(!html.includes('class="ichart"'), "no interactive payload for the invalid block");
+});
+
 test("viewer: chart without source degrades on the page too (P1 contract)", async () => {
   const md = "```chart\ntype: bar\nA | 1\nB | 2\n```";
   const token = await makeReportToken(SECRET, MSG_ID);

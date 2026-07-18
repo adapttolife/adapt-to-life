@@ -11,6 +11,7 @@
 import PostalMime from "postal-mime";
 import { cfSend } from "./email.js";
 import { resolveMarkdownBody } from "./md_render.js";
+import { renderMarkdownChartPngs } from "./chart_png.js";
 
 const STATUSES = ["new", "agent_working", "needs_review", "human", "replied", "resolved"];
 
@@ -70,6 +71,25 @@ function decodeOutAttachments(raw) {
     names.push(`${filename} (${(bytes.byteLength / 1024).toFixed(1)} KB)`);
   }
   return { list, note: `\n\n[attachments: ${names.join(", ")}]` };
+}
+
+// Spec 70 P2 — line/scatter chart blocks in body_markdown render to inline
+// PNGs (cid-referenced) at this one choke point, shared by /send and /reply.
+// Only the default register runs the pipeline: an explicit body_html wins
+// unchanged (Spec 53), and then no markdown render happens at all. Returns
+// { images, attachments } and never throws — a failed PNG leaves its block
+// to chart_render.js's table degrade inside resolveMarkdownBody.
+async function chartPngsFor(body) {
+  const b = body || {};
+  if (b.body_markdown == null || b.body_html != null) return { images: undefined, attachments: [] };
+  return await renderMarkdownChartPngs(b.body_markdown);
+}
+
+// cfSend attachment list = caller attachments + generated inline chart PNGs
+// (undefined when there is neither, matching cfSend's optional field).
+function mergeAttachments(list, chartAttachments) {
+  if (!chartAttachments || chartAttachments.length === 0) return list;
+  return [...(list || []), ...chartAttachments];
 }
 
 // Spec 53 — email house style: body_markdown is the default register for
@@ -514,7 +534,8 @@ async function apiAttachments(env, messageId, caller) {
 
 async function apiReply(env, body, caller) {
   const { thread_id, body_markdown, attachments } = body || {};
-  const { body_text, body_html } = resolveMarkdownBody(body || {});
+  const chartPngs = await chartPngsFor(body);
+  const { body_text, body_html } = resolveMarkdownBody(body || {}, { chartImages: chartPngs.images });
   if (!thread_id || !body_text) return jsonResp({ outcome: "error", error: "thread_id and body_text (or body_markdown) required" }, 422);
   const att = decodeOutAttachments(attachments);
   if (att.error) return jsonResp({ outcome: "error", error: att.error }, 422);
@@ -586,7 +607,7 @@ async function apiReply(env, body, caller) {
       text: body_text,
       html: body_html || undefined,
       headers: inReplyTo ? { "In-Reply-To": inReplyTo, References: inReplyTo } : undefined,
-      attachments: att.list,
+      attachments: mergeAttachments(att.list, chartPngs.attachments),
     });
   } catch (e) {
     // Spec 33 §6: record, then rethrow — the caller still gets the API 500.
@@ -617,7 +638,8 @@ async function apiReply(env, body, caller) {
 // counterparty (here the recipient), matching what /list shows for inbound.
 async function apiSend(env, body, caller) {
   const { from, to, subject, body_markdown, attachments } = body || {};
-  const { body_text, body_html } = resolveMarkdownBody(body || {});
+  const chartPngs = await chartPngsFor(body);
+  const { body_text, body_html } = resolveMarkdownBody(body || {}, { chartImages: chartPngs.images });
   if (!to || !subject || !body_text) return jsonResp({ outcome: "error", error: "to, subject, and body_text (or body_markdown) required" }, 422);
   const att = decodeOutAttachments(attachments);
   if (att.error) return jsonResp({ outcome: "error", error: att.error }, 422);
@@ -667,7 +689,7 @@ async function apiSend(env, body, caller) {
       subject,
       text: body_text,
       html: body_html || undefined,
-      attachments: att.list,
+      attachments: mergeAttachments(att.list, chartPngs.attachments),
     });
   } catch (e) {
     // Spec 33 §6: record, then rethrow — the caller still gets the API 500.

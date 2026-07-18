@@ -1,15 +1,23 @@
-// chart_render.js — Spec 70 Phase 1. Renders a ```chart fenced block (already
-// HTML-escaped by md_render.js's renderBody) into email-client-safe HTML:
-// inline styles only, <table role="presentation"> layout, no svg/img/JS/
-// classes/external anything. Zero deps, matches md_render.js's idiom (const
-// STYLE strings, small functions, never touch already-escaped text).
+// chart_render.js — Spec 70 Phase 1 + Phase 2 grammar. Renders a ```chart
+// fenced block (already HTML-escaped by md_render.js's renderBody) into
+// email-client-safe HTML: inline styles only, <table role="presentation">
+// layout, no svg/JS/classes/external anything. Zero deps, matches
+// md_render.js's idiom (const STYLE strings, small functions, never touch
+// already-escaped text).
 //
-// Grammar: leading "key: value" lines are headers (type, title, source);
-// remaining non-empty lines are data rows split on "|". type is one of
-// bar|stat|delta|heat. source is REQUIRED (Spec 70's reliability line).
+// Grammar: leading "key: value" lines are headers (type, title, source, and —
+// P2 — series); remaining non-empty lines are data rows split on "|". type is
+// one of bar|stat|delta|heat (P1, CSS-native) or line|scatter (P2, rendered
+// to a PNG inside the Worker by chart_png.js and referenced here as
+// <img src="cid:...">). source is REQUIRED (Spec 70's reliability line).
 //
-// Any violation (missing/unknown type, missing source, no data, or a
-// type-specific rule) degrades to a plain data table — never throws.
+// P2 split of responsibilities: this module owns the grammar (parsePngChart
+// validates line/scatter rows) and the HTML; chart_png.js owns pixels. When
+// the send path has rendered a PNG it passes {cid,width,height} as the second
+// renderChart argument and the block becomes an inline image; without one
+// (PNG render failed, or a caller renders HTML outside the send path) the
+// block degrades to the plain data table with a named gap — never a broken
+// <img>, never a throw.
 
 // ── shared chrome / palette ─────────────────────────────────────────────
 const INK = "#0b0b0b";
@@ -26,6 +34,17 @@ const HEAT_RAMP = [
   "#cde2fb", "#b7d3f6", "#9ec5f4", "#86b6ef", "#6da7ec", "#5598e7", "#3987e5",
   "#2a78d6", "#256abf", "#1c5cab", "#184f95", "#104281", "#0d366b",
 ];
+
+// P2 series palette for line/scatter PNGs. Email-kit doctrine: ONE hue for
+// magnitude marks — more series get labeled, never rainbowed — so extra
+// series are widely-spaced stops of the same blue ramp above.
+export const SERIES_COLORS = [BLUE, "#0d366b", "#86b6ef", "#184f95"];
+
+// Chrome colors chart_png.js reuses so the PNG matches the P1 HTML charts.
+export const CHART_INK = INK;
+export const CHART_SECONDARY = SECONDARY;
+export const CHART_MUTED = MUTED;
+export const CHART_HAIRLINE = HAIRLINE;
 
 // Duplicated from md_render.js's TABLE_STYLE/CELL_STYLE (own module, zero
 // deps by design) so the degrade path stays visually identical to a normal
@@ -76,7 +95,9 @@ function signDecoration(text, defaultColor) {
 // Splits header lines ("type: bar", "title: ...", "source: ...") from data
 // rows. Headers are a strictly leading run; the first non-matching line ends
 // the header section, and every non-empty line from there on is a data row.
-function parseChart(escapedLines) {
+// Exported for chart_png.js, which parses the same grammar from the RAW
+// markdown (escaping never changes header/row structure).
+export function parseChart(escapedLines) {
   const n = escapedLines.length;
   let i = 0;
   const headers = {};
@@ -229,6 +250,71 @@ function renderHeat(dataLines) {
 
 const TYPE_RENDERERS = { bar: renderBar, stat: renderStat, delta: renderDelta, heat: renderHeat };
 
+// ── P2: line/scatter (PNG-rendered) grammar ─────────────────────────────
+//
+// Row format (Spec 70 P2): x | y  or  x | series1 | series2 ...
+//   line:    x is a category label (any text); every series value numeric.
+//   scatter: x must ALSO be numeric (it's a position, not a label).
+// Optional "series: Name A | Name B" header names the series; when present
+// its count must match the data columns. Limits keep the PNG legible and the
+// render cheap: 2..200 rows, 1..4 series.
+
+export const PNG_CHART_TYPES = ["line", "scatter"];
+const PNG_MAX_SERIES = 4;
+const PNG_MAX_ROWS = 200;
+
+// Validates a line/scatter block and extracts plot-ready data. Works on raw
+// OR escaped lines (numbers are never touched by HTML escaping; labels pass
+// through untouched either way). Returns {ok:true, chart} or {ok:false, reason}.
+export function parsePngChart(headers, dataLines) {
+  const type = String(headers.type || "").toLowerCase();
+  if (!PNG_CHART_TYPES.includes(type)) return { ok: false, reason: "unknown chart type" };
+  if (dataLines.length < 2) return { ok: false, reason: `${type} needs at least 2 data rows` };
+  if (dataLines.length > PNG_MAX_ROWS) return { ok: false, reason: `${type} exceeds ${PNG_MAX_ROWS} rows` };
+  const rows = dataLines.map(splitRow);
+  const width = rows[0].length;
+  if (width < 2) return { ok: false, reason: `${type} rows need x | value` };
+  if (rows.some((r) => r.length !== width)) return { ok: false, reason: `${type} ragged rows (cell count mismatch)` };
+  const seriesCount = width - 1;
+  if (seriesCount > PNG_MAX_SERIES) return { ok: false, reason: `${type} exceeds ${PNG_MAX_SERIES} series` };
+
+  let seriesNames;
+  if (headers.series) {
+    seriesNames = headers.series.split("|").map((s) => s.trim());
+    if (seriesNames.length !== seriesCount || seriesNames.some((s) => s === "")) {
+      return { ok: false, reason: "series names do not match data columns" };
+    }
+  } else {
+    seriesNames = Array.from({ length: seriesCount }, (_v, i) => `Series ${i + 1}`);
+  }
+
+  const xLabels = rows.map((r) => r[0]);
+  let xValues = null;
+  if (type === "scatter") {
+    xValues = xLabels.map(parseNumber);
+    if (xValues.some((v) => v === null)) return { ok: false, reason: "scatter x not numeric" };
+  }
+  const series = [];
+  for (let s = 0; s < seriesCount; s += 1) {
+    const values = rows.map((r) => parseNumber(r[s + 1]));
+    if (values.some((v) => v === null)) return { ok: false, reason: `${type} value not numeric` };
+    series.push(values);
+  }
+  return { ok: true, chart: { type, xLabels, xValues, series, seriesNames } };
+}
+
+// The HTML side of a PNG chart: title + <img src="cid:..."> + source. width/
+// height are display px ATTRIBUTES (Outlook's Word engine ignores CSS sizing
+// on images); alt names the chart so image-blocking clients still say what
+// the attachment is. The style keeps it responsive elsewhere.
+function renderPngImage(headers, image) {
+  const alt = headers.title || `${String(headers.type || "").toLowerCase()} chart`;
+  return (
+    `<img src="cid:${image.cid}" width="${image.width}" height="${image.height}" alt="${alt}" ` +
+    `style="display:block;width:100%;max-width:${image.width}px;height:auto;border:0">`
+  );
+}
+
 // Data-row fallback: the same plain-table idiom md_render.js's renderTable
 // uses, so a degraded chart still reads cleanly in any client.
 function degradeTable(dataLines) {
@@ -251,11 +337,25 @@ function degrade(headers, dataLines, reason) {
   return caption + table + source;
 }
 
-function renderChartUnsafe(escapedLines) {
+function renderChartUnsafe(escapedLines, image) {
   const { headers, dataLines } = parseChart(escapedLines);
   const type = (headers.type || "").toLowerCase();
 
   if (!headers.source) return degrade(headers, dataLines, "missing source");
+
+  // P2 PNG types: validate with the same grammar the PNG pipeline uses, then
+  // either reference the rendered image or degrade to the table (named gap).
+  if (PNG_CHART_TYPES.includes(type)) {
+    const parsed = parsePngChart(headers, dataLines);
+    if (!parsed.ok) return degrade(headers, dataLines, parsed.reason);
+    if (!image || !image.cid) return degrade(headers, dataLines, "chart image not rendered");
+    const parts = [];
+    if (headers.title) parts.push(titleLine(headers.title));
+    parts.push(renderPngImage(headers, image));
+    parts.push(sourceLine(headers.source));
+    return parts.join("");
+  }
+
   if (!TYPE_RENDERERS[type]) return degrade(headers, dataLines, "unknown chart type");
   if (dataLines.length === 0) return degrade(headers, dataLines, "no data rows");
 
@@ -271,11 +371,13 @@ function renderChartUnsafe(escapedLines) {
 
 // Entry point. escapedLines are the already-HTML-escaped lines collected
 // between a ```chart fence's open/close by md_render.js's renderBody — never
-// unescape them. Never throws: any unexpected failure degrades with reason
-// "render error" by construction.
-export function renderChart(escapedLines) {
+// unescape them. `image` ({cid,width,height}, optional) is the send path's
+// proof that a PNG for THIS block is attached (P2 line/scatter only; P1
+// types ignore it — they stay CSS-native). Never throws: any unexpected
+// failure degrades with reason "render error" by construction.
+export function renderChart(escapedLines, image) {
   try {
-    return renderChartUnsafe(escapedLines);
+    return renderChartUnsafe(escapedLines, image);
   } catch (err) {
     return degrade({}, [], "render error");
   }

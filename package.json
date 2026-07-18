@@ -19,7 +19,9 @@
   },
   "homepage": "https://github.com/coldcrippy/adapt-to-life#readme",
   "dependencies": {
+    "@resvg/resvg-wasm": "^2.6.2",
     "pdf-lib": "^1.17.1",
-    "postal-mime": "^2.7.5"
+    "postal-mime": "^2.7.5",
+    "satori": "^0.28.0"
   }
 }

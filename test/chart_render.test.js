@@ -119,6 +119,92 @@ test("heat: non-numeric value degrades with a reason", () => {
   assert.match(html, /Chart degraded \(heat value not numeric\)/);
 });
 
+// ── line / scatter (Spec 70 P2 grammar; PNG delivery tested in chart_png.test.js) ──
+
+test("line: valid data WITHOUT a rendered image degrades to the table with the named gap (never a broken img)", () => {
+  const html = renderChart(["type: line", "source: s", "Mon | 3", "Tue | 5"]);
+  assert.match(html, /Chart degraded \(chart image not rendered\)/);
+  assert.match(html, /<table/);
+  assert.equal(html.includes("<img"), false);
+});
+
+test("line: valid data WITH an image renders title + cid img (width/height attributes, alt = title) + source", () => {
+  const html = renderChart(
+    ["type: line", "title: Weekly escalations", "source: log, 2026-07-18", "Mon | 3", "Tue | 5"],
+    { cid: "chart-0-abc@agents.adapttolife.org", width: 640, height: 360 }
+  );
+  assert.match(html, /Weekly escalations<\/div>/);
+  assert.match(html, /<img src="cid:chart-0-abc@agents\.adapttolife\.org" width="640" height="360" alt="Weekly escalations"/);
+  assert.match(html, /Source: log, 2026-07-18/);
+  assert.equal(html.includes("Chart degraded"), false);
+});
+
+test("line: alt falls back to the chart type when there is no title", () => {
+  const html = renderChart(["type: line", "source: s", "A | 1", "B | 2"], { cid: "x", width: 640, height: 360 });
+  assert.match(html, /alt="line chart"/);
+});
+
+test("line: single data row degrades (a line needs 2 points)", () => {
+  const html = renderChart(["type: line", "source: s", "Mon | 3"], { cid: "x", width: 640, height: 360 });
+  assert.match(html, /Chart degraded \(line needs at least 2 data rows\)/);
+});
+
+test("line: non-numeric series value degrades even when an image is offered", () => {
+  const html = renderChart(["type: line", "source: s", "Mon | 3", "Tue | n/a"], { cid: "x", width: 640, height: 360 });
+  assert.match(html, /Chart degraded \(line value not numeric\)/);
+  assert.equal(html.includes("<img"), false);
+});
+
+test("line: ragged rows degrade", () => {
+  const html = renderChart(["type: line", "source: s", "Mon | 3 | 4", "Tue | 5"], { cid: "x", width: 640, height: 360 });
+  assert.match(html, /Chart degraded \(line ragged rows/);
+});
+
+test("line: series header count mismatch degrades", () => {
+  const html = renderChart(
+    ["type: line", "source: s", "series: A | B | C", "Mon | 3 | 4", "Tue | 5 | 6"],
+    { cid: "x", width: 640, height: 360 }
+  );
+  assert.match(html, /Chart degraded \(series names do not match data columns\)/);
+});
+
+test("scatter: non-numeric x degrades (scatter x is a position, not a label)", () => {
+  const html = renderChart(["type: scatter", "source: s", "Mon | 3", "Tue | 5"], { cid: "x", width: 640, height: 360 });
+  assert.match(html, /Chart degraded \(scatter x not numeric\)/);
+});
+
+test("scatter: valid numeric pairs with an image render the cid img", () => {
+  const html = renderChart(["type: scatter", "source: s", "1.5 | 3", "2 | 5"], { cid: "c1", width: 640, height: 360 });
+  assert.match(html, /<img src="cid:c1"/);
+});
+
+test("P1 types ignore the image argument — bar stays CSS-native even when an image is passed", () => {
+  const html = renderChart(["type: bar", "source: s", "A | 5", "B | 3"], { cid: "x", width: 640, height: 360 });
+  assert.equal(html.includes("<img"), false);
+  assert.match(html, /<table role="presentation"/);
+});
+
+test("chartImages map keys by chart-fence ordinal: bar (0) stays HTML, line (1) gets its img", () => {
+  const md = [
+    "```chart",
+    "type: bar",
+    "source: s",
+    "A | 5",
+    "```",
+    "",
+    "```chart",
+    "type: line",
+    "source: s",
+    "Mon | 1",
+    "Tue | 2",
+    "```",
+  ].join("\n");
+  const html = renderMarkdown(md, { chartImages: { 1: { cid: "c-line", width: 640, height: 360 } } });
+  assert.match(html, /<img src="cid:c-line"/);
+  assert.equal((html.match(/<img/g) || []).length, 1);
+  assert.match(html, /<table role="presentation"/); // the bar chart
+});
+
 // ── degrade path ────────────────────────────────────────────────────────────
 
 test("degrade: missing source produces the degraded table + reason, never throws", () => {

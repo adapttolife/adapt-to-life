@@ -25,6 +25,12 @@
   "observability": {
     "enabled": true
   },
+  // Spec 70 P2: the PNG chart pipeline (src/chart_assets_worker.js) imports the
+  // bundled Inter TTFs as raw bytes. .wasm needs no rule — wrangler's default
+  // CompiledWasm rule covers satori/yoga.wasm and @resvg/resvg-wasm/index_bg.wasm.
+  "rules": [
+    { "type": "Data", "globs": ["**/*.ttf"], "fallthrough": true }
+  ],
   "vars": {
     // Non-secret config. The Airtable token is set separately as a secret:
     //   cfrun wrangler secret put AIRTABLE_TOKEN

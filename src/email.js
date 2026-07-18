@@ -5,7 +5,12 @@
 //
 // Shape mirrors Cloudflare's structured message builder — no raw MIME needed:
 //   from, to, replyTo, cc, bcc, subject, text, html, headers, attachments
-// attachments: [{ filename, content: <ArrayBuffer|Uint8Array — raw bytes, NOT base64>, type, disposition }]
+// attachments: [{ filename, content: <ArrayBuffer|Uint8Array — raw bytes, NOT base64>, type, disposition, contentId? }]
+// Inline images (Spec 70 P2): the builder's Attachment interface is
+//   { content; filename; type; disposition: "attachment" | "inline"; contentId?: string }
+// (Email Service Workers API reference), so cid-referenced inline PNGs ride the
+// structured path — disposition:"inline" + contentId, <img src="cid:..."> in html.
+// No legacy raw-MIME EmailMessage needed.
 export async function cfSend(env, { from, to, replyTo, cc, bcc, subject, text, html, headers, attachments }) {
   if (!env.SEND_EMAIL) throw new Error("SEND_EMAIL binding not configured");
   const msg = { from, to, subject };

@@ -100,12 +100,17 @@ function renderTable(tableLines) {
   return `<table style="${TABLE_STYLE}">${rowsHtml.join("")}</table>`;
 }
 
-function renderBody(mdText) {
+function renderBody(mdText, opts) {
   const lines = mdText.split("\n");
   const escLines = lines.map(escapeHtml);
   const n = escLines.length;
   const out = [];
   let i = 0;
+  // Spec 70 P2: ```chart fences are numbered in document order; the send path
+  // passes opts.chartImages = { <ordinal>: {cid,width,height} } for the
+  // blocks it rendered to PNG. chart_png.js scans fences with the same walk,
+  // so ordinals line up by construction.
+  let chartIndex = 0;
 
   while (i < n) {
     const stripped = escLines[i].trim();
@@ -120,7 +125,9 @@ function renderBody(mdText) {
       }
       if (i < n) i += 1; // consume closing fence
       if (fenceInfo === "chart") {
-        out.push(renderChart(codeBuf));
+        const image = opts && opts.chartImages ? opts.chartImages[chartIndex] : undefined;
+        out.push(renderChart(codeBuf, image));
+        chartIndex += 1;
       } else {
         out.push(`<pre style="${CODE_BLOCK_STYLE}">${codeBuf.join("\n")}</pre>`);
       }
@@ -209,9 +216,10 @@ function renderBody(mdText) {
 }
 
 // Render markdown to reading-view HTML, wrapped in the same outer div
-// send-spec-mail.py uses for its email bodies.
-export function renderMarkdown(md) {
-  const rendered = renderBody(String(md == null ? "" : md));
+// send-spec-mail.py uses for its email bodies. opts (optional):
+// { chartImages } — see renderBody; omitted everywhere except the send path.
+export function renderMarkdown(md, opts) {
+  const rendered = renderBody(String(md == null ? "" : md), opts);
   return (
     // Explicit background (2026-07-05): dark-mode clients auto-invert emails that
     // declare none — keeps the reading-view card white deterministically.
@@ -233,9 +241,9 @@ export function deriveText(md) {
 // no explicit body_html -> the standard render applies to whatever body exists
 // (markdown preferred, plain text otherwise — plain text is valid markdown).
 // Explicit body_html (the report register) always wins, unchanged.
-export function resolveMarkdownBody({ body_text, body_html, body_markdown }) {
+export function resolveMarkdownBody({ body_text, body_html, body_markdown }, opts) {
   const source = body_markdown != null ? body_markdown : body_text;
-  const html = body_html != null ? body_html : (source ? renderMarkdown(source) : undefined);
+  const html = body_html != null ? body_html : (source ? renderMarkdown(source, opts) : undefined);
   const text = body_text != null ? body_text : (body_markdown ? deriveText(body_markdown) : undefined);
   return { body_text: text, body_html: html };
 }

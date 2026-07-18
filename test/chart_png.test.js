@@ -48,6 +48,21 @@ test("line chart renders a real PNG: magic bytes, 2x dimensions, inline disposit
   assert.match(att.contentId, /^chart-0-[0-9a-f-]+@agents\.adapttolife\.org$/);
 });
 
+test("4-series line renders a real PNG on the new fixed-slot palette (slots 0-3), legend included", async () => {
+  const md = chartMd([
+    "type: line",
+    "source: s",
+    "series: A | B | C | D",
+    "Mon | 1 | 2 | 3 | 4",
+    "Tue | 2 | 3 | 4 | 5",
+    "Wed | 3 | 4 | 5 | 6",
+  ]);
+  const res = await renderMarkdownChartPngs(md);
+  assert.equal(res.attachments.length, 1);
+  assert.deepEqual([...res.attachments[0].content.slice(0, 8)], PNG_MAGIC);
+  assert.ok(res.attachments[0].content.length > 3000, "legend + 4 colored lines drew something real");
+});
+
 test("scatter renders too, and the PNG is non-trivial (drawn marks, not a blank card)", async () => {
   const res = await renderMarkdownChartPngs(chartMd(SCATTER_BLOCK));
   assert.equal(res.attachments.length, 1);

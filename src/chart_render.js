@@ -5,8 +5,9 @@
 // md_render.js's idiom (const STYLE strings, small functions, never touch
 // already-escaped text).
 //
-// Grammar: leading "key: value" lines are headers (type, title, source, and —
-// P2 — series); remaining non-empty lines are data rows split on "|". type is
+// Grammar: leading "key: value" lines are headers (type, title, source,
+// series — P2 line/scatter and stacked bar — and shade, single-series bar
+// only); remaining non-empty lines are data rows split on "|". type is
 // one of bar|stat|delta|heat (P1, CSS-native) or line|scatter (P2, rendered
 // to a PNG inside the Worker by chart_png.js and referenced here as
 // <img src="cid:...">). source is REQUIRED (Spec 70's reliability line).
@@ -29,16 +30,21 @@ const DELTA_NEG = "#a02d2d";
 const DELTA_POS = "#006300";
 const BLUE = "#2a78d6";
 
-// Sequential blue ramp, light -> dark, 13 stops.
-const HEAT_RAMP = [
+// Sequential blue ramp, light -> dark, 13 stops. Used by heat cells AND by
+// the opt-in bar `shade: value` encoding (exported for tests).
+export const BLUE_RAMP = [
   "#cde2fb", "#b7d3f6", "#9ec5f4", "#86b6ef", "#6da7ec", "#5598e7", "#3987e5",
   "#2a78d6", "#256abf", "#1c5cab", "#184f95", "#104281", "#0d366b",
 ];
 
-// P2 series palette for line/scatter PNGs. Email-kit doctrine: ONE hue for
-// magnitude marks — more series get labeled, never rainbowed — so extra
-// series are widely-spaced stops of the same blue ramp above.
-export const SERIES_COLORS = [BLUE, "#0d366b", "#86b6ef", "#184f95"];
+// Categorical series palette (validated colorblind-safe set, 2026-07-18):
+// blue, green, magenta, yellow, aqua, orange. FIXED SLOT ORDER — series i
+// always gets slot i, never cycled, never reordered. Slots 2/3/4 (#e87ba4,
+// #eda100, #1baf7a) sit below 3:1 contrast on white; they are legal ONLY
+// because every chart form direct-labels values in INK and names series in a
+// legend — never remove a value label or legend. These are category colors
+// exclusively: status stays on DELTA_POS/DELTA_NEG, which are reserved.
+export const SERIES_COLORS = [BLUE, "#008300", "#e87ba4", "#eda100", "#1baf7a", "#eb6834"];
 
 // Chrome colors chart_png.js reuses so the PNG matches the P1 HTML charts.
 export const CHART_INK = INK;
@@ -54,6 +60,9 @@ const CELL_STYLE = "border:1px solid #ddd;padding:6px 8px;text-align:left;vertic
 
 const BAR_LABEL_STYLE = "font-weight:600;color:" + INK + ";font-size:13px;padding:3px 8px 3px 0;white-space:nowrap";
 const BAR_VALUE_STYLE = "text-align:right;color:" + SECONDARY + ";font-size:13px;padding-left:8px;white-space:nowrap";
+// Stacked-bar total: INK, not SECONDARY — the total is the one number the
+// bar carries (label-visibility obligation for the sub-3:1 palette slots).
+const STACK_TOTAL_STYLE = "text-align:right;color:" + INK + ";font-weight:600;font-size:13px;padding-left:8px;white-space:nowrap";
 const STAT_TILE_STYLE = "padding:12px 14px;border:1px solid " + HAIRLINE + ";border-radius:8px;vertical-align:top";
 const HEAT_HEADER_STYLE = "background-color:" + HEADER_BG + ";font-weight:700;color:" + INK + ";border:1px solid " + HAIRLINE + ";padding:6px 10px";
 const HEAT_ROWLABEL_STYLE = "font-weight:600;color:" + INK + ";border:1px solid " + HAIRLINE + ";padding:6px 10px";
@@ -117,21 +126,160 @@ export function parseChart(escapedLines) {
 
 // ── type renderers: each returns {ok:true, html} or {ok:false, reason} ───
 
-function renderBar(dataLines) {
+// ── bar grammar (single, stacked, shade) ─────────────────────────────────
+//
+// Row forms:
+//   single:  Label | value            (or Label | value | display-override)
+//   stacked: Label | v1 | v2 | ...    (2-6 value columns, all numeric >= 0)
+// An optional "series: NameA | NameB | ..." header names stacked segments.
+// Disambiguation rule (deliberate, keeps the golden-pinned single behavior):
+// a block is STACKED when the series header names >= 2 series, OR when every
+// row uniformly carries >= 3 numeric value columns. Bare 2-value-column rows
+// without a series header stay the legacy `Label | value | display` form —
+// name the series to stack two columns.
+//
+// "shade: value" (opt-in, SINGLE-series only) tints each bar from BLUE_RAMP
+// by its value — min gets the lightest stop, max the darkest, monotone in
+// between (same mapping renderHeat uses). Value labels stay INK text beside
+// the bar; labels never wear the series color. shade on a stacked/multi-
+// series block is a grammar violation and degrades with a named reason.
+//
+// parseBarChart is the ONE bar grammar — renderBar (email HTML) and
+// report_view.js's pageChartRenderer (interactive SVG payload) both consume
+// it, so the two surfaces can never drift. Returns {ok:false, reason} or
+// {ok:true, bar} where bar is
+//   { stacked:false, rows:[{label, value, display}], shadeColors:[hex]|null }
+//   { stacked:true,  names:[..], rows:[{label, values:[..], total}] }
+export const BAR_MAX_SERIES = 6;
+
+export function parseBarChart(headers, dataLines) {
   const rows = dataLines.map(splitRow);
-  if (rows.some((cells) => cells.length < 2 || cells.length > 3)) {
-    return { ok: false, reason: "bar row malformed" };
+  if (rows.some((cells) => cells.length < 2)) return { ok: false, reason: "bar row malformed" };
+
+  let names = null;
+  if (headers && headers.series !== undefined) {
+    names = String(headers.series).split("|").map((s) => s.trim());
+    if (names.some((s) => s === "")) return { ok: false, reason: "series names do not match data columns" };
   }
+
+  const width = rows[0].length;
+  const uniform = rows.every((cells) => cells.length === width);
+  const allNumeric = () => rows.every((cells) => cells.slice(1).every((c) => parseNumber(c) !== null));
+
+  let stacked;
+  if (names && names.length >= 2) {
+    if (!uniform) return { ok: false, reason: "bar ragged rows (cell count mismatch)" };
+    if (names.length !== width - 1) return { ok: false, reason: "series names do not match data columns" };
+    stacked = true;
+  } else {
+    if (names && uniform && names.length !== width - 1) {
+      return { ok: false, reason: "series names do not match data columns" };
+    }
+    stacked = uniform && width >= 4 && allNumeric();
+  }
+
+  const shade = headers && headers.shade !== undefined ? String(headers.shade).trim().toLowerCase() : null;
+  if (shade !== null && shade !== "value") return { ok: false, reason: "unknown shade mode" };
+
+  if (stacked) {
+    if (shade) return { ok: false, reason: "shade requires a single-series bar" };
+    if (width - 1 > BAR_MAX_SERIES) return { ok: false, reason: `bar exceeds ${BAR_MAX_SERIES} series` };
+    if (!names) names = Array.from({ length: width - 1 }, (_v, i) => `Series ${i + 1}`);
+    const out = [];
+    for (const cells of rows) {
+      const values = cells.slice(1).map(parseNumber);
+      if (values.some((v) => v === null || v < 0)) {
+        return { ok: false, reason: "bar value not numeric or negative" };
+      }
+      const total = Number(values.reduce((a, b) => a + b, 0).toFixed(6));
+      out.push({ label: cells[0], values, total });
+    }
+    return { ok: true, bar: { stacked: true, names, rows: out } };
+  }
+
+  if (rows.some((cells) => cells.length > 3)) return { ok: false, reason: "bar row malformed" };
   const values = rows.map((cells) => parseNumber(cells[1]));
   if (values.some((v) => v === null || v < 0)) {
     return { ok: false, reason: "bar value not numeric or negative" };
   }
-  const max = Math.max(...values);
-  const rowsHtml = rows
-    .map((cells, idx) => {
-      const value = values[idx];
-      const display = cells[2] !== undefined ? cells[2] : cells[1];
-      const pct = max === 0 || value === 0 ? 0 : Math.max(2, Math.round((value / max) * 92));
+  let shadeColors = null;
+  if (shade) {
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    shadeColors = values.map((v) => BLUE_RAMP[max === min ? 6 : Math.round(((v - min) / (max - min)) * 12)]);
+  }
+  const out = rows.map((cells, i) => ({
+    label: cells[0],
+    value: values[i],
+    display: cells[2] !== undefined ? cells[2] : cells[1],
+  }));
+  return { ok: true, bar: { stacked: false, rows: out, shadeColors } };
+}
+
+// Legend row above multi-series bars: chip cell (attribute width + nbsp, the
+// same Outlook idiom as the bars) + series name, one pair per series, chips
+// colored by fixed slot so they always match the marks.
+function legendRowHtml(names) {
+  const cells = names
+    .map(
+      (name, s) =>
+        `<td width="10" style="background-color:${SERIES_COLORS[s]};font-size:2px;line-height:10px">&nbsp;</td>` +
+        `<td style="font-size:11px;font-weight:600;color:${SECONDARY};padding:0 14px 0 5px">${name}</td>`
+    )
+    .join("");
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin:2px 0 6px"><tr>${cells}</tr></table>`;
+}
+
+function renderBar(dataLines, headers) {
+  const parsed = parseBarChart(headers, dataLines);
+  if (!parsed.ok) return parsed;
+  const bar = parsed.bar;
+
+  if (bar.stacked) {
+    const maxTotal = Math.max(...bar.rows.map((r) => r.total));
+    const rowsHtml = bar.rows
+      .map((row) => {
+        // Same Outlook idiom as the single bar (attribute widths + &nbsp; +
+        // font-size:2px/line-height:16px), plus a 2px spacer cell between
+        // segments — no background, so the page's white shows through as the
+        // segment gap. Zero-value segments are skipped (no mark, no gap).
+        const segs = row.values.map((v, s) => ({ v, s })).filter((seg) => seg.v > 0);
+        let cells = "";
+        segs.forEach((seg, k) => {
+          if (k > 0) cells += `<td width="2" style="font-size:2px;line-height:16px">&nbsp;</td>`;
+          const pct = Math.max(1, Math.round((seg.v / maxTotal) * 92));
+          const radius = k === segs.length - 1 ? ";border-radius:0 4px 4px 0" : "";
+          cells += `<td width="${pct}%" style="background-color:${SERIES_COLORS[seg.s]};font-size:2px;line-height:16px${radius}">&nbsp;</td>`;
+        });
+        const barCells = segs.length === 0 ? "<td>&nbsp;</td>" : cells + "<td>&nbsp;</td>";
+        return (
+          "<tr>" +
+          `<td style="${BAR_LABEL_STYLE}">${row.label}</td>` +
+          '<td style="width:100%">' +
+          `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse"><tr>` +
+          barCells +
+          "</tr></table>" +
+          "</td>" +
+          // ONE total per bar, at the end, in INK — never a number on every
+          // segment (the legend + tooltips carry per-segment values).
+          `<td style="${STACK_TOTAL_STYLE}">${row.total}</td>` +
+          "</tr>"
+        );
+      })
+      .join("");
+    return {
+      ok: true,
+      html:
+        legendRowHtml(bar.names) +
+        `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse">${rowsHtml}</table>`,
+    };
+  }
+
+  const max = Math.max(...bar.rows.map((r) => r.value));
+  const rowsHtml = bar.rows
+    .map((row, idx) => {
+      const pct = max === 0 || row.value === 0 ? 0 : Math.max(2, Math.round((row.value / max) * 92));
+      const fill = bar.shadeColors ? bar.shadeColors[idx] : BLUE;
       // Email-kit idiom, deliberately: &nbsp; in every cell (empty <td>s
       // collapse to zero height in Outlook and some Gmail modes; font-size:2px
       // keeps the nbsp invisible while line-height:16px sets the bar height),
@@ -140,16 +288,16 @@ function renderBar(dataLines) {
       const barCells =
         pct === 0
           ? "<td>&nbsp;</td>"
-          : `<td width="${pct}%" style="background-color:${BLUE};font-size:2px;line-height:16px;border-radius:0 4px 4px 0">&nbsp;</td><td>&nbsp;</td>`;
+          : `<td width="${pct}%" style="background-color:${fill};font-size:2px;line-height:16px;border-radius:0 4px 4px 0">&nbsp;</td><td>&nbsp;</td>`;
       return (
         "<tr>" +
-        `<td style="${BAR_LABEL_STYLE}">${cells[0]}</td>` +
+        `<td style="${BAR_LABEL_STYLE}">${row.label}</td>` +
         '<td style="width:100%">' +
         `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse"><tr>` +
         barCells +
         "</tr></table>" +
         "</td>" +
-        `<td style="${BAR_VALUE_STYLE}">${display}</td>` +
+        `<td style="${BAR_VALUE_STYLE}">${row.display}</td>` +
         "</tr>"
       );
     })
@@ -239,7 +387,7 @@ function renderHeat(dataLines) {
           const v = parseNumber(c);
           const idx = max === min ? 6 : Math.round(((v - min) / (max - min)) * 12);
           const textColor = idx >= 8 ? "#ffffff" : INK;
-          return `<td style="${HEAT_VALUE_BASE};background-color:${HEAT_RAMP[idx]};color:${textColor}">${c}</td>`;
+          return `<td style="${HEAT_VALUE_BASE};background-color:${BLUE_RAMP[idx]};color:${textColor}">${c}</td>`;
         })
         .join("");
       return `<tr>${rowLabel}${valueCells}</tr>`;
@@ -359,7 +507,7 @@ function renderChartUnsafe(escapedLines, image) {
   if (!TYPE_RENDERERS[type]) return degrade(headers, dataLines, "unknown chart type");
   if (dataLines.length === 0) return degrade(headers, dataLines, "no data rows");
 
-  const result = TYPE_RENDERERS[type](dataLines);
+  const result = TYPE_RENDERERS[type](dataLines, headers);
   if (!result.ok) return degrade(headers, dataLines, result.reason);
 
   const parts = [];

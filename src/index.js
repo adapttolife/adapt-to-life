@@ -4,7 +4,7 @@
 
 import { handleWaiver, handleWaiverDownload, handleWaiverVerify, handleWaiverDoc, runDriveBacklog } from "./waiver.js";
 import { handleEmail, handleAgentMailApi } from "./agent_mail.js";
-import { handleReportView } from "./report_view.js";
+import { handleReportView, handleLibraryView } from "./report_view.js";
 
 const LEAD_TYPES = [
   "Funding for an athlete",
@@ -15,7 +15,7 @@ const LEAD_TYPES = [
 ];
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
     // Signing hub: sign.adapttolife.org is the one place to sign the universal release.
@@ -79,10 +79,16 @@ export default {
     }
 
     // Spec 70 P3: signed report permalink — the interactive twin of an
-    // archived report email. Capability URL (HMAC token), GET only, 404 on
-    // any failure; no index route exists.
+    // archived report email. Capability URL (HMAC token), GET (+ the one
+    // deliberate POST /ask exception), 404 on any failure.
     if (url.pathname.startsWith("/r/")) {
-      return handleReportView(request, env, url);
+      return handleReportView(request, env, url, ctx);
+    }
+
+    // Spec 70 P3 Feature 1: a recipient's report library — every report ever
+    // sent to that address, one capability URL per recipient.
+    if (url.pathname.startsWith("/lib/")) {
+      return handleLibraryView(request, env, url);
     }
 
     // Everything else: the static site.

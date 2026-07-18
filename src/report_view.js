@@ -33,6 +33,14 @@ import {
   CHART_HAIRLINE,
 } from "./chart_render.js";
 import { extractChartBlocks } from "./chart_png.js";
+import { ringBell } from "./agent_mail.js";
+
+// report_view.js <-> agent_mail.js is a circular import (agent_mail.js pulls
+// reportFooterHtml from here for the send/reply footer; this file pulls
+// ringBell from there for the ask-box). Safe: both are hoisted `function`
+// declarations used only inside other functions' bodies, never at module
+// top level, so ESM's live-binding semantics resolve them regardless of
+// which file finishes evaluating first.
 
 // ── token: mint + verify ─────────────────────────────────────────────────
 
@@ -91,6 +99,10 @@ export async function verifyReportToken(secret, token) {
   } catch {
     return null;
   }
+  // Namespace guard: a library token ("lib:<email>.<sig>") shares the same
+  // hmac/base64url primitives (see makeLibraryToken below) but must never
+  // verify HERE — a real message id is always a UUID, never "lib:"-prefixed.
+  if (decoded.startsWith("lib:")) return null;
   const dot = decoded.lastIndexOf(".");
   if (dot <= 0) return null;
   const messageId = decoded.slice(0, dot);
@@ -98,6 +110,44 @@ export async function verifyReportToken(secret, token) {
   const expected = await hmacSha256Hex(secret, messageId);
   if (!timingSafeEqualHex(expected, sig)) return null;
   return messageId;
+}
+
+// Library token: base64url(`lib:${email}.${hmac_sha256_hex(secret, "lib:"+email)}`) —
+// a "lib:" namespace on the SAME hmac/base64url primitives the report token
+// uses (not the same verifier, so a report token can never be replayed as a
+// library token or vice versa: the payload prefix is part of what's signed).
+export async function makeLibraryToken(secret, email) {
+  const addr = String(email || "").toLowerCase().trim();
+  const payload = `lib:${addr}`;
+  const sig = await hmacSha256Hex(secret, payload);
+  return b64urlEncode(`${payload}.${sig}`);
+}
+
+// Returns the verified recipient email, or null on ANY failure — same
+// indistinguishable-404 contract as verifyReportToken.
+export async function verifyLibraryToken(secret, token) {
+  if (!secret || !token) return null;
+  let decoded;
+  try {
+    decoded = b64urlDecode(token);
+  } catch {
+    return null;
+  }
+  if (!decoded.startsWith("lib:")) return null;
+  const dot = decoded.lastIndexOf(".");
+  if (dot <= 4) return null; // "lib:" is 4 chars — payload must carry an address before the dot
+  const payload = decoded.slice(0, dot);
+  const sig = decoded.slice(dot + 1);
+  const expected = await hmacSha256Hex(secret, payload);
+  if (!timingSafeEqualHex(expected, sig)) return null;
+  return payload.slice(4);
+}
+
+// The absolute /lib/ permalink for a recipient's report library.
+export async function libraryLink(env, email) {
+  const token = await makeLibraryToken(env.REPORT_LINK_SECRET, email);
+  const base = String(env.REPORT_LINK_BASE || "https://adapttolife.org").replace(/\/+$/, "");
+  return `${base}/lib/${token}`;
 }
 
 // ── email footer integration ─────────────────────────────────────────────
@@ -121,17 +171,27 @@ export async function reportLink(env, messageId) {
 // only when the message actually carries a chart AND the secret exists.
 // Returns "" in every other case and NEVER throws: a footer is garnish, a
 // failed send over garnish would be the real bug. `body` is the raw API
-// request body ({body_markdown, body_html, ...}).
-export async function reportFooterHtml(env, body, messageId) {
+// request body ({body_markdown, body_html, ...}); `recipient` is the `to`
+// address of THIS send — the footer's report-library link is minted for
+// that recipient specifically (Spec 70 P3, Feature 1). A missing/unparseable
+// recipient degrades to the single "View interactive" link, same as before.
+export async function reportFooterHtml(env, body, messageId, recipient) {
   try {
     const b = body || {};
     if (!env.REPORT_LINK_SECRET) return "";
     if (b.body_markdown == null || b.body_html != null) return ""; // explicit-HTML register: untouched (Spec 53)
     if (!hasChartBlock(b.body_markdown)) return "";
     const href = await reportLink(env, messageId);
+    let libHtml = "";
+    const addr = String(recipient || "").toLowerCase().trim();
+    if (addr) {
+      const libHref = await libraryLink(env, addr);
+      libHtml =
+        ` &middot; Report library &#8594; <a href="${libHref}" style="color:#0b57d0">${libHref}</a>`;
+    }
     return (
       `<div style="font-size:12px;color:${CHART_MUTED};margin:14px 0 0">` +
-      `View interactive &#8594; <a href="${href}" style="color:#0b57d0">${href}</a></div>`
+      `View interactive &#8594; <a href="${href}" style="color:#0b57d0">${href}</a>${libHtml}</div>`
     );
   } catch (err) {
     console.error("report footer failed (sending without it):", err && err.message);
@@ -415,6 +475,101 @@ const RUNTIME_SCRIPT = `
     host.appendChild(svg);
   }
 
+  // Drill-down (Spec 70 P3, Feature 3): a "Data" toggle under every chart
+  // reveals the SAME embedded JSON as a plain table, plus a client-generated
+  // CSV (Blob URL — no new endpoint, no external request). Column headers
+  // come straight from the chart's series/label names, so the table and the
+  // SVG can never disagree about what a row means.
+  function tableData(d) {
+    if (d.type === "bar") {
+      if (d.stacked) {
+        var names = d.names || [];
+        return {
+          headers: ["Label"].concat(names, ["Total"]),
+          rows: d.rows.map(function (r) { return [r[0]].concat(r[1], [r[2]]); }),
+        };
+      }
+      return { headers: ["Label", "Value"], rows: d.rows.map(function (r) { return [r[0], r[1]]; }) };
+    }
+    var names = d.names && d.names.length ? d.names : ["Value"];
+    if (d.type === "scatter") {
+      return {
+        headers: ["X"].concat(names),
+        rows: d.x.map(function (xv, i) {
+          var row = [xv];
+          d.series.forEach(function (s) { row.push(s[i]); });
+          return row;
+        }),
+      };
+    }
+    return {
+      headers: ["Label"].concat(names),
+      rows: d.labels.map(function (lab, i) {
+        var row = [lab];
+        d.series.forEach(function (s) { row.push(s[i]); });
+        return row;
+      }),
+    };
+  }
+  function csvCell(v) {
+    var s = String(v);
+    return /[",\\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }
+  function addDrillDown(host, d) {
+    var td = tableData(d);
+    var wrap = document.createElement("div");
+    wrap.className = "drilldown";
+
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "data-toggle";
+    btn.textContent = "Data";
+
+    var tableHost = document.createElement("div");
+    tableHost.className = "data-table";
+    tableHost.style.display = "none";
+    var table = document.createElement("table");
+    var thead = document.createElement("tr");
+    td.headers.forEach(function (h) {
+      var th = document.createElement("th");
+      th.textContent = h;
+      thead.appendChild(th);
+    });
+    table.appendChild(thead);
+    td.rows.forEach(function (r) {
+      var tr = document.createElement("tr");
+      r.forEach(function (v) {
+        var cell = document.createElement("td");
+        cell.textContent = v;
+        tr.appendChild(cell);
+      });
+      table.appendChild(tr);
+    });
+    tableHost.appendChild(table);
+
+    var csvLines = [td.headers.map(csvCell).join(",")].concat(
+      td.rows.map(function (r) { return r.map(csvCell).join(","); })
+    );
+    var blob = new Blob([csvLines.join("\\n")], { type: "text/csv" });
+    var dl = document.createElement("a");
+    dl.href = URL.createObjectURL(blob);
+    dl.download = "chart-data.csv";
+    dl.className = "csv-link";
+    dl.textContent = "Download CSV";
+    dl.style.display = "none";
+
+    btn.addEventListener("click", function () {
+      var showing = tableHost.style.display !== "none";
+      tableHost.style.display = showing ? "none" : "block";
+      dl.style.display = showing ? "none" : "inline";
+    });
+
+    wrap.appendChild(btn);
+    wrap.appendChild(dl);
+    wrap.appendChild(tableHost);
+    host.appendChild(wrap);
+  }
+
   var hosts = document.querySelectorAll(".ichart");
   for (var i = 0; i < hosts.length; i += 1) {
     var host = hosts[i];
@@ -423,6 +578,7 @@ const RUNTIME_SCRIPT = `
     try {
       if (data.type === "bar") drawBar(host, data);
       else drawXY(host, data);
+      addDrillDown(host, data);
     } catch (e) { /* a broken chart never breaks the page */ }
   }
 })();
@@ -446,9 +602,54 @@ const PAGE_CSS = `
   #ctip { position: absolute; display: none; pointer-events: none; z-index: 10;
     background: ${CHART_INK}; color: #ffffff; font-size: 12px; line-height: 1.4;
     padding: 4px 8px; border-radius: 4px; white-space: pre; }
+  .drilldown { margin: 6px 0 0; }
+  .data-toggle { font-size: 12px; font-weight: 600; color: ${CHART_SECONDARY};
+    background: #f4f6f8; border: 1px solid ${CHART_HAIRLINE}; border-radius: 4px;
+    padding: 3px 10px; cursor: pointer; }
+  .csv-link { font-size: 12px; margin-left: 10px; color: #0b57d0; }
+  .data-table { margin: 8px 0 0; overflow-x: auto; }
+  .data-table table { border-collapse: collapse; font-size: 12px; width: 100%; }
+  .data-table th, .data-table td { text-align: left; padding: 4px 10px 4px 0;
+    border-bottom: 1px solid ${CHART_HAIRLINE}; white-space: nowrap; }
+  .data-table th { color: ${CHART_SECONDARY}; font-weight: 600; }
+  .ask-box { margin: 32px 0 0; padding-top: 20px; border-top: 1px solid ${CHART_HAIRLINE}; }
+  .ask-box h2 { font-size: 15px; margin: 0 0 8px; color: ${CHART_INK}; }
+  .ask-box textarea { width: 100%; box-sizing: border-box; min-height: 90px;
+    font-family: inherit; font-size: 14px; padding: 8px; border: 1px solid ${CHART_HAIRLINE};
+    border-radius: 6px; resize: vertical; }
+  .ask-box button { margin-top: 10px; font-size: 13px; font-weight: 600; color: #ffffff;
+    background: #0b57d0; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; }
+  .lib-filter { width: 100%; box-sizing: border-box; font-size: 14px; padding: 8px 10px;
+    border: 1px solid ${CHART_HAIRLINE}; border-radius: 6px; margin: 4px 0 16px; }
+  .lib-list { list-style: none; margin: 0; padding: 0; }
+  .lib-row { display: flex; gap: 12px; align-items: baseline; padding: 8px 0;
+    border-bottom: 1px solid ${CHART_HAIRLINE}; font-size: 13px; }
+  .lib-date { color: ${CHART_SECONDARY}; flex: 0 0 140px; }
+  .lib-from { color: ${CHART_SECONDARY}; flex: 0 0 200px; overflow: hidden; text-overflow: ellipsis; }
+  .lib-subject { color: #0b57d0; text-decoration: none; }
+  .lib-subject:hover { text-decoration: underline; }
+  .lib-empty { color: ${CHART_SECONDARY}; font-size: 13px; padding: 12px 0; }
 `;
 
-function renderReportPage(msg) {
+// The ask-box (Feature 2): one textarea + submit, posting to the SAME token's
+// /ask sub-route — the capability token that got the reader onto this page IS
+// the auth for asking a question about it (the one deliberate exception to
+// GET-only). `token` is server-minted, never user input, but escapeHtml costs
+// nothing and keeps the rule ("escape everything derived") uniform.
+function renderAskForm(token, agentName) {
+  const agent = escapeHtml(agentName || "the agent");
+  const safeToken = escapeHtml(token);
+  return (
+    '<section class="ask-box">' +
+    `<h2>Ask ${agent} about this report</h2>` +
+    `<form method="post" action="/r/${safeToken}/ask">` +
+    '<textarea name="question" maxlength="2000" required placeholder="Type your question&#8230;"></textarea>' +
+    `<div><button type="submit">Ask ${agent} about this report</button></div>` +
+    "</form></section>"
+  );
+}
+
+function renderReportPage(msg, token, agentName) {
   const subject = escapeHtml(msg.subject || "(no subject)");
   const meta = [
     msg.from_addr ? `From ${escapeHtml(msg.from_addr)}` : null,
@@ -466,6 +667,7 @@ function renderReportPage(msg) {
     `<h1 class="report-subject">${subject}</h1>` +
     (meta ? `<p class="report-meta">${meta}</p>` : "") +
     bodyHtml +
+    renderAskForm(token, agentName) +
     "</main>" +
     `<script>${RUNTIME_SCRIPT}</script>` +
     "</body></html>"
@@ -491,10 +693,18 @@ function notFound() {
 
 // GET /r/<token> — the report viewer. Reads the archived message straight from
 // the D1 messages table (the SAME store apiRead serves; there is no second
-// copy of report content anywhere).
-export async function handleReportView(request, env, url) {
+// copy of report content anywhere). POST /r/<token>/ask — Feature 2's one
+// deliberate GET-only exception, split out to handleAsk below.
+export async function handleReportView(request, env, url, ctx) {
+  const rawPath = url.pathname.slice("/r/".length);
+  const askMatch = rawPath.match(/^([^/]+)\/ask$/);
+  if (askMatch) {
+    if (request.method !== "POST") return notFound();
+    return handleAsk(request, env, askMatch[1], ctx);
+  }
+
   if (request.method !== "GET") return notFound();
-  const token = url.pathname.slice("/r/".length);
+  const token = rawPath;
   if (!token || token.includes("/")) return notFound();
 
   const messageId = await verifyReportToken(env.REPORT_LINK_SECRET, token);
@@ -503,7 +713,7 @@ export async function handleReportView(request, env, url) {
   let msg;
   try {
     msg = await env.AGENT_MAIL_DB
-      .prepare(`SELECT id, subject, from_addr, created_at, body_markdown FROM messages WHERE id = ?`)
+      .prepare(`SELECT id, thread_id, subject, from_addr, created_at, body_markdown FROM messages WHERE id = ?`)
       .bind(messageId)
       .first();
   } catch (err) {
@@ -512,7 +722,23 @@ export async function handleReportView(request, env, url) {
   }
   if (!msg || msg.body_markdown == null) return notFound();
 
-  return new Response(renderReportPage(msg), {
+  // Best-effort agent name for the ask-box button label ("Ask charlie about
+  // this report"). A missing/failed lookup degrades to a generic label —
+  // never blocks the page, never turns into a second 404 mode.
+  let agentName = "";
+  if (msg.thread_id) {
+    try {
+      const thread = await env.AGENT_MAIL_DB
+        .prepare(`SELECT assigned_agent FROM threads WHERE id = ?`)
+        .bind(msg.thread_id)
+        .first();
+      agentName = (thread && thread.assigned_agent) || "";
+    } catch (err) {
+      console.error("report view thread lookup failed (ask box degrades):", err && err.message);
+    }
+  }
+
+  return new Response(renderReportPage(msg, token, agentName), {
     headers: {
       "Content-Type": "text/html; charset=utf-8",
       // Liberty One confidential content behind a capability URL: never
@@ -523,6 +749,250 @@ export async function handleReportView(request, env, url) {
       "X-Content-Type-Options": "nosniff",
       // Everything is inline by design; the CSP makes "zero external
       // requests" a browser-enforced invariant, not a code-review hope.
+      // form-action 'self' (Feature 2) lets the ask-box's <form> post back to
+      // this SAME origin's /ask sub-route without loosening anything else —
+      // default-src stays 'none'.
+      "Content-Security-Policy": "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; form-action 'self'",
+    },
+  });
+}
+
+// ── ask-the-agent (Feature 2) ────────────────────────────────────────────
+
+const ASK_MARKER = "[asked from the report page]";
+const ASK_MAX_LEN = 2000;
+const ASK_DAILY_LIMIT = 10;
+
+// Strip tags, collapse whitespace, enforce length. The question is untrusted
+// DATA end-to-end: it is never re-rendered as HTML by this Worker (it lands
+// in D1 as body_text and leaves by ordinary email, same as any inbound
+// message) — this sanitizer's job is hygiene at the door, not an escaping
+// contract for a template that doesn't exist.
+function sanitizeQuestion(raw) {
+  const noTags = String(raw == null ? "" : raw).replace(/<[^>]*>/g, " ");
+  return noTags.replace(/\s+/g, " ").trim().slice(0, ASK_MAX_LEN);
+}
+
+function tryLaterPage() {
+  return new Response("You've asked enough questions about this report for today — please try again tomorrow.", {
+    status: 429,
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "private, no-store",
+      "X-Robots-Tag": "noindex, nofollow",
+      "Referrer-Policy": "no-referrer",
+    },
+  });
+}
+
+function askConfirmationPage(agentName) {
+  const agent = escapeHtml(agentName || "the agent");
+  const html =
+    "<!doctype html>\n" +
+    '<html lang="en"><head><meta charset="utf-8">' +
+    '<meta name="viewport" content="width=device-width, initial-scale=1">' +
+    '<meta name="robots" content="noindex, nofollow">' +
+    "<title>Sent</title>" +
+    `<style>body{margin:0;background:#fff;color:${CHART_INK};font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif}` +
+    "main{max-width:480px;margin:96px auto;padding:0 20px;font-size:15px}</style>" +
+    "</head><body><main>" +
+    `<p>Sent &#8212; ${agent} will reply to your inbox.</p>` +
+    "</main></body></html>";
+  return new Response(html, {
+    headers: {
+      "Content-Type": "text/html; charset=utf-8",
+      "Cache-Control": "private, no-store",
+      "X-Robots-Tag": "noindex, nofollow",
+      "Referrer-Policy": "no-referrer",
+      "Content-Security-Policy": "default-src 'none'",
+    },
+  });
+}
+
+// POST /r/<token>/ask — verifies the SAME capability token as the GET route
+// (possession of the link is the auth for asking about it too), then inserts
+// the sanitized question as an ordinary inbound message on the report's own
+// thread, from the thread's counterparty address, and rings the assigned
+// agent's bell via agent_mail.js's ringBell — the SAME wake path an inbound
+// email uses, not a parallel one. The agent's reply flows out by ordinary
+// email; nothing on that side is this handler's job.
+async function handleAsk(request, env, token, ctx) {
+  const messageId = await verifyReportToken(env.REPORT_LINK_SECRET, token);
+  if (!messageId) return notFound();
+
+  let msg;
+  try {
+    msg = await env.AGENT_MAIL_DB
+      .prepare(`SELECT id, thread_id, subject FROM messages WHERE id = ?`)
+      .bind(messageId)
+      .first();
+  } catch (err) {
+    console.error("ask: message read failed:", err && err.message);
+    return notFound();
+  }
+  if (!msg || !msg.thread_id) return notFound();
+
+  let thread;
+  try {
+    thread = await env.AGENT_MAIL_DB.prepare(`SELECT * FROM threads WHERE id = ?`).bind(msg.thread_id).first();
+  } catch (err) {
+    console.error("ask: thread read failed:", err && err.message);
+    return notFound();
+  }
+  if (!thread) return notFound();
+
+  let question = "";
+  try {
+    const form = await request.formData();
+    question = sanitizeQuestion(form.get("question"));
+  } catch {
+    try {
+      const body = await request.json();
+      question = sanitizeQuestion(body && body.question);
+    } catch {
+      return notFound();
+    }
+  }
+  if (!question) return notFound();
+
+  // Max ASK_DAILY_LIMIT asks per message_id per UTC day: counted on this
+  // report's own thread by the ask marker + "today" (same `datetime('now',
+  // 'start of day')` idiom Spec 80's ping-pong halt uses in agent_mail.js).
+  let askCount;
+  try {
+    askCount = await env.AGENT_MAIL_DB
+      .prepare(
+        `SELECT COUNT(*) AS n FROM messages
+         WHERE thread_id = ? AND direction = 'in' AND body_text LIKE ?
+           AND created_at > datetime('now', 'start of day')`
+      )
+      .bind(thread.id, `${ASK_MARKER}%`)
+      .first();
+  } catch (err) {
+    console.error("ask: rate-limit read failed:", err && err.message);
+    return notFound();
+  }
+  if ((askCount?.n || 0) >= ASK_DAILY_LIMIT) return tryLaterPage();
+
+  const subject = /^re:/i.test(msg.subject || "") ? msg.subject : `Re: ${msg.subject || ""}`.trim();
+  const bodyText = `${ASK_MARKER}\n\n${question}`;
+  const newId = crypto.randomUUID();
+  try {
+    await env.AGENT_MAIL_DB
+      .prepare(
+        `INSERT INTO messages (id, thread_id, direction, from_addr, to_addr, subject, body_text, is_machine)
+         VALUES (?, ?, 'in', ?, ?, ?, ?, 0)`
+      )
+      .bind(newId, thread.id, thread.from_addr, thread.inbox, subject, bodyText)
+      .run();
+    await env.AGENT_MAIL_DB.prepare(`UPDATE threads SET last_at = datetime('now') WHERE id = ?`).bind(thread.id).run();
+  } catch (err) {
+    console.error("ask: insert failed:", err && err.message);
+    return notFound();
+  }
+
+  const bellArgs = { inbox: thread.inbox, thread_id: thread.id, from: thread.from_addr, subject, message_uuid: newId };
+  const ring = () =>
+    ringBell(env, thread.assigned_agent, bellArgs).catch((e) => console.error("ask: bell failed:", e && e.message));
+  // Real Workers runtime: keep the bell POST alive past the response with
+  // waitUntil (Spec 47 best-effort semantics). Tests call this without a ctx
+  // — await inline instead so the mocked bell call is observable synchronously.
+  if (ctx && typeof ctx.waitUntil === "function") {
+    ctx.waitUntil(ring());
+  } else {
+    await ring();
+  }
+
+  return askConfirmationPage(thread.assigned_agent);
+}
+
+// ── report library (Feature 1) ───────────────────────────────────────────
+
+const LIBRARY_RUNTIME_SCRIPT = `
+(function () {
+  "use strict";
+  var input = document.getElementById("libFilter");
+  var items = document.querySelectorAll(".lib-row");
+  if (!input) return;
+  input.addEventListener("input", function () {
+    var q = input.value.trim().toLowerCase();
+    for (var i = 0; i < items.length; i += 1) {
+      var subj = items[i].getAttribute("data-subject") || "";
+      items[i].style.display = subj.indexOf(q) >= 0 ? "" : "none";
+    }
+  });
+})();
+`;
+
+function renderLibraryPage(email, rows) {
+  const rowsHtml = rows
+    .map((r) => {
+      const subject = escapeHtml(r.subject || "(no subject)");
+      const from = escapeHtml(r.from_addr || "");
+      const date = escapeHtml(r.created_at || "");
+      return (
+        `<li class="lib-row" data-subject="${subject.toLowerCase()}">` +
+        `<span class="lib-date">${date}</span>` +
+        `<span class="lib-from">${from}</span>` +
+        `<a class="lib-subject" href="${r.href}">${subject}</a>` +
+        "</li>"
+      );
+    })
+    .join("");
+  return (
+    "<!doctype html>\n" +
+    '<html lang="en"><head><meta charset="utf-8">' +
+    '<meta name="viewport" content="width=device-width, initial-scale=1">' +
+    '<meta name="robots" content="noindex, nofollow">' +
+    "<title>Report library</title>" +
+    `<style>${PAGE_CSS}</style>` +
+    "</head><body><main>" +
+    '<h1 class="report-subject">Report library</h1>' +
+    `<p class="report-meta">${escapeHtml(email)}</p>` +
+    '<input type="text" id="libFilter" class="lib-filter" placeholder="Filter by subject&#8230;" autocomplete="off">' +
+    `<ul class="lib-list">${rowsHtml || '<li class="lib-empty">No reports yet.</li>'}</ul>` +
+    "</main>" +
+    `<script>${LIBRARY_RUNTIME_SCRIPT}</script>` +
+    "</body></html>"
+  );
+}
+
+// GET /lib/<token> — a recipient's report library: every report ever sent to
+// that address, newest first, with a client-side subject filter. Same token
+// discipline, same 404s, same security headers as /r/ (Feature 1).
+export async function handleLibraryView(request, env, url) {
+  if (request.method !== "GET") return notFound();
+  const token = url.pathname.slice("/lib/".length);
+  if (!token || token.includes("/")) return notFound();
+
+  const email = await verifyLibraryToken(env.REPORT_LINK_SECRET, token);
+  if (!email) return notFound();
+
+  let rows;
+  try {
+    const { results } = await env.AGENT_MAIL_DB
+      .prepare(
+        `SELECT id, subject, from_addr, created_at FROM messages
+         WHERE lower(to_addr) = ? AND body_markdown IS NOT NULL
+         ORDER BY created_at DESC LIMIT 200`
+      )
+      .bind(email)
+      .all();
+    rows = results || [];
+  } catch (err) {
+    console.error("library view D1 read failed:", err && err.message);
+    return notFound();
+  }
+
+  const links = await Promise.all(rows.map(async (r) => ({ ...r, href: await reportLink(env, r.id) })));
+
+  return new Response(renderLibraryPage(email, links), {
+    headers: {
+      "Content-Type": "text/html; charset=utf-8",
+      "X-Robots-Tag": "noindex, nofollow",
+      "Referrer-Policy": "no-referrer",
+      "Cache-Control": "private, no-store",
+      "X-Content-Type-Options": "nosniff",
       "Content-Security-Policy": "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'",
     },
   });

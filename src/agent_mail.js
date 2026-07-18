@@ -255,7 +255,10 @@ async function senderAllowed(db, fromAddr) {
 // POST a signed "you've got mail" event to bell-<agent>.alectranel.com. Best
 // effort by design (Spec 47 decision 7): a missed bell means the mail waits for
 // the next touch — ingestion and the D1 record are never at risk.
-async function ringBell(env, agent, { inbox, thread_id, from, subject, message_uuid }) {
+// Exported (Spec 70 P3): the /r/<token>/ask handler in report_view.js rings the
+// SAME bell for a question asked from the report page — one wake path, not a
+// parallel one.
+export async function ringBell(env, agent, { inbox, thread_id, from, subject, message_uuid }) {
   let secrets = {};
   try { secrets = JSON.parse(env.MAIL_BELL_SECRETS || "{}"); } catch { /* unset or malformed = no bells */ }
   const secret = secrets[agent];
@@ -604,7 +607,7 @@ async function apiReply(env, body, caller) {
   // Footer appears only in the markdown register, only with chart blocks,
   // only when REPORT_LINK_SECRET exists — "" otherwise, never an error.
   const msgId = crypto.randomUUID();
-  const footer = await reportFooterHtml(env, body, msgId);
+  const footer = await reportFooterHtml(env, body, msgId, to);
   const htmlOut = body_html ? body_html + footer : undefined;
 
   let sent;
@@ -690,7 +693,7 @@ async function apiSend(env, body, caller) {
   // Spec 70 P3: mint the D1 message id BEFORE the send — the interactive-
   // report footer link is an HMAC of this id (same contract as /reply).
   const msgId = crypto.randomUUID();
-  const footer = await reportFooterHtml(env, body, msgId);
+  const footer = await reportFooterHtml(env, body, msgId, toAddr);
   const htmlOut = body_html ? body_html + footer : undefined;
 
   // Email Sending forbids a custom Message-ID (whitelist + X-* only), so we

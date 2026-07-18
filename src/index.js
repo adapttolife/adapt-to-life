@@ -4,6 +4,7 @@
 
 import { handleWaiver, handleWaiverDownload, handleWaiverVerify, handleWaiverDoc, runDriveBacklog } from "./waiver.js";
 import { handleEmail, handleAgentMailApi } from "./agent_mail.js";
+import { handleReportView } from "./report_view.js";
 
 const LEAD_TYPES = [
   "Funding for an athlete",
@@ -75,6 +76,13 @@ export default {
     // Spec 32 agent email: authenticated API the agentos MCP calls (list/read/reply/status).
     if (url.pathname.startsWith("/api/agent-mail/")) {
       return handleAgentMailApi(request, env, url);
+    }
+
+    // Spec 70 P3: signed report permalink — the interactive twin of an
+    // archived report email. Capability URL (HMAC token), GET only, 404 on
+    // any failure; no index route exists.
+    if (url.pathname.startsWith("/r/")) {
+      return handleReportView(request, env, url);
     }
 
     // Everything else: the static site.

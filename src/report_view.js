@@ -276,10 +276,13 @@ function pageChartRenderer(escapedLines) {
     const json = JSON.stringify(payload).replace(/</g, "\\u003c");
     const parts = [];
     if (esc.title) {
-      parts.push(`<div style="font-size:14px;font-weight:700;color:${CHART_INK};margin:16px 0 6px">${esc.title}</div>`);
+      // Page-owned chrome (not chart_render.js's email HTML) — reads the
+      // same CSS custom properties as the rest of the page, so the title
+      // follows dark mode like everything else on /r/.
+      parts.push(`<div style="font-size:14px;font-weight:700;color:var(--ink);margin:16px 0 6px">${esc.title}</div>`);
     }
     parts.push(`<div class="ichart"><script type="application/json">${json}</script></div>`);
-    parts.push(`<div style="font-size:12px;color:${CHART_MUTED};margin:4px 0 12px">Source: ${esc.source}</div>`);
+    parts.push(`<div style="font-size:12px;color:var(--muted);margin:4px 0 12px">Source: ${esc.source}</div>`);
     return parts.join("");
   } catch {
     return renderChart(escapedLines);
@@ -301,6 +304,27 @@ const RUNTIME_SCRIPT = `
   var MUTED = ${JSON.stringify(CHART_MUTED)};
   var HAIR = ${JSON.stringify(CHART_HAIRLINE)};
   var SVGNS = "http://www.w3.org/2000/svg";
+
+  // Dark mode (Spec 70 dark rung): the five bindings above are the LIGHT
+  // fallback baked at render time (never lost even if a CSS custom-property
+  // read fails) — refreshTheme() overwrites the SAME bindings from the live
+  // --ink/--secondary/--muted/--hairline/--series-N custom properties on
+  // :root (ROOT_VARS_CSS swaps those under prefers-color-scheme:dark) before
+  // every draw, so drawBar/drawStack/drawXY/legendRow below never need to
+  // change — they already read these variables by name.
+  function cssVar(name, fallback) {
+    if (typeof getComputedStyle !== "function") return fallback;
+    var v = getComputedStyle(document.documentElement).getPropertyValue(name);
+    v = v && v.trim();
+    return v || fallback;
+  }
+  function refreshTheme() {
+    INK = cssVar("--ink", INK);
+    SEC = cssVar("--secondary", SEC);
+    MUTED = cssVar("--muted", MUTED);
+    HAIR = cssVar("--hairline", HAIR);
+    COLORS = [0, 1, 2, 3, 4, 5].map(function (i) { return cssVar("--series-" + i, COLORS[i]); });
+  }
 
   var tip = document.createElement("div");
   tip.id = "ctip";
@@ -570,65 +594,156 @@ const RUNTIME_SCRIPT = `
     host.appendChild(wrap);
   }
 
-  var hosts = document.querySelectorAll(".ichart");
-  for (var i = 0; i < hosts.length; i += 1) {
-    var host = hosts[i];
-    var data;
-    try { data = JSON.parse(host.firstElementChild.textContent); } catch (e) { continue; }
-    try {
-      if (data.type === "bar") drawBar(host, data);
-      else drawXY(host, data);
-      addDrillDown(host, data);
-    } catch (e) { /* a broken chart never breaks the page */ }
+  // Redraw-on-change (dark rung): each host keeps its embedded JSON <script>
+  // as its FIRST child forever — clearHost strips everything drawn AFTER it
+  // (the previous SVG + legend + drilldown) so a redraw never duplicates
+  // marks. The one stateful side effect from the first draw, the drilldown's
+  // CSV Blob URL, gets revoked before the host is cleared so redraws don't
+  // leak object URLs.
+  function clearHost(host) {
+    var oldLink = host.querySelector(".csv-link");
+    if (oldLink && oldLink.href) {
+      try { URL.revokeObjectURL(oldLink.href); } catch (e) { /* not a blob URL yet */ }
+    }
+    while (host.children.length > 1) host.removeChild(host.lastChild);
+  }
+
+  function drawAll() {
+    refreshTheme();
+    var hosts = document.querySelectorAll(".ichart");
+    for (var i = 0; i < hosts.length; i += 1) {
+      var host = hosts[i];
+      clearHost(host);
+      var data;
+      try { data = JSON.parse(host.firstElementChild.textContent); } catch (e) { continue; }
+      try {
+        if (data.type === "bar") drawBar(host, data);
+        else drawXY(host, data);
+        addDrillDown(host, data);
+      } catch (e) { /* a broken chart never breaks the page */ }
+    }
+  }
+
+  drawAll();
+
+  // Dark is SELECTED via prefers-color-scheme, never auto-flipped by this
+  // script — but once the OS/browser flips it the CSS custom properties on
+  // :root change instantly, so a full redraw (cheap: same JSON payload,
+  // charts are already drawn client-side) is the simplest way to repaint
+  // every mark, legend, gridline, axis label, and shade fill already on the
+  // page. addListener is the pre-Safari-14 fallback for browsers without
+  // MediaQueryList.addEventListener.
+  if (typeof window.matchMedia === "function") {
+    var darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var onSchemeChange = function () { drawAll(); };
+    if (darkQuery.addEventListener) darkQuery.addEventListener("change", onSchemeChange);
+    else if (darkQuery.addListener) darkQuery.addListener(onSchemeChange);
   }
 })();
 `;
 
 // ── the page ─────────────────────────────────────────────────────────────
 
+// Dark mode (Spec 70 dark rung): SELECTED via prefers-color-scheme, never
+// auto-flipped by script. One set of CSS custom properties lives at :root —
+// light values default to EXACTLY the hex chart_render.js's shared chrome
+// already uses (CHART_INK/SECONDARY/MUTED/HAIRLINE) and SERIES_COLORS (the
+// same 6-slot categorical set the email renderer uses); the media query
+// below swaps every one of them for the validated dark palette. Every rule
+// in PAGE_CSS and every inline template in this file reads a var(...)
+// instead of a baked hex so the SAME markup repaints under either scheme.
+// This covers report_view.js's OWN page chrome and the inline SVG runtime
+// (RUNTIME_SCRIPT re-reads these via getComputedStyle at draw time) — it
+// does NOT reach chart_render.js's stat/delta/heat P1 HTML or the degrade
+// table, which return literal hex from the shared EMAIL renderer (untouched
+// by design, see the module banner): those two block types stay light-only
+// on the page too. See the branch report for that known limitation.
+const DARK_SERIES_COLORS = ["#3987e5", "#008300", "#d55181", "#c98500", "#199e70", "#d95926"];
+
+const ROOT_VARS_CSS = `
+  :root {
+    color-scheme: light dark;
+    --ink: ${CHART_INK};
+    --secondary: ${CHART_SECONDARY};
+    --muted: ${CHART_MUTED};
+    --hairline: ${CHART_HAIRLINE};
+    --surface: #ffffff;
+    --chip-bg: #f4f6f8;
+    --accent: #0b57d0;
+    --tooltip-bg: ${CHART_INK};
+    --tooltip-text: #ffffff;
+    --series-0: ${SERIES_COLORS[0]};
+    --series-1: ${SERIES_COLORS[1]};
+    --series-2: ${SERIES_COLORS[2]};
+    --series-3: ${SERIES_COLORS[3]};
+    --series-4: ${SERIES_COLORS[4]};
+    --series-5: ${SERIES_COLORS[5]};
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #ffffff;
+      --secondary: #c3c2b7;
+      --muted: #c3c2b7;
+      --hairline: #3a3936;
+      --surface: #1a1a19;
+      --chip-bg: #3a3936;
+      --tooltip-bg: #2a2a28;
+      --tooltip-text: #ffffff;
+      --series-0: ${DARK_SERIES_COLORS[0]};
+      --series-1: ${DARK_SERIES_COLORS[1]};
+      --series-2: ${DARK_SERIES_COLORS[2]};
+      --series-3: ${DARK_SERIES_COLORS[3]};
+      --series-4: ${DARK_SERIES_COLORS[4]};
+      --series-5: ${DARK_SERIES_COLORS[5]};
+    }
+  }
+`;
+
 const PAGE_CSS = `
-  body { margin: 0; background: #ffffff; color: ${CHART_INK};
+  ${ROOT_VARS_CSS}
+  body { margin: 0; background: var(--surface); color: var(--ink);
     font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif; }
   main { max-width: 720px; margin: 0 auto; padding: 32px 20px 64px; }
   h1.report-subject { font-size: 24px; line-height: 1.25; margin: 0 0 4px; }
-  .report-meta { font-size: 13px; color: ${CHART_SECONDARY}; margin: 0 0 8px;
-    padding-bottom: 12px; border-bottom: 1px solid ${CHART_HAIRLINE}; }
+  .report-meta { font-size: 13px; color: var(--secondary); margin: 0 0 8px;
+    padding-bottom: 12px; border-bottom: 1px solid var(--hairline); }
   .ichart { margin: 4px 0; }
   .ichart svg text { font-family: inherit; }
   .legend { display: flex; gap: 16px; align-items: center; font-size: 11px;
-    font-weight: 600; color: ${CHART_SECONDARY}; margin: 0 0 4px 44px; }
+    font-weight: 600; color: var(--secondary); margin: 0 0 4px 44px; }
   .legend .sw { display: inline-block; width: 10px; height: 10px;
     border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
   #ctip { position: absolute; display: none; pointer-events: none; z-index: 10;
-    background: ${CHART_INK}; color: #ffffff; font-size: 12px; line-height: 1.4;
+    background: var(--tooltip-bg); color: var(--tooltip-text); font-size: 12px; line-height: 1.4;
     padding: 4px 8px; border-radius: 4px; white-space: pre; }
   .drilldown { margin: 6px 0 0; }
-  .data-toggle { font-size: 12px; font-weight: 600; color: ${CHART_SECONDARY};
-    background: #f4f6f8; border: 1px solid ${CHART_HAIRLINE}; border-radius: 4px;
+  .data-toggle { font-size: 12px; font-weight: 600; color: var(--secondary);
+    background: var(--chip-bg); border: 1px solid var(--hairline); border-radius: 4px;
     padding: 3px 10px; cursor: pointer; }
-  .csv-link { font-size: 12px; margin-left: 10px; color: #0b57d0; }
+  .csv-link { font-size: 12px; margin-left: 10px; color: var(--accent); }
   .data-table { margin: 8px 0 0; overflow-x: auto; }
   .data-table table { border-collapse: collapse; font-size: 12px; width: 100%; }
   .data-table th, .data-table td { text-align: left; padding: 4px 10px 4px 0;
-    border-bottom: 1px solid ${CHART_HAIRLINE}; white-space: nowrap; }
-  .data-table th { color: ${CHART_SECONDARY}; font-weight: 600; }
-  .ask-box { margin: 32px 0 0; padding-top: 20px; border-top: 1px solid ${CHART_HAIRLINE}; }
-  .ask-box h2 { font-size: 15px; margin: 0 0 8px; color: ${CHART_INK}; }
+    border-bottom: 1px solid var(--hairline); white-space: nowrap; }
+  .data-table th { color: var(--secondary); font-weight: 600; }
+  .ask-box { margin: 32px 0 0; padding-top: 20px; border-top: 1px solid var(--hairline); }
+  .ask-box h2 { font-size: 15px; margin: 0 0 8px; color: var(--ink); }
   .ask-box textarea { width: 100%; box-sizing: border-box; min-height: 90px;
-    font-family: inherit; font-size: 14px; padding: 8px; border: 1px solid ${CHART_HAIRLINE};
-    border-radius: 6px; resize: vertical; }
+    font-family: inherit; font-size: 14px; padding: 8px; border: 1px solid var(--hairline);
+    border-radius: 6px; resize: vertical; background: var(--surface); color: var(--ink); }
   .ask-box button { margin-top: 10px; font-size: 13px; font-weight: 600; color: #ffffff;
-    background: #0b57d0; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; }
+    background: var(--accent); border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; }
   .lib-filter { width: 100%; box-sizing: border-box; font-size: 14px; padding: 8px 10px;
-    border: 1px solid ${CHART_HAIRLINE}; border-radius: 6px; margin: 4px 0 16px; }
+    border: 1px solid var(--hairline); border-radius: 6px; margin: 4px 0 16px;
+    background: var(--surface); color: var(--ink); }
   .lib-list { list-style: none; margin: 0; padding: 0; }
   .lib-row { display: flex; gap: 12px; align-items: baseline; padding: 8px 0;
-    border-bottom: 1px solid ${CHART_HAIRLINE}; font-size: 13px; }
-  .lib-date { color: ${CHART_SECONDARY}; flex: 0 0 140px; }
-  .lib-from { color: ${CHART_SECONDARY}; flex: 0 0 200px; overflow: hidden; text-overflow: ellipsis; }
-  .lib-subject { color: #0b57d0; text-decoration: none; }
+    border-bottom: 1px solid var(--hairline); font-size: 13px; }
+  .lib-date { color: var(--secondary); flex: 0 0 140px; }
+  .lib-from { color: var(--secondary); flex: 0 0 200px; overflow: hidden; text-overflow: ellipsis; }
+  .lib-subject { color: var(--accent); text-decoration: none; }
   .lib-subject:hover { text-decoration: underline; }
-  .lib-empty { color: ${CHART_SECONDARY}; font-size: 13px; padding: 12px 0; }
+  .lib-empty { color: var(--secondary); font-size: 13px; padding: 12px 0; }
 `;
 
 // The ask-box (Feature 2): one textarea + submit, posting to the SAME token's
@@ -793,7 +908,7 @@ function askConfirmationPage(agentName) {
     '<meta name="viewport" content="width=device-width, initial-scale=1">' +
     '<meta name="robots" content="noindex, nofollow">' +
     "<title>Sent</title>" +
-    `<style>body{margin:0;background:#fff;color:${CHART_INK};font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif}` +
+    `<style>${ROOT_VARS_CSS}body{margin:0;background:var(--surface);color:var(--ink);font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif}` +
     "main{max-width:480px;margin:96px auto;padding:0 20px;font-size:15px}</style>" +
     "</head><body><main>" +
     `<p>Sent &#8212; ${agent} will reply to your inbox.</p>` +

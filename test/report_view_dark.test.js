@@ -134,12 +134,82 @@ test("dark: the inline runtime reads mode via matchMedia and redraws on change (
   assert.match(html, /matchMedia\("\(prefers-color-scheme: dark\)"\)/);
   assert.match(html, /addEventListener\("change", onSchemeChange\)/);
   // Draw functions still read the SAME INK/SEC/MUTED/HAIR/COLORS bindings
-  // (existing pinned call sites in report_view.test.js) — refreshTheme()
-  // overwrites them from getComputedStyle before every draw instead of a
-  // second parallel color path.
-  assert.match(html, /function refreshTheme\(/);
-  assert.match(html, /getComputedStyle\(document\.documentElement\)/);
+  // (existing pinned call sites in report_view.test.js) — refreshTheme(host)
+  // overwrites them from getComputedStyle(host) before every draw instead of
+  // a second parallel color path. Post paper-card fix: theme is resolved AT
+  // THE CHART HOST (so a host inside .report-body inherits the card's pinned
+  // light values) rather than from document.documentElement.
+  assert.match(html, /function refreshTheme\(host\)/);
+  assert.match(html, /getComputedStyle\(el\)/);
+  assert.ok(!html.includes("getComputedStyle(document.documentElement)"), "no longer reads theme from the page root");
+  assert.match(html, /refreshTheme\(host\)/, "drawAll refreshes theme per chart host");
   assert.match(html, /function drawAll\(/);
+});
+
+// ---- paper card (dark-fix rung): the report body is a pinned-light card ----
+// The email-register body (baked light inline styles + the .ichart runtime
+// drawing inside it) renders as a white "paper card" in BOTH modes so nothing
+// inside it ever goes white-on-white. The card rule lives OUTSIDE the dark
+// media query — it isn't toggled by scheme, it's just always light — so in
+// light mode it's a no-op (today's exact look) and in dark mode it shows up
+// as a deliberate document card against the dark page.
+
+// The page has TWO @media (prefers-color-scheme: dark) blocks (:root's from
+// ROOT_VARS_CSS, then .report-body's own from REPORT_BODY_CSS) — so these
+// tests pull EVERY `.report-body { ... }` rule out by direct regex rather
+// than splitting on the first dark media query, which would land inside the
+// wrong (earlier, :root) block.
+function reportBodyRules(html) {
+  return [...html.matchAll(/\.report-body\s*\{([^}]*)\}/gs)].map((m) => m[1]);
+}
+
+// True when the `.report-body` selector at `idx` is the FIRST rule directly
+// inside a `@media (prefers-color-scheme: dark) { ... }` block — i.e. it is
+// scheme-conditional. False for the always-on rule, which sits at the CSS's
+// top level (its immediately preceding token is a `}` closing some earlier
+// rule/media block, never a bare dark-media `{`).
+function isNestedInDarkMedia(html, idx) {
+  const before = html.slice(Math.max(0, idx - 100), idx);
+  return /@media \(prefers-color-scheme: dark\)\s*\{\s*$/.test(before);
+}
+
+test("dark: .report-body pins background/ink light OUTSIDE the dark media query, and re-declares every var the runtime/chart chrome reads", async () => {
+  const html = await viewReport();
+  const rules = reportBodyRules(html);
+  assert.ok(rules.length >= 1, "at least one .report-body rule present");
+  const light = rules[0];
+  // The always-on rule must NOT be nested inside `@media (prefers-color-scheme: dark)`.
+  const lightRuleIndex = html.indexOf(".report-body");
+  assert.ok(!isNestedInDarkMedia(html, lightRuleIndex), "the always-light .report-body rule is declared outside any dark media block");
+  assert.match(light, /background:\s*#ffffff/, "paper card background pinned light");
+  assert.match(light, /color:\s*#0b0b0b/);
+  assert.match(light, /--ink:\s*#0b0b0b/);
+  assert.match(light, /--secondary:\s*#52514e/);
+  assert.match(light, /--muted:\s*#898781/);
+  assert.match(light, /--hairline:\s*#e1e0d9/);
+  assert.match(light, /--surface:\s*#ffffff/);
+  assert.match(light, /--tooltip-bg:\s*#0b0b0b/);
+  assert.match(light, /--tooltip-text:\s*#ffffff/);
+  SERIES_COLORS.forEach((hex, i) => assert.match(light, new RegExp(`--series-${i}:\\s*${hex}\\b`)));
+});
+
+test("dark: .report-body only gains padding/border-radius INSIDE the dark media query (light layout never shifts)", async () => {
+  const html = await viewReport();
+  const rules = reportBodyRules(html);
+  const light = rules[0];
+  assert.ok(!/padding/.test(light), "no padding baked into the always-on light rule");
+  assert.ok(!/border-radius/.test(light), "no border-radius baked into the always-on light rule");
+  // A second .report-body rule, carrying padding + radius, must exist and
+  // must be nested inside a dark media block.
+  const dark = rules.find((r) => /padding/.test(r) && /border-radius/.test(r));
+  assert.ok(dark, "a dark-only .report-body rule with padding + border-radius exists");
+  const secondReportBodyIndex = html.indexOf(".report-body", html.indexOf(".report-body") + 1);
+  assert.ok(isNestedInDarkMedia(html, secondReportBodyIndex), "the padding/radius rule sits directly inside a dark media block");
+});
+
+test("dark: the rendered email body on /r/ is wrapped in the .report-body paper card", async () => {
+  const html = await viewReport();
+  assert.match(html, /<div class="report-body">[\s\S]*class="ichart"[\s\S]*<\/div>/, "the ichart payload lives inside the report-body wrapper");
 });
 
 // ---- /lib/ and the ask-box confirmation page get the same treatment --------

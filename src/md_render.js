@@ -50,6 +50,42 @@ const TASK_RE = /^\[( |x|X)\]\s+/;
 const TASK_DONE_MARK = '<span style="color:#1a7f37">\u2713</span> ';
 const TASK_OPEN_MARK = '<span style="color:#888">\u2610</span> ';
 
+// Verdict accents (Spec 70 P4): the house report style pins a verdict line as
+// bold text ending "\u2014 VERDICT" (e.g. "**NVDA \u2014 RISK**"). When a **bold** run's
+// text matches VERDICT_RE, the <strong> gets a semantic accent \u2014 a 3px left
+// border + tinted background chip \u2014 while the text itself STAYS ink (only the
+// chip's frame carries the color; never repaint the letters). No match =
+// plain <strong>, the ordinary degrade. Both email and the /r/ viewer share
+// this ONE render path (report_view.js's pageChartRenderer only intercepts
+// ```chart fences \u2014 everything else, including this inline() call, runs
+// through renderMarkdown unmodified), so the accent is a single source of
+// truth. Colors here are RESERVED: chart_render.js's SERIES_COLORS categorical
+// palette must never reuse one (tested in chart_render.test.js).
+const VERDICT_RE = /\u2014\s*(RISK|CONFIRMING|BUY|WATCHLIST|PASS|NOTHING MATERIAL)\b/;
+export const VERDICT_COLORS = {
+  RISK: { border: "#a02d2d", bg: "#f7e9e9" },
+  CONFIRMING: { border: "#006300", bg: "#e9f2ea" },
+  BUY: { border: "#006300", bg: "#e9f2ea" },
+  WATCHLIST: { border: "#9a6b00", bg: "#f7f0dd" },
+  PASS: { border: "#667085", bg: "#eef0f3" },
+  "NOTHING MATERIAL": { border: "#667085", bg: "#eef0f3" },
+};
+
+// Renders one <strong> run. Email-safe idiom: inline border-left + inline
+// background-color (the same "style attribute, no classes" discipline every
+// other kit color in this file already uses) \u2014 no new dependency on a
+// stylesheet or a table-cell bgcolor trick, so it survives clipped-CSS email
+// clients same as everything else in this renderer.
+function strongTag(content) {
+  const m = content.match(VERDICT_RE);
+  if (!m) return `<strong>${content}</strong>`;
+  const { border, bg } = VERDICT_COLORS[m[1]];
+  const style =
+    `border-left:3px solid ${border};background-color:${bg};` +
+    "padding:2px 8px;border-radius:3px;display:inline-block";
+  return `<strong style="${style}">${content}</strong>`;
+}
+
 function escapeHtml(s) {
   return String(s)
     .replace(/&/g, "&amp;")
@@ -71,7 +107,7 @@ function inline(text) {
     placeholders.push(`<a href="${url}" style="${LINK_STYLE}">${label}</a>`);
     return token;
   });
-  text = text.replace(BOLD_RE, "<strong>$1</strong>");
+  text = text.replace(BOLD_RE, (_m, content) => strongTag(content));
   text = text.replace(ITALIC_RE, "<em>$1</em>");
   text = text.replace(CODE_RE, `<code style="${INLINE_CODE_STYLE}">$1</code>`);
   placeholders.forEach((linkHtml, idx) => {

@@ -53,12 +53,31 @@ test("bar: negative value degrades to a plain table with a reason", () => {
 
 // ── categorical palette (validated 2026-07-18) ────────────────────────────
 
+// GOLDEN CHANGED DELIBERATELY (Spec 70 P4, 2026-07-19): the categorical set
+// deepened toward premium editorial tones — validate_palette.js light mode,
+// surface #ffffff, ALL CHECKS PASS (pasted in the branch report). Slot 0
+// (house anchor blue) is unchanged.
 test("palette: SERIES_COLORS is the exact 6-slot categorical set, in order, and never touches the reserved status colors", () => {
-  assert.deepEqual(SERIES_COLORS, ["#2a78d6", "#008300", "#e87ba4", "#eda100", "#1baf7a", "#eb6834"]);
+  assert.deepEqual(SERIES_COLORS, ["#2a78d6", "#1e7a46", "#b95784", "#c98500", "#0f8a6d", "#c2542a"]);
   // DELTA_POS/DELTA_NEG are reserved for status; the categorical set must
-  // never absorb them (green slot #008300 !== status green #006300).
+  // never absorb them.
   assert.ok(!SERIES_COLORS.includes("#006300"));
   assert.ok(!SERIES_COLORS.includes("#a02d2d"));
+});
+
+// The four verdict-accent colors (md_render.js's VERDICT_COLORS) are ALSO
+// reserved — a chart series must never collide with a verdict border/chip,
+// or a reader could mistake a bar's fixed-slot color for a semantic verdict.
+test("palette: SERIES_COLORS never collides with the reserved verdict-accent colors", async () => {
+  const { VERDICT_COLORS } = await import("../src/md_render.js");
+  const reserved = new Set();
+  for (const { border, bg } of Object.values(VERDICT_COLORS)) {
+    reserved.add(border);
+    reserved.add(bg);
+  }
+  for (const c of SERIES_COLORS) {
+    assert.ok(!reserved.has(c), `series color ${c} collides with a reserved verdict color`);
+  }
 });
 
 // ── stacked bar ────────────────────────────────────────────────────────────
@@ -229,6 +248,9 @@ test("delta: sign coloring + arrows, signless delta is neutral (no arrow)", () =
 
 // ── heat ────────────────────────────────────────────────────────────────────
 
+// GOLDEN CHANGED DELIBERATELY (Spec 70 P4, contrast pass): BLUE_RAMP's top
+// stop deepened from #0d366b to #061b3c so the max heat cell reads as rich
+// navy — lightness stays monotone, still the same blue family.
 test("heat: min value gets lightest stop, max gets darkest, dark cells get white text", () => {
   const html = renderChart([
     "type: heat",
@@ -238,7 +260,7 @@ test("heat: min value gets lightest stop, max gets darkest, dark cells get white
     "TSM | 3 | 4 | 5",
   ]);
   assert.match(html, /background-color:#cde2fb/); // value 1 == min
-  assert.match(html, /background-color:#0d366b;color:#ffffff/); // value 12 == max
+  assert.match(html, /background-color:#061b3c;color:#ffffff/); // value 12 == max, rich navy
 });
 
 test("heat: ragged rows degrade with a reason", () => {

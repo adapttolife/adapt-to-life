@@ -235,15 +235,18 @@ test("viewer: stacked bar becomes an interactive payload with per-segment toolti
   assert.match(html, /"font-weight": 600, fill: INK \}, svg\);\n\s*val\.textContent = fmt\(r\[2\]\)/);
 
   // The page palette is the fixed 6-slot categorical set, in slot order.
-  assert.match(html, /var COLORS = \["#2a78d6","#008300","#e87ba4","#eda100","#1baf7a","#eb6834"\]/);
+  // GOLDEN CHANGED DELIBERATELY (Spec 70 P4): deepened editorial palette.
+  assert.match(html, /var COLORS = \["#2a78d6","#1e7a46","#b95784","#c98500","#0f8a6d","#c2542a"\]/);
 });
 
+// GOLDEN CHANGED DELIBERATELY (Spec 70 P4, contrast pass): BLUE_RAMP's max
+// stop deepened from #0d366b to #061b3c (rich navy).
 test("viewer: shade bar payload embeds the per-row ramp colors; invalid shade+multi-series degrades on the page", async () => {
   const shadeMd = "```chart\ntype: bar\nsource: s\nshade: value\nA | 1\nB | 12\n```";
   const token = await makeReportToken(SECRET, MSG_ID);
   let env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: viewerDb({ ...ROW, body_markdown: shadeMd }) };
   let html = await (await view(env, token)).text();
-  assert.match(html, /"shades":\["#cde2fb","#0d366b"\]/, "min→lightest, max→darkest ramp stops embedded");
+  assert.match(html, /"shades":\["#cde2fb","#061b3c"\]/, "min→lightest, max→darkest ramp stops embedded");
   assert.match(html, /d\.shades && d\.shades\[i\]/, "runtime paints bars from the embedded shades");
 
   const badMd = "```chart\ntype: bar\nsource: s\nshade: value\nseries: A | B\nQ1 | 1 | 2\nQ2 | 3 | 4\n```";

@@ -2,7 +2,7 @@
 // dependencies (node's built-in test runner + assert).
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { renderMarkdown, deriveText, resolveMarkdownBody } from "../src/md_render.js";
+import { renderMarkdown, deriveText, resolveMarkdownBody, VERDICT_COLORS } from "../src/md_render.js";
 
 const FIXTURE = [
   "# Heading One",
@@ -158,4 +158,79 @@ test("renderMarkdown: task-list bullets render check/box marks, never literal [x
   assert.match(html, /<li[^>]*>plain item<\/li>/);
   assert.doesNotMatch(html, /\[x\]/);
   assert.doesNotMatch(html, /\[ \]/);
+});
+
+// \u2500\u2500 verdict accents (Spec 70 P4) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+//
+// The house report style pins verdict lines as bold text ending "\u2014 VERDICT"
+// (e.g. "**NVDA \u2014 RISK**"). Each recognized verdict word gets a semantic
+// left-border + tinted background chip on the SAME <strong> tag; text stays
+// ink (untouched color) \u2014 only the frame carries the verdict color. This is
+// md_render.js's inline() path, so it applies identically whether the
+// markdown is rendered for email OR the /r/ viewer page (one render path,
+// both surfaces \u2014 report_view.js's chartRenderer hook only intercepts
+// ```chart fences, never prose).
+
+test("verdict accent: RISK gets the red border + tinted chip, text stays ink (untouched)", () => {
+  const html = renderMarkdown("**NVDA \u2014 RISK**");
+  const { border, bg } = VERDICT_COLORS.RISK;
+  const expectedTag =
+    `<strong style="border-left:3px solid ${border};background-color:${bg};` +
+    'padding:2px 8px;border-radius:3px;display:inline-block">NVDA \u2014 RISK</strong>';
+  assert.ok(html.includes(expectedTag), `expected tag missing: ${expectedTag}`);
+  // The text itself carries no color override \u2014 it's still the plain
+  // <strong> content, only the chip's frame is colored.
+  assert.ok(!html.includes("color:#a02d2d\">NVDA"), "verdict text is not repainted \u2014 only the chip frame is");
+});
+
+test("verdict accent: CONFIRMING gets the green border + tinted chip", () => {
+  const html = renderMarkdown("**LLY \u2014 CONFIRMING**");
+  assert.match(html, new RegExp(`border-left:3px solid ${VERDICT_COLORS.CONFIRMING.border};background-color:${VERDICT_COLORS.CONFIRMING.bg}`));
+  assert.match(html, /<strong[^>]*>LLY \u2014 CONFIRMING<\/strong>/);
+});
+
+test("verdict accent: BUY shares CONFIRMING's green (both are affirming verdicts)", () => {
+  const html = renderMarkdown("**AAPL \u2014 BUY**");
+  assert.match(html, new RegExp(`border-left:3px solid ${VERDICT_COLORS.BUY.border};background-color:${VERDICT_COLORS.BUY.bg}`));
+  assert.equal(VERDICT_COLORS.BUY.border, VERDICT_COLORS.CONFIRMING.border);
+  assert.equal(VERDICT_COLORS.BUY.bg, VERDICT_COLORS.CONFIRMING.bg);
+});
+
+test("verdict accent: WATCHLIST gets the amber border + tinted chip", () => {
+  const html = renderMarkdown("**TSM \u2014 WATCHLIST**");
+  assert.match(html, new RegExp(`border-left:3px solid ${VERDICT_COLORS.WATCHLIST.border};background-color:${VERDICT_COLORS.WATCHLIST.bg}`));
+});
+
+test("verdict accent: PASS gets the neutral gray border + tinted chip", () => {
+  const html = renderMarkdown("**AVGO \u2014 PASS**");
+  assert.match(html, new RegExp(`border-left:3px solid ${VERDICT_COLORS.PASS.border};background-color:${VERDICT_COLORS.PASS.bg}`));
+});
+
+test("verdict accent: NOTHING MATERIAL shares PASS's neutral gray", () => {
+  const html = renderMarkdown("**MSFT \u2014 NOTHING MATERIAL**");
+  assert.match(html, new RegExp(`border-left:3px solid ${VERDICT_COLORS["NOTHING MATERIAL"].border};background-color:${VERDICT_COLORS["NOTHING MATERIAL"].bg}`));
+  assert.equal(VERDICT_COLORS["NOTHING MATERIAL"].border, VERDICT_COLORS.PASS.border);
+});
+
+test("verdict accent: no-match degrades to plain <strong>, no chip, no border", () => {
+  const plainBold = renderMarkdown("**bold text**");
+  assert.match(plainBold, /<strong>bold text<\/strong>/);
+  assert.ok(!plainBold.includes("border-left"));
+
+  // A dash without a recognized verdict word also degrades plain.
+  const notAVerdict = renderMarkdown("**NVDA \u2014 Interesting quarter**");
+  assert.match(notAVerdict, /<strong>NVDA \u2014 Interesting quarter<\/strong>/);
+  assert.ok(!notAVerdict.includes("border-left"));
+
+  // A verdict word WITHOUT the leading em dash + word boundary also degrades
+  // (the regex requires "\u2014" immediately before the verdict token).
+  const noDash = renderMarkdown("**RISK ahead this quarter**");
+  assert.match(noDash, /<strong>RISK ahead this quarter<\/strong>/);
+  assert.ok(!noDash.includes("border-left"));
+});
+
+test("verdict accent: works inside the SAME render path the /r/ viewer uses (report_view.js's pageChartRenderer only hooks ```chart fences)", () => {
+  const md = "## Summary\n\n**NVDA \u2014 RISK**\n\nSome prose after.";
+  const html = renderMarkdown(md); // no chartRenderer opt \u2014 same code path report_view.js's non-chart prose takes
+  assert.match(html, new RegExp(`border-left:3px solid ${VERDICT_COLORS.RISK.border}`));
 });

@@ -255,9 +255,6 @@ async function senderAllowed(db, fromAddr) {
 // POST a signed "you've got mail" event to bell-<agent>.alectranel.com. Best
 // effort by design (Spec 47 decision 7): a missed bell means the mail waits for
 // the next touch — ingestion and the D1 record are never at risk.
-// Exported (Spec 70 P3): the /r/<token>/ask handler in report_view.js rings the
-// SAME bell for a question asked from the report page — one wake path, not a
-// parallel one.
 export async function ringBell(env, agent, { inbox, thread_id, from, subject, message_uuid }) {
   let secrets = {};
   try { secrets = JSON.parse(env.MAIL_BELL_SECRETS || "{}"); } catch { /* unset or malformed = no bells */ }

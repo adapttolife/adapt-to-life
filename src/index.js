@@ -79,8 +79,8 @@ export default {
     }
 
     // Spec 70 P3: signed report permalink — the interactive twin of an
-    // archived report email. Capability URL (HMAC token), GET (+ the one
-    // deliberate POST /ask exception), 404 on any failure.
+    // archived report email. Capability URL (HMAC token), GET-only, 404 on
+    // any failure.
     if (url.pathname.startsWith("/r/")) {
       return handleReportView(request, env, url, ctx);
     }

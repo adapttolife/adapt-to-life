@@ -33,14 +33,10 @@ import {
   CHART_HAIRLINE,
 } from "./chart_render.js";
 import { extractChartBlocks } from "./chart_png.js";
-import { ringBell } from "./agent_mail.js";
 
-// report_view.js <-> agent_mail.js is a circular import (agent_mail.js pulls
-// reportFooterHtml from here for the send/reply footer; this file pulls
-// ringBell from there for the ask-box). Safe: both are hoisted `function`
-// declarations used only inside other functions' bodies, never at module
-// top level, so ESM's live-binding semantics resolve them regardless of
-// which file finishes evaluating first.
+// agent_mail.js pulls reportFooterHtml from here for the send/reply footer —
+// one-directional, not circular (the ask-box that used to import ringBell
+// back from agent_mail.js was retired; see the reply-line note below).
 
 // ── token: mint + verify ─────────────────────────────────────────────────
 
@@ -279,7 +275,10 @@ function pageChartRenderer(escapedLines) {
       // Page-owned chrome (not chart_render.js's email HTML) — reads the
       // same CSS custom properties as the rest of the page, so the title
       // follows dark mode like everything else on /r/.
-      parts.push(`<div style="font-size:14px;font-weight:700;color:var(--ink);margin:16px 0 6px">${esc.title}</div>`);
+      // Contrast pass (Spec 70 P4): same 600-weight step as chart_render.js's
+      // titleLine — the two title idioms (email HTML vs. page-owned chrome)
+      // stay visually matched.
+      parts.push(`<div style="font-size:14px;font-weight:600;color:var(--ink);margin:16px 0 6px">${esc.title}</div>`);
     }
     parts.push(`<div class="ichart"><script type="application/json">${json}</script></div>`);
     parts.push(`<div style="font-size:12px;color:var(--muted);margin:4px 0 12px">Source: ${esc.source}</div>`);
@@ -664,7 +663,13 @@ const RUNTIME_SCRIPT = `
 // table, which return literal hex from the shared EMAIL renderer (untouched
 // by design, see the module banner): those two block types stay light-only
 // on the page too. See the branch report for that known limitation.
-const DARK_SERIES_COLORS = ["#3987e5", "#008300", "#d55181", "#c98500", "#199e70", "#d95926"];
+// Dark-surface steps of the SAME six hues as SERIES_COLORS (validated
+// 2026-07-19, validate_palette.js dark mode, surface #1a1a19 — ALL CHECKS
+// PASS): slot 0 unchanged from the prior dark set (already a lighter step of
+// the house anchor blue); slots 1-5 lift lightness/saturation off the new
+// light editorial hues just enough to clear the dark-surface contrast floor
+// without leaving the same hue family.
+const DARK_SERIES_COLORS = ["#3987e5", "#208f50", "#c36490", "#c08410", "#0fa17f", "#d65c2d"];
 
 const ROOT_VARS_CSS = `
   :root {
@@ -712,22 +717,28 @@ const ROOT_VARS_CSS = `
 // runtime draws INSIDE this container too. So .report-body pins itself light
 // UNCONDITIONALLY (this rule lives OUTSIDE the dark media query — it is not
 // toggled by scheme) and re-declares every custom property anything inside
-// it reads, to the SAME light values ROOT_VARS_CSS's :root block defaults to.
-// In light mode the page is already light, so this is a no-op — no visible
-// card chrome, white on white, EXACTLY today's look. In dark mode the page
-// goes dark but this container stays a deliberate white card; the dark-only
-// media block below adds padding/radius so it reads as a document card
-// instead of a jarring color clash — scoped to dark so light-mode layout
-// never shifts by a pixel.
+// it reads, to the SAME light values ROOT_VARS_CSS's :root block defaults to
+// — EXCEPT --surface/background, which is the card's own warm white
+// (#fcfcfb, contrast pass, Spec 70 P4) rather than the page's pure white
+// (:root's --surface stays #ffffff). That whisper of difference is
+// deliberate: even in light mode the card now reads as a distinct sheet of
+// paper against the page chrome, instead of the previous white-on-white
+// no-op. Background/color-only change — no padding/size touched here, so
+// light-mode layout never shifts by a pixel (guarded by the existing "no
+// padding/border-radius outside dark" test). In dark mode the page goes dark
+// but this container stays the SAME light card; the dark-only media block
+// below adds padding/radius so it reads as a document card instead of a
+// jarring color clash — scoped to dark so light-mode layout still never
+// shifts.
 const REPORT_BODY_CSS = `
   .report-body {
-    background: #ffffff;
+    background: #fcfcfb;
     color: #0b0b0b;
     --ink: ${CHART_INK};
     --secondary: ${CHART_SECONDARY};
     --muted: ${CHART_MUTED};
     --hairline: ${CHART_HAIRLINE};
-    --surface: #ffffff;
+    --surface: #fcfcfb;
     --chip-bg: #f4f6f8;
     --accent: #0b57d0;
     --tooltip-bg: ${CHART_INK};
@@ -775,13 +786,7 @@ const PAGE_CSS = `
   .data-table th, .data-table td { text-align: left; padding: 4px 10px 4px 0;
     border-bottom: 1px solid var(--hairline); white-space: nowrap; }
   .data-table th { color: var(--secondary); font-weight: 600; }
-  .ask-box { margin: 32px 0 0; padding-top: 20px; border-top: 1px solid var(--hairline); }
-  .ask-box h2 { font-size: 15px; margin: 0 0 8px; color: var(--ink); }
-  .ask-box textarea { width: 100%; box-sizing: border-box; min-height: 90px;
-    font-family: inherit; font-size: 14px; padding: 8px; border: 1px solid var(--hairline);
-    border-radius: 6px; resize: vertical; background: var(--surface); color: var(--ink); }
-  .ask-box button { margin-top: 10px; font-size: 13px; font-weight: 600; color: #ffffff;
-    background: var(--accent); border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; }
+  .reply-line { margin: 24px 0 0; font-size: 13px; line-height: 1.55; color: var(--secondary); }
   .lib-filter { width: 100%; box-sizing: border-box; font-size: 14px; padding: 8px 10px;
     border: 1px solid var(--hairline); border-radius: 6px; margin: 4px 0 16px;
     background: var(--surface); color: var(--ink); }
@@ -795,25 +800,22 @@ const PAGE_CSS = `
   .lib-empty { color: var(--secondary); font-size: 13px; padding: 12px 0; }
 `;
 
-// The ask-box (Feature 2): one textarea + submit, posting to the SAME token's
-// /ask sub-route — the capability token that got the reader onto this page IS
-// the auth for asking a question about it (the one deliberate exception to
-// GET-only). `token` is server-minted, never user input, but escapeHtml costs
-// nothing and keeps the rule ("escape everything derived") uniform.
-function renderAskForm(token, agentName) {
-  const agent = escapeHtml(agentName || "the agent");
-  const safeToken = escapeHtml(token);
+// The reply line (replaces the ask-box, Spec 70 P3 rung 3): no form, no
+// mailto link — the reply happens in the reader's own inbox against the
+// email this page is the twin of. First-person in the agent's voice;
+// agentName is a best-effort thread lookup (never user input) but escapeHtml
+// costs nothing and keeps the rule ("escape everything derived") uniform.
+function renderReplyLine(agentName) {
+  const agent = escapeHtml(agentName || "the desk");
   return (
-    '<section class="ask-box">' +
-    `<h2>Ask ${agent} about this report</h2>` +
-    `<form method="post" action="/r/${safeToken}/ask">` +
-    '<textarea name="question" maxlength="2000" required placeholder="Type your question&#8230;"></textarea>' +
-    `<div><button type="submit">Ask ${agent} about this report</button></div>` +
-    "</form></section>"
+    '<p class="reply-line">' +
+    `This report came from ${agent}. Questions, pushback, a name you want dug into ` +
+    "— just reply to the email; I read every reply." +
+    "</p>"
   );
 }
 
-function renderReportPage(msg, token, agentName) {
+function renderReportPage(msg, agentName) {
   const subject = escapeHtml(msg.subject || "(no subject)");
   const meta = [
     msg.from_addr ? `From ${escapeHtml(msg.from_addr)}` : null,
@@ -831,7 +833,7 @@ function renderReportPage(msg, token, agentName) {
     `<h1 class="report-subject">${subject}</h1>` +
     (meta ? `<p class="report-meta">${meta}</p>` : "") +
     `<div class="report-body">${bodyHtml}</div>` +
-    renderAskForm(token, agentName) +
+    renderReplyLine(agentName) +
     "</main>" +
     `<script>${RUNTIME_SCRIPT}</script>` +
     "</body></html>"
@@ -857,18 +859,12 @@ function notFound() {
 
 // GET /r/<token> — the report viewer. Reads the archived message straight from
 // the D1 messages table (the SAME store apiRead serves; there is no second
-// copy of report content anywhere). POST /r/<token>/ask — Feature 2's one
-// deliberate GET-only exception, split out to handleAsk below.
-export async function handleReportView(request, env, url, ctx) {
-  const rawPath = url.pathname.slice("/r/".length);
-  const askMatch = rawPath.match(/^([^/]+)\/ask$/);
-  if (askMatch) {
-    if (request.method !== "POST") return notFound();
-    return handleAsk(request, env, askMatch[1], ctx);
-  }
-
+// copy of report content anywhere). GET-only: the ask-box's POST /ask
+// exception was retired (Spec 70 P3 rung 3) in favor of the plain reply-line
+// — the reader's reply happens in their own inbox, never on this page.
+export async function handleReportView(request, env, url) {
   if (request.method !== "GET") return notFound();
-  const token = rawPath;
+  const token = url.pathname.slice("/r/".length);
   if (!token || token.includes("/")) return notFound();
 
   const messageId = await verifyReportToken(env.REPORT_LINK_SECRET, token);
@@ -886,9 +882,9 @@ export async function handleReportView(request, env, url, ctx) {
   }
   if (!msg || msg.body_markdown == null) return notFound();
 
-  // Best-effort agent name for the ask-box button label ("Ask charlie about
-  // this report"). A missing/failed lookup degrades to a generic label —
-  // never blocks the page, never turns into a second 404 mode.
+  // Best-effort agent name for the reply line ("This report came from
+  // charlie."). A missing/failed lookup degrades to "the desk" — never
+  // blocks the page, never turns into a second 404 mode.
   let agentName = "";
   if (msg.thread_id) {
     try {
@@ -898,11 +894,11 @@ export async function handleReportView(request, env, url, ctx) {
         .first();
       agentName = (thread && thread.assigned_agent) || "";
     } catch (err) {
-      console.error("report view thread lookup failed (ask box degrades):", err && err.message);
+      console.error("report view thread lookup failed (reply line degrades):", err && err.message);
     }
   }
 
-  return new Response(renderReportPage(msg, token, agentName), {
+  return new Response(renderReportPage(msg, agentName), {
     headers: {
       "Content-Type": "text/html; charset=utf-8",
       // Liberty One confidential content behind a capability URL: never
@@ -913,161 +909,11 @@ export async function handleReportView(request, env, url, ctx) {
       "X-Content-Type-Options": "nosniff",
       // Everything is inline by design; the CSP makes "zero external
       // requests" a browser-enforced invariant, not a code-review hope.
-      // form-action 'self' (Feature 2) lets the ask-box's <form> post back to
-      // this SAME origin's /ask sub-route without loosening anything else —
-      // default-src stays 'none'.
-      "Content-Security-Policy": "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; form-action 'self'",
+      // No form on the page anymore — default-src 'none' with no
+      // form-action addition needed.
+      "Content-Security-Policy": "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'",
     },
   });
-}
-
-// ── ask-the-agent (Feature 2) ────────────────────────────────────────────
-
-const ASK_MARKER = "[asked from the report page]";
-const ASK_MAX_LEN = 2000;
-const ASK_DAILY_LIMIT = 10;
-
-// Strip tags, collapse whitespace, enforce length. The question is untrusted
-// DATA end-to-end: it is never re-rendered as HTML by this Worker (it lands
-// in D1 as body_text and leaves by ordinary email, same as any inbound
-// message) — this sanitizer's job is hygiene at the door, not an escaping
-// contract for a template that doesn't exist.
-function sanitizeQuestion(raw) {
-  const noTags = String(raw == null ? "" : raw).replace(/<[^>]*>/g, " ");
-  return noTags.replace(/\s+/g, " ").trim().slice(0, ASK_MAX_LEN);
-}
-
-function tryLaterPage() {
-  return new Response("You've asked enough questions about this report for today — please try again tomorrow.", {
-    status: 429,
-    headers: {
-      "Content-Type": "text/plain; charset=utf-8",
-      "Cache-Control": "private, no-store",
-      "X-Robots-Tag": "noindex, nofollow",
-      "Referrer-Policy": "no-referrer",
-    },
-  });
-}
-
-function askConfirmationPage(agentName) {
-  const agent = escapeHtml(agentName || "the agent");
-  const html =
-    "<!doctype html>\n" +
-    '<html lang="en"><head><meta charset="utf-8">' +
-    '<meta name="viewport" content="width=device-width, initial-scale=1">' +
-    '<meta name="robots" content="noindex, nofollow">' +
-    "<title>Sent</title>" +
-    `<style>${ROOT_VARS_CSS}body{margin:0;background:var(--surface);color:var(--ink);font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif}` +
-    "main{max-width:480px;margin:96px auto;padding:0 20px;font-size:15px}</style>" +
-    "</head><body><main>" +
-    `<p>Sent &#8212; ${agent} will reply to your inbox.</p>` +
-    "</main></body></html>";
-  return new Response(html, {
-    headers: {
-      "Content-Type": "text/html; charset=utf-8",
-      "Cache-Control": "private, no-store",
-      "X-Robots-Tag": "noindex, nofollow",
-      "Referrer-Policy": "no-referrer",
-      "Content-Security-Policy": "default-src 'none'",
-    },
-  });
-}
-
-// POST /r/<token>/ask — verifies the SAME capability token as the GET route
-// (possession of the link is the auth for asking about it too), then inserts
-// the sanitized question as an ordinary inbound message on the report's own
-// thread, from the thread's counterparty address, and rings the assigned
-// agent's bell via agent_mail.js's ringBell — the SAME wake path an inbound
-// email uses, not a parallel one. The agent's reply flows out by ordinary
-// email; nothing on that side is this handler's job.
-async function handleAsk(request, env, token, ctx) {
-  const messageId = await verifyReportToken(env.REPORT_LINK_SECRET, token);
-  if (!messageId) return notFound();
-
-  let msg;
-  try {
-    msg = await env.AGENT_MAIL_DB
-      .prepare(`SELECT id, thread_id, subject FROM messages WHERE id = ?`)
-      .bind(messageId)
-      .first();
-  } catch (err) {
-    console.error("ask: message read failed:", err && err.message);
-    return notFound();
-  }
-  if (!msg || !msg.thread_id) return notFound();
-
-  let thread;
-  try {
-    thread = await env.AGENT_MAIL_DB.prepare(`SELECT * FROM threads WHERE id = ?`).bind(msg.thread_id).first();
-  } catch (err) {
-    console.error("ask: thread read failed:", err && err.message);
-    return notFound();
-  }
-  if (!thread) return notFound();
-
-  let question = "";
-  try {
-    const form = await request.formData();
-    question = sanitizeQuestion(form.get("question"));
-  } catch {
-    try {
-      const body = await request.json();
-      question = sanitizeQuestion(body && body.question);
-    } catch {
-      return notFound();
-    }
-  }
-  if (!question) return notFound();
-
-  // Max ASK_DAILY_LIMIT asks per message_id per UTC day: counted on this
-  // report's own thread by the ask marker + "today" (same `datetime('now',
-  // 'start of day')` idiom Spec 80's ping-pong halt uses in agent_mail.js).
-  let askCount;
-  try {
-    askCount = await env.AGENT_MAIL_DB
-      .prepare(
-        `SELECT COUNT(*) AS n FROM messages
-         WHERE thread_id = ? AND direction = 'in' AND body_text LIKE ?
-           AND created_at > datetime('now', 'start of day')`
-      )
-      .bind(thread.id, `${ASK_MARKER}%`)
-      .first();
-  } catch (err) {
-    console.error("ask: rate-limit read failed:", err && err.message);
-    return notFound();
-  }
-  if ((askCount?.n || 0) >= ASK_DAILY_LIMIT) return tryLaterPage();
-
-  const subject = /^re:/i.test(msg.subject || "") ? msg.subject : `Re: ${msg.subject || ""}`.trim();
-  const bodyText = `${ASK_MARKER}\n\n${question}`;
-  const newId = crypto.randomUUID();
-  try {
-    await env.AGENT_MAIL_DB
-      .prepare(
-        `INSERT INTO messages (id, thread_id, direction, from_addr, to_addr, subject, body_text, is_machine)
-         VALUES (?, ?, 'in', ?, ?, ?, ?, 0)`
-      )
-      .bind(newId, thread.id, thread.from_addr, thread.inbox, subject, bodyText)
-      .run();
-    await env.AGENT_MAIL_DB.prepare(`UPDATE threads SET last_at = datetime('now') WHERE id = ?`).bind(thread.id).run();
-  } catch (err) {
-    console.error("ask: insert failed:", err && err.message);
-    return notFound();
-  }
-
-  const bellArgs = { inbox: thread.inbox, thread_id: thread.id, from: thread.from_addr, subject, message_uuid: newId };
-  const ring = () =>
-    ringBell(env, thread.assigned_agent, bellArgs).catch((e) => console.error("ask: bell failed:", e && e.message));
-  // Real Workers runtime: keep the bell POST alive past the response with
-  // waitUntil (Spec 47 best-effort semantics). Tests call this without a ctx
-  // — await inline instead so the mocked bell call is observable synchronously.
-  if (ctx && typeof ctx.waitUntil === "function") {
-    ctx.waitUntil(ring());
-  } else {
-    await ring();
-  }
-
-  return askConfirmationPage(thread.assigned_agent);
 }
 
 // ── report library (Feature 1) ───────────────────────────────────────────

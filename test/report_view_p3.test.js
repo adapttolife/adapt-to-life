@@ -233,7 +233,7 @@ test("footer end-to-end: /send with a recipient carries both links; library toke
   assert.equal(await verifyLibraryToken(SECRET, libToken), "nick@example.com");
 });
 
-// ---- Feature 2: ask-the-agent ----------------------------------------------
+// ---- reply line (replaces Feature 2's ask-box) ------------------------------
 
 const ASK_ROW = {
   id: MSG_ID,
@@ -251,6 +251,9 @@ const ASK_THREAD = {
   subject: "Daily brief",
 };
 
+// Same D1 stub the drill-down tests below reuse — kept general-purpose (name
+// held over from the retired ask-box feature) even though nothing here reads
+// the rate-limit COUNT(*) branch anymore.
 function askDb({ askCount = 0 } = {}) {
   const calls = [];
   return {
@@ -279,140 +282,51 @@ function askDb({ askCount = 0 } = {}) {
   };
 }
 
-async function postAsk(env, token, question, ctx) {
-  const request = new Request(`https://adapttolife.org/r/${token}/ask`, {
-    method: "POST",
-    body: new URLSearchParams({ question }),
-  });
-  return handleReportView(request, env, new URL(request.url), ctx);
+async function viewReport(env, token) {
+  const request = new Request(`https://adapttolife.org/r/${token}`, { method: "GET" });
+  return handleReportView(request, env, new URL(request.url));
 }
 
-function withMockedFetch(fn) {
-  const original = globalThis.fetch;
-  const calls = [];
-  globalThis.fetch = async (url, opts) => {
-    calls.push({ url, opts });
-    return new Response("{}", { status: 200 });
-  };
-  return fn(calls).finally(() => {
-    globalThis.fetch = original;
-  });
-}
-
-test("ask: happy path inserts an inbound message with the marker on the report's own thread, and rings the bell", async () => {
-  await withMockedFetch(async (bellCalls) => {
-    const token = await makeReportToken(SECRET, MSG_ID);
-    const db = askDb();
-    const env = {
-      REPORT_LINK_SECRET: SECRET,
-      AGENT_MAIL_DB: db,
-      MAIL_BELL_SECRETS: JSON.stringify({ charlie: "bell-secret" }),
-    };
-    const res = await postAsk(env, token, "What drove the Q2 delta?");
-    assert.equal(res.status, 200);
-    const html = await res.text();
-    assert.match(html, /Sent/);
-    assert.match(html, /charlie will reply/);
-
-    const ins = db.calls.find((c) => /INSERT INTO messages/.test(c.sql));
-    assert.ok(ins, "inbound message inserted");
-    // (id, thread_id, direction[lit], from_addr, to_addr, subject, body_text, is_machine[lit])
-    assert.equal(ins.args[1], "t-ask", "same thread as the report");
-    assert.equal(ins.args[2], "nick@example.com", "from the thread's counterparty");
-    assert.equal(ins.args[3], "charlie@agents.adapttolife.org", "to the thread's inbox");
-    assert.equal(ins.args[4], "Re: Daily brief");
-    assert.match(ins.args[5], /^\[asked from the report page\]\n\nWhat drove the Q2 delta\?$/);
-
-    assert.equal(bellCalls.length, 1, "ringBell posted to the assigned agent's bell");
-    assert.match(bellCalls[0].url, /bell-charlie\.alectranel\.com/);
-    const posted = JSON.parse(bellCalls[0].opts.body);
-    assert.equal(posted.thread_id, "t-ask");
-    assert.equal(posted.agent, "charlie");
-  });
-});
-
-test("ask: waitUntil is used when a ctx is supplied (real Workers runtime path)", async () => {
-  await withMockedFetch(async (bellCalls) => {
-    const token = await makeReportToken(SECRET, MSG_ID);
-    const env = {
-      REPORT_LINK_SECRET: SECRET,
-      AGENT_MAIL_DB: askDb(),
-      MAIL_BELL_SECRETS: JSON.stringify({ charlie: "bell-secret" }),
-    };
-    const waited = [];
-    const ctx = { waitUntil(p) { waited.push(p); } };
-    const res = await postAsk(env, token, "waitUntil path", ctx);
-    assert.equal(res.status, 200);
-    assert.equal(waited.length, 1, "the bell POST is handed to ctx.waitUntil, not blocking the response");
-    await waited[0]; // let the background promise settle before the test exits
-    assert.equal(bellCalls.length, 1);
-  });
-});
-
-test("ask: bad/tampered/unknown token → the same 404 (not a distinguishable ask error)", async () => {
+test("reply line: names the assigned agent, points at the inbox, no form/mailto", async () => {
+  const token = await makeReportToken(SECRET, MSG_ID);
   const env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: askDb() };
-  assert.equal((await postAsk(env, "garbage-token", "hi")).status, 404);
-  const token = await makeReportToken(SECRET, "unknown-message-id");
-  const dbUnknown = {
-    prepare() {
-      return { bind() { return { async first() { return null; }, async all() { return { results: [] }; }, async run() { return {}; } }; } };
+  const res = await viewReport(env, token);
+  assert.equal(res.status, 200);
+  const html = await res.text();
+  assert.match(
+    html,
+    /This report came from charlie\. Questions, pushback, a name you want dug into — just reply to the email; I read every reply\./
+  );
+  assert.match(html, /<p class="reply-line">/);
+  assert.ok(!html.includes("<form"), "no form on the page");
+  assert.ok(!html.includes("mailto:"), "no mailto link — the reply happens in their inbox");
+  assert.ok(!html.includes("ask-box"), "ask-box class retired");
+});
+
+test("reply line: missing/failed thread lookup falls back to 'the desk', never blocks the page", async () => {
+  const token = await makeReportToken(SECRET, MSG_ID);
+  const noThreadDb = {
+    prepare(sql) {
+      return {
+        bind() {
+          return {
+            async first() {
+              if (/FROM messages WHERE id = \?/.test(sql)) return { ...ASK_ROW, thread_id: null };
+              return null;
+            },
+          };
+        },
+      };
     },
   };
-  const env2 = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: dbUnknown };
-  assert.equal((await postAsk(env2, token, "hi")).status, 404);
+  const env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: noThreadDb };
+  const res = await viewReport(env, token);
+  assert.equal(res.status, 200);
+  const html = await res.text();
+  assert.match(html, /This report came from the desk\./);
 });
 
-test("ask: sanitization strips tags, collapses whitespace, and enforces the 2000-char cap", async () => {
-  const token = await makeReportToken(SECRET, MSG_ID);
-  const db = askDb();
-  const env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: db };
-  // Tags are STRIPPED (removed as markup, replaced with a space so words
-  // either side don't fuse); tag CONTENT is untrusted text, not executed —
-  // it survives as plain words, same as any other word in the question.
-  const dirty = "  <b>What</b>   about\n\nQ2  <i>growth</i>?  ";
-  await postAsk(env, token, dirty);
-  const ins = db.calls.find((c) => /INSERT INTO messages/.test(c.sql));
-  assert.equal(ins.args[5], "[asked from the report page]\n\nWhat about Q2 growth ?");
-  assert.ok(!ins.args[5].includes("<") && !ins.args[5].includes(">"), "no tag delimiters survive sanitization");
-
-  const db2 = askDb();
-  const env2 = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: db2 };
-  const long = "x".repeat(3000);
-  await postAsk(env2, token, long);
-  const ins2 = db2.calls.find((c) => /INSERT INTO messages/.test(c.sql));
-  const stored = ins2.args[5].replace("[asked from the report page]\n\n", "");
-  assert.equal(stored.length, 2000);
-});
-
-test("ask: an all-tags/whitespace question sanitizes to empty and is refused with 404 (no empty insert)", async () => {
-  const token = await makeReportToken(SECRET, MSG_ID);
-  const db = askDb();
-  const env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: db };
-  const res = await postAsk(env, token, "   <div></div>   ");
-  assert.equal(res.status, 404);
-  assert.ok(!db.calls.some((c) => /INSERT INTO messages/.test(c.sql)));
-});
-
-test("ask: rate limit — 10 asks already recorded today on this thread → 429, no insert", async () => {
-  const token = await makeReportToken(SECRET, MSG_ID);
-  const db = askDb({ askCount: 10 });
-  const env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: db };
-  const res = await postAsk(env, token, "one more question");
-  assert.equal(res.status, 429);
-  assert.ok(!db.calls.some((c) => /INSERT INTO messages/.test(c.sql)), "429 refuses before any insert");
-});
-
-test("ask: under the cap (9 today) still succeeds", async () => {
-  await withMockedFetch(async () => {
-    const token = await makeReportToken(SECRET, MSG_ID);
-    const db = askDb({ askCount: 9 });
-    const env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: db };
-    const res = await postAsk(env, token, "under the cap");
-    assert.equal(res.status, 200);
-  });
-});
-
-test("ask: GET on the /ask sub-route is refused (POST is the one deliberate exception, not GET)", async () => {
+test("GET on the retired /ask sub-route now 404s like any other unknown path", async () => {
   const token = await makeReportToken(SECRET, MSG_ID);
   const env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: askDb() };
   const request = new Request(`https://adapttolife.org/r/${token}/ask`, { method: "GET" });
@@ -420,9 +334,20 @@ test("ask: GET on the /ask sub-route is refused (POST is the one deliberate exce
   assert.equal(res.status, 404);
 });
 
-// ---- CSP still forbids external + form-action addition ---------------------
+test("POST on the retired /ask sub-route now 404s — no route left to handle it", async () => {
+  const token = await makeReportToken(SECRET, MSG_ID);
+  const env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: askDb() };
+  const request = new Request(`https://adapttolife.org/r/${token}/ask`, {
+    method: "POST",
+    body: new URLSearchParams({ question: "anybody home?" }),
+  });
+  const res = await handleReportView(request, env, new URL(request.url));
+  assert.equal(res.status, 404);
+});
 
-test("CSP: /r/ page keeps default-src 'none' and adds form-action 'self' for the ask-box only", async () => {
+// ---- CSP: no form-action, nothing permissive snuck in -----------------------
+
+test("CSP: /r/ page is default-src 'none' with no form-action (the ask-box's exception is gone)", async () => {
   const token = await makeReportToken(SECRET, MSG_ID);
   const db = askDb();
   const env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: db };
@@ -430,12 +355,11 @@ test("CSP: /r/ page keeps default-src 'none' and adds form-action 'self' for the
   const res = await handleReportView(request, env, new URL(request.url));
   const csp = res.headers.get("Content-Security-Policy");
   assert.match(csp, /default-src 'none'/);
-  assert.match(csp, /form-action 'self'/);
+  assert.ok(!/form-action/.test(csp), "form-action addition retired with the ask-box");
   assert.ok(!/connect-src|img-src|frame-src/.test(csp), "no new permissive directives snuck in");
 
   const html = await res.text();
-  assert.match(html, /<form method="post" action="\/r\/[A-Za-z0-9_-]+\/ask">/);
-  assert.ok(!/<form[^>]*action="https?:\/\//.test(html), "form posts same-origin only, never absolute/external");
+  assert.ok(!/<form/.test(html), "no form anywhere on the page");
 });
 
 // ---- Feature 3: chart drill-down (data table + CSV) ------------------------

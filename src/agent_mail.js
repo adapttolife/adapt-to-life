@@ -422,7 +422,7 @@ export async function handleAgentMailApi(request, env, url) {
 async function apiList(env, url, caller) {
   const inbox = url.searchParams.get("inbox");
   const status = url.searchParams.get("status");
-  const limit = Math.min(parseInt(url.searchParams.get("limit") || "20", 10) || 20, 100);
+  const limit = clampLimit(url.searchParams.get("limit"));
 
   const where = [];
   const binds = [];
@@ -501,13 +501,20 @@ function escapeLike(s) {
   return String(s).replace(/[\\%_]/g, (c) => "\\" + c);
 }
 
+// SQLite treats LIMIT -1 as "no limit" — a negative or zero limit param must
+// clamp to the floor, never pass through to the query.
+function clampLimit(raw) {
+  const n = parseInt(raw || "20", 10) || 20;
+  return Math.min(Math.max(n, 1), 100);
+}
+
 async function apiReports(env, url, caller) {
   const to = url.searchParams.get("to");
   const since = url.searchParams.get("since");
   const until = url.searchParams.get("until");
   const q = url.searchParams.get("q");
   const includeBody = url.searchParams.get("body") === "1";
-  const limit = Math.min(parseInt(url.searchParams.get("limit") || "20", 10) || 20, 100);
+  const limit = clampLimit(url.searchParams.get("limit"));
 
   const where = ["messages.direction = 'out'", "messages.body_markdown IS NOT NULL"];
   const binds = [];

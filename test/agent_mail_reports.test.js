@@ -298,6 +298,15 @@ test("reports: a smaller explicit limit is respected", async () => {
   assert.equal(body.reports.length, 1);
 });
 
+test("reports: a negative limit clamps to the floor, never SQLite's LIMIT -1 = unlimited", async () => {
+  const env = baseEnv();
+  const res = await call(env, OPERATOR_TOKEN, "limit=-1");
+  assert.equal(res.status, 200);
+  const db = env.AGENT_MAIL_DB;
+  const sel = db.calls.find((c) => /FROM messages JOIN threads/.test(c.sql));
+  assert.equal(sel.args[sel.args.length - 1], 1);
+});
+
 // ── response shape ---------------------------------------------------------
 
 test("reports: rows carry id/thread_id/to/subject/created_at/report_url", async () => {

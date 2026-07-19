@@ -292,6 +292,59 @@ test("heat: non-numeric value degrades with a reason", () => {
   assert.match(html, /Chart degraded \(heat value not numeric\)/);
 });
 
+// ── waterfall ────────────────────────────────────────────────────────────────
+
+// Golden pins the email HTML idiom: delta bars float on a leading transparent
+// spacer td (attribute width) + colored bar td, subtotal bars start at the
+// left edge (no spacer, spacerPct === 0). Colors: subtotal = BLUE, delta >= 0
+// = DELTA_POS, delta < 0 = DELTA_NEG. Scale is the full [lo, hi] range
+// (0..2400 here — Gross Rent is the max, lo stays 0 since nothing dips
+// negative) to 92% max, same as the other bar types.
+test("waterfall: floating delta bars (spacer + colored bar), subtotal from zero, exact colors + widths", () => {
+  const html = renderChart([
+    "type: waterfall",
+    "source: s",
+    "Gross Rent | 2400 | $2,400",
+    "Vacancy Loss | -120",
+    "= Effective Gross Income | 2280 | $2,280",
+  ]);
+  assert.equal(html.includes("Chart degraded"), false);
+  // Gross Rent: delta, positive, no baseline yet — bar starts at 0, no spacer.
+  assert.match(html, /<td width="92%" style="background-color:#006300;font-size:2px;line-height:16px;border-radius:4px">&nbsp;<\/td>/);
+  assert.match(html, />\$2,400<\/td>/, "display override honored");
+  // Vacancy Loss: delta, negative — floats between 2280 and 2400 (spacer to
+  // 2280, then the bar itself), DELTA_NEG fill.
+  assert.match(
+    html,
+    /<td width="87%" style="font-size:2px;line-height:16px">&nbsp;<\/td><td width="5%" style="background-color:#a02d2d;font-size:2px;line-height:16px;border-radius:4px">&nbsp;<\/td>/
+  );
+  assert.match(html, />-120<\/td>/, "default signed display when no override given");
+  // Effective Gross Income: subtotal, drawn from zero — "= " prefix stripped
+  // from the label, BLUE fill, no spacer (spacerPct 0).
+  assert.match(html, />Effective Gross Income<\/td>/);
+  assert.equal(html.includes("= Effective Gross Income"), false, "'= ' prefix stripped for display");
+  assert.match(html, /<td width="87%" style="background-color:#2a78d6;font-size:2px;line-height:16px;border-radius:4px">&nbsp;<\/td>/);
+  assert.match(html, />\$2,280<\/td>/);
+});
+
+test("waterfall: non-numeric value degrades with the exact reason", () => {
+  const html = renderChart(["type: waterfall", "source: s", "A | x", "B | 2"]);
+  assert.match(html, /Chart degraded \(waterfall value not numeric\)/);
+});
+
+test("waterfall: fewer than 2 rows degrades with the exact reason", () => {
+  const html = renderChart(["type: waterfall", "source: s", "A | 100"]);
+  assert.match(html, /Chart degraded \(waterfall needs at least 2 rows\)/);
+});
+
+test("waterfall: subtotal may be negative; default display is plain digit-grouped (no forced sign)", () => {
+  const html = renderChart(["type: waterfall", "source: s", "Loss | -50", "= Net | -50"]);
+  assert.match(html, />-50<\/td>/); // delta default
+  // subtotal default is grouped-but-unsigned formatting (toLocaleString keeps the minus)
+  const rows = html.match(/>-?[\d,]+<\/td>/g);
+  assert.ok(rows.some((r) => r === ">-50</td>"));
+});
+
 // ── line / scatter (Spec 70 P2 grammar; PNG delivery tested in chart_png.test.js) ──
 
 test("line: valid data WITHOUT a rendered image degrades to the table with the named gap (never a broken img)", () => {
@@ -400,6 +453,9 @@ test("renderChart never throws on adversarial input", () => {
   assert.doesNotThrow(() => renderChart([]));
   assert.doesNotThrow(() => renderChart(["garbage", "more | garbage | |||"]));
   assert.doesNotThrow(() => renderChart(["type: heat", "source: s", "", "a|b"]));
+  assert.doesNotThrow(() => renderChart(["type: waterfall", "source: s", "garbage", "= only-label"]));
+  assert.doesNotThrow(() => renderChart(["type: waterfall", "source: s", "= totally | not-numeric", "another || row"]));
+  assert.doesNotThrow(() => renderChart(["type: waterfall", "source: s"]));
 });
 
 // ── escaping passthrough ─────────────────────────────────────────────────

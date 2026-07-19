@@ -8,8 +8,8 @@
 // Grammar: leading "key: value" lines are headers (type, title, source,
 // series — P2 line/scatter and stacked bar — and shade, single-series bar
 // only); remaining non-empty lines are data rows split on "|". type is
-// one of bar|stat|delta|heat (P1, CSS-native) or line|scatter (P2, rendered
-// to a PNG inside the Worker by chart_png.js and referenced here as
+// one of bar|stat|delta|heat|waterfall (P1, CSS-native) or line|scatter (P2,
+// rendered to a PNG inside the Worker by chart_png.js and referenced here as
 // <img src="cid:...">). source is REQUIRED (Spec 70's reliability line).
 //
 // P2 split of responsibilities: this module owns the grammar (parsePngChart
@@ -409,7 +409,108 @@ function renderHeat(dataLines) {
   return { ok: true, html: `<table style="border-collapse:collapse;font-size:13px"><tr>${headerHtml}</tr>${bodyHtml}</table>` };
 }
 
-const TYPE_RENDERERS = { bar: renderBar, stat: renderStat, delta: renderDelta, heat: renderHeat };
+// ── waterfall grammar (cashflow bridge) ──────────────────────────────────
+//
+// Row forms:
+//   delta:    Label | value [| display]        -- floats on the running baseline
+//   subtotal: = Label | value [| display]       -- drawn from zero; "= " prefix
+//                                                   is stripped for display
+// A subtotal's value is the absolute level (may be negative) and resets the
+// running baseline; a delta's value is signed and moves the baseline by that
+// amount. base/top on each row are the bar's start/end level (NOT sorted —
+// top can be below base for a negative delta), so the renderer can tell a
+// rising step from a falling one; lo/hi are the global range across every
+// bar's extent, always including 0 (subtotals draw from there).
+//
+// parseWaterfallChart is the ONE waterfall grammar — renderWaterfall (email
+// HTML) and report_view.js's pageChartRenderer (interactive SVG payload)
+// both consume it, so the two surfaces can never drift.
+function formatGrouped(v) {
+  return v.toLocaleString("en-US");
+}
+
+function waterfallDefaultDisplay(kind, value) {
+  if (kind === "total") return formatGrouped(value);
+  return (value >= 0 ? "+" : "-") + formatGrouped(Math.abs(value));
+}
+
+export function parseWaterfallChart(headers, dataLines) {
+  if (dataLines.length < 2) return { ok: false, reason: "waterfall needs at least 2 rows" };
+  const rows = [];
+  let baseline = 0;
+  let lo = 0;
+  let hi = 0;
+  for (const line of dataLines) {
+    const cells = splitRow(line);
+    let label = cells[0];
+    let kind = "delta";
+    if (label.startsWith("= ")) {
+      kind = "total";
+      label = label.slice(2);
+    }
+    const value = parseNumber(cells[1]);
+    if (value === null) return { ok: false, reason: "waterfall value not numeric" };
+    let base;
+    let top;
+    if (kind === "total") {
+      base = 0;
+      top = value;
+      baseline = value;
+    } else {
+      base = baseline;
+      top = baseline + value;
+      baseline = top;
+    }
+    const display = cells[2] !== undefined ? cells[2] : waterfallDefaultDisplay(kind, value);
+    rows.push({ label, value, display, kind, base, top });
+    lo = Math.min(lo, base, top);
+    hi = Math.max(hi, base, top);
+  }
+  return { ok: true, rows, lo, hi };
+}
+
+// Email HTML: same Outlook-survival idiom as renderBar (attribute widths,
+// &nbsp; in every td, font-size:2px/line-height:16px for an invisible bar
+// height), extended with a leading transparent spacer td so a delta bar can
+// float between its start and end level instead of always starting at the
+// left edge. Scale the full [lo, hi] range (always including 0) to ~92% max,
+// same as the other bar types; Math.max(1, ...) keeps every bar visible.
+function renderWaterfall(dataLines, headers) {
+  const parsed = parseWaterfallChart(headers, dataLines);
+  if (!parsed.ok) return parsed;
+  const { rows, lo, hi } = parsed;
+  const range = Math.max(1, hi - lo);
+  const rowsHtml = rows
+    .map((row) => {
+      const barLow = Math.min(row.base, row.top);
+      const barHigh = Math.max(row.base, row.top);
+      const spacerPct = Math.max(0, Math.round(((barLow - lo) / range) * 92));
+      const barPct = Math.max(1, Math.round(((barHigh - barLow) / range) * 92));
+      const fill = row.kind === "total" ? BLUE : row.value >= 0 ? DELTA_POS : DELTA_NEG;
+      const spacerCell =
+        spacerPct === 0 ? "" : `<td width="${spacerPct}%" style="font-size:2px;line-height:16px">&nbsp;</td>`;
+      const barCells =
+        spacerCell +
+        `<td width="${barPct}%" style="background-color:${fill};font-size:2px;line-height:16px;border-radius:4px">&nbsp;</td>` +
+        "<td>&nbsp;</td>";
+      return (
+        "<tr>" +
+        `<td style="${BAR_LABEL_STYLE}">${row.label}</td>` +
+        '<td style="width:100%">' +
+        `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse"><tr>${barCells}</tr></table>` +
+        "</td>" +
+        `<td style="${BAR_VALUE_STYLE}">${row.display}</td>` +
+        "</tr>"
+      );
+    })
+    .join("");
+  return {
+    ok: true,
+    html: `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse">${rowsHtml}</table>`,
+  };
+}
+
+const TYPE_RENDERERS = { bar: renderBar, stat: renderStat, delta: renderDelta, heat: renderHeat, waterfall: renderWaterfall };
 
 // ── P2: line/scatter (PNG-rendered) grammar ─────────────────────────────
 //

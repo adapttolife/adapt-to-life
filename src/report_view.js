@@ -25,6 +25,7 @@ import {
   parseChart,
   parseBarChart,
   parsePngChart,
+  parseWaterfallChart,
   PNG_CHART_TYPES,
   SERIES_COLORS,
   CHART_INK,
@@ -237,12 +238,29 @@ function barPayload(headers, dataLines) {
   return payload;
 }
 
+// Waterfall payload for the interactive runtime — parseWaterfallChart (the
+// ONE waterfall grammar, shared with the email renderer) decides delta vs
+// subtotal and computes lo/hi; rows travel as [label, value, display, kind]
+// so the runtime can recompute each bar's base/top (it already needs the
+// same running-baseline walk for the drill-down's "Running total" column).
+function waterfallPayload(headers, dataLines) {
+  if (dataLines.length === 0) return null;
+  const parsed = parseWaterfallChart(headers, dataLines);
+  if (!parsed.ok) return null;
+  return {
+    type: "waterfall",
+    rows: parsed.rows.map((r) => [r.label, r.value, r.display, r.kind]),
+    lo: parsed.lo,
+    hi: parsed.hi,
+  };
+}
+
 // The chartRenderer hook for renderMarkdown on the viewer page. bar/line/
-// scatter become an .ichart host div carrying its data as embedded JSON (the
-// inline runtime script draws the SVG + tooltips); everything else — stat/
-// delta/heat, unknown types, invalid data, missing source — falls through to
-// renderChart's P1 HTML / degrade table, so the page never shows less than
-// the email did.
+// scatter/waterfall become an .ichart host div carrying its data as embedded
+// JSON (the inline runtime script draws the SVG + tooltips); everything else
+// — stat/delta/heat, unknown types, invalid data, missing source — falls
+// through to renderChart's P1 HTML / degrade table, so the page never shows
+// less than the email did.
 function pageChartRenderer(escapedLines) {
   try {
     const rawLines = escapedLines.map(unescapeHtml);
@@ -253,6 +271,8 @@ function pageChartRenderer(escapedLines) {
     let payload = null;
     if (type === "bar") {
       payload = barPayload(headers, dataLines);
+    } else if (type === "waterfall") {
+      payload = waterfallPayload(headers, dataLines);
     } else if (PNG_CHART_TYPES.includes(type)) {
       const parsed = parsePngChart(headers, dataLines);
       if (parsed.ok) {
@@ -504,6 +524,66 @@ const RUNTIME_SCRIPT = `
     host.appendChild(svg);
   }
 
+  // Recomputes each row's [base, top] level from the payload's [label,
+  // value, display, kind] tuples — the SAME running-baseline walk
+  // parseWaterfallChart does server-side (subtotal grounds to zero and
+  // resets the baseline; delta floats from the running baseline). Shared by
+  // drawWaterfall and tableData so the SVG and the CSV drill-down can never
+  // disagree about a bar's extent.
+  function waterfallExtents(rows) {
+    var out = [], baseline = 0;
+    rows.forEach(function (r) {
+      var label = r[0], value = r[1], display = r[2], kind = r[3];
+      var base, top;
+      if (kind === "total") { base = 0; top = value; baseline = value; }
+      else { base = baseline; top = baseline + value; baseline = top; }
+      out.push({ label: label, value: value, display: display, kind: kind, base: base, top: top });
+    });
+    return out;
+  }
+
+  // Horizontal floating bars, same row-based layout as drawBar/drawStack:
+  // label left, bar floats between its base/top level scaled across the
+  // payload's [lo, hi] range (always includes 0). Subtotal bars are BLUE
+  // (COLORS[0], the house anchor — same hex as the email's subtotal fill).
+  // Delta polarity reuses the existing resolved (theme-aware) series slots —
+  // COLORS[1] (green) for >= 0, COLORS[5] (sienna) for < 0 — rather than a
+  // dedicated --delta-pos/--delta-neg custom property: those tokens don't
+  // exist on the page yet, and the email renderer's baked DELTA_POS/DELTA_NEG
+  // hex fail WCAG contrast against the dark surface, so reusing the
+  // already-dark-validated series palette is the correct fallback (see the
+  // module notes above ROOT_VARS_CSS). A thin dashed connector links
+  // consecutive bars (nice-to-have) — skipped into a subtotal, which always
+  // grounds to zero rather than continuing the chain.
+  function drawWaterfall(host, d) {
+    var W = 640, labelW = 180, valW = 76, rowH = 26;
+    var ext = waterfallExtents(d.rows);
+    var H = ext.length * rowH + 6;
+    var svg = elt("svg", { viewBox: "0 0 " + W + " " + H, width: "100%", role: "img" });
+    var avail = W - labelW - valW - 16;
+    var lo = d.lo, hi = d.hi, range = Math.max(1, hi - lo);
+    function xp(v) { return labelW + ((v - lo) / range) * avail; }
+    ext.forEach(function (r, i) {
+      var yTop = 3 + i * rowH;
+      var lab = elt("text", { x: labelW - 8, y: yTop + rowH / 2 + 4, "text-anchor": "end", "font-size": 13, "font-weight": 600, fill: INK }, svg);
+      lab.textContent = r.label;
+      var x1 = xp(Math.min(r.base, r.top));
+      var x2 = xp(Math.max(r.base, r.top));
+      var w = Math.max(2, x2 - x1);
+      var fill = r.kind === "total" ? COLORS[0] : (r.value >= 0 ? COLORS[1] : COLORS[5]);
+      elt("rect", { x: x1, y: yTop + 5, width: w, height: rowH - 10, rx: 3, fill: fill }, svg);
+      var val = elt("text", { x: x2 + 8, y: yTop + rowH / 2 + 4, "font-size": 12, fill: SEC }, svg);
+      val.textContent = r.display;
+      var hot = elt("rect", { x: 0, y: yTop, width: W, height: rowH, fill: "transparent" }, svg);
+      hover(hot, r.label + ": " + r.display);
+      if (i < ext.length - 1 && ext[i + 1].kind !== "total") {
+        var xEnd = xp(r.top);
+        elt("line", { x1: xEnd, y1: yTop + rowH - 5, x2: xEnd, y2: yTop + rowH + 5, stroke: HAIR, "stroke-width": 1, "stroke-dasharray": "2,2" }, svg);
+      }
+    });
+    host.appendChild(svg);
+  }
+
   // Drill-down (Spec 70 P3, Feature 3): a "Data" toggle under every chart
   // reveals the SAME embedded JSON as a plain table, plus a client-generated
   // CSV (Blob URL — no new endpoint, no external request). Column headers
@@ -519,6 +599,13 @@ const RUNTIME_SCRIPT = `
         };
       }
       return { headers: ["Label", "Value"], rows: d.rows.map(function (r) { return [r[0], r[1]]; }) };
+    }
+    if (d.type === "waterfall") {
+      var ext = waterfallExtents(d.rows);
+      return {
+        headers: ["Label", "Delta/Level", "Running total"],
+        rows: ext.map(function (r) { return [r.label, r.value, r.top]; }),
+      };
     }
     var names = d.names && d.names.length ? d.names : ["Value"];
     if (d.type === "scatter") {
@@ -623,6 +710,7 @@ const RUNTIME_SCRIPT = `
       try { data = JSON.parse(host.firstElementChild.textContent); } catch (e) { continue; }
       try {
         if (data.type === "bar") drawBar(host, data);
+        else if (data.type === "waterfall") drawWaterfall(host, data);
         else drawXY(host, data);
         addDrillDown(host, data);
       } catch (e) { /* a broken chart never breaks the page */ }

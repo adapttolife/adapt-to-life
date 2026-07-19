@@ -256,6 +256,48 @@ test("viewer: shade bar payload embeds the per-row ramp colors; invalid shade+mu
   assert.ok(!html.includes('class="ichart"'), "no interactive payload for the invalid block");
 });
 
+test("viewer: waterfall becomes an interactive payload — rows, kind, and the [lo,hi] range", async () => {
+  const md = [
+    "```chart",
+    "type: waterfall",
+    "title: Cashflow bridge",
+    "source: s",
+    "Gross Rent | 2400 | $2,400",
+    "Vacancy Loss | -120",
+    "= EGI | 2280 | $2,280",
+    "```",
+  ].join("\n");
+  const token = await makeReportToken(SECRET, MSG_ID);
+  const env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: viewerDb({ ...ROW, body_markdown: md }) };
+  const html = await (await view(env, token)).text();
+
+  // The embedded payload: rows as [label, value, display, kind], plus the
+  // global lo/hi range (always includes 0 — nothing here dips negative).
+  assert.match(
+    html,
+    /"type":"waterfall","rows":\[\["Gross Rent",2400,"\$2,400","delta"\],\["Vacancy Loss",-120,"-120","delta"\],\["EGI",2280,"\$2,280","total"\]\],"lo":0,"hi":2400/
+  );
+  assert.match(html, /class="ichart"/, "an interactive host is emitted for the waterfall block");
+
+  // The runtime draws it via drawWaterfall, resolving polarity from the
+  // theme-aware series slots (COLORS[1] green / COLORS[5] sienna) — the
+  // email's dedicated DELTA_POS/DELTA_NEG hex fail contrast on the dark
+  // surface, so the interactive runtime falls back to the already
+  // dark-validated palette instead of inventing new tokens.
+  assert.match(html, /function drawWaterfall\(host, d\)/);
+  assert.match(html, /else if \(data\.type === "waterfall"\) drawWaterfall\(host, data\);/);
+  assert.match(html, /var fill = r\.kind === "total" \? COLORS\[0\] : \(r\.value >= 0 \? COLORS\[1\] : COLORS\[5\]\)/);
+});
+
+test("viewer: waterfall degrade reasons surface on the page too (shared grammar, no drift)", async () => {
+  const badMd = "```chart\ntype: waterfall\nsource: s\nA | not-numeric\nB | 2\n```";
+  const token = await makeReportToken(SECRET, MSG_ID);
+  const env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: viewerDb({ ...ROW, body_markdown: badMd }) };
+  const html = await (await view(env, token)).text();
+  assert.match(html, /Chart degraded \(waterfall value not numeric\)/);
+  assert.ok(!html.includes('class="ichart"'), "no interactive payload for the invalid block");
+});
+
 test("viewer: chart without source degrades on the page too (P1 contract)", async () => {
   const md = "```chart\ntype: bar\nA | 1\nB | 2\n```";
   const token = await makeReportToken(SECRET, MSG_ID);

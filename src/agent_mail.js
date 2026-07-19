@@ -12,7 +12,7 @@ import PostalMime from "postal-mime";
 import { cfSend } from "./email.js";
 import { resolveMarkdownBody } from "./md_render.js";
 import { renderMarkdownChartPngs } from "./chart_png.js";
-import { reportFooterHtml } from "./report_view.js";
+import { reportFooterHtml, reportLink } from "./report_view.js";
 
 const STATUSES = ["new", "agent_working", "needs_review", "human", "replied", "resolved"];
 
@@ -394,6 +394,9 @@ export async function handleAgentMailApi(request, env, url) {
     if (request.method === "GET" && path === "stale-threads") {
       return await apiStaleThreads(env, url, caller);
     }
+    if (request.method === "GET" && path === "reports") {
+      return await apiReports(env, url, caller);
+    }
     if (request.method === "GET" && path.startsWith("thread/")) {
       return await apiRead(env, path.slice("thread/".length), caller);
     }
@@ -481,6 +484,80 @@ async function apiStaleThreads(env, url, caller) {
     .bind(`-${hours} hours`)
     .all();
   return jsonResp({ outcome: "ok", data: results || [] });
+}
+
+// Spec 70 P4 — the reports-concierge substrate: an agent-scoped list/search
+// surface over the report archive. Every outbound report already lives in
+// messages.body_markdown (the same column the /r/ viewer renders from) —
+// this route just lets an agent find its own past reports ("resend week 1",
+// "combine the last 3 months") without a fleet-wide directory. Recompose and
+// judgment stay in the agent; this is read-only. Operator sees every report;
+// an agent sees only reports on threads it owns — same ownership predicate
+// family as apiList's inbox-less branch (thread's inbox default_agent OR the
+// thread's own assigned_agent). A row only counts as a "report" under the
+// same rule the /lib/ library view uses: direction='out' AND body_markdown
+// IS NOT NULL (report_view.js handleLibraryView, ~:983-990).
+function escapeLike(s) {
+  return String(s).replace(/[\\%_]/g, (c) => "\\" + c);
+}
+
+async function apiReports(env, url, caller) {
+  const to = url.searchParams.get("to");
+  const since = url.searchParams.get("since");
+  const until = url.searchParams.get("until");
+  const q = url.searchParams.get("q");
+  const includeBody = url.searchParams.get("body") === "1";
+  const limit = Math.min(parseInt(url.searchParams.get("limit") || "20", 10) || 20, 100);
+
+  const where = ["messages.direction = 'out'", "messages.body_markdown IS NOT NULL"];
+  const binds = [];
+  if (!caller.operator) {
+    where.push(
+      "(threads.inbox IN (SELECT address FROM inboxes WHERE default_agent = ?) OR threads.assigned_agent = ?)"
+    );
+    binds.push(caller.agent, caller.agent);
+  }
+  if (to) {
+    where.push("lower(messages.to_addr) = ?");
+    binds.push(to.toLowerCase());
+  }
+  if (since) {
+    where.push("messages.created_at >= ?");
+    binds.push(since);
+  }
+  if (until) {
+    where.push("messages.created_at <= ?");
+    binds.push(until);
+  }
+  if (q) {
+    where.push("messages.subject LIKE ? ESCAPE '\\'");
+    binds.push(`%${escapeLike(q)}%`);
+  }
+
+  const cols = includeBody
+    ? `messages.id AS id, messages.thread_id AS thread_id, messages.to_addr AS "to", messages.subject AS subject, messages.created_at AS created_at, messages.body_markdown AS body_markdown`
+    : `messages.id AS id, messages.thread_id AS thread_id, messages.to_addr AS "to", messages.subject AS subject, messages.created_at AS created_at`;
+
+  const sql =
+    `SELECT ${cols}
+     FROM messages JOIN threads ON messages.thread_id = threads.id
+     WHERE ${where.join(" AND ")}
+     ORDER BY messages.created_at DESC LIMIT ?`;
+  binds.push(limit);
+
+  const { results } = await env.AGENT_MAIL_DB.prepare(sql).bind(...binds).all();
+  const reports = await Promise.all(
+    (results || []).map(async (r) => ({
+      id: r.id,
+      thread_id: r.thread_id,
+      to: r.to,
+      subject: r.subject,
+      created_at: r.created_at,
+      report_url: await reportLink(env, r.id),
+      ...(includeBody ? { body_markdown: r.body_markdown } : {}),
+    }))
+  );
+  return jsonResp({ outcome: "ok", reports });
 }
 
 async function apiRead(env, threadId, caller) {

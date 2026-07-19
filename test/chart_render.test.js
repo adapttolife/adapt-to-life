@@ -123,6 +123,19 @@ test("stacked bar: label-visibility obligation — total labeled at the bar end 
   }
 });
 
+test("stacked bar: token-scale totals render with digit grouping (no display-override cell exists in the stacked grammar)", () => {
+  const html = renderChart([
+    "type: bar",
+    "source: s",
+    "series: in | out",
+    "stingel | 1332536 | 118065",
+    "julia | 142865 | 14073",
+  ]);
+  assert.equal(html.includes("Chart degraded"), false);
+  assert.match(html, /color:#0b0b0b;font-weight:600;[^"]*">1,450,601<\/td>/);
+  assert.match(html, /color:#0b0b0b;font-weight:600;[^"]*">156,938<\/td>/);
+});
+
 test("stacked bar: 3+ numeric value columns stack WITHOUT a series header, with default names", () => {
   const html = renderChart(["type: bar", "source: s", "Q1 | 4 | 2 | 1", "Q2 | 3 | 3 | 2"]);
   assert.equal(html.includes("Chart degraded"), false);

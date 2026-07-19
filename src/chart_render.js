@@ -272,8 +272,10 @@ function renderBar(dataLines, headers) {
           "</tr></table>" +
           "</td>" +
           // ONE total per bar, at the end, in INK — never a number on every
-          // segment (the legend + tooltips carry per-segment values).
-          `<td style="${STACK_TOTAL_STYLE}">${row.total}</td>` +
+          // segment (the legend + tooltips carry per-segment values). Grouped
+          // digits here only: the stacked grammar has no display-override
+          // cell, so token-scale totals would otherwise render as 1450601.
+          `<td style="${STACK_TOTAL_STYLE}">${row.total.toLocaleString("en-US")}</td>` +
           "</tr>"
         );
       })

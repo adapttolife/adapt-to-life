@@ -305,25 +305,31 @@ const RUNTIME_SCRIPT = `
   var HAIR = ${JSON.stringify(CHART_HAIRLINE)};
   var SVGNS = "http://www.w3.org/2000/svg";
 
-  // Dark mode (Spec 70 dark rung): the five bindings above are the LIGHT
-  // fallback baked at render time (never lost even if a CSS custom-property
-  // read fails) — refreshTheme() overwrites the SAME bindings from the live
-  // --ink/--secondary/--muted/--hairline/--series-N custom properties on
-  // :root (ROOT_VARS_CSS swaps those under prefers-color-scheme:dark) before
-  // every draw, so drawBar/drawStack/drawXY/legendRow below never need to
-  // change — they already read these variables by name.
-  function cssVar(name, fallback) {
+  // Dark mode (Spec 70 dark rung) + paper card (dark-fix rung): the five
+  // bindings above are the LIGHT fallback baked at render time (never lost
+  // even if a CSS custom-property read fails) — refreshTheme(host) overwrites
+  // the SAME bindings from the LIVE --ink/--secondary/--muted/--hairline/
+  // --series-N custom properties resolved AT THE CHART HOST, not
+  // document.documentElement. Custom properties inherit down the DOM, so a
+  // host inside .report-body (the light paper card — see REPORT_BODY_CSS)
+  // resolves the card's pinned-light values regardless of page scheme, while
+  // any future chart drawn OUTSIDE the card falls through the inheritance
+  // chain to :root and follows the page like before. drawBar/drawStack/
+  // drawXY/legendRow below never need to change — they already read these
+  // variables by name.
+  function cssVar(el, name, fallback) {
     if (typeof getComputedStyle !== "function") return fallback;
-    var v = getComputedStyle(document.documentElement).getPropertyValue(name);
+    var v = getComputedStyle(el).getPropertyValue(name);
     v = v && v.trim();
     return v || fallback;
   }
-  function refreshTheme() {
-    INK = cssVar("--ink", INK);
-    SEC = cssVar("--secondary", SEC);
-    MUTED = cssVar("--muted", MUTED);
-    HAIR = cssVar("--hairline", HAIR);
-    COLORS = [0, 1, 2, 3, 4, 5].map(function (i) { return cssVar("--series-" + i, COLORS[i]); });
+  function refreshTheme(host) {
+    var el = host || document.documentElement;
+    INK = cssVar(el, "--ink", INK);
+    SEC = cssVar(el, "--secondary", SEC);
+    MUTED = cssVar(el, "--muted", MUTED);
+    HAIR = cssVar(el, "--hairline", HAIR);
+    COLORS = [0, 1, 2, 3, 4, 5].map(function (i) { return cssVar(el, "--series-" + i, COLORS[i]); });
   }
 
   var tip = document.createElement("div");
@@ -609,10 +615,10 @@ const RUNTIME_SCRIPT = `
   }
 
   function drawAll() {
-    refreshTheme();
     var hosts = document.querySelectorAll(".ichart");
     for (var i = 0; i < hosts.length; i += 1) {
       var host = hosts[i];
+      refreshTheme(host);
       clearHost(host);
       var data;
       try { data = JSON.parse(host.firstElementChild.textContent); } catch (e) { continue; }
@@ -699,8 +705,51 @@ const ROOT_VARS_CSS = `
   }
 `;
 
+// The "paper card" (dark-fix rung): the rendered email body on /r/ is the
+// SAME HTML the email register produces — chart_render.js's stat/delta/heat
+// tiles and the plain-markdown table/text elements carry baked LIGHT inline
+// styles/colors (untouched by design, see the module banner) and the .ichart
+// runtime draws INSIDE this container too. So .report-body pins itself light
+// UNCONDITIONALLY (this rule lives OUTSIDE the dark media query — it is not
+// toggled by scheme) and re-declares every custom property anything inside
+// it reads, to the SAME light values ROOT_VARS_CSS's :root block defaults to.
+// In light mode the page is already light, so this is a no-op — no visible
+// card chrome, white on white, EXACTLY today's look. In dark mode the page
+// goes dark but this container stays a deliberate white card; the dark-only
+// media block below adds padding/radius so it reads as a document card
+// instead of a jarring color clash — scoped to dark so light-mode layout
+// never shifts by a pixel.
+const REPORT_BODY_CSS = `
+  .report-body {
+    background: #ffffff;
+    color: #0b0b0b;
+    --ink: ${CHART_INK};
+    --secondary: ${CHART_SECONDARY};
+    --muted: ${CHART_MUTED};
+    --hairline: ${CHART_HAIRLINE};
+    --surface: #ffffff;
+    --chip-bg: #f4f6f8;
+    --accent: #0b57d0;
+    --tooltip-bg: ${CHART_INK};
+    --tooltip-text: #ffffff;
+    --series-0: ${SERIES_COLORS[0]};
+    --series-1: ${SERIES_COLORS[1]};
+    --series-2: ${SERIES_COLORS[2]};
+    --series-3: ${SERIES_COLORS[3]};
+    --series-4: ${SERIES_COLORS[4]};
+    --series-5: ${SERIES_COLORS[5]};
+  }
+  @media (prefers-color-scheme: dark) {
+    .report-body {
+      padding: 16px 20px;
+      border-radius: 8px;
+    }
+  }
+`;
+
 const PAGE_CSS = `
   ${ROOT_VARS_CSS}
+  ${REPORT_BODY_CSS}
   body { margin: 0; background: var(--surface); color: var(--ink);
     font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif; }
   main { max-width: 720px; margin: 0 auto; padding: 32px 20px 64px; }
@@ -781,7 +830,7 @@ function renderReportPage(msg, token, agentName) {
     "</head><body><main>" +
     `<h1 class="report-subject">${subject}</h1>` +
     (meta ? `<p class="report-meta">${meta}</p>` : "") +
-    bodyHtml +
+    `<div class="report-body">${bodyHtml}</div>` +
     renderAskForm(token, agentName) +
     "</main>" +
     `<script>${RUNTIME_SCRIPT}</script>` +

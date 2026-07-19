@@ -1,5 +1,5 @@
-// Spec 70 dark rung — dark mode for the report viewer pages (/r/, /lib/, the
-// ask-box confirmation page). Design is SELECTED via `@media
+// Spec 70 dark rung — dark mode for the report viewer pages (/r/, /lib/).
+// Design is SELECTED via `@media
 // (prefers-color-scheme: dark)` swapping CSS custom properties defined once
 // at :root, never an auto-flip in script. These tests pin: the dark media
 // block carries the exact six validated dark series hexes, the light
@@ -27,7 +27,10 @@ import { handleAgentMailApi } from "../src/agent_mail.js";
 const SECRET = "report-secret-for-tests";
 const MSG_ID = "5b2f2a10-9d1c-4f4e-8a30-1c2d3e4f5a6b";
 
-const DARK_SERIES = ["#3987e5", "#008300", "#d55181", "#c98500", "#199e70", "#d95926"];
+// GOLDEN CHANGED DELIBERATELY (Spec 70 P4, 2026-07-19): dark-surface steps
+// of the new light editorial hues — validate_palette.js dark mode, surface
+// #1a1a19, ALL CHECKS PASS (pasted in the branch report).
+const DARK_SERIES = ["#3987e5", "#208f50", "#c36490", "#c08410", "#0fa17f", "#d65c2d"];
 
 const REPORT_MD = [
   "```chart",
@@ -112,15 +115,20 @@ test("dark: tooltip dark-elevated background token present, text stays white", a
   assert.match(html, /#ctip[^}]*color: var\(--tooltip-text\)/);
 });
 
-// ---- light defaults: unchanged -----------------------------------------
+// ---- light defaults: chrome + palette (SERIES_COLORS read live; hairline golden updated) --
 
-test("dark: light :root defaults are exactly today's chrome + email SERIES_COLORS (unchanged)", async () => {
+// GOLDEN CHANGED DELIBERATELY (Spec 70 P4, contrast pass): --hairline
+// softened from #e1e0d9 to #e8e7e0. Everything else at :root is unchanged;
+// SERIES_COLORS is asserted from the live export so it always tracks
+// chart_render.js's palette (currently the P4 editorial set) without a
+// second hardcoded pin here.
+test("dark: light :root defaults are today's chrome (softened hairline) + email SERIES_COLORS", async () => {
   const html = await viewReport();
   const root = html.split("@media (prefers-color-scheme: dark)")[0];
   assert.match(root, /--ink: #0b0b0b/);
   assert.match(root, /--secondary: #52514e/);
   assert.match(root, /--muted: #898781/);
-  assert.match(root, /--hairline: #e1e0d9/);
+  assert.match(root, /--hairline: #e8e7e0/);
   assert.match(root, /--surface: #ffffff/);
   SERIES_COLORS.forEach((hex, i) => {
     assert.match(root, new RegExp(`--series-${i}: ${hex}\\b`));
@@ -173,6 +181,11 @@ function isNestedInDarkMedia(html, idx) {
   return /@media \(prefers-color-scheme: dark\)\s*\{\s*$/.test(before);
 }
 
+// GOLDEN CHANGED DELIBERATELY (Spec 70 P4, contrast pass): the card's own
+// surface/background lifted from pure white (#ffffff) to warm white
+// (#fcfcfb) — a deliberate whisper of contrast against the page's still-pure
+// white chrome, even in light mode. Background-color only; no layout shift
+// (still guarded by the padding/border-radius test below).
 test("dark: .report-body pins background/ink light OUTSIDE the dark media query, and re-declares every var the runtime/chart chrome reads", async () => {
   const html = await viewReport();
   const rules = reportBodyRules(html);
@@ -181,13 +194,13 @@ test("dark: .report-body pins background/ink light OUTSIDE the dark media query,
   // The always-on rule must NOT be nested inside `@media (prefers-color-scheme: dark)`.
   const lightRuleIndex = html.indexOf(".report-body");
   assert.ok(!isNestedInDarkMedia(html, lightRuleIndex), "the always-light .report-body rule is declared outside any dark media block");
-  assert.match(light, /background:\s*#ffffff/, "paper card background pinned light");
+  assert.match(light, /background:\s*#fcfcfb/, "paper card background pinned to the warm-white surface");
   assert.match(light, /color:\s*#0b0b0b/);
   assert.match(light, /--ink:\s*#0b0b0b/);
   assert.match(light, /--secondary:\s*#52514e/);
   assert.match(light, /--muted:\s*#898781/);
-  assert.match(light, /--hairline:\s*#e1e0d9/);
-  assert.match(light, /--surface:\s*#ffffff/);
+  assert.match(light, /--hairline:\s*#e8e7e0/);
+  assert.match(light, /--surface:\s*#fcfcfb/);
   assert.match(light, /--tooltip-bg:\s*#0b0b0b/);
   assert.match(light, /--tooltip-text:\s*#ffffff/);
   SERIES_COLORS.forEach((hex, i) => assert.match(light, new RegExp(`--series-${i}:\\s*${hex}\\b`)));
@@ -228,49 +241,15 @@ test("dark: /lib/ library page carries the same dark media block", async () => {
   DARK_SERIES.forEach((hex, i) => assert.match(dark, new RegExp(`--series-${i}: ${hex}\\b`)));
 });
 
-test("dark: ask-box confirmation page carries the same dark media block", async () => {
+test("dark: POST to the retired /ask sub-route 404s — no confirmation page left to carry the dark block", async () => {
   const token = await makeReportToken(SECRET, MSG_ID);
-  const askEnv = {
-    REPORT_LINK_SECRET: SECRET,
-    AGENT_MAIL_DB: {
-      prepare(sql) {
-        return {
-          bind() {
-            return {
-              async first() {
-                if (/FROM messages WHERE id = \?/.test(sql)) return ROW;
-                if (/FROM threads WHERE id = \?/.test(sql)) {
-                  return { id: "t-dark", inbox: "charlie@agents.adapttolife.org", assigned_agent: "charlie", from_addr: "nick@example.com" };
-                }
-                if (/COUNT\(\*\) AS n/.test(sql)) return { n: 0 };
-                return null;
-              },
-              async run() {
-                return {};
-              },
-            };
-          },
-        };
-      },
-    },
-    MAIL_BELL_SECRETS: JSON.stringify({ charlie: "bell-secret" }),
-  };
-  const originalFetch = globalThis.fetch;
-  globalThis.fetch = async () => new Response("{}", { status: 200 });
-  try {
-    const request = new Request(`https://adapttolife.org/r/${token}/ask`, {
-      method: "POST",
-      body: new URLSearchParams({ question: "dark mode check" }),
-    });
-    const res = await handleReportView(request, askEnv, new URL(request.url));
-    assert.equal(res.status, 200);
-    const html = await res.text();
-    const dark = darkBlock(html);
-    assert.match(dark, /--surface: #1a1a19/);
-    assert.match(dark, /--ink: #ffffff/);
-  } finally {
-    globalThis.fetch = originalFetch;
-  }
+  const env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: viewerDb(ROW) };
+  const request = new Request(`https://adapttolife.org/r/${token}/ask`, {
+    method: "POST",
+    body: new URLSearchParams({ question: "dark mode check" }),
+  });
+  const res = await handleReportView(request, env, new URL(request.url));
+  assert.equal(res.status, 404);
 });
 
 // ---- email untouched pin ----------------------------------------------------

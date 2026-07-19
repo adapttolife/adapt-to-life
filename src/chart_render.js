@@ -24,27 +24,35 @@
 const INK = "#0b0b0b";
 const SECONDARY = "#52514e";
 const MUTED = "#898781";
-const HAIRLINE = "#e1e0d9";
+const HAIRLINE = "#e8e7e0"; // softened (Spec 70 P4, light only) — email + viewer share this one constant
 const HEADER_BG = "#f9f9f7";
 const DELTA_NEG = "#a02d2d";
 const DELTA_POS = "#006300";
 const BLUE = "#2a78d6";
 
 // Sequential blue ramp, light -> dark, 13 stops. Used by heat cells AND by
-// the opt-in bar `shade: value` encoding (exported for tests).
+// the opt-in bar `shade: value` encoding (exported for tests). Contrast pass
+// (Spec 70 P4, 2026-07-19): the top four stops were deepened so the ramp's
+// max cell reads as rich navy rather than a mid-blue plateau — lightness
+// stays strictly monotone (each stop darker than the last, same blue-family
+// hue, ~213-217°) so the ramp is still a valid sequential encoding, just with
+// more headroom at the dark end.
 export const BLUE_RAMP = [
   "#cde2fb", "#b7d3f6", "#9ec5f4", "#86b6ef", "#6da7ec", "#5598e7", "#3987e5",
-  "#2a78d6", "#256abf", "#1c5cab", "#184f95", "#104281", "#0d366b",
+  "#2a78d6", "#256abf", "#164e98", "#0f3c7b", "#0a2b5c", "#061b3c",
 ];
 
-// Categorical series palette (validated colorblind-safe set, 2026-07-18):
-// blue, green, magenta, yellow, aqua, orange. FIXED SLOT ORDER — series i
-// always gets slot i, never cycled, never reordered. Slots 2/3/4 (#e87ba4,
-// #eda100, #1baf7a) sit below 3:1 contrast on white; they are legal ONLY
-// because every chart form direct-labels values in INK and names series in a
-// legend — never remove a value label or legend. These are category colors
-// exclusively: status stays on DELTA_POS/DELTA_NEG, which are reserved.
-export const SERIES_COLORS = [BLUE, "#008300", "#e87ba4", "#eda100", "#1baf7a", "#eb6834"];
+// Categorical series palette (premium editorial set, validated 2026-07-19):
+// blue, green, magenta, amber, teal, sienna. FIXED SLOT ORDER — series i
+// always gets slot i, never cycled, never reordered. Slot 0 (BLUE) is the
+// house anchor, unchanged since the 2026-07-18 set; slots 1-5 were deepened
+// toward editorial tones (validate_palette.js, light mode, surface #ffffff —
+// ALL CHECKS PASS) to read as considered rather than default-chart-library
+// bright. These are category colors exclusively: status stays on
+// DELTA_POS/DELTA_NEG, and the four verdict-accent colors in md_render.js's
+// VERDICT_COLORS are ALSO reserved — none of the six may ever collide with
+// either reserved set (tested in chart_render.test.js).
+export const SERIES_COLORS = [BLUE, "#1e7a46", "#b95784", "#c98500", "#0f8a6d", "#c2542a"];
 
 // Chrome colors chart_png.js reuses so the PNG matches the P1 HTML charts.
 export const CHART_INK = INK;
@@ -74,7 +82,10 @@ const UP = "▲ "; // ▲
 const DOWN = "▼ "; // ▼
 
 function titleLine(title) {
-  return `<div style="font-size:14px;font-weight:700;color:${INK};margin:16px 0 2px">${title}</div>`;
+  // Contrast pass (Spec 70 P4): 600 weight, still ink — a considered
+  // semibold reads more editorial than the previous 700 bold; source lines
+  // stay MUTED, untouched.
+  return `<div style="font-size:14px;font-weight:600;color:${INK};margin:16px 0 2px">${title}</div>`;
 }
 
 function sourceLine(source) {

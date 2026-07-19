@@ -41,6 +41,9 @@ CREATE TABLE IF NOT EXISTS messages (
   created_at  TEXT NOT NULL DEFAULT (datetime('now'))
 );
 CREATE INDEX IF NOT EXISTS idx_messages_thread ON messages(thread_id, created_at);
+-- Spec 70 P4: GET /api/agent-mail/reports and the /lib/ library view both scan
+-- messages filtered on direction='out' ordered by created_at.
+CREATE INDEX IF NOT EXISTS idx_messages_out_created ON messages(direction, created_at);
 -- Migration for deployments created before is_machine (run once):
 --   ALTER TABLE messages ADD COLUMN is_machine INTEGER NOT NULL DEFAULT 0;
 -- Migration for deployments created before body_markdown/body_html (Spec 53, run once):

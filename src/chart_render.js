@@ -76,7 +76,10 @@ const BAR_VALUE_STYLE = "text-align:right;color:" + SECONDARY + ";font-size:13px
 // Stacked-bar total: INK, not SECONDARY — the total is the one number the
 // bar carries (label-visibility obligation for the sub-3:1 palette slots).
 const STACK_TOTAL_STYLE = "text-align:right;color:" + INK + ";font-weight:600;font-size:13px;padding-left:8px;white-space:nowrap";
-const STAT_TILE_STYLE = "padding:14px 18px 14px 16px;border:1px solid " + HAIRLINE + ";border-radius:10px;vertical-align:top";
+const STAT_TILE_STYLE =
+  "display:inline-block;vertical-align:top;box-sizing:border-box;max-width:100%;" +
+  "padding:14px 18px 14px 16px;border:1px solid " + HAIRLINE + ";border-radius:10px;" +
+  "margin:0 10px 10px 0";
 // Stat tile figure contract (Spec 100, dataviz hero spec): uppercase muted
 // micro-label, display-weight value, delta as a tinted chip below.
 const STAT_LABEL_STYLE = "font-size:11px;font-weight:600;color:" + MUTED + ";text-transform:uppercase;letter-spacing:0.06em";
@@ -352,6 +355,12 @@ function renderStat(dataLines) {
   if (rows.some((cells) => cells.length < 2 || cells.length > 3)) {
     return { ok: false, reason: "stat row malformed" };
   }
+  // Mobile-first (Spec 100): tiles are inline-block divs, NOT a single-row
+  // table — a rigid row wider than a phone viewport makes Gmail iOS scale the
+  // whole email down (the 7/5 tiny-text hazard class; probe-proven 2026-07-20
+  // at 445px on a 390px screen). Inline-block wraps to two/one columns on
+  // narrow screens; Outlook's Word engine stacks them vertically — an
+  // acceptable degrade (stacked, never clipped).
   const tiles = rows.map(([label, value, context]) => {
     let contextHtml = "";
     if (context !== undefined && context !== "") {
@@ -359,18 +368,16 @@ function renderStat(dataLines) {
       contextHtml = `<div style="padding-top:6px">${deltaChip(context, color, prefix)}</div>`;
     }
     return (
-      `<td style="${STAT_TILE_STYLE}">` +
+      `<div style="${STAT_TILE_STYLE}">` +
       `<div style="${STAT_LABEL_STYLE}">${label}</div>` +
       `<div style="${STAT_VALUE_STYLE}">${value}</div>` +
       contextHtml +
-      "</td>"
+      "</div>"
     );
   });
-  // Kit idiom: attribute width + &nbsp; so the spacer survives Outlook.
-  const spacer = '<td width="12" style="font-size:0">&nbsp;</td>';
   return {
     ok: true,
-    html: `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse"><tr>${tiles.join(spacer)}</tr></table>`,
+    html: `<div style="margin:2px 0">${tiles.join("")}</div>`,
   };
 }
 
@@ -638,6 +645,10 @@ function renderChartUnsafe(escapedLines, image) {
     if (!image || !image.cid) return degrade(headers, dataLines, "chart image not rendered");
     const parts = [];
     if (headers.title) parts.push(titleLine(headers.title));
+    // Mobile-first (Spec 100): the legend is HTML beside the image, not
+    // pixels inside it — real text stays legible at any width while the
+    // downscaled PNG carries shape (ticks live full-size on the /r/ twin).
+    if (parsed.chart.series.length > 1) parts.push(legendRowHtml(parsed.chart.seriesNames));
     parts.push(renderPngImage(headers, image));
     parts.push(sourceLine(headers.source));
     return parts.join("");

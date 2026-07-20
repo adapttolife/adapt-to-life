@@ -414,9 +414,19 @@ const RUNTIME_SCRIPT = `
     host.appendChild(lg);
   }
 
+  // Spec 100 mobile-first: draw at the host's real width (viewBox units ==
+  // CSS px) so type stays actual-size on phones instead of shrinking with a
+  // fixed 640 viewBox; narrow hosts get tighter label/value columns.
+  function dims(host) {
+    var w = Math.round(host.getBoundingClientRect().width) || 640;
+    w = Math.max(300, Math.min(880, w));
+    var narrow = w < 480;
+    return { W: w, labelW: narrow ? 110 : 180, valW: narrow ? 56 : 76, narrow: narrow };
+  }
+
   function drawBar(host, d) {
     if (d.stacked) return drawStack(host, d);
-    var W = 640, labelW = 180, valW = 76, rowH = 26;
+    var D = dims(host), W = D.W, labelW = D.labelW, valW = D.valW, rowH = 26;
     var rows = d.rows;
     var H = rows.length * rowH + 6;
     var svg = elt("svg", { viewBox: "0 0 " + W + " " + H, width: "100%", role: "img" });
@@ -443,7 +453,7 @@ const RUNTIME_SCRIPT = `
   // per-segment hover tooltip ("NameA: 2.4"), ONE total per bar at the end
   // in INK — never a number on every segment.
   function drawStack(host, d) {
-    var W = 640, labelW = 180, valW = 76, rowH = 26, GAP = 2;
+    var D = dims(host), W = D.W, labelW = D.labelW, valW = D.valW, rowH = 26, GAP = 2;
     if (d.names && d.names.length > 1) legendRow(host, d.names);
     var rows = d.rows;
     var H = rows.length * rowH + 6;
@@ -471,7 +481,7 @@ const RUNTIME_SCRIPT = `
   }
 
   function drawXY(host, d) {
-    var W = 640, H = 320, padL = 52, padR = 12, padT = 12, padB = 26;
+    var D = dims(host), W = D.W, H = D.narrow ? 240 : 320, padL = D.narrow ? 44 : 52, padR = 12, padT = 12, padB = 26;
     var plotW = W - padL - padR, plotH = H - padT - padB;
     var svg = elt("svg", { viewBox: "0 0 " + W + " " + H, width: "100%", role: "img" });
     var all = [];
@@ -556,7 +566,7 @@ const RUNTIME_SCRIPT = `
   // consecutive bars (nice-to-have) — skipped into a subtotal, which always
   // grounds to zero rather than continuing the chain.
   function drawWaterfall(host, d) {
-    var W = 640, labelW = 180, valW = 76, rowH = 26;
+    var D = dims(host), W = D.W, labelW = D.labelW, valW = D.valW, rowH = 26;
     var ext = waterfallExtents(d.rows);
     var H = ext.length * rowH + 6;
     var svg = elt("svg", { viewBox: "0 0 " + W + " " + H, width: "100%", role: "img" });
@@ -732,6 +742,18 @@ const RUNTIME_SCRIPT = `
     if (darkQuery.addEventListener) darkQuery.addEventListener("change", onSchemeChange);
     else if (darkQuery.addListener) darkQuery.addListener(onSchemeChange);
   }
+
+  // Spec 100 mobile-first: redraw at the new width on resize/rotation.
+  // Debounced, and width-gated — mobile browsers fire resize on URL-bar
+  // show/hide (height-only), which must not trigger a redraw storm.
+  var lastW = window.innerWidth;
+  var resizeTimer = null;
+  window.addEventListener("resize", function () {
+    if (window.innerWidth === lastW) return;
+    lastW = window.innerWidth;
+    if (resizeTimer) clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(drawAll, 150);
+  });
 })();
 `;
 
@@ -893,6 +915,13 @@ const PAGE_CSS = `
   .lib-subject { color: var(--accent); text-decoration: none; }
   .lib-subject:hover { text-decoration: underline; }
   .lib-empty { color: var(--secondary); font-size: 13px; padding: 12px 0; }
+  @media (max-width: 480px) {
+    main { padding: 24px 12px 48px; }
+    h1.report-subject { font-size: 24px; }
+    .legend { margin-left: 0; }
+    .lib-row { flex-wrap: wrap; }
+    .lib-date, .lib-from { flex: 0 0 auto; }
+  }
 `;
 
 // The reply line (replaces the ask-box, Spec 70 P3 rung 3): no form, no

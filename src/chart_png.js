@@ -37,7 +37,6 @@ const PAD = 20;
 const Y_AXIS_W = 48;
 const AXIS_GAP = 8;
 const X_AXIS_H = 18;
-const LEGEND_H = 22;
 const ZERO_LINE = "#c7c5bd"; // between hairline and secondary — visible, not loud
 // Marks at the domain edge (first/last point, min/max value) would be half-
 // clipped by the plot svg's viewBox without a small inset on both scales.
@@ -138,8 +137,7 @@ function round2(v) {
 // that satori serializes into the card.
 function buildTree(chart) {
   const { type, xLabels, xValues, series, seriesNames } = chart;
-  const multi = series.length > 1;
-  const legendH = multi ? LEGEND_H : 0;
+  const legendH = 0;
   const plotW = WIDTH - PAD * 2 - Y_AXIS_W - AXIS_GAP;
   const plotH = HEIGHT - PAD * 2 - legendH - X_AXIS_H;
 
@@ -205,7 +203,7 @@ function buildTree(chart) {
   const yLabelEls = y.ticks.map((t) =>
     el(
       "div",
-      { position: "absolute", top: round2(yPix(t) - 7), left: 0, width: Y_AXIS_W - AXIS_GAP, display: "flex", justifyContent: "flex-end", fontSize: 11, color: CHART_MUTED },
+      { position: "absolute", top: round2(yPix(t) - 7), left: 0, width: Y_AXIS_W - AXIS_GAP, display: "flex", justifyContent: "flex-end", fontSize: 12, color: CHART_MUTED },
       fmtTick(t, y.decimals)
     )
   );
@@ -228,21 +226,9 @@ function buildTree(chart) {
     );
   });
 
+  // Spec 100 mobile-first: no in-image legend — chart_render.js emits the
+  // HTML legend row beside the <img>, so legend text never downscales.
   const children = [];
-  if (multi) {
-    children.push(
-      el(
-        "div",
-        { display: "flex", flexDirection: "row", alignItems: "center", height: LEGEND_H, marginLeft: Y_AXIS_W + AXIS_GAP },
-        seriesNames.map((name, s) =>
-          el("div", { display: "flex", flexDirection: "row", alignItems: "center", marginRight: 16 }, [
-            el("div", { width: 10, height: 10, backgroundColor: SERIES_COLORS[s], borderRadius: 2, marginRight: 6 }, undefined),
-            el("div", { fontSize: 11, fontWeight: 600, color: CHART_SECONDARY }, name),
-          ])
-        )
-      )
-    );
-  }
   children.push(
     el("div", { display: "flex", flexDirection: "row", height: plotH }, [
       el("div", { position: "relative", width: Y_AXIS_W, height: plotH, display: "flex" }, yLabelEls),

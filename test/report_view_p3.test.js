@@ -419,3 +419,43 @@ test("drill-down: bar/stacked/line/scatter table headers derive from the chart's
   // The stacked-bar table branch: ["Label"].concat(names, ["Total"]).
   assert.match(html, /headers: \["Label"\]\.concat\(names, \["Total"\]\)/);
 });
+
+test("drill-down: grouped-bar CSV serializes Label + one column per series (no Total — a comparison never sums)", async () => {
+  const groupedMd = [
+    "```chart",
+    "type: bar",
+    "mode: grouped",
+    "source: reverse-DCF grid",
+    "series: Implied | Hurdle",
+    "unit: %",
+    "NVDA | 14.2 | 11.8",
+    "```",
+  ].join("\n");
+  const db = {
+    prepare(sql) {
+      return {
+        bind() {
+          return {
+            async first() {
+              return /FROM messages WHERE id = \?/.test(sql) ? { ...ASK_ROW, body_markdown: groupedMd } : null;
+            },
+            async all() {
+              return { results: [] };
+            },
+          };
+        },
+      };
+    },
+  };
+  const token = await makeReportToken(SECRET, MSG_ID);
+  const env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: db };
+  const request = new Request(`https://adapttolife.org/r/${token}`, { method: "GET" });
+  const res = await handleReportView(request, env, new URL(request.url));
+  const html = await res.text();
+  // The grouped-bar table branch: ["Label"].concat(d.names), one row per
+  // category as [label, v1, v2, ...] — raw numbers, no unit, no Total.
+  assert.match(html, /headers: \["Label"\]\.concat\(d\.names \|\| \[\]\)/);
+  assert.match(html, /rows: d\.rows\.map\(function \(r\) \{ return \[r\[0\]\]\.concat\(r\[1\]\); \}\)/);
+  // And the payload it serializes from carries the raw grouped rows.
+  assert.match(html, /"rows":\[\["NVDA",\[14\.2,11\.8\]\]\]/);
+});

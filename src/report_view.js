@@ -225,11 +225,17 @@ function escapeHtml(s) {
 // shade; anything it rejects falls back to renderChart's degrade table.
 //   single:  { type:"bar", rows:[[label, value, display]], shades?:[hex] }
 //   stacked: { type:"bar", stacked:true, names:[..], rows:[[label,[v..],total]] }
+//   grouped: { type:"bar", grouped:true, names:[..], unit?:string, rows:[[label,[v..]]] }
 function barPayload(headers, dataLines) {
   if (dataLines.length === 0) return null;
   const parsed = parseBarChart(headers, dataLines);
   if (!parsed.ok) return null;
   const bar = parsed.bar;
+  if (bar.grouped) {
+    const payload = { type: "bar", grouped: true, names: bar.names, rows: bar.rows.map((r) => [r.label, r.values]) };
+    if (bar.unit) payload.unit = bar.unit;
+    return payload;
+  }
   if (bar.stacked) {
     return { type: "bar", stacked: true, names: bar.names, rows: bar.rows.map((r) => [r.label, r.values, r.total]) };
   }
@@ -425,6 +431,7 @@ const RUNTIME_SCRIPT = `
   }
 
   function drawBar(host, d) {
+    if (d.grouped) return drawGrouped(host, d);
     if (d.stacked) return drawStack(host, d);
     var D = dims(host), W = D.W, labelW = D.labelW, valW = D.valW, rowH = 26;
     var rows = d.rows;
@@ -445,6 +452,40 @@ const RUNTIME_SCRIPT = `
       val.textContent = r[2];
       var hot = elt("rect", { x: 0, y: yTop, width: W, height: rowH, fill: "transparent" }, svg);
       hover(hot, r[0] + ": " + r[2]);
+    });
+    host.appendChild(svg);
+  }
+
+  // Grouped bars (mode: grouped): 2-4 side-by-side horizontal bars per
+  // category — a comparison, so every bar scales against the GLOBAL max.
+  // Thinner bars than the single/stacked 26px row (they stack vertically
+  // within a group), one value label per bar (unit-suffixed) in INK, and a
+  // fixed-slot legend so the marks always match the chips.
+  function drawGrouped(host, d) {
+    var D = dims(host), W = D.W, labelW = D.labelW, valW = D.valW, barH = 16, groupPad = 8;
+    legendRow(host, d.names);
+    var n = d.names.length;
+    var groupH = n * barH + groupPad;
+    var rows = d.rows;
+    var H = rows.length * groupH - groupPad + 6;
+    var svg = elt("svg", { viewBox: "0 0 " + W + " " + H, width: "100%", role: "img" });
+    var max = 0;
+    rows.forEach(function (r) { r[1].forEach(function (v) { if (v > max) max = v; }); });
+    var avail = W - labelW - valW - 16;
+    var unit = d.unit || "";
+    rows.forEach(function (r, i) {
+      var yTop = 3 + i * groupH;
+      var lab = elt("text", { x: labelW - 8, y: yTop + (n * barH) / 2 + 4, "text-anchor": "end", "font-size": 13, "font-weight": 600, fill: INK }, svg);
+      lab.textContent = r[0];
+      r[1].forEach(function (v, s) {
+        var y = yTop + s * barH;
+        var bw = max > 0 && v > 0 ? Math.max(2, (v / max) * avail) : 0;
+        if (bw > 0) elt("rect", { x: labelW, y: y + 2, width: bw, height: barH - 4, rx: 2, fill: COLORS[s % COLORS.length] }, svg);
+        var val = elt("text", { x: labelW + bw + 8, y: y + barH / 2 + 4, "font-size": 12, fill: INK }, svg);
+        val.textContent = fmt(v) + unit;
+        var hot = elt("rect", { x: 0, y: y, width: W, height: barH, fill: "transparent" }, svg);
+        hover(hot, r[0] + " \\u2014 " + d.names[s] + ": " + fmt(v) + unit);
+      });
     });
     host.appendChild(svg);
   }
@@ -601,6 +642,13 @@ const RUNTIME_SCRIPT = `
   // SVG can never disagree about what a row means.
   function tableData(d) {
     if (d.type === "bar") {
+      if (d.grouped) {
+        // Grouped is a comparison — one column per series, no Total column.
+        return {
+          headers: ["Label"].concat(d.names || []),
+          rows: d.rows.map(function (r) { return [r[0]].concat(r[1]); }),
+        };
+      }
       if (d.stacked) {
         var names = d.names || [];
         return {

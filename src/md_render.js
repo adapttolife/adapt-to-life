@@ -20,22 +20,33 @@
 
 import { renderChart } from "./chart_render.js";
 
+// Spec 100 (premium pass): every gray below sits on the ONE warm ink family
+// chart_render.js already uses (INK #0b0b0b / SECONDARY #52514e / MUTED
+// #898781 / HAIRLINE #e8e7e0) — the cool GitHub grays (#ddd/#ccc/#555/
+// #f6f8fa) are gone so email prose and charts read as one system.
 const CODE_BLOCK_STYLE =
   "font-family:ui-monospace,Menlo,monospace;font-size:13px;line-height:1.45;" +
-  "background:#f6f8fa;padding:12px;border-radius:6px;overflow-x:auto";
-const INLINE_CODE_STYLE = "background:#f6f8fa;padding:1px 4px;border-radius:3px;font-size:13px";
-const HR_STYLE = "border:none;border-top:1px solid #ddd;margin:20px 0";
-const H1_STYLE = "font-size:22px;margin:24px 0 8px";
-const H2_STYLE = "font-size:18px;border-bottom:1px solid #ddd;padding-bottom:4px;margin:24px 0 8px";
-const H3_STYLE = "font-size:15px;margin:24px 0 8px";
-const TABLE_STYLE = "border-collapse:collapse;width:100%;margin:10px 0;font-size:14px";
-const CELL_STYLE = "border:1px solid #ddd;padding:6px 8px;text-align:left;vertical-align:top";
-const TH_STYLE = CELL_STYLE + ";background:#f6f8fa";
+  "background:#f6f6f3;padding:12px 14px;border-radius:8px;overflow-x:auto";
+const INLINE_CODE_STYLE = "background:#f6f6f3;padding:1px 5px;border-radius:4px;font-size:13px";
+const HR_STYLE = "border:none;border-top:1px solid #e8e7e0;margin:24px 0";
+const H1_STYLE = "font-size:26px;font-weight:700;letter-spacing:-0.02em;margin:24px 0 8px";
+const H2_STYLE =
+  "font-size:18px;font-weight:700;letter-spacing:-0.01em;border-bottom:1px solid #e8e7e0;" +
+  "padding-bottom:6px;margin:28px 0 10px";
+const H3_STYLE = "font-size:15px;font-weight:700;margin:24px 0 8px";
+// Tables: horizontal rules only (the full border grid is the loudest
+// "default HTML" tell) — hairline row rules, a slightly firmer rule under an
+// uppercase micro-label header row, no fills, no vertical ink.
+const TABLE_STYLE = "border-collapse:collapse;width:100%;margin:12px 0;font-size:14px";
+const CELL_STYLE = "border-bottom:1px solid #e8e7e0;padding:8px 12px 8px 0;text-align:left;vertical-align:top";
+const TH_STYLE =
+  "border-bottom:1px solid #d6d4cb;padding:0 12px 6px 0;text-align:left;vertical-align:bottom;" +
+  "font-size:11px;font-weight:600;color:#898781;text-transform:uppercase;letter-spacing:0.06em";
 const LIST_STYLE = "margin:8px 0 8px 22px";
 const LI_STYLE = "margin:4px 0";
-const BLOCKQUOTE_STYLE = "border-left:3px solid #ccc;margin:10px 0;padding:4px 12px;color:#555";
+const BLOCKQUOTE_STYLE = "border-left:3px solid #d6d4cb;margin:12px 0;padding:4px 14px;color:#52514e";
 const PARAGRAPH_STYLE = "margin:10px 0;line-height:1.55";
-const LINK_STYLE = "color:#0b57d0";
+const LINK_STYLE = "color:#256abf";
 
 const LINK_RE = /\[([^\]]+)\]\(([^)]+)\)/g;
 const BOLD_RE = /\*\*(.+?)\*\*/g;
@@ -47,8 +58,8 @@ const ORDERED_STRIP_RE = /^\d+\.\s+/;
 // these into email otherwise -- a raw "[x]" token is exactly the "straight up
 // markdown" Spec 53 exists to prevent (Alec, 2026-07-12).
 const TASK_RE = /^\[( |x|X)\]\s+/;
-const TASK_DONE_MARK = '<span style="color:#1a7f37">\u2713</span> ';
-const TASK_OPEN_MARK = '<span style="color:#888">\u2610</span> ';
+const TASK_DONE_MARK = '<span style="color:#006300">\u2713</span> ';
+const TASK_OPEN_MARK = '<span style="color:#898781">\u2610</span> ';
 
 // Verdict accents (Spec 70 P4): the house report style pins a verdict line as
 // bold text ending "\u2014 VERDICT" (e.g. "**NVDA \u2014 RISK**"). When a **bold** run's
@@ -82,7 +93,7 @@ function strongTag(content) {
   const { border, bg } = VERDICT_COLORS[m[1]];
   const style =
     `border-left:3px solid ${border};background-color:${bg};` +
-    "padding:2px 8px;border-radius:3px;display:inline-block";
+    "padding:2px 9px;border-radius:4px;display:inline-block";
   return `<strong style="${style}">${content}</strong>`;
 }
 
@@ -268,7 +279,7 @@ export function renderMarkdown(md, opts) {
     // Explicit background (2026-07-05): dark-mode clients auto-invert emails that
     // declare none — keeps the reading-view card white deterministically.
     '<div style="font-family:-apple-system,\'Segoe UI\',Helvetica,Arial,sans-serif;' +
-    'font-size:15px;color:#1a1a1a;background:#ffffff;max-width:720px;padding:4px 2px">' +
+    'font-size:15px;color:#0b0b0b;background:#ffffff;max-width:720px;padding:4px 2px">' +
     rendered +
     "</div>"
   );

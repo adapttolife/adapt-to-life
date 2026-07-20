@@ -414,9 +414,19 @@ const RUNTIME_SCRIPT = `
     host.appendChild(lg);
   }
 
+  // Spec 100 mobile-first: draw at the host's real width (viewBox units ==
+  // CSS px) so type stays actual-size on phones instead of shrinking with a
+  // fixed 640 viewBox; narrow hosts get tighter label/value columns.
+  function dims(host) {
+    var w = Math.round(host.getBoundingClientRect().width) || 640;
+    w = Math.max(300, Math.min(880, w));
+    var narrow = w < 480;
+    return { W: w, labelW: narrow ? 110 : 180, valW: narrow ? 56 : 76, narrow: narrow };
+  }
+
   function drawBar(host, d) {
     if (d.stacked) return drawStack(host, d);
-    var W = 640, labelW = 180, valW = 76, rowH = 26;
+    var D = dims(host), W = D.W, labelW = D.labelW, valW = D.valW, rowH = 26;
     var rows = d.rows;
     var H = rows.length * rowH + 6;
     var svg = elt("svg", { viewBox: "0 0 " + W + " " + H, width: "100%", role: "img" });
@@ -443,7 +453,7 @@ const RUNTIME_SCRIPT = `
   // per-segment hover tooltip ("NameA: 2.4"), ONE total per bar at the end
   // in INK — never a number on every segment.
   function drawStack(host, d) {
-    var W = 640, labelW = 180, valW = 76, rowH = 26, GAP = 2;
+    var D = dims(host), W = D.W, labelW = D.labelW, valW = D.valW, rowH = 26, GAP = 2;
     if (d.names && d.names.length > 1) legendRow(host, d.names);
     var rows = d.rows;
     var H = rows.length * rowH + 6;
@@ -471,7 +481,7 @@ const RUNTIME_SCRIPT = `
   }
 
   function drawXY(host, d) {
-    var W = 640, H = 320, padL = 52, padR = 12, padT = 12, padB = 26;
+    var D = dims(host), W = D.W, H = D.narrow ? 240 : 320, padL = D.narrow ? 44 : 52, padR = 12, padT = 12, padB = 26;
     var plotW = W - padL - padR, plotH = H - padT - padB;
     var svg = elt("svg", { viewBox: "0 0 " + W + " " + H, width: "100%", role: "img" });
     var all = [];
@@ -556,7 +566,7 @@ const RUNTIME_SCRIPT = `
   // consecutive bars (nice-to-have) — skipped into a subtotal, which always
   // grounds to zero rather than continuing the chain.
   function drawWaterfall(host, d) {
-    var W = 640, labelW = 180, valW = 76, rowH = 26;
+    var D = dims(host), W = D.W, labelW = D.labelW, valW = D.valW, rowH = 26;
     var ext = waterfallExtents(d.rows);
     var H = ext.length * rowH + 6;
     var svg = elt("svg", { viewBox: "0 0 " + W + " " + H, width: "100%", role: "img" });
@@ -732,6 +742,18 @@ const RUNTIME_SCRIPT = `
     if (darkQuery.addEventListener) darkQuery.addEventListener("change", onSchemeChange);
     else if (darkQuery.addListener) darkQuery.addListener(onSchemeChange);
   }
+
+  // Spec 100 mobile-first: redraw at the new width on resize/rotation.
+  // Debounced, and width-gated — mobile browsers fire resize on URL-bar
+  // show/hide (height-only), which must not trigger a redraw storm.
+  var lastW = window.innerWidth;
+  var resizeTimer = null;
+  window.addEventListener("resize", function () {
+    if (window.innerWidth === lastW) return;
+    lastW = window.innerWidth;
+    if (resizeTimer) clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(drawAll, 150);
+  });
 })();
 `;
 
@@ -767,8 +789,8 @@ const ROOT_VARS_CSS = `
     --muted: ${CHART_MUTED};
     --hairline: ${CHART_HAIRLINE};
     --surface: #ffffff;
-    --chip-bg: #f4f6f8;
-    --accent: #0b57d0;
+    --chip-bg: #f4f3ef;
+    --accent: #256abf;
     --tooltip-bg: ${CHART_INK};
     --tooltip-text: #ffffff;
     --series-0: ${SERIES_COLORS[0]};
@@ -782,7 +804,7 @@ const ROOT_VARS_CSS = `
     :root {
       --ink: #ffffff;
       --secondary: #c3c2b7;
-      --muted: #c3c2b7;
+      --muted: #8f8e85; /* Spec 100: differentiated from secondary; 5.3:1 on #1a1a19 */
       --hairline: #3a3936;
       --surface: #1a1a19;
       --chip-bg: #3a3936;
@@ -827,8 +849,8 @@ const REPORT_BODY_CSS = `
     --muted: ${CHART_MUTED};
     --hairline: ${CHART_HAIRLINE};
     --surface: #fcfcfb;
-    --chip-bg: #f4f6f8;
-    --accent: #0b57d0;
+    --chip-bg: #f4f3ef;
+    --accent: #256abf;
     --tooltip-bg: ${CHART_INK};
     --tooltip-text: #ffffff;
     --series-0: ${SERIES_COLORS[0]};
@@ -850,24 +872,30 @@ const PAGE_CSS = `
   ${ROOT_VARS_CSS}
   ${REPORT_BODY_CSS}
   body { margin: 0; background: var(--surface); color: var(--ink);
-    font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif; }
-  main { max-width: 720px; margin: 0 auto; padding: 32px 20px 64px; }
-  h1.report-subject { font-size: 24px; line-height: 1.25; margin: 0 0 4px; }
+    font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased; }
+  main { max-width: 720px; margin: 0 auto; padding: 40px 20px 64px; }
+  h1.report-subject { font-size: 28px; font-weight: 700; letter-spacing: -0.02em;
+    line-height: 1.2; margin: 0 0 6px; }
   .report-meta { font-size: 13px; color: var(--secondary); margin: 0 0 8px;
-    padding-bottom: 12px; border-bottom: 1px solid var(--hairline); }
+    padding-bottom: 14px; border-bottom: 1px solid var(--hairline); }
   .ichart { margin: 4px 0; }
   .ichart svg text { font-family: inherit; }
-  .legend { display: flex; gap: 16px; align-items: center; font-size: 11px;
-    font-weight: 600; color: var(--secondary); margin: 0 0 4px 44px; }
-  .legend .sw { display: inline-block; width: 10px; height: 10px;
-    border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 11px;
+    font-weight: 600; color: var(--secondary); margin: 0 0 6px 44px; }
+  .legend > span { display: inline-flex; align-items: center; background: var(--chip-bg);
+    border-radius: 999px; padding: 3px 10px 3px 6px; }
+  .legend .sw { display: inline-block; width: 9px; height: 9px;
+    border-radius: 50%; margin-right: 6px; }
   #ctip { position: absolute; display: none; pointer-events: none; z-index: 10;
     background: var(--tooltip-bg); color: var(--tooltip-text); font-size: 12px; line-height: 1.4;
-    padding: 4px 8px; border-radius: 4px; white-space: pre; }
+    padding: 6px 10px; border-radius: 8px; white-space: pre;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22); }
   .drilldown { margin: 6px 0 0; }
   .data-toggle { font-size: 12px; font-weight: 600; color: var(--secondary);
-    background: var(--chip-bg); border: 1px solid var(--hairline); border-radius: 4px;
-    padding: 3px 10px; cursor: pointer; }
+    background: var(--chip-bg); border: 1px solid var(--hairline); border-radius: 999px;
+    padding: 4px 14px; cursor: pointer; }
+  .data-toggle:hover { color: var(--ink); border-color: var(--secondary); }
   .csv-link { font-size: 12px; margin-left: 10px; color: var(--accent); }
   .data-table { margin: 8px 0 0; overflow-x: auto; }
   .data-table table { border-collapse: collapse; font-size: 12px; width: 100%; }
@@ -879,13 +907,21 @@ const PAGE_CSS = `
     border: 1px solid var(--hairline); border-radius: 6px; margin: 4px 0 16px;
     background: var(--surface); color: var(--ink); }
   .lib-list { list-style: none; margin: 0; padding: 0; }
-  .lib-row { display: flex; gap: 12px; align-items: baseline; padding: 8px 0;
-    border-bottom: 1px solid var(--hairline); font-size: 13px; }
+  .lib-row { display: flex; gap: 12px; align-items: baseline; padding: 8px 6px;
+    border-bottom: 1px solid var(--hairline); font-size: 13px; border-radius: 6px; }
+  .lib-row:hover { background: var(--chip-bg); }
   .lib-date { color: var(--secondary); flex: 0 0 140px; }
   .lib-from { color: var(--secondary); flex: 0 0 200px; overflow: hidden; text-overflow: ellipsis; }
   .lib-subject { color: var(--accent); text-decoration: none; }
   .lib-subject:hover { text-decoration: underline; }
   .lib-empty { color: var(--secondary); font-size: 13px; padding: 12px 0; }
+  @media (max-width: 480px) {
+    main { padding: 24px 12px 48px; }
+    h1.report-subject { font-size: 24px; }
+    .legend { margin-left: 0; }
+    .lib-row { flex-wrap: wrap; }
+    .lib-date, .lib-from { flex: 0 0 auto; }
+  }
 `;
 
 // The reply line (replaces the ask-box, Spec 70 P3 rung 3): no form, no

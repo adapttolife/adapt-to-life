@@ -107,7 +107,7 @@ test("stacked bar: fixed-slot segment colors, legend chips match marks, 2px gap 
   assert.match(html, />Upsell<\/td>/);
   // Outlook gap idiom: a 2px attribute-width spacer cell BETWEEN segments —
   // (segments - 1) per bar, so 2 per row here, 4 total.
-  const gaps = html.match(/<td width="2" style="font-size:2px;line-height:16px">&nbsp;<\/td>/g) || [];
+  const gaps = html.match(/<td width="2" style="font-size:2px;line-height:14px">&nbsp;<\/td>/g) || [];
   assert.equal(gaps.length, 4);
 });
 
@@ -231,10 +231,11 @@ test("stat: 3 tiles render, + context green with up-arrow, - context red with do
     "Churn | 2.1% | -0.4pp",
     "Headcount | 340",
   ]);
-  const tileCount = (html.match(/padding:12px 14px/g) || []).length;
+  const tileCount = (html.match(/padding:14px 18px 14px 16px/g) || []).length;
   assert.equal(tileCount, 3);
-  assert.match(html, /color:#006300">▲ \+12%/);
-  assert.match(html, /color:#a02d2d">▼ -0\.4pp/);
+  // Delta context is a tinted chip (Spec 100): reserved color + reserved tint.
+  assert.match(html, /color:#006300;background-color:#e9f2ea[^>]*>▲ \+12%/);
+  assert.match(html, /color:#a02d2d;background-color:#f7e9e9[^>]*>▼ -0\.4pp/);
 });
 
 test("stat: row count out of range (1 row) degrades with a reason", () => {
@@ -310,20 +311,20 @@ test("waterfall: floating delta bars (spacer + colored bar), subtotal from zero,
   ]);
   assert.equal(html.includes("Chart degraded"), false);
   // Gross Rent: delta, positive, no baseline yet — bar starts at 0, no spacer.
-  assert.match(html, /<td width="92%" style="background-color:#006300;font-size:2px;line-height:16px;border-radius:4px">&nbsp;<\/td>/);
+  assert.match(html, /<td width="92%" style="background-color:#006300;font-size:2px;line-height:14px;border-radius:4px">&nbsp;<\/td>/);
   assert.match(html, />\$2,400<\/td>/, "display override honored");
   // Vacancy Loss: delta, negative — floats between 2280 and 2400 (spacer to
   // 2280, then the bar itself), DELTA_NEG fill.
   assert.match(
     html,
-    /<td width="87%" style="font-size:2px;line-height:16px">&nbsp;<\/td><td width="5%" style="background-color:#a02d2d;font-size:2px;line-height:16px;border-radius:4px">&nbsp;<\/td>/
+    /<td width="87%" style="font-size:2px;line-height:14px">&nbsp;<\/td><td width="5%" style="background-color:#a02d2d;font-size:2px;line-height:14px;border-radius:4px">&nbsp;<\/td>/
   );
   assert.match(html, />-120<\/td>/, "default signed display when no override given");
   // Effective Gross Income: subtotal, drawn from zero — "= " prefix stripped
   // from the label, BLUE fill, no spacer (spacerPct 0).
   assert.match(html, />Effective Gross Income<\/td>/);
   assert.equal(html.includes("= Effective Gross Income"), false, "'= ' prefix stripped for display");
-  assert.match(html, /<td width="87%" style="background-color:#2a78d6;font-size:2px;line-height:16px;border-radius:4px">&nbsp;<\/td>/);
+  assert.match(html, /<td width="87%" style="background-color:#2a78d6;font-size:2px;line-height:14px;border-radius:4px">&nbsp;<\/td>/);
   assert.match(html, />\$2,280<\/td>/);
 });
 

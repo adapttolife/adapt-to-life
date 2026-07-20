@@ -181,15 +181,20 @@ function buildTree(chart) {
         props: { points: pts, fill: "none", stroke: color, strokeWidth: 2, strokeLinejoin: "round", strokeLinecap: "round" },
       });
       if (values.length <= 20) {
+        // Spec 99: markers wear a 2px surface ring (dataviz spec) so dots
+        // stay legible where they cross a line or another series.
         values.forEach((v, i) => {
-          shapes.push({ type: "circle", props: { cx: round2(xPix(i)), cy: round2(yPix(v)), r: 3, fill: color } });
+          shapes.push({
+            type: "circle",
+            props: { cx: round2(xPix(i)), cy: round2(yPix(v)), r: 4, fill: color, stroke: "#ffffff", strokeWidth: 2 },
+          });
         });
       }
     } else {
       values.forEach((v, i) => {
         shapes.push({
           type: "circle",
-          props: { cx: round2(xPix(xValues[i])), cy: round2(yPix(v)), r: 3.5, fill: color, fillOpacity: 0.85 },
+          props: { cx: round2(xPix(xValues[i])), cy: round2(yPix(v)), r: 4.5, fill: color, fillOpacity: 0.9, stroke: "#ffffff", strokeWidth: 2 },
         });
       });
     }

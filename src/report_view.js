@@ -767,8 +767,8 @@ const ROOT_VARS_CSS = `
     --muted: ${CHART_MUTED};
     --hairline: ${CHART_HAIRLINE};
     --surface: #ffffff;
-    --chip-bg: #f4f6f8;
-    --accent: #0b57d0;
+    --chip-bg: #f4f3ef;
+    --accent: #256abf;
     --tooltip-bg: ${CHART_INK};
     --tooltip-text: #ffffff;
     --series-0: ${SERIES_COLORS[0]};
@@ -782,7 +782,7 @@ const ROOT_VARS_CSS = `
     :root {
       --ink: #ffffff;
       --secondary: #c3c2b7;
-      --muted: #c3c2b7;
+      --muted: #8f8e85; /* Spec 99: differentiated from secondary; 5.3:1 on #1a1a19 */
       --hairline: #3a3936;
       --surface: #1a1a19;
       --chip-bg: #3a3936;
@@ -827,8 +827,8 @@ const REPORT_BODY_CSS = `
     --muted: ${CHART_MUTED};
     --hairline: ${CHART_HAIRLINE};
     --surface: #fcfcfb;
-    --chip-bg: #f4f6f8;
-    --accent: #0b57d0;
+    --chip-bg: #f4f3ef;
+    --accent: #256abf;
     --tooltip-bg: ${CHART_INK};
     --tooltip-text: #ffffff;
     --series-0: ${SERIES_COLORS[0]};
@@ -850,24 +850,30 @@ const PAGE_CSS = `
   ${ROOT_VARS_CSS}
   ${REPORT_BODY_CSS}
   body { margin: 0; background: var(--surface); color: var(--ink);
-    font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif; }
-  main { max-width: 720px; margin: 0 auto; padding: 32px 20px 64px; }
-  h1.report-subject { font-size: 24px; line-height: 1.25; margin: 0 0 4px; }
+    font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased; }
+  main { max-width: 720px; margin: 0 auto; padding: 40px 20px 64px; }
+  h1.report-subject { font-size: 28px; font-weight: 700; letter-spacing: -0.02em;
+    line-height: 1.2; margin: 0 0 6px; }
   .report-meta { font-size: 13px; color: var(--secondary); margin: 0 0 8px;
-    padding-bottom: 12px; border-bottom: 1px solid var(--hairline); }
+    padding-bottom: 14px; border-bottom: 1px solid var(--hairline); }
   .ichart { margin: 4px 0; }
   .ichart svg text { font-family: inherit; }
-  .legend { display: flex; gap: 16px; align-items: center; font-size: 11px;
-    font-weight: 600; color: var(--secondary); margin: 0 0 4px 44px; }
-  .legend .sw { display: inline-block; width: 10px; height: 10px;
-    border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 11px;
+    font-weight: 600; color: var(--secondary); margin: 0 0 6px 44px; }
+  .legend > span { display: inline-flex; align-items: center; background: var(--chip-bg);
+    border-radius: 999px; padding: 3px 10px 3px 6px; }
+  .legend .sw { display: inline-block; width: 9px; height: 9px;
+    border-radius: 50%; margin-right: 6px; }
   #ctip { position: absolute; display: none; pointer-events: none; z-index: 10;
     background: var(--tooltip-bg); color: var(--tooltip-text); font-size: 12px; line-height: 1.4;
-    padding: 4px 8px; border-radius: 4px; white-space: pre; }
+    padding: 6px 10px; border-radius: 8px; white-space: pre;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22); }
   .drilldown { margin: 6px 0 0; }
   .data-toggle { font-size: 12px; font-weight: 600; color: var(--secondary);
-    background: var(--chip-bg); border: 1px solid var(--hairline); border-radius: 4px;
-    padding: 3px 10px; cursor: pointer; }
+    background: var(--chip-bg); border: 1px solid var(--hairline); border-radius: 999px;
+    padding: 4px 14px; cursor: pointer; }
+  .data-toggle:hover { color: var(--ink); border-color: var(--secondary); }
   .csv-link { font-size: 12px; margin-left: 10px; color: var(--accent); }
   .data-table { margin: 8px 0 0; overflow-x: auto; }
   .data-table table { border-collapse: collapse; font-size: 12px; width: 100%; }
@@ -879,8 +885,9 @@ const PAGE_CSS = `
     border: 1px solid var(--hairline); border-radius: 6px; margin: 4px 0 16px;
     background: var(--surface); color: var(--ink); }
   .lib-list { list-style: none; margin: 0; padding: 0; }
-  .lib-row { display: flex; gap: 12px; align-items: baseline; padding: 8px 0;
-    border-bottom: 1px solid var(--hairline); font-size: 13px; }
+  .lib-row { display: flex; gap: 12px; align-items: baseline; padding: 8px 6px;
+    border-bottom: 1px solid var(--hairline); font-size: 13px; border-radius: 6px; }
+  .lib-row:hover { background: var(--chip-bg); }
   .lib-date { color: var(--secondary); flex: 0 0 140px; }
   .lib-from { color: var(--secondary); flex: 0 0 200px; overflow: hidden; text-overflow: ellipsis; }
   .lib-subject { color: var(--accent); text-decoration: none; }

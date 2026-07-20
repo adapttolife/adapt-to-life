@@ -196,7 +196,7 @@ test("viewer: happy path — page, charts, tooltip runtime, security headers", a
   assert.equal((html.match(/class="ichart"/g) || []).length, 2, "exactly the bar + line blocks are interactive");
 
   // ...the stat block keeps its P1 HTML (tile with the 22px value)...
-  assert.match(html, /font-size:22px[^>]*>\$59M</);
+  assert.match(html, /font-size:28px[^>]*>\$59M</);
 
   // ...and the hand-rolled runtime is inline: tooltip div + hover wiring,
   // zero external requests (no src/href pointing off-page).

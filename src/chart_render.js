@@ -25,10 +25,15 @@ const INK = "#0b0b0b";
 const SECONDARY = "#52514e";
 const MUTED = "#898781";
 const HAIRLINE = "#e8e7e0"; // softened (Spec 70 P4, light only) — email + viewer share this one constant
-const HEADER_BG = "#f9f9f7";
 const DELTA_NEG = "#a02d2d";
 const DELTA_POS = "#006300";
 const BLUE = "#2a78d6";
+// Chip tints (Spec 99): the SAME reserved tint backgrounds md_render.js's
+// verdict chips use for these two semantics, plus a neutral warm tint for
+// unsigned context. Tints, never new hues — the palette is ratified.
+const TINT_POS = "#e9f2ea";
+const TINT_NEG = "#f7e9e9";
+const TINT_NEUTRAL = "#f4f3ef";
 
 // Sequential blue ramp, light -> dark, 13 stops. Used by heat cells AND by
 // the opt-in bar `shade: value` encoding (exported for tests). Contrast pass
@@ -62,20 +67,27 @@ export const CHART_HAIRLINE = HAIRLINE;
 
 // Duplicated from md_render.js's TABLE_STYLE/CELL_STYLE (own module, zero
 // deps by design) so the degrade path stays visually identical to a normal
-// markdown table.
-const TABLE_STYLE = "border-collapse:collapse;width:100%;margin:10px 0;font-size:14px";
-const CELL_STYLE = "border:1px solid #ddd;padding:6px 8px;text-align:left;vertical-align:top";
+// markdown table (Spec 99: horizontal hairline rules, no border grid).
+const TABLE_STYLE = "border-collapse:collapse;width:100%;margin:12px 0;font-size:14px";
+const CELL_STYLE = "border-bottom:1px solid " + HAIRLINE + ";padding:8px 12px 8px 0;text-align:left;vertical-align:top";
 
 const BAR_LABEL_STYLE = "font-weight:600;color:" + INK + ";font-size:13px;padding:3px 8px 3px 0;white-space:nowrap";
 const BAR_VALUE_STYLE = "text-align:right;color:" + SECONDARY + ";font-size:13px;padding-left:8px;white-space:nowrap";
 // Stacked-bar total: INK, not SECONDARY — the total is the one number the
 // bar carries (label-visibility obligation for the sub-3:1 palette slots).
 const STACK_TOTAL_STYLE = "text-align:right;color:" + INK + ";font-weight:600;font-size:13px;padding-left:8px;white-space:nowrap";
-const STAT_TILE_STYLE = "padding:12px 14px;border:1px solid " + HAIRLINE + ";border-radius:8px;vertical-align:top";
-const HEAT_HEADER_STYLE = "background-color:" + HEADER_BG + ";font-weight:700;color:" + INK + ";border:1px solid " + HAIRLINE + ";padding:6px 10px";
-const HEAT_ROWLABEL_STYLE = "font-weight:600;color:" + INK + ";border:1px solid " + HAIRLINE + ";padding:6px 10px";
-const HEAT_VALUE_BASE = "border:1px solid " + HAIRLINE + ";padding:6px 10px;text-align:right";
-const DELTA_CELL_STYLE = "border-bottom:1px solid " + HAIRLINE + ";padding:6px 10px";
+const STAT_TILE_STYLE = "padding:14px 18px 14px 16px;border:1px solid " + HAIRLINE + ";border-radius:10px;vertical-align:top";
+// Stat tile figure contract (Spec 99, dataviz hero spec): uppercase muted
+// micro-label, display-weight value, delta as a tinted chip below.
+const STAT_LABEL_STYLE = "font-size:11px;font-weight:600;color:" + MUTED + ";text-transform:uppercase;letter-spacing:0.06em";
+const STAT_VALUE_STYLE = "font-size:28px;font-weight:700;letter-spacing:-0.02em;color:" + INK + ";padding-top:4px";
+// Heat cells separate with a 2px surface gap (dataviz spacer), not a border
+// grid; header/row labels lose their boxes entirely.
+const HEAT_HEADER_STYLE =
+  "font-size:11px;font-weight:600;color:" + MUTED + ";text-transform:uppercase;letter-spacing:0.05em;padding:0 12px 6px 0";
+const HEAT_ROWLABEL_STYLE = "font-weight:600;color:" + INK + ";padding:7px 12px 7px 0";
+const HEAT_VALUE_BASE = "border:2px solid #ffffff;padding:7px 12px;text-align:right";
+const DELTA_CELL_STYLE = "border-bottom:1px solid " + HAIRLINE + ";padding:8px 0";
 
 const HEADER_LINE_RE = /^[a-z_]+:\s/;
 const UP = "▲ "; // ▲
@@ -85,11 +97,22 @@ function titleLine(title) {
   // Contrast pass (Spec 70 P4): 600 weight, still ink — a considered
   // semibold reads more editorial than the previous 700 bold; source lines
   // stay MUTED, untouched.
-  return `<div style="font-size:14px;font-weight:600;color:${INK};margin:16px 0 2px">${title}</div>`;
+  return `<div style="font-size:14px;font-weight:600;letter-spacing:-0.01em;color:${INK};margin:18px 0 4px">${title}</div>`;
 }
 
 function sourceLine(source) {
-  return `<div style="font-size:12px;color:${MUTED};margin:4px 0 12px">Source: ${source}</div>`;
+  return `<div style="font-size:11px;color:${MUTED};margin:6px 0 16px">Source: ${source}</div>`;
+}
+
+// A tinted pill chip around signed context/delta text (Spec 99, the
+// OpenRouter "+701.8%" treatment): direction rides both the arrow prefix and
+// the reserved pos/neg colors; unsigned text gets the neutral warm tint.
+function deltaChip(text, color, prefix) {
+  const bg = color === DELTA_POS ? TINT_POS : color === DELTA_NEG ? TINT_NEG : TINT_NEUTRAL;
+  return (
+    `<span style="display:inline-block;font-size:12px;font-weight:600;color:${color};` +
+    `background-color:${bg};border-radius:999px;padding:2px 9px;white-space:nowrap">${prefix}${text}</span>`
+  );
 }
 
 function splitRow(line) {
@@ -251,16 +274,16 @@ function renderBar(dataLines, headers) {
     const rowsHtml = bar.rows
       .map((row) => {
         // Same Outlook idiom as the single bar (attribute widths + &nbsp; +
-        // font-size:2px/line-height:16px), plus a 2px spacer cell between
+        // font-size:2px/line-height:14px), plus a 2px spacer cell between
         // segments — no background, so the page's white shows through as the
         // segment gap. Zero-value segments are skipped (no mark, no gap).
         const segs = row.values.map((v, s) => ({ v, s })).filter((seg) => seg.v > 0);
         let cells = "";
         segs.forEach((seg, k) => {
-          if (k > 0) cells += `<td width="2" style="font-size:2px;line-height:16px">&nbsp;</td>`;
+          if (k > 0) cells += `<td width="2" style="font-size:2px;line-height:14px">&nbsp;</td>`;
           const pct = Math.max(1, Math.round((seg.v / maxTotal) * 92));
           const radius = k === segs.length - 1 ? ";border-radius:0 4px 4px 0" : "";
-          cells += `<td width="${pct}%" style="background-color:${SERIES_COLORS[seg.s]};font-size:2px;line-height:16px${radius}">&nbsp;</td>`;
+          cells += `<td width="${pct}%" style="background-color:${SERIES_COLORS[seg.s]};font-size:2px;line-height:14px${radius}">&nbsp;</td>`;
         });
         const barCells = segs.length === 0 ? "<td>&nbsp;</td>" : cells + "<td>&nbsp;</td>";
         return (
@@ -295,13 +318,13 @@ function renderBar(dataLines, headers) {
       const fill = bar.shadeColors ? bar.shadeColors[idx] : BLUE;
       // Email-kit idiom, deliberately: &nbsp; in every cell (empty <td>s
       // collapse to zero height in Outlook and some Gmail modes; font-size:2px
-      // keeps the nbsp invisible while line-height:16px sets the bar height),
+      // keeps the nbsp invisible while line-height:14px sets the bar height),
       // and the HTML width ATTRIBUTE on the bar cell (Outlook's Word engine
       // honors attributes, not td CSS widths).
       const barCells =
         pct === 0
           ? "<td>&nbsp;</td>"
-          : `<td width="${pct}%" style="background-color:${fill};font-size:2px;line-height:16px;border-radius:0 4px 4px 0">&nbsp;</td><td>&nbsp;</td>`;
+          : `<td width="${pct}%" style="background-color:${fill};font-size:2px;line-height:14px;border-radius:0 4px 4px 0">&nbsp;</td><td>&nbsp;</td>`;
       return (
         "<tr>" +
         `<td style="${BAR_LABEL_STYLE}">${row.label}</td>` +
@@ -332,13 +355,13 @@ function renderStat(dataLines) {
   const tiles = rows.map(([label, value, context]) => {
     let contextHtml = "";
     if (context !== undefined && context !== "") {
-      const { color, prefix } = signDecoration(context, MUTED);
-      contextHtml = `<div style="font-size:12px;color:${color}">${prefix}${context}</div>`;
+      const { color, prefix } = signDecoration(context, SECONDARY);
+      contextHtml = `<div style="padding-top:6px">${deltaChip(context, color, prefix)}</div>`;
     }
     return (
       `<td style="${STAT_TILE_STYLE}">` +
-      `<div style="font-size:12px;color:${SECONDARY}">${label}</div>` +
-      `<div style="font-size:22px;font-weight:600;color:${INK};padding-top:2px">${value}</div>` +
+      `<div style="${STAT_LABEL_STYLE}">${label}</div>` +
+      `<div style="${STAT_VALUE_STYLE}">${value}</div>` +
       contextHtml +
       "</td>"
     );
@@ -362,8 +385,8 @@ function renderDelta(dataLines) {
       return (
         "<tr>" +
         `<td style="color:${INK};${DELTA_CELL_STYLE}">${label}</td>` +
-        `<td style="text-align:right;color:${SECONDARY};${DELTA_CELL_STYLE}">${value}</td>` +
-        `<td style="text-align:right;font-weight:700;color:${color};${DELTA_CELL_STYLE}">${prefix}${delta}</td>` +
+        `<td style="text-align:right;color:${SECONDARY};padding-left:12px;${DELTA_CELL_STYLE}">${value}</td>` +
+        `<td style="text-align:right;padding-left:12px;${DELTA_CELL_STYLE}">${deltaChip(delta, color, prefix)}</td>` +
         "</tr>"
       );
     })
@@ -390,7 +413,9 @@ function renderHeat(dataLines) {
   }
   const min = Math.min(...values);
   const max = Math.max(...values);
-  const headerHtml = headerRow.map((c) => `<td style="${HEAT_HEADER_STYLE}">${c}</td>`).join("");
+  const headerHtml = headerRow
+    .map((c, i) => `<td style="${HEAT_HEADER_STYLE}${i > 0 ? ";text-align:right" : ""}">${c}</td>`)
+    .join("");
   const bodyHtml = bodyRows
     .map((cells) => {
       const rowLabel = `<td style="${HEAT_ROWLABEL_STYLE}">${cells[0]}</td>`;
@@ -470,7 +495,7 @@ export function parseWaterfallChart(headers, dataLines) {
 }
 
 // Email HTML: same Outlook-survival idiom as renderBar (attribute widths,
-// &nbsp; in every td, font-size:2px/line-height:16px for an invisible bar
+// &nbsp; in every td, font-size:2px/line-height:14px for an invisible bar
 // height), extended with a leading transparent spacer td so a delta bar can
 // float between its start and end level instead of always starting at the
 // left edge. Scale the full [lo, hi] range (always including 0) to ~92% max,
@@ -488,10 +513,10 @@ function renderWaterfall(dataLines, headers) {
       const barPct = Math.max(1, Math.round(((barHigh - barLow) / range) * 92));
       const fill = row.kind === "total" ? BLUE : row.value >= 0 ? DELTA_POS : DELTA_NEG;
       const spacerCell =
-        spacerPct === 0 ? "" : `<td width="${spacerPct}%" style="font-size:2px;line-height:16px">&nbsp;</td>`;
+        spacerPct === 0 ? "" : `<td width="${spacerPct}%" style="font-size:2px;line-height:14px">&nbsp;</td>`;
       const barCells =
         spacerCell +
-        `<td width="${barPct}%" style="background-color:${fill};font-size:2px;line-height:16px;border-radius:4px">&nbsp;</td>` +
+        `<td width="${barPct}%" style="background-color:${fill};font-size:2px;line-height:14px;border-radius:4px">&nbsp;</td>` +
         "<td>&nbsp;</td>";
       return (
         "<tr>" +

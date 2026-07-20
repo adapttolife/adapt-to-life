@@ -20,7 +20,7 @@
 
 import { renderChart } from "./chart_render.js";
 
-// Spec 99 (premium pass): every gray below sits on the ONE warm ink family
+// Spec 100 (premium pass): every gray below sits on the ONE warm ink family
 // chart_render.js already uses (INK #0b0b0b / SECONDARY #52514e / MUTED
 // #898781 / HAIRLINE #e8e7e0) — the cool GitHub grays (#ddd/#ccc/#555/
 // #f6f8fa) are gone so email prose and charts read as one system.

@@ -181,7 +181,7 @@ function buildTree(chart) {
         props: { points: pts, fill: "none", stroke: color, strokeWidth: 2, strokeLinejoin: "round", strokeLinecap: "round" },
       });
       if (values.length <= 20) {
-        // Spec 99: markers wear a 2px surface ring (dataviz spec) so dots
+        // Spec 100: markers wear a 2px surface ring (dataviz spec) so dots
         // stay legible where they cross a line or another series.
         values.forEach((v, i) => {
           shapes.push({

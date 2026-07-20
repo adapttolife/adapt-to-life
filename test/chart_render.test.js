@@ -233,7 +233,7 @@ test("stat: 3 tiles render, + context green with up-arrow, - context red with do
   ]);
   const tileCount = (html.match(/padding:14px 18px 14px 16px/g) || []).length;
   assert.equal(tileCount, 3);
-  // Delta context is a tinted chip (Spec 99): reserved color + reserved tint.
+  // Delta context is a tinted chip (Spec 100): reserved color + reserved tint.
   assert.match(html, /color:#006300;background-color:#e9f2ea[^>]*>▲ \+12%/);
   assert.match(html, /color:#a02d2d;background-color:#f7e9e9[^>]*>▼ -0\.4pp/);
 });

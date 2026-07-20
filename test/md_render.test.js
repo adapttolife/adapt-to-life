@@ -107,7 +107,7 @@ test("deriveText: empty/nullish input yields an empty string, never throws", () 
   assert.equal(deriveText(undefined), "");
 });
 
-// ── APPROVED BASELINE (Alec 2026-07-05 spec-55 thread c3de4a22; Spec 99 ──────
+// ── APPROVED BASELINE (Alec 2026-07-05 spec-55 thread c3de4a22; Spec 100 ──────
 // premium pass 2026-07-20, re-ratification pending Alec's before/after yes).
 // The exact style constants below ARE the fleet email standard — the baseline
 // under every per-person preference, agent↔agent mail included (Spec 53

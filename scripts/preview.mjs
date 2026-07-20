@@ -1,4 +1,4 @@
-// scripts/preview.mjs — Spec 99: local render harness for the screenshot loop.
+// scripts/preview.mjs — Spec 100: local render harness for the screenshot loop.
 // Renders ONE torture fixture (every chart type + verdict lines + the full
 // markdown surface) through the real production code paths and writes
 // browser-openable HTML to an output dir:

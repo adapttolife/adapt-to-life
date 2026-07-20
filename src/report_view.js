@@ -782,7 +782,7 @@ const ROOT_VARS_CSS = `
     :root {
       --ink: #ffffff;
       --secondary: #c3c2b7;
-      --muted: #8f8e85; /* Spec 99: differentiated from secondary; 5.3:1 on #1a1a19 */
+      --muted: #8f8e85; /* Spec 100: differentiated from secondary; 5.3:1 on #1a1a19 */
       --hairline: #3a3936;
       --surface: #1a1a19;
       --chip-bg: #3a3936;

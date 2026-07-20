@@ -28,7 +28,7 @@ const HAIRLINE = "#e8e7e0"; // softened (Spec 70 P4, light only) — email + vie
 const DELTA_NEG = "#a02d2d";
 const DELTA_POS = "#006300";
 const BLUE = "#2a78d6";
-// Chip tints (Spec 99): the SAME reserved tint backgrounds md_render.js's
+// Chip tints (Spec 100): the SAME reserved tint backgrounds md_render.js's
 // verdict chips use for these two semantics, plus a neutral warm tint for
 // unsigned context. Tints, never new hues — the palette is ratified.
 const TINT_POS = "#e9f2ea";
@@ -67,7 +67,7 @@ export const CHART_HAIRLINE = HAIRLINE;
 
 // Duplicated from md_render.js's TABLE_STYLE/CELL_STYLE (own module, zero
 // deps by design) so the degrade path stays visually identical to a normal
-// markdown table (Spec 99: horizontal hairline rules, no border grid).
+// markdown table (Spec 100: horizontal hairline rules, no border grid).
 const TABLE_STYLE = "border-collapse:collapse;width:100%;margin:12px 0;font-size:14px";
 const CELL_STYLE = "border-bottom:1px solid " + HAIRLINE + ";padding:8px 12px 8px 0;text-align:left;vertical-align:top";
 
@@ -77,7 +77,7 @@ const BAR_VALUE_STYLE = "text-align:right;color:" + SECONDARY + ";font-size:13px
 // bar carries (label-visibility obligation for the sub-3:1 palette slots).
 const STACK_TOTAL_STYLE = "text-align:right;color:" + INK + ";font-weight:600;font-size:13px;padding-left:8px;white-space:nowrap";
 const STAT_TILE_STYLE = "padding:14px 18px 14px 16px;border:1px solid " + HAIRLINE + ";border-radius:10px;vertical-align:top";
-// Stat tile figure contract (Spec 99, dataviz hero spec): uppercase muted
+// Stat tile figure contract (Spec 100, dataviz hero spec): uppercase muted
 // micro-label, display-weight value, delta as a tinted chip below.
 const STAT_LABEL_STYLE = "font-size:11px;font-weight:600;color:" + MUTED + ";text-transform:uppercase;letter-spacing:0.06em";
 const STAT_VALUE_STYLE = "font-size:28px;font-weight:700;letter-spacing:-0.02em;color:" + INK + ";padding-top:4px";
@@ -104,7 +104,7 @@ function sourceLine(source) {
   return `<div style="font-size:11px;color:${MUTED};margin:6px 0 16px">Source: ${source}</div>`;
 }
 
-// A tinted pill chip around signed context/delta text (Spec 99, the
+// A tinted pill chip around signed context/delta text (Spec 100, the
 // OpenRouter "+701.8%" treatment): direction rides both the arrow prefix and
 // the reserved pos/neg colors; unsigned text gets the neutral warm tint.
 function deltaChip(text, color, prefix) {

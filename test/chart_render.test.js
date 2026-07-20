@@ -221,6 +221,141 @@ test("shade: any mode other than 'value' degrades with a named reason", () => {
   assert.match(html, /Chart degraded \(unknown shade mode\)/);
 });
 
+// ── grouped bar (mode: grouped — comparison, never a composition) ──────────
+
+const GROUPED = [
+  "type: bar",
+  "mode: grouped",
+  "source: s",
+  "series: Implied | Hurdle",
+  "unit: %",
+  "NVDA | 14.2 | 11.8",
+  "KO | 3.1 | 4",
+];
+
+test("grouped bar: legend, one <tr> per series, fixed-slot fills at line-height:11px, spacer row between categories", () => {
+  const html = renderChart(GROUPED);
+  assert.equal(html.includes("Chart degraded"), false);
+  // Legend chips carry the fixed slots (chip = 10px attribute-width cell).
+  const chipColors = [...html.matchAll(/<td width="10" style="background-color:(#[0-9a-f]{6})/g)].map((m) => m[1]);
+  assert.deepEqual(chipColors, [SERIES_COLORS[0], SERIES_COLORS[1]]);
+  assert.match(html, />Implied<\/td>/);
+  assert.match(html, />Hurdle<\/td>/);
+  // One bar per series, thinner mark than the single bar (line-height:11px),
+  // fixed slot order twice (two categories).
+  const fills = [...html.matchAll(/<td width="\d+%" style="background-color:(#[0-9a-f]{6});font-size:2px;line-height:11px/g)].map((m) => m[1]);
+  assert.deepEqual(fills, [SERIES_COLORS[0], SERIES_COLORS[1], SERIES_COLORS[0], SERIES_COLORS[1]]);
+  // GLOBAL max scaling: 14.2 is the max across ALL values → width=92%.
+  assert.match(html, /<td width="92%" style="background-color:#2a78d6;font-size:2px;line-height:11px/);
+  // Exactly ONE spacer row between the two categories, none after the last.
+  const spacers = html.match(/<tr><td colspan="3" style="font-size:2px;line-height:6px">&nbsp;<\/td><\/tr>/g) || [];
+  assert.equal(spacers.length, 1);
+});
+
+test("grouped bar: unit-suffixed digit-grouped value labels in INK; first series row carries the category label, later rows an empty label cell", () => {
+  const html = renderChart(GROUPED);
+  // Values are INK (label-visibility obligation), digit-grouped, unit-suffixed.
+  assert.match(html, /text-align:right;color:#0b0b0b;font-size:13px[^"]*">14\.2%<\/td>/);
+  assert.match(html, /text-align:right;color:#0b0b0b;font-size:13px[^"]*">11\.8%<\/td>/);
+  assert.match(html, /text-align:right;color:#0b0b0b;font-size:13px[^"]*">4%<\/td>/);
+  // Category label appears exactly once per group; the second series row
+  // carries an invisible &nbsp; label cell (Outlook collapse idiom).
+  assert.equal((html.match(/>NVDA<\/td>/g) || []).length, 1);
+  const emptyLabels = html.match(/font-weight:600;color:#0b0b0b;font-size:13px[^"]*">&nbsp;<\/td>/g) || [];
+  assert.equal(emptyLabels.length, 2); // one per category's second series row
+});
+
+test("grouped bar: unit absent → plain digit-grouped values, no suffix", () => {
+  const html = renderChart([
+    "type: bar",
+    "mode: grouped",
+    "source: s",
+    "series: A | B",
+    "Q1 | 1250000 | 2",
+  ]);
+  assert.equal(html.includes("Chart degraded"), false);
+  assert.match(html, />1,250,000<\/td>/);
+  assert.match(html, />2<\/td>/);
+});
+
+test("grouped bar: four series render on the four fixed slots", () => {
+  const html = renderChart([
+    "type: bar",
+    "mode: grouped",
+    "source: s",
+    "series: A | B | C | D",
+    "Q1 | 1 | 2 | 3 | 4",
+    "Q2 | 4 | 3 | 2 | 1",
+  ]);
+  assert.equal(html.includes("Chart degraded"), false);
+  for (const c of SERIES_COLORS.slice(0, 4)) {
+    assert.ok(html.includes(`background-color:${c};font-size:2px;line-height:11px`), `slot ${c} used`);
+  }
+});
+
+test("grouped bar: five series degrade with the named reason", () => {
+  const html = renderChart([
+    "type: bar",
+    "mode: grouped",
+    "source: s",
+    "series: A | B | C | D | E",
+    "Q1 | 1 | 2 | 3 | 4 | 5",
+  ]);
+  assert.match(html, /Chart degraded \(grouped bar exceeds 4 series\)/);
+});
+
+test("grouped bar: mode without a series header (or with only one name) degrades with the named reason", () => {
+  assert.match(
+    renderChart(["type: bar", "mode: grouped", "source: s", "Q1 | 1 | 2"]),
+    /Chart degraded \(grouped requires a series header\)/
+  );
+  assert.match(
+    renderChart(["type: bar", "mode: grouped", "source: s", "series: Solo", "Q1 | 1"]),
+    /Chart degraded \(grouped requires a series header\)/
+  );
+});
+
+test("grouped bar: unknown mode value degrades with the named reason", () => {
+  const html = renderChart(["type: bar", "mode: sideways", "source: s", "series: A | B", "Q1 | 1 | 2"]);
+  assert.match(html, /Chart degraded \(unknown bar mode\)/);
+});
+
+test("grouped bar: negative value and ragged rows degrade with the shared bar reasons", () => {
+  assert.match(
+    renderChart(["type: bar", "mode: grouped", "source: s", "series: A | B", "Q1 | 1 | -2"]),
+    /Chart degraded \(bar value not numeric or negative\)/
+  );
+  assert.match(
+    renderChart(["type: bar", "mode: grouped", "source: s", "series: A | B", "Q1 | 1 | 2", "Q2 | 3"]),
+    /Chart degraded \(bar ragged rows \(cell count mismatch\)\)/
+  );
+});
+
+test("grouped bar: shade + grouped degrades with the shared single-series reason", () => {
+  const html = renderChart(["type: bar", "mode: grouped", "source: s", "shade: value", "series: A | B", "Q1 | 1 | 2"]);
+  assert.match(html, /Chart degraded \(shade requires a single-series bar\)/);
+});
+
+test("grouped bar: series-count/data-column mismatch degrades with the shared reason", () => {
+  const html = renderChart(["type: bar", "mode: grouped", "source: s", "series: A | B | C", "Q1 | 1 | 2"]);
+  assert.match(html, /Chart degraded \(series names do not match data columns\)/);
+});
+
+test("unit on a non-grouped bar is ignored (headers are permissive) — single-bar golden unchanged", () => {
+  const html = renderChart(["type: bar", "source: s", "unit: %", "A | 5", "B | 3"]);
+  assert.equal(html.includes("Chart degraded"), false);
+  assert.match(html, /<td width="92%"[^>]*>&nbsp;<\/td>/);
+  assert.match(html, />5<\/td>/); // no suffix appended
+  assert.equal(/>5%<\/td>/.test(html), false);
+});
+
+test("disambiguation: without mode, a series-header block still STACKS (grouped is explicit-only)", () => {
+  const html = renderChart(["type: bar", "source: s", "series: A | B", "Q1 | 3 | 4"]);
+  // Stacked signature: ONE INK 600-weight total at the bar end.
+  assert.match(html, /color:#0b0b0b;font-weight:600;[^"]*">7<\/td>/);
+  assert.equal(html.includes("line-height:11px"), false);
+});
+
 // ── stat ────────────────────────────────────────────────────────────────────
 
 test("stat: 3 tiles render, + context green with up-arrow, - context red with down-arrow", () => {

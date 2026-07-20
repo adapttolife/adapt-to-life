@@ -76,6 +76,10 @@ const BAR_VALUE_STYLE = "text-align:right;color:" + SECONDARY + ";font-size:13px
 // Stacked-bar total: INK, not SECONDARY — the total is the one number the
 // bar carries (label-visibility obligation for the sub-3:1 palette slots).
 const STACK_TOTAL_STYLE = "text-align:right;color:" + INK + ";font-weight:600;font-size:13px;padding-left:8px;white-space:nowrap";
+// Grouped-bar value: INK for the same label-visibility obligation — each bar
+// wears a sub-3:1 palette slot and its value label is the one number it
+// carries (no total exists in a comparison).
+const GROUP_VALUE_STYLE = "text-align:right;color:" + INK + ";font-size:13px;padding-left:8px;white-space:nowrap";
 const STAT_TILE_STYLE =
   "display:inline-block;vertical-align:top;box-sizing:border-box;max-width:100%;" +
   "padding:14px 18px 14px 16px;border:1px solid " + HAIRLINE + ";border-radius:10px;" +
@@ -163,17 +167,28 @@ export function parseChart(escapedLines) {
 
 // ── type renderers: each returns {ok:true, html} or {ok:false, reason} ───
 
-// ── bar grammar (single, stacked, shade) ─────────────────────────────────
+// ── bar grammar (single, stacked, grouped, shade) ────────────────────────
 //
 // Row forms:
 //   single:  Label | value            (or Label | value | display-override)
 //   stacked: Label | v1 | v2 | ...    (2-6 value columns, all numeric >= 0)
+//   grouped: Label | v1 | v2 | ...    (2-4 value columns, all numeric >= 0)
 // An optional "series: NameA | NameB | ..." header names stacked segments.
 // Disambiguation rule (deliberate, keeps the golden-pinned single behavior):
 // a block is STACKED when the series header names >= 2 series, OR when every
 // row uniformly carries >= 3 numeric value columns. Bare 2-value-column rows
 // without a series header stay the legacy `Label | value | display` form —
 // name the series to stack two columns.
+//
+// "mode: grouped" (explicit, wins over the stacked disambiguation) draws the
+// series SIDE BY SIDE per category — a COMPARISON, where stacking (a
+// COMPOSITION) would visually sum values that must not be summed (the
+// two-hurdle-rates-per-ticker case). Grouped REQUIRES a series header naming
+// 2-4 series; "shade" is single-series-only and degrades here too. The
+// optional "unit: %" header (grouped only for now) is a short suffix appended
+// to each rendered value label — row values stay plain numbers per the
+// grammar's global rule. Any other "mode:" value degrades with a named
+// reason; without a mode header behavior is byte-identical to before.
 //
 // "shade: value" (opt-in, SINGLE-series only) tints each bar from BLUE_RAMP
 // by its value — min gets the lightest stop, max the darkest, monotone in
@@ -187,7 +202,9 @@ export function parseChart(escapedLines) {
 // {ok:true, bar} where bar is
 //   { stacked:false, rows:[{label, value, display}], shadeColors:[hex]|null }
 //   { stacked:true,  names:[..], rows:[{label, values:[..], total}] }
+//   { grouped:true,  names:[..], unit:string|null, rows:[{label, values:[..]}] }
 export const BAR_MAX_SERIES = 6;
+export const BAR_GROUPED_MAX_SERIES = 4;
 
 export function parseBarChart(headers, dataLines) {
   const rows = dataLines.map(splitRow);
@@ -202,6 +219,30 @@ export function parseBarChart(headers, dataLines) {
   const width = rows[0].length;
   const uniform = rows.every((cells) => cells.length === width);
   const allNumeric = () => rows.every((cells) => cells.slice(1).every((c) => parseNumber(c) !== null));
+
+  // "mode: grouped" is explicit and wins; everything below this block is the
+  // pre-mode grammar, untouched so mode-less blocks stay byte-identical.
+  const mode = headers && headers.mode !== undefined ? String(headers.mode).trim().toLowerCase() : null;
+  if (mode !== null && mode !== "grouped") return { ok: false, reason: "unknown bar mode" };
+  if (mode === "grouped") {
+    if (headers.shade !== undefined) return { ok: false, reason: "shade requires a single-series bar" };
+    if (!names || names.length < 2) return { ok: false, reason: "grouped requires a series header" };
+    if (names.length > BAR_GROUPED_MAX_SERIES) {
+      return { ok: false, reason: `grouped bar exceeds ${BAR_GROUPED_MAX_SERIES} series` };
+    }
+    if (!uniform) return { ok: false, reason: "bar ragged rows (cell count mismatch)" };
+    if (names.length !== width - 1) return { ok: false, reason: "series names do not match data columns" };
+    const unit = headers.unit !== undefined ? String(headers.unit).trim() : null;
+    const out = [];
+    for (const cells of rows) {
+      const values = cells.slice(1).map(parseNumber);
+      if (values.some((v) => v === null || v < 0)) {
+        return { ok: false, reason: "bar value not numeric or negative" };
+      }
+      out.push({ label: cells[0], values });
+    }
+    return { ok: true, bar: { grouped: true, names, unit, rows: out } };
+  }
 
   let stacked;
   if (names && names.length >= 2) {
@@ -271,6 +312,59 @@ function renderBar(dataLines, headers) {
   const parsed = parseBarChart(headers, dataLines);
   if (!parsed.ok) return parsed;
   const bar = parsed.bar;
+
+  if (bar.grouped) {
+    // Every bar scales against the GLOBAL max across all series — grouped is
+    // a comparison, so equal values must render equal lengths everywhere.
+    const max = Math.max(...bar.rows.flatMap((r) => r.values));
+    const unit = bar.unit || "";
+    const rowsHtml = bar.rows
+      .map((row, ri) => {
+        // One <tr> per series; the first carries the category label, the rest
+        // an invisible &nbsp; label cell (empty <td>s collapse in Outlook).
+        // Same width-attribute + &nbsp; + font-size:2px idiom as the single
+        // bar, at line-height:11px — 2-4 bars per category need the thinner
+        // mark to read as one group.
+        const trs = row.values
+          .map((v, s) => {
+            const pct = max === 0 || v === 0 ? 0 : Math.max(2, Math.round((v / max) * 92));
+            const barCells =
+              pct === 0
+                ? "<td>&nbsp;</td>"
+                : `<td width="${pct}%" style="background-color:${SERIES_COLORS[s]};font-size:2px;line-height:11px;border-radius:0 4px 4px 0">&nbsp;</td><td>&nbsp;</td>`;
+            const labelCell =
+              s === 0
+                ? `<td style="${BAR_LABEL_STYLE}">${row.label}</td>`
+                : `<td style="${BAR_LABEL_STYLE}">&nbsp;</td>`;
+            return (
+              "<tr>" +
+              labelCell +
+              '<td style="width:100%">' +
+              `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse"><tr>` +
+              barCells +
+              "</tr></table>" +
+              "</td>" +
+              `<td style="${GROUP_VALUE_STYLE}">${v.toLocaleString("en-US")}${unit}</td>` +
+              "</tr>"
+            );
+          })
+          .join("");
+        // Spacer row BETWEEN categories so groups read as groups (&nbsp; at
+        // font-size:2px — an empty spacer <tr> collapses in Outlook too).
+        const spacer =
+          ri < bar.rows.length - 1
+            ? `<tr><td colspan="3" style="font-size:2px;line-height:6px">&nbsp;</td></tr>`
+            : "";
+        return trs + spacer;
+      })
+      .join("");
+    return {
+      ok: true,
+      html:
+        legendRowHtml(bar.names) +
+        `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse">${rowsHtml}</table>`,
+    };
+  }
 
   if (bar.stacked) {
     const maxTotal = Math.max(...bar.rows.map((r) => r.total));

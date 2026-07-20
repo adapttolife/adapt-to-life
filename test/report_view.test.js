@@ -239,6 +239,46 @@ test("viewer: stacked bar becomes an interactive payload with per-segment toolti
   assert.match(html, /var COLORS = \["#2a78d6","#1e7a46","#b95784","#c98500","#0f8a6d","#c2542a"\]/);
 });
 
+test("viewer: grouped bar becomes an interactive payload with per-bar tooltips and unit-suffixed labels", async () => {
+  const md = [
+    "```chart",
+    "type: bar",
+    "mode: grouped",
+    "title: Implied growth vs hurdle",
+    "source: reverse-DCF grid, 2026-07-20",
+    "series: Implied | Hurdle",
+    "unit: %",
+    "NVDA | 14.2 | 11.8",
+    "KO | 3.1 | 4",
+    "```",
+  ].join("\n");
+  const token = await makeReportToken(SECRET, MSG_ID);
+  const env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: viewerDb({ ...ROW, body_markdown: md }) };
+  const html = await (await view(env, token)).text();
+
+  // The embedded payload: grouped flag, raw names, unit, rows as [label, [values...]].
+  assert.match(html, /"type":"bar","grouped":true,"names":\["Implied","Hurdle"\]/);
+  assert.match(html, /"rows":\[\["NVDA",\[14\.2,11\.8\]\],\["KO",\[3\.1,4\]\]\],"unit":"%"/);
+  assert.match(html, /class="ichart"/, "an interactive host is emitted for the grouped block");
+
+  // The runtime draws side-by-side bars via drawGrouped: fixed-slot legend,
+  // per-bar tooltip "label — series: value+unit", INK value labels.
+  assert.match(html, /function drawGrouped\(host, d\)/);
+  assert.match(html, /if \(d\.grouped\) return drawGrouped\(host, d\);/);
+  assert.match(html, /hover\(hot, r\[0\] \+ " \\u2014 " \+ d\.names\[s\] \+ ": " \+ fmt\(v\) \+ unit\)/);
+  assert.match(html, /val\.textContent = fmt\(v\) \+ unit/);
+  assert.match(html, /legendRow\(host, d\.names\)/);
+});
+
+test("viewer: grouped bar without a series header degrades on the page too (shared grammar, no drift)", async () => {
+  const badMd = "```chart\ntype: bar\nmode: grouped\nsource: s\nQ1 | 1 | 2\n```";
+  const token = await makeReportToken(SECRET, MSG_ID);
+  const env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: viewerDb({ ...ROW, body_markdown: badMd }) };
+  const html = await (await view(env, token)).text();
+  assert.match(html, /Chart degraded \(grouped requires a series header\)/);
+  assert.ok(!html.includes('class="ichart"'), "no interactive payload for the invalid block");
+});
+
 // GOLDEN CHANGED DELIBERATELY (Spec 70 P4, contrast pass): BLUE_RAMP's max
 // stop deepened from #0d366b to #061b3c (rich navy).
 test("viewer: shade bar payload embeds the per-row ramp colors; invalid shade+multi-series degrades on the page", async () => {

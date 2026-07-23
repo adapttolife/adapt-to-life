@@ -10,6 +10,24 @@ CREATE TABLE IF NOT EXISTS inboxes (
   created_at    TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
+-- Inbox-specific admission policy. If an inbox has one or more rows, inbound
+-- mail from every other sender is captured but quarantined resolved/no-bell.
+-- Patterns are exact lowercase addresses or '@domain' suffixes. Spec 108 adds
+-- eng-intake as a separate Julia-only lane without weakening stingel@.
+CREATE TABLE IF NOT EXISTS inbox_locks (
+  inbox      TEXT NOT NULL REFERENCES inboxes(address),
+  pattern    TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  PRIMARY KEY (inbox, pattern)
+);
+
+-- Global token-protection list for bells. This is not sender authority; inbox
+-- locks above are the lane-specific fail-closed boundary.
+CREATE TABLE IF NOT EXISTS allowed_senders (
+  pattern    TEXT PRIMARY KEY,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
 CREATE TABLE IF NOT EXISTS threads (
   id             TEXT PRIMARY KEY,                -- uuid
   inbox          TEXT NOT NULL REFERENCES inboxes(address),
@@ -53,7 +71,16 @@ CREATE INDEX IF NOT EXISTS idx_messages_out_created ON messages(direction, creat
 -- Seed the v1 inboxes (idempotent).
 INSERT OR IGNORE INTO inboxes (address, kind, default_agent) VALUES
   ('hello@agents.adapttolife.org', 'shared', 'julia'),
-  ('julia@agents.adapttolife.org', 'agent',  'julia');
+  ('julia@agents.adapttolife.org', 'agent',  'julia'),
+  ('eng-intake@alectranel.com',    'agent',  'stingel');
+
+-- Spec 108 v1: only Julia may enter the engineering intake loop. Stingel's
+-- Alec-only decision lock remains a separate row set and is never widened here.
+INSERT OR IGNORE INTO inbox_locks (inbox, pattern) VALUES
+  ('eng-intake@alectranel.com', 'julia@alectranel.com');
+
+-- Julia is already covered by the live '@alectranel.com' global bell allowlist.
+-- Keep that global list operator-managed; the inbox lock above is the authority.
 
 -- Per-agent API tokens (Spec 33 hardening, 2026-07-02). One token per AGENT (an
 -- agent may own several inboxes). Only the SHA-256 hex of the token lands here;

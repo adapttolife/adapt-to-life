@@ -300,12 +300,18 @@ async function recordSendFailure(env, route, toAddr, err) {
   }
 }
 
-async function findOrCreateThread(db, { inbox, fromAddr, subject, inReplyTo }) {
-  // Stitch replies into an existing thread when the inbound references a known message.
+export async function findOrCreateThread(db, { inbox, fromAddr, subject, inReplyTo }) {
+  // Message-IDs are globally unique, but a reply must stay inside the envelope
+  // recipient's inbox. Without this scope, a fleet reply arriving at Julia can
+  // stitch back into the sender's eng-intake thread and disappear from Julia's
+  // scoped view (Spec 108 live-wire finding).
   if (inReplyTo) {
     const prior = await db
-      .prepare(`SELECT t.* FROM messages m JOIN threads t ON t.id = m.thread_id WHERE m.message_id = ? LIMIT 1`)
-      .bind(inReplyTo)
+      .prepare(
+        `SELECT t.* FROM messages m JOIN threads t ON t.id = m.thread_id
+         WHERE m.message_id = ? AND t.inbox = ? LIMIT 1`
+      )
+      .bind(inReplyTo, inbox)
       .first();
     if (prior) return prior;
   }

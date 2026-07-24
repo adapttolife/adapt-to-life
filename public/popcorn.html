@@ -220,6 +220,42 @@
     background:var(--paper); border:1px solid var(--hairline); border-radius:8px;
     padding:0.12rem 0.5rem; margin-left:0.15rem; white-space:nowrap;
   }
+
+  /* ---- where the money goes -------------------------------------------- */
+  .pop-cost{
+    list-style:none; padding:0; margin:clamp(2.4rem,4vw,3.4rem) 0 0;
+    display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(1.2rem,2.6vw,2rem);
+  }
+  @media (max-width:860px){ .pop-cost{ grid-template-columns:1fr; } }
+  .pop-cost-item{
+    background:var(--paper); border:1px solid rgba(28,26,21,0.09); border-radius:18px;
+    padding:clamp(1.5rem,2.8vw,2.1rem);
+    box-shadow:0 18px 40px -30px rgba(28,26,21,0.3);
+  }
+  .pop-cost-ico{ display:block; width:44px; height:44px; color:var(--orange-ink); }
+  .pop-cost-ico svg{ width:100%; height:100%; display:block; }
+  .pop-cost-item h3{ margin-top:1rem; }
+  .pop-cost-n{
+    margin-top:0.25rem; font-family:"Space Mono",monospace; font-size:0.86rem;
+    letter-spacing:0.05em; color:var(--orange-ink);
+  }
+  .pop-cost-item .prose{ margin-top:0.7rem; font-size:0.97rem; }
+
+  .pop-math{
+    margin-top:clamp(2rem,3.4vw,2.8rem); max-width:var(--reading); margin-inline:auto;
+    text-align:center; padding-top:clamp(1.6rem,2.6vw,2.2rem); border-top:1px solid var(--hairline);
+  }
+  .pop-math-line{ color:var(--ink-soft); }
+  .pop-math-sub{ margin-top:0.8rem; font-size:0.92rem; color:var(--muted); }
+  .pop-math .actions{ justify-content:center; }
+
+  /* ---- the closing block under the flavor wall -------------------------- */
+  .pop-final{ margin-top:clamp(2.4rem,4vw,3.4rem); }
+  .pop-final-sub{
+    margin-top:1rem; font-size:0.92rem; color:var(--cream-faint);
+    max-width:46ch; margin-inline:auto;
+  }
+  .pop-final-sub .textlink{ color:var(--cream-mute); }
   .pop-empty{ text-align:center; color:var(--muted); font-size:0.95rem; margin-top:1.4rem; }
 </style>
 </head>
@@ -262,8 +298,8 @@
       <h1 class="serif display reveal">Half of every bag puts an athlete in the game.</h1>
       <p class="lead sub reveal" style="color:var(--cream-mute);">Small batch popcorn, shipped to your door. Fifty percent of every order comes straight back to the Hustle &amp; Heart Fund. No shipping to organize, no boxes in your trunk, nothing to hand out.</p>
       <div class="actions reveal">
-        <a class="btn" id="popHeroCta" href="#" target="_blank" rel="noopener">Shop the pop-up store</a>
-        <a class="btn ghost" href="#how">How it works</a>
+        <a class="btn" id="popHeroCta" href="/donate">Buy popcorn</a>
+        <a class="btn ghost" href="#goes">Where the money goes</a>
       </div>
       <p class="pop-hero-meta reveal" id="popHeroMeta"></p>
     </div>
@@ -278,8 +314,66 @@
 <!-- ====================== ACTIVE CAMPAIGN ======================= -->
 <section class="band-sm" id="active">
   <div class="wrap">
-    <div class="pop-active" id="popActive">
-      <!-- rendered by JS from the campaign data below -->
+    <div class="pop-active" id="popActive"></div>
+  </div>
+</section>
+
+<!-- ==================== WHERE THE MONEY GOES ==================== -->
+<section class="band" id="goes">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow reveal">Where the money goes</span>
+      <h2 class="serif h2 reveal" style="margin-top:0.7rem;">What it takes to put one athlete on that court.</h2>
+      <p class="reveal" style="margin-top:1rem; color:var(--ink-soft);">The US Open is in Naples, thirteen hundred miles from our home courts, and it runs the better part of a week. Three things have to be true before an athlete can play it.</p>
+    </div>
+
+    <ul class="pop-cost">
+      <li class="pop-cost-item reveal">
+        <span class="pop-cost-ico" aria-hidden="true">
+          <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+            <circle cx="20" cy="20" r="13"/><circle cx="20" cy="20" r="3.4"/>
+            <path d="M20 7v9.6M20 23.4V33M7 20h9.6M23.4 20H33"/>
+            <path d="M10.8 10.8l6.8 6.8M22.4 22.4l6.8 6.8M29.2 10.8l-6.8 6.8M17.6 22.4l-6.8 6.8" opacity=".45"/>
+          </svg>
+        </span>
+        <h3 class="h3 serif">Equipment</h3>
+        <p class="pop-cost-n">about $450</p>
+        <p class="prose">A sport chair is only as good as what it rolls on. Tires wear out on tournament surfaces, and a cracked paddle ends a weekend early. Tires run about $200, a competition paddle about $250.</p>
+      </li>
+
+      <li class="pop-cost-item reveal">
+        <span class="pop-cost-ico" aria-hidden="true">
+          <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="6" y="9" width="28" height="22" rx="2"/>
+            <path d="M20 9v22M6 20h28" opacity=".45"/>
+            <circle cx="20" cy="20" r="3.2"/>
+          </svg>
+        </span>
+        <h3 class="h3 serif">Training</h3>
+        <p class="pop-cost-n">about $500</p>
+        <p class="prose">Nobody arrives at a national championship untrained. We share a practice facility with six to ten wheelchair athletes every week, all year. This is the part of your gift that keeps working long after the tournament ends.</p>
+      </li>
+
+      <li class="pop-cost-item reveal">
+        <span class="pop-cost-ico" aria-hidden="true">
+          <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 22.5l31-11.5-4.5 9.5L35 30l-6.5-2-5 4-2.5-7.5z" opacity=".92"/>
+            <path d="M18 24.5L11 33" opacity=".45"/>
+          </svg>
+        </span>
+        <h3 class="h3 serif">Travel</h3>
+        <p class="pop-cost-n">about $2,300</p>
+        <p class="prose">Airfare into Naples in the spring runs around $500. Six nights of lodging is over $1,200. Entry is $150 to register plus $45 to $50 per event, and accessible ground transport is on top of that.</p>
+      </li>
+    </ul>
+
+    <div class="pop-math reveal">
+      <p class="pop-math-line"><strong>About $3,500 puts one athlete on that court.</strong> Six athletes is <strong>$21,000</strong>, which is the goal of Send 6 to the US Open. These costs climb every year, so we budget honestly rather than optimistically.</p>
+      <p class="pop-math-sub">Every bag of popcorn sends about six dollars to the fund. A set of tires is roughly thirty bags. One athlete is roughly five hundred.</p>
+      <div class="actions" style="margin-top:1.6rem;">
+        <a class="btn ghost" href="/hustle-and-heart">About the fund</a>
+        <a class="textlink" href="/donate">Or give directly &rarr;</a>
+      </div>
     </div>
   </div>
 </section>
@@ -305,25 +399,10 @@
       <li class="pop-step reveal">
         <span class="pop-step-n">03</span>
         <h3 class="h3 serif">Half comes back</h3>
-        <p class="prose">Fifty percent of every dollar goes to the fund, and from the fund to an athlete's equipment, travel, and training.</p>
+        <p class="prose">Fifty percent of every dollar goes to the fund, and from the fund to the equipment, training, and travel above.</p>
       </li>
     </ol>
     <p class="pop-note reveal">Orders have to go through our pop-up store link for the fund to receive its half. Buying from the regular Double Good shop does not count toward our campaign.</p>
-  </div>
-</section>
-
-<!-- ========================= FLAVOR WALL ======================== -->
-<section class="dark band pop-flavors" id="flavors">
-  <div class="wrap">
-    <div class="sec-head">
-      <span class="eyebrow orange reveal">The lineup</span>
-      <h2 class="serif h2 reveal" style="margin-top:0.7rem; color:var(--cream);">Twelve flavors. Pick your side.</h2>
-      <p class="reveal" style="margin-top:0.9rem; color:var(--cream-mute); max-width:52ch;">Small batch, popped fresh, made in Chicago. Prices are set by Double Good and shown here so you know what you are walking into.</p>
-    </div>
-    <ul class="pop-grid" id="popGrid"></ul>
-    <div class="center reveal" style="margin-top:clamp(2.4rem,4vw,3.4rem);">
-      <a class="btn" id="popFlavorCta" href="#" target="_blank" rel="noopener">Shop the pop-up store</a>
-    </div>
   </div>
 </section>
 
@@ -332,9 +411,9 @@
   <div class="wrap">
     <div class="pop-sell" id="popSell">
       <div class="pop-sell-copy">
-        <span class="eyebrow reveal">Raise more</span>
+        <span class="eyebrow reveal">The multiplier</span>
         <h2 class="serif h2 reveal" style="margin-top:0.7rem;">Run a store of your own.</h2>
-        <p class="prose reveal" style="margin-top:1rem;">One store reaches one circle of friends. Ten stores reach ten. Anyone can open their own in a couple of minutes, share the link with their people, and every order still comes back to the same fund.</p>
+        <p class="prose reveal" style="margin-top:1rem;">This is the part that decides how much we raise. One store reaches one circle of friends. Ten stores reach ten. Anyone can open their own in a couple of minutes, share the link with their people, and every order still lands in the same fund.</p>
         <div class="actions reveal" style="margin-top:1.6rem;">
           <a class="btn ghost" id="popJoinCta" href="#" target="_blank" rel="noopener">Join the team</a>
         </div>
@@ -344,27 +423,6 @@
         <li id="popCodeStep"><span class="pop-join-n">2</span><span>Enter our event code <strong class="pop-code" id="popCode"></strong></span></li>
         <li><span class="pop-join-n">3</span><span>Create your store and share the link.</span></li>
       </ol>
-    </div>
-  </div>
-</section>
-
-<!-- ======================= WHAT IT FUNDS ======================== -->
-<section class="band" id="funds">
-  <div class="wrap">
-    <div class="pop-funds">
-      <div class="pop-funds-copy">
-        <span class="eyebrow reveal">Where it goes</span>
-        <h2 class="serif statement reveal" style="margin-top:0.7rem;">Popcorn is the easy part. The fund is the point.</h2>
-        <p class="prose reveal" style="margin-top:1.2rem;">A racing chair can cost more than a car. A weekend at a national tournament runs about $3,500 once you count entry, travel, and a room. Those numbers are why athletes sit out, and they are what this fund exists to cover.</p>
-        <p class="prose reveal">Every campaign on this page is tied to something specific we are trying to pay for. When a store closes, we say what it raised and what it went to.</p>
-        <div class="actions reveal" style="margin-top:2rem;">
-          <a class="btn ghost" href="/hustle-and-heart">About the fund</a>
-          <a class="textlink" href="/donate">Or give directly &rarr;</a>
-        </div>
-      </div>
-      <div class="pop-funds-art reveal" aria-hidden="true">
-        <img src="/images/popcorn/burst-butter.webp" alt="" width="900" height="900" loading="lazy">
-      </div>
     </div>
   </div>
 </section>
@@ -380,13 +438,18 @@
   </div>
 </section>
 
-<!-- ========================== CLOSING ============================ -->
-<section class="dark closing band">
-  <div class="wrap center">
-    <h2 class="serif statement reveal">Buy popcorn. Move an athlete.</h2>
-    <p class="reveal" style="margin-top:1.1rem; color:var(--cream-mute); max-width:46ch; margin-inline:auto;">It is a snack you were going to buy anyway. Half of it does something.</p>
-    <div class="actions reveal" style="justify-content:center; margin-top:2.2rem;">
-      <a class="btn" id="popCloseCta" href="#" target="_blank" rel="noopener">Shop the pop-up store</a>
+<!-- ================= FLAVOR WALL = THE CLOSING ================== -->
+<section class="dark band pop-flavors" id="flavors">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow orange reveal">The lineup</span>
+      <h2 class="serif statement reveal" style="margin-top:0.7rem; color:var(--cream);">Pick your side. Move an athlete.</h2>
+      <p class="reveal" style="margin-top:1rem; color:var(--cream-mute); max-width:52ch;">Small batch, popped fresh, made in Chicago. Prices are set by Double Good, and half of each one comes back to the fund.</p>
+    </div>
+    <ul class="pop-grid" id="popGrid"></ul>
+    <div class="center reveal pop-final">
+      <a class="btn" id="popFlavorCta" href="/donate">Buy popcorn</a>
+      <p class="pop-final-sub" id="popFinalSub"></p>
     </div>
   </div>
 </section>
@@ -511,9 +574,9 @@
 {
   "campaigns": [
     {
-      "slug": "vlasic-2026",
-      "name": "Vlasic Classic popcorn drive",
-      "supports": "Getting our wheelchair athletes to the APP Vlasic Classic in Highland Park.",
+      "slug": "popcorn-2026-08",
+      "name": "August popcorn drive",
+      "supports": "Every bag moves us toward Send 6 to the US Open: six adaptive athletes on the court in Naples, spring 2027, with nothing out of pocket.",
       "opens": "2026-08-06",
       "closes": "2026-08-13",
       "time_note": "Opens and closes at 10:00 PM CT",
@@ -595,8 +658,10 @@
   // to /subscribe instead of a link that would dump a buyer on an app download.
   var buyUrl   = (current && current.store_url) || null;
   var joinUrl  = (current && current.join_url)  || null;
-  var shopHref = buyUrl || '/subscribe';
-  var shopText = buyUrl ? 'Buy popcorn' : 'Tell me when it opens';
+  // No store yet? Send people to the fund, which is open every day of the year.
+  // Never a click that does nothing, and never a picture of popcorn that is not for sale.
+  var shopHref = buyUrl || '/donate';
+  var shopText = buyUrl ? 'Buy popcorn' : 'Give to the fund';
 
   function wire(el, href, text){
     if (!el) return;
@@ -698,7 +763,7 @@
       wire(a, shopHref);
       a.setAttribute('aria-label', buyUrl
         ? 'Buy ' + f.name + ' from our pop-up store'
-        : f.name + ' — get notified when our store opens');
+        : f.name + ' — give to the fund while our store is closed');
       var img = document.createElement('img');
       img.src = '/images/popcorn/' + f.img + '.webp';
       img.alt = f.name + ' popcorn';
@@ -708,10 +773,24 @@
       a.appendChild(el('span','pop-fl-tag', f.tag || ''));
       a.appendChild(el('span','pop-fl-name', f.name));
       a.appendChild(el('span','pop-fl-price', f.price || ''));
-      a.appendChild(el('span','pop-fl-go', buyUrl ? 'Buy' : 'Notify me'));
+      a.appendChild(el('span','pop-fl-go', buyUrl ? 'Buy' : 'Give'));
       li.appendChild(a);
       grid.appendChild(li);
     });
+  }
+
+  var finalSub = document.getElementById('popFinalSub');
+  if (finalSub){
+    if (buyUrl){
+      finalSub.textContent = 'Every order sends half back to the Hustle & Heart Fund.';
+    } else if (current && status(current) === 'soon'){
+      var when = fmt(localDate(current.opens));
+      finalSub.innerHTML = 'The store opens ' + when + '. Until then your gift goes to the same place the popcorn money does. '
+        + '<a class="textlink" href="/subscribe">Tell me when it opens</a>';
+    } else {
+      finalSub.innerHTML = 'No store is open right now, and the fund still is. '
+        + '<a class="textlink" href="/subscribe">Tell me when the next one opens</a>';
+    }
   }
 
   // --- sell for us: the event code + join link -------------------------------

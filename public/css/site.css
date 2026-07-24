@@ -341,6 +341,48 @@ section{ position:relative; }
 .reveal{ opacity:0; transform:translateY(14px); transition:opacity .6s ease-out, transform .6s ease-out; }
 .reveal.in{ opacity:1; transform:none; }
 
+
+/* ---- nav v2: grouped dropdowns (Spec 115) -------------------------------- */
+.nav-group{ position:relative; display:flex; align-items:center; }
+.nav-toggle{
+  display:inline-flex; align-items:center; gap:0.34rem;
+  background:none; border:none; padding:0; cursor:pointer;
+  font-family:inherit; font-size:0.92rem; font-weight:500; color:var(--ink);
+  opacity:0.78; transition:opacity .15s ease, color .15s ease;
+}
+.nav-toggle:hover, .nav-group:focus-within .nav-toggle, .nav-toggle[aria-expanded="true"]{ opacity:1; }
+.nav-toggle .caret{ width:9px; height:9px; transition:transform .2s ease; }
+.nav-toggle[aria-expanded="true"] .caret{ transform:rotate(180deg); }
+
+.nav-panel{
+  position:absolute; top:calc(100% + 0.85rem); left:50%; transform:translateX(-50%) translateY(-6px);
+  min-width:290px; padding:0.5rem; z-index:60;
+  background:var(--paper); border:1px solid var(--hairline); border-radius:16px;
+  box-shadow:0 26px 60px -28px rgba(28,26,21,0.45);
+  opacity:0; visibility:hidden; pointer-events:none;
+  transition:opacity .18s ease, transform .18s ease, visibility .18s;
+}
+.nav-group:hover .nav-panel,
+.nav-group:focus-within .nav-panel,
+.nav-panel.open{ opacity:1; visibility:visible; pointer-events:auto; transform:translateX(-50%) translateY(0); }
+/* hover bridge so the pointer can travel from the label to the panel */
+.nav-group::after{ content:""; position:absolute; top:100%; left:0; right:0; height:0.9rem; }
+
+.nav-panel a{ display:block; padding:0.62rem 0.75rem; border-radius:11px; transition:background .15s ease; }
+.nav-panel a:hover, .nav-panel a:focus-visible{ background:var(--sand); }
+.np-t{ display:block; font-size:0.94rem; font-weight:600; color:var(--ink); }
+.np-d{ display:block; margin-top:0.12rem; font-size:0.8rem; line-height:1.4; color:var(--muted); }
+
+.nav.over-dark:not(.scrolled) .nav-toggle{ color:var(--cream); opacity:0.82; }
+
+/* mobile: groups render expanded, no accordion to hunt through */
+.mobile-menu .m-group{
+  display:block; padding:1.1rem 0 0.45rem;
+  font-family:"Space Mono",monospace; font-size:0.68rem; font-weight:700;
+  letter-spacing:0.18em; text-transform:uppercase; color:var(--muted);
+}
+.mobile-menu a.m-sub{ padding-left:0.9rem; font-size:1rem; }
+
 /* ---- responsive ---------------------------------------------------------- */
 @media (max-width:860px){
   .nav-links{ display:none; }
@@ -349,7 +391,7 @@ section{ position:relative; }
   .nav.open .menu-btn span:nth-child(2){ opacity:0; }
   .nav.open .menu-btn span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }
   .mobile-menu{ display:block; max-height:0; overflow:hidden; background:var(--canvas); transition:max-height .28s ease; }
-  .nav.open .mobile-menu{ max-height:560px; border-bottom:1px solid var(--hairline); }
+  .nav.open .mobile-menu{ max-height:760px; border-bottom:1px solid var(--hairline); }
   .mobile-menu .mwrap{ display:flex; flex-direction:column; padding:0.8rem var(--gutter) 1.4rem; }
   .mobile-menu a{ padding:0.8rem 0; font-size:1.05rem; font-weight:600; color:var(--ink); border-bottom:1px solid var(--hairline); }
   .mobile-menu a.m-cta{ color:var(--orange); border-bottom:none; }

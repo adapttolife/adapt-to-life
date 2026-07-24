@@ -176,6 +176,50 @@
   .pop-row-name{ font-weight:600; }
   .pop-row-when{ font-family:"Space Mono",monospace; font-size:0.76rem; color:var(--muted); }
   .pop-row-out{ margin-left:auto; font-family:"Space Mono",monospace; font-size:0.82rem; color:var(--ink-soft); }
+
+  /* ---- clickable flavor cards ------------------------------------------- */
+  .pop-grid > li{ display:flex; }
+  a.pop-fl{ width:100%; color:inherit; text-decoration:none; cursor:pointer; }
+  a.pop-fl:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:3px; }
+  .pop-fl-go{
+    margin-top:0.7rem; font-family:"Space Mono",monospace; font-size:0.62rem; font-weight:700;
+    letter-spacing:0.16em; text-transform:uppercase; color:var(--orange-hot);
+    opacity:0; transform:translateY(4px); transition:opacity .3s ease, transform .3s ease;
+  }
+  a.pop-fl:hover .pop-fl-go, a.pop-fl:focus-visible .pop-fl-go{ opacity:1; transform:none; }
+  @media (hover:none){ .pop-fl-go{ opacity:1; transform:none; } }
+
+  /* ---- goal bar (renders only when a goal is set) ------------------------ */
+  .pop-goal{ margin-top:1.1rem; max-width:340px; }
+  .pop-goal-bar{ height:7px; border-radius:999px; background:rgba(28,26,21,0.10); overflow:hidden; }
+  .pop-goal-fill{
+    height:100%; border-radius:999px; min-width:3px;
+    background:linear-gradient(90deg, var(--orange-ink), var(--orange-hot));
+  }
+  .pop-goal-label{
+    margin-top:0.5rem; font-family:"Space Mono",monospace; font-size:0.74rem;
+    letter-spacing:0.04em; color:var(--muted);
+  }
+
+  /* ---- sell for us ------------------------------------------------------- */
+  .pop-sell{ display:grid; grid-template-columns:1.05fr 0.95fr; gap:clamp(1.6rem,4vw,3.4rem); align-items:center; }
+  @media (max-width:820px){ .pop-sell{ grid-template-columns:1fr; gap:1.8rem; } }
+  .pop-join{
+    list-style:none; padding:clamp(1.3rem,2.6vw,1.9rem); margin:0;
+    background:var(--sand); border-radius:18px; display:grid; gap:0.9rem;
+  }
+  .pop-join li{ display:flex; align-items:flex-start; gap:0.8rem; font-size:0.98rem; color:var(--ink-soft); }
+  .pop-join-n{
+    flex:0 0 auto; width:24px; height:24px; border-radius:50%;
+    background:var(--orange-ink); color:#fff;
+    font-family:"Space Mono",monospace; font-size:0.72rem; font-weight:700;
+    display:inline-flex; align-items:center; justify-content:center;
+  }
+  .pop-code{
+    font-family:"Space Mono",monospace; letter-spacing:0.14em;
+    background:var(--paper); border:1px solid var(--hairline); border-radius:8px;
+    padding:0.12rem 0.5rem; margin-left:0.15rem; white-space:nowrap;
+  }
   .pop-empty{ text-align:center; color:var(--muted); font-size:0.95rem; margin-top:1.4rem; }
 </style>
 </head>
@@ -279,6 +323,27 @@
     <ul class="pop-grid" id="popGrid"></ul>
     <div class="center reveal" style="margin-top:clamp(2.4rem,4vw,3.4rem);">
       <a class="btn" id="popFlavorCta" href="#" target="_blank" rel="noopener">Shop the pop-up store</a>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= SELL FOR US ========================= -->
+<section class="band-sm" id="sell">
+  <div class="wrap">
+    <div class="pop-sell" id="popSell">
+      <div class="pop-sell-copy">
+        <span class="eyebrow reveal">Raise more</span>
+        <h2 class="serif h2 reveal" style="margin-top:0.7rem;">Run a store of your own.</h2>
+        <p class="prose reveal" style="margin-top:1rem;">One store reaches one circle of friends. Ten stores reach ten. Anyone can open their own in a couple of minutes, share the link with their people, and every order still comes back to the same fund.</p>
+        <div class="actions reveal" style="margin-top:1.6rem;">
+          <a class="btn ghost" id="popJoinCta" href="#" target="_blank" rel="noopener">Join the team</a>
+        </div>
+      </div>
+      <ol class="pop-join reveal">
+        <li><span class="pop-join-n">1</span><span>Download the Double Good app.</span></li>
+        <li id="popCodeStep"><span class="pop-join-n">2</span><span>Enter our event code <strong class="pop-code" id="popCode"></strong></span></li>
+        <li><span class="pop-join-n">3</span><span>Create your store and share the link.</span></li>
+      </ol>
     </div>
   </div>
 </section>
@@ -451,8 +516,12 @@
       "supports": "Getting our wheelchair athletes to the APP Vlasic Classic in Highland Park.",
       "opens": "2026-08-06",
       "closes": "2026-08-13",
-      "url": "https://popup.doublegood.com/event/5c049f98-86bb-11f1-b4c1-4fb1d2de4810",
-      "raised": null
+      "time_note": "Opens and closes at 10:00 PM CT",
+      "goal": null,
+      "raised": null,
+      "store_url": null,
+      "join_url": "https://popup.doublegood.com/event/5c049f98-86bb-11f1-b4c1-4fb1d2de4810",
+      "event_code": "PPL VSR"
     }
   ],
   "flavors": [
@@ -464,7 +533,7 @@
     { "name": "My Main Cheese",            "price": "$12", "tag": "Savory",         "img": "my-main-cheese" },
     { "name": "Home On The Ranch",         "price": "$12", "tag": "Savory",         "img": "home-on-the-ranch" },
     { "name": "In Queso Fire",             "price": "$12", "tag": "Spicy",          "img": "in-queso-fire" },
-    { "name": "Holla-Peño",           "price": "$12", "tag": "Spicy",          "img": "holla-peno" },
+    { "name": "Holla-Pe\u00f1o",              "price": "$12", "tag": "Spicy",          "img": "holla-peno" },
     { "name": "Butter Believe It!",        "price": "$11", "tag": "Savory & salty", "img": "butter-believe-it" },
     { "name": "Sergeant Salt & Pepper",    "price": "$11", "tag": "Savory & salty", "img": "salt-and-pepper" },
     { "name": "Little Kettle That Could",  "price": "$12", "tag": "Sweet & salty",  "img": "little-kettle" }
@@ -494,12 +563,12 @@
   function span(a, b){
     if (!a) return '';
     if (!b) return fmt(a);
-    var sameYear = a.getFullYear() === b.getFullYear();
     var tail = ', ' + b.getFullYear();
     return a.getMonth() === b.getMonth()
-      ? MON[a.getMonth()] + ' ' + a.getDate() + '–' + b.getDate() + (sameYear ? tail : '')
+      ? MON[a.getMonth()] + ' ' + a.getDate() + '–' + b.getDate() + tail
       : fmt(a) + ' – ' + fmt(b) + tail;
   }
+  function money(n){ return '$' + Number(n).toLocaleString(); }
 
   // Status is derived from dates, never stored.
   function status(c){
@@ -510,104 +579,155 @@
     return 'soon';
   }
 
-  var valid = campaigns.filter(function(c){ return c && c.url && c.name; });
+  var valid  = campaigns.filter(function(c){ return c && c.name; });
   var open   = valid.filter(function(c){ return status(c) === 'open'; });
   var soon   = valid.filter(function(c){ return status(c) === 'soon'; })
                     .sort(function(a,b){ return (localDate(a.opens)||0) - (localDate(b.opens)||0); });
   var closed = valid.filter(function(c){ return status(c) === 'closed'; })
                     .sort(function(a,b){ return (localDate(b.closes)||0) - (localDate(a.closes)||0); });
 
-  // The one campaign every CTA on the page points at: open first, else next up.
   var current = open[0] || soon[0] || null;
 
-  // --- CTAs -----------------------------------------------------------------
-  ['popHeroCta','popFlavorCta','popCloseCta'].forEach(function(id){
-    var el = document.getElementById(id);
+  // THE key distinction on this platform:
+  //   store_url = where a supporter BUYS (no app, no account)
+  //   join_url  = where a volunteer JOINS THE TEAM and creates their own store (app required)
+  // Until a store exists there is nothing to buy, so every "buy" surface routes
+  // to /subscribe instead of a link that would dump a buyer on an app download.
+  var buyUrl   = (current && current.store_url) || null;
+  var joinUrl  = (current && current.join_url)  || null;
+  var shopHref = buyUrl || '/subscribe';
+  var shopText = buyUrl ? 'Buy popcorn' : 'Tell me when it opens';
+
+  function wire(el, href, text){
     if (!el) return;
-    if (current){ el.href = current.url; }
-    else {
-      el.href = '/donate';
-      el.textContent = 'Give to the fund';
-      el.removeAttribute('target');
-    }
+    el.href = href;
+    if (text) el.textContent = text;
+    if (/^https?:/.test(href)) { el.target = '_blank'; el.rel = 'noopener'; }
+    else { el.removeAttribute('target'); el.removeAttribute('rel'); }
+  }
+
+  ['popHeroCta','popFlavorCta','popCloseCta'].forEach(function(id){
+    wire(document.getElementById(id), shopHref, shopText);
   });
 
   var meta = document.getElementById('popHeroMeta');
   if (meta){
-    if (current && status(current) === 'open'){
-      meta.innerHTML = '<span class="on">Open now</span> · closes ' + fmt(localDate(current.closes));
-    } else if (current){
-      meta.textContent = 'Opens ' + span(localDate(current.opens), localDate(current.closes));
-    } else {
+    if (!current){
       meta.textContent = 'No store open right now. The fund still is.';
+    } else if (status(current) === 'open'){
+      meta.innerHTML = '<span class="on">Open now</span> · closes ' + fmt(localDate(current.closes));
+    } else {
+      meta.textContent = 'Opens ' + span(localDate(current.opens), localDate(current.closes));
     }
   }
 
   // --- active campaign card --------------------------------------------------
+  function el(tag, cls, text){
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
   var host = document.getElementById('popActive');
   if (host){
     if (!current){
-      host.innerHTML = '<div class="pop-card"><div><span class="pop-status is-closed">'
-        + '<span class="dot"></span>No campaign running</span>'
-        + '<h2 class="serif h2">The next store has not opened yet.</h2>'
-        + '<p class="pop-card-sub">Join the list and we will tell you the day it does.</p></div>'
-        + '<div class="pop-card-cta"><a class="btn" href="/subscribe">Get notified</a></div></div>';
+      var none = el('div','pop-card');
+      var nl = el('div');
+      var ns = el('span','pop-status is-closed');
+      ns.appendChild(el('span','dot'));
+      ns.appendChild(document.createTextNode('No campaign running'));
+      nl.appendChild(ns);
+      nl.appendChild(el('h2','serif h2','The next store has not opened yet.'));
+      nl.appendChild(el('p','pop-card-sub','Join the list and we will tell you the day it does.'));
+      var nr = el('div','pop-card-cta');
+      var na = el('a','btn','Get notified'); na.href = '/subscribe';
+      nr.appendChild(na);
+      none.appendChild(nl); none.appendChild(nr);
+      host.appendChild(none);
     } else {
       var st = status(current);
-      var label = st === 'open' ? 'Open now' : 'Opening soon';
-      var cta   = st === 'open' ? 'Shop the pop-up store' : 'See the store';
-      var when  = span(localDate(current.opens), localDate(current.closes));
-      var card = document.createElement('div');
-      card.className = 'pop-card';
-      var left = document.createElement('div');
-      var sEl = document.createElement('span');
-      sEl.className = 'pop-status is-' + (st === 'open' ? 'open' : 'soon');
-      sEl.innerHTML = '<span class="dot"></span>';
-      sEl.appendChild(document.createTextNode(label));
-      var h = document.createElement('h2');
-      h.className = 'serif h2';
-      h.textContent = current.name;
-      var p = document.createElement('p');
-      p.className = 'pop-card-sub';
-      p.textContent = current.supports || '';
-      var d = document.createElement('p');
-      d.className = 'pop-dates';
-      d.textContent = when;
-      left.appendChild(sEl); left.appendChild(h); left.appendChild(p); left.appendChild(d);
-      var right = document.createElement('div');
-      right.className = 'pop-card-cta';
-      var a = document.createElement('a');
-      a.className = 'btn'; a.href = current.url; a.target = '_blank'; a.rel = 'noopener';
-      a.textContent = cta;
-      var s2 = document.createElement('span');
-      s2.className = 'sml'; s2.textContent = '50% comes back to the fund';
-      right.appendChild(a); right.appendChild(s2);
+      var card = el('div','pop-card');
+      var left = el('div');
+
+      var sEl = el('span','pop-status is-' + (st === 'open' ? 'open' : 'soon'));
+      sEl.appendChild(el('span','dot'));
+      sEl.appendChild(document.createTextNode(st === 'open' ? 'Open now' : 'Opening soon'));
+      left.appendChild(sEl);
+      left.appendChild(el('h2','serif h2', current.name));
+      if (current.supports) left.appendChild(el('p','pop-card-sub', current.supports));
+
+      var dates = span(localDate(current.opens), localDate(current.closes));
+      if (current.time_note) dates += ' · ' + current.time_note;
+      left.appendChild(el('p','pop-dates', dates));
+
+      // Goal bar renders only when a goal is actually set. No invented numbers.
+      if (typeof current.goal === 'number' && current.goal > 0){
+        var raised = typeof current.raised === 'number' ? current.raised : 0;
+        var pct = Math.max(0, Math.min(100, Math.round((raised / current.goal) * 100)));
+        var wrapEl = el('div','pop-goal');
+        var barEl  = el('div','pop-goal-bar');
+        var fillEl = el('div','pop-goal-fill');
+        fillEl.style.width = pct + '%';
+        barEl.appendChild(fillEl);
+        var lbl = el('p','pop-goal-label');
+        lbl.textContent = (typeof current.raised === 'number')
+          ? money(raised) + ' of ' + money(current.goal) + ' raised'
+          : 'Goal: ' + money(current.goal);
+        wrapEl.appendChild(barEl); wrapEl.appendChild(lbl);
+        left.appendChild(wrapEl);
+      }
+
+      var right = el('div','pop-card-cta');
+      var a = el('a','btn');
+      wire(a, shopHref, buyUrl ? 'Buy popcorn' : 'Tell me when it opens');
+      right.appendChild(a);
+      right.appendChild(el('span','sml','50% comes back to the fund'));
       card.appendChild(left); card.appendChild(right);
       host.appendChild(card);
     }
   }
 
-  // --- flavor wall -----------------------------------------------------------
+  // --- flavor wall: every bag is a link, never a dead end --------------------
   var grid = document.getElementById('popGrid');
   if (grid){
     flavors.forEach(function(f){
-      if (!f || !f.img || !f.name) return;            // skip malformed, never break the page
-      var li = document.createElement('li');
-      li.className = 'pop-fl';
+      if (!f || !f.img || !f.name) return;      // skip malformed, never break the page
+      var li = el('li');
+      var a  = el('a','pop-fl');
+      wire(a, shopHref);
+      a.setAttribute('aria-label', buyUrl
+        ? 'Buy ' + f.name + ' from our pop-up store'
+        : f.name + ' — get notified when our store opens');
       var img = document.createElement('img');
       img.src = '/images/popcorn/' + f.img + '.webp';
       img.alt = f.name + ' popcorn';
       img.loading = 'lazy';
       img.width = 700; img.height = 1085;
-      var tag = document.createElement('span');
-      tag.className = 'pop-fl-tag'; tag.textContent = f.tag || '';
-      var nm = document.createElement('span');
-      nm.className = 'pop-fl-name'; nm.textContent = f.name;
-      var pr = document.createElement('span');
-      pr.className = 'pop-fl-price'; pr.textContent = f.price || '';
-      li.appendChild(img); li.appendChild(tag); li.appendChild(nm); li.appendChild(pr);
+      a.appendChild(img);
+      a.appendChild(el('span','pop-fl-tag', f.tag || ''));
+      a.appendChild(el('span','pop-fl-name', f.name));
+      a.appendChild(el('span','pop-fl-price', f.price || ''));
+      a.appendChild(el('span','pop-fl-go', buyUrl ? 'Buy' : 'Notify me'));
+      li.appendChild(a);
       grid.appendChild(li);
     });
+  }
+
+  // --- sell for us: the event code + join link -------------------------------
+  var sell = document.getElementById('popSell');
+  if (sell){
+    if (!joinUrl || !current){
+      sell.closest('section').style.display = 'none';
+    } else {
+      var codeEl = document.getElementById('popCode');
+      if (codeEl) codeEl.textContent = current.event_code || '';
+      if (!current.event_code){
+        var step = document.getElementById('popCodeStep');
+        if (step) step.style.display = 'none';
+      }
+      wire(document.getElementById('popJoinCta'), joinUrl, 'Join the team');
+    }
   }
 
   // --- the record ------------------------------------------------------------
@@ -618,18 +738,11 @@
         + 'closed store will be listed, with what it raised and what it paid for.</p>';
     } else {
       closed.forEach(function(c){
-        var row = document.createElement('div');
-        row.className = 'pop-row';
-        var n = document.createElement('span');
-        n.className = 'pop-row-name'; n.textContent = c.name;
-        var w = document.createElement('span');
-        w.className = 'pop-row-when'; w.textContent = span(localDate(c.opens), localDate(c.closes));
-        var o = document.createElement('span');
-        o.className = 'pop-row-out';
-        o.textContent = (typeof c.raised === 'number')
-          ? '$' + c.raised.toLocaleString() + ' to the fund'
-          : 'Total being counted';
-        row.appendChild(n); row.appendChild(w); row.appendChild(o);
+        var row = el('div','pop-row');
+        row.appendChild(el('span','pop-row-name', c.name));
+        row.appendChild(el('span','pop-row-when', span(localDate(c.opens), localDate(c.closes))));
+        row.appendChild(el('span','pop-row-out',
+          (typeof c.raised === 'number') ? money(c.raised) + ' to the fund' : 'Total being counted'));
         past.appendChild(row);
       });
     }

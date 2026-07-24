@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<title>Popcorn Fundraiser | Adapt To Life</title>
+<meta name="description" content="Buy small batch popcorn and half of every dollar goes straight to the Hustle & Heart Fund, covering equipment, travel, and training for adaptive athletes. Adapt To Life is a 501(c)(3).">
+<link rel="canonical" href="https://adapttolife.org/popcorn">
+<link rel="icon" type="image/svg+xml" href="/images/atl-logo.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
+<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Popcorn Fundraiser | Adapt To Life">
+<meta property="og:description" content="Half of every bag puts an athlete in the game. Small batch popcorn, shipped to your door.">
+<meta property="og:image" content="https://adapttolife.org/images/og-image.jpg">
+<meta property="og:url" content="https://adapttolife.org/popcorn">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Popcorn Fundraiser | Adapt To Life">
+<meta name="twitter:description" content="Half of every bag puts an athlete in the game.">
+<meta name="twitter:image" content="https://adapttolife.org/images/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/site.css">
+<style>
+  /* ==========================================================================
+     Popcorn campaigns — a branded home for every Double Good pop-up store.
+     Product cutouts float on the house near-black; Double Good's own brand
+     furniture (purple, their lockups) is deliberately not used.
+     ========================================================================== */
+
+  /* ---- hero ---------------------------------------------------------- */
+  .pop-hero{ position:relative; overflow:hidden; padding-top:clamp(7rem,15vh,10rem); padding-bottom:clamp(3.5rem,8vw,6rem); }
+  .pop-hero-glow{
+    position:absolute; inset:auto -20% -55% 30%; height:78%;
+    background:radial-gradient(ellipse 50% 50% at 50% 50%, rgba(232,87,42,0.30) 0%, transparent 65%);
+    pointer-events:none;
+  }
+  .pop-hero-burst{
+    position:absolute; top:-16%; right:-20%; width:min(44vw,520px); opacity:0.10;
+    transform:rotate(-8deg); pointer-events:none; filter:saturate(0.7);
+  }
+  .pop-hero-inner{ position:relative; display:grid; grid-template-columns:1.02fr 0.98fr; gap:clamp(1.5rem,4vw,3.5rem); align-items:center; }
+  .pop-hero-copy .display{ margin-top:1.4rem; max-width:15ch; }
+  .pop-hero-copy .sub{ max-width:48ch; }
+  .pop-hero-meta{
+    margin-top:1.5rem; font-family:"Space Mono",monospace; font-size:0.74rem;
+    letter-spacing:0.09em; text-transform:uppercase; color:var(--cream-faint);
+  }
+  .pop-hero-meta .on{ color:var(--orange-hot); }
+
+  .pop-hero-art{ position:relative; min-height:clamp(300px,42vw,470px); }
+  .pop-hero-art .pb{
+    position:absolute; width:52%; height:auto;
+    filter:drop-shadow(0 34px 46px rgba(0,0,0,0.62));
+  }
+  .pop-hero-art .pb-1{ left:24%; top:0; width:58%; z-index:3; transform:rotate(-3deg); }
+  .pop-hero-art .pb-2{ left:-4%; top:18%; z-index:2; transform:rotate(-13deg); }
+  .pop-hero-art .pb-3{ right:1%; top:21%; z-index:1; transform:rotate(11deg); }
+
+  @media (max-width:880px){
+    .pop-hero-inner{ grid-template-columns:1fr; gap:2.2rem; }
+    .pop-hero-copy .display{ max-width:none; }
+    .pop-hero-art{ min-height:min(62vw,330px); order:-1; }
+    .pop-hero-art .pb-1{ width:44%; left:28%; }
+    .pop-hero-art .pb{ width:40%; }
+    .pop-hero-burst{ width:70vw; right:-24%; opacity:0.12; }
+  }
+
+  /* ---- active campaign card ------------------------------------------- */
+  .pop-active{ margin-top:clamp(-3.5rem,-5vw,-2rem); position:relative; z-index:5; }
+  .pop-card{
+    background:var(--paper); border:1px solid var(--hairline); border-radius:20px;
+    padding:clamp(1.4rem,3vw,2.2rem);
+    box-shadow:0 28px 64px -34px rgba(28,26,21,0.42);
+    display:grid; grid-template-columns:1fr auto; gap:1.2rem 2rem; align-items:center;
+  }
+  @media (max-width:760px){ .pop-card{ grid-template-columns:1fr; } }
+  .pop-status{
+    display:inline-flex; align-items:center; gap:0.5rem;
+    font-family:"Space Mono",monospace; font-size:0.68rem; font-weight:700;
+    letter-spacing:0.16em; text-transform:uppercase;
+  }
+  .pop-status .dot{ width:8px; height:8px; border-radius:50%; background:var(--muted); flex:0 0 auto; }
+  .pop-status.is-open{ color:var(--orange-ink); }
+  .pop-status.is-open .dot{ background:var(--orange); box-shadow:0 0 0 4px var(--orange-bloom); }
+  .pop-status.is-soon{ color:var(--muted); }
+  .pop-status.is-closed{ color:var(--muted); }
+  .pop-card h2{ margin-top:0.7rem; }
+  .pop-card-sub{ margin-top:0.5rem; color:var(--ink-soft); max-width:52ch; }
+  .pop-dates{ margin-top:0.9rem; font-family:"Space Mono",monospace; font-size:0.76rem; color:var(--muted); letter-spacing:0.05em; }
+  .pop-card-cta{ display:flex; flex-direction:column; align-items:flex-start; gap:0.6rem; }
+  .pop-card-cta .sml{ font-size:0.8rem; color:var(--muted); }
+
+  /* ---- steps ---------------------------------------------------------- */
+  .pop-steps{
+    list-style:none; padding:0; margin:clamp(2.4rem,4vw,3.4rem) 0 0;
+    display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(1.2rem,2.6vw,2rem);
+  }
+  @media (max-width:760px){ .pop-steps{ grid-template-columns:1fr; } }
+  .pop-step{
+    background:var(--canvas); border:1px solid rgba(28,26,21,0.09); border-radius:18px;
+    padding:clamp(1.5rem,2.8vw,2.1rem);
+  }
+  .pop-step-n{
+    font-family:"Space Mono",monospace; font-size:0.72rem; font-weight:700;
+    letter-spacing:0.18em; color:var(--orange-ink);
+  }
+  .pop-step h3{ margin-top:0.7rem; }
+  .pop-step p{ margin-top:0.5rem; font-size:0.98rem; }
+  .pop-note{
+    margin-top:clamp(1.6rem,2.6vw,2.2rem); font-size:0.9rem; color:var(--muted);
+    max-width:62ch; margin-inline:auto; text-align:center;
+  }
+
+  /* ---- flavor wall ----------------------------------------------------- */
+  .pop-grid{
+    list-style:none; padding:0; margin:clamp(2.4rem,4vw,3.4rem) 0 0;
+    display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:clamp(0.9rem,2vw,1.6rem);
+  }
+  @media (max-width:1000px){ .pop-grid{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
+  @media (max-width:700px){ .pop-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.8rem; } }
+  .pop-fl{
+    background:rgba(255,255,255,0.035); border:1px solid rgba(247,244,238,0.10);
+    border-radius:16px; padding:clamp(0.9rem,1.8vw,1.3rem) clamp(0.8rem,1.6vw,1.1rem) clamp(1rem,2vw,1.3rem);
+    display:flex; flex-direction:column; align-items:center; text-align:center;
+    transition:transform .35s cubic-bezier(.2,.7,.3,1), border-color .35s ease, background .35s ease;
+  }
+  .pop-fl:hover{ transform:translateY(-6px); border-color:rgba(232,87,42,0.42); background:rgba(232,87,42,0.05); }
+  .pop-fl img{
+    width:auto; height:clamp(112px,15vw,168px); object-fit:contain;
+    filter:drop-shadow(0 18px 24px rgba(0,0,0,0.55));
+  }
+  .pop-fl-tag{
+    margin-top:0.85rem; font-family:"Space Mono",monospace; font-size:0.6rem; font-weight:700;
+    letter-spacing:0.16em; text-transform:uppercase; color:var(--gold);
+  }
+  .pop-fl-name{ margin-top:0.4rem; font-weight:600; font-size:0.95rem; line-height:1.25; color:var(--cream); }
+  .pop-fl-price{ margin-top:0.3rem; font-family:"Space Mono",monospace; font-size:0.82rem; color:var(--cream-faint); }
+
+  /* ---- what it funds ---------------------------------------------------- */
+  .pop-funds{ display:grid; grid-template-columns:1.08fr 0.92fr; gap:clamp(1.8rem,4vw,3.6rem); align-items:center; }
+  @media (max-width:880px){ .pop-funds{ grid-template-columns:1fr; } .pop-funds-art{ order:-1; } }
+  .pop-funds-art img{ width:100%; height:auto; opacity:0.95; }
+
+  /* ---- past campaigns --------------------------------------------------- */
+  .pop-past{ margin-top:clamp(2rem,3.4vw,2.8rem); max-width:var(--reading); margin-inline:auto; }
+  .pop-row{
+    display:flex; flex-wrap:wrap; align-items:baseline; gap:0.4rem 1rem;
+    padding:1.05rem 0; border-bottom:1px solid var(--hairline);
+  }
+  .pop-row:first-child{ border-top:1px solid var(--hairline); }
+  .pop-row-name{ font-weight:600; }
+  .pop-row-when{ font-family:"Space Mono",monospace; font-size:0.76rem; color:var(--muted); }
+  .pop-row-out{ margin-left:auto; font-family:"Space Mono",monospace; font-size:0.82rem; color:var(--ink-soft); }
+  .pop-empty{ text-align:center; color:var(--muted); font-size:0.95rem; margin-top:1.4rem; }
+</style>
+</head>
+<body>
+
+<header class="nav over-dark" id="nav">
+  <div class="wrap nav-inner">
+    <a href="/" class="brand"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="217.61900000000003 211.68400000000003 1485.031 1351.756" class="brand-logo" aria-hidden="true"><path fill="#1A1A1A" d="M359.579 1424.07C374.643 1414 419.843 1314.91 429.93 1293.87L494.424 1159.36L747.066 640.99L855.497 418.881C869.352 390.403 883.808 362.487 897.593 333.689C907.159 313.705 908.44 287.493 891.747 270.443C890.687 269.361 891.226 270.404 890.726 268.488C910.256 266.684 954.763 268.012 976.132 267.978L1027.73 267.866C1050.43 267.823 1069.15 266.862 1090.2 276.699C1100.08 280.969 1119.05 295.115 1124.15 305.089C1149.4 354.497 1171.67 409.57 1192.51 460.73C1207.12 496.586 1223.18 529.721 1237.07 564.893C1231.2 560.008 1227.44 557.269 1221.08 553.015C1215.99 557.591 1208.19 556.729 1206.65 548.966C1204.79 547.116 1205.4 548.172 1205.09 545.604C1202.88 544.392 1200.58 543.344 1198.22 542.469C1149.51 524.158 1115.69 536.668 1071.87 556.467C1061.68 531.46 1047.28 493.022 1034.45 468.477C1033.54 466.745 1031.36 466.995 1029.72 467.026C1023.63 472.302 1006.14 511.519 1002.14 520.975C1003.99 526.438 1006.21 532.816 1000.42 535.761C999.73 535.161 999.042 534.562 998.355 533.963L995.587 534.913C991.934 541.165 989.114 547.012 986.003 553.541C978.262 569.79 970.036 585.78 962.167 602.001L905.887 716.678C898.157 732.102 890.506 749.961 882.211 764.818C876.619 774.834 855.527 783.028 844.283 790.778C773.508 839.563 722.902 906.96 712.074 994.461C711.238 1005.28 710.874 1016.13 710.985 1026.98C711.392 1036.24 711.6 1041.55 713.301 1050.54C715.147 1038.12 716.538 1026.66 719.061 1014.08C747.026 874.746 884.594 776.948 1019.67 757.989C1033.35 756.07 1049.34 754.641 1062.97 756.691C1081.24 759.401 1097.61 769.443 1108.31 784.498C1141.91 831.239 1107.16 895.887 1082.84 938.981C1070.16 961.44 1046.9 999.023 1064.37 1024.25C1065.51 1025.88 1066.68 1027.48 1067.88 1029.06C1029.44 1044.14 983.182 1035.86 967.927 993.161C952.577 950.192 964.659 904.334 977.615 862.526C961.687 864.778 939.913 868.607 925.08 873.993C873.313 892.788 825.45 928.17 793.2 972.628C749.701 1032.59 718.718 1102.16 686.859 1168.46L592.531 1364.34L560.696 1430.8C552.425 1448.47 540.172 1482.34 521.933 1491.44C510.331 1497.23 486.702 1496.02 473.295 1496.02L419.601 1496C373.568 1495.97 318.065 1497.35 272.619 1495.53C299.416 1479.6 313.334 1471.82 336.26 1449.95C339.189 1443.65 341.78 1440.96 345.75 1435.2L345.227 1435.64C348.674 1430.56 353.897 1426.19 359.579 1424.07Z"/><path fill="#E85D04" d="M1223.86 1142.69C1176.21 1128.49 1149.97 1142.58 1105.3 1157.83C1041.84 1179.5 949.416 1199.66 909.488 1127.93C889.272 1092.07 895.318 1042.58 907.061 1004.78C914.066 982.224 931.884 938.201 945.531 918.31C934.727 976.648 943.073 1045.11 1012.53 1058.92C1038.79 1064.14 1062.99 1055.23 1087.54 1047.14C1140.35 1029.01 1197.18 1006.46 1254.03 1017.1C1289.1 1023.67 1325.25 1046.46 1345.49 1076.01C1378.24 1123.85 1397.19 1180.53 1418.23 1234.13C1449.55 1314.65 1503.74 1418.16 1580.23 1464.25C1583.85 1463.21 1589.98 1461.73 1593.37 1463.58C1593.59 1466.23 1593.34 1466.46 1592.66 1469.09C1597.56 1472.29 1602.54 1473.68 1604.16 1477.79L1605.97 1478.39C1614.43 1480.9 1616.3 1478.09 1622.66 1479.72C1624.28 1482.72 1623.84 1483.16 1624 1486.81C1629.15 1489.52 1640.46 1493.28 1647.65 1496.74C1624.41 1497.19 1603.55 1498.32 1580.39 1494.33C1449.33 1471.77 1372.44 1370.93 1312.08 1261.29C1291.38 1223.68 1275.14 1182.88 1244.5 1153.99C1244.37 1153.96 1226.28 1143.89 1223.86 1142.69Z"/><path fill="#1A1A1A" d="M884.091 997.18C881.573 1003.22 879.168 1009.32 876.877 1015.45C872.103 1043.72 864.64 1071.51 871.609 1100.69C845.46 1128.65 828.491 1154.6 818.826 1192.32C816.984 1199.52 813.918 1213.11 813.959 1220.49C812.475 1231.51 813.015 1240.82 812.825 1251.85C813.263 1255.26 813.858 1259.12 814.152 1262.51C818.588 1268.64 815.637 1265.16 817.476 1272.58L823.121 1273.27C826.428 1279.35 820.905 1285.89 821.677 1290.17C823.045 1297.75 828.009 1303.4 827.331 1312.28C828.661 1322.63 848.459 1349.98 855.865 1358.19C974.653 1489.9 1172.27 1374.81 1159.6 1211.15C1158.54 1197.39 1153.77 1184.05 1152.5 1171.07C1155.27 1168.58 1160.94 1166.68 1164.64 1165.81C1190.31 1159.76 1205.22 1161.47 1227.84 1175.44C1232.07 1176.61 1233.16 1176.71 1237.48 1175.98L1239.62 1177.38C1241.92 1188.43 1245.64 1205.53 1243.89 1216.31C1241.99 1240.23 1243.24 1264.11 1237.58 1287.96C1220.89 1358.2 1179.19 1421.17 1118.06 1459.72C1060.12 1496.36 989.975 1508.44 923.115 1493.29C902.176 1488.53 882.13 1480.26 863.152 1469.87C743.322 1404.25 701.651 1254.69 756.971 1132.59C783.05 1075.03 819.264 1037.28 872.458 1004.19C876.447 1001.9 880.284 999.778 884.091 997.18Z"/><path fill="#1A1A1A" d="M1132.43 581.791C1182.17 578.689 1225.06 616.367 1228.39 666.087C1231.72 715.808 1194.24 758.871 1144.53 762.432C1094.5 766.016 1051.1 728.237 1047.74 678.192C1044.39 628.146 1082.37 584.914 1132.43 581.791Z"/></svg>Adapt To Life</a>
+    <nav class="nav-links">
+      <a class="lk" href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
+      <a class="lk" href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
+      <a class="lk" href="/about">Our Story</a>
+      <a class="lk featured" href="/apply">Grant Application</a>
+      <a class="nav-cta" href="/donate">Donate</a>
+    </nav>
+    <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="mobile-menu">
+    <div class="wrap mwrap">
+      <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
+      <a href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
+      <a href="/about">Our Story</a>
+      <a class="featured" href="/apply">Grant Application</a>
+      <a class="m-cta" href="/donate">Donate &rarr;</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ============================ HERO ============================ -->
+<section class="dark pop-hero">
+  <div class="pop-hero-glow" aria-hidden="true"></div>
+  <img class="pop-hero-burst" src="/images/popcorn/burst-caramel-cheesy.webp" alt="" aria-hidden="true" loading="eager" width="900" height="900">
+  <div class="wrap pop-hero-inner">
+    <div class="pop-hero-copy">
+      <span class="eyebrow orange reveal">Popcorn fundraiser</span>
+      <h1 class="serif display reveal">Half of every bag puts an athlete in the game.</h1>
+      <p class="lead sub reveal" style="color:var(--cream-mute);">Small batch popcorn, shipped to your door. Fifty percent of every order comes straight back to the Hustle &amp; Heart Fund. No shipping to organize, no boxes in your trunk, nothing to hand out.</p>
+      <div class="actions reveal">
+        <a class="btn" id="popHeroCta" href="#" target="_blank" rel="noopener">Shop the pop-up store</a>
+        <a class="btn ghost" href="#how">How it works</a>
+      </div>
+      <p class="pop-hero-meta reveal" id="popHeroMeta"></p>
+    </div>
+    <div class="pop-hero-art reveal" aria-hidden="true">
+      <img class="pb pb-1" src="/images/popcorn/caramel-cheesy.webp" alt="" width="700" height="1085" loading="eager">
+      <img class="pb pb-2" src="/images/popcorn/in-queso-fire.webp" alt="" width="700" height="1085" loading="eager">
+      <img class="pb pb-3" src="/images/popcorn/white-cheddar.webp" alt="" width="700" height="1085" loading="eager">
+    </div>
+  </div>
+</section>
+
+<!-- ====================== ACTIVE CAMPAIGN ======================= -->
+<section class="band-sm" id="active">
+  <div class="wrap">
+    <div class="pop-active" id="popActive">
+      <!-- rendered by JS from the campaign data below -->
+    </div>
+  </div>
+</section>
+
+<!-- ========================= HOW IT WORKS ======================= -->
+<section class="band tint" id="how">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow reveal">How it works</span>
+      <h2 class="serif h2 reveal" style="margin-top:0.7rem;">Three taps, and you are done.</h2>
+    </div>
+    <ol class="pop-steps">
+      <li class="pop-step reveal">
+        <span class="pop-step-n">01</span>
+        <h3 class="h3 serif">Open the store</h3>
+        <p class="prose">Each campaign has its own pop-up store link. It stays open for a set number of days, then closes.</p>
+      </li>
+      <li class="pop-step reveal">
+        <span class="pop-step-n">02</span>
+        <h3 class="h3 serif">Order what you like</h3>
+        <p class="prose">Twelve flavors, single bags or sets. Double Good ships it to your door, or to whoever you are sending it to.</p>
+      </li>
+      <li class="pop-step reveal">
+        <span class="pop-step-n">03</span>
+        <h3 class="h3 serif">Half comes back</h3>
+        <p class="prose">Fifty percent of every dollar goes to the fund, and from the fund to an athlete's equipment, travel, and training.</p>
+      </li>
+    </ol>
+    <p class="pop-note reveal">Orders have to go through our pop-up store link for the fund to receive its half. Buying from the regular Double Good shop does not count toward our campaign.</p>
+  </div>
+</section>
+
+<!-- ========================= FLAVOR WALL ======================== -->
+<section class="dark band pop-flavors" id="flavors">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow orange reveal">The lineup</span>
+      <h2 class="serif h2 reveal" style="margin-top:0.7rem; color:var(--cream);">Twelve flavors. Pick your side.</h2>
+      <p class="reveal" style="margin-top:0.9rem; color:var(--cream-mute); max-width:52ch;">Small batch, popped fresh, made in Chicago. Prices are set by Double Good and shown here so you know what you are walking into.</p>
+    </div>
+    <ul class="pop-grid" id="popGrid"></ul>
+    <div class="center reveal" style="margin-top:clamp(2.4rem,4vw,3.4rem);">
+      <a class="btn" id="popFlavorCta" href="#" target="_blank" rel="noopener">Shop the pop-up store</a>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= WHAT IT FUNDS ======================== -->
+<section class="band" id="funds">
+  <div class="wrap">
+    <div class="pop-funds">
+      <div class="pop-funds-copy">
+        <span class="eyebrow reveal">Where it goes</span>
+        <h2 class="serif statement reveal" style="margin-top:0.7rem;">Popcorn is the easy part. The fund is the point.</h2>
+        <p class="prose reveal" style="margin-top:1.2rem;">A racing chair can cost more than a car. A weekend at a national tournament runs about $3,500 once you count entry, travel, and a room. Those numbers are why athletes sit out, and they are what this fund exists to cover.</p>
+        <p class="prose reveal">Every campaign on this page is tied to something specific we are trying to pay for. When a store closes, we say what it raised and what it went to.</p>
+        <div class="actions reveal" style="margin-top:2rem;">
+          <a class="btn ghost" href="/hustle-and-heart">About the fund</a>
+          <a class="textlink" href="/donate">Or give directly &rarr;</a>
+        </div>
+      </div>
+      <div class="pop-funds-art reveal" aria-hidden="true">
+        <img src="/images/popcorn/burst-butter.webp" alt="" width="900" height="900" loading="lazy">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== PAST CAMPAIGNS ======================== -->
+<section class="band-sm tint" id="past">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow reveal">The record</span>
+      <h2 class="serif h2 reveal" style="margin-top:0.7rem;">Every campaign, and what it did.</h2>
+    </div>
+    <div class="pop-past" id="popPast"></div>
+  </div>
+</section>
+
+<!-- ========================== CLOSING ============================ -->
+<section class="dark closing band">
+  <div class="wrap center">
+    <h2 class="serif statement reveal">Buy popcorn. Move an athlete.</h2>
+    <p class="reveal" style="margin-top:1.1rem; color:var(--cream-mute); max-width:46ch; margin-inline:auto;">It is a snack you were going to buy anyway. Half of it does something.</p>
+    <div class="actions reveal" style="justify-content:center; margin-top:2.2rem;">
+      <a class="btn" id="popCloseCta" href="#" target="_blank" rel="noopener">Shop the pop-up store</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="brandcol">
+        <a href="/" class="brand"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="217.61900000000003 211.68400000000003 1485.031 1351.756" class="brand-logo" aria-hidden="true"><path fill="#1A1A1A" d="M359.579 1424.07C374.643 1414 419.843 1314.91 429.93 1293.87L494.424 1159.36L747.066 640.99L855.497 418.881C869.352 390.403 883.808 362.487 897.593 333.689C907.159 313.705 908.44 287.493 891.747 270.443C890.687 269.361 891.226 270.404 890.726 268.488C910.256 266.684 954.763 268.012 976.132 267.978L1027.73 267.866C1050.43 267.823 1069.15 266.862 1090.2 276.699C1100.08 280.969 1119.05 295.115 1124.15 305.089C1149.4 354.497 1171.67 409.57 1192.51 460.73C1207.12 496.586 1223.18 529.721 1237.07 564.893C1231.2 560.008 1227.44 557.269 1221.08 553.015C1215.99 557.591 1208.19 556.729 1206.65 548.966C1204.79 547.116 1205.4 548.172 1205.09 545.604C1202.88 544.392 1200.58 543.344 1198.22 542.469C1149.51 524.158 1115.69 536.668 1071.87 556.467C1061.68 531.46 1047.28 493.022 1034.45 468.477C1033.54 466.745 1031.36 466.995 1029.72 467.026C1023.63 472.302 1006.14 511.519 1002.14 520.975C1003.99 526.438 1006.21 532.816 1000.42 535.761C999.73 535.161 999.042 534.562 998.355 533.963L995.587 534.913C991.934 541.165 989.114 547.012 986.003 553.541C978.262 569.79 970.036 585.78 962.167 602.001L905.887 716.678C898.157 732.102 890.506 749.961 882.211 764.818C876.619 774.834 855.527 783.028 844.283 790.778C773.508 839.563 722.902 906.96 712.074 994.461C711.238 1005.28 710.874 1016.13 710.985 1026.98C711.392 1036.24 711.6 1041.55 713.301 1050.54C715.147 1038.12 716.538 1026.66 719.061 1014.08C747.026 874.746 884.594 776.948 1019.67 757.989C1033.35 756.07 1049.34 754.641 1062.97 756.691C1081.24 759.401 1097.61 769.443 1108.31 784.498C1141.91 831.239 1107.16 895.887 1082.84 938.981C1070.16 961.44 1046.9 999.023 1064.37 1024.25C1065.51 1025.88 1066.68 1027.48 1067.88 1029.06C1029.44 1044.14 983.182 1035.86 967.927 993.161C952.577 950.192 964.659 904.334 977.615 862.526C961.687 864.778 939.913 868.607 925.08 873.993C873.313 892.788 825.45 928.17 793.2 972.628C749.701 1032.59 718.718 1102.16 686.859 1168.46L592.531 1364.34L560.696 1430.8C552.425 1448.47 540.172 1482.34 521.933 1491.44C510.331 1497.23 486.702 1496.02 473.295 1496.02L419.601 1496C373.568 1495.97 318.065 1497.35 272.619 1495.53C299.416 1479.6 313.334 1471.82 336.26 1449.95C339.189 1443.65 341.78 1440.96 345.75 1435.2L345.227 1435.64C348.674 1430.56 353.897 1426.19 359.579 1424.07Z"/><path fill="#E85D04" d="M1223.86 1142.69C1176.21 1128.49 1149.97 1142.58 1105.3 1157.83C1041.84 1179.5 949.416 1199.66 909.488 1127.93C889.272 1092.07 895.318 1042.58 907.061 1004.78C914.066 982.224 931.884 938.201 945.531 918.31C934.727 976.648 943.073 1045.11 1012.53 1058.92C1038.79 1064.14 1062.99 1055.23 1087.54 1047.14C1140.35 1029.01 1197.18 1006.46 1254.03 1017.1C1289.1 1023.67 1325.25 1046.46 1345.49 1076.01C1378.24 1123.85 1397.19 1180.53 1418.23 1234.13C1449.55 1314.65 1503.74 1418.16 1580.23 1464.25C1583.85 1463.21 1589.98 1461.73 1593.37 1463.58C1593.59 1466.23 1593.34 1466.46 1592.66 1469.09C1597.56 1472.29 1602.54 1473.68 1604.16 1477.79L1605.97 1478.39C1614.43 1480.9 1616.3 1478.09 1622.66 1479.72C1624.28 1482.72 1623.84 1483.16 1624 1486.81C1629.15 1489.52 1640.46 1493.28 1647.65 1496.74C1624.41 1497.19 1603.55 1498.32 1580.39 1494.33C1449.33 1471.77 1372.44 1370.93 1312.08 1261.29C1291.38 1223.68 1275.14 1182.88 1244.5 1153.99C1244.37 1153.96 1226.28 1143.89 1223.86 1142.69Z"/><path fill="#1A1A1A" d="M884.091 997.18C881.573 1003.22 879.168 1009.32 876.877 1015.45C872.103 1043.72 864.64 1071.51 871.609 1100.69C845.46 1128.65 828.491 1154.6 818.826 1192.32C816.984 1199.52 813.918 1213.11 813.959 1220.49C812.475 1231.51 813.015 1240.82 812.825 1251.85C813.263 1255.26 813.858 1259.12 814.152 1262.51C818.588 1268.64 815.637 1265.16 817.476 1272.58L823.121 1273.27C826.428 1279.35 820.905 1285.89 821.677 1290.17C823.045 1297.75 828.009 1303.4 827.331 1312.28C828.661 1322.63 848.459 1349.98 855.865 1358.19C974.653 1489.9 1172.27 1374.81 1159.6 1211.15C1158.54 1197.39 1153.77 1184.05 1152.5 1171.07C1155.27 1168.58 1160.94 1166.68 1164.64 1165.81C1190.31 1159.76 1205.22 1161.47 1227.84 1175.44C1232.07 1176.61 1233.16 1176.71 1237.48 1175.98L1239.62 1177.38C1241.92 1188.43 1245.64 1205.53 1243.89 1216.31C1241.99 1240.23 1243.24 1264.11 1237.58 1287.96C1220.89 1358.2 1179.19 1421.17 1118.06 1459.72C1060.12 1496.36 989.975 1508.44 923.115 1493.29C902.176 1488.53 882.13 1480.26 863.152 1469.87C743.322 1404.25 701.651 1254.69 756.971 1132.59C783.05 1075.03 819.264 1037.28 872.458 1004.19C876.447 1001.9 880.284 999.778 884.091 997.18Z"/><path fill="#1A1A1A" d="M1132.43 581.791C1182.17 578.689 1225.06 616.367 1228.39 666.087C1231.72 715.808 1194.24 758.871 1144.53 762.432C1094.5 766.016 1051.1 728.237 1047.74 678.192C1044.39 628.146 1082.37 584.914 1132.43 581.791Z"/></svg>Adapt To Life</a>
+        <p class="tagline">Your place in adaptive sports.</p>
+        <form class="foot-sub js-subscribe" data-source="footer" novalidate>
+          <label class="foot-sub-label" for="footEm">Stay in the game</label>
+          <div class="foot-sub-row">
+            <input class="foot-sub-input" id="footEm" name="em" type="email" autocomplete="email" placeholder="you@example.com" aria-label="Your email">
+            <button class="foot-sub-btn" type="submit" aria-label="Join the list">&rarr;</button>
+          </div>
+          <input type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only"></div>
+          <p class="foot-sub-msg" role="status" aria-live="polite"></p>
+        </form>
+        <p class="legal">Adapt To Life is a recognized 501(c)(3) nonprofit organization. Donations are tax-deductible to the extent allowed by law. EIN 41-3213344.</p>
+      </div>
+      <div class="col">
+        <h4>Organization</h4>
+        <a href="/about">Our Story</a>
+        <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
+        <a href="/tim">Tim&#39;s Story</a>
+        <a href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
+        <a href="/roadmap">Roadmap</a>
+      </div>
+      <div class="col">
+        <h4>Get involved</h4>
+        <a href="/donate">Donate</a>
+        <a href="/sponsorship">Sponsor us</a>
+        <a href="/apply">Grant Application</a>
+        <a href="https://sign.adapttolife.org/waiver?source=atl">Sign waiver</a>
+        <a href="/subscribe">Join the list</a>
+        <a href="/contact">Contact</a>
+        <a href="mailto:hello@adapttolife.org">hello@adapttolife.org</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Adapt To Life</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var nav = document.getElementById('nav');
+    var menuBtn = document.getElementById('menuBtn');
+    menuBtn.addEventListener('click', function(){
+      var open = nav.classList.toggle('open');
+      menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    nav.querySelectorAll('.mobile-menu a').forEach(function(a){
+      a.addEventListener('click', function(){ nav.classList.remove('open'); menuBtn.setAttribute('aria-expanded','false'); });
+    });
+    var onScroll = function(){ if(window.scrollY > 8){ nav.classList.add('scrolled'); } else { nav.classList.remove('scrolled'); } };
+    window.addEventListener('scroll', onScroll, { passive:true });
+    onScroll();
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var reveals = document.querySelectorAll('.reveal');
+    if(reduce || !('IntersectionObserver' in window)){
+      reveals.forEach(function(el){ el.classList.add('in'); });
+    } else {
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+      }, { threshold:0.12, rootMargin:'0px 0px -8% 0px' });
+      reveals.forEach(function(el){ io.observe(el); });
+      window.addEventListener('load', function(){
+        document.querySelectorAll('.hero .reveal').forEach(function(el, i){
+          setTimeout(function(){ el.classList.add('in'); }, 60 + i*70);
+        });
+      });
+    }
+  })();
+</script>
+
+<!-- Donation form is the embedded Givebutter giving form above; no custom JS needed. -->
+
+
+<script>
+  (function(){
+    var nav = document.getElementById('nav');
+    var menuBtn = document.getElementById('menuBtn');
+    menuBtn.addEventListener('click', function(){
+      var open = nav.classList.toggle('open');
+      menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    nav.querySelectorAll('.mobile-menu a').forEach(function(a){
+      a.addEventListener('click', function(){ nav.classList.remove('open'); menuBtn.setAttribute('aria-expanded','false'); });
+    });
+    var onScroll = function(){ if(window.scrollY > 8){ nav.classList.add('scrolled'); } else { nav.classList.remove('scrolled'); } };
+    window.addEventListener('scroll', onScroll, { passive:true });
+    onScroll();
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var reveals = document.querySelectorAll('.reveal');
+    if(reduce || !('IntersectionObserver' in window)){
+      reveals.forEach(function(el){ el.classList.add('in'); });
+    } else {
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+      }, { threshold:0.12, rootMargin:'0px 0px -8% 0px' });
+      reveals.forEach(function(el){ io.observe(el); });
+      window.addEventListener('load', function(){
+        document.querySelectorAll('.hero .reveal').forEach(function(el, i){
+          setTimeout(function(){ el.classList.add('in'); }, 60 + i*70);
+        });
+      });
+    }
+  })();
+</script>
+
+<!-- Campaign + flavor data. To add a campaign: append one object to "campaigns".
+     Dates are ISO (YYYY-MM-DD) and read as local dates. "raised" stays null until
+     a store closes and we know the number. -->
+<script id="popcorn-data" type="application/json">
+{
+  "campaigns": [
+    {
+      "slug": "vlasic-2026",
+      "name": "Vlasic Classic popcorn drive",
+      "supports": "Getting our wheelchair athletes to the APP Vlasic Classic in Highland Park.",
+      "opens": "2026-08-06",
+      "closes": "2026-08-13",
+      "url": "https://popup.doublegood.com/event/5c049f98-86bb-11f1-b4c1-4fb1d2de4810",
+      "raised": null
+    }
+  ],
+  "flavors": [
+    { "name": "Easy Peasy Caramel Cheesy", "price": "$14", "tag": "Sweet & savory", "img": "caramel-cheesy" },
+    { "name": "Chi-Town Chow Down",        "price": "$13", "tag": "Sweet & savory", "img": "chi-town-chow-down" },
+    { "name": "Caramel-Diem",              "price": "$13", "tag": "Sweet",          "img": "caramel-diem" },
+    { "name": "Sweetie, You Salty",        "price": "$14", "tag": "Sweet & salty",  "img": "sweetie-you-salty" },
+    { "name": "White Cheddar Go Getter",   "price": "$12", "tag": "Savory",         "img": "white-cheddar" },
+    { "name": "My Main Cheese",            "price": "$12", "tag": "Savory",         "img": "my-main-cheese" },
+    { "name": "Home On The Ranch",         "price": "$12", "tag": "Savory",         "img": "home-on-the-ranch" },
+    { "name": "In Queso Fire",             "price": "$12", "tag": "Spicy",          "img": "in-queso-fire" },
+    { "name": "Holla-Peño",           "price": "$12", "tag": "Spicy",          "img": "holla-peno" },
+    { "name": "Butter Believe It!",        "price": "$11", "tag": "Savory & salty", "img": "butter-believe-it" },
+    { "name": "Sergeant Salt & Pepper",    "price": "$11", "tag": "Savory & salty", "img": "salt-and-pepper" },
+    { "name": "Little Kettle That Could",  "price": "$12", "tag": "Sweet & salty",  "img": "little-kettle" }
+  ]
+}
+</script>
+
+<script>
+(function(){
+  var data;
+  try { data = JSON.parse(document.getElementById('popcorn-data').textContent); }
+  catch (err) { console.error('popcorn data parse failed:', err); return; }
+
+  var campaigns = Array.isArray(data.campaigns) ? data.campaigns : [];
+  var flavors   = Array.isArray(data.flavors)   ? data.flavors   : [];
+
+  // --- dates: read YYYY-MM-DD as a LOCAL date, never UTC (avoids off-by-one) --
+  function localDate(s){
+    if (typeof s !== 'string') return null;
+    var m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!m) return null;
+    return new Date(+m[1], +m[2] - 1, +m[3]);
+  }
+  function today(){ var n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); }
+  var MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  function fmt(d){ return d ? MON[d.getMonth()] + ' ' + d.getDate() : ''; }
+  function span(a, b){
+    if (!a) return '';
+    if (!b) return fmt(a);
+    var sameYear = a.getFullYear() === b.getFullYear();
+    var tail = ', ' + b.getFullYear();
+    return a.getMonth() === b.getMonth()
+      ? MON[a.getMonth()] + ' ' + a.getDate() + '–' + b.getDate() + (sameYear ? tail : '')
+      : fmt(a) + ' – ' + fmt(b) + tail;
+  }
+
+  // Status is derived from dates, never stored.
+  function status(c){
+    var t = today(), o = localDate(c.opens), x = localDate(c.closes);
+    if (o && t < o) return 'soon';
+    if (x && t > x) return 'closed';
+    if (o || x) return 'open';
+    return 'soon';
+  }
+
+  var valid = campaigns.filter(function(c){ return c && c.url && c.name; });
+  var open   = valid.filter(function(c){ return status(c) === 'open'; });
+  var soon   = valid.filter(function(c){ return status(c) === 'soon'; })
+                    .sort(function(a,b){ return (localDate(a.opens)||0) - (localDate(b.opens)||0); });
+  var closed = valid.filter(function(c){ return status(c) === 'closed'; })
+                    .sort(function(a,b){ return (localDate(b.closes)||0) - (localDate(a.closes)||0); });
+
+  // The one campaign every CTA on the page points at: open first, else next up.
+  var current = open[0] || soon[0] || null;
+
+  // --- CTAs -----------------------------------------------------------------
+  ['popHeroCta','popFlavorCta','popCloseCta'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (!el) return;
+    if (current){ el.href = current.url; }
+    else {
+      el.href = '/donate';
+      el.textContent = 'Give to the fund';
+      el.removeAttribute('target');
+    }
+  });
+
+  var meta = document.getElementById('popHeroMeta');
+  if (meta){
+    if (current && status(current) === 'open'){
+      meta.innerHTML = '<span class="on">Open now</span> · closes ' + fmt(localDate(current.closes));
+    } else if (current){
+      meta.textContent = 'Opens ' + span(localDate(current.opens), localDate(current.closes));
+    } else {
+      meta.textContent = 'No store open right now. The fund still is.';
+    }
+  }
+
+  // --- active campaign card --------------------------------------------------
+  var host = document.getElementById('popActive');
+  if (host){
+    if (!current){
+      host.innerHTML = '<div class="pop-card"><div><span class="pop-status is-closed">'
+        + '<span class="dot"></span>No campaign running</span>'
+        + '<h2 class="serif h2">The next store has not opened yet.</h2>'
+        + '<p class="pop-card-sub">Join the list and we will tell you the day it does.</p></div>'
+        + '<div class="pop-card-cta"><a class="btn" href="/subscribe">Get notified</a></div></div>';
+    } else {
+      var st = status(current);
+      var label = st === 'open' ? 'Open now' : 'Opening soon';
+      var cta   = st === 'open' ? 'Shop the pop-up store' : 'See the store';
+      var when  = span(localDate(current.opens), localDate(current.closes));
+      var card = document.createElement('div');
+      card.className = 'pop-card';
+      var left = document.createElement('div');
+      var sEl = document.createElement('span');
+      sEl.className = 'pop-status is-' + (st === 'open' ? 'open' : 'soon');
+      sEl.innerHTML = '<span class="dot"></span>';
+      sEl.appendChild(document.createTextNode(label));
+      var h = document.createElement('h2');
+      h.className = 'serif h2';
+      h.textContent = current.name;
+      var p = document.createElement('p');
+      p.className = 'pop-card-sub';
+      p.textContent = current.supports || '';
+      var d = document.createElement('p');
+      d.className = 'pop-dates';
+      d.textContent = when;
+      left.appendChild(sEl); left.appendChild(h); left.appendChild(p); left.appendChild(d);
+      var right = document.createElement('div');
+      right.className = 'pop-card-cta';
+      var a = document.createElement('a');
+      a.className = 'btn'; a.href = current.url; a.target = '_blank'; a.rel = 'noopener';
+      a.textContent = cta;
+      var s2 = document.createElement('span');
+      s2.className = 'sml'; s2.textContent = '50% comes back to the fund';
+      right.appendChild(a); right.appendChild(s2);
+      card.appendChild(left); card.appendChild(right);
+      host.appendChild(card);
+    }
+  }
+
+  // --- flavor wall -----------------------------------------------------------
+  var grid = document.getElementById('popGrid');
+  if (grid){
+    flavors.forEach(function(f){
+      if (!f || !f.img || !f.name) return;            // skip malformed, never break the page
+      var li = document.createElement('li');
+      li.className = 'pop-fl';
+      var img = document.createElement('img');
+      img.src = '/images/popcorn/' + f.img + '.webp';
+      img.alt = f.name + ' popcorn';
+      img.loading = 'lazy';
+      img.width = 700; img.height = 1085;
+      var tag = document.createElement('span');
+      tag.className = 'pop-fl-tag'; tag.textContent = f.tag || '';
+      var nm = document.createElement('span');
+      nm.className = 'pop-fl-name'; nm.textContent = f.name;
+      var pr = document.createElement('span');
+      pr.className = 'pop-fl-price'; pr.textContent = f.price || '';
+      li.appendChild(img); li.appendChild(tag); li.appendChild(nm); li.appendChild(pr);
+      grid.appendChild(li);
+    });
+  }
+
+  // --- the record ------------------------------------------------------------
+  var past = document.getElementById('popPast');
+  if (past){
+    if (!closed.length){
+      past.innerHTML = '<p class="pop-empty">Our first campaign is still running. This is where every '
+        + 'closed store will be listed, with what it raised and what it paid for.</p>';
+    } else {
+      closed.forEach(function(c){
+        var row = document.createElement('div');
+        row.className = 'pop-row';
+        var n = document.createElement('span');
+        n.className = 'pop-row-name'; n.textContent = c.name;
+        var w = document.createElement('span');
+        w.className = 'pop-row-when'; w.textContent = span(localDate(c.opens), localDate(c.closes));
+        var o = document.createElement('span');
+        o.className = 'pop-row-out';
+        o.textContent = (typeof c.raised === 'number')
+          ? '$' + c.raised.toLocaleString() + ' to the fund'
+          : 'Total being counted';
+        row.appendChild(n); row.appendChild(w); row.appendChild(o);
+        past.appendChild(row);
+      });
+    }
+  }
+})();
+</script>
+
+
+<script src="/js/subscribe.js" defer></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</body>
+</html>

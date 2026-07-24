@@ -256,6 +256,11 @@
     max-width:46ch; margin-inline:auto;
   }
   .pop-final-sub .textlink{ color:var(--cream-mute); }
+  .pop-goal-sub{ margin-top:0.3rem; font-size:0.8rem; color:var(--muted); }
+  .pop-ladder{
+    margin-top:1rem; font-size:0.98rem; color:var(--ink-soft);
+    padding-top:1rem; border-top:1px solid var(--hairline);
+  }
   .pop-empty{ text-align:center; color:var(--muted); font-size:0.95rem; margin-top:1.4rem; }
 </style>
 </head>
@@ -369,7 +374,8 @@
 
     <div class="pop-math reveal">
       <p class="pop-math-line"><strong>About $3,500 puts one athlete on that court.</strong> Six athletes is <strong>$21,000</strong>, which is the goal of Send 6 to the US Open. These costs climb every year, so we budget honestly rather than optimistically.</p>
-      <p class="pop-math-sub">Every bag of popcorn sends about six dollars to the fund. A set of tires is roughly thirty bags. One athlete is roughly five hundred.</p>
+      <p class="pop-math-sub">Every bag sends about six dollars to the fund. A set of tires is roughly thirty bags. One athlete is roughly five hundred.</p>
+      <p class="pop-ladder">This drive is going for <strong>$1,000</strong>. Twenty-one of them, or the equivalent in gifts, is six athletes in Naples.</p>
       <div class="actions" style="margin-top:1.6rem;">
         <a class="btn ghost" href="/hustle-and-heart">About the fund</a>
         <a class="textlink" href="/donate">Or give directly &rarr;</a>
@@ -394,7 +400,7 @@
       <li class="pop-step reveal">
         <span class="pop-step-n">02</span>
         <h3 class="h3 serif">Order what you like</h3>
-        <p class="prose">Twelve flavors, single bags or sets. Double Good ships it to your door, or to whoever you are sending it to.</p>
+        <p class="prose">Twelve flavors, single bags or sets. There is a $22 order minimum, which is about two bags. Double Good ships to your door, or to whoever you are sending it to.</p>
       </li>
       <li class="pop-step reveal">
         <span class="pop-step-n">03</span>
@@ -579,10 +585,10 @@
       "supports": "Every bag moves us toward Send 6 to the US Open: six adaptive athletes on the court in Naples, spring 2027, with nothing out of pocket.",
       "opens": "2026-08-06",
       "closes": "2026-08-13",
-      "time_note": "Opens and closes at 10:00 PM CT",
-      "goal": null,
+      "time_note": "",
+      "goal": 1000,
       "raised": null,
-      "store_url": null,
+      "store_url": "https://popup.doublegood.com/s/89fjuv65",
       "join_url": "https://popup.doublegood.com/event/5c049f98-86bb-11f1-b4c1-4fb1d2de4810",
       "event_code": "PPL VSR"
     }
@@ -737,9 +743,10 @@
         barEl.appendChild(fillEl);
         var lbl = el('p','pop-goal-label');
         lbl.textContent = (typeof current.raised === 'number')
-          ? money(raised) + ' of ' + money(current.goal) + ' raised'
-          : 'Goal: ' + money(current.goal);
-        wrapEl.appendChild(barEl); wrapEl.appendChild(lbl);
+          ? money(raised) + ' of ' + money(current.goal) + ' this drive'
+          : money(current.goal) + ' goal for this drive';
+        var goalSub = el('p','pop-goal-sub','Popcorn and direct gifts both count toward it.');
+        wrapEl.appendChild(barEl); wrapEl.appendChild(lbl); wrapEl.appendChild(goalSub);
         left.appendChild(wrapEl);
       }
 

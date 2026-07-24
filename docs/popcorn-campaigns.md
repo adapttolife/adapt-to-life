@@ -77,6 +77,22 @@ US Open Pickleball Championships, Naples FL. 2026 ran April 11-18 at the USOP Na
 Center; wheelchair events run double elimination with a consolation bracket. Fees above are from the
 official registration page. Costs rise annually, so re-check before each campaign.
 
+## Keep the numbers aligned across surfaces
+
+A supporter sees two goals: ours on `/popcorn`, and the seller's inside the Double Good store.
+Make them agree, or say why they differ.
+
+- **One seller** (today): set the store's Fundraising Goal in the app to the same number as the
+  drive `goal` here. Alec's store shipped at $500 while this drive is $1,000; raise the store to match.
+- **Several sellers**: keep the drive `goal` as the TEAM number and expect each store to carry its
+  own smaller one. Label ours "team goal" at that point.
+
+Note the store goal counts popcorn only. The drive `goal` here counts popcorn **and** direct gifts,
+which is why the card says so out loud.
+
+The Double Good app also asks "Why are you raising funds?" Put the same sentence there as the card
+carries here. Two surfaces, one message.
+
 ## The CTA rule
 
 There is never a click that does nothing.

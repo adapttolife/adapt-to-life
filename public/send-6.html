@@ -47,7 +47,8 @@
     background:linear-gradient(90deg,var(--orange-ink),var(--orange-hot));
     box-shadow:0 0 22px -2px rgba(232,93,4,0.7);
     transition:width 1.3s cubic-bezier(.2,.8,.2,1); }
-  .s6-meter-note{ margin-top:0.85rem; font-family:"Space Mono",monospace; font-size:0.73rem; letter-spacing:0.06em; color:var(--cream-faint); }
+  /* the meter no longer carries a caption, so it owns the gap to the buttons */
+  .s6-hero .actions{ margin-top:2.2rem; }
 
   /* ---- six seats --------------------------------------------------------- */
   .s6-seats{ list-style:none; padding:0; margin:clamp(2.2rem,4vw,3rem) 0 0;
@@ -160,7 +161,7 @@
   <div class="wrap">
     <span class="eyebrow orange reveal">The campaign</span>
     <h1 class="serif display reveal">Send 6 to the US Open.</h1>
-    <p class="lead sub reveal" style="color:var(--cream-mute);">Six adaptive pickleball athletes on the court in Naples, spring 2027, with nothing out of pocket. Not a hardship discount, not a partial scholarship. Covered.</p>
+    <p class="lead sub reveal" style="color:var(--cream-mute);">Six adaptive pickleball athletes on the court in Naples, spring 2027. Not a hardship discount, not a partial scholarship. Covered.</p>
 
     <div class="s6-meter reveal" id="s6Meter">
       <div class="s6-meter-row">
@@ -168,12 +169,11 @@
         <span class="s6-meter-of" id="s6Of">to go</span>
       </div>
       <span class="s6-meter-track"><span class="s6-meter-fill" id="s6Fill"></span></span>
-      <p class="s6-meter-note" id="s6Note">Six athletes · about $3,500 each</p>
     </div>
 
     <div class="actions reveal">
       <a class="btn" href="/donate">Donate</a>
-      <a class="btn ghost" href="#cost">What $3,500 covers</a>
+      <a class="btn ghost" href="#cost">Where the money goes</a>
     </div>
   </div>
 </section>
@@ -184,7 +184,7 @@
     <div class="sec-head">
       <span class="eyebrow reveal">The goal, in people</span>
       <h2 class="serif h2 reveal" style="margin-top:0.7rem;">Six seats. One athlete each.</h2>
-      <p class="reveal" style="margin-top:1rem; color:var(--ink-soft);">The number is not a target we picked. It is six athletes multiplied by what it actually costs to get one of them there and back.</p>
+      <p class="reveal" style="margin-top:1rem; color:var(--ink-soft);">A seat is one athlete's equipment, training, and travel. About $3,500 covers one.</p>
     </div>
     <ul class="s6-seats" id="s6Seats"></ul>
     <p class="s6-seats-note reveal">Athletes are selected through the same grant process as everyone else the fund backs. We will name them here once they are confirmed.</p>
@@ -418,7 +418,6 @@
 
     var nEl = document.getElementById('s6Raised');
     var ofEl = document.getElementById('s6Of');
-    var noteEl = document.getElementById('s6Note');
     var fillEl = document.getElementById('s6Fill');
 
     // Givebutter unreachable: the goal stands and the raised figure stays off.
@@ -426,14 +425,12 @@
     if (raised === null){
       if (nEl) nEl.textContent = C.money(goal);
       if (ofEl) ofEl.textContent = 'to raise';
-      if (noteEl) noteEl.textContent = 'Six athletes · about ' + C.money(PER_SEAT) + ' each';
       return;
     }
 
     var pct = goal > 0 ? Math.max(0, Math.min(100, raised / goal * 100)) : 0;
     if (nEl) nEl.textContent = C.money(raised);
     if (ofEl) ofEl.textContent = 'raised of our ' + C.money(goal) + ' goal';
-    if (noteEl) noteEl.textContent = 'Six athletes · about ' + C.money(PER_SEAT) + ' each';
     if (fillEl){
       requestAnimationFrame(function(){
         setTimeout(function(){ fillEl.style.width = pct.toFixed(1) + '%'; }, 140);

@@ -269,7 +269,7 @@
   /* the campaign name inside the drive's sentence: .textlink is inline-flex for
      standalone links and would refuse to break mid-phrase, so a five-word name
      overflows a 390px screen. Inline, inheriting the sentence's size, wraps. */
-  .pop-card-sub .textlink{ display:inline; font-size:inherit; }
+  .pop-card-sub .textlink, .pop-goal-sub .textlink{ display:inline; font-size:inherit; }
 </style>
 </head>
 <body>
@@ -773,7 +773,15 @@
           lbl.textContent = (typeof current.raised === 'number')
             ? money(raised) + ' of ' + money(current.goal) + ' this drive'
             : money(current.goal) + ' goal for this drive';
-          var goalSub = el('p','pop-goal-sub','Popcorn and direct gifts both count toward it.');
+          // Names the goal rather than "it", says donations rather than "direct
+          // gifts", and makes the word itself the door — the reader who does not
+          // want popcorn had no way to act on this sentence before.
+          var goalSub = el('p','pop-goal-sub');
+          goalSub.appendChild(document.createTextNode('Popcorn sales and '));
+          var giveLink = el('a','textlink','donations');
+          giveLink.href = '/donate';
+          goalSub.appendChild(giveLink);
+          goalSub.appendChild(document.createTextNode(' both count toward this goal.'));
           wrapEl.appendChild(barEl); wrapEl.appendChild(lbl); wrapEl.appendChild(goalSub);
           left.appendChild(wrapEl);
         }
@@ -795,7 +803,9 @@
         var a = el('a','btn');
         wire(a, shopHref, buyUrl ? 'Buy popcorn' : 'Tell me when it opens');
         right.appendChild(a);
-        right.appendChild(el('span','sml','50% comes back to the fund'));
+        // "Half", not "50%": every other line on this page says half, and the one
+        // numeral made the same fact read like a vendor's rev-share term.
+        right.appendChild(el('span','sml','Half comes back to the fund'));
         card.appendChild(left); card.appendChild(right);
         host.appendChild(card);
       }

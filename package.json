@@ -8,9 +8,9 @@
     "test": "node --test",
     "cards": "node scripts/make-og.mjs && node scripts/wire-og.mjs",
     "stamp": "node scripts/stamp-build.mjs",
-    "preview": "npm run stamp && npx wrangler versions upload --env staging",
-    "deploy:staging": "npm run stamp && npx wrangler deploy --env staging",
-    "deploy:prod": "npm run stamp && npx wrangler deploy",
+    "preview": "npx wrangler versions upload --env staging",
+    "deploy:staging": "npx wrangler deploy --env staging",
+    "deploy:prod": "npx wrangler deploy",
     "check": "node scripts/check-site.mjs"
   },
   "repository": {

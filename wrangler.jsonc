@@ -6,6 +6,15 @@
   "name": "adapt-to-life",
   "compatibility_date": "2026-06-24",
   "main": "src/index.js",
+
+  // Stamps public/build.txt (commit + digest of every deployed file) before ANY
+  // wrangler deploy, versions upload, or dev. It lives here rather than only in
+  // an npm script because a second session deployed production with bare
+  // `wrangler deploy` 19 seconds after ours on 2026-07-25 and the stamp went
+  // missing, which is exactly the case the stamp exists to detect. A control
+  // that a human has to remember to invoke is not a control.
+  "build": { "command": "node scripts/stamp-build.mjs" },
+
   // Live custom domains (apex + www). Cloudflare manages DNS + TLS for these.
   "routes": [
     { "pattern": "adapttolife.org", "custom_domain": true },

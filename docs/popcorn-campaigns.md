@@ -17,13 +17,21 @@ A buyer who lands on the event link gets an app-download screen and leaves. The 
 
 ## Launching the next campaign
 
-Edit the `popcorn-data` JSON block in `public/popcorn.html`. Append one object to `campaigns`:
+Every drive on the site lives in **one** file, `public/data/campaigns.json` (Spec 115). `/popcorn`,
+`/send-6` and `/ways-to-give` all read it, so a drive is never described in two places and a date
+changed once is changed everywhere. Append one object to `drives`:
 
 ```json
 {
   "slug": "spring-2027",
   "name": "Spring popcorn drive",
-  "supports": "One sentence on what this campaign pays for.",
+  "type": "fundraiser",
+  "relationship": "we_fundraise",
+  "campaign": "send-6-us-open",
+  "published": true,
+  "page": "/popcorn",
+  "supports": "One sentence on what this drive pays for.",
+  "summary": "One line for the campaign hub and the campaign page.",
   "opens": "2027-03-01",
   "closes": "2027-03-08",
   "time_note": "Opens and closes at 10:00 PM CT",
@@ -35,13 +43,20 @@ Edit the `popcorn-data` JSON block in `public/popcorn.html`. Append one object t
 }
 ```
 
-That is the whole job. Nothing else on the page needs touching.
+That is the whole job. Nothing else on any page needs touching.
+
+- `campaign` is the slug of the campaign this drive feeds. It is what makes the drive show up on
+  that campaign's page.
+- `published: false` keeps a verified record on file without putting it on the site. Use it for
+  anything real but not yet confirmed, rather than deleting the facts you already checked.
+- `public/popcorn.html` still holds the **flavor** list, because flavors are that page's own
+  business and no other page renders them.
 
 ## What the page does on its own
 
 - **Picks the current campaign.** Open now wins; otherwise the next one opening. Every CTA on the page follows it.
 - **Derives status from the dates.** `opening soon` → `open now` → `closed`, with no deploy on the day a store opens or closes.
-- **Never shows a dead link.** With `store_url` set, the hero, the card, all twelve flavor bags, and both section CTAs go to the store. Without it, they go to `/subscribe` and read "Tell me when it opens."
+- **Never shows a dead link.** With `store_url` set, the hero, the card, all twelve flavor bags, and both section CTAs go to the store. Without it, they go to `/donate` and read "Give to the fund," because the fund is open even when the store is not.
 - **Hides what it does not have.** No `goal` means no goal bar. No `raised` means the bar shows the target only. No `join_url` hides the whole team section.
 - **Files closed campaigns** into the record list at the bottom. Set `raised` when the payout is known and it shows there.
 
@@ -56,10 +71,13 @@ That is the whole job. Nothing else on the page needs touching.
 
 ```
 Hustle & Heart Fund            the fund, open every day
-   └─ Send 6 to the US Open    the goal, $21,000 (six athletes x ~$3,500)
-        └─ August popcorn drive    one vehicle, Aug 6-13
+   └─ Send 6 to the US Open    the campaign, $21,000 (six athletes x ~$3,500), page at /send-6
+        └─ August popcorn drive    one drive, Aug 6-13, page at /popcorn
         └─ future drives, tournaments, monthly popcorn
 ```
+
+A **drive** is a row on its campaign's page until it earns a page of its own, the way popcorn did.
+The hub at `/ways-to-give` lists the campaigns first and the dated drives under them.
 
 Set the drive's `goal` to what **that drive** can realistically raise, not to the $21,000 campaign
 goal. A one-week popcorn store carrying a $21,000 bar reads as failure at $1,500. The $21,000 lives

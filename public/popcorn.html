@@ -573,26 +573,11 @@
   })();
 </script>
 
-<!-- Campaign + flavor data. To add a campaign: append one object to "campaigns".
-     Dates are ISO (YYYY-MM-DD) and read as local dates. "raised" stays null until
-     a store closes and we know the number. -->
+<!-- Flavors only. The DRIVE records (dates, goal, store link, event code) live in
+     /data/campaigns.json, the campaign layer's single source (Spec 115), so a drive
+     is never described in two places. Flavors are this page's own business. -->
 <script id="popcorn-data" type="application/json">
 {
-  "campaigns": [
-    {
-      "slug": "popcorn-2026-08",
-      "name": "August popcorn drive",
-      "supports": "Every bag moves us toward Send 6 to the US Open: six adaptive athletes on the court in Naples, spring 2027, with nothing out of pocket.",
-      "opens": "2026-08-06",
-      "closes": "2026-08-13",
-      "time_note": "",
-      "goal": 1000,
-      "raised": null,
-      "store_url": "https://popup.doublegood.com/s/89fjuv65",
-      "join_url": "https://popup.doublegood.com/event/5c049f98-86bb-11f1-b4c1-4fb1d2de4810",
-      "event_code": "PPL VSR"
-    }
-  ],
   "flavors": [
     { "name": "Easy Peasy Caramel Cheesy", "price": "$14", "tag": "Sweet & savory", "img": "caramel-cheesy" },
     { "name": "Chi-Town Chow Down",        "price": "$13", "tag": "Sweet & savory", "img": "chi-town-chow-down" },
@@ -610,14 +595,14 @@
 }
 </script>
 
+<script src="/js/campaigns.js"></script>
 <script>
 (function(){
   var data;
   try { data = JSON.parse(document.getElementById('popcorn-data').textContent); }
   catch (err) { console.error('popcorn data parse failed:', err); return; }
 
-  var campaigns = Array.isArray(data.campaigns) ? data.campaigns : [];
-  var flavors   = Array.isArray(data.flavors)   ? data.flavors   : [];
+  var flavors = Array.isArray(data.flavors) ? data.flavors : [];
 
   // --- dates: read YYYY-MM-DD as a LOCAL date, never UTC (avoids off-by-one) --
   function localDate(s){
@@ -648,191 +633,199 @@
     return 'soon';
   }
 
-  var valid  = campaigns.filter(function(c){ return c && c.name; });
-  var open   = valid.filter(function(c){ return status(c) === 'open'; });
-  var soon   = valid.filter(function(c){ return status(c) === 'soon'; })
-                    .sort(function(a,b){ return (localDate(a.opens)||0) - (localDate(b.opens)||0); });
-  var closed = valid.filter(function(c){ return status(c) === 'closed'; })
-                    .sort(function(a,b){ return (localDate(b.closes)||0) - (localDate(a.closes)||0); });
+  // The drives feeding this page come from /data/campaigns.json. This page
+  // renders the Double Good ones: a drive with a pop-up store attached.
+  ATLCampaigns.load(function(store){
+    var campaigns = store ? store.drives.filter(function(d){
+      return d.type === 'fundraiser' && (d.store_url || d.join_url);
+    }) : [];
 
-  var current = open[0] || soon[0] || null;
+    var valid  = campaigns.filter(function(c){ return c && c.name; });
+    var open   = valid.filter(function(c){ return status(c) === 'open'; });
+    var soon   = valid.filter(function(c){ return status(c) === 'soon'; })
+                      .sort(function(a,b){ return (localDate(a.opens)||0) - (localDate(b.opens)||0); });
+    var closed = valid.filter(function(c){ return status(c) === 'closed'; })
+                      .sort(function(a,b){ return (localDate(b.closes)||0) - (localDate(a.closes)||0); });
 
-  // THE key distinction on this platform:
-  //   store_url = where a supporter BUYS (no app, no account)
-  //   join_url  = where a volunteer JOINS THE TEAM and creates their own store (app required)
-  // Until a store exists there is nothing to buy, so every "buy" surface routes
-  // to /subscribe instead of a link that would dump a buyer on an app download.
-  var buyUrl   = (current && current.store_url) || null;
-  var joinUrl  = (current && current.join_url)  || null;
-  // No store yet? Send people to the fund, which is open every day of the year.
-  // Never a click that does nothing, and never a picture of popcorn that is not for sale.
-  var shopHref = buyUrl || '/donate';
-  var shopText = buyUrl ? 'Buy popcorn' : 'Give to the fund';
+    var current = open[0] || soon[0] || null;
 
-  function wire(el, href, text){
-    if (!el) return;
-    el.href = href;
-    if (text) el.textContent = text;
-    if (/^https?:/.test(href)) { el.target = '_blank'; el.rel = 'noopener'; }
-    else { el.removeAttribute('target'); el.removeAttribute('rel'); }
-  }
+    // THE key distinction on this platform:
+    //   store_url = where a supporter BUYS (no app, no account)
+    //   join_url  = where a volunteer JOINS THE TEAM and creates their own store (app required)
+    // Until a store exists there is nothing to buy, so every "buy" surface routes
+    // to /subscribe instead of a link that would dump a buyer on an app download.
+    var buyUrl   = (current && current.store_url) || null;
+    var joinUrl  = (current && current.join_url)  || null;
+    // No store yet? Send people to the fund, which is open every day of the year.
+    // Never a click that does nothing, and never a picture of popcorn that is not for sale.
+    var shopHref = buyUrl || '/donate';
+    var shopText = buyUrl ? 'Buy popcorn' : 'Give to the fund';
 
-  ['popHeroCta','popFlavorCta','popCloseCta'].forEach(function(id){
-    wire(document.getElementById(id), shopHref, shopText);
-  });
-
-  var meta = document.getElementById('popHeroMeta');
-  if (meta){
-    if (!current){
-      meta.textContent = 'No store open right now. The fund still is.';
-    } else if (status(current) === 'open'){
-      meta.innerHTML = '<span class="on">Open now</span> · closes ' + fmt(localDate(current.closes));
-    } else {
-      meta.textContent = 'Opens ' + span(localDate(current.opens), localDate(current.closes));
+    function wire(el, href, text){
+      if (!el) return;
+      el.href = href;
+      if (text) el.textContent = text;
+      if (/^https?:/.test(href)) { el.target = '_blank'; el.rel = 'noopener'; }
+      else { el.removeAttribute('target'); el.removeAttribute('rel'); }
     }
-  }
 
-  // --- active campaign card --------------------------------------------------
-  function el(tag, cls, text){
-    var n = document.createElement(tag);
-    if (cls) n.className = cls;
-    if (text != null) n.textContent = text;
-    return n;
-  }
-
-  var host = document.getElementById('popActive');
-  if (host){
-    if (!current){
-      var none = el('div','pop-card');
-      var nl = el('div');
-      var ns = el('span','pop-status is-closed');
-      ns.appendChild(el('span','dot'));
-      ns.appendChild(document.createTextNode('No campaign running'));
-      nl.appendChild(ns);
-      nl.appendChild(el('h2','serif h2','The next store has not opened yet.'));
-      nl.appendChild(el('p','pop-card-sub','Join the list and we will tell you the day it does.'));
-      var nr = el('div','pop-card-cta');
-      var na = el('a','btn','Get notified'); na.href = '/subscribe';
-      nr.appendChild(na);
-      none.appendChild(nl); none.appendChild(nr);
-      host.appendChild(none);
-    } else {
-      var st = status(current);
-      var card = el('div','pop-card');
-      var left = el('div');
-
-      var sEl = el('span','pop-status is-' + (st === 'open' ? 'open' : 'soon'));
-      sEl.appendChild(el('span','dot'));
-      sEl.appendChild(document.createTextNode(st === 'open' ? 'Open now' : 'Opening soon'));
-      left.appendChild(sEl);
-      left.appendChild(el('h2','serif h2', current.name));
-      if (current.supports) left.appendChild(el('p','pop-card-sub', current.supports));
-
-      var dates = span(localDate(current.opens), localDate(current.closes));
-      if (current.time_note) dates += ' · ' + current.time_note;
-      left.appendChild(el('p','pop-dates', dates));
-
-      // Goal bar renders only when a goal is actually set. No invented numbers.
-      if (typeof current.goal === 'number' && current.goal > 0){
-        var raised = typeof current.raised === 'number' ? current.raised : 0;
-        var pct = Math.max(0, Math.min(100, Math.round((raised / current.goal) * 100)));
-        var wrapEl = el('div','pop-goal');
-        var barEl  = el('div','pop-goal-bar');
-        var fillEl = el('div','pop-goal-fill');
-        fillEl.style.width = pct + '%';
-        barEl.appendChild(fillEl);
-        var lbl = el('p','pop-goal-label');
-        lbl.textContent = (typeof current.raised === 'number')
-          ? money(raised) + ' of ' + money(current.goal) + ' this drive'
-          : money(current.goal) + ' goal for this drive';
-        var goalSub = el('p','pop-goal-sub','Popcorn and direct gifts both count toward it.');
-        wrapEl.appendChild(barEl); wrapEl.appendChild(lbl); wrapEl.appendChild(goalSub);
-        left.appendChild(wrapEl);
-      }
-
-      var right = el('div','pop-card-cta');
-      var a = el('a','btn');
-      wire(a, shopHref, buyUrl ? 'Buy popcorn' : 'Tell me when it opens');
-      right.appendChild(a);
-      right.appendChild(el('span','sml','50% comes back to the fund'));
-      card.appendChild(left); card.appendChild(right);
-      host.appendChild(card);
-    }
-  }
-
-  // --- flavor wall: every bag is a link, never a dead end --------------------
-  var grid = document.getElementById('popGrid');
-  if (grid){
-    flavors.forEach(function(f){
-      if (!f || !f.img || !f.name) return;      // skip malformed, never break the page
-      var li = el('li');
-      var a  = el('a','pop-fl');
-      wire(a, shopHref);
-      a.setAttribute('aria-label', buyUrl
-        ? 'Buy ' + f.name + ' from our pop-up store'
-        : f.name + ' — give to the fund while our store is closed');
-      var img = document.createElement('img');
-      img.src = '/images/popcorn/' + f.img + '.webp';
-      img.alt = f.name + ' popcorn';
-      img.loading = 'lazy';
-      img.width = 700; img.height = 1085;
-      a.appendChild(img);
-      a.appendChild(el('span','pop-fl-tag', f.tag || ''));
-      a.appendChild(el('span','pop-fl-name', f.name));
-      a.appendChild(el('span','pop-fl-price', f.price || ''));
-      a.appendChild(el('span','pop-fl-go', buyUrl ? 'Buy' : 'Give'));
-      li.appendChild(a);
-      grid.appendChild(li);
+    ['popHeroCta','popFlavorCta','popCloseCta'].forEach(function(id){
+      wire(document.getElementById(id), shopHref, shopText);
     });
-  }
 
-  var finalSub = document.getElementById('popFinalSub');
-  if (finalSub){
-    if (buyUrl){
-      finalSub.textContent = 'Every order sends half back to the Hustle & Heart Fund.';
-    } else if (current && status(current) === 'soon'){
-      var when = fmt(localDate(current.opens));
-      finalSub.innerHTML = 'The store opens ' + when + '. Until then your gift goes to the same place the popcorn money does. '
-        + '<a class="textlink" href="/subscribe">Tell me when it opens</a>';
-    } else {
-      finalSub.innerHTML = 'No store is open right now, and the fund still is. '
-        + '<a class="textlink" href="/subscribe">Tell me when the next one opens</a>';
-    }
-  }
-
-  // --- sell for us: the event code + join link -------------------------------
-  var sell = document.getElementById('popSell');
-  if (sell){
-    if (!joinUrl || !current){
-      sell.closest('section').style.display = 'none';
-    } else {
-      var codeEl = document.getElementById('popCode');
-      if (codeEl) codeEl.textContent = current.event_code || '';
-      if (!current.event_code){
-        var step = document.getElementById('popCodeStep');
-        if (step) step.style.display = 'none';
+    var meta = document.getElementById('popHeroMeta');
+    if (meta){
+      if (!current){
+        meta.textContent = 'No store open right now. The fund still is.';
+      } else if (status(current) === 'open'){
+        meta.innerHTML = '<span class="on">Open now</span> · closes ' + fmt(localDate(current.closes));
+      } else {
+        meta.textContent = 'Opens ' + span(localDate(current.opens), localDate(current.closes));
       }
-      wire(document.getElementById('popJoinCta'), joinUrl, 'Join the team');
     }
-  }
 
-  // --- the record ------------------------------------------------------------
-  var past = document.getElementById('popPast');
-  if (past){
-    if (!closed.length){
-      past.innerHTML = '<p class="pop-empty">Our first campaign is still running. This is where every '
-        + 'closed store will be listed, with what it raised and what it paid for.</p>';
-    } else {
-      closed.forEach(function(c){
-        var row = el('div','pop-row');
-        row.appendChild(el('span','pop-row-name', c.name));
-        row.appendChild(el('span','pop-row-when', span(localDate(c.opens), localDate(c.closes))));
-        row.appendChild(el('span','pop-row-out',
-          (typeof c.raised === 'number') ? money(c.raised) + ' to the fund' : 'Total being counted'));
-        past.appendChild(row);
+    // --- active campaign card --------------------------------------------------
+    function el(tag, cls, text){
+      var n = document.createElement(tag);
+      if (cls) n.className = cls;
+      if (text != null) n.textContent = text;
+      return n;
+    }
+
+    var host = document.getElementById('popActive');
+    if (host){
+      if (!current){
+        var none = el('div','pop-card');
+        var nl = el('div');
+        var ns = el('span','pop-status is-closed');
+        ns.appendChild(el('span','dot'));
+        ns.appendChild(document.createTextNode('No campaign running'));
+        nl.appendChild(ns);
+        nl.appendChild(el('h2','serif h2','The next store has not opened yet.'));
+        nl.appendChild(el('p','pop-card-sub','Join the list and we will tell you the day it does.'));
+        var nr = el('div','pop-card-cta');
+        var na = el('a','btn','Get notified'); na.href = '/subscribe';
+        nr.appendChild(na);
+        none.appendChild(nl); none.appendChild(nr);
+        host.appendChild(none);
+      } else {
+        var st = status(current);
+        var card = el('div','pop-card');
+        var left = el('div');
+
+        var sEl = el('span','pop-status is-' + (st === 'open' ? 'open' : 'soon'));
+        sEl.appendChild(el('span','dot'));
+        sEl.appendChild(document.createTextNode(st === 'open' ? 'Open now' : 'Opening soon'));
+        left.appendChild(sEl);
+        left.appendChild(el('h2','serif h2', current.name));
+        if (current.supports) left.appendChild(el('p','pop-card-sub', current.supports));
+
+        var dates = span(localDate(current.opens), localDate(current.closes));
+        if (current.time_note) dates += ' · ' + current.time_note;
+        left.appendChild(el('p','pop-dates', dates));
+
+        // Goal bar renders only when a goal is actually set. No invented numbers.
+        if (typeof current.goal === 'number' && current.goal > 0){
+          var raised = typeof current.raised === 'number' ? current.raised : 0;
+          var pct = Math.max(0, Math.min(100, Math.round((raised / current.goal) * 100)));
+          var wrapEl = el('div','pop-goal');
+          var barEl  = el('div','pop-goal-bar');
+          var fillEl = el('div','pop-goal-fill');
+          fillEl.style.width = pct + '%';
+          barEl.appendChild(fillEl);
+          var lbl = el('p','pop-goal-label');
+          lbl.textContent = (typeof current.raised === 'number')
+            ? money(raised) + ' of ' + money(current.goal) + ' this drive'
+            : money(current.goal) + ' goal for this drive';
+          var goalSub = el('p','pop-goal-sub','Popcorn and direct gifts both count toward it.');
+          wrapEl.appendChild(barEl); wrapEl.appendChild(lbl); wrapEl.appendChild(goalSub);
+          left.appendChild(wrapEl);
+        }
+
+        var right = el('div','pop-card-cta');
+        var a = el('a','btn');
+        wire(a, shopHref, buyUrl ? 'Buy popcorn' : 'Tell me when it opens');
+        right.appendChild(a);
+        right.appendChild(el('span','sml','50% comes back to the fund'));
+        card.appendChild(left); card.appendChild(right);
+        host.appendChild(card);
+      }
+    }
+
+    // --- flavor wall: every bag is a link, never a dead end --------------------
+    var grid = document.getElementById('popGrid');
+    if (grid){
+      flavors.forEach(function(f){
+        if (!f || !f.img || !f.name) return;      // skip malformed, never break the page
+        var li = el('li');
+        var a  = el('a','pop-fl');
+        wire(a, shopHref);
+        a.setAttribute('aria-label', buyUrl
+          ? 'Buy ' + f.name + ' from our pop-up store'
+          : f.name + ' — give to the fund while our store is closed');
+        var img = document.createElement('img');
+        img.src = '/images/popcorn/' + f.img + '.webp';
+        img.alt = f.name + ' popcorn';
+        img.loading = 'lazy';
+        img.width = 700; img.height = 1085;
+        a.appendChild(img);
+        a.appendChild(el('span','pop-fl-tag', f.tag || ''));
+        a.appendChild(el('span','pop-fl-name', f.name));
+        a.appendChild(el('span','pop-fl-price', f.price || ''));
+        a.appendChild(el('span','pop-fl-go', buyUrl ? 'Buy' : 'Give'));
+        li.appendChild(a);
+        grid.appendChild(li);
       });
     }
-  }
+
+    var finalSub = document.getElementById('popFinalSub');
+    if (finalSub){
+      if (buyUrl){
+        finalSub.textContent = 'Every order sends half back to the Hustle & Heart Fund.';
+      } else if (current && status(current) === 'soon'){
+        var when = fmt(localDate(current.opens));
+        finalSub.innerHTML = 'The store opens ' + when + '. Until then your gift goes to the same place the popcorn money does. '
+          + '<a class="textlink" href="/subscribe">Tell me when it opens</a>';
+      } else {
+        finalSub.innerHTML = 'No store is open right now, and the fund still is. '
+          + '<a class="textlink" href="/subscribe">Tell me when the next one opens</a>';
+      }
+    }
+
+    // --- sell for us: the event code + join link -------------------------------
+    var sell = document.getElementById('popSell');
+    if (sell){
+      if (!joinUrl || !current){
+        sell.closest('section').style.display = 'none';
+      } else {
+        var codeEl = document.getElementById('popCode');
+        if (codeEl) codeEl.textContent = current.event_code || '';
+        if (!current.event_code){
+          var step = document.getElementById('popCodeStep');
+          if (step) step.style.display = 'none';
+        }
+        wire(document.getElementById('popJoinCta'), joinUrl, 'Join the team');
+      }
+    }
+
+    // --- the record ------------------------------------------------------------
+    var past = document.getElementById('popPast');
+    if (past){
+      if (!closed.length){
+        past.innerHTML = '<p class="pop-empty">Our first campaign is still running. This is where every '
+          + 'closed store will be listed, with what it raised and what it paid for.</p>';
+      } else {
+        closed.forEach(function(c){
+          var row = el('div','pop-row');
+          row.appendChild(el('span','pop-row-name', c.name));
+          row.appendChild(el('span','pop-row-when', span(localDate(c.opens), localDate(c.closes))));
+          row.appendChild(el('span','pop-row-out',
+            (typeof c.raised === 'number') ? money(c.raised) + ' to the fund' : 'Total being counted'));
+          past.appendChild(row);
+        });
+      }
+    }
+  });
 })();
 </script>
 

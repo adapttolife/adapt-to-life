@@ -31,6 +31,9 @@ trust beat → one ask.
 | `/sponsorship` | The business case | Talk to us |
 | `/apply` | Athlete requests funding | Submit the application |
 | `/adaptive-sports-near-me` | The access barrier | Visit the directory |
+| `/ways-to-give` | Every way to back an athlete, campaigns first | Donate |
+| `/send-6` | The US Open campaign: the goal, who it reaches, what feeds it | Donate |
+| `/popcorn` | The recurring popcorn series | Buy popcorn (or Donate when no store is open) |
 | `/tim` | The heart | Into the fund |
 | `/about` | The people + the canonical promise | Meet us → give |
 | `/roadmap` | Accountability + momentum | Back the campaign |
@@ -51,6 +54,8 @@ Each message lives in ONE canonical place. Everywhere else: one line max, linkin
 | The sponsor pitch + tiers | `/sponsorship` | One card/line + link |
 | Impact grid ($3,500 / $500 / $200 / 0%) | `/donate` | Not repeated |
 | The two-barriers framing | `/` (home) | One clause |
+| The US Open campaign goal and its per-athlete arithmetic ($3,500 × 6) | `/send-6` | The figure and a link. `/popcorn` carries a short version because it is that page's conversion device |
+| Planned and major giving (DAF, stock, bequests, matching, tribute) | `/ways-to-give` | Link only |
 | Tim's story | `/tim` | One sentence + link |
 | Region vs national scope | `/about` ("we fund athletes in Northern Illinois & Southern Wisconsin; the directory is national") | Footer line |
 
@@ -67,13 +72,27 @@ Each message lives in ONE canonical place. Everywhere else: one line max, linkin
   (directory) · **Talk to us** (sponsor/custom).
 - Directory links: internal explainer is `/adaptive-sports-near-me`; the external directory link is
   labeled "Visit the directory" and opens a new tab.
+- **A campaign and a drive are different things and never merge.** A *campaign* is what we are
+  raising for and who it reaches (Send 6 to the US Open, six athletes, $21,000). It has a goal and a
+  named beneficiary, and it gets a page. A *drive* is a dated way we raise it (the August popcorn
+  store, a tournament). It feeds exactly one campaign and is a row on that campaign's page until it
+  earns a page of its own, the way popcorn did. Goals nest and never compete: a drive carries what
+  that drive can raise, the campaign carries the total.
+- **Say our actual relationship to an event.** Three exist and they are not the same: events we
+  **host**, events we **fundraise around**, and events we **send athletes to**. An event we only
+  compete in names its real host and its real beneficiary, and nothing on our page may imply we run
+  it or receive from it. This is a claim about someone else's charity, not a style choice.
+- **No click that does nothing.** With a live purchase link, every path goes to it. Without one,
+  every path goes to `/donate`, because the fund is open every day of the year even when a store is
+  not. Email capture is a secondary line, never a button dressed as a product.
 
 ## Momentum hand-offs (no circles)
 
 Every page ends by handing the visitor forward, never sideways to a page that hands them back:
 
 home → doors → (fund | directory) · tim → fund · fund → give · donate → done (+ level up: monthly,
-sponsor) · sponsorship → talk · apply → submit · about → give · roadmap → back the campaign.
+sponsor) · sponsorship → talk · apply → submit · about → give · roadmap → back the campaign ·
+ways to give → a campaign or a standing way · send-6 → give · popcorn → buy (or give).
 
 Adding something new? Give it ONE home page, one ask, one line + link everywhere else. Update this
 doc in the same PR.

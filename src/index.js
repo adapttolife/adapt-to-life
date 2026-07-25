@@ -343,7 +343,9 @@ async function handleRaised(request, env) {
     raised: online + offline,
     online,
     offline,
-    goal: goal || Number(env.RAISED_GOAL) || 17500,
+    // Fallback only. The live goal is Givebutter's (Send 6 to the US Open:
+    // 6 athletes x $3,500). Change it there, not here (Spec 115 D3).
+    goal: goal || Number(env.RAISED_GOAL) || 21000,
   });
   return new Response(body, {
     headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=60" },

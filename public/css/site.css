@@ -572,3 +572,16 @@ a.info-v{ border-bottom:1.5px solid var(--orange); padding-bottom:1px; }
 .hero-atmos .sub{ max-width:48ch; }
 .hero-atmos .startline-hero{ width:min(460px,82%); }
 
+
+/* Space held for the campaign band while /data/campaigns.json is in flight.
+   The band is injected by JS, so without this the page jumps when it lands —
+   which is what was left on /donate once the Givebutter shift was fixed, and
+   what put desktop CLS at 0.112 while mobile sat at 0.
+
+   Heights are measured, not guessed: the rendered card is 238px at 1440 and
+   349px stacked below its own 820px breakpoint, identical on all three hosts.
+   `camp-pending` is removed by campaigns.js as soon as the fetch resolves,
+   including when there is no campaign — an empty band is a real state and must
+   never leave a reserved hole behind it. */
+.camp-pending{ min-height:349px; }
+@media (min-width:821px){ .camp-pending{ min-height:238px; } }

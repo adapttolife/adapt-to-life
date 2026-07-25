@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
-<script async src="https://widgets.givebutter.com/latest.umd.cjs?acct=7FsgcjXFnW6fabQn"></script>
+<script src="/js/givebutter-lazy.js" defer></script>
 <style>
   .give-split{ display:grid; grid-template-columns:1.02fr 0.98fr; gap:clamp(2rem,5vw,4rem); align-items:center; text-align:left; }
   @media (max-width:880px){ .give-split{ grid-template-columns:1fr; gap:2.2rem; } }
@@ -42,6 +42,11 @@
   .thermo-fill{ display:block; height:100%; width:0; border-radius:999px; background:linear-gradient(90deg,#E85D04,#ff9a4d); transition:width 1.3s cubic-bezier(.2,.8,.2,1); }
   .thermo-link{ display:inline-block; margin-top:1.05rem; font-family:"Hanken Grotesk",sans-serif; font-weight:600; color:var(--orange); text-decoration:none; }
   .thermo-link:hover{ text-decoration:underline; }
+  /* Space held for the Givebutter embed so its late mount cannot shove the
+     page. Measured on prod: the settled form is 552px on a phone and 508px on
+     a desktop, so these sit just under each. */
+  givebutter-giving-form{ display:block; min-height:552px; }
+  @media (min-width:881px){ givebutter-giving-form{ min-height:508px; } }
 </style>
 </head>
 <body>

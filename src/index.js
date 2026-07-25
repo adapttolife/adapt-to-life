@@ -5,6 +5,7 @@
 import { handleWaiver, handleWaiverDownload, handleWaiverVerify, handleWaiverDoc, runDriveBacklog } from "./waiver.js";
 import { handleEmail, handleAgentMailApi } from "./agent_mail.js";
 import { handleReportView, handleLibraryView } from "./report_view.js";
+import { handleQr } from "./qr.js";
 
 const LEAD_TYPES = [
   "Funding for an athlete",
@@ -81,6 +82,12 @@ export default {
     // Spec 70 P3: signed report permalink — the interactive twin of an
     // archived report email. Capability URL (HMAC token), GET-only, 404 on
     // any failure.
+    // Spec 115: durable QR redirects. A sticker on a chair outlives any vendor,
+    // so the code encodes our URL and the destination stays editable.
+    if (url.pathname.startsWith("/q/")) {
+      return handleQr(request, env, url, ctx);
+    }
+
     if (url.pathname.startsWith("/r/")) {
       return handleReportView(request, env, url, ctx);
     }

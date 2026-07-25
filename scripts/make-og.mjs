@@ -53,6 +53,10 @@ const PHOTOS = {
   // organisation's logo was legible on it, and a partner's branding does not
   // belong on our card (the same call as the popcorn vendor's bag).
   pickle:   { file: "assets/photos/pickleball-court.jpg",    pos: "27% 58%" },
+  // Brand artwork, not a photograph: the mark rendered as an object. Both files
+  // arrived with a Gemini sparkle in the corner and are cropped to exclude it.
+  black:    { file: "assets/art/mark-black.jpg",             pos: "50% 42%" },
+  fire:     { file: "assets/art/mark-fire.jpg",              pos: "50% 46%" },
   // PARKED, not forgotten: Alec's own water shot exists only as a 1600x1067
   // web copy, which the resolution gate rejects for any crop that fills a panel.
   // Its master (JNC02305.JPG, 6.8MB) is the one file the Drive connector will
@@ -69,57 +73,24 @@ const PHOTOS = {
 //
 // Only the pages people actually send to each other get their own card. Every
 // other page falls back to the default, which is now worth falling back to.
-const SPLIT_DEFAULTS = { variant: "split", zoom: "auto 168%" };
+const MONO = { variant: "mono", photo: "black", size: 74, measure: "13ch" };
 const CARDS = {
   // the default: adapttolife.org/ and any page without its own card
-  home: {
-    ...SPLIT_DEFAULTS,
-    out: "public/images/og-image.jpg", page: "index.html",
-    photo: "karen", pos: "56% 34%",
-    headline: "Your place in <em>adaptive sports</em>.",
-    size: 74, measure: "12ch",
-  },
-  donate: {
-    ...SPLIT_DEFAULTS,
-    out: "public/images/og/donate.jpg", page: "donate.html",
-    photo: "coaching", pos: "42% 40%", zoom: "auto 150%",
-    headline: "Put an athlete <em>in the game</em>.",
-    size: 72, measure: "12ch",
-  },
-  // The US Open here is the US Open PICKLEBALL Championships in Naples, and
-  // send-6.html says so in its own description. I assumed water-ski from the
-  // photo library and Alec corrected it: read the page, do not infer the sport
-  // from whatever imagery happens to be lying around.
-  "send-6": {
-    ...SPLIT_DEFAULTS,
-    out: "public/images/og/send-6.jpg", page: "send-6.html",
-    photo: "pickle", pos: "27% 58%", zoom: "auto 205%",
-    headline: "Send 6 to the <em>US Open</em>.",
-    size: 74, measure: "12ch",
-  },
-  // No photo: the only popcorn imagery we own is the vendor's branded bag, and
-  // a partner's logo does not belong on Adapt To Life's share card.
-  popcorn: {
-    out: "public/images/og/popcorn.jpg", page: "popcorn.html",
-    variant: "light",
+  home: { ...MONO, out: "public/images/og-image.jpg", page: "index.html",
+    headline: "Your place in <em>adaptive sports</em>." },
+  donate: { ...MONO, out: "public/images/og/donate.jpg", page: "donate.html",
+    headline: "Put an athlete <em>in the game</em>." },
+  "send-6": { ...MONO, out: "public/images/og/send-6.jpg", page: "send-6.html",
+    headline: "Send 6 to the <em>US Open</em>." },
+  popcorn: { ...MONO, out: "public/images/og/popcorn.jpg", page: "popcorn.html",
     headline: "Half of every bag <em>puts an athlete in the game</em>.",
-    size: 66, measure: "17ch",
-  },
-  "hustle-and-heart": {
-    ...SPLIT_DEFAULTS,
-    out: "public/images/og/hustle-and-heart.jpg", page: "hustle-and-heart.html",
-    photo: "coaching", pos: "16% 48%", zoom: "auto 126%",
-    headline: "Every dollar goes to <em>an athlete</em>.",
-    size: 72, measure: "15ch",
-  },
-  "ways-to-give": {
-    ...SPLIT_DEFAULTS,
-    out: "public/images/og/ways-to-give.jpg", page: "ways-to-give.html",
-    // the headline says "on a court", so the card shows one
-    photo: "coaching", pos: "66% 34%", zoom: "auto 152%",
-    headline: "Every road here ends <em>on a court</em>.",
-    size: 72, measure: "17ch",
-  },
+    size: 64, measure: "16ch" },
+  "hustle-and-heart": { ...MONO, out: "public/images/og/hustle-and-heart.jpg",
+    page: "hustle-and-heart.html",
+    headline: "Every dollar goes to <em>an athlete</em>.", measure: "14ch" },
+  "ways-to-give": { ...MONO, out: "public/images/og/ways-to-give.jpg",
+    page: "ways-to-give.html",
+    headline: "Every road here ends <em>on a court</em>.", measure: "14ch" },
 };
 
 // ---- candidate sets: same content, three treatments, for a design review ----
@@ -129,6 +100,14 @@ const LINE = "Your place in <em>adaptive sports</em>.";
 const SPLIT = { variant: "split", photo: "karen", headline: LINE, size: 74,
                 measure: "12ch", zoom: "auto 168%", pos: "56% 34%" };
 const CANDIDATES = {
+  "m1-home-black":   { out: "m1-home-black.jpg", variant: "mono", photo: "black",
+    headline: "Your place in <em>adaptive sports</em>.", size: 76, measure: "13ch" },
+  "m2-send6-black":  { out: "m2-send6-black.jpg", variant: "mono", photo: "black",
+    headline: "Send 6 to the <em>US Open</em>.", size: 76, measure: "13ch" },
+  "m3-donate-black": { out: "m3-donate-black.jpg", variant: "mono", photo: "black",
+    headline: "Put an athlete <em>in the game</em>.", size: 76, measure: "13ch" },
+  "m4-home-fire":    { out: "m4-home-fire.jpg", variant: "mono", photo: "fire",
+    headline: "Your place in <em>adaptive sports</em>.", size: 76, measure: "13ch" },
   "b-paper": { out: "b-paper.jpg", variant: "light", headline: LINE, size: 96, measure: "13ch" },
   "c-split": { ...SPLIT, out: "c-split.jpg" },
   "d-split-light": { ...SPLIT, out: "d-split-light.jpg", variant: "split light" },

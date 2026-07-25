@@ -71,6 +71,33 @@
     radial-gradient(ellipse 50% 70% at -6% 104%, rgba(28,26,21,0.06) 0%, transparent 60%); }
   .card.light .grain{ opacity:0.35; mix-blend-mode:multiply; }
 
+  /* ---- mono: one backdrop, one line, nothing else -------------------------
+     Alec's direction (2026-07-25): all black, clean, simple, minimal, the same
+     imagery on every card, and only the text changes per link.
+
+     The type sits RIGHT here, which is the one place this system breaks the
+     site's left alignment, and it is the artwork's fault rather than a whim:
+     the mark sits left of centre in the source, and the only way to push it
+     right is to zoom past what the file can carry, which the resolution gate
+     correctly refuses. So the mark keeps the left, the words take the right. */
+  .card.mono .photo{ filter:none; }
+  /* Reaches further left than looks necessary at 1200px, because headline
+     length varies per page: the longest line (popcorn) lands on the mark's
+     spine, and the type has to sit on solid ink wherever it falls. */
+  .card.mono .scrim{ background:
+    linear-gradient(270deg, rgba(10,10,11,0.94) 0%, rgba(10,10,11,0.92) 38%,
+                    rgba(10,10,11,0.62) 58%, rgba(10,10,11,0.18) 80%, transparent 100%); }
+  .card.mono .atmos{ background:
+    radial-gradient(ellipse 46% 70% at 88% 50%, rgba(232,87,42,0.13) 0%, transparent 66%); }
+  .card.mono .grain{ opacity:0.14; }
+  .card.mono .inner{ align-items:flex-end; text-align:right; }
+  .card.mono h1{ max-width:var(--measure,13ch); }
+  /* the backdrop already carries the mark at full size; repeating it small is
+     clutter, so the lockup here is the wordmark alone */
+  .card.mono .lockup svg{ display:none; }
+  .card.mono .lockup{ gap:0; }
+  .card.mono .foot{ flex-direction:row-reverse; }
+
   /* WATERMARK — the type-only card leaves the right half empty, which reads as
      unfinished at thumbnail size. The wheel bleeding off the edge fills it
      without adding a word. Hidden wherever a photo already holds that side. */

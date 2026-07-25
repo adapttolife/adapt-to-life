@@ -25,13 +25,16 @@ const PER_PAGE = {
   "ways-to-give.html": "ways-to-give",
 };
 
+// Every card is now the same artwork with a different line, so the alt text
+// leads with the words. The image is the Adapt To Life mark, not a photograph,
+// and describing embossing at length would tell a screen reader nothing useful.
 const ALT = {
-  _default: "Adapt To Life. Your place in adaptive sports. An adaptive water-skier grinning as she carves through the spray.",
-  donate: "Put an athlete in the game. Young wheelchair basketball players together on the court.",
-  "send-6": "Send 6 to the US Open. A wheelchair pickleball player with his paddle, courtside.",
-  popcorn: "Half of every bag puts an athlete in the game. Adapt To Life popcorn drive.",
-  "hustle-and-heart": "Every dollar goes to an athlete. The Hustle and Heart Fund. Young wheelchair basketball players on the court.",
-  "ways-to-give": "Every road here ends on a court. Young wheelchair basketball players, the hoop behind them.",
+  _default: "Adapt To Life: your place in adaptive sports. The Adapt To Life mark, embossed in black.",
+  donate: "Put an athlete in the game. Adapt To Life.",
+  "send-6": "Send 6 to the US Open. Adapt To Life.",
+  popcorn: "Half of every bag puts an athlete in the game. Adapt To Life.",
+  "hustle-and-heart": "Every dollar goes to an athlete. The Hustle and Heart Fund, Adapt To Life.",
+  "ways-to-give": "Every road here ends on a court. Adapt To Life.",
 };
 
 const url = (card) => card === "_default"

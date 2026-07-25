@@ -149,8 +149,15 @@ sees while building the site. It is generated, never exported by hand:
 - Only pages people actually send each other get their own card. Everything else falls back to the
   default. Adding one is a row in `CARDS` plus a row in `scripts/wire-og.mjs`, which is the ONLY
   writer of `og:image` tags.
-- Photographs are of real athletes, ours, and are cropped rather than altered. Nothing generated
-  stands in for an athlete.
+- **One style across every card; only the line changes** (Alec, 2026-07-25). The backdrop is the
+  Adapt To Life mark embossed in black, identical on all of them, so a run of shared links reads as
+  one organisation. Resist per-page imagery: the variation belongs in the sentence.
+- The type sits right on these cards, the one place the system breaks the site's left alignment. The
+  mark sits left of centre in the artwork and cannot be moved right without zooming past what the
+  file carries, which the resolution gate refuses. Composition decided it, not taste.
+- Photographs, when a card uses one, are of real athletes, ours, and are cropped rather than
+  altered. Nothing generated stands in for an athlete. The photo layout is still in the generator
+  and one flag away, kept deliberately rather than deleted.
 - **A card's photograph must match the page's actual sport.** Read the page; never infer the sport
   from whichever images happen to be at hand. The first Send 6 card showed water-skiing because the
   photo library is full of it, while the page has always said "six adaptive pickleball athletes".

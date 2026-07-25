@@ -35,14 +35,14 @@ export default {
       if (request.method !== "POST") {
         return json({ ok: false, error: "Method not allowed" }, 405);
       }
-      return handleContact(request, env);
+      return handleContact(request, env, ctx);
     }
 
     if (url.pathname === "/api/apply") {
       if (request.method !== "POST") {
         return json({ ok: false, error: "Method not allowed" }, 405);
       }
-      return handleApply(request, env);
+      return handleApply(request, env, ctx);
     }
 
     if (url.pathname === "/api/subscribe") {
@@ -114,7 +114,20 @@ export default {
   },
 };
 
-async function handleContact(request, env) {
+// Run a side effect after the response goes out. Receipts must never delay a
+// submission (awaiting one put a live SMTP round-trip on the critical path and
+// the form visibly hung), and must never fail one either — so a missing ctx
+// degrades to fire-and-forget rather than throwing on ctx.waitUntil.
+function after(ctx, promise) {
+  try {
+    if (ctx && typeof ctx.waitUntil === "function") ctx.waitUntil(promise);
+    else Promise.resolve(promise).catch(() => {});
+  } catch (err) {
+    console.error("after() could not schedule work:", err);
+  }
+}
+
+async function handleContact(request, env, ctx) {
   let data;
   try {
     const ct = request.headers.get("content-type") || "";
@@ -183,14 +196,19 @@ async function handleContact(request, env) {
     return json({ ok: false, error: "Could not save right now. Please email hello@adapttolife.org." }, 502);
   }
 
-  // The record is saved; the receipt is a courtesy on top of it and must never
-  // be able to turn a successful submission into a failed one.
-  await sendContactReceipt(env, { name, email, message, type });
+  // The record is saved. Send the receipt AFTER responding: awaiting it here put
+  // a live SMTP round-trip on the critical path and the form visibly hung for
+  // seconds while the submitter watched a spinner. ctx.waitUntil keeps the
+  // Worker alive until the send settles without making anyone wait for it.
+  //
+  // The receipt is a courtesy on top of a saved record and must never be able to
+  // turn a successful submission into a failed one, or a slow one.
+  after(ctx, sendContactReceipt(env, { name, email, message, type }));
 
   return json({ ok: true });
 }
 
-async function handleApply(request, env) {
+async function handleApply(request, env, ctx) {
   let data;
   try {
     const ct = request.headers.get("content-type") || "";
@@ -256,8 +274,9 @@ async function handleApply(request, env) {
 
   // Saved. The acknowledgement matters more here than on the contact form —
   // silence after asking for equipment money reads as "it did not go through" —
-  // but it still must not be able to fail the submission.
-  await sendApplyReceipt(env, { name, email, sport: str(data.sport), need: str(data.need) });
+  // but it must not be able to fail the submission OR delay it. Sent after the
+  // response, same as the contact receipt.
+  after(ctx, sendApplyReceipt(env, { name, email, sport: str(data.sport), need: str(data.need) }));
 
   return json({ ok: true });
 }

@@ -67,6 +67,9 @@
   .wtg-drive-name{ font-weight:600; font-size:1.06rem; }
   .wtg-drive-sub{ margin-top:0.25rem; font-size:0.94rem; color:var(--ink-soft); max-width:56ch; }
   .wtg-drive-meta{ margin-top:0.4rem; font-family:"Space Mono",monospace; font-size:0.73rem; letter-spacing:0.05em; color:var(--muted); }
+  /* Whose event this actually is. A disclosure, not a selling line, so it sits
+     quiet and separate instead of buried in the mono meta row. */
+  .wtg-drive-note{ margin-top:0.35rem; font-size:0.85rem; color:var(--muted); font-style:italic; }
   .wtg-pill{
     display:inline-flex; align-items:center; gap:0.42rem;
     font-family:"Space Mono",monospace; font-size:0.63rem; font-weight:700;
@@ -78,20 +81,38 @@
   .wtg-drive .btn{ flex:0 0 auto; }
   .wtg-empty{ margin-top:1.4rem; color:var(--muted); max-width:60ch; }
 
-  /* ---- standing ways ----------------------------------------------------- */
-  .wtg-ways{ list-style:none; padding:0; margin:clamp(2.2rem,4vw,3rem) 0 0;
-    display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(1rem,2.2vw,1.6rem); }
-  @media (max-width:920px){ .wtg-ways{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
-  @media (max-width:620px){ .wtg-ways{ grid-template-columns:1fr; } }
-  .wtg-way{
+  /* ---- standing ways ------------------------------------------------------
+     The giving pyramid should look like a pyramid, not a grid. Nine equal
+     cards gave a bequest the same weight as a $15 monthly gift, which is not
+     how any of this works. Two ways carry almost everyone, so they get the
+     room. The rest is reference material for the handful of people who need
+     it, and reference material reads better as a list than as cards.
+     ------------------------------------------------------------------------ */
+  .wtg-lead{ list-style:none; padding:0; margin:clamp(2.2rem,4vw,3rem) 0 0;
+    display:grid; grid-template-columns:1fr 1fr; gap:clamp(1.1rem,2.4vw,1.8rem); }
+  @media (max-width:760px){ .wtg-lead{ grid-template-columns:1fr; } }
+  .wtg-lead li{
     display:flex; flex-direction:column; align-items:flex-start;
-    background:var(--paper); border:1px solid rgba(28,26,21,0.09); border-radius:18px;
-    padding:clamp(1.4rem,2.6vw,1.9rem);
-    box-shadow:0 18px 40px -32px rgba(28,26,21,0.3);
+    background:var(--paper); border:1px solid var(--hairline); border-radius:20px;
+    padding:clamp(1.6rem,3vw,2.3rem);
+    box-shadow:0 24px 56px -34px rgba(28,26,21,0.38);
   }
-  .wtg-way h3{ font-size:1.18rem; }
-  .wtg-way p{ margin-top:0.6rem; font-size:0.96rem; color:var(--ink-soft); flex:1 1 auto; }
-  .wtg-way .textlink{ margin-top:1.15rem; font-size:0.92rem; }
+  .wtg-lead h3{ font-size:clamp(1.35rem,2.2vw,1.75rem); }
+  .wtg-lead p{ margin-top:0.75rem; color:var(--ink-soft); flex:1 1 auto; max-width:42ch; }
+  .wtg-lead .btn{ margin-top:1.5rem; }
+
+  .wtg-more{ list-style:none; padding:0; margin:clamp(2.2rem,3.6vw,2.8rem) 0 0; }
+  .wtg-more li{
+    display:grid; grid-template-columns:13rem minmax(0,1fr) auto; align-items:baseline;
+    gap:0.4rem clamp(1.2rem,2.4vw,2rem); padding:1.15rem 0; border-bottom:1px solid var(--hairline);
+  }
+  .wtg-more li:first-child{ border-top:1px solid var(--hairline); }
+  @media (max-width:820px){ .wtg-more li{ grid-template-columns:1fr; gap:0.3rem; padding:1.3rem 0; } }
+  .wtg-more-k{ font-weight:600; color:var(--ink); }
+  .wtg-more-v{ color:var(--ink-soft); font-size:0.96rem; }
+  .wtg-more .textlink{ font-size:0.9rem; white-space:nowrap; }
+  @media (max-width:820px){ .wtg-more .textlink{ margin-top:0.6rem; } }
+  .wtg-time{ margin-top:clamp(1.8rem,3vw,2.4rem); max-width:var(--reading); color:var(--muted); font-size:0.96rem; }
 
   /* ---- the details an advisor asks for ----------------------------------- */
   .wtg-facts{ list-style:none; padding:0; margin:clamp(1.6rem,3vw,2.2rem) 0 0; max-width:var(--reading); margin-inline:auto; }
@@ -178,9 +199,8 @@
 <section class="band-sm tint" id="drives">
   <div class="wrap">
     <div class="sec-head">
-      <span class="eyebrow reveal">Coming up</span>
-      <h2 class="serif h2 reveal" style="margin-top:0.7rem;">Dated ways to pitch in.</h2>
-      <p class="reveal" style="margin-top:1rem; color:var(--ink-soft);">Stores that open and close, tournaments with a date on them. Each one feeds a campaign above.</p>
+      <span class="eyebrow reveal">On the calendar</span>
+      <h2 class="serif h2 reveal" style="margin-top:0.7rem;">What is coming up.</h2>
     </div>
     <ul class="wtg-drives" id="wtgDrives"></ul>
   </div>
@@ -192,56 +212,51 @@
     <div class="sec-head">
       <span class="eyebrow reveal">Standing ways to give</span>
       <h2 class="serif h2 reveal" style="margin-top:0.7rem;">Open every day of the year.</h2>
-      <p class="reveal" style="margin-top:1rem; color:var(--ink-soft);">Campaigns start and finish. These do not. If your gift is bigger than a card payment, or it is coming from an advisor, a broker, or an estate, the last one on this list is the fastest way through.</p>
+      <p class="reveal" style="margin-top:1rem; color:var(--ink-soft);">Campaigns start and finish. These do not.</p>
     </div>
 
-    <ul class="wtg-ways">
-      <li class="wtg-way reveal">
+    <ul class="wtg-lead">
+      <li class="reveal">
         <h3 class="serif">Give monthly</h3>
-        <p>A season of coaching is a monthly cost, so monthly money fits it best. Fifteen dollars a month covers a set of tires across a year.</p>
-        <a class="textlink" href="/donate">Set up monthly giving <span class="arrow">&rarr;</span></a>
+        <p>A season of coaching is a monthly cost, so monthly money fits it best. Fifteen dollars a month covers a set of racing tires across a year, and it is the difference between hoping we can say yes and knowing we can.</p>
+        <a class="btn" href="/donate">Set up monthly giving</a>
       </li>
-      <li class="wtg-way reveal">
+      <li class="reveal">
         <h3 class="serif">Sponsor</h3>
-        <p>Businesses back athletes and get their name where the sport actually happens, on the chair and at the tournament.</p>
-        <a class="textlink" href="/sponsorship">See the sponsorship ladder <span class="arrow">&rarr;</span></a>
-      </li>
-      <li class="wtg-way reveal">
-        <h3 class="serif">Donor-advised fund</h3>
-        <p>If you already give through a DAF, your sponsor needs two things to send a grant: our legal name and our EIN. Both are below.</p>
-        <a class="textlink" href="#details">Get our grant details <span class="arrow">&rarr;</span></a>
-      </li>
-      <li class="wtg-way reveal">
-        <h3 class="serif">Stock and securities</h3>
-        <p>Giving appreciated stock directly can avoid the capital gains you would owe on selling it first. We handle these one at a time with your broker.</p>
-        <a class="textlink" href="/contact?rsn=donor">Start a stock gift <span class="arrow">&rarr;</span></a>
-      </li>
-      <li class="wtg-way reveal">
-        <h3 class="serif">Bequests and IRA gifts</h3>
-        <p>A line in a will, or naming us as a beneficiary on a retirement account, costs nothing today and keeps the fund going long after.</p>
-        <a class="textlink" href="#details">Get the language for your attorney <span class="arrow">&rarr;</span></a>
-      </li>
-      <li class="wtg-way reveal">
-        <h3 class="serif">Employer matching</h3>
-        <p>Plenty of employers double a gift and most people never ask. Send us the form or your company's portal link and we will complete our side.</p>
-        <a class="textlink" href="/contact?rsn=donor">Send us your match form <span class="arrow">&rarr;</span></a>
-      </li>
-      <li class="wtg-way reveal">
-        <h3 class="serif">In honor, in memory</h3>
-        <p>Give in someone's name and add a dedication as you check out. The fund itself carries a name, so this is familiar ground for us.</p>
-        <a class="textlink" href="/tim">Read why it is called Hustle &amp; Heart <span class="arrow">&rarr;</span></a>
-      </li>
-      <li class="wtg-way reveal">
-        <h3 class="serif">Buy something</h3>
-        <p>When a store is open, half of every order comes back to the fund. When it is closed, the fund is still open.</p>
-        <a class="textlink" href="/popcorn">See the popcorn drive <span class="arrow">&rarr;</span></a>
-      </li>
-      <li class="wtg-way reveal">
-        <h3 class="serif">Give your time</h3>
-        <p>Coaching, driving, running a store of your own, or telling one person about an athlete who needs a chair. Not every gift is money.</p>
-        <a class="textlink" href="/contact">Tell us what you can do <span class="arrow">&rarr;</span></a>
+        <p>Businesses back athletes and get their name where the sport actually happens, on the chair and at the tournament. There is a ladder, and the first rung is smaller than you would guess.</p>
+        <a class="btn ghost" href="/sponsorship">See the sponsorship ladder</a>
       </li>
     </ul>
+
+    <ul class="wtg-more reveal">
+      <li>
+        <span class="wtg-more-k">Donor-advised fund</span>
+        <span class="wtg-more-v">Your sponsor needs two things to send a grant: our legal name and our EIN.</span>
+        <a class="textlink" href="#details">Get them <span class="arrow">&rarr;</span></a>
+      </li>
+      <li>
+        <span class="wtg-more-k">Stock and securities</span>
+        <span class="wtg-more-v">Giving appreciated stock directly can avoid the capital gains you would owe on selling it first.</span>
+        <a class="textlink" href="/contact?rsn=donor">Start one <span class="arrow">&rarr;</span></a>
+      </li>
+      <li>
+        <span class="wtg-more-k">Bequests and IRA gifts</span>
+        <span class="wtg-more-v">A line in a will, or a beneficiary designation, costs nothing today and keeps the fund going long after.</span>
+        <a class="textlink" href="#details">Get the language <span class="arrow">&rarr;</span></a>
+      </li>
+      <li>
+        <span class="wtg-more-k">Employer matching</span>
+        <span class="wtg-more-v">Plenty of employers double a gift and most people never ask. Send us the form and we complete our side.</span>
+        <a class="textlink" href="/contact?rsn=donor">Send it over <span class="arrow">&rarr;</span></a>
+      </li>
+      <li>
+        <span class="wtg-more-k">In honor, in memory</span>
+        <span class="wtg-more-v">Give in someone's name and add a dedication as you check out. The fund itself carries a name.</span>
+        <a class="textlink" href="/tim">Read whose <span class="arrow">&rarr;</span></a>
+      </li>
+    </ul>
+
+    <p class="wtg-time reveal">Not every gift is money. Coaching, driving, running a popcorn store of your own, or telling one person about an athlete who needs a chair. <a class="textlink" href="/contact">Tell us what you can do <span class="arrow">&rarr;</span></a></p>
   </div>
 </section>
 
@@ -461,21 +476,26 @@
     main.appendChild(C.el('p','wtg-drive-name', d.name));
     if (d.summary) main.appendChild(C.el('p','wtg-drive-sub', d.summary));
 
-    // Principle 1a: an event we only compete in names its real host and who it
-    // actually benefits. Never let our page imply otherwise.
     var meta = [];
     var when = C.driveWhen(d);
     if (when) meta.push(when);
-    if (d.relationship === 'we_compete'){
-      if (d.host) meta.push('Hosted by ' + d.host);
-      if (d.beneficiary) meta.push('Benefits ' + d.beneficiary);
-    } else if (typeof d.goal === 'number' && d.goal > 0){
+    if (d.venue) meta.push([d.venue, d.city, d.state].filter(Boolean).join(', '));
+    if (d.relationship !== 'we_compete' && typeof d.goal === 'number' && d.goal > 0){
       meta.push(C.money(d.goal) + ' goal');
     }
     if (d.register_by && C.today() <= C.localDate(d.register_by)){
       meta.push('Register by ' + C.fmtDate(C.localDate(d.register_by)));
     }
     if (meta.length) main.appendChild(C.el('p','wtg-drive-meta', meta.join(' · ')));
+
+    // Principle 1a: an event we only compete in names its real host and who it
+    // actually benefits. Blurring that is a claim about someone else's charity.
+    if (d.relationship === 'we_compete' && (d.host || d.beneficiary)){
+      var note = [];
+      if (d.host) note.push('Hosted by ' + d.host);
+      if (d.beneficiary) note.push('proceeds benefit ' + d.beneficiary + ', not us');
+      main.appendChild(C.el('p','wtg-drive-note', note.join(', ') + '.'));
+    }
 
     var cta = C.driveCta(d);
     var btn = C.el('a','btn ghost');

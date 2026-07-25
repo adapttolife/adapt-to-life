@@ -140,6 +140,12 @@
       },
       current: function (slug) {
         return this.drivesFor(slug).filter(function (d) { return driveStatus(d) !== "past"; });
+      },
+      /* The campaign a drive feeds, or null. A drive we only compete in feeds
+         nothing and must resolve to null rather than to the nearest campaign. */
+      campaignFor: function (drive) {
+        if (!drive || !drive.campaign) return null;
+        return campaigns.filter(function (c) { return c.slug === drive.campaign; })[0] || null;
       }
     };
   }

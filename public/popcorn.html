@@ -262,6 +262,10 @@
     padding-top:1rem; border-top:1px solid var(--hairline);
   }
   .pop-empty{ text-align:center; color:var(--muted); font-size:0.95rem; margin-top:1.4rem; }
+  /* which campaign this drive feeds — the drive's goal and the campaign's goal
+     are different numbers on purpose, so the link says which is which */
+  .pop-feeds{ margin-top:0.9rem; font-size:0.9rem; color:var(--muted); }
+  .pop-feeds .textlink{ font-size:0.9rem; }
 </style>
 </head>
 <body>
@@ -391,9 +395,9 @@
     </ul>
 
     <div class="pop-math reveal">
-      <p class="pop-math-line"><strong>About $3,500 puts one athlete on that court.</strong> Six athletes is <strong>$21,000</strong>, which is the goal of Send 6 to the US Open. These costs climb every year, so we budget honestly rather than optimistically.</p>
+      <p class="pop-math-line"><strong>About $3,500 puts one athlete on that court.</strong> Six athletes is <strong>$21,000</strong>, which is the goal of <a class="textlink" href="/send-6">Send 6 to the US Open</a>. These costs climb every year, so we budget honestly rather than optimistically.</p>
       <p class="pop-math-sub">Every bag sends about six dollars to the fund. A set of tires is roughly thirty bags. One athlete is roughly five hundred.</p>
-      <p class="pop-ladder">This drive is going for <strong>$1,000</strong>. Twenty-one of them, or the equivalent in gifts, is six athletes in Naples.</p>
+      <p class="pop-ladder">This drive is going for <strong>$1,000</strong>. Twenty-one of them, or the equivalent in gifts, is <a class="textlink" href="/send-6">six athletes in Naples</a>.</p>
       <div class="actions" style="margin-top:1.6rem;">
         <a class="btn ghost" href="/hustle-and-heart">About the fund</a>
         <a class="textlink" href="/donate">Or give directly &rarr;</a>
@@ -750,6 +754,20 @@
           var goalSub = el('p','pop-goal-sub','Popcorn and direct gifts both count toward it.');
           wrapEl.appendChild(barEl); wrapEl.appendChild(lbl); wrapEl.appendChild(goalSub);
           left.appendChild(wrapEl);
+        }
+
+        // Goals nest, they never compete. This drive carries what this drive can
+        // raise; the campaign carries the total. Naming the campaign here, from
+        // the data rather than from a hardcoded link, is what makes the drive
+        // and the goal read as one story instead of two numbers.
+        var feeds = store && store.campaignFor(current);
+        if (feeds){
+          var feedsEl = el('p','pop-feeds');
+          feedsEl.appendChild(document.createTextNode('Feeding '));
+          var feedsLink = el('a','textlink', feeds.name);
+          feedsLink.href = feeds.page || '/send-6';
+          feedsEl.appendChild(feedsLink);
+          left.appendChild(feedsEl);
         }
 
         var right = el('div','pop-card-cta');

@@ -45,8 +45,11 @@ changed once is changed everywhere. Append one object to `drives`:
 
 That is the whole job. Nothing else on any page needs touching.
 
-- `campaign` is the slug of the campaign this drive feeds. It is what makes the drive show up on
-  that campaign's page.
+- `campaign` is the slug of the campaign this drive feeds, and it is load-bearing in three places:
+  the drive appears on that campaign's page, the campaign card on `/ways-to-give` counts it, and
+  `/popcorn` renders a "Feeding <campaign>" link straight from it. Get it wrong and the drive
+  silently detaches from the story it belongs to. Omit it **only** for something that raises nothing
+  for us, the way the Vlasic Classic does.
 - `published: false` keeps a verified record on file without putting it on the site. Use it for
   anything real but not yet confirmed, rather than deleting the facts you already checked.
 - `public/popcorn.html` still holds the **flavor** list, because flavors are that page's own

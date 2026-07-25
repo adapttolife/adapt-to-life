@@ -53,6 +53,7 @@ Each message lives in ONE canonical place. Everywhere else: one line max, linkin
 | How a grant works (steps) | `/apply` | Link only |
 | The sponsor pitch + tiers | `/sponsorship` | One card/line + link |
 | Impact grid ($3,500 / $500 / $200 / 0%) | `/donate` | Not repeated |
+| **"Sports in abundance."** (the vision) | `/` (home), heading the work section | Quotable elsewhere, but it is a headline, never body filler. See the rule below |
 | The two-barriers framing | `/` (home) | One clause |
 | The US Open campaign goal and its per-athlete arithmetic ($3,500 × 6) | `/send-6` | The figure and a link. `/popcorn` carries a short version because it is that page's conversion device |
 | Planned and major giving (DAF, stock, bequests, matching, tribute) | `/ways-to-give` | Link only |
@@ -66,6 +67,21 @@ Each message lives in ONE canonical place. Everywhere else: one line max, linkin
 - "Barrier," never "wall." Non-cornering legal/ops language.
 - **Recognized** 501(c)(3), EIN 41-3213344, "tax-deductible to the extent allowed by law."
 - The promise, exactly: "One hundred percent reaches the athlete." ("100%" only in tight UI chips.)
+- **The three lines, and what each is for.** They are not interchangeable and none of them is decoration.
+  - **"Your place in adaptive sports."** The *promise*, made to an athlete. Second person, about
+    belonging. It leads the site and it does not change.
+  - **"Sports in abundance."** The *vision*, about the world rather than the athlete. Adaptive sport
+    is scarce today: it costs too much, there is too little of it, and what exists is hard to find.
+    Our job is to end that scarcity. Use it to head work or vision, never as a caption or a
+    sign-off, and never stretched to mean "we do lots of things."
+  - **"The more we grow, the more we give."** The *engine*. Growth is the method, not the goal, and
+    the reason growth is not self-serving is that overhead is covered separately.
+- **Never write a number that caps the mission.** "Two barriers," "both of them," "our two programs"
+  all describe today's list as if it were the definition, and each one has to be rewritten the day
+  the list grows. Adapt To Life is an umbrella: the Hustle & Heart Fund is what it delivers, Adaptive
+  Sports Near Me is how it removes the access barrier, and there will be more surfaces
+  ([Spec 117](https://github.com/adapttolife/adapt-to-life) adds a storefront). Name what exists
+  today, say plainly that it grows, and let the count live in the data rather than in the prose.
 - Funding maturity: "We've started funding athletes, and we're just getting going." (Not "already
   funded" bravado, not "the moment we can fund" pre-launch.)
 - CTA verbs, always: **Donate** (give money) · **Apply** (request a grant) · **Suggest a program**

@@ -58,7 +58,7 @@ Each message lives in ONE canonical place. Everywhere else: one line max, linkin
 | The US Open campaign goal and its per-athlete arithmetic ($3,500 × 6) | `/send-6` | The figure and a link. `/popcorn` carries a short version because it is that page's conversion device |
 | Planned and major giving (DAF, stock, bequests, matching, tribute) | `/ways-to-give` | Link only |
 | Tim's story | `/tim` | One sentence + link |
-| Region vs national scope | `/about` ("we fund athletes in Northern Illinois & Southern Wisconsin; the directory is national") | Footer line |
+| Region vs national scope | `/about` ("we fund adaptive athletes wherever they are, and our directory reaches nationwide") | Footer line. **The fund carries no geographic limit**; the earlier "Northern Illinois and Southern Wisconsin" line was retired and this row lagged behind the page |
 
 ## Voice canon
 

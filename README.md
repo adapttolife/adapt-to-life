@@ -82,8 +82,11 @@ npm run deploy:staging
 # → https://adapt-to-life-staging.alec-af3.workers.dev
 ```
 
-Both paths stamp `public/build.txt` first, and `check-site.mjs` fails if the build it reaches is
-not the build you are testing. That check is the point: it is what turns "someone deployed over
+Every wrangler invocation stamps `public/build.txt` through the `build` hook in `wrangler.jsonc`,
+including a bare `cfrun npx wrangler deploy`, and `check-site.mjs` fails if the build it reaches is
+not the build you are testing. The hook is not in an npm script because a second session deployed
+production with bare wrangler 19 seconds after ours and the stamp went missing: a control a human
+has to remember to invoke is not a control. That check is the point: it is what turns "someone deployed over
 me" from a thing you find out from Alec into a thing the harness tells you.
 
 Preview locally without deploying:

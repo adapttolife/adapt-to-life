@@ -77,6 +77,19 @@
   function driveCta(d) {
     var live = driveStatus(d) !== "past";
     var closed = d.register_by && today() > localDate(d.register_by);
+
+    // A drive with its own page goes to that page, never straight to the
+    // vendor. The page carries why half of every bag matters, and it is the
+    // only surface that recruits sellers, which is the whole growth lever on
+    // this platform: total raised is roughly stores times each seller's reach.
+    // A vendor storefront cannot ask anyone to open a store. Sending everyone
+    // direct converts one order and loses every future seller.
+    //
+    // The drive's own page is where the store link lives, so this is still one
+    // tap from buying and there is still no click that does nothing.
+    if (live && d.page) {
+      return { href: d.page, label: d.cta_label || "Buy popcorn", external: false };
+    }
     if (live && d.store_url) {
       return { href: d.store_url, label: d.cta_label || "Buy popcorn", external: true };
     }

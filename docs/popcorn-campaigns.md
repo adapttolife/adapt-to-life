@@ -2,6 +2,23 @@
 
 `/popcorn` is a template. Every campaign after the first is a data edit, not a build.
 
+## Which link to share
+
+Two links exist and they are not interchangeable in public either.
+
+| Situation | Share | Why |
+|---|---|---|
+| **Anything public**: social posts, the newsletter, a flyer, a QR code, a group text to people who have not heard the pitch | **`adapttolife.org/popcorn`** (print uses `adapttolife.org/q/popcorn`) | It carries why half of every bag matters, and it is the **only** surface that recruits sellers. It also survives: the Double Good URL dies when the store closes, so a printed one is dead paper. |
+| **Warm and already sold**: someone replies "send me the link", you have just had the conversation in person | **the Double Good store link** | They do not need the pitch. Do not make a buyer read a page to reach a cart. |
+
+**The reason this matters more than it looks.** On this platform total raised is roughly *number of
+stores × each seller's reach*, and a Double Good storefront cannot ask anyone to open a store. Only
+`/popcorn` does. Every person sent straight to the vendor converts at most one order and is a seller
+you never got to ask. Traffic is not the lever here, sellers are.
+
+Every drive CTA on the site follows this: the home calendar, `/ways-to-give` and `/send-6` all send
+people to the drive's page, and the drive's page is where the store link lives.
+
 ## The one thing to understand about Double Good
 
 There are **two different links** and they are not interchangeable.

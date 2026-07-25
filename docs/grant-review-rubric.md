@@ -2,7 +2,7 @@
 
 Internal document. Not published. This is the spine behind the public "How we decide" copy: it lets us make consistent, defensible award decisions and protect the "100% reaches the athlete" promise as volume grows.
 
-Modeled on the Kelly Brush Foundation Active Fund, adapted for our stage. KBF rations scarce money across 50 states with heavy up-front paperwork. We are a young, regional fund whose job right now is to learn who needs help and what it costs, so we keep the **front door light** and move the diligence to the **approval step**, once someone is a finalist.
+Modeled on the Kelly Brush Foundation Active Fund, adapted for our stage. KBF rations scarce money across 50 states with heavy up-front paperwork. We are a young fund whose job right now is to learn who needs help and what it costs, so we keep the **front door light** and move the diligence to the **approval step**, once someone is a finalist.
 
 ## 1. Scoring rubric (applied to every application)
 

@@ -81,6 +81,11 @@ Each message lives in ONE canonical place. Everywhere else: one line max, linkin
     campaign, a deck title, a shirt.
   - **"The more we grow, the more we give."** The *engine*. Growth is the method, not the goal, and
     the reason growth is not self-serving is that overhead is covered separately.
+- **Never localize the organization.** The fund has no geographic limit, the directory is national,
+  the board is spread out, and the athletes are wherever they are. So no home state, no home region,
+  no home courts, and no distance measured from a single base. Third-party facts are fine and often
+  necessary: the US Open really is in Naples, AMP really is in Elkhorn, Double Good really pops in
+  Chicago. The test is whether the place is a fact about someone else or a claim about our reach.
 - **Never write a number that caps the mission.** "Two barriers," "both of them," "our two programs"
   all describe today's list as if it were the definition, and each one has to be rewritten the day
   the list grows. Adapt To Life is an umbrella: the Hustle & Heart Fund is what it delivers, Adaptive

@@ -31,27 +31,25 @@
 <body style="background:#faf8f4;">
 <div class="rv-wrap">
   <span class="rv-badge">Staging review</span>
-  <h1 class="rv-h1">The latest iteration, in one walk.</h1>
-  <p class="rv-sub">This whole staging site is the newest version of adapttolife.org. Nothing here is live until you say ship it. Walk the stops in order, as a visitor would; every page below opens the real staged page.</p>
-  <p class="rv-date">Iteration: the campaign layer, nav v2, the home page, and the geography sweep (Spec 115, complete) &middot; updated 2026-07-25</p>
+  <h1 class="rv-h1">Nothing should look different. That is the test.</h1>
+  <p class="rv-sub">This iteration is speed and safety, not design. No page changed its layout, its copy or its behaviour, so the review is the opposite of the usual one: walk the stops and confirm that everything is exactly where you left it, and that the giving form still takes a gift.</p>
+  <p class="rv-date">Iteration: asset caching, a money-path check, and a page-weight budget &middot; updated 2026-07-25</p>
 
   <ol class="rv-steps">
-    <li><a href="/"><span><span class="t">Home</span><span class="d">Rebuilt on the three lines: the promise leads, "Sports in abundance" heads the work, and "the more we grow, the more we give" is now the organisation's engine rather than a founder's aside. Nothing on the page counts the mission any more, so a third surface is a new row and not a rewrite. Campaign card sits under the hero, calendar shows the dated things. Nav is here too: tap the hamburger on a phone.</span></span></a></li>
-    <li><a href="/ways-to-give"><span><span class="t">Ways to Give</span><span class="d">New. What we are raising for, then what is on the calendar, then the standing ways. Give monthly and Sponsor carry the weight; the five planned-giving mechanisms are a reference list, not nine equal cards. Ends with the legal name and EIN an advisor asks for.</span></span></a></li>
-    <li><a href="/send-6"><span><span class="t">Send 6 to the US Open</span><span class="d">New. The campaign page. Live number against the $21,000 goal, six seats at $3,500 each that fill as money comes in, the equipment/training/travel arithmetic, and the drives feeding it.</span></span></a></li>
-    <li><a href="/popcorn"><span><span class="t">Popcorn</span><span class="d">Now names the campaign it feeds and links to it, straight from the data rather than a hardcoded link. Same page you signed off on otherwise, fed by the one data file the other two read, so a store link and its dates exist in one place. Its mobile menu was dead and is fixed: worth a tap on your phone.</span></span></a></li>
-    <li><a href="/donate"><span><span class="t">Donate</span><span class="d">The same campaign card now sits under the giving form, so the gift you just considered has something specific attached to it.</span></span></a></li>
-    <li><a href="/roadmap"><span><span class="t">Roadmap</span><span class="d">Its Active Campaign block used to hand-write the name and the goal, which is how it ended up still saying Send 5 and $17,500 months later. It is the shared card now, so it cannot drift again.</span></span></a></li>
-    <li><a href="/hustle-and-heart"><span><span class="t">Hustle &amp; Heart Fund</span><span class="d">Untouched except the thermometer, which reads against $21,000 and now points at the campaign rather than the roadmap. Four surfaces show that figure and all four read it from the same place.</span></span></a></li>
+    <li><a href="/donate"><span><span class="t">Donate, on your phone</span><span class="d">The one that matters. Tap an amount, then Continue, and confirm you reach the card step. Stop there, do not complete a gift. This page is now covered by an automated check that reads the amount step the way you just did, so if the form ever fails to load, the build goes red instead of quietly showing a donor an empty box. That check did not exist before this week.</span></span></a></li>
+    <li><a href="/hustle-and-heart"><span><span class="t">Hustle &amp; Heart Fund</span><span class="d">The second giving form, same check, same test. Tap through to the amount step and confirm it appears.</span></span></a></li>
+    <li><a href="/"><span><span class="t">Home</span><span class="d">Load it, scroll it, tap the hamburger. Then go to another page and come back. The second visit should feel instant: the stylesheet, both scripts and the photos now stay in your browser instead of being re-checked with the server on every single click. That was four wasted round-trips per page view, on every visit, forever.</span></span></a></li>
+    <li><a href="/ways-to-give"><span><span class="t">Ways to Give</span><span class="d">A page with a lot of links and a form. Confirm nothing shifted and the footer signup still submits.</span></span></a></li>
+    <li><a href="/popcorn"><span><span class="t">Popcorn</span><span class="d">The heaviest page we build ourselves. Scroll it top to bottom on your phone and confirm it still runs smooth.</span></span></a></li>
   </ol>
 
-  <p class="rv-minor"><strong>Two things worth your eye.</strong> On Send 6, the six seats are nearly empty at $300 raised. That is honest but it reads quiet, so say if you want it framed differently. On Ways to Give, check the Vlasic Classic row: it says our athletes are in the Aug 9 bracket, and in its own line that APP hosts it and the proceeds go to Shriners Children's, not us.</p>
+  <p class="rv-minor"><strong>What you cannot see, and what I measured instead.</strong> Caching is invisible by design, so it was verified at the wire rather than by eye: every rule applies on staging, and the rules file itself is not served. Scroll was measured on a throttled phone across four pages and holds a locked 60fps with zero dropped frames, which is why nothing about the scroll was touched. Taps on the home page are clean, worst case 76ms.</p>
 
-  <p class="rv-minor"><strong>Nothing localizes us any more.</strong> "Illinois registration" on the roadmap is now "Charitable registration", Tom's bio no longer says Midwest, and the US Open is no longer "thirteen hundred miles from our home courts" (which implied one home base and pinned it to a map). Naples, Elkhorn and Chicago stay, because those are facts about the US Open, AMP and Double Good rather than claims about our reach. The rule is in the content standard so it does not creep back.</p>
+  <p class="rv-minor"><strong>One thing this iteration does not fix.</strong> On /donate, taps can lag up to 577ms in a window roughly ten seconds after the page loads, while Givebutter's embed parses about 9MB of Stripe, Google Maps and its own bundles. That is their code, not ours, but we control when it loads. Gating it until someone actually intends to give is the next change, and it is deliberately not in this one, because it changes behaviour on the giving path and I wanted the check that guards that path landed first.</p>
 
-  <p class="rv-minor"><strong>Spec 115 is complete, 12 of 12.</strong> The ASNM half of the last one is <a href="https://github.com/adapttolife/adaptivesportsnearme/pull/7">PR #7</a> on the other repo, waiting on your merge. Everything here is staging only; production has not been touched.</p>
+  <p class="rv-minor"><strong>Production has not been touched.</strong> This is staging only. <a href="https://github.com/adapttolife/adapt-to-life/pull/60">PR #60</a> is open and waiting on your word before anything ships.</p>
 
-  <div class="rv-start"><a class="btn" href="/">Start the walk <span class="arrow">&rarr;</span></a></div>
+  <div class="rv-start"><a class="btn" href="/donate">Start with the giving form <span class="arrow">&rarr;</span></a></div>
 </div>
 </body>
 </html>

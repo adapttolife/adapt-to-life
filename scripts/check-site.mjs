@@ -14,6 +14,10 @@
 //   5. zero horizontal overflow at 390px and 1440px
 //   6. zero reachable dead links, and every internal target resolves
 //   7. no page errors in the console
+//   8. every page's og:image resolves, is absolute, carries alt text, matches
+//      its declared 1200x630, and fits the preview budget
+//   9. the DEPLOYED build is the one being checked, so a passing run cannot be
+//      a passing run against someone else's build
 //
 // Pages run with reduced motion. The coaching photo band loops a 30s ken-burns
 // scale, so without it the overflow probe caught the image mid-scale and the
@@ -125,6 +129,72 @@ for (const t of [...targets].sort()) {
 
 const missing = await fetch(`${BASE}/definitely-not-a-real-page?cb=${Date.now()}`);
 if (missing.status !== 404) fail(`unknown path returned ${missing.status}, expected 404`);
+
+// ---- is the deployed build MY build? --------------------------------------
+// Everything below tests a URL. If someone else's branch has landed on that URL
+// since you deployed, every check can pass against the wrong build and you will
+// hand over a link that shows the old thing. That happened on 2026-07-25:
+// eleven staging deploys in ninety minutes, three of them mine, and the review
+// link served the June card. Compare first, so the rest means something.
+{
+  const local = execSync("node scripts/stamp-build.mjs >/dev/null && cat public/build.txt",
+    { encoding: "utf8" }).trim();
+  const r = await fetch(`${BASE}/build.txt?cb=${Date.now()}`);
+  if (!r.ok) {
+    fail(`${BASE} serves no /build.txt (${r.status}). Either it was deployed without ` +
+         `scripts/stamp-build.mjs, or something else deployed over you.`);
+  } else {
+    const live = (await r.text()).trim();
+    if (live !== local) {
+      fail(`the deployed build is NOT the one being checked.\n` +
+           `  deployed: ${live}\n  local:    ${local}\n` +
+           `  Someone else deployed to this URL, or you have not deployed since your last edit. ` +
+           `Every check below is testing a build you did not make.`);
+    } else {
+      console.log(`build: ${live} (deployed build matches local)`);
+    }
+  }
+}
+
+// ---- share cards: the one thing nobody sees while building ----------------
+// An og:image is invisible on the site itself, so a wrong path, a stale file or
+// a card over the preview budget shows up only in someone else's text thread,
+// which is the worst place to find it. Checked on the wire, not in the repo.
+{
+  const OG_BUDGET = 300 * 1024; // WhatsApp-class ceiling; over it, no preview
+  const seen = new Map();
+  for (const path of PAGES) {
+    const html = await (await fetch(`${BASE}${path}?cb=${Date.now()}`)).text();
+    const src = html.match(/<meta property="og:image" content="([^"]+)"/)?.[1];
+    if (!src) { fail(`${path} has no og:image`); continue; }
+    if (!/<meta property="og:image:alt" content="[^"]+"/.test(html))
+      fail(`${path} og:image has no alt text`);
+
+    // pages may legitimately share the default card; fetch each card once
+    if (!seen.has(src)) {
+      // og:image must be absolute: crawlers do not resolve relative paths
+      if (!/^https:\/\//.test(src)) { fail(`${path} og:image is not absolute: ${src}`); continue; }
+      const asset = new URL(src).pathname;
+      const r = await fetch(`${BASE}${asset}?cb=${Date.now()}`);
+      if (!r.ok) { fail(`og:image ${asset} returned ${r.status}`); seen.set(src, false); continue; }
+      const bytes = (await r.arrayBuffer()).byteLength;
+      if (bytes > OG_BUDGET)
+        fail(`og:image ${asset} is ${Math.round(bytes / 1024)}KB, over the ${OG_BUDGET / 1024}KB preview budget`);
+      if (!/^image\//.test(r.headers.get("content-type") || ""))
+        fail(`og:image ${asset} served as ${r.headers.get("content-type")}`);
+      seen.set(src, true);
+    }
+
+    // the declared size has to match the file, or the card lays out wrong
+    const w = html.match(/<meta property="og:image:width" content="(\d+)"/)?.[1];
+    const h = html.match(/<meta property="og:image:height" content="(\d+)"/)?.[1];
+    if (w !== "1200" || h !== "630") fail(`${path} declares og:image ${w}x${h}, expected 1200x630`);
+
+    const tw = html.match(/<meta name="twitter:image" content="([^"]+)"/)?.[1];
+    if (tw && tw !== src) fail(`${path} twitter:image (${tw}) differs from og:image (${src})`);
+  }
+  console.log(`share cards: ${seen.size} distinct, all fetched`);
+}
 
 // ---- /review: the one link Alec gets ------------------------------------
 // It is the tour of the current iteration, so it going stale is a bug in the

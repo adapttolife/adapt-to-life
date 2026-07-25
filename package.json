@@ -1,11 +1,17 @@
 {
   "name": "adapt-to-life",
   "version": "1.0.0",
-  "description": "Marketing site for **Adapt To Life — Your Place in Adaptive Sports**, deployed on Cloudflare Workers. Serves a static site plus one form-capture API route.",
+  "description": "Marketing site for **Adapt To Life \u2014 Your Place in Adaptive Sports**, deployed on Cloudflare Workers. Serves a static site plus one form-capture API route.",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "cards": "node scripts/make-og.mjs && node scripts/wire-og.mjs",
+    "stamp": "node scripts/stamp-build.mjs",
+    "preview": "npm run stamp && npx wrangler versions upload --env staging",
+    "deploy:staging": "npm run stamp && npx wrangler deploy --env staging",
+    "deploy:prod": "npm run stamp && npx wrangler deploy",
+    "check": "node scripts/check-site.mjs"
   },
   "repository": {
     "type": "git",

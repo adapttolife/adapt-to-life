@@ -132,3 +132,43 @@ ways to give → a campaign or a standing way · send-6 → give · popcorn → 
 
 Adding something new? Give it ONE home page, one ask, one line + link everywhere else. Update this
 doc in the same PR.
+
+## Share cards (og:image)
+
+The card a link draws in a text thread is content, not decoration, and it is the one surface nobody
+sees while building the site. It is generated, never exported by hand:
+
+- `scripts/make-og.mjs` renders every card from `src/og/card.html` at 1200x630, using the same
+  tokens and typefaces as `site.css`. Hand-exporting drifts: the first card shipped in Arial and
+  the previous orange, and stayed that way for a month after the brand moved.
+- **A card's headline is its page's `h1`, verbatim.** Never new copy. A card is the page's first
+  impression, so inventing a line there would put an unapproved promise in front of someone before
+  they ever reach the page. The generator fails the build if the two ever differ.
+- One line, the mark, the domain. No eyebrow, no supporting sentence: a 15px tracked line is 4px
+  wide in a chat bubble.
+- Only pages people actually send each other get their own card. Everything else falls back to the
+  default. Adding one is a row in `CARDS` plus a row in `scripts/wire-og.mjs`, which is the ONLY
+  writer of `og:image` tags.
+- **One style across every card; only the line changes** (Alec, 2026-07-25). The backdrop is the
+  Adapt To Life mark embossed in black, identical on all of them, so a run of shared links reads as
+  one organisation. Resist per-page imagery: the variation belongs in the sentence.
+- The type sits right on these cards, the one place the system breaks the site's left alignment. The
+  mark sits left of centre in the artwork and cannot be moved right without zooming past what the
+  file carries, which the resolution gate refuses. Composition decided it, not taste.
+- Photographs, when a card uses one, are of real athletes, ours, and are cropped rather than
+  altered. Nothing generated stands in for an athlete. The photo layout is still in the generator
+  and one flag away, kept deliberately rather than deleted.
+- **A card's photograph must match the page's actual sport.** Read the page; never infer the sport
+  from whichever images happen to be at hand. The first Send 6 card showed water-skiing because the
+  photo library is full of it, while the page has always said "six adaptive pickleball athletes".
+- **No other organisation's branding on our card.** It applies to a partner's product (the popcorn
+  vendor's bag) and to a host venue's logo on a shirt in the background alike.
+- **Deploy with `npm run deploy:staging`, never bare `wrangler deploy`.** It stamps
+  `public/build.txt` with the commit and a digest of `public/` first, and `check-site.mjs` fails if
+  the deployed stamp is not the build you are checking. One staging Worker serves one branch, so
+  without this a green check can be a green check against somebody else's deploy: on 2026-07-25
+  staging took eleven deploys in ninety minutes, three of them ours, and the review link served a
+  month-old card.
+- `scripts/check-site.mjs` fetches every card off the deployed host on every deploy: it must resolve,
+  be absolute, carry alt text, match its declared 1200x630, and fit the 300KB budget above which
+  WhatsApp silently drops the preview.

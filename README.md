@@ -56,12 +56,35 @@ This repo deploys to the existing `adapt-to-life` Worker. The Cloudflare API tok
 cfrun npx wrangler deploy
 ```
 
-Staging preview first (front-end only — no data bindings, no cron — so it can never touch prod Airtable/D1/R2/email):
+### Two sessions at once: use a per-version preview URL, not shared staging
+
+`--env staging` is ONE Worker. Two concurrent workstreams deploying to it silently replace each
+other, and every check you run afterwards passes against whichever build landed last. On
+2026-07-25 that happened for real: eleven staging deploys in ninety minutes from two sessions, and
+the review link handed over served a month-old card.
+
+**So do not deploy to shared staging for review. Upload a version and use its own URL:**
 
 ```sh
-cfrun npx wrangler deploy --env staging
+npm run preview
+# → Version Preview URL: https://<version-prefix>-adapt-to-life-staging.alec-af3.workers.dev
+```
+
+That URL is yours alone, it is a full working copy of the site, and it does not change what
+`adapt-to-life-staging` serves. No second Worker, no second environment, no config change: the
+isolation already exists in Wrangler. Check and hand over THAT link.
+
+Shared staging (only when you know you are the only session on it — front-end only, no data
+bindings, no cron, so it can never touch prod Airtable/D1/R2/email):
+
+```sh
+npm run deploy:staging
 # → https://adapt-to-life-staging.alec-af3.workers.dev
 ```
+
+Both paths stamp `public/build.txt` first, and `check-site.mjs` fails if the build it reaches is
+not the build you are testing. That check is the point: it is what turns "someone deployed over
+me" from a thing you find out from Alec into a thing the harness tells you.
 
 Preview locally without deploying:
 
@@ -72,7 +95,8 @@ npx wrangler dev
 ## Checking a deploy
 
 ```sh
-node scripts/check-site.mjs                        # staging
+node scripts/check-site.mjs <your-preview-url>       # your own version, the normal case
+node scripts/check-site.mjs                          # shared staging
 node scripts/check-site.mjs https://adapttolife.org  # prod, after promoting
 ```
 
@@ -87,6 +111,11 @@ Edge propagation runs ~35 to 60 seconds. Poll the served HTML for a string from 
 before trusting a check or a screenshot, or you will verify the previous build.
 
 ## Handing an iteration over
+
+`/review` has ONE writer per branch and two concurrent branches will both rewrite it. That is fine
+and it is not worth coordinating: resolve the conflict in favour of the branch that merges last,
+because the file means "the newest iteration". Review happens on your own preview URL, so the
+shared path never has to arbitrate between two live iterations.
 
 `/review` is the one link a reviewer gets: a single ordered walk of what changed, staging-only
 (production 302s it home). It is part of the work, not a chore afterwards, so **update

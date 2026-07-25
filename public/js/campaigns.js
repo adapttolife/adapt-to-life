@@ -182,9 +182,65 @@
       });
   }
 
+  /* The campaign band: one partial, four pages. Renders the active campaign
+     into `hostId`, or renders nothing at all if there is no campaign or the
+     data is unreachable. Nothing is the correct empty state here: the pages it
+     sits on are complete without it, and a band that cannot name a real goal
+     is worse than no band. */
+  function band(hostId, opts) {
+    var host = document.getElementById(hostId);
+    if (!host) return;
+    var lifted = (opts || {}).lifted;
+
+    load(function (store) {
+      var c = store && store.campaigns[0];
+      if (!c) return;
+
+      var a = el("a", "camp-band" + (lifted ? " lifted" : ""));
+      a.href = c.page || "/send-6";
+
+      var card = el("div", "camp-band-card");
+      var left = el("div");
+      var eyebrow = el("span", "cb-eyebrow");
+      eyebrow.appendChild(el("span", "dot"));
+      eyebrow.appendChild(document.createTextNode("Raising now"));
+      left.appendChild(eyebrow);
+      left.appendChild(el("span", "cb-name", c.name));
+      if (c.blurb) left.appendChild(el("span", "cb-blurb", c.blurb));
+
+      var side = el("div", "cb-side");
+      var bar = el("span", "cb-bar");
+      var fill = el("span", "cb-fill");
+      bar.appendChild(fill);
+      var label = el("span", "cb-label", c.goal ? money(c.goal) + " goal" : "");
+      var cta = el("span", "cb-cta", "See the campaign");
+      side.appendChild(bar);
+      side.appendChild(label);
+      side.appendChild(cta);
+
+      card.appendChild(left);
+      card.appendChild(side);
+      a.appendChild(card);
+      host.appendChild(a);
+
+      // The live figure lands last. If Givebutter is unreachable the goal
+      // stands on its own rather than publishing a $0 we cannot vouch for.
+      raised(function (d) {
+        if (!d || !d.goal) return;
+        var goal = d.goal || c.goal;
+        label.textContent = money(d.raised) + " of " + money(goal) + " raised";
+        var pct = Math.max(0, Math.min(100, (d.raised / goal) * 100));
+        requestAnimationFrame(function () {
+          setTimeout(function () { fill.style.width = pct.toFixed(1) + "%"; }, 140);
+        });
+      });
+    });
+  }
+
   global.ATLCampaigns = {
     load: load,
     raised: raised,
+    band: band,
     localDate: localDate,
     today: today,
     fmtDate: fmtDate,

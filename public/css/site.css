@@ -421,6 +421,52 @@ section{ position:relative; }
   .btn,.arrow,.nav{ transition:none; }
 }
 
+/* ---- campaign band (Spec 115) --------------------------------------------
+   One partial, four pages: /, /donate, /hustle-and-heart, /roadmap. It answers
+   the question an identity page never answers, which is "what is happening
+   right now." The goal figure comes from /api/raised on every instance, so
+   changing it in Givebutter changes it everywhere and it can never disagree
+   with itself across pages.
+   -------------------------------------------------------------------------- */
+.camp-band{ display:block; }
+.camp-band-card{
+  display:grid; grid-template-columns:1fr minmax(0,290px);
+  gap:1.2rem clamp(1.6rem,3.4vw,3rem); align-items:center;
+  background:var(--paper); border:1px solid var(--hairline); border-radius:20px;
+  padding:clamp(1.4rem,3vw,2.2rem);
+  box-shadow:0 28px 64px -34px rgba(28,26,21,0.42);
+  transition:border-color .2s ease, transform .2s ease;
+}
+a.camp-band:hover .camp-band-card{ border-color:rgba(232,87,42,0.4); transform:translateY(-2px); }
+a.camp-band:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:4px; border-radius:20px; }
+@media (max-width:820px){ .camp-band-card{ grid-template-columns:1fr; } }
+
+/* pulled up over the dark band above it, the way /popcorn's active card sits */
+.camp-band.lifted{ margin-top:clamp(-3.6rem,-5vw,-2.2rem); position:relative; z-index:5; }
+
+.cb-eyebrow{
+  display:inline-flex; align-items:center; gap:0.5rem;
+  font-family:"Space Mono",monospace; font-size:0.68rem; font-weight:700;
+  letter-spacing:0.16em; text-transform:uppercase; color:var(--orange-ink);
+}
+.cb-eyebrow .dot{ width:8px; height:8px; border-radius:50%; background:var(--orange); box-shadow:0 0 0 4px var(--orange-bloom); }
+.cb-name{ display:block; margin-top:0.7rem; font-family:"Newsreader",serif; font-weight:500;
+  font-size:clamp(1.5rem,2.6vw,2.05rem); line-height:1.1; letter-spacing:-0.012em; color:var(--ink); }
+.cb-blurb{ display:block; margin-top:0.6rem; color:var(--ink-soft); max-width:52ch; font-size:1rem; }
+.cb-side{ display:flex; flex-direction:column; gap:0.9rem; }
+.cb-bar{ display:block; height:8px; border-radius:999px; background:rgba(28,26,21,0.10); overflow:hidden; }
+.cb-fill{ display:block; height:100%; width:0; min-width:3px; border-radius:999px;
+  background:linear-gradient(90deg,var(--orange-ink),var(--orange-hot));
+  transition:width 1.2s cubic-bezier(.2,.8,.2,1); }
+.cb-label{ display:block; margin-top:-0.35rem; font-family:"Space Mono",monospace; font-size:0.78rem; color:var(--muted); }
+.cb-cta{
+  display:inline-flex; align-items:center; justify-content:center; gap:0.5rem;
+  font-weight:600; font-size:0.98rem; padding:0.82rem 1.55rem; border-radius:999px;
+  background:var(--orange-ink); color:#fff; border:1.5px solid var(--orange-ink);
+  box-shadow:0 8px 26px -10px var(--orange-glow);
+}
+a.camp-band:hover .cb-cta{ background:var(--orange-press); border-color:var(--orange-press); }
+
 /* ---- contact ------------------------------------------------------------- */
 .contact-grid{ display:grid; grid-template-columns:0.9fr 1.1fr; gap:clamp(2rem,5vw,4rem); align-items:start; margin-top:clamp(1.5rem,3vw,2.5rem); }
 .info-item{ padding:1.05rem 0; border-top:1px solid var(--hairline); }

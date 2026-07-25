@@ -84,15 +84,11 @@
     </div>
   </section>
 
-  <!-- ACTIVE CAMPAIGN (light tint) -->
-  <section class="band tint">
-    <div class="wrap reading">
-      <hr class="tick orange reveal">
-      <span class="eyebrow orange reveal">Active campaign</span>
-      <h2 class="serif statement reveal" style="margin-top:0.8rem;">Send 6 to the US Open</h2>
-      <p class="prose reveal" style="margin-top:1.1rem;">We're raising $21,000 to send six adaptive pickleball athletes to the 2027 US Open in Naples, with no one paying a dollar out of pocket. It's the fund at its clearest: real athletes, real competition, fully covered.</p>
-      <div class="reveal" style="margin-top:1.8rem;"><a href="/send-6" class="btn">Back the campaign</a></div>
-    </div>
+  <!-- ACTIVE CAMPAIGN — the shared band, not a restatement. This block used to
+       hand-write the name, the goal and the pitch, which is how it ended up
+       still saying "Send 5" and "$17,500" long after both had changed. -->
+  <section class="band-sm">
+    <div class="wrap"><div id="roadmapBand"></div></div>
   </section>
 
   <!-- NOW (light) -->
@@ -295,6 +291,8 @@
   })();
 </script>
 
+<script src="/js/campaigns.js"></script>
+<script>window.ATLCampaigns.band('roadmapBand');</script>
 <script src="/js/subscribe.js" defer></script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </body>

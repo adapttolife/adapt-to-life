@@ -110,6 +110,11 @@
     </div>
   </section>
 
+  <!-- CAMPAIGN BAND — what the gift you just considered is going toward -->
+  <section class="band-sm">
+    <div class="wrap"><div id="donateBand"></div></div>
+  </section>
+
   <!-- IMPACT -->
   <section class="band tint">
     <div class="wrap">
@@ -277,6 +282,8 @@
 
 <!-- Donation form is the embedded Givebutter giving form above; no custom JS needed. -->
 
+<script src="/js/campaigns.js"></script>
+<script>window.ATLCampaigns.band('donateBand');</script>
 <script src="/js/subscribe.js" defer></script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </body>

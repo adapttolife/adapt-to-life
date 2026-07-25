@@ -15,6 +15,10 @@
 //   6. zero reachable dead links, and every internal target resolves
 //   7. no page errors in the console
 //
+// Pages run with reduced motion. The coaching photo band loops a 30s ken-burns
+// scale, so without it the overflow probe caught the image mid-scale and the
+// same build passed or failed depending on when it ran.
+//
 // Box-local dev tool (not Worker code): Playwright lives at ~/pw on the box.
 // Usage: node scripts/check-site.mjs [base-url]
 //   default base: the staging Worker. Pass https://adapttolife.org to check prod.
@@ -45,7 +49,7 @@ let reference = null;
 
 for (const path of PAGES) {
   // ---- mobile: one tap must open the menu -------------------------------
-  const m = await browser.newPage({ viewport: { width: 390, height: 800 } });
+  const m = await browser.newPage({ viewport: { width: 390, height: 800 }, reducedMotion: "reduce" });
   const mErrs = [];
   m.on("pageerror", (e) => mErrs.push(String(e).slice(0, 90)));
   // Turnstile logs a %c%d line as console.error on every page; not ours.
@@ -71,7 +75,7 @@ for (const path of PAGES) {
   if (mErrs.length) fail(`${path} @390 console: ${JSON.stringify(mErrs)}`);
 
   // ---- desktop: the dropdown must open, and match mobile ----------------
-  const d = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  const d = await browser.newPage({ viewport: { width: 1440, height: 1000 }, reducedMotion: "reduce" });
   const dErrs = [];
   d.on("pageerror", (e) => dErrs.push(String(e).slice(0, 90)));
   d.on("console", (c) => { if (c.type() === "error" && !c.text().includes("font-size:0")) dErrs.push(c.text().slice(0, 90)); });

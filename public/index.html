@@ -23,6 +23,20 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
+<style>
+  /* On the calendar: dated proof the org is moving. Compact by design, because
+     the hub at /ways-to-give is where the full list belongs. */
+  .home-cal{ list-style:none; padding:0; margin:clamp(1.8rem,3vw,2.4rem) 0 0; max-width:860px; margin-inline:auto; }
+  .home-cal li{ display:flex; flex-wrap:wrap; align-items:center; gap:0.5rem 1.2rem;
+    padding:1.15rem 0; border-bottom:1px solid var(--hairline); }
+  .home-cal li:first-child{ border-top:1px solid var(--hairline); }
+  .hc-main{ flex:1 1 20rem; min-width:0; }
+  .hc-when{ font-family:"Space Mono",monospace; font-size:0.7rem; font-weight:700;
+    letter-spacing:0.14em; text-transform:uppercase; color:var(--orange-ink); }
+  .hc-name{ margin-top:0.3rem; font-weight:600; font-size:1.04rem; }
+  .hc-sub{ margin-top:0.2rem; font-size:0.93rem; color:var(--ink-soft); max-width:56ch; }
+  .hc-go{ flex:0 0 auto; font-size:0.9rem; }
+</style>
 </head>
 <body>
 
@@ -79,34 +93,55 @@
       <p class="lead sub reveal">Access to sport is a right, not a privilege. Two things still keep athletes on the sidelines: what it costs, and finding it at all. We're taking down both.</p>
       <div class="actions reveal">
         <a href="/donate" class="btn">Donate</a>
-        <a href="/roadmap" class="btn ghost">Follow the build <span class="arrow">&rarr;</span></a>
+        <a href="/send-6" class="btn ghost">See what we're raising for <span class="arrow">&rarr;</span></a>
       </div>
       <div class="startline-hero" aria-hidden="true"></div>
     </div>
   </section>
 
-  <!-- 3 · THE TWO PIECES — barrier-led -->
-  <section class="band tint">
+  <!-- 2 · CAMPAIGN BAND — the answer to "what is happening right now",
+         lifted over the hero. Renders nothing if there is no live campaign. -->
+  <section style="padding:0;">
+    <div class="wrap"><div id="homeBand"></div></div>
+  </section>
+
+  <!-- 3 · OUR WORK — two fronts of one job, not a choice between two products -->
+  <section class="band">
     <div class="wrap">
       <div class="reveal sec-head">
-        <span class="eyebrow orange">Where we start</span>
-        <h2 class="serif h2" style="margin-top:0.8rem;">We clear the path into the game, one barrier at a time.</h2>
-        <p class="prose" style="margin-top:1rem;">A chair nobody could afford. A trip nobody funded. A program nobody could find. Solvable, all of it. We start with the two barriers that stop people first.</p>
+        <span class="eyebrow orange">Our work</span>
+        <h2 class="serif h2" style="margin-top:0.8rem;">One job, worked from two sides.</h2>
+        <p class="prose" style="margin-top:1rem;">A chair nobody could afford. A trip nobody funded. A program nobody could find. Same athlete, stopped by two different things, so we work both.</p>
       </div>
       <div class="progs">
         <div class="prog reveal">
           <span class="tag">The cost barrier</span>
           <h3 class="serif h3">Hustle &amp; Heart Fund</h3>
           <p>Adaptive gear is brutally expensive. A racing chair can cost more than a car. We help cover those costs so money is never the reason someone stops.</p>
-          <a href="/hustle-and-heart" class="textlink go">See what's happening now <span class="arrow">&rarr;</span></a>
+          <a href="/hustle-and-heart" class="textlink go">How the fund works <span class="arrow">&rarr;</span></a>
         </div>
         <div class="prog reveal">
           <span class="tag">The access barrier</span>
           <h3 class="serif h3">Adaptive Sports Near Me</h3>
           <p>You can't play what you can't find. We're building a free, open directory of adaptive programs nationwide, with no logins and no paywalls.</p>
-          <a href="/adaptive-sports-near-me" class="textlink go">Adaptive Sports Near Me <span class="arrow">&rarr;</span></a>
+          <a href="/adaptive-sports-near-me" class="textlink go">How the directory works <span class="arrow">&rarr;</span></a>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- 4 · ON THE CALENDAR — dated proof the org is moving. Whole section
+         removes itself when nothing is coming up, rather than sitting empty. -->
+  <section class="band-sm tint" id="homeCalendarSection" hidden>
+    <div class="wrap">
+      <div class="reveal sec-head">
+        <span class="eyebrow">On the calendar</span>
+        <h2 class="serif h2" style="margin-top:0.7rem;">What is coming up.</h2>
+      </div>
+      <ul class="home-cal" id="homeCalendar"></ul>
+      <p class="center reveal" style="margin-top:1.8rem;">
+        <a class="textlink" href="/ways-to-give">Every way to pitch in <span class="arrow">&rarr;</span></a>
+      </p>
     </div>
   </section>
 
@@ -145,9 +180,10 @@
     <div class="wrap center">
       <span class="eyebrow orange reveal">Your turn</span>
       <h2 class="serif display reveal">Be the reason the next athlete plays.</h2>
-      <p class="lead sub reveal">Every dollar you give goes to an athlete's costs: equipment, training, and travel.</p>
+      <p class="lead sub reveal">About $3,500 covers one athlete's equipment, training, and travel. Any part of it moves someone off the sidelines.</p>
       <div class="actions reveal">
         <a href="/donate" class="btn">Donate</a>
+        <a href="/ways-to-give" class="btn ghost">Other ways to give <span class="arrow">&rarr;</span></a>
       </div>
     </div>
   </section>
@@ -253,6 +289,49 @@
       });
     }
   })();
+</script>
+
+<script src="/js/campaigns.js"></script>
+<script>
+(function(){
+  var C = window.ATLCampaigns;
+
+  // The campaign band, lifted over the hero.
+  C.band('homeBand', { lifted: true });
+
+  // On the calendar: at most three, soonest first. The whole section stays
+  // hidden unless there is something real and upcoming to put in it.
+  C.load(function(store){
+    if (!store) return;
+    var host = document.getElementById('homeCalendar');
+    var section = document.getElementById('homeCalendarSection');
+    if (!host || !section) return;
+
+    var upcoming = store.drives
+      .filter(function(d){ return C.driveStatus(d) !== 'past'; })
+      .sort(function(a,b){ return (C.driveOpens(a) || 0) - (C.driveOpens(b) || 0); })
+      .slice(0, 3);
+    if (!upcoming.length) return;
+
+    upcoming.forEach(function(d){
+      var li = C.el('li','reveal in');
+      var main = C.el('div','hc-main');
+      main.appendChild(C.el('p','hc-when', C.driveWhen(d)));
+      main.appendChild(C.el('p','hc-name', d.name));
+      if (d.summary) main.appendChild(C.el('p','hc-sub', d.summary));
+
+      var cta = C.driveCta(d);
+      var go = C.el('a','textlink hc-go');
+      C.wire(go, cta.href, cta.label);
+      go.appendChild(C.el('span','arrow','→'));
+
+      li.appendChild(main);
+      li.appendChild(go);
+      host.appendChild(li);
+    });
+    section.hidden = false;
+  });
+})();
 </script>
 
 <script src="/js/subscribe.js" defer></script>

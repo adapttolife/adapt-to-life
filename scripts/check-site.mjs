@@ -19,8 +19,11 @@
 // Usage: node scripts/check-site.mjs [base-url]
 //   default base: the staging Worker. Pass https://adapttolife.org to check prod.
 import { chromium } from "/home/agentos/pw/node_modules/playwright/index.mjs";
+import { readFileSync } from "node:fs";
+import { execSync } from "node:child_process";
 
 const BASE = process.argv[2] || "https://adapt-to-life-staging.alec-af3.workers.dev";
+const IS_STAGING = BASE.includes("staging");
 const PAGES = [
   "/", "/about", "/adaptive-sports-near-me", "/apply", "/contact", "/donate",
   "/hustle-and-heart", "/karen", "/popcorn", "/roadmap", "/send-6", "/sponsorship",
@@ -118,6 +121,32 @@ for (const t of [...targets].sort()) {
 
 const missing = await fetch(`${BASE}/definitely-not-a-real-page?cb=${Date.now()}`);
 if (missing.status !== 404) fail(`unknown path returned ${missing.status}, expected 404`);
+
+// ---- /review: the one link Alec gets ------------------------------------
+// It is the tour of the current iteration, so it going stale is a bug in the
+// iteration, not a chore for later. This session it described a build three
+// weeks old, including a goal figure we had already retired.
+{
+  const tour = readFileSync(new URL("../public/review.html", import.meta.url), "utf8");
+  const stamped = tour.match(/updated (\d{4}-\d{2}-\d{2})/)?.[1];
+  const lastTouched = execSync(
+    "git log -1 --format=%cs -- public ':(exclude)public/review.html'",
+    { encoding: "utf8" }
+  ).trim();
+  if (!stamped) fail("review.html has no `updated YYYY-MM-DD` stamp");
+  else if (lastTouched && stamped < lastTouched)
+    fail(`review.html is stale: stamped ${stamped}, but public/ last changed ${lastTouched}. The tour is the deliverable, so refresh it in the same commit.`);
+
+  // Every stop must be a real page, and the tour stays off production.
+  for (const href of [...tour.matchAll(/class="rv-steps"[\s\S]*?<\/ol>/g)][0]?.[0]
+    .matchAll(/href="(\/[^"]*)"/g) ?? []) {
+    const r = await fetch(`${BASE}${href[1]}?cb=${Date.now()}`);
+    if (!r.ok) fail(`review.html links to ${href[1]}, which returned ${r.status}`);
+  }
+  const rv = await fetch(`${BASE}/review?cb=${Date.now()}`, { redirect: "manual" });
+  if (IS_STAGING && rv.status !== 200) fail(`/review returned ${rv.status} on staging, expected 200`);
+  if (!IS_STAGING && rv.status !== 302) fail(`/review returned ${rv.status} on production, expected a 302 home`);
+}
 
 await browser.close();
 console.log(`\n${PAGES.length} pages · ${targets.size} internal targets · nav ${reference.desk}`);

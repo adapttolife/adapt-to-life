@@ -86,6 +86,18 @@ opened. The markup was identical on every page and grepping it found nothing.
 Edge propagation runs ~35 to 60 seconds. Poll the served HTML for a string from your change
 before trusting a check or a screenshot, or you will verify the previous build.
 
+## Handing an iteration over
+
+`/review` is the one link a reviewer gets: a single ordered walk of what changed, staging-only
+(production 302s it home). It is part of the work, not a chore afterwards, so **update
+`public/review.html` in the same commit as the iteration.** Give it the stops in the order a
+visitor would walk them, one line each on what changed, plus what specifically to look at and
+what is deliberately unfinished, so nobody spends attention reporting known gaps.
+
+`check-site.mjs` fails if the tour's `updated` stamp predates the newest change under `public/`,
+or if it links to a page that no longer resolves. It went stale once and the person reviewing
+had to ask twice for a usable link.
+
 ## Provenance
 
 This repo was reconstructed from the live deployment (the only source that existed at the time). Because the Worker serves static assets with no server code, the captured files are byte-identical to what was deployed.

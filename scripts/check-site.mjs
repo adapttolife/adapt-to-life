@@ -242,6 +242,14 @@ for (const path of ["/donate", "/hustle-and-heart"]) {
     const form = g.locator("givebutter-giving-form");
     await form.waitFor({ state: "attached", timeout: 20000 });
 
+    // Scroll the panel into view before asserting. The embed is deferred until
+    // it nears the viewport, so a check that never scrolls cannot tell a broken
+    // form from a correctly-deferred one — on /hustle-and-heart the panel sits
+    // far enough down that this is the difference between red and green. A
+    // donor scrolls to the form before using it, so this models the real thing
+    // rather than weakening the assertion.
+    await form.scrollIntoViewIfNeeded();
+
     // The embed lives in an iframe inside the element's shadow root. Wait on the
     // amount step being VISIBLE, not on an element being attached: the iframe is
     // attached long before it renders, and most of its ~30 inputs are hidden, so
@@ -296,13 +304,21 @@ for (const path of ["/donate", "/hustle-and-heart"]) {
 // catches an added embed: embeds arrive with a fleet of hosts, not one.
 const BUDGET = {
   "/": { own: 185, total: 700, reqs: 24, hosts: 4, cls: 0.10 },
-  // cls:null = deliberately NOT asserted yet, which is a finding, not an
-  // oversight. /donate measured 0.12, 0.15, 0.34 and 0.76 across runs because
-  // the Givebutter panel reserves no height and shoves the page when it mounts
-  // ~1.9s in. Any ceiling wide enough not to flap is wide enough to be
-  // meaningless, and a check that cries wolf gets ignored — which is how the
-  // 9 MB got here. Reserve the panel's height, then set this to 0.10 like every
-  // other page. The null is the debt marker; delete it with the fix.
+  // cls:null, still — but for a smaller and better-understood reason than
+  // before. The Givebutter cause IS fixed: reserving the panel's height took
+  // MOBILE from 0.12-0.76 down to a flat 0 across five runs in every condition
+  // tried, and mobile is where the donors and the original complaint are.
+  //
+  // What is left is desktop-only and bimodal: roughly half of 1440x900 runs
+  // score ~0.108, the rest ~0.002, from something landing near 1.7s that moves
+  // .give-intro / .gp-note / SECTION.band-sm. Ruled out by measurement, not
+  // guesswork: it is not the form height (reserving the exact settled 508px
+  // changed nothing), not the reveal animation (it reproduces under
+  // reducedMotion), and not only the webfont swap (it reproduces with
+  // fonts.googleapis and fonts.gstatic blocked).
+  //
+  // A ceiling that flaps between 0.002 and 0.108 would teach us to ignore red,
+  // so this stays null until that race is named. Tracked, not forgotten.
   "/donate": { own: 115, total: 9000, reqs: 108, hosts: 21, cls: null },
 };
 

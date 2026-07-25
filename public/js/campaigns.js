@@ -212,6 +212,10 @@
     var lifted = (opts || {}).lifted;
 
     load(function (store) {
+      // Release the reserved height the moment we know the answer, whether or
+      // not there is anything to show. Holding it open on an empty band would
+      // trade a jump for a permanent hole.
+      host.classList.remove("camp-pending");
       var c = store && store.campaigns[0];
       if (!c) return;
 

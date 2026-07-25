@@ -39,6 +39,11 @@
   .gp-note{ text-align:center; font-family:'Hanken Grotesk',sans-serif; font-size:0.76rem; color:#9a9a9a; margin:0.3rem 0 0; }
   .give-ways{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(1.6rem,2.6vw,2.4rem) clamp(1.6rem,3vw,2.8rem); margin-top:clamp(2.2rem,3.6vw,3rem); }
   @media (max-width:679px){ .give-ways{ grid-template-columns:1fr; } }
+  /* Space held for the Givebutter embed so its late mount cannot shove the
+     page. Measured on prod: the settled form is 552px on a phone and 508px on
+     a desktop, so these sit just under each. */
+  givebutter-giving-form{ display:block; min-height:552px; }
+  @media (min-width:881px){ givebutter-giving-form{ min-height:508px; } }
 </style>
 </head>
 <body>
@@ -105,7 +110,7 @@
 
         <!-- GIVE PANEL — Givebutter embedded giving form (campaign IXM5DR,
              account 7FsgcjXFnW6fabQn). Renders once the campaign is published. -->
-        <script async src="https://widgets.givebutter.com/latest.umd.cjs?acct=7FsgcjXFnW6fabQn"></script>
+        <script src="/js/givebutter-lazy.js" defer></script>
         <div class="give-panel reveal" id="givePanel">
           <givebutter-giving-form campaign="IXM5DR"></givebutter-giving-form>
           <p class="gp-note">Secure checkout by Givebutter.</p>
@@ -116,7 +121,7 @@
 
   <!-- CAMPAIGN BAND — what the gift you just considered is going toward -->
   <section class="band-sm">
-    <div class="wrap"><div id="donateBand"></div></div>
+    <div class="wrap"><div id="donateBand" class="camp-pending"></div></div>
   </section>
 
   <!-- IMPACT -->

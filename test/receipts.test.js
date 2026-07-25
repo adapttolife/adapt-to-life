@@ -1,0 +1,93 @@
+// Unit tests for src/receipts.js — the contact and grant-application receipts.
+//
+// What this pins, in order of how much it would hurt to get wrong:
+//   1. A receipt can NEVER throw. By the time it runs the record is already in
+//      Airtable, so a thrown error would turn a saved grant application into a
+//      "could not save" for the applicant. Every failure mode is swallowed.
+//   2. The bcc to hello@ is present, because that single header is the entire
+//      internal-notification mechanism. Losing it silently returns us to the
+//      state Alec found: submissions landing with nobody told.
+//   3. User text is escaped into the HTML body.
+//
+// Standalone `node --test` with a stub binding — same no-new-deps convention as
+// the other tests here.
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { sendContactReceipt, sendApplyReceipt } from "../src/receipts.js";
+
+function stubEnv({ throws = false } = {}) {
+  const sent = [];
+  return {
+    sent,
+    env: {
+      SEND_EMAIL: {
+        send(msg) {
+          if (throws) throw new Error("simulated Email Service outage");
+          sent.push(msg);
+          return {};
+        },
+      },
+    },
+  };
+}
+
+test("contact receipt sends to the person and bccs the house address", async () => {
+  const { env, sent } = stubEnv();
+  const ok = await sendContactReceipt(env, {
+    name: "Alec Tranel", email: "someone@example.com", message: "Hello", type: "Giving or sponsoring",
+  });
+  assert.equal(ok, true);
+  assert.equal(sent.length, 1);
+  const m = sent[0];
+  assert.equal(m.to, "someone@example.com");
+  assert.equal(m.bcc, "hello@adapttolife.org");
+  assert.equal(m.replyTo, "hello@adapttolife.org");
+  assert.match(m.from, /hello@adapttolife\.org/);
+  assert.ok(m.subject.length > 0);
+  assert.ok(m.text.includes("Alec"), "greets by first name only");
+  assert.ok(!m.text.includes("Tranel"), "does not use the full name in the greeting");
+});
+
+test("apply receipt names the next step and bccs the house address", async () => {
+  const { env, sent } = stubEnv();
+  const ok = await sendApplyReceipt(env, {
+    name: "Jordan Rivers", email: "jordan@example.com", sport: "Wheelchair basketball", need: "Sport chair",
+  });
+  assert.equal(ok, true);
+  const m = sent[0];
+  assert.equal(m.bcc, "hello@adapttolife.org");
+  assert.ok(/review/i.test(m.text), "tells the applicant a person reviews it");
+  assert.ok(m.html.includes("Wheelchair basketball"));
+  assert.ok(m.html.includes("Sport chair"));
+});
+
+test("a send failure never throws — the submission is already saved", async () => {
+  const { env } = stubEnv({ throws: true });
+  const a = await sendContactReceipt(env, { name: "A", email: "a@example.com", message: "x" });
+  const b = await sendApplyReceipt(env, { name: "B", email: "b@example.com" });
+  assert.equal(a, false);
+  assert.equal(b, false);
+});
+
+test("a missing SEND_EMAIL binding is quiet, not fatal — staging has none", async () => {
+  const a = await sendContactReceipt({}, { name: "A", email: "a@example.com", message: "x" });
+  const b = await sendApplyReceipt({}, { name: "B", email: "b@example.com" });
+  assert.equal(a, false);
+  assert.equal(b, false);
+});
+
+test("user text is escaped into the html body", async () => {
+  const { env, sent } = stubEnv();
+  await sendContactReceipt(env, {
+    name: "X", email: "x@example.com", message: '<img src=x onerror="alert(1)">',
+  });
+  const html = sent[0].html;
+  assert.ok(!html.includes("<img src=x"), "raw tag must not survive");
+  assert.ok(html.includes("&lt;img"), "escaped form is present");
+});
+
+test("a missing name still produces a sane greeting", async () => {
+  const { env, sent } = stubEnv();
+  await sendContactReceipt(env, { name: "", email: "x@example.com", message: "hi" });
+  assert.ok(sent[0].text.startsWith("Hi there,"));
+});

@@ -69,6 +69,35 @@ Preview locally without deploying:
 npx wrangler dev
 ```
 
+## Checking a deploy
+
+```sh
+node scripts/check-site.mjs                        # staging
+node scripts/check-site.mjs https://adapttolife.org  # prod, after promoting
+```
+
+Run it after every deploy. It clicks rather than greps: every page returns 200 and an unknown
+path 404s, the mobile menu opens on one tap, the desktop dropdown opens on click, the mobile
+and desktop navs list the same items, there is no horizontal overflow at 390px or 1440px, no
+reachable dead links, and no console errors. It exists because `/popcorn` once shipped with the
+nav script included twice, so every tap toggled the mobile menu open and shut and the menu never
+opened. The markup was identical on every page and grepping it found nothing.
+
+Edge propagation runs ~35 to 60 seconds. Poll the served HTML for a string from your change
+before trusting a check or a screenshot, or you will verify the previous build.
+
+## Handing an iteration over
+
+`/review` is the one link a reviewer gets: a single ordered walk of what changed, staging-only
+(production 302s it home). It is part of the work, not a chore afterwards, so **update
+`public/review.html` in the same commit as the iteration.** Give it the stops in the order a
+visitor would walk them, one line each on what changed, plus what specifically to look at and
+what is deliberately unfinished, so nobody spends attention reporting known gaps.
+
+`check-site.mjs` fails if the tour's `updated` stamp predates the newest change under `public/`,
+or if it links to a page that no longer resolves. It went stale once and the person reviewing
+had to ask twice for a usable link.
+
 ## Provenance
 
 This repo was reconstructed from the live deployment (the only source that existed at the time). Because the Worker serves static assets with no server code, the captured files are byte-identical to what was deployed.

@@ -4,25 +4,103 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light only">
-<title>Our Story | Adapt To Life</title>
-<meta name="description" content="Adapt To Life was built by the adaptive sports community it serves. Meet the team and the founder behind the mission.">
-<link rel="canonical" href="https://adapttolife.org/about">
+<title>Send 6 to the US Open | Adapt To Life</title>
+<meta name="description" content="We are raising $21,000 to send six adaptive pickleball athletes to the US Open in Naples with nothing out of pocket. About $3,500 covers one athlete's equipment, training, and travel. Adapt To Life is a recognized 501(c)(3).">
+<link rel="canonical" href="https://adapttolife.org/send-6">
 <link rel="icon" type="image/svg+xml" href="/images/atl-logo.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
 <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Our Story | Adapt To Life">
-<meta property="og:description" content="Adapt To Life was built by the adaptive sports community it serves. Meet the team and the founder behind the mission.">
+<meta property="og:title" content="Send 6 to the US Open | Adapt To Life">
+<meta property="og:description" content="Six adaptive athletes in Naples, nothing out of pocket. About $3,500 covers one.">
 <meta property="og:image" content="https://adapttolife.org/images/og-image.jpg">
-<meta property="og:url" content="https://adapttolife.org/about">
+<meta property="og:url" content="https://adapttolife.org/send-6">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Our Story | Adapt To Life">
-<meta name="twitter:description" content="Adapt To Life was built by the adaptive sports community it serves. Meet the team and the founder behind the mission.">
+<meta name="twitter:title" content="Send 6 to the US Open | Adapt To Life">
+<meta name="twitter:description" content="Six adaptive athletes in Naples, nothing out of pocket.">
 <meta name="twitter:image" content="https://adapttolife.org/images/og-image.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
+<style>
+  /* ==========================================================================
+     Send 6 to the US Open — the campaign page. The goal, who it reaches, the
+     arithmetic behind the number, and every drive feeding it. Everything here
+     is a verified cost, not a round number picked to look good.
+     ========================================================================== */
+
+  /* ---- hero + the number ------------------------------------------------- */
+  .s6-hero{ padding-top:clamp(6rem,14vh,9.5rem); padding-bottom:clamp(3.5rem,8vw,6rem); }
+  .s6-hero .display{ max-width:14ch; margin-top:1.3rem; }
+  .s6-hero .sub{ max-width:50ch; margin-top:1.4rem; }
+  .s6-meter{ max-width:620px; margin-top:clamp(2rem,4vw,2.8rem); }
+  .s6-meter-row{ display:flex; align-items:baseline; gap:0.55rem; flex-wrap:wrap; }
+  .s6-meter-n{ font-family:"Newsreader",serif; font-size:clamp(2.3rem,5.6vw,3.3rem); line-height:1; color:#fff; font-variant-numeric:tabular-nums; }
+  .s6-meter-of{ font-size:0.98rem; color:var(--cream-mute); }
+  .s6-meter-track{ display:block; height:12px; border-radius:999px; background:rgba(255,255,255,0.13); margin-top:1rem; overflow:hidden; }
+  .s6-meter-fill{ display:block; height:100%; width:0; border-radius:999px;
+    background:linear-gradient(90deg,var(--orange-ink),var(--orange-hot));
+    box-shadow:0 0 22px -2px rgba(232,93,4,0.7);
+    transition:width 1.3s cubic-bezier(.2,.8,.2,1); }
+  .s6-meter-note{ margin-top:0.85rem; font-family:"Space Mono",monospace; font-size:0.73rem; letter-spacing:0.06em; color:var(--cream-faint); }
+
+  /* ---- six seats --------------------------------------------------------- */
+  .s6-seats{ list-style:none; padding:0; margin:clamp(2.2rem,4vw,3rem) 0 0;
+    display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:clamp(0.7rem,1.6vw,1.1rem); }
+  @media (max-width:820px){ .s6-seats{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
+  @media (max-width:430px){ .s6-seats{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  .s6-seat{
+    position:relative; overflow:hidden;
+    background:var(--paper); border:1px solid var(--hairline); border-radius:16px;
+    padding:clamp(1rem,2.2vw,1.4rem) 0.75rem clamp(1.1rem,2.4vw,1.5rem);
+    text-align:center; box-shadow:0 16px 36px -30px rgba(28,26,21,0.32);
+  }
+  /* the fill rises from the floor of the tile as money comes in */
+  .s6-seat-fill{
+    position:absolute; left:0; right:0; bottom:0; height:0;
+    background:linear-gradient(180deg, var(--orange-bloom), rgba(232,87,42,0.20));
+    transition:height 1.3s cubic-bezier(.2,.8,.2,1);
+  }
+  .s6-seat > *{ position:relative; }
+  .s6-seat-ico{ display:block; width:34px; height:34px; margin:0 auto; color:var(--muted); transition:color .4s ease; }
+  .s6-seat-ico svg{ width:100%; height:100%; display:block; }
+  .s6-seat.is-on .s6-seat-ico{ color:var(--orange-ink); }
+  .s6-seat-n{ margin-top:0.7rem; font-family:"Space Mono",monospace; font-size:0.68rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); }
+  .s6-seat-amt{ margin-top:0.25rem; font-size:0.92rem; color:var(--ink-soft); }
+  .s6-seats-note{ margin-top:clamp(1.4rem,2.6vw,2rem); text-align:center; color:var(--muted); font-size:0.94rem; max-width:56ch; margin-inline:auto; }
+
+  /* ---- cost basis (the same three costs the fund always covers) ---------- */
+  .s6-cost{ list-style:none; padding:0; margin:clamp(2.2rem,4vw,3.2rem) 0 0;
+    display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(1.2rem,2.6vw,2rem); }
+  @media (max-width:860px){ .s6-cost{ grid-template-columns:1fr; } }
+  .s6-cost-item{ background:var(--paper); border:1px solid rgba(28,26,21,0.09); border-radius:18px;
+    padding:clamp(1.5rem,2.8vw,2.1rem); box-shadow:0 18px 40px -30px rgba(28,26,21,0.3); }
+  .s6-cost-ico{ display:block; width:44px; height:44px; color:var(--orange-ink); }
+  .s6-cost-ico svg{ width:100%; height:100%; display:block; }
+  .s6-cost-item h3{ margin-top:1rem; }
+  .s6-cost-n{ margin-top:0.25rem; font-family:"Space Mono",monospace; font-size:0.86rem; letter-spacing:0.05em; color:var(--orange-ink); }
+  .s6-cost-item .prose{ margin-top:0.7rem; font-size:0.97rem; }
+  .s6-math{ margin-top:clamp(2rem,3.4vw,2.8rem); max-width:var(--reading); margin-inline:auto; text-align:center;
+    padding-top:clamp(1.6rem,2.6vw,2.2rem); border-top:1px solid var(--hairline); }
+  .s6-math-sub{ margin-top:0.8rem; font-size:0.92rem; color:var(--muted); }
+
+  /* ---- drives feeding it -------------------------------------------------- */
+  .s6-drives{ list-style:none; padding:0; margin:clamp(1.8rem,3vw,2.4rem) 0 0; max-width:860px; margin-inline:auto; }
+  .s6-drive{ display:flex; flex-wrap:wrap; align-items:center; gap:0.6rem 1.2rem; padding:1.25rem 0; border-bottom:1px solid var(--hairline); }
+  .s6-drive:first-child{ border-top:1px solid var(--hairline); }
+  .s6-drive-main{ flex:1 1 20rem; min-width:0; }
+  .s6-drive-name{ font-weight:600; font-size:1.06rem; }
+  .s6-drive-sub{ margin-top:0.25rem; font-size:0.94rem; color:var(--ink-soft); max-width:56ch; }
+  .s6-drive-meta{ margin-top:0.4rem; font-family:"Space Mono",monospace; font-size:0.73rem; letter-spacing:0.05em; color:var(--muted); }
+  .s6-pill{ display:inline-flex; align-items:center; gap:0.42rem; font-family:"Space Mono",monospace;
+    font-size:0.63rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); }
+  .s6-pill .dot{ width:7px; height:7px; border-radius:50%; background:var(--muted); flex:0 0 auto; }
+  .s6-pill.is-open{ color:var(--orange-ink); }
+  .s6-pill.is-open .dot{ background:var(--orange); box-shadow:0 0 0 4px var(--orange-bloom); }
+  .s6-drive .btn{ flex:0 0 auto; }
+  .s6-empty{ color:var(--muted); text-align:center; margin-top:1.4rem; }
+</style>
 </head>
 <body>
 
@@ -71,88 +149,124 @@
 
 <main>
 
-  <!-- HERO (dark) -->
-  <section class="hero dark">
-    <div class="wrap">
-      <span class="eyebrow reveal">Our Story</span>
-      <h1 class="serif statement reveal">Built by the community it serves.</h1>
-      <p class="lead sub reveal">Adapt To Life was built by adaptive athletes and coaches, the people who lived the problem, then set out to fix it for everyone behind them.</p>
-    </div>
-  </section>
+<!-- ============================ HERO ============================ -->
+<section class="dark s6-hero hero-atmos">
+  <div class="wrap">
+    <span class="eyebrow orange reveal">The campaign</span>
+    <h1 class="serif display reveal">Send 6 to the US Open.</h1>
+    <p class="lead sub reveal" style="color:var(--cream-mute);">Six adaptive pickleball athletes on the court in Naples, spring 2027, with nothing out of pocket. Not a hardship discount, not a partial scholarship. Covered.</p>
 
-  <!-- TEAM (light) -->
-  <section class="band">
-    <div class="wrap">
-      <div class="reveal sec-head" style="max-width:52ch;">
-        <span class="eyebrow orange">The team</span>
-        <h2 class="serif h2" style="margin-top:0.8rem;">The people behind the mission.</h2>
-        <p class="prose" style="margin-top:1rem;">Athletes and coaches who've lived this. The fund honors one of our own, <a href="/tim" class="textlink">Tim Gruensfelder</a>.</p>
+    <div class="s6-meter reveal" id="s6Meter">
+      <div class="s6-meter-row">
+        <span class="s6-meter-n" id="s6Raised">$21,000</span>
+        <span class="s6-meter-of" id="s6Of">to go</span>
       </div>
-      <div class="progs" style="margin-top:clamp(2.6rem,5vw,3.8rem);">
-        <div class="prog reveal">
-          <div style="aspect-ratio:4/5; border-radius:14px; overflow:hidden; margin-bottom:1.25rem; background:#ece9e4;"><img src="/images/karen.jpg" alt="Karen Atkinson" style="width:100%;height:100%;object-fit:cover;object-position:center 28%;"></div>
-          <span class="tag">Leadership Team</span>
-          <h3 class="serif h3">Karen Atkinson</h3>
-          <p>An Army captain and disabled veteran who found adaptive sports on the other side of her service. A Move United Warfighter Ambassador, an AMP Adaptive Sports board member, and First Chair of Stand Up and Play. She's the athlete this work is built for, and she keeps us honest.</p>
-          <a href="/karen" class="textlink" style="margin-top:0.9rem;">Learn more about Karen <span class="arrow">&rarr;</span></a>
-        </div>
-        <div class="prog reveal">
-          <div style="aspect-ratio:4/5; border-radius:14px; overflow:hidden; margin-bottom:1.25rem; background:#ece9e4;"><img src="/images/tom-daily.jpg" alt="Tom Daily" style="width:100%;height:100%;object-fit:cover;object-position:center 25%;"></div>
-          <span class="tag">Board Member</span>
-          <h3 class="serif h3">Tom Daily</h3>
-          <p>Coached wheelchair basketball for decades. He didn't just teach athletes to play. He taught them to advocate, to lead, and to take up space in rooms that weren't built for them.</p>
-        </div>
-        <div class="prog reveal">
-          <div style="aspect-ratio:4/5; border-radius:14px; overflow:hidden; margin-bottom:1.25rem; background:#ece9e4;"><img src="/images/mike-carrico.jpg" alt="Mike Carrico" style="width:100%;height:100%;object-fit:cover;object-position:center 20%;"></div>
-          <span class="tag">Board Member</span>
-          <h3 class="serif h3">Mike Carrico</h3>
-          <p>Retired Director of Racquets at the Birchwood Club and an adaptive tennis coach with two decades on the court. He once coached a kid in a wheelchair he called Hot Shot. That kid grew up to found Adapt To Life.</p>
-        </div>
-        <div class="prog reveal">
-          <div style="aspect-ratio:4/5; border-radius:14px; overflow:hidden; margin-bottom:1.25rem; background:#ece9e4;"><img src="/images/pete-petersen.jpg" alt="Pete Petersen" style="width:100%;height:100%;object-fit:cover;object-position:center 15%;"></div>
-          <span class="tag">Leadership Team</span>
-          <h3 class="serif h3">Pete Petersen</h3>
-          <p>Came to coach tennis with no background in disability and helped build the wheelchair pickleball program from the ground up. In 2025 he competed in hybrid doubles at the US Open Pickleball Championships in Naples.</p>
-        </div>
+      <span class="s6-meter-track"><span class="s6-meter-fill" id="s6Fill"></span></span>
+      <p class="s6-meter-note" id="s6Note">Six athletes · about $3,500 each</p>
+    </div>
+
+    <div class="actions reveal">
+      <a class="btn" href="/donate">Donate</a>
+      <a class="btn ghost" href="#cost">What $3,500 covers</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ SIX SEATS ============================ -->
+<section class="band" id="seats">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow reveal">The goal, in people</span>
+      <h2 class="serif h2 reveal" style="margin-top:0.7rem;">Six seats. One athlete each.</h2>
+      <p class="reveal" style="margin-top:1rem; color:var(--ink-soft);">The number is not a target we picked. It is six athletes multiplied by what it actually costs to get one of them there and back.</p>
+    </div>
+    <ul class="s6-seats" id="s6Seats"></ul>
+    <p class="s6-seats-note reveal">Athletes are selected through the same grant process as everyone else the fund backs. We will name them here once they are confirmed.</p>
+  </div>
+</section>
+
+<!-- ======================== WHAT $3,500 COVERS ======================== -->
+<section class="band tint" id="cost">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow reveal">Where the money goes</span>
+      <h2 class="serif h2 reveal" style="margin-top:0.7rem;">What it takes to put one athlete on that court.</h2>
+      <p class="reveal" style="margin-top:1rem; color:var(--ink-soft);">The US Open is in Naples, and it runs the better part of a week. For nearly every athlete we back, that is a flight rather than a drive. Three things have to be true before an athlete can play it.</p>
+    </div>
+
+    <ul class="s6-cost">
+      <li class="s6-cost-item reveal">
+        <span class="s6-cost-ico" aria-hidden="true">
+          <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+            <circle cx="20" cy="20" r="13"/><circle cx="20" cy="20" r="3.4"/>
+            <path d="M20 7v9.6M20 23.4V33M7 20h9.6M23.4 20H33"/>
+            <path d="M10.8 10.8l6.8 6.8M22.4 22.4l6.8 6.8M29.2 10.8l-6.8 6.8M17.6 22.4l-6.8 6.8" opacity=".45"/>
+          </svg>
+        </span>
+        <h3 class="h3 serif">Equipment</h3>
+        <p class="s6-cost-n">about $450</p>
+        <p class="prose">A sport chair is only as good as what it rolls on. Tires wear out on tournament surfaces, and a cracked paddle ends a weekend early. Tires run about $200, a competition paddle about $250.</p>
+      </li>
+
+      <li class="s6-cost-item reveal">
+        <span class="s6-cost-ico" aria-hidden="true">
+          <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="6" y="9" width="28" height="22" rx="2"/>
+            <path d="M20 9v22M6 20h28" opacity=".45"/>
+            <circle cx="20" cy="20" r="3.2"/>
+          </svg>
+        </span>
+        <h3 class="h3 serif">Training</h3>
+        <p class="s6-cost-n">about $500</p>
+        <p class="prose">Nobody arrives at a national championship untrained. We share a practice facility with six to ten wheelchair athletes every week, all year. This is the part of your gift that keeps working long after the tournament ends.</p>
+      </li>
+
+      <li class="s6-cost-item reveal">
+        <span class="s6-cost-ico" aria-hidden="true">
+          <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 22.5l31-11.5-4.5 9.5L35 30l-6.5-2-5 4-2.5-7.5z" opacity=".92"/>
+            <path d="M18 24.5L11 33" opacity=".45"/>
+          </svg>
+        </span>
+        <h3 class="h3 serif">Travel</h3>
+        <p class="s6-cost-n">about $2,300</p>
+        <p class="prose">Airfare into Naples in the spring runs around $500. Six nights of lodging is over $1,200. Entry is $150 to register plus $45 to $50 per event, and accessible ground transport is on top of that.</p>
+      </li>
+    </ul>
+
+    <div class="s6-math reveal">
+      <p class="prose"><strong style="color:var(--ink);">About $3,500 puts one athlete on that court. Six athletes is $21,000.</strong> These are our own numbers from the last trip and the published entry fees, not estimates. They climb every year, so we budget honestly rather than optimistically.</p>
+      <p class="s6-math-sub">Wheelchair events run double elimination with a consolation bracket, so an athlete who travels gets more than one match. Nobody flies thirteen hundred miles to play once.</p>
+      <div class="actions" style="margin-top:1.6rem; justify-content:center;">
+        <a class="btn ghost" href="/hustle-and-heart">About the fund</a>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- FOUNDER (light, narrow) — recedes, speaks as steward -->
-  <section class="band">
-    <div class="wrap narrow">
-      <div class="founder-portrait reveal"><img src="/images/founder.webp" alt="Alec Tranel"></div>
-      <span class="eyebrow orange reveal">The founder</span>
-      <h2 class="serif statement italic reveal" style="margin-top:1rem;">The organization I needed at six, built now by the team around me.</h2>
-      <p class="prose reveal">Alec Tranel has been in a wheelchair since he was six; by eighteen, twenty-eight operations. A few months after his injury, a physical therapist handed him a brochure for adaptive sports he didn't know existed. A gym led to a coach named Tom Daily, who saw an athlete, not a kid in a chair. Alec spent more than twenty years in this community as an athlete and a coach, then came back to coach at the program that raised him.</p>
-      <blockquote class="pullquote reveal">I got lucky. Great coaches, the right equipment, someone who believed in me before I believed in myself. Not everyone gets that lucky. That's the whole reason we're here.</blockquote>
-      <p class="reveal" style="margin-top:1.2rem; font-weight:600;">Alec Tranel</p>
-      <span class="eyebrow reveal">Founder &amp; Executive Director</span>
+<!-- ========================= HOW WE GET THERE ========================= -->
+<section class="band" id="drives">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow reveal">How we get there</span>
+      <h2 class="serif h2 reveal" style="margin-top:0.7rem;">What is feeding this campaign.</h2>
+      <p class="reveal" style="margin-top:1rem; color:var(--ink-soft);">Drives open and close. The campaign runs until all six are covered.</p>
     </div>
-  </section>
+    <ul class="s6-drives" id="s6Drives"></ul>
+  </div>
+</section>
 
-  <!-- PROMISE — how every dollar works (light, narrow) -->
-  <section class="band" id="promise">
-    <div class="wrap narrow">
-      <span class="eyebrow orange reveal">How every dollar works</span>
-      <h2 class="serif h2 reveal" style="margin-top:0.8rem;">One hundred percent reaches the athlete.</h2>
-      <p class="prose reveal" style="margin-top:1.2rem;">Operating costs are covered separately, on purpose, so giving is never reduced by overhead. Every grant is reviewed, documented, and paid straight to the vendor. We cover costs directly rather than sending money to the athlete or reimbursing a purchase, so every dollar goes exactly where it was given. We don't replace existing programs; we fund the individual costs their budgets were never built to carry.</p>
-      <p class="prose reveal" style="margin-top:1.1rem;">We are early, and we are building like it will be big. We fund adaptive athletes wherever they are, and our directory reaches nationwide. The books are open to anyone who asks, and as we grow, our progress and reporting live in the open on our <a href="/roadmap" class="textlink">roadmap</a>.</p>
+<!-- =========================== CLOSING =========================== -->
+<section class="closing dark band-lg">
+  <div class="wrap center">
+    <span class="eyebrow orange reveal">One hundred percent reaches the athlete</span>
+    <h2 class="serif display reveal">Cover a seat.</h2>
+    <p class="lead sub reveal">Any amount moves the number. Six of them and we are on a plane.</p>
+    <div class="actions reveal">
+      <a class="btn" href="/donate">Donate</a>
     </div>
-  </section>
-
-  <!-- CLOSING (dark) -->
-  <section class="closing dark band-lg">
-    <div class="wrap center">
-      <span class="eyebrow orange reveal">Our north star</span>
-      <h2 class="serif display reveal">The more we grow, the more we give.</h2>
-      <p class="lead sub reveal">That's the whole point. As we grow, more athletes get funded and more barriers fall. The promise only gets bigger.</p>
-      <div class="actions reveal" style="justify-content:center;">
-        <a href="/donate" class="btn">Donate</a>
-        <a href="/roadmap" class="btn ghost">See where we're headed <span class="arrow">&rarr;</span></a>
-      </div>
-    </div>
-  </section>
+  </div>
+</section>
 
 </main>
 
@@ -255,6 +369,146 @@
       });
     }
   })();
+</script>
+
+<script src="/js/campaigns.js"></script>
+<script>
+(function(){
+  var C = window.ATLCampaigns;
+  var SLUG = 'send-6-us-open';
+  var SEATS = 6;
+  var PER_SEAT = 3500;
+  var GOAL = SEATS * PER_SEAT;   // the fallback if /api/raised is unreachable
+
+  var SEAT_ICO =
+    '<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' +
+    '<circle cx="14" cy="27" r="8"/><circle cx="14" cy="27" r="2.2"/>' +
+    '<path d="M20 27h7l4-7"/><path d="M14 19V9h6"/><circle cx="24" cy="8" r="3"/>' +
+    '</svg>';
+
+  /* ---- the six seats ------------------------------------------------------ */
+  var seatFills = [];
+  (function buildSeats(){
+    var host = document.getElementById('s6Seats');
+    if (!host) return;
+    for (var i = 0; i < SEATS; i++){
+      var li = C.el('li','s6-seat reveal in');
+      var fill = C.el('span','s6-seat-fill');
+      var ico = C.el('span','s6-seat-ico');
+      ico.setAttribute('aria-hidden','true');
+      ico.innerHTML = SEAT_ICO;
+      li.appendChild(fill);
+      li.appendChild(ico);
+      li.appendChild(C.el('p','s6-seat-n','Seat ' + (i + 1)));
+      li.appendChild(C.el('p','s6-seat-amt', C.money(PER_SEAT)));
+      host.appendChild(li);
+      seatFills.push({ tile:li, fill:fill });
+    }
+  })();
+
+  /* ---- the live number ---------------------------------------------------- */
+  C.raised(function(d){
+    var goal = (d && d.goal) || GOAL;
+    var raised = d ? d.raised : null;
+
+    var nEl = document.getElementById('s6Raised');
+    var ofEl = document.getElementById('s6Of');
+    var noteEl = document.getElementById('s6Note');
+    var fillEl = document.getElementById('s6Fill');
+
+    // Givebutter unreachable: the goal stands and the raised figure stays off.
+    // A $0 we cannot vouch for is worse than no number at all.
+    if (raised === null){
+      if (nEl) nEl.textContent = C.money(goal);
+      if (ofEl) ofEl.textContent = 'to raise';
+      if (noteEl) noteEl.textContent = 'Six athletes · about ' + C.money(PER_SEAT) + ' each';
+      return;
+    }
+
+    var pct = goal > 0 ? Math.max(0, Math.min(100, raised / goal * 100)) : 0;
+    if (nEl) nEl.textContent = C.money(raised);
+    if (ofEl) ofEl.textContent = 'raised of our ' + C.money(goal) + ' goal';
+    if (noteEl) noteEl.textContent = 'Six athletes · about ' + C.money(PER_SEAT) + ' each';
+    if (fillEl){
+      requestAnimationFrame(function(){
+        setTimeout(function(){ fillEl.style.width = pct.toFixed(1) + '%'; }, 140);
+      });
+    }
+
+    // Seats fill left to right off the same money. The partial seat shows a
+    // partial fill, because rounding it up would be a claim we cannot make.
+    var perSeat = goal / SEATS;
+    seatFills.forEach(function(s, i){
+      var share = Math.max(0, Math.min(1, (raised - i * perSeat) / perSeat));
+      if (share >= 1) s.tile.classList.add('is-on');
+      setTimeout(function(){ s.fill.style.height = (share * 100).toFixed(1) + '%'; }, 200 + i * 90);
+    });
+  });
+
+  /* ---- the drives feeding it ---------------------------------------------- */
+  var driveHost = document.getElementById('s6Drives');
+
+  function renderDrive(d){
+    var st = C.driveStatus(d);
+    var li = C.el('li','s6-drive reveal in');
+    var main = C.el('div','s6-drive-main');
+
+    var pill = C.el('span','s6-pill is-' + (st === 'open' ? 'open' : st));
+    pill.appendChild(C.el('span','dot'));
+    pill.appendChild(document.createTextNode(
+      st === 'open' ? 'Open now' : st === 'soon' ? 'Coming up' : 'Finished'
+    ));
+    main.appendChild(pill);
+    main.appendChild(C.el('p','s6-drive-name', d.name));
+    if (d.summary) main.appendChild(C.el('p','s6-drive-sub', d.summary));
+
+    var meta = [];
+    var when = C.driveWhen(d);
+    if (when) meta.push(when);
+    if (d.relationship === 'we_compete'){
+      if (d.host) meta.push('Hosted by ' + d.host);
+      if (d.beneficiary) meta.push('Benefits ' + d.beneficiary);
+    } else if (typeof d.goal === 'number' && d.goal > 0){
+      meta.push(C.money(d.goal) + ' goal');
+    }
+    if (meta.length) main.appendChild(C.el('p','s6-drive-meta', meta.join(' · ')));
+
+    var cta = C.driveCta(d);
+    var btn = C.el('a','btn ghost');
+    C.wire(btn, cta.href, cta.label);
+
+    li.appendChild(main);
+    li.appendChild(btn);
+    driveHost.appendChild(li);
+  }
+
+  function directGiftRow(){
+    var li = C.el('li','s6-drive reveal in');
+    var main = C.el('div','s6-drive-main');
+    var pill = C.el('span','s6-pill is-open');
+    pill.appendChild(C.el('span','dot'));
+    pill.appendChild(document.createTextNode('Always open'));
+    main.appendChild(pill);
+    main.appendChild(C.el('p','s6-drive-name','Direct gifts'));
+    main.appendChild(C.el('p','s6-drive-sub','The fund takes gifts every day of the year, and every one of them counts toward this campaign.'));
+    var btn = C.el('a','btn ghost');
+    C.wire(btn, '/donate', 'Donate');
+    li.appendChild(main);
+    li.appendChild(btn);
+    driveHost.appendChild(li);
+  }
+
+  C.load(function(store){
+    if (!driveHost) return;
+    // Direct giving is never absent, so this list can never be empty.
+    if (store){
+      store.drivesFor(SLUG).forEach(renderDrive);
+    } else {
+      driveHost.appendChild(C.el('li','s6-empty','We could not load our drives just now.'));
+    }
+    directGiftRow();
+  });
+})();
 </script>
 
 <script src="/js/subscribe.js" defer></script>

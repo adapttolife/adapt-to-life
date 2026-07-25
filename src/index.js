@@ -5,6 +5,7 @@
 import { handleWaiver, handleWaiverDownload, handleWaiverVerify, handleWaiverDoc, runDriveBacklog } from "./waiver.js";
 import { handleEmail, handleAgentMailApi } from "./agent_mail.js";
 import { handleReportView, handleLibraryView } from "./report_view.js";
+import { handleQr } from "./qr.js";
 
 const LEAD_TYPES = [
   "Funding for an athlete",
@@ -81,6 +82,12 @@ export default {
     // Spec 70 P3: signed report permalink — the interactive twin of an
     // archived report email. Capability URL (HMAC token), GET-only, 404 on
     // any failure.
+    // Spec 115: durable QR redirects. A sticker on a chair outlives any vendor,
+    // so the code encodes our URL and the destination stays editable.
+    if (url.pathname.startsWith("/q/")) {
+      return handleQr(request, env, url, ctx);
+    }
+
     if (url.pathname.startsWith("/r/")) {
       return handleReportView(request, env, url, ctx);
     }
@@ -336,7 +343,9 @@ async function handleRaised(request, env) {
     raised: online + offline,
     online,
     offline,
-    goal: goal || Number(env.RAISED_GOAL) || 17500,
+    // Fallback only. The live goal is Givebutter's (Send 6 to the US Open:
+    // 6 athletes x $3,500). Change it there, not here (Spec 115 D3).
+    goal: goal || Number(env.RAISED_GOAL) || 21000,
   });
   return new Response(body, {
     headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=60" },

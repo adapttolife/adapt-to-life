@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<title>Ways to Give | Adapt To Life</title>
+<meta name="description" content="Every way to back adaptive athletes: the campaigns we are raising for now, monthly giving, sponsorship, donor-advised funds, gifts of stock, bequests, employer matching, and tribute gifts. Adapt To Life is a recognized 501(c)(3).">
+<link rel="canonical" href="https://adapttolife.org/ways-to-give">
+<link rel="icon" type="image/svg+xml" href="/images/atl-logo.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
+<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Ways to Give | Adapt To Life">
+<meta property="og:description" content="Back an athlete the way that fits you. Every path lands in the same place.">
+<meta property="og:image" content="https://adapttolife.org/images/og-image.jpg">
+<meta property="og:url" content="https://adapttolife.org/ways-to-give">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Ways to Give | Adapt To Life">
+<meta name="twitter:description" content="Back an athlete the way that fits you.">
+<meta name="twitter:image" content="https://adapttolife.org/images/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/site.css">
+<style>
+  /* ==========================================================================
+     Ways to Give — the giving hub. Campaigns at the emotional top, standing
+     ways to give below. The order is the argument: what we are raising for
+     right now comes before the mechanics of how to send money.
+     ========================================================================== */
+
+  /* ---- campaign cards --------------------------------------------------- */
+  .wtg-campaigns{ list-style:none; padding:0; margin:clamp(2.2rem,4vw,3rem) 0 0; display:grid; gap:clamp(1.2rem,2.4vw,1.8rem); }
+  .wtg-camp{
+    background:var(--paper); border:1px solid var(--hairline); border-radius:20px;
+    padding:clamp(1.5rem,3.2vw,2.4rem);
+    box-shadow:0 26px 60px -34px rgba(28,26,21,0.4);
+    display:grid; grid-template-columns:1fr minmax(0,300px); gap:1.4rem clamp(1.6rem,3.4vw,3rem); align-items:center;
+  }
+  @media (max-width:820px){ .wtg-camp{ grid-template-columns:1fr; } }
+  .wtg-camp-for{
+    font-family:"Space Mono",monospace; font-size:0.68rem; font-weight:700;
+    letter-spacing:0.16em; text-transform:uppercase; color:var(--orange-ink);
+  }
+  .wtg-camp h3{ margin-top:0.75rem; font-size:clamp(1.5rem,2.6vw,2.05rem); }
+  .wtg-camp-blurb{ margin-top:0.7rem; color:var(--ink-soft); max-width:54ch; }
+  .wtg-camp-when{ margin-top:0.85rem; font-family:"Space Mono",monospace; font-size:0.76rem; letter-spacing:0.05em; color:var(--muted); }
+  .wtg-camp-side{ display:flex; flex-direction:column; gap:0.9rem; align-items:flex-start; }
+
+  /* progress: shows the goal always, the raised figure only when we know it */
+  .wtg-bar{ width:100%; }
+  .wtg-bar-track{ height:8px; border-radius:999px; background:rgba(28,26,21,0.10); overflow:hidden; }
+  .wtg-bar-fill{ display:block; height:100%; width:0; border-radius:999px; min-width:3px;
+    background:linear-gradient(90deg,var(--orange-ink),var(--orange-hot)); transition:width 1.1s cubic-bezier(.2,.8,.2,1); }
+  .wtg-bar-label{ margin-top:0.55rem; font-family:"Space Mono",monospace; font-size:0.78rem; color:var(--muted); }
+  .wtg-camp-side .btn{ width:100%; justify-content:center; }
+
+  /* ---- drive rows -------------------------------------------------------- */
+  .wtg-drives{ list-style:none; padding:0; margin:clamp(1.6rem,3vw,2.2rem) 0 0; }
+  .wtg-drive{
+    display:flex; flex-wrap:wrap; align-items:center; gap:0.6rem 1.2rem;
+    padding:1.2rem 0; border-bottom:1px solid var(--hairline);
+  }
+  .wtg-drive:first-child{ border-top:1px solid var(--hairline); }
+  .wtg-drive-main{ flex:1 1 20rem; min-width:0; }
+  .wtg-drive-name{ font-weight:600; font-size:1.06rem; }
+  .wtg-drive-sub{ margin-top:0.25rem; font-size:0.94rem; color:var(--ink-soft); max-width:56ch; }
+  .wtg-drive-meta{ margin-top:0.4rem; font-family:"Space Mono",monospace; font-size:0.73rem; letter-spacing:0.05em; color:var(--muted); }
+  /* Whose event this actually is. A disclosure, not a selling line, so it sits
+     quiet and separate instead of buried in the mono meta row. */
+  .wtg-drive-note{ margin-top:0.35rem; font-size:0.85rem; color:var(--muted); font-style:italic; }
+  .wtg-pill{
+    display:inline-flex; align-items:center; gap:0.42rem;
+    font-family:"Space Mono",monospace; font-size:0.63rem; font-weight:700;
+    letter-spacing:0.14em; text-transform:uppercase; color:var(--muted);
+  }
+  .wtg-pill .dot{ width:7px; height:7px; border-radius:50%; background:var(--muted); flex:0 0 auto; }
+  .wtg-pill.is-open{ color:var(--orange-ink); }
+  .wtg-pill.is-open .dot{ background:var(--orange); box-shadow:0 0 0 4px var(--orange-bloom); }
+  .wtg-drive .btn{ flex:0 0 auto; }
+  .wtg-empty{ margin-top:1.4rem; color:var(--muted); max-width:60ch; }
+
+  /* ---- standing ways ------------------------------------------------------
+     The giving pyramid should look like a pyramid, not a grid. Nine equal
+     cards gave a bequest the same weight as a $15 monthly gift, which is not
+     how any of this works. Two ways carry almost everyone, so they get the
+     room. The rest is reference material for the handful of people who need
+     it, and reference material reads better as a list than as cards.
+     ------------------------------------------------------------------------ */
+  .wtg-lead{ list-style:none; padding:0; margin:clamp(2.2rem,4vw,3rem) 0 0;
+    display:grid; grid-template-columns:1fr 1fr; gap:clamp(1.1rem,2.4vw,1.8rem); }
+  @media (max-width:760px){ .wtg-lead{ grid-template-columns:1fr; } }
+  .wtg-lead li{
+    display:flex; flex-direction:column; align-items:flex-start;
+    background:var(--paper); border:1px solid var(--hairline); border-radius:20px;
+    padding:clamp(1.6rem,3vw,2.3rem);
+    box-shadow:0 24px 56px -34px rgba(28,26,21,0.38);
+  }
+  .wtg-lead h3{ font-size:clamp(1.35rem,2.2vw,1.75rem); }
+  .wtg-lead p{ margin-top:0.75rem; color:var(--ink-soft); flex:1 1 auto; max-width:42ch; }
+  .wtg-lead .btn{ margin-top:1.5rem; }
+
+  .wtg-more{ list-style:none; padding:0; margin:clamp(2.2rem,3.6vw,2.8rem) 0 0; }
+  .wtg-more li{
+    display:grid; grid-template-columns:13rem minmax(0,1fr) auto; align-items:baseline;
+    gap:0.4rem clamp(1.2rem,2.4vw,2rem); padding:1.15rem 0; border-bottom:1px solid var(--hairline);
+  }
+  .wtg-more li:first-child{ border-top:1px solid var(--hairline); }
+  @media (max-width:820px){ .wtg-more li{ grid-template-columns:1fr; gap:0.3rem; padding:1.3rem 0; } }
+  .wtg-more-k{ font-weight:600; color:var(--ink); }
+  .wtg-more-v{ color:var(--ink-soft); font-size:0.96rem; }
+  .wtg-more .textlink{ font-size:0.9rem; white-space:nowrap; }
+  @media (max-width:820px){ .wtg-more .textlink{ margin-top:0.6rem; } }
+  .wtg-time{ margin-top:clamp(1.8rem,3vw,2.4rem); max-width:var(--reading); color:var(--muted); font-size:0.96rem; }
+
+  /* ---- the details an advisor asks for ----------------------------------- */
+  .wtg-facts{ list-style:none; padding:0; margin:clamp(1.6rem,3vw,2.2rem) 0 0; max-width:var(--reading); margin-inline:auto; }
+  .wtg-fact{ display:flex; flex-wrap:wrap; gap:0.3rem 1.2rem; padding:0.95rem 0; border-bottom:1px solid var(--hairline); }
+  .wtg-fact:first-child{ border-top:1px solid var(--hairline); }
+  .wtg-fact-k{ flex:0 0 11rem; font-family:"Space Mono",monospace; font-size:0.7rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); padding-top:0.28rem; }
+  .wtg-fact-v{ flex:1 1 14rem; color:var(--ink); }
+</style>
+</head>
+<body>
+
+<header class="nav over-dark" id="nav">
+  <div class="wrap nav-inner">
+    <a href="/" class="brand"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="217.61900000000003 211.68400000000003 1485.031 1351.756" class="brand-logo" aria-hidden="true"><path fill="#1A1A1A" d="M359.579 1424.07C374.643 1414 419.843 1314.91 429.93 1293.87L494.424 1159.36L747.066 640.99L855.497 418.881C869.352 390.403 883.808 362.487 897.593 333.689C907.159 313.705 908.44 287.493 891.747 270.443C890.687 269.361 891.226 270.404 890.726 268.488C910.256 266.684 954.763 268.012 976.132 267.978L1027.73 267.866C1050.43 267.823 1069.15 266.862 1090.2 276.699C1100.08 280.969 1119.05 295.115 1124.15 305.089C1149.4 354.497 1171.67 409.57 1192.51 460.73C1207.12 496.586 1223.18 529.721 1237.07 564.893C1231.2 560.008 1227.44 557.269 1221.08 553.015C1215.99 557.591 1208.19 556.729 1206.65 548.966C1204.79 547.116 1205.4 548.172 1205.09 545.604C1202.88 544.392 1200.58 543.344 1198.22 542.469C1149.51 524.158 1115.69 536.668 1071.87 556.467C1061.68 531.46 1047.28 493.022 1034.45 468.477C1033.54 466.745 1031.36 466.995 1029.72 467.026C1023.63 472.302 1006.14 511.519 1002.14 520.975C1003.99 526.438 1006.21 532.816 1000.42 535.761C999.73 535.161 999.042 534.562 998.355 533.963L995.587 534.913C991.934 541.165 989.114 547.012 986.003 553.541C978.262 569.79 970.036 585.78 962.167 602.001L905.887 716.678C898.157 732.102 890.506 749.961 882.211 764.818C876.619 774.834 855.527 783.028 844.283 790.778C773.508 839.563 722.902 906.96 712.074 994.461C711.238 1005.28 710.874 1016.13 710.985 1026.98C711.392 1036.24 711.6 1041.55 713.301 1050.54C715.147 1038.12 716.538 1026.66 719.061 1014.08C747.026 874.746 884.594 776.948 1019.67 757.989C1033.35 756.07 1049.34 754.641 1062.97 756.691C1081.24 759.401 1097.61 769.443 1108.31 784.498C1141.91 831.239 1107.16 895.887 1082.84 938.981C1070.16 961.44 1046.9 999.023 1064.37 1024.25C1065.51 1025.88 1066.68 1027.48 1067.88 1029.06C1029.44 1044.14 983.182 1035.86 967.927 993.161C952.577 950.192 964.659 904.334 977.615 862.526C961.687 864.778 939.913 868.607 925.08 873.993C873.313 892.788 825.45 928.17 793.2 972.628C749.701 1032.59 718.718 1102.16 686.859 1168.46L592.531 1364.34L560.696 1430.8C552.425 1448.47 540.172 1482.34 521.933 1491.44C510.331 1497.23 486.702 1496.02 473.295 1496.02L419.601 1496C373.568 1495.97 318.065 1497.35 272.619 1495.53C299.416 1479.6 313.334 1471.82 336.26 1449.95C339.189 1443.65 341.78 1440.96 345.75 1435.2L345.227 1435.64C348.674 1430.56 353.897 1426.19 359.579 1424.07Z"/><path fill="#E85D04" d="M1223.86 1142.69C1176.21 1128.49 1149.97 1142.58 1105.3 1157.83C1041.84 1179.5 949.416 1199.66 909.488 1127.93C889.272 1092.07 895.318 1042.58 907.061 1004.78C914.066 982.224 931.884 938.201 945.531 918.31C934.727 976.648 943.073 1045.11 1012.53 1058.92C1038.79 1064.14 1062.99 1055.23 1087.54 1047.14C1140.35 1029.01 1197.18 1006.46 1254.03 1017.1C1289.1 1023.67 1325.25 1046.46 1345.49 1076.01C1378.24 1123.85 1397.19 1180.53 1418.23 1234.13C1449.55 1314.65 1503.74 1418.16 1580.23 1464.25C1583.85 1463.21 1589.98 1461.73 1593.37 1463.58C1593.59 1466.23 1593.34 1466.46 1592.66 1469.09C1597.56 1472.29 1602.54 1473.68 1604.16 1477.79L1605.97 1478.39C1614.43 1480.9 1616.3 1478.09 1622.66 1479.72C1624.28 1482.72 1623.84 1483.16 1624 1486.81C1629.15 1489.52 1640.46 1493.28 1647.65 1496.74C1624.41 1497.19 1603.55 1498.32 1580.39 1494.33C1449.33 1471.77 1372.44 1370.93 1312.08 1261.29C1291.38 1223.68 1275.14 1182.88 1244.5 1153.99C1244.37 1153.96 1226.28 1143.89 1223.86 1142.69Z"/><path fill="#1A1A1A" d="M884.091 997.18C881.573 1003.22 879.168 1009.32 876.877 1015.45C872.103 1043.72 864.64 1071.51 871.609 1100.69C845.46 1128.65 828.491 1154.6 818.826 1192.32C816.984 1199.52 813.918 1213.11 813.959 1220.49C812.475 1231.51 813.015 1240.82 812.825 1251.85C813.263 1255.26 813.858 1259.12 814.152 1262.51C818.588 1268.64 815.637 1265.16 817.476 1272.58L823.121 1273.27C826.428 1279.35 820.905 1285.89 821.677 1290.17C823.045 1297.75 828.009 1303.4 827.331 1312.28C828.661 1322.63 848.459 1349.98 855.865 1358.19C974.653 1489.9 1172.27 1374.81 1159.6 1211.15C1158.54 1197.39 1153.77 1184.05 1152.5 1171.07C1155.27 1168.58 1160.94 1166.68 1164.64 1165.81C1190.31 1159.76 1205.22 1161.47 1227.84 1175.44C1232.07 1176.61 1233.16 1176.71 1237.48 1175.98L1239.62 1177.38C1241.92 1188.43 1245.64 1205.53 1243.89 1216.31C1241.99 1240.23 1243.24 1264.11 1237.58 1287.96C1220.89 1358.2 1179.19 1421.17 1118.06 1459.72C1060.12 1496.36 989.975 1508.44 923.115 1493.29C902.176 1488.53 882.13 1480.26 863.152 1469.87C743.322 1404.25 701.651 1254.69 756.971 1132.59C783.05 1075.03 819.264 1037.28 872.458 1004.19C876.447 1001.9 880.284 999.778 884.091 997.18Z"/><path fill="#1A1A1A" d="M1132.43 581.791C1182.17 578.689 1225.06 616.367 1228.39 666.087C1231.72 715.808 1194.24 758.871 1144.53 762.432C1094.5 766.016 1051.1 728.237 1047.74 678.192C1044.39 628.146 1082.37 584.914 1132.43 581.791Z"/></svg>Adapt To Life</a>
+    <nav class="nav-links">
+      <div class="nav-group">
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navOurWork">Our Work<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 3 3-3"/></svg></button>
+        <div class="nav-panel" id="navOurWork">
+          <a href="/hustle-and-heart"><span class="np-t">Hustle &amp; Heart Fund</span><span class="np-d">Equipment, training, and travel, so cost is never why an athlete sits out</span></a>
+          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d">The free directory of adaptive programs, nationwide</span></a>
+        </div>
+      </div>
+      <a class="lk" href="/ways-to-give">Ways to Give</a>
+      <div class="nav-group">
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navAbout">About<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 3 3-3"/></svg></button>
+        <div class="nav-panel" id="navAbout">
+          <a href="/about"><span class="np-t">Our Story</span><span class="np-d">The team and the promise</span></a>
+          <a href="/tim"><span class="np-t">Tim's Story</span><span class="np-d">How the fund got its name</span></a>
+          <a href="/roadmap"><span class="np-t">Roadmap</span><span class="np-d">What is live, what we are building</span></a>
+        </div>
+      </div>
+      <a class="lk featured" href="/apply">Grant Application</a>
+      <a class="nav-cta" href="/donate">Donate</a>
+    </nav>
+    <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="mobile-menu">
+    <div class="wrap mwrap">
+      <span class="m-group">Our Work</span>
+      <a class="m-sub" href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
+      <a class="m-sub" href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
+      <a href="/ways-to-give">Ways to Give</a>
+      <span class="m-group">About</span>
+      <a class="m-sub" href="/about">Our Story</a>
+      <a class="m-sub" href="/tim">Tim&#39;s Story</a>
+      <a class="m-sub" href="/roadmap">Roadmap</a>
+      <a class="featured" href="/apply">Grant Application</a>
+      <a class="m-cta" href="/donate">Donate &rarr;</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ============================ HERO ============================ -->
+<section class="hero dark hero-atmos">
+  <div class="wrap">
+    <span class="eyebrow orange reveal">Ways to give</span>
+    <h1 class="serif display reveal">Every road here ends on a court.</h1>
+    <p class="lead sub reveal" style="color:var(--cream-mute);">Some people give once. Some give every month, some buy popcorn, some send stock, some put us in a will. Below is what we are raising for right now, and every way to be part of it.</p>
+    <div class="actions reveal">
+      <a class="btn" href="/donate">Donate</a>
+      <a class="btn ghost" href="#standing">Other ways to give</a>
+    </div>
+    <div class="startline-hero" aria-hidden="true"></div>
+  </div>
+</section>
+
+<!-- ======================= WHAT WE ARE RAISING FOR ======================= -->
+<section class="band" id="campaigns">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow reveal">What we are raising for</span>
+      <h2 class="serif h2 reveal" style="margin-top:0.7rem;">Right now, the money is going here.</h2>
+      <p class="reveal" style="margin-top:1rem; color:var(--ink-soft);">A campaign names the goal and the athletes it reaches.</p>
+    </div>
+    <ul class="wtg-campaigns" id="wtgCampaigns"></ul>
+  </div>
+</section>
+
+<!-- ========================= DRIVES RUNNING ========================= -->
+<section class="band-sm tint" id="drives">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow reveal">On the calendar</span>
+      <h2 class="serif h2 reveal" style="margin-top:0.7rem;">What is coming up.</h2>
+    </div>
+    <ul class="wtg-drives" id="wtgDrives"></ul>
+  </div>
+</section>
+
+<!-- ======================== STANDING WAYS ========================= -->
+<section class="band" id="standing">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow reveal">Standing ways to give</span>
+      <h2 class="serif h2 reveal" style="margin-top:0.7rem;">Open every day of the year.</h2>
+      <p class="reveal" style="margin-top:1rem; color:var(--ink-soft);">Campaigns start and finish. These do not.</p>
+    </div>
+
+    <ul class="wtg-lead">
+      <li class="reveal">
+        <h3 class="serif">Give monthly</h3>
+        <p>A season of coaching is a monthly cost, so monthly money fits it best. Fifteen dollars a month covers a set of racing tires across a year, and it is the difference between hoping we can say yes and knowing we can.</p>
+        <a class="btn" href="/donate">Set up monthly giving</a>
+      </li>
+      <li class="reveal">
+        <h3 class="serif">Sponsor</h3>
+        <p>Businesses back athletes and get their name where the sport actually happens, on the chair and at the tournament. There is a ladder, and the first rung is smaller than you would guess.</p>
+        <a class="btn ghost" href="/sponsorship">See the sponsorship ladder</a>
+      </li>
+    </ul>
+
+    <ul class="wtg-more reveal">
+      <li>
+        <span class="wtg-more-k">Donor-advised fund</span>
+        <span class="wtg-more-v">Your sponsor needs two things to send a grant: our legal name and our EIN.</span>
+        <a class="textlink" href="#details">Get them <span class="arrow">&rarr;</span></a>
+      </li>
+      <li>
+        <span class="wtg-more-k">Stock and securities</span>
+        <span class="wtg-more-v">Giving appreciated stock directly can avoid the capital gains you would owe on selling it first.</span>
+        <a class="textlink" href="/contact?rsn=donor">Start one <span class="arrow">&rarr;</span></a>
+      </li>
+      <li>
+        <span class="wtg-more-k">Bequests and IRA gifts</span>
+        <span class="wtg-more-v">A line in a will, or a beneficiary designation, costs nothing today and keeps the fund going long after.</span>
+        <a class="textlink" href="#details">Get the language <span class="arrow">&rarr;</span></a>
+      </li>
+      <li>
+        <span class="wtg-more-k">Employer matching</span>
+        <span class="wtg-more-v">Plenty of employers double a gift and most people never ask. Send us the form and we complete our side.</span>
+        <a class="textlink" href="/contact?rsn=donor">Send it over <span class="arrow">&rarr;</span></a>
+      </li>
+      <li>
+        <span class="wtg-more-k">In honor, in memory</span>
+        <span class="wtg-more-v">Give in someone's name and add a dedication as you check out. The fund itself carries a name.</span>
+        <a class="textlink" href="/tim">Read whose <span class="arrow">&rarr;</span></a>
+      </li>
+    </ul>
+
+    <p class="wtg-time reveal">Not every gift is money. Coaching, driving, running a popcorn store of your own, or telling one person about an athlete who needs a chair. <a class="textlink" href="/contact">Tell us what you can do <span class="arrow">&rarr;</span></a></p>
+  </div>
+</section>
+
+<!-- ==================== DETAILS FOR ADVISORS ===================== -->
+<section class="band-sm tint" id="details">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow reveal">For your advisor, broker, or attorney</span>
+      <h2 class="serif h2 reveal" style="margin-top:0.7rem;">The details they will ask for.</h2>
+    </div>
+    <ul class="wtg-facts reveal">
+      <li class="wtg-fact"><span class="wtg-fact-k">Legal name</span><span class="wtg-fact-v">Adapt To Life</span></li>
+      <li class="wtg-fact"><span class="wtg-fact-k">Status</span><span class="wtg-fact-v">Recognized 501(c)(3) nonprofit organization. Gifts are tax-deductible to the extent allowed by law.</span></li>
+      <li class="wtg-fact"><span class="wtg-fact-k">EIN</span><span class="wtg-fact-v">41-3213344</span></li>
+      <li class="wtg-fact"><span class="wtg-fact-k">Determination letter</span><span class="wtg-fact-v"><a class="textlink" href="/docs/adapt-to-life-501c3-determination-letter.pdf">Download the IRS letter <span class="arrow">&rarr;</span></a></span></li>
+      <li class="wtg-fact"><span class="wtg-fact-k">Who to talk to</span><span class="wtg-fact-v"><a class="textlink" href="mailto:hello@adapttolife.org">hello@adapttolife.org</a></span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- =========================== CLOSING =========================== -->
+<section class="closing dark band-lg">
+  <div class="wrap center">
+    <span class="eyebrow orange reveal">One hundred percent reaches the athlete</span>
+    <h2 class="serif display reveal">Pick a way. Any way.</h2>
+    <p class="lead sub reveal">The fastest one is the one right here.</p>
+    <div class="actions reveal">
+      <a class="btn" href="/donate">Donate</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="brandcol">
+        <a href="/" class="brand"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="217.61900000000003 211.68400000000003 1485.031 1351.756" class="brand-logo" aria-hidden="true"><path fill="#1A1A1A" d="M359.579 1424.07C374.643 1414 419.843 1314.91 429.93 1293.87L494.424 1159.36L747.066 640.99L855.497 418.881C869.352 390.403 883.808 362.487 897.593 333.689C907.159 313.705 908.44 287.493 891.747 270.443C890.687 269.361 891.226 270.404 890.726 268.488C910.256 266.684 954.763 268.012 976.132 267.978L1027.73 267.866C1050.43 267.823 1069.15 266.862 1090.2 276.699C1100.08 280.969 1119.05 295.115 1124.15 305.089C1149.4 354.497 1171.67 409.57 1192.51 460.73C1207.12 496.586 1223.18 529.721 1237.07 564.893C1231.2 560.008 1227.44 557.269 1221.08 553.015C1215.99 557.591 1208.19 556.729 1206.65 548.966C1204.79 547.116 1205.4 548.172 1205.09 545.604C1202.88 544.392 1200.58 543.344 1198.22 542.469C1149.51 524.158 1115.69 536.668 1071.87 556.467C1061.68 531.46 1047.28 493.022 1034.45 468.477C1033.54 466.745 1031.36 466.995 1029.72 467.026C1023.63 472.302 1006.14 511.519 1002.14 520.975C1003.99 526.438 1006.21 532.816 1000.42 535.761C999.73 535.161 999.042 534.562 998.355 533.963L995.587 534.913C991.934 541.165 989.114 547.012 986.003 553.541C978.262 569.79 970.036 585.78 962.167 602.001L905.887 716.678C898.157 732.102 890.506 749.961 882.211 764.818C876.619 774.834 855.527 783.028 844.283 790.778C773.508 839.563 722.902 906.96 712.074 994.461C711.238 1005.28 710.874 1016.13 710.985 1026.98C711.392 1036.24 711.6 1041.55 713.301 1050.54C715.147 1038.12 716.538 1026.66 719.061 1014.08C747.026 874.746 884.594 776.948 1019.67 757.989C1033.35 756.07 1049.34 754.641 1062.97 756.691C1081.24 759.401 1097.61 769.443 1108.31 784.498C1141.91 831.239 1107.16 895.887 1082.84 938.981C1070.16 961.44 1046.9 999.023 1064.37 1024.25C1065.51 1025.88 1066.68 1027.48 1067.88 1029.06C1029.44 1044.14 983.182 1035.86 967.927 993.161C952.577 950.192 964.659 904.334 977.615 862.526C961.687 864.778 939.913 868.607 925.08 873.993C873.313 892.788 825.45 928.17 793.2 972.628C749.701 1032.59 718.718 1102.16 686.859 1168.46L592.531 1364.34L560.696 1430.8C552.425 1448.47 540.172 1482.34 521.933 1491.44C510.331 1497.23 486.702 1496.02 473.295 1496.02L419.601 1496C373.568 1495.97 318.065 1497.35 272.619 1495.53C299.416 1479.6 313.334 1471.82 336.26 1449.95C339.189 1443.65 341.78 1440.96 345.75 1435.2L345.227 1435.64C348.674 1430.56 353.897 1426.19 359.579 1424.07Z"/><path fill="#E85D04" d="M1223.86 1142.69C1176.21 1128.49 1149.97 1142.58 1105.3 1157.83C1041.84 1179.5 949.416 1199.66 909.488 1127.93C889.272 1092.07 895.318 1042.58 907.061 1004.78C914.066 982.224 931.884 938.201 945.531 918.31C934.727 976.648 943.073 1045.11 1012.53 1058.92C1038.79 1064.14 1062.99 1055.23 1087.54 1047.14C1140.35 1029.01 1197.18 1006.46 1254.03 1017.1C1289.1 1023.67 1325.25 1046.46 1345.49 1076.01C1378.24 1123.85 1397.19 1180.53 1418.23 1234.13C1449.55 1314.65 1503.74 1418.16 1580.23 1464.25C1583.85 1463.21 1589.98 1461.73 1593.37 1463.58C1593.59 1466.23 1593.34 1466.46 1592.66 1469.09C1597.56 1472.29 1602.54 1473.68 1604.16 1477.79L1605.97 1478.39C1614.43 1480.9 1616.3 1478.09 1622.66 1479.72C1624.28 1482.72 1623.84 1483.16 1624 1486.81C1629.15 1489.52 1640.46 1493.28 1647.65 1496.74C1624.41 1497.19 1603.55 1498.32 1580.39 1494.33C1449.33 1471.77 1372.44 1370.93 1312.08 1261.29C1291.38 1223.68 1275.14 1182.88 1244.5 1153.99C1244.37 1153.96 1226.28 1143.89 1223.86 1142.69Z"/><path fill="#1A1A1A" d="M884.091 997.18C881.573 1003.22 879.168 1009.32 876.877 1015.45C872.103 1043.72 864.64 1071.51 871.609 1100.69C845.46 1128.65 828.491 1154.6 818.826 1192.32C816.984 1199.52 813.918 1213.11 813.959 1220.49C812.475 1231.51 813.015 1240.82 812.825 1251.85C813.263 1255.26 813.858 1259.12 814.152 1262.51C818.588 1268.64 815.637 1265.16 817.476 1272.58L823.121 1273.27C826.428 1279.35 820.905 1285.89 821.677 1290.17C823.045 1297.75 828.009 1303.4 827.331 1312.28C828.661 1322.63 848.459 1349.98 855.865 1358.19C974.653 1489.9 1172.27 1374.81 1159.6 1211.15C1158.54 1197.39 1153.77 1184.05 1152.5 1171.07C1155.27 1168.58 1160.94 1166.68 1164.64 1165.81C1190.31 1159.76 1205.22 1161.47 1227.84 1175.44C1232.07 1176.61 1233.16 1176.71 1237.48 1175.98L1239.62 1177.38C1241.92 1188.43 1245.64 1205.53 1243.89 1216.31C1241.99 1240.23 1243.24 1264.11 1237.58 1287.96C1220.89 1358.2 1179.19 1421.17 1118.06 1459.72C1060.12 1496.36 989.975 1508.44 923.115 1493.29C902.176 1488.53 882.13 1480.26 863.152 1469.87C743.322 1404.25 701.651 1254.69 756.971 1132.59C783.05 1075.03 819.264 1037.28 872.458 1004.19C876.447 1001.9 880.284 999.778 884.091 997.18Z"/><path fill="#1A1A1A" d="M1132.43 581.791C1182.17 578.689 1225.06 616.367 1228.39 666.087C1231.72 715.808 1194.24 758.871 1144.53 762.432C1094.5 766.016 1051.1 728.237 1047.74 678.192C1044.39 628.146 1082.37 584.914 1132.43 581.791Z"/></svg>Adapt To Life</a>
+        <p class="tagline">Your place in adaptive sports.</p>
+        <form class="foot-sub js-subscribe" data-source="footer" novalidate>
+          <label class="foot-sub-label" for="footEm">Stay in the game</label>
+          <div class="foot-sub-row">
+            <input class="foot-sub-input" id="footEm" name="em" type="email" autocomplete="email" placeholder="you@example.com" aria-label="Your email">
+            <button class="foot-sub-btn" type="submit" aria-label="Join the list">&rarr;</button>
+          </div>
+          <input type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only"></div>
+          <p class="foot-sub-msg" role="status" aria-live="polite"></p>
+        </form>
+        <p class="legal">Adapt To Life is a recognized 501(c)(3) nonprofit organization. Donations are tax-deductible to the extent allowed by law. EIN 41-3213344.</p>
+      </div>
+      <div class="col">
+        <h4>Organization</h4>
+        <a href="/about">Our Story</a>
+        <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
+        <a href="/tim">Tim&#39;s Story</a>
+        <a href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
+                <a href="/roadmap">Roadmap</a>
+      </div>
+      <div class="col">
+        <h4>Get involved</h4>
+        <a href="/donate">Donate</a>
+        <a href="/ways-to-give">Ways to give</a>
+        <a href="/sponsorship">Sponsor us</a>
+        <a href="/apply">Grant Application</a>
+        <a href="https://sign.adapttolife.org/waiver?source=atl">Sign waiver</a>
+        <a href="/subscribe">Join the list</a>
+        <a href="/contact">Contact</a>
+        <a href="mailto:hello@adapttolife.org">hello@adapttolife.org</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Adapt To Life</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var toggles = document.querySelectorAll('.nav-toggle');
+    function closeAll(except){
+      toggles.forEach(function(t){
+        if (t === except) return;
+        t.setAttribute('aria-expanded','false');
+        var pnl = document.getElementById(t.getAttribute('aria-controls'));
+        if (pnl) pnl.classList.remove('open');
+      });
+    }
+    toggles.forEach(function(t){
+      var panel = document.getElementById(t.getAttribute('aria-controls'));
+      t.addEventListener('click', function(e){
+        e.stopPropagation();
+        var open = t.getAttribute('aria-expanded') === 'true';
+        closeAll(t);
+        t.setAttribute('aria-expanded', open ? 'false' : 'true');
+        if (panel) panel.classList.toggle('open', !open);
+      });
+    });
+    document.addEventListener('click', function(){ closeAll(null); });
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape') closeAll(null);
+    });
+  })();
+  (function(){
+    var nav = document.getElementById('nav');
+    var menuBtn = document.getElementById('menuBtn');
+    menuBtn.addEventListener('click', function(){
+      var open = nav.classList.toggle('open');
+      menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    nav.querySelectorAll('.mobile-menu a').forEach(function(a){
+      a.addEventListener('click', function(){ nav.classList.remove('open'); menuBtn.setAttribute('aria-expanded','false'); });
+    });
+    var onScroll = function(){ if(window.scrollY > 8){ nav.classList.add('scrolled'); } else { nav.classList.remove('scrolled'); } };
+    window.addEventListener('scroll', onScroll, { passive:true });
+    onScroll();
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var reveals = document.querySelectorAll('.reveal');
+    if(reduce || !('IntersectionObserver' in window)){
+      reveals.forEach(function(el){ el.classList.add('in'); });
+    } else {
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+      }, { threshold:0.12, rootMargin:'0px 0px -8% 0px' });
+      reveals.forEach(function(el){ io.observe(el); });
+      window.addEventListener('load', function(){
+        document.querySelectorAll('.hero .reveal').forEach(function(el, i){
+          setTimeout(function(){ el.classList.add('in'); }, 60 + i*70);
+        });
+      });
+    }
+  })();
+</script>
+
+<script src="/js/campaigns.js"></script>
+<script>
+(function(){
+  var C = window.ATLCampaigns;
+  var campHost  = document.getElementById('wtgCampaigns');
+  var driveHost = document.getElementById('wtgDrives');
+
+  // Honest empty states. An empty hub is a real state; a broken page is not.
+  function emptyCampaigns(msg){
+    if (!campHost) return;
+    var li = C.el('li','wtg-empty');
+    li.appendChild(document.createTextNode(msg + ' '));
+    var a = C.el('a','textlink','Give to the fund');
+    a.href = '/donate';
+    li.appendChild(a);
+    campHost.appendChild(li);
+  }
+
+  function progressBar(goal){
+    var wrapEl = C.el('div','wtg-bar');
+    var track  = C.el('div','wtg-bar-track');
+    var fill   = C.el('span','wtg-bar-fill');
+    var label  = C.el('p','wtg-bar-label', C.money(goal) + ' goal');
+    track.appendChild(fill);
+    wrapEl.appendChild(track);
+    wrapEl.appendChild(label);
+    return { node:wrapEl, fill:fill, label:label };
+  }
+
+  function renderCampaign(c, driveCount){
+    var li = C.el('li','wtg-camp reveal');
+    var left = C.el('div');
+
+    left.appendChild(C.el('span','wtg-camp-for','For ' + (c.beneficiary || 'adaptive athletes')));
+    left.appendChild(C.el('h3','serif', c.name));
+    if (c.blurb) left.appendChild(C.el('p','wtg-camp-blurb', c.blurb));
+
+    var meta = [];
+    if (c.when) meta.push(c.when);
+    if (driveCount) meta.push(driveCount === 1 ? '1 drive feeding it' : driveCount + ' drives feeding it');
+    if (meta.length) left.appendChild(C.el('p','wtg-camp-when', meta.join(' · ')));
+
+    var side = C.el('div','wtg-camp-side');
+    var bar = null;
+    if (typeof c.goal === 'number' && c.goal > 0){
+      bar = progressBar(c.goal);
+      side.appendChild(bar.node);
+    }
+    var cta = C.el('a','btn', c.cta_label || 'See the campaign');
+    C.wire(cta, c.cta_url || c.page || '/donate', c.cta_label || 'See the campaign');
+    side.appendChild(cta);
+
+    li.appendChild(left);
+    li.appendChild(side);
+    campHost.appendChild(li);
+
+    // Live figure last, so a slow or failed /api/raised leaves the goal standing
+    // rather than publishing a $0 that is not true.
+    if (bar && c.raised_source === 'api'){
+      C.raised(function(d){
+        if (!d || !d.goal) return;
+        var goal = d.goal || c.goal;
+        var pct = Math.max(0, Math.min(100, d.raised / goal * 100));
+        bar.label.textContent = C.money(d.raised) + ' of ' + C.money(goal) + ' raised';
+        requestAnimationFrame(function(){
+          setTimeout(function(){ bar.fill.style.width = pct.toFixed(1) + '%'; }, 120);
+        });
+      });
+    }
+  }
+
+  function renderDrive(d){
+    var st = C.driveStatus(d);
+    var li = C.el('li','wtg-drive reveal');
+    var main = C.el('div','wtg-drive-main');
+
+    var pill = C.el('span','wtg-pill is-' + (st === 'open' ? 'open' : st));
+    pill.appendChild(C.el('span','dot'));
+    pill.appendChild(document.createTextNode(
+      st === 'open' ? 'Open now' : st === 'soon' ? 'Coming up' : 'Finished'
+    ));
+    main.appendChild(pill);
+    main.appendChild(C.el('p','wtg-drive-name', d.name));
+    if (d.summary) main.appendChild(C.el('p','wtg-drive-sub', d.summary));
+
+    var meta = [];
+    var when = C.driveWhen(d);
+    if (when) meta.push(when);
+    if (d.venue) meta.push([d.venue, d.city, d.state].filter(Boolean).join(', '));
+    if (d.relationship !== 'we_compete' && typeof d.goal === 'number' && d.goal > 0){
+      meta.push(C.money(d.goal) + ' goal');
+    }
+    if (d.register_by && C.today() <= C.localDate(d.register_by)){
+      meta.push('Register by ' + C.fmtDate(C.localDate(d.register_by)));
+    }
+    if (meta.length) main.appendChild(C.el('p','wtg-drive-meta', meta.join(' · ')));
+
+    // Principle 1a: an event we only compete in names its real host and who it
+    // actually benefits. Blurring that is a claim about someone else's charity.
+    if (d.relationship === 'we_compete' && (d.host || d.beneficiary)){
+      var note = [];
+      if (d.host) note.push('Hosted by ' + d.host);
+      if (d.beneficiary) note.push('proceeds benefit ' + d.beneficiary + ', not us');
+      main.appendChild(C.el('p','wtg-drive-note', note.join(', ') + '.'));
+    }
+
+    var cta = C.driveCta(d);
+    var btn = C.el('a','btn ghost');
+    C.wire(btn, cta.href, cta.label);
+
+    li.appendChild(main);
+    li.appendChild(btn);
+    driveHost.appendChild(li);
+  }
+
+  C.load(function(store){
+    if (!store){
+      emptyCampaigns('We could not load our campaigns just now. The fund is open either way.');
+      if (driveHost) driveHost.closest('section').style.display = 'none';
+      return;
+    }
+
+    if (!store.campaigns.length){
+      emptyCampaigns('No campaign is running at the moment, and the fund still is.');
+    } else {
+      store.campaigns.forEach(function(c){
+        renderCampaign(c, store.drivesFor(c.slug).length);
+      });
+    }
+
+    // "Coming up" is omitted when nothing is coming up, never left empty-headed.
+    var upcoming = store.drives.filter(function(d){ return C.driveStatus(d) !== 'past'; });
+    if (!upcoming.length){
+      if (driveHost) driveHost.closest('section').style.display = 'none';
+    } else {
+      upcoming.sort(function(a,b){ return (C.driveOpens(a) || 0) - (C.driveOpens(b) || 0); });
+      upcoming.forEach(renderDrive);
+    }
+
+    // These nodes arrive after the observer ran, so reveal them directly.
+    document.querySelectorAll('#wtgCampaigns .reveal, #wtgDrives .reveal')
+      .forEach(function(el){ el.classList.add('in'); });
+  });
+})();
+</script>
+
+<script src="/js/subscribe.js" defer></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</body>
+</html>

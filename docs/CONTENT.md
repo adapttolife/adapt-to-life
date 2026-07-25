@@ -31,6 +31,9 @@ trust beat → one ask.
 | `/sponsorship` | The business case | Talk to us |
 | `/apply` | Athlete requests funding | Submit the application |
 | `/adaptive-sports-near-me` | The access barrier | Visit the directory |
+| `/ways-to-give` | Every way to back an athlete, campaigns first | Donate |
+| `/send-6` | The US Open campaign: the goal, who it reaches, what feeds it | Donate |
+| `/popcorn` | The recurring popcorn series | Buy popcorn (or Donate when no store is open) |
 | `/tim` | The heart | Into the fund |
 | `/about` | The people + the canonical promise | Meet us → give |
 | `/roadmap` | Accountability + momentum | Back the campaign |
@@ -50,9 +53,12 @@ Each message lives in ONE canonical place. Everywhere else: one line max, linkin
 | How a grant works (steps) | `/apply` | Link only |
 | The sponsor pitch + tiers | `/sponsorship` | One card/line + link |
 | Impact grid ($3,500 / $500 / $200 / 0%) | `/donate` | Not repeated |
+| **"Sports in abundance."** (the vision) | `/` (home), in the hero, directly after the belief line | Quotable elsewhere, but it is a declaration, never body filler. See the rule below |
 | The two-barriers framing | `/` (home) | One clause |
+| The US Open campaign goal and its per-athlete arithmetic ($3,500 × 6) | `/send-6` | The figure and a link. `/popcorn` carries a short version because it is that page's conversion device |
+| Planned and major giving (DAF, stock, bequests, matching, tribute) | `/ways-to-give` | Link only |
 | Tim's story | `/tim` | One sentence + link |
-| Region vs national scope | `/about` ("we fund athletes in Northern Illinois & Southern Wisconsin; the directory is national") | Footer line |
+| Region vs national scope | `/about` ("we fund adaptive athletes wherever they are, and our directory reaches nationwide") | Footer line. **The fund carries no geographic limit**; the earlier "Northern Illinois and Southern Wisconsin" line was retired and this row lagged behind the page |
 
 ## Voice canon
 
@@ -61,19 +67,58 @@ Each message lives in ONE canonical place. Everywhere else: one line max, linkin
 - "Barrier," never "wall." Non-cornering legal/ops language.
 - **Recognized** 501(c)(3), EIN 41-3213344, "tax-deductible to the extent allowed by law."
 - The promise, exactly: "One hundred percent reaches the athlete." ("100%" only in tight UI chips.)
+- **The three lines, and what each is for.** They are not interchangeable and none of them is decoration.
+  - **"Your place in adaptive sports."** The *promise*, made to an athlete. Second person, about
+    belonging. It leads the site and it does not change.
+  - **"Sports in abundance."** The *vision*, about the world rather than the athlete. Adaptive sport
+    is scarce today: it costs too much, there is too little of it, and what exists is hard to find.
+    Our job is to end that scarcity. It lives in the home hero, one line after the belief, and it is
+    said **once**: everything downstream pays it off rather than repeating it (the work section is
+    "How we make more of it," not a second billing). Never a caption, never a sign-off, and never
+    stretched to mean "we do lots of things."
+    **Sentence case in prose**, because every headline on this site is sentence case and breaking
+    that would make it read as a product name. Title case only when it genuinely is a name: a
+    campaign, a deck title, a shirt.
+  - **"The more we grow, the more we give."** The *engine*. Growth is the method, not the goal, and
+    the reason growth is not self-serving is that overhead is covered separately.
+- **Never localize the organization.** The fund has no geographic limit, the directory is national,
+  the board is spread out, and the athletes are wherever they are. So no home state, no home region,
+  no home courts, and no distance measured from a single base. Third-party facts are fine and often
+  necessary: the US Open really is in Naples, AMP really is in Elkhorn, Double Good really pops in
+  Chicago. The test is whether the place is a fact about someone else or a claim about our reach.
+- **Never write a number that caps the mission.** "Two barriers," "both of them," "our two programs"
+  all describe today's list as if it were the definition, and each one has to be rewritten the day
+  the list grows. Adapt To Life is an umbrella: the Hustle & Heart Fund is what it delivers, Adaptive
+  Sports Near Me is how it removes the access barrier, and there will be more surfaces
+  ([Spec 117](https://github.com/adapttolife/adapt-to-life) adds a storefront). Name what exists
+  today, say plainly that it grows, and let the count live in the data rather than in the prose.
 - Funding maturity: "We've started funding athletes, and we're just getting going." (Not "already
   funded" bravado, not "the moment we can fund" pre-launch.)
 - CTA verbs, always: **Donate** (give money) · **Apply** (request a grant) · **Suggest a program**
   (directory) · **Talk to us** (sponsor/custom).
 - Directory links: internal explainer is `/adaptive-sports-near-me`; the external directory link is
   labeled "Visit the directory" and opens a new tab.
+- **A campaign and a drive are different things and never merge.** A *campaign* is what we are
+  raising for and who it reaches (Send 6 to the US Open, six athletes, $21,000). It has a goal and a
+  named beneficiary, and it gets a page. A *drive* is a dated way we raise it (the August popcorn
+  store, a tournament). It feeds exactly one campaign and is a row on that campaign's page until it
+  earns a page of its own, the way popcorn did. Goals nest and never compete: a drive carries what
+  that drive can raise, the campaign carries the total.
+- **Say our actual relationship to an event.** Three exist and they are not the same: events we
+  **host**, events we **fundraise around**, and events we **send athletes to**. An event we only
+  compete in names its real host and its real beneficiary, and nothing on our page may imply we run
+  it or receive from it. This is a claim about someone else's charity, not a style choice.
+- **No click that does nothing.** With a live purchase link, every path goes to it. Without one,
+  every path goes to `/donate`, because the fund is open every day of the year even when a store is
+  not. Email capture is a secondary line, never a button dressed as a product.
 
 ## Momentum hand-offs (no circles)
 
 Every page ends by handing the visitor forward, never sideways to a page that hands them back:
 
 home → doors → (fund | directory) · tim → fund · fund → give · donate → done (+ level up: monthly,
-sponsor) · sponsorship → talk · apply → submit · about → give · roadmap → back the campaign.
+sponsor) · sponsorship → talk · apply → submit · about → give · roadmap → back the campaign ·
+ways to give → a campaign or a standing way · send-6 → give · popcorn → buy (or give).
 
 Adding something new? Give it ONE home page, one ask, one line + link everywhere else. Update this
 doc in the same PR.

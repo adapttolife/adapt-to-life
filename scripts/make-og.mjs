@@ -76,7 +76,11 @@ const PHOTOS = {
 const MONO = { variant: "mono", photo: "black", size: 74, measure: "13ch" };
 const CARDS = {
   // the default: adapttolife.org/ and any page without its own card
-  home: { ...MONO, out: "public/images/og-image.jpg", page: "index.html",
+  // On its own path, NOT the historical /images/og-image.jpg. Assets ship with
+  // a 30-day cache header, so reusing that URL means every platform and thread
+  // that already scraped the June card keeps serving it. A new design needs a
+  // new URL or the most-shared link is the last one to update.
+  home: { ...MONO, out: "public/images/og/home.jpg", page: "index.html",
     headline: "Your place in <em>adaptive sports</em>." },
   donate: { ...MONO, out: "public/images/og/donate.jpg", page: "donate.html",
     headline: "Put an athlete <em>in the game</em>." },

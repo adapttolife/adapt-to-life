@@ -64,9 +64,13 @@ That is the whole job. Nothing else on any page needs touching.
 
 - `campaign` is the slug of the campaign this drive feeds, and it is load-bearing in three places:
   the drive appears on that campaign's page, the campaign card on `/ways-to-give` counts it, and
-  `/popcorn` renders a "Feeding <campaign>" link straight from it. Get it wrong and the drive
-  silently detaches from the story it belongs to. Omit it **only** for something that raises nothing
-  for us, the way the Vlasic Classic does.
+  `/popcorn` links the campaign straight from it. Get it wrong and the drive silently detaches from
+  the story it belongs to. Omit it **only** for something that raises nothing for us, the way the
+  Vlasic Classic does.
+- `supports` should name the campaign the way `campaigns.json` names it, because `/popcorn` turns
+  that name into the link to the campaign page. Word it differently and the card falls back to a
+  standalone "Part of <campaign>" line — still correct, just a second mention of a name the sentence
+  already carried.
 - `published: false` keeps a verified record on file without putting it on the site. Use it for
   anything real but not yet confirmed, rather than deleting the facts you already checked.
 - `public/popcorn.html` still holds the **flavor** list, because flavors are that page's own

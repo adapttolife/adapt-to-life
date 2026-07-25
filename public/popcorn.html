@@ -266,6 +266,10 @@
      are different numbers on purpose, so the link says which is which */
   .pop-feeds{ margin-top:0.9rem; font-size:0.9rem; color:var(--muted); }
   .pop-feeds .textlink{ font-size:0.9rem; }
+  /* the campaign name inside the drive's sentence: .textlink is inline-flex for
+     standalone links and would refuse to break mid-phrase, so a five-word name
+     overflows a 390px screen. Inline, inheriting the sentence's size, wraps. */
+  .pop-card-sub .textlink{ display:inline; font-size:inherit; }
 </style>
 </head>
 <body>
@@ -706,6 +710,23 @@
       return n;
     }
 
+    // Goals nest, they never compete: the drive carries what the drive can
+    // raise, the campaign carries the total. The drive's own sentence already
+    // names the campaign, so the name itself is the link — a second line under
+    // it would be the third mention of one campaign on one card. Text nodes
+    // only: campaigns.json is data, never markup, and must not reach innerHTML.
+    function subWithCampaign(text, camp){
+      var p = el('p','pop-card-sub');
+      var at = camp && camp.name ? text.indexOf(camp.name) : -1;
+      if (at < 0){ p.textContent = text; return p; }
+      p.appendChild(document.createTextNode(text.slice(0, at)));
+      var link = el('a','textlink', camp.name);
+      link.href = camp.page || '/send-6';
+      p.appendChild(link);
+      p.appendChild(document.createTextNode(text.slice(at + camp.name.length)));
+      return p;
+    }
+
     var host = document.getElementById('popActive');
     if (host){
       if (!current){
@@ -732,7 +753,8 @@
         sEl.appendChild(document.createTextNode(st === 'open' ? 'Open now' : 'Opening soon'));
         left.appendChild(sEl);
         left.appendChild(el('h2','serif h2', current.name));
-        if (current.supports) left.appendChild(el('p','pop-card-sub', current.supports));
+        var feeds = store && store.campaignFor(current);
+        if (current.supports) left.appendChild(subWithCampaign(current.supports, feeds));
 
         var dates = span(localDate(current.opens), localDate(current.closes));
         if (current.time_note) dates += ' · ' + current.time_note;
@@ -756,14 +778,13 @@
           left.appendChild(wrapEl);
         }
 
-        // Goals nest, they never compete. This drive carries what this drive can
-        // raise; the campaign carries the total. Naming the campaign here, from
-        // the data rather than from a hardcoded link, is what makes the drive
-        // and the goal read as one story instead of two numbers.
-        var feeds = store && store.campaignFor(current);
-        if (feeds){
+        // Fallback door, not a second mention: only when the drive's sentence
+        // is missing or never names the campaign does the card carry a standalone
+        // line, so the way to the campaign page can never disappear on an editor
+        // rewording the copy.
+        if (feeds && !(current.supports && current.supports.indexOf(feeds.name) >= 0)){
           var feedsEl = el('p','pop-feeds');
-          feedsEl.appendChild(document.createTextNode('Feeding '));
+          feedsEl.appendChild(document.createTextNode('Part of '));
           var feedsLink = el('a','textlink', feeds.name);
           feedsLink.href = feeds.page || '/send-6';
           feedsEl.appendChild(feedsLink);

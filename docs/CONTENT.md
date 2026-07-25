@@ -132,3 +132,25 @@ ways to give → a campaign or a standing way · send-6 → give · popcorn → 
 
 Adding something new? Give it ONE home page, one ask, one line + link everywhere else. Update this
 doc in the same PR.
+
+## Share cards (og:image)
+
+The card a link draws in a text thread is content, not decoration, and it is the one surface nobody
+sees while building the site. It is generated, never exported by hand:
+
+- `scripts/make-og.mjs` renders every card from `src/og/card.html` at 1200x630, using the same
+  tokens and typefaces as `site.css`. Hand-exporting drifts: the first card shipped in Arial and
+  the previous orange, and stayed that way for a month after the brand moved.
+- **A card's headline is its page's `h1`, verbatim.** Never new copy. A card is the page's first
+  impression, so inventing a line there would put an unapproved promise in front of someone before
+  they ever reach the page. The generator fails the build if the two ever differ.
+- One line, the mark, the domain. No eyebrow, no supporting sentence: a 15px tracked line is 4px
+  wide in a chat bubble.
+- Only pages people actually send each other get their own card. Everything else falls back to the
+  default. Adding one is a row in `CARDS` plus a row in `scripts/wire-og.mjs`, which is the ONLY
+  writer of `og:image` tags.
+- Photographs are of real athletes, ours, and are cropped rather than altered. Nothing generated
+  stands in for an athlete.
+- `scripts/check-site.mjs` fetches every card off the deployed host on every deploy: it must resolve,
+  be absolute, carry alt text, match its declared 1200x630, and fit the 300KB budget above which
+  WhatsApp silently drops the preview.

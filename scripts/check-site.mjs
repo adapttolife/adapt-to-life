@@ -215,15 +215,17 @@ for (const path of ["/donate", "/hustle-and-heart"]) {
 // Analytics beacon, neither of which exists on the workers.dev staging Worker.
 // Budget the surface a donor actually touches; staging simply runs under it.
 //
-// Measured, not guessed — four clean prod runs each: / at exactly 5 third-party
-// hosts / 31 requests, /donate at 20 / 114, with zero variance in host count.
+// Tightened 2026-07-25 when Turnstile stopped loading eagerly: / went from
+// 1314KB/26req/4hosts to 500KB/15req/2hosts on staging. A ratchet you do not
+// re-tighten after a fix is a ratchet that quietly lets the fix be undone, so
+// these come down every time weight comes off.
 // / gets no host headroom: every host there is a choice we made (fonts,
 // Turnstile, CF analytics), so a new one is a decision worth a red build.
 // /donate gets one slot, because Givebutter's own dependency set shifts
 // (q.stripe.com appears conditionally) and we do not control it. One slot still
 // catches an added embed: embeds arrive with a fleet of hosts, not one.
 const BUDGET = {
-  "/": { own: 180, total: 1500, reqs: 33, hosts: 5, cls: 0.10 },
+  "/": { own: 185, total: 700, reqs: 24, hosts: 4, cls: 0.10 },
   // cls:null = deliberately NOT asserted yet, which is a finding, not an
   // oversight. /donate measured 0.12, 0.15, 0.34 and 0.76 across runs because
   // the Givebutter panel reserves no height and shoves the page when it mounts
@@ -231,7 +233,7 @@ const BUDGET = {
   // meaningless, and a check that cries wolf gets ignored — which is how the
   // 9 MB got here. Reserve the panel's height, then set this to 0.10 like every
   // other page. The null is the debt marker; delete it with the fix.
-  "/donate": { own: 110, total: 9800, reqs: 118, hosts: 21, cls: null },
+  "/donate": { own: 115, total: 9000, reqs: 108, hosts: 21, cls: null },
 };
 
 for (const [path, cap] of Object.entries(BUDGET)) {

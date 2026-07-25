@@ -36,6 +36,34 @@
   .hc-name{ margin-top:0.3rem; font-weight:600; font-size:1.04rem; }
   .hc-sub{ margin-top:0.2rem; font-size:0.93rem; color:var(--ink-soft); max-width:56ch; }
   .hc-go{ flex:0 0 auto; font-size:0.9rem; }
+
+  /* Our work: ONE object with two facets, not two cards.
+     The old version asserted "one job, two sides" in a headline and then put
+     two headings, two paragraphs and two links side by side, which on a phone
+     collapsed into a plain list of two products. Cohesion has to be structural.
+     The verb leads (Afford it / Find it, the spec's own athlete-side framing)
+     and each program name lives inside its sentence rather than standing up as
+     a rival headline. */
+  .fronts{
+    list-style:none; margin:clamp(2.2rem,4vw,3rem) auto 0; padding:clamp(1.7rem,3.2vw,2.6rem);
+    max-width:960px;
+    background:var(--paper); border:1px solid var(--hairline); border-radius:20px;
+    box-shadow:0 26px 60px -36px rgba(28,26,21,0.36);
+    display:grid; grid-template-columns:1fr 1fr; gap:clamp(1.6rem,3.4vw,3rem);
+  }
+  .fronts > li{ display:flex; flex-direction:column; align-items:flex-start; }
+  .fronts > li + li{ border-left:1px solid var(--hairline); padding-left:clamp(1.6rem,3.4vw,3rem); }
+  @media (max-width:760px){
+    .fronts{ grid-template-columns:1fr; gap:1.6rem; }
+    .fronts > li + li{ border-left:0; padding-left:0; border-top:1px solid var(--hairline); padding-top:1.6rem; }
+  }
+  .front-verb{
+    font-family:"Space Mono",monospace; font-size:0.72rem; font-weight:700;
+    letter-spacing:0.18em; text-transform:uppercase; color:var(--orange-ink);
+  }
+  .fronts p{ margin-top:0.8rem; color:var(--ink-soft); flex:1 1 auto; }
+  .fronts p strong{ color:var(--ink); font-weight:600; }
+  .fronts .textlink{ margin-top:1.3rem; font-size:0.94rem; }
 </style>
 </head>
 <body>
@@ -113,20 +141,18 @@
         <h2 class="serif h2" style="margin-top:0.8rem;">One job, worked from two sides.</h2>
         <p class="prose" style="margin-top:1rem;">A chair nobody could afford. A trip nobody funded. A program nobody could find. Same athlete, stopped by two different things, so we work both.</p>
       </div>
-      <div class="progs">
-        <div class="prog reveal">
-          <span class="tag">The cost barrier</span>
-          <h3 class="serif h3">Hustle &amp; Heart Fund</h3>
-          <p>Adaptive gear is brutally expensive. A racing chair can cost more than a car. We help cover those costs so money is never the reason someone stops.</p>
-          <a href="/hustle-and-heart" class="textlink go">How the fund works <span class="arrow">&rarr;</span></a>
-        </div>
-        <div class="prog reveal">
-          <span class="tag">The access barrier</span>
-          <h3 class="serif h3">Adaptive Sports Near Me</h3>
-          <p>You can't play what you can't find. We're building a free, open directory of adaptive programs nationwide, with no logins and no paywalls.</p>
-          <a href="/adaptive-sports-near-me" class="textlink go">How the directory works <span class="arrow">&rarr;</span></a>
-        </div>
-      </div>
+      <ul class="fronts reveal">
+        <li>
+          <span class="front-verb">Afford it</span>
+          <p>Adaptive gear is brutally expensive, and a racing chair can cost more than a car. The <strong>Hustle &amp; Heart Fund</strong> covers equipment, training, and travel, so money is never the reason someone stops.</p>
+          <a href="/hustle-and-heart" class="textlink">How the fund works <span class="arrow">&rarr;</span></a>
+        </li>
+        <li>
+          <span class="front-verb">Find it</span>
+          <p>You can't play what you can't find. <strong>Adaptive Sports Near Me</strong> is a free, open directory of adaptive programs nationwide, with no logins and no paywalls.</p>
+          <a href="/adaptive-sports-near-me" class="textlink">How the directory works <span class="arrow">&rarr;</span></a>
+        </li>
+      </ul>
     </div>
   </section>
 

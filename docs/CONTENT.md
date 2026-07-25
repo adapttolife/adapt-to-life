@@ -67,6 +67,16 @@ Each message lives in ONE canonical place. Everywhere else: one line max, linkin
 - "Barrier," never "wall." Non-cornering legal/ops language.
 - **Recognized** 501(c)(3), EIN 41-3213344, "tax-deductible to the extent allowed by law."
 - The promise, exactly: "One hundred percent reaches the athlete." ("100%" only in tight UI chips.)
+- **One fact, one register.** A number we state in words stays in words everywhere it is a sentence;
+  numerals belong to stat tiles and chips. Two spellings of one fact is the single thing that makes
+  careful copy read as careless, and it is how three of these drifted:
+  - The popcorn split, exactly: **half**. `/popcorn` carried "half", "50%", and "fifty percent" at
+    once, the h1 and the line under it disagreeing.
+  - The promise above. `/donate` stated it three times in one viewport, twice as "100%" in prose,
+    on the one page where the money actually moves.
+  - The fund's name, exactly: **Hustle & Heart Fund** (`&amp;` in HTML), *including meta
+    descriptions* — `/tim`, `/apply` and `/hustle-and-heart` said "Hustle and Heart Fund" there, so
+    the name rendered two ways in search results and every shared link while looking fine on-page.
 - **The three lines, and what each is for.** They are not interchangeable and none of them is decoration.
   - **"Your place in adaptive sports."** The *promise*, made to an athlete. Second person, about
     belonging. It leads the site and it does not change.

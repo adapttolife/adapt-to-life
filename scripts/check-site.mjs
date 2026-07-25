@@ -152,6 +152,120 @@ if (missing.status !== 404) fail(`unknown path returned ${missing.status}, expec
   if (!IS_STAGING && rv.status !== 302) fail(`/review returned ${rv.status} on production, expected a 302 home`);
 }
 
+// ---- the money path: the giving form must reach a real amount -----------
+// Why this exists: /donate and /hustle-and-heart embed Givebutter, and nothing
+// here asserted it worked. The page could return 200, pass every nav and link
+// check above, and still show a donor an empty box. The embed also renders into
+// a shadow root with a cross-origin iframe inside it, so "the markup is present"
+// is especially meaningless — the <givebutter-giving-form> tag is in the HTML
+// whether or not the widget ever mounts.
+//
+// So this reads the amount step the way a donor does. It is deliberately the
+// strongest assertion in this file, because it guards the only path on the site
+// where a failure costs the org money. It will also fail if Givebutter itself is
+// down, which is correct: the giving form being unusable is worth a red build
+// no matter whose fault it is.
+for (const path of ["/donate", "/hustle-and-heart"]) {
+  const g = await browser.newPage({ viewport: { width: 1440, height: 1000 }, reducedMotion: "reduce" });
+  try {
+    await g.goto(`${BASE}${path}?cb=${Date.now()}`, { waitUntil: "domcontentloaded" });
+    const form = g.locator("givebutter-giving-form");
+    await form.waitFor({ state: "attached", timeout: 20000 });
+
+    // The embed lives in an iframe inside the element's shadow root. Wait on the
+    // amount step being VISIBLE, not on an element being attached: the iframe is
+    // attached long before it renders, and most of its ~30 inputs are hidden, so
+    // both "attached" and `input.first()` resolve on something a donor cannot
+    // see. Waiting on the text a donor reads is the only honest signal.
+    const inner = g.frameLocator("givebutter-giving-form iframe");
+    await inner.getByText(/choose amount/i).first().waitFor({ state: "visible", timeout: 45000 });
+
+    const text = (await inner.locator("body").innerText()).replace(/\s+/g, " ");
+    if (!/continue|donate|give/i.test(text)) fail(`${path} giving form has no way to proceed (text: ${text.slice(0, 80)})`);
+
+    const amounts = await inner.locator("input:visible").count();
+    if (amounts < 1) fail(`${path} giving form rendered no amount a donor can pick`);
+
+    // Deliberately no height assertion. The panel is 188px when the amount step
+    // first paints and ~508px once it settles, so any pixel threshold is a race.
+    // "The donor can see the amounts and a way to continue" is the real contract.
+  } catch (e) {
+    fail(`${path} giving form did not become usable: ${String(e).split("\n")[0].slice(0, 120)}`);
+  }
+  await g.close();
+}
+
+// ---- performance budget --------------------------------------------------
+// Why this exists: an audit on 2026-07-25 found /donate arriving at 9.4 MB over
+// 109 requests from 21 third-party hosts, with the main thread blocked ~2s on a
+// throttled phone. Nothing in this file would have caught it, and nothing would
+// catch the next embed someone drops in. Weight arrives one widget at a time and
+// no single commit ever looks like the problem, so the ceiling has to be a test.
+//
+// These are RATCHETS, not targets — set just above what the site measures today
+// so any regression is loud, then tightened whenever a fix lands. `own` is our
+// own bytes and is the only number fully under our control; `hosts` is the
+// sharpest regression signal because a new embed shows up there first.
+//
+// Measured over three runs each: own/total/requests/hosts were stable to <0.2%.
+// CLS was not, which is itself the finding — see the /donate note below.
+// These numbers come from PRODUCTION, not staging, and that distinction cost a
+// red build to learn: the prod zone injects Cloudflare's bot-detection script
+// (/cdn-cgi/challenge-platform/.../jsd/main.js, ~21KB same-origin) and the Web
+// Analytics beacon, neither of which exists on the workers.dev staging Worker.
+// Budget the surface a donor actually touches; staging simply runs under it.
+//
+// Measured, not guessed — four clean prod runs each: / at exactly 5 third-party
+// hosts / 31 requests, /donate at 20 / 114, with zero variance in host count.
+// / gets no host headroom: every host there is a choice we made (fonts,
+// Turnstile, CF analytics), so a new one is a decision worth a red build.
+// /donate gets one slot, because Givebutter's own dependency set shifts
+// (q.stripe.com appears conditionally) and we do not control it. One slot still
+// catches an added embed: embeds arrive with a fleet of hosts, not one.
+const BUDGET = {
+  "/": { own: 180, total: 1500, reqs: 33, hosts: 5, cls: 0.10 },
+  // cls:null = deliberately NOT asserted yet, which is a finding, not an
+  // oversight. /donate measured 0.12, 0.15, 0.34 and 0.76 across runs because
+  // the Givebutter panel reserves no height and shoves the page when it mounts
+  // ~1.9s in. Any ceiling wide enough not to flap is wide enough to be
+  // meaningless, and a check that cries wolf gets ignored — which is how the
+  // 9 MB got here. Reserve the panel's height, then set this to 0.10 like every
+  // other page. The null is the debt marker; delete it with the fix.
+  "/donate": { own: 110, total: 9800, reqs: 118, hosts: 21, cls: null },
+};
+
+for (const [path, cap] of Object.entries(BUDGET)) {
+  const b = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: "reduce" });
+  let own = 0, total = 0, reqs = 0;
+  const hosts = new Set();
+  b.on("response", async (r) => {
+    let n = 0;
+    try { n = (await r.body()).length; } catch { /* opaque/aborted */ }
+    const h = new URL(r.url()).host;
+    if (h) hosts.add(h);
+    total += n; reqs++;
+    if (/adapt-to-life|adapttolife/.test(h)) own += n;
+  });
+  await b.addInitScript(`window.__cls = 0;
+    new PerformanceObserver((l) => { for (const e of l.getEntries()) if (!e.hadRecentInput) window.__cls += e.value; })
+      .observe({ type: 'layout-shift', buffered: true });`);
+  await b.goto(`${BASE}${path}?cb=${Date.now()}`, { waitUntil: "load", timeout: 90000 });
+  // Third-party embeds keep loading well past `load` — Givebutter's tail runs to
+  // ~14s on a throttled phone. Settle long enough to bill them for it.
+  await b.waitForTimeout(9000);
+  const cls = await b.evaluate("+window.__cls.toFixed(4)");
+  await b.close();
+
+  const ownKB = Math.round(own / 1024), totalKB = Math.round(total / 1024);
+  const third = [...hosts].filter((h) => !/adapt-to-life|adapttolife/.test(h));
+  if (ownKB > cap.own) fail(`${path} own bytes ${ownKB}KB over budget ${cap.own}KB`);
+  if (totalKB > cap.total) fail(`${path} total bytes ${totalKB}KB over budget ${cap.total}KB`);
+  if (reqs > cap.reqs) fail(`${path} ${reqs} requests over budget ${cap.reqs}`);
+  if (third.length > cap.hosts) fail(`${path} ${third.length} third-party hosts over budget ${cap.hosts}: ${JSON.stringify(third.sort())}`);
+  if (cap.cls !== null && cls > cap.cls) fail(`${path} CLS ${cls} over budget ${cap.cls}`);
+  console.log(`  budget ${path.padEnd(9)} own ${String(ownKB).padStart(4)}KB · total ${String(totalKB).padStart(5)}KB · ${String(reqs).padStart(3)} req · ${String(third.length).padStart(2)} 3p hosts · CLS ${cls}${cap.cls === null ? " (not asserted — see BUDGET)" : ""}`);
+}
+
 await browser.close();
 console.log(`\n${PAGES.length} pages · ${targets.size} internal targets · nav ${reference.desk}`);
 console.log(failed ? "\nFAILED" : "\nSITE CHECK PASSED");

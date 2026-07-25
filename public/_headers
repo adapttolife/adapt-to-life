@@ -1,0 +1,55 @@
+# public/_headers — browser cache policy for static assets.
+#
+# Why this exists: Workers Assets defaults every file to
+# `cache-control: public, max-age=0, must-revalidate`, so a returning visitor
+# re-validated the stylesheet, both scripts and every image on EVERY navigation.
+# Measured 2026-07-25 on prod: four 304 round-trips per page view for files that
+# had not changed. That is a round-trip of latency on every click, paid forever.
+#
+# The constraint that shapes the rest of this file: the site has NO build step
+# and NO content hashing. /css/site.css keeps its name across deploys, so it can
+# never be `immutable` — a returning visitor would be pinned to old CSS with no
+# way to break out. So the split below is by "how bad is one stale view":
+#
+#   code (css/js)  — short freshness + a SHORT stale-while-revalidate window.
+#                    A navigation inside a session costs zero round-trips, which
+#                    is the whole win. Worst case is one page view of last-deploy
+#                    CSS against current HTML, which then self-heals in the
+#                    background. The SWR window is one hour, not one day, on
+#                    purpose: this repo deploys several times a day, so a 24h
+#                    window would make that stale view likely rather than rare.
+#                    Anything structural (new markup + new CSS together) is
+#                    exactly when a mismatch would show, so keep the window
+#                    shorter than the gap between deploys.
+#   media          — long. These are effectively content-addressed by filename;
+#                    we add a new photo far more often than we overwrite one.
+#                    If you DO replace an image, rename it (see docs/ below).
+#   data           — near-live. /data/campaigns.json is Alec's editing surface,
+#                    so it gets seconds, not days.
+#
+# Anything not listed keeps the Workers Assets default, which is the safe one.
+# HTML is deliberately absent: pages must stay revalidated so content edits and
+# the /review tour are never served stale.
+
+/css/*
+  Cache-Control: public, max-age=300, stale-while-revalidate=3600
+
+/js/*
+  Cache-Control: public, max-age=300, stale-while-revalidate=3600
+
+# Photos, logos, QR art. Replace by renaming, never in place — a visitor who
+# already has the old bytes will not ask again for up to 30 days.
+/images/*
+  Cache-Control: public, max-age=2592000
+
+/qr/*
+  Cache-Control: public, max-age=2592000
+
+/docs/*
+  Cache-Control: public, max-age=2592000
+
+# Campaign data drives the live thermometer and the drive list. Fresh enough
+# that an edit shows up on the next view, cached enough that the two consumers
+# on a page do not both pay full latency.
+/data/*
+  Cache-Control: public, max-age=60, stale-while-revalidate=600

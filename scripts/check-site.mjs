@@ -16,6 +16,8 @@
 //   7. no page errors in the console
 //   8. every page's og:image resolves, is absolute, carries alt text, matches
 //      its declared 1200x630, and fits the preview budget
+//   9. the DEPLOYED build is the one being checked, so a passing run cannot be
+//      a passing run against someone else's build
 //
 // Pages run with reduced motion. The coaching photo band loops a 30s ken-burns
 // scale, so without it the overflow probe caught the image mid-scale and the
@@ -127,6 +129,32 @@ for (const t of [...targets].sort()) {
 
 const missing = await fetch(`${BASE}/definitely-not-a-real-page?cb=${Date.now()}`);
 if (missing.status !== 404) fail(`unknown path returned ${missing.status}, expected 404`);
+
+// ---- is the deployed build MY build? --------------------------------------
+// Everything below tests a URL. If someone else's branch has landed on that URL
+// since you deployed, every check can pass against the wrong build and you will
+// hand over a link that shows the old thing. That happened on 2026-07-25:
+// eleven staging deploys in ninety minutes, three of them mine, and the review
+// link served the June card. Compare first, so the rest means something.
+{
+  const local = execSync("node scripts/stamp-build.mjs >/dev/null && cat public/build.txt",
+    { encoding: "utf8" }).trim();
+  const r = await fetch(`${BASE}/build.txt?cb=${Date.now()}`);
+  if (!r.ok) {
+    fail(`${BASE} serves no /build.txt (${r.status}). Either it was deployed without ` +
+         `scripts/stamp-build.mjs, or something else deployed over you.`);
+  } else {
+    const live = (await r.text()).trim();
+    if (live !== local) {
+      fail(`the deployed build is NOT the one being checked.\n` +
+           `  deployed: ${live}\n  local:    ${local}\n` +
+           `  Someone else deployed to this URL, or you have not deployed since your last edit. ` +
+           `Every check below is testing a build you did not make.`);
+    } else {
+      console.log(`build: ${live} (deployed build matches local)`);
+    }
+  }
+}
 
 // ---- share cards: the one thing nobody sees while building ----------------
 // An og:image is invisible on the site itself, so a wrong path, a stale file or

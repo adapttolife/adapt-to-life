@@ -156,6 +156,12 @@ sees while building the site. It is generated, never exported by hand:
   photo library is full of it, while the page has always said "six adaptive pickleball athletes".
 - **No other organisation's branding on our card.** It applies to a partner's product (the popcorn
   vendor's bag) and to a host venue's logo on a shirt in the background alike.
+- **Deploy with `npm run deploy:staging`, never bare `wrangler deploy`.** It stamps
+  `public/build.txt` with the commit and a digest of `public/` first, and `check-site.mjs` fails if
+  the deployed stamp is not the build you are checking. One staging Worker serves one branch, so
+  without this a green check can be a green check against somebody else's deploy: on 2026-07-25
+  staging took eleven deploys in ninety minutes, three of them ours, and the review link served a
+  month-old card.
 - `scripts/check-site.mjs` fetches every card off the deployed host on every deploy: it must resolve,
   be absolute, carry alt text, match its declared 1200x630, and fit the 300KB budget above which
   WhatsApp silently drops the preview.

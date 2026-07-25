@@ -48,6 +48,11 @@ const MAX_UPSCALE = 1.0;         // no upscaling, ever: it cannot be undone late
 const PHOTOS = {
   karen:    { file: "assets/photos/karen-waterskiing.jpg", pos: "52% 40%" },
   coaching: { file: "assets/photos/coaching.jpg",          pos: "34% 44%" },
+  // Adaptive pickleball, because the US Open in Naples is a PICKLEBALL
+  // championship. Ruled out a warmer frame from the same set: another
+  // organisation's logo was legible on it, and a partner's branding does not
+  // belong on our card (the same call as the popcorn vendor's bag).
+  pickle:   { file: "assets/photos/pickleball-court.jpg",    pos: "27% 58%" },
   // PARKED, not forgotten: Alec's own water shot exists only as a 1600x1067
   // web copy, which the resolution gate rejects for any crop that fills a panel.
   // Its master (JNC02305.JPG, 6.8MB) is the one file the Drive connector will
@@ -81,11 +86,14 @@ const CARDS = {
     headline: "Put an athlete <em>in the game</em>.",
     size: 72, measure: "12ch",
   },
-  // the US Open is an adaptive water-ski event, so the water shot belongs here
+  // The US Open here is the US Open PICKLEBALL Championships in Naples, and
+  // send-6.html says so in its own description. I assumed water-ski from the
+  // photo library and Alec corrected it: read the page, do not infer the sport
+  // from whatever imagery happens to be lying around.
   "send-6": {
     ...SPLIT_DEFAULTS,
     out: "public/images/og/send-6.jpg", page: "send-6.html",
-    photo: "karen", pos: "40% 52%", zoom: "auto 128%",
+    photo: "pickle", pos: "27% 58%", zoom: "auto 205%",
     headline: "Send 6 to the <em>US Open</em>.",
     size: 74, measure: "12ch",
   },

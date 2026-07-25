@@ -28,7 +28,7 @@ const PER_PAGE = {
 const ALT = {
   _default: "Adapt To Life. Your place in adaptive sports. An adaptive water-skier grinning as she carves through the spray.",
   donate: "Put an athlete in the game. Young wheelchair basketball players together on the court.",
-  "send-6": "Send 6 to the US Open. An adaptive water-skier mid-run, skis throwing spray.",
+  "send-6": "Send 6 to the US Open. A wheelchair pickleball player with his paddle, courtside.",
   popcorn: "Half of every bag puts an athlete in the game. Adapt To Life popcorn drive.",
   "hustle-and-heart": "Every dollar goes to an athlete. The Hustle and Heart Fund. Young wheelchair basketball players on the court.",
   "ways-to-give": "Every road here ends on a court. Young wheelchair basketball players, the hoop behind them.",

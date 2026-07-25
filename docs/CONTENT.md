@@ -151,6 +151,11 @@ sees while building the site. It is generated, never exported by hand:
   writer of `og:image` tags.
 - Photographs are of real athletes, ours, and are cropped rather than altered. Nothing generated
   stands in for an athlete.
+- **A card's photograph must match the page's actual sport.** Read the page; never infer the sport
+  from whichever images happen to be at hand. The first Send 6 card showed water-skiing because the
+  photo library is full of it, while the page has always said "six adaptive pickleball athletes".
+- **No other organisation's branding on our card.** It applies to a partner's product (the popcorn
+  vendor's bag) and to a host venue's logo on a shirt in the background alike.
 - `scripts/check-site.mjs` fetches every card off the deployed host on every deploy: it must resolve,
   be absolute, carry alt text, match its declared 1200x630, and fit the 300KB budget above which
   WhatsApp silently drops the preview.

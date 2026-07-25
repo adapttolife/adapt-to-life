@@ -3,6 +3,7 @@
 // writing leads to Airtable. The Airtable token stays server-side (Worker secret).
 
 import { handleWaiver, handleWaiverDownload, handleWaiverVerify, handleWaiverDoc, runDriveBacklog } from "./waiver.js";
+import { sendContactReceipt, sendApplyReceipt } from "./receipts.js";
 import { handleEmail, handleAgentMailApi } from "./agent_mail.js";
 import { handleReportView, handleLibraryView } from "./report_view.js";
 import { handleQr } from "./qr.js";
@@ -182,6 +183,10 @@ async function handleContact(request, env) {
     return json({ ok: false, error: "Could not save right now. Please email hello@adapttolife.org." }, 502);
   }
 
+  // The record is saved; the receipt is a courtesy on top of it and must never
+  // be able to turn a successful submission into a failed one.
+  await sendContactReceipt(env, { name, email, message, type });
+
   return json({ ok: true });
 }
 
@@ -248,6 +253,11 @@ async function handleApply(request, env) {
     console.error("Airtable apply error", res.status, await safeText(res));
     return json({ ok: false, error: "Could not save right now. Please email hello@adapttolife.org." }, 502);
   }
+
+  // Saved. The acknowledgement matters more here than on the contact form —
+  // silence after asking for equipment money reads as "it did not go through" —
+  // but it still must not be able to fail the submission.
+  await sendApplyReceipt(env, { name, email, sport: str(data.sport), need: str(data.need) });
 
   return json({ ok: true });
 }

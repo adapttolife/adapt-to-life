@@ -25,10 +25,59 @@ const STATUSES = ["new", "agent_working", "needs_review", "human", "replied", "r
 const SEND_LIMITS = { perThreadPerHour: 5, perInboxPerHour: 20, repliesPerThreadPerDay: 6 };
 
 // Outbound attachments. API callers pass base64; the Email Sending binding wants
-// raw bytes. The platform caps the whole outbound message at 5 MiB — 4 MiB of
-// decoded attachment bytes leaves room for body + MIME overhead. Executable
-// types are refused: agents send reports and data files, never programs.
-const OUT_ATTACHMENT_LIMITS = { count: 4, totalBytes: 4 * 1024 * 1024 };
+// raw bytes. Executable types are refused: agents send reports and data files,
+// never programs.
+//
+// Cloudflare Email Sending caps TOTAL MESSAGE size at 5 MiB for ordinary
+// recipients, but 25 MiB when every recipient is a verified Email Routing
+// destination address. Our whole fleet plus Alec are verified, which is the
+// case that actually matters — a full-resolution print file is ~5-10 MB and was
+// being refused for no platform reason.
+//
+// Sizing: MIME base64 inflates payloads by 4/3, plus ~2.7% for CRLF line breaks
+// (~1.37x total), and the body/headers ride along too. So the DECODED budget is
+// the message cap divided by ~1.37, less headroom for the body.
+//
+// This also fixes a latent bug: the old 4 MiB decoded limit became ~5.5 MiB on
+// the wire, already OVER the 5 MiB unverified cap. It only ever worked because
+// nothing had yet sent an attachment that large to an unverified recipient.
+const OUT_ATTACHMENT_LIMITS = {
+  count: 4,
+  totalBytes: 3.5 * 1024 * 1024,          // 5 MiB cap  -> ~4.8 MiB on the wire
+};
+const OUT_ATTACHMENT_LIMITS_VERIFIED = {
+  count: 10,
+  totalBytes: 17 * 1024 * 1024,           // 25 MiB cap -> ~23.3 MiB on the wire
+};
+
+// Verified Email Routing destinations. Regenerate with:
+//   cfrun bash -c 'curl -s -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+//     "https://api.cloudflare.com/client/v4/accounts/<acct>/email/routing/addresses?per_page=50"'
+// Verification is a manual step Alec performs in the dashboard, so this list
+// changes rarely; an address missing here just gets the smaller (safe) budget.
+const VERIFIED_DESTINATIONS = new Set([
+  "alec@alecability.com",
+  "charlie@alectranel.com",
+  "cheech@agents.adapttolife.org",
+  "hello@agents.adapttolife.org",
+  "julia@agents.adapttolife.org",
+  "julia@alectranel.com",
+  "julio@agents.adapttolife.org",
+  "nick@libertyoneim.com",
+  "stingel@alectranel.com",
+]);
+
+// Every recipient must be verified to earn the larger budget — the platform cap
+// applies to the message, so one unverified recipient governs the whole send.
+export function attachmentLimitsFor(recipients) {
+  const list = (Array.isArray(recipients) ? recipients : [recipients])
+    .filter(Boolean)
+    .map((r) => String(r).toLowerCase().trim());
+  if (!list.length) return OUT_ATTACHMENT_LIMITS;
+  return list.every((r) => VERIFIED_DESTINATIONS.has(r))
+    ? OUT_ATTACHMENT_LIMITS_VERIFIED
+    : OUT_ATTACHMENT_LIMITS;
+}
 const OUT_ATTACHMENT_BLOCKED = /\.(exe|dll|bat|cmd|com|scr|jar|msi|ps1|sh|vbs|js|apk|html?)$/i;
 
 // Validate + decode API attachments ([{filename, content_b64, type?}]) into the
@@ -36,13 +85,14 @@ const OUT_ATTACHMENT_BLOCKED = /\.(exe|dll|bat|cmd|com|scr|jar|msi|ps1|sh|vbs|js
 // field is absent), or { error: <422 message> } on bad input. `note` is a short
 // human-readable suffix recorded with the message body so attachments are
 // visible in thread reads and the Airtable mirror without a schema change.
-function decodeOutAttachments(raw) {
+function decodeOutAttachments(raw, recipients) {
   if (raw === undefined || raw === null) return { list: undefined, note: "" };
   if (!Array.isArray(raw) || raw.length === 0) {
     return { error: "attachments must be a non-empty array of {filename, content_b64, type?}" };
   }
-  if (raw.length > OUT_ATTACHMENT_LIMITS.count) {
-    return { error: `at most ${OUT_ATTACHMENT_LIMITS.count} attachments per message` };
+  const limits = attachmentLimitsFor(recipients);
+  if (raw.length > limits.count) {
+    return { error: `at most ${limits.count} attachments per message` };
   }
   const list = [];
   const names = [];
@@ -60,8 +110,12 @@ function decodeOutAttachments(raw) {
       return { error: `attachment ${filename}: content_b64 is not valid base64` };
     }
     total += bytes.byteLength;
-    if (total > OUT_ATTACHMENT_LIMITS.totalBytes) {
-      return { error: `attachments exceed ${OUT_ATTACHMENT_LIMITS.totalBytes} decoded bytes total` };
+    if (total > limits.totalBytes) {
+      const mib = (limits.totalBytes / 1048576).toFixed(1);
+      const hint = limits === OUT_ATTACHMENT_LIMITS
+        ? " (recipient is not a verified Email Routing destination, so the platform caps this message at 5 MiB; verified destinations get 25 MiB)"
+        : "";
+      return { error: `attachments exceed ${limits.totalBytes} decoded bytes total (${mib} MiB)${hint}` };
     }
     list.push({
       filename,
@@ -628,8 +682,6 @@ async function apiReply(env, body, caller) {
   const chartPngs = await chartPngsFor(body);
   const { body_text, body_html } = resolveMarkdownBody(body || {}, { chartImages: chartPngs.images });
   if (!thread_id || !body_text) return jsonResp({ outcome: "error", error: "thread_id and body_text (or body_markdown) required" }, 422);
-  const att = decodeOutAttachments(attachments);
-  if (att.error) return jsonResp({ outcome: "error", error: att.error }, 422);
 
   const db = env.AGENT_MAIL_DB;
   const thread = await db.prepare(`SELECT * FROM threads WHERE id = ?`).bind(thread_id).first();
@@ -638,6 +690,10 @@ async function apiReply(env, body, caller) {
   if (thread.status === "human") {
     return jsonResp({ outcome: "error", error: "thread is owned by a human; agent reply refused" }, 409);
   }
+
+  // Attachment budget depends on the recipient, so this waits for the thread.
+  const att = decodeOutAttachments(attachments, thread.from_addr);
+  if (att.error) return jsonResp({ outcome: "error", error: att.error }, 422);
 
   // Reply to the most recent inbound sender, in the original thread.
   const last = await db
@@ -739,7 +795,7 @@ async function apiSend(env, body, caller) {
   const chartPngs = await chartPngsFor(body);
   const { body_text, body_html } = resolveMarkdownBody(body || {}, { chartImages: chartPngs.images });
   if (!to || !subject || !body_text) return jsonResp({ outcome: "error", error: "to, subject, and body_text (or body_markdown) required" }, 422);
-  const att = decodeOutAttachments(attachments);
+  const att = decodeOutAttachments(attachments, to);
   if (att.error) return jsonResp({ outcome: "error", error: att.error }, 422);
   const toAddr = String(to).toLowerCase().trim();
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(toAddr)) return jsonResp({ outcome: "error", error: "to must be a single email address" }, 422);

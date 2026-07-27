@@ -12,6 +12,7 @@
     "deploy:staging": "npx wrangler deploy --env staging",
     "deploy:prod": "npx wrangler deploy",
     "deploy:reports": "npx wrangler deploy --config wrangler.reports.jsonc",
+    "deploy:agent-mail": "npx wrangler deploy --config wrangler.agent-mail.jsonc",
     "check": "node scripts/check-site.mjs"
   },
   "repository": {

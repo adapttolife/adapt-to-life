@@ -50,11 +50,23 @@ The Hustle & Heart Fund pages are `public/hustle-and-heart.html` (the fund expla
 
 ## Deploy
 
-This repo deploys to the existing `adapt-to-life` Worker. The Cloudflare API token is injected at runtime from 1Password via the `cfrun` wrapper — no secrets live in the repo or the environment.
+This repository owns three deliberately separate Workers:
+
+| Worker | Host | Entrypoint | Purpose |
+|---|---|---|---|
+| `adapt-to-life` | `adapttolife.org`, `www`, `sign` | `src/index.js` | Public site, forms, waivers, QR redirects |
+| `amelioration-reports` | `reports.amelioration.is` | `src/reports_worker.js` | Human report views behind Cloudflare Access |
+| `amelioration-agent-mail` | `api.amelioration.is` | `src/agent_mail_worker.js` | Machine mail API plus inbound Email Worker events |
+
+The Cloudflare API token is injected at runtime from 1Password through `cfrun`; no secrets live in Git. Always name the intended deployment explicitly:
 
 ```sh
-cfrun npx wrangler deploy
+cfrun npm run deploy:prod
+cfrun npm run deploy:reports
+cfrun npm run deploy:agent-mail
 ```
+
+`amelioration-agent-mail` accepts HTTP only on its custom domain, which is protected by a Cloudflare Access **Service Auth** policy. Access is the transport gate; the existing operator/per-agent bearer token remains mandatory inside the Worker and continues to enforce inbox ownership. Its `workers.dev` and preview hostnames must stay disabled. Inbound `*@agents.adapttolife.org` mail keeps the same address and DNS identity; Cloudflare Email Routing sends the event directly to this Worker and does not traverse the HTTP hostname.
 
 ### Two sessions at once: use a per-version preview URL, not shared staging
 

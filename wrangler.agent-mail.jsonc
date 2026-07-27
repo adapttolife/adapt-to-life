@@ -1,0 +1,54 @@
+{
+  // api.amelioration.is — agent-mail machine API + inbound Email Worker.
+  //
+  // HTTP is protected by a Cloudflare Access Service Auth policy on the custom
+  // domain. The Worker separately enforces the existing operator/per-agent
+  // bearer token, preserving least-privilege inbox ownership in D1. Email
+  // Routing events do not traverse the HTTP custom domain or Access.
+  "name": "amelioration-agent-mail",
+  "compatibility_date": "2026-06-24",
+  "main": "src/agent_mail_worker.js",
+
+  "routes": [
+    { "pattern": "api.amelioration.is", "custom_domain": true }
+  ],
+
+  // Access protects only the custom domain. Either alternate hostname would be
+  // a direct bypass to the same Worker, so both remain off in every deployment.
+  "workers_dev": false,
+  "preview_urls": false,
+
+  "observability": {
+    "enabled": true
+  },
+
+  // agent_mail.js shares the report/chart mail renderer. These are build-time
+  // data loaders only and add no runtime network or storage capability.
+  "rules": [
+    { "type": "Data", "globs": ["**/*.ttf"], "fallthrough": true }
+  ],
+
+  "vars": {
+    "AGENT_MAIL_DOMAIN": "agents.adapttolife.org",
+    "REPORT_LINK_BASE": "https://reports.amelioration.is",
+    "AIRTABLE_BASE_ID": "appVPKDdwnOG5qkYG",
+    "AIRTABLE_AGENT_MAIL_TABLE_ID": "tbliDyb8sAiA8JY0c"
+  },
+
+  // One source of truth: these are the existing agent-mail stores, not copies.
+  "r2_buckets": [
+    { "binding": "AGENT_MAIL_BUCKET", "bucket_name": "agent-mail" }
+  ],
+  "d1_databases": [
+    { "binding": "AGENT_MAIL_DB", "database_name": "agent-mail", "database_id": "8609089a-7d9c-4d46-a527-d7f00c5ca050" }
+  ],
+
+  // Required for /send and /reply. The sender remains each agent's registered
+  // address; the binding does not broaden application-layer authorization.
+  "send_email": [
+    { "name": "SEND_EMAIL" }
+  ]
+
+  // Worker secrets, set out-of-band and never committed:
+  //   AGENT_MAIL_TOKEN  AIRTABLE_TOKEN  MAIL_BELL_SECRETS  REPORT_LINK_SECRET
+}

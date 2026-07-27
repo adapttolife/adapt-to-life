@@ -54,6 +54,11 @@
     // Spec 32 agent email. AGENT_MAIL_TOKEN (MCP bearer) is a secret. Outbound mail uses
     // the SEND_EMAIL binding below (Cloudflare Email Sending) — no API key.
     "AGENT_MAIL_DOMAIN": "agents.adapttolife.org",
+    // Spec 70 P3: reports live on their own Worker behind Cloudflare Access
+    // (wrangler.reports.jsonc). Every NEW report/library link this Worker mints
+    // points there; the old adapttolife.org/r/ and /lib/ links already in
+    // inboxes are forwarded to the same origin by src/index.js.
+    "REPORT_LINK_BASE": "https://reports.amelioration.is",
     "AIRTABLE_AGENT_MAIL_TABLE_ID": "tbliDyb8sAiA8JY0c",
     // Fundraising thermometer: Givebutter campaign + offline (in-person) gifts. API key is a secret.
     "GIVEBUTTER_CAMPAIGN_ID": "683765",

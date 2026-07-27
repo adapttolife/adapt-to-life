@@ -1,0 +1,56 @@
+{
+  // reports.amelioration.is — the report Worker (src/reports_worker.js).
+  //
+  // A separate Worker from `adapt-to-life` on purpose. The report surfaces read
+  // client-confidential material out of the agent-mail D1, so they get their own
+  // deployment with their own (much shorter) list of bindings, sitting behind a
+  // Cloudflare Access policy on the custom domain. Nothing about the ATL site —
+  // assets, forms, waivers, the agent-mail API, inbound email, the Drive cron —
+  // exists here, and none of those bindings are attached, so none of it can be
+  // reached from behind Access even by accident.
+  //
+  // Deploy:  npm run deploy:reports
+  "name": "amelioration-reports",
+  "compatibility_date": "2026-06-24",
+  "main": "src/reports_worker.js",
+
+  // The only way in. Cloudflare manages DNS + TLS, and the Access policy is
+  // attached to this hostname.
+  "routes": [
+    { "pattern": "reports.amelioration.is", "custom_domain": true }
+  ],
+
+  // CRITICAL, and the reason this file exists rather than an `env` block in
+  // wrangler.jsonc: workers.dev URLs and version preview URLs are the SAME
+  // Worker on hostnames the Access policy does not cover. Either one left on is
+  // an unauthenticated public route to every report. Off, permanently.
+  "workers_dev": false,
+  "preview_urls": false,
+
+  "observability": {
+    "enabled": true
+  },
+
+  // report_view.js imports the shared chart module, which bundles local Inter
+  // fonts for chart rendering. This is a build-time loader only, not a runtime
+  // binding or network dependency.
+  "rules": [
+    { "type": "Data", "globs": ["**/*.ttf"], "fallthrough": true }
+  ],
+
+  "vars": {
+    // Where this Worker mints the /r/ links it puts in the library page — its
+    // own origin, so a link followed from the library stays behind Access.
+    // REPORT_LINK_SECRET is NOT here and must never be: it is the HMAC key for
+    // every report token. Set it once per Worker:
+    //   cfrun wrangler secret put REPORT_LINK_SECRET --config wrangler.reports.jsonc
+    "REPORT_LINK_BASE": "https://reports.amelioration.is"
+  },
+
+  // The one binding the report pages need: the archived messages they render.
+  // Same database as the ATL Worker's AGENT_MAIL_DB — one source of truth, no
+  // copy of report content anywhere.
+  "d1_databases": [
+    { "binding": "AGENT_MAIL_DB", "database_name": "agent-mail", "database_id": "8609089a-7d9c-4d46-a527-d7f00c5ca050" }
+  ]
+}

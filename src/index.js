@@ -5,7 +5,6 @@
 import { handleWaiver, handleWaiverDownload, handleWaiverVerify, handleWaiverDoc, runDriveBacklog } from "./waiver.js";
 import { sendContactReceipt, sendApplyReceipt } from "./receipts.js";
 import { handleEmail, handleAgentMailApi } from "./agent_mail.js";
-import { handleReportView, handleLibraryView } from "./report_view.js";
 import { handleQr } from "./qr.js";
 
 const LEAD_TYPES = [
@@ -80,9 +79,6 @@ export default {
       return handleAgentMailApi(request, env, url);
     }
 
-    // Spec 70 P3: signed report permalink — the interactive twin of an
-    // archived report email. Capability URL (HMAC token), GET-only, 404 on
-    // any failure.
     // Spec 115: durable QR redirects. A sticker on a chair outlives any vendor,
     // so the code encodes our URL and the destination stays editable.
     if (url.pathname.startsWith("/q/")) {
@@ -96,14 +92,11 @@ export default {
     const moved = legacyReportRedirect(request, env, url);
     if (moved) return moved;
 
-    if (url.pathname.startsWith("/r/")) {
-      return handleReportView(request, env, url, ctx);
-    }
-
-    // Spec 70 P3 Feature 1: a recipient's report library — every report ever
-    // sent to that address, one capability URL per recipient.
-    if (url.pathname.startsWith("/lib/")) {
-      return handleLibraryView(request, env, url);
+    // Anything left under /r/ or /lib/ is a report request on a host that is
+    // not one of the two published ones — sign.adapttolife.org, workers.dev, a
+    // preview URL. This Worker no longer renders reports, so those fail closed.
+    if (LEGACY_REPORT_PATHS.some((p) => url.pathname.startsWith(p))) {
+      return reportsMovedNotFound();
     }
 
     // Everything else: the static site.
@@ -146,12 +139,46 @@ function legacyReportRedirect(request, env, url) {
   try {
     dest = new URL(url.pathname + url.search, String(env.REPORT_LINK_BASE || ""));
   } catch {
-    return null; // unset or unparseable base: serve here, exactly as before.
+    return null; // unset or unparseable base: the fail-closed backstop handles it.
   }
   // A base still pointing at this host would redirect to itself forever.
   if (dest.origin === url.origin) return null;
 
-  return Response.redirect(dest.toString(), 302);
+  return new Response(null, {
+    status: 302,
+    headers: {
+      Location: dest.toString(),
+      "Cache-Control": "private, no-store",
+      "X-Robots-Tag": "noindex, nofollow",
+      "Referrer-Policy": "no-referrer",
+    },
+  });
+}
+
+// The backstop behind that redirect.
+//
+// A report token is a capability: it verifies against REPORT_LINK_SECRET, not
+// against a hostname. So for as long as this Worker could render a report, a
+// valid token was a working, unauthenticated way to read client-confidential
+// material on every host this Worker answers on — sign.adapttolife.org, the
+// workers.dev URL, any version preview URL. None of those are behind the
+// Cloudflare Access policy that protects reports.amelioration.is; the policy
+// was simply not on the path. Deleting the viewer from this Worker is what
+// closes that, and this 404 is what a deleted route looks like.
+//
+// This response is intentionally local to the public router. Its exact status,
+// body, cache and indexing behavior are pinned by the redirect tests so future
+// report-view changes cannot accidentally reopen or fingerprint this surface.
+function reportsMovedNotFound() {
+  return new Response("Not found", {
+    status: 404,
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "private, no-store",
+      "X-Robots-Tag": "noindex, nofollow",
+      "Referrer-Policy": "no-referrer",
+    },
+  });
 }
 
 // Run a side effect after the response goes out. Receipts must never delay a

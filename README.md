@@ -2,7 +2,7 @@
 
 Marketing site for **Adapt To Life — Your Place in Adaptive Sports**, deployed on Cloudflare Workers. Serves a static site plus one form-capture API route.
 
-- **Live:** https://adapt-to-life.alec-af3.workers.dev
+- **Live:** https://adapttolife.org
 - **Cloudflare Worker:** `adapt-to-life` (account: Alec@alecability.com)
 - **Hosting model:** Workers with Static Assets — `public/` is served directly; `src/index.js` handles `POST /api/contact`.
 

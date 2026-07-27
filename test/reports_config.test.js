@@ -121,3 +121,17 @@ test("the ATL Worker's own domains are untouched by this slice", () => {
     "sign.adapttolife.org",
   ]);
 });
+
+test("the production ATL Worker has no alternate workers.dev or version-preview ingress", () => {
+  assert.equal(atl.workers_dev, false);
+  assert.equal(atl.preview_urls, false);
+});
+
+test("the separate front-end-only staging Worker keeps its review URL", () => {
+  assert.equal(atl.env.staging.workers_dev, true);
+  assert.equal(atl.env.staging.preview_urls, true);
+  assert.deepEqual(atl.env.staging.routes, []);
+  assert.equal(atl.env.staging.d1_databases, undefined);
+  assert.equal(atl.env.staging.r2_buckets, undefined);
+  assert.equal(atl.env.staging.send_email, undefined);
+});

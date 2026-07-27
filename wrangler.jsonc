@@ -1,8 +1,8 @@
 {
   // Cloudflare Worker for Adapt To Life.
   // Serves the static site from ./public and handles POST /api/contact in src/index.js,
-  // writing leads to Airtable. Published to the `adapt-to-life` Worker at
-  // https://adapt-to-life.alec-af3.workers.dev
+  // writing leads to Airtable. Production is published only on the three
+  // custom domains below; review builds use the separate staging environment.
   "name": "adapt-to-life",
   "compatibility_date": "2026-06-24",
   "main": "src/index.js",
@@ -21,9 +21,13 @@
     { "pattern": "www.adapttolife.org", "custom_domain": true },
     { "pattern": "sign.adapttolife.org", "custom_domain": true }
   ],
-  // Keep the workers.dev URL + version preview URLs for staging / A-B work.
-  "workers_dev": true,
-  "preview_urls": true,
+  // No alternate production ingress. The production Worker also carries
+  // authenticated operational APIs and data bindings; workers.dev or version
+  // previews would expose the same bundle outside the intended custom-domain
+  // boundary. The separate, front-end-only staging environment below keeps
+  // its workers.dev and per-version review URLs.
+  "workers_dev": false,
+  "preview_urls": false,
   "assets": {
     "directory": "./public",
     "binding": "ASSETS",
@@ -93,6 +97,7 @@
     "staging": {
       "name": "adapt-to-life-staging",
       "workers_dev": true,
+      "preview_urls": true,
       "vars": { "GIVEBUTTER_CAMPAIGN_ID": "683765", "OFFLINE_RAISED": "0", "STAGING": "1" },
       // CRITICAL: empty routes overrides the inherited production routes, so a
       // staging deploy can never reassign the live apex domains to this Worker.

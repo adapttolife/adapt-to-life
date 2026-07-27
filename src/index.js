@@ -89,6 +89,13 @@ export default {
       return handleQr(request, env, url, ctx);
     }
 
+    // Reports have moved to their own Worker on reports.amelioration.is, behind
+    // Cloudflare Access. Links already sitting in inboxes still say
+    // adapttolife.org, and an email cannot be edited after it is sent — so the
+    // two legacy namespaces forward there instead of breaking.
+    const moved = legacyReportRedirect(request, env, url);
+    if (moved) return moved;
+
     if (url.pathname.startsWith("/r/")) {
       return handleReportView(request, env, url, ctx);
     }
@@ -113,6 +120,39 @@ export default {
     await handleEmail(message, env, ctx);
   },
 };
+
+// The only hostnames whose /r/ and /lib/ links were ever published to readers.
+// sign.adapttolife.org and the staging / workers.dev hosts are deliberately
+// absent: they never minted report links, and forwarding them would move
+// traffic off a host an operator is deliberately testing on.
+const LEGACY_REPORT_HOSTS = new Set(["adapttolife.org", "www.adapttolife.org"]);
+const LEGACY_REPORT_PATHS = ["/r/", "/lib/"];
+
+// Forward a legacy report link to the report Worker's origin, or null to leave
+// the request alone.
+//
+// The destination is assembled from env.REPORT_LINK_BASE — the same configured
+// origin new links are minted with — and the request's already-parsed pathname
+// and search. Nothing from the request's host, and no string concatenation of
+// a scheme with untrusted input, goes into it: resolving against the base URL
+// means a path can only ever land under the configured origin, so this cannot
+// become an open redirect no matter what a prober puts in the URL.
+function legacyReportRedirect(request, env, url) {
+  if (request.method !== "GET" && request.method !== "HEAD") return null;
+  if (!LEGACY_REPORT_HOSTS.has(url.hostname)) return null;
+  if (!LEGACY_REPORT_PATHS.some((p) => url.pathname.startsWith(p))) return null;
+
+  let dest;
+  try {
+    dest = new URL(url.pathname + url.search, String(env.REPORT_LINK_BASE || ""));
+  } catch {
+    return null; // unset or unparseable base: serve here, exactly as before.
+  }
+  // A base still pointing at this host would redirect to itself forever.
+  if (dest.origin === url.origin) return null;
+
+  return Response.redirect(dest.toString(), 302);
+}
 
 // Run a side effect after the response goes out. Receipts must never delay a
 // submission (awaiting one put a live SMTP round-trip on the critical path and

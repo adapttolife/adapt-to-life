@@ -11,6 +11,7 @@
     "preview": "npx wrangler versions upload --env staging",
     "deploy:staging": "npx wrangler deploy --env staging",
     "deploy:prod": "npx wrangler deploy",
+    "deploy:reports": "npx wrangler deploy --config wrangler.reports.jsonc",
     "check": "node scripts/check-site.mjs"
   },
   "repository": {

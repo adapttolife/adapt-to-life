@@ -1017,7 +1017,10 @@ function renderReportPage(msg, agentName) {
 // Indistinguishable 404 for every failure mode — an attacker probing tokens
 // learns nothing about which ids exist, whether the secret is set, or why a
 // guess failed. noindex rides the 404 too.
-function notFound() {
+// Exported so the reports-only Worker (src/reports_worker.js) answers every
+// off-surface path with the byte-identical 404, rather than growing a second
+// one that differs and leaks the boundary.
+export function notFound() {
   return new Response("Not found", {
     status: 404,
     headers: {

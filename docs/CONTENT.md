@@ -135,8 +135,23 @@ Each message lives in ONE canonical place. Everywhere else: one line max, linkin
   Pinned by `test/receipts.test.js`; a copy edit that drops the severance sentence fails the suite.
 - CTA verbs, always: **Donate** (give money) · **Apply** (request a grant) · **Suggest a program**
   (directory) · **Talk to us** (sponsor/custom).
-- Directory links: internal explainer is `/adaptive-sports-near-me`; the external directory link is
-  labeled "Visit the directory" and opens a new tab.
+- Directory links: internal explainer is `/adaptive-sports-near-me`; the external link opens a new
+  tab and is labeled **"Get notified when it opens"** until Adaptive Sports Near Me actually
+  launches, then reverts to **"Visit the directory."** One label, everywhere, flipped in one pass.
+- **Never claim a sibling product is live that says it is not** (2026-07-29). adapttolife.org
+  described the directory as live in five places, including `/roadmap` under *Live today* and the
+  dropdown nav on all sixteen pages, while `adaptivesportsnearme.com` read "We are not live yet" and
+  `/programs` returned 404. Three buttons labeled "Visit the directory" delivered visitors straight
+  into that contradiction. Same class of failure as the grant funnel above, and worse, because a
+  button makes the promise clickable.
+  - **The claim lives where the product is, not where the marketing is.** Before writing that
+    anything is live, load it. This drifted because ASNM's launch gate went up after ATL's copy was
+    written and nothing connected the two.
+  - **Say precisely which part is live.** ASNM's site, its program-submission intake and its notify
+    capture are all up; only browsing is gated. So `/roadmap` says exactly that rather than
+    downgrading the whole thing to "coming soon", which would undersell real work.
+  - Flip list, for whoever launches ASNM: nav description on all 16 pages, `/`, `/about`,
+    `/roadmap`, `/karen`, and `/adaptive-sports-near-me` (hero, closing, and both CTA labels).
 - **A campaign and a drive are different things and never merge.** A *campaign* is what we are
   raising for and who it reaches (Send 6 to the US Open, six athletes, $21,000). It has a goal and a
   named beneficiary, and it gets a page. A *drive* is a dated way we raise it (the August popcorn

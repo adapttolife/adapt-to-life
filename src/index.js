@@ -8,6 +8,7 @@ import { sendContactReceipt, sendApplyReceipt } from "./receipts.js";
 import { createApplication, createContact } from "./clickup.js";
 import { handleEmail, handleAgentMailApi } from "./agent_mail.js";
 import { handleQr } from "./qr.js";
+import { fundPosition } from "./fund.js";
 
 const LEAD_TYPES = [
   "Funding for an athlete",
@@ -380,34 +381,12 @@ async function handleSubscribe(request, env) {
 
 // Public fundraising total for the site thermometer: Givebutter's live "raised" for the
 // campaign plus an offline figure we control (in-person gifts). Cached 60s at the edge.
+// The public thermometer. Reads src/fund.js, which the grant-application
+// receipt also reads, so the number on the page and the number we put in
+// writing to an applicant come from one place and cannot drift apart.
 async function handleRaised(request, env) {
-  const campaignId = env.GIVEBUTTER_CAMPAIGN_ID || "683765";
-  const offline = Number(env.OFFLINE_RAISED) || 0;
-  let online = 0;
-  let goal = 0;
-  try {
-    if (env.GIVEBUTTER_API_KEY) {
-      const r = await fetch(`https://api.givebutter.com/v1/campaigns/${campaignId}`, {
-        headers: { Authorization: `Bearer ${env.GIVEBUTTER_API_KEY}`, Accept: "application/json" },
-        cf: { cacheTtl: 60, cacheEverything: true },
-      });
-      if (r.ok) {
-        const d = await r.json();
-        online = Number(d.raised) || 0;
-        goal = Number(d.goal) || 0;
-      }
-    }
-  } catch (err) {
-    console.error("givebutter raised fetch failed:", err);
-  }
-  const body = JSON.stringify({
-    raised: online + offline,
-    online,
-    offline,
-    // Fallback only. The live goal is Givebutter's (Send 6 to the US Open:
-    // 6 athletes x $3,500). Change it there, not here (Spec 115 D3).
-    goal: goal || Number(env.RAISED_GOAL) || 21000,
-  });
+  const { raised, online, offline, goal } = await fundPosition(env);
+  const body = JSON.stringify({ raised, online, offline, goal });
   return new Response(body, {
     headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=60" },
   });

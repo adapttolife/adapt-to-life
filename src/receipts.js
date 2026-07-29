@@ -13,36 +13,32 @@
 // waiver receipt has used in production all along — no API key, sender domain
 // already onboarded with SPF/DKIM.
 //
-// The bcc does double duty on purpose: the person hears back, and hello@ is
+// The bcc does double duty on purpose: the person hears back, and the house is
 // told a submission arrived, in one send with one failure mode instead of two.
 //
 // HARD RULE: a receipt must never fail a submission. By the time these run the
 // record is already saved, and a bounced confirmation is a far smaller problem
 // than telling someone their grant application did not go through. Every path
 // here swallows its error and logs it.
-import { cfSend } from "./email.js";
+import { cfSend, HOUSE_FROM, HOUSE_INBOX, houseShell, houseQuote, houseLabel, esc } from "./email.js";
+import { fundPosition, usd } from "./fund.js";
 
-const FROM = "Adapt To Life <hello@adapttolife.org>";
-const HOUSE = "hello@adapttolife.org";
+const FUND_URL = "https://adapttolife.org/hustle-and-heart";
 
-const esc = (s) =>
-  String(s ?? "").replace(/[&<>"']/g, (c) =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])
-  );
-
-// One shell so both receipts read as the same organisation. Deliberately plain:
-// this is a transactional note, not a campaign, and it should survive any mail
-// client without a layout engine behind it.
-function shell(bodyHtml) {
-  return (
-    `<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;` +
-    `font-size:16px;line-height:1.6;color:#1c1a15;max-width:560px">` +
-    bodyHtml +
-    `<p style="margin-top:28px;color:#6b6b70;font-size:14px">Adapt To Life<br>` +
-    `501(c)(3) nonprofit &middot; EIN 41-3213344</p>` +
-    `</div>`
-  );
-}
+// Where the internal copy of a GRANT APPLICATION goes.
+//
+// A grant application carries disability detail, financial need and a personal
+// story: it is the most sensitive data this organisation holds. hello@ is the
+// public contact address printed in every page footer and it is a shared seat
+// that working staff sign into, so "who can read an applicant's file" currently
+// answers itself as "anyone with the shared password." That is a policy a
+// 501(c)(3) should be able to answer deliberately.
+//
+// This var is the seam. It stays on hello@ until a dedicated, restricted
+// grants@ mailbox exists in Workspace, and flipping it is one line in
+// wrangler.jsonc with no code change. Contact-form and waiver receipts stay on
+// hello@ on purpose: those are ordinary correspondence.
+const grantsInbox = (env) => env.GRANTS_INBOX || HOUSE_INBOX;
 
 async function send(env, msg, label) {
   try {
@@ -71,65 +67,108 @@ export async function sendContactReceipt(env, { name, email, message, type }) {
     `We reply as soon as we can. If it is urgent, just answer this email.\n\n` +
     `What you sent:\n${message || "(no message)"}\n\n` +
     `Adapt To Life\n501(c)(3) nonprofit, EIN 41-3213344`;
-  const html = shell(
+  const html = houseShell(
     `<p>Hi ${esc(first)},</p>` +
       `<p>Thanks for reaching out. Your message reached us and a person will read it.</p>` +
       `<p>We reply as soon as we can. If it is urgent, just answer this email.</p>` +
-      `<p style="margin-top:24px;color:#6b6b70;font-size:14px">What you sent</p>` +
-      `<blockquote style="margin:8px 0 0;padding:12px 16px;border-left:3px solid #e3e0d9;` +
-      `background:#faf8f4;color:#3f3d38;white-space:pre-wrap">${esc(message || "(no message)")}</blockquote>`
+      houseLabel("What you sent") +
+      houseQuote(esc(message || "(no message)"))
   );
   return send(
     env,
     {
-      from: FROM,
+      from: HOUSE_FROM,
       to: email,
-      bcc: HOUSE,
-      replyTo: HOUSE,
+      bcc: HOUSE_INBOX,
+      replyTo: HOUSE_INBOX,
       subject,
       text,
       html,
-      // Gives hello@ something to filter on without opening the message.
+      // Gives the house something to filter on without opening the message.
       headers: { "X-ATL-Form": "contact", "X-ATL-Type": String(type || "") },
     },
     "contact receipt"
   );
 }
 
-// Grant application. This one carries more weight: somebody has just asked for
-// money for equipment they need, and silence reads as "it did not go through."
-// It names the next step rather than only acknowledging.
+// Grant application. This one carries the most weight of anything we send.
+//
+// Somebody has just asked for money for equipment they need, and the two ways
+// to get it wrong are opposite: silence reads as "it did not go through," and a
+// warm, confident acknowledgement reads as "the money is coming." The fund has
+// a few hundred dollars in it. So this email does three jobs the old one did
+// not:
+//
+//   1. States the stage plainly, with the real number when we can read it, so
+//      nobody builds a plan around a grant that may be months away.
+//   2. Promises only what we control: a person reads it, and you hear back. No
+//      timeline, because we cannot hold one yet.
+//   3. Invites, without conditioning. The invitation to help the fund grow is
+//      explicitly optional and explicitly severed from the application, because
+//      an applicant must never believe that fundraising buys consideration.
+//      That sentence is a control, not a courtesy. Do not delete it.
+//
+// The fund position is best-effort. If Givebutter is unreachable the sentence
+// is dropped rather than guessed: a wrong number here is worse than no number.
 export async function sendApplyReceipt(env, { name, email, sport, need }) {
   const first = String(name || "").trim().split(/\s+/)[0] || "there";
   const subject = "Your Hustle & Heart Fund application";
+
+  let position = "";
+  try {
+    const f = await fundPosition(env);
+    if (f.live) position = ` We have raised ${usd(f.raised)} toward ${usd(f.goal)} so far.`;
+  } catch (err) {
+    console.error("apply receipt: fund position unavailable:", err);
+  }
+
+  const inbox = grantsInbox(env);
+
+  const picture =
+    `A person reads every one. Here is the honest picture so you are not left ` +
+    `guessing: Adapt To Life is a young fund and it is still filling.${position} ` +
+    `We fund what we can as money comes in, so some requests move quickly and ` +
+    `others wait for the fund to catch up. Applying is not a promise of a grant. ` +
+    `What we do promise is that a person reads it and that you hear where it stands.`;
+
   const text =
     `Hi ${first},\n\n` +
     `Your application reached us. Nothing else is needed from you right now.\n\n` +
-    `A person reviews every application. If we need anything to make a decision, ` +
-    `we will email you at this address, so keep an eye out.\n\n` +
+    `${picture}\n\n` +
+    `If we need anything to make a decision, we will email you at this address.\n\n` +
     (sport ? `Sport: ${sport}\n` : "") +
     (need ? `What you asked for: ${need}\n` : "") +
-    `\nAdapt To Life\n501(c)(3) nonprofit, EIN 41-3213344`;
-  const html = shell(
+    (sport || need ? `\n` : "") +
+    `Optional, and it has no bearing on your application: the fund grows fastest ` +
+    `through people who already care about one athlete. If you want to help it along, ` +
+    `share it with the people who root for you.\n${FUND_URL}\n\n` +
+    `Adapt To Life\n501(c)(3) nonprofit, EIN 41-3213344`;
+
+  const html = houseShell(
     `<p>Hi ${esc(first)},</p>` +
       `<p>Your application reached us. Nothing else is needed from you right now.</p>` +
-      `<p>A person reviews every application. If we need anything to make a decision, ` +
-      `we will email you at this address, so keep an eye out.</p>` +
+      `<p>${esc(picture)}</p>` +
+      `<p>If we need anything to make a decision, we will email you at this address.</p>` +
       (sport || need
-        ? `<p style="margin-top:24px;color:#6b6b70;font-size:14px">What we have</p>` +
-          `<div style="padding:12px 16px;border-left:3px solid #e3e0d9;background:#faf8f4;color:#3f3d38">` +
-          (sport ? `<div>Sport: ${esc(sport)}</div>` : "") +
-          (need ? `<div>What you asked for: ${esc(need)}</div>` : "") +
-          `</div>`
-        : "")
+        ? houseLabel("What we have") +
+          houseQuote(
+            (sport ? `<div>Sport: ${esc(sport)}</div>` : "") +
+              (need ? `<div>What you asked for: ${esc(need)}</div>` : "")
+          )
+        : "") +
+      `<p style="margin-top:24px">Optional, and it has no bearing on your application: ` +
+      `the fund grows fastest through people who already care about one athlete. If you ` +
+      `want to help it along, <a href="${FUND_URL}" style="color:#c2410c">share it with ` +
+      `the people who root for you</a>.</p>`
   );
+
   return send(
     env,
     {
-      from: FROM,
+      from: HOUSE_FROM,
       to: email,
-      bcc: HOUSE,
-      replyTo: HOUSE,
+      bcc: inbox,
+      replyTo: inbox,
       subject,
       text,
       html,

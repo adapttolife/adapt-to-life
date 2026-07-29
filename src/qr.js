@@ -13,20 +13,26 @@
 
 const CODES = {
   // slug: { to, label, note }
+  // The three physical codes point at the live campaign rather than the bare
+  // donate form. Someone scanning a sticker at a tournament has no context yet:
+  // /send-6 gives them the goal, the six athletes and the meter before it asks,
+  // and its own primary ask is Donate. A generic form asks a stranger for money
+  // before telling them what it buys, which is the whole reason this indirection
+  // exists. Repoint these whenever the live campaign changes.
   chair: {
-    to: "/donate",
+    to: "/send-6",
     label: "Chair sticker",
-    note: "Stickers on athletes' chairs. Point at the live campaign page once /send-6 exists.",
+    note: "Stickers on athletes' chairs. Points at the live campaign.",
   },
   sign: {
-    to: "/donate",
+    to: "/send-6",
     label: "Event signage",
-    note: "Banners and table signs at tournaments.",
+    note: "Banners and table signs at tournaments. Points at the live campaign.",
   },
   card: {
-    to: "/donate",
+    to: "/send-6",
     label: "Hand card",
-    note: "Printed cards handed out courtside.",
+    note: "Printed cards handed out courtside. Points at the live campaign.",
   },
   popcorn: {
     to: "/popcorn",

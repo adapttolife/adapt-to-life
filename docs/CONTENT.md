@@ -102,8 +102,37 @@ Each message lives in ONE canonical place. Everywhere else: one line max, linkin
   Sports Near Me is how it removes the access barrier, and there will be more surfaces
   ([Spec 117](https://github.com/adapttolife/adapt-to-life) adds a storefront). Name what exists
   today, say plainly that it grows, and let the count live in the data rather than in the prose.
-- Funding maturity: "We've started funding athletes, and we're just getting going." (Not "already
-  funded" bravado, not "the moment we can fund" pre-launch.)
+- **Funding maturity, corrected 2026-07-29. Adapt To Life has not yet made a grant.** The site said
+  "We've started funding athletes to compete" on `/roadmap` under *Live today*, and it was not true
+  of the organization. What is true, and is the better story, is that **Alec covered these costs
+  personally for years** and built ATL so it stops depending on one person's checkbook. Two rules
+  come out of it and both outlive the current numbers:
+  - **Founder history is never organizational impact.** Alec's personal giving predates the org and
+    may never be counted in athletes funded, dollars granted, or anything that reaches a 990. Tell
+    it as his history. The org's first number has to be the org's.
+  - **A status claim names the stage it is actually at.** "Funding, so far" beats "Athletes funded"
+    when the honest content is "the first grants come as we raise." Neither bravado nor pre-launch
+    coyness: say where the thing is.
+- **The grant funnel manages expectations before it asks for anything** (Alec, 2026-07-29). Someone
+  applying for equipment money is the most vulnerable reader the site has, and the failure mode is
+  not rudeness, it is a warm page that reads as a promise. Three rules, live on `/apply` and in the
+  receipt email:
+  - **The honest line is placed, not buried.** "Applying is not a promise of a grant" sits second on
+    the page, not third in a block of prose under two friendlier paragraphs.
+  - **A numbered ladder must contain the outcome that actually happens most.** The four steps used to
+    run Apply → Review → Approve → Covered, which promises delivery in its own structure no matter
+    what the surrounding prose says. Step 3 is now **Decision**: some we fund now, some wait, you
+    hear either way.
+  - **Words on the page, numbers in the email.** The fund's live position ($ raised of $ goal) is in
+    the receipt, not on `/apply`. On the page a small number discourages the application we need; in
+    the receipt, after someone has already applied, the same number is the thing that makes the
+    invitation to help land. It is read live from `src/fund.js` and **omitted entirely** if
+    Givebutter is unreachable, because a guessed figure in writing to an applicant is worse than none.
+- **Never condition help on helping.** The invitation for an applicant to share or fundraise is
+  always marked optional and always explicitly severed from their application ("this has no bearing
+  on your application"). An applicant who believes fundraising buys consideration is a fairness
+  problem and a legal one. Money raised goes to **the fund**, never earmarked as someone's own grant.
+  Pinned by `test/receipts.test.js`; a copy edit that drops the severance sentence fails the suite.
 - CTA verbs, always: **Donate** (give money) · **Apply** (request a grant) · **Suggest a program**
   (directory) · **Talk to us** (sponsor/custom).
 - Directory links: internal explainer is `/adaptive-sports-near-me`; the external directory link is

@@ -63,6 +63,16 @@
     // points there; the old adapttolife.org/r/ and /lib/ links already in
     // inboxes are forwarded to the same origin by src/index.js.
     "REPORT_LINK_BASE": "https://reports.amelioration.is",
+    // Where the internal copy of a GRANT APPLICATION is bcc'd, and the reply-to
+    // on the applicant's receipt. Applications carry disability detail and
+    // financial need; hello@ is the public address in every page footer and a
+    // shared working seat, so this is deliberately its own setting.
+    // TO RESTRICT: create grants@adapttolife.org in Google Workspace, limit its
+    // members to the people who actually review grants, then change this one
+    // line. No code change. Until that mailbox exists this stays on hello@,
+    // because a bcc to an address that does not resolve is worse than a shared
+    // one: it would bounce the applicant's own receipt.
+    "GRANTS_INBOX": "hello@adapttolife.org",
     // Fundraising thermometer: Givebutter campaign + offline (in-person) gifts. API key is a secret.
     "GIVEBUTTER_CAMPAIGN_ID": "683765",
     "OFFLINE_RAISED": "0"

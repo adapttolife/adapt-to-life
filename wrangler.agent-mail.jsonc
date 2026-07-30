@@ -30,9 +30,7 @@
 
   "vars": {
     "AGENT_MAIL_DOMAIN": "agents.adapttolife.org",
-    "REPORT_LINK_BASE": "https://reports.amelioration.is",
-    "AIRTABLE_BASE_ID": "appVPKDdwnOG5qkYG",
-    "AIRTABLE_AGENT_MAIL_TABLE_ID": "tbliDyb8sAiA8JY0c"
+    "REPORT_LINK_BASE": "https://reports.amelioration.is"
   },
 
   // One source of truth: these are the existing agent-mail stores, not copies.
@@ -50,5 +48,5 @@
   ]
 
   // Worker secrets, set out-of-band and never committed:
-  //   AGENT_MAIL_TOKEN  AIRTABLE_TOKEN  MAIL_BELL_SECRETS  REPORT_LINK_SECRET
+  //   AGENT_MAIL_TOKEN  MAIL_BELL_SECRETS  REPORT_LINK_SECRET
 }

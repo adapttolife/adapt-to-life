@@ -18,48 +18,41 @@ public/
   hustle-and-heart.html         # /hustle-and-heart
   adaptive-sports-near-me.html  # /adaptive-sports-near-me
   images/                       # logo, favicon, touch icon
-src/index.js                    # Worker: serves assets + POST /api/contact → Airtable
+src/index.js                    # Worker: serves assets + form posts → ClickUp
 wrangler.jsonc                  # Cloudflare deploy config
 ```
 
 Clean URLs (`/about`) are handled automatically by Cloudflare; the source file is `about.html`.
 
-## Contact form → Airtable (CRM)
+## The forms → ClickUp
 
-The contact form posts JSON to `POST /api/contact`. The Worker validates it (email required, honeypot spam guard) and creates a row in Airtable:
+Both public forms write to ClickUp. Nothing writes to Airtable — that was the
+prototype, and the line was cut on 2026-07-30. The full map of the three trackers,
+including the one that is deliberately **not** automated, is
+[`docs/clickup-trackers.md`](docs/clickup-trackers.md).
 
-- **Base:** `Adapt To Life` (`appVPKDdwnOG5qkYG`) · **Table:** `Leads` (`tblhJaZtMY37K7Uio`)
-- Base/table IDs are non-secret `vars` in `wrangler.jsonc`.
-- The Airtable PAT is a **Worker secret**, never in the repo:
+| Form | Endpoint | Lands in |
+|---|---|---|
+| `/contact` | `POST /api/contact` | **Contacts** (`901418639884`) |
+| `/apply` | `POST /api/apply` | **Hustle & Heart — Applications** (`901418622126`) |
 
-  ```sh
-  op read "op://Julia/Airtable PAT/credential" | cfrun npx wrangler secret put AIRTABLE_TOKEN
-  ```
+Both validate before writing (email required, honeypot spam guard, Turnstile), put
+the sender's own words verbatim in the task description, and set Stage `New`. List
+IDs are non-secret `vars` in `wrangler.jsonc`; field IDs are a schema contract and
+live in `src/clickup.js`.
 
-The form's "reaching out as" dropdown maps to the `Type` field, so interested athletes/volunteers and program submissions land in one CRM table, filterable by type.
+**Last contacted** is the staleness rung on both lists. The receipt emails promise
+every sender they will hear back, so anything sitting in `New` with a stale Last
+contacted is a broken promise, not a backlog.
 
-## Apply form → ClickUp (grant applications)
+The token is a **Worker secret**, never in the repo:
 
-`/apply` posts to `POST /api/apply` and the Worker creates one task per application
-in the ClickUp list **Hustle & Heart — Applications** (`901418622126`, Team Space →
-Adapt To Life). The page is unchanged from when this wrote to Airtable — only the
-destination moved, because ClickUp is the tracker ATL actually reviews from and a
-record nobody opens is not a record.
+```sh
+op read "op://Stingel/ClickUp API/credential" | cfrun npx wrangler secret put CLICKUP_TOKEN
+```
 
-- Task name is `Name — Sport`; the description carries every answer verbatim.
-- Custom fields carry Stage (`New`), Applied, Email, Phone, Sport, Location and
-  Amount requested — the last only when the applicant gave an unambiguous figure
-  (see `parseAmount` in `src/clickup.js`). Field ids live in that file.
-- **Last contacted** is the staleness rung. The receipt email promises every
-  applicant they will hear where things stand, so anything sitting in New or
-  Reviewing with a stale Last contacted is a broken promise, not a backlog.
-- The token is a **Worker secret**, never in the repo:
+It authenticates as Alec, so tasks show as created by him.
 
-  ```sh
-  op read "op://Stingel/ClickUp API/credential" | cfrun npx wrangler secret put CLICKUP_TOKEN
-  ```
-
-Staging has no ClickUp vars, so a staging deploy can never write an application.
 
 _Roadmap: Beehiiv (newsletter / "Join the list") and Givebutter (donations) are not wired yet._
 
@@ -110,7 +103,7 @@ That URL is yours alone, it is a full working copy of the site, and it does not 
 isolation already exists in Wrangler. Check and hand over THAT link.
 
 Shared staging (only when you know you are the only session on it — front-end only, no data
-bindings, no cron, so it can never touch prod Airtable/D1/R2/email):
+bindings, no cron, so it can never touch prod ClickUp/D1/R2/email):
 
 ```sh
 npm run deploy:staging

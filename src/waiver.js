@@ -152,18 +152,10 @@ export async function handleWaiver(request, env) {
     console.error("waiver D1 insert failed:", err);
   }
 
-  // Compliance mirror -> Airtable "Waivers" table (best-effort; never blocks the signer).
-  // The PDF is attached by giving Airtable the absolute download URL to fetch.
-  try {
-    const origin = new URL(request.url).origin;
-    await mirrorToAirtable(env, {
-      origin, id, org, signedAt, name, email, isMinor, minorName, relationship,
-      program, signatureType, version: doc.version, pdfSha,
-      location: [geo.city, geo.region, geo.country].filter(Boolean).join(", "), ip,
-    });
-  } catch (err) {
-    console.error("waiver Airtable mirror failed:", err);
-  }
+  // The compliance record is D1 (index, above) + R2 (the signed PDF) + the Google
+  // Shared Drive archive (filed by the cron below). There is deliberately no
+  // fourth mirror: a signed release is a record to retrieve, not a task to work,
+  // so it does not belong in ClickUp either.
 
   // Email a copy of the signed PDF to the signer (and the org), from hello@adapttolife.org.
   // Best-effort; never blocks the signer. Sent via the SEND_EMAIL binding.
@@ -314,38 +306,6 @@ async function buildPdf(d) {
   return await pdf.save();
 }
 
-// Mirror a signed release into the Airtable "Waivers" compliance table.
-async function mirrorToAirtable(env, r) {
-  if (!env.AIRTABLE_TOKEN || !env.AIRTABLE_BASE_ID || !env.AIRTABLE_WAIVERS_TABLE_ID) {
-    console.error("Airtable not configured for waivers; skipping mirror");
-    return;
-  }
-  const fields = {
-    "Signer": r.name,
-    "Email": r.email,
-    "Source": r.org === "asnm" ? "adaptivesportsnearme.com" : "adapttolife.org",
-    "Signed At": r.signedAt,
-    "Signer Type": r.isMinor ? "Parent/Guardian" : "Adult",
-    "Minor Name": r.isMinor ? r.minorName : "",
-    "Relationship": r.isMinor ? r.relationship : "",
-    "Program or Event": r.program || "",
-    "Signature Method": r.signatureType === "typed" ? "Typed" : "Drawn",
-    "Release Version": r.version,
-    "Signed PDF": [{ url: `${r.origin}/api/waiver/${r.id}`, filename: `release-${r.id.slice(0, 8)}.pdf` }],
-    "SHA-256": r.pdfSha,
-    "Location": r.location,
-    "IP": r.ip,
-    "Document ID": r.id,
-    "Status": "Signed",
-  };
-  const res = await fetch(`https://api.airtable.com/v0/${env.AIRTABLE_BASE_ID}/${env.AIRTABLE_WAIVERS_TABLE_ID}`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${env.AIRTABLE_TOKEN}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ records: [{ fields }], typecast: true }),
-  });
-  if (!res.ok) console.error("Airtable waivers create error", res.status, await res.text().catch(() => ""));
-}
-
 // Email the signed PDF to the signer (and a copy to the org), from hello@adapttolife.org.
 // Uses Cloudflare Email Sending (src/email.js cfSend). The apex is onboarded to Email
 // Service via SPF/DKIM TXT records only — no MX change — so Google Workspace mail on the
@@ -394,7 +354,7 @@ function bytesToB64(bytes) {
 // ---------------------------------------------------------------------------
 // Google Drive archive (compliance backlog). Runs on a cron: any signed release
 // not yet in Drive gets uploaded to the Shared Drive, and its Drive File ID +
-// link are written back to D1 and the Airtable row. Off the signing hot path, so
+// link are written back to D1. Off the signing hot path, so
 // a Drive hiccup never blocks a signer. Files land in a Shared Drive (owned by the
 // drive, not the service account), which is why uploads succeed.
 // ---------------------------------------------------------------------------
@@ -420,7 +380,6 @@ export async function runDriveBacklog(env) {
       const file = await driveUpload(token, env.WAIVERS_DRIVE_ID, `release-${row.id}.pdf`, bytes);
       const link = file.webViewLink || `https://drive.google.com/file/d/${file.id}/view`;
       await env.WAIVERS_DB.prepare("UPDATE waivers SET drive_file_id = ?, drive_link = ? WHERE id = ?").bind(file.id, link, row.id).run();
-      await airtablePatchByDocId(env, row.id, { "Drive File ID": file.id, "Drive Link": link, "Status": "Filed to Drive" });
     } catch (err) {
       console.error("Drive backlog: failed for", row.id, err);
     }
@@ -458,18 +417,6 @@ async function driveUpload(token, driveId, filename, bytes) {
   return await res.json();
 }
 
-async function airtablePatchByDocId(env, docId, fields) {
-  if (!env.AIRTABLE_TOKEN || !env.AIRTABLE_BASE_ID || !env.AIRTABLE_WAIVERS_TABLE_ID) return;
-  const url = `https://api.airtable.com/v0/${env.AIRTABLE_BASE_ID}/${env.AIRTABLE_WAIVERS_TABLE_ID}?maxRecords=1&filterByFormula=` + encodeURIComponent(`{Document ID}='${docId}'`);
-  const found = await (await fetch(url, { headers: { Authorization: `Bearer ${env.AIRTABLE_TOKEN}` } })).json();
-  const rec = (found.records || [])[0];
-  if (!rec) { console.error("Airtable patch: no row for", docId); return; }
-  const res = await fetch(`https://api.airtable.com/v0/${env.AIRTABLE_BASE_ID}/${env.AIRTABLE_WAIVERS_TABLE_ID}`, {
-    method: "PATCH", headers: { Authorization: `Bearer ${env.AIRTABLE_TOKEN}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ records: [{ id: rec.id, fields }], typecast: true }),
-  });
-  if (!res.ok) console.error("Airtable patch error", res.status, await res.text().catch(() => ""));
-}
 
 function b64url(bytes) {
   let s = ""; for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);

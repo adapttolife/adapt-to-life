@@ -60,10 +60,8 @@ test("agent-mail keeps only non-secret mail/report configuration", () => {
   assert.deepEqual(agentMail.vars, {
     AGENT_MAIL_DOMAIN: atl.vars.AGENT_MAIL_DOMAIN,
     REPORT_LINK_BASE: atl.vars.REPORT_LINK_BASE,
-    AIRTABLE_BASE_ID: atl.vars.AIRTABLE_BASE_ID,
-    AIRTABLE_AGENT_MAIL_TABLE_ID: atl.vars.AIRTABLE_AGENT_MAIL_TABLE_ID,
   });
-  for (const secret of ["AGENT_MAIL_TOKEN", "AIRTABLE_TOKEN", "MAIL_BELL_SECRETS", "REPORT_LINK_SECRET"])
+  for (const secret of ["AGENT_MAIL_TOKEN", "MAIL_BELL_SECRETS", "REPORT_LINK_SECRET"])
     assert.equal(agentMail.vars[secret], undefined, `${secret} must remain a Worker secret`);
 });
 

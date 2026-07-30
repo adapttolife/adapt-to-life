@@ -8,6 +8,7 @@ import { sendContactReceipt, sendApplyReceipt } from "./receipts.js";
 import { createApplication, createContact } from "./clickup.js";
 import { handleEmail, handleAgentMailApi } from "./agent_mail.js";
 import { handleQr } from "./qr.js";
+import { fundPosition } from "./fund.js";
 
 const LEAD_TYPES = [
   "Funding for an athlete",
@@ -30,6 +31,21 @@ export default {
     // Staging-only review tour: /review walks the latest iteration. Production redirects home.
     if ((url.pathname === "/review" || url.pathname === "/review.html") && env.STAGING !== "1") {
       return Response.redirect(`${url.origin}/`, 302);
+    }
+
+    // Staging-only: render a receipt so it can actually be reviewed.
+    //
+    // Staging has no send_email binding by design, so the most consequential
+    // copy we write, the email an applicant gets after asking for equipment
+    // money, was the one artifact nobody could look at before approving it.
+    // Pasting the wording into the review page would have created a second copy
+    // that drifts from src/receipts.js the first time either is edited. So this
+    // calls the real function with a capturing stub and returns exactly what
+    // would have been sent. Off in production, where it 404s with everything
+    // else that is not a page.
+    if (url.pathname === "/preview/receipt") {
+      if (env.STAGING !== "1") return new Response("Not found", { status: 404 });
+      return previewReceipt(env, url);
     }
 
     if (url.pathname === "/api/contact") {
@@ -380,34 +396,12 @@ async function handleSubscribe(request, env) {
 
 // Public fundraising total for the site thermometer: Givebutter's live "raised" for the
 // campaign plus an offline figure we control (in-person gifts). Cached 60s at the edge.
+// The public thermometer. Reads src/fund.js, which the grant-application
+// receipt also reads, so the number on the page and the number we put in
+// writing to an applicant come from one place and cannot drift apart.
 async function handleRaised(request, env) {
-  const campaignId = env.GIVEBUTTER_CAMPAIGN_ID || "683765";
-  const offline = Number(env.OFFLINE_RAISED) || 0;
-  let online = 0;
-  let goal = 0;
-  try {
-    if (env.GIVEBUTTER_API_KEY) {
-      const r = await fetch(`https://api.givebutter.com/v1/campaigns/${campaignId}`, {
-        headers: { Authorization: `Bearer ${env.GIVEBUTTER_API_KEY}`, Accept: "application/json" },
-        cf: { cacheTtl: 60, cacheEverything: true },
-      });
-      if (r.ok) {
-        const d = await r.json();
-        online = Number(d.raised) || 0;
-        goal = Number(d.goal) || 0;
-      }
-    }
-  } catch (err) {
-    console.error("givebutter raised fetch failed:", err);
-  }
-  const body = JSON.stringify({
-    raised: online + offline,
-    online,
-    offline,
-    // Fallback only. The live goal is Givebutter's (Send 6 to the US Open:
-    // 6 athletes x $3,500). Change it there, not here (Spec 115 D3).
-    goal: goal || Number(env.RAISED_GOAL) || 21000,
-  });
+  const { raised, online, offline, goal } = await fundPosition(env);
+  const body = JSON.stringify({ raised, online, offline, goal });
   return new Response(body, {
     headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=60" },
   });
@@ -445,4 +439,60 @@ function json(obj, status = 200) {
 
 async function safeText(res) {
   try { return await res.text(); } catch { return "(no body)"; }
+}
+
+// ---------------------------------------------------------------------------
+// Staging receipt preview (see the route above). Reuses the production senders
+// through a capturing SEND_EMAIL stub, so what renders here is byte-for-byte
+// what an applicant receives. Never reachable in production.
+// ---------------------------------------------------------------------------
+async function previewReceipt(env, url) {
+  const kind = url.searchParams.get("type") === "contact" ? "contact" : "apply";
+  const captured = [];
+  const stub = { ...env, SEND_EMAIL: { send: (msg) => (captured.push(msg), {}) } };
+
+  if (kind === "contact") {
+    await sendContactReceipt(stub, {
+      name: "Jordan Rivers",
+      email: "jordan@example.com",
+      message: "Is there a program near Rockford for a 12 year old who wants to try basketball?",
+      type: "Funding for an athlete",
+    });
+  } else {
+    await sendApplyReceipt(stub, {
+      name: "Jordan Rivers",
+      email: "jordan@example.com",
+      sport: "Wheelchair basketball",
+      need: "A sport chair so I can join the league season in the fall",
+    });
+  }
+
+  const msg = captured[0];
+  if (!msg) return new Response("Receipt did not render", { status: 500 });
+
+  const banner =
+    `<div style="font:600 13px/1.5 -apple-system,system-ui,sans-serif;background:#1c1a15;` +
+    `color:#faf8f4;padding:12px 16px">Staging preview of the real send. ` +
+    `Subject: ${escapeHtml(msg.subject)} &nbsp;|&nbsp; To: ${escapeHtml(String(msg.to))} ` +
+    `&nbsp;|&nbsp; Bcc: ${escapeHtml(String(msg.bcc))}` +
+    `<div style="font-weight:400;opacity:.75;margin-top:4px">Any dollar figure below was read live ` +
+    `from Givebutter just now. If that call fails the sentence is dropped rather than estimated, so ` +
+    `its absence on a future load is the safeguard working, not a bug.</div></div>`;
+
+  return new Response(
+    `<!doctype html><meta name="robots" content="noindex,nofollow">` +
+      `<title>Receipt preview</title><body style="margin:0;background:#f4f2ee">` +
+      banner +
+      `<div style="padding:28px 16px">${msg.html}</div>` +
+      `<div style="padding:0 16px 40px"><pre style="white-space:pre-wrap;font:13px/1.6 ui-monospace,` +
+      `monospace;color:#3f3d38;background:#fff;border:1px solid #e3e0d9;border-radius:10px;padding:16px">` +
+      `${escapeHtml(msg.text)}</pre></div></body>`,
+    { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } }
+  );
+}
+
+function escapeHtml(s) {
+  return String(s ?? "").replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])
+  );
 }

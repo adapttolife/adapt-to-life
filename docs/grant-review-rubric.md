@@ -44,6 +44,32 @@ Live on `/hustle-and-heart` as the "What the fund is for" section, paired with w
 
 Kept deliberately short and warm. Tighten only if volume forces it.
 
-## 5. Track from grant #1
+## 5. What we tell an applicant, and when (added 2026-07-29)
+
+The review rubric decides who gets funded. This section decides what someone hears while they wait,
+which at this stage matters more, because **as of 2026-07-29 the fund has made zero grants and holds
+a few hundred dollars.** Every applicant right now is applying to a fund whose money is small.
+
+**Scope the scarcity to the fund, never to the organization.** ATL is a recognized 501(c)(3) with an
+EIN and a public determination letter. The federal work is finished. Copy that says "Adapt To Life is
+young" to soften a funding delay gives away standing the org already earned, and it reads especially
+badly near any mention of a pending filing. Say "the Hustle & Heart Fund is new and the money in it
+is small." Name the fund, name the money. Pinned in `test/receipts.test.js`.
+
+- **State the stage, in the receipt, with the real number.** The application receipt reads the live
+  fund position from `src/fund.js` and says it plainly. If Givebutter is unreachable the sentence is
+  dropped rather than estimated.
+- **Promise only what we control.** A person reads it, and you hear where it stands. No timeline: we
+  cannot hold one yet, and "within X days" is the promise that turns a slow month into a broken word.
+- **The invitation to help is optional and severed.** Applicants may be invited to share the fund.
+  They are never told, or allowed to infer, that doing so improves their chances. Money they help
+  raise goes to the fund, never earmarked as their grant. Earmarking would create donor-restricted
+  funds and make the accounting and the fairness story much harder, and it is the natural instinct to
+  resist here.
+- **Applicant data is not general correspondence.** Applications carry disability detail and
+  financial need. The internal copy is routed by the `GRANTS_INBOX` Worker var so it can be moved off
+  the shared `hello@` seat to a restricted mailbox without a code change.
+
+## 6. Track from grant #1
 
 KBF's "1,900 athletes across 50 states" is proof the machine works. We start counting now: athletes funded, dollars to athletes, sports and towns reached. Every application is the dataset. The moment we can show it, we do.

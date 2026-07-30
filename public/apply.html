@@ -38,7 +38,7 @@
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navOurWork">Our Work<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 3 3-3"/></svg></button>
         <div class="nav-panel" id="navOurWork">
           <a href="/hustle-and-heart"><span class="np-t">Hustle &amp; Heart Fund</span><span class="np-d">Equipment, training, and travel, so cost is never why an athlete sits out</span></a>
-          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d">The free directory of adaptive programs, nationwide</span></a>
+          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d">A free national directory of adaptive programs, opening soon</span></a>
         </div>
       </div>
       <a class="lk" href="/ways-to-give">Ways to Give</a>
@@ -89,8 +89,8 @@
         <div class="contact-info reveal">
           <span class="eyebrow orange">Who this is for</span>
           <p class="prose" style="margin-top:1rem;">Adaptive athletes of any age, sport, or level. If the cost of competing is the thing keeping you out, you're exactly who the Hustle &amp; Heart Fund is built for. No referral, no red tape.</p>
-          <p class="prose" style="margin-top:1rem;">We read every application, wherever you are. We're just getting going, so every one tells us who needs help and what it costs. Apply even if you're not sure you qualify.</p>
-          <p class="prose" style="margin-top:1rem;">We review each request and fund what we can as the fund grows. Applying is never a promise of a grant, but it is always worth doing.</p>
+          <p class="prose" style="margin-top:1rem;"><strong>Where the fund stands today.</strong> The Hustle &amp; Heart Fund is new and the money in it is small. Applying is not a promise of a grant. It is how we learn who needs help and what it costs, and it puts you in front of us when the money is there. We would rather say that plainly than leave you waiting on something we never promised.</p>
+          <p class="prose" style="margin-top:1rem;">We read every application, wherever you are. Apply even if you're not sure you qualify.</p>
           <p class="prose" style="margin-top:1.9rem;">The fund covers equipment, travel, and training, the real costs of competing. <a class="textlink" href="/hustle-and-heart">How the fund works <span class="arrow">&rarr;</span></a></p>
           <div class="elig-cue reveal">
             <span class="elig-head">Is this you?</span>
@@ -105,10 +105,15 @@
             <span class="ql-head">What happens next</span>
             <div class="apply-steps">
               <p><strong>1 &middot; Apply.</strong> A few minutes, that's it.</p>
-              <p><strong>2 &middot; Review.</strong> We confirm the need and the real costs.</p>
-              <p><strong>3 &middot; Approve.</strong> Approved grants are paid straight to the vendor.</p>
-              <p><strong>4 &middot; Covered.</strong> You never handle the money; you just get on the court.</p>
+              <p><strong>2 &middot; Review.</strong> A person reads it. We confirm the need and the real cost.</p>
+              <p><strong>3 &middot; Decision.</strong> Some we can fund now. Some wait for the fund to catch up. You hear either way.</p>
+              <p><strong>4 &middot; Covered.</strong> Approved grants are paid straight to the vendor, so you never handle the money.</p>
             </div>
+          </div>
+          <div class="quick-links" style="margin-top:1.9rem;">
+            <span class="ql-head">Want it to move faster?</span>
+            <p class="prose" style="margin:0;">The fund grows fastest through people who already care about one athlete. If you want to help it along, share it with the people who root for you. Everything raised goes back out as grants. This is entirely optional and it has no bearing on your application.</p>
+            <a class="textlink" href="/hustle-and-heart">Share the fund <span class="arrow">&rarr;</span></a>
           </div>
         </div>
         <div class="contact-form-wrap reveal">
@@ -130,7 +135,7 @@
             <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only" style="margin-bottom:1rem;"></div>
             <button type="submit" class="btn">Submit application</button>
             <p class="form-status" id="formStatus" role="status" aria-live="polite" style="margin-top:.9rem;font-weight:600"></p>
-            <p class="form-note">One hundred percent reaches the athlete. We'll follow up at the email you provide.</p>
+            <p class="form-note">One hundred percent reaches the athlete. We'll email you a receipt now, and we'll tell you where things stand even when the answer is not yet.</p>
           </form>
         </div>
       </div>
@@ -270,7 +275,7 @@
       .then(function(d){
         if(d && d.ok){
           f.reset();
-          setStatus("Thank you. Your application is in. We'll be in touch as the fund grows.", true);
+          setStatus("Thank you. Your application is in, and a receipt is on its way to your email.", true);
         } else {
           setStatus((d && d.error) || 'Something went wrong. Please email hello@adapttolife.org.', false);
         }

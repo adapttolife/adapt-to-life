@@ -56,9 +56,66 @@ test("apply receipt names the next step and bccs the house address", async () =>
   assert.equal(ok, true);
   const m = sent[0];
   assert.equal(m.bcc, "hello@adapttolife.org");
-  assert.ok(/review/i.test(m.text), "tells the applicant a person reviews it");
+  assert.ok(/a person reads/i.test(m.text), "tells the applicant a person reads it");
   assert.ok(m.html.includes("Wheelchair basketball"));
   assert.ok(m.html.includes("Sport chair"));
+});
+
+// --- expectation-management copy -------------------------------------------
+// These four pin sentences, which is unusual for a test suite and deliberate.
+// The fund has a few hundred dollars in it and no grant has ever been made, so
+// the receipt an applicant gets is the org's most consequential promise. Each
+// line below was added to solve a specific failure: someone planning around a
+// grant that is months away, or believing that fundraising buys consideration.
+// A future copy edit that drops one should have to say so out loud.
+
+test("apply receipt states the stage and refuses to promise a grant", async () => {
+  const { env, sent } = stubEnv();
+  await sendApplyReceipt(env, { name: "Jordan", email: "j@example.com" });
+  const m = sent[0];
+  assert.match(m.text, /not a promise of a grant/i, "must not imply funding is coming");
+  assert.match(m.text, /money in it is small/i, "must name what is actually short: the money");
+  // The scarcity is the FUND's, never the organisation's. ATL is a recognised
+  // 501(c)(3) with an EIN and a public determination letter, and copy that blurs
+  // "our fund is small" into "we are not established yet" gives away standing
+  // the org has already earned. Alec misread the first draft exactly that way.
+  assert.match(m.text, /Hustle & Heart Fund is new/i, "scarcity is scoped to the fund by name");
+  assert.ok(
+    !/Adapt To Life is (a )?(young|new)/i.test(m.text),
+    "must never describe the organisation itself as young or unfinished"
+  );
+  assert.match(m.html, /not a promise of a grant/i);
+});
+
+test("apply receipt severs the fundraising invitation from the application", async () => {
+  const { env, sent } = stubEnv();
+  await sendApplyReceipt(env, { name: "Jordan", email: "j@example.com" });
+  const m = sent[0];
+  // An applicant must never believe that helping raise money buys them
+  // consideration. This is a control, not a courtesy.
+  assert.match(m.text, /no bearing on your application/i);
+  assert.match(m.html, /no bearing on your application/i);
+});
+
+test("apply receipt quotes no fund figure when Givebutter is unreadable", async () => {
+  const { env, sent } = stubEnv();
+  // No GIVEBUTTER_API_KEY on this env, so fundPosition returns live:false.
+  await sendApplyReceipt(env, { name: "Jordan", email: "j@example.com" });
+  assert.ok(
+    !/\$\d/.test(sent[0].text.replace(/EIN [\d-]+/g, "")),
+    "a guessed dollar figure in writing to an applicant is worse than none"
+  );
+});
+
+test("GRANTS_INBOX routes the application copy away from the shared inbox", async () => {
+  const { env, sent } = stubEnv();
+  env.GRANTS_INBOX = "grants@adapttolife.org";
+  await sendApplyReceipt(env, { name: "Jordan", email: "j@example.com" });
+  assert.equal(sent[0].bcc, "grants@adapttolife.org");
+  assert.equal(sent[0].replyTo, "grants@adapttolife.org");
+  // The contact form is ordinary correspondence and stays on hello@.
+  await sendContactReceipt(env, { name: "Jordan", email: "j@example.com", message: "hi" });
+  assert.equal(sent[1].bcc, "hello@adapttolife.org");
 });
 
 test("a send failure never throws — the submission is already saved", async () => {

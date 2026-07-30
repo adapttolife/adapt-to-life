@@ -102,12 +102,56 @@ Each message lives in ONE canonical place. Everywhere else: one line max, linkin
   Sports Near Me is how it removes the access barrier, and there will be more surfaces
   ([Spec 117](https://github.com/adapttolife/adapt-to-life) adds a storefront). Name what exists
   today, say plainly that it grows, and let the count live in the data rather than in the prose.
-- Funding maturity: "We've started funding athletes, and we're just getting going." (Not "already
-  funded" bravado, not "the moment we can fund" pre-launch.)
+- **Funding maturity, corrected 2026-07-29. Adapt To Life has not yet made a grant.** The site said
+  "We've started funding athletes to compete" on `/roadmap` under *Live today*, and it was not true
+  of the organization. What is true, and is the better story, is that **Alec covered these costs
+  personally for years** and built ATL so it stops depending on one person's checkbook. Two rules
+  come out of it and both outlive the current numbers:
+  - **Founder history is never organizational impact.** Alec's personal giving predates the org and
+    may never be counted in athletes funded, dollars granted, or anything that reaches a 990. Tell
+    it as his history. The org's first number has to be the org's.
+  - **A status claim names the stage it is actually at.** "Funding, so far" beats "Athletes funded"
+    when the honest content is "the first grants come as we raise." Neither bravado nor pre-launch
+    coyness: say where the thing is.
+- **The grant funnel manages expectations before it asks for anything** (Alec, 2026-07-29). Someone
+  applying for equipment money is the most vulnerable reader the site has, and the failure mode is
+  not rudeness, it is a warm page that reads as a promise. Three rules, live on `/apply` and in the
+  receipt email:
+  - **The honest line is placed, not buried.** "Applying is not a promise of a grant" sits second on
+    the page, not third in a block of prose under two friendlier paragraphs.
+  - **A numbered ladder must contain the outcome that actually happens most.** The four steps used to
+    run Apply → Review → Approve → Covered, which promises delivery in its own structure no matter
+    what the surrounding prose says. Step 3 is now **Decision**: some we fund now, some wait, you
+    hear either way.
+  - **Words on the page, numbers in the email.** The fund's live position ($ raised of $ goal) is in
+    the receipt, not on `/apply`. On the page a small number discourages the application we need; in
+    the receipt, after someone has already applied, the same number is the thing that makes the
+    invitation to help land. It is read live from `src/fund.js` and **omitted entirely** if
+    Givebutter is unreachable, because a guessed figure in writing to an applicant is worse than none.
+- **Never condition help on helping.** The invitation for an applicant to share or fundraise is
+  always marked optional and always explicitly severed from their application ("this has no bearing
+  on your application"). An applicant who believes fundraising buys consideration is a fairness
+  problem and a legal one. Money raised goes to **the fund**, never earmarked as someone's own grant.
+  Pinned by `test/receipts.test.js`; a copy edit that drops the severance sentence fails the suite.
 - CTA verbs, always: **Donate** (give money) · **Apply** (request a grant) · **Suggest a program**
   (directory) · **Talk to us** (sponsor/custom).
-- Directory links: internal explainer is `/adaptive-sports-near-me`; the external directory link is
-  labeled "Visit the directory" and opens a new tab.
+- Directory links: internal explainer is `/adaptive-sports-near-me`; the external link opens a new
+  tab and is labeled **"Get notified when it opens"** until Adaptive Sports Near Me actually
+  launches, then reverts to **"Visit the directory."** One label, everywhere, flipped in one pass.
+- **Never claim a sibling product is live that says it is not** (2026-07-29). adapttolife.org
+  described the directory as live in five places, including `/roadmap` under *Live today* and the
+  dropdown nav on all sixteen pages, while `adaptivesportsnearme.com` read "We are not live yet" and
+  `/programs` returned 404. Three buttons labeled "Visit the directory" delivered visitors straight
+  into that contradiction. Same class of failure as the grant funnel above, and worse, because a
+  button makes the promise clickable.
+  - **The claim lives where the product is, not where the marketing is.** Before writing that
+    anything is live, load it. This drifted because ASNM's launch gate went up after ATL's copy was
+    written and nothing connected the two.
+  - **Say precisely which part is live.** ASNM's site, its program-submission intake and its notify
+    capture are all up; only browsing is gated. So `/roadmap` says exactly that rather than
+    downgrading the whole thing to "coming soon", which would undersell real work.
+  - Flip list, for whoever launches ASNM: nav description on all 16 pages, `/`, `/about`,
+    `/roadmap`, `/karen`, and `/adaptive-sports-near-me` (hero, closing, and both CTA labels).
 - **A campaign and a drive are different things and never merge.** A *campaign* is what we are
   raising for and who it reaches (Send 6 to the US Open, six athletes, $21,000). It has a goal and a
   named beneficiary, and it gets a page. A *drive* is a dated way we raise it (the August popcorn

@@ -5,7 +5,7 @@
 // and return an unguessable download link. No external server, no SMTP.
 
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
-import { cfSend } from "./email.js";
+import { cfSend, houseShell } from "./email.js";
 
 // ---------------------------------------------------------------------------
 // Document model — SINGLE SOURCE OF TRUTH for both the on-screen text and the
@@ -319,15 +319,16 @@ async function sendReceiptEmail(env, { to, pdfBytes, name, doc, isMinor, minorNa
     `Thank you. Your ${doc.title} with ${doc.org} is attached as a signed PDF for your records.\n\n` +
     `Participant: ${who}\n\n` +
     `If you ever want to withdraw permission for future use, just reply to this email or write to hello@adapttolife.org.\n\n` +
-    `With gratitude,\n${doc.org}\n501(c)(3) nonprofit · EIN 41-3213344`;
-  const html =
-    `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#0C0C0E">` +
+    `Adapt To Life\n501(c)(3) nonprofit, EIN 41-3213344`;
+  // Same house shell as the contact and grant-application receipts. These three
+  // are the only automated mail we send from hello@, and they used to arrive in
+  // two different typefaces with two different sign-offs.
+  const html = houseShell(
     `<p>Hi ${esc(name)},</p>` +
     `<p>Thank you. Your <strong>${esc(doc.title)}</strong> with ${esc(doc.org)} is attached as a signed PDF for your records.</p>` +
-    `<p style="color:#3a3a3e"><strong>Participant:</strong> ${esc(who)}</p>` +
-    `<p>If you ever want to withdraw permission for future use, just reply to this email or write to <a href="mailto:hello@adapttolife.org">hello@adapttolife.org</a>.</p>` +
-    `<p style="margin-top:24px;color:#6b6b70">With gratitude,<br>${esc(doc.org)}<br>501(c)(3) nonprofit · EIN 41-3213344</p>` +
-    `</div>`;
+    `<p style="color:#3f3d38"><strong>Participant:</strong> ${esc(who)}</p>` +
+    `<p>If you ever want to withdraw permission for future use, just reply to this email or write to <a href="mailto:hello@adapttolife.org" style="color:#c2410c">hello@adapttolife.org</a>.</p>`
+  );
   try {
     await cfSend(env, {
       from: "Adapt To Life <hello@adapttolife.org>",

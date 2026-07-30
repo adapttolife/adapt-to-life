@@ -73,7 +73,7 @@ test("send-failures: an AGENT token is 403 — operator only", async () => {
 test("send-failures: operator token gets the rows, since binds as ts > ?", async () => {
   const rows = [
     { id: "a", ts: 1700000100, route: "cfSend", to_addr: "nick@example.com", error: "SEND_EMAIL boom" },
-    { id: "b", ts: 1700000200, route: "mirror", to_addr: "julia@agents.adapttolife.org", error: "airtable create 503: upstream" },
+    { id: "b", ts: 1700000200, route: "mirror", to_addr: "julia@agents.adapttolife.org", error: "clickup create 503: upstream" },
   ];
   const db = stubDb({ rows });
   const env = { AGENT_MAIL_TOKEN: OPERATOR_TOKEN, AGENT_MAIL_DB: db };

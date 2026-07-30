@@ -1,10 +1,11 @@
 // Adapt To Life — Worker entry.
-// Serves the static site (env.ASSETS) and handles form submissions at /api/contact,
-// writing leads to Airtable. The Airtable token stays server-side (Worker secret).
+// Serves the static site (env.ASSETS) and handles form submissions at /api/contact
+// and /api/apply, writing both to ClickUp. The ClickUp token stays server-side
+// (Worker secret). See src/clickup.js and docs/clickup-trackers.md.
 
 import { handleWaiver, handleWaiverDownload, handleWaiverVerify, handleWaiverDoc, runDriveBacklog } from "./waiver.js";
 import { sendContactReceipt, sendApplyReceipt } from "./receipts.js";
-import { createApplication } from "./clickup.js";
+import { createApplication, createContact } from "./clickup.js";
 import { handleEmail, handleAgentMailApi } from "./agent_mail.js";
 import { handleQr } from "./qr.js";
 
@@ -232,35 +233,17 @@ async function handleContact(request, env, ctx) {
     return json({ ok: false, error: "Please add your name or a message." }, 422);
   }
 
-  const fields = {
-    Name: name || "(no name given)",
-    Email: email,
-    Message: message,
-    Status: "New",
-    Source: source || "Website — contact form",
-  };
-  if (LEAD_TYPES.includes(type)) fields.Type = type;
+  // Contacts land in the ClickUp "Contacts" list. See src/clickup.js.
+  const saved = await createContact(env, {
+    name: name || "(no name given)",
+    email,
+    phone: "",
+    type: LEAD_TYPES.includes(type) ? type : "",
+    message,
+    source: source || "Submitted through the contact form on adapttolife.org.",
+  });
 
-  let res;
-  try {
-    res = await fetch(
-      `https://api.airtable.com/v0/${env.AIRTABLE_BASE_ID}/${env.AIRTABLE_TABLE_ID}`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${env.AIRTABLE_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ records: [{ fields }], typecast: true }),
-      }
-    );
-  } catch (err) {
-    console.error("Airtable request failed:", err);
-    return json({ ok: false, error: "Could not save right now. Please email hello@adapttolife.org." }, 502);
-  }
-
-  if (!res.ok) {
-    console.error("Airtable error", res.status, await safeText(res));
+  if (!saved.ok) {
     return json({ ok: false, error: "Could not save right now. Please email hello@adapttolife.org." }, 502);
   }
 
@@ -304,9 +287,8 @@ async function handleApply(request, env, ctx) {
     return json({ ok: false, error: "Please add your name." }, 422);
   }
 
-  // Applications go to the ClickUp "Hustle & Heart — Applications" list. This is
-  // the tracker ATL actually works from; the Airtable applications table is no
-  // longer written to. See src/clickup.js.
+  // Applications go to the ClickUp "Hustle & Heart — Applications" list — the
+  // applicant tracker, and the list ATL actually works from. See src/clickup.js.
   const saved = await createApplication(env, {
     name,
     email,

@@ -45,16 +45,12 @@
     { "type": "Data", "globs": ["**/*.ttf"], "fallthrough": true }
   ],
   "vars": {
-    // Non-secret config. The Airtable token is set separately as a secret:
-    //   cfrun wrangler secret put AIRTABLE_TOKEN
-    "AIRTABLE_BASE_ID": "appVPKDdwnOG5qkYG",
-    "AIRTABLE_TABLE_ID": "tblhJaZtMY37K7Uio",
-    // Grant applications moved off Airtable to ClickUp, which is the tracker ATL
-    // reviews from. List "Hustle & Heart — Applications" in Team Space -> Adapt
-    // To Life. The token is a secret: cfrun wrangler secret put CLICKUP_TOKEN
+    // Non-secret config. Both public forms write to ClickUp, which is the tracker
+    // ATL actually reviews from; nothing writes to Airtable any more. Lists live in
+    // Team Space -> Adapt To Life. The token is a secret:
+    //   cfrun wrangler secret put CLICKUP_TOKEN
     "CLICKUP_APPLICATIONS_LIST_ID": "901418622126",
-    // Compliance mirror: signed releases land in the Airtable "Waivers" table.
-    "AIRTABLE_WAIVERS_TABLE_ID": "tbl51GcteN2lAbyN9",
+    "CLICKUP_CONTACTS_LIST_ID": "901418639884",
     // Google Shared Drive ("Adapt To Life") for the signed-release archive.
     // The service account JSON is a secret: cfrun wrangler secret put GOOGLE_SA_JSON
     "WAIVERS_DRIVE_ID": "0AIG-pWrds0g7Uk9PVA",
@@ -66,7 +62,6 @@
     // points there; the old adapttolife.org/r/ and /lib/ links already in
     // inboxes are forwarded to the same origin by src/index.js.
     "REPORT_LINK_BASE": "https://reports.amelioration.is",
-    "AIRTABLE_AGENT_MAIL_TABLE_ID": "tbliDyb8sAiA8JY0c",
     // Fundraising thermometer: Givebutter campaign + offline (in-person) gifts. API key is a secret.
     "GIVEBUTTER_CAMPAIGN_ID": "683765",
     "OFFLINE_RAISED": "0"

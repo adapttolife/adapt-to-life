@@ -5,8 +5,8 @@
 //   handleAgentMailApi(request, env, url) authenticated HTTP API the agentos MCP calls
 //
 // Source of truth: D1 (env.AGENT_MAIL_DB) for threads/messages; R2 (env.AGENT_MAIL_BUCKET) for raw .eml.
-// Humans read a write-through Airtable mirror (never on the agent hot path). Outbound via
-// Cloudflare Email Sending (src/email.js cfSend). Airtable REST patterns reused from src/index.js.
+// That is the whole record — there is no mirror. Humans read threads through the
+// API and the reports viewer. Outbound via Cloudflare Email Sending (src/email.js cfSend).
 
 import PostalMime from "postal-mime";
 import { cfSend } from "./email.js";
@@ -84,7 +84,7 @@ const OUT_ATTACHMENT_BLOCKED = /\.(exe|dll|bat|cmd|com|scr|jar|msi|ps1|sh|vbs|js
 // cfSend shape. Returns { list, note } on success ({ list: undefined } when the
 // field is absent), or { error: <422 message> } on bad input. `note` is a short
 // human-readable suffix recorded with the message body so attachments are
-// visible in thread reads and the Airtable mirror without a schema change.
+// visible in thread reads without a schema change.
 function decodeOutAttachments(raw, recipients) {
   if (raw === undefined || raw === null) return { list: undefined, note: "" };
   if (!Array.isArray(raw) || raw.length === 0) {
@@ -230,12 +230,6 @@ export async function handleEmail(message, env, ctx) {
     console.log(`agent-mail: locked inbox ${inbox} — quarantined sender ${fromAddr}`);
   }
 
-  // Mirror to the human cockpit (best-effort; never blocks ingestion).
-  ctx.waitUntil(mirrorThread(env, db, thread.id).catch(async (e) => {
-    console.error("agent-mail mirror failed:", e);
-    await recordSendFailure(env, "mirror", inbox, e);
-  }));
-
   // Spec 47 mail bell: wake the owning agent's Hermes webhook gateway — push,
   // not poll. Machine mail (bounces/auto-replies) is archived but never rings,
   // and neither do senders outside the allowlist: unknown/spam mail is captured
@@ -332,8 +326,8 @@ export async function ringBell(env, agent, { inbox, thread_id, from, subject, me
   }
 }
 
-// Spec 33 §6 — send-failure ledger. A failed outbound step (cfSend, Airtable
-// mirror, agent bell) used to be loud in Worker logs but paged no one; every
+// Spec 33 §6 — send-failure ledger. A failed outbound step (cfSend, agent bell)
+// used to be loud in Worker logs but paged no one; every
 // such failure path lands one row here, and the fleet watchdog polls
 // GET /send-failures to page per row. Fail-open by contract: a failed insert
 // console.errors and never breaks the send flow it rides on.
@@ -779,10 +773,6 @@ async function apiReply(env, body, caller) {
     .run();
   await db.prepare(`UPDATE threads SET status = 'replied', last_at = datetime('now') WHERE id = ?`).bind(thread_id).run();
 
-  await mirrorThread(env, db, thread_id).catch(async (e) => {
-    console.error("agent-mail mirror failed:", e);
-    await recordSendFailure(env, "mirror", thread.inbox, e);
-  });
   return jsonResp({ outcome: "ok", data: { message_id: sent.id || null } });
 }
 
@@ -873,10 +863,6 @@ async function apiSend(env, body, caller) {
     .bind(msgId, threadId, fromAddr, toAddr, subject, body_text + att.note, body_markdown || null, htmlOut || null)
     .run();
 
-  await mirrorThread(env, db, threadId).catch(async (e) => {
-    console.error("agent-mail mirror failed:", e);
-    await recordSendFailure(env, "mirror", fromAddr, e);
-  });
   return jsonResp({ outcome: "ok", data: { thread_id: threadId } });
 }
 
@@ -897,53 +883,9 @@ async function apiSetStatus(env, body, caller) {
     await db.prepare(`UPDATE threads SET status = ?, last_at = datetime('now') WHERE id = ?`)
       .bind(status, thread_id).run();
   }
-  await mirrorThread(env, db, thread_id).catch(async (e) => {
-    console.error("agent-mail mirror failed:", e);
-    await recordSendFailure(env, "mirror", thread.inbox, e);
-  });
 
   const updated = await db.prepare(`SELECT id AS thread_id, status, assigned_agent FROM threads WHERE id = ?`).bind(thread_id).first();
   return jsonResp({ outcome: "ok", data: updated });
-}
-
-// ───────────────────────── human mirror (Airtable) ─────────────────────────
-
-async function mirrorThread(env, db, threadId) {
-  // Off the agent hot path: keep a human-readable Airtable row per thread.
-  // No-op until the table id is configured (so the system runs before T04 lands).
-  if (!env.AIRTABLE_TOKEN || !env.AIRTABLE_BASE_ID || !env.AIRTABLE_AGENT_MAIL_TABLE_ID) return;
-
-  const t = await db.prepare(`SELECT * FROM threads WHERE id = ?`).bind(threadId).first();
-  if (!t) return;
-  const fields = {
-    Thread: t.id,
-    Inbox: t.inbox,
-    From: t.from_addr,
-    Subject: t.subject || "",
-    Status: t.status,
-    Agent: t.assigned_agent || "",
-    Last: t.last_at,
-  };
-
-  const base = `https://api.airtable.com/v0/${env.AIRTABLE_BASE_ID}/${env.AIRTABLE_AGENT_MAIL_TABLE_ID}`;
-  const headers = { Authorization: `Bearer ${env.AIRTABLE_TOKEN}`, "Content-Type": "application/json" };
-
-  if (t.airtable_id) {
-    await fetch(`${base}/${t.airtable_id}`, { method: "PATCH", headers, body: JSON.stringify({ fields, typecast: true }) });
-    return;
-  }
-  const res = await fetch(base, { method: "POST", headers, body: JSON.stringify({ records: [{ fields }], typecast: true }) });
-  if (res.ok) {
-    const data = await res.json();
-    const recId = data.records && data.records[0] && data.records[0].id;
-    if (recId) await db.prepare(`UPDATE threads SET airtable_id = ? WHERE id = ?`).bind(recId, t.id).run();
-  } else {
-    // Non-throwing failure: the call-site .catch never sees this, so the
-    // Spec 33 §6 ledger row is written here.
-    const detail = `airtable create ${res.status}: ${await safeText(res)}`.slice(0, 500);
-    console.error("agent-mail airtable create failed:", detail);
-    await recordSendFailure(env, "mirror", t.inbox, detail);
-  }
 }
 
 // ───────────────────────── helpers ─────────────────────────

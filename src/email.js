@@ -75,3 +75,46 @@ export function houseQuote(innerHtml) {
 export function houseLabel(text) {
   return `<p style="margin-top:24px;color:#6b6b70;font-size:14px">${esc(text)}</p>`;
 }
+
+// ---------------------------------------------------------------------------
+// Transactional-send failure ledger.
+//
+// The three automated emails this site sends — contact receipt, grant-application
+// receipt, signed-waiver receipt — all swallow their errors on purpose. A receipt
+// must never fail a submission: by the time it runs the record is already saved,
+// and telling someone their grant application did not go through because a
+// confirmation bounced would be far worse than a missing confirmation.
+//
+// But "swallow" had meant console.error and nothing else, so a receipt that
+// stopped sending would page nobody and show up nowhere. Every applicant would
+// quietly stop hearing back and the first signal would be a person asking why
+// they never got a reply.
+//
+// The agent-mail Worker already solved exactly this: a `send_failures` row per
+// failed outbound step, served at GET /send-failures, polled by the fleet
+// watchdog which pages one bullet per row. This Worker already binds the same D1
+// database, so the fix is to write to that table rather than to invent a second
+// monitoring path. Same table, same watchdog, distinct `route` values.
+//
+// Fail-open by contract, twice over: a failed insert console.errors and returns,
+// and a missing binding (staging has no D1 by design) is a silent no-op. This
+// function must never be able to turn a swallowed receipt failure into a thrown
+// one — that would resurrect the exact bug it exists to report.
+// ---------------------------------------------------------------------------
+export async function recordTransactionalFailure(env, route, toAddr, err) {
+  try {
+    if (!env.AGENT_MAIL_DB) return;
+    await env.AGENT_MAIL_DB
+      .prepare(`INSERT INTO send_failures (id, ts, route, to_addr, error) VALUES (?, ?, ?, ?, ?)`)
+      .bind(
+        crypto.randomUUID(),
+        Math.floor(Date.now() / 1000),
+        route,
+        String(toAddr || ""),
+        String((err && err.message) || err).slice(0, 2000)
+      )
+      .run();
+  } catch (e) {
+    console.error("send_failures insert failed:", e);
+  }
+}

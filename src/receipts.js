@@ -20,7 +20,10 @@
 // record is already saved, and a bounced confirmation is a far smaller problem
 // than telling someone their grant application did not go through. Every path
 // here swallows its error and logs it.
-import { cfSend, HOUSE_FROM, HOUSE_INBOX, houseShell, houseQuote, houseLabel, esc } from "./email.js";
+import {
+  cfSend, HOUSE_FROM, HOUSE_INBOX, houseShell, houseQuote, houseLabel, esc,
+  recordTransactionalFailure,
+} from "./email.js";
 import { fundPosition, usd } from "./fund.js";
 
 const FUND_URL = "https://adapttolife.org/hustle-and-heart";
@@ -44,7 +47,10 @@ async function send(env, msg, label) {
   try {
     if (!env.SEND_EMAIL) {
       // Staging has no send_email binding by design, so this is the normal path
-      // there and must stay quiet rather than look like a fault.
+      // there and must stay quiet rather than look like a fault. Deliberately
+      // NOT recorded as a failure: staging is supposed to look like this, and a
+      // ledger that cries wolf on every staging deploy gets ignored on the day
+      // it is right.
       console.log(`${label}: SEND_EMAIL not bound, skipping`);
       return false;
     }
@@ -52,6 +58,9 @@ async function send(env, msg, label) {
     return true;
   } catch (err) {
     console.error(`${label} failed:`, err);
+    // Still swallowed for the caller — the submission is already saved and must
+    // not fail — but no longer invisible. This is what the fleet watchdog pages on.
+    await recordTransactionalFailure(env, `receipt:${label}`, msg && msg.to, err);
     return false;
   }
 }

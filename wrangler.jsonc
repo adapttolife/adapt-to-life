@@ -1,8 +1,9 @@
 {
   // Cloudflare Worker for Adapt To Life.
-  // Serves the static site from ./public and handles POST /api/contact in src/index.js,
-  // writing leads to Airtable. Production is published only on the three
-  // custom domains below; review builds use the separate staging environment.
+  // Serves the static site from ./public and handles POST /api/contact and
+  // POST /api/apply in src/index.js, writing both to ClickUp. Production is
+  // published only on the three custom domains below; review builds use the
+  // separate staging environment.
   "name": "adapt-to-life",
   "compatibility_date": "2026-06-24",
   "main": "src/index.js",
@@ -90,7 +91,7 @@
   },
   // Staging preview: a separate Worker (adapt-to-life-staging) on workers.dev for
   // design review before promoting to production. Front-end only — no data bindings
-  // and no cron — so staging can never touch prod Airtable / D1 / R2 / email.
+  // and no cron — so staging can never touch prod ClickUp / D1 / R2 / email.
   "env": {
     "staging": {
       "name": "adapt-to-life-staging",

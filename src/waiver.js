@@ -5,7 +5,7 @@
 // and return an unguessable download link. No external server, no SMTP.
 
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
-import { cfSend, houseShell } from "./email.js";
+import { cfSend, houseShell, recordTransactionalFailure } from "./email.js";
 
 // ---------------------------------------------------------------------------
 // Document model — SINGLE SOURCE OF TRUTH for both the on-screen text and the
@@ -162,6 +162,8 @@ export async function handleWaiver(request, env) {
   try {
     await sendReceiptEmail(env, { to: email, pdfBytes, name, doc, isMinor, minorName });
   } catch (err) {
+    // sendReceiptEmail records its own failures (it swallows them internally).
+    // This guards only against an unexpected throw on the way in.
     console.error("waiver email failed:", err);
   }
 
@@ -342,6 +344,9 @@ async function sendReceiptEmail(env, { to, pdfBytes, name, doc, isMinor, minorNa
     });
   } catch (err) {
     console.error("receipt email failed:", err);
+    // Recorded HERE, not at the call site: this catch swallows the error and
+    // never rethrows, so a hook on the caller's try/catch would be dead code.
+    await recordTransactionalFailure(env, "receipt:waiver", to, err);
   }
 }
 

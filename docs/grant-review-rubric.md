@@ -48,7 +48,13 @@ Kept deliberately short and warm. Tighten only if volume forces it.
 
 The review rubric decides who gets funded. This section decides what someone hears while they wait,
 which at this stage matters more, because **as of 2026-07-29 the fund has made zero grants and holds
-a few hundred dollars.** Every applicant right now is applying to a fund that is still filling.
+a few hundred dollars.** Every applicant right now is applying to a fund whose money is small.
+
+**Scope the scarcity to the fund, never to the organization.** ATL is a recognized 501(c)(3) with an
+EIN and a public determination letter. The federal work is finished. Copy that says "Adapt To Life is
+young" to soften a funding delay gives away standing the org already earned, and it reads especially
+badly near any mention of a pending filing. Say "the Hustle & Heart Fund is new and the money in it
+is small." Name the fund, name the money. Pinned in `test/receipts.test.js`.
 
 - **State the stage, in the receipt, with the real number.** The application receipt reads the live
   fund position from `src/fund.js` and says it plainly. If Givebutter is unreachable the sentence is

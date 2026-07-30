@@ -124,9 +124,15 @@ export async function sendApplyReceipt(env, { name, email, sport, need }) {
 
   const inbox = grantsInbox(env);
 
+  // Say "the Hustle & Heart Fund", never "Adapt To Life", and never a metaphor.
+  // The first draft read "Adapt To Life is a young fund and it is still filling"
+  // and Alec read it as a claim that the ORGANISATION was unfinished, sitting a
+  // paragraph away from talk of pending filings. ATL is a fully recognised
+  // 501(c)(3) with an EIN and a determination letter. What is small is the money.
+  // Name the fund, name the money, and let the figure below do the rest.
   const picture =
     `A person reads every one. Here is the honest picture so you are not left ` +
-    `guessing: Adapt To Life is a young fund and it is still filling.${position} ` +
+    `guessing: the Hustle & Heart Fund is new and the money in it is small.${position} ` +
     `We fund what we can as money comes in, so some requests move quickly and ` +
     `others wait for the fund to catch up. Applying is not a promise of a grant. ` +
     `What we do promise is that a person reads it and that you hear where it stands.`;

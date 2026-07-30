@@ -74,7 +74,16 @@ test("apply receipt states the stage and refuses to promise a grant", async () =
   await sendApplyReceipt(env, { name: "Jordan", email: "j@example.com" });
   const m = sent[0];
   assert.match(m.text, /not a promise of a grant/i, "must not imply funding is coming");
-  assert.match(m.text, /still filling/i, "must name the stage the fund is actually at");
+  assert.match(m.text, /money in it is small/i, "must name what is actually short: the money");
+  // The scarcity is the FUND's, never the organisation's. ATL is a recognised
+  // 501(c)(3) with an EIN and a public determination letter, and copy that blurs
+  // "our fund is small" into "we are not established yet" gives away standing
+  // the org has already earned. Alec misread the first draft exactly that way.
+  assert.match(m.text, /Hustle & Heart Fund is new/i, "scarcity is scoped to the fund by name");
+  assert.ok(
+    !/Adapt To Life is (a )?(young|new)/i.test(m.text),
+    "must never describe the organisation itself as young or unfinished"
+  );
   assert.match(m.html, /not a promise of a grant/i);
 });
 

@@ -24,7 +24,7 @@ Do NOT ask for these at application. Collect only once we intend to fund:
 - [ ] **One real vendor quote** (or invoice/entry-fee page) confirming the actual cost
 - [ ] **Need confirmed** in one sentence: what this unlocks and why cost is the barrier
 - [ ] **Payment routed** per policy below
-- [ ] **Logged** in Airtable: amount, purpose, date, outcome
+- [ ] **Logged** in the ClickUp "Grants Awarded" list: amount, vendor paid, funded from (general fund vs Send 6, so restricted gifts stay separable), quote on file, application URL
 
 ## 3. Payment policy — DECIDED (Alec, adopts KBF exactly)
 

@@ -4,6 +4,7 @@
 
 import { handleWaiver, handleWaiverDownload, handleWaiverVerify, handleWaiverDoc, runDriveBacklog } from "./waiver.js";
 import { sendContactReceipt, sendApplyReceipt } from "./receipts.js";
+import { createApplication } from "./clickup.js";
 import { handleEmail, handleAgentMailApi } from "./agent_mail.js";
 import { handleQr } from "./qr.js";
 
@@ -303,39 +304,21 @@ async function handleApply(request, env, ctx) {
     return json({ ok: false, error: "Please add your name." }, 422);
   }
 
-  const fields = {
-    Name: name,
-    Email: email,
-    Phone: str(data.phone),
-    Sport: str(data.sport),
-    Location: str(data.location),
-    Need: str(data.need),
-    "Estimated Cost": str(data.cost),
-    About: str(data.about),
-    Status: "New",
-    Source: "Website — apply form",
-  };
+  // Applications go to the ClickUp "Hustle & Heart — Applications" list. This is
+  // the tracker ATL actually works from; the Airtable applications table is no
+  // longer written to. See src/clickup.js.
+  const saved = await createApplication(env, {
+    name,
+    email,
+    phone: str(data.phone),
+    sport: str(data.sport),
+    location: str(data.location),
+    need: str(data.need),
+    cost: str(data.cost),
+    about: str(data.about),
+  });
 
-  let res;
-  try {
-    res = await fetch(
-      `https://api.airtable.com/v0/${env.AIRTABLE_BASE_ID}/${env.AIRTABLE_APPLICATIONS_TABLE_ID}`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${env.AIRTABLE_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ records: [{ fields }], typecast: true }),
-      }
-    );
-  } catch (err) {
-    console.error("Airtable apply request failed:", err);
-    return json({ ok: false, error: "Could not save right now. Please email hello@adapttolife.org." }, 502);
-  }
-
-  if (!res.ok) {
-    console.error("Airtable apply error", res.status, await safeText(res));
+  if (!saved.ok) {
     return json({ ok: false, error: "Could not save right now. Please email hello@adapttolife.org." }, 502);
   }
 

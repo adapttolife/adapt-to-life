@@ -49,7 +49,10 @@
     //   cfrun wrangler secret put AIRTABLE_TOKEN
     "AIRTABLE_BASE_ID": "appVPKDdwnOG5qkYG",
     "AIRTABLE_TABLE_ID": "tblhJaZtMY37K7Uio",
-    "AIRTABLE_APPLICATIONS_TABLE_ID": "tbl1Aiy8CId6hIzF6",
+    // Grant applications moved off Airtable to ClickUp, which is the tracker ATL
+    // reviews from. List "Hustle & Heart — Applications" in Team Space -> Adapt
+    // To Life. The token is a secret: cfrun wrangler secret put CLICKUP_TOKEN
+    "CLICKUP_APPLICATIONS_LIST_ID": "901418622126",
     // Compliance mirror: signed releases land in the Airtable "Waivers" table.
     "AIRTABLE_WAIVERS_TABLE_ID": "tbl51GcteN2lAbyN9",
     // Google Shared Drive ("Adapt To Life") for the signed-release archive.

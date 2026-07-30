@@ -38,6 +38,29 @@ The contact form posts JSON to `POST /api/contact`. The Worker validates it (ema
 
 The form's "reaching out as" dropdown maps to the `Type` field, so interested athletes/volunteers and program submissions land in one CRM table, filterable by type.
 
+## Apply form → ClickUp (grant applications)
+
+`/apply` posts to `POST /api/apply` and the Worker creates one task per application
+in the ClickUp list **Hustle & Heart — Applications** (`901418622126`, Team Space →
+Adapt To Life). The page is unchanged from when this wrote to Airtable — only the
+destination moved, because ClickUp is the tracker ATL actually reviews from and a
+record nobody opens is not a record.
+
+- Task name is `Name — Sport`; the description carries every answer verbatim.
+- Custom fields carry Stage (`New`), Applied, Email, Phone, Sport, Location and
+  Amount requested — the last only when the applicant gave an unambiguous figure
+  (see `parseAmount` in `src/clickup.js`). Field ids live in that file.
+- **Last contacted** is the staleness rung. The receipt email promises every
+  applicant they will hear where things stand, so anything sitting in New or
+  Reviewing with a stale Last contacted is a broken promise, not a backlog.
+- The token is a **Worker secret**, never in the repo:
+
+  ```sh
+  op read "op://Stingel/ClickUp API/credential" | cfrun npx wrangler secret put CLICKUP_TOKEN
+  ```
+
+Staging has no ClickUp vars, so a staging deploy can never write an application.
+
 _Roadmap: Beehiiv (newsletter / "Join the list") and Givebutter (donations) are not wired yet._
 
 ## Editing content

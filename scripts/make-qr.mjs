@@ -31,8 +31,10 @@ const OUT = process.env.ATL_QR_OUT || path.join(process.cwd(), 'public/qr');
 
 const args  = process.argv.slice(2);
 const style = (args.find(a => a.startsWith('--style=')) || '--style=frame').split('=')[1];
+// Black and white by default (Alec 2026-07-31). --ink=brand restores cream + orange.
+const ink = (args.find(a => a.startsWith('--ink=')) || '--ink=mono').split('=')[1];
 const slugs = args.filter(a => !a.startsWith('--'));
-if (!slugs.length) { console.error('usage: make-qr.mjs [--style=frame|plain] <slug>...'); process.exit(1); }
+if (!slugs.length) { console.error('usage: make-qr.mjs [--style=frame|plain] [--ink=mono|brand] <slug>...'); process.exit(1); }
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 2200, height: 2600 } });
@@ -40,7 +42,7 @@ let failed = 0;
 
 for (const slug of slugs) {
   const url = BASE + slug;
-  const art = renderCode(url, { style });
+  const art = renderCode(url, { style, ink });
   fs.writeFileSync(path.join(OUT, `brand-${slug}.svg`), art.svg);
 
   // Render at an INTEGER number of pixels per module. 2048px across a 41-module

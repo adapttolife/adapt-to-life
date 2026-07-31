@@ -58,10 +58,28 @@ const MODULE_RADIUS = 0.30;   // of a module, so the dot keeps its shape
 const isEye = (r, c, n) =>
   (r < 7 && c < 7) || (r < 7 && c >= n - 7) || (r >= n - 7 && c < 7);
 
-const eye = (x, y, m) =>
-  `<rect x="${x}" y="${y}" width="${7*m}" height="${7*m}" rx="${m*2.1}" fill="${INK}"/>`
-  + `<rect x="${x+m}" y="${y+m}" width="${5*m}" height="${5*m}" rx="${m*1.5}" fill="#FFFFFF"/>`
-  + `<circle cx="${x+3.5*m}" cy="${y+3.5*m}" r="${m*1.55}" fill="${ORANGE}"/>`;
+// One ink, near-black, by default (Alec 2026-07-31: "go all black and white").
+//
+// This is the cheaper AND the safer version. Single-colour printing costs less
+// on every process that matters here — screen print, laser, thermal, vinyl cut
+// — and it removes the one element measurement had flagged as a press risk: the
+// orange hub's luminance sits near the middle of the range a scanner
+// thresholds on, so a colour shift on cheap CMYK or uncoated stock moved it in
+// the wrong direction. Nothing about the geometry changes, so the wheel still
+// reads as a wheel.
+//
+// The brand palette is one flag away (`--ink=brand`) and still generates.
+const eye = (x, y, m, p) =>
+  `<rect x="${x}" y="${y}" width="${7*m}" height="${7*m}" rx="${m*2.1}" fill="${p.ink}"/>`
+  + `<rect x="${x+m}" y="${y+m}" width="${5*m}" height="${5*m}" rx="${m*1.5}" fill="${p.field}"/>`
+  + `<circle cx="${x+3.5*m}" cy="${y+3.5*m}" r="${m*1.55}" fill="${p.hub}"/>`;
+
+// A palette is the ONLY thing that varies between the two looks. Geometry is
+// shared, so a decode result measured on one carries to the other.
+export const PALETTES = {
+  mono:  { ink: INK, field: '#FFFFFF', hub: INK,    tile: '#FFFFFF', rule: INK },
+  brand: { ink: INK, field: '#FFFFFF', hub: ORANGE, tile: CREAM,     rule: ORANGE },
+};
 
 /**
  * Build the artwork for one code.
@@ -75,7 +93,8 @@ const eye = (x, y, m) =>
  *   widthUnits   full artwork width  (frame style: the cream tile)
  *   heightUnits  full artwork height (frame style: tile + caption band)
  */
-export function renderCode(text, { style = 'frame' } = {}) {
+export function renderCode(text, { style = 'frame', ink = 'mono' } = {}) {
+  const p = PALETTES[ink] || PALETTES.mono;
   const qr = QR.create(text, { errorCorrectionLevel: EC });
   const n = qr.modules.size, d = qr.modules.data;
   const m = 10, quiet = QUIET_MODULES * m;
@@ -86,15 +105,15 @@ export function renderCode(text, { style = 'frame' } = {}) {
     if (!d[r*n+c] || isEye(r, c, n)) continue;
     const x = quiet + c*m, y = quiet + r*m;
     const inset = m * (1 - MODULE_FILL) / 2;
-    body += `<rect x="${x+inset}" y="${y+inset}" width="${m*MODULE_FILL}" height="${m*MODULE_FILL}" rx="${m*MODULE_RADIUS}" fill="${INK}"/>`;
+    body += `<rect x="${x+inset}" y="${y+inset}" width="${m*MODULE_FILL}" height="${m*MODULE_FILL}" rx="${m*MODULE_RADIUS}" fill="${p.ink}"/>`;
   }
-  const eyes = eye(quiet, quiet, m) + eye(quiet+(n-7)*m, quiet, m) + eye(quiet, quiet+(n-7)*m, m);
+  const eyes = eye(quiet, quiet, m, p) + eye(quiet+(n-7)*m, quiet, m, p) + eye(quiet, quiet+(n-7)*m, m, p);
 
   const geom = { modules: n, moduleUnits: m, quietUnits: quiet, codeUnits: dim };
 
   if (style === 'plain') {
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${dim} ${dim}" width="${dim}" height="${dim}">`
-      + `<rect width="${dim}" height="${dim}" fill="#FFFFFF"/>${body}${eyes}</svg>`;
+      + `<rect width="${dim}" height="${dim}" fill="${p.field}"/>${body}${eyes}</svg>`;
     return { svg, ...geom, widthUnits: dim, heightUnits: dim };
   }
 
@@ -102,12 +121,13 @@ export function renderCode(text, { style = 'frame' } = {}) {
   // sit inside a dark layout without ever inverting (principle 4).
   const band = dim * 0.20, H = dim + band, inset = dim * 0.035;
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${dim} ${H}" width="${dim}" height="${H}">`
-    + `<rect width="${dim}" height="${H}" rx="${dim*0.045}" fill="${CREAM}"/>`
-    + `<rect x="${inset}" y="${inset}" width="${dim-inset*2}" height="${dim-inset*2}" rx="${dim*0.02}" fill="#FFFFFF"/>`
+    + `<rect width="${dim}" height="${H}" rx="${dim*0.045}" fill="${p.tile}"/>`
+    + (ink === 'mono' ? `<rect x="0.6" y="0.6" width="${dim-1.2}" height="${H-1.2}" rx="${dim*0.045}" fill="none" stroke="${p.ink}" stroke-width="1.2" stroke-opacity="0.28"/>` : '')
+    + `<rect x="${inset}" y="${inset}" width="${dim-inset*2}" height="${dim-inset*2}" rx="${dim*0.02}" fill="${p.field}"/>`
     + body + eyes
-    + `<rect x="${dim*0.34}" y="${dim+band*0.10}" width="${dim*0.32}" height="${dim*0.007}" rx="${dim*0.004}" fill="${ORANGE}"/>`
+    + `<rect x="${dim*0.34}" y="${dim+band*0.10}" width="${dim*0.32}" height="${dim*0.007}" rx="${dim*0.004}" fill="${p.rule}"/>`
     + `<text x="${dim/2}" y="${dim+band*0.68}" text-anchor="middle" font-family="'Space Mono',ui-monospace,monospace"`
-    + ` font-weight="700" font-size="${band*0.34}" letter-spacing="${band*0.08}" fill="${INK}">SCAN TO GIVE</text>`
+    + ` font-weight="700" font-size="${band*0.34}" letter-spacing="${band*0.08}" fill="${p.ink}">SCAN TO GIVE</text>`
     + `</svg>`;
   return { svg, ...geom, widthUnits: dim, heightUnits: H };
 }

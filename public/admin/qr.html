@@ -25,7 +25,7 @@
   a{ color:var(--orange-ink); }
   .wrap{ max-width:1180px; margin:0 auto; padding:clamp(1.5rem,4vw,3rem) clamp(1rem,3vw,2rem) 5rem; }
 
-  header.top{ display:flex; align-items:flex-end; justify-content:space-between; gap:1.5rem; flex-wrap:wrap; margin-bottom:0.6rem; }
+  header.top{ display:flex; align-items:baseline; justify-content:space-between; gap:0.6rem 1.5rem; flex-wrap:wrap; margin-bottom:0.6rem; }
   h1{ font-family:'Newsreader',serif; font-weight:500; font-size:clamp(1.8rem,3.4vw,2.5rem); margin:0; letter-spacing:-0.01em; }
   .sub{ color:var(--ink-soft); max-width:60ch; margin:0.5rem 0 0; }
   .who{ font-family:'Space Mono',monospace; font-size:0.76rem; color:var(--ink-soft); white-space:nowrap; }
@@ -94,8 +94,32 @@
   .hist{ font-size:0.82rem; }
   .hist td{ padding:0.6rem 1rem; }
   .hist .when{ font-family:'Space Mono',monospace; font-size:0.72rem; color:#8A8377; white-space:nowrap; }
+  /* On a phone the table has to stop being a table. The whole point of this
+     page is repointing a code from wherever you are standing — a tournament,
+     a print shop — and in the grid layout the Raised column and both action
+     buttons fell off the right edge, which put the only two buttons that
+     matter out of reach on the device most likely to be used. Each row
+     becomes a card, every cell keeps its column name, and the actions sit at
+     the bottom where a thumb is. */
   @media (max-width:820px){
-    th.hide, td.hide{ display:none; }
+    thead{ display:none; }
+    table, tbody, tr, td{ display:block; width:100%; }
+    tr{ border-bottom:1px solid var(--line); padding:0.35rem 0 0.75rem; }
+    tr:last-child{ border-bottom:none; }
+    td{ border:none; padding:0.3rem 1rem; display:flex; gap:0.9rem; align-items:baseline; }
+    td[data-label]::before{
+      content:attr(data-label); flex:0 0 5.6rem;
+      font-size:0.64rem; letter-spacing:0.09em; text-transform:uppercase;
+      color:#8A8377; font-weight:700; padding-top:0.2rem;
+    }
+    td.cell-code{ display:block; padding-top:0.85rem; }
+    td.cell-code::before{ content:none; }
+    .actions{ justify-content:flex-start; padding-top:0.3rem; }
+    .actions button{ flex:1; padding:0.55rem 0.6rem; font-size:0.84rem; }
+    .dest{ font-size:0.78rem; }
+    .hist td{ padding:0.25rem 1rem; }
+    .hist tr{ padding:0.7rem 0; }
+    .hist td:first-child{ padding-bottom:0.35rem; }
   }
 </style>
 </head>
@@ -182,6 +206,9 @@
   function money(n) {
     return '$' + Number(n || 0).toLocaleString('en-US', { maximumFractionDigits: 0 });
   }
+  function plural(n, word) {
+    return n + ' ' + word + (n === 1 ? '' : 's');
+  }
   function ago(iso) {
     if (!iso) return 'never';
     var d = Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
@@ -208,18 +235,18 @@
       var s = c.scans, m = c.money;
       var phones = (s.ios || 0) + '&nbsp;iOS &middot; ' + (s.android || 0) + '&nbsp;Android';
       return '<tr class="' + (c.active ? '' : 'retired') + '">'
-        + '<td><div class="slug">/q/' + esc(c.slug) + '</div>'
+        + '<td class="cell-code"><div class="slug">/q/' + esc(c.slug) + '</div>'
         + '<div class="label">' + esc(c.label) + (c.active ? '' : ' &mdash; retired') + '</div>'
         + (c.surface ? '<span class="surface">' + esc(c.surface) + '</span>' : '')
         + '</td>'
-        + '<td><span class="dest">' + esc(c.dest) + '</span>'
+        + '<td data-label="Points at"><span class="dest">' + esc(c.dest) + '</span>'
         + (c.rule === 'campaign-follow' ? '<span class="rule">follows the live drive</span>' : '')
         + '</td>'
-        + '<td><span class="num' + (s.scans ? '' : ' zero') + '">' + (s.scans || 0) + '</span>'
-        + '<div class="sub2">' + (s.days || 0) + ' days &middot; ' + ago(s.last_scan) + '</div></td>'
-        + '<td class="hide"><div class="sub2">' + phones + '</div></td>'
-        + '<td><span class="num money' + (m.dollars ? '' : ' zero') + '">' + money(m.dollars) + '</span>'
-        + '<div class="sub2">' + (m.gifts || 0) + ' gift' + (m.gifts === 1 ? '' : 's') + '</div></td>'
+        + '<td data-label="Scans"><span class="num' + (s.scans ? '' : ' zero') + '">' + (s.scans || 0) + '</span>'
+        + '<div class="sub2">' + plural(s.days || 0, 'day') + ' &middot; ' + ago(s.last_scan) + '</div></td>'
+        + '<td class="hide" data-label="Phones"><div class="sub2">' + phones + '</div></td>'
+        + '<td data-label="Raised"><span class="num money' + (m.dollars ? '' : ' zero') + '">' + money(m.dollars) + '</span>'
+        + '<div class="sub2">' + plural(m.gifts || 0, 'gift') + '</div></td>'
         + '<td><div class="actions">'
         + '<button class="btn-ghost btn-sm" data-edit="' + esc(c.slug) + '">Change</button>'
         + '<button class="btn-ghost btn-sm" data-toggle="' + esc(c.slug) + '">' + (c.active ? 'Retire' : 'Restore') + '</button>'

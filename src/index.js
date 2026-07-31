@@ -105,12 +105,24 @@ export default {
       return handleQr(request, env, url, ctx);
     }
 
-    // Spec 116 P2: the QR admin API, behind the "ATL QR Admin" Cloudflare
-    // Access application on adapttolife.org/admin. Access gates the whole path
-    // at the edge; src/qr_admin.js verifies the Access JWT again here, so the
-    // API cannot be reached by deleting or re-scoping the Access app.
-    if (url.pathname.startsWith("/admin/api/")) {
-      return handleAdmin(request, env, url);
+    // Spec 116 P2: the QR admin, behind the "ATL QR Admin" Cloudflare Access
+    // application on adapttolife.org/admin.
+    //
+    // Production-only, and the gate has to live here rather than rely on Access
+    // alone: an Access application is bound to a HOSTNAME, and the staging
+    // Worker answers on workers.dev where no such application exists. Assets
+    // normally serve before the Worker, so without this (and the matching
+    // run_worker_first in wrangler.jsonc) the admin page would be readable by
+    // anyone who guessed the staging URL. The API itself already fails closed
+    // on a missing Access JWT; this closes the page too.
+    if (url.pathname.startsWith("/admin")) {
+      if (env.STAGING === "1") return new Response("Not found", { status: 404 });
+      // Access gates the edge; src/qr_admin.js verifies the JWT again here, so
+      // the API cannot be reached by deleting or re-scoping the Access app.
+      if (url.pathname.startsWith("/admin/api/")) {
+        return handleAdmin(request, env, url);
+      }
+      // The page itself is a static asset, served below.
     }
 
     // Reports have moved to their own Worker on reports.amelioration.is, behind

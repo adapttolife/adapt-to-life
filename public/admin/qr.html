@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<meta name="robots" content="noindex, nofollow">
+<title>QR codes | Adapt To Life</title>
+<link rel="icon" type="image/svg+xml" href="/images/atl-logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1C1A15; --ink-soft:#3C382F; --ink-warm:#0C0C0E;
+    --orange:#E8572A; --orange-ink:#BD4418;
+    --cream:#F7F4EE; --cream-mute:#CFC9BD; --line:rgba(28,26,21,0.14);
+    --good:#2E7D5B; --warn:#8A6D1F;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; background:var(--cream); color:var(--ink);
+    font-family:'Hanken Grotesk',system-ui,sans-serif; font-size:15px; line-height:1.5;
+  }
+  a{ color:var(--orange-ink); }
+  .wrap{ max-width:1180px; margin:0 auto; padding:clamp(1.5rem,4vw,3rem) clamp(1rem,3vw,2rem) 5rem; }
+
+  header.top{ display:flex; align-items:flex-end; justify-content:space-between; gap:1.5rem; flex-wrap:wrap; margin-bottom:0.6rem; }
+  h1{ font-family:'Newsreader',serif; font-weight:500; font-size:clamp(1.8rem,3.4vw,2.5rem); margin:0; letter-spacing:-0.01em; }
+  .sub{ color:var(--ink-soft); max-width:60ch; margin:0.5rem 0 0; }
+  .who{ font-family:'Space Mono',monospace; font-size:0.76rem; color:var(--ink-soft); white-space:nowrap; }
+
+  .bar{ display:flex; gap:0.6rem; flex-wrap:wrap; margin:1.6rem 0 1.1rem; align-items:center; }
+  button{
+    font:inherit; font-weight:600; font-size:0.86rem; cursor:pointer;
+    border-radius:9px; padding:0.5rem 0.95rem; border:1.5px solid transparent; transition:.14s;
+  }
+  .btn-primary{ background:var(--orange-ink); color:#fff; }
+  .btn-primary:hover{ background:#A33A13; }
+  .btn-ghost{ background:transparent; color:var(--ink); border-color:rgba(28,26,21,0.26); }
+  .btn-ghost:hover{ border-color:var(--ink); }
+  .btn-sm{ padding:0.32rem 0.6rem; font-size:0.78rem; border-radius:7px; }
+  button:disabled{ opacity:0.5; cursor:default; }
+
+  .card{ background:#fff; border:1px solid var(--line); border-radius:14px; overflow:hidden; }
+  table{ width:100%; border-collapse:collapse; }
+  th{
+    text-align:left; font-size:0.68rem; letter-spacing:0.09em; text-transform:uppercase;
+    color:#8A8377; font-weight:700; padding:0.85rem 1rem; border-bottom:1px solid var(--line); white-space:nowrap;
+  }
+  td{ padding:0.85rem 1rem; border-bottom:1px solid rgba(28,26,21,0.07); vertical-align:top; }
+  tr:last-child td{ border-bottom:none; }
+  tr.retired{ background:#FBFAF7; }
+  tr.retired .slug{ text-decoration:line-through; text-decoration-color:var(--cream-mute); }
+
+  .slug{ font-family:'Space Mono',monospace; font-weight:700; font-size:0.9rem; }
+  .label{ color:var(--ink-soft); font-size:0.82rem; margin-top:0.15rem; }
+  .surface{ display:inline-block; font-family:'Space Mono',monospace; font-size:0.66rem; letter-spacing:0.04em;
+    background:var(--cream); border:1px solid var(--line); border-radius:5px; padding:0.06rem 0.36rem; color:#6E685C; margin-top:0.3rem; }
+  .dest{ font-family:'Space Mono',monospace; font-size:0.82rem; word-break:break-all; }
+  .rule{ display:inline-block; font-size:0.66rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase;
+    color:var(--warn); background:rgba(138,109,31,0.1); border-radius:5px; padding:0.1rem 0.4rem; margin-left:0.35rem; }
+  .num{ font-family:'Space Mono',monospace; font-size:0.95rem; font-weight:700; }
+  .num.zero{ color:var(--cream-mute); font-weight:400; }
+  .money{ color:var(--good); }
+  .sub2{ font-size:0.72rem; color:#8A8377; margin-top:0.15rem; white-space:nowrap; }
+  .actions{ display:flex; gap:0.35rem; flex-wrap:wrap; justify-content:flex-end; }
+
+  input, select, textarea{
+    font:inherit; font-size:0.86rem; width:100%; padding:0.45rem 0.6rem;
+    border:1.5px solid var(--line); border-radius:8px; background:#fff; color:var(--ink);
+  }
+  input:focus, select:focus, textarea:focus{ outline:2px solid var(--orange); outline-offset:1px; border-color:transparent; }
+  .field{ margin-bottom:0.8rem; }
+  .field label{ display:block; font-size:0.72rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:#8A8377; margin-bottom:0.28rem; }
+  .field .hint{ font-size:0.74rem; color:#8A8377; margin-top:0.28rem; }
+
+  dialog{ border:none; border-radius:16px; padding:0; max-width:560px; width:calc(100% - 2rem); box-shadow:0 30px 80px rgba(0,0,0,0.3); }
+  dialog::backdrop{ background:rgba(12,12,14,0.5); }
+  .dlg-in{ padding:clamp(1.3rem,3vw,1.8rem); }
+  .dlg-in h2{ font-family:'Newsreader',serif; font-weight:500; font-size:1.4rem; margin:0 0 0.3rem; }
+  .dlg-in p.note{ color:var(--ink-soft); font-size:0.85rem; margin:0 0 1.2rem; }
+  .dlg-foot{ display:flex; gap:0.6rem; justify-content:flex-end; margin-top:1.3rem; }
+
+  .flash{ border-radius:10px; padding:0.7rem 0.95rem; font-size:0.86rem; margin-bottom:1rem; display:none; }
+  .flash.ok{ display:block; background:rgba(46,125,91,0.1); color:var(--good); border:1px solid rgba(46,125,91,0.25); }
+  .flash.err{ display:block; background:rgba(189,68,24,0.09); color:var(--orange-ink); border:1px solid rgba(189,68,24,0.25); }
+
+  .empty{ padding:3rem 1rem; text-align:center; color:#8A8377; }
+  .why{ background:#fff; border:1px solid var(--line); border-left:3px solid var(--orange); border-radius:10px;
+        padding:0.9rem 1.1rem; font-size:0.86rem; color:var(--ink-soft); margin:1.2rem 0 0; }
+  .why b{ color:var(--ink); }
+  h2.sec{ font-family:'Newsreader',serif; font-weight:500; font-size:1.3rem; margin:2.6rem 0 0.8rem; }
+  .hist{ font-size:0.82rem; }
+  .hist td{ padding:0.6rem 1rem; }
+  .hist .when{ font-family:'Space Mono',monospace; font-size:0.72rem; color:#8A8377; white-space:nowrap; }
+  @media (max-width:820px){
+    th.hide, td.hide{ display:none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <h1>QR codes</h1>
+      <p class="sub">Every printed code points here first, so you can change where it sends people without reprinting anything. A change is live within a minute.</p>
+    </div>
+    <div class="who" id="who"></div>
+  </header>
+
+  <div class="why">
+    <b>The rule that protects you:</b> a slug is printed matter. Codes are minted and retired, never reused &mdash; because a retired sticker is still out there, and handing its slug to something else would silently send those people somewhere wrong. Retired codes keep redirecting; they just stop being offered for new print runs.
+  </div>
+
+  <div class="bar">
+    <button class="btn-primary" id="mint">Mint a new code</button>
+    <button class="btn-ghost" id="refresh">Refresh</button>
+    <button class="btn-ghost" id="sync">Pull gifts from Givebutter</button>
+  </div>
+
+  <div class="flash" id="flash"></div>
+
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Points at</th>
+          <th>Scans</th>
+          <th class="hide">Phones</th>
+          <th>Raised</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="rows">
+        <tr><td colspan="6" class="empty">Loading&hellip;</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="sec">What changed</h2>
+  <div class="card">
+    <table class="hist">
+      <tbody id="hist">
+        <tr><td colspan="4" class="empty">Loading&hellip;</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<dialog id="dlg">
+  <form method="dialog" class="dlg-in" id="dlgForm">
+    <h2 id="dlgTitle">Mint a new code</h2>
+    <p class="note" id="dlgNote"></p>
+    <div id="dlgFields"></div>
+    <div class="dlg-foot">
+      <button class="btn-ghost" value="cancel" type="submit">Cancel</button>
+      <button class="btn-primary" id="dlgSave" type="button">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+(function () {
+  var API = '/admin/api';
+  var codes = [];
+  var dlg = document.getElementById('dlg');
+  var flash = document.getElementById('flash');
+
+  function say(msg, kind) {
+    flash.className = 'flash ' + (kind || 'ok');
+    flash.textContent = msg;
+    if (kind !== 'err') setTimeout(function () { flash.className = 'flash'; }, 6000);
+  }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function money(n) {
+    return '$' + Number(n || 0).toLocaleString('en-US', { maximumFractionDigits: 0 });
+  }
+  function ago(iso) {
+    if (!iso) return 'never';
+    var d = Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
+    if (d <= 0) return 'today';
+    if (d === 1) return 'yesterday';
+    if (d < 30) return d + ' days ago';
+    return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  async function api(path, opts) {
+    var res = await fetch(API + path, Object.assign({ headers: { 'Content-Type': 'application/json' } }, opts || {}));
+    var body = await res.json().catch(function () { return { error: 'unreadable response' }; });
+    if (!res.ok || body.ok === false) throw new Error(body.error || ('HTTP ' + res.status));
+    return body;
+  }
+
+  function render() {
+    var tb = document.getElementById('rows');
+    if (!codes.length) {
+      tb.innerHTML = '<tr><td colspan="6" class="empty">No codes yet. Mint one to get started.</td></tr>';
+      return;
+    }
+    tb.innerHTML = codes.map(function (c) {
+      var s = c.scans, m = c.money;
+      var phones = (s.ios || 0) + '&nbsp;iOS &middot; ' + (s.android || 0) + '&nbsp;Android';
+      return '<tr class="' + (c.active ? '' : 'retired') + '">'
+        + '<td><div class="slug">/q/' + esc(c.slug) + '</div>'
+        + '<div class="label">' + esc(c.label) + (c.active ? '' : ' &mdash; retired') + '</div>'
+        + (c.surface ? '<span class="surface">' + esc(c.surface) + '</span>' : '')
+        + '</td>'
+        + '<td><span class="dest">' + esc(c.dest) + '</span>'
+        + (c.rule === 'campaign-follow' ? '<span class="rule">follows the live drive</span>' : '')
+        + '</td>'
+        + '<td><span class="num' + (s.scans ? '' : ' zero') + '">' + (s.scans || 0) + '</span>'
+        + '<div class="sub2">' + (s.days || 0) + ' days &middot; ' + ago(s.last_scan) + '</div></td>'
+        + '<td class="hide"><div class="sub2">' + phones + '</div></td>'
+        + '<td><span class="num money' + (m.dollars ? '' : ' zero') + '">' + money(m.dollars) + '</span>'
+        + '<div class="sub2">' + (m.gifts || 0) + ' gift' + (m.gifts === 1 ? '' : 's') + '</div></td>'
+        + '<td><div class="actions">'
+        + '<button class="btn-ghost btn-sm" data-edit="' + esc(c.slug) + '">Change</button>'
+        + '<button class="btn-ghost btn-sm" data-toggle="' + esc(c.slug) + '">' + (c.active ? 'Retire' : 'Restore') + '</button>'
+        + '</div></td>'
+        + '</tr>';
+    }).join('');
+  }
+
+  function renderHistory(events) {
+    var tb = document.getElementById('hist');
+    if (!events.length) {
+      tb.innerHTML = '<tr><td colspan="4" class="empty">Nothing yet.</td></tr>';
+      return;
+    }
+    tb.innerHTML = events.map(function (e) {
+      var what = e.action === 'repoint'
+        ? '<b>/q/' + esc(e.slug) + '</b> repointed from <code>' + esc(e.old_dest) + '</code> to <code>' + esc(e.new_dest) + '</code>'
+        : '<b>/q/' + esc(e.slug) + '</b> ' + esc(e.action) + (e.new_dest ? ' &rarr; <code>' + esc(e.new_dest) + '</code>' : '');
+      return '<tr><td class="when">' + new Date(e.at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
+        + '</td><td>' + what + '</td><td class="when">' + esc(e.actor || '') + '</td></tr>';
+    }).join('');
+  }
+
+  async function load() {
+    try {
+      var d = await api('/codes');
+      codes = d.codes;
+      document.getElementById('who').textContent = 'signed in as ' + d.you;
+      render();
+      var h = await api('/history');
+      renderHistory(h.events);
+    } catch (err) {
+      say(err.message, 'err');
+      document.getElementById('rows').innerHTML = '<tr><td colspan="6" class="empty">Could not load. ' + esc(err.message) + '</td></tr>';
+    }
+  }
+
+  function field(name, label, value, hint, type) {
+    return '<div class="field"><label for="f_' + name + '">' + label + '</label>'
+      + (type === 'select'
+        ? '<select id="f_' + name + '"><option value="">Always this destination</option>'
+          + '<option value="campaign-follow"' + (value === 'campaign-follow' ? ' selected' : '') + '>Follow whichever drive is open today</option></select>'
+        : '<input id="f_' + name + '" value="' + esc(value || '') + '">')
+      + (hint ? '<div class="hint">' + hint + '</div>' : '') + '</div>';
+  }
+
+  function openMint() {
+    document.getElementById('dlgTitle').textContent = 'Mint a new code';
+    document.getElementById('dlgNote').innerHTML = 'The slug becomes the printed URL and can never be changed or reused. Everything else can.';
+    document.getElementById('dlgFields').innerHTML =
+        field('slug', 'Slug', '', 'Lowercase letters, numbers and hyphens. The code will print as <code>adapttolife.org/q/&lt;slug&gt;</code>.')
+      + field('label', 'Label', '', 'What you call it. Shown only here.')
+      + field('dest', 'Points at', '/donate', 'A path on the site like <code>/send-6</code>, or a full https:// link for a vendor.')
+      + field('surface', 'Surface', 'print', 'The physical thing it goes on. This becomes the channel name in Givebutter.')
+      + field('rule', 'Routing', '', '', 'select');
+    document.getElementById('dlgSave').onclick = async function () {
+      try {
+        var body = {
+          slug: document.getElementById('f_slug').value.trim().toLowerCase(),
+          label: document.getElementById('f_label').value.trim(),
+          dest: document.getElementById('f_dest').value.trim(),
+          surface: document.getElementById('f_surface').value.trim(),
+          rule: document.getElementById('f_rule').value
+        };
+        var r = await api('/codes', { method: 'POST', body: JSON.stringify(body) });
+        dlg.close();
+        say('Minted ' + r.url + ' — generate the artwork with: node scripts/make-qr.mjs ' + body.slug);
+        load();
+      } catch (err) { say(err.message, 'err'); }
+    };
+    dlg.showModal();
+  }
+
+  function openEdit(slug) {
+    var c = codes.filter(function (x) { return x.slug === slug; })[0];
+    if (!c) return;
+    document.getElementById('dlgTitle').textContent = 'Change /q/' + c.slug;
+    document.getElementById('dlgNote').innerHTML = 'Anything already printed keeps working. Only where it sends people changes, and it takes effect within a minute.';
+    document.getElementById('dlgFields').innerHTML =
+        field('dest', 'Points at', c.dest, 'A path on the site like <code>/send-6</code>, or a full https:// link for a vendor.')
+      + field('label', 'Label', c.label, '')
+      + field('surface', 'Surface', c.surface, 'Becomes the channel name in Givebutter.')
+      + field('rule', 'Routing', c.rule, 'Following the live drive means this code goes wherever the open drive is, and falls back to the destination above when none is open.', 'select');
+    document.getElementById('dlgSave').onclick = async function () {
+      try {
+        await api('/codes/' + slug, { method: 'PATCH', body: JSON.stringify({
+          dest: document.getElementById('f_dest').value.trim(),
+          label: document.getElementById('f_label').value.trim(),
+          surface: document.getElementById('f_surface').value.trim(),
+          rule: document.getElementById('f_rule').value
+        }) });
+        dlg.close();
+        say('/q/' + slug + ' updated. Live within a minute — no reprint needed.');
+        load();
+      } catch (err) { say(err.message, 'err'); }
+    };
+    dlg.showModal();
+  }
+
+  document.getElementById('mint').onclick = openMint;
+  document.getElementById('refresh').onclick = load;
+  document.getElementById('sync').onclick = async function () {
+    var b = this;
+    b.disabled = true; b.textContent = 'Pulling…';
+    try {
+      var r = await api('/sync', { method: 'POST' });
+      say('Read ' + r.result.scanned + ' transactions, ' + r.result.written + ' carried a QR code.');
+      load();
+    } catch (err) { say(err.message, 'err'); }
+    b.disabled = false; b.textContent = 'Pull gifts from Givebutter';
+  };
+
+  document.getElementById('rows').addEventListener('click', async function (e) {
+    var edit = e.target.getAttribute('data-edit');
+    if (edit) return openEdit(edit);
+    var slug = e.target.getAttribute('data-toggle');
+    if (!slug) return;
+    var c = codes.filter(function (x) { return x.slug === slug; })[0];
+    var msg = c.active
+      ? 'Retire /q/' + slug + '?\n\nAnything already printed KEEPS WORKING and keeps redirecting. It just stops being offered for new print runs.'
+      : 'Put /q/' + slug + ' back in service?';
+    if (!confirm(msg)) return;
+    try {
+      await api('/codes/' + slug, { method: 'PATCH', body: JSON.stringify({ active: !c.active }) });
+      say('/q/' + slug + (c.active ? ' retired. Existing stickers still redirect.' : ' restored.'));
+      load();
+    } catch (err) { say(err.message, 'err'); }
+  });
+
+  load();
+})();
+</script>
+</body>
+</html>

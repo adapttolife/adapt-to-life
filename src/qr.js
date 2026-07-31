@@ -33,24 +33,32 @@ const SEED = {
   popcorn: { to: "/popcorn", label: "Popcorn drive", surface: "print" },
 };
 
-// Codes are read on every scan, so they are cached in the isolate. The TTL is
-// the only thing standing between "repoint takes effect instantly" and a D1
-// read on every redirect; 30s keeps the redirect fast AND honours the spec's
-// 60-second repoint criterion with margin. Do not raise it without moving that
-// acceptance criterion too.
-const CODES_TTL_MS = 30_000;
-const CAMPAIGNS_TTL_MS = 300_000;
-
-let codesCache = { at: 0, map: null };
-let campaignsCache = { at: 0, data: null };
+// The codes are read from D1 on EVERY redirect, deliberately.
+//
+// The first cut of this cached them in the isolate for 30 seconds, and it was
+// wrong in a way that took a production drill to see. In a Workers isolate,
+// Date.now() is frozen at the last I/O the isolate performed — it does not
+// advance while the isolate sits idle. So a TTL measured with Date.now(), read
+// BEFORE the request does any I/O, can compare a fresh cache against a clock
+// that stopped when the cache was filled. On a quiet isolate that comparison
+// never expires, and the sticker keeps pointing at the old destination
+// forever, silently. Measured on production 2026-07-31: a code repointed and
+// retired in D1 still served its ORIGINAL destination, and the scans it logged
+// were stamped two minutes in the past by the same frozen clock.
+//
+// A read per scan is the right price. QR traffic is human-paced, the query is
+// a primary-key table scan of a handful of rows, and the alternative is a
+// wrong redirect nobody can see. The only cache kept is last-known-good, used
+// solely when D1 is unreachable — it has no TTL because a stale destination
+// beats no destination for someone standing in front of a sticker.
+let lastGood = null;
 
 export function _resetCaches() {
-  codesCache = { at: 0, map: null };
-  campaignsCache = { at: 0, data: null };
+  lastGood = null;
+  campaigns = null;
 }
 
-async function loadCodes(env, now) {
-  if (codesCache.map && now - codesCache.at < CODES_TTL_MS) return codesCache.map;
+async function loadCodes(env) {
   try {
     if (!env.WAIVERS_DB) return null;
     const { results } = await env.WAIVERS_DB.prepare(
@@ -58,27 +66,31 @@ async function loadCodes(env, now) {
     ).all();
     const map = new Map();
     for (const r of results || []) map.set(r.slug, r);
-    codesCache = { at: now, map };
+    lastGood = map;
     return map;
   } catch (err) {
-    // Serving the seed is strictly better than serving an error to someone
-    // standing in front of a sticker.
-    console.error("qr: codes load failed, falling back to seed:", err);
-    return null;
+    // Serving the last good answer, or the seed, is strictly better than
+    // serving an error to someone standing in front of a sticker.
+    console.error("qr: codes load failed, falling back:", err);
+    return lastGood;
   }
 }
 
 // campaign-follow reads the same file the site's campaign band reads, so a
 // drive's dates exist in exactly one place. /popcorn already works this way.
-async function loadCampaigns(env, origin, now) {
-  if (campaignsCache.data && now - campaignsCache.at < CAMPAIGNS_TTL_MS) return campaignsCache.data;
+// Held for the life of the isolate rather than on a timer, for the same reason
+// as above — and this one is a static asset that only changes on deploy, which
+// replaces the isolate anyway.
+let campaigns = null;
+
+async function loadCampaigns(env, origin) {
+  if (campaigns) return campaigns;
   try {
     if (!env.ASSETS) return null;
     const res = await env.ASSETS.fetch(new Request(`${origin}/data/campaigns.json`));
     if (!res.ok) return null;
-    const data = await res.json();
-    campaignsCache = { at: now, data };
-    return data;
+    campaigns = await res.json();
+    return campaigns;
   } catch (err) {
     console.error("qr: campaigns load failed:", err);
     return null;
@@ -157,10 +169,9 @@ export function attributionParams(slug, surface, known) {
 
 // Kept deliberately small: a redirect that has to think is a redirect that breaks.
 export async function handleQr(request, env, url, ctx) {
-  const now = Date.now();
   const slug = url.pathname.replace(/^\/q\//, "").replace(/\/+$/, "").toLowerCase();
 
-  const map = await loadCodes(env, now);
+  const map = await loadCodes(env);
   const row = map ? map.get(slug) : null;
   const seed = SEED[slug];
   // A row that exists but is retired still redirects (D4) — it just stops being
@@ -168,12 +179,16 @@ export async function handleQr(request, env, url, ctx) {
   const entry = row || (seed ? { dest: seed.to, label: seed.label, surface: seed.surface, active: 1 } : null);
   const known = Boolean(entry);
 
+  // Read the clock only AFTER the D1 read above. Before any I/O, a Workers
+  // isolate reports the time of its last I/O, which can be minutes stale.
+  const now = Date.now();
+
   let dest = "/donate";
   if (entry) {
-    const campaigns = entry.rule === "campaign-follow"
-      ? await loadCampaigns(env, url.origin, now)
+    const drives = entry.rule === "campaign-follow"
+      ? await loadCampaigns(env, url.origin)
       : null;
-    dest = resolveDest(entry, campaigns, chicagoToday(now));
+    dest = resolveDest(entry, drives, chicagoToday(now));
   }
 
   const target = new URL(dest, url.origin);
@@ -188,7 +203,7 @@ export async function handleQr(request, env, url, ctx) {
 
   if (ctx && typeof ctx.waitUntil === "function") {
     const kind = !known ? "unknown" : (row && row.active === 0 ? "retired" : "known");
-    ctx.waitUntil(countScan(env, request, slug, kind, now));
+    ctx.waitUntil(countScan(env, request, slug, kind));
   }
 
   return new Response(null, {
@@ -202,18 +217,20 @@ export async function handleQr(request, env, url, ctx) {
   });
 }
 
-async function countScan(env, request, slug, kind, now) {
+async function countScan(env, request, slug, kind) {
   try {
     if (!env.WAIVERS_DB) return; // staging carries no data bindings, by design
     const cf = request && request.cf ? request.cf : {};
+    // The DATABASE stamps the time, not the isolate. A Worker's Date.now() is
+    // frozen at its last I/O, which put the first production scans two minutes
+    // in the past; SQLite's clock is the one signal here that always moves.
     await env.WAIVERS_DB.prepare(
       `INSERT INTO qr_scans (slug, kind, scanned_at, country, region, city, device, referrer)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+       VALUES (?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now'), ?, ?, ?, ?, ?)`
     )
       .bind(
         slug,
         kind,
-        new Date(now).toISOString(),
         cf.country || null,
         cf.region || null,
         cf.city || null,

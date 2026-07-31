@@ -261,6 +261,35 @@ function withToken(token) {
   });
 }
 
+// Access sits in front of /admin on production, so a live probe from outside
+// can only ever see the login redirect — it cannot tell "the page serves" from
+// "the page 404s once you are through the door". Alec logging in and landing on
+// a 404 would be the first anyone knew. So the routing is asserted here.
+const worker = (await import("../src/index.js")).default;
+const ASSET_MARKER = "THE-ADMIN-PAGE";
+const siteEnv = (extra = {}) => ({
+  ASSETS: { fetch: async () => new Response(ASSET_MARKER, { status: 200 }) },
+  ...extra,
+});
+
+test("on production /admin/qr falls through to the page itself", async () => {
+  const res = await worker.fetch(
+    new Request("https://adapttolife.org/admin/qr"), siteEnv(), { waitUntil() {} }
+  );
+  assert.equal(res.status, 200);
+  assert.equal(await res.text(), ASSET_MARKER, "Access lets you in and there must be a page there");
+});
+
+test("on staging /admin is 404 — Access cannot protect a workers.dev host", async () => {
+  for (const path of ["/admin/qr", "/admin/api/codes", "/admin"]) {
+    const res = await worker.fetch(
+      new Request(`https://adapt-to-life-staging.workers.dev${path}`),
+      siteEnv({ STAGING: "1" }), { waitUntil() {} }
+    );
+    assert.equal(res.status, 404, `${path} must not exist on staging`);
+  }
+});
+
 test("no Access token is not an identity", async () => {
   assert.equal(await verifyAccess(withToken(null)), null);
 });

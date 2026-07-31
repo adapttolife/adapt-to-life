@@ -65,11 +65,12 @@ const mm = (v) => {
 
 const slugs = args.filter((a) => !a.startsWith('--'));
 if (slugs.length !== 1) {
-  console.error('usage: make-qr-sheet.mjs <slug> --size=45mm [--sheet=letter|a4] [--style=frame|plain] [--bleed=0] [--gutter=6mm] [--copies=auto]');
+  console.error('usage: make-qr-sheet.mjs <slug> --size=45mm [--sheet=letter|a4] [--style=frame|plain] [--ink=mono|brand] [--bleed=0] [--gutter=6mm] [--copies=auto]');
   process.exit(1);
 }
 const slug   = slugs[0];
 const style  = flag('style', 'frame');
+const ink    = flag('ink', 'mono');   // black and white by default
 const sheet  = SHEETS[flag('sheet', 'letter')];
 const size   = mm(flag('size', '45mm'));
 const bleed  = mm(flag('bleed', '0'));
@@ -81,7 +82,7 @@ const keepRaster = args.includes('--keep-raster');
 if (!sheet) { console.error('unknown --sheet'); process.exit(1); }
 
 const url = BASE + slug;
-const art = renderCode(url, { style });
+const art = renderCode(url, { style, ink });
 
 // ---- geometry, in millimetres -------------------------------------------
 const pieceW = size;
@@ -112,7 +113,7 @@ const fmt = (n) => `${n.toFixed(2)}mm`;
 const inches = (n) => `${(n / 25.4).toFixed(2)}in`;
 
 console.log(`\n  /q/${slug}  →  ${url}`);
-console.log(`  ${sheet.label} · ${style} · ${copies} of ${perSheet} positions (${cols}×${rows})\n`);
+console.log(`  ${sheet.label} · ${style} · ${ink} · ${copies} of ${perSheet} positions (${cols}×${rows})\n`);
 console.log(`  finished piece   ${fmt(pieceW)} × ${fmt(pieceH)}   (${inches(pieceW)} × ${inches(pieceH)})`);
 console.log(`  symbol           ${fmt(symbolMm)}   ${art.modules}×${art.modules} modules`);
 console.log(`  one module       ${moduleMm.toFixed(3)}mm`);
@@ -184,7 +185,7 @@ ${pieces}
 
 const dir = path.join(OUT, 'print');
 fs.mkdirSync(dir, { recursive: true });
-const base = `sheet-${slug}-${Math.round(size)}mm-${flag('sheet', 'letter')}${style === 'plain' ? '-plain' : ''}${bleed ? '-bleed' : ''}`;
+const base = `sheet-${slug}-${Math.round(size)}mm-${flag('sheet', 'letter')}${style === 'plain' ? '-plain' : ''}${ink === 'brand' ? '-brand' : ''}${bleed ? '-bleed' : ''}`;
 const pdfPath = path.join(dir, `${base}.pdf`);
 
 const browser = await chromium.launch();

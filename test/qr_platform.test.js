@@ -191,7 +191,48 @@ test("a scan records place and device from what Cloudflare already knows", async
   const scan = e.WAIVERS_DB.writes.find((w) => /qr_scans/.test(w.sql));
   assert.equal(scan.args[0], "chair");
   assert.equal(scan.args[1], "known");
-  assert.equal(scan.args[6], "ios");
+  assert.equal(scan.args[5], "ios");
+});
+
+// The bug this locks down cost a production drill to find. In a Workers
+// isolate Date.now() is frozen at the last I/O, so the scan time computed in
+// the handler was two minutes stale on the very first real scans. Let the
+// database stamp it: SQLite's clock is the only one here that always moves.
+test("the scan time comes from the database, not the isolate's frozen clock", async () => {
+  const { env: e } = await go("/q/chair", [CHAIR]);
+  const scan = e.WAIVERS_DB.writes.find((w) => /qr_scans/.test(w.sql));
+  assert.match(scan.sql, /strftime\('%Y-%m-%dT%H:%M:%fZ','now'\)/);
+  assert.equal(scan.args.length, 7, "scanned_at must not be bound from JS");
+});
+
+// Same root cause, worse blast radius: a wall-clock TTL on the codes cache
+// could never expire on a quiet isolate, so a repointed sticker would keep
+// serving its old destination indefinitely with nothing to see. Codes are read
+// fresh every time. This test deliberately does NOT reset caches.
+test("a repoint is visible on the very next request, with no cache reset", async () => {
+  const rows = [{ ...CHAIR }];
+  const e = env(rows);
+  const hit = async () => {
+    const u = new URL("https://adapttolife.org/q/chair");
+    const r = await handleQr(req("/q/chair"), e, u, { waitUntil: (p) => p });
+    return new URL(r.headers.get("Location")).pathname;
+  };
+  assert.equal(await hit(), "/send-6");
+  rows[0].dest = "/ways-to-give";          // the only thing that changed
+  assert.equal(await hit(), "/ways-to-give", "a stale isolate cache would fail here");
+});
+
+test("when D1 goes down mid-life, the last good answer is still served", async () => {
+  _resetCaches();
+  const good = env([{ ...CHAIR, dest: "/ways-to-give" }]);
+  const u = new URL("https://adapttolife.org/q/chair");
+  await handleQr(req("/q/chair"), good, u, { waitUntil: (p) => p });
+
+  // Same isolate, D1 now refusing reads. The seed says /send-6; last-known-good
+  // says /ways-to-give, and the more recent truth should win.
+  const down = env([], { failReads: true });
+  const r = await handleQr(req("/q/chair"), down, u, { waitUntil: (p) => p });
+  assert.equal(new URL(r.headers.get("Location")).pathname, "/ways-to-give");
 });
 
 // --- the admin write path: where a permanent mistake would be made ----------

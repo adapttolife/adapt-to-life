@@ -8,6 +8,8 @@ import { sendContactReceipt, sendApplyReceipt } from "./receipts.js";
 import { createApplication, createContact } from "./clickup.js";
 import { handleEmail, handleAgentMailApi } from "./agent_mail.js";
 import { handleQr } from "./qr.js";
+import { handleAdmin } from "./qr_admin.js";
+import { syncGifts } from "./qr_gifts.js";
 import { fundPosition } from "./fund.js";
 
 const LEAD_TYPES = [
@@ -97,10 +99,18 @@ export default {
       return handleAgentMailApi(request, env, url);
     }
 
-    // Spec 115: durable QR redirects. A sticker on a chair outlives any vendor,
+    // Spec 116: durable QR redirects. A sticker on a chair outlives any vendor,
     // so the code encodes our URL and the destination stays editable.
     if (url.pathname.startsWith("/q/")) {
       return handleQr(request, env, url, ctx);
+    }
+
+    // Spec 116 P2: the QR admin API, behind the "ATL QR Admin" Cloudflare
+    // Access application on adapttolife.org/admin. Access gates the whole path
+    // at the edge; src/qr_admin.js verifies the Access JWT again here, so the
+    // API cannot be reached by deleting or re-scoping the Access app.
+    if (url.pathname.startsWith("/admin/api/")) {
+      return handleAdmin(request, env, url);
     }
 
     // Reports have moved to their own Worker on reports.amelioration.is, behind
@@ -121,9 +131,20 @@ export default {
     return env.ASSETS.fetch(request);
   },
 
-  // Cron: archive newly signed releases to the Shared Drive (compliance backlog).
+  // Cron, every 10 minutes: archive newly signed releases to the Shared Drive
+  // (compliance backlog), and pull QR-attributed gifts back from Givebutter
+  // (Spec 116 P6). Two independent jobs on one schedule — each is wrapped so a
+  // failure in either cannot stop the other, and the gift sync is idempotent
+  // on Givebutter's own transaction id, so a repeated or overlapping run can
+  // never double-count a donation.
   async scheduled(event, env, ctx) {
     ctx.waitUntil(runDriveBacklog(env));
+    ctx.waitUntil(
+      syncGifts(env).then((r) => {
+        if (!r.ok) console.error("qr gift sync failed:", r.error);
+        else if (r.written) console.log(`qr gift sync: ${r.written} attributed gift(s) recorded`);
+      })
+    );
   },
 
   // Spec 32 agent email: inbound mail for *@agents.adapttolife.org (Cloudflare Email Routing).

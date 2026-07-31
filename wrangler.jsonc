@@ -34,7 +34,12 @@
     "binding": "ASSETS",
     // /review is staging-only: run the Worker first for it so the redirect gate
     // executes (assets otherwise serve before the Worker and bypass the gate).
-    "run_worker_first": ["/review", "/review.html"]
+    // /admin/* is the same shape for the opposite reason: it is PRODUCTION-only.
+    // Cloudflare Access protects adapttolife.org/admin, but Access is bound to a
+    // hostname and the staging Worker answers on workers.dev, where no Access
+    // app exists — so without the Worker running first, the QR admin page would
+    // serve to anyone who guessed the staging URL.
+    "run_worker_first": ["/review", "/review.html", "/admin/*"]
   },
   "observability": {
     "enabled": true
@@ -111,7 +116,7 @@
       // CRITICAL: empty routes overrides the inherited production routes, so a
       // staging deploy can never reassign the live apex domains to this Worker.
       "routes": [],
-      "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": ["/review", "/review.html"] },
+      "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": ["/review", "/review.html", "/admin/*"] },
       "triggers": { "crons": [] }
     }
   }

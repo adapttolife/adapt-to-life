@@ -20,7 +20,7 @@ import {
   handleQr, resolveDest, liveDrive, deviceOf, referrerHost,
   attributionParams, chicagoToday, _resetCaches,
 } from "../src/qr.js";
-import { validateDest, validateSlug } from "../src/qr_admin.js";
+import { validateDest, validateSlug, verifyAccess } from "../src/qr_admin.js";
 import { markerFrom } from "../src/qr_gifts.js";
 
 const NOW = Date.UTC(2026, 7, 10, 15, 0, 0); // 2026-08-10, inside the popcorn drive
@@ -244,6 +244,40 @@ test("a destination cannot be turned into an open redirect", () => {
   assert.ok(validateDest("//evil.example.com"), "protocol-relative must be refused");
   assert.ok(validateDest("data:text/html,<script>"), "data: must be refused");
   assert.ok(validateDest(""), "empty must be refused");
+});
+
+// Cloudflare Access refuses these at the edge, which is exactly why they are
+// tested here: the edge gate MASKS the Worker's own check, so the second layer
+// can rot unnoticed until the day the Access app is deleted or re-scoped and it
+// becomes the only thing standing there.
+const ADMIN_AUD = "ca9188a0496a0b1cc0708d7b22929e134a85ea31c9cd8df5997f7985b31ab403";
+function fakeJwt(payload) {
+  const b64 = (o) => Buffer.from(JSON.stringify(o)).toString("base64url");
+  return `${b64({ alg: "RS256", kid: "whatever" })}.${b64(payload)}.bm90LWEtc2lnbmF0dXJl`;
+}
+function withToken(token) {
+  return new Request("https://adapttolife.org/admin/api/codes", {
+    headers: token ? { "Cf-Access-Jwt-Assertion": token } : {},
+  });
+}
+
+test("no Access token is not an identity", async () => {
+  assert.equal(await verifyAccess(withToken(null)), null);
+});
+
+test("a token minted for a DIFFERENT app on our team is refused", async () => {
+  const t = fakeJwt({ aud: ["some-other-application-audience-tag"], email: "alec@alecability.com", exp: 9999999999 });
+  assert.equal(await verifyAccess(withToken(t)), null);
+});
+
+test("an expired token is refused even with the right audience", async () => {
+  const t = fakeJwt({ aud: [ADMIN_AUD], email: "alec@alecability.com", exp: 1 });
+  assert.equal(await verifyAccess(withToken(t)), null);
+});
+
+test("garbage in the header is refused, not thrown on", async () => {
+  assert.equal(await verifyAccess(withToken("not.a.jwt")), null);
+  assert.equal(await verifyAccess(withToken("only-one-segment")), null);
 });
 
 test("slugs are constrained to what is safe to print and type", () => {

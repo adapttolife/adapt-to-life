@@ -18,7 +18,7 @@ import assert from "node:assert/strict";
 
 import {
   handleQr, resolveDest, liveDrive, deviceOf, referrerHost,
-  attributionParams, chicagoToday, _resetCaches,
+  attributionParams, chicagoToday, _resetCaches, osOf, browserOf,
 } from "../src/qr.js";
 import { validateDest, validateSlug, verifyAccess } from "../src/qr_admin.js";
 import { markerFrom } from "../src/qr_gifts.js";
@@ -202,7 +202,11 @@ test("the scan time comes from the database, not the isolate's frozen clock", as
   const { env: e } = await go("/q/chair", [CHAIR]);
   const scan = e.WAIVERS_DB.writes.find((w) => /qr_scans/.test(w.sql));
   assert.match(scan.sql, /strftime\('%Y-%m-%dT%H:%M:%fZ','now'\)/);
-  assert.equal(scan.args.length, 7, "scanned_at must not be bound from JS");
+  // The bind count grows as we capture more, so assert the INVARIANT instead:
+  // the placeholder count must equal the bind count, which is only true if
+  // scanned_at is still coming from SQL rather than from JS.
+  const placeholders = (scan.sql.match(/\?/g) || []).length;
+  assert.equal(scan.args.length, placeholders, "scanned_at must not be bound from JS");
 });
 
 // Same root cause, worse blast radius: a wall-clock TTL on the codes cache
@@ -341,4 +345,45 @@ test("the QR marker is found in either shape Givebutter returns", () => {
 
 test("an unattributed gift is not guessed at", () => {
   assert.equal(markerFrom({ utm_parameters: { utm_source: "facebook", utm_campaign: "spring" } }), null);
+});
+
+// --- what a scan tells us about the world -----------------------------------
+
+test("in-app browsers are identified, because they change what a scan MEANS", () => {
+  // A scan from Instagram's browser is someone scanning a screenshot on their
+  // phone, not a person standing in front of a chair. Same row otherwise.
+  assert.equal(browserOf("Mozilla/5.0 (iPhone) Instagram 300.0.0.0"), "instagram-app");
+  assert.equal(browserOf("Mozilla/5.0 (iPhone) FBAN/FBIOS;FBAV/400"), "facebook-app");
+  assert.equal(browserOf("Mozilla/5.0 (iPhone) AppleWebKit Version/17.0 Safari/604.1"), "safari");
+  assert.equal(browserOf(null), "unknown");
+});
+
+test("os is a coarse bucket, never a fingerprint", () => {
+  assert.equal(osOf("Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)"), "iOS");
+  assert.equal(osOf("Mozilla/5.0 (Linux; Android 13; Pixel 7)"), "Android");
+  assert.equal(osOf("Mozilla/5.0 (Windows NT 10.0)"), "Windows");
+  assert.equal(osOf(null), "unknown");
+});
+
+test("a scan records place and network without ever touching an IP or a cookie", async () => {
+  _resetCaches();
+  const e = env([CHAIR]);
+  const r = new Request("https://adapttolife.org/q/chair", {
+    headers: { "user-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)" },
+  });
+  Object.defineProperty(r, "cf", {
+    value: { country: "US", region: "Illinois", city: "Antioch", latitude: "42.47",
+             longitude: "-88.09", postalCode: "60002", continent: "NA",
+             timezone: "America/Chicago", asOrganization: "T-Mobile USA", colo: "ORD" },
+  });
+  await handleQr(r, e, new URL("https://adapttolife.org/q/chair"), { waitUntil: (p) => p });
+  const scan = e.WAIVERS_DB.writes.find((w) => /qr_scans/.test(w.sql));
+  const sql = scan.sql;
+  assert.match(sql, /latitude/);
+  assert.match(sql, /timezone/);
+  assert.ok(scan.args.includes("America/Chicago"), "local timezone is captured");
+  assert.ok(scan.args.includes("T-Mobile USA"), "carrier vs venue wifi is captured");
+  assert.ok(scan.args.includes("60002"), "postal code is captured");
+  // The whole point: none of these are identifiers.
+  assert.ok(!/\bip\b|cookie|fingerprint/i.test(sql), "no IP, cookie or fingerprint column");
 });

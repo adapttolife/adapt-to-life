@@ -74,7 +74,18 @@ CREATE TABLE IF NOT EXISTS qr_scans (
   region     TEXT,
   city       TEXT,
   device     TEXT,               -- ios | android | desktop | other | unknown
-  referrer   TEXT                -- host only; a camera scan usually has none
+  referrer   TEXT,               -- host only; a camera scan usually has none
+  -- Everything below is what Cloudflare already knew in order to route the
+  -- request. Still no IP, no cookie, no cross-scan identifier.
+  latitude    TEXT,              -- city-level centroid from IP geolocation, NOT GPS
+  longitude   TEXT,
+  postal_code TEXT,
+  continent   TEXT,
+  timezone    TEXT,              -- so "what LOCAL time do people scan?" is answerable
+  network     TEXT,              -- carrier vs venue wifi
+  colo        TEXT,              -- Cloudflare edge that served it
+  os          TEXT,
+  browser     TEXT               -- in-app browser vs Safari: HOW the scan happened
 );
 CREATE INDEX IF NOT EXISTS qr_scans_slug ON qr_scans (slug, scanned_at);
 

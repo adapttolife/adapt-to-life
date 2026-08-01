@@ -41,6 +41,11 @@ import {
 const SHEETS = {
   letter: { w: 215.9, h: 279.4, label: 'US Letter' },
   a4:     { w: 210.0, h: 297.0, label: 'A4' },
+  // Apparel and signage artwork is not laid out on paper. `fit` sizes the page
+  // to the artwork itself; without it a 254mm shirt graphic was being placed on
+  // a 215.9mm letter page, silently clipped, and then correctly failed the
+  // decode gate — with an error message blaming the size for the wrong reason.
+  fit:    { w: 0, h: 0, label: 'fit to artwork' },
 };
 const OUT = process.env.ATL_QR_OUT || path.join(process.cwd(), 'public/qr');
 // Resolution the gate rasterises at. Raise it with --gate-dpi to tell a genuine
@@ -71,6 +76,7 @@ if (slugs.length !== 1) {
 const slug   = slugs[0];
 const style  = flag('style', 'frame');
 const ink    = flag('ink', 'mono');   // black and white by default
+const apparel = args.includes('--apparel');  // square modules, no hairline: see lib/qr-art.mjs
 const sheet  = SHEETS[flag('sheet', 'letter')];
 const size   = mm(flag('size', '45mm'));
 const bleed  = mm(flag('bleed', '0'));
@@ -82,7 +88,7 @@ const keepRaster = args.includes('--keep-raster');
 if (!sheet) { console.error('unknown --sheet'); process.exit(1); }
 
 const url = BASE + slug;
-const art = renderCode(url, { style, ink });
+const art = renderCode(url, { style, ink, apparel });
 
 // ---- geometry, in millimetres -------------------------------------------
 const pieceW = size;
@@ -94,6 +100,10 @@ const symbolMm = moduleMm * art.modules;
 const quietMm  = moduleMm * 4;
 const readMm   = symbolMm * readDistanceRatio;
 
+if (sheet.w === 0) {          // --sheet=fit: page becomes the artwork plus margin
+  sheet.w = pieceW + 2 * margin;
+  sheet.h = pieceH + 2 * margin;
+}
 const cellW = pieceW + gutter, cellH = pieceH + gutter;
 const cols = Math.max(1, Math.floor((sheet.w - 2 * margin + gutter) / cellW));
 const rows = Math.max(1, Math.floor((sheet.h - 2 * margin + gutter) / cellH));
@@ -159,8 +169,9 @@ for (let i = 0; i < copies; i++) {
     + art.svg.replace(/ width="[\d.]+" height="[\d.]+"/, ' width="100%" height="100%"')
     + `</div>`;
 
-  // Corner crop marks, hairline, in the gutter.
-  for (const [cx, cy, dx, dy] of [
+  // Corner crop marks, hairline, in the gutter. A fitted single piece has no
+  // gutter to put them in, and a screen printer wants clean artwork anyway.
+  if (copies > 1) for (const [cx, cy, dx, dy] of [
     [x, y, -1, -1], [x + pieceW, y, 1, -1], [x, y + pieceH, -1, 1], [x + pieceW, y + pieceH, 1, 1],
   ]) {
     pieces += `<div style="position:absolute;left:${cx + dx * MARK_GAP - (dx < 0 ? MARK : 0)}mm;top:${cy}mm;`
@@ -185,7 +196,7 @@ ${pieces}
 
 const dir = path.join(OUT, 'print');
 fs.mkdirSync(dir, { recursive: true });
-const base = `sheet-${slug}-${Math.round(size)}mm-${flag('sheet', 'letter')}${style === 'plain' ? '-plain' : ''}${ink === 'brand' ? '-brand' : ''}${bleed ? '-bleed' : ''}`;
+const base = `sheet-${slug}-${Math.round(size)}mm-${flag('sheet', 'letter')}${style === 'plain' ? '-plain' : ''}${ink === 'brand' ? '-brand' : ''}${apparel ? '-apparel' : ''}${bleed ? '-bleed' : ''}`;
 const pdfPath = path.join(dir, `${base}.pdf`);
 
 const browser = await chromium.launch();

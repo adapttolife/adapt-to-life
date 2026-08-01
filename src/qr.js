@@ -134,6 +134,37 @@ export function resolveDest(entry, campaigns, todayISO) {
   return entry.dest || entry.to || "/donate";
 }
 
+// Which OS, and which browser did the scan open in? Both are coarse buckets,
+// and the browser one earns its keep: a scan that opens in Instagram's or
+// Facebook's in-app browser behaves very differently from one in Safari — it
+// is a screenshot being scanned off a phone, not someone standing in front of
+// the object. That distinction changes what a scan MEANS, and no vendor
+// dashboard tells you it.
+export function osOf(ua) {
+  if (!ua) return "unknown";
+  if (/iPhone|iPad|iPod/i.test(ua)) return "iOS";
+  if (/Android/i.test(ua)) return "Android";
+  if (/Macintosh|Mac OS X/i.test(ua)) return "macOS";
+  if (/Windows NT/i.test(ua)) return "Windows";
+  if (/CrOS/i.test(ua)) return "ChromeOS";
+  if (/X11|Linux/i.test(ua)) return "Linux";
+  return "other";
+}
+
+export function browserOf(ua) {
+  if (!ua) return "unknown";
+  if (/Instagram/i.test(ua)) return "instagram-app";
+  if (/FBAN|FBAV/i.test(ua)) return "facebook-app";
+  if (/Snapchat/i.test(ua)) return "snapchat-app";
+  if (/TikTok|BytedanceWebview/i.test(ua)) return "tiktok-app";
+  if (/LinkedInApp/i.test(ua)) return "linkedin-app";
+  if (/EdgA?\//i.test(ua)) return "edge";
+  if (/(FxiOS|Firefox)/i.test(ua)) return "firefox";
+  if (/(CriOS|Chrome)/i.test(ua)) return "chrome";
+  if (/Safari/i.test(ua)) return "safari";
+  return "other";
+}
+
 // Coarse on purpose. "Did this sticker get scanned by phones or by laptops" is
 // a real question; anything finer is fingerprinting, which principle 8 forbids.
 export function deviceOf(ua) {
@@ -224,9 +255,13 @@ async function countScan(env, request, slug, kind) {
     // The DATABASE stamps the time, not the isolate. A Worker's Date.now() is
     // frozen at its last I/O, which put the first production scans two minutes
     // in the past; SQLite's clock is the one signal here that always moves.
+    const ua = request && request.headers.get("user-agent");
+    // Every field below is something Cloudflare already used to route this
+    // request. Still no IP, no cookie, no cross-scan identifier.
     await env.WAIVERS_DB.prepare(
-      `INSERT INTO qr_scans (slug, kind, scanned_at, country, region, city, device, referrer)
-       VALUES (?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now'), ?, ?, ?, ?, ?)`
+      `INSERT INTO qr_scans (slug, kind, scanned_at, country, region, city, device, referrer,
+                             latitude, longitude, postal_code, continent, timezone, network, colo, os, browser)
+       VALUES (?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now'), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     )
       .bind(
         slug,
@@ -234,8 +269,17 @@ async function countScan(env, request, slug, kind) {
         cf.country || null,
         cf.region || null,
         cf.city || null,
-        deviceOf(request && request.headers.get("user-agent")),
-        referrerHost(request && request.headers.get("referer"))
+        deviceOf(ua),
+        referrerHost(request && request.headers.get("referer")),
+        cf.latitude || null,
+        cf.longitude || null,
+        cf.postalCode || null,
+        cf.continent || null,
+        cf.timezone || null,
+        cf.asOrganization || null,
+        cf.colo || null,
+        osOf(ua),
+        browserOf(ua)
       )
       .run();
   } catch (err) {

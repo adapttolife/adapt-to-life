@@ -11,10 +11,29 @@ import react from "@vitejs/plugin-react";
 // Root-level config, and the deps live in the root package.json, because merges
 // auto-deploy through Workers Builds: one `npm install` at the repo root has to
 // be enough to build this, or CI ships a stale app and nobody notices.
+// Vite stamps `crossorigin` on the module script and stylesheet it generates.
+// Behind Cloudflare Access that is fatal and completely silent: `crossorigin`
+// with no value means `anonymous`, so the browser fetches those files WITHOUT
+// cookies, Access sees an unauthenticated request, and returns a 302 to the
+// login page instead of JavaScript. You sign in, get the shell, and stare at a
+// blank screen — and nothing in the console says "auth", it says the module
+// failed to parse.
+//
+// It cannot reproduce locally, because `wrangler dev` has no Access in front of
+// it. Same-origin assets need no CORS mode at all, so the attribute is stripped.
+function stripCrossorigin() {
+  return {
+    name: "strip-crossorigin",
+    transformIndexHtml(html: string) {
+      return html.replace(/\s+crossorigin(?==|\s|>)/g, "");
+    },
+  };
+}
+
 export default defineConfig({
   root: "admin-app",
   base: "/admin/app/",
-  plugins: [react()],
+  plugins: [react(), stripCrossorigin()],
   build: {
     outDir: "../public/admin/app",
     emptyOutDir: true,

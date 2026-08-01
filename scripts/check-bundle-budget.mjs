@@ -12,24 +12,43 @@ import { gzipSync } from "zlib";
 import path from "path";
 
 const DIR = "public/admin/app/assets";
-const BUDGET_KB = 90;          // JS + CSS, gzipped, together
 
-let js = 0, css = 0;
+// TWO budgets, because they answer different questions.
+//
+// INITIAL is what a person waits for before the console is usable, and it is
+// the number that replaced a 42KB zero-dependency page. Deferred chunks are
+// real weight but they arrive after the thing is already readable.
+//
+// The map alone is ~21KB gzipped — a projected basemap plus d3-geo. It earns
+// its place and it does not earn blocking first paint, which is exactly what
+// splitting is for. Without this split the entry hit 95% of a single budget
+// with five phases still to build.
+const INITIAL_KB = 70;
+const TOTAL_KB = 130;
+
+let initial = 0, deferred = 0;
 for (const f of readdirSync(DIR)) {
   if (f.endsWith(".map")) continue;                 // never shipped to a browser
   const gz = gzipSync(readFileSync(path.join(DIR, f))).length;
-  if (f.endsWith(".js")) js += gz;
-  else if (f.endsWith(".css")) css += gz;
+  // Vite names the entry "index-*"; everything else is a split chunk that
+  // loads on demand.
+  if (/^index-/.test(f)) initial += gz;
+  else deferred += gz;
 }
-const total = (js + css) / 1024;
-const pct = Math.round((total / BUDGET_KB) * 100);
+const iKB = initial / 1024, dKB = deferred / 1024, tKB = iKB + dKB;
 
-console.log(`  bundle: ${(js / 1024).toFixed(1)}KB js + ${(css / 1024).toFixed(1)}KB css`
-  + ` = ${total.toFixed(1)}KB gzipped  (${pct}% of ${BUDGET_KB}KB budget)`);
+console.log(`  initial : ${iKB.toFixed(1)}KB gzipped  (${Math.round((iKB / INITIAL_KB) * 100)}% of ${INITIAL_KB}KB)`);
+console.log(`  deferred: ${dKB.toFixed(1)}KB gzipped  (loads after the page is usable)`);
+console.log(`  total   : ${tKB.toFixed(1)}KB gzipped  (${Math.round((tKB / TOTAL_KB) * 100)}% of ${TOTAL_KB}KB)`);
 
-if (total > BUDGET_KB) {
-  console.error(`\n  OVER BUDGET by ${(total - BUDGET_KB).toFixed(1)}KB.`);
-  console.error(`  Either the addition earns the weight and the budget moves DELIBERATELY,`);
-  console.error(`  or it does not and something comes back out. Do not raise this quietly.\n`);
-  process.exit(1);
+let bad = false;
+if (iKB > INITIAL_KB) {
+  console.error(`\n  INITIAL OVER BUDGET by ${(iKB - INITIAL_KB).toFixed(1)}KB — this is what a person waits for.`);
+  console.error(`  Split it, or take something out. Raising this number is a decision, not a fix.`);
+  bad = true;
 }
+if (tKB > TOTAL_KB) {
+  console.error(`\n  TOTAL OVER BUDGET by ${(tKB - TOTAL_KB).toFixed(1)}KB.`);
+  bad = true;
+}
+if (bad) { console.error(""); process.exit(1); }

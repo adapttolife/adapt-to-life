@@ -123,7 +123,20 @@ export default {
       if (url.pathname.startsWith("/admin/api/")) {
         return handleAdmin(request, env, url);
       }
-      // The page itself is a static asset, served below.
+      // Mission Control (Spec 127) is a single-page app: its client routes are
+      // real URLs a person can bookmark or reload, but only /admin/app/ exists
+      // on disk. Anything under it that is not a built asset serves the app
+      // shell so the router can take over. Without this, reloading on
+      // /admin/app/qr 404s — the classic SPA deep-link failure.
+      if (url.pathname.startsWith("/admin/app") && !url.pathname.includes("/assets/")) {
+        const shell = await env.ASSETS.fetch(new Request(`${url.origin}/admin/app/index.html`));
+        return new Response(shell.body, {
+          status: shell.status,
+          headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" },
+        });
+      }
+      // /admin/qr — the original single-file page — is a static asset served
+      // below, and keeps working untouched for the whole migration (AC1).
     }
 
     // Reports have moved to their own Worker on reports.amelioration.is, behind

@@ -387,3 +387,35 @@ test("a scan records place and network without ever touching an IP or a cookie",
   // The whole point: none of these are identifiers.
   assert.ok(!/\bip\b|cookie|fingerprint/i.test(sql), "no IP, cookie or fingerprint column");
 });
+
+// --- Mission Control shell routing (Spec 127) -------------------------------
+// SPA deep links are the classic silent break: /admin/app/qr works when you
+// click to it and 404s when you reload or share the URL, because only
+// index.html exists on disk. A static file server cannot answer this — the
+// Worker has to — so it is asserted here rather than eyeballed locally.
+
+test("a Mission Control deep link serves the app shell, not a 404", async () => {
+  const res = await worker.fetch(
+    new Request("https://adapttolife.org/admin/app/qr"), siteEnv(), { waitUntil() {} }
+  );
+  assert.equal(res.status, 200);
+  assert.match(res.headers.get("Content-Type") || "", /text\/html/);
+  assert.equal(await res.text(), ASSET_MARKER, "reloading a client route must serve the shell");
+});
+
+test("built assets are NOT swallowed by the shell fallback", async () => {
+  // If /admin/app/assets/* also returned index.html, the app would serve HTML
+  // where it expected JavaScript and fail with a MIME error nobody can read.
+  let asked = null;
+  const e = { ASSETS: { fetch: async (r) => { asked = new URL(r.url).pathname; return new Response("JS", { status: 200 }); } } };
+  await worker.fetch(new Request("https://adapttolife.org/admin/app/assets/index-abc.js"), e, { waitUntil() {} });
+  assert.equal(asked, "/admin/app/assets/index-abc.js", "asset requests must pass straight through");
+});
+
+test("Mission Control does not exist on staging either", async () => {
+  const res = await worker.fetch(
+    new Request("https://staging.workers.dev/admin/app/qr"),
+    siteEnv({ STAGING: "1" }), { waitUntil() {} }
+  );
+  assert.equal(res.status, 404);
+});

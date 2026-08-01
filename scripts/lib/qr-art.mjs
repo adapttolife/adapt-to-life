@@ -150,7 +150,9 @@ export const PALETTES = {
 function centreLogo(logoSvg, dim, m, modules, p) {
   const box = (logoSvg.match(/viewBox="([^"]+)"/) || [])[1] || '0 0 1024 1024';
   const inner = logoSvg.replace(/^[\s\S]*?<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '')
-                       .replace(/#FFFFFF/gi, p.ink).replace(/#ffffff/g, p.ink);
+                       .replace(/#FFFFFF/gi, p.ink)
+                       .replace(/currentColor/g, p.ink)
+                       .replace(/fill="#000000"/gi, `fill="${p.ink}"`);
   const pad = modules * m;                   // white pad, in module units
   const x = (dim - pad) / 2, y = (dim - pad) / 2;
   const inset = pad * 0.05;   // fill the pad. Pad SIZE is what costs error

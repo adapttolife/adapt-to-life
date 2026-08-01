@@ -194,6 +194,10 @@
   </header>
 
   <div class="why">
+    <b>This page and ClickUp do different jobs.</b> Here is live truth &mdash; where every code points right now, and every number that moves. <a href="https://app.clickup.com/90146343249/v/li/901418690965" target="_blank" rel="noopener">The ClickUp register</a> is the physical world: what is actually printed, how many, and where they are. Scans and dollars are mirrored there once a day so it is glanceable, stamped with when they were read. Nothing you change here needs changing there.
+  </div>
+
+  <div class="why">
     <b>The rule that protects you:</b> a slug is printed matter. Codes are minted and retired, never reused &mdash; because a retired sticker is still out there, and handing its slug to something else would silently send those people somewhere wrong. Retired codes keep redirecting; they just stop being offered for new print runs.
   </div>
 
@@ -201,6 +205,8 @@
     <button class="btn-primary" id="mint">Mint a new code</button>
     <button class="btn-ghost" id="refresh">Refresh</button>
     <button class="btn-ghost" id="sync">Pull gifts from Givebutter</button>
+    <a class="btn-ghost" style="text-decoration:none;display:inline-block"
+       href="https://app.clickup.com/90146343249/v/li/901418690965" target="_blank" rel="noopener">Open the register in ClickUp &rarr;</a>
   </div>
 
   <div class="flash" id="flash"></div>
@@ -429,7 +435,8 @@
     b.disabled = true; b.textContent = 'Pulling…';
     try {
       var r = await api('/sync', { method: 'POST' });
-      say('Read ' + r.result.scanned + ' transactions, ' + r.result.written + ' carried a QR code.');
+      var extra = (r.clickup && r.clickup.updated) ? ' ClickUp updated (' + r.clickup.updated + ' codes).' : '';
+      say('Read ' + r.result.scanned + ' transactions, ' + r.result.written + ' carried a QR code.' + extra);
       load();
     } catch (err) { say(err.message, 'err'); }
     b.disabled = false; b.textContent = 'Pull gifts from Givebutter';

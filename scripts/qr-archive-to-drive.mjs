@@ -2,6 +2,7 @@
 // Push the QR artwork archive into the ATL Shared Drive (Spec 116).
 //
 //   op run -- node scripts/qr-archive-to-drive.mjs public/qr/archive-2026-07-31
+//   op run -- node scripts/qr-archive-to-drive.mjs out/shirt --into="Shirt front"
 //
 // Needs GOOGLE_SA_JSON (the same service account the waiver archive uses) as
 // either a path or the JSON itself.
@@ -11,6 +12,13 @@
 // this refreshes the folder Alec actually looks in, instead of quietly
 // creating a second copy somewhere else — a backup nobody can find is not a
 // backup. Same-named files are replaced, not duplicated.
+//
+// `--into` adds ONE subfolder under that fixed destination, for artwork that is
+// a surface rather than a slug — the shirt, which has two backgrounds and its
+// own print spec, would otherwise scatter six files through a folder organised
+// by slug. It deliberately cannot redirect the upload elsewhere: everything
+// still lands under Marketing / QR codes, which is the property that makes the
+// destination findable.
 //
 // Note the folder is "Marketing", not "ATL Marketing": inside a drive already
 // called Adapt To Life the prefix stutters, and the sibling folder is "Design".
@@ -22,7 +30,11 @@ import crypto from 'crypto';
 const DRIVE_ID = '0AIG-pWrds0g7Uk9PVA';       // shared drive "Adapt To Life"
 const TRAIL = ['Marketing', 'QR codes'];
 
-const SRC = process.argv[2];
+const argv = process.argv.slice(2);
+const SRC = argv.find((a) => !a.startsWith('--'));
+// One level, name only. A slash or a ".." here would be an attempt to aim the
+// upload somewhere other than the destination this file exists to pin down.
+const INTO = (argv.find((a) => a.startsWith('--into=')) || '--into=').slice(7).replace(/[\\/]/g, ' ').trim();
 if (!SRC || !fs.existsSync(SRC)) {
   console.error('usage: qr-archive-to-drive.mjs <archive-dir>');
   console.error('build one first: node scripts/make-qr-archive.mjs');
@@ -91,11 +103,12 @@ async function upload(file, parent) {
   if (!r.id) throw new Error(`upload failed for ${name}: ` + JSON.stringify(r).slice(0, 300));
 }
 
+const trail = INTO ? [...TRAIL, INTO] : TRAIL;
 let parent = DRIVE_ID;
-for (const name of TRAIL) parent = await folder(name, parent);
+for (const name of trail) parent = await folder(name, parent);
 
 const files = fs.readdirSync(SRC).filter((f) => !f.startsWith('.'));
 for (const f of files) await upload(path.join(SRC, f), parent);
 
-console.log(`\n  ${files.length} files → ${TRAIL.join(' / ')}`);
+console.log(`\n  ${files.length} files → ${trail.join(' / ')}`);
 console.log(`  https://drive.google.com/drive/folders/${parent}\n`);

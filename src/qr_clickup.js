@@ -22,27 +22,39 @@
 // scans weeks after it was marked printed. That usually means a sticker batch
 // never got applied or a sign got hung somewhere nobody walks — and it is
 // invisible on a dashboard, which only ever draws what DID happen.
+//
+// WHY THE DESCRIPTION AND NOT CUSTOM FIELDS. The first cut wrote five custom
+// fields and ClickUp refused: {"err":"Custom field usages exceeded for your
+// plan","ECODE":"FIELD_033"}. ATL is on the free tier and the quota was gone.
+// Descriptions have no quota, render better, and work on every plan — so the
+// numbers live in a delimited block the sync owns end-to-end. Anything a human
+// writes outside that block is preserved untouched, which matters: this is
+// their task list, not our output surface.
 
-const LIST_ID = "901418690965";          // Team Space -> Adapt To Life -> QR codes
-const DASHBOARD = "https://adapttolife.org/admin/qr";
-const SYNC_KEY = "clickup_synced_on";
+const BEGIN = "<!-- live:begin -->";
+const END = "<!-- live:end -->";
 
-async function cu(env, path, { method = "GET", body } = {}) {
-  const r = await fetch(`https://api.clickup.com/api/v2/${path}`, {
-    method,
-    headers: { Authorization: env.CLICKUP_TOKEN, "Content-Type": "application/json" },
-    body: body ? JSON.stringify(body) : undefined,
-  });
-  if (!r.ok) throw new Error(`clickup ${path} -> ${r.status}`);
-  return r.json();
-}
+function block(slug, scans, dollars, lastScan, syncedAt) {
+  const last = lastScan ? new Date(lastScan).toISOString().slice(0, 10) : "never";
+  const cold = scans === 0
+    ? "\n\n> No scans recorded yet. If this is marked printed, that is worth checking — "
+      + "it usually means the batch never got applied, or it is somewhere nobody walks."
+    : "";
+  return `${BEGIN}
+**Live numbers** — read from the dashboard, do not edit here.
 
-// Fields are looked up by NAME at run time rather than hardcoded by id. Ids
-// change if a field is deleted and remade in the UI, and a sync that silently
-// writes nothing because an id rotted is worse than one that fails loudly.
-async function fieldMap(env) {
-  const { fields } = await cu(env, `list/${LIST_ID}/field`);
-  return Object.fromEntries((fields || []).map((f) => [f.name, f.id]));
+| | |
+|---|---|
+| Scans | **${scans}** |
+| Raised | **$${Math.round(dollars).toLocaleString("en-US")}** |
+| Last scan | ${last} |
+
+Where it points, and everything that moves by the minute, lives at
+[the QR dashboard](${DASHBOARD}) — deliberately not copied here, because a
+second copy of a control surface goes stale and then gets acted on.
+
+_Synced ${syncedAt}._${cold}
+${END}`;
 }
 
 export async function syncClickUp(env, { force = false } = {}) {
@@ -70,30 +82,31 @@ export async function syncClickUp(env, { force = false } = {}) {
     const byScan = new Map((scans || []).map((r) => [r.slug, r]));
     const byGift = new Map((gifts || []).map((r) => [r.slug, r]));
 
-    const F = await fieldMap(env);
     const { tasks } = await cu(env, `list/${LIST_ID}/task?include_closed=true`);
-    const now = Date.now();
+    const stamp = new Date().toISOString().replace("T", " ").slice(0, 16) + " UTC";
 
     for (const t of tasks || []) {
       const slugField = (t.custom_fields || []).find((f) => f.name === "Slug");
       const slug = slugField && slugField.value;
       if (!slug) { out.skipped++; continue; }
 
-      const s = byScan.get(slug) || { n: 0, last_scan: null };
-      const g = byGift.get(slug) || { dollars: 0 };
-      const sets = [
-        [F["Scans (observed)"], s.n],
-        [F["Raised (observed)"], Math.round(g.dollars || 0)],
-        [F["Data synced"], now],
-        [F["Live dashboard"], DASHBOARD],
-      ];
-      if (s.last_scan) sets.push([F["Last scan"], Date.parse(s.last_scan)]);
+      const sc = byScan.get(slug) || { n: 0, last_scan: null };
+      const gf = byGift.get(slug) || { dollars: 0 };
+      const fresh = block(slug, sc.n, gf.dollars || 0, sc.last_scan, stamp);
 
-      for (const [fid, value] of sets) {
-        if (!fid) continue;
-        await cu(env, `task/${t.id}/field/${fid}`, { method: "POST", body: { value } });
+      // Replace only OUR block. Everything a human wrote around it survives.
+      const existing = t.description || "";
+      const i = existing.indexOf(BEGIN), j = existing.indexOf(END);
+      const next = (i !== -1 && j !== -1)
+        ? existing.slice(0, i) + fresh + existing.slice(j + END.length)
+        : (existing ? existing.trimEnd() + "\n\n" : "") + fresh;
+
+      if (next.trim() !== existing.trim()) {
+        await cu(env, `task/${t.id}`, { method: "PUT", body: { markdown_description: next } });
+        out.updated++;
+      } else {
+        out.skipped++;
       }
-      out.updated++;
     }
 
     await env.WAIVERS_DB.prepare(

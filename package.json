@@ -13,7 +13,10 @@
     "deploy:prod": "npx wrangler deploy",
     "deploy:reports": "npx wrangler deploy --config wrangler.reports.jsonc",
     "deploy:agent-mail": "npx wrangler deploy --config wrangler.agent-mail.jsonc",
-    "check": "node scripts/check-site.mjs"
+    "check": "node scripts/check-site.mjs",
+    "build:app": "vite build && node scripts/check-bundle-budget.mjs",
+    "typecheck": "tsc --noEmit",
+    "dev:app": "vite"
   },
   "repository": {
     "type": "git",
@@ -31,5 +34,14 @@
     "pdf-lib": "^1.17.1",
     "postal-mime": "^2.7.5",
     "satori": "^0.28.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "@vitejs/plugin-react": "^6.0.5",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.0"
   }
 }

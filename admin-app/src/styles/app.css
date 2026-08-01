@@ -1,0 +1,135 @@
+/* Mission Control layout. Dense (D1): 14px base, tight rows, small headers,
+ * more on screen than a marketing page would ever allow. */
+
+.shell { display: grid; grid-template-columns: var(--nav-w) 1fr; min-height: 100%; }
+
+/* ---- nav ---------------------------------------------------------------- */
+.nav {
+  background: var(--plane);
+  border-right: 1px solid var(--line);
+  display: flex; flex-direction: column;
+  position: sticky; top: 0; height: 100vh; padding: 14px 10px;
+}
+.brand {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 8px 14px; font-weight: 700; letter-spacing: -0.01em;
+}
+.brand-mark { color: var(--accent); font-size: 0.85em; }
+.nav-items { display: flex; flex-direction: column; gap: 1px; }
+.nav-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  background: none; border: 0; color: var(--ink-2); font: inherit; font-size: 13.5px;
+  text-align: left; padding: 7px 9px; border-radius: 7px; cursor: pointer;
+}
+.nav-item:hover:not(:disabled) { background: var(--surface-2); color: var(--ink); }
+.nav-item.on { background: var(--surface-3); color: var(--ink); font-weight: 600; }
+.nav-item.soon { color: var(--ink-3); cursor: default; }
+.soon-tag {
+  font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink-3); border: 1px solid var(--line); border-radius: 4px; padding: 1px 4px;
+}
+.nav-foot { margin-top: auto; padding: 10px 9px 2px; border-top: 1px solid var(--line); }
+.who { font-size: 11px; color: var(--ink-3); word-break: break-all; }
+.nav-link { display: block; margin-top: 8px; font-size: 12px; color: var(--ink-3); }
+.nav-link:hover { color: var(--ink-2); text-decoration: none; }
+
+/* ---- page --------------------------------------------------------------- */
+.main { padding: 22px 26px 60px; max-width: 1500px; }
+.page-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 20px; flex-wrap: wrap; margin-bottom: 18px;
+}
+.page-head h1 { font-size: 20px; font-weight: 700; margin: 0; letter-spacing: -0.015em; }
+.page-head .sub { margin: 3px 0 0; color: var(--ink-2); font-size: 13px; }
+.actions { display: flex; gap: 8px; align-items: center; }
+
+/* ---- segmented time range ----------------------------------------------- */
+.segmented { display: inline-flex; background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 2px; }
+.seg {
+  background: none; border: 0; color: var(--ink-2); font: inherit; font-size: 12.5px;
+  padding: 4px 11px; border-radius: 6px; cursor: pointer;
+}
+.seg:hover { color: var(--ink); }
+.seg.on { background: var(--surface-3); color: var(--ink); font-weight: 600; }
+
+/* ---- panels & stats ------------------------------------------------------ */
+.panel {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 14px 16px; margin-bottom: 14px;
+}
+.panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 10px; }
+.panel h2 { font-size: 14px; font-weight: 600; margin: 0; }
+.panel .cap { margin: 2px 0 0; color: var(--ink-3); font-size: 12px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.grid-2 > * { min-width: 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 14px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; }
+.stat-v { font-size: 26px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.1; }
+/* Deliberately NOT --good. Status tokens mean state, and a green $0 would
+   read as 'fine' when it means 'nothing happened'. This tile leads by size
+   and position (D2), which is emphasis that stays true at any value. */
+.stat-v.money { color: var(--ink); }
+.stat-k { font-size: 10.5px; letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-3); font-weight: 700; margin-top: 4px; }
+.stat-s { font-size: 11.5px; color: var(--ink-3); margin-top: 2px; }
+
+/* ---- tables: first-class, not a fallback (Spec 127 principle 3) ---------- */
+.dt { width: 100%; border-collapse: collapse; font-size: 13px; }
+.dt th {
+  text-align: left; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink-3); font-weight: 700; padding: 6px 10px 6px 0; border-bottom: 1px solid var(--line);
+}
+.dt td { padding: 8px 10px 8px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.dt tr:last-child td { border-bottom: none; }
+.dt .num { text-align: right; font-variant-numeric: tabular-nums; }
+.dt .money { color: var(--ink); font-weight: 600; }
+.dt .zero { color: var(--ink-3); }
+.dt .strong { font-weight: 700; }
+.dt .dim { color: var(--ink-3); }
+.dt .nowrap { white-space: nowrap; }
+.dt .break { word-break: break-all; }
+.dt tr.retired .strong { text-decoration: line-through; text-decoration-color: var(--ink-3); }
+.dt code { color: var(--ink-2); }
+.tag {
+  display: inline-block; margin-left: 6px; font-size: 9.5px; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--warn); background: rgba(250,178,25,0.10);
+  border-radius: 4px; padding: 1px 5px; white-space: nowrap;
+}
+
+/* ---- charts -------------------------------------------------------------- */
+.chart { display: block; overflow: visible; }
+.chart .lbl { font-size: 11px; fill: var(--ink-2); font-family: var(--mono); }
+.chart .val { font-size: 11px; fill: var(--ink); font-weight: 600; }
+.chart .tick { font-size: 10px; fill: var(--ink-3); }
+.bar-g:hover rect { filter: brightness(1.12); }
+
+.linkbtn { background: none; border: 0; color: var(--ink-3); font: inherit; font-size: 11.5px;
+           text-decoration: underline; cursor: pointer; padding: 6px 0 0; }
+.linkbtn:hover { color: var(--ink-2); }
+
+.empty { padding: 22px 4px; color: var(--ink-3); font-size: 12.5px; max-width: 62ch; }
+.foot { margin: 10px 0 0; font-size: 11.5px; color: var(--ink-3); }
+
+.lapsed { max-width: 380px; margin: 18vh auto; text-align: center; }
+.lapsed h1 { font-size: 18px; margin: 0 0 6px; }
+.lapsed p { color: var(--ink-2); font-size: 13px; }
+.btn {
+  display: inline-block; margin-top: 12px; background: var(--accent); color: #fff;
+  padding: 7px 16px; border-radius: 7px; font-size: 13px; font-weight: 600;
+}
+.btn:hover { background: var(--accent-hover); text-decoration: none; }
+
+/* ---- narrow -------------------------------------------------------------- */
+@media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+@media (max-width: 720px) {
+  /* The nav becomes a horizontal strip rather than eating a third of a phone. */
+  .shell { grid-template-columns: 1fr; }
+  .nav { position: static; height: auto; flex-direction: row; align-items: center;
+         gap: 10px; overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--line); padding: 8px 10px; }
+  .brand { padding: 0 6px 0 0; white-space: nowrap; }
+  .nav-items { flex-direction: row; gap: 4px; }
+  .nav-item { white-space: nowrap; }
+  .nav-item.soon { display: none; }
+  .nav-foot { display: none; }
+  .main { padding: 16px 14px 50px; }
+}

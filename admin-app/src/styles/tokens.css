@@ -1,0 +1,97 @@
+/* Mission Control tokens — Spec 127.
+ *
+ * Dense and dark (D1, Alec 2026-08-01). Every colour below is a ROLE, never a
+ * raw hex at the point of use, so the one place to change the system is here.
+ *
+ * The data colours are not chosen, they are measured. D1 invalidated the light
+ * palette wholesale and the replacement was re-run through the validator
+ * against the surface below. The result that matters: the obvious dark trio
+ * (blue/aqua/violet) fails at CVD dE 1.9 under protanopia — one colour with
+ * three names. The set here passes all-pairs at 8.4. Do not substitute by eye.
+ */
+
+:root {
+  color-scheme: dark;
+
+  /* Surfaces — dense means these sit close together, so the steps are small
+     and deliberate. Anything flatter and panels stop reading as panels. */
+  --plane:        #0C0C0E;   /* the page itself */
+  --surface:      #16161A;   /* panels and cards — the CHART surface */
+  --surface-2:    #1D1D22;   /* rows, inputs, hover */
+  --surface-3:    #26262C;   /* pressed, active nav */
+  --line:         #2A2A31;   /* hairline borders */
+  --line-strong:  #3A3A44;
+
+  /* Ink */
+  --ink:          #F4F2EE;
+  --ink-2:        #A9A69E;
+  --ink-3:        #75726B;   /* axis, ticks, muted labels */
+
+  /* Brand accent — reserved. Orange means MAGNITUDE and nothing else, so a
+     reader never has to ask whether a colour is identity or quantity. */
+  --accent:       #E8572A;
+  --accent-hover: #F06B41;
+  --accent-dim:   rgba(232, 87, 42, 0.14);
+
+  /* Magnitude ramp for dark: more reads LIGHTER. The two darkest light-mode
+     steps are deliberately absent — they measure 1.9:1 and 2.8:1 here and
+     would vanish into the surface. */
+  --mag-1: #C4431E;
+  --mag-2: #E8572A;
+  --mag-3: #F07A50;
+  --mag-4: #F49F7C;
+  --mag-5: #F8C4AC;
+
+  /* Categorical — identity, never magnitude. Validated all-pairs on
+     --surface: CVD dE 8.4, normal-vision 19.8, all >= 3:1. */
+  --cat-1: #3987e5;   /* blue  */
+  --cat-2: #199e70;   /* aqua  */
+  --cat-3: #c98500;   /* yellow — hue-adjacent to --accent; they never share a
+                         chart, but they do share a page. Watch it. */
+  --cat-other: #6E6B64;
+
+  /* Status — reserved, never a series colour. Always shipped with a label. */
+  --good:     #0ca30c;
+  --warn:     #fab219;
+  --serious:  #ec835a;
+  --critical: #e66767;
+
+  --grid: #23232A;   /* recessive, hairline, never dashed */
+
+  --radius: 10px;
+  --nav-w: 216px;
+  --font: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+  --mono: 'Space Mono', ui-monospace, SFMono-Regular, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root { height: 100%; }
+
+body {
+  margin: 0;
+  background: var(--plane);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 14px;          /* dense: 14 not 16 */
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--accent-hover); text-decoration: underline; }
+
+/* Identifiers are monospace everywhere, always. A slug, a task id and a code
+   are things people copy and compare character by character. */
+code, .mono { font-family: var(--mono); font-size: 0.88em; }
+
+::selection { background: var(--accent); color: #fff; }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Scrollbars, so a dark app does not get light scrollbars bolted to it. */
+* { scrollbar-color: var(--line-strong) transparent; scrollbar-width: thin; }

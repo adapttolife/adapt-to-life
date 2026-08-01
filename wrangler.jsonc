@@ -14,7 +14,11 @@
   // `wrangler deploy` 19 seconds after ours on 2026-07-25 and the stamp went
   // missing, which is exactly the case the stamp exists to detect. A control
   // that a human has to remember to invoke is not a control.
-  "build": { "command": "node scripts/stamp-build.mjs" },
+  // Mission Control is built BEFORE the stamp, because the stamp hashes every
+  // file in public/ — stamping first would fingerprint a build that does not
+  // exist yet and quietly certify the wrong bytes. The budget check is part of
+  // the build command, not a separate step someone can forget.
+  "build": { "command": "npm run build:app && node scripts/stamp-build.mjs" },
 
   // Live custom domains (apex + www). Cloudflare manages DNS + TLS for these.
   "routes": [

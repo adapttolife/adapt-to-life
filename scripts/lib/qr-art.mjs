@@ -9,9 +9,27 @@
 //
 // Design (D1, Alec 2026-07-24): functionality first, premium second, and the
 // brand carried by geometry rather than a logo — the logo ships as its own
-// sticker. The finder eyes are drawn as WHEELS: near-black rounded rim, orange
-// hub. It reads as adaptive sport at a glance and costs no decode margin,
-// because the eyes are structural and never carry data.
+// sticker.
+//
+// THE FINDER EYES WERE WHEELS AND THAT WAS A REAL BUG (fixed 2026-08-01).
+// D1 asserted the wheel "costs no decode margin, because finder patterns are
+// structural and never carry data." Structural is exactly why it mattered: a
+// decoder LOOKS for the finder pattern's 1:1:3:1:1 dark/light run, and a
+// heavily rounded rim with a CIRCULAR hub does not present it. Measured with
+// OpenCV 5, padded, at 872px — the size a phone sees a 10in code from ~3ft:
+//
+//     standard square eyes  DECODES
+//     gently rounded eyes   DECODES
+//     WHEEL eyes            FAILS
+//
+// Same payload, same modules, same everything else. jsQR read the wheel fine,
+// which is why it survived from July to August unnoticed — one tolerant
+// decoder is not evidence, and every earlier claim in this file that the eyes
+// were the robust part of the design came from that single source.
+//
+// The eyes are now a rounded SQUARE topology: 7x7 ink, 5x5 field, 3x3 ink,
+// corners softened enough to still read as ours. Brand where it is free,
+// never where a scanner has to forgive it.
 
 import QR from 'qrcode';
 
@@ -70,9 +88,9 @@ const isEye = (r, c, n) =>
 //
 // The brand palette is one flag away (`--ink=brand`) and still generates.
 const eye = (x, y, m, p) =>
-  `<rect x="${x}" y="${y}" width="${7*m}" height="${7*m}" rx="${m*2.1}" fill="${p.ink}"/>`
-  + `<rect x="${x+m}" y="${y+m}" width="${5*m}" height="${5*m}" rx="${m*1.5}" fill="${p.field}"/>`
-  + `<circle cx="${x+3.5*m}" cy="${y+3.5*m}" r="${m*1.55}" fill="${p.hub}"/>`;
+  `<rect x="${x}" y="${y}" width="${7*m}" height="${7*m}" rx="${m*0.8}" fill="${p.ink}"/>`
+  + `<rect x="${x+m}" y="${y+m}" width="${5*m}" height="${5*m}" rx="${m*0.6}" fill="${p.field}"/>`
+  + `<rect x="${x+2*m}" y="${y+2*m}" width="${3*m}" height="${3*m}" rx="${m*0.5}" fill="${p.hub}"/>`;
 
 // A palette is the ONLY thing that varies between the two looks. Geometry is
 // shared, so a decode result measured on one carries to the other.

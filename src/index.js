@@ -10,6 +10,7 @@ import { handleEmail, handleAgentMailApi } from "./agent_mail.js";
 import { handleQr } from "./qr.js";
 import { handleAdmin } from "./qr_admin.js";
 import { syncGifts } from "./qr_gifts.js";
+import { syncClickUp } from "./qr_clickup.js";
 import { fundPosition } from "./fund.js";
 
 const LEAD_TYPES = [
@@ -155,6 +156,14 @@ export default {
       syncGifts(env).then((r) => {
         if (!r.ok) console.error("qr gift sync failed:", r.error);
         else if (r.written) console.log(`qr gift sync: ${r.written} attributed gift(s) recorded`);
+      })
+    );
+    // Mirror observations into the ClickUp register once a day. Self-limiting:
+    // it records the date it ran and no-ops for the rest of the day's ticks.
+    ctx.waitUntil(
+      syncClickUp(env).then((r) => {
+        if (!r.ok) console.error("qr clickup sync failed:", r.error);
+        else if (r.updated) console.log(`qr clickup sync: ${r.updated} task(s) updated`);
       })
     );
   },

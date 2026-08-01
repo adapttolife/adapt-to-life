@@ -114,7 +114,35 @@ export const PALETTES = {
 // on a shirt nobody can see the difference; a code that will not scan is fatal.
 // It also drops the hairline tile border, which is a 28%-opacity line no screen
 // printer can hold.
-export function renderCode(text, { style = 'frame', ink = 'mono', apparel = false } = {}) {
+// Drop a logo into the middle of the code.
+//
+// Spec 116's D1 deliberately did NOT do this — "the logo ships as its own
+// separate sticker, so the code carries no knockout and every bit of error
+// correction stays as insurance." Alec reversed that for apparel on 2026-08-01,
+// which is his call to make.
+//
+// What it costs is real and worth stating: a centre logo destroys the modules
+// underneath it. Error correction H recovers roughly 30% of a symbol, so a
+// small knockout is free-ish — but on a shirt that budget is ALREADY being
+// spent on ink spread eroding every module. The two stack, so the logo is
+// sized against a measured result rather than by eye (see make-shirt-artwork).
+//
+// The pad is the light field and the logo is drawn in ink, so on a black shirt
+// it stays one white screen: pad printed, logo left as bare fabric.
+function centreLogo(logoSvg, dim, m, modules, p) {
+  const box = (logoSvg.match(/viewBox="([^"]+)"/) || [])[1] || '0 0 1024 1024';
+  const inner = logoSvg.replace(/^[\s\S]*?<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '')
+                       .replace(/#FFFFFF/gi, p.ink).replace(/#ffffff/g, p.ink);
+  const pad = modules * m;                   // white pad, in module units
+  const x = (dim - pad) / 2, y = (dim - pad) / 2;
+  const inset = pad * 0.05;   // fill the pad. Pad SIZE is what costs error
+                             // correction; the mark inside it is free.
+  return `<rect x="${x}" y="${y}" width="${pad}" height="${pad}" rx="${m*0.3}" fill="${p.field}"/>`
+    + `<svg x="${x+inset}" y="${y+inset}" width="${pad-2*inset}" height="${pad-2*inset}"`
+    + ` viewBox="${box}" preserveAspectRatio="xMidYMid meet">${inner}</svg>`;
+}
+
+export function renderCode(text, { style = 'frame', ink = 'mono', apparel = false, logoSvg = null, logoModules = 9 } = {}) {
   const p = PALETTES[ink] || PALETTES.mono;
   const fill = apparel ? 1 : MODULE_FILL;
   const radius = apparel ? 0 : MODULE_RADIUS;
@@ -131,12 +159,13 @@ export function renderCode(text, { style = 'frame', ink = 'mono', apparel = fals
     body += `<rect x="${x+inset}" y="${y+inset}" width="${m*fill}" height="${m*fill}" rx="${m*radius}" fill="${p.ink}"/>`;
   }
   const eyes = eye(quiet, quiet, m, p) + eye(quiet+(n-7)*m, quiet, m, p) + eye(quiet, quiet+(n-7)*m, m, p);
+  const badge = logoSvg ? centreLogo(logoSvg, dim, m, logoModules, p) : '';
 
   const geom = { modules: n, moduleUnits: m, quietUnits: quiet, codeUnits: dim };
 
   if (style === 'plain') {
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${dim} ${dim}" width="${dim}" height="${dim}">`
-      + `<rect width="${dim}" height="${dim}" fill="${p.field}"/>${body}${eyes}</svg>`;
+      + `<rect width="${dim}" height="${dim}" fill="${p.field}"/>${body}${eyes}${badge}</svg>`;
     return { svg, ...geom, widthUnits: dim, heightUnits: dim };
   }
 
@@ -147,7 +176,7 @@ export function renderCode(text, { style = 'frame', ink = 'mono', apparel = fals
     + `<rect width="${dim}" height="${H}" rx="${dim*0.045}" fill="${p.tile}"/>`
     + (ink === 'mono' && !apparel ? `<rect x="0.6" y="0.6" width="${dim-1.2}" height="${H-1.2}" rx="${dim*0.045}" fill="none" stroke="${p.ink}" stroke-width="1.2" stroke-opacity="0.28"/>` : '')
     + `<rect x="${inset}" y="${inset}" width="${dim-inset*2}" height="${dim-inset*2}" rx="${dim*0.02}" fill="${p.field}"/>`
-    + body + eyes
+    + body + eyes + badge
     + `<rect x="${dim*0.34}" y="${dim+band*0.10}" width="${dim*0.32}" height="${dim*0.007}" rx="${dim*0.004}" fill="${p.rule}"/>`
     + `<text x="${dim/2}" y="${dim+band*0.68}" text-anchor="middle" font-family="'Space Mono',ui-monospace,monospace"`
     + ` font-weight="700" font-size="${band*0.34}" letter-spacing="${band*0.08}" fill="${p.ink}">SCAN TO GIVE</text>`

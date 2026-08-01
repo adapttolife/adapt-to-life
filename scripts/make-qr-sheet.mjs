@@ -83,7 +83,7 @@ const bleed  = mm(flag('bleed', '0'));
 const gutter = mm(flag('gutter', '6mm'));
 const margin = mm(flag('margin', '12mm'));
 const copiesWanted = flag('copies', 'auto');
-const GATE_DPI = parseInt(flag('gate-dpi', String(DEFAULT_GATE_DPI)), 10);
+let GATE_DPI = parseInt(flag('gate-dpi', '0'), 10) || 0;   // 0 = derive it below
 const keepRaster = args.includes('--keep-raster');
 if (!sheet) { console.error('unknown --sheet'); process.exit(1); }
 
@@ -118,6 +118,23 @@ const colsUsed = Math.min(copies, cols);
 const rowsUsed = Math.ceil(copies / cols);
 const originX = (sheet.w - (colsUsed * cellW - gutter)) / 2;
 const originY = (sheet.h - (rowsUsed * cellH - gutter)) / 2;
+
+// Rasterise the gate at an INTEGER number of pixels per module.
+//
+// make-qr.mjs learned this the expensive way and snaps its PNG render to the
+// module grid; the sheet gate did not, and it cost a false failure. `card` at
+// 45mm on a fitted page failed while `chair` at the SAME 45mm passed — same
+// geometry, different data, and 17.28 px per module meant sub-pixel placement
+// decided it. That is the gate lying about the artwork, which is worse than no
+// gate: it deletes good PDFs and sends you looking for a design bug.
+//
+// Aim near the requested DPI, then move to the nearest DPI that lands whole
+// pixels on a module. --gate-dpi still forces an exact value for diagnosis.
+if (!GATE_DPI) {
+  const wanted = DEFAULT_GATE_DPI;
+  const perModule = Math.max(8, Math.round(moduleMm * wanted / 25.4));
+  GATE_DPI = Math.round(perModule * 25.4 / moduleMm);
+}
 
 const fmt = (n) => `${n.toFixed(2)}mm`;
 const inches = (n) => `${(n / 25.4).toFixed(2)}in`;

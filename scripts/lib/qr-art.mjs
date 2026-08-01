@@ -93,8 +93,31 @@ export const PALETTES = {
  *   widthUnits   full artwork width  (frame style: the cream tile)
  *   heightUnits  full artwork height (frame style: tile + caption band)
  */
-export function renderCode(text, { style = 'frame', ink = 'mono' } = {}) {
+// `apparel` is not a style, it is a manufacturing mode.
+//
+// On a BLACK shirt the correct print is white ink laid down as the FIELD, with
+// the dark modules left unprinted so the fabric itself shows through. That
+// keeps the code dark-on-light (principle 4 — never invert, older Android
+// cameras fail on inverted codes) and it costs ONE screen instead of two.
+//
+// The consequence is that ink spread EATS the modules rather than fattening
+// them, so the design has to survive shrinkage. Measured 2026-08-01 on the
+// shirt code, simulating gain by thinning the dark modules:
+//
+//     effective fill   0.70  0.75  0.80  0.85  0.90  0.94  1.00
+//     rounded dots      NO    NO    NO    NO    NO   yes   yes
+//     square modules    NO    NO   yes   yes   yes   yes   yes
+//
+// The rounded dot dies at ~6% shrink; fabric routinely gives more than that.
+// Square modules hold to 20%. So apparel drops the dot treatment — principle 5
+// again, a treatment is welcome until it costs decode margin. At arm's length
+// on a shirt nobody can see the difference; a code that will not scan is fatal.
+// It also drops the hairline tile border, which is a 28%-opacity line no screen
+// printer can hold.
+export function renderCode(text, { style = 'frame', ink = 'mono', apparel = false } = {}) {
   const p = PALETTES[ink] || PALETTES.mono;
+  const fill = apparel ? 1 : MODULE_FILL;
+  const radius = apparel ? 0 : MODULE_RADIUS;
   const qr = QR.create(text, { errorCorrectionLevel: EC });
   const n = qr.modules.size, d = qr.modules.data;
   const m = 10, quiet = QUIET_MODULES * m;
@@ -104,8 +127,8 @@ export function renderCode(text, { style = 'frame', ink = 'mono' } = {}) {
   for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
     if (!d[r*n+c] || isEye(r, c, n)) continue;
     const x = quiet + c*m, y = quiet + r*m;
-    const inset = m * (1 - MODULE_FILL) / 2;
-    body += `<rect x="${x+inset}" y="${y+inset}" width="${m*MODULE_FILL}" height="${m*MODULE_FILL}" rx="${m*MODULE_RADIUS}" fill="${p.ink}"/>`;
+    const inset = m * (1 - fill) / 2;
+    body += `<rect x="${x+inset}" y="${y+inset}" width="${m*fill}" height="${m*fill}" rx="${m*radius}" fill="${p.ink}"/>`;
   }
   const eyes = eye(quiet, quiet, m, p) + eye(quiet+(n-7)*m, quiet, m, p) + eye(quiet, quiet+(n-7)*m, m, p);
 
@@ -122,7 +145,7 @@ export function renderCode(text, { style = 'frame', ink = 'mono' } = {}) {
   const band = dim * 0.20, H = dim + band, inset = dim * 0.035;
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${dim} ${H}" width="${dim}" height="${H}">`
     + `<rect width="${dim}" height="${H}" rx="${dim*0.045}" fill="${p.tile}"/>`
-    + (ink === 'mono' ? `<rect x="0.6" y="0.6" width="${dim-1.2}" height="${H-1.2}" rx="${dim*0.045}" fill="none" stroke="${p.ink}" stroke-width="1.2" stroke-opacity="0.28"/>` : '')
+    + (ink === 'mono' && !apparel ? `<rect x="0.6" y="0.6" width="${dim-1.2}" height="${H-1.2}" rx="${dim*0.045}" fill="none" stroke="${p.ink}" stroke-width="1.2" stroke-opacity="0.28"/>` : '')
     + `<rect x="${inset}" y="${inset}" width="${dim-inset*2}" height="${dim-inset*2}" rx="${dim*0.02}" fill="${p.field}"/>`
     + body + eyes
     + `<rect x="${dim*0.34}" y="${dim+band*0.10}" width="${dim*0.32}" height="${dim*0.007}" rx="${dim*0.004}" fill="${p.rule}"/>`

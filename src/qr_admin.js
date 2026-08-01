@@ -236,6 +236,50 @@ export async function handleAdmin(request, env, url) {
     return json({ ok: true, slug, action });
   }
 
+  // Everything the dashboard draws, in one round trip. Aggregated in SQL so the
+  // browser never holds raw scan rows — the page is a view, not a copy of the
+  // database.
+  if (path === "/admin/api/analytics" && request.method === "GET") {
+    const days = Math.min(365, Math.max(7, parseInt(url.searchParams.get("days") || "90", 10)));
+    const since = new Date(Date.now() - days * 86400000).toISOString().slice(0, 10);
+    const q = async (sql, ...binds) =>
+      ((await env.WAIVERS_DB.prepare(sql).bind(...binds).all()).results) || [];
+
+    const [daily, byCode, byCity, byDevice, byBrowser, byOs, gifts, totals] = await Promise.all([
+      q(`SELECT substr(scanned_at,1,10) day, COUNT(*) n FROM qr_scans
+          WHERE substr(scanned_at,1,10) >= ? GROUP BY day ORDER BY day`, since),
+      q(`SELECT slug, COUNT(*) n FROM qr_scans
+          WHERE substr(scanned_at,1,10) >= ? AND kind='known' GROUP BY slug ORDER BY n DESC`, since),
+      // Bot traffic is excluded from the map on purpose: a datacentre is not a
+      // place anyone stood. It stays in the totals so nothing silently vanishes.
+      q(`SELECT city, region, country, latitude lat, longitude lon, COUNT(*) n
+           FROM qr_scans
+          WHERE substr(scanned_at,1,10) >= ? AND latitude IS NOT NULL AND city IS NOT NULL
+          GROUP BY city, region, country, lat, lon ORDER BY n DESC LIMIT 60`, since),
+      q(`SELECT COALESCE(device,'unknown') k, COUNT(*) n FROM qr_scans
+          WHERE substr(scanned_at,1,10) >= ? GROUP BY k ORDER BY n DESC`, since),
+      q(`SELECT COALESCE(browser,'unknown') k, COUNT(*) n FROM qr_scans
+          WHERE substr(scanned_at,1,10) >= ? GROUP BY k ORDER BY n DESC`, since),
+      q(`SELECT COALESCE(os,'unknown') k, COUNT(*) n FROM qr_scans
+          WHERE substr(scanned_at,1,10) >= ? GROUP BY k ORDER BY n DESC`, since),
+      q(`SELECT slug, COUNT(*) gifts, COALESCE(SUM(CASE WHEN status='succeeded' THEN donated END),0) dollars
+           FROM qr_gifts GROUP BY slug ORDER BY dollars DESC`),
+      q(`SELECT COUNT(*) scans,
+                COUNT(DISTINCT city) cities,
+                COUNT(DISTINCT substr(scanned_at,1,10)) days,
+                SUM(CASE WHEN network LIKE '%Hetzner%' OR network LIKE '%Amazon%'
+                          OR network LIKE '%Google%' OR network LIKE '%Microsoft%'
+                          OR network LIKE '%DigitalOcean%' THEN 1 ELSE 0 END) likely_bots
+           FROM qr_scans WHERE substr(scanned_at,1,10) >= ?`, since),
+    ]);
+
+    return json({
+      ok: true, days, since,
+      daily, byCode, byCity, byDevice, byBrowser, byOs, gifts,
+      totals: totals[0] || { scans: 0, cities: 0, days: 0, likely_bots: 0 },
+    });
+  }
+
   if (path === "/admin/api/history" && request.method === "GET") {
     const { results } = await env.WAIVERS_DB.prepare(
       `SELECT slug, action, old_dest, new_dest, actor, detail, at

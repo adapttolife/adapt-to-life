@@ -1,8 +1,14 @@
-import { useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { api, AuthLapsed, type Analytics } from "../lib/api";
 import { Panel, Stat, Empty, Loading } from "../components/Bits";
 import { count, money, plural } from "../lib/format";
 import { Bars, Sparkline } from "../components/Charts";
+// The map is the heaviest thing in the console — a projected basemap plus
+// d3-geo, about 21KB gzipped. It is worth its weight, but not worth blocking
+// first paint for: the numbers above it are what someone opens this to see.
+// Split out, it arrives a beat later and the budget stays honest.
+const PlacesMap = lazy(() => import("../components/PlacesMap").then((m) => ({ default: m.PlacesMap })));
+import { Split } from "../components/Split";
 
 // The home page opens on what happened and what it produced (D2), which is what
 // both reference consoles do. Money is the largest tile because it is the
@@ -59,6 +65,21 @@ export function Activity({ days, onFail }: { days: number; onFail: () => void })
                 No gifts attributed yet. The chain is built and verified as far as the
                 Givebutter form — it needs one real gift through a scanned code to close.
               </Empty>}
+        </Panel>
+      </div>
+
+      <Panel title="Places" caption={`${a.byCity.length} place${a.byCity.length === 1 ? "" : "s"} in the last ${a.days} days.`}>
+        <Suspense fallback={<div className="empty">Drawing the map…</div>}>
+          <PlacesMap places={a.byCity} />
+        </Suspense>
+      </Panel>
+
+      <div className="grid-2">
+        <Panel title="How they scanned" caption="An in-app browser means a screenshot, not the object.">
+          <Split rows={a.byBrowser} />
+        </Panel>
+        <Panel title="Device" caption="Older Android is the decode risk we design against.">
+          <Split rows={a.byDevice} />
         </Panel>
       </div>
     </>

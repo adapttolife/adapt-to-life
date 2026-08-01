@@ -1,4 +1,5 @@
 import { type ReactNode } from "react";
+import { Logo } from "./Logo";
 
 // The console frame: persistent nav on the left, one page title and one primary
 // action on the right. Spec 127 principle 1 — a console is a place, not a
@@ -27,7 +28,7 @@ export function Shell({
     <div className="shell">
       <nav className="nav">
         <div className="brand">
-          <span className="brand-mark">▲</span>
+          <Logo size={22} />
           <span>Mission Control</span>
         </div>
         <div className="nav-items">

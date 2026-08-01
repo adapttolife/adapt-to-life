@@ -1,7 +1,7 @@
 {
   "name": "adapt-to-life",
   "version": "1.0.0",
-  "description": "Marketing site for **Adapt To Life \u2014 Your Place in Adaptive Sports**, deployed on Cloudflare Workers. Serves a static site plus one form-capture API route.",
+  "description": "Marketing site for **Adapt To Life — Your Place in Adaptive Sports**, deployed on Cloudflare Workers. Serves a static site plus one form-capture API route.",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -36,11 +36,15 @@
     "satori": "^0.28.0"
   },
   "devDependencies": {
+    "@types/d3-geo": "^3.1.1",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
     "@vitejs/plugin-react": "^6.0.5",
+    "d3-geo": "^3.1.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "topojson-client": "^3.1.0",
+    "topojson-simplify": "^3.0.3",
     "typescript": "^7.0.2",
     "vite": "^8.2.0"
   }

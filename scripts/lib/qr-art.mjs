@@ -94,10 +94,44 @@ const eye = (x, y, m, p) =>
 
 // A palette is the ONLY thing that varies between the two looks. Geometry is
 // shared, so a decode result measured on one carries to the other.
+//
+// `dark` is a POLARITY FLIP, not a third colourway, and it is the one palette
+// here that changes what a scanner has to do. Alec asked for it on 2026-08-01
+// for the black shirt, where the white panel of the `mono` version is a large
+// printed block and the dark version is just the code floating on fabric.
+//
+// It is an INVERTED code — light modules on a dark field — and the cost is
+// measured, not assumed. scripts/qr-polarity-test.py, on a PERFECT render where
+// nothing but polarity can matter:
+//
+//     decoder                       1600px  872px  600px  436px  300px
+//     white bg, any decoder             ok     ok     ok     ok  (ok*)
+//     black bg, ZXing try_invert=on     ok     ok     ok     ok     ok
+//     black bg, ZXing try_invert=off  FAIL   FAIL   FAIL   FAIL   FAIL
+//     black bg, OpenCV 5.0           FAIL   FAIL   FAIL   FAIL   FAIL
+//
+// The black version reads on every decoder that attempts an inversion and on no
+// decoder that does not — and OpenCV 5, a current library, is in the second
+// group. "Modern decoders handle it" is therefore false as stated.
+//
+// Photographed off a shirt (warp, defocus, knit, indoor contrast, 5 samples per
+// point, 10in print) the inverting decoder holds to ~10ft on black against ~12ft
+// on white, so the flip also costs a little range.
+//
+// This is why `mono` stays the default and `dark` ships as a deliberate,
+// informed choice rather than a colourway anyone can pick by accident.
 export const PALETTES = {
   mono:  { ink: INK, field: '#FFFFFF', hub: INK,    tile: '#FFFFFF', rule: INK },
   brand: { ink: INK, field: '#FFFFFF', hub: ORANGE, tile: CREAM,     rule: ORANGE },
+  dark:  { ink: '#FFFFFF', field: INK, hub: '#FFFFFF', tile: INK,    rule: '#FFFFFF' },
 };
+
+// Every palette above is the SAME geometry — only the five colours change.
+// This strips colour out of an SVG so two variants can be proved identical
+// shape-for-shape rather than eyeballed, which is what "make sure the QR code
+// is the same" actually requires.
+export const geometryOf = (svg) =>
+  svg.replace(/\s(?:fill|stroke|stroke-opacity)="[^"]*"/g, '');
 
 /**
  * Build the artwork for one code.

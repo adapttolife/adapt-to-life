@@ -77,7 +77,22 @@ Swept again across four slugs and both styles: everything from 0.92 to 0.98 pass
 
 ## Rules that do not bend
 
-- **Dark modules on a light field. Always.** Inverted codes read on many modern phones and fail on older Android cameras, and we cannot choose which phone a donor is holding. Where a dark layout needs a code, the code sits on a light tile inside it — that is what the cream tile is for.
+- **Dark modules on a light field. Always — unless someone has paid for the exception in measurement.** Inverted codes read on many modern phones and fail on older Android cameras, and we cannot choose which phone a donor is holding. Where a dark layout needs a code, the code sits on a light tile inside it — that is what the cream tile is for. The one standing exception is the black-background shirt, which Alec chose on 2026-08-01 with the cost measured rather than argued (`scripts/qr-polarity-test.py`): ZXing reads it only with `try_invert=on`, OpenCV 5 fails it at every size, and off a photographed shirt it holds to ~10 ft against ~12 ft for the white-panel version. Taste may overrule this rule; a hunch may not.
 - **Never render the SVG with ImageMagick.** Its renderer mangles modules badly enough to stop even an unbranded code decoding, and you will spend an hour blaming a design that is fine. The pipeline renders through a browser for exactly this reason.
 - **A slug is printed matter.** Never reused, never deleted. Retire it in `/admin/qr` and mint a new one; the retired code keeps redirecting forever.
 - **Print the URL nowhere.** The code encodes `adapttolife.org/q/<slug>`, and the destination behind it is data. That is the whole point: nothing on paper ever has to change.
+
+## Where the artwork lives, and the two credentials that decide
+
+There are two Google destinations and they are **not** interchangeable. Getting this wrong is not a cosmetic mistake: on 2026-08-01 the shirt artwork was pushed to the wrong one and simply could not be found — *"clearly I cannot find them!"*
+
+| | Alec prints from this | This is the backup |
+|---|---|---|
+| Where | **His** Drive → `Work / Adapt To Life / Marketing / QR codes` | "Adapt To Life" **shared** drive → `Marketing / QR codes` |
+| Shape | by surface (`Shirt`, `Chair sticker`, …) inside `Ready to print` → `PRINTED — live in the world` → `Archive — superseded` | one flat bundle |
+| Script | `node scripts/qr-to-drive.mjs <dir> --surface="Shirt"` | `op run -- node scripts/qr-archive-backup.mjs <archive-dir>` |
+| Credential | **user OAuth, as Alec** (`GOOGLE_OAUTH_TOKEN`) | service account (`GOOGLE_SA_JSON`) |
+
+The credential is the whole reason for the split: **a service account owns no storage and can never write to a personal Drive.** Anything pushed with it lands in the shared drive by physics, not by choice. So artwork meant for a printer goes through `qr-to-drive.mjs`, which authenticates as him and refuses to fall back.
+
+`qr-to-drive.mjs` mirrors the local directory shape, replaces same-named files rather than duplicating them, and then **downloads every file back and compares bytes** before it claims success. It refuses to invent a surface folder without `--new-surface` (a typo would otherwise create `Shirt ` beside `Shirt`, which is this same bug wearing a different hat) and refuses outright to overwrite a surface already under `PRINTED — live in the world`, because copies of that are in the world and cannot be recalled.

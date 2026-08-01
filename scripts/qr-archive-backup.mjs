@@ -1,24 +1,20 @@
 #!/usr/bin/env node
-// Push the QR artwork archive into the ATL Shared Drive (Spec 116).
+// THE OFF-REPO BACKUP COPY. NOT the folder Alec prints from (Spec 116).
 //
-//   op run -- node scripts/qr-archive-to-drive.mjs public/qr/archive-2026-07-31
-//   op run -- node scripts/qr-archive-to-drive.mjs out/shirt --into="Shirt front"
+//   op run -- node scripts/qr-archive-backup.mjs public/qr/archive-2026-07-31
 //
-// Needs GOOGLE_SA_JSON (the same service account the waiver archive uses) as
-// either a path or the JSON itself.
+// Alec, 2026-07-31: "put the QR codes in a folder so if your software breaks we
+// still have it." That is this script's whole job — a flat bundle of plain
+// files in the "Adapt To Life" SHARED drive, reachable with none of our tooling
+// running. Needs GOOGLE_SA_JSON (path or the JSON itself).
 //
-// Destination: "Adapt To Life" shared drive → Marketing → QR codes. It is
-// spelled out here rather than passed on the command line so that re-running
-// this refreshes the folder Alec actually looks in, instead of quietly
-// creating a second copy somewhere else — a backup nobody can find is not a
-// backup. Same-named files are replaced, not duplicated.
-//
-// `--into` adds ONE subfolder under that fixed destination, for artwork that is
-// a surface rather than a slug — the shirt, which has two backgrounds and its
-// own print spec, would otherwise scatter six files through a folder organised
-// by slug. It deliberately cannot redirect the upload elsewhere: everything
-// still lands under Marketing / QR codes, which is the property that makes the
-// destination findable.
+// IT IS NOT THE WORKING FOLDER, and the earlier version of this file was wrong
+// to claim it was. Alec's own Drive is where he opens things; the service
+// account used here CANNOT WRITE THERE AT ALL — a service account owns no
+// storage and cannot reach a personal Drive. On 2026-08-01 the shirt artwork
+// was pushed with this script and therefore existed only in a shared drive he
+// does not browse: "I cannot find it." Artwork he is meant to PRINT goes
+// through scripts/qr-to-drive.mjs, which authenticates as him.
 //
 // Note the folder is "Marketing", not "ATL Marketing": inside a drive already
 // called Adapt To Life the prefix stutters, and the sibling folder is "Design".
@@ -32,12 +28,10 @@ const TRAIL = ['Marketing', 'QR codes'];
 
 const argv = process.argv.slice(2);
 const SRC = argv.find((a) => !a.startsWith('--'));
-// One level, name only. A slash or a ".." here would be an attempt to aim the
-// upload somewhere other than the destination this file exists to pin down.
-const INTO = (argv.find((a) => a.startsWith('--into=')) || '--into=').slice(7).replace(/[\\/]/g, ' ').trim();
 if (!SRC || !fs.existsSync(SRC)) {
-  console.error('usage: qr-archive-to-drive.mjs <archive-dir>');
+  console.error('usage: qr-archive-backup.mjs <archive-dir>');
   console.error('build one first: node scripts/make-qr-archive.mjs');
+  console.error('printing from this folder is the bug — use qr-to-drive.mjs for that');
   process.exit(1);
 }
 
@@ -103,12 +97,12 @@ async function upload(file, parent) {
   if (!r.id) throw new Error(`upload failed for ${name}: ` + JSON.stringify(r).slice(0, 300));
 }
 
-const trail = INTO ? [...TRAIL, INTO] : TRAIL;
 let parent = DRIVE_ID;
-for (const name of trail) parent = await folder(name, parent);
+for (const name of TRAIL) parent = await folder(name, parent);
 
 const files = fs.readdirSync(SRC).filter((f) => !f.startsWith('.'));
 for (const f of files) await upload(path.join(SRC, f), parent);
 
-console.log(`\n  ${files.length} files → ${trail.join(' / ')}`);
-console.log(`  https://drive.google.com/drive/folders/${parent}\n`);
+console.log(`\n  ${files.length} files → ${TRAIL.join(' / ')}  (BACKUP copy)`);
+console.log(`  https://drive.google.com/drive/folders/${parent}`);
+console.log(`  Alec prints from HIS Drive — scripts/qr-to-drive.mjs puts it there.\n`);

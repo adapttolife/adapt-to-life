@@ -183,6 +183,25 @@ export function classifyMachine(parsed, fromAddr) {
 
 // ───────────────────────── inbound ─────────────────────────
 
+const STINGEL_INBOX = "stingel@alectranel.com";
+const STINGEL_HUMAN_MIRROR = "alec@alecability.com";
+
+// Alec owns the human copy of every message sent to Stingel. Keep this inside
+// the Worker rather than replacing the routing rule so Agent Mail's D1/R2
+// archive and engineering decision inbox remain intact. Awaiting the forward is
+// deliberate: Cloudflare only confirms delivery acceptance when this promise
+// resolves, and a failure must retry/fail loud rather than silently capture a
+// message Alec never receives.
+export async function forwardHumanMirror(message) {
+  const inbox = String(message.to || "").toLowerCase().trim();
+  if (inbox !== STINGEL_INBOX) return false;
+
+  const headers = new Headers();
+  headers.set("X-Agent-Mail-Original-Recipient", STINGEL_INBOX);
+  await message.forward(STINGEL_HUMAN_MIRROR, headers);
+  return true;
+}
+
 export async function handleEmail(message, env, ctx) {
   // Read the raw message once so we can both parse it and archive it to R2.
   const rawBuf = await new Response(message.raw).arrayBuffer();
@@ -259,6 +278,18 @@ export async function handleEmail(message, env, ctx) {
     } else {
       console.log(`agent-mail: bell suppressed — sender not allowlisted: ${fromAddr} → ${inbox}`);
     }
+  }
+
+  // Cloudflare's documented archive+forward order is parse/store first, then
+  // forward. This keeps the single-use raw stream available to PostalMime and
+  // makes the Agent Mail copy durable before the human delivery side effect.
+  // A failed forward is recorded and rethrown so Cloudflare retries instead of
+  // silently claiming that every Stingel message reached Alec.
+  try {
+    await forwardHumanMirror(message);
+  } catch (error) {
+    await recordSendFailure(env, "human-mirror", STINGEL_HUMAN_MIRROR, error);
+    throw error;
   }
 }
 

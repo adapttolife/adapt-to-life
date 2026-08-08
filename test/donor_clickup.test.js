@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { syncDonorRelationships } from "../src/donor_clickup.js";
+import { donorMarkerId, mergeSnapshot, syncDonorRelationships } from "../src/donor_clickup.js";
 
 const donor = {
   donor_key: "jordan@example.com", clickup_task_id: null,
@@ -11,6 +11,8 @@ const donor = {
   source_watermark: 41,
   last_synced_at: null,
 };
+const marker = `<!-- donor:key:${await donorMarkerId(donor.donor_key)} -->`;
+const markerCount = (text) => text.split(marker).length - 1;
 
 function setup(rows = [donor], options = {}) {
   const writes = [];
@@ -71,6 +73,7 @@ test("a new donor becomes one relationship task with an automation snapshot", as
   assert.match(s.calls[1].body.markdown_description, /Lifetime gifts \| \*\*\$80\*\*/);
   assert.match(s.calls[1].body.markdown_description, /Communication opt-in \| Yes/);
   assert.match(s.calls[1].body.markdown_description, /## Relationship work/);
+  assert.ok(s.calls[1].body.markdown_description.includes(`<!-- donor:begin -->\n${marker}`));
   assert.ok(s.writes.some((write) => write.args.includes("task-1")), "projection stores the ClickUp task id");
   assert.ok(s.writes.some((write) => write.args.includes(donor.source_watermark)), "commit stores the rendered source watermark");
 });
@@ -98,7 +101,7 @@ test("an existing donor snapshot updates without touching human notes, tags, own
 
 test("task discovery closes the ClickUp-created/D1-write-failed duplicate gap", async () => {
   const s = setup();
-  const description = "<!-- donor:key:jordan@example.com -->\nHuman stewardship note.";
+  const description = `${marker}\nHuman stewardship note.`;
   s.queue.push({ tasks: [{ id: "already-created", description }], last_page: true });
   s.queue.push({ id: "already-created", description });
   s.queue.push({ id: "already-created" });
@@ -108,6 +111,20 @@ test("task discovery closes the ClickUp-created/D1-write-failed duplicate gap", 
   assert.equal(result.updated, 1);
   assert.equal(s.calls.filter((call) => call.init.method === "POST").length, 0);
   assert.ok(s.writes.some((write) => write.args.includes("already-created")));
+});
+
+test("legacy raw-email discovery resolves to the hashed donor without duplication", async () => {
+  const s = setup();
+  const description = "<!-- donor:key:jordan@example.com -->\nHuman stewardship note.";
+  s.queue.push({ tasks: [{ id: "legacy-created", description }], last_page: true });
+  s.queue.push({ id: "legacy-created", description });
+  s.queue.push({ id: "legacy-created" });
+
+  const result = await syncDonorRelationships(s.env);
+  assert.equal(result.created, 0);
+  assert.equal(result.updated, 1);
+  assert.equal(s.calls.filter((call) => call.init.method === "POST").length, 0);
+  assert.ok(s.writes.some((write) => write.args.includes("legacy-created")));
 });
 
 test("a ClickUp outage is recorded and remains retryable", async () => {
@@ -135,6 +152,20 @@ test("a deleted stored task is rediscovered or recreated instead of failing fore
   const result = await syncDonorRelationships(s.env);
   assert.deepEqual(result, { ok: true, created: 1, updated: 0, failed: 0, skipped: 0 });
   assert.ok(s.writes.some((write) => write.args.includes("replacement-task")));
+});
+
+test("a deleted stored id adopts a rediscovered hashed task instead of duplicating", async () => {
+  const s = setup([{ ...donor, clickup_task_id: "deleted-task" }]);
+  const description = `${marker}\nHuman stewardship note.`;
+  s.queue.push({ status: 404, body: { err: "Task not found" } });
+  s.queue.push({ tasks: [{ id: "rediscovered-task", description }], last_page: true });
+  s.queue.push({ id: "rediscovered-task" });
+
+  const result = await syncDonorRelationships(s.env);
+  assert.equal(result.created, 0);
+  assert.equal(result.updated, 1);
+  assert.equal(s.calls.filter((call) => call.init.method === "POST").length, 0);
+  assert.ok(s.writes.some((write) => write.args.includes("rediscovered-task")));
 });
 
 test("an active D1 lease prevents overlapping cron runs from creating duplicates", async () => {
@@ -165,4 +196,39 @@ test("missing bindings fail loud without making network calls", async () => {
   assert.equal(result.ok, false);
   assert.match(result.error, /CLICKUP_TOKEN/);
   assert.equal(s.calls.length, 0);
+});
+
+test("legacy raw-email marker migrates into the hashed block exactly once", async () => {
+  const existing = `<!-- donor:key:jordan@example.com -->\nHuman before.\n<!-- donor:begin -->\nold\n<!-- donor:end -->\nHuman after.`;
+  const merged = await mergeSnapshot(existing, donor);
+  assert.equal(markerCount(merged), 1);
+  assert.equal(merged.includes("<!-- donor:key:jordan@example.com -->"), false);
+  assert.match(merged, /Human before\./);
+  assert.match(merged, /Human after\.$/);
+  assert.ok(merged.includes(`<!-- donor:begin -->\n${marker}`));
+});
+
+test("the uniquely marked block is replaced while another valid block is preserved", async () => {
+  const other = `<!-- donor:begin -->\nother machine block\n<!-- donor:end -->`;
+  const ours = `<!-- donor:begin -->\n${marker}\nold donor block\n<!-- donor:end -->`;
+  const merged = await mergeSnapshot(`${other}\nHuman middle.\n${ours}`, donor);
+  assert.match(merged, /other machine block/);
+  assert.match(merged, /Human middle\./);
+  assert.doesNotMatch(merged, /old donor block/);
+  assert.equal(markerCount(merged), 1);
+});
+
+test("malformed delimiters preserve content and append one safe block", async () => {
+  const malformed = `Human note.\n${marker}\n<!-- donor:begin -->\nbroken  \n`;
+  const merged = await mergeSnapshot(malformed, donor);
+  assert.ok(merged.startsWith("Human note.\n\n<!-- donor:begin -->\nbroken  \n\n\n"));
+  assert.equal(markerCount(merged), 1);
+  assert.ok(merged.includes(`<!-- donor:begin -->\n${marker}`));
+});
+
+test("donor marker id is stable normalized SHA-256", async () => {
+  assert.equal(await donorMarkerId(" Jordan@Example.com "), await donorMarkerId("jordan@example.com"));
+  assert.equal(await donorMarkerId("hello"), "2cf24dba5fb0a30e26e83b2ac5b9e29e");
+  assert.match(await donorMarkerId(donor.donor_key), /^[0-9a-f]{32}$/);
+  assert.equal(marker.includes("@"), false);
 });

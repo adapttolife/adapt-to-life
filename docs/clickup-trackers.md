@@ -32,6 +32,11 @@ human text outside its marked block. A ClickUp outage is recorded in D1 and
 retried independently, so it cannot reject a Givebutter webhook or suppress a
 donor email.
 
+Crash deduplication uses a deterministic 128-bit SHA-256 digest of the normalized
+donor key inside the automation block. The digest is pseudonymous, not secret;
+the authorized task already displays the donor email. Raw email is never used as
+hidden marker syntax because ClickUp strips comments containing email addresses.
+
 The projector intentionally uses ClickUp's live-proven `markdown_description`
 write field and requests `include_markdown_description=true` on every read.
 Do not replace this contract from an SDK guess; rerun a disposable live

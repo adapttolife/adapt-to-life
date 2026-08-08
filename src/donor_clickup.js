@@ -56,7 +56,8 @@ export async function syncDonorRelationships(env) {
 
   for (const { donor, leaseToken } of claimed) {
     try {
-      let taskId = donor.clickup_task_id || discovered.get(donor.donor_key)?.id || null;
+      const markerId = await donorMarkerId(donor.donor_key);
+      let taskId = donor.clickup_task_id || discovered.get(markerId)?.id || null;
       let task = null;
       if (taskId) {
         try {
@@ -64,7 +65,7 @@ export async function syncDonorRelationships(env) {
         } catch (err) {
           if (err?.status !== 404) throw err;
           const recovered = await tasksByDonorKey(env);
-          task = recovered.get(donor.donor_key) || null;
+          task = recovered.get(markerId) || null;
           taskId = task?.id || null;
         }
       }
@@ -72,7 +73,7 @@ export async function syncDonorRelationships(env) {
       await renewClaim(env, donor.donor_key, leaseToken);
       if (taskId && task) {
         const existing = task.markdown_description ?? task.description ?? "";
-        const description = mergeSnapshot(existing, donor);
+        const description = await mergeSnapshot(existing, donor);
         await clickup(env, `task/${taskId}`, {
           method: "PUT",
           body: { name: taskName(donor), markdown_description: description },
@@ -84,7 +85,7 @@ export async function syncDonorRelationships(env) {
           method: "POST",
           body: {
             name: taskName(donor),
-            markdown_description: newDescription(donor),
+            markdown_description: await newDescription(donor),
             tags: ["type-donor", "stage-new"],
           },
         });
@@ -113,7 +114,10 @@ async function tasksByDonorKey(env) {
     const tasks = result?.tasks || [];
     for (const task of tasks) {
       const description = task.markdown_description ?? task.description ?? "";
-      const key = donorKeyFromDescription(description);
+      const rawKey = donorKeyFromDescription(description);
+      const key = /^[0-9a-f]{32}$/.test(rawKey || "")
+        ? rawKey
+        : (rawKey?.includes("@") ? await donorMarkerId(rawKey) : null);
       if (key) found.set(key, task);
     }
     if (result?.last_page === true || tasks.length < 100) break;
@@ -121,11 +125,12 @@ async function tasksByDonorKey(env) {
   return found;
 }
 
-function snapshot(donor) {
+async function snapshot(donor) {
   const synced = new Date().toISOString().replace("T", " ").slice(0, 16) + " UTC";
   const first = dateOnly(donor.first_gift_at);
   const latest = dateOnly(donor.latest_gift_at);
   return `${BEGIN}
+${await keyMarker(donor.donor_key)}
 **Donor snapshot** — mirrored from Givebutter and Cloudflare; do not edit here.
 
 | | |
@@ -144,24 +149,57 @@ _Synced ${synced}._
 ${END}`;
 }
 
-function newDescription(donor) {
-  return `${keyMarker(donor.donor_key)}
-${snapshot(donor)}
+async function newDescription(donor) {
+  return `${await snapshot(donor)}
 
 ## Relationship work
 
 Use the task **assignee** for the owner and the **due date** for the next action. Keep human context, next-action reasoning, and stewardship notes here. Automation will preserve everything outside the donor snapshot.`;
 }
 
-function mergeSnapshot(existing, donor) {
-  const marker = keyMarker(donor.donor_key);
-  const withMarker = existing.includes(marker) ? existing : `${marker}\n${existing}`;
-  const start = withMarker.indexOf(BEGIN);
-  const end = withMarker.indexOf(END);
-  if (start !== -1 && end !== -1 && end >= start) {
-    return withMarker.slice(0, start) + snapshot(donor) + withMarker.slice(end + END.length);
+export async function mergeSnapshot(existing, donor) {
+  const marker = await keyMarker(donor.donor_key);
+  const legacyMarker = `${KEY_PREFIX}${String(donor.donor_key || "").trim().toLowerCase()}${KEY_SUFFIX}`;
+  const original = donorBlocks(existing);
+  const marked = original.blocks
+    .map((block, index) => {
+      const text = existing.slice(block.start, block.end);
+      return text.includes(marker) || text.includes(legacyMarker) ? index : -1;
+    })
+    .filter((index) => index !== -1);
+  const cleaned = existing.split(marker).join("").split(legacyMarker).join("");
+  const parsed = donorBlocks(cleaned);
+
+  if (!original.malformed && !parsed.malformed) {
+    const target = marked.length === 1
+      ? marked[0]
+      : (marked.length === 0 && parsed.blocks.length === 1 ? 0 : -1);
+    if (target >= 0 && parsed.blocks[target]) {
+      const block = parsed.blocks[target];
+      return cleaned.slice(0, block.start) + await snapshot(donor) + cleaned.slice(block.end);
+    }
   }
-  return `${withMarker.trimEnd()}\n\n${snapshot(donor)}`;
+  return `${cleaned}\n\n${await snapshot(donor)}`;
+}
+
+function donorBlocks(description) {
+  const token = /<!-- donor:(begin|end) -->/g;
+  const blocks = [];
+  let open = null;
+  let malformed = false;
+  for (let match = token.exec(description); match; match = token.exec(description)) {
+    if (match[1] === "begin") {
+      if (open !== null) malformed = true;
+      open = match.index;
+    } else if (open === null) {
+      malformed = true;
+    } else {
+      blocks.push({ start: open, end: match.index + match[0].length });
+      open = null;
+    }
+  }
+  if (open !== null) malformed = true;
+  return { blocks, malformed };
 }
 
 function donorKeyFromDescription(description) {
@@ -172,7 +210,12 @@ function donorKeyFromDescription(description) {
   return end === -1 ? null : description.slice(valueStart, end).trim().toLowerCase();
 }
 
-function keyMarker(key) { return `${KEY_PREFIX}${String(key || "").trim().toLowerCase()}${KEY_SUFFIX}`; }
+async function keyMarker(key) { return `${KEY_PREFIX}${await donorMarkerId(key)}${KEY_SUFFIX}`; }
+export async function donorMarkerId(key) {
+  const bytes = new TextEncoder().encode(String(key || "").trim().toLowerCase());
+  const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", bytes));
+  return [...digest.slice(0, 16)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
 function taskName(donor) { return `${String(donor.donor_name || donor.email || "Donor").trim()} — donor`; }
 function dateOnly(value) { return value ? String(value).slice(0, 10) : "unknown"; }
 function number(value) { return Math.max(0, Number(value) || 0).toLocaleString("en-US"); }

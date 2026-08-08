@@ -149,6 +149,19 @@ test("the production Worker routes Givebutter deliveries to the handler", async 
   assert.equal(s.sent.length, 1);
 });
 
+test("ClickUp availability cannot reject a Givebutter webhook or suppress its email", async () => {
+  const s = setup();
+  s.env.CLICKUP_TOKEN = "configured-but-unavailable";
+  s.env.CLICKUP_RELATIONSHIPS_LIST_ID = "relationships";
+  s.env.CLICKUP_FETCH = async () => { throw new Error("ClickUp unavailable"); };
+
+  const res = await worker.fetch(signedRequest(payload()), s.env, s.ctx);
+  assert.equal(res.status, 200);
+  await finish(s);
+  assert.equal(s.sent.length, 1);
+  assert.equal(s.donorDb.gifts.size, 1);
+});
+
 test("a D1 failure is returned to Givebutter so the delivery will retry", async () => {
   const s = setup();
   s.env.WAIVERS_DB = { prepare() { throw new Error("D1 unavailable"); } };

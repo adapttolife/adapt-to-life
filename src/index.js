@@ -13,6 +13,7 @@ import { syncGifts } from "./qr_gifts.js";
 import { syncClickUp } from "./qr_clickup.js";
 import { fundPosition } from "./fund.js";
 import { handleGivebutterWebhook, recoverDonorEmails } from "./givebutter_webhook.js";
+import { syncDonorRelationships } from "./donor_clickup.js";
 
 const LEAD_TYPES = [
   "Funding for an athlete",
@@ -184,6 +185,16 @@ export default {
       recoverDonorEmails(env).then((r) => {
         if (r.sent) console.log(`donor email recovery: ${r.sent} email(s) sent`);
       }).catch((err) => console.error("donor email recovery failed:", err))
+    );
+    // ClickUp is the human tracking projection, never the webhook critical path.
+    // Pending/error rows are retried every tick; unchanged donors make no API call.
+    ctx.waitUntil(
+      syncDonorRelationships(env).then((r) => {
+        if (!r.ok) console.error("donor ClickUp sync failed:", r.error || `${r.failed} donor(s)`);
+        else if (r.created || r.updated) {
+          console.log(`donor ClickUp sync: ${r.created} created, ${r.updated} updated`);
+        }
+      }).catch((err) => console.error("donor ClickUp sync failed:", err))
     );
     // Mirror observations into the ClickUp register once a day. Self-limiting:
     // it records the date it ran and no-ops for the rest of the day's ticks.

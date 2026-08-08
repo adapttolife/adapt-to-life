@@ -12,6 +12,7 @@ import { handleAdmin } from "./qr_admin.js";
 import { syncGifts } from "./qr_gifts.js";
 import { syncClickUp } from "./qr_clickup.js";
 import { fundPosition } from "./fund.js";
+import { handleGivebutterWebhook, recoverDonorEmails } from "./givebutter_webhook.js";
 
 const LEAD_TYPES = [
   "Funding for an athlete",
@@ -70,6 +71,14 @@ export default {
         return json({ ok: false, error: "Method not allowed" }, 405);
       }
       return handleSubscribe(request, env);
+    }
+
+    // Givebutter signs successful-transaction deliveries. The handler records
+    // the gift before attempting ATL's follow-up. Ordinary webhook retries are
+    // idempotent; the cron reclaims interrupted or transiently failed attempts
+    // through a bounded delivery lease.
+    if (url.pathname === "/api/givebutter-webhook") {
+      return handleGivebutterWebhook(request, env, ctx);
     }
 
     // Public fundraising total for the site thermometer (Givebutter live + offline gifts).
@@ -170,6 +179,11 @@ export default {
         if (!r.ok) console.error("qr gift sync failed:", r.error);
         else if (r.written) console.log(`qr gift sync: ${r.written} attributed gift(s) recorded`);
       })
+    );
+    ctx.waitUntil(
+      recoverDonorEmails(env).then((r) => {
+        if (r.sent) console.log(`donor email recovery: ${r.sent} email(s) sent`);
+      }).catch((err) => console.error("donor email recovery failed:", err))
     );
     // Mirror observations into the ClickUp register once a day. Self-limiting:
     // it records the date it ran and no-ops for the rest of the day's ticks.

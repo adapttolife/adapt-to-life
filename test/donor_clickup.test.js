@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { syncDonorRelationships } from "../src/donor_clickup.js";
+import { mergeSnapshot, syncDonorRelationships } from "../src/donor_clickup.js";
 
 const donor = {
   donor_key: "jordan@example.com", clickup_task_id: null,
@@ -71,6 +71,7 @@ test("a new donor becomes one relationship task with an automation snapshot", as
   assert.match(s.calls[1].body.markdown_description, /Lifetime gifts \| \*\*\$80\*\*/);
   assert.match(s.calls[1].body.markdown_description, /Communication opt-in \| Yes/);
   assert.match(s.calls[1].body.markdown_description, /## Relationship work/);
+  assert.match(s.calls[1].body.markdown_description, /<!-- donor:begin -->\n<!-- donor:key:jordan@example\.com -->/);
   assert.ok(s.writes.some((write) => write.args.includes("task-1")), "projection stores the ClickUp task id");
   assert.ok(s.writes.some((write) => write.args.includes(donor.source_watermark)), "commit stores the rendered source watermark");
 });
@@ -165,4 +166,31 @@ test("missing bindings fail loud without making network calls", async () => {
   assert.equal(result.ok, false);
   assert.match(result.error, /CLICKUP_TOKEN/);
   assert.equal(s.calls.length, 0);
+});
+
+test("legacy outside marker migrates into the block exactly once", () => {
+  const existing = `<!-- donor:key:jordan@example.com -->\nHuman before.\n<!-- donor:begin -->\nold\n<!-- donor:end -->\nHuman after.`;
+  const merged = mergeSnapshot(existing, donor);
+  assert.equal((merged.match(/<!-- donor:key:jordan@example\.com -->/g) || []).length, 1);
+  assert.match(merged, /Human before\./);
+  assert.match(merged, /Human after\.$/);
+  assert.match(merged, /<!-- donor:begin -->\n<!-- donor:key:jordan@example\.com -->/);
+});
+
+test("the uniquely marked block is replaced while another valid block is preserved", () => {
+  const other = `<!-- donor:begin -->\nother machine block\n<!-- donor:end -->`;
+  const ours = `<!-- donor:begin -->\n<!-- donor:key:jordan@example.com -->\nold donor block\n<!-- donor:end -->`;
+  const merged = mergeSnapshot(`${other}\nHuman middle.\n${ours}`, donor);
+  assert.match(merged, /other machine block/);
+  assert.match(merged, /Human middle\./);
+  assert.doesNotMatch(merged, /old donor block/);
+  assert.equal((merged.match(/<!-- donor:key:jordan@example\.com -->/g) || []).length, 1);
+});
+
+test("malformed delimiters preserve content and append one safe block", () => {
+  const malformed = `Human note.\n<!-- donor:key:jordan@example.com -->\n<!-- donor:begin -->\nbroken  \n`;
+  const merged = mergeSnapshot(malformed, donor);
+  assert.ok(merged.startsWith("Human note.\n\n<!-- donor:begin -->\nbroken  \n\n\n"));
+  assert.equal((merged.match(/<!-- donor:key:jordan@example\.com -->/g) || []).length, 1);
+  assert.match(merged, /<!-- donor:begin -->\n<!-- donor:key:jordan@example\.com -->/);
 });

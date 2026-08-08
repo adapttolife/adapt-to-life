@@ -126,6 +126,7 @@ function snapshot(donor) {
   const first = dateOnly(donor.first_gift_at);
   const latest = dateOnly(donor.latest_gift_at);
   return `${BEGIN}
+${keyMarker(donor.donor_key)}
 **Donor snapshot** — mirrored from Givebutter and Cloudflare; do not edit here.
 
 | | |
@@ -145,23 +146,52 @@ ${END}`;
 }
 
 function newDescription(donor) {
-  return `${keyMarker(donor.donor_key)}
-${snapshot(donor)}
+  return `${snapshot(donor)}
 
 ## Relationship work
 
 Use the task **assignee** for the owner and the **due date** for the next action. Keep human context, next-action reasoning, and stewardship notes here. Automation will preserve everything outside the donor snapshot.`;
 }
 
-function mergeSnapshot(existing, donor) {
+export function mergeSnapshot(existing, donor) {
   const marker = keyMarker(donor.donor_key);
-  const withMarker = existing.includes(marker) ? existing : `${marker}\n${existing}`;
-  const start = withMarker.indexOf(BEGIN);
-  const end = withMarker.indexOf(END);
-  if (start !== -1 && end !== -1 && end >= start) {
-    return withMarker.slice(0, start) + snapshot(donor) + withMarker.slice(end + END.length);
+  const original = donorBlocks(existing);
+  const marked = original.blocks
+    .map((block, index) => existing.slice(block.start, block.end).includes(marker) ? index : -1)
+    .filter((index) => index !== -1);
+  const cleaned = existing.split(marker).join("");
+  const parsed = donorBlocks(cleaned);
+
+  if (!original.malformed && !parsed.malformed) {
+    const target = marked.length === 1
+      ? marked[0]
+      : (marked.length === 0 && parsed.blocks.length === 1 ? 0 : -1);
+    if (target >= 0 && parsed.blocks[target]) {
+      const block = parsed.blocks[target];
+      return cleaned.slice(0, block.start) + snapshot(donor) + cleaned.slice(block.end);
+    }
   }
-  return `${withMarker.trimEnd()}\n\n${snapshot(donor)}`;
+  return `${cleaned}\n\n${snapshot(donor)}`;
+}
+
+function donorBlocks(description) {
+  const token = /<!-- donor:(begin|end) -->/g;
+  const blocks = [];
+  let open = null;
+  let malformed = false;
+  for (let match = token.exec(description); match; match = token.exec(description)) {
+    if (match[1] === "begin") {
+      if (open !== null) malformed = true;
+      open = match.index;
+    } else if (open === null) {
+      malformed = true;
+    } else {
+      blocks.push({ start: open, end: match.index + match[0].length });
+      open = null;
+    }
+  }
+  if (open !== null) malformed = true;
+  return { blocks, malformed };
 }
 
 function donorKeyFromDescription(description) {

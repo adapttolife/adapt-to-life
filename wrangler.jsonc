@@ -61,6 +61,9 @@
     //   cfrun wrangler secret put CLICKUP_TOKEN
     "CLICKUP_APPLICATIONS_LIST_ID": "901418622126",
     "CLICKUP_CONTACTS_LIST_ID": "901418639884",
+    // Human action layer for donors, vendors, organizations, partners,
+    // sponsorships, and grants ATL is pursuing. D1 remains source of truth.
+    "CLICKUP_RELATIONSHIPS_LIST_ID": "901418931939",
     // Google Shared Drive ("Adapt To Life") for the signed-release archive.
     // The service account JSON is a secret: cfrun wrangler secret put GOOGLE_SA_JSON
     "WAIVERS_DRIVE_ID": "0AIG-pWrds0g7Uk9PVA",

@@ -43,7 +43,7 @@ const ALT = {
 // references it, so a redesign is never served from a stale third-party cache.
 const url = (card) => {
   const name = card === "_default" ? "home" : card;
-  return `${BASE}/images/og/${name}-2026.jpg`;
+  return `${BASE}/images/og/${name}-v2-option2.jpg`;
 };
 
 function setMeta(html, selector, attr, value) {
@@ -73,7 +73,7 @@ for (const file of readdirSync(PUB).filter((f) => f.endsWith(".html")).sort()) {
 
   // the card file must exist before a page is allowed to point at it
   const name = card === "_default" ? "home" : card;
-  const local = join(PUB, "images/og", `${name}-2026.jpg`);
+  const local = join(PUB, "images/og", `${name}-v2-option2.jpg`);
   if (!existsSync(local)) throw new Error(`${file}: card missing at ${local} (run make-og.mjs first)`);
 
   const before = html;

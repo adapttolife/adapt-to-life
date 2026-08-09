@@ -47,33 +47,34 @@ test("every site header and footer uses the 2026 ATL monogram", async () => {
   }
 });
 
-test("favicon assets use the optimized 2026 monogram", async () => {
+test("favicon assets use the cache-safe Option 2 monogram", async () => {
   const pages = await htmlPages();
   pages.push({ name: "admin-app/index.html", html: await readFile(join(ROOT, "admin-app", "index.html"), "utf8") });
   for (const { name, html } of pages) {
     if (!html.includes('rel="icon"')) continue;
-    assert.ok(html.includes('href="/images/favicon-2026.svg"'), `${name} should request the versioned 2026 SVG favicon`);
+    assert.ok(html.includes('href="/images/favicon-v2-option2.svg"'), `${name} should request the Option 2 SVG favicon`);
     assert.ok(!html.includes('href="/images/atl-logo.svg"'), `${name} must not request the cache-stale SVG favicon`);
     if (html.includes('type="image/png"')) {
-      assert.ok(html.includes('href="/images/favicon-2026-32.png"'), `${name} should request the versioned 2026 PNG favicon`);
+      assert.ok(html.includes('href="/images/favicon-v2-option2-32.png"'), `${name} should request the Option 2 PNG favicon`);
     }
     if (html.includes('rel="apple-touch-icon"')) {
-      assert.ok(html.includes('href="/images/apple-touch-icon-2026.png"'), `${name} should request the versioned 2026 Apple icon`);
+      assert.ok(html.includes('href="/images/apple-touch-icon-v2-option2.png"'), `${name} should request the Option 2 Apple icon`);
     }
   }
 
-  for (const name of ["favicon-2026.svg"]) {
+  for (const name of ["favicon-v2-option2.svg"]) {
     const svg = await readFile(join(PUBLIC, "images", name), "utf8");
     assert.ok(svg.includes(NEW_VIEWBOX), `${name} should use the 2026 geometry`);
     assert.ok(svg.includes("prefers-color-scheme: dark"), `${name} should stay visible in dark browser chrome`);
     assert.ok(svg.includes("fill: #1a1a1a"), `${name} should use the dark mark in light mode`);
     assert.ok(svg.includes("fill: #f7f3eb"), `${name} should use the cream mark in dark mode`);
+    assert.ok(svg.includes('fill="#FF5C39"'), `${name} should use the exact Option 2 coral gesture`);
     assert.ok(!svg.includes(OLD_VIEWBOX), `${name} must not retain the legacy mark`);
   }
 
   const rasterAssets = new Map([
-    ["favicon-2026-32.png", { hash: "ada4f43a926d18b6c91e069fe94a4a0b73c9d38a2d6814646b66da0f29c33e50", width: 32, height: 32 }],
-    ["apple-touch-icon-2026.png", { hash: "fbc0476196671aad6db13e56eef50064a858e89a9c7c3a51f73eb6a73bb6e5ce", width: 180, height: 180 }],
+    ["favicon-v2-option2-32.png", { hash: "cd626199b146e53035b242b5ec2dfd14731e575878484916ed4f81bcbd4aa09c", width: 32, height: 32 }],
+    ["apple-touch-icon-v2-option2.png", { hash: "567455012e2de42c69e01d4836933c8aa35a7a256f65b0228a6cff97cb5c0860", width: 180, height: 180 }],
   ]);
   for (const [name, expected] of rasterAssets) {
     const png = await readFile(join(PUBLIC, "images", name));
@@ -84,12 +85,12 @@ test("favicon assets use the optimized 2026 monogram", async () => {
   }
 });
 
-test("social cards use the 2026 monogram on cache-busting URLs", async () => {
+test("social cards use the Option 2 monogram on cache-busting URLs", async () => {
   const generator = await readFile(join(ROOT, "scripts", "make-og.mjs"), "utf8");
   const writer = await readFile(join(ROOT, "scripts", "wire-og.mjs"), "utf8");
-  assert.ok(generator.includes('brand/atl-logo-2026-ui.svg'), "OG generator should use the approved 2026 source");
+  assert.ok(generator.includes('brand/atl-logo-v2-option2-ui.svg'), "OG generator should use the Option 2 derivative");
   assert.ok(!generator.includes('public/images/atl-logo.svg'), "OG generator must not use the legacy source");
-  assert.ok(writer.includes('${name}-2026.jpg'), "OG writer should version image URLs");
+  assert.ok(writer.includes('${name}-v2-option2.jpg'), "OG writer should version Option 2 image URLs");
 
   const legacyHashes = new Map([
     ["images/atl-logo.svg", "421057c39131ad5431f255733d00af1a289844cfdb151e8ed0b8917ae069d4b2"],
@@ -111,7 +112,15 @@ test("social cards use the 2026 monogram on cache-busting URLs", async () => {
     ["images/og/hustle-and-heart-2026.jpg", "ee4597876c0af7da7bee7a6dc5d02c9fd41d533991cb38dd6762377b1243f79f"],
     ["images/og/ways-to-give-2026.jpg", "2f7eecfc12d8c358bc3a721a16a3cf4c486d85b928ef461021064f9a0145ac6c"],
   ]);
-  for (const [relative, expected] of [...legacyHashes, ...approvedCardHashes]) {
+  const option2CardHashes = new Map([
+    ["images/og/home-v2-option2.jpg", "187977286e321dd17262dc7a8ebd2a8651240f040dac54d5e659097869f31825"],
+    ["images/og/donate-v2-option2.jpg", "baae568f4d001175fbb7079a9371e6ac0e42bcf2f4c2c4b200951455d004cba5"],
+    ["images/og/send-6-v2-option2.jpg", "7871ac35374864298ede560991bd118d5e6e76ea76f2ceb8c3ae9e2e34542d7f"],
+    ["images/og/popcorn-v2-option2.jpg", "6d8ecd2384e1ebffa50d648804cd694cda0a36fbe78094a6eea0a878850ecd3f"],
+    ["images/og/hustle-and-heart-v2-option2.jpg", "3d9f3ba6d7714914b9ee49ce6ee5c6335048054ca46eac2870280517b77f77ac"],
+    ["images/og/ways-to-give-v2-option2.jpg", "fb161a09235e53bd59f94468aa6c97eaf30b637540abbb955de215798800d282"],
+  ]);
+  for (const [relative, expected] of [...legacyHashes, ...approvedCardHashes, ...option2CardHashes]) {
     const bytes = await readFile(join(PUBLIC, relative));
     assert.equal(createHash("sha256").update(bytes).digest("hex"), expected, `${relative} hash drifted`);
   }
@@ -120,7 +129,7 @@ test("social cards use the 2026 monogram on cache-busting URLs", async () => {
     const images = [...html.matchAll(/<meta[^>]+(?:property="og:image"|name="twitter:image")[^>]+content="([^"]+)"/g)]
       .map((match) => match[1]);
     for (const image of images) {
-      assert.match(image, /\/images\/og\/[a-z0-9-]+-2026\.jpg$/, `${name} should request a versioned 2026 social card`);
+      assert.match(image, /\/images\/og\/[a-z0-9-]+-v2-option2\.jpg$/, `${name} should request a versioned Option 2 social card`);
     }
   }
 });

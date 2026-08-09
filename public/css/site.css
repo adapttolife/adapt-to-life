@@ -9,12 +9,12 @@
   color-scheme: only light;
 
   /* brand */
-  --orange:#E8572A; --orange-ink:#BD4418; --orange-press:#A33A13;
-  --orange-hot:#FF6A45; --orange-glow:rgba(232,87,42,0.42); --orange-bloom:rgba(232,87,42,0.12);
+  --orange:#FF5C39; --orange-ink:#C63F22; --orange-press:#A72F17;
+  --orange-hot:#FF765B; --orange-glow:rgba(255,92,57,0.42); --orange-bloom:rgba(255,92,57,0.12);
   --gold:#D4A843;   --gold-press:#BE9233;   /* reserved for Tim / reverence */
 
   /* ink + canvas (warm, never pure white/black) */
-  --ink:#1C1A15;            /* primary text on light */
+  --ink:#1A1A1A;            /* primary text on light */
   --ink-soft:#3C382F;       /* body prose */
   --muted:#6E6B62;          /* labels, captions */
   --ink-warm:#0C0C0E;       /* dark band base — crisp near-black (was warm brown) */
@@ -104,7 +104,7 @@ p{ text-wrap:pretty; }
   transition:background .18s ease, transform .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease;
   cursor:pointer; white-space:nowrap;
 }
-.btn:hover{ background:var(--orange-press); border-color:var(--orange-press); transform:translateY(-2px); box-shadow:0 12px 30px -12px rgba(232,87,42,0.55); }
+.btn:hover{ background:var(--orange-press); border-color:var(--orange-press); transform:translateY(-2px); box-shadow:0 12px 30px -12px rgba(255,92,57,0.55); }
 .btn.ghost{ background:transparent; color:var(--ink); border-color:rgba(28,26,21,0.28); }
 .btn.ghost:hover{ background:var(--ink); color:#fff; border-color:var(--ink); }
 
@@ -138,7 +138,7 @@ p{ text-wrap:pretty; }
 .nav-links a.lk.featured{ color:var(--orange-ink); opacity:1; font-weight:600; }
 .nav-links a.lk.featured:hover{ color:var(--orange-press); opacity:1; }
 .nav-cta{ font-weight:600; font-size:0.9rem; background:var(--orange-ink); color:#fff; padding:0.55rem 1.15rem; border-radius:999px; box-shadow:0 6px 18px -8px var(--orange-glow); transition:background .18s ease, box-shadow .18s ease; }
-.nav-cta:hover{ background:var(--orange-press); box-shadow:0 9px 22px -10px rgba(232,87,42,0.5); }
+.nav-cta:hover{ background:var(--orange-press); box-shadow:0 9px 22px -10px rgba(255,92,57,0.5); }
 .menu-btn{ display:none; background:none; border:none; cursor:pointer; padding:0.4rem; }
 .menu-btn span{ display:block; width:24px; height:2px; background:var(--ink); margin:5px 0; transition:transform .2s ease, opacity .2s ease, background .25s ease; }
 .mobile-menu{ display:none; }
@@ -168,7 +168,7 @@ section{ position:relative; }
   color:var(--cream);
   background-color:var(--ink-warm);
   /* crisp near-black + subtle orange/gold atmosphere (no brown) */
-  background-image:radial-gradient(ellipse 72% 60% at 80% 26%, rgba(232,87,42,0.11) 0%, transparent 62%),
+  background-image:radial-gradient(ellipse 72% 60% at 80% 26%, rgba(255,92,57,0.11) 0%, transparent 62%),
                    radial-gradient(ellipse 60% 72% at 8% 104%, rgba(212,168,67,0.045) 0%, transparent 60%);
 }
 .dark h1,.dark h2,.dark h3{ color:#fff; }
@@ -313,7 +313,7 @@ section{ position:relative; }
 
 /* ---- footer (dark) ------------------------------------------------------- */
 .footer{ color:var(--cream); padding-top:clamp(3.5rem,7vw,5rem); padding-bottom:2.5rem; border-top:3px solid var(--orange);
-  background-color:var(--ink-warm); background-image:radial-gradient(ellipse 70% 95% at 86% -10%, rgba(232,87,42,0.07) 0%, transparent 56%); }
+  background-color:var(--ink-warm); background-image:radial-gradient(ellipse 70% 95% at 86% -10%, rgba(255,92,57,0.07) 0%, transparent 56%); }
 .footer-top{ display:grid; grid-template-columns:1.6fr 1fr 1fr; gap:2.5rem; }
 .footer .brand{ color:#fff; margin-bottom:0.9rem; }
 .footer .tagline{ color:var(--cream-mute); max-width:30ch; font-size:0.95rem; margin-bottom:1.2rem; }
@@ -407,6 +407,8 @@ section{ position:relative; }
   .metrics{ grid-template-columns:repeat(2,1fr); gap:1.6rem 1.2rem; }
   .impact-grid{ grid-template-columns:1fr 1fr; gap:1.8rem 1.4rem; }
   .hero .actions .btn{ width:100%; justify-content:center; }
+  .closing .actions{ flex-direction:column; align-items:stretch; }
+  .closing .actions .btn{ width:100%; justify-content:center; }
 }
 @media (max-width:480px){
   .footer-top{ grid-template-columns:1fr; }
@@ -434,7 +436,7 @@ section{ position:relative; }
   box-shadow:0 28px 64px -34px rgba(28,26,21,0.42);
   transition:border-color .2s ease, transform .2s ease;
 }
-a.camp-band:hover .camp-band-card{ border-color:rgba(232,87,42,0.4); transform:translateY(-2px); }
+a.camp-band:hover .camp-band-card{ border-color:rgba(255,92,57,0.4); transform:translateY(-2px); }
 a.camp-band:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:4px; border-radius:20px; }
 @media (max-width:820px){ .camp-band-card{ grid-template-columns:1fr; } }
 
@@ -555,14 +557,14 @@ a.info-v{ border-bottom:1.5px solid var(--orange); padding-bottom:1px; }
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
 .hero-startline > .wrap{ position:relative; z-index:2; }
 .startline-hero{ position:relative; height:3px; width:min(560px,82%); margin-top:clamp(2.6rem,5vw,3.6rem); background:rgba(255,255,255,0.10); border-radius:3px; overflow:hidden; }
-.startline-hero::before{ content:""; position:absolute; top:0; bottom:0; left:0; right:100%; background:var(--orange); box-shadow:0 0 20px -1px rgba(232,87,42,0.7); border-radius:3px; animation:drawline 1.5s 0.6s cubic-bezier(.2,.7,.2,1) forwards; }
+.startline-hero::before{ content:""; position:absolute; top:0; bottom:0; left:0; right:100%; background:var(--orange); box-shadow:0 0 20px -1px rgba(255,92,57,0.7); border-radius:3px; animation:drawline 1.5s 0.6s cubic-bezier(.2,.7,.2,1) forwards; }
 @keyframes drawline{ to{ right:0; } }
 @media (prefers-reduced-motion: reduce){ .startline-hero::before{ right:0; animation:none; } }
 
 /* Home hero — atmosphere only: crisp black + orange/gold glow, bold type */
 .hero-atmos{
   background-image:
-    radial-gradient(ellipse 60% 84% at 84% 48%, rgba(232,87,42,0.20) 0%, rgba(232,87,42,0.05) 40%, transparent 64%),
+    radial-gradient(ellipse 60% 84% at 84% 48%, rgba(255,92,57,0.20) 0%, rgba(255,92,57,0.05) 40%, transparent 64%),
     radial-gradient(ellipse 48% 62% at 102% 102%, rgba(212,168,67,0.06) 0%, transparent 58%);
 }
 .hero-atmos .display{ max-width:15ch; font-size:clamp(3.1rem,7.4vw,6rem); }

@@ -12,8 +12,8 @@
      headless browser with no site stylesheet, and a share card that drifts from
      the site is the bug this generator exists to prevent. */
   :root{
-    --orange:#E8572A; --orange-ink:#BD4418;
-    --ink:#1C1A15; --ink-warm:#0C0C0E;
+    --orange:#FF5C39; --orange-ink:#C63F22;
+    --ink:#1A1A1A; --ink-warm:#0C0C0E;
     --cream:#F7F4EE; --cream-mute:#CFC9BD; --cream-faint:#9C968A;
   }
   *{ margin:0; padding:0; box-sizing:border-box; }
@@ -36,7 +36,7 @@
     linear-gradient(0deg, rgba(12,12,14,0.55) 0%, transparent 46%); }
   /* Brand warmth, same recipe as the home hero */
   .atmos{ position:absolute; inset:0; background:
-    radial-gradient(ellipse 60% 84% at 86% 46%, rgba(232,87,42,0.22) 0%, rgba(232,87,42,0.05) 40%, transparent 66%),
+    radial-gradient(ellipse 60% 84% at 86% 46%, rgba(255,92,57,0.22) 0%, rgba(255,92,57,0.05) 40%, transparent 66%),
     radial-gradient(ellipse 48% 62% at 100% 104%, rgba(212,168,67,0.07) 0%, transparent 58%); }
   .grain{ position:absolute; inset:0; opacity:0.28; mix-blend-mode:overlay;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
@@ -58,7 +58,7 @@
 
   .foot{ display:flex; align-items:center; gap:22px; }
   .rule{ height:3px; width:132px; border-radius:3px; background:var(--orange);
-    box-shadow:0 0 20px -1px rgba(232,87,42,0.7); }
+    box-shadow:0 0 20px -1px rgba(255,92,57,0.7); }
   .domain{ font-family:"Space Mono", monospace; font-weight:700; font-size:15px;
     letter-spacing:0.2em; text-transform:uppercase; }
 
@@ -67,7 +67,7 @@
   .card.light .wordmark{ color:var(--ink); }
   .card.light .domain{ color:var(--orange-ink); }
   .card.light .atmos{ background:
-    radial-gradient(ellipse 70% 90% at 92% 8%, rgba(232,87,42,0.10) 0%, transparent 62%),
+    radial-gradient(ellipse 70% 90% at 92% 8%, rgba(255,92,57,0.10) 0%, transparent 62%),
     radial-gradient(ellipse 50% 70% at -6% 104%, rgba(28,26,21,0.06) 0%, transparent 60%); }
   .card.light .grain{ opacity:0.35; mix-blend-mode:multiply; }
 
@@ -88,7 +88,7 @@
     linear-gradient(270deg, rgba(10,10,11,0.94) 0%, rgba(10,10,11,0.92) 38%,
                     rgba(10,10,11,0.62) 58%, rgba(10,10,11,0.18) 80%, transparent 100%); }
   .card.mono .atmos{ background:
-    radial-gradient(ellipse 46% 70% at 88% 50%, rgba(232,87,42,0.13) 0%, transparent 66%); }
+    radial-gradient(ellipse 46% 70% at 88% 50%, rgba(255,92,57,0.13) 0%, transparent 66%); }
   .card.mono .grain{ opacity:0.14; }
   .card.mono .inner{ align-items:flex-end; text-align:right; }
   .card.mono h1{ max-width:var(--measure,13ch); }
@@ -117,7 +117,7 @@
   .card.split .scrim{ left:auto; right:0; width:52%; background:
     linear-gradient(90deg, rgba(12,12,14,1) 0%, rgba(12,12,14,0.96) 3.4%, rgba(12,12,14,0) 4.4%); }
   .card.split .atmos{ background:
-    radial-gradient(ellipse 52% 78% at 8% 52%, rgba(232,87,42,0.16) 0%, transparent 62%); }
+    radial-gradient(ellipse 52% 78% at 8% 52%, rgba(255,92,57,0.16) 0%, transparent 62%); }
   /* The type panel stops well short of the seam. Set to 56% it looked fine at
      1200px and the full stop landed on the photograph at 300px. */
   .card.split .inner{ width:50%; padding-right:48px; }
@@ -125,7 +125,7 @@
   .card.split.light .scrim{ background:
     linear-gradient(90deg, var(--cream) 0%, rgba(247,244,238,0.96) 3.4%, rgba(247,244,238,0) 4.4%); }
   .card.split.light .atmos{ background:
-    radial-gradient(ellipse 52% 78% at 6% 50%, rgba(232,87,42,0.09) 0%, transparent 62%); }
+    radial-gradient(ellipse 52% 78% at 6% 50%, rgba(255,92,57,0.09) 0%, transparent 62%); }
 
   /* There is deliberately no eyebrow/kicker line. A 15px tracked cap line is
      4px in a chat thread: unreadable texture that costs the headline room.

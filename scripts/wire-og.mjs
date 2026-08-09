@@ -31,7 +31,7 @@ const PER_PAGE = {
 const ALT = {
   _default: "Adapt To Life: your place in adaptive sports. The Adapt To Life mark, embossed in black.",
   donate: "Put an athlete in the game. Adapt To Life.",
-  "send-6": "Send 6 to the US Open. Adapt To Life.",
+  "send-6": "Send 6 to the US Open Spring 2027. Adapt To Life.",
   popcorn: "Half of every bag puts an athlete in the game. Adapt To Life.",
   "hustle-and-heart": "Every dollar goes to an athlete. The Hustle and Heart Fund, Adapt To Life.",
   "ways-to-give": "Every road here ends on a court. Adapt To Life.",
@@ -43,7 +43,7 @@ const ALT = {
 // references it, so a redesign is never served from a stale third-party cache.
 const url = (card) => {
   const name = card === "_default" ? "home" : card;
-  return `${BASE}/images/og/${name}-2026.jpg`;
+  return `${BASE}/images/og/${name}-v2-option2.jpg`;
 };
 
 function setMeta(html, selector, attr, value) {
@@ -73,7 +73,7 @@ for (const file of readdirSync(PUB).filter((f) => f.endsWith(".html")).sort()) {
 
   // the card file must exist before a page is allowed to point at it
   const name = card === "_default" ? "home" : card;
-  const local = join(PUB, "images/og", `${name}-2026.jpg`);
+  const local = join(PUB, "images/og", `${name}-v2-option2.jpg`);
   if (!existsSync(local)) throw new Error(`${file}: card missing at ${local} (run make-og.mjs first)`);
 
   const before = html;

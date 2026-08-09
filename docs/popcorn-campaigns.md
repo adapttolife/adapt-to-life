@@ -95,7 +95,7 @@ That is the whole job. Nothing else on any page needs touching.
 
 ```
 Hustle & Heart Fund            the fund, open every day
-   └─ Send 6 to the US Open    the campaign, $21,000 (six athletes x ~$3,500), page at /send-6
+   └─ Send 6 to the US Open Spring 2027    the campaign, $21,000 (six athletes x ~$3,500), page at /send-6
         └─ August popcorn drive    one drive, Aug 6-13, page at /popcorn
         └─ future drives, tournaments, monthly popcorn
 ```

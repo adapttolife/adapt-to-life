@@ -34,7 +34,7 @@
 import QR from 'qrcode';
 
 export const INK    = '#0C0C0E';
-export const ORANGE = '#E8572A';
+export const ORANGE = '#FF5C39';
 export const CREAM  = '#F7F4EE';
 export const BASE   = 'https://adapttolife.org/q/';
 

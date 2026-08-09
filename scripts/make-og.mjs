@@ -81,19 +81,19 @@ const CARDS = {
   // a 30-day cache header, so reusing that URL means every platform and thread
   // that already scraped the June card keeps serving it. A new design needs a
   // new URL or the most-shared link is the last one to update.
-  home: { ...MONO, out: "public/images/og/home-2026.jpg", page: "index.html",
+  home: { ...MONO, out: "public/images/og/home-v2-option2.jpg", page: "index.html",
     headline: "Your place in <em>adaptive sports</em>." },
-  donate: { ...MONO, out: "public/images/og/donate-2026.jpg", page: "donate.html",
+  donate: { ...MONO, out: "public/images/og/donate-v2-option2.jpg", page: "donate.html",
     headline: "Put an athlete <em>in the game</em>." },
-  "send-6": { ...MONO, out: "public/images/og/send-6-2026.jpg", page: "send-6.html",
-    headline: "Send 6 to the <em>US Open</em>." },
-  popcorn: { ...MONO, out: "public/images/og/popcorn-2026.jpg", page: "popcorn.html",
+  "send-6": { ...MONO, out: "public/images/og/send-6-v2-option2.jpg", page: "send-6.html",
+    headline: "Send 6 to the <em>US Open</em> Spring 2027." },
+  popcorn: { ...MONO, out: "public/images/og/popcorn-v2-option2.jpg", page: "popcorn.html",
     headline: "Half of every bag <em>puts an athlete in the game</em>.",
     size: 64, measure: "16ch" },
-  "hustle-and-heart": { ...MONO, out: "public/images/og/hustle-and-heart-2026.jpg",
+  "hustle-and-heart": { ...MONO, out: "public/images/og/hustle-and-heart-v2-option2.jpg",
     page: "hustle-and-heart.html",
     headline: "Every dollar goes to <em>an athlete</em>.", measure: "14ch" },
-  "ways-to-give": { ...MONO, out: "public/images/og/ways-to-give-2026.jpg",
+  "ways-to-give": { ...MONO, out: "public/images/og/ways-to-give-v2-option2.jpg",
     page: "ways-to-give.html",
     headline: "Every road here ends <em>on a court</em>.", measure: "14ch" },
 };
@@ -108,7 +108,7 @@ const CANDIDATES = {
   "m1-home-black":   { out: "m1-home-black.jpg", variant: "mono", photo: "black",
     headline: "Your place in <em>adaptive sports</em>.", size: 76, measure: "13ch" },
   "m2-send6-black":  { out: "m2-send6-black.jpg", variant: "mono", photo: "black",
-    headline: "Send 6 to the <em>US Open</em>.", size: 76, measure: "13ch" },
+    headline: "Send 6 to the <em>US Open</em> Spring 2027.", size: 68, measure: "16ch" },
   "m3-donate-black": { out: "m3-donate-black.jpg", variant: "mono", photo: "black",
     headline: "Put an athlete <em>in the game</em>.", size: 76, measure: "13ch" },
   "m4-home-fire":    { out: "m4-home-fire.jpg", variant: "mono", photo: "fire",
@@ -128,7 +128,7 @@ const todo = names.length ? names : Object.keys(set);
 
 // The mark is the site's own SVG, recoloured per variant. Inlined so the
 // headless render never depends on a file:// image resolving.
-const logoSrc = readFileSync(join(ROOT, "brand/atl-logo-2026-ui.svg"), "utf8");
+const logoSrc = readFileSync(join(ROOT, "brand/atl-logo-v2-option2-ui.svg"), "utf8");
 function mark(variant) {
   const body = (variant || "").includes("light") ? "#1C1A15" : "#F7F4EE";
   return logoSrc.replace(/currentColor/g, body);

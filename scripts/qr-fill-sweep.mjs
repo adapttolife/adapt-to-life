@@ -18,7 +18,7 @@ import { chromium } from 'playwright';
 import { PNG } from 'pngjs';
 import jsQR from 'jsqr';
 
-const INK='#0C0C0E', ORANGE='#E8572A', CREAM='#F7F4EE';
+const INK='#0C0C0E', ORANGE='#FF5C39', CREAM='#F7F4EE';
 const isEye=(r,c,n)=>(r<7&&c<7)||(r<7&&c>=n-7)||(r>=n-7&&c<7);
 
 function build(url, fill, frame){

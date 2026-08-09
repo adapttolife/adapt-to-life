@@ -29,7 +29,7 @@
 
   /* Brand accent — reserved. Orange means MAGNITUDE and nothing else, so a
      reader never has to ask whether a colour is identity or quantity. */
-  --accent:       #E8572A;
+  --accent:       #FF5C39;
   --accent-hover: #F06B41;
   --accent-dim:   rgba(232, 87, 42, 0.14);
 
@@ -37,7 +37,7 @@
      steps are deliberately absent — they measure 1.9:1 and 2.8:1 here and
      would vanish into the surface. */
   --mag-1: #C4431E;
-  --mag-2: #E8572A;
+  --mag-2: #FF5C39;
   --mag-3: #F07A50;
   --mag-4: #F49F7C;
   --mag-5: #F8C4AC;

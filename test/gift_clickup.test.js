@@ -80,6 +80,9 @@ test("one gift becomes one subtask under the donor relationship", async () => {
   assert.match(create.body.markdown_description, /Allocation status \| Unallocated/);
   assert.match(create.body.markdown_description, /ATL thank-you \| Sent/);
   assert.match(create.body.markdown_description, /## Stewardship work/);
+  assert.ok(create.body.markdown_description.indexOf("## Stewardship work")
+    < create.body.markdown_description.indexOf("<!-- gift:begin -->"));
+  assert.ok(create.body.markdown_description.trimEnd().endsWith("<!-- gift:end -->"));
   assert.ok(s.writes.some((write) => write.args.includes("gift-task-1")));
 });
 
@@ -158,6 +161,36 @@ test("adversarial source text cannot break gift blocks or inject Markdown links"
   assert.doesNotMatch(merged, /https:\/\/user:password/);
   assert.ok(merged.includes("&lt;\\!-- gift:end --&gt;"));
   assert.ok(merged.startsWith("Human note"));
+});
+
+test("ClickUp's legacy marker-heading rewrite migrates human work before the block", async () => {
+  const legacy = `<!-- gift:begin -->\nold\n## <!-- gift:end -->Stewardship work\n\nHuman note  \n`;
+  const merged = await mergeGiftSnapshot(legacy, gift);
+  assert.ok(merged.startsWith("## Stewardship work\n\nHuman note  \n"));
+  assert.ok(merged.indexOf("Human note") < merged.indexOf("<!-- gift:begin -->"));
+  assert.ok(merged.trimEnd().endsWith("<!-- gift:end -->"));
+  assert.equal((merged.match(/Human note/g) || []).length, 1);
+});
+
+test("near-match stewardship text is preserved rather than migrated", async () => {
+  const near = `<!-- gift:begin -->\nold\n<!-- gift:end -->Stewardship workflow\n\nHuman note  \n`;
+  const merged = await mergeGiftSnapshot(near, gift);
+  assert.ok(merged.endsWith("Stewardship workflow\n\nHuman note  \n"));
+  assert.ok(merged.indexOf("<!-- gift:begin -->") < merged.indexOf("Stewardship workflow"));
+});
+
+test("leading whitespace makes the legacy shape a non-migrating near match", async () => {
+  const near = ` \n<!-- gift:begin -->\nold\n## <!-- gift:end -->Stewardship work\n\nHuman note  \n`;
+  const merged = await mergeGiftSnapshot(near, gift);
+  assert.ok(merged.startsWith(" \n<!-- gift:begin -->"));
+  assert.ok(merged.endsWith("Stewardship work\n\nHuman note  \n"));
+});
+
+test("a key marker before the block cannot manufacture a byte-zero legacy match", async () => {
+  const near = `${marker}\n<!-- gift:begin -->\nold\n## <!-- gift:end -->Stewardship work\n\nHuman note  \n`;
+  const merged = await mergeGiftSnapshot(near, gift);
+  assert.ok(!merged.startsWith("## Stewardship work"));
+  assert.ok(merged.endsWith("Stewardship work\n\nHuman note  \n"));
 });
 
 test("historical gifts are explicit and never claim a retroactive ATL email", async () => {

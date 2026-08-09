@@ -135,7 +135,7 @@ ${await keyMarker(donor.donor_key)}
 
 | | |
 |---|---|
-| Email | ${escapeMarkdown(donor.email)} |
+| Email | ${donor.email ? escapeMarkdown(donor.email) : "Not provided"} |
 | Gift count | **${number(donor.gift_count)}** |
 | Lifetime gifts | **$${money(donor.total_donated)}** |
 | First gift | ${first} |
@@ -216,12 +216,20 @@ export async function donorMarkerId(key) {
   const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", bytes));
   return [...digest.slice(0, 16)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
 }
-function taskName(donor) { return `${String(donor.donor_name || donor.email || "Donor").trim()} — donor`; }
+function taskName(donor) { return `${escapeMarkdown(donor.donor_name || donor.email || "Donor")} — donor`; }
 function dateOnly(value) { return value ? String(value).slice(0, 10) : "unknown"; }
 function number(value) { return Math.max(0, Number(value) || 0).toLocaleString("en-US"); }
 function money(value) { return (Number(value) || 0).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 2 }); }
 function truthy(value) { return value === true || value === 1 || value === "1" || value === "true"; }
-function escapeMarkdown(value) { return String(value || "").replace(/[|\\]/g, "\\$&"); }
+function escapeMarkdown(value) {
+  return String(value || "")
+    .replace(/[\u0000-\u001f\u007f]+/g, " ")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replace(/([\\|[\]()*_`~#!])/g, "\\$1")
+    .trim();
+}
 function safeError(err) { return String(err?.message || err || "unknown error").slice(0, 500); }
 
 class ClickUpError extends Error {
@@ -308,15 +316,24 @@ async function safeRecordFailure(env, donor, leaseToken, error) {
 }
 
 export const DONOR_PROJECTION_QUERY = `
-WITH eligible_gifts AS (
-  SELECT g.rowid AS gift_rowid, g.*
+WITH keyed_gifts AS (
+  SELECT g.rowid AS gift_rowid,
+         CASE
+           WHEN g.email IS NOT NULL AND trim(g.email) <> '' THEN lower(trim(g.email))
+           WHEN g.contact_id IS NOT NULL AND trim(g.contact_id) <> '' THEN 'contact:' || trim(g.contact_id)
+           ELSE 'transaction:' || g.transaction_id
+         END AS donor_key,
+         g.*
     FROM donor_gifts g
-    LEFT JOIN donor_clickup_projection p ON p.donor_key = lower(trim(g.email))
-   WHERE g.email IS NOT NULL AND trim(g.email) <> ''
-     AND (p.baseline_cutoff_at IS NULL OR g.transacted_at >= p.baseline_cutoff_at)
+),
+eligible_gifts AS (
+  SELECT k.*
+    FROM keyed_gifts k
+    LEFT JOIN donor_clickup_projection p ON p.donor_key = k.donor_key
+   WHERE p.baseline_cutoff_at IS NULL OR k.transacted_at >= p.baseline_cutoff_at
 ),
 live AS (
-  SELECT lower(trim(email)) AS donor_key,
+  SELECT donor_key,
          COUNT(*) AS gift_count,
          SUM(amount) AS total_donated,
          MIN(transacted_at) AS first_gift_at,
@@ -325,13 +342,13 @@ live AS (
          MAX(gift_rowid) AS source_watermark,
          MAX(recurring) AS recurring
     FROM eligible_gifts
-   GROUP BY lower(trim(email))
+   GROUP BY donor_key
 ),
 latest_ranked AS (
-  SELECT lower(trim(email)) AS donor_key, first_name, last_name, email,
+  SELECT donor_key, first_name, last_name, email,
          communication_opt_in,
          ROW_NUMBER() OVER (
-           PARTITION BY lower(trim(email))
+           PARTITION BY donor_key
            ORDER BY transacted_at DESC, transaction_id DESC
          ) AS position
     FROM eligible_gifts
@@ -349,7 +366,7 @@ SELECT k.donor_key,
        p.clickup_task_id,
        v.source_watermark,
        COALESCE(NULLIF(trim(COALESCE(l.first_name, '') || ' ' || COALESCE(l.last_name, '')), ''),
-                p.baseline_name, l.email, p.baseline_email, 'Donor') AS donor_name,
+                p.baseline_name, l.email, p.baseline_email, 'Anonymous donor') AS donor_name,
        COALESCE(l.email, p.baseline_email) AS email,
        COALESCE(p.baseline_gift_count, 0) + COALESCE(v.gift_count, 0) AS gift_count,
        COALESCE(p.baseline_total, 0) + COALESCE(v.total_donated, 0) AS total_donated,

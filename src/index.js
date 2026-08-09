@@ -14,6 +14,7 @@ import { syncClickUp } from "./qr_clickup.js";
 import { fundPosition } from "./fund.js";
 import { handleGivebutterWebhook, recoverDonorEmails } from "./givebutter_webhook.js";
 import { syncDonorRelationships } from "./donor_clickup.js";
+import { syncGiftRelationships } from "./gift_clickup.js";
 
 const LEAD_TYPES = [
   "Funding for an athlete",
@@ -187,12 +188,18 @@ export default {
       }).catch((err) => console.error("donor email recovery failed:", err))
     );
     // ClickUp is the human tracking projection, never the webhook critical path.
-    // Pending/error rows are retried every tick; unchanged donors make no API call.
+    // Parent donors reconcile before gift subtasks in the same tick.
     ctx.waitUntil(
-      syncDonorRelationships(env).then((r) => {
+      syncDonorRelationships(env).then(async (r) => {
         if (!r.ok) console.error("donor ClickUp sync failed:", r.error || `${r.failed} donor(s)`);
         else if (r.created || r.updated) {
           console.log(`donor ClickUp sync: ${r.created} created, ${r.updated} updated`);
+        }
+        if (!r.ok) return;
+        const gifts = await syncGiftRelationships(env);
+        if (!gifts.ok) console.error("gift ClickUp sync failed:", gifts.error || `${gifts.failed} gift(s)`);
+        else if (gifts.created || gifts.updated) {
+          console.log(`gift ClickUp sync: ${gifts.created} created, ${gifts.updated} updated`);
         }
       }).catch((err) => console.error("donor ClickUp sync failed:", err))
     );

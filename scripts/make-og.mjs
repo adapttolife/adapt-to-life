@@ -22,12 +22,13 @@
 // Usage:
 //   node scripts/make-og.mjs                 # render every card in CARDS
 //   node scripts/make-og.mjs home popcorn    # render named cards only
-//   node scripts/make-og.mjs --out /tmp/x    # write somewhere else (candidates)
+//   node scripts/make-og.mjs --out ~/scratch/stingel/og-candidate  # candidates
 import { chromium } from "/home/agentos/pw/node_modules/playwright/index.mjs";
-import { readFileSync, writeFileSync, mkdirSync, statSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, mkdtempSync, rmSync, statSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { homedir } from "node:os";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const W = 1200, H = 630;
@@ -73,26 +74,26 @@ const PHOTOS = {
 //
 // Only the pages people actually send to each other get their own card. Every
 // other page falls back to the default, which is now worth falling back to.
-const MONO = { variant: "mono", photo: "black", size: 74, measure: "13ch" };
+const MONO = { variant: "mono", size: 74, measure: "13ch" };
 const CARDS = {
   // the default: adapttolife.org/ and any page without its own card
   // On its own path, NOT the historical /images/og-image.jpg. Assets ship with
   // a 30-day cache header, so reusing that URL means every platform and thread
   // that already scraped the June card keeps serving it. A new design needs a
   // new URL or the most-shared link is the last one to update.
-  home: { ...MONO, out: "public/images/og/home.jpg", page: "index.html",
+  home: { ...MONO, out: "public/images/og/home-2026.jpg", page: "index.html",
     headline: "Your place in <em>adaptive sports</em>." },
-  donate: { ...MONO, out: "public/images/og/donate.jpg", page: "donate.html",
+  donate: { ...MONO, out: "public/images/og/donate-2026.jpg", page: "donate.html",
     headline: "Put an athlete <em>in the game</em>." },
-  "send-6": { ...MONO, out: "public/images/og/send-6.jpg", page: "send-6.html",
+  "send-6": { ...MONO, out: "public/images/og/send-6-2026.jpg", page: "send-6.html",
     headline: "Send 6 to the <em>US Open</em>." },
-  popcorn: { ...MONO, out: "public/images/og/popcorn.jpg", page: "popcorn.html",
+  popcorn: { ...MONO, out: "public/images/og/popcorn-2026.jpg", page: "popcorn.html",
     headline: "Half of every bag <em>puts an athlete in the game</em>.",
     size: 64, measure: "16ch" },
-  "hustle-and-heart": { ...MONO, out: "public/images/og/hustle-and-heart.jpg",
+  "hustle-and-heart": { ...MONO, out: "public/images/og/hustle-and-heart-2026.jpg",
     page: "hustle-and-heart.html",
     headline: "Every dollar goes to <em>an athlete</em>.", measure: "14ch" },
-  "ways-to-give": { ...MONO, out: "public/images/og/ways-to-give.jpg",
+  "ways-to-give": { ...MONO, out: "public/images/og/ways-to-give-2026.jpg",
     page: "ways-to-give.html",
     headline: "Every road here ends <em>on a court</em>.", measure: "14ch" },
 };
@@ -127,12 +128,10 @@ const todo = names.length ? names : Object.keys(set);
 
 // The mark is the site's own SVG, recoloured per variant. Inlined so the
 // headless render never depends on a file:// image resolving.
-const logoSrc = readFileSync(join(ROOT, "public/images/atl-logo.svg"), "utf8");
+const logoSrc = readFileSync(join(ROOT, "brand/atl-logo-2026-ui.svg"), "utf8");
 function mark(variant) {
   const body = (variant || "").includes("light") ? "#1C1A15" : "#F7F4EE";
-  return logoSrc
-    .replace(/fill="#1A1A1A"/g, `fill="${body}"`)
-    .replace(/fill="#E85D04"/g, 'fill="#E8572A"');
+  return logoSrc.replace(/currentColor/g, body);
 }
 
 function dataUri(rel) {
@@ -246,11 +245,18 @@ for (const name of todo) {
   mkdirSync(dirname(out), { recursive: true });
   // Render at 2x (2400x1260) and supersample down to 1200x630: serif type at
   // 90px has thin strokes that alias badly when rasterised once at 1x.
-  const tmp = `/tmp/og-2x-${name}.png`;
-  writeFileSync(tmp, await page.screenshot({ type: "png", clip: { x: 0, y: 0, width: W, height: H } }));
-  execFileSync("convert", [tmp, "-filter", "Lanczos", "-resize", `${W}x${H}`,
-    "-strip", "-interlace", "Plane", "-sampling-factor", "4:2:0",
-    "-quality", "86", out]);
+  const scratchRoot = join(homedir(), "scratch", "stingel");
+  mkdirSync(scratchRoot, { recursive: true });
+  const scratch = mkdtempSync(join(scratchRoot, "atl-og-render-"));
+  const tmp = join(scratch, `og-2x-${name}.png`);
+  try {
+    writeFileSync(tmp, await page.screenshot({ type: "png", clip: { x: 0, y: 0, width: W, height: H } }));
+    execFileSync("convert", [tmp, "-filter", "Lanczos", "-resize", `${W}x${H}`,
+      "-strip", "-interlace", "Plane", "-sampling-factor", "4:2:0",
+      "-quality", "86", out]);
+  } finally {
+    rmSync(scratch, { recursive: true, force: true });
+  }
 
   const kb = Math.round(statSync(out).size / 1024);
   const okSize = probe.size >= MIN_HEADLINE_PX;

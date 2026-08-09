@@ -125,18 +125,30 @@ export async function mergeGiftSnapshot(existing, gift) {
     const target = marked.length === 1 ? marked[0] : (marked.length === 0 && parsed.blocks.length === 1 ? 0 : -1);
     if (target >= 0 && parsed.blocks[target]) {
       const block = parsed.blocks[target];
-      return cleaned.slice(0, block.start) + await giftSnapshot(gift) + cleaned.slice(block.end);
+      const before = cleaned.slice(0, block.start);
+      const after = cleaned.slice(block.end);
+      const originalBlock = original.blocks[target]
+        ? existing.slice(original.blocks[target].start, original.blocks[target].end)
+        : "";
+      const legacy = after.match(/^Stewardship work((?:\r?\n|$)[\s\S]*)$/);
+      if (before === "" && original.blocks[target]?.start === 0
+          && originalBlock.endsWith("## <!-- gift:end -->") && legacy) {
+        return `## Stewardship work${legacy[1]}\n\n---\n\n${await giftSnapshot(gift)}`;
+      }
+      return before + await giftSnapshot(gift) + after;
     }
   }
   return `${cleaned}\n\n${await giftSnapshot(gift)}`;
 }
 
 async function newGiftDescription(gift) {
-  return `${await giftSnapshot(gift)}
+  return `## Stewardship work
 
-## Stewardship work
+Use the **assignee** for the owner and **due date** for the next follow-up. Record the human story, message, and next action here. Do not state that this exact gift funded an expense until a verified allocation appears in the snapshot below.
 
-Use the **assignee** for the owner and **due date** for the next follow-up. Record the human story, message, and next action here. Do not state that this exact gift funded an expense until a verified allocation appears in the snapshot above.`;
+---
+
+${await giftSnapshot(gift)}`;
 }
 
 async function giftSnapshot(gift) {

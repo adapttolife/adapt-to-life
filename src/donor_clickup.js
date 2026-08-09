@@ -56,7 +56,8 @@ export async function syncDonorRelationships(env) {
 
   for (const { donor, leaseToken } of claimed) {
     try {
-      let taskId = donor.clickup_task_id || discovered.get(donor.donor_key)?.id || null;
+      const markerId = await donorMarkerId(donor.donor_key);
+      let taskId = donor.clickup_task_id || discovered.get(markerId)?.id || null;
       let task = null;
       if (taskId) {
         try {
@@ -64,7 +65,7 @@ export async function syncDonorRelationships(env) {
         } catch (err) {
           if (err?.status !== 404) throw err;
           const recovered = await tasksByDonorKey(env);
-          task = recovered.get(donor.donor_key) || null;
+          task = recovered.get(markerId) || null;
           taskId = task?.id || null;
         }
       }
@@ -72,7 +73,7 @@ export async function syncDonorRelationships(env) {
       await renewClaim(env, donor.donor_key, leaseToken);
       if (taskId && task) {
         const existing = task.markdown_description ?? task.description ?? "";
-        const description = mergeSnapshot(existing, donor);
+        const description = await mergeSnapshot(existing, donor);
         await clickup(env, `task/${taskId}`, {
           method: "PUT",
           body: { name: taskName(donor), markdown_description: description },
@@ -84,7 +85,7 @@ export async function syncDonorRelationships(env) {
           method: "POST",
           body: {
             name: taskName(donor),
-            markdown_description: newDescription(donor),
+            markdown_description: await newDescription(donor),
             tags: ["type-donor", "stage-new"],
           },
         });
@@ -113,7 +114,10 @@ async function tasksByDonorKey(env) {
     const tasks = result?.tasks || [];
     for (const task of tasks) {
       const description = task.markdown_description ?? task.description ?? "";
-      const key = donorKeyFromDescription(description);
+      const rawKey = donorKeyFromDescription(description);
+      const key = /^[0-9a-f]{32}$/.test(rawKey || "")
+        ? rawKey
+        : (rawKey?.includes("@") ? await donorMarkerId(rawKey) : null);
       if (key) found.set(key, task);
     }
     if (result?.last_page === true || tasks.length < 100) break;
@@ -121,17 +125,17 @@ async function tasksByDonorKey(env) {
   return found;
 }
 
-function snapshot(donor) {
+async function snapshot(donor) {
   const synced = new Date().toISOString().replace("T", " ").slice(0, 16) + " UTC";
   const first = dateOnly(donor.first_gift_at);
   const latest = dateOnly(donor.latest_gift_at);
   return `${BEGIN}
-${keyMarker(donor.donor_key)}
+${await keyMarker(donor.donor_key)}
 **Donor snapshot** — mirrored from Givebutter and Cloudflare; do not edit here.
 
 | | |
 |---|---|
-| Email | ${escapeMarkdown(donor.email)} |
+| Email | ${donor.email ? escapeMarkdown(donor.email) : "Not provided"} |
 | Gift count | **${number(donor.gift_count)}** |
 | Lifetime gifts | **$${money(donor.total_donated)}** |
 | First gift | ${first} |
@@ -145,21 +149,25 @@ _Synced ${synced}._
 ${END}`;
 }
 
-function newDescription(donor) {
-  return `${snapshot(donor)}
+async function newDescription(donor) {
+  return `${await snapshot(donor)}
 
 ## Relationship work
 
 Use the task **assignee** for the owner and the **due date** for the next action. Keep human context, next-action reasoning, and stewardship notes here. Automation will preserve everything outside the donor snapshot.`;
 }
 
-export function mergeSnapshot(existing, donor) {
-  const marker = keyMarker(donor.donor_key);
+export async function mergeSnapshot(existing, donor) {
+  const marker = await keyMarker(donor.donor_key);
+  const legacyMarker = `${KEY_PREFIX}${String(donor.donor_key || "").trim().toLowerCase()}${KEY_SUFFIX}`;
   const original = donorBlocks(existing);
   const marked = original.blocks
-    .map((block, index) => existing.slice(block.start, block.end).includes(marker) ? index : -1)
+    .map((block, index) => {
+      const text = existing.slice(block.start, block.end);
+      return text.includes(marker) || text.includes(legacyMarker) ? index : -1;
+    })
     .filter((index) => index !== -1);
-  const cleaned = existing.split(marker).join("");
+  const cleaned = existing.split(marker).join("").split(legacyMarker).join("");
   const parsed = donorBlocks(cleaned);
 
   if (!original.malformed && !parsed.malformed) {
@@ -168,10 +176,10 @@ export function mergeSnapshot(existing, donor) {
       : (marked.length === 0 && parsed.blocks.length === 1 ? 0 : -1);
     if (target >= 0 && parsed.blocks[target]) {
       const block = parsed.blocks[target];
-      return cleaned.slice(0, block.start) + snapshot(donor) + cleaned.slice(block.end);
+      return cleaned.slice(0, block.start) + await snapshot(donor) + cleaned.slice(block.end);
     }
   }
-  return `${cleaned}\n\n${snapshot(donor)}`;
+  return `${cleaned}\n\n${await snapshot(donor)}`;
 }
 
 function donorBlocks(description) {
@@ -202,13 +210,26 @@ function donorKeyFromDescription(description) {
   return end === -1 ? null : description.slice(valueStart, end).trim().toLowerCase();
 }
 
-function keyMarker(key) { return `${KEY_PREFIX}${String(key || "").trim().toLowerCase()}${KEY_SUFFIX}`; }
-function taskName(donor) { return `${String(donor.donor_name || donor.email || "Donor").trim()} — donor`; }
+async function keyMarker(key) { return `${KEY_PREFIX}${await donorMarkerId(key)}${KEY_SUFFIX}`; }
+export async function donorMarkerId(key) {
+  const bytes = new TextEncoder().encode(String(key || "").trim().toLowerCase());
+  const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", bytes));
+  return [...digest.slice(0, 16)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+function taskName(donor) { return `${escapeMarkdown(donor.donor_name || donor.email || "Donor")} — donor`; }
 function dateOnly(value) { return value ? String(value).slice(0, 10) : "unknown"; }
 function number(value) { return Math.max(0, Number(value) || 0).toLocaleString("en-US"); }
 function money(value) { return (Number(value) || 0).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 2 }); }
 function truthy(value) { return value === true || value === 1 || value === "1" || value === "true"; }
-function escapeMarkdown(value) { return String(value || "").replace(/[|\\]/g, "\\$&"); }
+function escapeMarkdown(value) {
+  return String(value || "")
+    .replace(/[\u0000-\u001f\u007f]+/g, " ")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replace(/([\\|[\]()*_`~#!])/g, "\\$1")
+    .trim();
+}
 function safeError(err) { return String(err?.message || err || "unknown error").slice(0, 500); }
 
 class ClickUpError extends Error {
@@ -295,15 +316,24 @@ async function safeRecordFailure(env, donor, leaseToken, error) {
 }
 
 export const DONOR_PROJECTION_QUERY = `
-WITH eligible_gifts AS (
-  SELECT g.rowid AS gift_rowid, g.*
+WITH keyed_gifts AS (
+  SELECT g.rowid AS gift_rowid,
+         CASE
+           WHEN g.email IS NOT NULL AND trim(g.email) <> '' THEN lower(trim(g.email))
+           WHEN g.contact_id IS NOT NULL AND trim(g.contact_id) <> '' THEN 'contact:' || trim(g.contact_id)
+           ELSE 'transaction:' || g.transaction_id
+         END AS donor_key,
+         g.*
     FROM donor_gifts g
-    LEFT JOIN donor_clickup_projection p ON p.donor_key = lower(trim(g.email))
-   WHERE g.email IS NOT NULL AND trim(g.email) <> ''
-     AND (p.baseline_cutoff_at IS NULL OR g.transacted_at >= p.baseline_cutoff_at)
+),
+eligible_gifts AS (
+  SELECT k.*
+    FROM keyed_gifts k
+    LEFT JOIN donor_clickup_projection p ON p.donor_key = k.donor_key
+   WHERE p.baseline_cutoff_at IS NULL OR k.transacted_at >= p.baseline_cutoff_at
 ),
 live AS (
-  SELECT lower(trim(email)) AS donor_key,
+  SELECT donor_key,
          COUNT(*) AS gift_count,
          SUM(amount) AS total_donated,
          MIN(transacted_at) AS first_gift_at,
@@ -312,13 +342,13 @@ live AS (
          MAX(gift_rowid) AS source_watermark,
          MAX(recurring) AS recurring
     FROM eligible_gifts
-   GROUP BY lower(trim(email))
+   GROUP BY donor_key
 ),
 latest_ranked AS (
-  SELECT lower(trim(email)) AS donor_key, first_name, last_name, email,
+  SELECT donor_key, first_name, last_name, email,
          communication_opt_in,
          ROW_NUMBER() OVER (
-           PARTITION BY lower(trim(email))
+           PARTITION BY donor_key
            ORDER BY transacted_at DESC, transaction_id DESC
          ) AS position
     FROM eligible_gifts
@@ -336,7 +366,7 @@ SELECT k.donor_key,
        p.clickup_task_id,
        v.source_watermark,
        COALESCE(NULLIF(trim(COALESCE(l.first_name, '') || ' ' || COALESCE(l.last_name, '')), ''),
-                p.baseline_name, l.email, p.baseline_email, 'Donor') AS donor_name,
+                p.baseline_name, l.email, p.baseline_email, 'Anonymous donor') AS donor_name,
        COALESCE(l.email, p.baseline_email) AS email,
        COALESCE(p.baseline_gift_count, 0) + COALESCE(v.gift_count, 0) AS gift_count,
        COALESCE(p.baseline_total, 0) + COALESCE(v.total_donated, 0) AS total_donated,

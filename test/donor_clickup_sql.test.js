@@ -16,13 +16,28 @@ function database() {
   return db;
 }
 
-function gift(db, { id, email, amount, transactedAt, createdAt, optIn = 0 }) {
+function gift(db, { id, email, contactId = null, amount, transactedAt, createdAt, optIn = 0 }) {
   db.prepare(`INSERT INTO donor_gifts
-    (transaction_id, email, amount, donated, communication_opt_in, recurring,
+    (transaction_id, contact_id, email, amount, donated, communication_opt_in, recurring,
      transacted_at, email_status, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, 0, ?, 'sent', ?, ?)`)
-    .run(id, email, amount, amount, optIn, transactedAt, createdAt, createdAt);
+    VALUES (?, ?, ?, ?, ?, ?, 0, ?, 'sent', ?, ?)`)
+    .run(id, contactId, email, amount, amount, optIn, transactedAt, createdAt, createdAt);
 }
+
+test("no-email gifts group by Givebutter contact, then fall back to transaction", () => {
+  const db = database();
+  gift(db, { id: "contact-1", contactId: "gb-7", email: null, amount: 10,
+    transactedAt: "2026-08-08T20:00:00Z", createdAt: "2026-08-08T20:01:00Z" });
+  gift(db, { id: "contact-2", contactId: "gb-7", email: null, amount: 20,
+    transactedAt: "2026-08-08T21:00:00Z", createdAt: "2026-08-08T21:01:00Z" });
+  gift(db, { id: "anonymous", email: null, amount: 5,
+    transactedAt: "2026-08-08T22:00:00Z", createdAt: "2026-08-08T22:01:00Z" });
+  const rows = db.prepare(DONOR_PROJECTION_QUERY).all();
+  assert.deepEqual(rows.map((row) => [row.donor_key, row.gift_count, row.total_donated]), [
+    ["transaction:anonymous", 1, 5],
+    ["contact:gb-7", 2, 30],
+  ]);
+});
 
 test("baseline importer emits one D1-compatible multi-row statement", () => {
   const db = database();

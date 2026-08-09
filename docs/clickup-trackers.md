@@ -11,7 +11,7 @@ All four relationship-facing lists live in **Team Space → Adapt To Life**. Eac
 | **Hustle & Heart — Applications** | `901418622126` | one grant application | `POST /api/apply` (the `/apply` page) |
 | **Hustle & Heart — Awards** | `901418622127` | one grant actually awarded | a human, at Approved |
 | **Contacts** | `901418639884` | one person who used the contact form | `POST /api/contact` (the `/contact` page) |
-| **Relationships & Opportunities** | `901418931939` | one donor, vendor, organization, sponsor, partner, or grant ATL is pursuing | Givebutter/D1 for donors; humans for every other type |
+| **Relationships & Opportunities** | `901418931939` | one relationship parent; each donation is its own gift subtask | Givebutter/D1 for donors and gifts; humans for every other type |
 
 ClickUp is the human action layer, not ATL's CRM/CLM. Source systems and
 Cloudflare/D1 own history, consent, totals, delivery state, and automation.
@@ -25,12 +25,27 @@ different relationships and must not be collapsed into one workflow.
 
 ### Relationships & Opportunities
 
-Donors are automatic: the ten-minute Worker schedule projects one task per
-normalized donor email. Repeat gifts update the same automation-owned snapshot;
-the projector never modifies assignees, due dates, status, tags, comments, or
-human text outside its marked block. A ClickUp outage is recorded in D1 and
-retried independently, so it cannot reject a Givebutter webhook or suppress a
-donor email.
+Donors and gifts are automatic. The ten-minute Worker schedule projects one
+parent task per normalized donor email and one subtask per Givebutter transaction.
+The parent owns the long-running relationship; each gift owns its own thank-you,
+impact follow-up, and allocation question. Repeat donors therefore accumulate
+distinct gift tasks under one relationship instead of losing transaction history
+inside an aggregate. The projector never modifies assignees, due dates, status,
+tags, comments, or human text outside its marked blocks. A ClickUp outage is
+recorded in D1 and retried independently, so it cannot reject a Givebutter
+webhook or suppress a donor email.
+
+Gift subtasks use `type-gift` plus `stage-follow-up`. The gift's assignee and due
+date are the human follow-up owner and next action date. Allocation facts are
+read only from the append-only `gift_allocation_events` D1 ledger. Corrections are
+negative reversal events, not edits. ClickUp may hold the story and work notes,
+but it may not assert that a specific gift funded a specific expense until a
+verified allocation event and evidence link exist underneath it.
+
+Crash deduplication uses a deterministic 128-bit SHA-256 digest of the normalized
+donor key inside the automation block. The digest is pseudonymous, not secret;
+the authorized task already displays the donor email. Raw email is never used as
+hidden marker syntax because ClickUp strips comments containing email addresses.
 
 The projector intentionally uses ClickUp's live-proven `markdown_description`
 write field and requests `include_markdown_description=true` on every read.
@@ -39,11 +54,12 @@ create/read/update/delete probe if ClickUp changes its reference schema.
 
 The one-time historical seed is `scripts/import-givebutter-donor-baseline.mjs`.
 It derives a strict cutoff from the one enabled production webhook and imports
-only successful transactions before that instant. The generated SQL contains
-donor PII: write it only to a mode-600 scratch path, apply it to `atl-waivers`,
-and delete it immediately. Transactions at or after the cutoff stay exclusively
-in `donor_gifts`; this is what prevents baseline/live double-counting. The seed
-never calls the webhook or email path.
+only successful transactions before that instant. It creates both donor
+baselines and exact historical gift projection rows, but never transactional
+email state. The generated SQL contains donor PII: write it only to a mode-600
+scratch path, apply it to `atl-waivers`, and delete it immediately. Transactions
+at or after the cutoff stay exclusively in `donor_gifts`; this prevents
+baseline/live double-counting. The seed never calls the webhook or email path.
 
 The importer requires `BASELINE_PII_SCRATCH_DIR` and refuses destinations
 outside that directory or anywhere inside the repository. The output file must

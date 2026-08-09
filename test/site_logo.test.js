@@ -115,7 +115,7 @@ test("social cards use the Option 2 monogram on cache-busting URLs", async () =>
   const option2CardHashes = new Map([
     ["images/og/home-v2-option2.jpg", "187977286e321dd17262dc7a8ebd2a8651240f040dac54d5e659097869f31825"],
     ["images/og/donate-v2-option2.jpg", "baae568f4d001175fbb7079a9371e6ac0e42bcf2f4c2c4b200951455d004cba5"],
-    ["images/og/send-6-v2-option2.jpg", "7871ac35374864298ede560991bd118d5e6e76ea76f2ceb8c3ae9e2e34542d7f"],
+    ["images/og/send-6-v2-option2.jpg", "ab80b57caba24245570746065722dc1876caae5b665d8aa2f434efce9374ebc8"],
     ["images/og/popcorn-v2-option2.jpg", "6d8ecd2384e1ebffa50d648804cd694cda0a36fbe78094a6eea0a878850ecd3f"],
     ["images/og/hustle-and-heart-v2-option2.jpg", "3d9f3ba6d7714914b9ee49ce6ee5c6335048054ca46eac2870280517b77f77ac"],
     ["images/og/ways-to-give-v2-option2.jpg", "fb161a09235e53bd59f94468aa6c97eaf30b637540abbb955de215798800d282"],

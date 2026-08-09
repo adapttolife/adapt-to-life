@@ -4,7 +4,7 @@
   "campaigns": [
     {
       "slug": "send-6-us-open",
-      "name": "Send 6 to the US Open",
+      "name": "Send 6 to the US Open Spring 2027",
       "page": "/send-6",
       "published": true,
       "beneficiary": "Six adaptive pickleball athletes",
@@ -27,7 +27,7 @@
       "campaign": "send-6-us-open",
       "published": true,
       "page": "/popcorn",
-      "supports": "Every bag moves us toward Send 6 to the US Open: six adaptive athletes on the court in Naples, spring 2027, with nothing out of pocket.",
+      "supports": "Every bag moves us toward Send 6 to the US Open Spring 2027: six adaptive athletes on the court in Naples with nothing out of pocket.",
       "summary": "Small batch popcorn, shipped to your door. Half of every order comes back to the fund.",
       "opens": "2026-08-06",
       "closes": "2026-08-13",

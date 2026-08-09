@@ -153,7 +153,7 @@ Each message lives in ONE canonical place. Everywhere else: one line max, linkin
   - Flip list, for whoever launches ASNM: nav description on all 16 pages, `/`, `/about`,
     `/roadmap`, `/karen`, and `/adaptive-sports-near-me` (hero, closing, and both CTA labels).
 - **A campaign and a drive are different things and never merge.** A *campaign* is what we are
-  raising for and who it reaches (Send 6 to the US Open, six athletes, $21,000). It has a goal and a
+  raising for and who it reaches (Send 6 to the US Open Spring 2027, six athletes, $21,000). It has a goal and a
   named beneficiary, and it gets a page. A *drive* is a dated way we raise it (the August popcorn
   store, a tournament). It feeds exactly one campaign and is a row on that campaign's page until it
   earns a page of its own, the way popcorn did. Goals nest and never compete: a drive carries what

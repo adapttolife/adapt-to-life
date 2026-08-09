@@ -41,7 +41,10 @@ const ALT = {
 // /images/og-image.jpg is left in place, still regenerated, for anything outside
 // this repo that already points at it (Givebutter, signatures) — but no page
 // references it, so a redesign is never served from a stale third-party cache.
-const url = (card) => `${BASE}/images/og/${card === "_default" ? "home" : card}.jpg`;
+const url = (card) => {
+  const name = card === "_default" ? "home" : card;
+  return `${BASE}/images/og/${name}-2026.jpg`;
+};
 
 function setMeta(html, selector, attr, value) {
   // one tag, replaced in place; the tag must already exist (every page has both)
@@ -69,7 +72,8 @@ for (const file of readdirSync(PUB).filter((f) => f.endsWith(".html")).sort()) {
   const alt = ALT[card];
 
   // the card file must exist before a page is allowed to point at it
-  const local = join(PUB, "images/og", `${card === "_default" ? "home" : card}.jpg`);
+  const name = card === "_default" ? "home" : card;
+  const local = join(PUB, "images/og", `${name}-2026.jpg`);
   if (!existsSync(local)) throw new Error(`${file}: card missing at ${local} (run make-og.mjs first)`);
 
   const before = html;

@@ -92,7 +92,8 @@
   .card.mono .grain{ opacity:0.14; }
   .card.mono .inner{ align-items:flex-end; text-align:right; }
   .card.mono h1{ max-width:var(--measure,13ch); }
-  /* the backdrop already carries the mark at full size; repeating it small is
+  .card.mono .watermark{ left:-72px; right:auto; opacity:0.14; }
+  /* the watermark carries the mark at full size; repeating it small is
      clutter, so the lockup here is the wordmark alone */
   .card.mono .lockup svg{ display:none; }
   .card.mono .lockup{ gap:0; }

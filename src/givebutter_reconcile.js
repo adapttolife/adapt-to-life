@@ -3,104 +3,94 @@ import { syncDonorRelationships } from "./donor_clickup.js";
 import { syncGiftRelationships } from "./gift_clickup.js";
 
 const TRANSACTIONS_API = "https://api.givebutter.com/v1/transactions";
-const WATERMARK_KEY = "givebutter_donor_reconciled_through";
-const WATERMARK_OVERLAP_MS = 7 * 24 * 60 * 60 * 1000;
+const MAX_STABILIZATION_PASSES = 3;
 
 // The webhook is a latency optimization. This scheduled reconciliation is the
 // completion owner: every successful Givebutter transaction at or after ATL's
 // explicit activation boundary must exist in donor_gifts, regardless of webhook
 // delivery. The transaction id is the idempotency key shared by both paths.
 export async function reconcileGivebutterTransactions(env, opts = {}) {
-  const out = { ok: false, pages: 0, scanned: 0, eligible: 0, written: 0, error: null };
+  const out = { ok: false, passes: 0, pages: 0, scanned: 0, eligible: 0, written: 0, error: null };
   if (!env.WAIVERS_DB) { out.error = "no D1 binding"; return out; }
   if (!env.GIVEBUTTER_API_KEY) { out.error = "no GIVEBUTTER_API_KEY"; return out; }
   if (!env.GIVEBUTTER_DONOR_CUTOFF) { out.error = "no GIVEBUTTER_DONOR_CUTOFF"; return out; }
 
   const cutoff = new Date(env.GIVEBUTTER_DONOR_CUTOFF);
+  const before = new Date(opts.before || Date.now());
   if (!Number.isFinite(cutoff.getTime())) { out.error = "invalid GIVEBUTTER_DONOR_CUTOFF"; return out; }
+  if (!Number.isFinite(before.getTime())) { out.error = "invalid reconciliation upper bound"; return out; }
+
   const fetcher = opts.fetch || fetch;
-  const watermark = await readWatermark(env);
-  const cutoffAfter = cutoff.getTime() - 1;
-  const watermarkAfter = watermark ? watermark.getTime() - WATERMARK_OVERLAP_MS - 1 : -Infinity;
-  // Givebutter documents this as an "after" filter. Ask for an overlap, then
-  // enforce the inclusive activation boundary ourselves.
-  const providerAfter = new Date(Math.max(cutoffAfter, watermarkAfter)).toISOString();
-  let newestSeen = watermark;
+  const providerAfter = new Date(cutoff.getTime() - 1).toISOString();
+  const providerBefore = before.toISOString();
+  const ensured = new Set();
+  let priorSignature = null;
 
   try {
-    for (let page = 1; ; page++) {
-      const url = new URL(TRANSACTIONS_API);
-      url.searchParams.set("per_page", "100");
-      url.searchParams.set("page", String(page));
-      url.searchParams.set("transactedAfter", providerAfter);
-      url.searchParams.set("sortByDesc", "transacted_at");
-      const response = await fetcher(url, {
-        headers: {
-          Authorization: `Bearer ${env.GIVEBUTTER_API_KEY}`,
-          Accept: "application/json",
-        },
+    for (let pass = 1; pass <= MAX_STABILIZATION_PASSES; pass++) {
+      out.passes = pass;
+      const ids = await scanStableRange({
+        env, fetcher, cutoff, before, providerAfter, providerBefore, ensured, out,
       });
-      if (!response.ok) { out.error = `givebutter ${response.status}`; return out; }
-      const body = await response.json();
-      if (!Array.isArray(body.data)
-        || !Number.isInteger(body.meta?.current_page)
-        || !Number.isInteger(body.meta?.last_page)
-        || body.meta.current_page !== page
-        || body.meta.last_page < page) {
-        out.error = "invalid givebutter pagination";
-        return out;
-      }
-      const rows = body.data;
-      out.pages = page;
-
-      for (const transaction of rows) {
-        out.scanned++;
-        if (transaction?.status !== "succeeded") continue;
-        const transactedAt = new Date(transaction.transacted_at);
-        if (!Number.isFinite(transactedAt.getTime()) || transactedAt < cutoff) continue;
-        if (!newestSeen || transactedAt > newestSeen) newestSeen = transactedAt;
-        if (!String(transaction.id ?? "").trim()) {
-          out.error = "missing transaction id";
-          return out;
-        }
-        out.eligible++;
-        const gift = await recordGift(env, transaction);
-        if (gift.inserted) out.written++;
-      }
-
-      const lastPage = body.meta.last_page;
-      if (page >= lastPage) {
-        if (newestSeen) await writeWatermark(env, newestSeen.toISOString());
+      const signature = [...ids].sort().join("\n");
+      if (signature === priorSignature) {
         out.ok = true;
         return out;
       }
+      priorSignature = signature;
     }
+    out.error = "givebutter collection did not stabilize";
+    return out;
   } catch (err) {
     out.error = String(err?.message || err);
     return out;
   }
-  return out;
 }
 
-async function readWatermark(env) {
-  try {
-    const row = await env.WAIVERS_DB.prepare(
-      "SELECT value FROM qr_sync_state WHERE key = ?"
-    ).bind(WATERMARK_KEY).first();
-    if (!row?.value) return null;
-    const value = new Date(row.value);
-    return Number.isFinite(value.getTime()) ? value : null;
-  } catch {
-    return null;
+async function scanStableRange({ env, fetcher, cutoff, before, providerAfter, providerBefore, ensured, out }) {
+  const ids = new Set();
+  for (let page = 1; ; page++) {
+    const url = new URL(TRANSACTIONS_API);
+    url.searchParams.set("per_page", "100");
+    url.searchParams.set("page", String(page));
+    url.searchParams.set("transactedAfter", providerAfter);
+    url.searchParams.set("transactedBefore", providerBefore);
+    url.searchParams.set("sortByDesc", "transacted_at");
+    const response = await fetcher(url, {
+      headers: {
+        Authorization: `Bearer ${env.GIVEBUTTER_API_KEY}`,
+        Accept: "application/json",
+      },
+    });
+    if (!response.ok) throw new Error(`givebutter ${response.status}`);
+    const body = await response.json();
+    if (!Array.isArray(body.data)
+      || !Number.isInteger(body.meta?.current_page)
+      || !Number.isInteger(body.meta?.last_page)
+      || body.meta.current_page !== page
+      || body.meta.last_page < page) {
+      throw new Error("invalid givebutter pagination");
+    }
+    out.pages++;
+
+    for (const transaction of body.data) {
+      out.scanned++;
+      if (transaction?.status !== "succeeded") continue;
+      const transactedAt = new Date(transaction.transacted_at);
+      if (!Number.isFinite(transactedAt.getTime())) throw new Error("invalid transaction timestamp");
+      if (transactedAt < cutoff || transactedAt >= before) continue;
+      const id = String(transaction.id ?? "").trim();
+      if (!id) throw new Error("missing transaction id");
+      ids.add(id);
+      if (ensured.has(id)) continue;
+      out.eligible++;
+      const gift = await recordGift(env, transaction);
+      ensured.add(id);
+      if (gift.inserted) out.written++;
+    }
+
+    if (page >= body.meta.last_page) return ids;
   }
-}
-
-async function writeWatermark(env, value) {
-  await env.WAIVERS_DB.prepare(
-    `INSERT INTO qr_sync_state (key, value, updated_at) VALUES (?, ?, ?)
-     ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at
-     WHERE qr_sync_state.value IS NULL OR excluded.value >= qr_sync_state.value`
-  ).bind(WATERMARK_KEY, value, new Date().toISOString()).run();
 }
 
 // One scheduled owner sequences discovery before closure. A Givebutter outage is
@@ -147,7 +137,7 @@ function receiptPayload(result) {
     version: 1,
     ok: result.ok,
     completedAt: result.completedAt,
-    reconciliation: pick(result.reconciliation, ["ok", "pages", "scanned", "eligible", "written", "error"]),
+    reconciliation: pick(result.reconciliation, ["ok", "passes", "pages", "scanned", "eligible", "written", "error"]),
     email: pick(result.email, ["ok", "scanned", "sent", "queued", "failed", "error"]),
     donors: pick(result.donors, ["ok", "created", "updated", "failed", "error"]),
     gifts: pick(result.gifts, ["ok", "created", "updated", "failed", "skipped", "error"]),

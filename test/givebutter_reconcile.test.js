@@ -93,7 +93,7 @@ test("Cloudflare reconciliation records every post-cutoff successful transaction
 
   const result = await reconcileGivebutterTransactions(baseEnv(database), { fetch: provider.fetch });
 
-  assert.deepEqual(result, { ok: true, pages: 2, scanned: 4, eligible: 2, written: 2, error: null });
+  assert.deepEqual(result, { ok: true, passes: 2, pages: 4, scanned: 8, eligible: 2, written: 2, error: null });
   assert.deepEqual([...database.gifts.keys()].sort(), ["new-1", "new-2"]);
   assert.equal(database.gifts.get("new-1").email_status, "pending");
   assert.equal(database.gifts.get("new-1").communication_opt_in, 0);
@@ -105,7 +105,8 @@ test("pagination cannot strand page 21 behind a permanent restart", async () => 
   const result = await reconcileGivebutterTransactions(baseEnv(database), { fetch: api(pages).fetch });
 
   assert.equal(result.ok, true);
-  assert.equal(result.pages, 21);
+  assert.equal(result.passes, 2);
+  assert.equal(result.pages, 42);
   assert.equal(result.written, 21);
   assert.equal(database.gifts.size, 21);
 });
@@ -121,16 +122,64 @@ test("the provider query overlaps the exact activation boundary by one milliseco
   assert.equal(database.gifts.has("cutoff"), true);
 });
 
-test("a complete scan advances a seven-day overlap watermark instead of rereading all history forever", async () => {
+test("every run rescans the full activation range, including a success delayed by more than seven days", async () => {
   const database = db();
-  const first = api([[tx("future", { transacted_at: "2026-09-10T12:00:00Z" })]]);
-  assert.equal((await reconcileGivebutterTransactions(baseEnv(database), { fetch: first.fetch })).ok, true);
-  assert.equal(database.state.get("givebutter_donor_reconciled_through"), "2026-09-10T12:00:00.000Z");
+  const provider = api([[tx("delayed", { transacted_at: "2026-08-09T12:00:00Z" })]]);
+  const result = await reconcileGivebutterTransactions(baseEnv(database), {
+    fetch: provider.fetch,
+    before: "2026-09-10T12:00:00Z",
+  });
 
-  const second = api([[tx("future", { transacted_at: "2026-09-10T12:00:00Z" })]]);
-  assert.equal((await reconcileGivebutterTransactions(baseEnv(database), { fetch: second.fetch })).ok, true);
-  const queriedAfter = new URL(second.calls[0]).searchParams.get("transactedAfter");
-  assert.equal(queriedAfter, "2026-09-03T11:59:59.999Z");
+  assert.equal(result.ok, true);
+  assert.equal(result.passes, 2);
+  assert.equal(database.gifts.has("delayed"), true);
+  for (const call of provider.calls) {
+    const url = new URL(call);
+    assert.equal(url.searchParams.get("transactedAfter"), "2026-08-08T22:40:54.999Z");
+    assert.equal(url.searchParams.get("transactedBefore"), "2026-09-10T12:00:00.000Z");
+  }
+  assert.equal(database.state.has("givebutter_donor_reconciled_through"), false);
+});
+
+test("a mutating first snapshot must stabilize before reconciliation can report green", async () => {
+  const database = db();
+  let pass = 0;
+  const fetcher = async (input) => {
+    const url = new URL(input);
+    const page = Number(url.searchParams.get("page"));
+    if (page === 1) pass++;
+    const snapshots = [
+      [[tx("a"), tx("b")], [tx("d")]],
+      [[tx("a"), tx("b")], [tx("c"), tx("d")]],
+      [[tx("a"), tx("b")], [tx("c"), tx("d")]],
+    ];
+    const pages = snapshots[Math.min(pass - 1, snapshots.length - 1)];
+    return new Response(JSON.stringify({
+      data: pages[page - 1] || [],
+      meta: { current_page: page, last_page: pages.length },
+    }), { status: 200, headers: { "Content-Type": "application/json" } });
+  };
+
+  const result = await reconcileGivebutterTransactions(baseEnv(database), { fetch: fetcher });
+  assert.equal(result.ok, true);
+  assert.equal(result.passes, 3);
+  assert.deepEqual([...database.gifts.keys()].sort(), ["a", "b", "c", "d"]);
+});
+
+test("a collection that never stabilizes stays red", async () => {
+  const database = db();
+  let pass = 0;
+  const fetcher = async () => {
+    pass++;
+    const data = [tx(pass % 2 ? "a" : "b")];
+    return new Response(JSON.stringify({ data, meta: { current_page: 1, last_page: 1 } }), {
+      status: 200, headers: { "Content-Type": "application/json" },
+    });
+  };
+  const result = await reconcileGivebutterTransactions(baseEnv(database), { fetch: fetcher });
+  assert.equal(result.ok, false);
+  assert.equal(result.passes, 3);
+  assert.equal(result.error, "givebutter collection did not stabilize");
 });
 
 test("a successful transaction without an id makes reconciliation red", async () => {

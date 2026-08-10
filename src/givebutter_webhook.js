@@ -31,6 +31,11 @@ export async function handleGivebutterWebhook(request, env, ctx) {
 
   const transaction = body.data || {};
   if (!text(transaction.id)) return json({ ok: false, error: "Missing transaction id" }, 400);
+  const cutoff = new Date(env.GIVEBUTTER_DONOR_CUTOFF || "");
+  if (!Number.isFinite(cutoff.getTime())) return json({ ok: false, error: "Donor journey not configured" }, 503);
+  const transactedAt = new Date(transaction.transacted_at);
+  if (!Number.isFinite(transactedAt.getTime())) return json({ ok: false, error: "Invalid transaction timestamp" }, 400);
+  if (transactedAt < cutoff) return json({ ok: true, ignored: true, reason: "pre-activation" });
 
   let gift;
   try {

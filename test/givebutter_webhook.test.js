@@ -122,7 +122,7 @@ function payload(overrides = {}) {
       id: "tx_123", contact_id: "contact_1", first_name: "Jordan", last_name: "Rivers",
       email: "jordan@example.com", amount: 55, donated: 55, campaign_id: "683765",
       campaign_title: "Hustle & Heart Fund", communication_opt_in: true,
-      plan_id: null, transacted_at: "2026-08-08T22:00:00Z", ...overrides,
+      plan_id: null, transacted_at: "2026-08-08T23:00:00Z", ...overrides,
     },
   });
 }
@@ -139,6 +139,7 @@ function setup({ failuresRemaining = 0 } = {}) {
   const scheduled = [];
   const env = {
     GIVEBUTTER_WEBHOOK_SECRET: SECRET,
+    GIVEBUTTER_DONOR_CUTOFF: "2026-08-08T22:40:55Z",
     WAIVERS_DB: donorDb,
     SEND_EMAIL: { async send(msg) {
       if (failuresRemaining > 0) { failuresRemaining--; throw new Error("email unavailable"); }
@@ -156,6 +157,24 @@ test("the production Worker routes Givebutter deliveries to the handler", async 
   assert.equal(res.status, 200);
   await finish(s);
   assert.equal(s.sent.length, 1);
+});
+
+test("the webhook fast path ignores pre-activation transactions", async () => {
+  const s = setup();
+  const res = await worker.fetch(signedRequest(payload({ transacted_at: "2026-08-08T22:40:54Z" })), s.env, s.ctx);
+  assert.equal(res.status, 200);
+  assert.equal((await res.json()).ignored, true);
+  await finish(s);
+  assert.equal(s.donorDb.gifts.size, 0);
+  assert.equal(s.sent.length, 0);
+});
+
+test("the webhook fast path fails closed on an invalid transaction timestamp", async () => {
+  const s = setup();
+  const res = await worker.fetch(signedRequest(payload({ transacted_at: "not-a-date" })), s.env, s.ctx);
+  assert.equal(res.status, 400);
+  assert.equal(s.donorDb.gifts.size, 0);
+  assert.equal(s.sent.length, 0);
 });
 
 test("ClickUp availability cannot reject a Givebutter webhook or suppress its email", async () => {

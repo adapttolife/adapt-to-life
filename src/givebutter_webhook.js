@@ -31,6 +31,11 @@ export async function handleGivebutterWebhook(request, env, ctx) {
 
   const transaction = body.data || {};
   if (!text(transaction.id)) return json({ ok: false, error: "Missing transaction id" }, 400);
+  const cutoff = new Date(env.GIVEBUTTER_DONOR_CUTOFF || "");
+  if (!Number.isFinite(cutoff.getTime())) return json({ ok: false, error: "Donor journey not configured" }, 503);
+  const transactedAt = new Date(transaction.transacted_at);
+  if (!Number.isFinite(transactedAt.getTime())) return json({ ok: false, error: "Invalid transaction timestamp" }, 400);
+  if (transactedAt < cutoff) return json({ ok: true, ignored: true, reason: "pre-activation" });
 
   let gift;
   try {
@@ -49,21 +54,23 @@ export async function recordGift(env, transaction) {
   if (!env.WAIVERS_DB) throw new Error("WAIVERS_DB binding not configured");
 
   const gift = normalizeGift(transaction);
+  if (!gift.transactionId) throw new Error("missing transaction id");
   const now = new Date().toISOString();
   const initialStatus = gift.email ? "pending" : "no_email";
-  await env.WAIVERS_DB.prepare(
-    `INSERT OR IGNORE INTO donor_gifts
+  const result = await env.WAIVERS_DB.prepare(
+    `INSERT INTO donor_gifts
       (transaction_id, contact_id, first_name, last_name, email, amount, donated,
        campaign_id, campaign_title, communication_opt_in, recurring, transacted_at,
        email_status, created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+     ON CONFLICT(transaction_id) DO NOTHING`
   ).bind(
     gift.transactionId, gift.contactId, gift.firstName, gift.lastName, gift.email,
     gift.amount, gift.donated, gift.campaignId, gift.campaignTitle,
     gift.communicationOptIn ? 1 : 0, gift.recurring ? 1 : 0, gift.transactedAt,
     initialStatus, now, now
   ).run();
-  return gift;
+  return { ...gift, inserted: Boolean(result?.meta?.changes) };
 }
 
 export async function claimAndThank(env, gift) {
@@ -128,7 +135,8 @@ export async function claimAndThank(env, gift) {
 // the email outcome. Cloudflare Email Sending has no idempotency key, so this is
 // deliberately at-least-once after a crash rather than silently at-most-once.
 export async function recoverDonorEmails(env) {
-  if (!env.WAIVERS_DB || !env.SEND_EMAIL) return { scanned: 0, sent: 0 };
+  if (!env.WAIVERS_DB) return { ok: false, scanned: 0, sent: 0, queued: 0, failed: 0, error: "WAIVERS_DB binding not configured" };
+  if (!env.SEND_EMAIL) return { ok: false, scanned: 0, sent: 0, queued: 0, failed: 0, error: "SEND_EMAIL binding not configured" };
   const staleBefore = new Date(Date.now() - 15 * 60 * 1000).toISOString();
   const now = new Date().toISOString();
   await env.WAIVERS_DB.prepare(
@@ -152,7 +160,21 @@ export async function recoverDonorEmails(env) {
   ).bind(MAX_EMAIL_ATTEMPTS, staleBefore, now).all();
   const gifts = (result?.results || []).map(giftFromRow);
   const outcomes = await Promise.all(gifts.map((gift) => claimAndThank(env, gift)));
-  return { scanned: gifts.length, sent: outcomes.filter((r) => r?.emailed).length };
+  const remaining = await env.WAIVERS_DB.prepare(
+    `SELECT
+       COALESCE(SUM(CASE WHEN email_status IN ('pending','sending','retry') THEN 1 ELSE 0 END), 0) AS queued,
+       COALESCE(SUM(CASE WHEN email_status = 'failed' THEN 1 ELSE 0 END), 0) AS failed
+       FROM donor_gifts`
+  ).first();
+  const queued = number(remaining?.queued);
+  const failed = number(remaining?.failed);
+  return {
+    ok: queued === 0 && failed === 0,
+    scanned: gifts.length,
+    sent: outcomes.filter((r) => r?.emailed).length,
+    queued,
+    failed,
+  };
 }
 
 export async function sendDonorThankYou(env, gift) {

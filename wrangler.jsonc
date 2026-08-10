@@ -85,8 +85,11 @@
     // because a bcc to an address that does not resolve is worse than a shared
     // one: it would bounce the applicant's own receipt.
     "GRANTS_INBOX": "hello@adapttolife.org",
-    // Fundraising thermometer: Givebutter campaign + offline (in-person) gifts. API key is a secret.
+    // Fundraising thermometer and donor reconciliation. API key is a secret.
     "GIVEBUTTER_CAMPAIGN_ID": "683765",
+    // Exact creation time of ATL's donor-journey activation webhook. Scheduled
+    // reconciliation must never send retroactive thank-yous for the baseline.
+    "GIVEBUTTER_DONOR_CUTOFF": "2026-08-08T22:40:55Z",
     "OFFLINE_RAISED": "0"
   },
   // Signed-waiver storage: PDFs in R2, the signing record index in D1.

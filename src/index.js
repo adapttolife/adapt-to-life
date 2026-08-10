@@ -12,9 +12,8 @@ import { handleAdmin } from "./qr_admin.js";
 import { syncGifts } from "./qr_gifts.js";
 import { syncClickUp } from "./qr_clickup.js";
 import { fundPosition } from "./fund.js";
-import { handleGivebutterWebhook, recoverDonorEmails } from "./givebutter_webhook.js";
-import { syncDonorRelationships } from "./donor_clickup.js";
-import { syncGiftRelationships } from "./gift_clickup.js";
+import { handleGivebutterWebhook } from "./givebutter_webhook.js";
+import { reconcileDonorJourney } from "./givebutter_reconcile.js";
 
 const LEAD_TYPES = [
   "Funding for an athlete",
@@ -182,26 +181,20 @@ export default {
         else if (r.written) console.log(`qr gift sync: ${r.written} attributed gift(s) recorded`);
       })
     );
+    // The webhook is only the fast path. This single scheduled owner polls every
+    // successful post-activation Givebutter transaction into D1 first, then closes
+    // thank-you and ClickUp work in order. A provider failure remains visible as a
+    // red receipt but cannot block recovery of work already durable in D1.
     ctx.waitUntil(
-      recoverDonorEmails(env).then((r) => {
-        if (r.sent) console.log(`donor email recovery: ${r.sent} email(s) sent`);
-      }).catch((err) => console.error("donor email recovery failed:", err))
-    );
-    // ClickUp is the human tracking projection, never the webhook critical path.
-    // Parent donors reconcile before gift subtasks in the same tick.
-    ctx.waitUntil(
-      syncDonorRelationships(env).then(async (r) => {
-        if (!r.ok) console.error("donor ClickUp sync failed:", r.error || `${r.failed} donor(s)`);
-        else if (r.created || r.updated) {
-          console.log(`donor ClickUp sync: ${r.created} created, ${r.updated} updated`);
+      reconcileDonorJourney(env).then((r) => {
+        if (!r.ok) {
+          console.error("donor journey reconciliation failed:", JSON.stringify(r));
+          return;
         }
-        if (!r.ok) return;
-        const gifts = await syncGiftRelationships(env);
-        if (!gifts.ok) console.error("gift ClickUp sync failed:", gifts.error || `${gifts.failed} gift(s)`);
-        else if (gifts.created || gifts.updated) {
-          console.log(`gift ClickUp sync: ${gifts.created} created, ${gifts.updated} updated`);
+        if (r.reconciliation.written || r.email.sent || r.donors.created || r.donors.updated || r.gifts.created || r.gifts.updated) {
+          console.log("donor journey reconciled:", JSON.stringify(r));
         }
-      }).catch((err) => console.error("donor ClickUp sync failed:", err))
+      }).catch((err) => console.error("donor journey reconciliation crashed:", err))
     );
     // Mirror observations into the ClickUp register once a day. Self-limiting:
     // it records the date it ran and no-ops for the rest of the day's ticks.

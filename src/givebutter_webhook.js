@@ -51,7 +51,7 @@ export async function recordGift(env, transaction) {
   const gift = normalizeGift(transaction);
   const now = new Date().toISOString();
   const initialStatus = gift.email ? "pending" : "no_email";
-  await env.WAIVERS_DB.prepare(
+  const result = await env.WAIVERS_DB.prepare(
     `INSERT OR IGNORE INTO donor_gifts
       (transaction_id, contact_id, first_name, last_name, email, amount, donated,
        campaign_id, campaign_title, communication_opt_in, recurring, transacted_at,
@@ -63,7 +63,7 @@ export async function recordGift(env, transaction) {
     gift.communicationOptIn ? 1 : 0, gift.recurring ? 1 : 0, gift.transactedAt,
     initialStatus, now, now
   ).run();
-  return gift;
+  return { ...gift, inserted: Boolean(result?.meta?.changes) };
 }
 
 export async function claimAndThank(env, gift) {

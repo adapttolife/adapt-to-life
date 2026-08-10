@@ -4,6 +4,7 @@ import { syncGiftRelationships } from "./gift_clickup.js";
 
 const TRANSACTIONS_API = "https://api.givebutter.com/v1/transactions";
 const MAX_STABILIZATION_PASSES = 3;
+const MAX_PAGES_PER_PASS = 100;
 
 // The webhook is a latency optimization. This scheduled reconciliation is the
 // completion owner: every successful Givebutter transaction at or after ATL's
@@ -70,6 +71,9 @@ async function scanStableRange({ env, fetcher, cutoff, before, providerAfter, pr
       || body.meta.current_page !== page
       || body.meta.last_page < page) {
       throw new Error("invalid givebutter pagination");
+    }
+    if (body.meta.last_page > MAX_PAGES_PER_PASS) {
+      throw new Error("givebutter pagination exceeds Cloudflare budget");
     }
     out.pages++;
 

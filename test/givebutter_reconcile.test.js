@@ -247,6 +247,22 @@ test("missing pagination metadata is red instead of silently truncating reconcil
   assert.equal(result.error, "invalid givebutter pagination");
 });
 
+test("provider pagination beyond the Cloudflare request budget is durably red", async () => {
+  const database = db();
+  let calls = 0;
+  const result = await reconcileGivebutterTransactions(baseEnv(database), {
+    fetch: async () => {
+      calls++;
+      return new Response(JSON.stringify({
+        data: [tx("visible")], meta: { current_page: 1, last_page: 101 },
+      }), { status: 200, headers: { "Content-Type": "application/json" } });
+    },
+  });
+  assert.equal(result.ok, false);
+  assert.equal(result.error, "givebutter pagination exceeds Cloudflare budget");
+  assert.equal(calls, 1);
+});
+
 test("the scheduled owner reconciles before email and ClickUp closure", async () => {
   const calls = [];
   const result = await reconcileDonorJourney({}, {

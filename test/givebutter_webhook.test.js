@@ -14,6 +14,15 @@ function db() {
       return {
         bind(...v) { args = v; return this; },
         async first() {
+          if (/AS queued/.test(sql) && /AS failed/.test(sql)) {
+            let queued = 0;
+            let failed = 0;
+            for (const row of gifts.values()) {
+              if (["pending", "sending", "retry"].includes(row.email_status)) queued++;
+              if (row.email_status === "failed") failed++;
+            }
+            return { queued, failed };
+          }
           if (/SELECT email_status FROM donor_gifts/.test(sql)) {
             const row = gifts.get(String(args[0]));
             return row ? { email_status: row.email_status } : null;
@@ -33,12 +42,12 @@ function db() {
                 (row.email_status === "sending" && row.email_attempted_at < staleBefore) ||
                 (row.email_status === "retry" && row.next_attempt_at <= now)
               )
-            ) };
+            ).slice(0, 50) };
           }
           return { results: [] };
         },
         async run() {
-          if (/INSERT OR IGNORE INTO donor_gifts/.test(sql)) {
+          if (/INSERT(?: OR IGNORE)? INTO donor_gifts/.test(sql)) {
             const id = String(args[0]);
             if (gifts.has(id)) return { meta: { changes: 0 } };
             gifts.set(id, {
@@ -251,6 +260,8 @@ test("a stale lease at the attempt ceiling is dead-lettered instead of reclaimed
   const result = await recoverDonorEmails(s.env);
   const row = s.donorDb.gifts.get("tx_exhausted");
   assert.equal(result.scanned, 0);
+  assert.equal(result.ok, false);
+  assert.equal(result.failed, 1);
   assert.equal(row.email_status, "failed");
   assert.equal(row.lease_token, null);
   assert.equal(s.sent.length, 0);
@@ -336,5 +347,43 @@ test("email retries stop at the bounded terminal failure", async () => {
   }
   assert.equal(gift.attempt_count, 4);
   assert.equal(gift.email_status, "failed");
-  assert.equal((await recoverDonorEmails(s.env)).scanned, 0);
+  const terminal = await recoverDonorEmails(s.env);
+  assert.equal(terminal.scanned, 0);
+  assert.equal(terminal.ok, false);
+  assert.equal(terminal.failed, 1);
+});
+
+test("a recovery batch larger than 50 stays red until every queued email closes", async () => {
+  const s = setup();
+  for (let index = 0; index < 51; index++) {
+    s.donorDb.gifts.set(`tx_batch_${index}`, {
+      transaction_id: `tx_batch_${index}`, contact_id: `contact_${index}`,
+      first_name: "Jordan", last_name: "Rivers", email: `donor${index}@example.com`,
+      amount: 10, donated: 10, campaign_id: "683765", campaign_title: "Hustle & Heart Fund",
+      communication_opt_in: 0, recurring: 0, transacted_at: "2026-08-10T12:00:00Z",
+      email_status: "pending", attempt_count: 0, email_attempted_at: null,
+      email_sent_at: null, next_attempt_at: null, last_error: null, lease_token: null,
+      created_at: "2026-08-10T12:00:00Z", updated_at: "2026-08-10T12:00:00Z",
+    });
+  }
+
+  const first = await recoverDonorEmails(s.env);
+  assert.equal(first.sent, 50);
+  assert.equal(first.queued, 1);
+  assert.equal(first.failed, 0);
+  assert.equal(first.ok, false);
+
+  const second = await recoverDonorEmails(s.env);
+  assert.equal(second.sent, 1);
+  assert.equal(second.queued, 0);
+  assert.equal(second.failed, 0);
+  assert.equal(second.ok, true);
+});
+
+test("missing email infrastructure is red, never an empty green", async () => {
+  const s = setup();
+  delete s.env.SEND_EMAIL;
+  const result = await recoverDonorEmails(s.env);
+  assert.equal(result.ok, false);
+  assert.match(result.error, /SEND_EMAIL/);
 });

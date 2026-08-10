@@ -3,7 +3,8 @@ import { syncDonorRelationships } from "./donor_clickup.js";
 import { syncGiftRelationships } from "./gift_clickup.js";
 
 const TRANSACTIONS_API = "https://api.givebutter.com/v1/transactions";
-const MAX_PAGES = 20;
+const WATERMARK_KEY = "givebutter_donor_reconciled_through";
+const WATERMARK_OVERLAP_MS = 7 * 24 * 60 * 60 * 1000;
 
 // The webhook is a latency optimization. This scheduled reconciliation is the
 // completion owner: every successful Givebutter transaction at or after ATL's
@@ -18,13 +19,20 @@ export async function reconcileGivebutterTransactions(env, opts = {}) {
   const cutoff = new Date(env.GIVEBUTTER_DONOR_CUTOFF);
   if (!Number.isFinite(cutoff.getTime())) { out.error = "invalid GIVEBUTTER_DONOR_CUTOFF"; return out; }
   const fetcher = opts.fetch || fetch;
+  const watermark = await readWatermark(env);
+  const cutoffAfter = cutoff.getTime() - 1;
+  const watermarkAfter = watermark ? watermark.getTime() - WATERMARK_OVERLAP_MS - 1 : -Infinity;
+  // Givebutter documents this as an "after" filter. Ask for an overlap, then
+  // enforce the inclusive activation boundary ourselves.
+  const providerAfter = new Date(Math.max(cutoffAfter, watermarkAfter)).toISOString();
+  let newestSeen = watermark;
 
   try {
-    for (let page = 1; page <= MAX_PAGES; page++) {
+    for (let page = 1; ; page++) {
       const url = new URL(TRANSACTIONS_API);
       url.searchParams.set("per_page", "100");
       url.searchParams.set("page", String(page));
-      url.searchParams.set("transactedAfter", cutoff.toISOString());
+      url.searchParams.set("transactedAfter", providerAfter);
       url.searchParams.set("sortByDesc", "transacted_at");
       const response = await fetcher(url, {
         headers: {
@@ -50,18 +58,20 @@ export async function reconcileGivebutterTransactions(env, opts = {}) {
         if (transaction?.status !== "succeeded") continue;
         const transactedAt = new Date(transaction.transacted_at);
         if (!Number.isFinite(transactedAt.getTime()) || transactedAt < cutoff) continue;
+        if (!newestSeen || transactedAt > newestSeen) newestSeen = transactedAt;
+        if (!String(transaction.id ?? "").trim()) {
+          out.error = "missing transaction id";
+          return out;
+        }
         out.eligible++;
         const gift = await recordGift(env, transaction);
         if (gift.inserted) out.written++;
       }
 
-      const lastPage = Number(body.meta?.last_page || page);
+      const lastPage = body.meta.last_page;
       if (page >= lastPage) {
+        if (newestSeen) await writeWatermark(env, newestSeen.toISOString());
         out.ok = true;
-        return out;
-      }
-      if (page === MAX_PAGES) {
-        out.error = `givebutter pagination exceeds ${MAX_PAGES} pages`;
         return out;
       }
     }
@@ -70,6 +80,27 @@ export async function reconcileGivebutterTransactions(env, opts = {}) {
     return out;
   }
   return out;
+}
+
+async function readWatermark(env) {
+  try {
+    const row = await env.WAIVERS_DB.prepare(
+      "SELECT value FROM qr_sync_state WHERE key = ?"
+    ).bind(WATERMARK_KEY).first();
+    if (!row?.value) return null;
+    const value = new Date(row.value);
+    return Number.isFinite(value.getTime()) ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+async function writeWatermark(env, value) {
+  await env.WAIVERS_DB.prepare(
+    `INSERT INTO qr_sync_state (key, value, updated_at) VALUES (?, ?, ?)
+     ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at
+     WHERE qr_sync_state.value IS NULL OR excluded.value >= qr_sync_state.value`
+  ).bind(WATERMARK_KEY, value, new Date().toISOString()).run();
 }
 
 // One scheduled owner sequences discovery before closure. A Givebutter outage is
@@ -90,7 +121,7 @@ export async function reconcileDonorJourney(env, opts = {}) {
     ? await outcome(() => syncGifts(env))
     : { ok: false, skipped: true, error: "donor projection failed" };
   const base = {
-    ok: reconciliation.ok === true && email.ok !== false && donors.ok === true && gifts.ok === true,
+    ok: reconciliation.ok === true && email.ok === true && donors.ok === true && gifts.ok === true,
     completedAt: new Date().toISOString(),
     reconciliation,
     email,
@@ -105,7 +136,8 @@ export async function persistDonorJourneyReceipt(env, receipt) {
   if (!env.WAIVERS_DB) return { ok: false, error: "no D1 binding" };
   await env.WAIVERS_DB.prepare(
     `INSERT INTO qr_sync_state (key, value, updated_at) VALUES (?, ?, ?)
-     ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at`
+     ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at
+     WHERE qr_sync_state.updated_at IS NULL OR excluded.updated_at >= qr_sync_state.updated_at`
   ).bind("givebutter_donor_journey_last_receipt", JSON.stringify(receipt), receipt.completedAt).run();
   return { ok: true, completedAt: receipt.completedAt };
 }
@@ -116,7 +148,7 @@ function receiptPayload(result) {
     ok: result.ok,
     completedAt: result.completedAt,
     reconciliation: pick(result.reconciliation, ["ok", "pages", "scanned", "eligible", "written", "error"]),
-    email: pick(result.email, ["ok", "scanned", "sent", "error"]),
+    email: pick(result.email, ["ok", "scanned", "sent", "queued", "failed", "error"]),
     donors: pick(result.donors, ["ok", "created", "updated", "failed", "error"]),
     gifts: pick(result.gifts, ["ok", "created", "updated", "failed", "skipped", "error"]),
   };

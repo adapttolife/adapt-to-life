@@ -6,14 +6,26 @@ import { reconcileDonorJourney, reconcileGivebutterTransactions } from "../src/g
 
 function db() {
   const gifts = new Map();
+  const state = new Map();
   return {
     gifts,
+    state,
     prepare(sql) {
       let args = [];
       return {
         bind(...values) { args = values; return this; },
+        async first() {
+          if (/SELECT value FROM qr_sync_state/.test(sql)) {
+            return state.has(String(args[0])) ? { value: state.get(String(args[0])) } : null;
+          }
+          return null;
+        },
         async run() {
-          if (!/INSERT OR IGNORE INTO donor_gifts/.test(sql)) throw new Error(`unexpected SQL: ${sql}`);
+          if (/INSERT INTO qr_sync_state/.test(sql)) {
+            state.set(String(args[0]), String(args[1]));
+            return { meta: { changes: 1 } };
+          }
+          if (!/INSERT(?: OR IGNORE)? INTO donor_gifts/.test(sql)) throw new Error(`unexpected SQL: ${sql}`);
           const id = String(args[0]);
           if (gifts.has(id)) return { meta: { changes: 0 } };
           gifts.set(id, {
@@ -87,6 +99,57 @@ test("Cloudflare reconciliation records every post-cutoff successful transaction
   assert.equal(database.gifts.get("new-1").communication_opt_in, 0);
 });
 
+test("pagination cannot strand page 21 behind a permanent restart", async () => {
+  const database = db();
+  const pages = Array.from({ length: 21 }, (_, index) => [tx(`page-${index + 1}`)]);
+  const result = await reconcileGivebutterTransactions(baseEnv(database), { fetch: api(pages).fetch });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.pages, 21);
+  assert.equal(result.written, 21);
+  assert.equal(database.gifts.size, 21);
+});
+
+test("the provider query overlaps the exact activation boundary by one millisecond", async () => {
+  const database = db();
+  const provider = api([[tx("cutoff", { transacted_at: "2026-08-08T22:40:55Z" })]]);
+  const result = await reconcileGivebutterTransactions(baseEnv(database), { fetch: provider.fetch });
+
+  assert.equal(result.ok, true);
+  const queriedAfter = new URL(provider.calls[0]).searchParams.get("transactedAfter");
+  assert.equal(queriedAfter, "2026-08-08T22:40:54.999Z");
+  assert.equal(database.gifts.has("cutoff"), true);
+});
+
+test("a complete scan advances a seven-day overlap watermark instead of rereading all history forever", async () => {
+  const database = db();
+  const first = api([[tx("future", { transacted_at: "2026-09-10T12:00:00Z" })]]);
+  assert.equal((await reconcileGivebutterTransactions(baseEnv(database), { fetch: first.fetch })).ok, true);
+  assert.equal(database.state.get("givebutter_donor_reconciled_through"), "2026-09-10T12:00:00.000Z");
+
+  const second = api([[tx("future", { transacted_at: "2026-09-10T12:00:00Z" })]]);
+  assert.equal((await reconcileGivebutterTransactions(baseEnv(database), { fetch: second.fetch })).ok, true);
+  const queriedAfter = new URL(second.calls[0]).searchParams.get("transactedAfter");
+  assert.equal(queriedAfter, "2026-09-03T11:59:59.999Z");
+});
+
+test("a successful transaction without an id makes reconciliation red", async () => {
+  const database = db();
+  const result = await reconcileGivebutterTransactions(baseEnv(database), {
+    fetch: api([[tx("")]]).fetch,
+  });
+
+  assert.equal(result.ok, false);
+  assert.equal(result.error, "missing transaction id");
+  assert.equal(database.gifts.size, 0);
+});
+
+test("D1 ignores only duplicate transaction ids, never arbitrary constraint failures", () => {
+  const source = readFileSync(fileURLToPath(new URL("../src/givebutter_webhook.js", import.meta.url)), "utf8");
+  assert.match(source, /ON CONFLICT\(transaction_id\) DO NOTHING/);
+  assert.doesNotMatch(source, /INSERT OR IGNORE INTO donor_gifts/);
+});
+
 test("reconciliation is idempotent when webhook already recorded the transaction", async () => {
   const database = db();
   const provider = api([[tx("same")]]);
@@ -139,7 +202,7 @@ test("the scheduled owner reconciles before email and ClickUp closure", async ()
   const calls = [];
   const result = await reconcileDonorJourney({}, {
     reconcile: async () => { calls.push("reconcile"); return { ok: true, written: 1 }; },
-    recoverEmails: async () => { calls.push("email"); return { scanned: 1, sent: 1 }; },
+    recoverEmails: async () => { calls.push("email"); return { ok: true, scanned: 1, sent: 1, queued: 0, failed: 0 }; },
     syncDonors: async () => { calls.push("donors"); return { ok: true, created: 1, updated: 0 }; },
     syncGifts: async () => { calls.push("gifts"); return { ok: true, created: 1, updated: 0 }; },
     writeReceipt: async (_env, receipt) => { calls.push("receipt"); assert.equal(receipt.ok, true); return { ok: true }; },
@@ -157,7 +220,7 @@ test("provider outage stays red but cannot block already-durable donor closure",
   let stored;
   const result = await reconcileDonorJourney({}, {
     reconcile: async () => { calls.push("reconcile"); return { ok: false, error: "givebutter 503" }; },
-    recoverEmails: async () => { calls.push("email"); return { scanned: 1, sent: 1 }; },
+    recoverEmails: async () => { calls.push("email"); return { ok: true, scanned: 1, sent: 1, queued: 0, failed: 0 }; },
     syncDonors: async () => { calls.push("donors"); return { ok: true, created: 0, updated: 1 }; },
     syncGifts: async () => { calls.push("gifts"); return { ok: true, created: 0, updated: 1 }; },
     writeReceipt: async (_env, receipt) => { calls.push("receipt"); stored = receipt; return { ok: true }; },
@@ -168,6 +231,27 @@ test("provider outage stays red but cannot block already-durable donor closure",
   assert.equal(result.reconciliation.error, "givebutter 503");
   assert.equal(result.email.sent, 1);
   assert.equal(stored.ok, false, "the durable receipt must preserve the provider failure");
+});
+
+test("queued or terminal thank-you work makes the journey receipt red", async () => {
+  let stored;
+  const result = await reconcileDonorJourney({}, {
+    reconcile: async () => ({ ok: true, written: 0 }),
+    recoverEmails: async () => ({ ok: false, scanned: 50, sent: 50, queued: 1, failed: 0 }),
+    syncDonors: async () => ({ ok: true, created: 0, updated: 0 }),
+    syncGifts: async () => ({ ok: true, created: 0, updated: 0 }),
+    writeReceipt: async (_env, receipt) => { stored = receipt; return { ok: true }; },
+  });
+
+  assert.equal(result.ok, false);
+  assert.equal(result.email.queued, 1);
+  assert.equal(stored.ok, false);
+  assert.equal(stored.email.queued, 1);
+});
+
+test("older overlapping executions cannot overwrite a newer donor receipt", () => {
+  const source = readFileSync(fileURLToPath(new URL("../src/givebutter_reconcile.js", import.meta.url)), "utf8");
+  assert.match(source, /WHERE[^`]{0,120}excluded\.updated_at >= qr_sync_state\.updated_at/);
 });
 
 test("the production schedule delegates donor work to the single reconciliation owner", () => {

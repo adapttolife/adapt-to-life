@@ -362,12 +362,12 @@ export async function ringBell(env, agent, { inbox, thread_id, from, subject, me
 // such failure path lands one row here, and the fleet watchdog polls
 // GET /send-failures to page per row. Fail-open by contract: a failed insert
 // console.errors and never breaks the send flow it rides on.
-async function recordSendFailure(env, route, toAddr, err) {
+export async function recordSendFailure(env, route, toAddr, err, id = crypto.randomUUID()) {
   try {
     await env.AGENT_MAIL_DB
       .prepare(`INSERT INTO send_failures (id, ts, route, to_addr, error) VALUES (?, ?, ?, ?, ?)`)
       .bind(
-        crypto.randomUUID(),
+        id,
         Math.floor(Date.now() / 1000),
         route,
         String(toAddr || ""),
@@ -795,16 +795,21 @@ async function apiReply(env, body, caller) {
     throw e;
   }
 
+  const cloudflareMessageId = sent.messageId || sent.id || null;
   await db
     .prepare(
       `INSERT INTO messages (id, thread_id, direction, from_addr, to_addr, subject, body_text, body_markdown, body_html, message_id, in_reply_to)
        VALUES (?, ?, 'out', ?, ?, ?, ?, ?, ?, ?, ?)`
     )
-    .bind(msgId, thread_id, fromAddr, to, subject, body_text + att.note, body_markdown || null, htmlOut || null, sent.id || null, inReplyTo)
+    .bind(msgId, thread_id, fromAddr, to, subject, body_text + att.note, body_markdown || null, htmlOut || null, cloudflareMessageId, inReplyTo)
     .run();
-  await db.prepare(`UPDATE threads SET status = 'replied', last_at = datetime('now') WHERE id = ?`).bind(thread_id).run();
+  await db.prepare(`UPDATE messages SET delivery_status = 'pending' WHERE id = ?`).bind(msgId).run();
+  await db.prepare(
+    `UPDATE threads SET status = 'agent_working', last_at = datetime('now')
+      WHERE id = ? AND status NOT IN ('human', 'resolved', 'needs_review')`
+  ).bind(thread_id).run();
 
-  return jsonResp({ outcome: "ok", data: { message_id: sent.id || null } });
+  return jsonResp({ outcome: "ok", data: { message_id: cloudflareMessageId, delivery_status: "pending" } });
 }
 
 // Agent-initiated outbound (Spec 33): a new thread that STARTS with an outgoing
@@ -863,8 +868,9 @@ async function apiSend(env, body, caller) {
   // Email Sending forbids a custom Message-ID (whitelist + X-* only), so we
   // cannot know the id the recipient's reply will reference — replies stitch by
   // the subject+counterparty fallback in findOrCreateThread instead.
+  let sent;
   try {
-    await cfSend(env, {
+    sent = await cfSend(env, {
       from: fromAddr,
       to: toAddr,
       subject,
@@ -883,24 +889,27 @@ async function apiSend(env, body, caller) {
     || null;
   const threadId = crypto.randomUUID();
   await db
-    .prepare(`INSERT INTO threads (id, inbox, assigned_agent, status, subject, from_addr) VALUES (?, ?, ?, 'replied', ?, ?)`)
+    .prepare(`INSERT INTO threads (id, inbox, assigned_agent, status, subject, from_addr) VALUES (?, ?, ?, 'agent_working', ?, ?)`)
     .bind(threadId, fromAddr, assigned, subject, toAddr)
     .run();
   await db
     .prepare(
-      `INSERT INTO messages (id, thread_id, direction, from_addr, to_addr, subject, body_text, body_markdown, body_html)
-       VALUES (?, ?, 'out', ?, ?, ?, ?, ?, ?)`
+      `INSERT INTO messages (id, thread_id, direction, from_addr, to_addr, subject, body_text, body_markdown, body_html, message_id, delivery_status)
+       VALUES (?, ?, 'out', ?, ?, ?, ?, ?, ?, ?, 'pending')`
     )
-    .bind(msgId, threadId, fromAddr, toAddr, subject, body_text + att.note, body_markdown || null, htmlOut || null)
+    .bind(msgId, threadId, fromAddr, toAddr, subject, body_text + att.note, body_markdown || null, htmlOut || null, sent.messageId || sent.id || null)
     .run();
 
-  return jsonResp({ outcome: "ok", data: { thread_id: threadId } });
+  return jsonResp({ outcome: "ok", data: { thread_id: threadId, message_id: sent.messageId || sent.id || null, delivery_status: "pending" } });
 }
 
 async function apiSetStatus(env, body, caller) {
   const { thread_id, status, assigned_agent } = body || {};
   if (!thread_id || !STATUSES.includes(status)) {
     return jsonResp({ outcome: "error", error: `status must be one of ${STATUSES.join("|")}` }, 422);
+  }
+  if (status === "replied") {
+    return jsonResp({ outcome: "error", error: "replied is managed by terminal Email Sending delivery events" }, 422);
   }
   const db = env.AGENT_MAIL_DB;
   const thread = await db.prepare(`SELECT * FROM threads WHERE id = ?`).bind(thread_id).first();

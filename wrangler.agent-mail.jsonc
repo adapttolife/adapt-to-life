@@ -45,7 +45,18 @@
   // address; the binding does not broaden application-layer authorization.
   "send_email": [
     { "name": "SEND_EMAIL" }
-  ]
+  ],
+
+  "queues": {
+    "consumers": [
+      {
+        "queue": "agent-mail-email-events",
+        "max_batch_size": 10,
+        "max_retries": 5,
+        "dead_letter_queue": "agent-mail-email-events-dlq"
+      }
+    ]
+  }
 
   // Worker secrets, set out-of-band and never committed:
   //   AGENT_MAIL_TOKEN  MAIL_BELL_SECRETS  REPORT_LINK_SECRET

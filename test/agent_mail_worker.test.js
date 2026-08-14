@@ -54,8 +54,9 @@ test("unsupported methods inside the API namespace are handled by the API, not a
   assert.deepEqual(await res.json(), { outcome: "error", error: "not found" });
 });
 
-test("the entrypoint exposes inbound email but no scheduled handler", () => {
+test("the entrypoint exposes inbound email and lifecycle queue, but no scheduled handler", () => {
   assert.equal(typeof worker.email, "function");
+  assert.equal(typeof worker.queue, "function");
   assert.equal(worker.scheduled, undefined);
 });
 

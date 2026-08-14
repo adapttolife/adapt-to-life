@@ -9,6 +9,7 @@
 // identity and DNS stay unchanged while runtime authority moves off the public
 // nonprofit Worker.
 import { handleAgentMailApi, handleEmail } from "./agent_mail.js";
+import { handleEmailSendingBatch } from "./email_delivery.js";
 
 const notFound = () => new Response("Not found", {
   status: 404,
@@ -27,5 +28,9 @@ export default {
 
   async email(message, env, ctx) {
     await handleEmail(message, env, ctx);
+  },
+
+  async queue(batch, env) {
+    await handleEmailSendingBatch(batch, env);
   },
 };

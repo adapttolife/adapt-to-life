@@ -48,11 +48,17 @@ test("agent-mail is a distinct Worker on its private custom domain only", () => 
   assert.equal(agentMail.preview_urls, false);
 });
 
-test("agent-mail holds exactly its D1, R2, and outbound-email runtime bindings", () => {
+test("agent-mail holds its mail stores, outbound binding, and lifecycle consumer", () => {
   assert.deepEqual(agentMail.d1_databases, [expectedD1]);
   assert.deepEqual(agentMail.r2_buckets, [expectedR2]);
   assert.deepEqual(agentMail.send_email, [{ name: "SEND_EMAIL" }]);
-  for (const key of ["assets", "kv_namespaces", "queues", "triggers"])
+  assert.deepEqual(agentMail.queues, { consumers: [{
+    queue: "agent-mail-email-events",
+    max_batch_size: 10,
+    max_retries: 5,
+    dead_letter_queue: "agent-mail-email-events-dlq",
+  }] });
+  for (const key of ["assets", "kv_namespaces", "triggers"])
     assert.equal(agentMail[key], undefined, `agent-mail must not configure ${key}`);
 });
 

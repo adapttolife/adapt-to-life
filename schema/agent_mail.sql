@@ -56,12 +56,27 @@ CREATE TABLE IF NOT EXISTS messages (
   message_id  TEXT,                               -- RFC822 Message-ID (threading)
   in_reply_to TEXT,                               -- In-Reply-To / References stitching
   is_machine  INTEGER NOT NULL DEFAULT 0,         -- Spec 33 loop guard: bounce/auto-reply/no-reply inbound; never a reply target
+  delivery_status TEXT,                           -- outbound Email Sending lifecycle state
+  delivery_event_id TEXT,                         -- latest Cloudflare event id
+  delivery_updated_at TEXT,
   created_at  TEXT NOT NULL DEFAULT (datetime('now'))
 );
 CREATE INDEX IF NOT EXISTS idx_messages_thread ON messages(thread_id, created_at);
 -- Spec 70 P4: GET /api/agent-mail/reports and the /lib/ library view both scan
 -- messages filtered on direction='out' ordered by created_at.
 CREATE INDEX IF NOT EXISTS idx_messages_out_created ON messages(direction, created_at);
+CREATE INDEX IF NOT EXISTS idx_messages_delivery_id ON messages(message_id) WHERE direction = 'out';
+
+CREATE TABLE IF NOT EXISTS email_delivery_events (
+  event_id     TEXT PRIMARY KEY,
+  message_id   TEXT NOT NULL,
+  event_type   TEXT NOT NULL,
+  terminal     INTEGER NOT NULL DEFAULT 0,
+  payload_json TEXT NOT NULL,
+  occurred_at  TEXT,
+  processed_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_email_delivery_message ON email_delivery_events(message_id, processed_at);
 -- Migration for deployments created before is_machine (run once):
 --   ALTER TABLE messages ADD COLUMN is_machine INTEGER NOT NULL DEFAULT 0;
 -- Migration for deployments created before body_markdown/body_html (Spec 53, run once):

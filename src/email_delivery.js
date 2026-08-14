@@ -1,5 +1,3 @@
-import { recordSendFailure } from "./agent_mail.js";
-
 const PREFIX = "cf.email.sending.message.";
 const TERMINAL_FAILURES = new Set(["bounced", "failed", "rejected", "complained"]);
 const KNOWN = new Set(["delivered", "deferred", ...TERMINAL_FAILURES]);
@@ -53,29 +51,44 @@ export async function processEmailSendingEvent(env, event) {
       `UPDATE messages SET delivery_status = ?, delivery_event_id = ?, delivery_updated_at = datetime('now') WHERE id = ?`
     ).bind(status, eventId, message.id));
   }
-  await db.batch(statements);
 
   if (status === "deferred" || TERMINAL_FAILURES.has(status)) {
-    await recordSendFailure(env, `email.${status}`, payload.recipient || message.to_addr, new Error(failureDetail(event, status)), eventId);
+    statements.push(db.prepare(
+      `INSERT INTO send_failures (id, ts, route, to_addr, error) VALUES (?, ?, ?, ?, ?)`
+    ).bind(
+      eventId,
+      Math.floor(Date.now() / 1000),
+      `email.${status}`,
+      String(payload.recipient || message.to_addr || ""),
+      failureDetail(event, status)
+    ));
   }
 
   if (!alreadyTerminal && status === "delivered") {
-    const latest = await db.prepare(
-      `SELECT direction FROM messages WHERE thread_id = ? ORDER BY created_at DESC, rowid DESC LIMIT 1`
-    ).bind(message.thread_id).first();
-    const pending = await db.prepare(
-      `SELECT COUNT(*) AS n FROM messages WHERE thread_id = ? AND direction = 'out' AND delivery_status IN ('pending', 'deferred')`
-    ).bind(message.thread_id).first();
-    if (latest?.direction === "out" && Number(pending?.n || 0) === 0) {
-      await db.prepare(
-        `UPDATE threads SET status = 'replied', last_at = datetime('now') WHERE id = ? AND status IN ('new', 'agent_working')`
-      ).bind(message.thread_id).run();
-    }
+    statements.push(db.prepare(
+      `UPDATE threads
+          SET status = 'replied', last_at = datetime('now')
+        WHERE id = ?
+          AND status IN ('new', 'agent_working')
+          AND NOT EXISTS (
+            SELECT 1 FROM messages
+             WHERE thread_id = ? AND direction = 'out' AND delivery_status IN ('pending', 'deferred')
+          )
+          AND 'out' = (
+            SELECT direction FROM messages
+             WHERE thread_id = ? ORDER BY created_at DESC, rowid DESC LIMIT 1
+          )`
+    ).bind(message.thread_id, message.thread_id, message.thread_id));
   } else if (!alreadyTerminal && TERMINAL_FAILURES.has(status)) {
-    await db.prepare(
+    statements.push(db.prepare(
       `UPDATE threads SET status = 'needs_review', last_at = datetime('now') WHERE id = ? AND status NOT IN ('human', 'resolved')`
-    ).bind(message.thread_id).run();
+    ).bind(message.thread_id));
   }
+
+  // D1 batch is a transaction: if any durable effect fails, the event ledger,
+  // message state, pager row, and thread state all roll back together. A Queue
+  // retry therefore sees no ledger row and safely replays every effect.
+  await db.batch(statements);
   return { duplicate: false, status };
 }
 

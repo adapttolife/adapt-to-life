@@ -24,6 +24,7 @@ function database() {
     events: new Set(),
     failures: [],
     latestDirection: "out",
+    failThreadUpdateOnce: false,
   };
   const db = {
     state,
@@ -44,9 +45,17 @@ function database() {
           if (/INSERT INTO email_delivery_events/.test(sql)) state.events.add(binds[0]);
           else if (/UPDATE messages SET delivery_status/.test(sql)) state.message.delivery_status = binds[0];
           else if (/INSERT INTO send_failures/.test(sql)) state.failures.push({ id: binds[0], route: binds[2], error: binds[4] });
-          else if (/UPDATE threads SET status = 'replied'/.test(sql)) {
+          else if (/UPDATE threads\s+SET status = 'replied'/.test(sql)) {
+            if (state.failThreadUpdateOnce) {
+              state.failThreadUpdateOnce = false;
+              throw new Error("injected thread update failure");
+            }
             if (["new", "agent_working"].includes(state.thread.status)) state.thread.status = "replied";
           } else if (/UPDATE threads SET status = 'needs_review'/.test(sql)) {
+            if (state.failThreadUpdateOnce) {
+              state.failThreadUpdateOnce = false;
+              throw new Error("injected thread update failure");
+            }
             if (!["human", "resolved"].includes(state.thread.status)) state.thread.status = "needs_review";
           } else throw new Error(`unexpected run: ${sql}`);
           return { success: true };
@@ -54,7 +63,22 @@ function database() {
       };
     },
     async batch(statements) {
-      for (const statement of statements) await statement.run();
+      const snapshot = {
+        message: state.message && { ...state.message },
+        thread: { ...state.thread },
+        events: new Set(state.events),
+        failures: state.failures.map((row) => ({ ...row })),
+      };
+      try {
+        for (const statement of statements) await statement.run();
+      } catch (error) {
+        state.message = snapshot.message;
+        state.thread = snapshot.thread;
+        state.events = snapshot.events;
+        state.failures = snapshot.failures;
+        state.failThreadUpdateOnce = false;
+        throw error;
+      }
     },
   };
   return db;
@@ -91,6 +115,25 @@ test("late deferred events cannot reverse a terminal delivery", async () => {
   const db = database();
   await processEmailSendingEvent({ AGENT_MAIL_DB: db }, event("delivered"));
   await processEmailSendingEvent({ AGENT_MAIL_DB: db }, event("deferred", "evt-late-deferred"));
+  assert.equal(db.state.message.delivery_status, "delivered");
+  assert.equal(db.state.thread.status, "replied");
+});
+
+test("a failure after ledger insertion rolls back all effects and Queue retry completes closure", async () => {
+  const db = database();
+  db.state.failThreadUpdateOnce = true;
+
+  await assert.rejects(
+    processEmailSendingEvent({ AGENT_MAIL_DB: db }, event("delivered")),
+    /injected thread update failure/
+  );
+  assert.equal(db.state.events.size, 0, "ledger insertion rolled back");
+  assert.equal(db.state.message.delivery_status, "pending", "message transition rolled back");
+  assert.equal(db.state.thread.status, "agent_working", "thread remains retryable");
+
+  const replay = await processEmailSendingEvent({ AGENT_MAIL_DB: db }, event("delivered"));
+  assert.equal(replay.duplicate, false);
+  assert.equal(db.state.events.size, 1);
   assert.equal(db.state.message.delivery_status, "delivered");
   assert.equal(db.state.thread.status, "replied");
 });

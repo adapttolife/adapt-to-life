@@ -37,27 +37,40 @@
     document.head.appendChild(l);
   }
 
+  ["https://widgets.givebutter.com", "https://givebuttercdn.com",
+   "https://givebutter.com", "https://js.stripe.com"].forEach(preconnect);
+
   function load() {
     if (loading) return;
     loading = true;
-    ["https://widgets.givebutter.com", "https://givebuttercdn.com",
-     "https://givebutter.com", "https://js.stripe.com"].forEach(preconnect);
     var s = document.createElement("script");
     s.src = SRC;
     s.async = true;
     document.head.appendChild(s);
   }
 
-  // Load as the form approaches the viewport. On both pages the panel sits below
-  // a full-height hero on a phone, so this fires on the donor's first scroll —
-  // early enough that the form is ready when they arrive, late enough that the
-  // bundle is not competing with first paint.
-  if ("IntersectionObserver" in window) {
+  function afterFirstPaint(fn) {
+    if (typeof requestIdleCallback === "function") {
+      requestIdleCallback(fn, { timeout: 400 });
+    } else {
+      setTimeout(fn, 1);
+    }
+  }
+
+  // /donate's form sits in the hero. Waiting on a scroll observer there just
+  // delays the gift. Start the widget after first paint so HTML/CSS win the
+  // first frame and the form is already fetching when the donor looks at it.
+  // Other pages keep the observer (widened) so the 8.5MB bundle does not
+  // contend with first paint. Never a click-wall.
+  var eager = document.querySelector(".give-hero givebutter-giving-form, givebutter-giving-form[data-gb-eager]");
+  if (eager) {
+    afterFirstPaint(load);
+  } else if ("IntersectionObserver" in window) {
     var io = new IntersectionObserver(function (entries) {
       for (var i = 0; i < entries.length; i++) {
         if (entries[i].isIntersecting) { load(); io.disconnect(); return; }
       }
-    }, { rootMargin: "600px 0px" });
+    }, { rootMargin: "1200px 0px" });
     for (var i = 0; i < els.length; i++) io.observe(els[i]);
   } else {
     load();

@@ -90,7 +90,7 @@
     // Exact creation time of ATL's donor-journey activation webhook. Scheduled
     // reconciliation must never send retroactive thank-yous for the baseline.
     "GIVEBUTTER_DONOR_CUTOFF": "2026-08-08T22:40:55Z",
-    "OFFLINE_RAISED": "0"
+    "OFFLINE_RAISED": "3004"
   },
   // Signed-waiver storage: PDFs in R2, the signing record index in D1.
   "r2_buckets": [
@@ -122,7 +122,7 @@
       "name": "adapt-to-life-staging",
       "workers_dev": true,
       "preview_urls": true,
-      "vars": { "GIVEBUTTER_CAMPAIGN_ID": "683765", "OFFLINE_RAISED": "0", "STAGING": "1" },
+      "vars": { "GIVEBUTTER_CAMPAIGN_ID": "683765", "OFFLINE_RAISED": "3004", "STAGING": "1" },
       // CRITICAL: empty routes overrides the inherited production routes, so a
       // staging deploy can never reassign the live apex domains to this Worker.
       "routes": [],

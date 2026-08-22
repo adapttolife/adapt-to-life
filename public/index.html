@@ -430,5 +430,26 @@ fill="currentColor" stroke="none">
 
 <script src="/js/subscribe.js" defer></script>
 <script src="/js/turnstile-lazy.js" defer></script>
+<script>
+  // Warm the Givebutter widget script when a donor aims at /donate.
+  // Prefetch only — do not load the full widget on the homepage.
+  (function(){
+    var href = "https://widgets.givebutter.com/latest.umd.cjs?acct=7FsgcjXFnW6fabQn";
+    var done = false;
+    function warm(){
+      if (done) return;
+      done = true;
+      var l = document.createElement("link");
+      l.rel = "prefetch";
+      l.as = "script";
+      l.href = href;
+      document.head.appendChild(l);
+    }
+    document.querySelectorAll('a[href="/donate"]').forEach(function(a){
+      a.addEventListener("pointerenter", warm, { passive:true });
+      a.addEventListener("focus", warm);
+    });
+  })();
+</script>
 </body>
 </html>

@@ -524,7 +524,9 @@ fill="currentColor" stroke="none">
       if (d.host) meta.push('Hosted by ' + d.host);
       if (d.beneficiary) meta.push('Benefits ' + d.beneficiary);
     } else if (typeof d.goal === 'number' && d.goal > 0){
-      meta.push(C.money(d.goal) + ' goal');
+      meta.push(typeof d.raised === 'number'
+        ? C.money(d.raised) + ' raised · ' + C.money(d.goal) + ' goal'
+        : C.money(d.goal) + ' goal');
     }
     if (meta.length) main.appendChild(C.el('p','s6-drive-meta', meta.join(' · ')));
 

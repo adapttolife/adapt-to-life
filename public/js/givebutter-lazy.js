@@ -1,6 +1,6 @@
-// Lazy Givebutter. Replaces the eager
-// <script async src="https://widgets.givebutter.com/latest.umd.cjs?acct=...">
-// on /donate and /hustle-and-heart.
+// Lazy Givebutter for below-the-fold embeds (currently /hustle-and-heart).
+// /donate loads the official widget script in <head> immediately — do not
+// include this file there or it will delay first fetch of the form.
 //
 // Why: measured 2026-07-25, the embed pulls ~8.5MB across ~80 requests from 19
 // third-party hosts — Stripe (1MB), Google Maps Places (1.3MB), moment-timezone

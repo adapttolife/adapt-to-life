@@ -30,6 +30,8 @@
 <link rel="dns-prefetch" href="https://widgets.givebutter.com">
 <link rel="dns-prefetch" href="https://givebuttercdn.com">
 <link rel="dns-prefetch" href="https://js.stripe.com">
+<link rel="preload" as="script" href="https://widgets.givebutter.com/latest.umd.cjs?acct=7FsgcjXFnW6fabQn">
+<script async src="https://widgets.givebutter.com/latest.umd.cjs?acct=7FsgcjXFnW6fabQn"></script>
 <link rel="preload" href="/css/site.css" as="style">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -44,14 +46,26 @@
   .give-assure{ list-style:none; padding:0; margin:1.5rem 0 0; display:flex; flex-wrap:wrap; gap:0.5rem 1.4rem; }
   .give-assure li{ font-family:'Hanken Grotesk',sans-serif; font-size:0.88rem; color:rgba(255,255,255,0.72); }
   .give-assure .ga-k{ color:#fff; font-weight:600; }
-  .give-panel{ background:#fff; border-radius:18px; padding:clamp(1.3rem,3vw,1.9rem); box-shadow:0 24px 60px rgba(0,0,0,0.34); }
+  .give-panel{ background:#fff; border-radius:18px; padding:clamp(1.3rem,3vw,1.9rem); box-shadow:0 24px 60px rgba(0,0,0,0.34);
+    position:relative; width:100%; min-width:min(100%,320px); max-width:600px; }
+  @media (min-width:881px){ .give-panel{ justify-self:end; } }
+  /* In-flow placeholder only. Givebutter hides the real form until its iframe
+     boots; this keeps the white box from reading as empty. Not a fake checkout. */
+  .gb-boot{ position:absolute; inset:clamp(1.3rem,3vw,1.9rem); pointer-events:none; z-index:0;
+    display:flex; flex-direction:column; align-items:center; padding-top:2.4rem; }
+  .gb-boot-pulse{ width:36px; height:36px; border-radius:50%; background:#ececec;
+    animation:gb-pulse 1.1s ease-in-out infinite; }
+  .gb-boot-line{ display:block; height:10px; border-radius:6px; background:#f2f2f2; margin-top:1rem; width:62%; }
+  .gb-boot-line-s{ width:38%; }
+  @keyframes gb-pulse{ 50%{ opacity:0.4; } }
+  @media (prefers-reduced-motion: reduce){ .gb-boot-pulse{ animation:none; } }
   .gp-note{ text-align:center; font-family:'Hanken Grotesk',sans-serif; font-size:0.76rem; color:#9a9a9a; margin:0.3rem 0 0; }
   .give-ways{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(1.6rem,2.6vw,2.4rem) clamp(1.6rem,3vw,2.8rem); margin-top:clamp(2.2rem,3.6vw,3rem); }
   @media (max-width:679px){ .give-ways{ grid-template-columns:1fr; } }
   /* Space held for the Givebutter embed so its late mount cannot shove the
      page. Measured on prod: the settled form is 552px on a phone and 508px on
      a desktop, so these sit just under each. */
-  givebutter-giving-form{ display:block; min-height:552px; }
+  givebutter-giving-form{ display:block; position:relative; z-index:1; min-height:552px; }
   @media (min-width:881px){ givebutter-giving-form{ min-height:508px; } }
 </style>
 </head>
@@ -145,8 +159,12 @@ fill="currentColor" stroke="none">
 
         <!-- GIVE PANEL — Givebutter embedded giving form (campaign IXM5DR,
              account 7FsgcjXFnW6fabQn). Renders once the campaign is published. -->
-        <script src="/js/givebutter-lazy.js" defer></script>
         <div class="give-panel reveal" id="givePanel">
+          <div class="gb-boot" aria-hidden="true">
+            <span class="gb-boot-pulse"></span>
+            <span class="gb-boot-line"></span>
+            <span class="gb-boot-line gb-boot-line-s"></span>
+          </div>
           <givebutter-giving-form campaign="IXM5DR"></givebutter-giving-form>
           <p class="gp-note">Secure checkout by Givebutter.</p>
         </div>

@@ -260,10 +260,88 @@
     });
   }
 
+  /* The result band: the counterpart to band(). band() says what we are
+     raising NOW; this says what a finished drive actually brought in.
+
+     Why this is data-driven rather than three lines of hand-written HTML:
+     the August popcorn drive's $3,004 already appears on /popcorn and
+     /send-6, and it is the same number the thermometer adds via
+     OFFLINE_RAISED. A fourth hand-typed copy is a fourth thing to forget
+     when the next drive closes. Reads the most recently CLOSED drive that
+     has a real `raised` figure, and renders nothing if there is not one —
+     an org with no finished drive must not claim a win.
+
+     `raised` stays null until a number is real (see campaigns.json), so a
+     drive that closed but has not been counted yet is correctly skipped. */
+  function result(hostId) {
+    var host = document.getElementById(hostId);
+    if (!host) return;
+
+    /* Own the empty state here rather than from a second load() in the page:
+       two independent fetches have no ordering guarantee, so a page-level
+       "hide if empty" check can run BEFORE this one renders and blank a band
+       that was about to be correct. Hiding the enclosing section from inside
+       the single callback makes that unrepresentable. */
+    function hideSection() {
+      var sec = host.closest && host.closest("section");
+      if (sec) sec.hidden = true;
+    }
+
+    load(function (store) {
+      host.classList.remove("camp-pending");
+      if (!store) return hideSection();
+
+      var done = store.drives
+        .filter(function (d) {
+          return driveStatus(d) === "past" && typeof d.raised === "number" && d.raised > 0;
+        })
+        .sort(function (a, b) { return (driveCloses(b) || 0) - (driveCloses(a) || 0); });
+
+      var d = done[0];
+      if (!d) return hideSection();
+
+      var camp = store.campaignFor(d);
+      var a = el("a", "win-band");
+      a.href = d.page || (camp && camp.page) || "/ways-to-give";
+
+      var card = el("div", "win-card");
+
+      var left = el("div");
+      var eyebrow = el("span", "win-eyebrow");
+      eyebrow.appendChild(el("span", "tick"));
+      eyebrow.appendChild(document.createTextNode("Drive complete"));
+      left.appendChild(eyebrow);
+      left.appendChild(el("span", "win-name", d.name));
+      if (camp) {
+        left.appendChild(el("span", "win-sub",
+          "Every dollar of it goes to " + camp.name + "."));
+      } else if (d.summary) {
+        left.appendChild(el("span", "win-sub", d.summary));
+      }
+
+      var fig = el("div", "win-figure");
+      fig.appendChild(el("span", "win-amount", money(d.raised)));
+      /* Percent of goal, not "of goal" — the story is that it went well past
+         it. Only claimed when a goal exists and was actually beaten. */
+      if (d.goal && d.raised >= d.goal) {
+        fig.appendChild(el("span", "win-of",
+          Math.round((d.raised / d.goal) * 100) + "% of goal"));
+      } else if (d.goal) {
+        fig.appendChild(el("span", "win-of", "of a " + money(d.goal) + " goal"));
+      }
+
+      card.appendChild(left);
+      card.appendChild(fig);
+      a.appendChild(card);
+      host.appendChild(a);
+    });
+  }
+
   global.ATLCampaigns = {
     load: load,
     raised: raised,
     band: band,
+    result: result,
     localDate: localDate,
     today: today,
     fmtDate: fmtDate,

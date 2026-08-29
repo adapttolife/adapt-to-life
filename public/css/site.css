@@ -584,3 +584,68 @@ a.info-v{ border-bottom:1.5px solid var(--orange); padding-bottom:1px; }
    never leave a reserved hole behind it. */
 .camp-pending{ min-height:349px; }
 @media (min-width:821px){ .camp-pending{ min-height:238px; } }
+
+/* ==========================================================================
+   Photography pass + drive results (2026-08-29)
+   ========================================================================== */
+
+/* Photographed hero. .hero-cine already lays a photo under a dark gradient;
+   this keeps the brand's orange bloom ON TOP of the photo so a hero with a
+   picture still reads as ours and not as stock. Sits between the gradient
+   (z-1) and the copy (z-2). */
+.hero-cine .hero-glow{
+  position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 84% at 84% 48%, rgba(255,92,57,0.26) 0%, rgba(255,92,57,0.07) 40%, transparent 64%),
+    radial-gradient(ellipse 48% 62% at 102% 102%, rgba(212,168,67,0.08) 0%, transparent 58%);
+}
+/* Photo heroes need a floor under the type that atmosphere heroes do not:
+   the picture is busiest exactly where the sub-line sits. */
+.hero-cine.hero-photo::after{
+  background:
+    linear-gradient(100deg, rgba(12,12,14,0.94) 0%, rgba(12,12,14,0.80) 46%, rgba(12,12,14,0.42) 100%),
+    linear-gradient(to top, rgba(12,12,14,0.78), rgba(12,12,14,0) 46%);
+}
+.hero-cine .hero-media{ background-position:center 34%; }
+
+/* Photoband caption — the band already carries a bottom scrim; this is the
+   line that says who is in the picture. Unlabelled photography of real
+   athletes reads as stock, which is the opposite of the point. */
+.photoband-cap .pb-line{
+  display:block; color:var(--cream); font-size:clamp(1rem,2vw,1.2rem);
+  max-width:46ch; margin-top:0.35rem;
+}
+
+/* ---- drive result band ("we finished one") ----------------------------
+   The counterpart to .camp-band. That one says what we are raising NOW;
+   this says what a finished drive actually brought in. Rendered from
+   campaigns.json by ATLCampaigns.result(), never hand-typed, so the
+   number cannot drift from the source the rest of the site reads. */
+.win-band{ display:block; }
+.win-card{
+  display:grid; grid-template-columns:1fr auto; gap:clamp(1.1rem,3vw,2.4rem);
+  align-items:center; padding:clamp(1.5rem,3.2vw,2.2rem) clamp(1.5rem,3.4vw,2.4rem);
+  background:var(--charcoal); border:1px solid rgba(255,255,255,0.10); border-radius:20px;
+  box-shadow:0 26px 60px -40px rgba(0,0,0,0.9);
+  transition:border-color .2s ease, transform .2s ease;
+}
+a.win-band:hover .win-card{ border-color:rgba(255,92,57,0.42); transform:translateY(-2px); }
+a.win-band:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:4px; border-radius:20px; }
+.win-eyebrow{
+  display:inline-flex; align-items:center; gap:0.55rem; font-family:"Space Mono",monospace;
+  font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--orange);
+}
+.win-eyebrow .tick{ width:8px; height:8px; border-radius:50%; background:var(--orange); box-shadow:0 0 0 4px var(--orange-bloom); }
+.win-name{ display:block; margin-top:0.6rem; color:var(--cream); font-size:clamp(1.15rem,2.3vw,1.45rem); font-weight:600; }
+.win-sub{ display:block; margin-top:0.35rem; color:var(--cream-mute); font-size:0.97rem; max-width:52ch; }
+.win-figure{ text-align:right; }
+.win-amount{
+  display:block; font-family:"Newsreader",serif; font-size:clamp(2.1rem,5.2vw,3.1rem);
+  line-height:1; color:var(--cream); letter-spacing:-0.01em;
+}
+.win-of{ display:block; margin-top:0.45rem; font-family:"Space Mono",monospace; font-size:0.72rem;
+  letter-spacing:0.1em; text-transform:uppercase; color:var(--orange); }
+@media (max-width:720px){
+  .win-card{ grid-template-columns:1fr; }
+  .win-figure{ text-align:left; }
+}

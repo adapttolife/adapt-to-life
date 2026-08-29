@@ -302,8 +302,21 @@ for (const path of ["/donate", "/hustle-and-heart"]) {
 // /donate gets one slot, because Givebutter's own dependency set shifts
 // (q.stripe.com appears conditionally) and we do not control it. One slot still
 // catches an added embed: embeds arrive with a fleet of hosts, not one.
+//
+// Re-baselined 2026-08-29 for the photography pass. This is a RAISE, and a
+// ratchet that goes up needs its reason in writing or it is just a rubber
+// stamp. The homepage used to carry one 60KB photoband image; it now carries a
+// photographed hero (wheelie-4, 39KB) plus the mid-page band (wheelie-47,
+// 115KB). Measured, not estimated: prod own was 168KB before, the image swap is
+// -60KB +154KB = +94KB, so prod lands at ~262KB. 270 gives ~3% for encoder and
+// CF-script variance and nothing more.
+//
+// What did NOT get spent: total went 549 -> ~643KB against a 700KB ceiling that
+// stays put, request count is unchanged, and no new third-party host. If the
+// next weight-saving fix lands (self-hosted subset fonts is the open one), this
+// comes back down — see the ratchet rule above.
 const BUDGET = {
-  "/": { own: 185, total: 700, reqs: 24, hosts: 4, cls: 0.10 },
+  "/": { own: 270, total: 700, reqs: 24, hosts: 4, cls: 0.10 },
   // cls:null, still — but for a smaller and better-understood reason than
   // before. The Givebutter cause IS fixed: reserving the panel's height took
   // MOBILE from 0.12-0.76 down to a flat 0 across five runs in every condition

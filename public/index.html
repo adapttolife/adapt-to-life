@@ -28,7 +28,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
-<link rel="preload" as="image" href="/images/coaching-opt2.webp">
+<!-- Preload the LCP image only. This used to point at the mid-page photoband,
+     which downloaded a below-fold picture before the hero and, once the hero
+     became a photograph, kept fetching an image the page no longer uses at
+     all (60KB for nothing). The hero background is the LCP element now. -->
+<link rel="preload" as="image" href="/images/athletes/wheelie-4.webp" fetchpriority="high">
 <script src="/js/attribution.js" defer></script>
 <style>
   /* On the calendar: dated proof the org is moving. Compact by design, because
@@ -148,7 +152,9 @@ fill="currentColor" stroke="none">
 <main>
 
   <!-- 1 · HERO — atmosphere only (crisp black + orange glow, bold type) -->
-  <section class="hero dark hero-atmos">
+  <section class="hero dark hero-atmos hero-cine hero-photo kenburns">
+    <div class="hero-media" style="background-image:url('/images/athletes/wheelie-4.webp')"></div>
+    <div class="hero-glow" aria-hidden="true"></div>
     <div class="wrap">
       <span class="eyebrow orange reveal">Made by athletes, for athletes</span>
       <h1 class="serif display reveal">Your place in <em class="italic" style="color:var(--orange)">adaptive sports.</em></h1>
@@ -165,6 +171,13 @@ fill="currentColor" stroke="none">
          lifted over the hero. Renders nothing if there is no live campaign. -->
   <section style="padding:0;">
     <div class="wrap"><div id="homeBand" class="camp-pending"></div></div>
+  </section>
+
+  <!-- 2b · DRIVE RESULT — what the last finished drive actually brought in.
+         Rendered from campaigns.json by ATLCampaigns.result(); renders
+         nothing at all when no closed drive has a counted figure. -->
+  <section id="homeResultSection" style="padding:clamp(1.6rem,3vw,2.4rem) 0 0;">
+    <div class="wrap"><div id="homeResult"></div></div>
   </section>
 
   <!-- 3 · OUR WORK — two fronts of one job, not a choice between two products -->
@@ -239,8 +252,14 @@ fill="currentColor" stroke="none">
   </section>
 
   <!-- PHOTO BAND — coaching, cinematic full-bleed (constant in both heroes) -->
-  <section class="photoband" aria-label="A wheelchair basketball clinic">
-    <div class="photoband-img" style="background-image:url('/images/coaching-opt2.webp')"></div>
+  <section class="photoband" aria-label="An adaptive pickleball player reaching wide for a return">
+    <div class="photoband-img" style="background-image:url('/images/athletes/wheelie-47.webp')"></div>
+    <div class="photoband-cap">
+      <div class="wrap">
+        <span class="eyebrow">On the court</span>
+        <span class="pb-line">Different body, same drive.</span>
+      </div>
+    </div>
   </section>
 
   <!-- 11 · CLOSING — dark CTA -->
@@ -392,6 +411,10 @@ fill="currentColor" stroke="none">
 
   // The campaign band, lifted over the hero.
   C.band('homeBand', { lifted: true });
+
+  // The last finished drive's result. Hides its own section when there is
+  // nothing to report, so the page never carries an empty band.
+  C.result('homeResult');
 
   // On the calendar: at most three, soonest first. The whole section stays
   // hidden unless there is something real and upcoming to put in it.

@@ -380,6 +380,14 @@ fill="currentColor" stroke="none">
   </div>
 </section>
 
+<!-- ====================== LAST DRIVE RESULT ===================== -->
+<!-- The same ATLCampaigns.result() band the homepage carries, reading the
+     same campaigns.json row that feeds "The record" further down. A store
+     page whose store is closed should lead with what the last one DID. -->
+<section id="popResultSection" style="padding:0 0 clamp(1.6rem,3vw,2.4rem);">
+  <div class="wrap"><div id="popResult"></div></div>
+</section>
+
 <!-- ==================== WHERE THE MONEY GOES ==================== -->
 <section class="band" id="goes">
   <div class="wrap">
@@ -486,6 +494,19 @@ fill="currentColor" stroke="none">
         <li id="popCodeStep"><span class="pop-join-n">2</span><span>Enter our event code <strong class="pop-code" id="popCode"></strong></span></li>
         <li><span class="pop-join-n">3</span><span>Create your store and share the link.</span></li>
       </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= WHO IT REACHES ======================= -->
+<!-- Popcorn money is abstract until you see who it moves. This is the same
+     athletes the drive's half-of-every-dollar actually pays for. -->
+<section class="photoband" aria-label="Adaptive pickleball players together at the net after a match">
+  <div class="photoband-img" style="background-image:url('/images/athletes/wheelie-96.webp')"></div>
+  <div class="photoband-cap">
+    <div class="wrap">
+      <span class="eyebrow">Who the popcorn moves</span>
+      <span class="pb-line">Half of every bag becomes equipment, training, and travel for these athletes.</span>
     </div>
   </div>
 </section>
@@ -710,6 +731,8 @@ fill="currentColor" stroke="none">
 
   // The drives feeding this page come from /data/campaigns.json. This page
   // renders the Double Good ones: a drive with a pop-up store attached.
+  ATLCampaigns.result('popResult');
+
   ATLCampaigns.load(function(store){
     var campaigns = store ? store.drives.filter(function(d){
       return d.type === 'fundraiser' && (d.store_url || d.join_url);

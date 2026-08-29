@@ -34,7 +34,12 @@ export default {
     }
 
     // Staging-only review tour: /review walks the latest iteration. Production redirects home.
-    if ((url.pathname === "/review" || url.pathname === "/review.html") && env.STAGING !== "1") {
+    // /photo-picks rides the same gate: it is a working surface for choosing
+    // which athlete photographs land where, not a page of the site, and it must
+    // never be reachable on a custom domain even though it is noindex.
+    if ((url.pathname === "/review" || url.pathname === "/review.html" ||
+         url.pathname === "/photo-picks" || url.pathname === "/photo-picks.html") &&
+        env.STAGING !== "1") {
       return Response.redirect(`${url.origin}/`, 302);
     }
 

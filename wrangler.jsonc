@@ -43,7 +43,7 @@
     // hostname and the staging Worker answers on workers.dev, where no Access
     // app exists — so without the Worker running first, the QR admin page would
     // serve to anyone who guessed the staging URL.
-    "run_worker_first": ["/review", "/review.html", "/admin/*"]
+    "run_worker_first": ["/review", "/review.html", "/photo-picks", "/photo-picks.html", "/admin/*"]
   },
   "observability": {
     "enabled": true
@@ -126,7 +126,7 @@
       // CRITICAL: empty routes overrides the inherited production routes, so a
       // staging deploy can never reassign the live apex domains to this Worker.
       "routes": [],
-      "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": ["/review", "/review.html", "/admin/*"] },
+      "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": ["/review", "/review.html", "/photo-picks", "/photo-picks.html", "/admin/*"] },
       "triggers": { "crons": [] }
     }
   }

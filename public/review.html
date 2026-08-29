@@ -31,20 +31,24 @@
 <body style="background:#faf8f4;">
 <div class="rv-wrap">
   <span class="rv-badge">Staging review</span>
-  <h1 class="rv-h1">Option 2, across the whole brand system.</h1>
-  <p class="rv-sub">The exact coral in Brand Style Guide Version 2 is now the site's primary accent. This walk shows it in the places visitors actually encounter it, from the homepage and application flow to browser icons and social cards.</p>
-  <p class="rv-date">Iteration: Option 2 color migration &middot; updated 2026-08-09</p>
+  <h1 class="rv-h1">Real athletes, and the drive we finished.</h1>
+  <p class="rv-sub">Two things to look at. The site now uses our own photography instead of leaning on type and atmosphere alone, and the August popcorn drive's $3,004 is stated as a result rather than filed as a data row. Every photograph here is a real Adapt To Life athlete.</p>
+  <p class="rv-date">Iteration: photography pass + drive result &middot; updated 2026-08-29</p>
 
   <ol class="rv-steps">
-    <li><a href="/"><span><span class="t">Homepage</span><span class="d">Start with the hero, navigation, buttons, campaign card, event links and footer. The logo gesture and every primary accent now use the exact Option 2 coral.</span></span></a></li>
-    <li><a href="/apply"><span><span class="t">Application flow</span><span class="d">Check coral on a long, light page. Text links use a darker coral derived from Option 2 so small type still clears WCAG contrast on white.</span></span></a></li>
-    <li><a href="/donate"><span><span class="t">Donation page</span><span class="d">Check the primary calls to action and focus states. The exact coral stays prominent while darker hover and pressed states keep white button labels readable.</span></span></a></li>
-    <li><a href="/hustle-and-heart"><span><span class="t">Campaign page</span><span class="d">This is the highest concentration of brand accents. Look for one coherent coral rather than the mix of older orange values that was present before.</span></span></a></li>
+    <li><a href="/"><span><span class="t">Homepage &mdash; the hero is a photograph now</span><span class="d">The headline used to sit on atmosphere alone. It now sits on a real athlete mid-swing, with the orange bloom kept on top so it still reads as ours. Scroll once: under the campaign card is the new "Drive complete" band showing the popcorn result at $3,004, 300% of goal.</span></span></a></li>
+    <li><a href="/popcorn"><span><span class="t">Popcorn &mdash; a results page, not a shut store</span><span class="d">The store is closed, so the page leads with what the last drive did instead of a buy button that goes nowhere. Further down, a photo band showing who the popcorn money actually moves.</span></span></a></li>
+    <li><a href="/send-6"><span><span class="t">Send 6 &mdash; who the money is for</span><span class="d">This is the campaign the popcorn feeds. The drive row already listed $3,004; now there is a face attached to the six athletes it is going toward.</span></span></a></li>
+    <li><a href="/hustle-and-heart"><span><span class="t">The fund &mdash; what it pays for</span><span class="d">Photo band before the closing ask. Check that the picture reads as evidence rather than decoration.</span></span></a></li>
+    <li><a href="/about"><span><span class="t">About &mdash; the community</span><span class="d">Team headshots were already here; this adds the people around them.</span></span></a></li>
+    <li><a href="/photo-picks"><span><span class="t">The full shortlist (staging only)</span><span class="d">All 24 candidates pulled from the Drive athlete library. If you want a different shot in any slot above, this is where to point at it by name.</span></span></a></li>
   </ol>
 
-  <p class="rv-minor"><strong>Also updated, but not separate stops:</strong> browser favicons, the Apple home-screen icon, Open Graph sharing cards, QR artwork defaults and the internal admin shell all use Option 2. New cache-safe filenames keep browsers and social networks from serving the retired orange.</p>
+  <p class="rv-minor"><strong>Also carrying a photo band, but not separate stops:</strong> /ways-to-give, /apply, /adaptive-sports-near-me, /roadmap and /sponsorship. Same treatment, placed before each page's closing ask.</p>
 
-  <p class="rv-minor"><strong>Deliberately unchanged:</strong> gold stays reserved for Tim's memorial treatment, status colors keep their semantic meanings, and old cache-versioned image files remain byte-identical as historical artifacts. The active site no longer references those files.</p>
+  <p class="rv-minor"><strong>Deliberately unchanged:</strong> Tim's memorial page keeps its own photograph and gold treatment and gets no athlete band. The $3,004 is still read from <code>campaigns.json</code>, the same single source /popcorn and /send-6 already use, so the number cannot drift between pages. Nothing about the donation flow, forms or Turnstile was touched.</p>
+
+  <p class="rv-minor"><strong>One tradeoff worth your eyes:</strong> photography costs bytes. The homepage went from 60KB of image to 154KB, and the perf budget in <code>check-site.mjs</code> was raised from 185KB to 270KB to match. Total page weight is still under its unchanged 700KB ceiling and the request count did not move.</p>
 
   <div class="rv-start"><a class="btn" href="/">Start the walk <span class="arrow">&rarr;</span></a></div>
 </div>

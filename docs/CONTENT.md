@@ -188,6 +188,24 @@ Each message lives in ONE canonical place. Everywhere else: one line max, linkin
     The mirror of *never condition help on helping*, pointed the other way.
   - The board is explicitly **not** a closed list ("We wrote down what we know we need. That is not
     the same as everything we need."), per the rule against numbers that cap the mission.
+  - **`/volunteer` and `/ways-to-give` are peers, never parent and child** (Alec asked, 2026-09-02).
+    Both are children of Get Involved and each links to the other. Three reasons it is not nested
+    under giving, and the second one is not a style call:
+    - **"Give" means money in nonprofit English.** Nobody reads "Ways to Give" and thinks that is
+      where a CPA licence is wanted. Nesting it there delivers a *recruiting* ask dressed as a
+      donation ask, and flattens the one thing that makes a professional say yes: a seat, not a gift.
+    - **Donated professional services are never tax-deductible.** Only a volunteer's out-of-pocket
+      expenses can be. `/ways-to-give` carries the deductibility frame end to end, including the
+      advisor block with the legal name and EIN, so filing "volunteer your CPA hours" inside it
+      invites precisely the mistake accountants and attorneys make most often. The site must not
+      encourage it.
+    - `/ways-to-give` is a hub over *payment mechanisms* (monthly, DAF, stock, bequest, matching,
+      and sponsorship, which is money from a business). Time is a different currency, not another
+      mechanism, so it gets a sibling page and the "not every gift is money" line hands off to it.
+  - **A page whose cards are form controls has no linkable cards.** Every role card is a `<label>`
+    wrapping a checkbox, so an anchor inside one would swallow the click that selects the role. That
+    is why `/volunteer` shipped its first draft with zero outbound links in the body: the doors have
+    to be prose, and the cards cannot carry them. Pinned by `test/volunteer_clickup.test.js`.
 - Directory links: internal explainer is `/adaptive-sports-near-me`; the external link opens a new
   tab and is labeled **"Get notified when it opens"** until Adaptive Sports Near Me actually
   launches, then reverts to **"Visit the directory."** One label, everywhere, flipped in one pass.
@@ -226,7 +244,7 @@ Every page ends by handing the visitor forward, never sideways to a page that ha
 home → doors → (fund | directory) · tim → fund · fund → give · donate → done (+ level up: monthly,
 sponsor) · sponsorship → talk · apply → submit · about → give · roadmap → back the campaign ·
 ways to give → a campaign or a standing way · send-6 → give · popcorn → buy (or give) ·
-volunteer → sign up.
+volunteer → sign up (or ways to give, for the reader who is not on the board).
 
 Adding something new? Give it ONE home page, one ask, one line + link everywhere else. Update this
 doc in the same PR.

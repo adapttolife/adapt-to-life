@@ -43,6 +43,43 @@ trust beat → one ask.
 A page may carry secondary links (text links, ghost buttons) but exactly **one** primary orange
 ask at its close.
 
+## The nav is the site's hierarchy (three nouns and one button)
+
+Settled 2026-09-02, when `/volunteer` needed a home and the audit found that `/sponsorship` never had
+one: it was in **no** nav on **any** page and the home page did not link it either, despite carrying
+tiers to $50,000. Adding Volunteer as a sixth flat item would have made two homeless doors instead of
+one, so the category that should always have existed got created.
+
+| Slot | Job | Children |
+|---|---|---|
+| **Our Work** ▾ | what we do | Hustle & Heart Fund · Adaptive Sports Near Me |
+| **Get Involved** ▾ | how you join | Ways to Give · Volunteer · Sponsor |
+| **About** ▾ | who we are | Our Story · Tim's Story · Roadmap |
+| **Grant Application** | the athlete door | (featured, orange text) |
+| **Donate** | the one standing ask | (the button) |
+
+Rules that come out of it:
+
+- **Three nouns, then the asks.** A new page is a child of one of the three nouns, never a fourth
+  noun. If it does not fit under what-we-do, how-you-join, or who-we-are, the page's job is unclear.
+- **The two highest-stakes doors never move and never nest.** Donate stays the button and Grant
+  Application stays featured, because an athlete must never hunt through a menu for the money and a
+  donor must never lose the ask. Everything else earns its place in a panel.
+- **The nav got shorter, not longer** (six items to five). A door with a home in a panel beats a
+  crowded row, and six was already tight at tablet width.
+- **Every panel child carries a one-line `np-d`.** The description is what makes a menu a map instead
+  of a list, and it is the only place the site explains a page before you open it.
+- **`/ways-to-give` is a child, not a peer.** It is the money page other than `/donate`, so it leads
+  its panel. Demoting it was the real cost of this change and it was accepted deliberately.
+- **The footer mirrors the nav order.** Two orderings of the same set is how a visitor learns the
+  site has no shape.
+
+Where a page appears in the nav is not the whole hierarchy. Every page also has to be reachable from
+the page where the reader forms the intention, which is why `/volunteer` is linked from the home
+closing (as a secondary text link, never a third button competing with Donate), from the `/about`
+closing under "the team is the point", from `/roadmap` where it already said "an hour of your time",
+from the `/ways-to-give` time-is-not-money line, and from the `/contact` quick links.
+
 ## Message ownership (say it once)
 
 Each message lives in ONE canonical place. Everywhere else: one line max, linking home.

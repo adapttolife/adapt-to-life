@@ -97,13 +97,17 @@ test("every role page's share card exists on disk", () => {
 
 // ---- 2. the promises hold on all 27 -------------------------------------
 
-const SECTIONS = ["Why this role exists", "What you would own", "Your first month",
-  "What helps", "What you do not need", "What this role is not"];
+// Four headings, down from nine. Two of the originals were one question asked
+// twice ("What helps" / "What you do not need") and two were the terms of
+// joining repeated on all 27 pages; those live on the board now.
+const SECTIONS = ["The work", "Your first month", "Who it suits", "Not this"];
 
 test("every role page carries the full job description", () => {
   for (const [slug, html] of PAGES) {
     for (const s of SECTIONS) assert.ok(html.includes(s), `${slug} is missing "${s}"`);
-    assert.match(html, /class="jd-glance"/, `${slug} has no at-a-glance panel`);
+    assert.match(html, /class="jd-glance"/, `${slug} has no apply sidebar`);
+    assert.match(html, /class="jd-lede/, `${slug} does not open with its argument`);
+    assert.match(html, /class="jd-skip/, `${slug} lost the one-line relief`);
     assert.match(html, /class="jd-payoff/, `${slug} has no payoff line`);
   }
 });
@@ -112,18 +116,50 @@ test("every role page says it is unpaid and creates no employment relationship",
   // A volunteer job description that reads like an employment contract creates
   // ambiguity a 501(c)(3) does not want. The line is written once in SHARED and
   // must reach every page.
-  assert.match(SHARED.legal, /unpaid volunteer role and creates no employment relationship/);
+  assert.match(SHARED.legal, /[Uu]npaid volunteer role/);
+  assert.match(SHARED.legal, /no employment relationship/);
   for (const [slug, html] of PAGES) {
-    assert.ok(html.includes("creates no employment relationship"), `${slug} is missing the legal line`);
+    assert.match(html, /no employment relationship/, `${slug} is missing the legal line`);
     assert.match(html, /Volunteer, unpaid/, `${slug} does not label itself unpaid`);
   }
 });
 
-test("every role page carries the shared culture blocks", () => {
+test("the terms of joining live on the board, once, and not on every role page", () => {
+  // They were eight headed blocks repeated 27 times. The board owns them; a
+  // role page keeps only the promise the form itself makes.
+  for (const [t] of SHARED.terms) {
+    assert.ok(BOARD.includes(t), `the board is missing the term "${t}"`);
+  }
   for (const [slug, html] of PAGES) {
-    assert.ok(html.includes(SHARED.how.h), `${slug} is missing "how we work"`);
-    assert.ok(html.includes(SHARED.get.h), `${slug} is missing "what you get"`);
-    assert.ok(html.includes("hear back either way"), `${slug} drops the one promise the board makes`);
+    assert.ok(html.includes("hear back either way"), `${slug} drops the one promise we make`);
+    assert.doesNotMatch(html, /What you get out of it|No busywork, and a real scope/,
+      `${slug} repeats the board's terms`);
+  }
+});
+
+test("no role page narrates its own design to the reader", () => {
+  // The first draft opened its first-month list with "Nobody starts with the
+  // whole job. This is what we would actually ask you to do first, in order."
+  // The heading already said that. Any sentence whose only job is to introduce
+  // the next one is fat.
+  const banned = [
+    /Nobody starts with the whole job/i,
+    /Being explicit about the boundary/i,
+    /Here is the part most organizations/i,
+    /This is what we would actually ask you to do/i,
+  ];
+  for (const [slug, html] of PAGES) {
+    for (const re of banned) assert.doesNotMatch(html, re, `${slug} explains itself to the reader`);
+  }
+});
+
+test("a role page stays under 500 words", () => {
+  // 985 when Alec called it bloated. The budget is the check, because prose
+  // creeps back one helpful sentence at a time.
+  for (const [slug, html] of PAGES) {
+    const text = body(html).replace(/<[^>]+>/g, " ").replace(/&[a-z]+;/g, " ");
+    const words = text.split(/\s+/).filter(Boolean).length;
+    assert.ok(words < 500, `${slug} is ${words} words, over the 500 budget`);
   }
 });
 
@@ -169,18 +205,32 @@ test("no role page emits JobPosting structured data", () => {
   }
 });
 
-test("every role names a time cost in both places it appears", () => {
+test("every role names its time cost on the board", () => {
   for (const r of ROLES) {
     assert.ok(r.time && r.time.length > 2, `${r.slug} has no time chip`);
-    assert.ok(r.commit && r.commit.length > 10, `${r.slug} has no commitment detail`);
     assert.match(BOARD, new RegExp(`<span class="role-t">${r.time.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</span>`),
       `${r.slug} card does not show its time`);
   }
 });
 
+test("the content model holds its own length budget", () => {
+  // The board is for scanning and the page is for the argument, so a card is
+  // one sentence and everything editorial belongs in `why`.
+  for (const r of ROLES) {
+    const sentences = (t) => t.split(/(?<=[.!?])\s+/).filter((x) => x.split(/\s+/).length > 2).length;
+    assert.ok(sentences(r.card) <= 1, `${r.slug} card is more than one sentence`);
+    assert.ok(sentences(r.why) <= 2, `${r.slug} why is more than two sentences`);
+    assert.ok(r.own.length <= 3, `${r.slug} has ${r.own.length} work bullets, max 3`);
+    assert.ok(r.first.length <= 3, `${r.slug} has ${r.first.length} first-month steps, max 3`);
+    assert.ok(r.helps.length <= 2, `${r.slug} has ${r.helps.length} helps bullets, max 2`);
+    assert.ok(r.isNot.length <= 2, `${r.slug} has ${r.isNot.length} not-this bullets, max 2`);
+    assert.equal(typeof r.skip, "string", `${r.slug} skip must be one line, not a list`);
+  }
+});
+
 test("the data model is complete and internally consistent", () => {
-  const need = ["slug", "lane", "name", "card", "time", "commit", "where", "withWhom",
-    "why", "own", "first", "helps", "notNeeded", "isNot", "payoff"];
+  const need = ["slug", "lane", "name", "card", "time", "where", "withWhom",
+    "why", "own", "first", "helps", "skip", "isNot", "payoff"];
   const lanes = new Set(LANES.map((l) => l.key));
   const slugs = new Set();
   for (const r of ROLES) {

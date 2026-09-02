@@ -31,22 +31,24 @@
 <body style="background:#faf8f4;">
 <div class="rv-wrap">
   <span class="rv-badge">Staging review</span>
-  <h1 class="rv-h1">Cleaner cards, and a stale-CSS trap closed.</h1>
-  <p class="rv-sub">Two things. The board you saw was <strong>new HTML painted with the previous deploy’s CSS</strong>, which is why the cards looked broken: staging served the stylesheet from cache for up to an hour while the pages stayed fresh. That is now impossible, staging marks CSS and JS <code>no-store</code>. Separately, and fairly, <strong>"Read the role" on all twenty-seven cards was noise</strong>. The whole card is a link, so it is one arrow now.</p>
-  <p class="rv-date">Iteration: card cleanup + staging cache fix &middot; updated 2026-09-02</p>
+  <h1 class="rv-h1">985 words down to 414.</h1>
+  <p class="rv-sub">Same claims, four headings instead of nine. What came out was fat: a heading that only introduced a paragraph, two lists asking one question, the terms of joining repeated on all twenty-seven pages, a sidebar table that restated the hero chips, and every sentence whose job was to introduce the next one. The budget is now a test, because prose creeps back one helpful sentence at a time.</p>
+  <p class="rv-date">Iteration: cut the fat &middot; updated 2026-09-02</p>
 
   <ol class="rv-steps">
-    <li><a href="/volunteer"><span><span class="t">The board &mdash; look at the card footers</span><span class="d">Time cost on the left, one orange arrow on the right, nothing else. Every card is a link, so spelling out "read the role" twenty-seven times was competing with the only piece of information that footer should carry. No hard refresh needed any more; staging will not hand you cached CSS again.</span></span></a></li>
-    <li><a href="/volunteer/grant-writer"><span><span class="t">Grant writer &mdash; the two-field form is unchanged</span><span class="d">Scroll to the bottom. Name, email, one button, with the note and link behind a toggle that starts shut. This is the flow from your last note and nothing about it moved.</span></span></a></li>
-    <li><a href="/volunteer#signup"><span><span class="t">"Nothing fit" &mdash; the only free-text form left</span><span class="d">Name, email, what you would want to do. For the reader who is not on the list.</span></span></a></li>
-    <li><a href="/preview/receipt?type=volunteer"><span><span class="t">The follow-up email</span><span class="d">Staging only. Promises a person reads it and you hear back either way, and asks for no money.</span></span></a></li>
+    <li><a href="/volunteer/grant-writer"><span><span class="t">Grant writer &mdash; read the whole thing</span><span class="d">It opens with the argument in two sentences and no heading over it, which is how a posting actually reads. Then four sections: the work, your first month, who it suits, not this. "What helps" and "What you do not need" used to be two lists asking one question; the second is now a single line of relief under the first.</span></span></a></li>
+    <li><a href="/volunteer/equipment-technician"><span><span class="t">Equipment technician &mdash; check the shape holds</span><span class="d">Different lane, same four sections, still under 500 words. The sidebar is one fact and a button now instead of a table that repeated the chips in the hero.</span></span></a></li>
+    <li><a href="/volunteer"><span><span class="t">The board &mdash; cards are one sentence</span><span class="d">Every card was one or two sentences and is now one. The board is for scanning; the argument belongs on the page. The copy above the first card is 167 words including the hero.</span></span></a></li>
+    <li><a href="/volunteer#roles"><span><span class="t">"What you would be joining" &mdash; four short terms</span><span class="d">These are the terms of joining, so the board owns them and no role page repeats them. They used to appear as eight headed blocks on every one of the twenty-seven.</span></span></a></li>
   </ol>
 
-  <p class="rv-minor"><strong>What actually broke, because it will explain other odd reviews:</strong> <code>public/_headers</code> gives <code>/css/*</code> a five minute freshness plus a one hour stale-while-revalidate window, while HTML is always revalidated. Ship a markup change and a CSS change together, and there is a window where a browser paints new HTML with the last deploy&rsquo;s stylesheet. Unstyled spans fall back to body size, which is exactly what you saw. The file&rsquo;s own comment predicted it. The fix is that the review surface should never be the thing that gambles: on staging only, the Worker now marks CSS and JS <code>no-store</code>. Production keeps its cache policy untouched and pays no Worker call for the stylesheet.</p>
+  <p class="rv-minor"><strong>The rules that came out of this, now in <code>docs/CONTENT.md</code> and enforced by test:</strong> a card is one sentence, a role&rsquo;s argument is two, three work bullets, three first-month steps, two "who it suits" bullets, one line of relief, two "not this" bullets, and the page under 500 words. If a fourth bullet feels necessary, one of the others was not pulling its weight. A test also fails if any page starts narrating its own design again.</p>
 
-  <p class="rv-minor"><strong>My mistake, plainly:</strong> I took a mobile screenshot of that board and never opened it. The screenshot loop only works if somebody looks at the picture.</p>
+  <p class="rv-minor"><strong>Where the sloppiness actually came from:</strong> most of it was me explaining the page to the reader. "Nobody starts with the whole job. This is what we would actually ask you to do first, in order." The heading already said that. Same with "Being explicit about the boundary is how we make the rest of this believable" and "Here is the part most organizations leave out of a posting", which was telling rather than showing.</p>
 
-  <p class="rv-minor"><strong>Still owed before this goes out on LinkedIn:</strong> two stray empty fields on the ClickUp Volunteers list need deleting in the UI, and somebody has to own the inbound queue. Every page promises a person answers either way.</p>
+  <p class="rv-minor"><strong>Nothing about the flow changed:</strong> one tap from a card, then a name, an email and one button on the role page. The two-field form and the ClickUp destination are untouched.</p>
+
+  <p class="rv-minor"><strong>Still owed before this goes out:</strong> two stray empty fields on the ClickUp Volunteers list need deleting in the UI, and somebody has to own the inbound queue.</p>
 
   <div class="rv-start"><a class="btn" href="/">Start the walk <span class="arrow">&rarr;</span></a></div>
 </div>

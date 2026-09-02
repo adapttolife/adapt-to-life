@@ -81,69 +81,64 @@ closing (as a secondary text link, never a third button competing with Donate), 
 closing under "the team is the point", from `/roadmap` where it already said "an hour of your time",
 from the `/ways-to-give` time-is-not-money line, and from the `/contact` quick links.
 
-## Role pages are generated, and the culture is in the shared blocks
+## Role pages are generated, and length is a budget
 
 `/volunteer` and all twenty-seven `/volunteer/<role>` pages are written by
-`scripts/build-volunteer.mjs` from `data/volunteer-roles.mjs`. **That data file carries the honesty
+`scripts/build-volunteer.mjs` from `data/volunteer-roles.mjs`. **That data file carries the house
 rules for this content at the top of it and is the authority; do not restate them here.** Run
-`npm run volunteer` after editing it, and `test/volunteer_pages.test.js` fails the build if the tree
-is out of date.
+`npm run volunteer` after editing, and `test/volunteer_pages.test.js` fails the build if the tree is
+out of date.
 
-Why generated rather than hand-written, and it is the same reason twice: twenty-seven pages making
-one set of promises is the shape that drifts. The culture blocks (how we work, what you get, the
-volunteer-and-unpaid line) are written once and rendered identically everywhere, so no page can
-quietly promise something the others do not. The chrome is *read* from a shipped page, so a nav
-change reaches all twenty-eight without anyone remembering they exist.
+**A role page ran to 985 words across nine headings before Alec cut it** (2026-09-02: "say all the
+same things with less bloat"). It is 414 now, across four, with every distinct claim still on the
+page. What came out was fat, not content, and each cut generalizes:
 
-What makes a volunteer posting read as care rather than as a vacancy, in order of how much each one
-carries:
+- **A heading that only introduces a paragraph is fat.** "Why this role exists" became the page's
+  opening paragraph with no heading, which is how a posting actually reads.
+- **Two lists answering one question is one list.** "What helps" and "What you do not need" are now
+  "Who it suits": two bullets, then one line of relief.
+- **Shared terms live in one place.** "How we work" and "What you get out of it" were eight headed
+  blocks repeated twenty-seven times. They are the terms of *joining*, so the board owns them and a
+  role page keeps only the promise its own form makes.
+- **Never restate a fact the page already shows.** The at-a-glance table repeated the hero chips.
+  The sidebar is now the one fact the chips do not carry, plus a button that stays reachable.
+- **Never narrate the page's own design to the reader.** The first draft opened its first-month list
+  with "Nobody starts with the whole job. This is what we would actually ask you to do first, in
+  order." The heading already said it. Cut every sentence whose job is to introduce the next one.
+- **A bullet does not explain itself.** Trailing justification on *every* bullet is what makes
+  careful writing read padded. Keep the one or two that earn it.
 
-- **"Your first month."** The only section that proves somebody thought about the volunteer instead
-  of about the gap. Three steps, in order, small enough to finish.
-- **"What this role is not."** Naming the boundary is what makes the rest believable. Every role has
-  one, and several of them are the reason a professional will say yes: *a fundraising quota, we will
-  never put a dollar target on a volunteer.*
-- **"What you do not need."** A list of the reasons people disqualify themselves. Two of our board
-  members started with no adaptive sport background at all, so that one is a fact, not comfort.
-- **The at-a-glance panel.** Answers "what does this cost me" without scrolling, which is the only
-  question a reader actually has in the first ten seconds.
-- **A named person to work with.** Currently the founder on every role, because `/about` is the only
-  public source for who is here. Naming a specific person per role would be stronger and is Alec's
-  call, since it commits their time: one line per role in the data file.
+The budget, enforced by test rather than by intention, because prose creeps back one helpful
+sentence at a time: **a card is one sentence, a `why` is two, three work bullets, three first-month
+steps, two "who it suits" bullets, one line of relief, two "not this" bullets, and the whole page
+under 500 words.** If a fourth bullet feels necessary, one of the others was not pulling its weight.
 
-Two hard constraints on this content, both of which came from getting it wrong first:
-
-- **No `JobPosting` structured data, ever.** Google's job markup is for paid employment and expects
-  a salary signal. Emitting it would put unpaid volunteer roles into job-search results as
-  employment. These pages read like a posting on purpose and must never be indexed as one. Pinned
-  by test.
-- **A card is either a control or a link, never both.** The board's first version wrapped each card
-  in a `<label>` around its checkbox, which swallows every click inside it, so no title could be a
-  link and the page shipped with no way out of it at all. The card is now a single `<a>` to its role
-  page, which means it can hold no nested link and no form control. Both directions are pinned by
-  test, because either mistake makes the role pages unreachable or untappable.
+**The board is for scanning, the page is for the argument.** That is why a card is one sentence and
+everything editorial lives in `why`. The board's own copy before the first card is 167 words.
 
 **Fewest clicks beats fewest forms** (Alec, 2026-09-02, overruling the first build). Almost everyone
-applies for **one** role, so the shortest path to a submitted application wins and everything that
-served browsing-then-picking is gone:
+applies for **one** role, so everything that served browsing-then-picking is gone:
 
-- **The whole card is one link** to its role page. It was a `<label>` wrapping a checkbox so a reader
-  could select several roles at once; that cost two decisions (which roles, then scroll to a shared
-  form) before reaching a form that could have been on the role page itself.
+- **The whole card is one link** to its role page, so the entire tile is the tap target on a phone.
 - **Each role page carries its own apply form: a name, an email, one button.** The role travels in a
-  hidden input, so choosing it costs nothing. Anything else (a note, a link) sits behind a shut
-  `<details>`, so the default path is two fields.
-- **The board's own form is only for the reader who is not on the list** ("Nothing fit. Then tell us
-  in your own words"), which is the one case that genuinely needs free text.
-- We follow up from there. The form asks for the least that lets a person come back to them, and the
-  rest of the conversation happens in the reply. Whatever the apply copy promises has to be true of a
-  name and an email and nothing more.
+  hidden input. A note and a link sit behind a shut `<details>`, so the default path is two fields.
+- **The board's form is only for the reader who is not on the list** ("Nothing fit"), which is the
+  one case that genuinely needs free text. We follow up from there.
 
 The original objection to a form per page was that twenty-seven copies would drift. It does not
 apply: the pages are generated, so there is exactly **one** copy of the form markup and one submit
-handler, in `scripts/build-volunteer.mjs`. That objection was about hand-written duplication and it
-got carried over to a generated page by reflex. Worth remembering as its own rule: **a reason to
-avoid duplication stops applying the moment the thing is generated.**
+handler. Worth remembering as its own rule: **a reason to avoid duplication stops applying the moment
+the thing is generated.**
+
+Two hard constraints, both learned by getting them wrong:
+
+- **No `JobPosting` structured data, ever.** Google's job markup is for paid employment and expects a
+  salary signal. Emitting it would put unpaid volunteer roles into job-search results as employment.
+  Pinned by test.
+- **A card is either a control or a link, never both.** As a `<label>` around a checkbox it swallowed
+  every click inside it, so no title could be a link. As an `<a>` it can hold no nested link and no
+  form control. Both directions are pinned, because either mistake makes the role pages unreachable
+  or untappable.
 
 ## Message ownership (say it once)
 

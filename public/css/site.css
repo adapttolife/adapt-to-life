@@ -699,6 +699,10 @@ a.win-band:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:4p
 .jd-sec + .jd-sec{ margin-top:clamp(2rem,3.4vw,2.8rem); }
 .jd-h{ font-family:"Newsreader", serif; font-size:clamp(1.3rem,2.4vw,1.6rem); font-weight:500; color:var(--ink); margin-bottom:0.8rem; }
 .jd-p{ font-family:"Hanken Grotesk", sans-serif; color:var(--ink-soft); line-height:1.62; }
+/* Opens the page in place of a "why this role exists" heading. */
+.jd-lede{ font-family:"Newsreader", serif; font-size:clamp(1.12rem,2.1vw,1.32rem); line-height:1.5; color:var(--ink); margin-bottom:clamp(2rem,3.4vw,2.6rem); }
+/* One line of relief, in place of a second list. */
+.jd-skip{ font-family:"Hanken Grotesk", sans-serif; font-size:0.92rem; line-height:1.55; color:var(--muted); margin-top:0.9rem; }
 .jd-note{ font-size:0.92rem; color:var(--muted); margin-bottom:0.9rem; }
 .jd-list{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:0.6rem; }
 .jd-list li{ position:relative; padding-left:1.5rem; font-family:"Hanken Grotesk", sans-serif; color:var(--ink-soft); line-height:1.55; }
@@ -711,12 +715,11 @@ a.win-band:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:4p
 
 .jd-side{ position:sticky; top:96px; }
 @media (max-width:900px){ .jd-side{ position:static; } }
-.jd-glance{ border:1.5px solid var(--hairline); border-radius:16px; background:var(--paper); padding:1.4rem 1.3rem; }
+.jd-glance{ border:1.5px solid var(--hairline); border-radius:16px; background:var(--paper); padding:1.3rem 1.25rem; }
 .gl-head{ display:block; font-family:"Space Mono", monospace; font-size:0.7rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:0.9rem; }
-.gl-row{ padding:0.7rem 0; border-top:1px solid var(--hairline); }
 .gl-k{ display:block; font-family:"Space Mono", monospace; font-size:0.65rem; letter-spacing:0.09em; text-transform:uppercase; color:var(--muted); }
 .gl-v{ display:block; font-family:"Hanken Grotesk", sans-serif; font-size:0.92rem; line-height:1.45; color:var(--ink); margin-top:0.2rem; }
-.jd-side-btn{ width:100%; justify-content:center; margin-top:1.2rem; }
+.jd-side-btn{ width:100%; justify-content:center; margin-top:1.1rem; }
 .gl-foot{ font-family:"Hanken Grotesk", sans-serif; font-size:0.82rem; color:var(--muted); margin-top:0.8rem; text-align:center; }
 .jd-legal{ font-family:"Hanken Grotesk", sans-serif; font-size:0.8rem; line-height:1.6; color:var(--cream-faint); max-width:60ch; margin:clamp(2rem,4vw,2.8rem) auto 0; }
 .closing .jd-list li{ color:var(--ink-soft); }

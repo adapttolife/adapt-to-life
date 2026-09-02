@@ -110,7 +110,7 @@ ${roles.map(card).join("\n")}
   </section>`;
   }).join("\n\n");
 
-  const terms = SHARED.how.items
+  const terms = SHARED.terms
     .map(([t, d]) => `        <div class="term reveal">\n          <h3>${esc(t)}</h3>\n          <p>${esc(d)}</p>\n        </div>`)
     .join("\n");
 
@@ -128,7 +128,7 @@ ${roles.map(card).join("\n")}
     <div class="wrap">
       <span class="eyebrow orange reveal">Volunteer</span>
       <h1 class="serif display reveal">Your place on <em class="italic" style="color:var(--orange)">this team</em>.</h1>
-      <p class="lead sub reveal">Adapt To Life is early, and the honest version is that we need people more than we need hours. Below is the real list we work from. Open any role to see what you would own, what your first month looks like, and roughly what it costs you. Applying takes a name and an email.</p>
+      <p class="lead sub reveal">We are early, and we need people more than hours. Open any role to see what you would own and what it costs you. Applying takes a name and an email.</p>
       <div class="actions reveal">
         <a href="#roles" class="btn">See what we need <span class="arrow">&rarr;</span></a>
       </div>
@@ -139,7 +139,7 @@ ${roles.map(card).join("\n")}
     <div class="wrap">
       <div class="reveal sec-head">
         <span class="eyebrow orange">Before you scroll</span>
-        <h2 class="serif h2" style="margin-top:0.8rem;">What you would actually be joining.</h2>
+        <h2 class="serif h2" style="margin-top:0.8rem;">What you would be joining.</h2>
       </div>
       <div class="terms">
 ${terms}
@@ -155,8 +155,7 @@ ${lanes}
     <div class="wrap reading center">
       <span class="eyebrow orange reveal">Not on the list</span>
       <h2 class="serif h3 reveal" style="margin-top:0.7rem;">We wrote down what we know we need.</h2>
-      <p class="prose reveal" style="margin-top:1rem;">That is not the same as everything we need. If you have something we did not think to ask for, put it in the box below and tell us plainly. The list grows.</p>
-      <p class="prose reveal" style="margin-top:1.4rem;">And if none of it is you, that is a fine answer. Somebody still has to pay for the chair. <a class="textlink" href="/ways-to-give">See the ways to give <span class="arrow">&rarr;</span></a></p>
+      <p class="prose reveal" style="margin-top:1rem;">Not the same as everything we need, so tell us below if you have something we did not think to ask for. And if none of it is you, somebody still has to pay for the chair. <a class="textlink" href="/ways-to-give">See the ways to give <span class="arrow">&rarr;</span></a></p>
     </div>
   </section>
 
@@ -175,7 +174,7 @@ ${lanes}
       <div class="reveal sec-head">
         <span class="eyebrow orange">Nothing fit</span>
         <h2 class="serif h2" style="margin-top:0.8rem;">Then tell us in your own words.</h2>
-        <p class="lane-blurb">If one of the roles above is you, open it and apply there. It takes a name and an email. This form is for everything we did not think to ask for.</p>
+        <p class="lane-blurb">If a role above is you, open it and apply there. This form is for everything else.</p>
       </div>
 
       <div class="vform reveal" style="margin-top:clamp(2rem,3.6vw,2.8rem);">
@@ -262,28 +261,26 @@ const FORM_JS = `<script>
 </script>`;
 
 // ---- one role page ------------------------------------------------------
-// The shape is deliberately the one people already know from a job board: a
-// title, an at-a-glance panel that answers "what does this cost me" without
-// scrolling, then the detail. The section that does the real work is "your
-// first month", because it is the only part that proves somebody thought about
-// the volunteer rather than about the vacancy.
+// The shape of a job posting, cut to what a reader actually uses. The first
+// build ran to nearly a thousand words per role across nine headings, and Alec
+// called it: "say all the same things with less bloat."
+//
+// What came out, and why each was fat rather than content:
+//   - "Why this role exists" as its own heading. The paragraph earns its place;
+//     the heading did not. It now opens the page, which is how a posting reads.
+//   - "What helps" AND "What you do not need" as two lists answering one
+//     question. Now one section: two bullets, then a single line of relief.
+//   - "How we work" and "What you get out of it", eight headed blocks repeated
+//     on all 27 pages. They are the terms of joining, so the BOARD owns them.
+//   - The at-a-glance table, which restated the hero chips. The sidebar is now
+//     the one fact the chips do not carry plus a button that stays reachable.
+//   - Every sentence whose job was to introduce the next one.
 function rolePage(r) {
   const lane = LANES.find((l) => l.key === r.lane);
-  const apply = "#apply";
   const title = `${strip(r.name)} (volunteer) | Adapt To Life`;
 
-  const jd = (h, body) =>
-    `      <section class="jd-sec reveal">\n        <h2 class="jd-h">${h}</h2>\n${body}\n      </section>`;
-
-  const glance = [
-    ["Time", r.time],
-    ["Commitment", r.commit],
-    ["Where", r.where],
-    ["You would work with", r.withWhom],
-    ["Type", "Volunteer, unpaid"],
-  ]
-    .map(([k, v]) => `          <div class="gl-row"><span class="gl-k">${k}</span><span class="gl-v">${esc(v)}</span></div>`)
-    .join("\n");
+  const sec = (h, body) =>
+    `        <section class="jd-sec reveal">\n          <h2 class="jd-h">${h}</h2>\n${body}\n        </section>`;
 
   return head({
     title,
@@ -291,11 +288,9 @@ function rolePage(r) {
     canonical: `${SITE}/volunteer/${r.slug}`,
     card: `/images/og/role-${r.slug}-v2-option2.jpg`,
     cardAlt: `${strip(r.name)}, a volunteer role at Adapt To Life.`,
-    // Schema.org JobPosting is deliberately NOT emitted. Google's job markup is
-    // for paid employment and requires a salary or an explicit "no salary"
-    // signal; publishing it for unpaid volunteer roles would put these in job
-    // search results as if they were employment. The pages read like a posting
-    // on purpose, but they must never be indexed as one.
+    // No JobPosting structured data, ever: Google's job markup is for paid
+    // employment and expects a salary signal, so it would list unpaid volunteer
+    // roles as jobs.
   }) + HEADER + `
 
 <main>
@@ -312,7 +307,7 @@ function rolePage(r) {
         <span class="jd-chip">Volunteer, unpaid</span>
       </div>
       <div class="actions reveal">
-        <a href="${apply}" class="btn">Apply for this role <span class="arrow">&rarr;</span></a>
+        <a href="#apply" class="btn">Apply for this role <span class="arrow">&rarr;</span></a>
       </div>
     </div>
   </section>
@@ -320,52 +315,28 @@ function rolePage(r) {
   <section class="band">
     <div class="wrap jd-grid">
       <div class="jd-main">
-${jd("Why this role exists", `        <p class="jd-p">${esc(r.why)}</p>`)}
-${jd("What you would own", "        " + ul(r.own))}
-${jd("Your first month", `        <p class="jd-p jd-note">Nobody starts with the whole job. This is what we would actually ask you to do first, in order.</p>\n        ` + ul(r.first, "jd-ordered"))}
-${jd("What helps", "        " + ul(r.helps))}
-${jd("What you do not need", "        " + ul(r.notNeeded, "jd-no"))}
-${jd("What this role is not", `        <p class="jd-p jd-note">Being explicit about the boundary is how we make the rest of this believable.</p>\n        ` + ul(r.isNot, "jd-no"))}
+        <p class="jd-lede reveal">${esc(r.why)}</p>
+${sec("The work", "          " + ul(r.own))}
+${sec("Your first month", "          " + ul(r.first, "jd-ordered"))}
+${sec("Who it suits", "          " + ul(r.helps) + `\n          <p class="jd-skip">${esc(r.skip)}</p>`)}
+${sec("Not this", "          " + ul(r.isNot, "jd-no"))}
         <p class="jd-payoff reveal">${esc(r.payoff)}</p>
       </div>
 
       <aside class="jd-side reveal">
         <div class="jd-glance">
-          <span class="gl-head">At a glance</span>
-${glance}
-          <a href="${apply}" class="btn jd-side-btn">Apply for this role</a>
-          <p class="gl-foot">A name and an email. That is the whole form.</p>
+          <span class="gl-k">You would work with</span>
+          <span class="gl-v">${esc(r.withWhom)}</span>
+          <a href="#apply" class="btn jd-side-btn">Apply for this role</a>
+          <p class="gl-foot">A name and an email.</p>
         </div>
       </aside>
     </div>
   </section>
 
-  <section class="band tint">
-    <div class="wrap reading">
-      <span class="eyebrow orange reveal">${SHARED.about.h}</span>
-      <h2 class="serif h3 reveal" style="margin-top:0.7rem;">Small, and saying so.</h2>
-${SHARED.about.p.map((x) => `      <p class="prose reveal" style="margin-top:1rem;">${x}</p>`).join("\n")}
-      <p class="prose reveal" style="margin-top:1rem;"><a class="textlink" href="/about">Read our story <span class="arrow">&rarr;</span></a></p>
-    </div>
-  </section>
-
-  <section class="band">
-    <div class="wrap">
-      <div class="reveal sec-head">
-        <span class="eyebrow orange">${SHARED.how.h}</span>
-        <h2 class="serif h2" style="margin-top:0.8rem;">No busywork, and a real scope.</h2>
-      </div>
-      <div class="terms">
-${SHARED.how.items.map(([t, d]) => `        <div class="term reveal">\n          <h3>${esc(t)}</h3>\n          <p>${esc(d)}</p>\n        </div>`).join("\n")}
-      </div>
-    </div>
-  </section>
-
   <section class="band-sm tint">
     <div class="wrap reading">
-      <span class="eyebrow orange reveal">${SHARED.get.h}</span>
-      <h2 class="serif h3 reveal" style="margin-top:0.7rem;">Nobody here is paid, including us. You still get something real.</h2>
-      ${ul(SHARED.get.items)}
+      <p class="prose reveal">${SHARED.about} <a class="textlink" href="/about">Read our story <span class="arrow">&rarr;</span></a></p>
     </div>
   </section>
 
@@ -373,9 +344,9 @@ ${SHARED.how.items.map(([t, d]) => `        <div class="term reveal">\n         
     <div class="wrap">
       <div class="jd-apply-grid">
         <div class="jd-apply-copy">
-          <span class="eyebrow orange reveal">${SHARED.apply.h}</span>
+          <span class="eyebrow orange reveal">Apply</span>
           <h2 class="serif h2 reveal" style="margin-top:0.7rem;">${esc(r.name)}.</h2>
-          <p class="lead sub reveal">${esc(SHARED.apply.p)}</p>
+          <p class="lead sub reveal">${esc(SHARED.apply)}</p>
         </div>
         <form class="jd-form reveal" id="volForm" novalidate>
           <input type="hidden" name="role" value="${esc(r.name)}">
@@ -383,7 +354,7 @@ ${SHARED.how.items.map(([t, d]) => `        <div class="term reveal">\n         
           <div class="field"><label for="em">Email</label><input id="em" name="em" type="email" autocomplete="email"></div>
           <details class="jd-more">
             <summary>Add a note or a link (optional)</summary>
-            <div class="field" style="margin-top:0.9rem;"><label for="bring">Anything you want us to know</label><textarea id="bring" name="bring" rows="3" placeholder="What you have done before, or a question."></textarea></div>
+            <div class="field" style="margin-top:0.9rem;"><label for="bring">Anything you want us to know</label><textarea id="bring" name="bring" rows="3"></textarea></div>
             <div class="field"><label for="links">A link</label><input id="links" name="links" type="text" placeholder="LinkedIn, a portfolio, a firm page"></div>
           </details>
           <input type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">

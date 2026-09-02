@@ -29,8 +29,8 @@ trust beat → one ask.
 | `/hustle-and-heart` | The fund's story (the cost barrier) | Give, in place (the give moment) |
 | `/donate` | Complete the gift, zero friction | Finish your gift |
 | `/sponsorship` | The business case | Talk to us |
-| `/volunteer` | The board of what we actually need, and the honest terms | Sign up (the form) |
-| `/volunteer/<role>` | One role, in job-posting shape: what you would own, your first month, what it costs you | Apply for this role |
+| `/volunteer` | The board of what we actually need, and the honest terms; routes to one role | Open a role (or, if nothing fits, the free-text form) |
+| `/volunteer/<role>` | One role, in job-posting shape: what you would own, your first month, what it costs you | Apply for this role, on the page (name + email) |
 | `/apply` | Athlete requests funding | Submit the application |
 | `/adaptive-sports-near-me` | The access barrier | Visit the directory |
 | `/ways-to-give` | Every way to back an athlete, campaigns first | Donate |
@@ -117,16 +117,33 @@ Two hard constraints on this content, both of which came from getting it wrong f
   a salary signal. Emitting it would put unpaid volunteer roles into job-search results as
   employment. These pages read like a posting on purpose and must never be indexed as one. Pinned
   by test.
-- **A page whose cards are form controls has no linkable cards.** The board's first version wrapped
-  each card in a `<label>` around its checkbox, which swallows every click inside it, so no title
-  could be a link and the page shipped with no way out of it at all. The card now carries the
-  checkbox as a sibling with an explicit "Add to my list" control, and the title is a real link. If
-  a `<label>` ever wraps a card again the role pages become unreachable; pinned by test.
+- **A card is either a control or a link, never both.** The board's first version wrapped each card
+  in a `<label>` around its checkbox, which swallows every click inside it, so no title could be a
+  link and the page shipped with no way out of it at all. The card is now a single `<a>` to its role
+  page, which means it can hold no nested link and no form control. Both directions are pinned by
+  test, because either mistake makes the role pages unreachable or untappable.
 
-Every role page's primary ask is **Apply for this role**, which deep-links back to the one form at
-`/volunteer?role=<name>#signup` with that role already selected. There is deliberately no second
-copy of the form: twenty-seven forms would mean twenty-seven Turnstile widgets and twenty-seven
-places for the submit handler to drift.
+**Fewest clicks beats fewest forms** (Alec, 2026-09-02, overruling the first build). Almost everyone
+applies for **one** role, so the shortest path to a submitted application wins and everything that
+served browsing-then-picking is gone:
+
+- **The whole card is one link** to its role page. It was a `<label>` wrapping a checkbox so a reader
+  could select several roles at once; that cost two decisions (which roles, then scroll to a shared
+  form) before reaching a form that could have been on the role page itself.
+- **Each role page carries its own apply form: a name, an email, one button.** The role travels in a
+  hidden input, so choosing it costs nothing. Anything else (a note, a link) sits behind a shut
+  `<details>`, so the default path is two fields.
+- **The board's own form is only for the reader who is not on the list** ("Nothing fit. Then tell us
+  in your own words"), which is the one case that genuinely needs free text.
+- We follow up from there. The form asks for the least that lets a person come back to them, and the
+  rest of the conversation happens in the reply. Whatever the apply copy promises has to be true of a
+  name and an email and nothing more.
+
+The original objection to a form per page was that twenty-seven copies would drift. It does not
+apply: the pages are generated, so there is exactly **one** copy of the form markup and one submit
+handler, in `scripts/build-volunteer.mjs`. That objection was about hand-written duplication and it
+got carried over to a generated page by reflex. Worth remembering as its own rule: **a reason to
+avoid duplication stops applying the moment the thing is generated.**
 
 ## Message ownership (say it once)
 
@@ -292,7 +309,7 @@ Every page ends by handing the visitor forward, never sideways to a page that ha
 home → doors → (fund | directory) · tim → fund · fund → give · donate → done (+ level up: monthly,
 sponsor) · sponsorship → talk · apply → submit · about → give · roadmap → back the campaign ·
 ways to give → a campaign or a standing way · send-6 → give · popcorn → buy (or give) ·
-volunteer → sign up (or ways to give, for the reader who is not on the board).
+volunteer → one role → apply there (or ways to give, for the reader who is not on the board).
 
 Adding something new? Give it ONE home page, one ask, one line + link everywhere else. Update this
 doc in the same PR.

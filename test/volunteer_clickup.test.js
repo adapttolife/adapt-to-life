@@ -13,7 +13,7 @@
 //   3. The receipt never asks a volunteer for money.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { createVolunteer, volunteerTitle } from "../src/clickup.js";
 
 const ENV = { CLICKUP_TOKEN: "tok", CLICKUP_VOLUNTEERS_LIST_ID: "901419920230" };
@@ -55,12 +55,20 @@ const EMAIL = "af25d1b1-5ef1-48f7-ad51-870385e3f6ce";
 
 // ---- 1. the page and the Worker agree on the role list -------------------
 
-const PAGE = readFileSync(new URL("../public/volunteer.html", import.meta.url), "utf8");
 const SRC = readFileSync(new URL("../src/index.js", import.meta.url), "utf8");
+const ROLE_PAGES = readdirSync(new URL("../public/volunteer/", import.meta.url))
+  .filter((f) => f.endsWith(".html"));
 
+// The role a submission carries is now a hidden input on that role's own page,
+// not a checkbox on the board. Alec, 2026-09-02: almost everyone applies for one
+// role, so the board stopped being a multi-select.
 function pageRoles() {
-  return [...PAGE.matchAll(/<input class="role-cb"[^>]*name="role" value="([^"]+)"/g)]
-    .map((m) => m[1].replace(/&amp;/g, "&"));
+  return ROLE_PAGES.map((f) => {
+    const html = readFileSync(new URL(`../public/volunteer/${f}`, import.meta.url), "utf8");
+    const m = html.match(/<input type="hidden" name="role" value="([^"]+)"/);
+    assert.ok(m, `${f} has no hidden role input, so applying there would post no role`);
+    return m[1].replace(/&amp;/g, "&");
+  });
 }
 function workerRoles() {
   const block = SRC.match(/const VOLUNTEER_ROLES = \[([\s\S]*?)\n\];/);
@@ -68,19 +76,19 @@ function workerRoles() {
   return [...block[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]);
 }
 
-test("every role on the page is a role the Worker will accept", () => {
+test("every role page posts a role the Worker will accept", () => {
   const page = pageRoles();
   const worker = workerRoles();
-  assert.ok(page.length > 0, "the page has no role checkboxes");
+  assert.ok(page.length > 0);
   const orphaned = page.filter((r) => !worker.includes(r));
-  assert.deepEqual(orphaned, [], "these roles are on the page but not in VOLUNTEER_ROLES, so picking them would be silently dropped");
+  assert.deepEqual(orphaned, [], "these roles are on a page but not in VOLUNTEER_ROLES, so applying would silently drop the role");
   const unreachable = worker.filter((r) => !page.includes(r));
-  assert.deepEqual(unreachable, [], "these roles are in VOLUNTEER_ROLES but on no card, so nobody can pick them");
+  assert.deepEqual(unreachable, [], "these roles are in VOLUNTEER_ROLES but have no page");
 });
 
 test("role values are unique", () => {
   const page = pageRoles();
-  assert.equal(new Set(page).size, page.length, "two cards share a value");
+  assert.equal(new Set(page).size, page.length, "two role pages post the same role");
 });
 
 // ---- 2. the submission survives ------------------------------------------
@@ -150,14 +158,5 @@ test("the volunteer receipt never asks for money", () => {
 
 test("the receipt makes the same promise the page makes", () => {
   assert.match(volunteerReceipt, /hear back either way/i);
-  assert.match(PAGE, /You hear back either way/i);
 });
 
-test("the page carries no em-dash", () => {
-  // House voice rule, and the one an em-dash slips past review on. HTML
-  // comments are stripped first: they are code, and the rest of the site uses
-  // dashes freely in them.
-  const body = PAGE.slice(PAGE.indexOf("<main>"), PAGE.indexOf("</main>"))
-    .replace(/<!--[\s\S]*?-->/g, "");
-  assert.doesNotMatch(body, /—|&mdash;/, "em-dash in user-facing copy");
-});

@@ -62,7 +62,11 @@ export const SHARED = {
   },
   apply: {
     h: "How to apply",
-    p: "There is no interview, no resume screen and no minimum commitment. Use the button below and the form arrives with this role already selected. Tell us in a sentence or two what you have done before, or what you would want to do. A person reads it and comes back to you with what the work would actually look like, or with an honest no.",
+    // Two fields. Alec, 2026-09-02: almost everyone applies for one role, so the
+    // form asks for the least that lets us come back to them, and the rest of
+    // the conversation happens in the reply. Anything this copy promises has to
+    // be true of a name and an email, and nothing more.
+    p: "No interview, no resume screen, no minimum commitment. Your name and your email is the whole form, and the role comes with it. A person reads it and comes back to you with what the work would actually look like, or with an honest no.",
   },
   legal:
     "This is an unpaid volunteer role and creates no employment relationship. Volunteer time is not tax-deductible as a charitable gift, though unreimbursed out-of-pocket expenses sometimes are. Ask your own tax advisor. Adapt To Life is a recognized 501(c)(3) nonprofit, EIN 41-3213344.",

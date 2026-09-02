@@ -488,10 +488,14 @@ async function handleVolunteer(request, env, ctx) {
     return json({ ok: false, error: "Verification failed. Please reload the page and try again." }, 403);
   }
 
-  const name = `${str(data.fn)} ${str(data.ln)}`.trim();
+  // Two shapes reach here. A role page posts { name, em, role } and nothing
+  // else, because applying for one role should cost a name, an email and one
+  // button. The board posts { name, em, bring } for someone who did not find
+  // themselves in the list. Older { fn, ln } still works.
+  const name = str(data.name) || `${str(data.fn)} ${str(data.ln)}`.trim();
   const email = str(data.em);
   const bring = str(data.bring);
-  const roles = normalizeRoles(data.roles);
+  const roles = normalizeRoles(data.role || data.roles);
 
   if (!email || /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) === false) {
     return json({ ok: false, error: "A valid email is required." }, 422);

@@ -123,7 +123,7 @@ fill="currentColor" stroke="none">
         <span class="jd-chip">Volunteer, unpaid</span>
       </div>
       <div class="actions reveal">
-        <a href="/volunteer?role=Planned%20and%20major%20giving%20advisor#signup" class="btn">Apply for this role <span class="arrow">&rarr;</span></a>
+        <a href="#apply" class="btn">Apply for this role <span class="arrow">&rarr;</span></a>
       </div>
     </div>
   </section>
@@ -168,8 +168,8 @@ fill="currentColor" stroke="none">
           <div class="gl-row"><span class="gl-k">Where</span><span class="gl-v">Remote</span></div>
           <div class="gl-row"><span class="gl-k">You would work with</span><span class="gl-v">Alec, our founder and executive director</span></div>
           <div class="gl-row"><span class="gl-k">Type</span><span class="gl-v">Volunteer, unpaid</span></div>
-          <a href="/volunteer?role=Planned%20and%20major%20giving%20advisor#signup" class="btn jd-side-btn">Apply for this role</a>
-          <p class="gl-foot">Or <a class="textlink" href="/volunteer">browse every role</a>.</p>
+          <a href="#apply" class="btn jd-side-btn">Apply for this role</a>
+          <p class="gl-foot">A name and an email. That is the whole form.</p>
         </div>
       </aside>
     </div>
@@ -220,13 +220,29 @@ fill="currentColor" stroke="none">
     </div>
   </section>
 
-  <section class="closing dark band-lg">
-    <div class="wrap center">
-      <span class="eyebrow orange reveal">How to apply</span>
-      <h2 class="serif display reveal">Planned and major giving advisor.</h2>
-      <p class="lead sub reveal">There is no interview, no resume screen and no minimum commitment. Use the button below and the form arrives with this role already selected. Tell us in a sentence or two what you have done before, or what you would want to do. A person reads it and comes back to you with what the work would actually look like, or with an honest no.</p>
-      <div class="actions reveal" style="justify-content:center;">
-        <a href="/volunteer?role=Planned%20and%20major%20giving%20advisor#signup" class="btn">Apply for this role <span class="arrow">&rarr;</span></a>
+  <section class="closing dark band-lg jd-apply" id="apply">
+    <div class="wrap">
+      <div class="jd-apply-grid">
+        <div class="jd-apply-copy">
+          <span class="eyebrow orange reveal">How to apply</span>
+          <h2 class="serif h2 reveal" style="margin-top:0.7rem;">Planned and major giving advisor.</h2>
+          <p class="lead sub reveal">No interview, no resume screen, no minimum commitment. Your name and your email is the whole form, and the role comes with it. A person reads it and comes back to you with what the work would actually look like, or with an honest no.</p>
+        </div>
+        <form class="jd-form reveal" id="volForm" novalidate>
+          <input type="hidden" name="role" value="Planned and major giving advisor">
+          <div class="field"><label for="name">Your name</label><input id="name" name="name" type="text" autocomplete="name"></div>
+          <div class="field"><label for="em">Email</label><input id="em" name="em" type="email" autocomplete="email"></div>
+          <details class="jd-more">
+            <summary>Add a note or a link (optional)</summary>
+            <div class="field" style="margin-top:0.9rem;"><label for="bring">Anything you want us to know</label><textarea id="bring" name="bring" rows="3" placeholder="What you have done before, or a question."></textarea></div>
+            <div class="field"><label for="links">A link</label><input id="links" name="links" type="text" placeholder="LinkedIn, a portfolio, a firm page"></div>
+          </details>
+          <input type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only" style="margin-bottom:0.9rem;"></div>
+          <button type="submit" class="btn" id="volSubmit">Apply for this role</button>
+          <p class="form-status" id="formStatus" role="status" aria-live="polite" style="margin-top:.9rem;font-weight:600"></p>
+          <p class="jd-form-note">You hear back either way.</p>
+        </form>
       </div>
       <p class="jd-legal reveal">This is an unpaid volunteer role and creates no employment relationship. Volunteer time is not tax-deductible as a charitable gift, though unreimbursed out-of-pocket expenses sometimes are. Ask your own tax advisor. Adapt To Life is a recognized 501(c)(3) nonprofit, EIN 41-3213344.</p>
     </div>
@@ -359,6 +375,56 @@ fill="currentColor" stroke="none">
         });
       });
     }
+  })();
+</script>
+<script>
+  (function(){
+    var f = document.getElementById('volForm');
+    if(!f) return;
+    var statusEl = document.getElementById('formStatus');
+    var btn = document.getElementById('volSubmit');
+    var dark = !!f.closest('.dark');
+    function val(n){ var el = f.elements[n]; return el ? String(el.value).trim() : ''; }
+    function setStatus(msg, ok){
+      if(!statusEl) return;
+      statusEl.textContent = msg;
+      statusEl.style.color = ok ? (dark ? '#8FE3B4' : '#2e7d32') : (dark ? '#FFB4A2' : '#c0392b');
+    }
+    f.addEventListener('submit', function(e){
+      e.preventDefault();
+      if(val('company')) return; // honeypot: silently drop bots
+      if(!val('name')){ setStatus('Please add your name.', false); return; }
+      if(!val('em')){ setStatus('Please add your email so we can reply.', false); return; }
+      // A role page carries a hidden role, so a name and an email is a whole
+      // application. The board form has no role, so it needs the free text.
+      if(!val('role') && !val('bring')){
+        setStatus('Tell us what you would want to do.', false); return;
+      }
+      var tk = f.querySelector('[name="cf-turnstile-response"]');
+      var payload = {
+        name: val('name'), em: val('em'), role: val('role'),
+        bring: val('bring'), links: val('links'), cf_token: tk ? tk.value : ''
+      };
+      var orig = btn ? btn.textContent : '';
+      if(btn){ btn.disabled = true; btn.textContent = 'Sending...'; }
+      setStatus('', true);
+      fetch('/api/volunteer', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      })
+      .then(function(r){ return r.json().catch(function(){ return { ok:r.ok }; }); })
+      .then(function(d){
+        if(d && d.ok){
+          f.reset();
+          setStatus("Thanks. A person will read this and get back to you.", true);
+        } else {
+          setStatus((d && d.error) || 'Something went wrong. Please email hello@adapttolife.org.', false);
+        }
+      })
+      .catch(function(){ setStatus('Network error. Please email hello@adapttolife.org.', false); })
+      .then(function(){ if(btn){ btn.disabled = false; btn.textContent = orig; } });
+    });
   })();
 </script>
 

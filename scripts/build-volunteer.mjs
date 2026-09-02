@@ -76,22 +76,21 @@ const ul = (items, cls = "") =>
   items.map((i) => `<li>${esc(i)}</li>`).join("") + `</ul>`;
 
 // ---- the board ----------------------------------------------------------
-// A card carries TWO affordances now: the title navigates to the role page and
-// a separate control adds it to the form. That is why the card is no longer a
-// <label> wrapping the checkbox: a label swallows the click, so the title could
-// never have been a link while the whole card was the control.
+// The whole card is one link to the role page. Alec, 2026-09-02: almost everyone
+// applies for one role, so the shortest path wins. That killed the multi-select
+// the first version had, which cost a reader two extra decisions (which roles,
+// then scroll to a shared form) to reach a two-field form they could have had on
+// the role page itself.
+//
+// One consequence worth keeping in mind: the card cannot contain another link or
+// a form control, because it IS an anchor. A "read the role" link inside it would
+// be a nested anchor, which is invalid, and it would also be redundant.
 function card(r) {
-  const id = `pick-${r.slug}`;
-  return `      <li class="role reveal">
-        <input class="role-cb" type="checkbox" id="${id}" name="role" value="${esc(r.name)}">
-        <a class="role-n" href="/volunteer/${r.slug}">${esc(r.name)}</a>
-        <p class="role-d">${esc(r.card)}</p>
-        <span class="role-t">${esc(r.time)}</span>
-        <span class="role-foot">
-          <label class="role-pick" for="${id}">${TICK}<span class="rp-off">Add to my list</span><span class="rp-on">Added</span></label>
-          <a class="role-more" href="/volunteer/${r.slug}">Read the role <span class="arrow">&rarr;</span></a>
-        </span>
-      </li>`;
+  return `      <li><a class="role" href="/volunteer/${r.slug}">
+        <span class="role-n">${esc(r.name)}</span>
+        <span class="role-d">${esc(r.card)}</span>
+        <span class="role-foot"><span class="role-t">${esc(r.time)}</span><span class="role-go">Read the role <span class="arrow">&rarr;</span></span></span>
+      </a></li>`;
 }
 
 function boardPage() {
@@ -124,16 +123,14 @@ ${roles.map(card).join("\n")}
   }) + HEADER + `
 
 <main>
-<form id="volForm" novalidate>
 
   <section class="hero dark hero-atmos">
     <div class="wrap">
       <span class="eyebrow orange reveal">Volunteer</span>
       <h1 class="serif display reveal">Your place on <em class="italic" style="color:var(--orange)">this team</em>.</h1>
-      <p class="lead sub reveal">Adapt To Life is early, and the honest version is that we need people more than we need hours. Below is the real list we work from. Every role has its own page saying what you would own, what your first month looks like, and roughly what it costs you. Some of it is a career's worth of skill. Some of it is one introduction. All of it ends with an athlete on a court.</p>
+      <p class="lead sub reveal">Adapt To Life is early, and the honest version is that we need people more than we need hours. Below is the real list we work from. Open any role to see what you would own, what your first month looks like, and roughly what it costs you. Applying takes a name and an email.</p>
       <div class="actions reveal">
         <a href="#roles" class="btn">See what we need <span class="arrow">&rarr;</span></a>
-        <a href="#signup" class="btn ghost">Sign up</a>
       </div>
     </div>
   </section>
@@ -176,58 +173,31 @@ ${lanes}
   <section class="band band-lg to-form" id="signup">
     <div class="wrap">
       <div class="reveal sec-head">
-        <span class="eyebrow orange">Sign up</span>
-        <h2 class="serif h2" style="margin-top:0.8rem;">Tell us where you fit.</h2>
-        <p class="lane-blurb">Add anything above that sounds like you, then tell us a little. There is no interview and no minimum commitment. We will come back to you with a real scope, or with an honest no.</p>
+        <span class="eyebrow orange">Nothing fit</span>
+        <h2 class="serif h2" style="margin-top:0.8rem;">Then tell us in your own words.</h2>
+        <p class="lane-blurb">If one of the roles above is you, open it and apply there. It takes a name and an email. This form is for everything we did not think to ask for.</p>
       </div>
 
       <div class="vform reveal" style="margin-top:clamp(2rem,3.6vw,2.8rem);">
-        <div class="picked">
-          <span class="picked-h">Roles you picked</span>
-          <p class="picked-none" id="pickedNone">None yet. Scroll up and add any role, or just tell us in your own words below.</p>
-          <div class="picked-list" id="pickedList"></div>
-        </div>
-
-        <div class="contact-form">
+        <form class="contact-form" id="volForm" novalidate>
           <div class="field-row">
-            <div class="field"><label for="fn">First name</label><input id="fn" name="fn" type="text" autocomplete="given-name"></div>
-            <div class="field"><label for="ln">Last name</label><input id="ln" name="ln" type="text" autocomplete="family-name"></div>
-          </div>
-          <div class="field-row">
+            <div class="field"><label for="name">Your name</label><input id="name" name="name" type="text" autocomplete="name"></div>
             <div class="field"><label for="em">Email</label><input id="em" name="em" type="email" autocomplete="email"></div>
-            <div class="field"><label for="phone">Phone <span style="font-weight:400;color:var(--muted)">(optional)</span></label><input id="phone" name="phone" type="tel" autocomplete="tel"></div>
           </div>
-          <div class="field-row">
-            <div class="field"><label for="based">Where are you based? <span style="font-weight:400;color:var(--muted)">(optional)</span></label><input id="based" name="based" type="text" autocomplete="address-level2" placeholder="City, state"></div>
-            <div class="field">
-              <label for="time">How much time feels right?</label>
-              <select id="time" name="time">
-                <option value="">Select one</option>
-                <option>An hour here and there</option>
-                <option>A few hours a month</option>
-                <option>A few hours a week</option>
-                <option>A day at a time, for events</option>
-                <option>One project, start to finish</option>
-                <option>Not sure yet</option>
-              </select>
-            </div>
-          </div>
-          <div class="field"><label for="bring">What would you bring? Anything we did not think to ask for?</label><textarea id="bring" name="bring" rows="5" placeholder="A sentence is plenty. If you added a role above, tell us what you have done before. If you did not, tell us what you would want to do."></textarea></div>
-          <div class="field"><label for="links">A link, if you have one <span style="font-weight:400;color:var(--muted)">(optional)</span></label><input id="links" name="links" type="text" placeholder="LinkedIn, a portfolio, a firm page"></div>
+          <div class="field"><label for="bring">What would you want to do?</label><textarea id="bring" name="bring" rows="4" placeholder="A sentence is plenty."></textarea></div>
           <input type="text" name="company" id="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
           <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only" style="margin-bottom:1rem;"></div>
-          <button type="submit" class="btn" id="volSubmit">Count me in</button>
+          <button type="submit" class="btn" id="volSubmit">Send it over</button>
           <p class="form-status" id="formStatus" role="status" aria-live="polite" style="margin-top:.9rem;font-weight:600"></p>
-          <p class="form-note">We will reply at the email you provide. Nothing here signs you up for anything.</p>
-        </div>
+          <p class="form-note">We will reply at the email you provide.</p>
+        </form>
       </div>
     </div>
   </section>
 
-</form>
 </main>
 
-` + FOOTER + "\n\n" + NAVJS + "\n" + BOARD_JS + `
+` + FOOTER + "\n\n" + NAVJS + "\n" + FORM_JS + `
 
 <script src="/js/subscribe.js" defer></script>
 <script src="/js/turnstile-lazy.js" defer></script>
@@ -236,66 +206,37 @@ ${lanes}
 `;
 }
 
-const BOARD_JS = `<script>
+// One submit handler, used by the role-page form and the board's
+// nothing-fit form alike. The chips, the role checkboxes and the ?role=
+// deep-link reader are all gone: they existed to serve a multi-select that
+// cost a reader two decisions before reaching a two-field form.
+const FORM_JS = `<script>
   (function(){
     var f = document.getElementById('volForm');
     if(!f) return;
     var statusEl = document.getElementById('formStatus');
     var btn = document.getElementById('volSubmit');
-    var list = document.getElementById('pickedList');
-    var none = document.getElementById('pickedNone');
-
-    function picked(){
-      return Array.prototype.slice.call(f.querySelectorAll('input[name="role"]:checked'))
-        .map(function(i){ return i.value; });
-    }
-    function paint(){
-      var sel = picked();
-      list.innerHTML = '';
-      sel.forEach(function(v){
-        var s = document.createElement('span');
-        s.className = 'chip';
-        s.textContent = v;
-        list.appendChild(s);
-      });
-      none.style.display = sel.length ? 'none' : '';
-    }
-    f.addEventListener('change', function(e){ if(e.target.name === 'role') paint(); });
-    paint();
-
-    // A role deep-link (?role=Grant+writer) so a post, or a role page's own
-    // apply button, can point at one ask instead of the whole board.
-    (function(){
-      var want = new URLSearchParams(location.search).getAll('role').map(function(s){ return s.toLowerCase(); });
-      if(!want.length) return;
-      var hit = false;
-      f.querySelectorAll('input[name="role"]').forEach(function(i){
-        if(want.indexOf(i.value.toLowerCase()) >= 0){ i.checked = true; hit = true; }
-      });
-      if(hit) paint();
-    })();
-
-    function v(id){ var el=document.getElementById(id); return el ? el.value.trim() : ''; }
+    var dark = !!f.closest('.dark');
+    function val(n){ var el = f.elements[n]; return el ? String(el.value).trim() : ''; }
     function setStatus(msg, ok){
       if(!statusEl) return;
       statusEl.textContent = msg;
-      statusEl.style.color = ok ? '#2e7d32' : '#c0392b';
+      statusEl.style.color = ok ? (dark ? '#8FE3B4' : '#2e7d32') : (dark ? '#FFB4A2' : '#c0392b');
     }
-
     f.addEventListener('submit', function(e){
       e.preventDefault();
-      if(v('company')) return; // honeypot: silently drop bots
-      if(!v('em')){ setStatus('Please enter your email so we can reply.', false); return; }
-      var roles = picked();
-      if(!roles.length && !v('bring')){
-        setStatus('Add a role above, or tell us what you would want to do.', false);
-        return;
+      if(val('company')) return; // honeypot: silently drop bots
+      if(!val('name')){ setStatus('Please add your name.', false); return; }
+      if(!val('em')){ setStatus('Please add your email so we can reply.', false); return; }
+      // A role page carries a hidden role, so a name and an email is a whole
+      // application. The board form has no role, so it needs the free text.
+      if(!val('role') && !val('bring')){
+        setStatus('Tell us what you would want to do.', false); return;
       }
       var tk = f.querySelector('[name="cf-turnstile-response"]');
       var payload = {
-        fn:v('fn'), ln:v('ln'), em:v('em'), phone:v('phone'), based:v('based'),
-        time:v('time'), bring:v('bring'), links:v('links'), roles:roles,
-        cf_token: tk?tk.value:''
+        name: val('name'), em: val('em'), role: val('role'),
+        bring: val('bring'), links: val('links'), cf_token: tk ? tk.value : ''
       };
       var orig = btn ? btn.textContent : '';
       if(btn){ btn.disabled = true; btn.textContent = 'Sending...'; }
@@ -309,7 +250,6 @@ const BOARD_JS = `<script>
       .then(function(d){
         if(d && d.ok){
           f.reset();
-          paint();
           setStatus("Thanks. A person will read this and get back to you.", true);
         } else {
           setStatus((d && d.error) || 'Something went wrong. Please email hello@adapttolife.org.', false);
@@ -321,7 +261,6 @@ const BOARD_JS = `<script>
   })();
 </script>`;
 
-
 // ---- one role page ------------------------------------------------------
 // The shape is deliberately the one people already know from a job board: a
 // title, an at-a-glance panel that answers "what does this cost me" without
@@ -330,7 +269,7 @@ const BOARD_JS = `<script>
 // the volunteer rather than about the vacancy.
 function rolePage(r) {
   const lane = LANES.find((l) => l.key === r.lane);
-  const apply = `/volunteer?role=${encodeURIComponent(r.name)}#signup`;
+  const apply = "#apply";
   const title = `${strip(r.name)} (volunteer) | Adapt To Life`;
 
   const jd = (h, body) =>
@@ -395,7 +334,7 @@ ${jd("What this role is not", `        <p class="jd-p jd-note">Being explicit ab
           <span class="gl-head">At a glance</span>
 ${glance}
           <a href="${apply}" class="btn jd-side-btn">Apply for this role</a>
-          <p class="gl-foot">Or <a class="textlink" href="/volunteer">browse every role</a>.</p>
+          <p class="gl-foot">A name and an email. That is the whole form.</p>
         </div>
       </aside>
     </div>
@@ -430,13 +369,29 @@ ${SHARED.how.items.map(([t, d]) => `        <div class="term reveal">\n         
     </div>
   </section>
 
-  <section class="closing dark band-lg">
-    <div class="wrap center">
-      <span class="eyebrow orange reveal">${SHARED.apply.h}</span>
-      <h2 class="serif display reveal">${esc(r.name)}.</h2>
-      <p class="lead sub reveal">${esc(SHARED.apply.p)}</p>
-      <div class="actions reveal" style="justify-content:center;">
-        <a href="${apply}" class="btn">Apply for this role <span class="arrow">&rarr;</span></a>
+  <section class="closing dark band-lg jd-apply" id="apply">
+    <div class="wrap">
+      <div class="jd-apply-grid">
+        <div class="jd-apply-copy">
+          <span class="eyebrow orange reveal">${SHARED.apply.h}</span>
+          <h2 class="serif h2 reveal" style="margin-top:0.7rem;">${esc(r.name)}.</h2>
+          <p class="lead sub reveal">${esc(SHARED.apply.p)}</p>
+        </div>
+        <form class="jd-form reveal" id="volForm" novalidate>
+          <input type="hidden" name="role" value="${esc(r.name)}">
+          <div class="field"><label for="name">Your name</label><input id="name" name="name" type="text" autocomplete="name"></div>
+          <div class="field"><label for="em">Email</label><input id="em" name="em" type="email" autocomplete="email"></div>
+          <details class="jd-more">
+            <summary>Add a note or a link (optional)</summary>
+            <div class="field" style="margin-top:0.9rem;"><label for="bring">Anything you want us to know</label><textarea id="bring" name="bring" rows="3" placeholder="What you have done before, or a question."></textarea></div>
+            <div class="field"><label for="links">A link</label><input id="links" name="links" type="text" placeholder="LinkedIn, a portfolio, a firm page"></div>
+          </details>
+          <input type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only" style="margin-bottom:0.9rem;"></div>
+          <button type="submit" class="btn" id="volSubmit">Apply for this role</button>
+          <p class="form-status" id="formStatus" role="status" aria-live="polite" style="margin-top:.9rem;font-weight:600"></p>
+          <p class="jd-form-note">You hear back either way.</p>
+        </form>
       </div>
       <p class="jd-legal reveal">${esc(SHARED.legal)}</p>
     </div>
@@ -444,7 +399,7 @@ ${SHARED.how.items.map(([t, d]) => `        <div class="term reveal">\n         
 
 </main>
 
-` + FOOTER + "\n\n" + NAVJS + `
+` + FOOTER + "\n\n" + NAVJS + "\n" + FORM_JS + `
 
 <script src="/js/subscribe.js" defer></script>
 <script src="/js/turnstile-lazy.js" defer></script>

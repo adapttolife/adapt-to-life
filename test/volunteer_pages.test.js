@@ -37,28 +37,52 @@ test("every role has a page, and every page has a role", () => {
   }
 });
 
-test("every role card links to its own role page", () => {
+test("the whole card is one link to its role page", () => {
+  // Alec, 2026-09-02: almost everyone applies for one role, so the shortest path
+  // wins. One tap on the card, then a two-field form on the role page.
   for (const r of ROLES) {
-    assert.match(BOARD, new RegExp(`<a class="role-n" href="/volunteer/${r.slug}">`),
-      `the board does not link ${r.slug}`);
+    assert.match(BOARD, new RegExp(`<a class="role" href="/volunteer/${r.slug}">`),
+      `the board does not link ${r.slug} as a whole card`);
   }
 });
 
-test("the card is no longer a label, so its title can be a link", () => {
-  // The first version wrapped each card in a <label> around the checkbox, which
-  // swallowed any click inside it. That is why the titles could not be links and
-  // why the page shipped with no way out of it. If a label ever wraps a card
-  // again, the role pages become unreachable from the board.
+test("the board carries no role picker", () => {
+  // The multi-select cost a reader two decisions before reaching a form they
+  // could have had on the role page. If checkboxes come back, so does the
+  // problem, and the card stops being tappable as a single target.
+  assert.doesNotMatch(BOARD, /name="role"[^>]*type="checkbox"|class="role-cb"/, "the board has role checkboxes again");
   assert.doesNotMatch(BOARD, /<label class="role["\s]/, "a card is wrapped in a label again");
-  assert.match(BOARD, /<input class="role-cb"/);
-  assert.match(BOARD, /<label class="role-pick" for="pick-/);
 });
 
-test("every role page deep-links back to the form with its role selected", () => {
+test("a card contains no nested link or form control", () => {
+  // The card IS an anchor, so an <a> or an <input> inside it would be invalid
+  // and would fight the tap.
+  const cards = [...BOARD.matchAll(/<a class="role" href="[^"]*">([\s\S]*?)<\/a>/g)].map((m) => m[1]);
+  assert.equal(cards.length, ROLES.length);
+  for (const c of cards) {
+    assert.doesNotMatch(c, /<a\s|<input|<button|<label/, "a card contains a nested link or control");
+  }
+});
+
+test("every role page carries its own two-field apply form", () => {
+  // The whole point of the change: applying is a name, an email and one button,
+  // on the page you are already reading.
   for (const [slug, html] of PAGES) {
     const r = ROLES.find((x) => x.slug === slug);
-    const want = `/volunteer?role=${encodeURIComponent(r.name)}#signup`;
-    assert.ok(html.includes(want), `${slug} does not deep-link its apply button`);
+    assert.ok(html.includes(`<input type="hidden" name="role" value="${r.name.replace(/&/g, "&amp;")}">`),
+      `${slug} does not carry its role in a hidden input`);
+    assert.match(html, /<form class="jd-form[^"]*" id="volForm"/, `${slug} has no apply form`);
+    assert.match(html, /name="name"[^>]*type="text"/, `${slug} has no name field`);
+    assert.match(html, /name="em"[^>]*type="email"/, `${slug} has no email field`);
+    assert.match(html, /action="\/api\/volunteer"|\/api\/volunteer/, `${slug} does not post to the API`);
+    assert.match(html, /cf-turnstile/, `${slug} has no spam gate`);
+    // Two visible fields by default: anything else is behind a shut <details>.
+    const form = html.slice(html.indexOf('<form class="jd-form'), html.indexOf("</form>"));
+    const outside = form.slice(0, form.indexOf("<details"));
+    const visible = [...outside.matchAll(/<label for="/g)].length;
+    assert.equal(visible, 2, `${slug} shows ${visible} fields before the optional section, expected 2`);
+    assert.match(form, /<details class="jd-more">/, `${slug} does not hide its optional fields`);
+    assert.doesNotMatch(form, /<details class="jd-more" open/, `${slug} opens its optional fields by default`);
   }
 });
 

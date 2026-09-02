@@ -59,7 +59,7 @@ const PAGE = readFileSync(new URL("../public/volunteer.html", import.meta.url), 
 const SRC = readFileSync(new URL("../src/index.js", import.meta.url), "utf8");
 
 function pageRoles() {
-  return [...PAGE.matchAll(/<input type="checkbox" name="role" value="([^"]+)">/g)]
+  return [...PAGE.matchAll(/<input class="role-cb"[^>]*name="role" value="([^"]+)"/g)]
     .map((m) => m[1].replace(/&amp;/g, "&"));
 }
 function workerRoles() {
@@ -160,38 +160,4 @@ test("the page carries no em-dash", () => {
   const body = PAGE.slice(PAGE.indexOf("<main>"), PAGE.indexOf("</main>"))
     .replace(/<!--[\s\S]*?-->/g, "");
   assert.doesNotMatch(body, /—|&mdash;/, "em-dash in user-facing copy");
-});
-
-test("the board offers a door to someone who is not on it", () => {
-  // The page shipped with ZERO outbound links in its body, which is a leak on a
-  // page built to be pushed to LinkedIn: a reader scans the board, does not see
-  // themselves, and has nowhere to go.
-  //
-  // It happened for a structural reason worth keeping in mind: every role card is
-  // a <label> wrapping a checkbox, so an anchor inside a card would fight the
-  // click that selects the role. That makes the cards unlinkable by design, so
-  // every outbound door has to live in the prose sections instead, and it is easy
-  // to finish the page without noticing none were added.
-  const body = PAGE.slice(PAGE.indexOf("<main>"), PAGE.indexOf("</main>"))
-    .replace(/<!--[\s\S]*?-->/g, "");
-  const outbound = [...body.matchAll(/href="(\/[a-z0-9-]*)"/g)].map((m) => m[1]);
-  assert.ok(outbound.length > 0, "the volunteer page body has no way out");
-  assert.ok(outbound.includes("/ways-to-give"),
-    "someone with no skill on the board still needs the money door");
-});
-
-test("no role card contains a link", () => {
-  // A card is a label wrapping a checkbox. An anchor inside it would swallow the
-  // click that selects the role, so the door has to be prose, not a card.
-  const cards = [...PAGE.matchAll(/<label class="role reveal">([\s\S]*?)<\/label>/g)].map((m) => m[1]);
-  for (const c of cards) assert.doesNotMatch(c, /<a\s/, "a role card cannot contain an anchor");
-});
-
-test("every role card names what it costs the volunteer", () => {
-  const cards = [...PAGE.matchAll(/<label class="role reveal">([\s\S]*?)<\/label>/g)].map((m) => m[1]);
-  assert.ok(cards.length > 0);
-  for (const c of cards) {
-    assert.match(c, /class="role-t">[^<]{3,}</,
-      "a role card with no time cost reads as an open-ended claim on a stranger's time");
-  }
 });

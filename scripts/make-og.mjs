@@ -29,6 +29,7 @@ import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { homedir } from "node:os";
+import { ROLES } from "../data/volunteer-roles.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const W = 1200, H = 630;
@@ -100,6 +101,30 @@ const CARDS = {
     page: "volunteer.html",
     headline: "Your place on <em>this team</em>." },
 };
+
+// One card per volunteer role, derived from data/volunteer-roles.mjs rather than
+// listed here. Twenty-seven hand-maintained rows would drift from the board the
+// first time a role was renamed, and the whole point of these cards is that a
+// post about ONE role shows that role's name in the preview.
+//
+// The <em> around the last word is what gives the card its orange accent, and it
+// costs nothing against GATE 0: that gate strips tags from the card headline and
+// the page h1 before comparing, so the markup is free.
+//
+// Wider measure than the editorial cards because a role title is a noun phrase
+// rather than a sentence, and "Sponsorship and partnership lead" needs the room.
+for (const r of ROLES) {
+  const words = r.name.split(" ");
+  const accented = words.length > 1
+    ? `${words.slice(0, -1).join(" ")} <em>${words[words.length - 1]}</em>`
+    : `<em>${r.name}</em>`;
+  CARDS[`role-${r.slug}`] = {
+    ...MONO, size: 68, measure: "16ch",
+    out: `public/images/og/role-${r.slug}-v2-option2.jpg`,
+    page: `volunteer/${r.slug}.html`,
+    headline: accented,
+  };
+}
 
 // ---- candidate sets: same content, three treatments, for a design review ----
 const LINE = "Your place in <em>adaptive sports</em>.";

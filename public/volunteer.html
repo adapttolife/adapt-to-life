@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light only">
 <title>Volunteer | Adapt To Life</title>
-<meta name="description" content="Adapt To Life is building a team. Grant writers, accountants, coaches, storytellers, equipment techs, and people who can open a door. Find your place on this team.">
+<meta name="description" content="Adapt To Life is building a team. Grant writers, accountants, coaches, storytellers, equipment techs, and people who can open a door. Every role says what it costs you.">
 <link rel="canonical" href="https://adapttolife.org/volunteer">
 <link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-v2-option2-32.png">
 <link rel="apple-touch-icon" href="/images/apple-touch-icon-v2-option2.png">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Volunteer | Adapt To Life">
-<meta property="og:description" content="Adapt To Life is building a team. Grant writers, accountants, coaches, storytellers, equipment techs, and people who can open a door. Find your place on this team.">
+<meta property="og:description" content="Adapt To Life is building a team. Grant writers, accountants, coaches, storytellers, equipment techs, and people who can open a door. Every role says what it costs you.">
 <meta property="og:image" content="https://adapttolife.org/images/og/volunteer-v2-option2.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -20,7 +20,7 @@
 <meta property="og:url" content="https://adapttolife.org/volunteer">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Volunteer | Adapt To Life">
-<meta name="twitter:description" content="Adapt To Life is building a team. Grant writers, accountants, coaches, storytellers, equipment techs, and people who can open a door. Find your place on this team.">
+<meta name="twitter:description" content="Adapt To Life is building a team. Grant writers, accountants, coaches, storytellers, equipment techs, and people who can open a door. Every role says what it costs you.">
 <meta name="twitter:image" content="https://adapttolife.org/images/og/volunteer-v2-option2.jpg">
 <meta name="twitter:image:alt" content="Your place on this team. Adapt To Life.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,45 +28,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
 <script src="/js/attribution.js" defer></script>
-<style>
-  /* Volunteer page — the role board.
-     The cards ARE the form control: each one wraps a real checkbox, so choosing
-     a role works with the keyboard and without JavaScript, and there is no
-     second list of roles to drift out of sync with the first. */
-  .lane-head{ display:flex; flex-wrap:wrap; align-items:baseline; gap:0 1rem; }
-  .lane-blurb{ max-width:62ch; margin-top:0.9rem; color:var(--ink-soft); }
-  .roles{ display:grid; grid-template-columns:repeat(auto-fit,minmax(255px,1fr)); gap:clamp(0.9rem,1.8vw,1.2rem); margin-top:clamp(1.8rem,3.4vw,2.6rem); list-style:none; padding:0; }
-  .role{ position:relative; display:flex; flex-direction:column; border:1.5px solid var(--hairline); border-radius:16px; padding:1.25rem 1.2rem 1.15rem; background:var(--paper); cursor:pointer; transition:border-color .16s ease, box-shadow .16s ease, transform .16s ease; }
-  .role:hover{ border-color:#cfc7b6; transform:translateY(-2px); }
-  .role input{ position:absolute; opacity:0; width:1px; height:1px; }
-  .role:has(input:focus-visible){ outline:2px solid var(--orange); outline-offset:3px; }
-  .role:has(input:checked){ border-color:var(--orange); box-shadow:0 14px 34px rgba(255,92,57,0.16); background:#FFFCFA; }
-  .role-n{ font-family:'Hanken Grotesk',sans-serif; font-weight:700; font-size:1rem; color:var(--ink); padding-right:1.9rem; line-height:1.3; }
-  .role-d{ font-family:'Hanken Grotesk',sans-serif; font-size:0.9rem; line-height:1.5; color:var(--ink-soft); margin-top:0.45rem; flex:1; }
-  .role-t{ font-family:'Space Mono',monospace; font-size:0.68rem; letter-spacing:0.07em; text-transform:uppercase; color:var(--muted); margin-top:0.9rem; }
-  .role-tick{ position:absolute; top:1.15rem; right:1.1rem; width:22px; height:22px; border-radius:50%; border:1.5px solid var(--hairline); display:grid; place-items:center; transition:background .16s ease, border-color .16s ease; }
-  .role-tick svg{ width:12px; height:12px; opacity:0; transition:opacity .16s ease; }
-  .role:has(input:checked) .role-tick{ background:var(--orange); border-color:var(--orange); }
-  .role:has(input:checked) .role-tick svg{ opacity:1; }
-
-  /* the honest beat */
-  .terms{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:clamp(1.4rem,3vw,2.4rem); margin-top:clamp(2.2rem,4vw,3rem); }
-  /* four terms: auto-fit lands on three at desktop and orphans the fourth */
-  @media (min-width:1000px){ .terms{ grid-template-columns:repeat(4,minmax(0,1fr)); } }
-  .term h3{ font-family:'Newsreader',serif; font-size:1.22rem; font-weight:500; color:var(--ink); margin-bottom:0.5rem; }
-  .term p{ font-family:'Hanken Grotesk',sans-serif; font-size:0.95rem; line-height:1.55; color:var(--ink-soft); }
-
-  /* the form close */
-  .vform{ max-width:760px; margin-inline:auto; }
-  .picked{ border:1.5px dashed var(--hairline); border-radius:14px; padding:1rem 1.1rem; margin-bottom:1.4rem; background:var(--paper); }
-  .picked-h{ font-family:'Space Mono',monospace; font-size:0.7rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); }
-  .picked-list{ display:flex; flex-wrap:wrap; gap:0.45rem; margin-top:0.7rem; }
-  .picked-list:empty{ display:none; }
-  .chip{ font-family:'Hanken Grotesk',sans-serif; font-size:0.82rem; font-weight:600; background:var(--sand); color:var(--ink); border-radius:999px; padding:0.3rem 0.75rem; }
-  .picked-none{ font-family:'Hanken Grotesk',sans-serif; font-size:0.9rem; color:var(--ink-soft); margin-top:0.55rem; }
-  .to-form{ scroll-margin-top:90px; }
-  #roles{ display:block; scroll-margin-top:64px; }
-</style>
 </head>
 <body>
 <header class="nav over-dark" id="nav">
@@ -151,12 +112,11 @@ fill="currentColor" stroke="none">
 <main>
 <form id="volForm" novalidate>
 
-  <!-- HERO -->
   <section class="hero dark hero-atmos">
     <div class="wrap">
       <span class="eyebrow orange reveal">Volunteer</span>
       <h1 class="serif display reveal">Your place on <em class="italic" style="color:var(--orange)">this team</em>.</h1>
-      <p class="lead sub reveal">Adapt To Life is early, and the honest version is that we need people more than we need hours. Below is the real list we work from. Some of it is a career's worth of skill. Some of it is one introduction. All of it ends with an athlete on a court.</p>
+      <p class="lead sub reveal">Adapt To Life is early, and the honest version is that we need people more than we need hours. Below is the real list we work from. Every role has its own page saying what you would own, what your first month looks like, and roughly what it costs you. Some of it is a career's worth of skill. Some of it is one introduction. All of it ends with an athlete on a court.</p>
       <div class="actions reveal">
         <a href="#roles" class="btn">See what we need <span class="arrow">&rarr;</span></a>
         <a href="#signup" class="btn ghost">Sign up</a>
@@ -164,7 +124,6 @@ fill="currentColor" stroke="none">
     </div>
   </section>
 
-  <!-- WHAT YOU WOULD BE JOINING -->
   <section class="band tint">
     <div class="wrap">
       <div class="reveal sec-head">
@@ -173,20 +132,20 @@ fill="currentColor" stroke="none">
       </div>
       <div class="terms">
         <div class="term reveal">
-          <h3>Small, and saying so.</h3>
-          <p>A recognized 501(c)(3) with a board, a published grant rubric, and a fund that is still young. We would rather you know that now than find out later.</p>
+          <h3>Async by default</h3>
+          <p>Almost none of this needs a meeting. We write things down so a volunteer with two hours on a Tuesday night can pick up where someone else left off.</p>
         </div>
         <div class="term reveal">
-          <h3>A scope, not a shift.</h3>
-          <p>Every role here has a defined job and a person you work with. If we cannot tell you what done looks like, we have no business asking for your time.</p>
+          <h3>A scope, not a shift</h3>
+          <p>You get a defined job and a person to work with. If we cannot tell you what done looks like, we have no business asking for your time.</p>
         </div>
         <div class="term reveal">
-          <h3>You hear back either way.</h3>
-          <p>A person reads every one of these. If there is no fit right now, we will say that rather than leave you wondering.</p>
+          <h3>No busywork</h3>
+          <p>We will not invent tasks to keep you occupied. If there is nothing useful this month, we will say so.</p>
         </div>
         <div class="term reveal">
-          <h3>Remote is normal.</h3>
-          <p>Most of this list is done from anywhere. The court work is in person, and we will be straight with you about which is which.</p>
+          <h3>You hear back either way</h3>
+          <p>A person reads every application. If there is no fit right now you will be told that, rather than left wondering.</p>
         </div>
       </div>
     </div>
@@ -202,41 +161,56 @@ fill="currentColor" stroke="none">
         <p class="lane-blurb">The Hustle &amp; Heart Fund is young. Everything in this lane is about making it bigger than one person's checkbook.</p>
       </div>
       <ul class="roles">
-      <li><label class="role reveal">
-        <input type="checkbox" name="role" value="Grant writer">
-        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
-        <span class="role-n">Grant writer</span>
-        <span class="role-d">Find the foundations that fund adaptive sport, and write the applications. Nobody at Adapt To Life has done this at scale yet.</span>
+      <li class="role reveal">
+        <input class="role-cb" type="checkbox" id="pick-grant-writer" name="role" value="Grant writer">
+        <a class="role-n" href="/volunteer/grant-writer">Grant writer</a>
+        <p class="role-d">Find the foundations that fund adaptive sport, and write the applications. Nobody at Adapt To Life has done this at scale yet.</p>
         <span class="role-t">A few hours a month</span>
-      </label></li>
-      <li><label class="role reveal">
-        <input type="checkbox" name="role" value="Fundraising lead">
-        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
-        <span class="role-n">Fundraising lead</span>
-        <span class="role-d">Build the annual plan. Which campaigns, which asks, in what order, and who we go back to.</span>
+        <span class="role-foot">
+          <label class="role-pick" for="pick-grant-writer"><span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span><span class="rp-off">Add to my list</span><span class="rp-on">Added</span></label>
+          <a class="role-more" href="/volunteer/grant-writer">Read the role <span class="arrow">&rarr;</span></a>
+        </span>
+      </li>
+      <li class="role reveal">
+        <input class="role-cb" type="checkbox" id="pick-fundraising-lead" name="role" value="Fundraising lead">
+        <a class="role-n" href="/volunteer/fundraising-lead">Fundraising lead</a>
+        <p class="role-d">Build the annual plan. Which campaigns, which asks, in what order, and who we go back to.</p>
         <span class="role-t">A few hours a month</span>
-      </label></li>
-      <li><label class="role reveal">
-        <input type="checkbox" name="role" value="Sponsorship and partnership lead">
-        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
-        <span class="role-n">Sponsorship and partnership lead</span>
-        <span class="role-d">Bring businesses to the table and keep them there. We have levels published and almost nobody working them.</span>
+        <span class="role-foot">
+          <label class="role-pick" for="pick-fundraising-lead"><span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span><span class="rp-off">Add to my list</span><span class="rp-on">Added</span></label>
+          <a class="role-more" href="/volunteer/fundraising-lead">Read the role <span class="arrow">&rarr;</span></a>
+        </span>
+      </li>
+      <li class="role reveal">
+        <input class="role-cb" type="checkbox" id="pick-sponsorship-and-partnership-lead" name="role" value="Sponsorship and partnership lead">
+        <a class="role-n" href="/volunteer/sponsorship-and-partnership-lead">Sponsorship and partnership lead</a>
+        <p class="role-d">Bring businesses to the table and keep them there. We have levels published and almost nobody working them.</p>
         <span class="role-t">A few hours a month</span>
-      </label></li>
-      <li><label class="role reveal">
-        <input type="checkbox" name="role" value="Corporate matching champion">
-        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
-        <span class="role-n">Corporate matching champion</span>
-        <span class="role-d">Get Adapt To Life into your employer's matching program. The single highest return an hour of volunteering has.</span>
+        <span class="role-foot">
+          <label class="role-pick" for="pick-sponsorship-and-partnership-lead"><span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span><span class="rp-off">Add to my list</span><span class="rp-on">Added</span></label>
+          <a class="role-more" href="/volunteer/sponsorship-and-partnership-lead">Read the role <span class="arrow">&rarr;</span></a>
+        </span>
+      </li>
+      <li class="role reveal">
+        <input class="role-cb" type="checkbox" id="pick-corporate-matching-champion" name="role" value="Corporate matching champion">
+        <a class="role-n" href="/volunteer/corporate-matching-champion">Corporate matching champion</a>
+        <p class="role-d">Get Adapt To Life into your employer's matching program. The single highest return an hour of volunteering has.</p>
         <span class="role-t">One hour, once</span>
-      </label></li>
-      <li><label class="role reveal">
-        <input type="checkbox" name="role" value="Planned and major giving advisor">
-        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
-        <span class="role-n">Planned and major giving advisor</span>
-        <span class="role-d">Donor advised funds, appreciated stock, bequests. The gifts that need someone who speaks the language.</span>
+        <span class="role-foot">
+          <label class="role-pick" for="pick-corporate-matching-champion"><span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span><span class="rp-off">Add to my list</span><span class="rp-on">Added</span></label>
+          <a class="role-more" href="/volunteer/corporate-matching-champion">Read the role <span class="arrow">&rarr;</span></a>
+        </span>
+      </li>
+      <li class="role reveal">
+        <input class="role-cb" type="checkbox" id="pick-planned-and-major-giving-advisor" name="role" value="Planned and major giving advisor">
+        <a class="role-n" href="/volunteer/planned-and-major-giving-advisor">Planned and major giving advisor</a>
+        <p class="role-d">Donor advised funds, appreciated stock, bequests. The gifts that need someone who speaks the language.</p>
         <span class="role-t">As it comes up</span>
-      </label></li>
+        <span class="role-foot">
+          <label class="role-pick" for="pick-planned-and-major-giving-advisor"><span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span><span class="rp-off">Add to my list</span><span class="rp-on">Added</span></label>
+          <a class="role-more" href="/volunteer/planned-and-major-giving-advisor">Read the role <span class="arrow">&rarr;</span></a>
+        </span>
+      </li>
       </ul>
     </div>
   </section>
@@ -249,48 +223,66 @@ fill="currentColor" stroke="none">
         <p class="lane-blurb">A nonprofit that loses its exemption stops funding anyone. This lane is insurance against that, and it is where professional volunteers are worth the most.</p>
       </div>
       <ul class="roles">
-      <li><label class="role reveal">
-        <input type="checkbox" name="role" value="CPA or tax preparer">
-        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
-        <span class="role-n">CPA or tax preparer</span>
-        <span class="role-d">Our first Form 990, our fiscal year call, and keeping the exemption airtight. Missing three returns is how small charities quietly disappear.</span>
+      <li class="role reveal">
+        <input class="role-cb" type="checkbox" id="pick-cpa-or-tax-preparer" name="role" value="CPA or tax preparer">
+        <a class="role-n" href="/volunteer/cpa-or-tax-preparer">CPA or tax preparer</a>
+        <p class="role-d">Our first Form 990, our fiscal year call, and keeping the exemption airtight. Missing three returns is how small charities quietly disappear.</p>
         <span class="role-t">Seasonal</span>
-      </label></li>
-      <li><label class="role reveal">
-        <input type="checkbox" name="role" value="Bookkeeper">
-        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
-        <span class="role-n">Bookkeeper</span>
-        <span class="role-d">Monthly reconciliation alongside our treasurer, so the books are ready before anyone asks to see them.</span>
+        <span class="role-foot">
+          <label class="role-pick" for="pick-cpa-or-tax-preparer"><span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span><span class="rp-off">Add to my list</span><span class="rp-on">Added</span></label>
+          <a class="role-more" href="/volunteer/cpa-or-tax-preparer">Read the role <span class="arrow">&rarr;</span></a>
+        </span>
+      </li>
+      <li class="role reveal">
+        <input class="role-cb" type="checkbox" id="pick-bookkeeper" name="role" value="Bookkeeper">
+        <a class="role-n" href="/volunteer/bookkeeper">Bookkeeper</a>
+        <p class="role-d">Monthly reconciliation alongside our treasurer, so the books are ready before anyone asks to see them.</p>
         <span class="role-t">An hour or two a month</span>
-      </label></li>
-      <li><label class="role reveal">
-        <input type="checkbox" name="role" value="Nonprofit attorney">
-        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
-        <span class="role-n">Nonprofit attorney</span>
-        <span class="role-d">Bylaws, a conflict of interest policy, and charitable registration in each state as we raise in more of them.</span>
+        <span class="role-foot">
+          <label class="role-pick" for="pick-bookkeeper"><span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span><span class="rp-off">Add to my list</span><span class="rp-on">Added</span></label>
+          <a class="role-more" href="/volunteer/bookkeeper">Read the role <span class="arrow">&rarr;</span></a>
+        </span>
+      </li>
+      <li class="role reveal">
+        <input class="role-cb" type="checkbox" id="pick-nonprofit-attorney" name="role" value="Nonprofit attorney">
+        <a class="role-n" href="/volunteer/nonprofit-attorney">Nonprofit attorney</a>
+        <p class="role-d">Bylaws, a conflict of interest policy, and charitable registration in each state as we raise in more of them.</p>
         <span class="role-t">As it comes up</span>
-      </label></li>
-      <li><label class="role reveal">
-        <input type="checkbox" name="role" value="Trademark counsel">
-        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
-        <span class="role-n">Trademark counsel</span>
-        <span class="role-d">Clear and file our marks before they go on physical product. Cheapest to fix right now.</span>
+        <span class="role-foot">
+          <label class="role-pick" for="pick-nonprofit-attorney"><span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span><span class="rp-off">Add to my list</span><span class="rp-on">Added</span></label>
+          <a class="role-more" href="/volunteer/nonprofit-attorney">Read the role <span class="arrow">&rarr;</span></a>
+        </span>
+      </li>
+      <li class="role reveal">
+        <input class="role-cb" type="checkbox" id="pick-trademark-counsel" name="role" value="Trademark counsel">
+        <a class="role-n" href="/volunteer/trademark-counsel">Trademark counsel</a>
+        <p class="role-d">Clear and file our marks before they go on physical product. Cheapest to fix right now.</p>
         <span class="role-t">A one time project</span>
-      </label></li>
-      <li><label class="role reveal">
-        <input type="checkbox" name="role" value="Insurance and risk">
-        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
-        <span class="role-n">Insurance and risk</span>
-        <span class="role-d">Coverage for clinics, tournaments, volunteers, and the athletes we put on a court.</span>
+        <span class="role-foot">
+          <label class="role-pick" for="pick-trademark-counsel"><span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span><span class="rp-off">Add to my list</span><span class="rp-on">Added</span></label>
+          <a class="role-more" href="/volunteer/trademark-counsel">Read the role <span class="arrow">&rarr;</span></a>
+        </span>
+      </li>
+      <li class="role reveal">
+        <input class="role-cb" type="checkbox" id="pick-insurance-and-risk" name="role" value="Insurance and risk">
+        <a class="role-n" href="/volunteer/insurance-and-risk">Insurance and risk</a>
+        <p class="role-d">Coverage for clinics, tournaments, volunteers, and the athletes we put on a court.</p>
         <span class="role-t">As it comes up</span>
-      </label></li>
-      <li><label class="role reveal">
-        <input type="checkbox" name="role" value="Grant reviewer">
-        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
-        <span class="role-n">Grant reviewer</span>
-        <span class="role-d">Score applications against our published rubric so decisions are fair, consistent, and documented.</span>
+        <span class="role-foot">
+          <label class="role-pick" for="pick-insurance-and-risk"><span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span><span class="rp-off">Add to my list</span><span class="rp-on">Added</span></label>
+          <a class="role-more" href="/volunteer/insurance-and-risk">Read the role <span class="arrow">&rarr;</span></a>
+        </span>
+      </li>
+      <li class="role reveal">
+        <input class="role-cb" type="checkbox" id="pick-grant-reviewer" name="role" value="Grant reviewer">
+        <a class="role-n" href="/volunteer/grant-reviewer">Grant reviewer</a>
+        <p class="role-d">Score applications against our published rubric so decisions are fair, consistent, and documented.</p>
         <span class="role-t">A few hours per cycle</span>
-      </label></li>
+        <span class="role-foot">
+          <label class="role-pick" for="pick-grant-reviewer"><span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span><span class="rp-off">Add to my list</span><span class="rp-on">Added</span></label>
+          <a class="role-more" href="/volunteer/grant-reviewer">Read the role <span class="arrow">&rarr;</span></a>
+        </span>
+      </li>
       </ul>
     </div>
   </section>
@@ -303,55 +295,76 @@ fill="currentColor" stroke="none">
         <p class="lane-blurb">An athlete cannot apply to a fund they have never heard of. Everything here is about being findable.</p>
       </div>
       <ul class="roles">
-      <li><label class="role reveal">
-        <input type="checkbox" name="role" value="Social media manager">
-        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
-        <span class="role-n">Social media manager</span>
-        <span class="role-d">Turn our work into posts people stop for, on the platforms where the adaptive community actually is.</span>
+      <li class="role reveal">
+        <input class="role-cb" type="checkbox" id="pick-social-media-manager" name="role" value="Social media manager">
+        <a class="role-n" href="/volunteer/social-media-manager">Social media manager</a>
+        <p class="role-d">Turn our work into posts people stop for, on the platforms where the adaptive community actually is.</p>
         <span class="role-t">A few hours a week</span>
-      </label></li>
-      <li><label class="role reveal">
-        <input type="checkbox" name="role" value="Writer or editor">
-        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
-        <span class="role-n">Writer or editor</span>
-        <span class="role-d">Athlete stories, the newsletter, and eventually the annual impact report.</span>
+        <span class="role-foot">
+          <label class="role-pick" for="pick-social-media-manager"><span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span><span class="rp-off">Add to my list</span><span class="rp-on">Added</span></label>
+          <a class="role-more" href="/volunteer/social-media-manager">Read the role <span class="arrow">&rarr;</span></a>
+        </span>
+      </li>
+      <li class="role reveal">
+        <input class="role-cb" type="checkbox" id="pick-writer-or-editor" name="role" value="Writer or editor">
+        <a class="role-n" href="/volunteer/writer-or-editor">Writer or editor</a>
+        <p class="role-d">Athlete stories, the newsletter, and eventually the annual impact report.</p>
         <span class="role-t">A few hours a month</span>
-      </label></li>
-      <li><label class="role reveal">
-        <input type="checkbox" name="role" value="Photographer or videographer">
-        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
-        <span class="role-n">Photographer or videographer</span>
-        <span class="role-d">Shoot our clinics and tournaments. Real athletes, ours. Every image on this site came from someone who showed up.</span>
+        <span class="role-foot">
+          <label class="role-pick" for="pick-writer-or-editor"><span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span><span class="rp-off">Add to my list</span><span class="rp-on">Added</span></label>
+          <a class="role-more" href="/volunteer/writer-or-editor">Read the role <span class="arrow">&rarr;</span></a>
+        </span>
+      </li>
+      <li class="role reveal">
+        <input class="role-cb" type="checkbox" id="pick-photographer-or-videographer" name="role" value="Photographer or videographer">
+        <a class="role-n" href="/volunteer/photographer-or-videographer">Photographer or videographer</a>
+        <p class="role-d">Shoot our clinics and tournaments. Real athletes, ours. Every image on this site came from someone who showed up.</p>
         <span class="role-t">A day at a time</span>
-      </label></li>
-      <li><label class="role reveal">
-        <input type="checkbox" name="role" value="Graphic designer">
-        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
-        <span class="role-n">Graphic designer</span>
-        <span class="role-d">Sponsor decks, one pagers, event graphics, apparel.</span>
+        <span class="role-foot">
+          <label class="role-pick" for="pick-photographer-or-videographer"><span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span><span class="rp-off">Add to my list</span><span class="rp-on">Added</span></label>
+          <a class="role-more" href="/volunteer/photographer-or-videographer">Read the role <span class="arrow">&rarr;</span></a>
+        </span>
+      </li>
+      <li class="role reveal">
+        <input class="role-cb" type="checkbox" id="pick-graphic-designer" name="role" value="Graphic designer">
+        <a class="role-n" href="/volunteer/graphic-designer">Graphic designer</a>
+        <p class="role-d">Sponsor decks, one pagers, event graphics, apparel.</p>
         <span class="role-t">Project by project</span>
-      </label></li>
-      <li><label class="role reveal">
-        <input type="checkbox" name="role" value="Press and media">
-        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
-        <span class="role-n">Press and media</span>
-        <span class="role-d">Get athletes in front of reporters, podcasts, and local news.</span>
+        <span class="role-foot">
+          <label class="role-pick" for="pick-graphic-designer"><span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span><span class="rp-off">Add to my list</span><span class="rp-on">Added</span></label>
+          <a class="role-more" href="/volunteer/graphic-designer">Read the role <span class="arrow">&rarr;</span></a>
+        </span>
+      </li>
+      <li class="role reveal">
+        <input class="role-cb" type="checkbox" id="pick-press-and-media" name="role" value="Press and media">
+        <a class="role-n" href="/volunteer/press-and-media">Press and media</a>
+        <p class="role-d">Get athletes in front of reporters, podcasts, and local news.</p>
         <span class="role-t">As it comes up</span>
-      </label></li>
-      <li><label class="role reveal">
-        <input type="checkbox" name="role" value="Spanish translator">
-        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
-        <span class="role-n">Spanish translator</span>
-        <span class="role-d">So the fund and the directory are not English only.</span>
+        <span class="role-foot">
+          <label class="role-pick" for="pick-press-and-media"><span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span><span class="rp-off">Add to my list</span><span class="rp-on">Added</span></label>
+          <a class="role-more" href="/volunteer/press-and-media">Read the role <span class="arrow">&rarr;</span></a>
+        </span>
+      </li>
+      <li class="role reveal">
+        <input class="role-cb" type="checkbox" id="pick-spanish-translator" name="role" value="Spanish translator">
+        <a class="role-n" href="/volunteer/spanish-translator">Spanish translator</a>
+        <p class="role-d">So the fund and the directory are not English only.</p>
         <span class="role-t">Project by project</span>
-      </label></li>
-      <li><label class="role reveal">
-        <input type="checkbox" name="role" value="Accessibility reviewer">
-        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
-        <span class="role-n">Accessibility reviewer</span>
-        <span class="role-d">Test this site and its forms with the screen readers, switches, and magnifiers our athletes actually use, then tell us what breaks.</span>
+        <span class="role-foot">
+          <label class="role-pick" for="pick-spanish-translator"><span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span><span class="rp-off">Add to my list</span><span class="rp-on">Added</span></label>
+          <a class="role-more" href="/volunteer/spanish-translator">Read the role <span class="arrow">&rarr;</span></a>
+        </span>
+      </li>
+      <li class="role reveal">
+        <input class="role-cb" type="checkbox" id="pick-accessibility-reviewer" name="role" value="Accessibility reviewer">
+        <a class="role-n" href="/volunteer/accessibility-reviewer">Accessibility reviewer</a>
+        <p class="role-d">Test this site and its forms with the screen readers, switches, and magnifiers our athletes actually use, then tell us what breaks.</p>
         <span class="role-t">A one time project</span>
-      </label></li>
+        <span class="role-foot">
+          <label class="role-pick" for="pick-accessibility-reviewer"><span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span><span class="rp-off">Add to my list</span><span class="rp-on">Added</span></label>
+          <a class="role-more" href="/volunteer/accessibility-reviewer">Read the role <span class="arrow">&rarr;</span></a>
+        </span>
+      </li>
       </ul>
     </div>
   </section>
@@ -364,48 +377,66 @@ fill="currentColor" stroke="none">
         <p class="lane-blurb">Hands on, in person, usually on a weekend.</p>
       </div>
       <ul class="roles">
-      <li><label class="role reveal">
-        <input type="checkbox" name="role" value="Adaptive sports coach">
-        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
-        <span class="role-n">Adaptive sports coach</span>
-        <span class="role-d">Run a clinic, coach a session, teach a sport. No adaptive experience required if you can coach.</span>
+      <li class="role reveal">
+        <input class="role-cb" type="checkbox" id="pick-adaptive-sports-coach" name="role" value="Adaptive sports coach">
+        <a class="role-n" href="/volunteer/adaptive-sports-coach">Adaptive sports coach</a>
+        <p class="role-d">Run a clinic, coach a session, teach a sport. No adaptive experience required if you can coach.</p>
         <span class="role-t">A season, or a single clinic</span>
-      </label></li>
-      <li><label class="role reveal">
-        <input type="checkbox" name="role" value="Event crew">
-        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
-        <span class="role-n">Event crew</span>
-        <span class="role-d">Setup, registration, scorekeeping, teardown. The reason an event feels organized.</span>
+        <span class="role-foot">
+          <label class="role-pick" for="pick-adaptive-sports-coach"><span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span><span class="rp-off">Add to my list</span><span class="rp-on">Added</span></label>
+          <a class="role-more" href="/volunteer/adaptive-sports-coach">Read the role <span class="arrow">&rarr;</span></a>
+        </span>
+      </li>
+      <li class="role reveal">
+        <input class="role-cb" type="checkbox" id="pick-event-crew" name="role" value="Event crew">
+        <a class="role-n" href="/volunteer/event-crew">Event crew</a>
+        <p class="role-d">Setup, registration, scorekeeping, teardown. The reason an event feels organized.</p>
         <span class="role-t">A day at a time</span>
-      </label></li>
-      <li><label class="role reveal">
-        <input type="checkbox" name="role" value="Equipment technician">
-        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
-        <span class="role-n">Equipment technician</span>
-        <span class="role-d">Fit, repair, and refurbish chairs and adaptive gear. Rare, and worth more than most people realize.</span>
+        <span class="role-foot">
+          <label class="role-pick" for="pick-event-crew"><span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span><span class="rp-off">Add to my list</span><span class="rp-on">Added</span></label>
+          <a class="role-more" href="/volunteer/event-crew">Read the role <span class="arrow">&rarr;</span></a>
+        </span>
+      </li>
+      <li class="role reveal">
+        <input class="role-cb" type="checkbox" id="pick-equipment-technician" name="role" value="Equipment technician">
+        <a class="role-n" href="/volunteer/equipment-technician">Equipment technician</a>
+        <p class="role-d">Fit, repair, and refurbish chairs and adaptive gear. Rare, and worth more than most people realize.</p>
         <span class="role-t">As it comes up</span>
-      </label></li>
-      <li><label class="role reveal">
-        <input type="checkbox" name="role" value="Athlete mentor">
-        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
-        <span class="role-n">Athlete mentor</span>
-        <span class="role-d">Be the person a newly injured athlete or their family calls first. Best done by someone who has been there.</span>
+        <span class="role-foot">
+          <label class="role-pick" for="pick-equipment-technician"><span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span><span class="rp-off">Add to my list</span><span class="rp-on">Added</span></label>
+          <a class="role-more" href="/volunteer/equipment-technician">Read the role <span class="arrow">&rarr;</span></a>
+        </span>
+      </li>
+      <li class="role reveal">
+        <input class="role-cb" type="checkbox" id="pick-athlete-mentor" name="role" value="Athlete mentor">
+        <a class="role-n" href="/volunteer/athlete-mentor">Athlete mentor</a>
+        <p class="role-d">Be the person a newly injured athlete or their family calls first. Best done by someone who has been there.</p>
         <span class="role-t">An hour here and there</span>
-      </label></li>
-      <li><label class="role reveal">
-        <input type="checkbox" name="role" value="Program scout">
-        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
-        <span class="role-n">Program scout</span>
-        <span class="role-d">Find and verify adaptive programs so Adaptive Sports Near Me is a real directory and not a list of guesses.</span>
+        <span class="role-foot">
+          <label class="role-pick" for="pick-athlete-mentor"><span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span><span class="rp-off">Add to my list</span><span class="rp-on">Added</span></label>
+          <a class="role-more" href="/volunteer/athlete-mentor">Read the role <span class="arrow">&rarr;</span></a>
+        </span>
+      </li>
+      <li class="role reveal">
+        <input class="role-cb" type="checkbox" id="pick-program-scout" name="role" value="Program scout">
+        <a class="role-n" href="/volunteer/program-scout">Program scout</a>
+        <p class="role-d">Find and verify adaptive programs so Adaptive Sports Near Me is a real directory and not a list of guesses.</p>
         <span class="role-t">An hour a month</span>
-      </label></li>
-      <li><label class="role reveal">
-        <input type="checkbox" name="role" value="Clinical referral partner">
-        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
-        <span class="role-n">Clinical referral partner</span>
-        <span class="role-d">Recreational therapists, physical therapists, and hospital staff who can hand someone a brochure the way one was handed to Alec.</span>
+        <span class="role-foot">
+          <label class="role-pick" for="pick-program-scout"><span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span><span class="rp-off">Add to my list</span><span class="rp-on">Added</span></label>
+          <a class="role-more" href="/volunteer/program-scout">Read the role <span class="arrow">&rarr;</span></a>
+        </span>
+      </li>
+      <li class="role reveal">
+        <input class="role-cb" type="checkbox" id="pick-clinical-referral-partner" name="role" value="Clinical referral partner">
+        <a class="role-n" href="/volunteer/clinical-referral-partner">Clinical referral partner</a>
+        <p class="role-d">Recreational therapists, physical therapists, and hospital staff who can hand someone a brochure the way one was handed to Alec.</p>
         <span class="role-t">As it comes up</span>
-      </label></li>
+        <span class="role-foot">
+          <label class="role-pick" for="pick-clinical-referral-partner"><span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span><span class="rp-off">Add to my list</span><span class="rp-on">Added</span></label>
+          <a class="role-more" href="/volunteer/clinical-referral-partner">Read the role <span class="arrow">&rarr;</span></a>
+        </span>
+      </li>
       </ul>
     </div>
   </section>
@@ -418,32 +449,40 @@ fill="currentColor" stroke="none">
         <p class="lane-blurb">Most people who want to help do not have a job title we listed. They have a relationship, a room, or a reason to organize something.</p>
       </div>
       <ul class="roles">
-      <li><label class="role reveal">
-        <input type="checkbox" name="role" value="Make an introduction">
-        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
-        <span class="role-n">Make an introduction</span>
-        <span class="role-d">A company, a foundation, a venue, a coach, a reporter, a family who needs us. Warm introductions beat every cold ask we could write.</span>
+      <li class="role reveal">
+        <input class="role-cb" type="checkbox" id="pick-make-an-introduction" name="role" value="Make an introduction">
+        <a class="role-n" href="/volunteer/make-an-introduction">Make an introduction</a>
+        <p class="role-d">A company, a foundation, a venue, a coach, a reporter, a family who needs us. Warm introductions beat every cold ask we could write.</p>
         <span class="role-t">One email</span>
-      </label></li>
-      <li><label class="role reveal">
-        <input type="checkbox" name="role" value="Host something">
-        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
-        <span class="role-n">Host something</span>
-        <span class="role-d">A tournament, a clinic, a popcorn drive, a birthday fundraiser. We will hand you everything you need.</span>
+        <span class="role-foot">
+          <label class="role-pick" for="pick-make-an-introduction"><span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span><span class="rp-off">Add to my list</span><span class="rp-on">Added</span></label>
+          <a class="role-more" href="/volunteer/make-an-introduction">Read the role <span class="arrow">&rarr;</span></a>
+        </span>
+      </li>
+      <li class="role reveal">
+        <input class="role-cb" type="checkbox" id="pick-host-something" name="role" value="Host something">
+        <a class="role-n" href="/volunteer/host-something">Host something</a>
+        <p class="role-d">A tournament, a clinic, a popcorn drive, a birthday fundraiser. We will hand you everything you need.</p>
         <span class="role-t">A few weeks of planning</span>
-      </label></li>
-      <li><label class="role reveal">
-        <input type="checkbox" name="role" value="Board and advisory">
-        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
-        <span class="role-n">Board and advisory</span>
-        <span class="role-d">The seats that steer this as it grows. We are deliberate about who sits in them, and we are looking.</span>
+        <span class="role-foot">
+          <label class="role-pick" for="pick-host-something"><span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span><span class="rp-off">Add to my list</span><span class="rp-on">Added</span></label>
+          <a class="role-more" href="/volunteer/host-something">Read the role <span class="arrow">&rarr;</span></a>
+        </span>
+      </li>
+      <li class="role reveal">
+        <input class="role-cb" type="checkbox" id="pick-board-and-advisory" name="role" value="Board and advisory">
+        <a class="role-n" href="/volunteer/board-and-advisory">Board and advisory</a>
+        <p class="role-d">The seats that steer this as it grows. We are deliberate about who sits in them, and we are looking.</p>
         <span class="role-t">A real commitment</span>
-      </label></li>
+        <span class="role-foot">
+          <label class="role-pick" for="pick-board-and-advisory"><span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span><span class="rp-off">Add to my list</span><span class="rp-on">Added</span></label>
+          <a class="role-more" href="/volunteer/board-and-advisory">Read the role <span class="arrow">&rarr;</span></a>
+        </span>
+      </li>
       </ul>
     </div>
   </section>
 
-  <!-- THE ESCAPE HATCH -->
   <section class="band tint">
     <div class="wrap reading center">
       <span class="eyebrow orange reveal">Not on the list</span>
@@ -453,7 +492,6 @@ fill="currentColor" stroke="none">
     </div>
   </section>
 
-  <!-- PHOTO BAND — real athletes, before the ask. -->
   <section class="photoband" aria-label="An adaptive pickleball player driving forward for a shot during an indoor match">
     <div class="photoband-img" style="background-image:url('/images/athletes/wheelie-68.webp'); background-position:center 18%"></div>
     <div class="photoband-cap">
@@ -464,19 +502,18 @@ fill="currentColor" stroke="none">
     </div>
   </section>
 
-  <!-- THE ASK -->
   <section class="band band-lg to-form" id="signup">
     <div class="wrap">
       <div class="reveal sec-head">
         <span class="eyebrow orange">Sign up</span>
         <h2 class="serif h2" style="margin-top:0.8rem;">Tell us where you fit.</h2>
-        <p class="lane-blurb">Pick anything above that sounds like you, then tell us a little. There is no interview and no minimum commitment. We will come back to you with a real scope, or with an honest no.</p>
+        <p class="lane-blurb">Add anything above that sounds like you, then tell us a little. There is no interview and no minimum commitment. We will come back to you with a real scope, or with an honest no.</p>
       </div>
 
       <div class="vform reveal" style="margin-top:clamp(2rem,3.6vw,2.8rem);">
         <div class="picked">
           <span class="picked-h">Roles you picked</span>
-          <p class="picked-none" id="pickedNone">None yet. Scroll up and tap any card, or just tell us in your own words below.</p>
+          <p class="picked-none" id="pickedNone">None yet. Scroll up and add any role, or just tell us in your own words below.</p>
           <div class="picked-list" id="pickedList"></div>
         </div>
 
@@ -504,7 +541,7 @@ fill="currentColor" stroke="none">
               </select>
             </div>
           </div>
-          <div class="field"><label for="bring">What would you bring? Anything we did not think to ask for?</label><textarea id="bring" name="bring" rows="5" placeholder="A sentence is plenty. If you picked a role above, tell us what you have done before. If you did not, tell us what you would want to do."></textarea></div>
+          <div class="field"><label for="bring">What would you bring? Anything we did not think to ask for?</label><textarea id="bring" name="bring" rows="5" placeholder="A sentence is plenty. If you added a role above, tell us what you have done before. If you did not, tell us what you would want to do."></textarea></div>
           <div class="field"><label for="links">A link, if you have one <span style="font-weight:400;color:var(--muted)">(optional)</span></label><input id="links" name="links" type="text" placeholder="LinkedIn, a portfolio, a firm page"></div>
           <input type="text" name="company" id="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
           <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only" style="margin-bottom:1rem;"></div>
@@ -673,8 +710,8 @@ fill="currentColor" stroke="none">
     f.addEventListener('change', function(e){ if(e.target.name === 'role') paint(); });
     paint();
 
-    // A role deep-link (?role=Grant+writer) so a LinkedIn or Facebook post can
-    // point at one ask instead of the whole board.
+    // A role deep-link (?role=Grant+writer) so a post, or a role page's own
+    // apply button, can point at one ask instead of the whole board.
     (function(){
       var want = new URLSearchParams(location.search).getAll('role').map(function(s){ return s.toLowerCase(); });
       if(!want.length) return;
@@ -682,7 +719,7 @@ fill="currentColor" stroke="none">
       f.querySelectorAll('input[name="role"]').forEach(function(i){
         if(want.indexOf(i.value.toLowerCase()) >= 0){ i.checked = true; hit = true; }
       });
-      if(hit){ paint(); }
+      if(hit) paint();
     })();
 
     function v(id){ var el=document.getElementById(id); return el ? el.value.trim() : ''; }
@@ -698,7 +735,7 @@ fill="currentColor" stroke="none">
       if(!v('em')){ setStatus('Please enter your email so we can reply.', false); return; }
       var roles = picked();
       if(!roles.length && !v('bring')){
-        setStatus('Pick a role above, or tell us what you would want to do.', false);
+        setStatus('Add a role above, or tell us what you would want to do.', false);
         return;
       }
       var tk = f.querySelector('[name="cf-turnstile-response"]');

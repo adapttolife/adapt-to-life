@@ -503,7 +503,7 @@ async function handleVolunteer(request, env, ctx) {
   // promises we will come back with a real scope, and we cannot do that from a
   // name and an email alone.
   if (!roles.length && !bring) {
-    return json({ ok: false, error: "Pick a role, or tell us what you would want to do." }, 422);
+    return json({ ok: false, error: "Add a role, or tell us what you would want to do." }, 422);
   }
 
   const saved = await createVolunteer(env, {

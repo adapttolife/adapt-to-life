@@ -30,6 +30,7 @@ trust beat → one ask.
 | `/donate` | Complete the gift, zero friction | Finish your gift |
 | `/sponsorship` | The business case | Talk to us |
 | `/volunteer` | The board of what we actually need, and the honest terms | Sign up (the form) |
+| `/volunteer/<role>` | One role, in job-posting shape: what you would own, your first month, what it costs you | Apply for this role |
 | `/apply` | Athlete requests funding | Submit the application |
 | `/adaptive-sports-near-me` | The access barrier | Visit the directory |
 | `/ways-to-give` | Every way to back an athlete, campaigns first | Donate |
@@ -79,6 +80,53 @@ the page where the reader forms the intention, which is why `/volunteer` is link
 closing (as a secondary text link, never a third button competing with Donate), from the `/about`
 closing under "the team is the point", from `/roadmap` where it already said "an hour of your time",
 from the `/ways-to-give` time-is-not-money line, and from the `/contact` quick links.
+
+## Role pages are generated, and the culture is in the shared blocks
+
+`/volunteer` and all twenty-seven `/volunteer/<role>` pages are written by
+`scripts/build-volunteer.mjs` from `data/volunteer-roles.mjs`. **That data file carries the honesty
+rules for this content at the top of it and is the authority; do not restate them here.** Run
+`npm run volunteer` after editing it, and `test/volunteer_pages.test.js` fails the build if the tree
+is out of date.
+
+Why generated rather than hand-written, and it is the same reason twice: twenty-seven pages making
+one set of promises is the shape that drifts. The culture blocks (how we work, what you get, the
+volunteer-and-unpaid line) are written once and rendered identically everywhere, so no page can
+quietly promise something the others do not. The chrome is *read* from a shipped page, so a nav
+change reaches all twenty-eight without anyone remembering they exist.
+
+What makes a volunteer posting read as care rather than as a vacancy, in order of how much each one
+carries:
+
+- **"Your first month."** The only section that proves somebody thought about the volunteer instead
+  of about the gap. Three steps, in order, small enough to finish.
+- **"What this role is not."** Naming the boundary is what makes the rest believable. Every role has
+  one, and several of them are the reason a professional will say yes: *a fundraising quota, we will
+  never put a dollar target on a volunteer.*
+- **"What you do not need."** A list of the reasons people disqualify themselves. Two of our board
+  members started with no adaptive sport background at all, so that one is a fact, not comfort.
+- **The at-a-glance panel.** Answers "what does this cost me" without scrolling, which is the only
+  question a reader actually has in the first ten seconds.
+- **A named person to work with.** Currently the founder on every role, because `/about` is the only
+  public source for who is here. Naming a specific person per role would be stronger and is Alec's
+  call, since it commits their time: one line per role in the data file.
+
+Two hard constraints on this content, both of which came from getting it wrong first:
+
+- **No `JobPosting` structured data, ever.** Google's job markup is for paid employment and expects
+  a salary signal. Emitting it would put unpaid volunteer roles into job-search results as
+  employment. These pages read like a posting on purpose and must never be indexed as one. Pinned
+  by test.
+- **A page whose cards are form controls has no linkable cards.** The board's first version wrapped
+  each card in a `<label>` around its checkbox, which swallows every click inside it, so no title
+  could be a link and the page shipped with no way out of it at all. The card now carries the
+  checkbox as a sibling with an explicit "Add to my list" control, and the title is a real link. If
+  a `<label>` ever wraps a card again the role pages become unreachable; pinned by test.
+
+Every role page's primary ask is **Apply for this role**, which deep-links back to the one form at
+`/volunteer?role=<name>#signup` with that role already selected. There is deliberately no second
+copy of the form: twenty-seven forms would mean twenty-seven Turnstile widgets and twenty-seven
+places for the submit handler to drift.
 
 ## Message ownership (say it once)
 

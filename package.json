@@ -7,6 +7,7 @@
   "scripts": {
     "test": "node --test",
     "cards": "node scripts/make-og.mjs && node scripts/wire-og.mjs",
+    "volunteer": "node scripts/build-volunteer.mjs",
     "stamp": "node scripts/stamp-build.mjs",
     "preview": "npx wrangler versions upload --env staging",
     "deploy:staging": "npx wrangler deploy --env staging",

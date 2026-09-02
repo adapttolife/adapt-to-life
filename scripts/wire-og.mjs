@@ -23,6 +23,7 @@ const PER_PAGE = {
   "popcorn.html": "popcorn",
   "hustle-and-heart.html": "hustle-and-heart",
   "ways-to-give.html": "ways-to-give",
+  "volunteer.html": "volunteer",
 };
 
 // Every card is now the same artwork with a different line, so the alt text
@@ -35,6 +36,7 @@ const ALT = {
   popcorn: "Half of every bag puts an athlete in the game. Adapt To Life.",
   "hustle-and-heart": "Every dollar goes to an athlete. The Hustle and Heart Fund, Adapt To Life.",
   "ways-to-give": "Every road here ends on a court. Adapt To Life.",
+  volunteer: "Your place on this team. Adapt To Life.",
 };
 
 // Cards live under /images/og/ on their own paths, including the default one.

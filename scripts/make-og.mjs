@@ -96,6 +96,9 @@ const CARDS = {
   "ways-to-give": { ...MONO, out: "public/images/og/ways-to-give-v2-option2.jpg",
     page: "ways-to-give.html",
     headline: "Every road here ends <em>on a court</em>.", measure: "14ch" },
+  volunteer: { ...MONO, out: "public/images/og/volunteer-v2-option2.jpg",
+    page: "volunteer.html",
+    headline: "Your place on <em>this team</em>." },
 };
 
 // ---- candidate sets: same content, three treatments, for a design review ----

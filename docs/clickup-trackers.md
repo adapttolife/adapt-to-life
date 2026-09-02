@@ -2,7 +2,7 @@
 
 Everything the public sends Adapt To Life lands in ClickUp. Nothing lands in Airtable — that was the prototype, and the line was cut on 2026-07-30.
 
-All four relationship-facing lists live in **Team Space → Adapt To Life**. Each list's operating instructions live in its own `content` field in ClickUp, so they are visible to whoever is standing in the list rather than only in this repo. This file is the map; the lists are the authority.
+All five relationship-facing lists live in **Team Space → Adapt To Life**. Each list's operating instructions live in its own `content` field in ClickUp, so they are visible to whoever is standing in the list rather than only in this repo. This file is the map; the lists are the authority.
 
 ## The relationship tracking map
 
@@ -11,6 +11,7 @@ All four relationship-facing lists live in **Team Space → Adapt To Life**. Eac
 | **Hustle & Heart — Applications** | `901418622126` | one grant application | `POST /api/apply` (the `/apply` page) |
 | **Hustle & Heart — Awards** | `901418622127` | one grant actually awarded | a human, at Approved |
 | **Contacts** | `901418639884` | one person who used the contact form | `POST /api/contact` (the `/contact` page) |
+| **Volunteers** | `901419920230` | one person who offered to help | `POST /api/volunteer` (the `/volunteer` page) |
 | **Relationships & Opportunities** | `901418931939` | one relationship parent; each donation is its own gift subtask | Givebutter/D1 for donors and gifts; humans for every other type |
 
 ClickUp is the human action layer, not ATL's CRM/CLM. Source systems and
@@ -88,11 +89,25 @@ Automatic. Task name is `Name — Reason`; the message is the description; field
 
 A reason that is not one of the form's five options is dropped rather than guessed — a wrong Reason routes someone to the wrong person, which is worse than an empty one. **A contact is not an application.** Someone asking about funding here gets pointed at `/apply`; a grant only becomes real once it is a task in Applications.
 
+### Volunteers
+
+Automatic. Task name is `Name — first role +N`; the description holds every answer verbatim; fields carry Stage (`New`), Received, Email, Phone, Roles, Time offered, Based in, Links and Source.
+
+**Roles is a comma-joined text field, not a dropdown**, so "show me everyone who ticked CPA" is a *contains* filter and adding a role to the page never requires touching a ClickUp schema. The closed list of valid roles lives in `VOLUNTEER_ROLES` in `src/index.js` and is pinned against the page by `test/volunteer_clickup.test.js` — a role added to `/volunteer` without being added there would be silently dropped, and the test fails the build instead.
+
+**A volunteer is not a contact.** They are separated because the workflows are: a contact gets an answer, a volunteer gets a scope and an owner. Collapsing them is how a CPA offering to do the first Form 990 ends up two hundred rows below someone asking about a t-shirt.
+
+**When a volunteer becomes a standing relationship** (a board member, a pro bono CPA, a recurring event partner), a human opens a parent task in **Relationships & Opportunities** and links back. This list is the front door, not the CRM.
+
+Two stray empty fields sit on this list, a `short_text` **Phone** and a `short_text` **Source**, left over from creating them with the wrong type. ClickUp's v2 API has no delete-field endpoint (405), so they need one pass in the UI. Nothing reads or writes them.
+
 ## Last contacted
 
-`Email`, `Phone` and `Last contacted` are space-level fields in ClickUp — the same field id on every list — so `Last contacted` means one thing wherever you are standing.
+`Email`, `Phone`, `Received` and `Last contacted` are space-level fields in ClickUp — the same field id on every list — so `Last contacted` means one thing wherever you are standing.
 
-It is the field that protects the promise. Both receipt emails tell the sender they will hear back. Anything sitting in `New` with a stale `Last contacted` is a broken promise, not a backlog.
+**How a new list gets them is not obvious and cost time.** A freshly created list inherits nothing: `GET /list/{id}/field` returns `[]`, and writing a known space-level field id onto a task there fails with `FIELD_115 Custom field does not exist in the task location hierarchy`. The v2 API has no "attach existing field" call. What works is to *create* the field on the new list with the **exact same name and type** — ClickUp dedupes it and hands back the existing space-level id rather than minting a new one. Get the type wrong (`short_text` where the original is `text`) and you get a genuine second field with a new id, no warning, and no way to delete it through the API.
+
+It is the field that protects the promise. All three receipt emails tell the sender they will hear back, and `/volunteer` says "you hear back either way" in as many words. Anything sitting in `New` with a stale `Last contacted` is a broken promise, not a backlog.
 
 ## What is deliberately not in ClickUp
 

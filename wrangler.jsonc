@@ -61,6 +61,7 @@
     //   cfrun wrangler secret put CLICKUP_TOKEN
     "CLICKUP_APPLICATIONS_LIST_ID": "901418622126",
     "CLICKUP_CONTACTS_LIST_ID": "901418639884",
+    "CLICKUP_VOLUNTEERS_LIST_ID": "901419920230",
     // Human action layer for donors, vendors, organizations, partners,
     // sponsorships, and grants ATL is pursuing. D1 remains source of truth.
     "CLICKUP_RELATIONSHIPS_LIST_ID": "901418931939",

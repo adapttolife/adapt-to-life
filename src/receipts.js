@@ -192,3 +192,69 @@ export async function sendApplyReceipt(env, { name, email, sport, need }) {
     "apply receipt"
   );
 }
+
+// Volunteer board. The failure mode here is specific and expensive: a
+// professional offers pro bono work, hears nothing, and concludes the
+// organisation is not serious. They do not offer twice, and they tell people.
+//
+// So this email does exactly three things and resists doing a fourth:
+//
+//   1. Says what they picked, back to them. It proves a human system received a
+//      real thing and not a form submission into a void.
+//   2. Promises only what we control: a person reads it, and you hear back
+//      either way. No timeline, because we cannot hold one, and the page does
+//      not offer one.
+//   3. Stops. It does not upsell a donation. Someone who just offered their time
+//      and got asked for money in the same breath learns what we actually
+//      wanted, and the ask costs more than it earns.
+export async function sendVolunteerReceipt(env, { name, email, roles, bring }) {
+  const first = String(name || "").trim().split(/\s+/)[0] || "there";
+  const picked = Array.isArray(roles) ? roles.filter(Boolean) : [];
+  const subject = "Thanks for offering to help";
+
+  // "Either way" is the whole promise. It is the sentence that makes it safe to
+  // raise a hand, and it is the one thing on the page we can actually hold.
+  const promise =
+    `A person reads every one of these. We will come back to you with what the ` +
+    `work would actually look like, or with an honest no if there is no fit right ` +
+    `now. You hear back either way.`;
+
+  const text =
+    `Hi ${first},\n\n` +
+    `Thanks for putting your hand up. That reached us.\n\n` +
+    `${promise}\n\n` +
+    (picked.length ? `What you picked:\n${picked.map((r) => `  - ${r}`).join("\n")}\n\n` : "") +
+    (bring ? `What you told us:\n${bring}\n\n` : "") +
+    `If anything changes on your end, or you thought of something after you hit ` +
+    `send, just reply to this email.\n\n` +
+    `Adapt To Life\n501(c)(3) nonprofit, EIN 41-3213344`;
+
+  const html = houseShell(
+    `<p>Hi ${esc(first)},</p>` +
+      `<p>Thanks for putting your hand up. That reached us.</p>` +
+      `<p>${esc(promise)}</p>` +
+      (picked.length
+        ? houseLabel("What you picked") +
+          houseQuote(picked.map((r) => `<div>${esc(r)}</div>`).join(""))
+        : "") +
+      (bring ? houseLabel("What you told us") + houseQuote(esc(bring)) : "") +
+      `<p>If anything changes on your end, or you thought of something after you ` +
+      `hit send, just reply to this email.</p>`
+  );
+
+  return send(
+    env,
+    {
+      from: HOUSE_FROM,
+      to: email,
+      bcc: HOUSE_INBOX,
+      replyTo: HOUSE_INBOX,
+      subject,
+      text,
+      html,
+      // Lets the house filter the board without opening the message.
+      headers: { "X-ATL-Form": "volunteer", "X-ATL-Roles": picked.join("; ").slice(0, 200) },
+    },
+    "volunteer receipt"
+  );
+}

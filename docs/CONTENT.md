@@ -29,6 +29,7 @@ trust beat → one ask.
 | `/hustle-and-heart` | The fund's story (the cost barrier) | Give, in place (the give moment) |
 | `/donate` | Complete the gift, zero friction | Finish your gift |
 | `/sponsorship` | The business case | Talk to us |
+| `/volunteer` | The board of what we actually need, and the honest terms | Sign up (the form) |
 | `/apply` | Athlete requests funding | Submit the application |
 | `/adaptive-sports-near-me` | The access barrier | Visit the directory |
 | `/ways-to-give` | Every way to back an athlete, campaigns first | Donate |
@@ -52,6 +53,7 @@ Each message lives in ONE canonical place. Everywhere else: one line max, linkin
 | What playing costs (equipment/travel/training + $ ranges) | `/hustle-and-heart` | Name the three words, no numbers |
 | How a grant works (steps) | `/apply` | Link only |
 | The sponsor pitch + tiers | `/sponsorship` | One card/line + link |
+| What we need from volunteers (every role, its time cost, the terms) | `/volunteer` | One line + link. `/ways-to-give` carries the time-is-not-money line because that page's job is *every* way to back an athlete |
 | Impact grid ($3,500 / $500 / $200 / 0%) | `/donate` | Not repeated |
 | **"Sports in abundance."** (the vision) | `/` (home), in the hero, directly after the belief line | Quotable elsewhere, but it is a declaration, never body filler. See the rule below |
 | The two-barriers framing | `/` (home) | One clause |
@@ -134,7 +136,21 @@ Each message lives in ONE canonical place. Everywhere else: one line max, linkin
   problem and a legal one. Money raised goes to **the fund**, never earmarked as someone's own grant.
   Pinned by `test/receipts.test.js`; a copy edit that drops the severance sentence fails the suite.
 - CTA verbs, always: **Donate** (give money) · **Apply** (request a grant) · **Suggest a program**
-  (directory) · **Talk to us** (sponsor/custom).
+  (directory) · **Talk to us** (sponsor/custom) · **Volunteer** (give time or skill).
+- **A volunteer page is a recruiting page, not a sign-up sheet** (2026-09-02). What makes a CPA say
+  yes is not warmth, it is a scope: the job, roughly what it costs them, and who they work with.
+  Three rules came out of building `/volunteer` and each one is a control:
+  - **Every role names its time cost.** "A few hours a month" is the sentence that converts. A role
+    without one reads as an open-ended claim on a stranger's life and gets skipped.
+  - **"You hear back either way."** The same promise `/apply` makes, for the same reason and with the
+    same teeth. A professional who offers pro bono work and hears nothing does not offer twice, and
+    tells people. It is the one commitment the page makes, so the ClickUp list behind it treats a
+    stale `Last contacted` as a broken promise rather than a backlog.
+  - **Never ask a volunteer for money in the same breath.** The receipt email deliberately carries no
+    donate link. Someone who just offered their time and gets upsold learns what we actually wanted.
+    The mirror of *never condition help on helping*, pointed the other way.
+  - The board is explicitly **not** a closed list ("We wrote down what we know we need. That is not
+    the same as everything we need."), per the rule against numbers that cap the mission.
 - Directory links: internal explainer is `/adaptive-sports-near-me`; the external link opens a new
   tab and is labeled **"Get notified when it opens"** until Adaptive Sports Near Me actually
   launches, then reverts to **"Visit the directory."** One label, everywhere, flipped in one pass.
@@ -172,7 +188,8 @@ Every page ends by handing the visitor forward, never sideways to a page that ha
 
 home → doors → (fund | directory) · tim → fund · fund → give · donate → done (+ level up: monthly,
 sponsor) · sponsorship → talk · apply → submit · about → give · roadmap → back the campaign ·
-ways to give → a campaign or a standing way · send-6 → give · popcorn → buy (or give).
+ways to give → a campaign or a standing way · send-6 → give · popcorn → buy (or give) ·
+volunteer → sign up.
 
 Adding something new? Give it ONE home page, one ask, one line + link everywhere else. Update this
 doc in the same PR.

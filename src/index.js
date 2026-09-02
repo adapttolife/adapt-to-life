@@ -1,11 +1,11 @@
 // Adapt To Life — Worker entry.
-// Serves the static site (env.ASSETS) and handles form submissions at /api/contact
-// and /api/apply, writing both to ClickUp. The ClickUp token stays server-side
+// Serves the static site (env.ASSETS) and handles form submissions at /api/contact,
+// /api/apply and /api/volunteer, writing all three to ClickUp. The ClickUp token stays server-side
 // (Worker secret). See src/clickup.js and docs/clickup-trackers.md.
 
 import { handleWaiver, handleWaiverDownload, handleWaiverVerify, handleWaiverDoc, runDriveBacklog } from "./waiver.js";
-import { sendContactReceipt, sendApplyReceipt } from "./receipts.js";
-import { createApplication, createContact } from "./clickup.js";
+import { sendContactReceipt, sendApplyReceipt, sendVolunteerReceipt } from "./receipts.js";
+import { createApplication, createContact, createVolunteer } from "./clickup.js";
 import { handleEmail, handleAgentMailApi } from "./agent_mail.js";
 import { handleQr } from "./qr.js";
 import { handleAdmin } from "./qr_admin.js";
@@ -22,6 +22,50 @@ const LEAD_TYPES = [
   "Volunteering",
   "Something else",
 ];
+
+// The volunteer board on /volunteer, verbatim. This is a closed set on purpose:
+// the page's checkboxes are the only legitimate source of a role, so anything
+// else arriving here is a hand-crafted POST and is dropped rather than written
+// into a field people filter on. The submitter's own words always survive in
+// "What would you bring", so nothing they actually said is ever lost to this.
+//
+// PINNED BY test/volunteer_clickup.test.js against public/volunteer.html. Adding
+// a role to the page without adding it here silently drops it, which is exactly
+// the kind of quiet failure that only shows up as "why does nobody tick that
+// one" six months later. The test fails the build instead.
+const VOLUNTEER_ROLES = [
+  "Grant writer",
+  "Fundraising lead",
+  "Sponsorship and partnership lead",
+  "Corporate matching champion",
+  "Planned and major giving advisor",
+  "CPA or tax preparer",
+  "Bookkeeper",
+  "Nonprofit attorney",
+  "Trademark counsel",
+  "Insurance and risk",
+  "Grant reviewer",
+  "Social media manager",
+  "Writer or editor",
+  "Photographer or videographer",
+  "Graphic designer",
+  "Press and media",
+  "Spanish translator",
+  "Accessibility reviewer",
+  "Adaptive sports coach",
+  "Event crew",
+  "Equipment technician",
+  "Athlete mentor",
+  "Program scout",
+  "Clinical referral partner",
+  "Make an introduction",
+  "Host something",
+  "Board and advisory",
+];
+
+// Ticking every box is legitimate but a 27-item title and field is not useful,
+// and an attacker padding the array is not either.
+const MAX_ROLES = 12;
 
 export default {
   async fetch(request, env, ctx) {
@@ -70,6 +114,11 @@ export default {
         return json({ ok: false, error: "Method not allowed" }, 405);
       }
       return handleApply(request, env, ctx);
+    }
+
+    if (url.pathname === "/api/volunteer") {
+      if (request.method !== "POST") return json({ ok: false, error: "Method not allowed." }, 405);
+      return handleVolunteer(request, env, ctx);
     }
 
     if (url.pathname === "/api/subscribe") {
@@ -414,6 +463,82 @@ async function handleApply(request, env, ctx) {
   return json({ ok: true });
 }
 
+// Volunteer board -> the ClickUp "Volunteers" list.
+//
+// Deliberately its own list and its own route rather than a sixth option on the
+// contact form. A CPA offering to do our first Form 990 and someone asking where
+// their popcorn is are not the same workflow, and the failure this whole
+// destination exists to prevent is a professional's pro bono offer aging out in a
+// general inbox. They do not offer twice.
+async function handleVolunteer(request, env, ctx) {
+  let data;
+  try {
+    const ct = request.headers.get("content-type") || "";
+    data = ct.includes("application/json")
+      ? await request.json()
+      : Object.fromEntries(await request.formData());
+  } catch {
+    return json({ ok: false, error: "Could not read your submission." }, 400);
+  }
+
+  // Honeypot — bots fill the hidden "company" field. Accept silently, store nothing.
+  if (str(data.company)) return json({ ok: true });
+
+  if (!(await verifyTurnstile(env, str(data.cf_token), request.headers.get("CF-Connecting-IP")))) {
+    return json({ ok: false, error: "Verification failed. Please reload the page and try again." }, 403);
+  }
+
+  const name = `${str(data.fn)} ${str(data.ln)}`.trim();
+  const email = str(data.em);
+  const bring = str(data.bring);
+  const roles = normalizeRoles(data.roles);
+
+  if (!email || /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) === false) {
+    return json({ ok: false, error: "A valid email is required." }, 422);
+  }
+  if (!name) {
+    return json({ ok: false, error: "Please add your name." }, 422);
+  }
+  // The page enforces this too. Enforced again here because the page's copy
+  // promises we will come back with a real scope, and we cannot do that from a
+  // name and an email alone.
+  if (!roles.length && !bring) {
+    return json({ ok: false, error: "Pick a role, or tell us what you would want to do." }, 422);
+  }
+
+  const saved = await createVolunteer(env, {
+    name,
+    email,
+    phone: str(data.phone),
+    based: str(data.based),
+    time: str(data.time),
+    links: str(data.links),
+    bring,
+    roles,
+    source: str(data.source).slice(0, 80) || "Submitted through the volunteer form on adapttolife.org.",
+  });
+
+  if (!saved.ok) {
+    return json({ ok: false, error: "Could not save right now. Please email hello@adapttolife.org." }, 502);
+  }
+
+  // Same contract as the other two: the record is already saved, so the receipt
+  // is sent after the response and can never fail or slow the submission.
+  after(ctx, sendVolunteerReceipt(env, { name, email, roles, bring }));
+
+  return json({ ok: true });
+}
+
+// Roles arrive as an array from the page and as a comma string from a plain form
+// post. Anything not on the board is dropped, duplicates collapse, and the order
+// of the board is preserved so two people who ticked the same boxes read the same
+// way in a list view.
+export function normalizeRoles(raw) {
+  const list = Array.isArray(raw) ? raw : String(raw || "").split(",");
+  const wanted = new Set(list.map((r) => String(r || "").trim().toLowerCase()).filter(Boolean));
+  return VOLUNTEER_ROLES.filter((r) => wanted.has(r.toLowerCase())).slice(0, MAX_ROLES);
+}
+
 // Newsletter / email capture -> beehiiv. API key + publication id are Worker secrets.
 async function handleSubscribe(request, env) {
   let data;
@@ -532,11 +657,19 @@ async function safeText(res) {
 // what an applicant receives. Never reachable in production.
 // ---------------------------------------------------------------------------
 async function previewReceipt(env, url) {
-  const kind = url.searchParams.get("type") === "contact" ? "contact" : "apply";
+  const asked = url.searchParams.get("type");
+  const kind = asked === "contact" || asked === "volunteer" ? asked : "apply";
   const captured = [];
   const stub = { ...env, SEND_EMAIL: { send: (msg) => (captured.push(msg), {}) } };
 
-  if (kind === "contact") {
+  if (kind === "volunteer") {
+    await sendVolunteerReceipt(stub, {
+      name: "Jordan Rivers",
+      email: "jordan@example.com",
+      roles: ["CPA or tax preparer", "Grant writer", "Make an introduction"],
+      bring: "Twenty years preparing returns for small charities, and a board contact at a family foundation that funds adaptive sport.",
+    });
+  } else if (kind === "contact") {
     await sendContactReceipt(stub, {
       name: "Jordan Rivers",
       email: "jordan@example.com",

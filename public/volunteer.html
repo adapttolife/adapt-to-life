@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<title>Volunteer | Adapt To Life</title>
+<meta name="description" content="Adapt To Life is building a team. Grant writers, accountants, coaches, storytellers, equipment techs, and people who can open a door. Find your place on this team.">
+<link rel="canonical" href="https://adapttolife.org/volunteer">
+<link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-v2-option2-32.png">
+<link rel="apple-touch-icon" href="/images/apple-touch-icon-v2-option2.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Volunteer | Adapt To Life">
+<meta property="og:description" content="Adapt To Life is building a team. Grant writers, accountants, coaches, storytellers, equipment techs, and people who can open a door. Find your place on this team.">
+<meta property="og:image" content="https://adapttolife.org/images/og/volunteer-v2-option2.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your place on this team. Adapt To Life.">
+<meta property="og:url" content="https://adapttolife.org/volunteer">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Volunteer | Adapt To Life">
+<meta name="twitter:description" content="Adapt To Life is building a team. Grant writers, accountants, coaches, storytellers, equipment techs, and people who can open a door. Find your place on this team.">
+<meta name="twitter:image" content="https://adapttolife.org/images/og/volunteer-v2-option2.jpg">
+<meta name="twitter:image:alt" content="Your place on this team. Adapt To Life.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/site.css">
+<script src="/js/attribution.js" defer></script>
+<style>
+  /* Volunteer page — the role board.
+     The cards ARE the form control: each one wraps a real checkbox, so choosing
+     a role works with the keyboard and without JavaScript, and there is no
+     second list of roles to drift out of sync with the first. */
+  .lane-head{ display:flex; flex-wrap:wrap; align-items:baseline; gap:0 1rem; }
+  .lane-blurb{ max-width:62ch; margin-top:0.9rem; color:var(--ink-soft); }
+  .roles{ display:grid; grid-template-columns:repeat(auto-fit,minmax(255px,1fr)); gap:clamp(0.9rem,1.8vw,1.2rem); margin-top:clamp(1.8rem,3.4vw,2.6rem); list-style:none; padding:0; }
+  .role{ position:relative; display:flex; flex-direction:column; border:1.5px solid var(--hairline); border-radius:16px; padding:1.25rem 1.2rem 1.15rem; background:var(--paper); cursor:pointer; transition:border-color .16s ease, box-shadow .16s ease, transform .16s ease; }
+  .role:hover{ border-color:#cfc7b6; transform:translateY(-2px); }
+  .role input{ position:absolute; opacity:0; width:1px; height:1px; }
+  .role:has(input:focus-visible){ outline:2px solid var(--orange); outline-offset:3px; }
+  .role:has(input:checked){ border-color:var(--orange); box-shadow:0 14px 34px rgba(255,92,57,0.16); background:#FFFCFA; }
+  .role-n{ font-family:'Hanken Grotesk',sans-serif; font-weight:700; font-size:1rem; color:var(--ink); padding-right:1.9rem; line-height:1.3; }
+  .role-d{ font-family:'Hanken Grotesk',sans-serif; font-size:0.9rem; line-height:1.5; color:var(--ink-soft); margin-top:0.45rem; flex:1; }
+  .role-t{ font-family:'Space Mono',monospace; font-size:0.68rem; letter-spacing:0.07em; text-transform:uppercase; color:var(--muted); margin-top:0.9rem; }
+  .role-tick{ position:absolute; top:1.15rem; right:1.1rem; width:22px; height:22px; border-radius:50%; border:1.5px solid var(--hairline); display:grid; place-items:center; transition:background .16s ease, border-color .16s ease; }
+  .role-tick svg{ width:12px; height:12px; opacity:0; transition:opacity .16s ease; }
+  .role:has(input:checked) .role-tick{ background:var(--orange); border-color:var(--orange); }
+  .role:has(input:checked) .role-tick svg{ opacity:1; }
+
+  /* the honest beat */
+  .terms{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:clamp(1.4rem,3vw,2.4rem); margin-top:clamp(2.2rem,4vw,3rem); }
+  /* four terms: auto-fit lands on three at desktop and orphans the fourth */
+  @media (min-width:1000px){ .terms{ grid-template-columns:repeat(4,minmax(0,1fr)); } }
+  .term h3{ font-family:'Newsreader',serif; font-size:1.22rem; font-weight:500; color:var(--ink); margin-bottom:0.5rem; }
+  .term p{ font-family:'Hanken Grotesk',sans-serif; font-size:0.95rem; line-height:1.55; color:var(--ink-soft); }
+
+  /* the form close */
+  .vform{ max-width:760px; margin-inline:auto; }
+  .picked{ border:1.5px dashed var(--hairline); border-radius:14px; padding:1rem 1.1rem; margin-bottom:1.4rem; background:var(--paper); }
+  .picked-h{ font-family:'Space Mono',monospace; font-size:0.7rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); }
+  .picked-list{ display:flex; flex-wrap:wrap; gap:0.45rem; margin-top:0.7rem; }
+  .picked-list:empty{ display:none; }
+  .chip{ font-family:'Hanken Grotesk',sans-serif; font-size:0.82rem; font-weight:600; background:var(--sand); color:var(--ink); border-radius:999px; padding:0.3rem 0.75rem; }
+  .picked-none{ font-family:'Hanken Grotesk',sans-serif; font-size:0.9rem; color:var(--ink-soft); margin-top:0.55rem; }
+  .to-form{ scroll-margin-top:90px; }
+  #roles{ display:block; scroll-margin-top:64px; }
+</style>
+</head>
+<body>
+<header class="nav over-dark" id="nav">
+  <div class="wrap nav-inner">
+    <a href="/" class="brand"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500.000000 457.000000" class="brand-logo" aria-hidden="true" focusable="false"><g transform="translate(0.000000,457.000000) scale(0.100000,-0.100000)"
+fill="currentColor" stroke="none">
+<path d="M2059 4548 c-14 -13 -99 -185 -198 -403 -96 -209 -238 -519 -316
+-690 -202 -440 -304 -662 -333 -725 -29 -65 -163 -358 -237 -520 -29 -63 -139
+-304 -245 -535 -291 -637 -404 -882 -445 -970 -20 -44 -56 -123 -80 -175 -53
+-118 -172 -375 -191 -414 -53 -108 -28 -116 371 -116 356 0 369 2 394 57 11
+23 190 440 524 1217 72 168 77 206 52 406 -69 554 79 859 585 1205 111 76 137
+101 165 155 20 40 233 517 330 742 23 53 45 90 56 93 20 7 59 -10 59 -26 0 -9
+208 -480 215 -488 3 -2 35 25 72 59 169 156 360 182 566 79 51 -27 51 -24 -54
+206 -134 293 -232 511 -306 675 -93 210 -35 190 -539 190 -421 0 -421 0 -445
+-22z"/>
+<path d="M3060 3404 c-127 -44 -200 -148 -200 -284 0 -358 507 -412 590 -62
+52 220 -174 420 -390 346z"/>
+<path d="M2334 2885 c-396 -102 -739 -406 -825 -732 -32 -119 -37 -419 -7
+-373 2 3 32 61 67 130 180 354 428 530 745 530 135 0 133 2 115 -107 -53 -333
+27 -498 243 -498 106 0 119 9 95 60 -36 75 -15 139 134 406 128 229 134 355
+26 476 -106 117 -372 166 -593 108z"/>
+<path fill="#FF5C39" d="M2242 2133 c-193 -421 -156 -742 101 -859 127 -58 282 -41 606 66
+403 134 502 93 711 -292 386 -708 698 -982 1176 -1030 158 -17 167 -8 53 50
+-349 178 -546 441 -794 1062 -293 734 -505 846 -1178 623 -249 -82 -337 -90
+-440 -40 -116 58 -187 202 -190 389 -2 116 -5 118 -45 31z"/>
+<path d="M1893 1869 c-616 -376 -623 -1289 -11 -1695 117 -78 206 -113 411
+-163 57 -13 236 -15 286 -2 20 6 68 17 106 26 399 93 694 425 771 869 45 256
+-59 389 -280 362 -87 -11 -104 -30 -80 -92 46 -119 16 -335 -66 -474 -199
+-338 -665 -446 -974 -226 -323 230 -382 720 -118 982 42 42 42 42 42 186 0 96
+5 163 15 201 25 97 17 99 -102 26z"/>
+</g></svg>Adapt To Life</a>
+    <nav class="nav-links">
+      <div class="nav-group">
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navOurWork">Our Work<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 3 3-3"/></svg></button>
+        <div class="nav-panel" id="navOurWork">
+          <a href="/hustle-and-heart"><span class="np-t">Hustle &amp; Heart Fund</span><span class="np-d">Equipment, training, and travel, so cost is never why an athlete sits out</span></a>
+          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d">A free national directory of adaptive programs, opening soon</span></a>
+        </div>
+      </div>
+      <a class="lk" href="/ways-to-give">Ways to Give</a>
+      <a class="lk" href="/volunteer">Volunteer</a>
+      <div class="nav-group">
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navAbout">About<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 3 3-3"/></svg></button>
+        <div class="nav-panel" id="navAbout">
+          <a href="/about"><span class="np-t">Our Story</span><span class="np-d">The team and the promise</span></a>
+          <a href="/tim"><span class="np-t">Tim's Story</span><span class="np-d">How the fund got its name</span></a>
+          <a href="/roadmap"><span class="np-t">Roadmap</span><span class="np-d">What is live, what we are building</span></a>
+        </div>
+      </div>
+      <a class="lk featured" href="/apply">Grant Application</a>
+      <a class="nav-cta" href="/donate">Donate</a>
+    </nav>
+    <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="mobile-menu">
+    <div class="wrap mwrap">
+      <span class="m-group">Our Work</span>
+      <a class="m-sub" href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
+      <a class="m-sub" href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
+      <a href="/ways-to-give">Ways to Give</a>
+      <a href="/volunteer">Volunteer</a>
+      <span class="m-group">About</span>
+      <a class="m-sub" href="/about">Our Story</a>
+      <a class="m-sub" href="/tim">Tim&#39;s Story</a>
+      <a class="m-sub" href="/roadmap">Roadmap</a>
+      <a class="featured" href="/apply">Grant Application</a>
+      <a class="m-cta" href="/donate">Donate &rarr;</a>
+    </div>
+  </div>
+</header>
+
+<main>
+<form id="volForm" novalidate>
+
+  <!-- HERO -->
+  <section class="hero dark hero-atmos">
+    <div class="wrap">
+      <span class="eyebrow orange reveal">Volunteer</span>
+      <h1 class="serif display reveal">Your place on <em class="italic" style="color:var(--orange)">this team</em>.</h1>
+      <p class="lead sub reveal">Adapt To Life is early, and the honest version is that we need people more than we need hours. Below is the real list we work from. Some of it is a career's worth of skill. Some of it is one introduction. All of it ends with an athlete on a court.</p>
+      <div class="actions reveal">
+        <a href="#roles" class="btn">See what we need <span class="arrow">&rarr;</span></a>
+        <a href="#signup" class="btn ghost">Sign up</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT YOU WOULD BE JOINING -->
+  <section class="band tint">
+    <div class="wrap">
+      <div class="reveal sec-head">
+        <span class="eyebrow orange">Before you scroll</span>
+        <h2 class="serif h2" style="margin-top:0.8rem;">What you would actually be joining.</h2>
+      </div>
+      <div class="terms">
+        <div class="term reveal">
+          <h3>Small, and saying so.</h3>
+          <p>A recognized 501(c)(3) with a board, a published grant rubric, and a fund that is still young. We would rather you know that now than find out later.</p>
+        </div>
+        <div class="term reveal">
+          <h3>A scope, not a shift.</h3>
+          <p>Every role here has a defined job and a person you work with. If we cannot tell you what done looks like, we have no business asking for your time.</p>
+        </div>
+        <div class="term reveal">
+          <h3>You hear back either way.</h3>
+          <p>A person reads every one of these. If there is no fit right now, we will say that rather than leave you wondering.</p>
+        </div>
+        <div class="term reveal">
+          <h3>Remote is normal.</h3>
+          <p>Most of this list is done from anywhere. The court work is in person, and we will be straight with you about which is which.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <span id="roles"></span>
+
+  <section class="band">
+    <div class="wrap">
+      <div class="reveal sec-head">
+        <span class="eyebrow orange">Fund the fund</span>
+        <h2 class="serif h2" style="margin-top:0.8rem;">Money, and the people who move it.</h2>
+        <p class="lane-blurb">The Hustle &amp; Heart Fund is young. Everything in this lane is about making it bigger than one person's checkbook.</p>
+      </div>
+      <ul class="roles">
+      <li><label class="role reveal">
+        <input type="checkbox" name="role" value="Grant writer">
+        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
+        <span class="role-n">Grant writer</span>
+        <span class="role-d">Find the foundations that fund adaptive sport, and write the applications. Nobody at Adapt To Life has done this at scale yet.</span>
+        <span class="role-t">A few hours a month</span>
+      </label></li>
+      <li><label class="role reveal">
+        <input type="checkbox" name="role" value="Fundraising lead">
+        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
+        <span class="role-n">Fundraising lead</span>
+        <span class="role-d">Build the annual plan. Which campaigns, which asks, in what order, and who we go back to.</span>
+        <span class="role-t">A few hours a month</span>
+      </label></li>
+      <li><label class="role reveal">
+        <input type="checkbox" name="role" value="Sponsorship and partnership lead">
+        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
+        <span class="role-n">Sponsorship and partnership lead</span>
+        <span class="role-d">Bring businesses to the table and keep them there. We have levels published and almost nobody working them.</span>
+        <span class="role-t">A few hours a month</span>
+      </label></li>
+      <li><label class="role reveal">
+        <input type="checkbox" name="role" value="Corporate matching champion">
+        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
+        <span class="role-n">Corporate matching champion</span>
+        <span class="role-d">Get Adapt To Life into your employer's matching program. The single highest return an hour of volunteering has.</span>
+        <span class="role-t">One hour, once</span>
+      </label></li>
+      <li><label class="role reveal">
+        <input type="checkbox" name="role" value="Planned and major giving advisor">
+        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
+        <span class="role-n">Planned and major giving advisor</span>
+        <span class="role-d">Donor advised funds, appreciated stock, bequests. The gifts that need someone who speaks the language.</span>
+        <span class="role-t">As it comes up</span>
+      </label></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="band tint">
+    <div class="wrap">
+      <div class="reveal sec-head">
+        <span class="eyebrow orange">Keep it clean</span>
+        <h2 class="serif h2" style="margin-top:0.8rem;">The unglamorous work that protects athletes.</h2>
+        <p class="lane-blurb">A nonprofit that loses its exemption stops funding anyone. This lane is insurance against that, and it is where professional volunteers are worth the most.</p>
+      </div>
+      <ul class="roles">
+      <li><label class="role reveal">
+        <input type="checkbox" name="role" value="CPA or tax preparer">
+        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
+        <span class="role-n">CPA or tax preparer</span>
+        <span class="role-d">Our first Form 990, our fiscal year call, and keeping the exemption airtight. Missing three returns is how small charities quietly disappear.</span>
+        <span class="role-t">Seasonal</span>
+      </label></li>
+      <li><label class="role reveal">
+        <input type="checkbox" name="role" value="Bookkeeper">
+        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
+        <span class="role-n">Bookkeeper</span>
+        <span class="role-d">Monthly reconciliation alongside our treasurer, so the books are ready before anyone asks to see them.</span>
+        <span class="role-t">An hour or two a month</span>
+      </label></li>
+      <li><label class="role reveal">
+        <input type="checkbox" name="role" value="Nonprofit attorney">
+        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
+        <span class="role-n">Nonprofit attorney</span>
+        <span class="role-d">Bylaws, a conflict of interest policy, and charitable registration in each state as we raise in more of them.</span>
+        <span class="role-t">As it comes up</span>
+      </label></li>
+      <li><label class="role reveal">
+        <input type="checkbox" name="role" value="Trademark counsel">
+        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
+        <span class="role-n">Trademark counsel</span>
+        <span class="role-d">Clear and file our marks before they go on physical product. Cheapest to fix right now.</span>
+        <span class="role-t">A one time project</span>
+      </label></li>
+      <li><label class="role reveal">
+        <input type="checkbox" name="role" value="Insurance and risk">
+        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
+        <span class="role-n">Insurance and risk</span>
+        <span class="role-d">Coverage for clinics, tournaments, volunteers, and the athletes we put on a court.</span>
+        <span class="role-t">As it comes up</span>
+      </label></li>
+      <li><label class="role reveal">
+        <input type="checkbox" name="role" value="Grant reviewer">
+        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
+        <span class="role-n">Grant reviewer</span>
+        <span class="role-d">Score applications against our published rubric so decisions are fair, consistent, and documented.</span>
+        <span class="role-t">A few hours per cycle</span>
+      </label></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap">
+      <div class="reveal sec-head">
+        <span class="eyebrow orange">Tell it right</span>
+        <h2 class="serif h2" style="margin-top:0.8rem;">Reach, so the next athlete finds us.</h2>
+        <p class="lane-blurb">An athlete cannot apply to a fund they have never heard of. Everything here is about being findable.</p>
+      </div>
+      <ul class="roles">
+      <li><label class="role reveal">
+        <input type="checkbox" name="role" value="Social media manager">
+        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
+        <span class="role-n">Social media manager</span>
+        <span class="role-d">Turn our work into posts people stop for, on the platforms where the adaptive community actually is.</span>
+        <span class="role-t">A few hours a week</span>
+      </label></li>
+      <li><label class="role reveal">
+        <input type="checkbox" name="role" value="Writer or editor">
+        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
+        <span class="role-n">Writer or editor</span>
+        <span class="role-d">Athlete stories, the newsletter, and eventually the annual impact report.</span>
+        <span class="role-t">A few hours a month</span>
+      </label></li>
+      <li><label class="role reveal">
+        <input type="checkbox" name="role" value="Photographer or videographer">
+        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
+        <span class="role-n">Photographer or videographer</span>
+        <span class="role-d">Shoot our clinics and tournaments. Real athletes, ours. Every image on this site came from someone who showed up.</span>
+        <span class="role-t">A day at a time</span>
+      </label></li>
+      <li><label class="role reveal">
+        <input type="checkbox" name="role" value="Graphic designer">
+        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
+        <span class="role-n">Graphic designer</span>
+        <span class="role-d">Sponsor decks, one pagers, event graphics, apparel.</span>
+        <span class="role-t">Project by project</span>
+      </label></li>
+      <li><label class="role reveal">
+        <input type="checkbox" name="role" value="Press and media">
+        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
+        <span class="role-n">Press and media</span>
+        <span class="role-d">Get athletes in front of reporters, podcasts, and local news.</span>
+        <span class="role-t">As it comes up</span>
+      </label></li>
+      <li><label class="role reveal">
+        <input type="checkbox" name="role" value="Spanish translator">
+        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
+        <span class="role-n">Spanish translator</span>
+        <span class="role-d">So the fund and the directory are not English only.</span>
+        <span class="role-t">Project by project</span>
+      </label></li>
+      <li><label class="role reveal">
+        <input type="checkbox" name="role" value="Accessibility reviewer">
+        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
+        <span class="role-n">Accessibility reviewer</span>
+        <span class="role-d">Test this site and its forms with the screen readers, switches, and magnifiers our athletes actually use, then tell us what breaks.</span>
+        <span class="role-t">A one time project</span>
+      </label></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="band tint">
+    <div class="wrap">
+      <div class="reveal sec-head">
+        <span class="eyebrow orange">On the court</span>
+        <h2 class="serif h2" style="margin-top:0.8rem;">The part that looks like sport.</h2>
+        <p class="lane-blurb">Hands on, in person, usually on a weekend.</p>
+      </div>
+      <ul class="roles">
+      <li><label class="role reveal">
+        <input type="checkbox" name="role" value="Adaptive sports coach">
+        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
+        <span class="role-n">Adaptive sports coach</span>
+        <span class="role-d">Run a clinic, coach a session, teach a sport. No adaptive experience required if you can coach.</span>
+        <span class="role-t">A season, or a single clinic</span>
+      </label></li>
+      <li><label class="role reveal">
+        <input type="checkbox" name="role" value="Event crew">
+        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
+        <span class="role-n">Event crew</span>
+        <span class="role-d">Setup, registration, scorekeeping, teardown. The reason an event feels organized.</span>
+        <span class="role-t">A day at a time</span>
+      </label></li>
+      <li><label class="role reveal">
+        <input type="checkbox" name="role" value="Equipment technician">
+        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
+        <span class="role-n">Equipment technician</span>
+        <span class="role-d">Fit, repair, and refurbish chairs and adaptive gear. Rare, and worth more than most people realize.</span>
+        <span class="role-t">As it comes up</span>
+      </label></li>
+      <li><label class="role reveal">
+        <input type="checkbox" name="role" value="Athlete mentor">
+        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
+        <span class="role-n">Athlete mentor</span>
+        <span class="role-d">Be the person a newly injured athlete or their family calls first. Best done by someone who has been there.</span>
+        <span class="role-t">An hour here and there</span>
+      </label></li>
+      <li><label class="role reveal">
+        <input type="checkbox" name="role" value="Program scout">
+        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
+        <span class="role-n">Program scout</span>
+        <span class="role-d">Find and verify adaptive programs so Adaptive Sports Near Me is a real directory and not a list of guesses.</span>
+        <span class="role-t">An hour a month</span>
+      </label></li>
+      <li><label class="role reveal">
+        <input type="checkbox" name="role" value="Clinical referral partner">
+        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
+        <span class="role-n">Clinical referral partner</span>
+        <span class="role-d">Recreational therapists, physical therapists, and hospital staff who can hand someone a brochure the way one was handed to Alec.</span>
+        <span class="role-t">As it comes up</span>
+      </label></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap">
+      <div class="reveal sec-head">
+        <span class="eyebrow orange">No title required</span>
+        <h2 class="serif h2" style="margin-top:0.8rem;">You do not need a profession to change this.</h2>
+        <p class="lane-blurb">Most people who want to help do not have a job title we listed. They have a relationship, a room, or a reason to organize something.</p>
+      </div>
+      <ul class="roles">
+      <li><label class="role reveal">
+        <input type="checkbox" name="role" value="Make an introduction">
+        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
+        <span class="role-n">Make an introduction</span>
+        <span class="role-d">A company, a foundation, a venue, a coach, a reporter, a family who needs us. Warm introductions beat every cold ask we could write.</span>
+        <span class="role-t">One email</span>
+      </label></li>
+      <li><label class="role reveal">
+        <input type="checkbox" name="role" value="Host something">
+        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
+        <span class="role-n">Host something</span>
+        <span class="role-d">A tournament, a clinic, a popcorn drive, a birthday fundraiser. We will hand you everything you need.</span>
+        <span class="role-t">A few weeks of planning</span>
+      </label></li>
+      <li><label class="role reveal">
+        <input type="checkbox" name="role" value="Board and advisory">
+        <span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>
+        <span class="role-n">Board and advisory</span>
+        <span class="role-d">The seats that steer this as it grows. We are deliberate about who sits in them, and we are looking.</span>
+        <span class="role-t">A real commitment</span>
+      </label></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- THE ESCAPE HATCH -->
+  <section class="band tint">
+    <div class="wrap reading center">
+      <span class="eyebrow orange reveal">Not on the list</span>
+      <h2 class="serif h3 reveal" style="margin-top:0.7rem;">We wrote down what we know we need.</h2>
+      <p class="prose reveal" style="margin-top:1rem;">That is not the same as everything we need. If you have something we did not think to ask for, put it in the box below and tell us plainly. The list grows.</p>
+    </div>
+  </section>
+
+  <!-- PHOTO BAND — real athletes, before the ask. -->
+  <section class="photoband" aria-label="An adaptive pickleball player driving forward for a shot during an indoor match">
+    <div class="photoband-img" style="background-image:url('/images/athletes/wheelie-68.webp'); background-position:center 18%"></div>
+    <div class="photoband-cap">
+      <div class="wrap">
+        <span class="eyebrow">What the hours turn into</span>
+        <span class="pb-line">Somebody found the program. Somebody cleared the paperwork. Somebody paid for the chair. Then she played.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE ASK -->
+  <section class="band band-lg to-form" id="signup">
+    <div class="wrap">
+      <div class="reveal sec-head">
+        <span class="eyebrow orange">Sign up</span>
+        <h2 class="serif h2" style="margin-top:0.8rem;">Tell us where you fit.</h2>
+        <p class="lane-blurb">Pick anything above that sounds like you, then tell us a little. There is no interview and no minimum commitment. We will come back to you with a real scope, or with an honest no.</p>
+      </div>
+
+      <div class="vform reveal" style="margin-top:clamp(2rem,3.6vw,2.8rem);">
+        <div class="picked">
+          <span class="picked-h">Roles you picked</span>
+          <p class="picked-none" id="pickedNone">None yet. Scroll up and tap any card, or just tell us in your own words below.</p>
+          <div class="picked-list" id="pickedList"></div>
+        </div>
+
+        <div class="contact-form">
+          <div class="field-row">
+            <div class="field"><label for="fn">First name</label><input id="fn" name="fn" type="text" autocomplete="given-name"></div>
+            <div class="field"><label for="ln">Last name</label><input id="ln" name="ln" type="text" autocomplete="family-name"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label for="em">Email</label><input id="em" name="em" type="email" autocomplete="email"></div>
+            <div class="field"><label for="phone">Phone <span style="font-weight:400;color:var(--muted)">(optional)</span></label><input id="phone" name="phone" type="tel" autocomplete="tel"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label for="based">Where are you based? <span style="font-weight:400;color:var(--muted)">(optional)</span></label><input id="based" name="based" type="text" autocomplete="address-level2" placeholder="City, state"></div>
+            <div class="field">
+              <label for="time">How much time feels right?</label>
+              <select id="time" name="time">
+                <option value="">Select one</option>
+                <option>An hour here and there</option>
+                <option>A few hours a month</option>
+                <option>A few hours a week</option>
+                <option>A day at a time, for events</option>
+                <option>One project, start to finish</option>
+                <option>Not sure yet</option>
+              </select>
+            </div>
+          </div>
+          <div class="field"><label for="bring">What would you bring? Anything we did not think to ask for?</label><textarea id="bring" name="bring" rows="5" placeholder="A sentence is plenty. If you picked a role above, tell us what you have done before. If you did not, tell us what you would want to do."></textarea></div>
+          <div class="field"><label for="links">A link, if you have one <span style="font-weight:400;color:var(--muted)">(optional)</span></label><input id="links" name="links" type="text" placeholder="LinkedIn, a portfolio, a firm page"></div>
+          <input type="text" name="company" id="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only" style="margin-bottom:1rem;"></div>
+          <button type="submit" class="btn" id="volSubmit">Count me in</button>
+          <p class="form-status" id="formStatus" role="status" aria-live="polite" style="margin-top:.9rem;font-weight:600"></p>
+          <p class="form-note">We will reply at the email you provide. Nothing here signs you up for anything.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</form>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="brandcol">
+        <a href="/" class="brand"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500.000000 457.000000" class="brand-logo" aria-hidden="true" focusable="false"><g transform="translate(0.000000,457.000000) scale(0.100000,-0.100000)"
+fill="currentColor" stroke="none">
+<path d="M2059 4548 c-14 -13 -99 -185 -198 -403 -96 -209 -238 -519 -316
+-690 -202 -440 -304 -662 -333 -725 -29 -65 -163 -358 -237 -520 -29 -63 -139
+-304 -245 -535 -291 -637 -404 -882 -445 -970 -20 -44 -56 -123 -80 -175 -53
+-118 -172 -375 -191 -414 -53 -108 -28 -116 371 -116 356 0 369 2 394 57 11
+23 190 440 524 1217 72 168 77 206 52 406 -69 554 79 859 585 1205 111 76 137
+101 165 155 20 40 233 517 330 742 23 53 45 90 56 93 20 7 59 -10 59 -26 0 -9
+208 -480 215 -488 3 -2 35 25 72 59 169 156 360 182 566 79 51 -27 51 -24 -54
+206 -134 293 -232 511 -306 675 -93 210 -35 190 -539 190 -421 0 -421 0 -445
+-22z"/>
+<path d="M3060 3404 c-127 -44 -200 -148 -200 -284 0 -358 507 -412 590 -62
+52 220 -174 420 -390 346z"/>
+<path d="M2334 2885 c-396 -102 -739 -406 -825 -732 -32 -119 -37 -419 -7
+-373 2 3 32 61 67 130 180 354 428 530 745 530 135 0 133 2 115 -107 -53 -333
+27 -498 243 -498 106 0 119 9 95 60 -36 75 -15 139 134 406 128 229 134 355
+26 476 -106 117 -372 166 -593 108z"/>
+<path fill="#FF5C39" d="M2242 2133 c-193 -421 -156 -742 101 -859 127 -58 282 -41 606 66
+403 134 502 93 711 -292 386 -708 698 -982 1176 -1030 158 -17 167 -8 53 50
+-349 178 -546 441 -794 1062 -293 734 -505 846 -1178 623 -249 -82 -337 -90
+-440 -40 -116 58 -187 202 -190 389 -2 116 -5 118 -45 31z"/>
+<path d="M1893 1869 c-616 -376 -623 -1289 -11 -1695 117 -78 206 -113 411
+-163 57 -13 236 -15 286 -2 20 6 68 17 106 26 399 93 694 425 771 869 45 256
+-59 389 -280 362 -87 -11 -104 -30 -80 -92 46 -119 16 -335 -66 -474 -199
+-338 -665 -446 -974 -226 -323 230 -382 720 -118 982 42 42 42 42 42 186 0 96
+5 163 15 201 25 97 17 99 -102 26z"/>
+</g></svg>Adapt To Life</a>
+        <p class="tagline">Your place in adaptive sports.</p>
+        <form class="foot-sub js-subscribe" data-source="footer" novalidate>
+          <label class="foot-sub-label" for="footEm">Stay in the game</label>
+          <div class="foot-sub-row">
+            <input class="foot-sub-input" id="footEm" name="em" type="email" autocomplete="email" placeholder="you@example.com" aria-label="Your email">
+            <button class="foot-sub-btn" type="submit" aria-label="Join the list">&rarr;</button>
+          </div>
+          <input type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only"></div>
+          <p class="foot-sub-msg" role="status" aria-live="polite"></p>
+        </form>
+        <p class="legal">Adapt To Life is a recognized 501(c)(3) nonprofit organization. Donations are tax-deductible to the extent allowed by law. EIN 41-3213344.</p>
+      </div>
+      <div class="col">
+        <h4>Organization</h4>
+        <a href="/about">Our Story</a>
+        <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
+        <a href="/tim">Tim&#39;s Story</a>
+        <a href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
+                <a href="/roadmap">Roadmap</a>
+      </div>
+      <div class="col">
+        <h4>Get involved</h4>
+        <a href="/donate">Donate</a>
+        <a href="/ways-to-give">Ways to give</a>
+        <a href="/sponsorship">Sponsor us</a>
+        <a href="/volunteer">Volunteer</a>
+        <a href="/apply">Grant Application</a>
+        <a href="https://sign.adapttolife.org/waiver?source=atl">Sign waiver</a>
+        <a href="/subscribe">Join the list</a>
+        <a href="/contact">Contact</a>
+        <a href="mailto:hello@adapttolife.org">hello@adapttolife.org</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Adapt To Life</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var toggles = document.querySelectorAll('.nav-toggle');
+    function closeAll(except){
+      toggles.forEach(function(t){
+        if (t === except) return;
+        t.setAttribute('aria-expanded','false');
+        var pnl = document.getElementById(t.getAttribute('aria-controls'));
+        if (pnl) pnl.classList.remove('open');
+      });
+    }
+    toggles.forEach(function(t){
+      var panel = document.getElementById(t.getAttribute('aria-controls'));
+      t.addEventListener('click', function(e){
+        e.stopPropagation();
+        var open = t.getAttribute('aria-expanded') === 'true';
+        closeAll(t);
+        t.setAttribute('aria-expanded', open ? 'false' : 'true');
+        if (panel) panel.classList.toggle('open', !open);
+      });
+    });
+    document.addEventListener('click', function(){ closeAll(null); });
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape') closeAll(null);
+    });
+  })();
+  (function(){
+    var nav = document.getElementById('nav');
+    var menuBtn = document.getElementById('menuBtn');
+    menuBtn.addEventListener('click', function(){
+      var open = nav.classList.toggle('open');
+      menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    nav.querySelectorAll('.mobile-menu a').forEach(function(a){
+      a.addEventListener('click', function(){ nav.classList.remove('open'); menuBtn.setAttribute('aria-expanded','false'); });
+    });
+    var onScroll = function(){ if(window.scrollY > 8){ nav.classList.add('scrolled'); } else { nav.classList.remove('scrolled'); } };
+    window.addEventListener('scroll', onScroll, { passive:true });
+    onScroll();
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var reveals = document.querySelectorAll('.reveal');
+    if(reduce || !('IntersectionObserver' in window)){
+      reveals.forEach(function(el){ el.classList.add('in'); });
+    } else {
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+      }, { threshold:0.12, rootMargin:'0px 0px -8% 0px' });
+      reveals.forEach(function(el){ io.observe(el); });
+      window.addEventListener('load', function(){
+        document.querySelectorAll('.hero .reveal').forEach(function(el, i){
+          setTimeout(function(){ el.classList.add('in'); }, 60 + i*70);
+        });
+      });
+    }
+  })();
+</script>
+<script>
+  (function(){
+    var f = document.getElementById('volForm');
+    if(!f) return;
+    var statusEl = document.getElementById('formStatus');
+    var btn = document.getElementById('volSubmit');
+    var list = document.getElementById('pickedList');
+    var none = document.getElementById('pickedNone');
+
+    function picked(){
+      return Array.prototype.slice.call(f.querySelectorAll('input[name="role"]:checked'))
+        .map(function(i){ return i.value; });
+    }
+    function paint(){
+      var sel = picked();
+      list.innerHTML = '';
+      sel.forEach(function(v){
+        var s = document.createElement('span');
+        s.className = 'chip';
+        s.textContent = v;
+        list.appendChild(s);
+      });
+      none.style.display = sel.length ? 'none' : '';
+    }
+    f.addEventListener('change', function(e){ if(e.target.name === 'role') paint(); });
+    paint();
+
+    // A role deep-link (?role=Grant+writer) so a LinkedIn or Facebook post can
+    // point at one ask instead of the whole board.
+    (function(){
+      var want = new URLSearchParams(location.search).getAll('role').map(function(s){ return s.toLowerCase(); });
+      if(!want.length) return;
+      var hit = false;
+      f.querySelectorAll('input[name="role"]').forEach(function(i){
+        if(want.indexOf(i.value.toLowerCase()) >= 0){ i.checked = true; hit = true; }
+      });
+      if(hit){ paint(); }
+    })();
+
+    function v(id){ var el=document.getElementById(id); return el ? el.value.trim() : ''; }
+    function setStatus(msg, ok){
+      if(!statusEl) return;
+      statusEl.textContent = msg;
+      statusEl.style.color = ok ? '#2e7d32' : '#c0392b';
+    }
+
+    f.addEventListener('submit', function(e){
+      e.preventDefault();
+      if(v('company')) return; // honeypot: silently drop bots
+      if(!v('em')){ setStatus('Please enter your email so we can reply.', false); return; }
+      var roles = picked();
+      if(!roles.length && !v('bring')){
+        setStatus('Pick a role above, or tell us what you would want to do.', false);
+        return;
+      }
+      var tk = f.querySelector('[name="cf-turnstile-response"]');
+      var payload = {
+        fn:v('fn'), ln:v('ln'), em:v('em'), phone:v('phone'), based:v('based'),
+        time:v('time'), bring:v('bring'), links:v('links'), roles:roles,
+        cf_token: tk?tk.value:''
+      };
+      var orig = btn ? btn.textContent : '';
+      if(btn){ btn.disabled = true; btn.textContent = 'Sending...'; }
+      setStatus('', true);
+      fetch('/api/volunteer', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      })
+      .then(function(r){ return r.json().catch(function(){ return { ok:r.ok }; }); })
+      .then(function(d){
+        if(d && d.ok){
+          f.reset();
+          paint();
+          setStatus("Thanks. A person will read this and get back to you.", true);
+        } else {
+          setStatus((d && d.error) || 'Something went wrong. Please email hello@adapttolife.org.', false);
+        }
+      })
+      .catch(function(){ setStatus('Network error. Please email hello@adapttolife.org.', false); })
+      .then(function(){ if(btn){ btn.disabled = false; btn.textContent = orig; } });
+    });
+  })();
+</script>
+
+<script src="/js/subscribe.js" defer></script>
+<script src="/js/turnstile-lazy.js" defer></script>
+</body>
+</html>

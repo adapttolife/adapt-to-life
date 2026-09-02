@@ -8,8 +8,9 @@
 //
 // Both public forms are unchanged. Only the destination moved.
 //
-//   POST /api/apply   -> "Hustle & Heart — Applications"  (the applicant tracker)
-//   POST /api/contact -> "Contacts"                       (everyone else)
+//   POST /api/apply     -> "Hustle & Heart — Applications" (the applicant tracker)
+//   POST /api/contact   -> "Contacts"                      (everyone else)
+//   POST /api/volunteer -> "Volunteers"                    (people offering to help)
 //
 // The third list, "Hustle & Heart — Awards", is the grant tracker. Nothing writes
 // to it from here on purpose: an award is a human decision about money, opened by
@@ -46,11 +47,32 @@ const CONTACT_FIELD = {
   received: "dd49ccb4-b7db-4a66-b38d-41ef49615d62",
 };
 
+// The Volunteers list. Email, Phone, Received and "Last contacted" carry the
+// SAME ids as the Contacts list above: ClickUp dedupes a created field against
+// an existing space-level field of the same name AND type, so one "Last
+// contacted" still means one thing wherever you are standing. It only dedupes on
+// an exact type match — a "Phone" created as short_text instead of text becomes a
+// second, unrelated field. Two such strays exist on the list from getting that
+// wrong and cannot be removed through the v2 API; delete them in the UI. Nothing
+// here writes to them.
+const VOLUNTEER_FIELD = {
+  email: FIELD.email,
+  phone: FIELD.phone,
+  received: CONTACT_FIELD.received,
+  stage: "8e74d25f-a4c5-4dd1-bd17-5e02a482346f",
+  roles: "408bfd1b-d9ce-4e69-aa5d-8323cf587440",
+  time: "72533db0-31f0-4484-b3f9-9ac09ae03a7b",
+  based: "9db6bb6e-a0ed-4f65-ae58-db105b18dbc6",
+  links: "cbad9797-e3d3-42fa-bad8-083a5a5bc529",
+  source: CONTACT_FIELD.source,
+};
+
 // "Stage" is a dropdown rather than a native status because custom statuses are
 // not writable through the ClickUp API — PUT /space/{id} accepts a statuses
 // array, returns 200, and ignores it.
 const STAGE_NEW = "11dcc191-244b-4263-b664-402efea16c29";
 const CONTACT_STAGE_NEW = "d6d3763e-0952-4d73-aaa7-ae3f7a89f154";
+const VOLUNTEER_STAGE_NEW = "56399a33-ee51-43cb-888c-beb2640bf9bb";
 
 // The contact form's "reaching out as" dropdown. A value that is not one of these
 // is dropped rather than guessed — the message body still says what they want.
@@ -211,6 +233,69 @@ export async function createContact(env, sub, now = Date.now()) {
     sub.type ? `${sub.name} — ${sub.type}` : sub.name,
     describeContact(sub),
     contactFields(sub, now)
+  );
+}
+
+// Everything a volunteer sent. Same rule as the two above: the description is
+// the record and the fields are for filtering, because a field id can change out
+// from under us and a person's offer to help may not depend on one.
+//
+// The roles go in BOTH places on purpose. In the description they are the
+// record; in the "Roles" text field they are filterable, which is the whole
+// point of the list — "show me everyone who ticked CPA" is the query this exists
+// to answer.
+function describeVolunteer({ email, phone, based, roles, time, bring, links, source }) {
+  const rows = [
+    ["Email", email],
+    ["Phone", phone],
+    ["Based in", based],
+    ["Time they offered", time],
+    ["Link", links],
+  ].filter(([, v]) => v);
+
+  let md = rows.map(([k, v]) => `**${k}:** ${v}`).join("\n");
+  md += `\n\n**Roles they picked**\n\n${roles && roles.length ? roles.map((r) => `- ${r}`).join("\n") : "_None picked; see their note._"}`;
+  if (bring) md += `\n\n**What they would bring**\n\n${bring}`;
+  md += `\n\n---\n\n${source || "Submitted through the volunteer form on adapttolife.org."}`;
+  return md;
+}
+
+function volunteerFields(sub, now) {
+  const fields = [
+    { id: VOLUNTEER_FIELD.stage, value: VOLUNTEER_STAGE_NEW },
+    { id: VOLUNTEER_FIELD.received, value: now },
+    { id: VOLUNTEER_FIELD.email, value: sub.email },
+  ];
+  if (sub.phone) fields.push({ id: VOLUNTEER_FIELD.phone, value: sub.phone });
+  if (sub.based) fields.push({ id: VOLUNTEER_FIELD.based, value: sub.based });
+  if (sub.time) fields.push({ id: VOLUNTEER_FIELD.time, value: sub.time });
+  if (sub.links) fields.push({ id: VOLUNTEER_FIELD.links, value: sub.links });
+  if (sub.source) fields.push({ id: VOLUNTEER_FIELD.source, value: sub.source });
+  if (sub.roles && sub.roles.length) {
+    // Comma-joined so the ClickUp filter "Roles contains CPA" works. Capped
+    // because someone can tick every box and the field is a text column.
+    fields.push({ id: VOLUNTEER_FIELD.roles, value: sub.roles.join(", ").slice(0, 500) });
+  }
+  return fields;
+}
+
+// The task name has to survive a list view, so it leads with the first role and
+// counts the rest rather than running the whole selection into the title.
+export function volunteerTitle(name, roles) {
+  const picked = Array.isArray(roles) ? roles.filter(Boolean) : [];
+  if (!picked.length) return `${name} — volunteer`;
+  if (picked.length === 1) return `${name} — ${picked[0]}`;
+  return `${name} — ${picked[0]} +${picked.length - 1}`;
+}
+
+export async function createVolunteer(env, sub, now = Date.now()) {
+  return createTask(
+    env,
+    env.CLICKUP_VOLUNTEERS_LIST_ID,
+    "volunteer",
+    volunteerTitle(sub.name, sub.roles),
+    describeVolunteer(sub),
+    volunteerFields(sub, now)
   );
 }
 

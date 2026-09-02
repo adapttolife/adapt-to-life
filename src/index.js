@@ -97,6 +97,22 @@ export default {
     // calls the real function with a capturing stub and returns exactly what
     // would have been sent. Off in production, where it 404s with everything
     // else that is not a page.
+    // Staging serves code assets uncached. Earned 2026-09-02: a markup change
+    // and a CSS change shipped together, HTML is always revalidated but
+    // /css/* carries max-age=300 + stale-while-revalidate=3600, so a reviewer
+    // on a phone got new HTML painted with the previous deploy's CSS. Every
+    // unstyled span rendered at body size and the page looked broken. The
+    // _headers comment predicts exactly this ("anything structural is exactly
+    // when a mismatch would show") and the answer is that the REVIEW surface
+    // cannot be the one that gambles. Production keeps the cache policy and
+    // never runs this branch, because /css/* is not in its run_worker_first.
+    if (env.STAGING === "1" && (url.pathname.startsWith("/css/") || url.pathname.startsWith("/js/"))) {
+      const res = await env.ASSETS.fetch(request);
+      const headers = new Headers(res.headers);
+      headers.set("Cache-Control", "no-store");
+      return new Response(res.body, { status: res.status, headers });
+    }
+
     if (url.pathname === "/preview/receipt") {
       if (env.STAGING !== "1") return new Response("Not found", { status: 404 });
       return previewReceipt(env, url);

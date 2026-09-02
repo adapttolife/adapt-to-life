@@ -671,7 +671,10 @@ a.win-band:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:4p
 .role-d{ font-family:"Hanken Grotesk", sans-serif; font-size:0.9rem; line-height:1.5; color:var(--ink-soft); margin-top:0.45rem; flex:1; }
 .role-foot{ display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:0.4rem 0.9rem; margin-top:1rem; padding-top:0.85rem; border-top:1px solid var(--hairline); }
 .role-t{ font-family:"Space Mono", monospace; font-size:0.68rem; letter-spacing:0.07em; text-transform:uppercase; color:var(--muted); }
-.role-go{ font-family:"Space Mono", monospace; font-size:0.68rem; letter-spacing:0.07em; text-transform:uppercase; color:var(--orange-ink); }
+/* Just an arrow. The whole card is a link, so "read the role" on all
+   twenty-seven of them was noise competing with the time chip. */
+.role-go{ font-size:1rem; line-height:1; color:var(--orange); transition:transform .16s ease; }
+.role:hover .role-go{ transform:translateX(3px); }
 
 .terms{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:clamp(1.4rem,3vw,2.4rem); margin-top:clamp(2.2rem,4vw,3rem); }
 @media (min-width:1000px){ .terms{ grid-template-columns:repeat(4,minmax(0,1fr)); } }

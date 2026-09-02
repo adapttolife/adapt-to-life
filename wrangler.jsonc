@@ -127,7 +127,12 @@
       // CRITICAL: empty routes overrides the inherited production routes, so a
       // staging deploy can never reassign the live apex domains to this Worker.
       "routes": [],
-      "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": ["/review", "/review.html", "/photo-picks", "/photo-picks.html", "/admin/*"] },
+      // /css/* and /js/* run the Worker on STAGING ONLY so it can mark them
+      // no-store. Staging is the review surface and must never hand Alec new
+      // markup against last-deploy CSS. Production deliberately does NOT list
+      // them: there it keeps the _headers cache policy and pays no Worker
+      // invocation for the stylesheet every page fetches.
+      "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": ["/review", "/review.html", "/photo-picks", "/photo-picks.html", "/admin/*", "/css/*", "/js/*"] },
       "triggers": { "crons": [] }
     }
   }

@@ -31,25 +31,22 @@
 <body style="background:#faf8f4;">
 <div class="rv-wrap">
   <span class="rv-badge">Staging review</span>
-  <h1 class="rv-h1">One tap in, two fields out.</h1>
-  <p class="rv-sub">Your call, applied: almost everyone applies for one role, so the multi-select is gone. A card is now a single tap to its role page, and the role page carries its own form: <strong>your name, your email, one button.</strong> The role rides along in a hidden field. Anything else is behind a shut "optional" toggle. We follow up from the dedicated list, which is what the extra questions were doing badly.</p>
-  <p class="rv-date">Iteration: fewest clicks to apply &middot; updated 2026-09-02</p>
+  <h1 class="rv-h1">Cleaner cards, and a stale-CSS trap closed.</h1>
+  <p class="rv-sub">Two things. The board you saw was <strong>new HTML painted with the previous deploy’s CSS</strong>, which is why the cards looked broken: staging served the stylesheet from cache for up to an hour while the pages stayed fresh. That is now impossible, staging marks CSS and JS <code>no-store</code>. Separately, and fairly, <strong>"Read the role" on all twenty-seven cards was noise</strong>. The whole card is a link, so it is one arrow now.</p>
+  <p class="rv-date">Iteration: card cleanup + staging cache fix &middot; updated 2026-09-02</p>
 
   <ol class="rv-steps">
-    <li><a href="/volunteer"><span><span class="t">The board &mdash; one tap per card</span><span class="d">No more checkboxes and no "add to my list". The whole card is a link now, so on a phone the entire tile is the tap target rather than a title you have to hit. Time cost still on every card. Tap one.</span></span></a></li>
-    <li><a href="/volunteer/grant-writer"><span><span class="t">Grant writer &mdash; scroll to the bottom</span><span class="d">Read as much or as little as you want, then look at the form. Your name, your email, "Apply for this role". That is it. The role is a hidden field so selecting it costs nothing, and the optional note and link sit behind a plus toggle that starts closed.</span></span></a></li>
-    <li><a href="/volunteer/equipment-technician"><span><span class="t">Equipment technician &mdash; press Apply in the sidebar</span><span class="d">The at-a-glance panel's button now jumps down the same page instead of bouncing you to a different one. Nobody leaves the posting to apply to it.</span></span></a></li>
-    <li><a href="/volunteer#signup"><span><span class="t">"Nothing fit" &mdash; the only place free text survives</span><span class="d">The board's own form is now just for the reader who is not on the list. Name, email, and what you would want to do. That is the one case that genuinely needs a text box.</span></span></a></li>
-    <li><a href="/preview/receipt?type=volunteer"><span><span class="t">The follow-up email &mdash; unchanged</span><span class="d">Staging only. Still promises a person reads it and you hear back either way, and still asks for no money. Everything the short form does not collect gets collected here, in a reply from a human.</span></span></a></li>
+    <li><a href="/volunteer"><span><span class="t">The board &mdash; look at the card footers</span><span class="d">Time cost on the left, one orange arrow on the right, nothing else. Every card is a link, so spelling out "read the role" twenty-seven times was competing with the only piece of information that footer should carry. No hard refresh needed any more; staging will not hand you cached CSS again.</span></span></a></li>
+    <li><a href="/volunteer/grant-writer"><span><span class="t">Grant writer &mdash; the two-field form is unchanged</span><span class="d">Scroll to the bottom. Name, email, one button, with the note and link behind a toggle that starts shut. This is the flow from your last note and nothing about it moved.</span></span></a></li>
+    <li><a href="/volunteer#signup"><span><span class="t">"Nothing fit" &mdash; the only free-text form left</span><span class="d">Name, email, what you would want to do. For the reader who is not on the list.</span></span></a></li>
+    <li><a href="/preview/receipt?type=volunteer"><span><span class="t">The follow-up email</span><span class="d">Staging only. Promises a person reads it and you hear back either way, and asks for no money.</span></span></a></li>
   </ol>
 
-  <p class="rv-minor"><strong>Where the applications land:</strong> the dedicated ClickUp <em>Volunteers</em> list, one task per person, named <code>Name &mdash; Role</code> with the role in a filterable field, Stage on New, and a "Last contacted" date that is the follow-up rung. That list already existed; the short form just means fewer empty fields on each task. Both shapes were driven against the live list before this went up.</p>
+  <p class="rv-minor"><strong>What actually broke, because it will explain other odd reviews:</strong> <code>public/_headers</code> gives <code>/css/*</code> a five minute freshness plus a one hour stale-while-revalidate window, while HTML is always revalidated. Ship a markup change and a CSS change together, and there is a window where a browser paints new HTML with the last deploy&rsquo;s stylesheet. Unstyled spans fall back to body size, which is exactly what you saw. The file&rsquo;s own comment predicted it. The fix is that the review surface should never be the thing that gambles: on staging only, the Worker now marks CSS and JS <code>no-store</code>. Production keeps its cache policy untouched and pays no Worker call for the stylesheet.</p>
 
-  <p class="rv-minor"><strong>What I removed rather than kept:</strong> the multi-select, the "roles you picked" chip tray, and the <code>?role=</code> deep link that pre-checked a box on a shared form. All three existed to serve browsing-then-picking, and none of them survives your point that people apply for one thing.</p>
+  <p class="rv-minor"><strong>My mistake, plainly:</strong> I took a mobile screenshot of that board and never opened it. The screenshot loop only works if somebody looks at the picture.</p>
 
-  <p class="rv-minor"><strong>Where I was wrong, for the record:</strong> I argued against a form per page because twenty-seven copies would drift. That does not apply here, because the pages are generated, so there is exactly one copy of the form markup and one submit handler. I carried a rule about hand-written duplication onto a generated page by reflex, and it cost the applicant clicks.</p>
-
-  <p class="rv-minor"><strong>Still owed before this goes out on LinkedIn:</strong> two stray empty fields on the Volunteers list need deleting in the ClickUp UI, and somebody has to own the inbound queue. Every page promises a person answers either way, and that breaks in week one if it is not assigned.</p>
+  <p class="rv-minor"><strong>Still owed before this goes out on LinkedIn:</strong> two stray empty fields on the ClickUp Volunteers list need deleting in the UI, and somebody has to own the inbound queue. Every page promises a person answers either way.</p>
 
   <div class="rv-start"><a class="btn" href="/">Start the walk <span class="arrow">&rarr;</span></a></div>
 </div>

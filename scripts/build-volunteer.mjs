@@ -89,7 +89,7 @@ function card(r) {
   return `      <li><a class="role" href="/volunteer/${r.slug}">
         <span class="role-n">${esc(r.name)}</span>
         <span class="role-d">${esc(r.card)}</span>
-        <span class="role-foot"><span class="role-t">${esc(r.time)}</span><span class="role-go">Read the role <span class="arrow">&rarr;</span></span></span>
+        <span class="role-foot"><span class="role-t">${esc(r.time)}</span><span class="role-go" aria-hidden="true">&rarr;</span></span>
       </a></li>`;
 }
 

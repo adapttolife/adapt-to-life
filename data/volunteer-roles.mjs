@@ -5,12 +5,12 @@
 //
 // HOUSE RULES FOR EVERY WORD BELOW. Each one is a claim a reader could act on.
 //
-//   1. Adapt To Life HAS made its first grants, all to one program: wheelchair
-//      pickleball in Chicago, year round, court included. Nothing here may
-//      imply more than that. No caseload, no waiting list, no track record
-//      across programs or regions. What is true and is still the better story:
-//      Alec paid these costs himself for years and built the org so it stops
-//      depending on one person.
+//   1. Adapt To Life HAS made its first grants. Nothing here may imply a
+//      caseload, a waiting list, or a track record across regions. Do NOT
+//      state a program count anywhere: it moves, and every count this site has
+//      published has later needed correcting. Say what the fund does, not how
+//      many. What is true and is still the better story: Alec paid these costs
+//      himself for years and built the org so it stops depending on one person.
 //   2. No dollar figures. Each number lands once, in the place that proves it.
 //   3. Volunteer, unpaid, no employment relationship. "What you would own", not
 //      responsibilities. "Who you would work with", not reports-to. "Helps if",
@@ -45,7 +45,7 @@
 export const SHARED = {
   // The board carries the terms of joining. Role pages do not repeat them.
   terms: [
-    ["Small, and saying so", "A recognized 501(c)(3) with a board and a published grant rubric. One program funded so far. The work you do now is what makes the next one possible."],
+    ["Small, and saying so", "A recognized 501(c)(3) with a board and a published grant rubric. The fund is live and giving. The work you do now decides how much."],
     ["A scope, not a shift", "Every role has a defined job and a person to work with. If we cannot say what done looks like, we will not ask for your time."],
     ["Async by default", "Almost none of this needs a meeting. Two hours on a Tuesday night is a real contribution."],
     ["You hear back either way", "A person reads every one. If there is no fit now, we say so."],

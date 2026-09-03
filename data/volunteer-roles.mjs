@@ -43,7 +43,7 @@
 export const SHARED = {
   // The board carries the terms of joining. Role pages do not repeat them.
   terms: [
-    ["Small, and saying so", "A recognized 501(c)(3) with a board and a published grant rubric. The fund has not made its first grant yet."],
+    ["Small, and saying so", "A recognized 501(c)(3) with a board and a published grant rubric. The fund has not made its first grant yet. The work you do now is what makes it happen."],
     ["A scope, not a shift", "Every role has a defined job and a person to work with. If we cannot say what done looks like, we will not ask for your time."],
     ["Async by default", "Almost none of this needs a meeting. Two hours on a Tuesday night is a real contribution."],
     ["You hear back either way", "A person reads every one. If there is no fit now, we say so."],

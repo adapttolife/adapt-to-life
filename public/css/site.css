@@ -309,7 +309,7 @@ section{ position:relative; }
 /* ---- closing CTA (dark) -------------------------------------------------- */
 .closing .display{ max-width:18ch; margin-inline:auto; margin-top:1.2rem; }
 .closing .sub{ max-width:44ch; margin:1.5rem auto 2.2rem; }
-.closing .actions{ display:flex; justify-content:center; }
+.closing .actions{ display:flex; justify-content:center; gap:0.9rem 1rem; margin-top:2rem; } /* gap and margin were missing here while .hero .actions had both, so closing    buttons touched each other on every page, and any closing without a    paragraph above them sat flush against the heading. */
 
 /* ---- footer (dark) ------------------------------------------------------- */
 .footer{ color:var(--cream); padding-top:clamp(3.5rem,7vw,5rem); padding-bottom:2.5rem; border-top:3px solid var(--orange);

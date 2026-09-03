@@ -529,6 +529,7 @@ a.info-v{ border-bottom:1.5px solid var(--orange); padding-bottom:1px; }
 .hero-2col{ padding-top:clamp(5rem,11vh,7.5rem); padding-bottom:clamp(3.5rem,7vw,5.5rem); }
 .hero-2col .h2col{ display:grid; grid-template-columns:1fr 0.9fr; gap:clamp(2rem,5vw,4.5rem); align-items:center; }
 .hero-2col .h2col-media .photo-frame{ margin:0; }
+.hero-2col .h2col-cap{ margin:0.95rem 0 0; max-width:38ch; color:var(--cream-mute); font-size:0.95rem; line-height:1.5; }
 @media (max-width:820px){ .hero-2col .h2col{ grid-template-columns:1fr; gap:2.2rem; } .hero-2col .h2col-media{ max-width:520px; } }
 
 /* centered section header (above grids / closing lines) */

@@ -468,29 +468,6 @@ ROLES.push(
   payoff: "One local story reaches families who have never heard the words adaptive sport.",
 },
 {
-  slug: "spanish-translator", lane: "tell", name: "Spanish translator",
-  card: "So the fund and the directory are not English only.",
-  time: "Project by project", where: "Remote",
-  withWhom: "Alec, our founder and executive director",
-  why: "A fund that exists only in English is only available to families who read English, and that is a barrier we put there ourselves. It is also one of the few on this list that can be removed completely.",
-  own: [
-    "Translating what matters most: what the fund is, who can apply, and how.",
-    "Translating the grant application, which is what actually decides who can ask.",
-    "Telling us where a literal translation would be worse than a rewritten one.",
-  ],
-  first: [
-    "Read our fund and application pages and tell us what order to translate them in.",
-    "Translate one.",
-  ],
-  helps: [
-    "You are a native or fully fluent Spanish speaker and a careful writer in both.",
-    "You have translated something with legal or medical weight. An application form has both.",
-  ],
-  skip: "You do not need a certification, or any technical skill. Give us words and we handle pages.",
-  isNot: ["Interpreting at events, which is a different skill. Tell us if you have it too."],
-  payoff: "A family that can read the application is a family that can apply.",
-},
-{
   slug: "accessibility-reviewer", lane: "tell", name: "Accessibility reviewer",
   card: "Test this site with the tools our athletes actually use, then tell us what breaks.",
   time: "A one time project", where: "Remote",

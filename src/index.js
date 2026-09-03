@@ -50,7 +50,6 @@ const VOLUNTEER_ROLES = [
   "Photographer or videographer",
   "Graphic designer",
   "Press and media",
-  "Spanish translator",
   "Accessibility reviewer",
   "Adaptive sports coach",
   "Event crew",

@@ -94,10 +94,7 @@ const CARDS = {
   "hustle-and-heart": { ...MONO, out: "public/images/og/hustle-and-heart-v2-option2.jpg",
     page: "hustle-and-heart.html",
     headline: "Every dollar goes to <em>an athlete</em>.", measure: "14ch" },
-  "ways-to-give": { ...MONO, out: "public/images/og/ways-to-give-v2-option2.jpg",
-    page: "ways-to-give.html",
-    headline: "Every road here ends <em>on a court</em>.", measure: "14ch" },
-  volunteer: { ...MONO, out: "public/images/og/volunteer-v2-option2.jpg",
+    volunteer: { ...MONO, out: "public/images/og/volunteer-v2-option2.jpg",
     page: "volunteer.html",
     headline: "Your place on <em>this team</em>." },
 };

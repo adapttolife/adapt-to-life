@@ -46,8 +46,8 @@ const IS_STAGING = BASE.includes("staging");
 const ROLE_SAMPLE = [ROLES[0], ROLES[ROLES.length - 1]].map((r) => `/volunteer/${r.slug}`);
 const PAGES = [
   "/", "/about", "/adaptive-sports-near-me", "/apply", "/contact", "/donate",
-  "/hustle-and-heart", "/karen", "/popcorn", "/roadmap", "/send-6", "/sponsorship",
-  "/subscribe", "/tim", "/volunteer", "/waiver", "/ways-to-give",
+  "/hustle-and-heart", "/karen", "/popcorn", "/promise", "/roadmap", "/send-6",
+  "/sponsorship", "/subscribe", "/tim", "/volunteer", "/waiver",
   ...ROLE_SAMPLE,
 ];
 

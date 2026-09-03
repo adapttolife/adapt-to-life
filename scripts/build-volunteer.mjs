@@ -155,7 +155,7 @@ ${lanes}
     <div class="wrap reading center">
       <span class="eyebrow orange reveal">Not on the list</span>
       <h2 class="serif h3 reveal" style="margin-top:0.7rem;">We wrote down what we know we need.</h2>
-      <p class="prose reveal" style="margin-top:1rem;">Not the same as everything we need, so tell us below if you have something we did not think to ask for. And if none of it is you, somebody still has to pay for the chair. <a class="textlink" href="/ways-to-give">See the ways to give <span class="arrow">&rarr;</span></a></p>
+      <p class="prose reveal" style="margin-top:1rem;">Not the same as everything we need, so tell us below if you have something we did not think to ask for. And if none of it is you, somebody still has to pay for the chair. <a class="textlink" href="/donate">See the ways to give <span class="arrow">&rarr;</span></a></p>
     </div>
   </section>
 

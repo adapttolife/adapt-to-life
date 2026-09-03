@@ -67,6 +67,13 @@
      a desktop, so these sit just under each. */
   givebutter-giving-form{ display:block; position:relative; z-index:1; min-height:552px; }
   @media (min-width:881px){ givebutter-giving-form{ min-height:508px; } }
+
+  /* Advisor / broker / attorney facts, merged in from /ways-to-give. */
+  .give-facts{ list-style:none; padding:0; margin:clamp(1.6rem,3vw,2.2rem) 0 0; max-width:var(--reading); margin-inline:auto; }
+  .give-fact{ display:flex; flex-wrap:wrap; gap:0.3rem 1.2rem; padding:0.95rem 0; border-bottom:1px solid var(--hairline); }
+  .give-fact:first-child{ border-top:1px solid var(--hairline); }
+  .give-fact-k{ flex:0 0 11rem; font-family:"Space Mono",monospace; font-size:0.7rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); padding-top:0.28rem; }
+  .give-fact-v{ flex:1 1 14rem; color:var(--ink); }
 </style>
 </head>
 <body>
@@ -111,7 +118,6 @@ fill="currentColor" stroke="none">
       <div class="nav-group">
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navJoin">Get Involved<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 3 3-3"/></svg></button>
         <div class="nav-panel" id="navJoin">
-          <a href="/ways-to-give"><span class="np-t">Ways to Give</span><span class="np-d">Every way to back an athlete, from a one-time gift to a bequest</span></a>
           <a href="/volunteer"><span class="np-t">Volunteer</span><span class="np-d">The roles we actually need, and roughly what each one costs you</span></a>
           <a href="/sponsorship"><span class="np-t">Sponsor</span><span class="np-d">Put your business behind athletes, with levels and recognition</span></a>
         </div>
@@ -119,7 +125,8 @@ fill="currentColor" stroke="none">
       <div class="nav-group">
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navAbout">About<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 3 3-3"/></svg></button>
         <div class="nav-panel" id="navAbout">
-          <a href="/about"><span class="np-t">Our Story</span><span class="np-d">The team and the promise</span></a>
+          <a href="/promise"><span class="np-t">The Promise</span><span class="np-d">100% to the community, 0% to admin, and what both of those mean</span></a>
+          <a href="/about"><span class="np-t">Our Story</span><span class="np-d">The people who built this, and why</span></a>
           <a href="/tim"><span class="np-t">Tim's Story</span><span class="np-d">How the fund got its name</span></a>
           <a href="/roadmap"><span class="np-t">Roadmap</span><span class="np-d">What is live, what we are building</span></a>
         </div>
@@ -137,10 +144,10 @@ fill="currentColor" stroke="none">
       <a class="m-sub" href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
       <a class="m-sub" href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
       <span class="m-group">Get Involved</span>
-      <a class="m-sub" href="/ways-to-give">Ways to Give</a>
       <a class="m-sub" href="/volunteer">Volunteer</a>
       <a class="m-sub" href="/sponsorship">Sponsor</a>
       <span class="m-group">About</span>
+      <a class="m-sub" href="/promise">The Promise</a>
       <a class="m-sub" href="/about">Our Story</a>
       <a class="m-sub" href="/tim">Tim&#39;s Story</a>
       <a class="m-sub" href="/roadmap">Roadmap</a>
@@ -198,7 +205,7 @@ fill="currentColor" stroke="none">
         <div class="reveal"><div class="impact-n">$3,500</div><div class="impact-l">Sends one athlete to nationals</div></div>
         <div class="reveal"><div class="impact-n">$500</div><div class="impact-l">Three months of facility access</div></div>
         <div class="reveal"><div class="impact-n">$200</div><div class="impact-l">A set of competition tires</div></div>
-        <div class="reveal"><div class="impact-n">0%</div><div class="impact-l">Goes to admin or overhead</div></div>
+        <div class="reveal"><div class="impact-n">0%</div><div class="impact-l"><a href="/promise" style="color:inherit;text-decoration:none;border-bottom:1px dotted rgba(26,26,26,0.38);">Goes to admin or overhead</a></div></div>
       </div>
     </div>
   </section>
@@ -214,7 +221,7 @@ fill="currentColor" stroke="none">
         <div class="prog reveal">
           <span class="tag">Monthly</span>
           <h3 class="serif h3">Become a sustaining giver</h3>
-          <p>A recurring gift keeps athletes funded all year. Choose Monthly above and give what works for you.</p>
+          <p>A season of coaching is a monthly cost, so monthly money fits it best. Fifteen dollars a month covers a set of racing tires across a year. Choose Monthly above.</p>
         </div>
         <div class="prog reveal">
           <span class="tag">Business</span>
@@ -238,7 +245,26 @@ fill="currentColor" stroke="none">
   </section>
 
   <!-- CLOSING — finish the gift -->
-  <section class="closing dark band-lg">
+    <!-- FOR ADVISORS — merged from /ways-to-give, which redirects here. A donor
+       whose gift comes through a broker, a DAF or a will needs these five
+       facts, and they existed on a page nobody landed on. -->
+  <section class="band-sm tint" id="details">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow reveal">For your advisor, broker, or attorney</span>
+        <h2 class="serif h2 reveal" style="margin-top:0.7rem;">The details they will ask for.</h2>
+      </div>
+      <ul class="give-facts reveal">
+        <li class="give-fact"><span class="give-fact-k">Legal name</span><span class="give-fact-v">Adapt To Life</span></li>
+        <li class="give-fact"><span class="give-fact-k">Status</span><span class="give-fact-v">Recognized 501(c)(3) nonprofit organization. Gifts are tax-deductible to the extent allowed by law.</span></li>
+        <li class="give-fact"><span class="give-fact-k">EIN</span><span class="give-fact-v">41-3213344</span></li>
+        <li class="give-fact"><span class="give-fact-k">Determination letter</span><span class="give-fact-v"><a class="textlink" href="/docs/adapt-to-life-501c3-determination-letter.pdf">Download the IRS letter <span class="arrow">&rarr;</span></a></span></li>
+        <li class="give-fact"><span class="give-fact-k">Who to talk to</span><span class="give-fact-v"><a class="textlink" href="mailto:hello@adapttolife.org">hello@adapttolife.org</a></span></li>
+      </ul>
+    </div>
+  </section>
+
+<section class="closing dark band-lg">
     <div class="wrap center">
       <span class="eyebrow orange reveal">Almost there</span>
       <h2 class="serif display reveal">Finish your gift.</h2>
@@ -306,7 +332,7 @@ fill="currentColor" stroke="none">
       <div class="col">
         <h4>Get involved</h4>
         <a href="/donate">Donate</a>
-        <a href="/ways-to-give">Ways to give</a>
+        <a href="/promise">The Promise</a>
         <a href="/volunteer">Volunteer</a>
         <a href="/sponsorship">Sponsor us</a>
         <a href="/apply">Grant Application</a>

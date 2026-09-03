@@ -22,7 +22,6 @@ const PER_PAGE = {
   "send-6.html": "send-6",
   "popcorn.html": "popcorn",
   "hustle-and-heart.html": "hustle-and-heart",
-  "ways-to-give.html": "ways-to-give",
   "volunteer.html": "volunteer",
 };
 
@@ -35,7 +34,6 @@ const ALT = {
   "send-6": "Send 6 to the US Open Spring 2027. Adapt To Life.",
   popcorn: "Half of every bag puts an athlete in the game. Adapt To Life.",
   "hustle-and-heart": "Every dollar goes to an athlete. The Hustle and Heart Fund, Adapt To Life.",
-  "ways-to-give": "Every road here ends on a court. Adapt To Life.",
   volunteer: "Your place on this team. Adapt To Life.",
 };
 

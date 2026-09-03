@@ -77,6 +77,15 @@ export default {
       return Response.redirect(`${url.origin}/waiver${url.search}`, 302);
     }
 
+    // Pages that merged into another one. 301, because these URLs are in the
+    // wild: /ways-to-give was in the nav, the footer and 21 body links before
+    // /donate absorbed it. A merged page that still answers is worse than one
+    // that redirects, because the two slowly drift apart.
+    const MERGED = { "/ways-to-give": "/donate", "/ways-to-give.html": "/donate" };
+    if (MERGED[url.pathname]) {
+      return Response.redirect(`${url.origin}${MERGED[url.pathname]}${url.search}`, 301);
+    }
+
     // Staging-only review tour: /review walks the latest iteration. Production redirects home.
     // /photo-picks rides the same gate: it is a working surface for choosing
     // which athlete photographs land where, not a page of the site, and it must

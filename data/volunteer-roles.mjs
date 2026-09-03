@@ -5,9 +5,11 @@
 //
 // HOUSE RULES FOR EVERY WORD BELOW. Each one is a claim a reader could act on.
 //
-//   1. Adapt To Life has NOT made its first grant. Nothing here may imply a
-//      caseload or a track record. What is true and is the better story: Alec
-//      paid these costs himself for years and built the org so it stops
+//   1. Adapt To Life HAS made its first grants, all to one program: wheelchair
+//      pickleball in Chicago, year round, court included. Nothing here may
+//      imply more than that. No caseload, no waiting list, no track record
+//      across programs or regions. What is true and is still the better story:
+//      Alec paid these costs himself for years and built the org so it stops
 //      depending on one person.
 //   2. No dollar figures. Each number lands once, in the place that proves it.
 //   3. Volunteer, unpaid, no employment relationship. "What you would own", not
@@ -43,7 +45,7 @@
 export const SHARED = {
   // The board carries the terms of joining. Role pages do not repeat them.
   terms: [
-    ["Small, and saying so", "A recognized 501(c)(3) with a board and a published grant rubric. The fund has not made its first grant yet. The work you do now is what makes it happen."],
+    ["Small, and saying so", "A recognized 501(c)(3) with a board and a published grant rubric. One program funded so far. The work you do now is what makes the next one possible."],
     ["A scope, not a shift", "Every role has a defined job and a person to work with. If we cannot say what done looks like, we will not ask for your time."],
     ["Async by default", "Almost none of this needs a meeting. Two hours on a Tuesday night is a real contribution."],
     ["You hear back either way", "A person reads every one. If there is no fit now, we say so."],
@@ -320,7 +322,7 @@ ROLES.push(
   card: "Score applications against our published rubric.",
   time: "A few hours per cycle", where: "Remote",
   withWhom: "Alec, our founder and executive director",
-  why: "We publish our rubric so the words an applicant reads are the words we score against, but no decision has a second set of eyes on it. Being straight with you: we have not made our first grant, so the first cycle you sit on may be the first there has ever been.",
+  why: "We publish our rubric so the words an applicant reads are the words we score against, but no decision has a second set of eyes on it. Being straight with you: we are early, so the cycle you sit on will be one of our first.",
   own: [
     "Scoring against the rubric: need, use, cost reasonableness, mission fit.",
     "Writing down why in a sentence, so a decision can be explained later.",

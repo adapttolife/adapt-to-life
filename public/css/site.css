@@ -491,7 +491,7 @@ a.info-v{ border-bottom:1.5px solid var(--orange); padding-bottom:1px; }
 .apply-steps strong{ color:var(--ink); }
 
 /* ---- image treatments (About hero A/B + founder portrait) -------------- */
-@keyframes kenburns{ from{ transform:scale(1.0); } to{ transform:scale(1.1); } }
+@keyframes kenburns{ from{ transform:scale(1.0); } to{ transform:scale(1.05); } }
 
 /* V1 cinematic full-bleed */
 .hero-cine{ position:relative; overflow:hidden; }
@@ -545,7 +545,7 @@ a.info-v{ border-bottom:1.5px solid var(--orange); padding-bottom:1px; }
 @media (max-width:720px){ .paths{ grid-template-columns:1fr; } }
 
 /* mid-page cinematic photo band (constant in both hero options) */
-.photoband{ position:relative; height:clamp(360px,58vh,600px); overflow:hidden; }
+.photoband{ position:relative; height:clamp(360px,40vw,740px); overflow:hidden; }
 .photoband-img{ position:absolute; inset:0; background:url('/images/coaching.webp') center/cover no-repeat; transform-origin:55% 45%; animation:kenburns 30s ease-in-out infinite alternate; }
 .photoband::after{ content:""; position:absolute; inset:0; background:linear-gradient(to top, rgba(22,20,15,0.72) 0%, rgba(22,20,15,0) 40%); }
 .photoband-cap{ position:absolute; left:0; right:0; bottom:clamp(1.2rem,3vw,2rem); z-index:2; }

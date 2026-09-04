@@ -7,6 +7,7 @@ import { handleWaiver, handleWaiverDownload, handleWaiverVerify, handleWaiverDoc
 import { sendContactReceipt, sendApplyReceipt, sendVolunteerReceipt } from "./receipts.js";
 import { createApplication, createContact, createVolunteer } from "./clickup.js";
 import { handleEmail, handleAgentMailApi } from "./agent_mail.js";
+import { handleShopContact, runShopCrmBacklog } from "./shop_contact.js";
 import { handleQr } from "./qr.js";
 import { handleAdmin } from "./qr_admin.js";
 import { syncGifts } from "./qr_gifts.js";
@@ -140,6 +141,14 @@ export default {
       return handleApply(request, env, ctx);
     }
 
+    // The Adapt Body Shop storefront is a separate Worker with no database and
+    // no mail binding. Its /contact action posts here, server-to-server, gated
+    // by a shared secret AND Turnstile. See src/shop_contact.js.
+    if (url.pathname === "/api/shop-contact") {
+      if (request.method !== "POST") return json({ ok: false, error: "Method not allowed" }, 405);
+      return handleShopContact(request, env, ctx);
+    }
+
     if (url.pathname === "/api/volunteer") {
       if (request.method !== "POST") return json({ ok: false, error: "Method not allowed." }, 405);
       return handleVolunteer(request, env, ctx);
@@ -253,6 +262,7 @@ export default {
   // never double-count a donation.
   async scheduled(event, env, ctx) {
     ctx.waitUntil(runDriveBacklog(env));
+    ctx.waitUntil(runShopCrmBacklog(env).catch((err) => console.error("shop CRM sync crashed:", err)));
     ctx.waitUntil(
       syncGifts(env).then((r) => {
         if (!r.ok) console.error("qr gift sync failed:", r.error);

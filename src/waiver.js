@@ -6,6 +6,7 @@
 
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import { cfSend, houseShell, recordTransactionalFailure } from "./email.js";
+import { getGoogleAccessToken } from "./google.js";
 
 // ---------------------------------------------------------------------------
 // Document model — SINGLE SOURCE OF TRUTH for both the on-screen text and the
@@ -392,24 +393,6 @@ export async function runDriveBacklog(env) {
   }
 }
 
-async function getGoogleAccessToken(env) {
-  const sa = JSON.parse(env.GOOGLE_SA_JSON);
-  const now = Math.floor(Date.now() / 1000);
-  const enc = (o) => b64url(new TextEncoder().encode(JSON.stringify(o)));
-  const head = enc({ alg: "RS256", typ: "JWT" });
-  const claim = enc({ iss: sa.client_email, scope: "https://www.googleapis.com/auth/drive", aud: sa.token_uri, iat: now, exp: now + 3600 });
-  const key = await crypto.subtle.importKey("pkcs8", pemToDer(sa.private_key), { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["sign"]);
-  const sig = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", key, new TextEncoder().encode(`${head}.${claim}`));
-  const jwt = `${head}.${claim}.${b64url(new Uint8Array(sig))}`;
-  const res = await fetch(sa.token_uri, {
-    method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer", assertion: jwt }),
-  });
-  const data = await res.json();
-  if (!data.access_token) throw new Error("no access_token: " + JSON.stringify(data));
-  return data.access_token;
-}
-
 async function driveUpload(token, driveId, filename, bytes) {
   const boundary = "atlbnd" + Math.random().toString(36).slice(2);
   const meta = JSON.stringify({ name: filename, parents: [driveId] });
@@ -421,18 +404,6 @@ async function driveUpload(token, driveId, filename, bytes) {
   });
   if (!res.ok) throw new Error("drive upload " + res.status + " " + await res.text().catch(() => ""));
   return await res.json();
-}
-
-
-function b64url(bytes) {
-  let s = ""; for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
-  return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-}
-function pemToDer(pem) {
-  const b64 = pem.replace(/-----BEGIN [^-]+-----/, "").replace(/-----END [^-]+-----/, "").replace(/\s+/g, "");
-  const bin = atob(b64); const der = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) der[i] = bin.charCodeAt(i);
-  return der.buffer;
 }
 
 // --- helpers ---

@@ -118,3 +118,41 @@ export async function recordTransactionalFailure(env, route, toAddr, err) {
     console.error("send_failures insert failed:", e);
   }
 }
+
+// ---------------------------------------------------------------------------
+// The Adapt Body Shop shell.
+//
+// Same file as the house shell on purpose: there is ONE place transactional
+// mail gets its chrome, and adding a second brand must mean adding a function
+// here, never a hand-built <div> in a handler. That rule is what stopped the
+// three ATL receipts drifting into three organisations, and the shop is exactly
+// the kind of adjacent surface that would restart the drift.
+//
+// It is a different brand and the same organisation, so it inherits the plain,
+// client-proof structure and changes only what a customer needs to see: the
+// shop's name at the top, and the 501(c)(3) line at the bottom, because "your
+// shirt money went somewhere" is the single most valuable thing this footer can
+// say and it is true.
+export const SHOP_NAME = "Adapt Body Shop";
+export const SHOP_INBOX = "hello@adaptbodyshop.com";
+// FROM stays on the onboarded apex (Alec, 2026-09-04). adaptbodyshop.com is a
+// Google Workspace alias domain but is NOT onboarded to Cloudflare Email
+// Sending, so a From: on it would leave here unsigned. Reply-To carries the
+// shop address, which is where the customer's answer should land. To flip the
+// From later: onboard the zone (cf-bounce MX + SPF + DKIM, the exact three
+// records adapttolife.org already has) and change this one line.
+export const SHOP_FROM = `Adapt Body Shop <${HOUSE_INBOX}>`;
+
+export function shopShell(bodyHtml) {
+  return (
+    `<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;` +
+    `font-size:16px;line-height:1.6;color:#1a1a1a;max-width:560px">` +
+    `<p style="margin:0 0 22px;font-family:'Space Mono',ui-monospace,Menlo,monospace;` +
+    `font-size:12px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:#c63f22">` +
+    `Adapt Body Shop</p>` +
+    bodyHtml +
+    `<p style="margin-top:28px;color:#6e6b62;font-size:14px">Adapt Body Shop<br>` +
+    `The merch surface for Adapt To Life &middot; 501(c)(3) nonprofit &middot; EIN 41-3213344</p>` +
+    `</div>`
+  );
+}

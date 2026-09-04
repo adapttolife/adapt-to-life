@@ -67,7 +67,20 @@
     "CLICKUP_RELATIONSHIPS_LIST_ID": "901418931939",
     // Google Shared Drive ("Adapt To Life") for the signed-release archive.
     // The service account JSON is a secret: cfrun wrangler secret put GOOGLE_SA_JSON
+    // That SAME credential also mirrors Adapt Body Shop contact-form messages
+    // into the "Adapt To Life CRM" sheet ("Shop Messages" tab). That sheet is in
+    // Alec's PERSONAL Drive and the service account reaches it only because the
+    // file is shared with it as an editor — Shared Drive membership buys nothing
+    // there. See src/google.js.
     "WAIVERS_DRIVE_ID": "0AIG-pWrds0g7Uk9PVA",
+    // POST /api/shop-contact is the Adapt Body Shop storefront's contact form
+    // (a separate Worker with no database and no mail binding). The shared
+    // secret both Workers hold is SHOP_CONTACT_KEY, a secret and never a var:
+    //   cfrun wrangler secret put SHOP_CONTACT_KEY
+    // It is stored in 1Password as "Adapt Body Shop contact key" (Engineering).
+    // Without it this Worker refuses every shop-contact request with a 503,
+    // which is the correct failure: an unset key must close the door, not open
+    // it. See src/shop_contact.js.
     // Spec 32 agent email. AGENT_MAIL_TOKEN (MCP bearer) is a secret. Outbound mail uses
     // the SEND_EMAIL binding below (Cloudflare Email Sending) — no API key.
     "AGENT_MAIL_DOMAIN": "agents.adapttolife.org",

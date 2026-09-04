@@ -15,13 +15,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { crmRow, archiveFilename, colLetter } from "../src/waiver_crm.js";
+import { crmRow, archiveFilename, CRM_HEADERS } from "../src/waiver_crm.js";
+import { colLetter, text, hyperlink, BOOKS } from "../src/sheets.js";
 
-const HEADERS = [
-  "Signed", "Participant", "Signed by", "Relationship", "Email", "Phone",
-  "Program or event", "Source", "Signer type", "Release version",
-  "Signed waiver", "Document ID", "Verify", "Filed",
-];
+const HEADERS = CRM_HEADERS;
 const at = (row, col) => row[HEADERS.indexOf(col)];
 
 const ADULT = {
@@ -140,4 +137,31 @@ test("every field the form collects is a field the Worker reads", () => {
     if (key === "agree" || key === "cf_token" || key === "org") continue;   // read by other names
     assert.match(worker, new RegExp(`data\\.${key}\\b`), `the Worker drops ${key} on the floor`);
   }
+});
+
+// --- the shared sheet contract -------------------------------------------
+// These pin the paved road, not the waiver: the next form to reach the CRM
+// reuses exactly this, and these are the properties it inherits for free.
+
+test("a book must be declared before the Worker can write to it", () => {
+  assert.equal(BOOKS.atlCrm, "1ahXuu11mV3bJVtyqXrhVz4lFCSSWpl7jX52SqlcJFLE");
+  const src = readFileSync(new URL("../src/sheets.js", import.meta.url), "utf8");
+  // Every id the Worker writes to comes from BOOKS. A spreadsheet id pasted
+  // into a handler is the start of the sprawl this file exists to prevent.
+  const ids = [...src.matchAll(/"1[A-Za-z0-9_-]{20,}"/g)].map((m) => m[0]);
+  assert.equal(ids.length, 1, "sheets.js should carry exactly the declared books");
+});
+
+test("text() neutralises formulas anywhere a form feeds a cell", () => {
+  for (const bad of ["=1+1", "+A1", "-2", "@import"]) {
+    assert.ok(text(bad).startsWith("'"), `${bad} must be neutralised`);
+  }
+  assert.equal(text("dana@example.org"), "dana@example.org", "an @ inside the value is not a leading @");
+  assert.equal(text(null), "");
+});
+
+test("hyperlink() is empty rather than a broken formula when there is no url", () => {
+  assert.equal(hyperlink("", "Open"), "");
+  assert.equal(hyperlink(null, "Open"), "");
+  assert.equal(hyperlink("https://x.test/a", "Open"), '=HYPERLINK("https://x.test/a","Open")');
 });

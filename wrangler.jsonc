@@ -70,11 +70,11 @@
     // first use) and writes a row into the CRM below, linking to it.
     // The service account JSON is a secret: cfrun wrangler secret put GOOGLE_SA_JSON
     "WAIVERS_DRIVE_ID": "0AIG-pWrds0g7Uk9PVA",
-    // "Adapt To Life CRM" spreadsheet (My Drive > Work > Adapt To Life > CRM).
-    // It is NOT in the Shared Drive, so it must be shared with the service
-    // account as an Editor for the Waivers tab to fill. Unset this var and the
-    // Drive archive still runs on its own.
-    "ATL_CRM_SHEET_ID": "1ahXuu11mV3bJVtyqXrhVz4lFCSSWpl7jX52SqlcJFLE",
+    // Spreadsheets this Worker may write to live in src/sheets.js BOOKS, not
+    // here — a book has to be declared in code to be writable at all, and the
+    // real control is the per-file Editor grant to the service account. This
+    // var only exists to point a review deploy at a scratch copy:
+    //   "SHEET_BOOKS": "{\"atlCrm\":\"<some test sheet id>\"}"
     // Spec 32 agent email. AGENT_MAIL_TOKEN (MCP bearer) is a secret. Outbound mail uses
     // the SEND_EMAIL binding below (Cloudflare Email Sending) — no API key.
     "AGENT_MAIL_DOMAIN": "agents.adapttolife.org",

@@ -345,7 +345,15 @@ const BUDGET = {
   //
   // A ceiling that flaps between 0.002 and 0.108 would teach us to ignore red,
   // so this stays null until that race is named. Tracked, not forgotten.
-  "/donate": { own: 115, total: 9000, reqs: 108, hosts: 21, cls: null },
+  // Raised 115 -> 120 on 2026-09-04, and here is the reason in writing, per
+  // the ratchet rule above. /ways-to-give was merged into /donate and its
+  // page deleted: the advisor block (legal name, status, EIN, determination
+  // letter, contact) now lives here because a donor giving through a broker
+  // or a will needs those five facts on the page they are already on. That is
+  // ~4KB of markup and CSS on this page against one fewer page on the site,
+  // so total weight went DOWN and this one number went up. 120 is measured
+  // prod own (119KB) plus ~1% for CF script variance, nothing more.
+  "/donate": { own: 120, total: 9000, reqs: 108, hosts: 21, cls: null },
 };
 
 for (const [path, cap] of Object.entries(BUDGET)) {

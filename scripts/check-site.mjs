@@ -370,8 +370,8 @@ for (const path of ["/donate", "/hustle-and-heart"]) {
 // Re-baselined 2026-08-29 for the photography pass. This is a RAISE, and a
 // ratchet that goes up needs its reason in writing or it is just a rubber
 // stamp. The homepage used to carry one 60KB photoband image; it now carries a
-// photographed hero (wheelie-4, 39KB) plus the mid-page band (wheelie-47,
-// 115KB). Measured, not estimated: prod own was 168KB before, the image swap is
+// photographed hero (wheelie-4, 39KB) plus the mid-page band (wheelie-167,
+// 110KB; was wheelie-47 at 115KB until the 2026-09-04 swap). Measured, not estimated: prod own was 168KB before, the image swap is
 // -60KB +154KB = +94KB, so prod lands at ~262KB. 270 gives ~3% for encoder and
 // CF-script variance and nothing more.
 //

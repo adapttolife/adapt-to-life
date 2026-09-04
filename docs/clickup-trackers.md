@@ -111,7 +111,9 @@ It is the field that protects the promise. All three receipt emails tell the sen
 
 ## What is deliberately not in ClickUp
 
-**Signed waivers.** The compliance record is D1 (`atl-waivers`, the index) + R2 (`atl-waivers`, the PDFs) + the Google Shared Drive archive filed by the 10-minute cron. Three copies, one of them browsable by a human. A signed release is a record to retrieve, not a task to work.
+**Signed waivers.** The compliance record is D1 (`atl-waivers`, the index) + R2 (`atl-waivers`, the PDFs) + the Google Shared Drive archive filed by the 10-minute cron. Three copies, one of them browsable by a human. A signed release is a record to retrieve, not a task to work — so it is a row in the **Adapt To Life CRM**, not a ClickUp task.
+
+The same cron files each PDF into `Adapt To Life` (Shared Drive) → **Signed Waivers** under a readable name, then appends a row to the CRM spreadsheet's **Waivers** tab: who signed, for whom, contact details, program, source site, release version, and a link to the PDF. The CRM stores the *link*, never a copy. `src/waiver_crm.js`; `ATL_CRM_SHEET_ID` in `wrangler.jsonc`. The CRM lives in Alec's Drive rather than the Shared Drive, so it must be shared with the `GOOGLE_SA_JSON` service account as an **Editor**; without that the Drive half still runs and the CRM half retries every ten minutes, recording why in the row's `crm_error`.
 
 **Agent mail.** D1 (`agent-mail`) is the record, read through the API and the reports viewer. One thread per task would bury the lists it shares a space with.
 

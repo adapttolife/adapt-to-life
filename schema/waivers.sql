@@ -8,6 +8,7 @@ CREATE TABLE waivers (
   waiver_version  TEXT NOT NULL,           -- document version at signing time
   signer_name     TEXT NOT NULL,           -- adult participant, or guardian's name
   signer_email    TEXT NOT NULL,
+  signer_phone    TEXT,                    -- optional, captured at signing for the CRM
   signed_at       TEXT NOT NULL,           -- ISO timestamp
   signature_type  TEXT,                    -- 'drawn' | 'typed'
   signer_kind     TEXT,                    -- 'adult' | 'guardian'
@@ -23,6 +24,11 @@ CREATE TABLE waivers (
   doc_sha256      TEXT,                    -- hash of the exact text agreed to
   pdf_sha256      TEXT,                    -- hash of the stored PDF (tamper-evidence)
   r2_key          TEXT NOT NULL,
+  drive_file_id   TEXT,                    -- archived copy in the "Signed Waivers" Drive folder
+  drive_link      TEXT,
+  drive_filed_at  TEXT,                    -- set once it is IN the folder under a readable name
+  crm_synced_at   TEXT,                    -- set once the CRM's Waivers tab has the row
+  crm_error       TEXT,                    -- last archive failure, so a stuck row explains itself
   created_at      TEXT NOT NULL DEFAULT (datetime('now'))
 );
 CREATE INDEX idx_waivers_email ON waivers(signer_email);

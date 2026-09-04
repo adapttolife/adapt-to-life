@@ -13,7 +13,7 @@ import { cfSend, houseShell, recordTransactionalFailure } from "./email.js";
 // the same object). Editing the wording here changes both, and bumping VERSION
 // records exactly which text each signer agreed to (also changes doc_sha256).
 // ---------------------------------------------------------------------------
-const VERSION = "media-release-2026-06-27-v3";
+const VERSION = "media-release-2026-09-04-v4";
 
 // ONE universal release for the whole organization. Adapt To Life NFP is the legal
 // entity; Adaptive Sports Near Me and everything else sit underneath it, so a single
@@ -25,22 +25,26 @@ const VERSION = "media-release-2026-06-27-v3";
 // review before production. Bumping VERSION re-stamps every PDF and changes doc_sha256.
 const DOC = {
   org: "Adapt To Life NFP",
-  domains: "adapttolife.org  ·  adaptivesportsnearme.com",
+  domains: "adapttolife.org  ·  adaptivesportsnearme.com  ·  adaptbodyshop.com",
   title: "Photo, Video, and Media Release",
   version: VERSION,
   intro:
     "By signing below, you give Adapt To Life NFP permission to take and use photos, video, and recordings of you (or your child) from our programs and activities. Please read it. It explains how the materials may be used, your consent to sign electronically, and how to withdraw permission.",
   sections: [
     { h: "Who this is with", p: [
-      "Adapt To Life NFP is an Illinois not-for-profit corporation, tax-exempt under Section 501(c)(3) of the Internal Revenue Code (EIN 41-3213344). This release covers Adapt To Life NFP and all of its programs, projects, and initiatives, including Adaptive Sports Near Me (adaptivesportsnearme.com), now and in the future, along with its successors, assigns, and anyone it authorizes such as staff, volunteers, contractors, partners, and sponsors.",
+      "Adapt To Life NFP is an Illinois not-for-profit corporation, tax-exempt under Section 501(c)(3) of the Internal Revenue Code (EIN 41-3213344). This release covers Adapt To Life NFP and every program, project, initiative, brand, website, publication, event, and activity it operates or supports, now and in the future, along with its successors, assigns, and anyone it authorizes such as staff, volunteers, contractors, partners, sponsors, and vendors.",
+      "Its current initiatives include Adapt To Life (adapttolife.org), Adaptive Sports Near Me (adaptivesportsnearme.com), and Adapt Body Shop (adaptbodyshop.com). Initiatives Adapt To Life NFP starts or takes on later are covered on the same terms, without a new signature.",
       "In this release, \"Materials\" means photographs, video, film, and audio recordings of the participant, together with the participant's name, image, likeness, and voice.",
     ]},
     { h: "Permission to record and use", p: [
-      "In consideration of the opportunity to take part in Adapt To Life NFP's programs and to support its charitable mission, I irrevocably grant Adapt To Life NFP and those it authorizes the right to photograph, film, and record the participant, and to use, edit, reproduce, publish, distribute, and display the Materials for any lawful purpose connected to its mission. This includes its websites, social media, print, email, fundraising, and promotional and educational materials, in any media now known or later developed, worldwide, and for as long as Adapt To Life NFP finds them useful.",
+      "In consideration of the opportunity to take part in Adapt To Life NFP's programs and to support its charitable mission, I irrevocably grant Adapt To Life NFP and those it authorizes the right to photograph, film, and record the participant, and to use, edit, reproduce, publish, distribute, and display the Materials for any lawful purpose connected to its mission. This includes every website it operates, social media, print, email, fundraising and donor communications, grant applications and reports, signage, displays, advertising, apparel, products, packaging and other merchandise, and promotional and educational materials, in any media now known or later developed, worldwide, and for as long as Adapt To Life NFP finds them useful.",
       "This is my written consent under any applicable right of publicity and privacy laws. Adapt To Life NFP is not required to use the Materials.",
     ]},
     { h: "Ownership and no payment", p: [
       "All Materials are owned by Adapt To Life NFP. I have no right to inspect or approve how they are used, and I will not be paid for this release or for any use of the Materials.",
+    ]},
+    { h: "Initiatives that sell goods or services", p: [
+      "Some of Adapt To Life NFP's initiatives, such as Adapt Body Shop, sell goods or services, and what they earn supports its charitable mission. I agree the Materials may be used for those initiatives too, including on and to promote products and merchandise, and I understand that I will not be paid for this and receive no share of any proceeds.",
     ]},
     { h: "Images from adaptive sports programs", p: [
       "I understand the Materials may identify the participant as a person with a disability or as someone who takes part in adaptive sports programs, and I consent to their use on that basis.",
@@ -94,7 +98,8 @@ export async function handleWaiver(request, env) {
 
   if (str(data.company)) return json({ ok: true }); // honeypot
 
-  if (!(await verifyTurnstile(env, str(data.cf_token), request.headers.get("CF-Connecting-IP")))) {
+  const botCheck = await verifyTurnstile(env, str(data.cf_token), request.headers.get("CF-Connecting-IP"));
+  if (!botCheck) {
     return json({ ok: false, error: "Verification failed. Please reload the page and try again." }, 403);
   }
 
@@ -104,6 +109,7 @@ export async function handleWaiver(request, env) {
   const name = str(data.name);              // adult participant, or guardian's name
   const email = str(data.em);
   const minorName = str(data.minor_name);
+  const phone = str(data.phone, 40);
   const relationship = str(data.relationship);
   const program = str(data.program, 200);
   const signatureDataUrl = str(data.signature, 2_000_000);
@@ -127,7 +133,7 @@ export async function handleWaiver(request, env) {
 
   let pdfBytes;
   try {
-    pdfBytes = await buildPdf({ doc, isMinor, name, email, minorName, relationship, program, signedAt, id, ip, ua, geo, signatureDataUrl, signatureType, docSha });
+    pdfBytes = await buildPdf({ doc, isMinor, name, email, phone, botCheck, minorName, relationship, program, signedAt, id, ip, ua, geo, signatureDataUrl, signatureType, docSha });
   } catch (err) {
     console.error("waiver pdf build failed:", err);
     return json({ ok: false, error: "Could not generate your document. Please try again." }, 500);
@@ -145,9 +151,9 @@ export async function handleWaiver(request, env) {
   try {
     await env.WAIVERS_DB.prepare(
       `INSERT INTO waivers
-       (id, org, waiver_version, signer_name, signer_email, signed_at, signature_type, signer_kind, minor_name, relationship, program, consent, ip, user_agent, country, region, city, doc_sha256, pdf_sha256, r2_key)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
-    ).bind(id, org, doc.version, name, email, signedAt, signatureType, isMinor ? "guardian" : "adult", minorName, relationship, program, 1, ip, ua, geo.country, geo.region, geo.city, docSha, pdfSha, r2Key).run();
+       (id, org, waiver_version, signer_name, signer_email, signer_phone, signed_at, signature_type, signer_kind, minor_name, relationship, program, consent, ip, user_agent, country, region, city, doc_sha256, pdf_sha256, r2_key)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+    ).bind(id, org, doc.version, name, email, phone, signedAt, signatureType, isMinor ? "guardian" : "adult", minorName, relationship, program, 1, ip, ua, geo.country, geo.region, geo.city, docSha, pdfSha, r2Key).run();
   } catch (err) {
     console.error("waiver D1 insert failed:", err);
   }
@@ -232,7 +238,10 @@ async function buildPdf(d) {
   para(d.doc.intro, { size: 10, color: rgb(0.25, 0.25, 0.28), gap: 12 });
 
   for (const sec of d.doc.sections) {
-    need(26);
+    // Keep a heading with the start of its own paragraph. 26pt only guaranteed
+    // room for the heading itself, which stranded "Images from adaptive sports
+    // programs" alone at the foot of page 1.
+    need(52);
     para(sec.h, { size: 12, f: bold, gap: 5 });
     for (const p of (sec.p || [])) para(p, { size: 10, gap: 6 });
     for (const li of (sec.ul || [])) {
@@ -245,8 +254,14 @@ async function buildPdf(d) {
     cur.y -= 4;
   }
 
-  // Signature block (kept together)
-  need(170);
+  // Signature block — kept together on ONE page. This has to be measured, not
+  // guessed: `need` is evaluated per line inside para(), so an under-estimate
+  // does not shrink the block, it splits it, and a release whose signature sits
+  // on a different page from the signer's name is a worse document. The 132 is
+  // the fixed furniture (rule, heading, signature image, ruled line); the rest
+  // is one line per detail actually being printed.
+  const detailLines = 4 + (d.phone ? 1 : 0) + (d.program ? 1 : 0);
+  need(150 + detailLines * 18);
   cur.y -= 6;
   cur.page.drawLine({ start: { x: M, y: cur.y }, end: { x: 612 - M, y: cur.y }, thickness: 1.5, color: orange }); cur.y -= 18;
   para("Signature", { size: 12, f: bold, gap: 8 });
@@ -266,6 +281,7 @@ async function buildPdf(d) {
     para(`Signed by: ${d.name}`, { size: 10.5, gap: 2 });
   }
   para(`Email: ${d.email}`, { size: 10.5, gap: 2 });
+  if (d.phone) para(`Phone: ${d.phone}`, { size: 10.5, gap: 2 });
   if (d.program) para(`Program or event: ${d.program}`, { size: 10.5, gap: 2 });
   para(`Date: ${new Date(d.signedAt).toUTCString()}`, { size: 10.5, gap: 0 });
 
@@ -283,12 +299,16 @@ async function buildPdf(d) {
   row("Document ID", d.id);
   row("Release version", d.doc.version);
   row("Signer", `${d.name} <${d.email}>`);
+  if (d.phone) row("Phone", d.phone);
   if (d.isMinor) { row("On behalf of (minor)", d.minorName); row("Relationship", d.relationship); }
   if (d.program) row("Program or event", d.program);
   row("Signature method", d.signatureType === "typed" ? "Typed" : "Hand-drawn");
   row("Signed at (UTC)", d.signedAt);
   row("Consent", "Affirmatively agreed; consented to electronic records and signature");
-  row("Bot check", "Cloudflare Turnstile passed");
+  // The certificate states what actually happened. Turnstile fails OPEN when no
+  // secret is configured (so a local run is possible at all), and a certificate
+  // that claims a check which never ran is worse than one that admits it.
+  row("Bot check", d.botCheck === "passed" ? "Cloudflare Turnstile passed" : "Turnstile not configured on this deployment");
   row("IP address", d.ip || "n/a");
   row("Location", [d.geo.city, d.geo.region, d.geo.country].filter(Boolean).join(", ") || "n/a");
   row("Device", d.ua || "n/a");
@@ -357,84 +377,6 @@ function bytesToB64(bytes) {
   return btoa(s);
 }
 
-// ---------------------------------------------------------------------------
-// Google Drive archive (compliance backlog). Runs on a cron: any signed release
-// not yet in Drive gets uploaded to the Shared Drive, and its Drive File ID +
-// link are written back to D1. Off the signing hot path, so
-// a Drive hiccup never blocks a signer. Files land in a Shared Drive (owned by the
-// drive, not the service account), which is why uploads succeed.
-// ---------------------------------------------------------------------------
-export async function runDriveBacklog(env) {
-  if (!env.GOOGLE_SA_JSON || !env.WAIVERS_DRIVE_ID) { console.error("Drive backlog not configured"); return; }
-  let rows;
-  try {
-    rows = (await env.WAIVERS_DB.prepare(
-      "SELECT id, org, r2_key FROM waivers WHERE drive_file_id IS NULL OR drive_file_id = '' ORDER BY created_at ASC LIMIT 10"
-    ).all()).results || [];
-  } catch (err) { console.error("Drive backlog D1 query failed:", err); return; }
-  if (!rows.length) return;
-
-  let token;
-  try { token = await getGoogleAccessToken(env); }
-  catch (err) { console.error("Drive backlog token mint failed:", err); return; }
-
-  for (const row of rows) {
-    try {
-      const obj = await env.WAIVERS_BUCKET.get(row.r2_key);
-      if (!obj) { console.error("Drive backlog: R2 object missing", row.r2_key); continue; }
-      const bytes = new Uint8Array(await obj.arrayBuffer());
-      const file = await driveUpload(token, env.WAIVERS_DRIVE_ID, `release-${row.id}.pdf`, bytes);
-      const link = file.webViewLink || `https://drive.google.com/file/d/${file.id}/view`;
-      await env.WAIVERS_DB.prepare("UPDATE waivers SET drive_file_id = ?, drive_link = ? WHERE id = ?").bind(file.id, link, row.id).run();
-    } catch (err) {
-      console.error("Drive backlog: failed for", row.id, err);
-    }
-  }
-}
-
-async function getGoogleAccessToken(env) {
-  const sa = JSON.parse(env.GOOGLE_SA_JSON);
-  const now = Math.floor(Date.now() / 1000);
-  const enc = (o) => b64url(new TextEncoder().encode(JSON.stringify(o)));
-  const head = enc({ alg: "RS256", typ: "JWT" });
-  const claim = enc({ iss: sa.client_email, scope: "https://www.googleapis.com/auth/drive", aud: sa.token_uri, iat: now, exp: now + 3600 });
-  const key = await crypto.subtle.importKey("pkcs8", pemToDer(sa.private_key), { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["sign"]);
-  const sig = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", key, new TextEncoder().encode(`${head}.${claim}`));
-  const jwt = `${head}.${claim}.${b64url(new Uint8Array(sig))}`;
-  const res = await fetch(sa.token_uri, {
-    method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer", assertion: jwt }),
-  });
-  const data = await res.json();
-  if (!data.access_token) throw new Error("no access_token: " + JSON.stringify(data));
-  return data.access_token;
-}
-
-async function driveUpload(token, driveId, filename, bytes) {
-  const boundary = "atlbnd" + Math.random().toString(36).slice(2);
-  const meta = JSON.stringify({ name: filename, parents: [driveId] });
-  const head = `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${meta}\r\n--${boundary}\r\nContent-Type: application/pdf\r\n\r\n`;
-  const tail = `\r\n--${boundary}--`;
-  const body = new Uint8Array([...new TextEncoder().encode(head), ...bytes, ...new TextEncoder().encode(tail)]);
-  const res = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true&fields=id,webViewLink", {
-    method: "POST", headers: { Authorization: `Bearer ${token}`, "Content-Type": `multipart/related; boundary=${boundary}` }, body,
-  });
-  if (!res.ok) throw new Error("drive upload " + res.status + " " + await res.text().catch(() => ""));
-  return await res.json();
-}
-
-
-function b64url(bytes) {
-  let s = ""; for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
-  return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-}
-function pemToDer(pem) {
-  const b64 = pem.replace(/-----BEGIN [^-]+-----/, "").replace(/-----END [^-]+-----/, "").replace(/\s+/g, "");
-  const bin = atob(b64); const der = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) der[i] = bin.charCodeAt(i);
-  return der.buffer;
-}
-
 // --- helpers ---
 function wrap(text, font, size, maxWidth) {
   const words = String(text).split(/\s+/); const lines = []; let line = "";
@@ -454,15 +396,18 @@ async function sha256Hex(bytes) {
   return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 function isUuid(s) { return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s); }
+// Returns "passed" when Turnstile actually verified the token, "unconfigured"
+// when there is no secret to verify against (local dev), and false when the
+// check ran and failed. The signature certificate prints the difference.
 async function verifyTurnstile(env, token, ip) {
-  if (!env.TURNSTILE_SECRET_KEY) return true;
+  if (!env.TURNSTILE_SECRET_KEY) return "unconfigured";
   if (!token) return false;
   try {
     const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ secret: env.TURNSTILE_SECRET_KEY, response: token, remoteip: ip || undefined }),
     });
-    return !!(await res.json()).success;
+    return (await res.json()).success ? "passed" : false;
   } catch (err) { console.error("turnstile verify failed:", err); return false; }
 }
 function str(v, max = 5000) { return (typeof v === "string" ? v : "").trim().slice(0, max); }

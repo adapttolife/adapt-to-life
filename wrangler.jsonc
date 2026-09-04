@@ -65,9 +65,16 @@
     // Human action layer for donors, vendors, organizations, partners,
     // sponsorships, and grants ATL is pursuing. D1 remains source of truth.
     "CLICKUP_RELATIONSHIPS_LIST_ID": "901418931939",
-    // Google Shared Drive ("Adapt To Life") for the signed-release archive.
+    // Google Shared Drive ("Adapt To Life") for the signed-release archive. The
+    // cron files each signed PDF into its "Signed Waivers" folder (created on
+    // first use) and writes a row into the CRM below, linking to it.
     // The service account JSON is a secret: cfrun wrangler secret put GOOGLE_SA_JSON
     "WAIVERS_DRIVE_ID": "0AIG-pWrds0g7Uk9PVA",
+    // Spreadsheets this Worker may write to live in src/sheets.js BOOKS, not
+    // here — a book has to be declared in code to be writable at all, and the
+    // real control is the per-file Editor grant to the service account. This
+    // var only exists to point a review deploy at a scratch copy:
+    //   "SHEET_BOOKS": "{\"atlCrm\":\"<some test sheet id>\"}"
     // Spec 32 agent email. AGENT_MAIL_TOKEN (MCP bearer) is a secret. Outbound mail uses
     // the SEND_EMAIL binding below (Cloudflare Email Sending) — no API key.
     "AGENT_MAIL_DOMAIN": "agents.adapttolife.org",

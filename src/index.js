@@ -3,7 +3,8 @@
 // /api/apply and /api/volunteer, writing all three to ClickUp. The ClickUp token stays server-side
 // (Worker secret). See src/clickup.js and docs/clickup-trackers.md.
 
-import { handleWaiver, handleWaiverDownload, handleWaiverVerify, handleWaiverDoc, runDriveBacklog } from "./waiver.js";
+import { handleWaiver, handleWaiverDownload, handleWaiverVerify, handleWaiverDoc } from "./waiver.js";
+import { runWaiverArchive } from "./waiver_crm.js";
 import { sendContactReceipt, sendApplyReceipt, sendVolunteerReceipt } from "./receipts.js";
 import { createApplication, createContact, createVolunteer } from "./clickup.js";
 import { handleEmail, handleAgentMailApi } from "./agent_mail.js";
@@ -252,7 +253,7 @@ export default {
   // on Givebutter's own transaction id, so a repeated or overlapping run can
   // never double-count a donation.
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(runDriveBacklog(env));
+    ctx.waitUntil(runWaiverArchive(env));
     ctx.waitUntil(
       syncGifts(env).then((r) => {
         if (!r.ok) console.error("qr gift sync failed:", r.error);

@@ -169,7 +169,10 @@ fill="currentColor" stroke="none">
             <div class="field"><label for="em">Email</label><input id="em" name="em" type="email" autocomplete="email"></div>
           </div>
 
-          <div class="field"><label for="program">Program or event <span style="color:#9a9a9e;font-weight:400">(optional)</span></label><input id="program" name="program" type="text" autocomplete="off" placeholder="e.g. Summer adaptive cycling clinic"></div>
+          <div class="field-row">
+            <div class="field"><label for="phone">Phone <span style="color:#9a9a9e;font-weight:400">(optional)</span></label><input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="(555) 123-4567"></div>
+            <div class="field"><label for="program">Program or event <span style="color:#9a9a9e;font-weight:400">(optional)</span></label><input id="program" name="program" type="text" autocomplete="off" placeholder="e.g. Summer adaptive cycling clinic"></div>
+          </div>
 
           <div class="sig-wrap">
             <label>Signature</label>
@@ -475,7 +478,8 @@ fill="currentColor" stroke="none">
       var payload = {
         org: ORG, name: val('name'), em: val('em'), agree: true,
         signer_kind: guardian ? 'guardian' : 'adult',
-        minor_name: val('minor_name'), relationship: val('relationship'), program: val('program'),
+        minor_name: val('minor_name'), relationship: val('relationship'),
+        phone: val('phone'), program: val('program'),
         signature: sig.signature, signature_type: sig.signature_type,
         cf_token: tk ? tk.value : ''
       };

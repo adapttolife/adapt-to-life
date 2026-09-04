@@ -224,15 +224,42 @@ if (missing.status !== 404) fail(`unknown path returned ${missing.status}, expec
   else if (lastTouched && stamped < lastTouched)
     fail(`review.html is stale: stamped ${stamped}, but public/ last changed ${lastTouched}. The tour is the deliverable, so refresh it in the same commit.`);
 
+  // A 429 is this script's own fault, not the site's.
+  //
+  // 2026-09-04: /review came back 429 in a full production run and 302 three
+  // times in a row a moment later. This file fetches every page, every internal
+  // target and every tour stop as fast as the network allows, with cache
+  // busting on all of it, from one IP. Cloudflare eventually treats that as
+  // what it looks like. Reporting it as a broken route is a lie about the site,
+  // and it is how a check earns a reputation for crying wolf.
+  //
+  // One pause and one retry. A route that is genuinely down stays down.
+  const patientFetch = async (url, init) => {
+    for (const backoff of [8000, 20000, null]) {
+      const r = await fetch(url, init);
+      if (r.status !== 429 || backoff === null) return r;
+      console.log(`  rate limited on ${new URL(url).pathname}, waiting ${backoff / 1000}s`);
+      await new Promise((resolve) => setTimeout(resolve, backoff));
+    }
+  };
+
+  // /review is checked BEFORE the tour stops, not after.
+  //
+  // It used to run last, immediately behind a burst of cache-busted fetches for
+  // every stop on the tour, and that is exactly where the 429 landed. Asking
+  // first costs nothing and asks while the edge is still calm.
+  const rv = await patientFetch(`${BASE}/review?cb=${Date.now()}`, { redirect: "manual" });
+
   // Every stop must be a real page, and the tour stays off production.
   for (const href of [...tour.matchAll(/class="rv-steps"[\s\S]*?<\/ol>/g)][0]?.[0]
     .matchAll(/href="(\/[^"]*)"/g) ?? []) {
-    const r = await fetch(`${BASE}${href[1]}?cb=${Date.now()}`);
+    const r = await patientFetch(`${BASE}${href[1]}?cb=${Date.now()}`);
     if (!r.ok) fail(`review.html links to ${href[1]}, which returned ${r.status}`);
   }
-  const rv = await fetch(`${BASE}/review?cb=${Date.now()}`, { redirect: "manual" });
-  if (IS_STAGING && rv.status !== 200) fail(`/review returned ${rv.status} on staging, expected 200`);
-  if (!IS_STAGING && rv.status !== 302) fail(`/review returned ${rv.status} on production, expected a 302 home`);
+  if (rv.status === 429)
+    fail(`/review still rate limited after three tries. This is Cloudflare throttling this script, not a broken route: check it by hand with curl before believing it.`);
+  else if (IS_STAGING && rv.status !== 200) fail(`/review returned ${rv.status} on staging, expected 200`);
+  else if (!IS_STAGING && rv.status !== 302) fail(`/review returned ${rv.status} on production, expected a 302 home`);
 }
 
 // ---- the money path: the giving form must reach a real amount -----------
@@ -248,7 +275,23 @@ if (missing.status !== 404) fail(`unknown path returned ${missing.status}, expec
 // where a failure costs the org money. It will also fail if Givebutter itself is
 // down, which is correct: the giving form being unusable is worth a red build
 // no matter whose fault it is.
+// Two attempts, and this is not the assertion going soft. Every check below is
+// unchanged and still has to pass: the amount step visible, a way to continue,
+// an amount a donor can pick. What changed is that a transient failure no longer
+// spends the whole run.
+//
+// 2026-09-04: /hustle-and-heart failed here on `attached` after 20s inside a
+// full run. Rerun on its own, twice, the element attached in 312ms and the
+// amount step was visible in 2.0s, on both pages. An element that normally
+// appears in a third of a second does not take twenty seconds because the site
+// is slow, so the red build was the harness, not the money path, and a check
+// that goes red on a working form is a check people learn to skip.
+//
+// The retry is loud on purpose. If this starts printing every run, the embed
+// really is degrading and the note above has expired.
 for (const path of ["/donate", "/hustle-and-heart"]) {
+  let lastError = null;
+  for (let attempt = 1; attempt <= 2; attempt++) {
   const g = await browser.newPage({ viewport: { width: 1440, height: 1000 }, reducedMotion: "reduce" });
   try {
     await g.goto(`${BASE}${path}?cb=${Date.now()}`, { waitUntil: "domcontentloaded" });
@@ -280,10 +323,18 @@ for (const path of ["/donate", "/hustle-and-heart"]) {
     // Deliberately no height assertion. The panel is 188px when the amount step
     // first paints and ~508px once it settles, so any pixel threshold is a race.
     // "The donor can see the amounts and a way to continue" is the real contract.
+    lastError = null;
   } catch (e) {
-    fail(`${path} giving form did not become usable: ${String(e).split("\n")[0].slice(0, 120)}`);
+    lastError = e;
   }
   await g.close();
+  if (!lastError) break;
+  if (attempt === 1) {
+    console.log(`  retrying ${path} giving form: ${String(lastError).split("\n")[0].slice(0, 80)}`);
+  } else {
+    fail(`${path} giving form did not become usable twice: ${String(lastError).split("\n")[0].slice(0, 120)}`);
+  }
+  }
 }
 
 // ---- performance budget --------------------------------------------------
@@ -328,6 +379,29 @@ for (const path of ["/donate", "/hustle-and-heart"]) {
 // stays put, request count is unchanged, and no new third-party host. If the
 // next weight-saving fix lands (self-hosted subset fonts is the open one), this
 // comes back down — see the ratchet rule above.
+// Raised 2026-09-04, /donate own 120 -> 125, and this is a measurement fix
+// wearing a raise's clothes, so here is the evidence.
+//
+// /donate had been failing intermittently: 122KB against a 120KB cap on one
+// run, 119.8KB on the next, with nothing shipped in between. Four consecutive
+// production runs, split by source:
+//
+//     run 1  own 120KB   cdn-cgi 20KB   ours 100KB
+//     run 2  own 121KB   cdn-cgi 21KB   ours 100KB
+//     run 3  own 121KB   cdn-cgi 20KB   ours 100KB
+//     run 4  own 121KB   cdn-cgi 21KB   ours 100KB
+//
+// Our own content is 100KB and does not move. Every kilobyte of the wobble is
+// Cloudflare's bot-detection script, which this file already knows is counted
+// deliberately, on the reasoning that a donor really does download it. That
+// reasoning still holds. What was wrong is that /donate was given no room for
+// the variance the homepage was explicitly given ~3% for, so the cap sat
+// exactly on the number and flipped on a script we do not ship and cannot pin.
+//
+// 125 is 100 ours + 21 observed maximum + 4 for encoder and CF drift. The
+// ratchet is not loosened in any way that matters: our real content would have
+// to grow by 4KB, 4% in one go, to trip it, and the intermittent red build that
+// was training everyone to ignore this check is gone.
 const BUDGET = {
   "/": { own: 270, total: 700, reqs: 24, hosts: 4, cls: 0.10 },
   // cls:null, still — but for a smaller and better-understood reason than
@@ -353,7 +427,7 @@ const BUDGET = {
   // ~4KB of markup and CSS on this page against one fewer page on the site,
   // so total weight went DOWN and this one number went up. 120 is measured
   // prod own (119KB) plus ~1% for CF script variance, nothing more.
-  "/donate": { own: 120, total: 9000, reqs: 108, hosts: 21, cls: null },
+  "/donate": { own: 125, total: 9000, reqs: 108, hosts: 21, cls: null },
 };
 
 for (const [path, cap] of Object.entries(BUDGET)) {

@@ -109,6 +109,14 @@ Two stray empty fields sit on this list, a `short_text` **Phone** and a `short_t
 
 It is the field that protects the promise. All three receipt emails tell the sender they will hear back, and `/volunteer` says "you hear back either way" in as many words. Anything sitting in `New` with a stale `Last contacted` is a broken promise, not a backlog.
 
+## The CRM half — every form also becomes a person
+
+Alec, 2026-09-04: **both.** ClickUp is where the work gets done; the *Adapt To Life CRM* is where the person is still findable next year, when the task is long closed. Each public form appends to its **own** intake tab — `Contacts`, `Applications`, `Volunteers` (and `Waivers`, filed separately). The curated **People** tab stays a human's: promoting a real relationship into it is a judgement, not a sync. Automation proposes; a person curates.
+
+Shape, and it is the same one everywhere: **D1 is the queue, the cron is the writer, the sheet is the destination.** A handler writes one `crm_intake` row and returns — the submitter never waits on Google, and a Sheets outage delays rows rather than losing them. `src/crm_intake.js` holds one `KINDS` entry per form (tab, columns, how a row reads); `src/sheets.js` and `src/google.js` hold everything shared. Adding the next form is a `KINDS` entry, not a module.
+
+**The Applications tab carries identity and a link, not the case.** Sport, need, cost and the personal story stay in ClickUp behind the grant review — the CRM is shared more widely than `GRANTS_INBOX` is, and that boundary already existed for a reason.
+
 ## What is deliberately not in ClickUp
 
 **Signed waivers.** The compliance record is D1 (`atl-waivers`, the index) + R2 (`atl-waivers`, the PDFs) + the Google Shared Drive archive filed by the 10-minute cron. Three copies, one of them browsable by a human. A signed release is a record to retrieve, not a task to work — so it is a row in the **Adapt To Life CRM**, not a ClickUp task.

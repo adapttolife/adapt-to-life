@@ -5,6 +5,7 @@
 
 import { handleWaiver, handleWaiverDownload, handleWaiverVerify, handleWaiverDoc } from "./waiver.js";
 import { runWaiverArchive } from "./waiver_crm.js";
+import { queueIntake, runCrmIntakeSync } from "./crm_intake.js";
 import { sendContactReceipt, sendApplyReceipt, sendVolunteerReceipt } from "./receipts.js";
 import { createApplication, createContact, createVolunteer } from "./clickup.js";
 import { handleEmail, handleAgentMailApi } from "./agent_mail.js";
@@ -254,6 +255,7 @@ export default {
   // never double-count a donation.
   async scheduled(event, env, ctx) {
     ctx.waitUntil(runWaiverArchive(env));
+    ctx.waitUntil(runCrmIntakeSync(env).catch((err) => console.error("crm intake sync failed:", err)));
     ctx.waitUntil(
       syncGifts(env).then((r) => {
         if (!r.ok) console.error("qr gift sync failed:", r.error);
@@ -431,6 +433,17 @@ async function handleContact(request, env, ctx) {
   // turn a successful submission into a failed one, or a slow one.
   after(ctx, sendContactReceipt(env, { name, email, message, type }));
 
+  // ...and the person becomes a CRM row. ClickUp holds the task; the CRM holds
+  // the person, long after the task is closed. Queued to D1 and drained by the
+  // cron, so this cannot slow or fail the submission (src/crm_intake.js).
+  queueIntake(env, ctx, {
+    kind: "contact", name, email,
+    source: source || "Contact form, adapttolife.org",
+    detail: LEAD_TYPES.includes(type) ? type : "",
+    clickup_id: saved.id, clickup_url: saved.url,
+    payload: { message, type },
+  });
+
   return json({ ok: true });
 }
 
@@ -484,6 +497,16 @@ async function handleApply(request, env, ctx) {
   // but it must not be able to fail the submission OR delay it. Sent after the
   // response, same as the contact receipt.
   after(ctx, sendApplyReceipt(env, { name, email, sport: str(data.sport), need: str(data.need) }));
+
+  // Identity and a link only. The sport, the need, the cost and the personal
+  // story stay in ClickUp behind the grant review — the CRM is shared more
+  // widely than GRANTS_INBOX is, and that boundary already exists for a reason.
+  queueIntake(env, ctx, {
+    kind: "application", name, email, phone: str(data.phone),
+    source: "Hustle & Heart application, adapttolife.org",
+    clickup_id: saved.id, clickup_url: saved.url,
+    payload: { location: str(data.location) },
+  });
 
   return json({ ok: true });
 }
@@ -554,6 +577,14 @@ async function handleVolunteer(request, env, ctx) {
   // Same contract as the other two: the record is already saved, so the receipt
   // is sent after the response and can never fail or slow the submission.
   after(ctx, sendVolunteerReceipt(env, { name, email, roles, bring }));
+
+  queueIntake(env, ctx, {
+    kind: "volunteer", name, email, phone: str(data.phone),
+    source: str(data.source).slice(0, 80) || "Volunteer form, adapttolife.org",
+    detail: roles.join("; "),
+    clickup_id: saved.id, clickup_url: saved.url,
+    payload: { based: str(data.based), time: str(data.time), links: str(data.links) },
+  });
 
   return json({ ok: true });
 }

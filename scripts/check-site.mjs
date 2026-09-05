@@ -380,6 +380,25 @@ for (const path of ["/donate", "/hustle-and-heart"]) {
 // stays put, request count is unchanged, and no new third-party host. If the
 // next weight-saving fix lands (self-hosted subset fonts is the open one), this
 // comes back down — see the ratchet rule above.
+//
+// Lowered 2026-09-05, / own 270 -> 193, and this is the ratchet doing the job
+// it was raised for. The band photo changed twice by Alec's eye, not for
+// weight, and landed on a 56KB frame where the raise had budgeted 115KB.
+//
+// Measured on PRODUCTION, twice: own 183KB and 184KB. 193 is that plus the
+// same ~5% the homepage was always given for encoder and CF-script variance.
+//
+// Calibrate this number against production and nothing else. The first attempt
+// at this line set it to 170 off two staging runs that both said 162KB, and it
+// failed on prod immediately: production serves ~21KB of Cloudflare scripts
+// that staging does not (22 requests and 3 third-party hosts there against 17
+// and 2), and this file already knows to count those, because a reader really
+// does download them. Staging is the cheaper host to measure and the wrong one.
+//
+// The point of taking it back at all: 270 would still pass if someone dropped a
+// 100KB hero in tomorrow, and nobody would learn that they had spent the whole
+// saving. A cap that only ever goes up is a record of what we once allowed,
+// not a limit.
 // Raised 2026-09-04, /donate own 120 -> 125, and this is a measurement fix
 // wearing a raise's clothes, so here is the evidence.
 //
@@ -404,7 +423,7 @@ for (const path of ["/donate", "/hustle-and-heart"]) {
 // to grow by 4KB, 4% in one go, to trip it, and the intermittent red build that
 // was training everyone to ignore this check is gone.
 const BUDGET = {
-  "/": { own: 270, total: 700, reqs: 24, hosts: 4, cls: 0.10 },
+  "/": { own: 193, total: 700, reqs: 24, hosts: 4, cls: 0.10 },
   // cls:null, still — but for a smaller and better-understood reason than
   // before. The Givebutter cause IS fixed: reserving the panel's height took
   // MOBILE from 0.12-0.76 down to a flat 0 across five runs in every condition

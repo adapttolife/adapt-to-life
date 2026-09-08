@@ -206,6 +206,40 @@ def compose_band():
         print(f"{name:20s} {W}x{H} {os.path.getsize(out)/1024:6.1f} KB")
 
 
+def compose_roll():
+    """A TILEABLE strip for the rolling closing band.
+
+    Alec wants variant 5's marquee as the last section before the footer on
+    /donate. Two constraints shape this into one image rather than eight:
+
+      · /donate's own-bytes budget is 125 KB and the page already sits at 123.
+        Eight columns would break it instantly. One <img loading="lazy"> at the
+        bottom of a long page is not fetched on load at all, so it costs the
+        page nothing — which is the honest fix, not a budget raise.
+      · A marquee has to LOOP. That means the image must tile: every column is
+        the same width on the same pitch, and the gap at each end is HALF a gap,
+        so column 8 meeting column 1 across the seam leaves exactly the same
+        space as every other join. Get that wrong and the loop stutters once per
+        cycle, which is the one thing people always notice.
+    """
+    COLS = ["JLA_6045.jpg", "JLA_5922.jpg", "JLA_6106.jpg", "JLA_6066.jpg",
+            "JLA_6073.jpg", "JLA_6077.jpg", "JLA_5973.jpg", "JLA_5920.jpg"]
+    H, CW, GAP = 430, 168, 28
+    PITCH = CW + GAP
+    W = PITCH * len(COLS)
+    canvas = Image.new("RGB", (W, H), (0, 0, 0))
+    for i, src in enumerate(COLS):
+        im = Image.open(os.path.join(SRC, src))
+        im.draft("RGB", (im.width // 3, im.height // 3))
+        im = crop_to(im.convert("RGB"), CW / H, 0.40, 0.50, 0.86)
+        im = mono(im.resize((CW, H), Image.LANCZOS))
+        im = ImageEnhance.Brightness(im).enhance(0.82)
+        canvas.paste(im, (i * PITCH + GAP // 2, 0))   # half a gap at each end
+    out = os.path.join(DST, "roll-strip.webp")
+    canvas.save(out, "WEBP", quality=60, method=6)
+    print(f"{'roll-strip':20s} {W}x{H} {os.path.getsize(out)/1024:6.1f} KB  (tileable, pitch {PITCH}px)")
+
+
 def main():
     os.makedirs(DST, exist_ok=True)
     manifest, total = {}, 0
@@ -245,6 +279,7 @@ def main():
         manifest[name] = {"w": im.size[0], "h": im.size[1], "role": role, "src": src}
         print(f"{name:14s} {role:5s} {im.size[0]:4d}x{im.size[1]:<4d} {n/1024:6.1f} KB   {src}")
     compose_band()
+    compose_roll()
     with open(os.path.join(DST, "panels.json"), "w") as f:
         json.dump(manifest, f, indent=1, sort_keys=True)
     print(f"{'TOTAL':14s} {len(PANELS)} panels {'':10s} {total/1024:6.1f} KB")

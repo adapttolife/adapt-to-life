@@ -1,0 +1,81 @@
+/* ==========================================================================
+   Adapt To Life — the rolling band
+   --------------------------------------------------------------------------
+   Alec, 2026-09-08, pointing at variant 5: "I want this to be on the last
+   section before the footer on the donate page. This design layout left to
+   right rolling pictures."
+
+   It is variant 5's marquee turned into a closing section: the headline above
+   the strip, the strip, the ask below it. On /donate that keeps the section
+   doing its actual job — it is the last thing before the footer on the page
+   where somebody decides — while the faces roll past between the two halves of
+   the sentence.
+
+   Three things it is careful about:
+
+     1. IT LOOPS PROPERLY. The track is two copies of one tileable image and
+        the animation moves it by exactly one copy's width. The image itself is
+        built on a uniform pitch with HALF a gap at each end (see compose_roll
+        in build-hero-panels.py), so the seam where copy 2 begins is spaced
+        exactly like every other join. A marquee that stutters once per cycle
+        is the one thing everybody notices.
+     2. IT COSTS THE PAGE NOTHING. One <img loading="lazy"> at the bottom of a
+        long page is not fetched on load. /donate's own-bytes budget is 125KB
+        and the page already sits at 123 — eight columns would have broken it,
+        and raising the cap for decoration on a payment page would have been
+        the wrong answer twice over.
+     3. IT STOPS. prefers-reduced-motion gets a still frame, not a slower one.
+        Motion sickness is not a speed setting.
+   ========================================================================== */
+
+.roll-band{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  background:#000;
+  padding:clamp(3.5rem,8vh,5.5rem) 0 clamp(3.5rem,8vh,5.5rem);
+}
+
+.roll-band .rb-copy{ position:relative; z-index:3; text-align:center; }
+.roll-band .rb-top{ margin-bottom:clamp(2rem,5vh,3rem); }
+.roll-band .rb-bottom{ margin-top:clamp(2rem,5vh,3rem); }
+
+/* ---- the track ----------------------------------------------------------- */
+.rb-track{
+  position:relative; z-index:1;
+  height:clamp(220px, 32vh, 340px);
+  overflow:hidden;
+  /* the ends fade into the black the section sits on, so the strip reads as
+     passing through the frame rather than starting and stopping in it */
+  -webkit-mask-image:linear-gradient(90deg, transparent 0%, #000 9%, #000 91%, transparent 100%);
+  mask-image:linear-gradient(90deg, transparent 0%, #000 9%, #000 91%, transparent 100%);
+}
+.rb-run{
+  display:flex; height:100%; width:max-content;
+  animation:rb-roll 48s linear infinite;
+}
+.rb-run img{
+  height:100%; width:auto; display:block; flex:0 0 auto;
+  /* the strip is already graded and dimmed in the asset; this only unifies it
+     with the rest of the dark bands */
+  filter:grayscale(1) contrast(1.02);
+}
+@keyframes rb-roll{ from{ transform:translate3d(0,0,0); } to{ transform:translate3d(-50%,0,0); } }
+
+/* a low warm bloom under the strip, the same orange-as-light rule the header
+   follows — never a tint on the photographs themselves */
+.rb-glow{
+  position:absolute; left:0; right:0; bottom:0; height:60%; z-index:2;
+  pointer-events:none;
+  background:radial-gradient(72% 60% at 50% 116%, rgba(255,92,57,0.30) 0%, rgba(255,92,57,0) 66%);
+}
+
+@media (prefers-reduced-motion: reduce){
+  .rb-run{ animation:none; }
+}
+
+@media (max-width:640px){
+  .roll-band{ padding:clamp(2.6rem,7vh,4rem) 0; }
+  .rb-track{ height:clamp(190px, 30vh, 260px); }
+  .rb-run{ animation-duration:34s; }
+}

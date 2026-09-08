@@ -38,6 +38,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
 <link rel="stylesheet" href="/css/page-header.css">
+<link rel="stylesheet" href="/css/roll-band.css">
 <script src="/js/attribution.js" defer></script>
 <style>
   /* Donate page — give panel */
@@ -261,10 +262,26 @@ fill="currentColor" stroke="none">
     </div>
   </section>
 
-<section class="closing dark band-lg">
-    <div class="wrap center">
+<!-- CLOSING — the rolling band. The last thing before the footer on the page
+       where somebody decides, so the faces roll past between the two halves of
+       the ask. The strip is ONE tileable image, loaded twice by the marquee and
+       fetched once by the browser, and lazy: it is far below the fold and must
+       not cost this page's load budget. -->
+  <section class="closing roll-band dark">
+    <div class="wrap center rb-copy rb-top">
       <span class="eyebrow orange reveal">Almost there</span>
       <h2 class="serif display reveal">Finish your gift.</h2>
+    </div>
+
+    <div class="rb-track" aria-hidden="true">
+      <div class="rb-run">
+        <img src="/images/hero/panels/roll-strip.webp" width="1568" height="430" alt="" loading="lazy" decoding="async">
+        <img src="/images/hero/panels/roll-strip.webp" width="1568" height="430" alt="" loading="lazy" decoding="async">
+      </div>
+    </div>
+    <div class="rb-glow"></div>
+
+    <div class="wrap center rb-copy rb-bottom">
       <p class="lead sub reveal">It takes about a minute, and it covers an athlete's real costs: equipment, travel, and training.</p>
       <div class="actions reveal">
         <a href="#givePanel" class="btn">Donate</a>

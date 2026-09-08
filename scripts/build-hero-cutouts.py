@@ -122,6 +122,24 @@ def bottom_fade(im, frac):
     return im
 
 
+# TRACED — the second set, hand-traced by Alec on 2026-09-08 and dropped into
+# the same Drive folder. These need none of the machinery above: the mattes are
+# clean, the wheel spokes are actually cut, and the court is gone. Trim, grade,
+# size, fade. They supersede the keyed versions for the stadium banner.
+#
+# Output heights are capped at each file's trimmed height — upscaling a cut-out
+# shows on the edge before it shows anywhere else.
+# Sizes and quality follow the depth the panel is composed at, same rule as
+# everywhere else in this header: the two front figures carry the frame, the
+# rest are seen through haze at half brightness and do not need the pixels.
+TRACED = [
+    ("Juan_Cutout_2.png",  "trace-juan.webp",   1100, 0.10, 80),
+    ("traced-ryan.png",    "trace-ryan.webp",    950, 0.10, 80),
+    ("traced-aubrey.png",  "trace-aubrey.webp",  700, 0.22, 74),
+    ("traced-ben.png",     "trace-ben.webp",     620, 0.26, 74),
+    ("traced-brian.png",   "trace-brian.webp",   560, 0.24, 72),
+]
+
 # src, dst, output height, bottom fade, court key mode
 JOBS = [
     ("JLA_6084_Transparent.png",       "cut-net.webp",       700, 0.32, None),
@@ -136,7 +154,9 @@ def main():
     os.makedirs(DST, exist_ok=True)
     total = 0
     dims = {}
-    for src, dst, height, fade, mode in JOBS:
+    for src, dst, height, fade, mode, q in (
+            [(a, b, c, d, e, 84) for a, b, c, d, e in JOBS]
+            + [(a, b, c, d, None, q) for a, b, c, d, q in TRACED]):
         path = os.path.join(SRC, src)
         if not os.path.exists(path):
             sys.exit(f"missing master: {path}\n"
@@ -150,7 +170,7 @@ def main():
         im = im.resize((round(w0 * height / h0), height), Image.LANCZOS)
         im = bottom_fade(im, fade)
         out = os.path.join(DST, dst)
-        im.save(out, "WEBP", quality=84, method=6)
+        im.save(out, "WEBP", quality=q, method=6)
         n = os.path.getsize(out)
         total += n
         dims[dst] = im.size

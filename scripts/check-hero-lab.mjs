@@ -12,7 +12,7 @@ import { chromium } from "/home/agentos/pw/node_modules/playwright/index.mjs";
 const BASE = process.argv[2] || "http://127.0.0.1:8788";
 const SIZES = [[1920, 1080, "1920"], [1440, 900, "1440"], [1024, 768, "1024"],
                [768, 1024, "768"], [390, 844, "390"], [320, 720, "320"]];
-const VARIANTS = ["d", "e", "a", "b", "c"];
+const VARIANTS = ["1", "2", "3"];
 
 const browser = await chromium.launch();
 let failed = 0;
@@ -68,7 +68,7 @@ for (const v of VARIANTS) {
       // 2. the ask has to be on the first screen, not merely on the page
       const stage = document.getElementById("heroStage");
       out.hero = Math.round(stage.getBoundingClientRect().height);
-      const copy = document.querySelector(".hs-copy, .mw-copy");
+      const copy = document.querySelector(".hs-copy, .mw-copy, .st-copy");
       ["h1", ".btn"].forEach((sel) => {
         const el = copy && copy.querySelector(sel);
         if (!el) return;
@@ -94,10 +94,10 @@ for (const v of VARIANTS) {
 
 // reduced motion must land on the finished frame, not on the pre-entrance one
 const rm = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: "reduce" });
-await rm.goto(`${BASE}/hero-d.html`, { waitUntil: "networkidle" });
+await rm.goto(`${BASE}/hero-3.html`, { waitUntil: "networkidle" });
 await rm.waitForTimeout(300);
 const vis = await rm.evaluate(() =>
-  [...document.querySelectorAll(".hs-fig, .hs-rise, .mw-p, .mw-rise")].every((el) => +getComputedStyle(el).opacity === 1));
+  [...document.querySelectorAll(".mw-p, .mw-rise, .st-fig, .st-rise")].every((el) => +getComputedStyle(el).opacity === 1));
 note(vis, "prefers-reduced-motion: every figure and line is visible with no animation");
 await rm.close();
 

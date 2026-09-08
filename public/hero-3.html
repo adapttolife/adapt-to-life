@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light only">
-<title>Header A · The lineup | Adapt To Life</title>
+<title>Header 3 · The stadium | Adapt To Life</title>
 <meta name="description" content="Adapt To Life funds the equipment, training, and travel that get adaptive athletes off the sidelines and into the game.">
 <link rel="canonical" href="https://adapttolife.org/">
 <link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
@@ -28,7 +28,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
-<link rel="stylesheet" href="/css/hero-lineup.css">
+<link rel="stylesheet" href="/css/hero-mosaic.css">
+<link rel="stylesheet" href="/css/hero-stadium.css">
 <!-- Preload the LCP image only. This used to point at the mid-page photoband,
      which downloaded a below-fold picture before the hero and, once the hero
      became a photograph, kept fetching an image the page no longer uses at
@@ -158,41 +159,40 @@ fill="currentColor" stroke="none">
 
 <main>
 
-  <!-- 1 · HERO — the lineup (variant A) -->
-  <section class="hero-stage dark hero-var" id="heroStage" data-variant="A">
-    <div class="hs-sky"></div>
-    <div class="hs-floor"></div>
-    <div class="hs-stage" aria-hidden="true">
-      <figure class="hs-fig s-deep d-back"><img src="/images/hero/cut-net.webp" width="871" height="700" alt="" loading="lazy" decoding="async"></figure>
-      <figure class="hs-fig s-left d-mid"><img src="/images/hero/cut-paddle.webp" width="643" height="760" alt="" loading="lazy" decoding="async"></figure>
-      <figure class="hs-fig s-right d-mid"><img src="/images/hero/cut-smile.webp" width="579" height="780" alt="" loading="lazy" decoding="async"></figure>
-      <div class="hs-haze"></div>
-      <figure class="hs-fig s-flank d-front above-haze"><img src="/images/hero/cut-dink.webp" width="1098" height="1150" alt="" fetchpriority="high" decoding="async"></figure>
-      <figure class="hs-fig s-anchor d-front above-haze"><img src="/images/hero/cut-forehand.webp" width="781" height="1150" alt="" fetchpriority="high" decoding="async"></figure>
+  <!-- 1 · HERO — the stadium banner (variant 3) -->
+  <section class="hero-stadium dark hero-var" id="heroStage" data-variant="3">
+    <div class="st-sky"></div>
+    <div class="st-room"></div>
+    <div class="st-team" aria-hidden="true">
+      <figure class="st-fig t-brian k2"><img src="/images/hero/trace-brian.webp" width="467" height="560" alt="" loading="lazy" decoding="async"></figure>
+      <figure class="st-fig t-ben k2"><img src="/images/hero/trace-ben.webp" width="824" height="620" alt="" loading="lazy" decoding="async"></figure>
+      <figure class="st-fig t-aubrey k2"><img src="/images/hero/trace-aubrey.webp" width="514" height="700" alt="" loading="lazy" decoding="async"></figure>
+      <figure class="st-fig t-ryan k3"><img src="/images/hero/trace-ryan.webp" width="889" height="950" alt="" fetchpriority="high" decoding="async"></figure>
+      <figure class="st-fig t-juan k3"><img src="/images/hero/trace-juan.webp" width="752" height="1100" alt="" fetchpriority="high" decoding="async"></figure>
     </div>
-    <div class="hs-scrim"></div>
-    <div class="wrap hs-copy">
-      <span class="eyebrow orange hs-rise" style="--d:80ms;">Made by athletes, for athletes</span>
-      <h1 class="serif display hs-rise" style="--d:180ms;">Your place in <em class="italic" style="color:var(--orange)">adaptive sports.</em></h1>
-      <p class="lead sub hs-rise" style="--d:300ms;">Access to sport is a right, not a privilege. Sports in abundance.</p>
-      <div class="actions hs-rise" style="--d:420ms;">
+    <div class="st-rays" aria-hidden="true">
+      <span class="st-ray r1"></span><span class="st-ray r2"></span><span class="st-ray r3"></span>
+    </div>
+    <div class="st-floor"></div>
+    <div class="st-scrim"></div>
+    <div class="wrap st-copy">
+      <h1 class="st-h1 st-rise" style="--d:180ms;">Your Place<br>in <em>Adaptive<br>Sports.</em></h1>
+      <div class="actions st-rise" style="--d:320ms;">
         <a href="/donate" class="btn">Donate</a>
-        <a href="/send-6" class="btn ghost">See what we're raising for <span class="arrow">&rarr;</span></a>
+        <a href="/hustle-and-heart" class="st-quiet">How the fund works <span class="arrow">&rarr;</span></a>
       </div>
-      <div class="hs-drive hs-rise" style="--d:760ms;">
-        <div class="hs-drive-in" id="heroDrive" hidden>
-          <span class="hs-drive-lab"><span class="dot"></span>Raising now</span>
-          <div class="hs-drive-body">
-            <div class="hs-drive-name" id="heroDriveName"></div>
-            <div class="hs-drive-track"><div class="hs-drive-fill" id="heroDriveFill"></div></div>
-            <div class="hs-drive-fig" id="heroDriveFig"></div>
-          </div>
-          <a class="hs-drive-go" href="/donate">Give <span class="arrow">&rarr;</span></a>
+      <div class="st-drive mw-rise" style="--d:460ms;">
+        <div class="mw-drive-in" id="heroDrive" hidden>
+          <span class="mw-drive-dot"></span>
+          <span id="heroDriveName"></span>
+          <span class="mw-bar"><i id="heroDriveFill"></i></span>
+          <span id="heroDriveFig"></span>
+          <a href="/donate">Give <span class="arrow">&rarr;</span></a>
         </div>
       </div>
     </div>
-    <div class="hs-grain"></div>
-    <div class="hs-vig"></div>
+    <div class="st-grain"></div>
+    <div class="st-vig"></div>
   </section>
 
   <!-- 2 · CAMPAIGN BAND — the answer to "what is happening right now",
@@ -600,6 +600,6 @@ fill="currentColor" stroke="none">
   .hv-chip.on{ color:#fff; background:var(--orange-ink); }
   @media print{ .hv-bar{ display:none; } }
 </style>
-<div class="hv-bar"><a href="/hero-d" class="hv-chip">D · The mosaic</a><a href="/hero-e" class="hv-chip">E · The banner</a><a href="/hero-a" class="hv-chip on">A · The lineup</a><a href="/hero-b" class="hv-chip">B · The wall</a><a href="/hero-c" class="hv-chip">C · The split</a></div>
+<div class="hv-bar"><a href="/hero-1" class="hv-chip">1 · The mosaic</a><a href="/hero-2" class="hv-chip">2 · The banner</a><a href="/hero-3" class="hv-chip on">3 · The stadium</a></div>
 </body>
 </html>

@@ -383,8 +383,69 @@ ${layoutCss(BANNER, BANNER_PHONE, "banner")}
 
 `;
 
-const VARIANTS = { d: HERO_D, e: HERO_E, a: HERO_A, b: HERO_B, c: HERO_C };
-const LABEL = { d: "D · The mosaic", e: "E · The banner", a: "A · The lineup", b: "B · The wall", c: "C · The split" };
+/* --------------------------------------------------------------------------
+   3 — THE STADIUM BANNER.  The concourse banner: the team cut out and
+   overlapped on one baseline, raking light behind them, the wordmark holding
+   a clear corner. Built on Alec's hand-traced mattes, which are clean through
+   the wheel spokes — the detail that decides whether a cut-out athlete in a
+   chair looks pasted on.
+
+   TEAM is the cast, in back-to-front order. Same rule as everywhere else here:
+   who stands where is data.
+   -------------------------------------------------------------------------- */
+const TEAM = [
+  { slot: "t-brian",  file: "trace-brian",  depth: 2, alt: "Brian, mid-rally with his paddle up" },
+  { slot: "t-ben",    file: "trace-ben",    depth: 2, alt: "Ben reaching wide for a shot" },
+  { slot: "t-aubrey", file: "trace-aubrey", depth: 2, alt: "Aubrey, laughing between points" },
+  { slot: "t-ryan",   file: "trace-ryan",   depth: 3, alt: "Ryan setting up a serve" },
+  { slot: "t-juan",   file: "trace-juan",   depth: 3, alt: "Juan turning into a forehand" },
+];
+
+const teamHtml = TEAM.map((m) => {
+  const f = `${m.file}.webp`;
+  const [w, h] = DIM[f];
+  const front = m.depth === 3;
+  return `      <figure class="st-fig ${m.slot} k${m.depth}">` +
+    `<img src="/images/hero/${f}" width="${w}" height="${h}" alt="" ` +
+    `${front ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></figure>`;
+}).join("\n");
+
+const HERO_3 = `  <!-- 1 · HERO — the stadium banner (variant 3) -->
+  <section class="hero-stadium dark hero-var" id="heroStage" data-variant="3">
+    <div class="st-sky"></div>
+    <div class="st-room"></div>
+    <div class="st-team" aria-hidden="true">
+${teamHtml}
+    </div>
+    <div class="st-rays" aria-hidden="true">
+      <span class="st-ray r1"></span><span class="st-ray r2"></span><span class="st-ray r3"></span>
+    </div>
+    <div class="st-floor"></div>
+    <div class="st-scrim"></div>
+    <div class="wrap st-copy">
+      <h1 class="st-h1 st-rise" style="--d:180ms;">Your Place<br>in <em>Adaptive<br>Sports.</em></h1>
+      <div class="actions st-rise" style="--d:320ms;">
+        <a href="/donate" class="btn">Donate</a>
+        <a href="/hustle-and-heart" class="st-quiet">How the fund works <span class="arrow">&rarr;</span></a>
+      </div>
+      <div class="st-drive mw-rise" style="--d:460ms;">
+        <div class="mw-drive-in" id="heroDrive" hidden>
+          <span class="mw-drive-dot"></span>
+          <span id="heroDriveName"></span>
+          <span class="mw-bar"><i id="heroDriveFill"></i></span>
+          <span id="heroDriveFig"></span>
+          <a href="/donate">Give <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="st-grain"></div>
+    <div class="st-vig"></div>
+  </section>
+
+`;
+
+const VARIANTS = { 1: HERO_D, 2: HERO_E, 3: HERO_3 };
+const LABEL = { 1: "1 · The mosaic", 2: "2 · The banner", 3: "3 · The stadium" };
 
 // The stage script: entrance, depth parallax, and the live drive strip. Kept
 // in the page rather than in a shared bundle because only the hero uses it and
@@ -483,7 +544,7 @@ const STAGE_JS = `
 // The variant switcher, so one link lets Alec flip between all three at the
 // same scroll position instead of opening three tabs and guessing.
 function switcher(active) {
-  const items = ["d", "e", "a", "b", "c"]
+  const items = ["1", "2", "3"]
     .map(
       (k) =>
         `<a href="/hero-${k}" class="hv-chip${k === active ? " on" : ""}">${LABEL[k]}</a>`,
@@ -510,8 +571,8 @@ for (const [key, hero] of Object.entries(VARIANTS)) {
   out = out
     .replace(
       '<link rel="stylesheet" href="/css/site.css">',
-      '<link rel="stylesheet" href="/css/site.css">\n<link rel="stylesheet" href="/css/' +
-        ("de".includes(key) ? "hero-mosaic" : "hero-lineup") + '.css">',
+      '<link rel="stylesheet" href="/css/site.css">\n<link rel="stylesheet" href="/css/hero-mosaic.css">' +
+        (key === "3" ? '\n<link rel="stylesheet" href="/css/hero-stadium.css">' : ""),
     )
     .replace(
       "</head>",

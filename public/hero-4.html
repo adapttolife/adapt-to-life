@@ -538,41 +538,12 @@ fill="currentColor" stroke="none">
   // entrance — one frame after paint so the transition actually runs
   requestAnimationFrame(function(){ requestAnimationFrame(function(){ stage.classList.add('lit'); }); });
 
-  // depth parallax. Two inputs, one output: the pointer moves the group a few
-  // pixels against itself, and the scroll sinks it. Both are scaled per figure
-  // by how far back it is, which is what makes the group feel like a room and
-  // not a picture. Skipped entirely for reduced motion and coarse pointers.
-  var figs = [].slice.call(stage.querySelectorAll('.hs-fig, .mw-p'));
-  var fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-  if(!reduce && fine && figs.length){
-    var depth = function(f){
-      if(f.classList.contains('d-front') || f.classList.contains('d3')) return 1;
-      if(f.classList.contains('d-mid')   || f.classList.contains('d2')) return 0.55;
-      return 0.3;
-    };
-    var tx = 0, ty = 0, cx = 0, cy = 0, scroll = 0, raf = 0;
-    window.addEventListener('pointermove', function(e){
-      var r = stage.getBoundingClientRect();
-      tx = ((e.clientX - r.left) / r.width - 0.5) * 2;
-      ty = ((e.clientY - r.top) / r.height - 0.5) * 2;
-      if(!raf) raf = requestAnimationFrame(tick);
-    }, {passive:true});
-    window.addEventListener('scroll', function(){
-      scroll = Math.min(1, window.scrollY / 700);
-      if(!raf) raf = requestAnimationFrame(tick);
-    }, {passive:true});
-    function tick(){
-      raf = 0;
-      cx += (tx - cx) * 0.08;
-      cy += (ty - cy) * 0.08;
-      for(var i=0;i<figs.length;i++){
-        var d = depth(figs[i]);
-        figs[i].style.setProperty('--px', (-cx * 16 * d).toFixed(2) + 'px');
-        figs[i].style.setProperty('--py', ((-cy * 8 * d) + (scroll * 40 * d)).toFixed(2) + 'px');
-      }
-      if(Math.abs(tx-cx) > 0.001 || Math.abs(ty-cy) > 0.001) raf = requestAnimationFrame(tick);
-    }
-  }
+  // No parallax. It moved nineteen panels a few pixels against the pointer, and
+  // a brush of the trackpad reads as the whole wall twitching. Alec: the
+  // desktop images shake every couple of seconds, and he does not like it.
+  // Removing it also drops a requestAnimationFrame loop, two window listeners
+  // and will-change:transform on nineteen composited layers, which is the
+  // cheapest thing on this page to give back.
 
   // There is no drive strip in the header any more. Alec, 2026-09-08: feel
   // first, then the ask. The campaign band directly below the hero still

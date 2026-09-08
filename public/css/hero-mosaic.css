@@ -53,8 +53,7 @@
 .mw-p{
   position:absolute; margin:0; overflow:hidden;
   border-radius:3px;
-  transform:rotate(var(--r,0deg)) translate3d(var(--px,0px), var(--py,0px), 0);
-  will-change:transform;
+  transform:rotate(var(--r,0deg));
 }
 .mw-p img{ width:100%; height:100%; object-fit:cover; display:block; }
 
@@ -68,7 +67,7 @@
     0 8px 22px -12px rgba(0,0,0,0.8),
     0 0 0 1px rgba(255,150,110,0.16);
 }
-.mw-p.d3 img{ filter:brightness(1.02) contrast(1.06); }
+.mw-p.d3 img{ filter:contrast(1.06); }
 
 .mw-p.d2{ /* mid */
   z-index:4;
@@ -76,13 +75,20 @@
     0 28px 56px -30px rgba(0,0,0,0.9),
     0 0 0 1px rgba(255,150,110,0.10);
 }
-.mw-p.d2 img{ filter:brightness(0.60) contrast(0.94) blur(0.7px); }
+/* Brightness is baked into the file now (see DEPTH_DIM in build-hero-panels.py),
+   which is what paid for the resolution. The mid plane keeps NO blur: it is
+   middle ground, and blurring it was half of the inconsistency Alec could see. */
+.mw-p.d2 img{ filter:contrast(0.96); }
 
 .mw-p.d1{ /* back */
   z-index:2;
   box-shadow:0 18px 40px -26px rgba(0,0,0,0.85);
 }
-.mw-p.d1 img{ filter:brightness(0.34) contrast(0.86) blur(2.4px); }
+/* The back plane keeps a DELIBERATE, gentle blur — Alec is fine with background
+   frames being soft, he objected to it being inconsistent. 1.2px on a frame
+   that is no longer being upscaled reads as depth of field. 2.4px on one that
+   was upscaled 2.5x read as a bad file. */
+.mw-p.d1 img{ filter:contrast(0.92) blur(1.2px); }
 
 /* Atmosphere INSIDE the stack. Rule 2: the haze planes are interleaved with
    the panels, so a mid panel is genuinely seen through the air in front of the
@@ -168,7 +174,7 @@
 /* The wall assembles from the back forward, then the type arrives. */
 .hero-wall-photo .mw-p{ opacity:0; transform:rotate(var(--r,0deg)) translateY(20px) scale(1.02); }
 .hero-wall-photo.lit .mw-p{
-  opacity:1; transform:rotate(var(--r,0deg)) translate3d(var(--px,0px), var(--py,0px), 0) scale(1);
+  opacity:1; transform:rotate(var(--r,0deg)) scale(1);
   transition:opacity .8s ease var(--d,0ms), transform 1s cubic-bezier(.19,.9,.24,1) var(--d,0ms); }
 .hero-wall-photo .mw-rise{ opacity:0; transform:translateY(14px); }
 .hero-wall-photo.lit .mw-rise{
@@ -264,7 +270,7 @@
   /* .mw-wall .mw-p img matches the (0,2,1) of the wide `.mw-p.d3 img` rules and
      sits later in the file, so it wins without !important; the lit cells are
      emitted at (0,3,1) by the generator and out-specify it in turn. */
-  .mw-wall .mw-p img{ filter:grayscale(1) brightness(0.20) contrast(0.92); }
+  .mw-wall .mw-p img{ filter:grayscale(1) brightness(0.34) contrast(0.92); }
 
   /* the haze planes are a wide-layout device; a grid has no air between rows */
   .mw-haze{ display:none; }

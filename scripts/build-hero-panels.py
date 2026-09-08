@@ -41,8 +41,17 @@ SRC = os.path.join(os.path.dirname(__file__), "..", ".work", "fav")
 DST = os.path.join(os.path.dirname(__file__), "..", "public", "images", "hero", "panels")
 
 # Long edge in device pixels, by depth role. See rule 3.
-SIZE = {"front": 700, "mid": 400, "back": 250}
-QUALITY = {"front": 74, "mid": 68, "back": 58, "big": 68, "band": 56}
+# Sized so nothing UPSCALES. Measured on the live page: every back-plane panel
+# was rendering 1.7-2.5x its own pixels AND carrying a 2.4px blur — soft twice
+# over, and the inconsistency Alec could see. These are the sizes the wall
+# actually paints at 1920 on a 2x display.
+SIZE = {"front": 820, "mid": 520, "back": 560}
+# Depth is BAKED into the file rather than applied in CSS, and that is what pays
+# for the resolution: a pre-darkened frame compresses far better. Back plane at
+# 560px pre-darkened costs 7.8 KB against 6.9 KB at 250px undarkened — 2.2x the
+# pixels for under a kilobyte.
+QUALITY = {"front": 76, "mid": 52, "back": 44, "big": 68, "band": 56}
+DEPTH_DIM = {"front": 1.00, "mid": 0.62, "back": 0.40}
 
 # name, source frame, aspect (w/h), vertical anchor (0 = top, 1 = bottom),
 # horizontal anchor, ZOOM, depth role
@@ -335,6 +344,8 @@ def main():
         im = mono(im)
         if role == 'band':
             im = ImageEnhance.Brightness(im).enhance(0.62)
+        elif role in DEPTH_DIM and DEPTH_DIM[role] < 1:
+            im = ImageEnhance.Brightness(im).enhance(DEPTH_DIM[role])
         out = os.path.join(DST, f"{name}.webp")
         im.save(out, "WEBP", quality=QUALITY[role], method=6)
         n = os.path.getsize(out)

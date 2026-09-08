@@ -113,12 +113,34 @@ const BANNER = [
 const MOSAIC_GRID = [
   "close-dink", "laugh",
   "net",        "smile-close",
-  "reach",      "serve",
+  "reach",      "forehand",
   "pair",       "dink",
   "whitecap",   "brian",
   "two-up",     "swing",
 ];
-const MOSAIC_GRID_LIT = new Set(["smile-close", "dink", "brian", "laugh"]);
+// All four must be FRONT-plane panels: depth is baked into the files now, so a
+// "lit" cell drawn from a pre-darkened mid or back file would still be dim.
+const MOSAIC_GRID_LIT = new Set(["smile-close", "dink", "brian", "forehand"]);
+
+// Where the crop window sits in each panel when the grid squashes a portrait
+// into a 3:2 cell. Default is 50%, which centres the window on the middle of
+// the photograph and cut the heads off the two Alec circled. These are measured
+// from a matte of each finished panel — the top of the subject plus a little
+// headroom — so the window lands on the face rather than the torso.
+const MOSAIC_GRID_POS = {
+  "close-dink": 2,
+  "laugh": 5,
+  "net": 0,
+  "smile-close": 7,
+  "reach": 22,
+  "forehand": 0,
+  "pair": 45,
+  "dink": 5,
+  "whitecap": 47,
+  "brian": 19,
+  "two-up": 46,
+  "swing": 27
+};
 
 const BANNER_PHONE = {
   "bn-dink":  { x: -6, w: 58, h: 100 },
@@ -188,8 +210,10 @@ const layoutCss = (rows, phone, mode) => {
   const RESET = "position:static; left:auto; top:auto; right:auto; bottom:auto; " +
                 "width:auto; height:auto; aspect-ratio:3/2; transform:none; " +
                 "border-radius:0; box-shadow:none;";
-  const cells = MOSAIC_GRID.map((n, i) =>
-    `    .mw-p.p-${n}{ display:block; order:${i}; ${RESET} }`);
+  const cells = MOSAIC_GRID.flatMap((n, i) => [
+    `    .mw-p.p-${n}{ display:block; order:${i}; ${RESET} }`,
+    `    .mw-p.p-${n} img{ object-position:50% ${MOSAIC_GRID_POS[n] ?? 50}%; }`,
+  ]);
   // the handful left at full brightness, one rule each so they out-specify the
   // blanket dim in hero-mosaic.css
   const lit = [...MOSAIC_GRID_LIT].map((n) =>
@@ -491,41 +515,12 @@ const STAGE_JS = `
   // entrance — one frame after paint so the transition actually runs
   requestAnimationFrame(function(){ requestAnimationFrame(function(){ stage.classList.add('lit'); }); });
 
-  // depth parallax. Two inputs, one output: the pointer moves the group a few
-  // pixels against itself, and the scroll sinks it. Both are scaled per figure
-  // by how far back it is, which is what makes the group feel like a room and
-  // not a picture. Skipped entirely for reduced motion and coarse pointers.
-  var figs = [].slice.call(stage.querySelectorAll('.hs-fig, .mw-p'));
-  var fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-  if(!reduce && fine && figs.length){
-    var depth = function(f){
-      if(f.classList.contains('d-front') || f.classList.contains('d3')) return 1;
-      if(f.classList.contains('d-mid')   || f.classList.contains('d2')) return 0.55;
-      return 0.3;
-    };
-    var tx = 0, ty = 0, cx = 0, cy = 0, scroll = 0, raf = 0;
-    window.addEventListener('pointermove', function(e){
-      var r = stage.getBoundingClientRect();
-      tx = ((e.clientX - r.left) / r.width - 0.5) * 2;
-      ty = ((e.clientY - r.top) / r.height - 0.5) * 2;
-      if(!raf) raf = requestAnimationFrame(tick);
-    }, {passive:true});
-    window.addEventListener('scroll', function(){
-      scroll = Math.min(1, window.scrollY / 700);
-      if(!raf) raf = requestAnimationFrame(tick);
-    }, {passive:true});
-    function tick(){
-      raf = 0;
-      cx += (tx - cx) * 0.08;
-      cy += (ty - cy) * 0.08;
-      for(var i=0;i<figs.length;i++){
-        var d = depth(figs[i]);
-        figs[i].style.setProperty('--px', (-cx * 16 * d).toFixed(2) + 'px');
-        figs[i].style.setProperty('--py', ((-cy * 8 * d) + (scroll * 40 * d)).toFixed(2) + 'px');
-      }
-      if(Math.abs(tx-cx) > 0.001 || Math.abs(ty-cy) > 0.001) raf = requestAnimationFrame(tick);
-    }
-  }
+  // No parallax. It moved nineteen panels a few pixels against the pointer, and
+  // a brush of the trackpad reads as the whole wall twitching. Alec: the
+  // desktop images shake every couple of seconds, and he does not like it.
+  // Removing it also drops a requestAnimationFrame loop, two window listeners
+  // and will-change:transform on nineteen composited layers, which is the
+  // cheapest thing on this page to give back.
 
   // There is no drive strip in the header any more. Alec, 2026-09-08: feel
   // first, then the ask. The campaign band directly below the hero still

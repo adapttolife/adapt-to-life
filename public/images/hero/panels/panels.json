@@ -30,112 +30,112 @@
   "w": 900
  },
  "bn-brian": {
-  "h": 1033,
+  "h": 1210,
   "role": "front",
   "src": "JLA_6045.jpg",
-  "w": 434
+  "w": 508
  },
  "bn-dink": {
-  "h": 1033,
+  "h": 1210,
   "role": "front",
   "src": "JLA_5922.jpg",
-  "w": 434
+  "w": 508
  },
  "bn-grin": {
-  "h": 590,
+  "h": 767,
   "role": "mid",
   "src": "JLA_6073.jpg",
-  "w": 248
+  "w": 322
  },
  "bn-reach": {
-  "h": 369,
+  "h": 826,
   "role": "back",
   "src": "JLA_5920.jpg",
-  "w": 155
+  "w": 347
  },
  "bn-seated": {
-  "h": 590,
+  "h": 767,
   "role": "mid",
   "src": "JLA_5973.jpg",
-  "w": 248
+  "w": 322
  },
  "bn-smile": {
-  "h": 1033,
+  "h": 1210,
   "role": "front",
   "src": "JLA_6106.jpg",
-  "w": 434
+  "w": 508
  },
  "bn-swing": {
-  "h": 590,
+  "h": 767,
   "role": "mid",
   "src": "JLA_6066.jpg",
-  "w": 248
+  "w": 322
  },
  "bn-white": {
-  "h": 590,
+  "h": 767,
   "role": "mid",
   "src": "JLA_6077.jpg",
-  "w": 248
+  "w": 322
  },
  "brian": {
-  "h": 700,
+  "h": 820,
   "role": "front",
   "src": "JLA_6045.jpg",
-  "w": 560
+  "w": 656
  },
  "close-dink": {
-  "h": 250,
+  "h": 560,
   "role": "back",
   "src": "JLA_5883.jpg",
-  "w": 188
+  "w": 420
  },
  "court": {
-  "h": 167,
+  "h": 373,
   "role": "back",
   "src": "JLA_5905.jpg",
-  "w": 250
+  "w": 560
  },
  "dink": {
-  "h": 700,
+  "h": 820,
   "role": "front",
   "src": "JLA_5922.jpg",
-  "w": 525
+  "w": 615
  },
  "forehand": {
-  "h": 467,
+  "h": 547,
   "role": "front",
   "src": "JLA_5945.jpg",
-  "w": 700
+  "w": 820
  },
  "grin": {
-  "h": 400,
+  "h": 520,
   "role": "mid",
   "src": "JLA_6073.jpg",
-  "w": 300
+  "w": 390
  },
  "laugh": {
-  "h": 400,
+  "h": 520,
   "role": "mid",
   "src": "JLA_6143.jpg",
-  "w": 300
+  "w": 390
  },
  "lobby": {
-  "h": 250,
+  "h": 560,
   "role": "back",
   "src": "JLA_6191.jpg",
-  "w": 188
+  "w": 420
  },
  "net": {
-  "h": 267,
+  "h": 347,
   "role": "mid",
   "src": "JLA_6084.jpg",
-  "w": 400
+  "w": 520
  },
  "pair": {
-  "h": 400,
+  "h": 520,
   "role": "mid",
   "src": "JLA_6127.jpg",
-  "w": 300
+  "w": 390
  },
  "pg-brian": {
   "h": 738,
@@ -186,57 +186,57 @@
   "w": 310
  },
  "rally": {
-  "h": 167,
+  "h": 373,
   "role": "back",
   "src": "JLA_5918.jpg",
-  "w": 250
+  "w": 560
  },
  "reach": {
-  "h": 400,
+  "h": 520,
   "role": "mid",
   "src": "JLA_5920.jpg",
-  "w": 300
+  "w": 390
  },
  "seated": {
-  "h": 400,
+  "h": 520,
   "role": "mid",
   "src": "JLA_5973.jpg",
-  "w": 300
+  "w": 390
  },
  "serve": {
-  "h": 188,
+  "h": 420,
   "role": "back",
   "src": "JLA_6224.jpg",
-  "w": 250
+  "w": 560
  },
  "shout": {
-  "h": 250,
+  "h": 560,
   "role": "back",
   "src": "JLA_6074.jpg",
-  "w": 188
+  "w": 420
  },
  "smile-close": {
-  "h": 700,
+  "h": 820,
   "role": "front",
   "src": "JLA_6106.jpg",
-  "w": 525
+  "w": 615
  },
  "swing": {
-  "h": 400,
+  "h": 520,
   "role": "mid",
   "src": "JLA_6066.jpg",
-  "w": 300
+  "w": 390
  },
  "two-up": {
-  "h": 250,
+  "h": 560,
   "role": "back",
   "src": "JLA_6122.jpg",
-  "w": 188
+  "w": 420
  },
  "whitecap": {
-  "h": 400,
+  "h": 520,
   "role": "mid",
   "src": "JLA_6077.jpg",
-  "w": 300
+  "w": 390
  }
 }

@@ -164,24 +164,24 @@ fill="currentColor" stroke="none">
   <!-- 1 · HERO — the contact sheet (variant 6) -->
   <section class="hero-spec hero-grid dark hero-var" id="heroStage" data-variant="6">
     <div class="sp-cells" aria-hidden="true">
-      <figure><img src="/images/hero/panels/close-dink.91bbe0e9.webp" width="188" height="250" alt="" fetchpriority="high" decoding="async"></figure>
-      <figure><img src="/images/hero/panels/laugh.2f1180d7.webp" width="300" height="400" alt="" fetchpriority="high" decoding="async"></figure>
-      <figure><img src="/images/hero/panels/net.9ac942cd.webp" width="400" height="267" alt="" fetchpriority="high" decoding="async"></figure>
-      <figure class="on"><img src="/images/hero/panels/smile-close.de7ff106.webp" width="525" height="700" alt="" fetchpriority="high" decoding="async"></figure>
-      <figure><img src="/images/hero/panels/reach.be3fea2a.webp" width="300" height="400" alt="" fetchpriority="high" decoding="async"></figure>
-      <figure><img src="/images/hero/panels/court.e7032def.webp" width="250" height="167" alt="" fetchpriority="high" decoding="async"></figure>
-      <figure><img src="/images/hero/panels/pair.ed74b4db.webp" width="300" height="400" alt="" loading="lazy" decoding="async"></figure>
-      <figure class="on"><img src="/images/hero/panels/dink.c6b3c3cc.webp" width="525" height="700" alt="" loading="lazy" decoding="async"></figure>
-      <figure class="on"><img src="/images/hero/panels/grin.0fcd0009.webp" width="300" height="400" alt="" loading="lazy" decoding="async"></figure>
-      <figure class="on"><img src="/images/hero/panels/brian.e1c662e2.webp" width="560" height="700" alt="" loading="lazy" decoding="async"></figure>
-      <figure><img src="/images/hero/panels/two-up.04919dbc.webp" width="188" height="250" alt="" loading="lazy" decoding="async"></figure>
-      <figure><img src="/images/hero/panels/swing.63c4acb1.webp" width="300" height="400" alt="" loading="lazy" decoding="async"></figure>
-      <figure><img src="/images/hero/panels/serve.9b98f371.webp" width="250" height="188" alt="" loading="lazy" decoding="async"></figure>
-      <figure><img src="/images/hero/panels/whitecap.38ab77b1.webp" width="300" height="400" alt="" loading="lazy" decoding="async"></figure>
-      <figure><img src="/images/hero/panels/rally.d08ac709.webp" width="250" height="167" alt="" loading="lazy" decoding="async"></figure>
-      <figure><img src="/images/hero/panels/forehand.e3e49060.webp" width="700" height="467" alt="" loading="lazy" decoding="async"></figure>
-      <figure><img src="/images/hero/panels/seated.a20513fc.webp" width="300" height="400" alt="" loading="lazy" decoding="async"></figure>
-      <figure><img src="/images/hero/panels/lobby.200b1699.webp" width="188" height="250" alt="" loading="lazy" decoding="async"></figure>
+      <figure><img src="/images/hero/panels/close-dink.1ab84d80.webp" width="420" height="560" alt="" fetchpriority="high" decoding="async"></figure>
+      <figure><img src="/images/hero/panels/laugh.e088f833.webp" width="390" height="520" alt="" fetchpriority="high" decoding="async"></figure>
+      <figure><img src="/images/hero/panels/net.d04bb69b.webp" width="520" height="347" alt="" fetchpriority="high" decoding="async"></figure>
+      <figure class="on"><img src="/images/hero/panels/smile-close.95474061.webp" width="615" height="820" alt="" fetchpriority="high" decoding="async"></figure>
+      <figure><img src="/images/hero/panels/reach.28cf12a7.webp" width="390" height="520" alt="" fetchpriority="high" decoding="async"></figure>
+      <figure><img src="/images/hero/panels/court.78500514.webp" width="560" height="373" alt="" fetchpriority="high" decoding="async"></figure>
+      <figure><img src="/images/hero/panels/pair.2b0af1b7.webp" width="390" height="520" alt="" loading="lazy" decoding="async"></figure>
+      <figure class="on"><img src="/images/hero/panels/dink.86c08253.webp" width="615" height="820" alt="" loading="lazy" decoding="async"></figure>
+      <figure class="on"><img src="/images/hero/panels/grin.b93dbec4.webp" width="390" height="520" alt="" loading="lazy" decoding="async"></figure>
+      <figure class="on"><img src="/images/hero/panels/brian.0b9c8c93.webp" width="656" height="820" alt="" loading="lazy" decoding="async"></figure>
+      <figure><img src="/images/hero/panels/two-up.8fa13582.webp" width="420" height="560" alt="" loading="lazy" decoding="async"></figure>
+      <figure><img src="/images/hero/panels/swing.8629e07e.webp" width="390" height="520" alt="" loading="lazy" decoding="async"></figure>
+      <figure><img src="/images/hero/panels/serve.ba27fa95.webp" width="560" height="420" alt="" loading="lazy" decoding="async"></figure>
+      <figure><img src="/images/hero/panels/whitecap.8ea041ee.webp" width="390" height="520" alt="" loading="lazy" decoding="async"></figure>
+      <figure><img src="/images/hero/panels/rally.5e99ca38.webp" width="560" height="373" alt="" loading="lazy" decoding="async"></figure>
+      <figure><img src="/images/hero/panels/forehand.a8eec816.webp" width="820" height="547" alt="" loading="lazy" decoding="async"></figure>
+      <figure><img src="/images/hero/panels/seated.5a7a13b8.webp" width="390" height="520" alt="" loading="lazy" decoding="async"></figure>
+      <figure><img src="/images/hero/panels/lobby.e9a4a6e6.webp" width="420" height="560" alt="" loading="lazy" decoding="async"></figure>
     </div>
     <div class="sp-glow"></div>
     <div class="wrap sp-copy">
@@ -559,41 +559,12 @@ fill="currentColor" stroke="none">
   // entrance — one frame after paint so the transition actually runs
   requestAnimationFrame(function(){ requestAnimationFrame(function(){ stage.classList.add('lit'); }); });
 
-  // depth parallax. Two inputs, one output: the pointer moves the group a few
-  // pixels against itself, and the scroll sinks it. Both are scaled per figure
-  // by how far back it is, which is what makes the group feel like a room and
-  // not a picture. Skipped entirely for reduced motion and coarse pointers.
-  var figs = [].slice.call(stage.querySelectorAll('.hs-fig, .mw-p'));
-  var fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-  if(!reduce && fine && figs.length){
-    var depth = function(f){
-      if(f.classList.contains('d-front') || f.classList.contains('d3')) return 1;
-      if(f.classList.contains('d-mid')   || f.classList.contains('d2')) return 0.55;
-      return 0.3;
-    };
-    var tx = 0, ty = 0, cx = 0, cy = 0, scroll = 0, raf = 0;
-    window.addEventListener('pointermove', function(e){
-      var r = stage.getBoundingClientRect();
-      tx = ((e.clientX - r.left) / r.width - 0.5) * 2;
-      ty = ((e.clientY - r.top) / r.height - 0.5) * 2;
-      if(!raf) raf = requestAnimationFrame(tick);
-    }, {passive:true});
-    window.addEventListener('scroll', function(){
-      scroll = Math.min(1, window.scrollY / 700);
-      if(!raf) raf = requestAnimationFrame(tick);
-    }, {passive:true});
-    function tick(){
-      raf = 0;
-      cx += (tx - cx) * 0.08;
-      cy += (ty - cy) * 0.08;
-      for(var i=0;i<figs.length;i++){
-        var d = depth(figs[i]);
-        figs[i].style.setProperty('--px', (-cx * 16 * d).toFixed(2) + 'px');
-        figs[i].style.setProperty('--py', ((-cy * 8 * d) + (scroll * 40 * d)).toFixed(2) + 'px');
-      }
-      if(Math.abs(tx-cx) > 0.001 || Math.abs(ty-cy) > 0.001) raf = requestAnimationFrame(tick);
-    }
-  }
+  // No parallax. It moved nineteen panels a few pixels against the pointer, and
+  // a brush of the trackpad reads as the whole wall twitching. Alec: the
+  // desktop images shake every couple of seconds, and he does not like it.
+  // Removing it also drops a requestAnimationFrame loop, two window listeners
+  // and will-change:transform on nineteen composited layers, which is the
+  // cheapest thing on this page to give back.
 
   // There is no drive strip in the header any more. Alec, 2026-09-08: feel
   // first, then the ask. The campaign band directly below the hero still

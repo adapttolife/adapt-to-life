@@ -101,6 +101,152 @@ const DRIVE = `      <div class="hs-drive hs-rise" style="--d:760ms;">
         </div>
       </div>`;
 
+
+// ---------------------------------------------------------------------------
+// THE WALL.  Panel layouts, as data.
+//
+// Same lesson as the CAST map above: a note like "move that photo behind the
+// headline" should be an edit to a row here, never to a stylesheet. Positions
+// are percentages of the hero box, and heights are DERIVED from each file's
+// real pixel dimensions in panels.json — so a re-crop that changes an aspect
+// cannot silently squash a panel.
+//
+//   x,y  top-left corner, % of the hero
+//   w    width, % of the hero
+//   d    depth: 1 back (dim, blurred), 2 mid, 3 front (sharp)
+//   r    rotation in degrees. Kept under ~1.2: enough to read as a pinned-up
+//        wall, past that it reads as a template.
+//   m    "m" drops the panel below 900px (see .m-drop in hero-mosaic.css)
+const PANELS = JSON.parse(readFileSync(new URL("../public/images/hero/panels/panels.json", import.meta.url), "utf8"));
+
+// D — THE MOSAIC. The wall is authored around a quiet left third for the type;
+// everything loud lives right of 44%.
+const MOSAIC = [
+  // back plane — the room, not the subjects
+  { n: "serve",      x: 38, y: 2,  w: 13, d: 1, r: -0.7, m: "m" },
+  { n: "rally",      x: 32, y: 62, w: 14, d: 1, r:  0.6, m: "m" },
+  { n: "court",      x: 76, y: 28, w: 15, d: 1, r: -0.5, m: "m" },
+  { n: "shout",      x: 51, y: 26, w: 10, d: 1, r:  0.9, m: "m" },
+  { n: "close-dink", x: 66, y: 38, w: 11, d: 1, r: -0.8, m: "m" },
+  { n: "two-up",     x: 61, y: 82, w: 11, d: 1, r:  0.7, m: "m" },
+  { n: "lobby",      x: 45, y: 78, w: 10, d: 1, r: -0.6, m: "m" },
+  // mid plane
+  { n: "net",        x: 69, y: 1,  w: 17, d: 2, r:  0.5, m: "m" },
+  { n: "laugh",      x: 44, y: 6,  w: 12, d: 2, r: -0.9, m: "m" },
+  { n: "whitecap",   x: 33, y: 18, w: 11, d: 2, r:  0.8, m: "m" },
+  { n: "reach",      x: 90, y: 42, w: 14, d: 2, r: -0.6, m: "s" },
+  { n: "swing",      x: 54, y: 58, w: 11, d: 2, r:  0.9, m: "m" },
+  { n: "pair",       x: 38, y: 32, w: 12, d: 2, r: -0.7, m: "m" },
+  { n: "seated",     x: 87, y: 72, w: 13, d: 2, r:  0.6, m: "m" },
+  { n: "grin",       x: 76, y: 52, w: 12, d: 2, r: -0.5, m: "s" },
+  // front plane — four photographs carry the whole header
+  { n: "smile-close",x: 82, y: 6,  w: 16, d: 3, r:  0.7, m: "s" },
+  { n: "dink",       x: 57, y: 12, w: 19, d: 3, r: -0.6, m: "" },
+  { n: "brian",      x: 43, y: 55, w: 15, d: 3, r:  0.5, m: "s" },
+  { n: "forehand",   x: 62, y: 66, w: 27, d: 3, r: -0.4, m: "" },
+];
+
+// E — THE BANNER. One row, bottom-aligned to a single baseline, heights
+// varying so the top edge is a skyline rather than a ruler. y is ignored;
+// h is the panel's height as a % of the hero and the crop fills it.
+const BANNER = [
+  { n: "bn-reach",  x: -4, w: 16, h: 64, d: 1, m: "m" },
+  { n: "bn-swing",  x:  9, w: 16, h: 78, d: 2, m: "m" },
+  { n: "bn-brian",  x: 22, w: 16, h: 94, d: 3, m: "s" },
+  { n: "bn-seated", x: 35, w: 16, h: 70, d: 2, m: "m" },
+  { n: "bn-dink",   x: 48, w: 16, h: 100, d: 3, m: "" },
+  { n: "bn-grin",   x: 61, w: 16, h: 74, d: 2, m: "m" },
+  { n: "bn-smile",  x: 74, w: 16, h: 90, d: 3, m: "" },
+  { n: "bn-white",  x: 87, w: 16, h: 68, d: 2, m: "s" },
+];
+
+// PHONE LAYOUTS. A wall authored for a 1440x790 landscape box does not thin
+// down to a 390x780 portrait one by hiding panels — that was the first cut and
+// it left two photographs stranded in a field of black. A phone gets its own
+// composition: fewer, much larger panels filling the bottom half under the
+// type. Panels absent from these maps are hidden below 640px.
+const MOSAIC_PHONE = {
+  "brian":       { x: -6, y: 45, w: 48 },
+  "dink":        { x: 46, y: 40, w: 48 },
+  "smile-close": { x: 18, y: 70, w: 44 },
+  "forehand":    { x: 54, y: 72, w: 56 },
+  "laugh":       { x: -8, y: 72, w: 34 },
+  "grin":        { x: 74, y: 58, w: 32 },
+};
+const BANNER_PHONE = {
+  "bn-dink":  { x: -6, w: 58, h: 100 },
+  "bn-smile": { x: 48, w: 58, h: 86 },
+};
+
+// A hero box is wider than it is tall, so one percentage point of width is not
+// one percentage point of height. Panels are placed by width and their height
+// is computed from the file's real aspect against the hero's own — which is why
+// panels.json carries pixel dimensions and not just names.
+const HERO_RATIO = 1440 / 792;
+const PHONE_RATIO = 390 / 780;
+
+// Geometry lives in a GENERATED STYLESHEET, not in style attributes on the
+// figures. The first cut put left/top/width inline and then tried to override
+// them in a phone media query — which can never win, because an inline style
+// outranks any selector. Every panel box, at both widths, is now one rule set
+// emitted from the same data.
+const boxRule = (p, meta, ratio, q, mode) => {
+  const g = q || p;
+  return mode === "banner"
+    ? `left:${g.x}%; width:${g.w}%; height:${g.h}%;`
+    : `left:${g.x}%; top:${g.y}%; width:${g.w}%; ` +
+      `height:${(g.w * ratio * meta.h / meta.w).toFixed(2)}%;`;
+};
+
+const panelHtml = (p, i) => {
+  const meta = PANELS[p.n];
+  if (!meta) throw new Error(`panel "${p.n}" is not in panels.json`);
+  return `      <figure class="mw-p p-${p.n} d${p.d}" style="--r:${p.r || 0}deg; --d:${60 + i * 45}ms;">` +
+    `<img src="/images/hero/panels/${p.n}.webp" width="${meta.w}" height="${meta.h}" alt="" ` +
+    `${p.d === 3 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></figure>`;
+};
+
+// Wide, then phone. A panel with no phone entry is simply not on the phone —
+// which is the honest way to thin a collage. Shrinking all nineteen turns
+// nineteen photographs into nineteen smudges.
+const layoutCss = (rows, phone, mode) => {
+  const wide = rows.map((p) =>
+    `  .mw-p.p-${p.n}{ ${boxRule(p, PANELS[p.n], HERO_RATIO, null, mode)} }`);
+  const small = rows.filter((p) => phone[p.n]).map((p) =>
+    `    .mw-p.p-${p.n}{ display:block; ${boxRule(p, PANELS[p.n], PHONE_RATIO, phone[p.n], mode)} }`);
+  return ["<style>", ...wide,
+    "  @media (max-width:640px){",
+    "    .mw-p{ display:none; }", ...small,
+    "  }", "</style>"].join("\n");
+};
+
+const wall = (rows) => {
+  const at = (d) => rows.map((p, i) => [p, i]).filter(([p]) => p.d === d)
+    .map(([p, i]) => panelHtml(p, i)).join("\n");
+  return [
+    '    <div class="mw-wall" aria-hidden="true">',
+    at(1),
+    '      <div class="mw-haze h1"></div>',
+    at(2),
+    '      <div class="mw-haze h2"></div>',
+    at(3),
+    "    </div>",
+  ].join("\n");
+};
+
+// The compact live drive: one sentence, not a card. D and E are the "less is
+// more" variants and a dashboard in the header would contradict them, but the
+// header still has to say money is moving.
+const DRIVE_LINE = `      <div class="mw-drive mw-rise" style="--d:460ms;">
+        <div class="mw-drive-in" id="heroDrive" hidden>
+          <span class="mw-drive-dot"></span>
+          <span id="heroDriveName"></span>
+          <span class="mw-bar"><i id="heroDriveFill"></i></span>
+          <span id="heroDriveFig"></span>
+          <a href="/donate">Give <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>`;
+
 const ATMOS = `    <div class="hs-grain"></div>
     <div class="hs-vig"></div>`;
 
@@ -188,8 +334,57 @@ ${ATMOS}
 
 `;
 
-const VARIANTS = { a: HERO_A, b: HERO_B, c: HERO_C };
-const LABEL = { a: "A · The lineup", b: "B · The wall", c: "C · The split" };
+/* --------------------------------------------------------------------------
+   D — THE MOSAIC.  Nineteen photographs on a wall, three planes deep, with the
+   air between them doing the separating. The type takes the quiet left third
+   and says one thing.
+   -------------------------------------------------------------------------- */
+const HERO_D = `  <!-- 1 · HERO — the mosaic (variant D) -->
+  <section class="hero-wall-photo dark hero-var" id="heroStage" data-variant="D">
+    <div class="mw-sky"></div>
+${wall(MOSAIC)}
+    <div class="mw-scrim"></div>
+    <div class="wrap mw-copy">
+      <h1 class="serif display mw-rise" style="--d:180ms;">Your place in <em class="italic" style="color:var(--orange)">adaptive sports.</em></h1>
+      <div class="actions mw-rise" style="--d:320ms;">
+        <a href="/donate" class="btn">Donate</a>
+        <a href="/hustle-and-heart" class="mw-quiet">How the fund works <span class="arrow">&rarr;</span></a>
+      </div>
+${DRIVE_LINE}
+    </div>
+    <div class="mw-grain"></div>
+    <div class="mw-vig"></div>
+  </section>
+${layoutCss(MOSAIC, MOSAIC_PHONE, "mosaic")}
+
+`;
+
+/* --------------------------------------------------------------------------
+   E — THE BANNER.  The arena version: one bottom-aligned row, heights varying
+   so the top edge is a skyline. Set in the grotesk rather than the serif.
+   -------------------------------------------------------------------------- */
+const HERO_E = `  <!-- 1 · HERO — the banner (variant E) -->
+  <section class="hero-wall-photo hero-banner dark hero-var" id="heroStage" data-variant="E">
+    <div class="mw-sky"></div>
+${wall(BANNER)}
+    <div class="mw-scrim"></div>
+    <div class="wrap mw-copy">
+      <h1 class="serif display mw-rise" style="--d:180ms;">Your Place in <em style="color:var(--orange)">Adaptive Sports.</em></h1>
+      <div class="actions mw-rise" style="--d:320ms;">
+        <a href="/donate" class="btn">Donate</a>
+        <a href="/hustle-and-heart" class="mw-quiet">How the fund works <span class="arrow">&rarr;</span></a>
+      </div>
+${DRIVE_LINE}
+    </div>
+    <div class="mw-grain"></div>
+    <div class="mw-vig"></div>
+  </section>
+${layoutCss(BANNER, BANNER_PHONE, "banner")}
+
+`;
+
+const VARIANTS = { d: HERO_D, e: HERO_E, a: HERO_A, b: HERO_B, c: HERO_C };
+const LABEL = { d: "D · The mosaic", e: "E · The banner", a: "A · The lineup", b: "B · The wall", c: "C · The split" };
 
 // The stage script: entrance, depth parallax, and the live drive strip. Kept
 // in the page rather than in a shared bundle because only the hero uses it and
@@ -208,10 +403,14 @@ const STAGE_JS = `
   // pixels against itself, and the scroll sinks it. Both are scaled per figure
   // by how far back it is, which is what makes the group feel like a room and
   // not a picture. Skipped entirely for reduced motion and coarse pointers.
-  var figs = [].slice.call(stage.querySelectorAll('.hs-fig'));
+  var figs = [].slice.call(stage.querySelectorAll('.hs-fig, .mw-p'));
   var fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   if(!reduce && fine && figs.length){
-    var depth = function(f){ return f.classList.contains('d-front') ? 1 : f.classList.contains('d-mid') ? 0.55 : 0.3; };
+    var depth = function(f){
+      if(f.classList.contains('d-front') || f.classList.contains('d3')) return 1;
+      if(f.classList.contains('d-mid')   || f.classList.contains('d2')) return 0.55;
+      return 0.3;
+    };
     var tx = 0, ty = 0, cx = 0, cy = 0, scroll = 0, raf = 0;
     window.addEventListener('pointermove', function(e){
       var r = stage.getBoundingClientRect();
@@ -251,7 +450,7 @@ const STAGE_JS = `
       if(!c || !c.goal) return;
       document.getElementById('heroDriveName').textContent = c.name || '';
       document.getElementById('heroDriveFig').textContent = api.money(c.goal) + ' goal';
-      var go = box.querySelector('.hs-drive-go');
+      var go = box.querySelector('.hs-drive-go, a[href="/donate"]');
       if(go && c.page) go.setAttribute('href', c.page);
       box.hidden = false;
       // Only stand down the band below if the strip is actually on screen. The
@@ -284,7 +483,7 @@ const STAGE_JS = `
 // The variant switcher, so one link lets Alec flip between all three at the
 // same scroll position instead of opening three tabs and guessing.
 function switcher(active) {
-  const items = ["a", "b", "c"]
+  const items = ["d", "e", "a", "b", "c"]
     .map(
       (k) =>
         `<a href="/hero-${k}" class="hv-chip${k === active ? " on" : ""}">${LABEL[k]}</a>`,
@@ -311,7 +510,8 @@ for (const [key, hero] of Object.entries(VARIANTS)) {
   out = out
     .replace(
       '<link rel="stylesheet" href="/css/site.css">',
-      '<link rel="stylesheet" href="/css/site.css">\n<link rel="stylesheet" href="/css/hero-lineup.css">',
+      '<link rel="stylesheet" href="/css/site.css">\n<link rel="stylesheet" href="/css/' +
+        ("de".includes(key) ? "hero-mosaic" : "hero-lineup") + '.css">',
     )
     .replace(
       "</head>",

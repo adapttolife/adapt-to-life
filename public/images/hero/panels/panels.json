@@ -1,0 +1,164 @@
+{
+ "bn-brian": {
+  "h": 1269,
+  "role": "front",
+  "src": "JLA_6045.jpg",
+  "w": 533
+ },
+ "bn-dink": {
+  "h": 1269,
+  "role": "front",
+  "src": "JLA_5922.jpg",
+  "w": 533
+ },
+ "bn-grin": {
+  "h": 826,
+  "role": "mid",
+  "src": "JLA_6073.jpg",
+  "w": 347
+ },
+ "bn-reach": {
+  "h": 502,
+  "role": "back",
+  "src": "JLA_5920.jpg",
+  "w": 211
+ },
+ "bn-seated": {
+  "h": 826,
+  "role": "mid",
+  "src": "JLA_5973.jpg",
+  "w": 347
+ },
+ "bn-smile": {
+  "h": 1269,
+  "role": "front",
+  "src": "JLA_6106.jpg",
+  "w": 533
+ },
+ "bn-swing": {
+  "h": 826,
+  "role": "mid",
+  "src": "JLA_6066.jpg",
+  "w": 347
+ },
+ "bn-white": {
+  "h": 826,
+  "role": "mid",
+  "src": "JLA_6077.jpg",
+  "w": 347
+ },
+ "brian": {
+  "h": 860,
+  "role": "front",
+  "src": "JLA_6045.jpg",
+  "w": 688
+ },
+ "close-dink": {
+  "h": 340,
+  "role": "back",
+  "src": "JLA_5883.jpg",
+  "w": 255
+ },
+ "court": {
+  "h": 227,
+  "role": "back",
+  "src": "JLA_5905.jpg",
+  "w": 340
+ },
+ "dink": {
+  "h": 860,
+  "role": "front",
+  "src": "JLA_5922.jpg",
+  "w": 645
+ },
+ "forehand": {
+  "h": 573,
+  "role": "front",
+  "src": "JLA_5945.jpg",
+  "w": 860
+ },
+ "grin": {
+  "h": 560,
+  "role": "mid",
+  "src": "JLA_6073.jpg",
+  "w": 420
+ },
+ "laugh": {
+  "h": 560,
+  "role": "mid",
+  "src": "JLA_6143.jpg",
+  "w": 420
+ },
+ "lobby": {
+  "h": 340,
+  "role": "back",
+  "src": "JLA_6191.jpg",
+  "w": 255
+ },
+ "net": {
+  "h": 373,
+  "role": "mid",
+  "src": "JLA_6084.jpg",
+  "w": 560
+ },
+ "pair": {
+  "h": 560,
+  "role": "mid",
+  "src": "JLA_6127.jpg",
+  "w": 420
+ },
+ "rally": {
+  "h": 227,
+  "role": "back",
+  "src": "JLA_5918.jpg",
+  "w": 340
+ },
+ "reach": {
+  "h": 560,
+  "role": "mid",
+  "src": "JLA_5920.jpg",
+  "w": 420
+ },
+ "seated": {
+  "h": 560,
+  "role": "mid",
+  "src": "JLA_5973.jpg",
+  "w": 420
+ },
+ "serve": {
+  "h": 255,
+  "role": "back",
+  "src": "JLA_6224.jpg",
+  "w": 340
+ },
+ "shout": {
+  "h": 340,
+  "role": "back",
+  "src": "JLA_6074.jpg",
+  "w": 255
+ },
+ "smile-close": {
+  "h": 860,
+  "role": "front",
+  "src": "JLA_6106.jpg",
+  "w": 645
+ },
+ "swing": {
+  "h": 560,
+  "role": "mid",
+  "src": "JLA_6066.jpg",
+  "w": 420
+ },
+ "two-up": {
+  "h": 340,
+  "role": "back",
+  "src": "JLA_6122.jpg",
+  "w": 255
+ },
+ "whitecap": {
+  "h": 560,
+  "role": "mid",
+  "src": "JLA_6077.jpg",
+  "w": 420
+ }
+}

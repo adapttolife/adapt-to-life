@@ -196,8 +196,16 @@ def compose_band():
         for i, (src, w, h, dim) in enumerate(use):
             im = Image.open(os.path.join(SRC, src))
             im.draft("RGB", (im.width // 3, im.height // 3))
-            im = crop_to(im.convert("RGB"), 0.42, 0.38, 0.50, 0.82)
             cw, ch = int(W * (w if step < 0.2 else w * 1.55)), int(H * h)
+            # Crop at the EXACT aspect of the box it is going into. Cropping at
+            # a fixed 0.42 and then resizing into boxes whose aspect ran from
+            # 0.40 to 0.62 stretched every column horizontally by up to 45% —
+            # Alec, looking at the asset: "the faces look squished". They were.
+            # A resize is not a crop, and giving it a different shape than it
+            # was cut for is a distortion, not a fit.
+            im = crop_to(im.convert("RGB"), cw / ch, 0.38, 0.50, 0.82)
+            assert abs((im.width / im.height) - (cw / ch)) < 0.02, \
+                f"{src}: cropped {im.width}x{im.height} for a {cw}x{ch} box"
             im = mono(im.resize((cw, ch), Image.LANCZOS))
             # near full brightness now; the veil does the protecting
             im = ImageEnhance.Brightness(im).enhance(0.66 if dim else 0.98)

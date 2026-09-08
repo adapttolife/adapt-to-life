@@ -78,9 +78,10 @@
 <div class="rv">
 
   <span class="rv-badge">Header review</span>
-  <h1>The athletes go in the header.</h1>
-  <p class="lede">Three candidates, built from the five cut-outs in your Drive folder. Same words, same brand, same page underneath &mdash; the only thing that differs between the three links below is the top screen. Pick one and I will merge it; nothing here is on adapttolife.org yet.</p>
-  <p class="date">Prepared 8 September 2026 &middot; branch <code>hero-lineup-2026-09</code> &middot; not live</p>
+  <h1>Juan holds the middle.</h1>
+  <p class="lede">Round two. Juan is the anchor in all three now &mdash; front, centre, largest, sharpest &mdash; and the athlete I believe is you has moved to the back row. Same words, same brand, same page underneath; the only thing that differs between the three links is the top screen. Pick one and I will merge it; nothing here is on adapttolife.org yet.</p>
+  <p class="lede" style="margin-top:0.8rem;">One question I could not answer from the files, in <a class="textlink" href="#cast">the cast sheet</a> below.</p>
+  <p class="date">Updated 8 September 2026 &middot; branch <code>hero-lineup-2026-09</code> &middot; not live</p>
 
   <h2>Start here</h2>
   <p>Each link is a <strong>complete working homepage</strong>, not a mockup: real nav, real live drive, real scroll. The chips at the bottom of each page flip between the three at any time.</p>
@@ -90,7 +91,7 @@
       <img src="/images/hero/review/a-desk.jpg" width="1280" height="704" alt="Header A: the headline sits left, five athletes recede into depth on the right.">
       <div class="body">
         <span class="k">A &middot; The lineup<span class="pill">my pick</span></span>
-        <div class="d">Type holds the left. The group comes forward out of the dark from back-left to front-right, so the eye lands on the headline, walks the line and finishes on the nearest face.</div>
+        <div class="d">Type holds the left, Juan holds the middle. The rest of the group stands behind him and falls away into the dark, so the eye lands on the headline and then on him.</div>
         <div class="go">Open A &rarr;</div>
       </div>
     </a>
@@ -98,7 +99,7 @@
       <img src="/images/hero/review/b-desk.jpg" width="1280" height="704" alt="Header B: centred headline with an athlete standing at each edge of the frame.">
       <div class="body">
         <span class="k">B &middot; The wall</span>
-        <div class="d">A centred poster. The athletes form a wall the headline stands inside. Loudest of the three, and the one that would photograph best as a share card or a banner.</div>
+        <div class="d">A centred poster: headline on top, Juan directly beneath it on the centre line, the group fanned out to either side. Loudest of the three, and the one that would work as a banner or a share card.</div>
         <div class="go">Open B &rarr;</div>
       </div>
     </a>
@@ -106,11 +107,20 @@
       <img src="/images/hero/review/c-desk.jpg" width="1280" height="704" alt="Header C: a column of type on the left, the athletes in a panel on the right, split by a hairline.">
       <div class="body">
         <span class="k">C &middot; The split</span>
-        <div class="d">A hard editorial column carrying the ask, the group in a bleed panel beside it, one hairline between them. The quietest, and the only one where nothing ever crosses the type.</div>
+        <div class="d">A hard editorial column carrying the ask, the group in a bleed panel beside it, one hairline between. Juan holds the middle of the panel. The quietest, and the only one where nothing ever crosses the type.</div>
         <div class="go">Open C &rarr;</div>
       </div>
     </a>
   </div>
+
+  <h2 id="cast">The recast, and the one thing I had to guess</h2>
+  <p>"I do not want to be the center image, I want Juan to be in the middle" is a <strong>casting</strong> note, not a layout note &mdash; and the first build made it expensive to answer, because the athletes were written into the stylesheet by name. They are not any more. The composition is five slots with fixed geometry, and who stands in each is one line in <code>scripts/build-hero-lab.mjs</code>. Moving somebody is now a one-line change, in all three candidates at once, which is what it should have been the first time.</p>
+  <p>Juan is <code>s-anchor</code> in all three: front, centre, largest, sharpest, and the only figure allowed in front of everything else. The white-capped athlete moved to <code>s-deep</code> &mdash; furthest back, dimmest, off the centre line, still in the picture.</p>
+  <p><strong>Here is the guess.</strong> Nothing in the Drive folder or the site says which of the five is you. The file guide names exactly two people, Juan and Brian, and the athlete it calls Juan is the one who was already in the middle &mdash; so I read your note as being about the banner you sent rather than about my build, and I picked the white-capped athlete as you by comparing against the founder portrait on /about. That is an inference, and it is doing real work in the layout, so it should not stay one.</p>
+  <figure style="margin:1.6rem 0 0;">
+    <img src="/images/hero/review/cast-sheet.jpg" width="1608" height="454" style="width:100%; height:auto; display:block; border-radius:12px; border:1px solid var(--hairline);" alt="Five athlete cut-outs labelled A to E with their source frame numbers.">
+  </figure>
+  <p style="margin-top:1rem;"><strong>Tell me a letter and I will recast.</strong> Two constraints: only A and B are complete figures &mdash; whole athlete, whole chair &mdash; so only they can hold the front row; C, D and E are cropped at the waist in the source and can only stand behind the floor haze that hides the cut. If you want somebody else in the middle, I need a frame of them that includes the chair.</p>
 
   <h2>What changed, and why it should raise more</h2>
 
@@ -127,7 +137,7 @@
 
   <p style="margin-top:1.4rem;"><strong>The header had no people in it.</strong> Today the first screen is a sentence about adaptive sport on an empty black field, and the right half of it is nothing. Giving is not moved by a category; it is moved by a person you can picture. Five athletes were sitting in a Drive folder and none of them were above the fold.</p>
 
-  <p><strong>The ask is now on the first screen, with a number attached.</strong> The live drive &mdash; name, goal and the running total &mdash; used to sit in a band below the header. It is in the header now, next to Donate, and it hides itself when no drive is open. So the first screen says who, what it costs, and how far along we are, in that order. When it shows there, the duplicate band below stands down; on a phone the header keeps the picture and the band below keeps the money, because the phone screen cannot carry both well.</p>
+  <p><strong>The ask is now on the first screen, with a number attached.</strong> The live drive &mdash; name, goal and the running total &mdash; used to sit in a band below the header. It is in the header now, next to Donate, and it hides itself when no drive is open. So the first screen says who, what it costs, and how far along we are, in that order. When it shows there, the duplicate band below stands down; on a phone the header keeps the picture and the band below keeps the money, because the phone screen cannot carry both well. B does the same thing at every width: a centred headline, a sub-line, two buttons AND the strip left about 250px of a 900px laptop for the athletes, which is not enough for anyone to hold the middle.</p>
 
   <p><strong>The picture is a room, not a collage.</strong> This is the part that separates it from a banner someone made in Canva, and it is three specific things. Every figure carries the <em>same</em> light: one warm rim from the glow low and right, one cool fill from the left, and nothing gets its own lighting. Depth is contrast, not stacking order &mdash; the athletes further back lose contrast, lose brightness, gain a little blur and sink into a floor haze, which is what twenty feet of gym air actually does. And every figure has a contact shadow on a shared floor line, because a cut-out without one is floating no matter how well it is masked. Then the whole group drifts a few pixels against your pointer and sinks slightly as you scroll, so it reads as a space rather than a picture.</p>
 
@@ -158,7 +168,7 @@
   <h2>What I need from you</h2>
   <ul class="asks">
     <li><span class="q">Which one?</span><span class="a">A is my recommendation: it is the only one where the type and the photograph are not competing for the same space, and it holds five athletes instead of two. B is the better poster if you want the header to double as a banner. C is the safest and the least memorable.</span></li>
-    <li><span class="q">Are these five the right five, in the right order?</span><span class="a">The two complete figures &mdash; whole athlete, whole chair &mdash; are the only ones that can stand in the front row; the other three are cropped at the waist in the source and can only sit behind the haze. If you want a specific athlete in front, I need a frame of them that includes the chair.</span></li>
+    <li><span class="q">Which letter on the cast sheet is you?</span><span class="a">I moved E to the back row on an inference and I would rather be told than be right by luck. Same answer recasts all three candidates.</span></li>
     <li><span class="q">Do the words stay?</span><span class="a">I did not touch the copy. "Your place in adaptive sports" and the sub-line are exactly what is live today. If you want the header to name the number &mdash; about $3,500 moves one athlete off the sidelines &mdash; say so and I will draft it.</span></li>
     <li><span class="q">Does anyone in these photographs need to approve being on the front page?</span><span class="a">They are already on the site elsewhere, so I have assumed yes. Tell me if any of the five is a no and I will pull them and recompose.</span></li>
   </ul>

@@ -31,15 +31,61 @@ if (a < 0 || b < 0) throw new Error("hero markers not found in index.html");
    Shared pieces
    -------------------------------------------------------------------------- */
 
-// Five athletes, three of them cropped at the waist in the source and
-// therefore only ever placed in the back row, behind the floor haze.
-const FIG = {
-  net: `      <figure class="hs-fig f-net d-back"><img src="/images/hero/cut-net.webp" ${dim("cut-net.webp")} alt="" loading="eager" decoding="async"></figure>`,
-  paddle: `      <figure class="hs-fig f-paddle d-mid"><img src="/images/hero/cut-paddle.webp" ${dim("cut-paddle.webp")} alt="" loading="eager" decoding="async"></figure>`,
-  smile: `      <figure class="hs-fig f-smile d-mid"><img src="/images/hero/cut-smile.webp" ${dim("cut-smile.webp")} alt="" loading="eager" decoding="async"></figure>`,
-  forehand: `      <figure class="hs-fig f-forehand d-front above-haze"><img src="/images/hero/cut-forehand.webp" ${dim("cut-forehand.webp")} alt="" fetchpriority="high" decoding="async"></figure>`,
-  dink: `      <figure class="hs-fig f-dink d-front above-haze"><img src="/images/hero/cut-dink.webp" ${dim("cut-dink.webp")} alt="" fetchpriority="high" decoding="async"></figure>`,
+// ---------------------------------------------------------------------------
+// THE CAST.  Slot -> athlete. This is the only place the two are joined.
+//
+// Alec's first note on the header was "I do not want to be the center image, I
+// want Juan to be in the middle" — a casting note, not a layout note, and the
+// first build made it a stylesheet edit because the athletes were written into
+// the CSS by name. They are not any more: hero-lineup.css owns five slots with
+// fixed geometry and this map owns who stands in each.
+//
+//   s-anchor  front, centre, largest, sharpest — the athlete the page is about
+//   s-flank   front, right edge, bled off the frame
+//   s-left    mid depth, left of the anchor
+//   s-right   mid depth, right of the anchor
+//   s-deep    furthest back, dimmest
+//
+// Two constraints on recasting, both real:
+//   1. ONLY a complete figure — whole athlete, whole chair — can hold s-anchor
+//      or s-flank. Three of the five sources are cropped at the waist and can
+//      only sit behind the floor haze, which is what hides the cut.
+//   2. Slot heights are tuned against the ASPECT of whoever stands in them.
+//      Swapping a near-portrait figure for a landscape crop needs the slot's
+//      --h re-checked; check-hero-lab.mjs is what tells you.
+const CAST = {
+  "s-anchor": "cut-forehand", // Juan  (JLA_5950) — complete figure
+  "s-flank":  "cut-dink",     //       (JLA_5922) — complete figure
+  "s-left":   "cut-paddle",   // Brian (JLA_6045) — waist crop
+  "s-right":  "cut-smile",    //       (JLA_6106) — waist crop
+  "s-deep":   "cut-net",      //       (JLA_6084) — waist crop
 };
+
+// Depth is carried by contrast, and it follows the slot rather than the person.
+const DEPTH = {
+  "s-anchor": "d-front", "s-flank": "d-front",
+  "s-left": "d-mid", "s-right": "d-mid", "s-deep": "d-back",
+};
+
+// The two front figures paint before the fold and are the LCP candidates; the
+// back row is decorative and can wait its turn.
+const EAGER = new Set(["s-anchor", "s-flank"]);
+
+const fig = (slot) => {
+  const f = `cut-${CAST[slot].replace(/^cut-/, "")}.webp`;
+  const [w, h] = DIM[f];
+  const front = EAGER.has(slot);
+  return `      <figure class="hs-fig ${slot} ${DEPTH[slot]}${front ? " above-haze" : ""}">` +
+    `<img src="/images/hero/${f}" width="${w}" height="${h}" alt="" ` +
+    `${front ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></figure>`;
+};
+
+// Back row, then the haze that hides their cropped waists, then the front row.
+const STAGE = [
+  fig("s-deep"), fig("s-left"), fig("s-right"),
+  '      <div class="hs-haze"></div>',
+  fig("s-flank"), fig("s-anchor"),
+].join("\n");
 
 // The live drive strip. Populated by ATLCampaigns like the band below it, and
 // removes itself when there is no live drive rather than sitting empty.
@@ -68,12 +114,7 @@ const HERO_A = `  <!-- 1 · HERO — the lineup (variant A) -->
     <div class="hs-sky"></div>
     <div class="hs-floor"></div>
     <div class="hs-stage" aria-hidden="true">
-${FIG.net}
-${FIG.paddle}
-${FIG.smile}
-      <div class="hs-haze"></div>
-${FIG.forehand}
-${FIG.dink}
+${STAGE}
     </div>
     <div class="hs-scrim"></div>
     <div class="wrap hs-copy">
@@ -101,12 +142,7 @@ const HERO_B = `  <!-- 1 · HERO — the wall (variant B) -->
     <div class="hs-sky"></div>
     <div class="hs-floor"></div>
     <div class="hs-stage" aria-hidden="true">
-${FIG.net}
-${FIG.smile}
-${FIG.paddle}
-      <div class="hs-haze"></div>
-${FIG.dink}
-${FIG.forehand}
+${STAGE}
     </div>
     <div class="hs-scrim"></div>
     <div class="wrap hs-copy center">
@@ -134,12 +170,7 @@ const HERO_C = `  <!-- 1 · HERO — the split (variant C) -->
     <div class="hs-sky"></div>
     <div class="hs-floor"></div>
     <div class="hs-stage" aria-hidden="true">
-${FIG.net}
-${FIG.paddle}
-${FIG.smile}
-      <div class="hs-haze"></div>
-${FIG.forehand}
-${FIG.dink}
+${STAGE}
     </div>
     <div class="hs-scrim"></div>
     <div class="wrap hs-copy">

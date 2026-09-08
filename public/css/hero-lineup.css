@@ -221,30 +221,57 @@
   .hs-drive-fill{ transition:none; }
 }
 
-/* ==========================================================================
-   Placement — desktop composition
-   Left 44% is the type column. The group is weighted right and reads from the
-   far back (left, dim, blurred) to the front (right, sharp), so the eye lands
-   on the headline, travels along the line of athletes and finishes on the
-   nearest face.
-   ========================================================================== */
-.hs-fig.f-net     { left:39%;  --h:30%; --b:47%; --sw:0%;  --d:120ms; }
-.hs-fig.f-smile   { left:52%;  --h:35%; --b:41%; --sw:0%;  --d:220ms; }
-.hs-fig.f-paddle  { right:15%; --h:33%; --b:43%; --sw:0%;  --d:320ms; }
-.hs-fig.f-forehand{ left:45%;  --h:57%; --b:4%;  --sw:76%; --sh:26px; --d:440ms; }
-.hs-fig.f-dink    { right:-6%; --h:63%; --b:3%;  --sw:74%; --sh:28px; --d:560ms; }
 
-/* --- laptop ------------------------------------------------------------- */
+/* ==========================================================================
+   PLACEMENT — slots, not people
+   --------------------------------------------------------------------------
+   The first build wrote the athletes into the CSS by name: .f-forehand sat at
+   45%, .f-net sat at 39%, and moving one person meant editing geometry. Alec's
+   first note on it was "I do not want to be the center image, I want Juan in
+   the middle", which is a casting note, not a layout note — and it should not
+   have cost a stylesheet edit to answer.
+
+   So the composition is five SLOTS with fixed geometry, and who stands in each
+   is one line of the CAST map in scripts/build-hero-lab.mjs:
+
+     s-anchor  front, centre, largest, sharpest — the athlete the page is about
+     s-flank   front, right edge, bled off the frame
+     s-left    mid depth, left of the anchor
+     s-right   mid depth, right of the anchor
+     s-deep    furthest back, dimmest
+
+   One caveat, because it is real: slot heights are tuned against the ASPECT of
+   whoever currently stands in them. The two complete figures (whole athlete,
+   whole chair) are near-portrait; the waist crops are wider. Recasting across
+   those two shapes needs the slot's --h re-checked, and check-hero-lab.mjs is
+   what tells you.
+
+   The back three sit HIGH — heads above the anchor's head, not level with it.
+   A wheelchair is wide enough to swallow anything placed beside it, so a crowd
+   only reads as a crowd when the row behind clears the row in front.
+   ========================================================================== */
+
+/* --- A · THE LINEUP: type left, the anchor holding the middle -------------- */
+/* The back three sit high enough that their HEADS clear the anchor's head
+   (slot top = --b + --h; the anchor's is 75%). Placed level with him they
+   disappear: a wheelchair is wide enough to swallow anything beside it. */
+.hs-fig.s-deep  { right:8%;   --h:28%; --b:46%; --sw:0%;  --d:120ms; }
+.hs-fig.s-left  { left:37%;   --h:36%; --b:42%; --sw:0%;  --d:220ms; }
+.hs-fig.s-right { left:66%;   --h:34%; --b:44%; --sw:0%;  --d:320ms; }
+.hs-fig.s-flank { right:-8%;  --h:56%; --b:2%;  --sw:72%; --sh:24px; --d:440ms; }
+.hs-fig.s-anchor{ left:47%;   --h:75%; --b:0%;  --sw:80%; --sh:30px; --d:560ms; }
+/* the anchor is the only figure allowed in front of everything */
+.hs-fig.s-anchor{ z-index:5; }
+
 @media (max-width:1200px){
-  .hs-fig.f-net     { left:38%;  --h:27%; --b:48%; }
-  .hs-fig.f-smile   { left:50%;  --h:32%; --b:43%; }
-  .hs-fig.f-paddle  { right:11%; --h:30%; --b:45%; }
-  .hs-fig.f-forehand{ left:44%;  --h:53%; --b:4%; }
-  .hs-fig.f-dink    { right:-11%; --h:59%; --b:3%; }
+  .hs-fig.s-deep  { right:-6%; --h:28%; --b:45%; }
+  .hs-fig.s-left  { left:37%;  --h:33%; --b:43%; }
+  .hs-fig.s-right { left:70%;  --h:32%; --b:40%; }
+  .hs-fig.s-flank { right:-20%; --h:52%; }
+  .hs-fig.s-anchor{ left:43%;  --h:70%; }
   .hs-copy .display{ max-width:13ch; }
 }
 
-/* --- tablet: the group drops behind the type and thins out --------------- */
 @media (max-width:900px){
   .hero-stage{ min-height:clamp(560px, 88svh, 820px); }
   .hs-scrim{
@@ -252,28 +279,27 @@
       rgba(8,8,10,0.92) 0%, rgba(8,8,10,0.78) 34%,
       rgba(8,8,10,0.42) 58%, rgba(8,8,10,0.10) 82%, rgba(8,8,10,0) 100%);
   }
-  .hs-fig.f-net, .hs-fig.f-paddle{ display:none; }
-  .hs-fig.f-smile   { left:auto; right:46%; --h:29%; --b:39%; }
-  .hs-fig.f-forehand{ left:auto; right:25%; --h:48%; --b:2%; }
-  .hs-fig.f-dink    { right:-20%; --h:55%; --b:1%; }
-  /* At 768 the 640px strip reached under the front athlete's paddle. The strip
-     is the one element that must never look accidental — it carries the goal. */
-  .hs-drive-in{ max-width:25rem; }
+  .hs-fig.s-deep, .hs-fig.s-left{ display:none; }
+  .hs-fig.s-right { left:auto; right:47%; --h:29%; --b:39%; }
+  .hs-fig.s-flank { right:-24%; --h:50%; --b:1%; }
+  .hs-fig.s-anchor{ left:auto; right:16%; --h:64%; --b:0%; }
   .hs-copy .display{ max-width:14ch; }
   .hs-copy .sub{ max-width:38ch; }
+  /* At 768 the 640px strip reached under the anchor's paddle. The strip is the
+     one element that must never look accidental — it carries the goal. */
+  .hs-drive-in{ max-width:25rem; }
 }
 
-/* --- phone: two athletes, full-width type, ask above the fold ------------ */
 @media (max-width:640px){
   /* On a phone the header IS the photograph — the first draft put the athletes
      entirely below the fold and shipped a wall of type to the majority of the
      traffic. The hero is one screen minus the nav, the copy is top-aligned in
-     the upper half, and the bottom 40% is reserved as floor for the two
-     complete figures. */
+     the upper half, and the bottom 40% is reserved as floor for the anchor and
+     one flanker. */
   .hero-stage{
     min-height:calc(100svh - 4.4rem);
     padding-top:clamp(4.5rem,13vh,6rem);
-    padding-bottom:clamp(16.5rem,46vw,21rem); /* the room the athletes stand in */
+    padding-bottom:clamp(16.5rem,46vw,21rem);
     justify-content:flex-start;
   }
   .hs-scrim{
@@ -281,28 +307,40 @@
       rgba(8,8,10,0.94) 0%, rgba(8,8,10,0.86) 30%,
       rgba(8,8,10,0.50) 56%, rgba(8,8,10,0.08) 80%, rgba(8,8,10,0) 100%);
   }
-  .hs-fig.f-smile{ display:none; }
-  .hs-fig.f-forehand{ left:-15%; right:auto; --h:36%; --b:0%; --sw:74%; --sh:16px; }
-  .hs-fig.f-dink   { right:-26%; --h:41%; --b:0%; --sw:72%; --sh:18px; }
+  .hs-fig.s-right{ display:none; }
+  .hs-fig.s-anchor{ left:-8%; right:auto; --h:38%; --b:0%; --sw:74%; --sh:16px; }
+  .hs-fig.s-flank { right:-26%; --h:38%; --b:0%; --sw:72%; --sh:18px; }
   .hs-haze{ height:30%; }
-  /* The strip and the campaign band say the same thing. On a phone the band
-     below the fold is the better home for it: the header's whole job at this
-     width is the picture and the Donate button. */
-  .hs-drive{ display:none; }
   .hs-copy .display{ max-width:none; }
   .hs-copy .sub{ max-width:none; }
   .hs-copy .actions{ gap:0.7rem; }
   .hs-copy .actions .btn{ flex:1 1 100%; justify-content:center; }
-  .hs-drive-in{ max-width:none; gap:0.7rem 1rem; }
-  .hs-drive-go{ flex:1 1 100%; }
+  /* The strip and the campaign band say the same thing. On a phone the band
+     below the fold is the better home for it: the header's whole job at this
+     width is the picture and the Donate button. */
+  .hs-drive{ display:none; }
 }
 
 /* ==========================================================================
    B — THE WALL
-   Centred type, athletes fanned symmetrically around it. The group is a wall
-   the headline stands in front of, so the scrim here is a soft centre pool
-   rather than a left-to-right wipe.
+   The anchor cannot be centred behind a centred headline, so B stacks instead
+   of flanking: the type holds the upper third and the anchor stands in the
+   middle of the frame beneath it, with the rest of the group fanned out to
+   either side. Symmetry is kept; the middle belongs to one athlete.
    ========================================================================== */
+/* The vertical budget is the whole design problem in B. A centred headline, a
+   sub-line, two buttons AND the drive strip leave about 250px of a 900px laptop
+   for the athletes, so the first stacked cut grew the hero to 1020px and put
+   the anchor's chair below the fold. The strip comes out — B is the poster, and
+   the campaign band directly below it carries the money, exactly as the phone
+   layout already does — and what it frees goes to the athlete in the middle. */
+.hero-wall{
+  justify-content:flex-start;
+  min-height:calc(100svh - 4.4rem);
+  padding-top:clamp(5rem,11vh,7rem);
+  padding-bottom:clamp(18rem,29vw,25rem);
+}
+.hero-wall .hs-drive{ display:none; }
 .hero-wall .hs-copy{ text-align:center; }
 .hero-wall .hs-copy .display{ max-width:17ch; margin-inline:auto; }
 .hero-wall .hs-copy .sub{ max-width:40ch; margin-inline:auto; }
@@ -310,8 +348,8 @@
 .hero-wall .hs-drive-in{ margin-inline:auto; }
 .hero-wall .hs-scrim{
   background:
-    radial-gradient(58% 52% at 50% 44%, rgba(8,8,10,0.90) 0%, rgba(8,8,10,0.62) 52%, rgba(8,8,10,0) 100%),
-    linear-gradient(180deg, rgba(8,8,10,0.55) 0%, rgba(8,8,10,0) 34%);
+    radial-gradient(64% 46% at 50% 30%, rgba(8,8,10,0.92) 0%, rgba(8,8,10,0.60) 56%, rgba(8,8,10,0) 100%),
+    linear-gradient(180deg, rgba(8,8,10,0.60) 0%, rgba(8,8,10,0) 40%);
 }
 .hero-wall .hs-sky{
   background:
@@ -322,46 +360,47 @@
 .hero-wall .hs-floor{
   background:
     radial-gradient(66% 130% at 50% 52%, rgba(255,120,80,0.16) 0%, rgba(255,120,80,0.05) 42%, rgba(255,120,80,0) 78%),
-    linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.55) 78%, rgba(0,0,0,0.8) 100%);
+    linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.50) 74%, rgba(0,0,0,0.8) 100%);
 }
-.hero-wall .hs-fig.f-net     { left:20%;  right:auto; --h:40%; --b:28%; --d:120ms; }
-.hero-wall .hs-fig.f-smile   { left:auto; right:19%;  --h:44%; --b:26%; --d:220ms; }
-.hero-wall .hs-fig.f-paddle  { left:34%;  right:auto; --h:50%; --b:20%; --d:320ms; }
-/* The first cut mirrored the right-hand athlete so the group looked inward
-   from both sides. Flipping a photograph of a real person is not a design
-   move on a page about those people — and the other athlete's shirt reads
-   DIFFERENT BODY, SAME DRIVE, which mirroring would turn into nonsense. Both
-   keep the orientation they were photographed in. */
-.hero-wall .hs-fig.f-dink    { left:-9%;  right:auto; --h:74%; --b:-2%; --sw:78%; --sh:28px; --d:440ms; }
-.hero-wall .hs-fig.f-forehand{ left:auto; right:-6%;  --h:78%; --b:-2%; --sw:80%; --sh:30px; --d:540ms; }
+/* Nothing here is mirrored. An earlier cut flipped the right-hand athlete so
+   the group looked inward from both sides; flipping a photograph of a real
+   person is not a design move on a page about those people, and one of these
+   shirts reads DIFFERENT BODY, SAME DRIVE. */
+.hero-wall .hs-fig.s-left  { left:11%;  right:auto; --h:30%; --b:23%; --sw:0%;  --d:120ms; }
+.hero-wall .hs-fig.s-deep  { left:24%;  right:auto; --h:26%; --b:28%; --sw:0%;  --d:220ms; }
+.hero-wall .hs-fig.s-right { left:auto; right:13%;  --h:30%; --b:25%; --sw:0%;  --d:320ms; }
+.hero-wall .hs-fig.s-flank { left:auto; right:-11%; --h:42%; --b:0%;  --sw:72%; --sh:20px; --d:440ms; }
+/* Placed by left:%, not a transform, so his own width does the centring:
+   at --h:45% he is 17.6% of the frame wide, so 41% puts his midline on 50%.
+   --b:4% keeps the whole chair off the fold instead of on it. */
+.hero-wall .hs-fig.s-anchor{ left:41%;  right:auto; --h:45%; --b:4%;  --sw:80%; --sh:24px; --d:560ms; z-index:5; }
 
 @media (max-width:1200px){
-  .hero-wall .hs-fig.f-net{ left:16%; --h:36%; }
-  .hero-wall .hs-fig.f-smile{ right:15%; --h:40%; }
-  .hero-wall .hs-fig.f-paddle{ left:31%; --h:45%; }
-  .hero-wall .hs-fig.f-dink{ left:-15%; --h:68%; }
-  .hero-wall .hs-fig.f-forehand{ right:-10%; --h:70%; }
+  .hero-wall .hs-fig.s-left  { left:5%;   --h:28%; --b:24%; }
+  .hero-wall .hs-fig.s-deep  { left:20%;  --h:24%; --b:29%; }
+  .hero-wall .hs-fig.s-right { right:8%;  --h:28%; --b:26%; }
+  .hero-wall .hs-fig.s-flank { right:-16%; --h:39%; }
+  .hero-wall .hs-fig.s-anchor{ left:39%;  --h:45%; }
 }
 @media (max-width:900px){
-  .hero-wall .hs-fig.f-net, .hero-wall .hs-fig.f-paddle, .hero-wall .hs-fig.f-smile{ display:none; }
-  .hero-wall .hs-fig.f-dink{ left:-22%; --h:56%; }
-  .hero-wall .hs-fig.f-forehand{ right:-18%; --h:58%; }
-  .hero-wall .hs-scrim{
-    background:
-      radial-gradient(74% 46% at 50% 36%, rgba(8,8,10,0.92) 0%, rgba(8,8,10,0.6) 58%, rgba(8,8,10,0) 100%),
-      linear-gradient(180deg, rgba(8,8,10,0.6) 0%, rgba(8,8,10,0) 40%);
-  }
+  .hero-wall .hs-fig.s-deep, .hero-wall .hs-fig.s-left{ display:none; }
+  .hero-wall .hs-fig.s-right { right:2%;  --h:26%; --b:27%; }
+  .hero-wall .hs-fig.s-flank { right:-22%; --h:38%; }
+  .hero-wall .hs-fig.s-anchor{ left:32%;  --h:44%; }
 }
 @media (max-width:640px){
-  .hero-wall .hs-fig.f-dink{ left:-26%; --h:32%; }
-  .hero-wall .hs-fig.f-forehand{ right:-24%; --h:31%; }
+  .hero-wall{ padding-bottom:clamp(16.5rem,46vw,21rem); }
+  .hero-wall .hs-fig.s-right{ display:none; }
+  .hero-wall .hs-fig.s-anchor{ left:6%;   right:auto; --h:38%; --b:0%; }
+  .hero-wall .hs-fig.s-flank { left:auto; right:-30%; --h:33%; --b:0%; }
 }
 
 /* ==========================================================================
    C — THE SPLIT
    A hard column of type on the left and the group in a bleed panel on the
    right, divided by one hairline. Nothing ever crosses the divider, so the
-   headline is never negotiating with a photograph for contrast.
+   headline is never negotiating with a photograph for contrast. The anchor
+   holds the middle OF THE PANEL, which is the middle of the picture.
    ========================================================================== */
 .hero-split2{ padding-top:0; padding-bottom:0; justify-content:stretch; }
 .hero-split2 .hs-sky{
@@ -370,16 +409,13 @@
     radial-gradient(46% 40% at 88% 84%,  rgba(255,150,90,0.32) 0%, rgba(255,92,57,0) 72%),
     linear-gradient(180deg, #0B0B0D 0%, #101013 50%, #17120F 100%);
 }
-/* the panel: everything photographic lives right of 46% */
-.hero-split2 .hs-stage{ left:46%; }
-.hero-split2 .hs-floor{ left:46%; right:-10%; }
+.hero-split2 .hs-stage{ left:48%; }
+.hero-split2 .hs-floor{ left:48%; right:-10%; }
 .hero-split2 .hs-scrim{
-  background:
-    linear-gradient(90deg, rgba(8,8,10,0.96) 0%, rgba(8,8,10,0.94) 42%, rgba(8,8,10,0.55) 48%, rgba(8,8,10,0) 58%);
+  background:linear-gradient(90deg, rgba(8,8,10,0.96) 0%, rgba(8,8,10,0.94) 42%, rgba(8,8,10,0.55) 48%, rgba(8,8,10,0) 58%);
 }
-/* the divider — one hairline, lit warm where the glow reaches it */
 .hero-split2::after{
-  content:""; position:absolute; top:0; bottom:0; left:46%; width:1px; z-index:6;
+  content:""; position:absolute; top:0; bottom:0; left:48%; width:1px; z-index:6;
   background:linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,120,80,0.42) 62%, rgba(255,120,80,0.10) 100%);
 }
 .hero-split2 .hs-copy{
@@ -389,11 +425,9 @@
 }
 /* The column is measured in rem, not in a percentage of the centred .wrap:
    the wrap is 1140px whatever the window does, so a percentage of it shrank
-   the headline to three ragged lines at 1440 and left a gutter at 1920. */
+   the headline to three ragged lines at 1440 and left a gutter at 1920.
+   Nothing may cross the divider — that constraint IS variant C. */
 .hero-split2 .hs-copy > *{ max-width:min(30rem, 100%); }
-/* Nothing may cross the divider — that constraint IS variant C. The first cut
-   ran the drive strip and the front athlete's paddle straight through it,
-   which reads as a mistake rather than as a rule. */
 .hero-split2 .hs-copy .display{ max-width:min(30rem, 100%); font-size:clamp(2.6rem, 4.1vw, 4.1rem); }
 .hero-split2 .hs-copy .sub{ max-width:min(27rem, 100%); }
 /* In a narrow column the row layout wrapped "Give" onto its own line and left
@@ -405,14 +439,12 @@
 }
 .hero-split2 .hs-drive-body{ flex:1 1 auto; width:100%; }
 .hero-split2 .hs-drive-name{ font-size:1.05rem; }
-.hero-split2 .hs-stage{ left:48%; }
-.hero-split2 .hs-floor{ left:48%; }
-.hero-split2::after{ left:48%; }
-.hero-split2 .hs-fig.f-net     { left:2%;   right:auto; --h:30%; --b:48%; --sw:0%; --d:120ms; }
-.hero-split2 .hs-fig.f-smile   { left:26%;  right:auto; --h:34%; --b:43%; --sw:0%; --d:220ms; }
-.hero-split2 .hs-fig.f-paddle  { left:auto; right:8%;   --h:32%; --b:45%; --sw:0%; --d:320ms; }
-.hero-split2 .hs-fig.f-forehand{ left:2%;   right:auto; --h:60%; --b:3%;  --sw:76%; --sh:24px; --d:440ms; }
-.hero-split2 .hs-fig.f-dink    { left:auto; right:-16%; --h:68%; --b:2%;  --sw:74%; --sh:26px; --d:540ms; }
+
+.hero-split2 .hs-fig.s-deep  { left:2%;   right:auto; --h:28%; --b:46%; --sw:0%;  --d:120ms; }
+.hero-split2 .hs-fig.s-left  { left:12%;  right:auto; --h:33%; --b:42%; --sw:0%;  --d:220ms; }
+.hero-split2 .hs-fig.s-right { left:auto; right:6%;   --h:34%; --b:41%; --sw:0%;  --d:320ms; }
+.hero-split2 .hs-fig.s-flank { left:auto; right:-24%; --h:54%; --b:2%;  --sw:72%; --sh:22px; --d:440ms; }
+.hero-split2 .hs-fig.s-anchor{ left:14%;  right:auto; --h:68%; --b:1%;  --sw:78%; --sh:26px; --d:560ms; z-index:5; }
 
 @media (max-width:1200px){
   .hero-split2 .hs-stage{ left:42%; }
@@ -421,18 +453,18 @@
   .hero-split2 .hs-copy > *,
   .hero-split2 .hs-copy .display,
   .hero-split2 .hs-drive-in{ max-width:min(26rem, 100%); }
-  .hero-split2 .hs-fig.f-net{ display:none; }
-  .hero-split2 .hs-fig.f-smile{ left:20%; --h:31%; --b:44%; }
-  .hero-split2 .hs-fig.f-paddle{ right:2%; --h:29%; --b:46%; }
-  .hero-split2 .hs-fig.f-forehand{ left:0%; --h:56%; }
-  .hero-split2 .hs-fig.f-dink{ right:-22%; --h:63%; }
+  .hero-split2 .hs-fig.s-deep{ display:none; }
+  .hero-split2 .hs-fig.s-left { left:6%;  --h:30%; --b:44%; }
+  .hero-split2 .hs-fig.s-right{ right:0%; --h:31%; --b:43%; }
+  .hero-split2 .hs-fig.s-flank{ right:-30%; --h:50%; }
+  .hero-split2 .hs-fig.s-anchor{ left:8%; --h:64%; }
 }
 @media (max-width:900px){
   /* the split becomes a stack: type first, then the panel as a photo band */
   .hero-split2{ min-height:auto; }
   .hero-split2::after{ display:none; }
-  .hero-split2 .hs-stage{ left:0; top:auto; height:min(52vh,420px); }
-  .hero-split2 .hs-floor{ left:-10%; height:min(30vh,240px); }
+  .hero-split2 .hs-stage{ left:0; }
+  .hero-split2 .hs-floor{ left:-10%; }
   .hero-split2 .hs-scrim{
     background:linear-gradient(180deg, rgba(8,8,10,0.94) 0%, rgba(8,8,10,0.84) 34%, rgba(8,8,10,0.34) 62%, rgba(8,8,10,0) 88%);
   }
@@ -443,35 +475,20 @@
   .hero-split2 .hs-copy > *,
   .hero-split2 .hs-copy .display,
   .hero-split2 .hs-drive-in{ max-width:none; }
-  .hero-split2 .hs-fig.f-paddle, .hero-split2 .hs-fig.f-smile{ display:none; }
-  .hero-split2 .hs-fig.f-forehand{ left:-12%; --h:78%; }
-  .hero-split2 .hs-fig.f-dink{ right:-20%; --h:86%; }
+  .hero-split2 .hs-fig.s-left, .hero-split2 .hs-fig.s-right{ display:none; }
+  .hero-split2 .hs-fig.s-anchor{ left:8%;  --h:54%; }
+  .hero-split2 .hs-fig.s-flank { right:-26%; --h:48%; }
 }
-
-/* ==========================================================================
-   Phone corrections for B and C
-   --------------------------------------------------------------------------
-   Both variants' tablet rules were reaching down to 390px because neither had
-   a narrow block of its own, so C shipped its 900px figure sizes to a phone
-   and put a paddle through the secondary button. At this width all three
-   variants converge: one screen, type in the top half, the two complete
-   athletes standing in the bottom 40%.
-   ========================================================================== */
 @media (max-width:640px){
-  .hero-wall .hs-fig.f-dink    { left:-20%;  right:auto; --h:37%; --b:0%; }
-  .hero-wall .hs-fig.f-forehand{ left:auto;  right:-20%; --h:40%; --b:0%; }
-
   .hero-split2{ padding-bottom:0; }
-  .hero-split2 .hs-stage{ left:0; top:auto; height:auto; inset:0; }
   .hero-split2 .hs-copy{
     min-height:calc(100svh - 4.4rem);
     padding-top:clamp(4.5rem,13vh,6rem);
     padding-bottom:clamp(16.5rem,46vw,21rem);
     justify-content:flex-start;
   }
-  .hero-split2 .hs-fig.f-smile, .hero-split2 .hs-fig.f-paddle{ display:none; }
-  .hero-split2 .hs-fig.f-forehand{ left:-15%; right:auto; --h:36%; --b:0%; }
-  .hero-split2 .hs-fig.f-dink    { left:auto; right:-26%; --h:41%; --b:0%; }
+  .hero-split2 .hs-fig.s-anchor{ left:-8%;  --h:38%; --b:0%; }
+  .hero-split2 .hs-fig.s-flank { right:-28%; --h:36%; --b:0%; }
   .hero-split2 .hs-floor{ left:-10%; right:-10%; height:38%; }
   .hero-split2 .hs-haze{ height:30%; }
 }

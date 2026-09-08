@@ -180,43 +180,50 @@ def compose_band():
     compresses to a fraction of its parts.
     """
     import numpy as np
-    COLS = [  # source, width share, height share, back row
-        ("JLA_5920.jpg", 0.15, 0.62, True),  ("JLA_6066.jpg", 0.15, 0.80, False),
-        ("JLA_6077.jpg", 0.15, 0.54, True),  ("JLA_6045.jpg", 0.15, 0.88, False),
-        ("JLA_5973.jpg", 0.15, 0.66, True),  ("JLA_5922.jpg", 0.15, 0.95, False),
-        ("JLA_6073.jpg", 0.15, 0.60, True),  ("JLA_6106.jpg", 0.16, 0.78, False),
+    # Alec, pointing at variant 2: "less crammed, none of the pictures are
+    # squished. I want a clean vertical layout when we use this."
+    #
+    # Crammed was the pitch. The columns were 15% wide on a 13% pitch, so every
+    # one of them OVERLAPPED its neighbour by two points and the band read as a
+    # solid wall of face. Real gaps are what make a row of columns read as
+    # columns. Width is now comfortably inside the pitch, and the heights swing
+    # wider so the top edge is a skyline rather than a comb.
+    COLS = [  # source, height share, back row
+        ("JLA_5920.jpg", 0.58, True),  ("JLA_6066.jpg", 0.86, False),
+        ("JLA_6077.jpg", 0.52, True),  ("JLA_6045.jpg", 1.00, False),
+        ("JLA_5973.jpg", 0.66, True),  ("JLA_5922.jpg", 0.92, False),
+        ("JLA_6073.jpg", 0.56, True),  ("JLA_6106.jpg", 0.80, False),
     ]
-    # Sized for what a background at `cover` behind a veil actually needs, not for
-    # the viewport. 1600 wide cost 58 KB and broke /donate's budget the moment
-    # the band became visible; 1100 at q56 is 28 KB and the difference does not
-    # survive the veil, the blur on the back row, or a 2x screen.
-    for name, W, H, step in (("pg-band-wide", 1100, 430, 0.13), ("pg-band-tall", 700, 480, 0.26)):
+    # These aspects are the CONTRACT with page-header.css, which anchors the band
+    # as a fixed-aspect strip at the bottom of the hero rather than stretching it
+    # over the whole thing. It has to be that way: interior heroes run from
+    # 1.50:1 (/donate) to 2.75:1 (/contact at 1920), and one fixed-aspect image
+    # under `cover` cannot serve that range — it scaled up and cropped the faces
+    # clean off the top. A strip with its own aspect always shows the whole band.
+    for name, W, H, n, pitch, cwf in (("pg-band-wide", 1200, 420, 8, 0.126, 0.104),
+                                      ("pg-band-tall", 760, 620, 4, 0.255, 0.212)):
         canvas = Image.new("RGB", (W, H), (0, 0, 0))
-        use = COLS if step < 0.2 else COLS[1::2]
-        for i, (src, w, h, dim) in enumerate(use):
+        use = COLS if n == 8 else COLS[1::2]
+        for i, (src, h, dim) in enumerate(use):
             im = Image.open(os.path.join(SRC, src))
             im.draft("RGB", (im.width // 3, im.height // 3))
-            cw, ch = int(W * (w if step < 0.2 else w * 1.55)), int(H * h)
-            # Crop at the EXACT aspect of the box it is going into. Cropping at
-            # a fixed 0.42 and then resizing into boxes whose aspect ran from
-            # 0.40 to 0.62 stretched every column horizontally by up to 45% —
-            # Alec, looking at the asset: "the faces look squished". They were.
-            # A resize is not a crop, and giving it a different shape than it
-            # was cut for is a distortion, not a fit.
-            im = crop_to(im.convert("RGB"), cw / ch, 0.38, 0.50, 0.82)
+            cw, ch = int(W * cwf), int(H * h)
+            # Crop at the EXACT aspect of the box it goes into. Cropping at a
+            # fixed ratio and resizing into a differently-shaped box stretched
+            # every column by up to 45% — "the faces look squished". They were.
+            im = crop_to(im.convert("RGB"), cw / ch, 0.36, 0.50, 0.80)
             assert abs((im.width / im.height) - (cw / ch)) < 0.02, \
                 f"{src}: cropped {im.width}x{im.height} for a {cw}x{ch} box"
             im = mono(im.resize((cw, ch), Image.LANCZOS))
-            # near full brightness now; the veil does the protecting
             im = ImageEnhance.Brightness(im).enhance(0.66 if dim else 0.98)
             if dim:
                 im = im.filter(ImageFilter.GaussianBlur(0.8))
-            canvas.paste(im, (int(W * (-0.04 + i * step)), H - ch))
-        # only the very bottom is taken down, so the band sits on the black the
-        # next section starts from instead of ending on a ruled line
+            # centred on its own pitch, so the gaps are even across the band
+            x = int(W * (0.5 * (1 - n * pitch) + i * pitch + (pitch - cwf) / 2))
+            canvas.paste(im, (x, H - ch))
         a = np.asarray(canvas, np.float32) / 255.0
         y = np.linspace(0, 1, H)[:, None, None]
-        a *= np.clip(1.0 - np.maximum(0, (y - 0.88) / 0.12) * 0.85, 0, 1)
+        a *= np.clip(1.0 - np.maximum(0, (y - 0.90) / 0.10) * 0.85, 0, 1)
         canvas = Image.fromarray((a * 255).astype(np.uint8))
         out = os.path.join(DST, f"{name}.webp")
         canvas.save(out, "WEBP", quality=56, method=6)

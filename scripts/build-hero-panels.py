@@ -180,50 +180,53 @@ def compose_band():
     compresses to a fraction of its parts.
     """
     import numpy as np
-    # Alec: "use less vertical frames besides squishing them, especially for
-    # mobile ... also use different pictures than the main banner."
+    # Alec, three times: "the pictures still look squeezed and squished."
     #
-    # FEWER, WIDER FRAMES. Nothing here was ever geometrically distorted — each
-    # column is cropped at exactly the aspect of the box it goes into — but a
-    # 0.30-aspect box is a vertical SLICE of a person, and a slice of a face
-    # reads as squished whether or not the arithmetic says otherwise. Eight
-    # columns on a phone is four too many. Five on desktop and three on a phone
-    # gives every frame something like portrait proportions, which is what makes
-    # a face look like a face.
+    # He was right and the reason was not distortion. Every column has been
+    # cropped at exactly the aspect of its box since the stretch bug, and the
+    # rendered strip matches the asset to 0.001 — checked end to end. What was
+    # wrong is WHERE the crop was taken: ax=0.50 for every photograph, on the
+    # assumption the athlete is centred. Run a human matte over these five and
+    # they are not:
     #
-    # DIFFERENT PHOTOGRAPHS. The homepage mosaic uses 19 of the 25 favourites;
-    # these are five of the six it does not touch, so the interior pages are not
-    # a rerun of the front page.
-    COLS = [  # source, height share, back row
-        ("JLA_5884.jpg", 0.72, True),   # reaching low for a dig
-        ("JLA_6071.jpg", 1.00, False),  # grinning, whole chair
-        ("JLA_5904.jpg", 0.62, True),   # rally, wide
-        ("JLA_6105.jpg", 0.92, False),  # laughing between points
-        ("JLA_6123.jpg", 0.70, True),   # two at the net
+    #     JLA_5884  subject centre 0.392      JLA_6071  0.381
+    #     JLA_5904  0.544                     JLA_6105  0.486
+    #     JLA_6123  0.615
+    #
+    # So a narrow frame cut into four of the five, which is exactly what
+    # "squeezed" looks like. The anchors below are measured from those mattes,
+    # not guessed, and ay is set from where each subject's head actually starts.
+    #
+    # Also: FEWER and TALLER. Four frames on desktop and two on a phone, each
+    # around 0.5-0.7 aspect — real portrait proportions — and the band is tall
+    # enough to fill most of the hero, because the black around it was the other
+    # half of the complaint.
+    COLS = [  # source, height share, back row, ax, ay  (ax/ay from the matte)
+        ("JLA_5884.jpg", 0.74, True,  0.39, 0.20),  # reaching low for a dig
+        ("JLA_6071.jpg", 1.00, False, 0.38, 0.33),  # grinning, whole chair
+        ("JLA_6105.jpg", 0.88, False, 0.49, 0.23),  # laughing between points
+        ("JLA_6123.jpg", 0.70, True,  0.62, 0.42),  # two at the net
     ]
-    for name, W, H, n, pitch, cwf in (("pg-band-wide", 1200, 420, 5, 0.190, 0.156),
-                                      ("pg-band-tall", 760, 500, 3, 0.325, 0.300)):
+    for name, W, H, n, pitch, cwf in (("pg-band-wide", 1200, 520, 4, 0.235, 0.205),
+                                      ("pg-band-tall", 760, 680, 2, 0.460, 0.440)):
         canvas = Image.new("RGB", (W, H), (0, 0, 0))
-        use = COLS if n == 5 else [COLS[1], COLS[3], COLS[0]]
-        for i, (src, h, dim) in enumerate(use):
+        use = COLS if n == 4 else [COLS[1], COLS[2]]
+        for i, (src, h, dim, ax, ay) in enumerate(use):
             im = Image.open(os.path.join(SRC, src))
             im.draft("RGB", (im.width // 3, im.height // 3))
             cw, ch = int(W * cwf), int(H * h)
-            # Crop at the EXACT aspect of the box it goes into. Cropping at a
-            # fixed ratio and resizing into a differently-shaped box stretches
-            # the image, which is a real distortion and was one once.
-            im = crop_to(im.convert("RGB"), cw / ch, 0.36, 0.50, 0.86)
+            im = crop_to(im.convert("RGB"), cw / ch, ay, ax, 0.88)
             assert abs((im.width / im.height) - (cw / ch)) < 0.02, \
                 f"{src}: cropped {im.width}x{im.height} for a {cw}x{ch} box"
             im = mono(im.resize((cw, ch), Image.LANCZOS))
-            im = ImageEnhance.Brightness(im).enhance(0.70 if dim else 0.98)
+            im = ImageEnhance.Brightness(im).enhance(0.72 if dim else 0.98)
             if dim:
                 im = im.filter(ImageFilter.GaussianBlur(0.7))
             x = int(W * (0.5 * (1 - n * pitch) + i * pitch + (pitch - cwf) / 2))
             canvas.paste(im, (x, H - ch))
         a = np.asarray(canvas, np.float32) / 255.0
         y = np.linspace(0, 1, H)[:, None, None]
-        a *= np.clip(1.0 - np.maximum(0, (y - 0.90) / 0.10) * 0.85, 0, 1)
+        a *= np.clip(1.0 - np.maximum(0, (y - 0.92) / 0.08) * 0.85, 0, 1)
         canvas = Image.fromarray((a * 255).astype(np.uint8))
         out = os.path.join(DST, f"{name}.webp")
         canvas.save(out, "WEBP", quality=58, method=6)

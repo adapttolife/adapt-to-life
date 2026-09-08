@@ -29,8 +29,8 @@
   isolation:isolate;
   overflow:hidden;
   background:#000;
-  padding-top:clamp(7rem, 15vh, 10rem);
-  padding-bottom:clamp(11rem, 26vh, 17rem);
+  padding-top:clamp(6rem, 13vh, 8.5rem);
+  padding-bottom:clamp(12rem, 30vh, 19rem);
 }
 
 /* ONE pre-composed strip, not eight <img> columns.
@@ -49,7 +49,7 @@
      strip the asset's own aspect means `cover` is an exact fit at every width
      and the whole band is always visible; what changes with the page is how
      much black sits above it, which is where the type goes anyway. */
-  aspect-ratio:1200/420;
+  aspect-ratio:1200/520;
   background:url('/images/hero/panels/pg-band-wide.webp') center bottom/cover no-repeat;
 }
 
@@ -112,15 +112,17 @@
      match, and the hero grows so there is real room for the band rather than a
      sliver behind a paragraph. */
   .hero.pg-band{
-    padding-top:clamp(5.5rem, 13vh, 7.5rem);
-    /* clear the strip. It is 760/500 of the viewport width — 257px at 390 — so
-       anything under that lands the last line of copy on a frame's top edge. */
-    padding-bottom:clamp(18rem, 72vw, 24rem);
+    /* Less black. Alec: "I want the vertical layout to be taller, I don't like
+       all the black space." The strip is 760/680 of the viewport width now —
+       349px at 390 rather than 257 — and the padding above the type comes down
+       so the dead band between the nav and the eyebrow goes with it. */
+    padding-top:clamp(4rem, 10vh, 5.5rem);
+    padding-bottom:clamp(23rem, 92vw, 28rem);
   }
   .hero.pg-band > .wrap > *{ max-width:none; }
   .hero.pg-band > .wrap::before{ left:-14%; right:-14%; top:-7%; bottom:-9%;
     background:rgba(0,0,0,0.88); }
-  .hero.pg-band::before{ aspect-ratio:760/500;
+  .hero.pg-band::before{ aspect-ratio:760/680;
     background-image:url('/images/hero/panels/pg-band-tall.webp'); }
   .hero.pg-band::after{
     background:

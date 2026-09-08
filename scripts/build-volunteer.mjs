@@ -14,7 +14,7 @@
 // change with it and nobody has to remember they exist. `--check` is wired into
 // the test suite so a nav edit that skips the generator fails the build.
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync, rmSync } from "node:fs";
-import { PAGE_HEADER_SHEET, PAGE_HEADER_CLASS } from "./lib/page-header.mjs";
+import { PAGE_HEADER_SHEET, PAGE_HEADER_CLASS, PAGE_HEADER_VARS } from "./lib/page-header.mjs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { SHARED, LANES, ROLES } from "../data/volunteer-roles.mjs";
@@ -64,7 +64,7 @@ function head({ title, desc, canonical, card, cardAlt }) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
-${PAGE_HEADER_SHEET}
+${PAGE_HEADER_SHEET}\n${PAGE_HEADER_VARS}
 <script src="/js/attribution.js" defer></script>
 </head>
 <body>

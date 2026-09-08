@@ -50,7 +50,7 @@
      and the whole band is always visible; what changes with the page is how
      much black sits above it, which is where the type goes anyway. */
   aspect-ratio:1200/520;
-  background:url('/images/hero/panels/pg-band-wide.webp') center bottom/cover no-repeat;
+  background:var(--pg-band-wide) center bottom/cover no-repeat;
 }
 
 /* The veil is now only what the PAGE needs, not what the type needs.
@@ -123,7 +123,7 @@
   .hero.pg-band > .wrap::before{ left:-14%; right:-14%; top:-7%; bottom:-9%;
     background:rgba(0,0,0,0.88); }
   .hero.pg-band::before{ aspect-ratio:760/680;
-    background-image:url('/images/hero/panels/pg-band-tall.webp'); }
+    background-image:var(--pg-band-tall); }
   .hero.pg-band::after{
     background:
       linear-gradient(180deg, rgba(0,0,0,0.86) 0%, rgba(0,0,0,0.34) 10%, rgba(0,0,0,0) 22%),

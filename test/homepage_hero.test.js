@@ -11,7 +11,7 @@
 // last remembered them.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 
 const html = readFileSync(new URL("../public/index.html", import.meta.url), "utf8");
 
@@ -31,12 +31,20 @@ test("the hero script block is present and not duplicated", () => {
   assert.equal((html.match(/<!-- \/hero:script -->/g) || []).length, 1);
 });
 
-test("every panel the hero references is a file that exists", () => {
-  const panels = JSON.parse(readFileSync(
-    new URL("../public/images/hero/panels/panels.json", import.meta.url), "utf8"));
-  const used = [...html.matchAll(/\/images\/hero\/panels\/([a-z0-9-]+)\.webp/g)].map((m) => m[1]);
-  assert.ok(used.length >= 10, `hero references only ${used.length} panels`);
-  for (const name of new Set(used)) {
-    assert.ok(panels[name], `hero references "${name}" which is not in panels.json`);
+test("every panel the hero references exists, and is fingerprinted", () => {
+  // The fingerprint is the point, not a detail. public/_headers caches media
+  // for 30 days and tells you to rename an image if you replace it. Overwriting
+  // the interior band in place under that policy cost four review rounds: every
+  // fix shipped, and Alec's browser kept serving the first version. A URL
+  // without a content hash in it is that bug waiting to happen again.
+  const used = [...html.matchAll(/\/images\/hero\/panels\/([a-z0-9-]+\.[0-9a-f]{8}\.webp)/g)]
+    .map((m) => m[1]);
+  assert.ok(used.length >= 10, `hero references only ${used.length} fingerprinted panels`);
+  const plain = [...html.matchAll(/\/images\/hero\/panels\/([a-z0-9-]+)\.webp/g)].map((m) => m[1]);
+  assert.equal(plain.length, 0,
+    `hero references un-fingerprinted panels: ${plain.join(", ")}`);
+  for (const file of new Set(used)) {
+    assert.ok(existsSync(new URL(`../public/images/hero/panels/${file}`, import.meta.url)),
+      `hero references "${file}" which is not on disk`);
   }
 });

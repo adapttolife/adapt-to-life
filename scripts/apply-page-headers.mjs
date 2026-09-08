@@ -20,7 +20,8 @@
 //     two pictures arguing.
 //   · the homepage, which has the mosaic.
 import { readFileSync, writeFileSync, readdirSync } from "node:fs";
-import { PAGE_HEADER_SHEET as SHEET, PAGE_HEADER_CLASS as BAND } from "./lib/page-header.mjs";
+import { PAGE_HEADER_SHEET as SHEET, PAGE_HEADER_CLASS as BAND,
+         PAGE_HEADER_VARS as VARS } from "./lib/page-header.mjs";
 
 const ROOT = new URL("../public/", import.meta.url);
 
@@ -61,10 +62,16 @@ for (const file of readdirSync(ROOT).filter((f) => f.endsWith(".html"))) {
 
   const classes = ["hero", "dark", ...modifiers.filter((c) => c !== BAND), BAND];
   html = html.replace(open[0], `<section class="${classes.join(" ")}">`);
+  // the sheet, then the hashed band URLs. The vars block is marked so a
+  // rebuild replaces it instead of stacking a second one.
   if (!html.includes(SHEET)) {
     html = html.replace('<link rel="stylesheet" href="/css/site.css">',
                         `<link rel="stylesheet" href="/css/site.css">\n${SHEET}`);
   }
+  const VARS_RE = /\n<!-- band:vars -->[\s\S]*?<\/style>/;
+  const block = `\n<!-- band:vars -->${VARS}`;
+  html = VARS_RE.test(html) ? html.replace(VARS_RE, block)
+                            : html.replace(SHEET, `${SHEET}${block}`);
   writeFileSync(url, html);
   changed += 1;
   console.log(`${file.padEnd(30)} banded`);

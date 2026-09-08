@@ -41,6 +41,14 @@ export const HERO_END = "  <!-- 2 · CAMPAIGN BAND";
 //   m    "m" drops the panel below 900px (see .m-drop in hero-mosaic.css)
 const PANELS = JSON.parse(readFileSync(new URL("../../public/images/hero/panels/panels.json", import.meta.url), "utf8"));
 
+// Content-hashed filenames. public/_headers caches media for 30 days and says
+// to rename an image if you replace it; overwriting one in place means every
+// returning visitor keeps the old bytes for a month. Every generated image is
+// fingerprinted by build-hero-panels.py and resolved through this manifest, so
+// changing a pixel changes the URL and nothing can go stale.
+const HASH = JSON.parse(readFileSync(new URL("../../public/images/hero/panels/hashes.json", import.meta.url), "utf8"));
+export const hashed = (file) => HASH[file] || file;
+
 // D — THE MOSAIC. The wall is authored around a quiet left third for the type;
 // everything loud lives right of 44%.
 const MOSAIC = [
@@ -145,7 +153,7 @@ const panelHtml = (p, i) => {
   const meta = PANELS[p.n];
   if (!meta) throw new Error(`panel "${p.n}" is not in panels.json`);
   return `      <figure class="mw-p p-${p.n} d${p.d}" style="--r:${p.r || 0}deg; --d:${60 + i * 45}ms;">` +
-    `<img src="/images/hero/panels/${p.n}.webp" width="${meta.w}" height="${meta.h}" alt="" ` +
+    `<img src="/images/hero/panels/${hashed(`${p.n}.webp`)}" width="${meta.w}" height="${meta.h}" alt="" ` +
     `${p.d === 3 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></figure>`;
 };
 
@@ -315,7 +323,7 @@ const cut = (name, extra = "") => {
 const img = (name, cls, extra = "") => {
   const m = PANELS[name];
   if (!m) throw new Error(`"${name}" is not in panels.json — run build-hero-panels.py`);
-  return `<img src="/images/hero/panels/${name}.webp" width="${m.w}" height="${m.h}" alt=""${cls ? ` class="${cls}"` : ""} ${extra}>`;
+  return `<img src="/images/hero/panels/${hashed(`${name}.webp`)}" width="${m.w}" height="${m.h}" alt=""${cls ? ` class="${cls}"` : ""} ${extra}>`;
 };
 
 const HERO_FRAME = `  <!-- 1 · HERO — one photograph (variant 3) -->

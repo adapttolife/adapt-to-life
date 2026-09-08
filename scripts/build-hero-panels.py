@@ -29,6 +29,7 @@ environment — glow behind the panels, warm rim on their edges — never a tint
 a photograph, so the athletes stay in the same black and white the rest of the
 site uses.
 """
+import hashlib
 import json
 import os
 import sys
@@ -267,6 +268,39 @@ def compose_roll():
     print(f"{'roll-strip':20s} {W}x{H} {os.path.getsize(out)/1024:6.1f} KB  (tileable, pitch {PITCH}px)")
 
 
+def fingerprint():
+    """Rename every generated image to include a hash of its own bytes.
+
+    public/_headers gives media a 30-day max-age and says, in as many words:
+    "If you DO replace an image, rename it." I did not. I overwrote
+    pg-band-wide.webp and pg-band-tall.webp at the same path on every iteration
+    of this band, so Alec's browser held the FIRST version for a month and every
+    fix I shipped was invisible to him. He told me four times that the frames
+    still looked squished; he was looking at the same old bytes each time, and
+    the file that documents the rule was in this repo the whole time.
+
+    Content-hashed names make that impossible: change a pixel and the URL
+    changes, so nothing can be stale and nothing has to be remembered.
+    """
+    manifest = {}
+    for f in sorted(os.listdir(DST)):
+        if not f.endswith(".webp") or "." in f[:-5]:
+            continue                      # already fingerprinted
+        raw = open(os.path.join(DST, f), "rb").read()
+        h = hashlib.sha256(raw).hexdigest()[:8]
+        stem = f[:-5]
+        manifest[f] = f"{stem}.{h}.webp"
+        os.replace(os.path.join(DST, f), os.path.join(DST, manifest[f]))
+    # drop fingerprinted files that are no longer current
+    keep = set(manifest.values())
+    for f in os.listdir(DST):
+        if f.endswith(".webp") and "." in f[:-5] and f not in keep:
+            os.remove(os.path.join(DST, f))
+    with open(os.path.join(DST, "hashes.json"), "w") as fh:
+        json.dump(manifest, fh, indent=1, sort_keys=True)
+    print(f"{'fingerprinted':20s} {len(manifest)} files -> hashes.json")
+
+
 def main():
     os.makedirs(DST, exist_ok=True)
     manifest, total = {}, 0
@@ -307,6 +341,7 @@ def main():
         print(f"{name:14s} {role:5s} {im.size[0]:4d}x{im.size[1]:<4d} {n/1024:6.1f} KB   {src}")
     compose_band()
     compose_roll()
+    fingerprint()
     with open(os.path.join(DST, "panels.json"), "w") as f:
         json.dump(manifest, f, indent=1, sort_keys=True)
     print(f"{'TOTAL':14s} {len(PANELS)} panels {'':10s} {total/1024:6.1f} KB")

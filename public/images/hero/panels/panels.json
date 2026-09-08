@@ -14,7 +14,7 @@
  "big-fill": {
   "h": 680,
   "role": "big",
-  "src": "JLA_6122.jpg",
+  "src": "JLA_6119.jpg",
   "w": 1700
  },
  "big-forehand": {
@@ -155,6 +155,12 @@
   "src": "JLA_6084.jpg",
   "w": 520
  },
+ "paddle": {
+  "h": 560,
+  "role": "back",
+  "src": "JLA_6131.jpg",
+  "w": 420
+ },
  "pair": {
   "h": 520,
   "role": "mid",
@@ -262,12 +268,6 @@
   "role": "back",
   "src": "JLA_5876.jpg",
   "w": 380
- },
- "two-up": {
-  "h": 560,
-  "role": "back",
-  "src": "JLA_6122.jpg",
-  "w": 420
  },
  "whitecap": {
   "h": 520,

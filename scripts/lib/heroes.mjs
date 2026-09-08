@@ -61,7 +61,7 @@ const MOSAIC = [
   { n: "court",      x: 76, y: 26, w: 15, d: 1, r: -0.5, m: "m" },
   { n: "shout",      x: 51, y: 22, w: 10, d: 1, r:  0.9, m: "m" },
   { n: "close-dink", x: 66, y: 36, w: 11, d: 1, r: -0.8, m: "m" },
-  { n: "two-up",     x: 62, y: 80, w: 11, d: 1, r:  0.7, m: "m" },
+  { n: "paddle",     x: 62, y: 80, w: 11, d: 1, r:  0.7, m: "m" },
   { n: "lobby",      x: 34, y: 64, w: 11, d: 1, r: -0.6, m: "m" },
   // The two buffer frames. On the phone they are the cells the headline covers;
   // on the wall they fill the left-centre hole the copy block leaves, which is
@@ -434,7 +434,7 @@ ${stripRun}
 // the light should not be a stylesheet edit.
 const GRID_CELLS = [
   "close-dink", "laugh", "net", "smile-close", "reach", "court",
-  "pair", "dink", "grin", "brian", "two-up", "swing",
+  "pair", "dink", "grin", "brian", "paddle", "swing",
   "serve", "whitecap", "rally", "forehand", "seated", "lobby",
 ];
 const GRID_LIT = new Set(["smile-close", "dink", "brian", "grin"]);

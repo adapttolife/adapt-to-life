@@ -1,7 +1,7 @@
 {
  "bench.webp": "bench.dab7e70c.webp",
  "big-brian.webp": "big-brian.6529d331.webp",
- "big-fill.webp": "big-fill.4125b476.webp",
+ "big-fill.webp": "big-fill.29e99ea3.webp",
  "big-forehand.webp": "big-forehand.b9452797.webp",
  "big-reach.webp": "big-reach.78d37de0.webp",
  "big-ryan.webp": "big-ryan.2b97a6b0.webp",
@@ -25,10 +25,11 @@
  "laugh.webp": "laugh.e088f833.webp",
  "lobby.webp": "lobby.e9a4a6e6.webp",
  "net.webp": "net.d04bb69b.webp",
+ "paddle.webp": "paddle.bace1a2a.webp",
  "pair.webp": "pair.2b0af1b7.webp",
  "pg-apply.webp": "pg-apply.735615e5.webp",
  "pg-band-tall.webp": "pg-band-tall.6cc30378.webp",
- "pg-band-wide.webp": "pg-band-wide.dc08206a.webp",
+ "pg-band-wide.webp": "pg-band-wide.40fa635a.webp",
  "pg-brian.webp": "pg-brian.6121c60d.webp",
  "pg-dink.webp": "pg-dink.16dcd257.webp",
  "pg-grin.webp": "pg-grin.6f0fcdd9.webp",
@@ -47,6 +48,5 @@
  "smile-close.webp": "smile-close.af71b3b5.webp",
  "swing.webp": "swing.8629e07e.webp",
  "turned.webp": "turned.9888a36e.webp",
- "two-up.webp": "two-up.8fa13582.webp",
  "whitecap.webp": "whitecap.8ea041ee.webp"
 }

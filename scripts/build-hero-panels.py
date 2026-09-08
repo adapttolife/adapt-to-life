@@ -63,6 +63,17 @@ DEPTH_DIM = {"front": 1.00, "mid": 0.62, "back": 0.40}
 # lanyard is here for the same reason measured rather than assumed: it paints at
 # 390 device px in the phone grid and 316 on the wall, so 520 was buying pixels
 # nothing ever resolves.
+# Photographs we may not publish. Alec, 2026-09-08: "We cannot use this image."
+# Two frames of one moment — the same two men seated by Court 6 — were on the
+# homepage wall, in the interior band on eleven pages, and behind the spectrum
+# variants. They are gone from all three.
+#
+# This list is the reason it stays that way. The builder refuses to run if any
+# of these files is present in the source folder, so the frame cannot come back
+# by someone dropping the shoot into .work/fav again and rebuilding. A consent
+# problem is not a layout preference and should not be defended by a comment.
+WITHDRAWN = {"JLA_6122.jpg", "JLA_6123.jpg"}
+
 SIZE_OVERRIDE = {"turned": 380, "profile": 380, "lanyard": 400}
 
 # name, source frame, aspect (w/h), vertical anchor (0 = top, 1 = bottom),
@@ -98,7 +109,8 @@ PANELS = [
     ("court",        "JLA_5905.jpg", 3/2,  0.32, 0.46, 0.60, "back"),
     ("rally",        "JLA_5918.jpg", 3/2,  0.30, 0.62, 0.62, "back"),
     ("pair",         "JLA_6127.jpg", 3/4,  0.48, 0.50, 0.80, "mid"),
-    ("two-up",       "JLA_6122.jpg", 3/4,  0.44, 0.50, 0.84, "back"),
+    # Replaced a withdrawn frame on 2026-09-08 (see WITHDRAWN, below).
+    ("paddle",       "JLA_6131.jpg", 3/4,  0.42, 0.50, 0.86, "back"),
     ("lobby",        "JLA_6191.jpg", 3/4,  0.46, 0.48, 0.70, "back"),
 
     # --- BUFFERS: the two cells the headline sits on top of --------------------
@@ -154,7 +166,7 @@ BIG = [
     ("big-reach",    "JLA_6084.jpg", 16/9,  0.42, 0.50, 0.86, 1900),
     ("big-ryan",     "JLA_5922.jpg", 3/4,   0.44, 0.50, 0.94, 1200),
     ("big-brian",    "JLA_6045.jpg", 16/9,  0.44, 0.46, 0.82, 1900),
-    ("big-fill",     "JLA_6122.jpg", 5/2,   0.40, 0.50, 0.92, 1700),
+    ("big-fill",     "JLA_6119.jpg", 5/2,   0.44, 0.50, 0.94, 1700),
 ]
 
 
@@ -237,7 +249,7 @@ def compose_band():
     #
     #     JLA_5884  subject centre 0.392      JLA_6071  0.381
     #     JLA_5904  0.544                     JLA_6105  0.486
-    #     JLA_6123  0.615
+    #     JLA_6168  0.526
     #
     # So a narrow frame cut into four of the five, which is exactly what
     # "squeezed" looks like. The anchors below are measured from those mattes,
@@ -251,7 +263,7 @@ def compose_band():
         ("JLA_5884.jpg", 0.74, True,  0.39, 0.20),  # reaching low for a dig
         ("JLA_6071.jpg", 1.00, False, 0.38, 0.33),  # grinning, whole chair
         ("JLA_6105.jpg", 0.88, False, 0.49, 0.23),  # laughing between points
-        ("JLA_6123.jpg", 0.70, True,  0.62, 0.42),  # two at the net
+        ("JLA_6168.jpg", 0.70, True,  0.53, 0.33),  # two at the net
     ]
     for name, W, H, n, pitch, cwf in (("pg-band-wide", 1500, 650, 4, 0.235, 0.205),
                                       ("pg-band-tall", 900, 805, 2, 0.460, 0.440)):
@@ -269,7 +281,14 @@ def compose_band():
             # reads as a bad photograph instead — Alec: "the picture all the way
             # to the right is way too blurry, I want these crisp and clear." A
             # small brightness step is enough to seat a frame behind another.
-            im = ImageEnhance.Brightness(im).enhance(0.82 if dim else 1.0)
+            # 0.74 for the back row, not 0.82. The frame that replaced the
+            # withdrawn one is a bright daylight court shot where the old one
+            # was dark, and a busy bright frame both sits forward of where a
+            # back-row column should sit AND compresses worse — it put /donate
+            # a kilobyte over its own-bytes budget. Seating it properly in the
+            # depth order is the fix for both, which is the good kind of
+            # constraint: the cheaper file is also the better composition.
+            im = ImageEnhance.Brightness(im).enhance(0.74 if dim else 1.0)
             x = int(W * (0.5 * (1 - n * pitch) + i * pitch + (pitch - cwf) / 2))
             canvas.paste(im, (x, H - ch))
         a = np.asarray(canvas, np.float32) / 255.0
@@ -317,6 +336,25 @@ def compose_roll():
     print(f"{'roll-strip':20s} {W}x{H} {os.path.getsize(out)/1024:6.1f} KB  (tileable, pitch {PITCH}px)")
 
 
+def assert_no_withdrawn():
+    """Refuse to build if a withdrawn photograph is sitting in the source folder.
+
+    Deleting the file and editing the panel list is enough to fix the site
+    today. It is not enough to keep it fixed: the next person to sync the shoot
+    into .work/fav restores the frame, and nothing anywhere would notice. The
+    only durable version of "we cannot use this image" is a build that stops.
+    """
+    present = sorted(WITHDRAWN & set(os.listdir(SRC)))
+    if present:
+        raise SystemExit(
+            "REFUSING TO BUILD — withdrawn photograph(s) in " + SRC + ":\n  "
+            + "\n  ".join(present)
+            + "\n\nThese frames may not be published (Alec, 2026-09-08). Delete them\n"
+              "from the source folder. If a withdrawal has genuinely been lifted,\n"
+              "take the name out of WITHDRAWN in this file and say so in the commit."
+        )
+
+
 def fingerprint():
     """Rename every generated image to include a hash of its own bytes.
 
@@ -351,6 +389,7 @@ def fingerprint():
 
 
 def main():
+    assert_no_withdrawn()
     os.makedirs(DST, exist_ok=True)
     manifest, total = {}, 0
     jobs = [(n, s_, a, y, x, z, r) for n, s_, a, y, x, z, r in PANELS + BANNER]

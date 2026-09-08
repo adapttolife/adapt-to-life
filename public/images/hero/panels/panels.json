@@ -137,6 +137,54 @@
   "src": "JLA_6127.jpg",
   "w": 420
  },
+ "pg-brian": {
+  "h": 738,
+  "role": "band",
+  "src": "JLA_6045.jpg",
+  "w": 310
+ },
+ "pg-dink": {
+  "h": 738,
+  "role": "band",
+  "src": "JLA_5922.jpg",
+  "w": 310
+ },
+ "pg-grin": {
+  "h": 738,
+  "role": "band",
+  "src": "JLA_6073.jpg",
+  "w": 310
+ },
+ "pg-reach": {
+  "h": 738,
+  "role": "band",
+  "src": "JLA_5920.jpg",
+  "w": 310
+ },
+ "pg-seated": {
+  "h": 738,
+  "role": "band",
+  "src": "JLA_5973.jpg",
+  "w": 310
+ },
+ "pg-smile": {
+  "h": 738,
+  "role": "band",
+  "src": "JLA_6106.jpg",
+  "w": 310
+ },
+ "pg-swing": {
+  "h": 738,
+  "role": "band",
+  "src": "JLA_6066.jpg",
+  "w": 310
+ },
+ "pg-white": {
+  "h": 738,
+  "role": "band",
+  "src": "JLA_6077.jpg",
+  "w": 310
+ },
  "rally": {
   "h": 227,
   "role": "back",

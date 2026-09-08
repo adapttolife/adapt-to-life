@@ -20,7 +20,7 @@
 //     two pictures arguing.
 //   · the homepage, which has the mosaic.
 import { readFileSync, writeFileSync, readdirSync } from "node:fs";
-import { PAGE_HEADER_STRIP as strip, PAGE_HEADER_SHEET as SHEET } from "./lib/page-header.mjs";
+import { PAGE_HEADER_SHEET as SHEET, PAGE_HEADER_CLASS as BAND } from "./lib/page-header.mjs";
 
 const ROOT = new URL("../public/", import.meta.url);
 
@@ -36,7 +36,8 @@ for (const file of readdirSync(ROOT).filter((f) => f.endsWith(".html"))) {
   const url = new URL(file, ROOT);
   let html = readFileSync(url, "utf8");
 
-  // idempotence first: remove anything a previous run left behind
+  // idempotence first: clear any markup an earlier version of this script left
+  // behind, from when the band was eight <img> columns instead of one image
   html = html.replace(STRIP_RE, "");
 
   // Only plain `hero dark` heroes. A hero that already carries a photograph of
@@ -58,8 +59,8 @@ for (const file of readdirSync(ROOT).filter((f) => f.endsWith(".html"))) {
     continue;
   }
 
-  const classes = ["hero", "dark", ...modifiers.filter((c) => c !== "pg-band"), "pg-band"];
-  html = html.replace(open[0], `<section class="${classes.join(" ")}">\n${strip}`);
+  const classes = ["hero", "dark", ...modifiers.filter((c) => c !== BAND), BAND];
+  html = html.replace(open[0], `<section class="${classes.join(" ")}">`);
   if (!html.includes(SHEET)) {
     html = html.replace('<link rel="stylesheet" href="/css/site.css">',
                         `<link rel="stylesheet" href="/css/site.css">\n${SHEET}`);

@@ -33,74 +33,44 @@
   padding-bottom:clamp(9rem, 20vh, 13rem);
 }
 
-/* the columns, bottom-aligned to one baseline */
-.pg-strip{
-  position:absolute; left:0; right:0; bottom:0; top:0;
-  z-index:0; pointer-events:none;
+/* ONE pre-composed strip, not eight <img> columns.
+   The homepage wall is eight-plus real elements because it is the subject and
+   it has to reflow. This band is decoration behind a veil that is 60-96% black;
+   it never needs to reflow, only to crop. Shipping the columns individually put
+   450 KB on /donate and broke its own-bytes budget — and the budget file is
+   explicit that a cap which only ever rises is a record of what we allowed
+   rather than a limit, so the change had to fit the cap and not the reverse.
+   Flattened, the frame is mostly black and compresses to 19 KB in one request.
+   The skyline, the depth falloff and the top fade are baked into the asset,
+   which is why there is no markup here at all beyond a class. */
+.hero.pg-band::before{
+  content:""; position:absolute; left:0; right:0; bottom:0; top:0; z-index:0;
+  background:url('/images/hero/panels/pg-band-wide.webp') center bottom/cover no-repeat;
 }
-.pg-strip figure{
-  position:absolute; bottom:0; margin:0; overflow:hidden;
-  left:var(--x); width:var(--w); height:var(--h);
-}
-.pg-strip img{
-  width:100%; height:100%; object-fit:cover; object-position:50% 22%;
-  display:block;
-  filter:grayscale(1) brightness(0.46) contrast(0.94);
-}
-.pg-strip figure.far img{ filter:grayscale(1) brightness(0.28) contrast(0.86) blur(1.2px); }
-
-/* Held back hard. The page's own words are the subject here, and the contrast
-   floor is not something to leave to whichever photograph lands behind the
-   sub-line. */
-.pg-veil{
-  position:absolute; inset:0; z-index:1; pointer-events:none;
+/* the veil and the grain, also markup-free */
+.hero.pg-band::after{
+  content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
   background:
-    /* down into black at the BOTTOM too. Without this the columns are cut flat
-       by the section boundary and the join to the next band reads as a
-       cropping accident rather than as a horizon. What is left is a lit band
-       through the middle, which is what the strip is for. */
-    linear-gradient(0deg,   rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.52) 12%, rgba(0,0,0,0.12) 26%, rgba(0,0,0,0) 38%),
-    linear-gradient(180deg, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.88) 32%, rgba(0,0,0,0.60) 56%, rgba(0,0,0,0.34) 76%, rgba(0,0,0,0.22) 100%),
-    radial-gradient(72% 30% at 62% 100%, rgba(255,92,57,0.32) 0%, rgba(255,92,57,0) 62%);
+    linear-gradient(0deg,   rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.52) 12%, rgba(0,0,0,0.10) 26%, rgba(0,0,0,0) 38%),
+    linear-gradient(180deg, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.90) 30%, rgba(0,0,0,0.62) 54%, rgba(0,0,0,0.34) 76%, rgba(0,0,0,0.24) 100%),
+    radial-gradient(72% 30% at 62% 100%, rgba(255,92,57,0.34) 0%, rgba(255,92,57,0) 62%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.16'/%3E%3C/svg%3E");
 }
-.pg-grain{
-  position:absolute; inset:0; z-index:2; pointer-events:none;
-  opacity:0.20; mix-blend-mode:overlay;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
 
 .hero.pg-band > .wrap{ position:relative; z-index:3; }
 
-/* the skyline: eight columns, heights varying, bleeding both edges */
-.pg-strip .c1{ --x:-4%;  --w:15%; --h:52%; }
-.pg-strip .c2{ --x:9%;   --w:15%; --h:68%; }
-.pg-strip .c3{ --x:22%;  --w:15%; --h:44%; }
-.pg-strip .c4{ --x:35%;  --w:15%; --h:74%; }
-.pg-strip .c5{ --x:48%;  --w:15%; --h:56%; }
-.pg-strip .c6{ --x:61%;  --w:15%; --h:82%; }
-.pg-strip .c7{ --x:74%;  --w:15%; --h:50%; }
-.pg-strip .c8{ --x:87%;  --w:16%; --h:66%; }
-
 @media (max-width:900px){
   .hero.pg-band{ padding-bottom:clamp(7rem, 16vh, 10rem); }
-  .pg-strip .c1{ --x:-6%; --w:22%; --h:44%; }
+  /* the narrow crop: four columns instead of eight, so faces stay legible
+     rather than being squeezed to slivers */
+  .hero.pg-band::before{ background-image:url('/images/hero/panels/pg-band-tall.webp'); }
   .pg-strip .c2{ --x:14%; --w:22%; --h:62%; }
-  .pg-strip .c3{ display:none; }
   .pg-strip .c4{ --x:34%; --w:22%; --h:70%; }
-  .pg-strip .c5{ display:none; }
   .pg-strip .c6{ --x:54%; --w:22%; --h:56%; }
-  .pg-strip .c7{ display:none; }
   .pg-strip .c8{ --x:74%; --w:24%; --h:66%; }
 }
 @media (max-width:640px){
   .hero.pg-band{ padding-bottom:clamp(6rem, 14vh, 8rem); }
-  .pg-strip .c1{ --x:-8%; --w:32%; --h:40%; }
   .pg-strip .c2{ --x:20%; --w:32%; --h:58%; }
-  .pg-strip .c4{ --x:50%; --w:32%; --h:68%; }
   .pg-strip .c6{ --x:78%; --w:32%; --h:48%; }
-  .pg-strip .c8{ display:none; }
-  .pg-veil{
-    background:
-      linear-gradient(0deg,   rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.50) 14%, rgba(0,0,0,0) 34%),
-      linear-gradient(180deg, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.92) 38%, rgba(0,0,0,0.66) 64%, rgba(0,0,0,0.34) 100%),
-      radial-gradient(80% 24% at 60% 100%, rgba(255,92,57,0.30) 0%, rgba(255,92,57,0) 62%); }
 }

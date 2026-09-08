@@ -34,14 +34,14 @@ import os
 import sys
 
 import numpy as np
-from PIL import Image, ImageEnhance
+from PIL import Image, ImageEnhance, ImageFilter
 
 SRC = os.path.join(os.path.dirname(__file__), "..", ".work", "fav")
 DST = os.path.join(os.path.dirname(__file__), "..", "public", "images", "hero", "panels")
 
 # Long edge in device pixels, by depth role. See rule 3.
 SIZE = {"front": 860, "mid": 560, "back": 340}
-QUALITY = {"front": 80, "mid": 76, "back": 70, "big": 68}
+QUALITY = {"front": 80, "mid": 76, "back": 70, "big": 68, "band": 56}
 
 # name, source frame, aspect (w/h), vertical anchor (0 = top, 1 = bottom),
 # horizontal anchor, ZOOM, depth role
@@ -112,6 +112,23 @@ BIG = [
 ]
 
 
+# The interior page band. These render about 200px wide, are held at a third of
+# their brightness behind a veil that is 60-96% black, and half of them are
+# blurred. They do not need the banner columns' pixels, and shipping those cost
+# /donate 450 KB and broke its own-bytes budget on the first rollout — the check
+# caught it, which is exactly what it is for.
+#
+# Pre-darkened in the asset rather than only in CSS: a file that is already dark
+# quantises to far fewer bytes at the same visible quality.
+PGBAND = [
+    ("pg-reach",  "JLA_5920.jpg"), ("pg-swing",  "JLA_6066.jpg"),
+    ("pg-white",  "JLA_6077.jpg"), ("pg-brian",  "JLA_6045.jpg"),
+    ("pg-seated", "JLA_5973.jpg"), ("pg-dink",   "JLA_5922.jpg"),
+    ("pg-grin",   "JLA_6073.jpg"), ("pg-smile",  "JLA_6106.jpg"),
+]
+PGBAND_SRC = {n: s_ for n, s_ in PGBAND}
+
+
 def mono(im):
     """One curve for every panel, so the wall reads as one photograph.
 
@@ -145,10 +162,57 @@ def crop_to(im, aspect, ay, ax, zoom=1.0):
     return im.crop((x, y, x + nw, y + nh))
 
 
+def compose_band():
+    """Flatten the interior page band into ONE pre-composed strip.
+
+    It started as eight <img> columns, which is what the homepage does, and on
+    /donate that cost 450 KB and broke the page's own-bytes budget. Shrinking the
+    files got it to ~52 KB and eight requests, still over.
+
+    The band is decoration behind a veil that is 60-96% black. It never needs to
+    reflow, only to crop — so it is one image, the same pattern Alec's court
+    plate already proved. One request, and because the frame is mostly black it
+    compresses to a fraction of the parts. The skyline, the depth falloff and
+    the top/bottom fade are all baked in, which is also why the CSS gets simpler.
+    """
+    import numpy as np
+    COLS = [  # source, width share, height share, dim (back row)
+        ("JLA_5920.jpg", 0.15, 0.52, True),  ("JLA_6066.jpg", 0.15, 0.68, False),
+        ("JLA_6077.jpg", 0.15, 0.44, True),  ("JLA_6045.jpg", 0.15, 0.74, False),
+        ("JLA_5973.jpg", 0.15, 0.56, True),  ("JLA_5922.jpg", 0.15, 0.82, False),
+        ("JLA_6073.jpg", 0.15, 0.50, True),  ("JLA_6106.jpg", 0.16, 0.66, False),
+    ]
+    for name, W, H, step in (("pg-band-wide", 1500, 460, 0.13), ("pg-band-tall", 760, 430, 0.26)):
+        canvas = Image.new("RGB", (W, H), (0, 0, 0))
+        use = COLS if step < 0.2 else COLS[1::2]
+        for i, (src, w, h, dim) in enumerate(use):
+            im = Image.open(os.path.join(SRC, src))
+            im.draft("RGB", (im.width // 3, im.height // 3))
+            im = crop_to(im.convert("RGB"), 0.42, 0.40, 0.50, 0.80)
+            cw, ch = int(W * (w if step < 0.2 else w * 1.55)), int(H * h)
+            im = mono(im.resize((cw, ch), Image.LANCZOS))
+            im = ImageEnhance.Brightness(im).enhance(0.30 if dim else 0.52)
+            if dim:
+                im = im.filter(ImageFilter.GaussianBlur(1.1))
+            canvas.paste(im, (int(W * (-0.04 + i * step)), H - ch))
+        # bake the vertical falloff: the band is a lit middle, black at both edges
+        a = np.asarray(canvas, np.float32) / 255.0
+        y = np.linspace(0, 1, H)[:, None, None]
+        a *= np.clip(1.0 - np.exp(-(y / 0.22)) * 0 - np.maximum(0, 1 - y / 0.30) * 0.85, 0, 1)
+        a *= np.clip(1.0 - np.maximum(0, (y - 0.80) / 0.20) * 0.75, 0, 1)
+        canvas = Image.fromarray((a * 255).astype(np.uint8))
+        out = os.path.join(DST, f"{name}.webp")
+        canvas.save(out, "WEBP", quality=62, method=6)
+        print(f"{name:20s} {W}x{H} {os.path.getsize(out)/1024:6.1f} KB")
+
+
 def main():
     os.makedirs(DST, exist_ok=True)
     manifest, total = {}, 0
     jobs = [(n, s_, a, y, x, z, r) for n, s_, a, y, x, z, r in PANELS + BANNER]
+    # same frames and anchors as the banner columns, at band size
+    bn = {n.replace("bn-", "pg-"): (s_, a, y, x, z) for n, s_, a, y, x, z, _r in BANNER}
+    jobs += [(n, *bn[n][0:1], *bn[n][1:], "band") for n in PGBAND_SRC if n in bn]
     jobs += [(n, s_, a, y, x, z, "big") for n, s_, a, y, x, z, _w in BIG]
     BIGW = {n: w for n, _s, _a, _y, _x, _z, w in BIG}
     for name, src, aspect, ay, ax, zoom, role in jobs:
@@ -160,7 +224,7 @@ def main():
         im.draft("RGB", (im.width // 2, im.height // 2))   # 8k JPEGs, decode at half
         im = im.convert("RGB")
         im = crop_to(im, aspect, ay, ax, zoom)
-        long_edge = BIGW[name] if role == 'big' else SIZE[role]
+        long_edge = BIGW[name] if role == 'big' else (500 if role == 'band' else SIZE[role])
         if aspect >= 1:
             size = (long_edge, round(long_edge / aspect))
         elif aspect <= 0.55:
@@ -172,12 +236,15 @@ def main():
             size = (round(long_edge * aspect), long_edge)
         im = im.resize(size, Image.LANCZOS)
         im = mono(im)
+        if role == 'band':
+            im = ImageEnhance.Brightness(im).enhance(0.62)
         out = os.path.join(DST, f"{name}.webp")
         im.save(out, "WEBP", quality=QUALITY[role], method=6)
         n = os.path.getsize(out)
         total += n
         manifest[name] = {"w": im.size[0], "h": im.size[1], "role": role, "src": src}
         print(f"{name:14s} {role:5s} {im.size[0]:4d}x{im.size[1]:<4d} {n/1024:6.1f} KB   {src}")
+    compose_band()
     with open(os.path.join(DST, "panels.json"), "w") as f:
         json.dump(manifest, f, indent=1, sort_keys=True)
     print(f"{'TOTAL':14s} {len(PANELS)} panels {'':10s} {total/1024:6.1f} KB")

@@ -410,3 +410,55 @@
   .hero-court .ct-fig.f-ryan { right:-24%; --h:34%; --b:12%; }
   .hero-court .sp-h1{ max-width:none; }
 }
+
+/* ==========================================================================
+   9 — THE STADIUM, ON THE PLATE
+   Alec: "the background images might be cool for the stadium version?" — yes,
+   and it is worth its own slot rather than a tweak to 8, because the two are
+   genuinely different compositions of the same five people:
+
+     8  a ROOM. The team is spread across the floor plane, smaller, standing in
+        depth, reflected in the surface. You are looking into a space.
+     9  a BANNER. The team is one tight overlapping mass, much larger, cropped
+        by the bottom edge the way a concourse banner is cropped by its own.
+        You are being confronted by a group.
+
+   This is deliberately built as a modifier on 8 rather than as its own
+   stylesheet, so the plate, the lighting, the shade and the depth treatment are
+   literally the same code. The only variable between the two links is the
+   arrangement, which is the only way the comparison means anything.
+
+   The earlier stadium attempt failed on its background, not its composition —
+   a blurred photograph behind photographs. This is that composition with the
+   background it always needed.
+   ========================================================================== */
+.hero-court.is-tight .ct-plate{ background-position:center 76%; }
+/* the team crops on the bottom edge, so there is no floor under them to
+   reflect into — a reflection here would be hanging off a cut figure */
+.hero-court.is-tight .ct-refl{ display:none; }
+.hero-court.is-tight .ct-fig.f-brian { left:16%;  --h:44%; --b:2%;  --sw:0%;  --d:120ms; }
+.hero-court.is-tight .ct-fig.f-ben   { left:29%;  --h:58%; --b:24%; --sw:0%;  --d:220ms; }
+.hero-court.is-tight .ct-fig.f-aubrey{ left:61%;  --h:53%; --b:32%; --sw:0%;  --d:320ms; }
+.hero-court.is-tight .ct-fig.f-ryan  { right:-1%; --h:74%; --b:1%;  --sw:72%; --sh:20px; --d:440ms; }
+.hero-court.is-tight .ct-fig.f-juan  { left:41%;  --h:86%; --b:0%;  --sw:76%; --sh:24px; --d:560ms; }
+
+@media (max-width:1200px){
+  .hero-court.is-tight .ct-fig.f-brian { left:11%; --h:40%; }
+  .hero-court.is-tight .ct-fig.f-ben   { left:25%; --h:53%; --b:26%; }
+  .hero-court.is-tight .ct-fig.f-aubrey{ left:59%; --h:48%; --b:34%; }
+  .hero-court.is-tight .ct-fig.f-ryan  { right:-8%; --h:67%; }
+  .hero-court.is-tight .ct-fig.f-juan  { left:38%; --h:80%; }
+}
+@media (max-width:900px){
+  .hero-court.is-tight .ct-plate{ background-position:center 68%; }
+  .hero-court.is-tight .ct-fig.f-brian, .hero-court.is-tight .ct-fig.f-ben{ display:none; }
+  .hero-court.is-tight .ct-fig.f-aubrey{ left:auto; right:44%; --h:36%; --b:36%; }
+  .hero-court.is-tight .ct-fig.f-juan  { left:auto; right:14%; --h:64%; --b:0%; }
+  .hero-court.is-tight .ct-fig.f-ryan  { right:-18%; --h:56%; --b:1%; }
+}
+@media (max-width:640px){
+  .hero-court.is-tight .ct-fig.f-aubrey{ display:none; }
+  /* 9 is the confronting one; on a phone that means big, not tidy. */
+  .hero-court.is-tight .ct-fig.f-juan { left:-16%; right:auto; --h:62%; --b:0%; }
+  .hero-court.is-tight .ct-fig.f-ryan { right:-28%; --h:54%; --b:1%; }
+}

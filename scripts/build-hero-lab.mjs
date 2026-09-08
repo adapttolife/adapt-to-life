@@ -421,11 +421,24 @@ ${courtTeam}
 
 `;
 
+/* --------------------------------------------------------------------------
+   9 — THE STADIUM, ON THE PLATE.  Same plate, same lighting, same depth
+   treatment, same five people as 8 — one tight overlapping mass instead of a
+   team spread across a floor. Built from the same markup with one modifier
+   class so the arrangement is genuinely the only variable between the links.
+   -------------------------------------------------------------------------- */
+const HERO_STADIUM_PLATE = HERO_COURT
+  .replace('class="hero-spec hero-court dark hero-var" id="heroStage" data-variant="8"',
+           'class="hero-spec hero-court is-tight dark hero-var" id="heroStage" data-variant="9"')
+  .replace("<!-- 1 · HERO — the court (variant 8) -->",
+           "<!-- 1 · HERO — the stadium, on the plate (variant 9) -->");
+
 const VARIANTS = { 1: HERO_D, 2: HERO_E, 3: HERO_FRAME, 4: HERO_KNOCKOUT,
-                   5: HERO_STRIP, 6: HERO_GRID, 7: HERO_SPLIT_ONE, 8: HERO_COURT };
+                   5: HERO_STRIP, 6: HERO_GRID, 7: HERO_SPLIT_ONE, 8: HERO_COURT,
+                   9: HERO_STADIUM_PLATE };
 const LABEL = {
   1: "1 · Mosaic", 2: "2 · Banner", 3: "3 · One frame", 4: "4 · Knockout",
-  5: "5 · Strip", 6: "6 · Grid", 7: "7 · Split", 8: "8 · The court",
+  5: "5 · Strip", 6: "6 · Grid", 7: "7 · Split", 8: "8 · The court", 9: "9 · Stadium",
 };
 
 // The stage script: entrance, depth parallax, and the live drive strip. Kept
@@ -487,7 +500,7 @@ const STAGE_JS = `
 // The variant switcher, so one link lets Alec flip between all three at the
 // same scroll position instead of opening three tabs and guessing.
 function switcher(active) {
-  const items = ["1", "2", "3", "4", "5", "6", "7", "8"]
+  const items = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
     .map(
       (k) =>
         `<a href="/hero-${k}" class="hv-chip${k === active ? " on" : ""}">${LABEL[k]}</a>`,
@@ -515,7 +528,7 @@ for (const [key, hero] of Object.entries(VARIANTS)) {
     .replace(
       '<link rel="stylesheet" href="/css/site.css">',
       '<link rel="stylesheet" href="/css/site.css">\n<link rel="stylesheet" href="/css/hero-mosaic.css">' +
-        ("345678".includes(key) ? '\n<link rel="stylesheet" href="/css/hero-spectrum.css">' : ""),
+        ("3456789".includes(key) ? '\n<link rel="stylesheet" href="/css/hero-spectrum.css">' : ""),
     )
     .replace(
       "</head>",

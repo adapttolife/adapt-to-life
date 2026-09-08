@@ -12,7 +12,7 @@ import { chromium } from "/home/agentos/pw/node_modules/playwright/index.mjs";
 const BASE = process.argv[2] || "http://127.0.0.1:8788";
 const SIZES = [[1920, 1080, "1920"], [1440, 900, "1440"], [1024, 768, "1024"],
                [768, 1024, "768"], [390, 844, "390"], [320, 720, "320"]];
-const VARIANTS = ["1", "2", "3", "4", "5", "6", "7", "8"];
+const VARIANTS = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
 const browser = await chromium.launch();
 let failed = 0;

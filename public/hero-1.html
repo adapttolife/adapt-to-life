@@ -187,51 +187,38 @@ fill="currentColor" stroke="none">
     <div class="mw-scrim"></div>
     <div class="wrap mw-copy">
       <h1 class="serif display mw-rise" style="--d:180ms;">Your place in <em class="italic" style="color:var(--orange)">adaptive sports.</em></h1>
-      <div class="actions mw-rise" style="--d:320ms;">
-        <a href="/donate" class="btn">Donate</a>
-        <a href="/hustle-and-heart" class="mw-quiet">How the fund works <span class="arrow">&rarr;</span></a>
-      </div>
-      <div class="mw-drive mw-rise" style="--d:460ms;">
-        <div class="mw-drive-in" id="heroDrive" hidden>
-          <span class="mw-drive-dot"></span>
-          <span id="heroDriveName"></span>
-          <span class="mw-bar"><i id="heroDriveFill"></i></span>
-          <span id="heroDriveFig"></span>
-          <a href="/donate">Give <span class="arrow">&rarr;</span></a>
-        </div>
-      </div>
     </div>
     <div class="mw-grain"></div>
     <div class="mw-vig"></div>
   </section>
 <style>
-  .mw-p.p-serve{ left:38%; top:2%; width:13%; height:17.73%; }
-  .mw-p.p-rally{ left:32%; top:62%; width:14%; height:16.99%; }
-  .mw-p.p-court{ left:76%; top:28%; width:15%; height:18.21%; }
-  .mw-p.p-shout{ left:51%; top:26%; width:10%; height:24.24%; }
-  .mw-p.p-close-dink{ left:66%; top:38%; width:11%; height:26.67%; }
-  .mw-p.p-two-up{ left:61%; top:82%; width:11%; height:26.67%; }
-  .mw-p.p-lobby{ left:45%; top:78%; width:10%; height:24.24%; }
-  .mw-p.p-net{ left:69%; top:1%; width:17%; height:20.59%; }
-  .mw-p.p-laugh{ left:44%; top:6%; width:12%; height:29.09%; }
-  .mw-p.p-whitecap{ left:33%; top:18%; width:11%; height:26.67%; }
-  .mw-p.p-reach{ left:90%; top:42%; width:14%; height:33.94%; }
-  .mw-p.p-swing{ left:54%; top:58%; width:11%; height:26.67%; }
-  .mw-p.p-pair{ left:38%; top:32%; width:12%; height:29.09%; }
-  .mw-p.p-seated{ left:87%; top:72%; width:13%; height:31.52%; }
-  .mw-p.p-grin{ left:76%; top:52%; width:12%; height:29.09%; }
-  .mw-p.p-smile-close{ left:82%; top:6%; width:16%; height:38.79%; }
-  .mw-p.p-dink{ left:57%; top:12%; width:19%; height:46.06%; }
-  .mw-p.p-brian{ left:43%; top:55%; width:15%; height:34.09%; }
-  .mw-p.p-forehand{ left:62%; top:66%; width:27%; height:32.71%; }
+  .mw-p.p-serve{ left:2%; top:58%; width:15%; height:20.45%; }
+  .mw-p.p-rally{ left:19%; top:76%; width:16%; height:19.42%; }
+  .mw-p.p-court{ left:76%; top:26%; width:15%; height:18.21%; }
+  .mw-p.p-shout{ left:51%; top:22%; width:10%; height:24.24%; }
+  .mw-p.p-close-dink{ left:66%; top:36%; width:11%; height:26.67%; }
+  .mw-p.p-two-up{ left:62%; top:80%; width:11%; height:26.67%; }
+  .mw-p.p-lobby{ left:34%; top:64%; width:11%; height:26.67%; }
+  .mw-p.p-net{ left:69%; top:0%; width:17%; height:20.59%; }
+  .mw-p.p-laugh{ left:44%; top:4%; width:12%; height:29.09%; }
+  .mw-p.p-whitecap{ left:5%; top:74%; width:13%; height:31.52%; }
+  .mw-p.p-reach{ left:90%; top:40%; width:14%; height:33.94%; }
+  .mw-p.p-swing{ left:54%; top:56%; width:11%; height:26.67%; }
+  .mw-p.p-pair{ left:17%; top:48%; width:13%; height:31.52%; }
+  .mw-p.p-seated{ left:87%; top:70%; width:13%; height:31.52%; }
+  .mw-p.p-grin{ left:76%; top:50%; width:12%; height:29.09%; }
+  .mw-p.p-smile-close{ left:82%; top:4%; width:16%; height:38.79%; }
+  .mw-p.p-dink{ left:57%; top:10%; width:19%; height:46.06%; }
+  .mw-p.p-brian{ left:41%; top:55%; width:16%; height:36.36%; }
+  .mw-p.p-forehand{ left:62%; top:64%; width:27%; height:32.71%; }
   @media (max-width:640px){
     .mw-p{ display:none; }
-    .mw-p.p-laugh{ display:block; left:-8%; top:72%; width:34%; height:22.67%; }
-    .mw-p.p-grin{ display:block; left:74%; top:58%; width:32%; height:21.33%; }
-    .mw-p.p-smile-close{ display:block; left:18%; top:70%; width:44%; height:29.33%; }
-    .mw-p.p-dink{ display:block; left:46%; top:40%; width:48%; height:32.00%; }
-    .mw-p.p-brian{ display:block; left:-6%; top:45%; width:48%; height:30.00%; }
-    .mw-p.p-forehand{ display:block; left:54%; top:72%; width:56%; height:18.66%; }
+    .mw-p.p-laugh{ display:block; left:-10%; top:68%; width:38%; height:25.33%; }
+    .mw-p.p-grin{ display:block; left:74%; top:52%; width:36%; height:24.00%; }
+    .mw-p.p-smile-close{ display:block; left:14%; top:66%; width:48%; height:32.00%; }
+    .mw-p.p-dink{ display:block; left:44%; top:31%; width:54%; height:36.00%; }
+    .mw-p.p-brian{ display:block; left:-8%; top:36%; width:54%; height:33.75%; }
+    .mw-p.p-forehand{ display:block; left:50%; top:68%; width:62%; height:20.65%; }
   }
 </style>
 
@@ -585,47 +572,9 @@ fill="currentColor" stroke="none">
     }
   }
 
-  // Live drive strip — the one thing in the header that says money is moving
-  // right now. Same two sources the campaign band below uses: campaigns.json
-  // for the name and goal, /api/raised for the live figure. When it renders it
-  // HIDES the band below, because the same drive stated twice in one screen
-  // reads as a template, not as urgency. No live drive means no strip and the
-  // band keeps its job.
-  function drive(){
-    var api = window.ATLCampaigns;
-    var box = document.getElementById('heroDrive');
-    if(!api || !box) return;
-    api.load(function(store){
-      var c = store && store.campaigns && store.campaigns[0];
-      if(!c || !c.goal) return;
-      document.getElementById('heroDriveName').textContent = c.name || '';
-      document.getElementById('heroDriveFig').textContent = api.money(c.goal) + ' goal';
-      var go = box.querySelector('.hs-drive-go, a[href="/donate"]');
-      if(go && c.page) go.setAttribute('href', c.page);
-      box.hidden = false;
-      // Only stand down the band below if the strip is actually on screen. The
-      // strip is display:none on phones, and hiding the band there would have
-      // deleted the live drive from the narrow layout entirely.
-      var shown = getComputedStyle(box.parentNode).display !== 'none';
-      var dup = document.getElementById('homeBand');
-      if(shown && dup && dup.parentNode && dup.parentNode.parentNode) dup.parentNode.parentNode.style.display = 'none';
-
-      // The live figure lands last and only if it is real. A $0 we could not
-      // fetch is worse than a goal on its own.
-      api.raised(function(r){
-        if(!r || !r.raised) return;
-        var goal = r.goal || c.goal;
-        var pct = Math.max(2, Math.min(100, Math.round((r.raised / goal) * 100)));
-        document.getElementById('heroDriveFig').innerHTML =
-          '<b>' + api.money(r.raised) + '</b> of ' + api.money(goal) + ' raised';
-        requestAnimationFrame(function(){
-          document.getElementById('heroDriveFill').style.width = pct + '%';
-        });
-      });
-    });
-  }
-  if(document.readyState !== 'loading') setTimeout(drive, 60);
-  else document.addEventListener('DOMContentLoaded', function(){ setTimeout(drive, 60); });
+  // There is no drive strip in the header any more. Alec, 2026-09-08: feel
+  // first, then the ask. The campaign band directly below the hero still
+  // renders the live drive, and no longer has to stand down for a duplicate.
 })();
 </script>
 

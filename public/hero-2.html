@@ -176,19 +176,6 @@ fill="currentColor" stroke="none">
     <div class="mw-scrim"></div>
     <div class="wrap mw-copy">
       <h1 class="serif display mw-rise" style="--d:180ms;">Your Place in <em style="color:var(--orange)">Adaptive Sports.</em></h1>
-      <div class="actions mw-rise" style="--d:320ms;">
-        <a href="/donate" class="btn">Donate</a>
-        <a href="/hustle-and-heart" class="mw-quiet">How the fund works <span class="arrow">&rarr;</span></a>
-      </div>
-      <div class="mw-drive mw-rise" style="--d:460ms;">
-        <div class="mw-drive-in" id="heroDrive" hidden>
-          <span class="mw-drive-dot"></span>
-          <span id="heroDriveName"></span>
-          <span class="mw-bar"><i id="heroDriveFill"></i></span>
-          <span id="heroDriveFig"></span>
-          <a href="/donate">Give <span class="arrow">&rarr;</span></a>
-        </div>
-      </div>
     </div>
     <div class="mw-grain"></div>
     <div class="mw-vig"></div>
@@ -559,47 +546,9 @@ fill="currentColor" stroke="none">
     }
   }
 
-  // Live drive strip — the one thing in the header that says money is moving
-  // right now. Same two sources the campaign band below uses: campaigns.json
-  // for the name and goal, /api/raised for the live figure. When it renders it
-  // HIDES the band below, because the same drive stated twice in one screen
-  // reads as a template, not as urgency. No live drive means no strip and the
-  // band keeps its job.
-  function drive(){
-    var api = window.ATLCampaigns;
-    var box = document.getElementById('heroDrive');
-    if(!api || !box) return;
-    api.load(function(store){
-      var c = store && store.campaigns && store.campaigns[0];
-      if(!c || !c.goal) return;
-      document.getElementById('heroDriveName').textContent = c.name || '';
-      document.getElementById('heroDriveFig').textContent = api.money(c.goal) + ' goal';
-      var go = box.querySelector('.hs-drive-go, a[href="/donate"]');
-      if(go && c.page) go.setAttribute('href', c.page);
-      box.hidden = false;
-      // Only stand down the band below if the strip is actually on screen. The
-      // strip is display:none on phones, and hiding the band there would have
-      // deleted the live drive from the narrow layout entirely.
-      var shown = getComputedStyle(box.parentNode).display !== 'none';
-      var dup = document.getElementById('homeBand');
-      if(shown && dup && dup.parentNode && dup.parentNode.parentNode) dup.parentNode.parentNode.style.display = 'none';
-
-      // The live figure lands last and only if it is real. A $0 we could not
-      // fetch is worse than a goal on its own.
-      api.raised(function(r){
-        if(!r || !r.raised) return;
-        var goal = r.goal || c.goal;
-        var pct = Math.max(2, Math.min(100, Math.round((r.raised / goal) * 100)));
-        document.getElementById('heroDriveFig').innerHTML =
-          '<b>' + api.money(r.raised) + '</b> of ' + api.money(goal) + ' raised';
-        requestAnimationFrame(function(){
-          document.getElementById('heroDriveFill').style.width = pct + '%';
-        });
-      });
-    });
-  }
-  if(document.readyState !== 'loading') setTimeout(drive, 60);
-  else document.addEventListener('DOMContentLoaded', function(){ setTimeout(drive, 60); });
+  // There is no drive strip in the header any more. Alec, 2026-09-08: feel
+  // first, then the ask. The campaign band directly below the hero still
+  // renders the live drive, and no longer has to stand down for a duplicate.
 })();
 </script>
 

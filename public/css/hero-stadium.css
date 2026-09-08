@@ -31,8 +31,8 @@
   min-height:clamp(580px, 88svh, 900px);
   display:flex;
   flex-direction:column;
-  justify-content:center;
-  padding-top:clamp(6rem, 13vh, 9rem);
+  justify-content:flex-start;
+  padding-top:clamp(6.5rem, 16vh, 10.5rem);
   padding-bottom:clamp(2rem, 5vh, 3.5rem);
 }
 
@@ -132,12 +132,14 @@
 /* Rule 4. Nothing photographic crosses this. */
 .st-scrim{
   position:absolute; inset:0; z-index:6; pointer-events:none;
-  background:linear-gradient(97deg,
-    rgba(5,5,7,0.93) 0%,
-    rgba(5,5,7,0.80) 16%,
-    rgba(5,5,7,0.44) 27%,
-    rgba(5,5,7,0.10) 38%,
-    rgba(5,5,7,0) 50%);
+  background:
+    linear-gradient(97deg,
+      rgba(5,5,7,0.90) 0%,
+      rgba(5,5,7,0.74) 15%,
+      rgba(5,5,7,0.40) 26%,
+      rgba(5,5,7,0.10) 37%,
+      rgba(5,5,7,0) 49%),
+    linear-gradient(180deg, rgba(5,5,7,0.55) 0%, rgba(5,5,7,0) 42%);
 }
 .st-copy{ position:relative; z-index:7; width:100%; }
 .st-copy .st-h1{
@@ -208,18 +210,18 @@
 /* Brian sits BELOW the wordmark rather than behind it — his head tops out at
    38% and the headline bottoms out at 41% — so he can be lit like the rest of
    the team instead of being dimmed into a smudge to protect the type. */
-.st-fig.t-brian { left:30%;  --h:36%; --b:0%;  --d:120ms; }
-.st-fig.t-ben   { left:34%;  --h:48%; --b:26%; --d:240ms; }
-.st-fig.t-aubrey{ left:66%;  --h:44%; --b:34%; --d:360ms; }
-.st-fig.t-ryan  { right:-2%; --h:66%; --b:0%;  --d:480ms; }
-.st-fig.t-juan  { left:45%;  --h:76%; --b:-1%; --d:620ms; }
+.st-fig.t-brian { left:17%;  --h:40%; --b:0%;  --d:120ms; }
+.st-fig.t-ben   { left:30%;  --h:54%; --b:22%; --d:240ms; }
+.st-fig.t-aubrey{ left:62%;  --h:50%; --b:30%; --d:360ms; }
+.st-fig.t-ryan  { right:0%;  --h:72%; --b:-1%; --d:480ms; }
+.st-fig.t-juan  { left:42%;  --h:84%; --b:-2%; --d:620ms; }
 
 @media (max-width:1200px){
-  .st-fig.t-brian { left:32%;  --h:31%; }
-  .st-fig.t-ben   { left:26%;  --h:40%; --b:28%; }
-  .st-fig.t-aubrey{ left:62%;  --h:40%; --b:34%; }
-  .st-fig.t-ryan  { right:-10%; --h:58%; }
-  .st-fig.t-juan  { left:45%;  --h:70%; }
+  .st-fig.t-brian { left:12%;  --h:36%; }
+  .st-fig.t-ben   { left:26%;  --h:49%; --b:24%; }
+  .st-fig.t-aubrey{ left:60%;  --h:45%; --b:32%; }
+  .st-fig.t-ryan  { right:-10%; --h:65%; }
+  .st-fig.t-juan  { left:39%;  --h:78%; }
   .st-copy .st-h1{ max-width:8ch; }
 }
 
@@ -239,18 +241,22 @@
 @media (max-width:640px){
   .hero-stadium{
     min-height:calc(100svh - 4.4rem);
-    padding-top:clamp(4.5rem,13vh,6rem);
-    padding-bottom:clamp(15rem,44vw,20rem);
+    padding-top:clamp(4rem,11vh,5.5rem);
+    padding-bottom:0;
     justify-content:flex-start;
   }
   .st-scrim{
     background:linear-gradient(180deg,
       rgba(5,5,7,0.95) 0%, rgba(5,5,7,0.88) 30%,
       rgba(5,5,7,0.52) 56%, rgba(5,5,7,0.10) 80%, rgba(5,5,7,0) 100%); }
-  .st-fig.t-aubrey{ display:none; }
-  /* b:2% rather than 0 so the chairs finish above the fold instead of on it */
-  .st-fig.t-juan  { left:-12%; right:auto; --h:46%; --b:2%; }
-  .st-fig.t-ryan  { right:-22%; --h:44%; --b:2%; }
+  /* Three of the five at this width, and big. The version Alec screenshotted
+     had two of them small at the bottom under half a screen of black, which is
+     the opposite of what a banner is for. */
+  .st-fig.t-brian { display:none; }
+  .st-fig.t-ben   { left:-28%; right:auto; --h:42%; --b:38%; }
+  .st-fig.t-aubrey{ left:auto; right:-14%; --h:40%; --b:40%; }
+  .st-fig.t-juan  { left:-16%; right:auto; --h:70%; --b:0%; }
+  .st-fig.t-ryan  { left:auto; right:-30%; --h:62%; --b:0%; }
   .st-ray.r3{ display:none; }
   .st-copy .st-h1{ max-width:none; }
   .st-copy .actions{ gap:0.7rem; }

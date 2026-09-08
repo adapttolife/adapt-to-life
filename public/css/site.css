@@ -383,8 +383,16 @@ section{ position:relative; }
 
 /* ---- responsive ---------------------------------------------------------- */
 @media (max-width:860px){
-  .nav-links{ display:none; }
-  .menu-btn{ display:block; }
+  /* Donate rides the bar on a phone too, immediately left of the hamburger.
+     It is the same element as the desktop CTA rather than a second copy: the
+     nav list stays in flow and every child except the button is hidden, so
+     there is one Donate link in the markup on every page and no chance of the
+     two drifting apart. Its DOM position already puts it before the menu
+     button, which is where it belongs. */
+  .nav-links{ display:flex; gap:0; margin-left:auto; }
+  .nav-links > *:not(.nav-cta){ display:none; }
+  .nav-cta{ font-size:0.85rem; padding:0.5rem 1.05rem; }
+  .menu-btn{ display:block; margin-left:0.9rem; }
   .nav.open .menu-btn span:nth-child(1){ transform:translateY(7px) rotate(45deg); }
   .nav.open .menu-btn span:nth-child(2){ opacity:0; }
   .nav.open .menu-btn span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }

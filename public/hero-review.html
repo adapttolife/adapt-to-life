@@ -78,10 +78,10 @@
 <div class="rv">
 
   <span class="rv-badge">Header review</span>
-  <h1>Three headers.</h1>
-  <p class="lede">You picked the two photograph-wall headers, so they are <strong>1</strong> and <strong>2</strong> now. <strong>3</strong> is new: the stadium banner, built on the hand-traced cut-outs you dropped in Drive, which are clean through the wheel spokes in a way nothing keyed from a photograph ever gets.</p>
+  <h1>The banner is the header.</h1>
+  <p class="lede">Buttons are out of the header. All three are now a photograph and five words &mdash; nothing else &mdash; and the imagery has grown into the space they were taking. Donate rides the nav at every width, including on a phone, immediately left of the hamburger.</p>
   <p class="lede" style="margin-top:0.8rem;">Pick one and I will merge it. Nothing here is on adapttolife.org.</p>
-  <p class="date">Updated 8 September 2026 &middot; round four &middot; branch <code>hero-lineup-2026-09</code> &middot; not live</p>
+  <p class="date">Updated 8 September 2026 &middot; round five &middot; branch <code>hero-lineup-2026-09</code> &middot; not live</p>
 
   <h2>Start here</h2>
   <p>Each link is a <strong>complete working homepage</strong>, not a mockup: real nav, real live drive, real scroll. The chips at the bottom of each page flip between the three at any time.</p>
@@ -124,6 +124,11 @@
   <h2>Serif or grotesk</h2>
   <p>You wrote it as "Your Place in Adaptive Sports" &mdash; title case, and the banner you sent is set in a heavy sans. The site is set in a serif today. That is a brand decision rather than a header decision, so rather than guess I put one of each in front of you: <strong>D is the site's serif</strong>, sentence case, exactly what is live. <strong>E is the grotesk</strong>, title case, tight, the register a stadium banner is actually set in. Same five words either way.</p>
   <p>Less is more, as asked. The eyebrow and the sub-line are gone from both &mdash; the wall behind already says "made by athletes, for athletes" better than the words did &mdash; and the live drive shrinks from a card to one line.</p>
+
+  <h2>Feel first</h2>
+  <p>You said it plainly and it changed all three: <strong>we are a non-profit, this needs gravitas, and people should feel something before they are asked anything.</strong> So the header no longer sells. There is no Donate button in it, no secondary link, no fundraising meter. There is a photograph and five words.</p>
+  <p>That is not a loss of the ask, it is a relocation of it. <strong>Donate is in the nav at every width now</strong> &mdash; top right on desktop, and on a phone immediately left of the hamburger, which is the change you drew. It is the same element as the desktop button rather than a second copy, so there is one Donate link in the markup on every page of the site and no chance of the two drifting apart. And the live drive still has its band directly below the hero, which now reads in the right order: the picture, then the money.</p>
+  <p>What the removals bought is size. The wall in 1 used to hug the right half of the frame because the copy block was four elements tall, and the bottom-left was simply empty; it fills the whole frame now, with the shade over the type turned from a full-height column into a corner. The team in 3 grew about a fifth and moved up. On a phone &mdash; which is where your screenshot was worst, half a screen of black above two small athletes &mdash; all three now put the words in the top corner and hand everything under them to the photographs.</p>
 
   <h2 id="cast">3 &middot; the stadium banner</h2>
   <p><strong>Your traced cut-outs are the reason this one works.</strong> The mattes you dropped in Drive &mdash; Aubrey, Ben, Brian, Ryan, and Juan &mdash; are cut cleanly <em>through the wheel spokes</em>, which is the single detail that decides whether a cut-out athlete in a chair looks composed or looks pasted on. Everything I could key from a photograph left the grey court sitting solid between the spokes. These do not. Nothing else in this variant would hold up without them.</p>
@@ -171,7 +176,7 @@
   <p>A header is judged by eye, but three things about it are not opinions and a screenshot cannot show them. <code>scripts/check-hero-lab.mjs</code> runs all three candidates at six widths from 320 to 1920 and fails the build on any of these.</p>
   <ul class="checks">
     <li><b>No sideways scroll</b> at any width, on any candidate &mdash; the panels and the athletes bleed past both edges on purpose, inside a clipping section.</li>
-    <li><b>The headline and the Donate button are above the fold</b> at every width, including 320px.</li>
+    <li><b>The headline is above the fold</b> at every width, including 320px, and Donate is in the nav on every one of them.</li>
     <li><b>The picture costs 489&nbsp;KB on 1, 472&nbsp;KB on 2 and 420&nbsp;KB on 3</b>, against a 620&nbsp;KB budget &mdash; nineteen photographs inside a budget that was set for five, because every asset is sized by the depth it is composed at rather than by how much it matters.</li>
     <li><b>Reduced motion lands on the finished frame</b>, not the pre-entrance one. No drift, no fade-in, everything visible.</li>
     <li><b>No console errors and no missing files</b> on any candidate at any width.</li>
@@ -179,7 +184,7 @@
 
   <h2>What I need from you</h2>
   <ul class="asks">
-    <li><span class="q">Which one?</span><span class="a">3 is my recommendation now. It is the closest to what you sketched, it is the one your traced mattes make possible, and it is the only one where five people are unmistakably five people rather than a texture. 1 is the one that rewards a second look and holds nineteen faces. 2 is the one to pick if the header also has to work as a printed banner or a share card.</span></li>
+    <li><span class="q">Which one?</span><span class="a">3 is my recommendation. It is the closest to what you sketched, it is the one your traced mattes make possible, and it is the only one where five people are unmistakably five people rather than a texture. 1 is the one that rewards a second look and holds nineteen faces. 2 is the one to pick if the header also has to work as a printed banner or a share card.</span></li>
     <li><span class="q">Is the cast right in 3?</span><span class="a">Brian, Ben, Juan, Aubrey and Ryan, back to front. Who stands where is one line of data now, so "swap Ryan and Juan" or "put Aubrey in front" is a one-line change, not a rebuild.</span></li>
     <li><span class="q">Serif or grotesk, sentence case or title case?</span><span class="a">1 takes the serif; 2 and 3 take the grotesk. It is a brand decision, not a header decision &mdash; whichever wins should probably run through the rest of the site rather than living only at the top of the homepage.</span></li>
     <li><span class="q">Does anyone in these photographs need to approve being on the front page?</span><span class="a">They are already on the site elsewhere, so I have assumed yes. Tell me if any of the five is a no and I will pull them and recompose.</span></li>

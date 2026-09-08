@@ -4,7 +4,7 @@
    Two variants share this file because they share one idea: the header is made
    of PHOTOGRAPHS AS PHOTOGRAPHS — rectangles with edges — rather than of
    figures cut out of them. That is a different craft problem from the cut-out
-   stage in hero-lineup.css, and it has one failure mode: a pile of rectangles
+   stage in hero-stadium.css, and it has one failure mode: a pile of rectangles
    is a mood board, not a header.
 
    Four things stop it being a mood board.
@@ -33,8 +33,8 @@
   min-height:clamp(580px, 88svh, 900px);
   display:flex;
   flex-direction:column;
-  justify-content:center;
-  padding-top:clamp(6.5rem, 14vh, 9.5rem);
+  justify-content:flex-start;
+  padding-top:clamp(6.5rem, 16vh, 10.5rem);
   padding-bottom:clamp(2rem, 5vh, 3.5rem);
 }
 
@@ -104,14 +104,18 @@
 
 /* The quiet zone. Rule 4: a wedge of dark on the left that the headline sits
    in, whatever the wall happens to be doing behind it. */
+/* A CORNER, not a column. While the header carried a headline, a sub-line, two
+   buttons and a meter, the quiet zone had to be a full-height left wedge. Now
+   it is five words in the top-left, so the shade is radial from that corner —
+   which hands the entire bottom-left back to the photographs. */
 .mw-scrim{
   position:absolute; inset:0; z-index:7; pointer-events:none;
-  background:linear-gradient(94deg,
+  background:radial-gradient(118% 86% at 6% 6%,
     rgba(6,6,8,0.95) 0%,
-    rgba(6,6,8,0.88) 24%,
-    rgba(6,6,8,0.58) 40%,
-    rgba(6,6,8,0.16) 54%,
-    rgba(6,6,8,0) 68%);
+    rgba(6,6,8,0.84) 26%,
+    rgba(6,6,8,0.46) 44%,
+    rgba(6,6,8,0.12) 64%,
+    rgba(6,6,8,0) 80%);
 }
 
 .mw-grain{
@@ -128,6 +132,10 @@
    the words did. */
 .mw-copy{ position:relative; z-index:8; width:100%; }
 .mw-copy .display{ max-width:12ch; }
+/* The header is a photograph and five words now — Alec, 2026-09-08: "feel
+   first, then CTA". Donate rides the nav at every width and the live drive
+   keeps the campaign band directly below, so nothing is lost from the page;
+   it is just no longer arguing with the picture. */
 .mw-copy .actions{ display:flex; flex-wrap:wrap; align-items:center; gap:0.9rem 1.2rem; margin-top:2.2rem; }
 .mw-copy .mw-quiet{ font-size:0.95rem; color:var(--cream-mute); border-bottom:1.5px solid var(--orange); padding-bottom:2px; }
 .mw-copy .mw-quiet:hover{ color:#fff; border-bottom-color:var(--orange-hot); }
@@ -244,6 +252,10 @@
   .mw-p.m-drop{ display:none; }
   .mw-copy .display{ max-width:13ch; }
   .hero-banner .mw-copy .display{ max-width:12ch; }
+/* The header is a photograph and five words now — Alec, 2026-09-08: "feel
+   first, then CTA". Donate rides the nav at every width and the live drive
+   keeps the campaign band directly below, so nothing is lost from the page;
+   it is just no longer arguing with the picture. */
 }
 
 @media (max-width:640px){

@@ -21,7 +21,8 @@
 //   · the homepage, which has the mosaic.
 import { readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { PAGE_HEADER_SHEET as SHEET, PAGE_HEADER_CLASS as BAND,
-         PAGE_HEADER_VARS as VARS, PAGE_PHOTOS, photoVars } from "./lib/page-header.mjs";
+         PAGE_HEADER_VARS as VARS, PAGE_PHOTOS, photoVars,
+         TIER_CLASS } from "./lib/page-header.mjs";
 
 const ROOT = new URL("../public/", import.meta.url);
 
@@ -61,9 +62,15 @@ for (const file of readdirSync(ROOT).filter((f) => f.endsWith(".html"))) {
   }
 
   const photo = PAGE_PHOTOS[file];
+  // The tier class is rewritten every run, so moving a page between tiers is
+  // one edit in PAGE_TIERS rather than a hunt through the HTML. hero-atmos goes
+  // with it: it existed only to make two pages' headlines bigger, which is what
+  // the tier type scale does now, and leaving it in would have it fight the
+  // tier for the same property.
   const classes = ["hero", "dark",
-    ...modifiers.filter((c) => c !== BAND && c !== "pg-photo"),
-    BAND, ...(photo ? ["pg-photo"] : [])];
+    ...modifiers.filter((c) => c !== BAND && c !== "pg-photo"
+                            && c !== "hero-atmos" && !c.startsWith("pg-head--")),
+    BAND, TIER_CLASS(file), ...(photo ? ["pg-photo"] : [])];
   html = html.replace(open[0], `<section class="${classes.join(" ")}">`);
   // the sheet, then the hashed band URLs. The vars block is marked so a
   // rebuild replaces it instead of stacking a second one.

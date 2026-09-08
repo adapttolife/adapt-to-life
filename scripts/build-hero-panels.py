@@ -220,6 +220,64 @@ def crop_to(im, aspect, ay, ax, zoom=1.0):
     return im.crop((x, y, x + nw, y + nh))
 
 
+
+# ==========================================================================
+# FRAME SPEC — the parameters a photograph must satisfy to go in a frame.
+#
+# Alec, 2026-09-08: "each of these vertical frames should have specific
+# parameters that set us up for success. When we rotate different pictures,
+# it's very streamlined, and nothing breaks."
+#
+# Everything that puts a photograph on this site now goes through one of three
+# frame kinds, and each kind states its numbers here rather than carrying them
+# inline where the next person has to reverse-engineer them from a crop call.
+# check_frames() runs on every build and refuses to ship a violation, so
+# swapping a photograph is a one-line edit that either works or tells you why.
+#
+#   column   the interior band's vertical frames. FIXED aspect — this is the
+#            one that used to drift between 0.5 and 0.7 per column, which is
+#            why faces looked squeezed in some and not others. A column is
+#            0.62 wide-to-tall, full stop, and a photo that cannot give that
+#            crop is the wrong photo for a column.
+#   tile     a mosaic frame, on the homepage wall or /donate. Free aspect,
+#            because tiles overlap and variety is the point, but bounded so a
+#            near-square or a letterbox cannot sneak in and break the rhythm.
+#   plate    a single full-bleed photograph (/apply). Landscape only: a
+#            portrait under `cover` in a wide header crops to a torso.
+FRAME_SPEC = {
+    "column": {"aspect": (0.62, 0.62), "min_src_px": 2400, "anchor": "required"},
+    "tile":   {"aspect": (0.66, 1.60), "min_src_px": 1800, "anchor": "required"},
+    "plate":  {"aspect": (1.30, 1.90), "min_src_px": 3000, "anchor": "required"},
+}
+
+
+def check_frames(kind, entries):
+    """Refuse to build a frame whose photograph cannot fill it.
+
+    The failures this catches are the ones that are invisible in a thumbnail
+    and obvious on a phone: an aspect the crop has to stretch to reach, a
+    source too small for the box it lands in, a missing anchor that silently
+    defaults to dead centre and lands the window on somebody's chest. All three
+    have shipped to Alec at least once.
+    """
+    lo, hi = FRAME_SPEC[kind]["aspect"]
+    floor = FRAME_SPEC[kind]["min_src_px"]
+    for name, src, ar, ax, ay in entries:
+        if not (lo - 0.02 <= ar <= hi + 0.02):
+            raise SystemExit(
+                f"FRAME SPEC — {kind} '{name}' has aspect {ar:.2f}, outside "
+                f"{lo}-{hi}. Reframe it or use a different frame kind.")
+        if not (0.0 <= ax <= 1.0 and 0.0 <= ay <= 1.0):
+            raise SystemExit(f"FRAME SPEC — {kind} '{name}' anchor out of range.")
+        path = os.path.join(SRC, src)
+        if os.path.exists(path):
+            with Image.open(path) as im:
+                if max(im.size) < floor:
+                    raise SystemExit(
+                        f"FRAME SPEC — {kind} '{name}': source is {im.width}x"
+                        f"{im.height}, under the {floor}px floor for this frame.")
+
+
 def compose_band():
     """The interior page band: one pre-composed strip of vertical columns.
 
@@ -265,6 +323,7 @@ def compose_band():
         ("JLA_6105.jpg", 0.88, False, 0.49, 0.23),  # laughing between points
         ("JLA_6168.jpg", 0.70, True,  0.53, 0.33),  # two at the net
     ]
+    check_frames("column", [(c[0], c[0], 0.62, c[3], c[4]) for c in COLS])
     for name, W, H, n, pitch, cwf in (("pg-band-wide", 1500, 650, 4, 0.235, 0.205),
                                       ("pg-band-tall", 900, 805, 2, 0.460, 0.440)):
         canvas = Image.new("RGB", (W, H), (0, 0, 0))
@@ -300,6 +359,87 @@ def compose_band():
         # are invisible here in a way they are not on the homepage wall
         canvas.save(out, "WEBP", quality=54, method=6)
         print(f"{name:20s} {W}x{H} {n} frames  {os.path.getsize(out)/1024:6.1f} KB")
+
+
+
+def compose_give():
+    """The /donate header: a mosaic, not a column band.
+
+    Alec, 2026-09-08: "maybe for the donate page, we don't do vertical frames.
+    We may do one or two pictures. Maybe it becomes a version of the main
+    banner, where we have kind of a mosaic style, but just fewer pictures ...
+    it will also give us a little bit more breathing room ... to complement the
+    Givebutter functionalities within the donate page."
+
+    So it borrows the HOMEPAGE's language rather than the interior band's:
+    overlapping frames at three depths, scattered, tilted off-square. But where
+    the wall is nineteen panels competing for attention, this is EIGHT. /donate
+    is where somebody decides, and the picture's job is warmth behind a form.
+
+    Shaped around the Givebutter panel, in two ways:
+
+      · A CLEAR RIGHT THIRD. The panel is a white card floating over this, and
+        a busy frame behind a white card is noise around the edges. The mosaic
+        is weighted left and centre; one low, deeply-dimmed frame sits right.
+      · A LOWER CEILING than the wall, because the copy is white and the card
+        is white and both have to win.
+
+    IT GRADES FROM THE SOURCE PHOTOGRAPHS, NOT FROM THE PANELS. The first cut
+    read the finished panel files, which already carry their depth dimming
+    baked in (front 1.00, mid 0.62, back 0.40), and multiplied a second dimming
+    on top. A mid-plane frame came out at 0.62 x 0.38 = 0.24 and the whole
+    header measured mean luma 0.066 against the band's 0.171 — it shipped as
+    black mush, which is the exact complaint this page exists to fix. Reading
+    the originals means one grade, one place, and the numbers below mean what
+    they say. Measured, not eyeballed: check the asset's mean luma if it ever
+    looks wrong again.
+
+    Composed rather than shipped as elements for the same reason as the band:
+    /donate carries a payment form and nineteen third-party requests, and has
+    the tightest byte budget on the site. One image, one request.
+    """
+    import numpy as np
+    # source, x, y, w (fractions), depth 1-3, tilt, aspect, ax, ay
+    # Anchors are the measured ones from PANELS/compose_band, not fresh guesses.
+    TILES = [
+        ("JLA_5945.jpg", 0.00, 0.00, 0.19, 1,  0.6, 3/2, 0.60, 0.42),
+        ("JLA_6143.jpg", 0.19, 0.00, 0.15, 1, -0.9, 3/4, 0.52, 0.30),
+        ("JLA_6073.jpg", 0.58, 0.14, 0.14, 1,  0.4, 3/4, 0.50, 0.40),
+        ("JLA_6084.jpg", 0.44, 0.48, 0.19, 1,  0.5, 3/2, 0.46, 0.46),
+        ("JLA_6077.jpg", 0.80, 0.54, 0.16, 1, -0.6, 3/4, 0.50, 0.36),
+        ("JLA_5922.jpg", 0.33, 0.06, 0.20, 2, -0.7, 3/4, 0.50, 0.44),
+        ("JLA_6045.jpg", 0.01, 0.26, 0.21, 3, -1.1, 4/5, 0.46, 0.42),
+        ("JLA_6106.jpg", 0.19, 0.44, 0.18, 3,  0.8, 3/4, 0.50, 0.34),
+    ]
+    # Graded ONCE, from full-brightness originals. Below the wall's own steps
+    # because a white card and white copy both sit on top of this.
+    DIM = {3: 0.92, 2: 0.66, 1: 0.44}
+    check_frames("tile", [(t[0], t[0], t[6], t[7], t[8]) for t in TILES])
+    for name, W, H in (("pg-give-wide", 1500, 720), ("pg-give-tall", 900, 1000)):
+        canvas = Image.new("RGB", (W, H), (0, 0, 0))
+        tall = H > W
+        for src, x, y, w, d, rot, ar, ax, ay in sorted(TILES, key=lambda t: t[4]):
+            im = Image.open(os.path.join(SRC, src))
+            im.draft("RGB", (im.width // 3, im.height // 3))
+            tw = int(W * w * (1.55 if tall else 1.0))
+            th = int(tw / ar)
+            im = crop_to(im.convert("RGB"), ar, ay, ax, 0.88)
+            im = mono(im.resize((tw, th), Image.LANCZOS))
+            im = ImageEnhance.Brightness(im).enhance(DIM[d])
+            im = im.rotate(rot, expand=True, resample=Image.BICUBIC, fillcolor=(0, 0, 0))
+            canvas.paste(im, (int(W * x), int(H * y)))
+        # the floor grade the wall and the band share: the top edge dissolves
+        # into the black the nav sits on, light pools low
+        a = np.asarray(canvas, np.float32) / 255.0
+        yy = np.linspace(0, 1, H)[:, None, None]
+        a *= np.clip(1.0 - np.maximum(0, (0.16 - yy) / 0.16) * 0.70, 0, 1)
+        a *= np.clip(1.0 - np.maximum(0, (yy - 0.94) / 0.06) * 0.75, 0, 1)
+        canvas = Image.fromarray((a * 255).astype(np.uint8))
+        out = os.path.join(DST, f"{name}.webp")
+        canvas.save(out, "WEBP", quality=QUALITY["band"], method=6)
+        lum = (np.asarray(Image.open(out).convert("L"), np.float32) / 255).mean()
+        print(f"{name:20} {W}x{H} {len(TILES)} tiles  "
+              f"{os.path.getsize(out)/1024:6.1f} KB  mean luma {lum:.3f}")
 
 
 def compose_roll():
@@ -430,6 +570,7 @@ def main():
         manifest[name] = {"w": im.size[0], "h": im.size[1], "role": role, "src": src}
         print(f"{name:14s} {role:5s} {im.size[0]:4d}x{im.size[1]:<4d} {n/1024:6.1f} KB   {src}")
     compose_band()
+    compose_give()
     compose_roll()
     # Page photos: a single full-bleed frame for a page that has one picture
     # worth the whole header. Copied in rather than re-encoded — the source is

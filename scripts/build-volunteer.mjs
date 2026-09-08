@@ -14,7 +14,8 @@
 // change with it and nobody has to remember they exist. `--check` is wired into
 // the test suite so a nav edit that skips the generator fails the build.
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync, rmSync } from "node:fs";
-import { PAGE_HEADER_SHEET, PAGE_HEADER_CLASS, PAGE_HEADER_VARS } from "./lib/page-header.mjs";
+import { PAGE_HEADER_SHEET, PAGE_HEADER_CLASS, PAGE_HEADER_VARS,
+         TIER_CLASS } from "./lib/page-header.mjs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { SHARED, LANES, ROLES } from "../data/volunteer-roles.mjs";
@@ -126,7 +127,7 @@ ${roles.map(card).join("\n")}
 
 <main>
 
-  <section class="hero dark hero-atmos ${PAGE_HEADER_CLASS}">
+  <section class="hero dark ${PAGE_HEADER_CLASS} ${TIER_CLASS("volunteer.html")}">
     <div class="wrap">
       <span class="eyebrow orange reveal">Volunteer</span>
       <h1 class="serif display reveal">Your place on <em class="italic" style="color:var(--orange)">this team</em>.</h1>

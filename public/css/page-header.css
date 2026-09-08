@@ -1,0 +1,106 @@
+/* ==========================================================================
+   Adapt To Life — interior page headers
+   --------------------------------------------------------------------------
+   Alec, 2026-09-08: the mosaic is the front page, "the other one for the other
+   pages in the website".
+
+   Variant 2 puts its type on the floor beneath a row of columns, which works
+   when the header is five words. An interior page header is not five words —
+   it is an eyebrow, a headline, a sub-line and sometimes a button, and all of
+   those have to stay. So this takes the LANGUAGE of 2 rather than its layout:
+
+     · the same bottom-aligned row of portrait columns, bleeding both edges
+     · the same pitch black, the same orange only as a floor bloom
+     · the same skyline top edge, heights varying so it is never a ruler
+
+   and then holds it well back — a band of texture the page's own words sit
+   above, not a picture competing with them. The homepage is the loud one; a
+   page about the grant process is not, and the family reads better for the
+   contrast.
+
+   One rule inherited from the front page and worth restating here: the strip
+   is decoration and is marked aria-hidden. Every athlete in it appears
+   somewhere on the site as a photograph with a name attached. It is texture
+   here, not testimony.
+   ========================================================================== */
+
+.hero.pg-band{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  background:#000;
+  padding-top:clamp(7rem, 15vh, 10rem);
+  padding-bottom:clamp(9rem, 20vh, 13rem);
+}
+
+/* the columns, bottom-aligned to one baseline */
+.pg-strip{
+  position:absolute; left:0; right:0; bottom:0; top:0;
+  z-index:0; pointer-events:none;
+}
+.pg-strip figure{
+  position:absolute; bottom:0; margin:0; overflow:hidden;
+  left:var(--x); width:var(--w); height:var(--h);
+}
+.pg-strip img{
+  width:100%; height:100%; object-fit:cover; object-position:50% 22%;
+  display:block;
+  filter:grayscale(1) brightness(0.46) contrast(0.94);
+}
+.pg-strip figure.far img{ filter:grayscale(1) brightness(0.28) contrast(0.86) blur(1.2px); }
+
+/* Held back hard. The page's own words are the subject here, and the contrast
+   floor is not something to leave to whichever photograph lands behind the
+   sub-line. */
+.pg-veil{
+  position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:
+    /* down into black at the BOTTOM too. Without this the columns are cut flat
+       by the section boundary and the join to the next band reads as a
+       cropping accident rather than as a horizon. What is left is a lit band
+       through the middle, which is what the strip is for. */
+    linear-gradient(0deg,   rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.52) 12%, rgba(0,0,0,0.12) 26%, rgba(0,0,0,0) 38%),
+    linear-gradient(180deg, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.88) 32%, rgba(0,0,0,0.60) 56%, rgba(0,0,0,0.34) 76%, rgba(0,0,0,0.22) 100%),
+    radial-gradient(72% 30% at 62% 100%, rgba(255,92,57,0.32) 0%, rgba(255,92,57,0) 62%);
+}
+.pg-grain{
+  position:absolute; inset:0; z-index:2; pointer-events:none;
+  opacity:0.20; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+.hero.pg-band > .wrap{ position:relative; z-index:3; }
+
+/* the skyline: eight columns, heights varying, bleeding both edges */
+.pg-strip .c1{ --x:-4%;  --w:15%; --h:52%; }
+.pg-strip .c2{ --x:9%;   --w:15%; --h:68%; }
+.pg-strip .c3{ --x:22%;  --w:15%; --h:44%; }
+.pg-strip .c4{ --x:35%;  --w:15%; --h:74%; }
+.pg-strip .c5{ --x:48%;  --w:15%; --h:56%; }
+.pg-strip .c6{ --x:61%;  --w:15%; --h:82%; }
+.pg-strip .c7{ --x:74%;  --w:15%; --h:50%; }
+.pg-strip .c8{ --x:87%;  --w:16%; --h:66%; }
+
+@media (max-width:900px){
+  .hero.pg-band{ padding-bottom:clamp(7rem, 16vh, 10rem); }
+  .pg-strip .c1{ --x:-6%; --w:22%; --h:44%; }
+  .pg-strip .c2{ --x:14%; --w:22%; --h:62%; }
+  .pg-strip .c3{ display:none; }
+  .pg-strip .c4{ --x:34%; --w:22%; --h:70%; }
+  .pg-strip .c5{ display:none; }
+  .pg-strip .c6{ --x:54%; --w:22%; --h:56%; }
+  .pg-strip .c7{ display:none; }
+  .pg-strip .c8{ --x:74%; --w:24%; --h:66%; }
+}
+@media (max-width:640px){
+  .hero.pg-band{ padding-bottom:clamp(6rem, 14vh, 8rem); }
+  .pg-strip .c1{ --x:-8%; --w:32%; --h:40%; }
+  .pg-strip .c2{ --x:20%; --w:32%; --h:58%; }
+  .pg-strip .c4{ --x:50%; --w:32%; --h:68%; }
+  .pg-strip .c6{ --x:78%; --w:32%; --h:48%; }
+  .pg-strip .c8{ display:none; }
+  .pg-veil{
+    background:
+      linear-gradient(0deg,   rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.50) 14%, rgba(0,0,0,0) 34%),
+      linear-gradient(180deg, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.92) 38%, rgba(0,0,0,0.66) 64%, rgba(0,0,0,0.34) 100%),
+      radial-gradient(80% 24% at 60% 100%, rgba(255,92,57,0.30) 0%, rgba(255,92,57,0) 62%); }
+}

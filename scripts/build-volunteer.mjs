@@ -14,6 +14,7 @@
 // change with it and nobody has to remember they exist. `--check` is wired into
 // the test suite so a nav edit that skips the generator fails the build.
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync, rmSync } from "node:fs";
+import { PAGE_HEADER_STRIP, PAGE_HEADER_SHEET } from "./lib/page-header.mjs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { SHARED, LANES, ROLES } from "../data/volunteer-roles.mjs";
@@ -63,6 +64,7 @@ function head({ title, desc, canonical, card, cardAlt }) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
+${PAGE_HEADER_SHEET}
 <script src="/js/attribution.js" defer></script>
 </head>
 <body>
@@ -124,7 +126,8 @@ ${roles.map(card).join("\n")}
 
 <main>
 
-  <section class="hero dark hero-atmos">
+  <section class="hero dark hero-atmos pg-band">
+${PAGE_HEADER_STRIP}
     <div class="wrap">
       <span class="eyebrow orange reveal">Volunteer</span>
       <h1 class="serif display reveal">Your place on <em class="italic" style="color:var(--orange)">this team</em>.</h1>

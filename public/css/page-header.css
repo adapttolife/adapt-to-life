@@ -78,43 +78,32 @@
 .hero.pg-band .give-intro > :is(.eyebrow, h1, p, ul){ max-width:min(44ch, 100%); }
 .hero.pg-band > .wrap > :is(.eyebrow, h1, h2, p, ul, ol){ max-width:min(44ch, 50%); }
 
-/* A SOFT SHADOW UNDER THE WORDS THEMSELVES, sized to the copy block.
-   Measured, not eyeballed: with the columns at full brightness and only the
-   corner veil protecting them, every sub-line on every banded page came in at
-   2.1-4.4:1 against a 4.5 floor (scripts/check-header-contrast.mjs). The
-   headlines passed — they are huge and ExtraBold and sit in the darkest part of
-   the veil — which is exactly how this kind of failure hides: the thing you
-   look at first is fine.
-   Darkening the whole band again would have fixed it and undone the point of
-   the change. This darkens only what is behind the text, blurred wide enough
-   that it reads as shadow rather than as a panel. */
+/* SHADING BEHIND THE TEXT, not a panel over the picture.
+   Alec: "add a little bit of shading/shadow behind the text so the text is
+   easier to read, but still keep the same layout."
+
+   Two layers, because one of them is not enough on its own:
+
+     · a soft field that HUGS THE COPY — tight to the block, not to the column,
+       so the band shows above it, below it and to the right of it. The version
+       before this ran the full height of the strip and blacked out three
+       columns to protect four lines of type.
+     · a text-shadow on the glyphs themselves, which is what makes the letters
+       sit ON the picture rather than in front of a rectangle.
+
+   The field carries the measurable part. text-shadow is real legibility but
+   WCAG gives it no credit and neither does the contrast probe, so the field is
+   sized so every line clears 4.5:1 on background alone — the shadow is the
+   finish on top of a number that already passes. */
 .hero.pg-band > .wrap::before{
   content:""; position:absolute; z-index:-1;
-  /* The box has to extend WELL past the copy, because a 30px blur is also 30px
-     of falloff: /roadmap's last link sat 32px above the old bottom edge and was
-     only half covered — 1.23:1 while the sub-line above it read 12.7:1. Feather
-     costs reach, so pay for it in the geometry. */
-  /* Sized to the COPY, not to the wrap. `right:16%` looked modest and was not:
-     the wrap is 1140px, so it left the field covering x 36-1108 of a 1440px
-     hero — 77% of the band, which is why five of the eight columns were dark
-     and Alec was still seeing a dim, crammed strip. The copy is capped at 50%
-     of the wrap, so the field ends just past that and the right half of the
-     band is untouched. */
-  left:-8%; right:42%; top:-20%; bottom:-24%;
-  /* A SOLID field, feathered by the blur that is already here.
-     It must cover the WHOLE copy column, not just the headline: /roadmap puts a
-     link three blocks below its sub-line and a radial centred on the block
-     missed it at 1.22:1 on a bright face. Two stacked gradients with
-     background-blend-mode did not composite the way the arithmetic said they
-     would either. A solid rectangle under a 30px blur has no such surprises —
-     the blur IS the feather, on all four edges, and what it covers is exactly
-     the box. */
-  background:rgba(0,0,0,0.88);
-  /* generous blur, and the box extended to pay for it — at 30px the field's
-     own edge was legible as a rectangle behind the type, which reads as a
-     panel someone forgot to style rather than as shadow */
-  filter:blur(46px);
+  left:-6%; right:44%; top:-9%; bottom:-11%;
+  background:rgba(0,0,0,0.86);
+  filter:blur(42px);
   pointer-events:none;
+}
+.hero.pg-band > .wrap :is(.eyebrow, h1, h2, p, a, li){
+  text-shadow:0 1px 2px rgba(0,0,0,0.55), 0 2px 14px rgba(0,0,0,0.45);
 }
 
 @media (max-width:900px){
@@ -127,8 +116,8 @@
     padding-bottom:clamp(14rem, 40vw, 20rem);
   }
   .hero.pg-band > .wrap > *{ max-width:none; }
-  .hero.pg-band > .wrap::before{ left:-16%; right:-16%; top:-12%; bottom:-20%;
-    background:rgba(0,0,0,0.92); }
+  .hero.pg-band > .wrap::before{ left:-14%; right:-14%; top:-7%; bottom:-9%;
+    background:rgba(0,0,0,0.88); }
   .hero.pg-band::before{ aspect-ratio:760/620;
     background-image:url('/images/hero/panels/pg-band-tall.webp'); }
   .hero.pg-band::after{

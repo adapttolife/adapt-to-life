@@ -180,45 +180,45 @@ def compose_band():
     compresses to a fraction of its parts.
     """
     import numpy as np
-    # Alec, pointing at variant 2: "less crammed, none of the pictures are
-    # squished. I want a clean vertical layout when we use this."
+    # Alec: "use less vertical frames besides squishing them, especially for
+    # mobile ... also use different pictures than the main banner."
     #
-    # Crammed was the pitch. The columns were 15% wide on a 13% pitch, so every
-    # one of them OVERLAPPED its neighbour by two points and the band read as a
-    # solid wall of face. Real gaps are what make a row of columns read as
-    # columns. Width is now comfortably inside the pitch, and the heights swing
-    # wider so the top edge is a skyline rather than a comb.
+    # FEWER, WIDER FRAMES. Nothing here was ever geometrically distorted — each
+    # column is cropped at exactly the aspect of the box it goes into — but a
+    # 0.30-aspect box is a vertical SLICE of a person, and a slice of a face
+    # reads as squished whether or not the arithmetic says otherwise. Eight
+    # columns on a phone is four too many. Five on desktop and three on a phone
+    # gives every frame something like portrait proportions, which is what makes
+    # a face look like a face.
+    #
+    # DIFFERENT PHOTOGRAPHS. The homepage mosaic uses 19 of the 25 favourites;
+    # these are five of the six it does not touch, so the interior pages are not
+    # a rerun of the front page.
     COLS = [  # source, height share, back row
-        ("JLA_5920.jpg", 0.58, True),  ("JLA_6066.jpg", 0.86, False),
-        ("JLA_6077.jpg", 0.52, True),  ("JLA_6045.jpg", 1.00, False),
-        ("JLA_5973.jpg", 0.66, True),  ("JLA_5922.jpg", 0.92, False),
-        ("JLA_6073.jpg", 0.56, True),  ("JLA_6106.jpg", 0.80, False),
+        ("JLA_5884.jpg", 0.72, True),   # reaching low for a dig
+        ("JLA_6071.jpg", 1.00, False),  # grinning, whole chair
+        ("JLA_5904.jpg", 0.62, True),   # rally, wide
+        ("JLA_6105.jpg", 0.92, False),  # laughing between points
+        ("JLA_6123.jpg", 0.70, True),   # two at the net
     ]
-    # These aspects are the CONTRACT with page-header.css, which anchors the band
-    # as a fixed-aspect strip at the bottom of the hero rather than stretching it
-    # over the whole thing. It has to be that way: interior heroes run from
-    # 1.50:1 (/donate) to 2.75:1 (/contact at 1920), and one fixed-aspect image
-    # under `cover` cannot serve that range — it scaled up and cropped the faces
-    # clean off the top. A strip with its own aspect always shows the whole band.
-    for name, W, H, n, pitch, cwf in (("pg-band-wide", 1200, 420, 8, 0.126, 0.104),
-                                      ("pg-band-tall", 760, 620, 4, 0.255, 0.212)):
+    for name, W, H, n, pitch, cwf in (("pg-band-wide", 1200, 420, 5, 0.190, 0.156),
+                                      ("pg-band-tall", 760, 500, 3, 0.325, 0.300)):
         canvas = Image.new("RGB", (W, H), (0, 0, 0))
-        use = COLS if n == 8 else COLS[1::2]
+        use = COLS if n == 5 else [COLS[1], COLS[3], COLS[0]]
         for i, (src, h, dim) in enumerate(use):
             im = Image.open(os.path.join(SRC, src))
             im.draft("RGB", (im.width // 3, im.height // 3))
             cw, ch = int(W * cwf), int(H * h)
             # Crop at the EXACT aspect of the box it goes into. Cropping at a
-            # fixed ratio and resizing into a differently-shaped box stretched
-            # every column by up to 45% — "the faces look squished". They were.
-            im = crop_to(im.convert("RGB"), cw / ch, 0.36, 0.50, 0.80)
+            # fixed ratio and resizing into a differently-shaped box stretches
+            # the image, which is a real distortion and was one once.
+            im = crop_to(im.convert("RGB"), cw / ch, 0.36, 0.50, 0.86)
             assert abs((im.width / im.height) - (cw / ch)) < 0.02, \
                 f"{src}: cropped {im.width}x{im.height} for a {cw}x{ch} box"
             im = mono(im.resize((cw, ch), Image.LANCZOS))
-            im = ImageEnhance.Brightness(im).enhance(0.66 if dim else 0.98)
+            im = ImageEnhance.Brightness(im).enhance(0.70 if dim else 0.98)
             if dim:
-                im = im.filter(ImageFilter.GaussianBlur(0.8))
-            # centred on its own pitch, so the gaps are even across the band
+                im = im.filter(ImageFilter.GaussianBlur(0.7))
             x = int(W * (0.5 * (1 - n * pitch) + i * pitch + (pitch - cwf) / 2))
             canvas.paste(im, (x, H - ch))
         a = np.asarray(canvas, np.float32) / 255.0
@@ -226,8 +226,8 @@ def compose_band():
         a *= np.clip(1.0 - np.maximum(0, (y - 0.90) / 0.10) * 0.85, 0, 1)
         canvas = Image.fromarray((a * 255).astype(np.uint8))
         out = os.path.join(DST, f"{name}.webp")
-        canvas.save(out, "WEBP", quality=56, method=6)
-        print(f"{name:20s} {W}x{H} {os.path.getsize(out)/1024:6.1f} KB")
+        canvas.save(out, "WEBP", quality=58, method=6)
+        print(f"{name:20s} {W}x{H} {n} frames  {os.path.getsize(out)/1024:6.1f} KB")
 
 
 def compose_roll():

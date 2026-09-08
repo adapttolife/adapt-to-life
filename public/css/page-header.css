@@ -113,12 +113,14 @@
      sliver behind a paragraph. */
   .hero.pg-band{
     padding-top:clamp(5.5rem, 13vh, 7.5rem);
-    padding-bottom:clamp(14rem, 40vw, 20rem);
+    /* clear the strip. It is 760/500 of the viewport width — 257px at 390 — so
+       anything under that lands the last line of copy on a frame's top edge. */
+    padding-bottom:clamp(18rem, 72vw, 24rem);
   }
   .hero.pg-band > .wrap > *{ max-width:none; }
   .hero.pg-band > .wrap::before{ left:-14%; right:-14%; top:-7%; bottom:-9%;
     background:rgba(0,0,0,0.88); }
-  .hero.pg-band::before{ aspect-ratio:760/620;
+  .hero.pg-band::before{ aspect-ratio:760/500;
     background-image:url('/images/hero/panels/pg-band-tall.webp'); }
   .hero.pg-band::after{
     background:

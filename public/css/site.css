@@ -393,6 +393,10 @@ section{ position:relative; }
   .nav-links > *:not(.nav-cta){ display:none; }
   .nav-cta{ font-size:0.85rem; padding:0.5rem 1.05rem; }
   .menu-btn{ display:block; margin-left:0.9rem; }
+  /* The brand is the one thing in this bar that must not wrap. Adding Donate
+     took the smallest phones (320px) below the width where "Adapt To Life"
+     fits on one line, and it broke to two. */
+  .brand{ white-space:nowrap; }
   .nav.open .menu-btn span:nth-child(1){ transform:translateY(7px) rotate(45deg); }
   .nav.open .menu-btn span:nth-child(2){ opacity:0; }
   .nav.open .menu-btn span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }
@@ -410,6 +414,13 @@ section{ position:relative; }
   .split{ grid-template-columns:1fr; gap:2.2rem; }
   .footer-top{ grid-template-columns:1fr 1fr; gap:2rem; }
   .footer .brandcol{ grid-column:1 / -1; }
+}
+@media (max-width:380px){
+  /* 320px: give the bar back the room the Donate button took */
+  .brand{ font-size:1rem; gap:0.45rem; }
+  .brand-logo{ height:30px; }
+  .nav-cta{ font-size:0.8rem; padding:0.45rem 0.85rem; }
+  .menu-btn{ margin-left:0.55rem; padding:0.3rem; }
 }
 @media (max-width:560px){
   .metrics{ grid-template-columns:repeat(2,1fr); gap:1.6rem 1.2rem; }

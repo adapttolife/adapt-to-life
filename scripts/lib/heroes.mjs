@@ -85,22 +85,33 @@ const BANNER = [
   { n: "bn-white",  x: 87, w: 16, h: 68, d: 2, m: "s" },
 ];
 
-// PHONE LAYOUTS. A wall authored for a 1440x790 landscape box does not thin
-// down to a 390x780 portrait one by hiding panels — that was the first cut and
-// it left two photographs stranded in a field of black. A phone gets its own
-// composition: fewer, much larger panels filling the bottom half under the
-// type. Panels absent from these maps are hidden below 640px.
-const MOSAIC_PHONE = {
-  // Raised and enlarged once the buttons left the header: the wall used to
-  // start 130px below the last line of type because there were two buttons and
-  // a meter in between. Now the words end and the photographs begin.
-  "brian":       { x: -8, y: 36, w: 54 },
-  "dink":        { x: 44, y: 31, w: 54 },
-  "grin":        { x: 74, y: 52, w: 36 },
-  "smile-close": { x: 14, y: 66, w: 48 },
-  "forehand":    { x: 50, y: 68, w: 62 },
-  "laugh":       { x: -10, y: 68, w: 38 },
-};
+// NARROW LAYOUTS.
+//
+// A wall authored for a 1440x790 landscape box does not thin down to a 390x780
+// portrait one. The first cut hid panels and left two photographs stranded in a
+// field of black; the second gave the phone its own scattered composition.
+//
+// Alec, 2026-09-08, picking the grid off variant 6: "I want this to be the main
+// banner style for mobile design." He is right and it is the better idea. A
+// portrait box wants a GRID, not a scatter — the arrangement stops being
+// authored per panel and becomes a rule, which is why every cell is the same
+// size and the composition cannot fall apart at a width nobody tested.
+//
+// Same nineteen files as the desktop wall, so a phone downloads nothing extra
+// and nothing new has to be built. Twelve of them show; MOSAIC_GRID is the
+// order they appear in, and `lit` is the handful left at full brightness. The
+// rest sit at a fifth, which is what makes four faces read instead of twelve
+// competing.
+const MOSAIC_GRID = [
+  "close-dink", "laugh",
+  "net",        "smile-close",
+  "reach",      "serve",
+  "pair",       "dink",
+  "whitecap",   "brian",
+  "two-up",     "swing",
+];
+const MOSAIC_GRID_LIT = new Set(["smile-close", "dink", "brian", "laugh"]);
+
 const BANNER_PHONE = {
   "bn-dink":  { x: -6, w: 58, h: 100 },
   "bn-smile": { x: 48, w: 58, h: 86 },
@@ -149,11 +160,36 @@ const panelHtml = (p, i) => {
 const layoutCss = (rows, phone, mode) => {
   const wide = rows.map((p) =>
     `  .mw-p.p-${p.n}{ ${boxRule(p, PANELS[p.n], null, mode)} }`);
-  const small = rows.filter((p) => phone[p.n]).map((p) =>
-    `    .mw-p.p-${p.n}{ display:block; ${boxRule(p, PANELS[p.n], phone[p.n], mode)} }`);
+
+  // The banner keeps a placed narrow layout — it is two columns and a headline,
+  // which is already a grid by another name.
+  if (mode === "banner") {
+    const small = rows.filter((p) => phone[p.n]).map((p) =>
+      `    .mw-p.p-${p.n}{ display:block; ${boxRule(p, PANELS[p.n], phone[p.n], mode)} }`);
+    return ["<style>", ...wide,
+      "  @media (max-width:900px){",
+      "    .mw-p{ display:none; }", ...small,
+      "  }", "</style>"].join("\n");
+  }
+
+  // The mosaic goes to a grid. Every positioning property the wide layout set
+  // has to be unwound, and it has to be unwound AT THE SAME SPECIFICITY: the
+  // wide rules are `.mw-p.p-dink{ width:19% }`, so a reset written as `.mw-p{
+  // width:auto }` loses and the "grid" renders as nineteen tiny scattered
+  // rectangles. It did. The reset therefore ships inside each cell's own rule.
+  const RESET = "position:static; left:auto; top:auto; right:auto; bottom:auto; " +
+                "width:auto; height:auto; aspect-ratio:3/2; transform:none; " +
+                "border-radius:0; box-shadow:none;";
+  const cells = MOSAIC_GRID.map((n, i) =>
+    `    .mw-p.p-${n}{ display:block; order:${i}; ${RESET} }`);
+  // the handful left at full brightness, one rule each so they out-specify the
+  // blanket dim in hero-mosaic.css
+  const lit = [...MOSAIC_GRID_LIT].map((n) =>
+    `    .mw-p.p-${n} img{ filter:grayscale(1) brightness(1) contrast(1.04); }`);
   return ["<style>", ...wide,
     "  @media (max-width:900px){",
-    "    .mw-p{ display:none; }", ...small,
+    "    .mw-p{ display:none; }",
+    ...cells, ...lit,
     "  }", "</style>"].join("\n");
 };
 
@@ -191,7 +227,7 @@ ${wall(MOSAIC)}
     <div class="mw-grain"></div>
     <div class="mw-vig"></div>
   </section>
-${layoutCss(MOSAIC, MOSAIC_PHONE, "mosaic")}
+${layoutCss(MOSAIC, null, "mosaic")}
 
 `;
 

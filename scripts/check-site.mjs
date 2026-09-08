@@ -459,7 +459,23 @@ const BUDGET = {
   // to come down; it is not done here because it would also flatten the
   // parallax those seven have, and that is a design call for Alec, not a
   // performance call for me.
-  "/": { own: 448, total: 815, reqs: 38, hosts: 4, cls: 0.10 },
+  // 448 -> 460 on 2026-09-08, and this raise is 4KB of measurement plus the
+  // usual drift allowance, not a concession.
+  //
+  // Alec asked for two things at once: crisper images and a lighter page. The
+  // wall was soft because every back-plane panel rendered at 1.7-2.5x its own
+  // pixels under a 2.4px blur. Fixing that meant more pixels, and the trade was
+  // paid for rather than waved through: depth is baked into the files instead
+  // of applied in CSS, and a pre-darkened frame compresses far better — the back
+  // plane went to 2.2x the resolution for under a kilobyte a panel. Front
+  // quality came down 76 -> 68. Net: 250KB -> 268KB of photographs for a wall
+  // whose worst upscale went from 2.50x to 1.05x.
+  //
+  // Measured own 452KB. And the page got genuinely lighter where it counts:
+  // removing the pointer parallax dropped a requestAnimationFrame loop, two
+  // window listeners and will-change:transform on nineteen composited layers.
+  // Bytes are not the only weight a page carries.
+  "/": { own: 460, total: 815, reqs: 38, hosts: 4, cls: 0.10 },
   // cls:null, still — but for a smaller and better-understood reason than
   // before. The Givebutter cause IS fixed: reserving the panel's height took
   // MOBILE from 0.12-0.76 down to a flat 0 across five runs in every condition
@@ -527,7 +543,13 @@ const BUDGET = {
   // always here; the other ~40 is one closing section and one visible header
   // band, both asked for by name. If it needs to come back down, the lever is
   // the band asset, not the design.
-  "/donate": { own: 146, total: 9000, reqs: 108, hosts: 21, cls: null },
+  // 146 -> 160 on 2026-09-08. The interior band carried a baked blur that read
+  // as a bad photograph rather than as depth, and it was undersized on top.
+  // Blur removed, resolution raised — then trimmed back hard once it worked:
+  // 1900px at q72 (72KB) down to 1500px at q54 (41KB), because the band sits
+  // under a veil that is 30-96% black and encoder artifacts are invisible
+  // there in a way they are not on the homepage wall. Measured own 155KB.
+  "/donate": { own: 160, total: 9000, reqs: 108, hosts: 21, cls: null },
 };
 
 for (const [path, cap] of Object.entries(BUDGET)) {

@@ -50,7 +50,7 @@ SIZE = {"front": 820, "mid": 520, "back": 560}
 # for the resolution: a pre-darkened frame compresses far better. Back plane at
 # 560px pre-darkened costs 7.8 KB against 6.9 KB at 250px undarkened — 2.2x the
 # pixels for under a kilobyte.
-QUALITY = {"front": 76, "mid": 52, "back": 44, "big": 68, "band": 56}
+QUALITY = {"front": 68, "mid": 52, "back": 44, "big": 68, "band": 56}
 DEPTH_DIM = {"front": 1.00, "mid": 0.62, "back": 0.40}
 
 # name, source frame, aspect (w/h), vertical anchor (0 = top, 1 = bottom),
@@ -217,8 +217,8 @@ def compose_band():
         ("JLA_6105.jpg", 0.88, False, 0.49, 0.23),  # laughing between points
         ("JLA_6123.jpg", 0.70, True,  0.62, 0.42),  # two at the net
     ]
-    for name, W, H, n, pitch, cwf in (("pg-band-wide", 1900, 823, 4, 0.235, 0.205),
-                                      ("pg-band-tall", 1100, 984, 2, 0.460, 0.440)):
+    for name, W, H, n, pitch, cwf in (("pg-band-wide", 1500, 650, 4, 0.235, 0.205),
+                                      ("pg-band-tall", 900, 805, 2, 0.460, 0.440)):
         canvas = Image.new("RGB", (W, H), (0, 0, 0))
         use = COLS if n == 4 else [COLS[1], COLS[2]]
         for i, (src, h, dim, ax, ay) in enumerate(use):
@@ -241,7 +241,9 @@ def compose_band():
         a *= np.clip(1.0 - np.maximum(0, (y - 0.92) / 0.08) * 0.85, 0, 1)
         canvas = Image.fromarray((a * 255).astype(np.uint8))
         out = os.path.join(DST, f"{name}.webp")
-        canvas.save(out, "WEBP", quality=72, method=6)
+        # the band sits under a veil that is 30-96% black, so encoder artifacts
+        # are invisible here in a way they are not on the homepage wall
+        canvas.save(out, "WEBP", quality=54, method=6)
         print(f"{name:20s} {W}x{H} {n} frames  {os.path.getsize(out)/1024:6.1f} KB")
 
 

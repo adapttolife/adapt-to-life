@@ -208,8 +208,8 @@ def compose_band():
         ("JLA_6105.jpg", 0.88, False, 0.49, 0.23),  # laughing between points
         ("JLA_6123.jpg", 0.70, True,  0.62, 0.42),  # two at the net
     ]
-    for name, W, H, n, pitch, cwf in (("pg-band-wide", 1200, 520, 4, 0.235, 0.205),
-                                      ("pg-band-tall", 760, 680, 2, 0.460, 0.440)):
+    for name, W, H, n, pitch, cwf in (("pg-band-wide", 1900, 823, 4, 0.235, 0.205),
+                                      ("pg-band-tall", 1100, 984, 2, 0.460, 0.440)):
         canvas = Image.new("RGB", (W, H), (0, 0, 0))
         use = COLS if n == 4 else [COLS[1], COLS[2]]
         for i, (src, h, dim, ax, ay) in enumerate(use):
@@ -220,9 +220,11 @@ def compose_band():
             assert abs((im.width / im.height) - (cw / ch)) < 0.02, \
                 f"{src}: cropped {im.width}x{im.height} for a {cw}x{ch} box"
             im = mono(im.resize((cw, ch), Image.LANCZOS))
-            im = ImageEnhance.Brightness(im).enhance(0.72 if dim else 0.98)
-            if dim:
-                im = im.filter(ImageFilter.GaussianBlur(0.7))
+            # No blur. It was there to push the back row into depth and it
+            # reads as a bad photograph instead — Alec: "the picture all the way
+            # to the right is way too blurry, I want these crisp and clear." A
+            # small brightness step is enough to seat a frame behind another.
+            im = ImageEnhance.Brightness(im).enhance(0.82 if dim else 1.0)
             x = int(W * (0.5 * (1 - n * pitch) + i * pitch + (pitch - cwf) / 2))
             canvas.paste(im, (x, H - ch))
         a = np.asarray(canvas, np.float32) / 255.0
@@ -230,7 +232,7 @@ def compose_band():
         a *= np.clip(1.0 - np.maximum(0, (y - 0.92) / 0.08) * 0.85, 0, 1)
         canvas = Image.fromarray((a * 255).astype(np.uint8))
         out = os.path.join(DST, f"{name}.webp")
-        canvas.save(out, "WEBP", quality=58, method=6)
+        canvas.save(out, "WEBP", quality=72, method=6)
         print(f"{name:20s} {W}x{H} {n} frames  {os.path.getsize(out)/1024:6.1f} KB")
 
 

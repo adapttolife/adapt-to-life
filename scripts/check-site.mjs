@@ -483,7 +483,28 @@ const BUDGET = {
   // ~4KB of markup and CSS on this page against one fewer page on the site,
   // so total weight went DOWN and this one number went up. 120 is measured
   // prod own (119KB) plus ~1% for CF script variance, nothing more.
-  "/donate": { own: 125, total: 9000, reqs: 108, hosts: 21, cls: null },
+  // Raised 125 -> 131 on 2026-09-08, per the ratchet rule, and here is the
+  // arithmetic. /donate gained a closing section: the rolling band Alec asked
+  // for as the last thing before the footer, faces passing between the two
+  // halves of the ask.
+  //
+  // The 49KB strip itself is NOT in this number and that is the point. It was
+  // marked loading="lazy" and Chrome fetched it anyway on a no-scroll load —
+  // its distance-from-viewport threshold is generous and this measurement waits
+  // 9s for Givebutter's tail — which put 177KB on the page and failed here,
+  // correctly. It is now swapped in by IntersectionObserver, so a visitor who
+  // never scrolls to it never pays for it. A visitor who does still downloads
+  // 49KB; nothing was made free, it was made conditional.
+  //
+  // What is left is the section's real weight on every load: 1.7KB of gzipped
+  // stylesheet, one request for it, and ~2KB of markup. Measured own went
+  // 123 -> 128. 131 is that plus the same ~2% for CF-script variance the rest
+  // of this table carries — our own content would have to grow 3KB to trip it.
+  //
+  // The alternative was raising this cap by 52KB to let decoration ride on the
+  // initial load of a page with a payment form. That would have been the wrong
+  // answer, and the check is what made it obvious.
+  "/donate": { own: 131, total: 9000, reqs: 108, hosts: 21, cls: null },
 };
 
 for (const [path, cap] of Object.entries(BUDGET)) {

@@ -36,7 +36,7 @@
     border-radius:16px; overflow:hidden; text-decoration:none; color:inherit; transition:border-color .15s, transform .15s; }
   .card:hover{ border-color:var(--orange-ink); transform:translateY(-2px); }
   .card.pick{ border-color:var(--orange-ink); box-shadow:0 18px 44px -30px rgba(198,63,34,0.5); }
-  .card img{ width:100%; display:block; aspect-ratio:1280/704; object-fit:cover; background:#111; }
+  .card img{ width:100%; height:auto; display:block; background:#111; }
   .card .body{ padding:1rem 1.1rem 1.2rem; }
   .card .k{ font-family:'Space Mono',monospace; font-size:0.66rem; letter-spacing:0.14em;
     text-transform:uppercase; color:var(--orange-ink); }
@@ -50,13 +50,13 @@
   .ba{ display:grid; grid-template-columns:1fr 1fr; gap:1.1rem; margin-top:1.4rem; }
   @media (max-width:760px){ .ba{ grid-template-columns:1fr; } }
   .ba figure{ margin:0; }
-  .ba img{ width:100%; display:block; border-radius:12px; border:1px solid var(--hairline); background:#111; }
+  .ba img{ width:100%; height:auto; display:block; border-radius:12px; border:1px solid var(--hairline); background:#111; }
   .ba figcaption{ font-family:'Space Mono',monospace; font-size:0.68rem; letter-spacing:0.1em;
     text-transform:uppercase; color:#8a857a; margin-bottom:0.5rem; }
 
   .phones{ display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-top:1.4rem; }
   @media (max-width:760px){ .phones{ grid-template-columns:repeat(2,1fr); } }
-  .phones img{ width:100%; display:block; border-radius:12px; border:1px solid var(--hairline); background:#111; }
+  .phones img{ width:100%; height:auto; display:block; border-radius:12px; border:1px solid var(--hairline); background:#111; }
   .phones figure{ margin:0; }
   .phones figcaption{ font-family:'Space Mono',monospace; font-size:0.64rem; letter-spacing:0.08em;
     text-transform:uppercase; color:#8a857a; margin-bottom:0.45rem; }

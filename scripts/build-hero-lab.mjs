@@ -383,11 +383,49 @@ const HERO_SPLIT_ONE = `  <!-- 1 · HERO — the split (variant 7) -->
 
 `;
 
+/* --------------------------------------------------------------------------
+   8 — THE COURT.  Alec's plate, the traced cut-outs standing on it. The light
+   is in the picture, so nothing here adds any: every athlete just takes their
+   rim from where the plate says the source is.
+   -------------------------------------------------------------------------- */
+const COURT = [
+  { slot: "f-brian",  file: "trace-brian",  depth: 1 },
+  { slot: "f-ben",    file: "trace-ben",    depth: 2 },
+  { slot: "f-aubrey", file: "trace-aubrey", depth: 2 },
+  { slot: "f-ryan",   file: "trace-ryan",   depth: 3 },
+  { slot: "f-juan",   file: "trace-juan",   depth: 3 },
+];
+// The front two carry a reflection: the same file again, flipped and masked in
+// CSS. It is a second <img> rather than a background because the alpha has to
+// be the athlete's own silhouette, and no CSS trick reflects an element's alpha.
+// The browser fetches it once.
+const courtTeam = COURT.map((m) => {
+  const front = m.depth === 3;
+  const tag = cut(m.file, front ? 'fetchpriority="high" decoding="async"' : 'loading="lazy" decoding="async"');
+  const refl = front ? `<span class="ct-refl" aria-hidden="true">${cut(m.file, 'loading="lazy" decoding="async"')}</span>` : "";
+  return `      <figure class="ct-fig ${m.slot} c${m.depth}">${tag}${refl}</figure>`;
+}).join("\n");
+
+const HERO_COURT = `  <!-- 1 · HERO — the court (variant 8) -->
+  <section class="hero-spec hero-court dark hero-var" id="heroStage" data-variant="8">
+    <div class="ct-plate" role="img" aria-label="An empty adaptive pickleball court, lit from high right"></div>
+    <div class="ct-shade"></div>
+    <div class="ct-team" aria-hidden="true">
+${courtTeam}
+    </div>
+    <div class="wrap sp-copy">
+      <h1 class="sp-h1 sp-rise" style="--d:160ms;">Your Place in Adaptive Sports.</h1>
+    </div>
+    <div class="sp-grain"></div>
+  </section>
+
+`;
+
 const VARIANTS = { 1: HERO_D, 2: HERO_E, 3: HERO_FRAME, 4: HERO_KNOCKOUT,
-                   5: HERO_STRIP, 6: HERO_GRID, 7: HERO_SPLIT_ONE };
+                   5: HERO_STRIP, 6: HERO_GRID, 7: HERO_SPLIT_ONE, 8: HERO_COURT };
 const LABEL = {
   1: "1 · Mosaic", 2: "2 · Banner", 3: "3 · One frame", 4: "4 · Knockout",
-  5: "5 · Strip", 6: "6 · Grid", 7: "7 · Split",
+  5: "5 · Strip", 6: "6 · Grid", 7: "7 · Split", 8: "8 · The court",
 };
 
 // The stage script: entrance, depth parallax, and the live drive strip. Kept
@@ -449,7 +487,7 @@ const STAGE_JS = `
 // The variant switcher, so one link lets Alec flip between all three at the
 // same scroll position instead of opening three tabs and guessing.
 function switcher(active) {
-  const items = ["1", "2", "3", "4", "5", "6", "7"]
+  const items = ["1", "2", "3", "4", "5", "6", "7", "8"]
     .map(
       (k) =>
         `<a href="/hero-${k}" class="hv-chip${k === active ? " on" : ""}">${LABEL[k]}</a>`,
@@ -477,7 +515,7 @@ for (const [key, hero] of Object.entries(VARIANTS)) {
     .replace(
       '<link rel="stylesheet" href="/css/site.css">',
       '<link rel="stylesheet" href="/css/site.css">\n<link rel="stylesheet" href="/css/hero-mosaic.css">' +
-        ("34567".includes(key) ? '\n<link rel="stylesheet" href="/css/hero-spectrum.css">' : ""),
+        ("345678".includes(key) ? '\n<link rel="stylesheet" href="/css/hero-spectrum.css">' : ""),
     )
     .replace(
       "</head>",

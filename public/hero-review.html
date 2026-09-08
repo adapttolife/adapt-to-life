@@ -82,16 +82,24 @@
 <div class="rv">
 
   <span class="rv-badge">Header review</span>
-  <h1>Seven headers.</h1>
+  <h1>Eight headers.</h1>
   <p class="lede">A spectrum, as asked. <strong>1</strong> is still the mosaic you liked; <strong>2</strong> is the column banner. <strong>3&ndash;7</strong> are five different <em>answers</em> to the question rather than five arrangements of the same one &mdash; one photograph, type knocked through to an image, a moving strip, a contact-sheet grid, and a hard split.</p>
   <p class="lede" style="margin-top:0.8rem;">The stadium version is gone, and so is the blurred court plate that was sitting behind it. Everything here is black-and-white pictures on pitch black, which is what you said and it is right. The orange only ever appears as light &mdash; a bloom, a seam, a rule &mdash; never as a tint on an athlete.</p>
-  <p class="date">Updated 8 September 2026 &middot; round six &middot; branch <code>hero-lineup-2026-09</code> &middot; not live</p>
+  <p class="date">Updated 8 September 2026 &middot; round seven &middot; branch <code>hero-lineup-2026-09</code> &middot; not live</p>
 
   <h2>Start here</h2>
-  <p>Each link is a <strong>complete working homepage</strong>, not a mockup: real nav, real live drive, real scroll. The chips at the bottom of each page flip between all seven at any time.</p>
+  <p>Each link is a <strong>complete working homepage</strong>, not a mockup: real nav, real live drive, real scroll. The chips at the bottom of each page flip between all eight at any time.</p>
 
   <div class="cards cards7">
-    <a class="card pick" href="/hero-1">
+    <a class="card pick" href="/hero-8">
+      <img src="/images/hero/review/8-desk.jpg" width="1100" height="605" alt="Header 8, the court: five athletes standing on a lit court with a net behind them.">
+      <div class="body">
+        <span class="k">8 &middot; The court<span class="pill">new</span></span>
+        <div class="d">Your plate, with the team standing on it. Pitch black, one warm source high right, a net for a horizon and a floor that reflects them. The only variant where the athletes are somewhere rather than on something.</div>
+        <div class="go">Open 8 &rarr;</div>
+      </div>
+    </a>
+    <a class="card" href="/hero-1">
       <img src="/images/hero/review/1-desk.jpg" width="1100" height="605" alt="Header 1, mosaic.">
       <div class="body">
         <span class="k">1 &middot; Mosaic<span class="pill">your pick</span></span>
@@ -161,9 +169,15 @@
   <p>You wrote it as "Your Place in Adaptive Sports" &mdash; title case, and the banner you sent is set in a heavy sans. The site is set in a serif today. That is a brand decision rather than a header decision, so rather than guess I put one of each in front of you: <strong>D is the site's serif</strong>, sentence case, exactly what is live. <strong>E is the grotesk</strong>, title case, tight, the register a stadium banner is actually set in. Same five words either way.</p>
   <p>Less is more, as asked. The eyebrow and the sub-line are gone from both &mdash; the wall behind already says "made by athletes, for athletes" better than the words did &mdash; and the live drive shrinks from a card to one line.</p>
 
+  <h2>8 &middot; the court</h2>
+  <p>You sent a plate, so I built the variant it was asking for. It is the answer to the thing you killed earlier and were right to kill: <strong>a blurred photograph behind the athletes fights the photographs in front of it</strong> &mdash; two competing subjects, both out of focus in different ways. A plate has no subject. It is a room. So the only faces in the frame are the ones that belong there.</p>
+  <p>Three things follow from the plate rather than from me, which is exactly why it works. <strong>The light is in the picture</strong> &mdash; there are no CSS rays and no added bloom in this variant at all; the plate already says where the source is, and every athlete takes their rim from that direction, high and to the right. <strong>The net is a horizon:</strong> the team stands on the floor below it with their heads clearing it, which is what puts them in the near court rather than in front of a backdrop. And <strong>further back is higher and smaller</strong>, because the floor is a receding plane, so depth here is a position on it rather than just a scale.</p>
+  <p>The detail worth looking closely at is the floor. It is wet-looking and it pools the light, so the front two carry a <strong>reflection</strong> as well as a contact shadow &mdash; flipped, masked to fade out within half its height, and held low enough to be felt rather than looked at. The first cut of this stood everyone on the bottom edge of the section and the reflections fell outside it and were clipped away; that is also precisely why they still looked like cut-outs sitting on a photograph. Standing them on the floor instead, with room underneath, is what turned it into a composite.</p>
+  <p>Both crops are in: the wide plate on desktop, the tall one below 900px. They total 64&nbsp;KB &mdash; the plate is flat and dark, which is the best thing an image can be for a compressor.</p>
+
   <h2>What the spectrum is actually testing</h2>
   <p>These are not seven layouts. They are seven answers to one question &mdash; <em>how much should the photographs carry?</em> &mdash; and they run from one extreme to the other, which is the only way a choice like this gets made honestly.</p>
-  <p><strong>1, 5 and 6 say: many.</strong> The header is a community, and no single face is the org. <strong>3 and 7 say: one.</strong> The header is a person, and you meet them. <strong>4 says: the words are the picture</strong> &mdash; the loudest and the most graphic, and the one that would travel furthest as a poster or a shirt. <strong>2 sits between</strong>: a team, lined up, the way a season gets announced.</p>
+  <p><strong>1, 5, 6 and 8 say: many.</strong> The header is a community, and no single face is the org. <strong>3 and 7 say: one.</strong> The header is a person, and you meet them. <strong>4 says: the words are the picture</strong> &mdash; the loudest and the most graphic, and the one that would travel furthest as a poster or a shirt. <strong>2 sits between</strong>: a team, lined up, the way a season gets announced.</p>
   <p>Worth knowing before you pick: <strong>3 and 7 are the only two that need one photograph to be perfect.</strong> Everything else is forgiving, because a weak frame in a wall of nineteen is texture. A weak frame in 3 is the header. That is a real operational difference over years of shooting, not just a look.</p>
 
   <h2>Two rules I held across all seven</h2>
@@ -210,17 +224,17 @@
   <h2>On a phone</h2>
   <p>Most of the people who will ever see this header will see it on a phone, so the first build was a failure there: it pushed every athlete below the fold and handed the majority of the traffic a wall of type. All three candidates now converge at that width &mdash; one screen, headline and Donate in the top half, two athletes standing in the bottom 40%.</p>
   <div class="phones phones7">
+    <figure><figcaption>8</figcaption><img src="/images/hero/review/8-phone.jpg" width="560" height="1111" alt="8 on a phone."></figure>
     <figure><figcaption>1</figcaption><img src="/images/hero/review/1-phone.jpg" width="560" height="1112" alt="1 on a phone."></figure>
     <figure><figcaption>3</figcaption><img src="/images/hero/review/3-phone.jpg" width="560" height="1112" alt="3 on a phone."></figure>
     <figure><figcaption>4</figcaption><img src="/images/hero/review/4-phone.jpg" width="560" height="1112" alt="4 on a phone."></figure>
     <figure><figcaption>5</figcaption><img src="/images/hero/review/5-phone.jpg" width="560" height="1112" alt="5 on a phone."></figure>
     <figure><figcaption>6</figcaption><img src="/images/hero/review/6-phone.jpg" width="560" height="1112" alt="6 on a phone."></figure>
-    <figure><figcaption>7</figcaption><img src="/images/hero/review/7-phone.jpg" width="560" height="1112" alt="7 on a phone."></figure>
   </div>
   <p style="margin-top:1rem; font-size:0.92rem; color:#7a756b;">Both new candidates get their own phone composition rather than a thinned-down desktop one. A wall authored for a wide box does not survive being squeezed into a tall one, so D drops to six large panels filling the bottom half and E to two full-height columns. Dropping panels is the only honest way to thin a collage &mdash; shrinking all nineteen turns nineteen photographs into nineteen smudges.</p>
 
   <h2>What is machine-checked, not eyeballed</h2>
-  <p>A header is judged by eye, but three things about it are not opinions and a screenshot cannot show them. <code>scripts/check-hero-lab.mjs</code> runs all seven candidates at six widths from 320 to 1920 and fails the build on any of these.</p>
+  <p>A header is judged by eye, but three things about it are not opinions and a screenshot cannot show them. <code>scripts/check-hero-lab.mjs</code> runs all eight candidates at six widths from 320 to 1920 and fails the build on any of these.</p>
   <ul class="checks">
     <li><b>No sideways scroll</b> at any width, on any candidate &mdash; the panels and the athletes bleed past both edges on purpose, inside a clipping section.</li>
     <li><b>The headline is above the fold</b> at every width, including 320px, and Donate is in the nav on every one of them.</li>
@@ -231,7 +245,7 @@
 
   <h2>What I need from you</h2>
   <ul class="asks">
-    <li><span class="q">Which one?</span><span class="a">Honestly: <strong>1 or 6</strong>. 1 is your instinct and it is a good one &mdash; it is the only one that keeps rewarding attention after the third visit. 6 is the sleeper: it says "community" harder than any of them and it is the easiest to keep alive, because a new shoot is new cells rather than a re-composition. 3 is the most beautiful and the most fragile. 4 is the one to use somewhere loud rather than on the landing page.</span></li>
+    <li><span class="q">Which one?</span><span class="a">Honestly, it is now <strong>8 or 1</strong>. 8 is the one that looks art-directed rather than assembled, and it is the only one where the athletes are somewhere &mdash; a room, with a floor and a horizon &mdash; instead of arranged on a field. 1 is your instinct and still the one that keeps rewarding attention on the third visit. 6 remains the sleeper for "community". 3 is the most beautiful and the most fragile. 4 belongs somewhere loud, not on the landing page.</span></li>
     <li><span class="q">Which one is the landing page?</span><span class="a">And which of the rest go where &mdash; you said you would use them across the site, which I think is right. They are one family and they were built to sit together.</span></li>
     <li><span class="q">Serif or grotesk, sentence case or title case?</span><span class="a">1 takes the serif; 2 through 7 take the grotesk. It is a brand decision, not a header decision &mdash; whichever wins should probably run through the rest of the site rather than living only at the top of the homepage.</span></li>
     <li><span class="q">Does anyone in these photographs need to approve being on the front page?</span><span class="a">They are already on the site elsewhere, so I have assumed yes. Tell me if any of the five is a no and I will pull them and recompose.</span></li>

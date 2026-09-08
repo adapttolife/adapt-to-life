@@ -294,3 +294,119 @@
   .hero-grid .sp-cells{ grid-template-columns:repeat(2,1fr); }
   .hero-grid .sp-copy{ min-height:calc(100svh - 4.4rem); align-items:flex-start; }
 }
+
+/* ==========================================================================
+   8 — THE COURT
+   Alec sent the plate for this one: a designed court — pitch black, one warm
+   source high right, two rakes off it, a net, and a floor with the light
+   pooling on it. Two crops, wide and tall.
+
+   This is the environment the cut-outs never had. The earlier stadium attempt
+   put a blurred photograph behind them and he was right to kill it: a real
+   photograph fights the real photographs in front of it. A PLATE does not —
+   it has no subject, so the only things with faces in the frame are the
+   athletes.
+
+   Three rules follow from the plate rather than from me, which is the point:
+     · The light is IN the picture. No CSS rays, no extra bloom. The plate
+       already says where the source is, and every athlete takes their rim
+       from that direction — high and to the right.
+     · The net is a horizon. Athletes stand on the floor BELOW it and their
+       heads clear it, which is what puts them in the near court instead of
+       floating in front of a backdrop.
+     · Further back is higher and smaller. The floor is a receding plane, so
+       depth here is position on it, not just scale.
+   ========================================================================== */
+.hero-court .ct-plate{
+  position:absolute; inset:0; z-index:0;
+  background:url('/images/hero/plate/court-wide.webp') center 62%/cover no-repeat;
+}
+/* the plate is bright through its middle; the wordmark corner gets pulled down
+   so the type never negotiates with the glow */
+.hero-court .ct-shade{
+  position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:
+    linear-gradient(97deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.72) 16%, rgba(0,0,0,0.34) 30%, rgba(0,0,0,0) 46%),
+    linear-gradient(180deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0) 34%);
+}
+.hero-court .ct-team{ position:absolute; inset:0; z-index:2; pointer-events:none; }
+.hero-court .ct-fig{
+  position:absolute; bottom:var(--b,0%); margin:0; height:var(--h,50%);
+  /* the reflection hangs below the figure and must not be clipped */
+  overflow:visible;
+  transform:translate3d(var(--px,0px), var(--py,0px), 0);
+}
+.hero-court .ct-fig img{
+  height:100%; width:auto; display:block;
+  filter:
+    drop-shadow(-14px 10px 26px rgba(0,0,0,0.92))
+    drop-shadow(7px -5px 18px rgba(255,130,90,0.30));
+}
+/* depth is where you stand on the floor, then contrast */
+.hero-court .ct-fig.c1 img{ filter:
+    drop-shadow(-8px 6px 18px rgba(0,0,0,0.85))
+    drop-shadow(4px -3px 14px rgba(255,120,80,0.18))
+    brightness(0.50) contrast(0.88) blur(1.4px); }
+.hero-court .ct-fig.c2 img{ filter:
+    drop-shadow(-11px 8px 22px rgba(0,0,0,0.9))
+    drop-shadow(5px -4px 16px rgba(255,125,85,0.24))
+    brightness(0.74) contrast(0.95) blur(0.5px); }
+
+/* The plate's floor is wet-looking and pools the light, so the front two get a
+   REFLECTION as well as a shadow. This is the detail that stops the composite
+   reading as cut-outs pasted onto a backdrop: the surface has to acknowledge
+   them. Flipped, masked to fade out within half its height, blurred, and held
+   low enough that it is felt rather than looked at. */
+.hero-court .ct-refl{
+  position:absolute; left:0; top:100%; width:100%; pointer-events:none;
+  transform:scaleY(-1); transform-origin:top;
+  opacity:0.20;
+  -webkit-mask-image:linear-gradient(to top, rgba(0,0,0,0) 0%, rgba(0,0,0,0.55) 46%, rgba(0,0,0,0.9) 100%);
+  mask-image:linear-gradient(to top, rgba(0,0,0,0) 0%, rgba(0,0,0,0.55) 46%, rgba(0,0,0,0.9) 100%);
+}
+.hero-court .ct-refl img{
+  width:100%; height:auto; display:block;
+  filter:brightness(0.62) contrast(0.9) blur(2.4px) !important;
+}
+
+/* contact with the floor — the plate has a real reflective surface, so an
+   athlete with no shadow on it is the one thing that would give the whole
+   composite away */
+.hero-court .ct-fig::after{
+  content:""; position:absolute; left:50%; bottom:0;
+  width:var(--sw,84%); height:var(--sh,22px);
+  transform:translate(-50%, 46%);
+  background:radial-gradient(50% 50% at 50% 50%, rgba(0,0,0,0.70) 0%, rgba(0,0,0,0.32) 46%, rgba(0,0,0,0) 74%);
+  filter:blur(6px); z-index:-1;
+}
+.hero-court .sp-copy{ z-index:6; }
+.hero-court .sp-h1{ max-width:10ch; }
+.hero-court{ justify-content:flex-start; padding-top:clamp(6rem,15vh,10rem); }
+
+/* placement — front to back, standing on the floor plane */
+/* Everyone stands ON the floor rather than on the bottom edge of the section.
+   The first cut anchored the front two at b:3% and the reflections fell outside
+   the hero and were clipped away — which is also why they looked like cut-outs
+   sitting on a photograph rather than people standing in a room. */
+.hero-court .ct-fig.f-juan  { left:41%;  --h:56%; --b:14%; --sw:78%; --sh:22px; --d:560ms; }
+.hero-court .ct-fig.f-ryan  { right:2%;  --h:50%; --b:14%; --sw:74%; --sh:20px; --d:440ms; }
+.hero-court .ct-fig.f-aubrey{ left:63%;  --h:37%; --b:30%; --sw:0%;  --d:320ms; }
+.hero-court .ct-fig.f-ben   { left:26%;  --h:39%; --b:24%; --sw:0%;  --d:220ms; }
+.hero-court .ct-fig.f-brian { left:11%;  --h:31%; --b:35%; --sw:0%;  --d:120ms; }
+
+@media (max-width:900px){
+  .hero-court .ct-plate{ background-image:url('/images/hero/plate/court-tall.webp'); background-position:center 58%; }
+  .hero-court .ct-shade{
+    background:linear-gradient(180deg, rgba(0,0,0,0.90) 0%, rgba(0,0,0,0.62) 26%, rgba(0,0,0,0.10) 52%, rgba(0,0,0,0) 70%); }
+  .hero-court .ct-fig.f-brian, .hero-court .ct-fig.f-ben{ display:none; }
+  .hero-court .ct-fig.f-aubrey{ left:auto; right:46%; --h:29%; --b:30%; }
+  .hero-court .ct-fig.f-juan  { left:auto; right:14%; --h:46%; --b:13%; }
+  .hero-court .ct-fig.f-ryan  { right:-16%; --h:40%; --b:13%; }
+  .hero-court .sp-h1{ max-width:12ch; }
+}
+@media (max-width:640px){
+  .hero-court .ct-fig.f-aubrey{ display:none; }
+  .hero-court .ct-fig.f-juan { left:-12%; right:auto; --h:38%; --b:12%; }
+  .hero-court .ct-fig.f-ryan { right:-24%; --h:34%; --b:12%; }
+  .hero-court .sp-h1{ max-width:none; }
+}

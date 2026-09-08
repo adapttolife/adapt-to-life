@@ -76,7 +76,7 @@ const MOSAIC = [
   { n: "whitecap",   x: 5,  y: 74, w: 13, d: 2, r:  0.8, m: "m" },
   { n: "reach",      x: 90, y: 40, w: 14, d: 2, r: -0.6, m: "s" },
   { n: "swing",      x: 54, y: 56, w: 11, d: 2, r:  0.9, m: "m" },
-  { n: "pair",       x: 17, y: 48, w: 13, d: 2, r: -0.7, m: "m" },
+  { n: "toss",       x: 17, y: 48, w: 13, d: 2, r: -0.7, m: "m" },
   { n: "seated",     x: 87, y: 70, w: 13, d: 2, r:  0.6, m: "m" },
   { n: "grin",       x: 76, y: 50, w: 12, d: 2, r: -0.5, m: "s" },
   { n: "lanyard",    x: 88, y: 14, w: 11, d: 2, r:  0.6, m: "m" },
@@ -434,7 +434,7 @@ ${stripRun}
 // the light should not be a stylesheet edit.
 const GRID_CELLS = [
   "close-dink", "laugh", "net", "smile-close", "reach", "court",
-  "pair", "dink", "grin", "brian", "paddle", "swing",
+  "toss", "dink", "grin", "brian", "paddle", "swing",
   "serve", "whitecap", "rally", "forehand", "seated", "lobby",
 ];
 const GRID_LIT = new Set(["smile-close", "dink", "brian", "grin"]);

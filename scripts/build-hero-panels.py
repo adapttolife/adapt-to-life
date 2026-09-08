@@ -72,7 +72,7 @@ DEPTH_DIM = {"front": 1.00, "mid": 0.62, "back": 0.40}
 # of these files is present in the source folder, so the frame cannot come back
 # by someone dropping the shoot into .work/fav again and rebuilding. A consent
 # problem is not a layout preference and should not be defended by a comment.
-WITHDRAWN = {"JLA_6122.jpg", "JLA_6123.jpg"}
+WITHDRAWN = {"JLA_6122.jpg", "JLA_6123.jpg", "JLA_6127.jpg"}
 
 SIZE_OVERRIDE = {"turned": 380, "profile": 380, "lanyard": 400}
 
@@ -108,7 +108,7 @@ PANELS = [
     # --- the room: wide frames that give the wall its depth -------------------
     ("court",        "JLA_5905.jpg", 3/2,  0.32, 0.46, 0.60, "back"),
     ("rally",        "JLA_5918.jpg", 3/2,  0.30, 0.62, 0.62, "back"),
-    ("pair",         "JLA_6127.jpg", 3/4,  0.48, 0.50, 0.80, "mid"),
+    ("toss",         "JLA_6146.jpg", 3/4,  0.34, 0.50, 0.72, "mid"),
     # Replaced a withdrawn frame on 2026-09-08 (see WITHDRAWN, below).
     ("paddle",       "JLA_6131.jpg", 3/4,  0.42, 0.50, 0.86, "back"),
     ("lobby",        "JLA_6191.jpg", 3/4,  0.46, 0.48, 0.70, "back"),

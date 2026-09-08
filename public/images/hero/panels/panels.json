@@ -161,12 +161,6 @@
   "src": "JLA_6131.jpg",
   "w": 420
  },
- "pair": {
-  "h": 520,
-  "role": "mid",
-  "src": "JLA_6127.jpg",
-  "w": 390
- },
  "pg-brian": {
   "h": 738,
   "role": "band",
@@ -261,6 +255,12 @@
   "h": 520,
   "role": "mid",
   "src": "JLA_6066.jpg",
+  "w": 390
+ },
+ "toss": {
+  "h": 520,
+  "role": "mid",
+  "src": "JLA_6146.jpg",
   "w": 390
  },
  "turned": {

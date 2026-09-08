@@ -29,8 +29,11 @@
   isolation:isolate;
   overflow:hidden;
   background:#000;
-  padding-top:clamp(6rem, 13vh, 8.5rem);
-  padding-bottom:clamp(12rem, 30vh, 19rem);
+  /* Was 13vh; the difference was dead black between nav and eyebrow. */
+  padding-top:clamp(4.5rem, 10vh, 6.5rem);
+  /* Was 30vh. That padding held the band clear of the copy; now the band comes
+     up to meet the copy instead, so most of it was just black. */
+  padding-bottom:clamp(9rem, 22vh, 14rem);
 }
 
 /* ONE pre-composed strip, not eight <img> columns.
@@ -50,6 +53,14 @@
      and the whole band is always visible; what changes with the page is how
      much black sits above it, which is where the type goes anyway. */
   aspect-ratio:1200/520;
+  /* ...AND A FLOOR TIED TO THE HERO. The aspect ratio alone pins this strip at
+     624px whatever page it is on, but hero height is set by the copy, and the
+     copy is not fixed — measured, the black above the band ran 6% on /about and
+     47% on /sponsorship, the page with the longest headline and the one Alec
+     objected to. A percentage min-height resolves against the hero, so the band
+     now rises with the page: short pages keep the aspect, long ones bring their
+     frames up behind the type. scripts/check-page-band.mjs is the meter. */
+  min-height:78%;
   background:var(--pg-band-wide) center bottom/cover no-repeat;
 }
 
@@ -163,7 +174,11 @@
   .hero.pg-band > .wrap > *{ max-width:none; }
   .hero.pg-band > .wrap::before{ left:-14%; right:-14%; top:-7%; bottom:-9%;
     background:rgba(0,0,0,0.88); }
-  .hero.pg-band::before{ aspect-ratio:760/680;
+  /* Same 78% floor as the wide band, so a phone and a laptop show the same
+     proportion of picture to black. 62% was binding on every banded page at 390
+     — all five read exactly 38%, the signature of a floor set too low. The tall
+     asset is 805px, so 78% of a 1116px hero upscales 1.08x: effectively free. */
+  .hero.pg-band::before{ aspect-ratio:760/680; min-height:78%;
     background-image:var(--pg-band-tall); }
   .hero.pg-band::after{
     background:

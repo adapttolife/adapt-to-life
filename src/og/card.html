@@ -5,7 +5,7 @@
 <title>OG card</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=block" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=block" rel="stylesheet">
 <style>
   /* The share card is 1200x630 (1.91:1) — the size every platform crops to.
      Brand tokens are copied from site.css on purpose: this file renders in a
@@ -18,7 +18,7 @@
   }
   *{ margin:0; padding:0; box-sizing:border-box; }
   html,body{ width:1200px; height:630px; overflow:hidden; }
-  body{ font-family:"Hanken Grotesk", system-ui, sans-serif; -webkit-font-smoothing:antialiased; }
+  body{ font-family:"Sofia Sans", system-ui, sans-serif; -webkit-font-smoothing:antialiased; }
 
   .card{ position:relative; width:1200px; height:630px; overflow:hidden;
     background:var(--ink-warm); color:var(--cream); display:flex; }
@@ -50,16 +50,16 @@
   .wordmark{ font-weight:700; font-size:23px; letter-spacing:0.15em;
     text-transform:uppercase; line-height:1; }
 
-  /* HEADLINE — the site's display voice: Newsreader, italic accent */
-  h1{ font-family:"Newsreader", Georgia, serif; font-weight:400;
-    font-size:var(--size,86px); line-height:1.02; letter-spacing:-0.015em;
+  /* HEADLINE — the site's display voice: Sofia Sans ExtraBold, italic accent */
+  h1{ font-family:"Sofia Sans", system-ui, sans-serif; font-weight:800;
+    font-size:var(--size,86px); line-height:0.98; letter-spacing:-0.038em;
     max-width:var(--measure,15ch); text-wrap:balance; }
-  h1 em{ font-style:italic; color:var(--accent,var(--orange)); }
+  h1 em{ font-style:italic; font-weight:800; color:var(--accent,var(--orange)); }
 
   .foot{ display:flex; align-items:center; gap:22px; }
   .rule{ height:3px; width:132px; border-radius:3px; background:var(--orange);
     box-shadow:0 0 20px -1px rgba(255,92,57,0.7); }
-  .domain{ font-family:"Space Mono", monospace; font-weight:700; font-size:15px;
+  .domain{ font-family:"Sofia Sans", system-ui, sans-serif; font-weight:700; font-size:15px;
     letter-spacing:0.2em; text-transform:uppercase; }
 
   /* ---- light variant: cream paper, ink type ---- */

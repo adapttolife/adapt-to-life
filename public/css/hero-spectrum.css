@@ -34,7 +34,7 @@
 }
 .hero-spec .sp-copy{ position:relative; z-index:8; width:100%; }
 .hero-spec .sp-h1{
-  font-family:"Hanken Grotesk", system-ui, sans-serif;
+  font-family:var(--font-body);
   font-weight:700;
   font-size:clamp(2.4rem, 5.8vw, 5.6rem);
   line-height:0.95;

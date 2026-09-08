@@ -219,7 +219,7 @@
     linear-gradient(180deg, rgba(6,6,8,0.55) 0%, rgba(6,6,8,0) 26%); }
 .hero-banner .mw-copy{ text-align:center; padding-bottom:clamp(2.5rem,6vh,4.5rem); }
 .hero-banner .mw-copy .display{
-  font-family:"Hanken Grotesk", system-ui, sans-serif;
+  font-family:var(--font-body);
   font-weight:700; font-style:normal;
   letter-spacing:-0.035em; line-height:0.94;
   font-size:clamp(2.6rem, 6.6vw, 6rem);
@@ -286,7 +286,7 @@
     background:#000;
     padding:clamp(1.6rem,6vw,2.4rem) clamp(1.2rem,5vw,2rem) clamp(1.5rem,5vw,2.2rem);
     border-bottom:3px solid var(--orange);
-    font-family:"Hanken Grotesk", system-ui, sans-serif;
+    font-family:var(--font-body);
     font-weight:700; font-style:normal;
     font-size:clamp(2rem, 8.6vw, 3.2rem);
     line-height:1.02; letter-spacing:-0.035em;

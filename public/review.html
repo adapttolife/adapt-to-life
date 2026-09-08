@@ -9,7 +9,7 @@
 <link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
 <style>
   body{ background:#0B0B0D; color:#F7F4EE; }
@@ -172,11 +172,29 @@
     </ul>
   </div>
 
+  <!-- 7b ------------------------------------------------------------------ -->
+  <div class="grp">
+    <span class="grp-n">07b &middot; New</span>
+    <h2>The whole site is Sofia Sans now</h2>
+    <p>ExtraBold for every headline, regular and medium for body copy, and the small uppercase labels hold their role through tracking rather than through a second family. <strong>Newsreader and Space Mono are gone.</strong> That also settles the serif-or-grotesk split &mdash; the voice no longer changes with the screen size.</p>
+    <p>An 800-weight grotesk is not a 500-weight serif with a different name: it needs real negative tracking at display sizes or it reads loose, and it needs less leading. Every headline size was re-set for it rather than swapped in place.</p>
+    <ul class="facts">
+      <li><b>Three CSS variables</b> hold the families, so the next change to the site's voice is three lines, not sixty files.</li>
+      <li><b>One command applies the webfont</b> to all 57 pages, the volunteer page generator and the share-card template &mdash; identical everywhere, because a page that loads a different weight range renders the same headline at a different thickness.</li>
+      <li><b>The eight share cards were regenerated</b> in the new face, so what gets posted to social matches the site.</li>
+    </ul>
+    <div class="btns">
+      <a href="/promise"><span class="t">The Promise</span><span class="d">Big two-line headline &mdash; the clearest look at ExtraBold</span></a>
+      <a href="/about"><span class="t">About</span><span class="d">A long single-line headline</span></a>
+      <a href="/images/og/home-v2-option2.jpg"><span class="t">A share card</span><span class="d">The OG image, re-rendered</span></a>
+    </div>
+  </div>
+
   <!-- 8 ------------------------------------------------------------------- -->
   <div class="grp">
     <span class="grp-n">08 &middot; Open</span>
-    <h2>Two things waiting on you</h2>
-    <p><strong>Serif or grotesk.</strong> The desktop homepage is set in the site's serif; the mobile version and most of the candidates are the grotesk. Right now the voice changes with the screen size, which is the one genuinely unresolved thing in here. Whichever you pick should run through the whole site rather than living at the top of one page.</p>
+    <h2>What is still open</h2>
+    <p><strong>Settled: the type is Sofia Sans.</strong> You called it, and it is now the whole site &mdash; ExtraBold for every headline, regular and medium for body, and the small uppercase labels keep their role through tracking rather than through a second family. Newsreader and Space Mono are gone. That also closes the serif-or-grotesk split: the voice no longer changes with the screen size.</p>
     <p><strong>Going live.</strong> Everything above is on staging only. Say go and I will open it for production.</p>
     <div class="btns">
       <a href="https://adapttolife.org/"><span class="t">The live site</span><span class="d">For comparison &mdash; untouched</span></a>

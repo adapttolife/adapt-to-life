@@ -112,12 +112,17 @@ test("social cards use the Option 2 monogram on cache-busting URLs", async () =>
     ["images/og/hustle-and-heart-2026.jpg", "ee4597876c0af7da7bee7a6dc5d02c9fd41d533991cb38dd6762377b1243f79f"],
     ["images/og/ways-to-give-2026.jpg", "2f7eecfc12d8c358bc3a721a16a3cf4c486d85b928ef461021064f9a0145ac6c"],
   ]);
+  // Re-pinned 2026-09-08. The site's typeface changed to Sofia Sans ExtraBold
+  // (Alec's call) and the OG template renders the same headline in it, so every
+  // card is genuinely new bytes. The pin is doing its job here — it is what
+  // stopped a font change from silently shipping cards that no longer match
+  // the site. Regenerate with `npm run cards` and re-pin in the same commit.
   const option2CardHashes = new Map([
-    ["images/og/home-v2-option2.jpg", "187977286e321dd17262dc7a8ebd2a8651240f040dac54d5e659097869f31825"],
-    ["images/og/donate-v2-option2.jpg", "baae568f4d001175fbb7079a9371e6ac0e42bcf2f4c2c4b200951455d004cba5"],
-    ["images/og/send-6-v2-option2.jpg", "ab80b57caba24245570746065722dc1876caae5b665d8aa2f434efce9374ebc8"],
-    ["images/og/popcorn-v2-option2.jpg", "6d8ecd2384e1ebffa50d648804cd694cda0a36fbe78094a6eea0a878850ecd3f"],
-    ["images/og/hustle-and-heart-v2-option2.jpg", "3d9f3ba6d7714914b9ee49ce6ee5c6335048054ca46eac2870280517b77f77ac"],
+    ["images/og/home-v2-option2.jpg", "64df65cdb665e0ea82168b0bd7b45ac256dce20206be81bcd8a9603f2b8d3c07"],
+    ["images/og/donate-v2-option2.jpg", "495bb6e9ce7a09395302898956934aee9342d46893dc4206c1425f4b27e2bd31"],
+    ["images/og/send-6-v2-option2.jpg", "e9b422d08c91f4615a1547a9fbf47e3231ed3dc1083bfdde84d3155f8f1fbebe"],
+    ["images/og/popcorn-v2-option2.jpg", "204628cb1545a87100bb2b3f45a019e0e1670c18a7fca56f57e08fceda7e857e"],
+    ["images/og/hustle-and-heart-v2-option2.jpg", "6adc6f955e3fbe892b234fb3b1354def8c871c15ee264181e65f7b2ded73dbe5"],
     ["images/og/ways-to-give-v2-option2.jpg", "fb161a09235e53bd59f94468aa6c97eaf30b637540abbb955de215798800d282"],
   ]);
   for (const [relative, expected] of [...legacyHashes, ...approvedCardHashes, ...option2CardHashes]) {

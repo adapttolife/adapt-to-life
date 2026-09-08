@@ -99,7 +99,7 @@ export default {
     // covered by one entry rather than by two that can drift apart.
     const STAGING_ONLY = new Set([
       "/review", "/photo-picks",
-      "/hero-review", "/hero-1", "/hero-2", "/hero-3", "/hero-4", "/hero-5", "/hero-6", "/hero-7", "/hero-8", "/hero-9",
+      "/hero-review", "/hero-1", "/hero-2", "/hero-3", "/hero-4", "/hero-5", "/hero-6", "/hero-7", "/hero-9",
     ]);
     if (STAGING_ONLY.has(url.pathname.replace(/\.html$/, "")) && env.STAGING !== "1") {
       return Response.redirect(`${url.origin}/`, 302);

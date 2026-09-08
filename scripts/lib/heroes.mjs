@@ -413,9 +413,10 @@ const HERO_SPLIT_ONE = `  <!-- 1 · HERO — the split (variant 7) -->
 `;
 
 /* --------------------------------------------------------------------------
-   8 — THE COURT.  Alec's plate, the traced cut-outs standing on it. The light
-   is in the picture, so nothing here adds any: every athlete just takes their
-   rim from where the plate says the source is.
+   THE COURT.  Alec's plate, the traced cut-outs standing on it. Rejected
+   2026-09-08 ("Hate it, don't use this") and no longer in the set — the
+   template stays only because 9 is built from it by replacement, and deleting
+   it would mean re-typing the same markup one class apart.
    -------------------------------------------------------------------------- */
 const COURT = [
   { slot: "f-brian",  file: "trace-brian",  depth: 1 },
@@ -463,11 +464,10 @@ const HERO_STADIUM_PLATE = HERO_COURT
            "<!-- 1 · HERO — the stadium, on the plate (variant 9) -->");
 
 const VARIANTS = { 1: HERO_D, 2: HERO_E, 3: HERO_FRAME, 4: HERO_KNOCKOUT,
-                   5: HERO_STRIP, 6: HERO_GRID, 7: HERO_SPLIT_ONE, 8: HERO_COURT,
-                   9: HERO_STADIUM_PLATE };
+                   5: HERO_STRIP, 6: HERO_GRID, 7: HERO_SPLIT_ONE, 9: HERO_STADIUM_PLATE };
 const LABEL = {
   1: "1 · Mosaic", 2: "2 · Banner", 3: "3 · One frame", 4: "4 · Knockout",
-  5: "5 · Strip", 6: "6 · Grid", 7: "7 · Split", 8: "8 · The court", 9: "9 · Stadium",
+  5: "5 · Strip", 6: "6 · Grid", 7: "7 · Split", 9: "9 · Stadium",
 };
 
 // The stage script: entrance, depth parallax, and the live drive strip. Kept

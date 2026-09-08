@@ -163,46 +163,51 @@ def crop_to(im, aspect, ay, ax, zoom=1.0):
 
 
 def compose_band():
-    """Flatten the interior page band into ONE pre-composed strip.
+    """The interior page band: one pre-composed strip of vertical columns.
 
-    It started as eight <img> columns, which is what the homepage does, and on
-    /donate that cost 450 KB and broke the page's own-bytes budget. Shrinking the
-    files got it to ~52 KB and eight requests, still over.
+    Alec, 2026-09-08, comparing the interior pages against variant 2: "I like
+    the second version ... the vertical design I think looks great on the other
+    pages." The first cut of this held the columns at a third of their
+    brightness so the page's words could lead, and it went too far — the faces
+    were barely there. The columns are close to full brightness now and the job
+    of protecting the type moves entirely to the veil in page-header.css, which
+    darkens the corner the words sit in rather than the whole picture. Same
+    logic the homepage wall uses.
 
-    The band is decoration behind a veil that is 60-96% black. It never needs to
-    reflow, only to crop — so it is one image, the same pattern Alec's court
-    plate already proved. One request, and because the frame is mostly black it
-    compresses to a fraction of the parts. The skyline, the depth falloff and
-    the top/bottom fade are all baked in, which is also why the CSS gets simpler.
+    It stays ONE image rather than eight <img> columns: the band never reflows,
+    only crops, and shipping the columns individually cost /donate 450 KB and
+    broke its own-bytes budget. Because the frame is still mostly black it
+    compresses to a fraction of its parts.
     """
     import numpy as np
-    COLS = [  # source, width share, height share, dim (back row)
-        ("JLA_5920.jpg", 0.15, 0.52, True),  ("JLA_6066.jpg", 0.15, 0.68, False),
-        ("JLA_6077.jpg", 0.15, 0.44, True),  ("JLA_6045.jpg", 0.15, 0.74, False),
-        ("JLA_5973.jpg", 0.15, 0.56, True),  ("JLA_5922.jpg", 0.15, 0.82, False),
-        ("JLA_6073.jpg", 0.15, 0.50, True),  ("JLA_6106.jpg", 0.16, 0.66, False),
+    COLS = [  # source, width share, height share, back row
+        ("JLA_5920.jpg", 0.15, 0.62, True),  ("JLA_6066.jpg", 0.15, 0.80, False),
+        ("JLA_6077.jpg", 0.15, 0.54, True),  ("JLA_6045.jpg", 0.15, 0.88, False),
+        ("JLA_5973.jpg", 0.15, 0.66, True),  ("JLA_5922.jpg", 0.15, 0.95, False),
+        ("JLA_6073.jpg", 0.15, 0.60, True),  ("JLA_6106.jpg", 0.16, 0.78, False),
     ]
-    for name, W, H, step in (("pg-band-wide", 1500, 460, 0.13), ("pg-band-tall", 760, 430, 0.26)):
+    for name, W, H, step in (("pg-band-wide", 1600, 620, 0.13), ("pg-band-tall", 820, 560, 0.26)):
         canvas = Image.new("RGB", (W, H), (0, 0, 0))
         use = COLS if step < 0.2 else COLS[1::2]
         for i, (src, w, h, dim) in enumerate(use):
             im = Image.open(os.path.join(SRC, src))
             im.draft("RGB", (im.width // 3, im.height // 3))
-            im = crop_to(im.convert("RGB"), 0.42, 0.40, 0.50, 0.80)
+            im = crop_to(im.convert("RGB"), 0.42, 0.38, 0.50, 0.82)
             cw, ch = int(W * (w if step < 0.2 else w * 1.55)), int(H * h)
             im = mono(im.resize((cw, ch), Image.LANCZOS))
-            im = ImageEnhance.Brightness(im).enhance(0.30 if dim else 0.52)
+            # near full brightness now; the veil does the protecting
+            im = ImageEnhance.Brightness(im).enhance(0.66 if dim else 0.98)
             if dim:
-                im = im.filter(ImageFilter.GaussianBlur(1.1))
+                im = im.filter(ImageFilter.GaussianBlur(0.8))
             canvas.paste(im, (int(W * (-0.04 + i * step)), H - ch))
-        # bake the vertical falloff: the band is a lit middle, black at both edges
+        # only the very bottom is taken down, so the band sits on the black the
+        # next section starts from instead of ending on a ruled line
         a = np.asarray(canvas, np.float32) / 255.0
         y = np.linspace(0, 1, H)[:, None, None]
-        a *= np.clip(1.0 - np.exp(-(y / 0.22)) * 0 - np.maximum(0, 1 - y / 0.30) * 0.85, 0, 1)
-        a *= np.clip(1.0 - np.maximum(0, (y - 0.80) / 0.20) * 0.75, 0, 1)
+        a *= np.clip(1.0 - np.maximum(0, (y - 0.88) / 0.12) * 0.85, 0, 1)
         canvas = Image.fromarray((a * 255).astype(np.uint8))
         out = os.path.join(DST, f"{name}.webp")
-        canvas.save(out, "WEBP", quality=62, method=6)
+        canvas.save(out, "WEBP", quality=66, method=6)
         print(f"{name:20s} {W}x{H} {os.path.getsize(out)/1024:6.1f} KB")
 
 

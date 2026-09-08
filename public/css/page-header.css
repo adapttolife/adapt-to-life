@@ -30,47 +30,105 @@
   overflow:hidden;
   background:#000;
   padding-top:clamp(7rem, 15vh, 10rem);
-  padding-bottom:clamp(9rem, 20vh, 13rem);
+  padding-bottom:clamp(11rem, 26vh, 17rem);
 }
 
 /* ONE pre-composed strip, not eight <img> columns.
-   The homepage wall is eight-plus real elements because it is the subject and
-   it has to reflow. This band is decoration behind a veil that is 60-96% black;
-   it never needs to reflow, only to crop. Shipping the columns individually put
-   450 KB on /donate and broke its own-bytes budget — and the budget file is
-   explicit that a cap which only ever rises is a record of what we allowed
-   rather than a limit, so the change had to fit the cap and not the reverse.
-   Flattened, the frame is mostly black and compresses to 19 KB in one request.
-   The skyline, the depth falloff and the top fade are baked into the asset,
-   which is why there is no markup here at all beyond a class. */
+   The homepage wall is real elements because it is the subject and has to
+   reflow. This band never reflows, only crops — and shipping the columns
+   individually put 450 KB on /donate and broke its own-bytes budget. Flattened,
+   the frame is mostly black and compresses to a fraction of the parts, in one
+   request. The skyline and the depth falloff bake into the asset, which is why
+   there is no markup here beyond a class. */
 .hero.pg-band::before{
   content:""; position:absolute; left:0; right:0; bottom:0; top:0; z-index:0;
   background:url('/images/hero/panels/pg-band-wide.webp') center bottom/cover no-repeat;
 }
-/* the veil and the grain, also markup-free */
+
+/* THE VEIL DARKENS THE CORNER THE WORDS SIT IN, NOT THE PICTURE.
+   The first cut held the columns at a third of their brightness so the type
+   could lead, and the faces all but disappeared — Alec, comparing these against
+   variant 2: "the vertical design I think looks great on the other pages."
+   The columns are near full brightness now and this does the protecting, radial
+   from the top-left where every interior headline starts, clearing by 74% so
+   the right-hand faces stay as bright as the asset made them. Same logic as the
+   homepage wall's corner scrim, which is what makes the two read as one family.
+   A light top band keeps the nav legible; the bottom grounds the band into the
+   black the next section starts from. */
 .hero.pg-band::after{
   content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
   background:
-    linear-gradient(0deg,   rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.52) 12%, rgba(0,0,0,0.10) 26%, rgba(0,0,0,0) 38%),
-    linear-gradient(180deg, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.90) 30%, rgba(0,0,0,0.62) 54%, rgba(0,0,0,0.34) 76%, rgba(0,0,0,0.24) 100%),
-    radial-gradient(72% 30% at 62% 100%, rgba(255,92,57,0.34) 0%, rgba(255,92,57,0) 62%),
+    radial-gradient(122% 104% at 0% 14%,
+      rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.90) 20%, rgba(0,0,0,0.62) 38%,
+      rgba(0,0,0,0.24) 56%, rgba(0,0,0,0.02) 70%, rgba(0,0,0,0) 78%),
+    linear-gradient(180deg, rgba(0,0,0,0.66) 0%, rgba(0,0,0,0.10) 22%, rgba(0,0,0,0) 34%),
+    linear-gradient(0deg,   rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.34) 12%, rgba(0,0,0,0) 28%),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.16'/%3E%3C/svg%3E");
 }
 
 .hero.pg-band > .wrap{ position:relative; z-index:3; }
+/* The copy keeps to the left so the columns on the right are never negotiated
+   with. Scoped to TEXT, not to every child: /donate's hero is a two-column
+   grid whose second column is the Givebutter panel, and a blanket
+   `.wrap > * { max-width:50% }` squeezed the donation form into a gutter. A
+   layout rule aimed at prose has to name prose. */
+.hero.pg-band > .wrap > :is(.eyebrow, h1, h2, p, ul, ol),
+.hero.pg-band .give-intro > :is(.eyebrow, h1, p, ul){ max-width:min(44ch, 100%); }
+.hero.pg-band > .wrap > :is(.eyebrow, h1, h2, p, ul, ol){ max-width:min(44ch, 50%); }
+
+/* A SOFT SHADOW UNDER THE WORDS THEMSELVES, sized to the copy block.
+   Measured, not eyeballed: with the columns at full brightness and only the
+   corner veil protecting them, every sub-line on every banded page came in at
+   2.1-4.4:1 against a 4.5 floor (scripts/check-header-contrast.mjs). The
+   headlines passed — they are huge and ExtraBold and sit in the darkest part of
+   the veil — which is exactly how this kind of failure hides: the thing you
+   look at first is fine.
+   Darkening the whole band again would have fixed it and undone the point of
+   the change. This darkens only what is behind the text, blurred wide enough
+   that it reads as shadow rather than as a panel. */
+.hero.pg-band > .wrap::before{
+  content:""; position:absolute; z-index:-1;
+  /* The box has to extend WELL past the copy, because a 30px blur is also 30px
+     of falloff: /roadmap's last link sat 32px above the old bottom edge and was
+     only half covered — 1.23:1 while the sub-line above it read 12.7:1. Feather
+     costs reach, so pay for it in the geometry. */
+  left:-10%; right:16%; top:-14%; bottom:-18%;
+  /* A SOLID field, feathered by the blur that is already here.
+     It must cover the WHOLE copy column, not just the headline: /roadmap puts a
+     link three blocks below its sub-line and a radial centred on the block
+     missed it at 1.22:1 on a bright face. Two stacked gradients with
+     background-blend-mode did not composite the way the arithmetic said they
+     would either. A solid rectangle under a 30px blur has no such surprises —
+     the blur IS the feather, on all four edges, and what it covers is exactly
+     the box. */
+  background:rgba(0,0,0,0.90);
+  filter:blur(30px);
+  pointer-events:none;
+}
 
 @media (max-width:900px){
-  .hero.pg-band{ padding-bottom:clamp(7rem, 16vh, 10rem); }
-  /* the narrow crop: four columns instead of eight, so faces stay legible
-     rather than being squeezed to slivers */
+  /* Narrow: the words take the top, the columns take everything under them —
+     the same shape the homepage uses at this width. The veil turns vertical to
+     match, and the hero grows so there is real room for the band rather than a
+     sliver behind a paragraph. */
+  .hero.pg-band{
+    padding-top:clamp(5.5rem, 13vh, 7.5rem);
+    padding-bottom:clamp(14rem, 40vw, 20rem);
+  }
+  .hero.pg-band > .wrap > *{ max-width:none; }
+  .hero.pg-band > .wrap::before{ left:-16%; right:-16%; top:-12%; bottom:-20%;
+    background:rgba(0,0,0,0.92); }
   .hero.pg-band::before{ background-image:url('/images/hero/panels/pg-band-tall.webp'); }
-  .pg-strip .c2{ --x:14%; --w:22%; --h:62%; }
-  .pg-strip .c4{ --x:34%; --w:22%; --h:70%; }
-  .pg-strip .c6{ --x:54%; --w:22%; --h:56%; }
-  .pg-strip .c8{ --x:74%; --w:24%; --h:66%; }
+  .hero.pg-band::after{
+    background:
+      linear-gradient(180deg,
+        rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.92) 26%, rgba(0,0,0,0.72) 44%,
+        rgba(0,0,0,0.30) 60%, rgba(0,0,0,0.02) 74%, rgba(0,0,0,0) 84%),
+      linear-gradient(0deg, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.30) 12%, rgba(0,0,0,0) 26%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.16'/%3E%3C/svg%3E");
+  }
 }
+
 @media (max-width:640px){
-  .hero.pg-band{ padding-bottom:clamp(6rem, 14vh, 8rem); }
-  .pg-strip .c2{ --x:20%; --w:32%; --h:58%; }
-  .pg-strip .c6{ --x:78%; --w:32%; --h:48%; }
+  .hero.pg-band{ padding-bottom:clamp(13rem, 46vw, 18rem); }
 }

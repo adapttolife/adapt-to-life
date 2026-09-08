@@ -5,48 +5,180 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light only">
 <meta name="robots" content="noindex,nofollow">
-<title>Review: the new header, sitewide | Adapt To Life staging</title>
+<title>Everything we changed | Adapt To Life staging</title>
 <link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
 <style>
-  .rv-wrap{ max-width:660px; margin:0 auto; padding:clamp(2.2rem,6vw,4rem) var(--gutter) 4rem; }
-  .rv-badge{ display:inline-block; font-family:'Space Mono',monospace; font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink); background:var(--orange); border-radius:999px; padding:0.35rem 0.85rem; }
-  .rv-h1{ font-family:'Newsreader',serif; font-size:clamp(2rem,6vw,2.7rem); line-height:1.1; margin:1rem 0 0.6rem; }
-  .rv-sub{ font-family:'Hanken Grotesk',sans-serif; color:#555; line-height:1.55; }
-  .rv-date{ font-family:'Space Mono',monospace; font-size:0.75rem; color:#999; margin-top:0.4rem; }
-  .rv-steps{ list-style:none; counter-reset:rv; padding:0; margin:2rem 0 0; display:flex; flex-direction:column; gap:0.7rem; }
-  .rv-steps li{ counter-increment:rv; }
-  .rv-steps a{ display:flex; gap:0.9rem; align-items:baseline; text-decoration:none; color:#1A1A1A; background:#fff; border:1.5px solid #e3e0d9; border-radius:14px; padding:1rem 1.1rem; transition:border-color .15s; }
-  .rv-steps a:hover{ border-color:var(--orange); }
-  .rv-steps a::before{ content:counter(rv,decimal-leading-zero); font-family:'Space Mono',monospace; color:var(--orange); font-size:0.85rem; }
-  .rv-steps .t{ font-family:'Hanken Grotesk',sans-serif; font-weight:700; }
-  .rv-steps .d{ display:block; font-family:'Hanken Grotesk',sans-serif; font-weight:400; font-size:0.88rem; color:#666; margin-top:0.25rem; line-height:1.45; }
-  .rv-minor{ font-family:'Hanken Grotesk',sans-serif; font-size:0.9rem; color:#666; line-height:1.6; margin-top:2rem; padding-top:1.4rem; border-top:1px solid #e3e0d9; }
-  .rv-start{ margin-top:2rem; }
+  body{ background:#0B0B0D; color:#F7F4EE; }
+  .ix{ max-width:920px; margin:0 auto; padding:clamp(2rem,6vw,3.5rem) var(--gutter) 5rem; }
+
+  .ix-badge{ display:inline-flex; align-items:center; gap:0.5rem;
+    font-family:'Space Mono',monospace; font-size:0.68rem; letter-spacing:0.14em;
+    text-transform:uppercase; color:#fff; background:var(--orange-ink);
+    border-radius:999px; padding:0.4rem 0.9rem; }
+  .ix h1{ font-family:'Hanken Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(2.1rem,6.5vw,3.2rem); line-height:1.0; letter-spacing:-0.035em;
+    margin:1.1rem 0 0.9rem; }
+  .ix .lede{ font-size:1.06rem; line-height:1.6; color:#CFC9BD; max-width:62ch; }
+  .ix .lede strong{ color:#fff; }
+  .ix .stamp{ font-family:'Space Mono',monospace; font-size:0.72rem; color:#7d7870; margin-top:1rem; }
+
+  .grp{ margin-top:clamp(2.6rem,6vw,3.6rem); padding-top:clamp(1.6rem,4vw,2.2rem);
+    border-top:1px solid rgba(255,255,255,0.13); }
+  .grp:first-of-type{ border-top:0; }
+  .grp-n{ font-family:'Space Mono',monospace; font-size:0.68rem; letter-spacing:0.16em;
+    text-transform:uppercase; color:var(--orange); }
+  .grp h2{ font-family:'Hanken Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(1.35rem,3.6vw,1.8rem); letter-spacing:-0.02em; margin:0.5rem 0 0.6rem; }
+  .grp p{ color:#B9B3A8; line-height:1.62; max-width:66ch; margin-bottom:0.8rem; font-size:0.98rem; }
+  .grp p strong{ color:#fff; font-weight:600; }
+  .grp p em{ color:#fff; font-style:normal; background:rgba(255,92,57,0.14); padding:0 0.25em; }
+
+  .btns{ display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
+    gap:0.7rem; margin-top:1.3rem; }
+  .btns a{ display:flex; flex-direction:column; gap:0.22rem;
+    background:#16161A; border:1px solid rgba(255,255,255,0.14); border-radius:13px;
+    padding:0.9rem 1rem; text-decoration:none; color:#fff;
+    transition:border-color .15s, background .15s, transform .15s; }
+  .btns a:hover{ border-color:var(--orange); background:#1D1D22; transform:translateY(-2px); }
+  .btns .t{ font-weight:600; font-size:0.98rem; display:flex; align-items:center; gap:0.4rem; }
+  .btns .t::after{ content:"\2197"; color:var(--orange); font-size:0.85em; }
+  .btns .d{ font-size:0.83rem; color:#9C968A; line-height:1.42; }
+  .btns a.hero{ background:linear-gradient(140deg,#2A1109,#16161A 62%); border-color:rgba(255,92,57,0.5); }
+
+  .note{ margin-top:1.2rem; padding:0.95rem 1.1rem; border-left:2px solid var(--orange);
+    background:rgba(255,92,57,0.07); font-size:0.92rem; color:#C9C3B8; line-height:1.6; }
+  .note strong{ color:#fff; }
+
+  .facts{ list-style:none; padding:0; margin:1.2rem 0 0; font-size:0.94rem; }
+  .facts li{ padding:0.6rem 0; border-bottom:1px solid rgba(255,255,255,0.10);
+    display:flex; gap:0.7rem; align-items:baseline; color:#B9B3A8; }
+  .facts li::before{ content:"\2713"; color:#5BD08A; font-weight:700; flex:0 0 auto; }
+  .facts b{ color:#fff; font-weight:600; }
+  code{ font-family:'Space Mono',monospace; font-size:0.85em;
+    background:rgba(255,255,255,0.09); padding:0.12em 0.4em; border-radius:4px; color:#fff; }
 </style>
 </head>
-<body style="background:#faf8f4;">
-<div class="rv-wrap">
-  <span class="rv-badge">Staging review</span>
-  <h1 class="rv-h1">The header is the photographs now, and the whole site follows it.</h1>
-  <p class="rv-sub" style="color:#1a7f4f;"><strong>This is staging.</strong> Nothing is on adapttolife.org. The nine candidates are still at <a class="textlink" href="/hero-review">/hero-review</a> if you want to re-compare.</p>
-  <p class="rv-sub">You picked the mosaic for the front page and the banner language for everything else. Both are applied. The header carries a photograph and five words &mdash; no buttons, no meter &mdash; because the ask moved to the nav, where it now sits at every width including phones, immediately left of the hamburger.</p>
-  <p class="rv-date">Iteration: the header, sitewide &middot; staging only &middot; updated 2026-09-08</p>
-  <ol class="rv-steps">
-    <li><a href="/"><span><span class="t">Home &mdash; the mosaic</span><span class="d">Nineteen photographs on a wall, three planes deep, with two haze planes interleaved <em>between</em> the depth layers so the air between them does the separating. The wordmark takes the top-left corner and the shade over it is radial from that corner rather than a full-height column, which is what hands the bottom-left back to the pictures. Panel heights are <code>aspect-ratio</code>, not a percentage derived from a fixed 1440&times;792 &mdash; that bug made the wall open gaps at 1920.</span></span></a></li>
-    <li><a href="/about"><span><span class="t">About &mdash; the interior band</span><span class="d">The same bottom-aligned columns, the same pitch black, the same orange as a floor bloom, held well back behind the page&rsquo;s own words. It takes variant 2&rsquo;s language, not its layout: 2 puts type on the floor, which works for five words and not for an eyebrow, a headline and a sub-line.</span></span></a></li>
-    <li><a href="/promise"><span><span class="t">The Promise &mdash; a taller header on the same band</span><span class="d">Two-line headline, more room, same treatment. Worth checking that the band still reads as texture rather than as a photograph competing with the number.</span></span></a></li>
-    <li><a href="/donate"><span><span class="t">Donate &mdash; the band under a live widget</span><span class="d">The Givebutter embed sits on the band. This page is also why the band exists in a light <code>pg-*</code> asset tier: the first rollout shipped the full banner columns here and put 450KB of decoration on a page with a payment form. check-site caught it on its own-bytes budget.</span></span></a></li>
-    <li><a href="/volunteer"><span><span class="t">Volunteer &mdash; the generated page</span><span class="d">This one is built by <code>build-volunteer.mjs</code>, so it gets the band from the same shared module the hand-written pages use rather than from a hand edit. The first attempt edited it directly and <code>build-volunteer --check</code> failed &mdash; correctly, because the next build would have deleted the change.</span></span></a></li>
-    <li><a href="/tim"><span><span class="t">Tim &mdash; deliberately untouched</span><span class="d">Tim and Hustle &amp; Heart keep their own two-column photo heroes. A texture band behind a portrait of Tim would be two pictures arguing.</span></span></a></li>
-  </ol>
-  <p class="rv-minor"><strong>Donate moved into the nav on phones.</strong> Left of the hamburger, on every page. It is the same element as the desktop button rather than a second copy &mdash; below 860px the nav list stays in flow and every child except the CTA is hidden &mdash; so there is one Donate link in the markup sitewide and no chance of the two drifting apart.</p>
-  <p class="rv-minor"><strong>Switching the front page is one command.</strong> <code>node scripts/apply-hero.mjs 1</code>. It is idempotent, and it reads the same definitions the comparison lab reads, so what got approved at <code>/hero-1</code> and what ships are the same bytes.</p>
-  <p class="rv-minor"><strong>Still open:</strong> serif or grotesk. The homepage is set in the site&rsquo;s serif; five of the nine candidates were grotesk and you have leaned that way twice. Whichever wins should probably run through the whole site rather than living only at the top of one page.</p>
-</div>
+<body>
+<div class="ix">
+
+  <span class="ix-badge">Staging &middot; not live</span>
+  <h1>Everything we changed.</h1>
+  <p class="lede">One page, every link. <strong>Nothing here is on adapttolife.org</strong> &mdash; it all sits on the staging copy, so click anything freely. The real site is untouched until you say go.</p>
+  <p class="stamp">Updated 8 September 2026 &middot; branch <code>hero-lineup-2026-09</code></p>
+
+  <!-- 1 ------------------------------------------------------------------- -->
+  <div class="grp">
+    <span class="grp-n">01 &middot; The decision</span>
+    <h2>The homepage header</h2>
+    <p>The header used to be a sentence on an empty black field with the right half doing nothing. It is now <strong>nineteen photographs of your athletes</strong>, three planes deep, with the words in the corner. <strong>There are no buttons in it</strong> &mdash; feel first, then the ask &mdash; because Donate moved into the nav at every width.</p>
+    <p><em>Open it on a phone as well as a laptop.</em> They are two different layouts of the same photographs: a wall on desktop, the two-column grid you picked on mobile. Same files either way, so a phone downloads nothing extra.</p>
+    <div class="btns">
+      <a class="hero" href="/"><span class="t">The homepage</span><span class="d">The mosaic. Try it on both a phone and a laptop.</span></a>
+    </div>
+  </div>
+
+  <!-- 2 ------------------------------------------------------------------- -->
+  <div class="grp">
+    <span class="grp-n">02 &middot; Rolled across the site</span>
+    <h2>Eleven interior pages</h2>
+    <p>Every one of these got the banner language: the same bottom-aligned columns, the same pitch black, the same orange as a floor bloom &mdash; held well back behind each page's own words. It takes variant 2's <em>language</em>, not its layout, because a page header is not five words; it is an eyebrow, a headline and a sub-line, and all of those had to stay readable.</p>
+    <div class="btns">
+      <a href="/about"><span class="t">About</span><span class="d">Built by the community it serves</span></a>
+      <a href="/promise"><span class="t">The Promise</span><span class="d">Two-line headline on the band</span></a>
+      <a href="/apply"><span class="t">Grant Application</span><span class="d">The form page</span></a>
+      <a href="/sponsorship"><span class="t">Sponsorship</span><span class="d">Levels and recognition</span></a>
+      <a href="/volunteer"><span class="t">Volunteer</span><span class="d">Generated page &mdash; band comes from the generator</span></a>
+      <a href="/adaptive-sports-near-me"><span class="t">Adaptive Sports Near Me</span><span class="d">The directory</span></a>
+      <a href="/roadmap"><span class="t">Roadmap</span><span class="d">We build in the open</span></a>
+      <a href="/contact"><span class="t">Contact</span><span class="d">Let's talk</span></a>
+      <a href="/subscribe"><span class="t">Subscribe</span><span class="d">Stay in the game</span></a>
+      <a href="/waiver"><span class="t">Waiver</span><span class="d">Sign the release</span></a>
+      <a href="/donate"><span class="t">Donate</span><span class="d">Band at the top, rolling strip at the bottom</span></a>
+    </div>
+  </div>
+
+  <!-- 3 ------------------------------------------------------------------- -->
+  <div class="grp">
+    <span class="grp-n">03 &middot; The one you asked for last</span>
+    <h2>The rolling band on Donate</h2>
+    <p>Variant 5's marquee, as the last section before the footer. <strong>Finish your gift.</strong> above, eight faces rolling left to right, the ask and the button below. <em>Scroll to the bottom of the page.</em></p>
+    <div class="note"><strong>It costs the page nothing to load.</strong> The strip only downloads if you actually scroll to it. I marked it lazy first and Chrome fetched it anyway, which put 49KB of decoration on the initial load of a page with a payment form &mdash; the budget check caught that, correctly.</div>
+    <div class="btns">
+      <a class="hero" href="/donate#details"><span class="t">Donate, near the bottom</span><span class="d">Then keep scrolling to the closing band</span></a>
+    </div>
+  </div>
+
+  <!-- 4 ------------------------------------------------------------------- -->
+  <div class="grp">
+    <span class="grp-n">04 &middot; Sitewide</span>
+    <h2>Donate is in the nav on phones</h2>
+    <p>Left of the hamburger, on <strong>every page</strong>, exactly as you drew it. It is the same element as the desktop button rather than a second copy, so there is one Donate link in the markup sitewide and no chance of the two drifting apart. Check it anywhere &mdash; it is on all nineteen pages.</p>
+    <ul class="facts">
+      <li><b>Verified on six pages</b> at 390px: visible, left of the menu, and the drawer still opens on one tap.</li>
+      <li><b>Fixed at 320px</b> &mdash; adding it had pushed "Adapt To Life" onto two lines on the smallest phones.</li>
+    </ul>
+  </div>
+
+  <!-- 5 ------------------------------------------------------------------- -->
+  <div class="grp">
+    <span class="grp-n">05 &middot; Left alone on purpose</span>
+    <h2>Five pages we did not touch</h2>
+    <p>Each of these already carries a photograph of its own subject. A texture band behind a portrait of Tim would be two pictures arguing, so they keep what they have.</p>
+    <div class="btns">
+      <a href="/tim"><span class="t">Tim</span><span class="d">Has his own portrait hero</span></a>
+      <a href="/hustle-and-heart"><span class="t">Hustle &amp; Heart</span><span class="d">Two-column photo hero</span></a>
+      <a href="/karen"><span class="t">Karen</span><span class="d">Her own page</span></a>
+      <a href="/send-6"><span class="t">Send 6</span><span class="d">The campaign page</span></a>
+      <a href="/popcorn"><span class="t">Popcorn</span><span class="d">The drive page</span></a>
+    </div>
+  </div>
+
+  <!-- 6 ------------------------------------------------------------------- -->
+  <div class="grp">
+    <span class="grp-n">06 &middot; The reference set</span>
+    <h2>The eight header candidates</h2>
+    <p>Still up, and still worth keeping &mdash; you said you would use several of these across the site, and they were built as one family. Every page has chips at the bottom that flip between all eight.</p>
+    <div class="btns">
+      <a class="hero" href="/hero-review"><span class="t">All eight, one page</span><span class="d">With the reasoning for each</span></a>
+      <a href="/hero-1"><span class="t">1 &middot; Mosaic</span><span class="d">Chosen &mdash; now the homepage</span></a>
+      <a href="/hero-2"><span class="t">2 &middot; Banner</span><span class="d">Chosen &mdash; now the interior pages</span></a>
+      <a href="/hero-3"><span class="t">3 &middot; One frame</span><span class="d">A single photograph, full bleed</span></a>
+      <a href="/hero-4"><span class="t">4 &middot; Knockout</span><span class="d">The headline is the photograph</span></a>
+      <a href="/hero-5"><span class="t">5 &middot; Strip</span><span class="d">Chosen &mdash; now closes /donate</span></a>
+      <a href="/hero-6"><span class="t">6 &middot; Grid</span><span class="d">Chosen &mdash; now the mobile homepage</span></a>
+      <a href="/hero-7"><span class="t">7 &middot; Split</span><span class="d">Pitch black, one photograph, one seam</span></a>
+      <a href="/hero-9"><span class="t">9 &middot; Stadium</span><span class="d">On the court plate &mdash; still unjudged</span></a>
+    </div>
+  </div>
+
+  <!-- 7 ------------------------------------------------------------------- -->
+  <div class="grp">
+    <span class="grp-n">07 &middot; Under the hood</span>
+    <h2>What this cost, and what protects it</h2>
+    <ul class="facts">
+      <li><b>Switching the homepage header is one command.</b> <code>node scripts/apply-hero.mjs 1</code> &mdash; it reads the same definitions the candidate pages read, so what you approve and what ships are the same bytes.</li>
+      <li><b>The header is half the weight it started at.</b> Every photograph is sized to what it actually paints on screen: 490KB down to 250KB, with no visible change.</li>
+      <li><b>The interior band is one image, 19KB</b>, not eight. Shipping it as eight put 450KB on the donate page and the budget check refused it.</li>
+      <li><b>472 automated tests pass</b>, including four new ones that assert the homepage is actually carrying the header you chose &mdash; I reverted it once by accident and every other check stayed green.</li>
+      <li><b>The full site check passes</b> on the deployed build: nineteen pages, forty-six links, nav parity, no sideways scroll at any width, no dead links, share cards all resolving.</li>
+    </ul>
+  </div>
+
+  <!-- 8 ------------------------------------------------------------------- -->
+  <div class="grp">
+    <span class="grp-n">08 &middot; Open</span>
+    <h2>Two things waiting on you</h2>
+    <p><strong>Serif or grotesk.</strong> The desktop homepage is set in the site's serif; the mobile version and most of the candidates are the grotesk. Right now the voice changes with the screen size, which is the one genuinely unresolved thing in here. Whichever you pick should run through the whole site rather than living at the top of one page.</p>
+    <p><strong>Going live.</strong> Everything above is on staging only. Say go and I will open it for production.</p>
+    <div class="btns">
+      <a href="https://adapttolife.org/"><span class="t">The live site</span><span class="d">For comparison &mdash; untouched</span></a>
+    </div>
+  </div>
+
 </div>
 </body>
 </html>

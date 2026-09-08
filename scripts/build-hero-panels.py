@@ -41,7 +41,7 @@ DST = os.path.join(os.path.dirname(__file__), "..", "public", "images", "hero", 
 
 # Long edge in device pixels, by depth role. See rule 3.
 SIZE = {"front": 860, "mid": 560, "back": 340}
-QUALITY = {"front": 80, "mid": 76, "back": 70}
+QUALITY = {"front": 80, "mid": 76, "back": 70, "big": 68}
 
 # name, source frame, aspect (w/h), vertical anchor (0 = top, 1 = bottom),
 # horizontal anchor, ZOOM, depth role
@@ -97,6 +97,21 @@ BANNER = [
 ]
 
 
+# Full-bleed single frames. The collage variants never need more than 860px
+# because no panel is ever painted wider than that; a header that is ONE
+# photograph does, and it is the only place in this build where a big file is
+# the right answer. Quality is pushed down to compensate — at this size the
+# grain in the source hides the difference and the budget does not.
+BIG = [
+    # name, source, aspect, vert anchor, horiz anchor, zoom, width
+    ("big-forehand", "JLA_5945.jpg", 16/9,  0.44, 0.58, 0.80, 1900),
+    ("big-reach",    "JLA_6084.jpg", 16/9,  0.42, 0.50, 0.86, 1900),
+    ("big-ryan",     "JLA_5922.jpg", 3/4,   0.44, 0.50, 0.94, 1200),
+    ("big-brian",    "JLA_6045.jpg", 16/9,  0.44, 0.46, 0.82, 1900),
+    ("big-fill",     "JLA_6122.jpg", 5/2,   0.40, 0.50, 0.92, 1700),
+]
+
+
 def mono(im):
     """One curve for every panel, so the wall reads as one photograph.
 
@@ -133,7 +148,10 @@ def crop_to(im, aspect, ay, ax, zoom=1.0):
 def main():
     os.makedirs(DST, exist_ok=True)
     manifest, total = {}, 0
-    for name, src, aspect, ay, ax, zoom, role in PANELS + BANNER:
+    jobs = [(n, s_, a, y, x, z, r) for n, s_, a, y, x, z, r in PANELS + BANNER]
+    jobs += [(n, s_, a, y, x, z, "big") for n, s_, a, y, x, z, _w in BIG]
+    BIGW = {n: w for n, _s, _a, _y, _x, _z, w in BIG}
+    for name, src, aspect, ay, ax, zoom, role in jobs:
         path = os.path.join(SRC, src)
         if not os.path.exists(path):
             sys.exit(f"missing favourite: {path}\n"
@@ -142,7 +160,7 @@ def main():
         im.draft("RGB", (im.width // 2, im.height // 2))   # 8k JPEGs, decode at half
         im = im.convert("RGB")
         im = crop_to(im, aspect, ay, ax, zoom)
-        long_edge = SIZE[role]
+        long_edge = BIGW[name] if role == 'big' else SIZE[role]
         if aspect >= 1:
             size = (long_edge, round(long_edge / aspect))
         elif aspect <= 0.55:

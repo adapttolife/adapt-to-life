@@ -1,0 +1,296 @@
+/* ==========================================================================
+   Adapt To Life — header spectrum, variants 3 to 7
+   --------------------------------------------------------------------------
+   Alec, 2026-09-08: "go rogue and crazy, show me what's possible ... create
+   more of a spectrum of choices." So these are deliberately far apart. 1 and 2
+   are both walls of many photographs; everything here is a different ANSWER to
+   the same question, not a different arrangement of the same answer:
+
+     3  ONE photograph, full bleed. The most restrained thing on the list.
+     4  The headline IS the photograph — one word knocked through to the image.
+     5  A moving strip. The only variant where the header is never still.
+     6  A strict grid, most of it dark, a few cells alive. The most systematic.
+     7  A hard split: pitch black and type, one photograph, one seam.
+
+   Two rules hold across all of them, both from Alec:
+     · PITCH BLACK. The field is #000, never a dark grey and never a blurred
+       photograph washed behind the real ones. Black and white pictures on
+       pitch black — his words, and he is right, it is what gives them weight.
+     · ORANGE IS LIGHT, NOT INK. It appears as a bloom, a seam or a rule. It
+       never tints an athlete.
+   ========================================================================== */
+
+.hero-spec{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  background:#000;
+  min-height:clamp(600px, 88svh, 900px);
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  padding-top:clamp(6rem, 14vh, 9rem);
+  padding-bottom:clamp(4rem, 10vh, 7rem);
+}
+.hero-spec .sp-copy{ position:relative; z-index:8; width:100%; }
+.hero-spec .sp-h1{
+  font-family:"Hanken Grotesk", system-ui, sans-serif;
+  font-weight:700;
+  font-size:clamp(2.4rem, 5.8vw, 5.6rem);
+  line-height:0.95;
+  letter-spacing:-0.038em;
+  color:#fff;
+  margin:0;
+  max-width:11ch;
+}
+.hero-spec .sp-grain{
+  position:absolute; inset:0; z-index:9; pointer-events:none;
+  opacity:0.22; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+/* entrance, shared */
+.hero-spec .sp-rise{ opacity:0; transform:translateY(16px); }
+.hero-spec.lit .sp-rise{
+  opacity:1; transform:none;
+  transition:opacity .9s ease var(--d,0ms), transform 1s cubic-bezier(.19,.9,.24,1) var(--d,0ms); }
+@media (prefers-reduced-motion: reduce){
+  .hero-spec .sp-rise{ opacity:1 !important; transform:none !important; transition:none !important; }
+}
+
+/* ==========================================================================
+   3 — THE FRAME
+   One photograph, edge to edge, and five words in the corner. The restraint is
+   the point: no layering, no rays, nothing clever. It lives or dies on the
+   picture, which is the most honest test a photograph can be given.
+
+   The falloff is the whole craft here. A photograph cropped to a 16:9 hero has
+   hard edges; four overlaid gradients pull all four of them down into the same
+   pitch black the rest of the page sits on, so the image has no border — it
+   just stops being lit.
+   ========================================================================== */
+.hero-frame-one .sp-media{
+  position:absolute; inset:0; z-index:0;
+  background:url('/images/hero/panels/big-forehand.webp') center 42%/cover no-repeat;
+  filter:grayscale(1) contrast(1.06) brightness(0.92);
+}
+.hero-frame-one .sp-fade{
+  position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,0.86) 0%, rgba(0,0,0,0.10) 26%, rgba(0,0,0,0) 40%),
+    linear-gradient(0deg,   rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.62) 24%, rgba(0,0,0,0.06) 52%, rgba(0,0,0,0) 66%),
+    linear-gradient(90deg,  rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.30) 22%, rgba(0,0,0,0) 44%),
+    linear-gradient(270deg, rgba(0,0,0,0.80) 0%, rgba(0,0,0,0.10) 26%, rgba(0,0,0,0) 46%);
+}
+/* the one warm note: a low bloom where the floor would be */
+.hero-frame-one .sp-glow{
+  position:absolute; inset:0; z-index:2; pointer-events:none;
+  background:radial-gradient(78% 52% at 62% 108%, rgba(255,92,57,0.34) 0%, rgba(255,92,57,0.08) 40%, rgba(255,92,57,0) 68%);
+}
+.hero-frame-one .sp-h1{ max-width:12ch; }
+
+/* ==========================================================================
+   4 — THE KNOCKOUT
+   The headline is the photograph. "Adaptive" is cut through to a frame of two
+   athletes; the rest of the line stays solid white so the sentence never
+   depends on the trick to be readable — which is the difference between this
+   and the version of it that ends up on a design blog and never ships.
+   ========================================================================== */
+.hero-knockout{ justify-content:center; }
+.hero-knockout .sp-h1{
+  max-width:none;
+  font-size:clamp(2.8rem, 11.5vw, 11rem);
+  line-height:0.86;
+  letter-spacing:-0.05em;
+  text-transform:uppercase;
+}
+.hero-knockout .kn-fill{
+  /* The photograph alone knocked out to about 30% average luminance and the
+     word was unreadable next to solid white. A flat white wash blended into
+     the same background paint lifts it without touching any photograph that
+     is actually shown as a photograph. */
+  background-image:
+    linear-gradient(rgba(255,255,255,0.42), rgba(255,255,255,0.42)),
+    url('/images/hero/panels/big-fill.webp');
+  background-size:120% auto, 120% auto;
+  background-position:center 34%, center 34%;
+  background-repeat:no-repeat;
+  -webkit-background-clip:text;
+  background-clip:text;
+  /* Only go transparent where the browser can actually paint the image into
+     the glyphs. Without the guard, an unsupporting browser gets an invisible
+     headline, which is a worse outcome than a plain white one. */
+  color:#fff;
+}
+@supports ((-webkit-background-clip:text) or (background-clip:text)){
+  .hero-knockout .kn-fill{ color:transparent; }
+}
+/* one athlete at the edge, for scale and to keep it from being a type poster */
+.hero-knockout .sp-fig{
+  position:absolute; right:-4%; bottom:-2%; z-index:1;
+  height:74%; margin:0;
+}
+.hero-knockout .sp-fig img{
+  height:100%; width:auto; display:block;
+  filter:brightness(0.9) contrast(1.05)
+    drop-shadow(-20px 14px 36px rgba(0,0,0,0.95))
+    drop-shadow(8px -5px 24px rgba(255,120,80,0.24));
+}
+.hero-knockout .sp-glow{
+  position:absolute; inset:0; z-index:0; pointer-events:none;
+  background:radial-gradient(70% 50% at 78% 104%, rgba(255,92,57,0.36) 0%, rgba(255,92,57,0) 66%);
+}
+.hero-knockout .sp-copy{ z-index:6; }
+
+/* ==========================================================================
+   5 — THE STRIP
+   The only variant that is never still. A single row of columns drifts slowly
+   sideways behind the type, so the header is a passing crowd rather than a
+   photograph of one. The track is duplicated and the animation moves it by
+   exactly one copy's width, which is what makes the loop seamless.
+   ========================================================================== */
+.hero-strip{ justify-content:center; }
+.hero-strip .sp-track{
+  position:absolute; left:0; right:0; top:50%; transform:translateY(-50%);
+  z-index:1; height:clamp(320px, 52vh, 560px); overflow:hidden;
+}
+.hero-strip .sp-run{
+  display:flex; gap:10px; height:100%; width:max-content;
+  animation:sp-marquee 64s linear infinite;
+}
+.hero-strip .sp-run img{
+  height:100%; width:auto; display:block; flex:0 0 auto;
+  filter:grayscale(1) brightness(0.62) contrast(0.98);
+}
+@keyframes sp-marquee{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
+@media (prefers-reduced-motion: reduce){ .hero-strip .sp-run{ animation:none; } }
+/* the strip is banded top and bottom so it reads as a seam through the frame */
+.hero-strip .sp-bands{
+  position:absolute; inset:0; z-index:2; pointer-events:none;
+  background:linear-gradient(180deg,
+    #000 0%, #000 22%, rgba(0,0,0,0.10) 27%, rgba(0,0,0,0) 34%,
+    rgba(0,0,0,0) 66%, rgba(0,0,0,0.10) 73%, #000 78%, #000 100%);
+}
+.hero-strip .sp-glow{
+  position:absolute; inset:0; z-index:3; pointer-events:none;
+  background:radial-gradient(84% 34% at 50% 106%, rgba(255,92,57,0.34) 0%, rgba(255,92,57,0) 62%);
+}
+.hero-strip .sp-copy{ text-align:center; z-index:6; }
+.hero-strip .sp-h1{ max-width:none; margin-inline:auto; }
+.hero-strip .sp-h1 .l1{ display:block; }
+.hero-strip .sp-h1 .l2{ display:block; color:var(--orange); }
+/* the two lines sit ABOVE and BELOW the strip, not on it */
+.hero-strip .sp-h1 .l1{ margin-bottom:clamp(280px, 46vh, 500px); }
+
+/* ==========================================================================
+   6 — THE GRID
+   A strict contact sheet, filling the frame, most of it held down at a fifth of
+   its brightness with four cells alive. The order is the argument: this is a
+   community, not a poster of five people. The headline sits in a black slab
+   that occupies whole cells rather than floating over them, so the grid is
+   never broken — only interrupted.
+   ========================================================================== */
+.hero-grid{ padding:0; justify-content:stretch; }
+.hero-grid .sp-cells{
+  position:absolute; inset:0; z-index:0;
+  display:grid; grid-template-columns:repeat(6,1fr); grid-auto-rows:1fr; gap:2px;
+}
+.hero-grid .sp-cells figure{ margin:0; overflow:hidden; position:relative; background:#000; }
+.hero-grid .sp-cells img{
+  width:100%; height:100%; object-fit:cover; display:block;
+  filter:grayscale(1) brightness(0.22) contrast(0.9);
+  transition:filter .6s ease;
+}
+.hero-grid .sp-cells figure.on img{ filter:grayscale(1) brightness(1) contrast(1.06); }
+.hero-grid .sp-glow{
+  position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:
+    radial-gradient(70% 26% at 68% 108%, rgba(255,92,57,0.30) 0%, rgba(255,92,57,0) 60%),
+    radial-gradient(120% 90% at 20% 12%, rgba(0,0,0,0.86) 0%, rgba(0,0,0,0.30) 42%, rgba(0,0,0,0) 70%);
+}
+.hero-grid .sp-copy{
+  z-index:6; display:flex; align-items:center;
+  min-height:clamp(600px, 88svh, 900px);
+  padding-top:clamp(5rem,11vh,7rem);
+}
+.hero-grid .sp-slab{
+  background:#000; padding:clamp(1.6rem,3vw,2.6rem) clamp(1.8rem,3.4vw,3rem) clamp(1.8rem,3.4vw,3rem);
+  border-right:2px solid var(--orange);
+}
+.hero-grid .sp-h1{ max-width:10ch; }
+
+/* ==========================================================================
+   7 — THE SPLIT
+   Pitch black and five words on the left, one photograph bleeding off the
+   right, one warm seam between them. The quietest and the most editorial —
+   and the only variant where the type has no photograph behind it at all, so
+   the contrast is not a judgement call.
+   ========================================================================== */
+.hero-split-one{ justify-content:center; }
+.hero-split-one .sp-media{
+  position:absolute; top:0; bottom:0; left:46%; right:0; z-index:0;
+  background:url('/images/hero/panels/big-ryan.webp') 44% center/cover no-repeat;
+  filter:grayscale(1) contrast(1.06) brightness(0.95);
+}
+.hero-split-one .sp-fade{
+  position:absolute; top:0; bottom:0; left:46%; right:0; z-index:1; pointer-events:none;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.20) 16%, rgba(0,0,0,0) 34%),
+    linear-gradient(0deg,  rgba(0,0,0,0.72) 0%, rgba(0,0,0,0) 34%),
+    linear-gradient(180deg,rgba(0,0,0,0.62) 0%, rgba(0,0,0,0) 26%);
+}
+.hero-split-one .sp-seam{
+  position:absolute; top:0; bottom:0; left:46%; width:2px; z-index:4;
+  background:linear-gradient(180deg, rgba(255,120,80,0.05) 0%, rgba(255,120,80,0.65) 58%, rgba(255,120,80,0.06) 100%);
+  box-shadow:0 0 26px 2px rgba(255,92,57,0.28);
+}
+.hero-split-one .sp-glow{
+  position:absolute; inset:0; z-index:2; pointer-events:none;
+  background:radial-gradient(56% 40% at 70% 106%, rgba(255,92,57,0.30) 0%, rgba(255,92,57,0) 64%);
+}
+.hero-split-one .sp-h1{ max-width:min(9ch, 40%); }
+
+/* ==========================================================================
+   Narrow
+   Every variant collapses the same way: the words take the top, the photograph
+   takes everything under them. The one exception is 5, where the strip is the
+   whole idea and stays in the middle.
+   ========================================================================== */
+@media (max-width:900px){
+  .hero-spec{ min-height:clamp(600px, 88svh, 900px); }
+
+  .hero-frame-one .sp-media{ background-position:58% 38%; }
+  .hero-frame-one .sp-fade{
+    background:
+      linear-gradient(180deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.42) 30%, rgba(0,0,0,0) 52%),
+      linear-gradient(0deg,   rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.55) 26%, rgba(0,0,0,0) 58%); }
+
+  .hero-knockout .sp-h1{ font-size:clamp(2.6rem, 13vw, 5rem); }
+  .hero-knockout .sp-fig{ right:-22%; height:52%; }
+
+  .hero-strip .sp-track{ height:clamp(240px, 40vh, 380px); }
+  .hero-strip .sp-h1 .l1{ margin-bottom:clamp(210px, 36vh, 340px); }
+
+  .hero-grid .sp-cells{ grid-template-columns:repeat(3,1fr); }
+  .hero-grid .sp-slab{ border-right:0; border-bottom:2px solid var(--orange); }
+
+  /* 7 stacks: type over the top of the picture rather than beside it */
+  .hero-split-one{ justify-content:flex-start; padding-top:clamp(5rem,13vh,7rem); }
+  .hero-split-one .sp-media,
+  .hero-split-one .sp-fade{ left:0; }
+  .hero-split-one .sp-media{ background-position:52% 30%; }
+  .hero-split-one .sp-fade{
+    background:linear-gradient(180deg, rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.68) 28%, rgba(0,0,0,0.10) 58%, rgba(0,0,0,0) 76%); }
+  .hero-split-one .sp-seam{ display:none; }
+  .hero-split-one .sp-h1{ max-width:none; }
+}
+
+@media (max-width:640px){
+  .hero-spec{
+    min-height:calc(100svh - 4.4rem);
+    padding-top:clamp(4.5rem,12vh,6rem);
+  }
+  .hero-spec .sp-h1{ max-width:none; }
+  .hero-knockout .sp-fig{ right:-34%; height:42%; }
+  .hero-grid .sp-cells{ grid-template-columns:repeat(2,1fr); }
+  .hero-grid .sp-copy{ min-height:calc(100svh - 4.4rem); align-items:flex-start; }
+}

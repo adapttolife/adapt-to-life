@@ -117,20 +117,24 @@ const BANNER_PHONE = {
 // one percentage point of height. Panels are placed by width and their height
 // is computed from the file's real aspect against the hero's own — which is why
 // panels.json carries pixel dimensions and not just names.
-const HERO_RATIO = 1440 / 792;
-const PHONE_RATIO = 390 / 780;
-
 // Geometry lives in a GENERATED STYLESHEET, not in style attributes on the
 // figures. The first cut put left/top/width inline and then tried to override
 // them in a phone media query — which can never win, because an inline style
 // outranks any selector. Every panel box, at both widths, is now one rule set
 // emitted from the same data.
-const boxRule = (p, meta, ratio, q, mode) => {
+//
+// Panel HEIGHT is `aspect-ratio`, never a computed percentage. The first cut
+// worked out height as `width% x (1440/792) x (imgH/imgW)` — a percentage of
+// the hero's height derived from the hero's width — which is only correct at
+// the one viewport aspect that constant describes. At 1920x900 the real ratio
+// is 2.13 rather than 1.82, so every panel came out about 15% too short and the
+// wall opened up gaps it does not have on a laptop. aspect-ratio lets the
+// browser do that arithmetic against the width it actually resolved.
+const boxRule = (p, meta, q, mode) => {
   const g = q || p;
   return mode === "banner"
     ? `left:${g.x}%; width:${g.w}%; height:${g.h}%;`
-    : `left:${g.x}%; top:${g.y}%; width:${g.w}%; ` +
-      `height:${(g.w * ratio * meta.h / meta.w).toFixed(2)}%;`;
+    : `left:${g.x}%; top:${g.y}%; width:${g.w}%; aspect-ratio:${meta.w}/${meta.h};`;
 };
 
 const panelHtml = (p, i) => {
@@ -141,16 +145,21 @@ const panelHtml = (p, i) => {
     `${p.d === 3 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></figure>`;
 };
 
-// Wide, then phone. A panel with no phone entry is simply not on the phone —
-// which is the honest way to thin a collage. Shrinking all nineteen turns
-// nineteen photographs into nineteen smudges.
+// Wide, then narrow. The cut-over is 900px, not 640: a 768x1024 tablet is a
+// portrait box and it is much closer to a phone than to a laptop. Left on the
+// wide layout it rendered all nineteen panels at about 145px each — technically
+// a collage, visually grey noise.
+//
+// A panel with no narrow entry is simply not there at that width. That is the
+// honest way to thin a collage; shrinking all nineteen turns nineteen
+// photographs into nineteen smudges.
 const layoutCss = (rows, phone, mode) => {
   const wide = rows.map((p) =>
-    `  .mw-p.p-${p.n}{ ${boxRule(p, PANELS[p.n], HERO_RATIO, null, mode)} }`);
+    `  .mw-p.p-${p.n}{ ${boxRule(p, PANELS[p.n], null, mode)} }`);
   const small = rows.filter((p) => phone[p.n]).map((p) =>
-    `    .mw-p.p-${p.n}{ display:block; ${boxRule(p, PANELS[p.n], PHONE_RATIO, phone[p.n], mode)} }`);
+    `    .mw-p.p-${p.n}{ display:block; ${boxRule(p, PANELS[p.n], phone[p.n], mode)} }`);
   return ["<style>", ...wide,
-    "  @media (max-width:640px){",
+    "  @media (max-width:900px){",
     "    .mw-p{ display:none; }", ...small,
     "  }", "</style>"].join("\n");
 };
@@ -260,8 +269,126 @@ ${teamHtml}
 
 `;
 
-const VARIANTS = { 1: HERO_D, 2: HERO_E, 3: HERO_3 };
-const LABEL = { 1: "1 · The mosaic", 2: "2 · The banner", 3: "3 · The stadium" };
+/* --------------------------------------------------------------------------
+   THE SPECTRUM — 3 to 7.  Alec: "go rogue and crazy ... create more of a
+   spectrum of choices." Five different ANSWERS, not five arrangements of one.
+   -------------------------------------------------------------------------- */
+// Intrinsic sizes come from panels.json, the manifest the crop build writes,
+// so a width/height attribute can never drift from the file on disk.
+// The hand-traced cut-outs live one directory up from the panels and carry
+// their sizes in dims.json rather than panels.json.
+const cut = (name, extra = "") => {
+  const d = DIM[`${name}.webp`];
+  if (!d) throw new Error(`"${name}" is not in dims.json — run build-hero-cutouts.py`);
+  return `<img src="/images/hero/${name}.webp" width="${d[0]}" height="${d[1]}" alt="" ${extra}>`;
+};
+
+const img = (name, cls, extra = "") => {
+  const m = PANELS[name];
+  if (!m) throw new Error(`"${name}" is not in panels.json — run build-hero-panels.py`);
+  return `<img src="/images/hero/panels/${name}.webp" width="${m.w}" height="${m.h}" alt=""${cls ? ` class="${cls}"` : ""} ${extra}>`;
+};
+
+const HERO_FRAME = `  <!-- 1 · HERO — one photograph (variant 3) -->
+  <section class="hero-spec hero-frame-one dark hero-var" id="heroStage" data-variant="3">
+    <div class="sp-media" role="img" aria-label="Juan turning into a forehand against the wall at ACE"></div>
+    <div class="sp-fade"></div>
+    <div class="sp-glow"></div>
+    <div class="wrap sp-copy">
+      <h1 class="sp-h1 sp-rise" style="--d:160ms;">Your Place in Adaptive Sports.</h1>
+    </div>
+    <div class="sp-grain"></div>
+  </section>
+
+`;
+
+const HERO_KNOCKOUT = `  <!-- 1 · HERO — the knockout (variant 4) -->
+  <section class="hero-spec hero-knockout dark hero-var" id="heroStage" data-variant="4">
+    <div class="sp-glow"></div>
+    <figure class="sp-fig">${cut("trace-ryan", 'fetchpriority="high" decoding="async"')}</figure>
+    <div class="wrap sp-copy">
+      <h1 class="sp-h1 sp-rise" style="--d:160ms;">Your place in<br><span class="kn-fill">Adaptive</span> sports.</h1>
+    </div>
+    <div class="sp-grain"></div>
+  </section>
+
+`;
+
+// The strip is duplicated so the marquee can translate by exactly one copy and
+// loop with no seam. aria-hidden on the whole track: it is texture, and a
+// screen reader does not need eight empty images read to it twice.
+const STRIP_COLUMNS = ["bn-brian", "bn-dink", "bn-smile", "bn-swing", "bn-grin",
+                       "bn-white", "bn-seated", "bn-reach"];
+const stripRun = [...STRIP_COLUMNS, ...STRIP_COLUMNS]
+  .map((n, i) => "        " + img(n, "", i < 4 ? 'fetchpriority="high" decoding="async"' : 'loading="lazy" decoding="async"'))
+  .join("\n");
+
+const HERO_STRIP = `  <!-- 1 · HERO — the moving strip (variant 5) -->
+  <section class="hero-spec hero-strip dark hero-var" id="heroStage" data-variant="5">
+    <div class="sp-track" aria-hidden="true">
+      <div class="sp-run">
+${stripRun}
+      </div>
+    </div>
+    <div class="sp-bands"></div>
+    <div class="sp-glow"></div>
+    <div class="wrap sp-copy">
+      <h1 class="sp-h1 sp-rise" style="--d:160ms;"><span class="l1">Your Place in</span><span class="l2">Adaptive Sports.</span></h1>
+    </div>
+    <div class="sp-grain"></div>
+  </section>
+
+`;
+
+// Eighteen cells, four of them alive. Which four is data — moving a face into
+// the light should not be a stylesheet edit.
+const GRID_CELLS = [
+  "close-dink", "laugh", "net", "smile-close", "reach", "court",
+  "pair", "dink", "grin", "brian", "two-up", "swing",
+  "serve", "whitecap", "rally", "forehand", "seated", "lobby",
+];
+const GRID_LIT = new Set(["smile-close", "dink", "brian", "grin"]);
+const gridCells = GRID_CELLS.map((n, i) =>
+  `      <figure${GRID_LIT.has(n) ? ' class="on"' : ""}>` +
+  img(n, "", i < 6 ? 'fetchpriority="high" decoding="async"' : 'loading="lazy" decoding="async"') +
+  "</figure>").join("\n");
+
+const HERO_GRID = `  <!-- 1 · HERO — the contact sheet (variant 6) -->
+  <section class="hero-spec hero-grid dark hero-var" id="heroStage" data-variant="6">
+    <div class="sp-cells" aria-hidden="true">
+${gridCells}
+    </div>
+    <div class="sp-glow"></div>
+    <div class="wrap sp-copy">
+      <div class="sp-slab sp-rise" style="--d:160ms;">
+        <h1 class="sp-h1">Your Place in Adaptive Sports.</h1>
+      </div>
+    </div>
+    <div class="sp-grain"></div>
+  </section>
+
+`;
+
+const HERO_SPLIT_ONE = `  <!-- 1 · HERO — the split (variant 7) -->
+  <section class="hero-spec hero-split-one dark hero-var" id="heroStage" data-variant="7">
+    <div class="sp-media" role="img" aria-label="Ryan at the net, mid-point"></div>
+    <div class="sp-fade"></div>
+    <div class="sp-seam"></div>
+    <div class="sp-glow"></div>
+    <div class="wrap sp-copy">
+      <h1 class="sp-h1 sp-rise" style="--d:160ms;">Your Place in Adaptive Sports.</h1>
+    </div>
+    <div class="sp-grain"></div>
+  </section>
+
+`;
+
+const VARIANTS = { 1: HERO_D, 2: HERO_E, 3: HERO_FRAME, 4: HERO_KNOCKOUT,
+                   5: HERO_STRIP, 6: HERO_GRID, 7: HERO_SPLIT_ONE };
+const LABEL = {
+  1: "1 · Mosaic", 2: "2 · Banner", 3: "3 · One frame", 4: "4 · Knockout",
+  5: "5 · Strip", 6: "6 · Grid", 7: "7 · Split",
+};
 
 // The stage script: entrance, depth parallax, and the live drive strip. Kept
 // in the page rather than in a shared bundle because only the hero uses it and
@@ -322,7 +449,7 @@ const STAGE_JS = `
 // The variant switcher, so one link lets Alec flip between all three at the
 // same scroll position instead of opening three tabs and guessing.
 function switcher(active) {
-  const items = ["1", "2", "3"]
+  const items = ["1", "2", "3", "4", "5", "6", "7"]
     .map(
       (k) =>
         `<a href="/hero-${k}" class="hv-chip${k === active ? " on" : ""}">${LABEL[k]}</a>`,
@@ -350,7 +477,7 @@ for (const [key, hero] of Object.entries(VARIANTS)) {
     .replace(
       '<link rel="stylesheet" href="/css/site.css">',
       '<link rel="stylesheet" href="/css/site.css">\n<link rel="stylesheet" href="/css/hero-mosaic.css">' +
-        (key === "3" ? '\n<link rel="stylesheet" href="/css/hero-stadium.css">' : ""),
+        ("34567".includes(key) ? '\n<link rel="stylesheet" href="/css/hero-spectrum.css">' : ""),
     )
     .replace(
       "</head>",

@@ -1,4 +1,34 @@
 {
+ "big-brian": {
+  "h": 1069,
+  "role": "big",
+  "src": "JLA_6045.jpg",
+  "w": 1900
+ },
+ "big-fill": {
+  "h": 680,
+  "role": "big",
+  "src": "JLA_6122.jpg",
+  "w": 1700
+ },
+ "big-forehand": {
+  "h": 1069,
+  "role": "big",
+  "src": "JLA_5945.jpg",
+  "w": 1900
+ },
+ "big-reach": {
+  "h": 1069,
+  "role": "big",
+  "src": "JLA_6084.jpg",
+  "w": 1900
+ },
+ "big-ryan": {
+  "h": 1200,
+  "role": "big",
+  "src": "JLA_5922.jpg",
+  "w": 900
+ },
  "bn-brian": {
   "h": 1269,
   "role": "front",

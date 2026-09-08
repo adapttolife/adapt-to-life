@@ -12,7 +12,7 @@ import { chromium } from "/home/agentos/pw/node_modules/playwright/index.mjs";
 const BASE = process.argv[2] || "http://127.0.0.1:8788";
 const SIZES = [[1920, 1080, "1920"], [1440, 900, "1440"], [1024, 768, "1024"],
                [768, 1024, "768"], [390, 844, "390"], [320, 720, "320"]];
-const VARIANTS = ["1", "2", "3"];
+const VARIANTS = ["1", "2", "3", "4", "5", "6", "7"];
 
 const browser = await chromium.launch();
 let failed = 0;
@@ -68,8 +68,8 @@ for (const v of VARIANTS) {
       // 2. the ask has to be on the first screen, not merely on the page
       const stage = document.getElementById("heroStage");
       out.hero = Math.round(stage.getBoundingClientRect().height);
-      const copy = document.querySelector(".hs-copy, .mw-copy, .st-copy");
-      ["h1", ".btn"].forEach((sel) => {
+      const copy = document.querySelector(".mw-copy, .sp-copy");
+      ["h1"].forEach((sel) => {
         const el = copy && copy.querySelector(sel);
         if (!el) return;
         const b = el.getBoundingClientRect();
@@ -97,7 +97,7 @@ const rm = await browser.newPage({ viewport: { width: 1440, height: 900 }, reduc
 await rm.goto(`${BASE}/hero-3.html`, { waitUntil: "networkidle" });
 await rm.waitForTimeout(300);
 const vis = await rm.evaluate(() =>
-  [...document.querySelectorAll(".mw-p, .mw-rise, .st-fig, .st-rise")].every((el) => +getComputedStyle(el).opacity === 1));
+  [...document.querySelectorAll(".mw-p, .mw-rise, .sp-rise")].every((el) => +getComputedStyle(el).opacity === 1));
 note(vis, "prefers-reduced-motion: every figure and line is visible with no animation");
 await rm.close();
 

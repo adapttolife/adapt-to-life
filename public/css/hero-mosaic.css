@@ -29,7 +29,7 @@
   position:relative;
   isolation:isolate;
   overflow:hidden;
-  background:#08080A;
+  background:#000;
   min-height:clamp(580px, 88svh, 900px);
   display:flex;
   flex-direction:column;
@@ -44,8 +44,7 @@
   background:
     radial-gradient(110% 80% at 82% 104%, rgba(255,92,57,0.46) 0%, rgba(255,92,57,0.14) 34%, rgba(255,92,57,0) 64%),
     radial-gradient(60% 44% at 88% 86%,  rgba(255,150,90,0.34) 0%, rgba(255,92,57,0) 72%),
-    radial-gradient(80% 56% at 8% 4%,    rgba(96,120,160,0.12) 0%, rgba(96,120,160,0) 66%),
-    linear-gradient(180deg, #08080A 0%, #0D0D10 44%, #17110E 100%);
+    linear-gradient(180deg, #000 0%, #030304 42%, #120B08 100%);
 }
 
 /* ---- the wall ------------------------------------------------------------ */
@@ -240,7 +239,16 @@
 }
 
 @media (max-width:900px){
-  .hero-wall-photo{ min-height:clamp(560px, 86svh, 820px); }
+  /* Everything narrow is one layout: wordmark in the top corner, wall filling
+     what is left. The panel geometry for this width is generated per variant
+     (see layoutCss in build-hero-lab.mjs) and cuts nineteen panels down to six
+     large ones. */
+  .hero-wall-photo{
+    min-height:clamp(600px, 88svh, 900px);
+    justify-content:flex-start;
+    padding-top:clamp(5rem,13vh,7rem);
+    padding-bottom:0;
+  }
   /* The wall stops competing with the type and becomes the ground it sits on:
      the scrim turns vertical, and the panels marked .m-drop leave. Dropping
      panels is the only honest way to thin a collage — shrinking them all

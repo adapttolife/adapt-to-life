@@ -1,0 +1,477 @@
+/* ==========================================================================
+   Adapt To Life — headline hero, athlete stage
+   --------------------------------------------------------------------------
+   The problem this solves: cut-out athletes pasted onto a dark rectangle read
+   as stickers. Three things make them read as one photograph instead, and all
+   three are here:
+
+     1. ONE LIGHT SOURCE. Every figure carries the same warm rim (a drop-shadow
+        that follows the silhouette exactly, offset toward the glow) and the
+        same cool fill from the left. Nothing gets its own lighting.
+     2. ATMOSPHERE. Depth is not z-index, it is contrast. Figures further back
+        lose contrast, lose brightness, gain a little blur, and sink into a
+        floor haze — the same thing real air does over twenty feet of gym.
+     3. GROUND. Each figure gets a contact shadow on a shared floor line. A
+        figure with no shadow is floating no matter how well it is masked.
+
+   Three of the five source cut-outs are cropped at the waist or hip. They are
+   only ever used in the BACK row, where the floor haze feathers the cut edge
+   away — which is why the haze sits between the two rows rather than on top
+   of everything.
+   ========================================================================== */
+
+.hero-stage{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  background:var(--ink-warm);
+  min-height:clamp(580px, 88svh, 900px);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding-top:clamp(6.5rem, 14vh, 9.5rem);
+  padding-bottom:clamp(2rem, 5vh, 3.5rem);
+}
+
+/* ---- the room ----------------------------------------------------------- */
+/* Warm horizon behind the line of athletes: the light they are all lit by.
+   Two lobes, not one — a tight hot core low and right of centre, and a wide
+   soft bloom above it, because a single radial gradient reads as a spotlight
+   decal rather than as air. */
+.hs-sky{
+  position:absolute; inset:0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(120% 78% at 68% 104%, rgba(255,92,57,0.40) 0%, rgba(255,92,57,0.13) 34%, rgba(255,92,57,0) 62%),
+    radial-gradient(70% 46% at 74% 88%,  rgba(255,140,80,0.36) 0%, rgba(255,92,57,0)  70%),
+    radial-gradient(90% 60% at 12% 8%,   rgba(96,120,160,0.13) 0%, rgba(96,120,160,0) 68%),
+    linear-gradient(180deg, #0B0B0D 0%, #101013 46%, #17120F 100%);
+}
+
+/* The floor. A faint ellipse of reflected light where the athletes stand, so
+   the bottom of the frame is a surface and not just a darker colour. */
+.hs-floor{
+  position:absolute; left:-10%; right:-10%; bottom:-6%; height:46%; z-index:1;
+  pointer-events:none;
+  background:
+    radial-gradient(72% 130% at 62% 52%, rgba(255,120,80,0.15) 0%, rgba(255,120,80,0.05) 42%, rgba(255,120,80,0) 78%),
+    linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.50) 74%, rgba(0,0,0,0.8) 100%);
+}
+
+/* ---- the stage ---------------------------------------------------------- */
+.hs-stage{
+  position:absolute; inset:0; z-index:2; pointer-events:none;
+  /* the composition is authored against this box; figures are placed in % of
+     it so the whole group scales as one object at any window size */
+  container-type:inline-size;
+}
+
+.hs-fig{
+  position:absolute; bottom:var(--b,0%); margin:0;
+  height:var(--h,60%);
+  transform:translate3d(var(--px,0px), var(--py,0px), 0);
+  will-change:transform;
+}
+.hs-fig img{
+  height:100%; width:auto; display:block;
+  /* the shared light: warm rim toward the glow, cool lift from the left,
+     and a soft occlusion shadow that grounds the silhouette */
+  filter:
+    drop-shadow(-14px 10px 24px rgba(0,0,0,0.6))
+    drop-shadow(5px -3px 16px rgba(255,110,70,0.20));
+}
+
+/* depth = contrast, not stacking order */
+.hs-fig.d-back img{
+  filter:
+    drop-shadow(-6px 4px 16px rgba(0,0,0,0.5))
+    drop-shadow(4px -2px 14px rgba(255,110,70,0.16))
+    brightness(0.40) contrast(0.80) blur(2.2px);
+  opacity:0.85;
+}
+.hs-fig.d-mid img{
+  filter:
+    drop-shadow(-10px 7px 20px rgba(0,0,0,0.55))
+    drop-shadow(5px -3px 15px rgba(255,110,70,0.18))
+    brightness(0.60) contrast(0.90) blur(1.1px);
+  opacity:0.94;
+}
+.hs-fig.d-front img{ filter:
+    drop-shadow(-16px 12px 28px rgba(0,0,0,0.62))
+    drop-shadow(6px -4px 18px rgba(255,120,80,0.26))
+    brightness(1.03) contrast(1.07);
+}
+
+/* contact shadow — an ellipse on the floor under each figure. Without this
+   every figure is levitating, and the eye reads it before it reads anything
+   else. */
+.hs-fig::after{
+  content:""; position:absolute; left:50%; bottom:0;
+  width:var(--sw,86%); height:var(--sh,26px);
+  transform:translate(-50%, 42%);
+  background:radial-gradient(50% 50% at 50% 50%, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.30) 46%, rgba(0,0,0,0) 74%);
+  filter:blur(5px);
+  z-index:-1;
+}
+
+/* haze between the rows: the back row's cropped waistlines end here */
+.hs-haze{
+  position:absolute; left:0; right:0; bottom:0; height:52%; z-index:3;
+  pointer-events:none;
+  background:linear-gradient(180deg,
+    rgba(11,11,13,0) 0%,
+    rgba(12,11,12,0.30) 26%,
+    rgba(13,11,11,0.62) 52%,
+    rgba(13,11,11,0.30) 78%,
+    rgba(13,11,11,0) 100%);
+}
+
+/* the two complete figures live above the haze, the crops below it */
+.hs-fig.above-haze{ z-index:4; }
+
+/* ---- copy --------------------------------------------------------------- */
+.hs-copy{ position:relative; z-index:6; width:100%; }
+.hs-copy .display{ max-width:15ch; margin-top:1.35rem; }
+.hs-copy .sub{ max-width:34ch; margin-top:1.4rem; }
+.hs-copy .actions{ display:flex; flex-wrap:wrap; align-items:center; gap:0.9rem 1rem; margin-top:2.1rem; }
+
+/* a readability floor under the type only — a soft column of dark on the left
+   so the headline never depends on what happens to be behind it */
+.hs-scrim{
+  position:absolute; inset:0; z-index:5; pointer-events:none;
+  background:linear-gradient(94deg,
+    rgba(8,8,10,0.92) 0%,
+    rgba(8,8,10,0.80) 22%,
+    rgba(8,8,10,0.46) 38%,
+    rgba(8,8,10,0.10) 52%,
+    rgba(8,8,10,0) 66%);
+}
+
+/* ---- live drive strip --------------------------------------------------- */
+/* The hero's job on a fundraising site is not only to be looked at. This is
+   the one thing on the page that says money is moving right now. */
+.hs-drive{
+  position:relative; z-index:6; margin-top:clamp(2.2rem,5vh,3.4rem);
+}
+.hs-drive-in{
+  display:flex; align-items:center; gap:clamp(0.9rem,2.4vw,1.9rem);
+  flex-wrap:wrap;
+  padding:0.95rem clamp(1rem,2.4vw,1.5rem);
+  border:1px solid rgba(255,255,255,0.14);
+  border-radius:14px;
+  background:rgba(9,9,11,0.74);
+  backdrop-filter:blur(14px) saturate(1.1); -webkit-backdrop-filter:blur(14px) saturate(1.1);
+  max-width:640px;
+}
+.hs-drive-lab{
+  display:flex; align-items:center; gap:0.5rem;
+  font-family:"Space Mono",monospace; font-size:0.66rem; font-weight:700;
+  letter-spacing:0.16em; text-transform:uppercase; color:var(--orange);
+  flex:0 0 auto;
+}
+.hs-drive-lab .dot{
+  width:7px; height:7px; border-radius:50%; background:var(--orange);
+  box-shadow:0 0 0 0 rgba(255,92,57,0.55); animation:hs-pulse 2.6s ease-out infinite;
+}
+@keyframes hs-pulse{
+  0%{ box-shadow:0 0 0 0 rgba(255,92,57,0.5); }
+  70%{ box-shadow:0 0 0 9px rgba(255,92,57,0); }
+  100%{ box-shadow:0 0 0 0 rgba(255,92,57,0); }
+}
+.hs-drive-body{ flex:1 1 16rem; min-width:0; }
+.hs-drive-name{ color:var(--cream); font-weight:600; font-size:0.98rem; line-height:1.3; }
+.hs-drive-track{ margin-top:0.55rem; height:4px; border-radius:999px; background:rgba(255,255,255,0.13); overflow:hidden; }
+.hs-drive-fill{ height:100%; border-radius:999px; background:linear-gradient(90deg,var(--orange-ink),var(--orange-hot)); box-shadow:0 0 16px -2px rgba(255,92,57,0.7); width:0; transition:width 1.1s cubic-bezier(.22,.9,.28,1) .5s; }
+.hs-drive-fig{ margin-top:0.45rem; font-family:"Space Mono",monospace; font-size:0.72rem; color:var(--cream-faint); }
+.hs-drive-fig b{ color:var(--cream); font-weight:700; }
+.hs-drive-go{ flex:0 0 auto; font-size:0.88rem; color:#fff; border-bottom:1.5px solid var(--orange); padding-bottom:2px; font-weight:500; }
+.hs-drive-go:hover{ color:var(--orange-hot); border-bottom-color:var(--orange-hot); }
+
+/* ---- grain -------------------------------------------------------------- */
+/* A photograph has grain; a gradient does not. This is the cheapest thing on
+   the page that stops the dark from looking like a CSS colour. */
+.hs-grain{
+  position:absolute; inset:0; z-index:7; pointer-events:none;
+  opacity:0.30; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+/* vignette, to keep the eye in the middle third */
+.hs-vig{
+  position:absolute; inset:0; z-index:7; pointer-events:none;
+  background:radial-gradient(120% 100% at 50% 46%, rgba(0,0,0,0) 42%, rgba(0,0,0,0.42) 100%);
+}
+
+/* ---- entrance ----------------------------------------------------------- */
+/* The group assembles back-to-front. Reduced motion gets the finished frame. */
+.hero-stage .hs-fig{ opacity:0; transform:translate3d(var(--px,0px), calc(var(--py,0px) + 26px), 0) scale(1.015); }
+.hero-stage.lit .hs-fig{
+  opacity:1; transform:translate3d(var(--px,0px), var(--py,0px), 0) scale(1);
+  transition:opacity .9s ease, transform 1.05s cubic-bezier(.19,.9,.24,1);
+  transition-delay:var(--d,0ms);
+}
+.hero-stage .hs-rise{ opacity:0; transform:translateY(14px); }
+.hero-stage.lit .hs-rise{
+  opacity:1; transform:none;
+  transition:opacity .8s ease var(--d,0ms), transform .9s cubic-bezier(.19,.9,.24,1) var(--d,0ms);
+}
+
+@media (prefers-reduced-motion: reduce){
+  .hero-stage .hs-fig,
+  .hero-stage .hs-rise{ opacity:1 !important; transform:none !important; transition:none !important; }
+  .hs-drive-lab .dot{ animation:none; }
+  .hs-drive-fill{ transition:none; }
+}
+
+/* ==========================================================================
+   Placement — desktop composition
+   Left 44% is the type column. The group is weighted right and reads from the
+   far back (left, dim, blurred) to the front (right, sharp), so the eye lands
+   on the headline, travels along the line of athletes and finishes on the
+   nearest face.
+   ========================================================================== */
+.hs-fig.f-net     { left:39%;  --h:30%; --b:47%; --sw:0%;  --d:120ms; }
+.hs-fig.f-smile   { left:52%;  --h:35%; --b:41%; --sw:0%;  --d:220ms; }
+.hs-fig.f-paddle  { right:15%; --h:33%; --b:43%; --sw:0%;  --d:320ms; }
+.hs-fig.f-forehand{ left:45%;  --h:57%; --b:4%;  --sw:76%; --sh:26px; --d:440ms; }
+.hs-fig.f-dink    { right:-6%; --h:63%; --b:3%;  --sw:74%; --sh:28px; --d:560ms; }
+
+/* --- laptop ------------------------------------------------------------- */
+@media (max-width:1200px){
+  .hs-fig.f-net     { left:38%;  --h:27%; --b:48%; }
+  .hs-fig.f-smile   { left:50%;  --h:32%; --b:43%; }
+  .hs-fig.f-paddle  { right:11%; --h:30%; --b:45%; }
+  .hs-fig.f-forehand{ left:44%;  --h:53%; --b:4%; }
+  .hs-fig.f-dink    { right:-11%; --h:59%; --b:3%; }
+  .hs-copy .display{ max-width:13ch; }
+}
+
+/* --- tablet: the group drops behind the type and thins out --------------- */
+@media (max-width:900px){
+  .hero-stage{ min-height:clamp(560px, 88svh, 820px); }
+  .hs-scrim{
+    background:linear-gradient(178deg,
+      rgba(8,8,10,0.92) 0%, rgba(8,8,10,0.78) 34%,
+      rgba(8,8,10,0.42) 58%, rgba(8,8,10,0.10) 82%, rgba(8,8,10,0) 100%);
+  }
+  .hs-fig.f-net, .hs-fig.f-paddle{ display:none; }
+  .hs-fig.f-smile   { left:auto; right:46%; --h:29%; --b:39%; }
+  .hs-fig.f-forehand{ left:auto; right:25%; --h:48%; --b:2%; }
+  .hs-fig.f-dink    { right:-20%; --h:55%; --b:1%; }
+  /* At 768 the 640px strip reached under the front athlete's paddle. The strip
+     is the one element that must never look accidental — it carries the goal. */
+  .hs-drive-in{ max-width:25rem; }
+  .hs-copy .display{ max-width:14ch; }
+  .hs-copy .sub{ max-width:38ch; }
+}
+
+/* --- phone: two athletes, full-width type, ask above the fold ------------ */
+@media (max-width:640px){
+  /* On a phone the header IS the photograph — the first draft put the athletes
+     entirely below the fold and shipped a wall of type to the majority of the
+     traffic. The hero is one screen minus the nav, the copy is top-aligned in
+     the upper half, and the bottom 40% is reserved as floor for the two
+     complete figures. */
+  .hero-stage{
+    min-height:calc(100svh - 4.4rem);
+    padding-top:clamp(4.5rem,13vh,6rem);
+    padding-bottom:clamp(16.5rem,46vw,21rem); /* the room the athletes stand in */
+    justify-content:flex-start;
+  }
+  .hs-scrim{
+    background:linear-gradient(180deg,
+      rgba(8,8,10,0.94) 0%, rgba(8,8,10,0.86) 30%,
+      rgba(8,8,10,0.50) 56%, rgba(8,8,10,0.08) 80%, rgba(8,8,10,0) 100%);
+  }
+  .hs-fig.f-smile{ display:none; }
+  .hs-fig.f-forehand{ left:-15%; right:auto; --h:36%; --b:0%; --sw:74%; --sh:16px; }
+  .hs-fig.f-dink   { right:-26%; --h:41%; --b:0%; --sw:72%; --sh:18px; }
+  .hs-haze{ height:30%; }
+  /* The strip and the campaign band say the same thing. On a phone the band
+     below the fold is the better home for it: the header's whole job at this
+     width is the picture and the Donate button. */
+  .hs-drive{ display:none; }
+  .hs-copy .display{ max-width:none; }
+  .hs-copy .sub{ max-width:none; }
+  .hs-copy .actions{ gap:0.7rem; }
+  .hs-copy .actions .btn{ flex:1 1 100%; justify-content:center; }
+  .hs-drive-in{ max-width:none; gap:0.7rem 1rem; }
+  .hs-drive-go{ flex:1 1 100%; }
+}
+
+/* ==========================================================================
+   B — THE WALL
+   Centred type, athletes fanned symmetrically around it. The group is a wall
+   the headline stands in front of, so the scrim here is a soft centre pool
+   rather than a left-to-right wipe.
+   ========================================================================== */
+.hero-wall .hs-copy{ text-align:center; }
+.hero-wall .hs-copy .display{ max-width:17ch; margin-inline:auto; }
+.hero-wall .hs-copy .sub{ max-width:40ch; margin-inline:auto; }
+.hero-wall .hs-copy .actions{ justify-content:center; }
+.hero-wall .hs-drive-in{ margin-inline:auto; }
+.hero-wall .hs-scrim{
+  background:
+    radial-gradient(58% 52% at 50% 44%, rgba(8,8,10,0.90) 0%, rgba(8,8,10,0.62) 52%, rgba(8,8,10,0) 100%),
+    linear-gradient(180deg, rgba(8,8,10,0.55) 0%, rgba(8,8,10,0) 34%);
+}
+.hero-wall .hs-sky{
+  background:
+    radial-gradient(96% 70% at 50% 106%, rgba(255,92,57,0.42) 0%, rgba(255,92,57,0.12) 36%, rgba(255,92,57,0) 64%),
+    radial-gradient(56% 40% at 50% 92%,  rgba(255,150,90,0.34) 0%, rgba(255,92,57,0) 72%),
+    linear-gradient(180deg, #0B0B0D 0%, #101013 46%, #17120F 100%);
+}
+.hero-wall .hs-floor{
+  background:
+    radial-gradient(66% 130% at 50% 52%, rgba(255,120,80,0.16) 0%, rgba(255,120,80,0.05) 42%, rgba(255,120,80,0) 78%),
+    linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.55) 78%, rgba(0,0,0,0.8) 100%);
+}
+.hero-wall .hs-fig.f-net     { left:20%;  right:auto; --h:40%; --b:28%; --d:120ms; }
+.hero-wall .hs-fig.f-smile   { left:auto; right:19%;  --h:44%; --b:26%; --d:220ms; }
+.hero-wall .hs-fig.f-paddle  { left:34%;  right:auto; --h:50%; --b:20%; --d:320ms; }
+/* The first cut mirrored the right-hand athlete so the group looked inward
+   from both sides. Flipping a photograph of a real person is not a design
+   move on a page about those people — and the other athlete's shirt reads
+   DIFFERENT BODY, SAME DRIVE, which mirroring would turn into nonsense. Both
+   keep the orientation they were photographed in. */
+.hero-wall .hs-fig.f-dink    { left:-9%;  right:auto; --h:74%; --b:-2%; --sw:78%; --sh:28px; --d:440ms; }
+.hero-wall .hs-fig.f-forehand{ left:auto; right:-6%;  --h:78%; --b:-2%; --sw:80%; --sh:30px; --d:540ms; }
+
+@media (max-width:1200px){
+  .hero-wall .hs-fig.f-net{ left:16%; --h:36%; }
+  .hero-wall .hs-fig.f-smile{ right:15%; --h:40%; }
+  .hero-wall .hs-fig.f-paddle{ left:31%; --h:45%; }
+  .hero-wall .hs-fig.f-dink{ left:-15%; --h:68%; }
+  .hero-wall .hs-fig.f-forehand{ right:-10%; --h:70%; }
+}
+@media (max-width:900px){
+  .hero-wall .hs-fig.f-net, .hero-wall .hs-fig.f-paddle, .hero-wall .hs-fig.f-smile{ display:none; }
+  .hero-wall .hs-fig.f-dink{ left:-22%; --h:56%; }
+  .hero-wall .hs-fig.f-forehand{ right:-18%; --h:58%; }
+  .hero-wall .hs-scrim{
+    background:
+      radial-gradient(74% 46% at 50% 36%, rgba(8,8,10,0.92) 0%, rgba(8,8,10,0.6) 58%, rgba(8,8,10,0) 100%),
+      linear-gradient(180deg, rgba(8,8,10,0.6) 0%, rgba(8,8,10,0) 40%);
+  }
+}
+@media (max-width:640px){
+  .hero-wall .hs-fig.f-dink{ left:-26%; --h:32%; }
+  .hero-wall .hs-fig.f-forehand{ right:-24%; --h:31%; }
+}
+
+/* ==========================================================================
+   C — THE SPLIT
+   A hard column of type on the left and the group in a bleed panel on the
+   right, divided by one hairline. Nothing ever crosses the divider, so the
+   headline is never negotiating with a photograph for contrast.
+   ========================================================================== */
+.hero-split2{ padding-top:0; padding-bottom:0; justify-content:stretch; }
+.hero-split2 .hs-sky{
+  background:
+    radial-gradient(90% 74% at 100% 100%, rgba(255,92,57,0.42) 0%, rgba(255,92,57,0.12) 38%, rgba(255,92,57,0) 66%),
+    radial-gradient(46% 40% at 88% 84%,  rgba(255,150,90,0.32) 0%, rgba(255,92,57,0) 72%),
+    linear-gradient(180deg, #0B0B0D 0%, #101013 50%, #17120F 100%);
+}
+/* the panel: everything photographic lives right of 46% */
+.hero-split2 .hs-stage{ left:46%; }
+.hero-split2 .hs-floor{ left:46%; right:-10%; }
+.hero-split2 .hs-scrim{
+  background:
+    linear-gradient(90deg, rgba(8,8,10,0.96) 0%, rgba(8,8,10,0.94) 42%, rgba(8,8,10,0.55) 48%, rgba(8,8,10,0) 58%);
+}
+/* the divider — one hairline, lit warm where the glow reaches it */
+.hero-split2::after{
+  content:""; position:absolute; top:0; bottom:0; left:46%; width:1px; z-index:6;
+  background:linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,120,80,0.42) 62%, rgba(255,120,80,0.10) 100%);
+}
+.hero-split2 .hs-copy{
+  display:flex; flex-direction:column; justify-content:center;
+  min-height:clamp(580px, 88svh, 900px);
+  padding-top:clamp(6.5rem,13vh,9rem); padding-bottom:clamp(2.5rem,6vh,4rem);
+}
+/* The column is measured in rem, not in a percentage of the centred .wrap:
+   the wrap is 1140px whatever the window does, so a percentage of it shrank
+   the headline to three ragged lines at 1440 and left a gutter at 1920. */
+.hero-split2 .hs-copy > *{ max-width:min(30rem, 100%); }
+/* Nothing may cross the divider — that constraint IS variant C. The first cut
+   ran the drive strip and the front athlete's paddle straight through it,
+   which reads as a mistake rather than as a rule. */
+.hero-split2 .hs-copy .display{ max-width:min(30rem, 100%); font-size:clamp(2.6rem, 4.1vw, 4.1rem); }
+.hero-split2 .hs-copy .sub{ max-width:min(27rem, 100%); }
+/* In a narrow column the row layout wrapped "Give" onto its own line and left
+   the label floating in the middle of a tall box. C states it as a card. */
+.hero-split2 .hs-drive-in{
+  max-width:min(26rem, 100%);
+  flex-direction:column; align-items:flex-start; gap:0.75rem;
+  padding:1.1rem clamp(1rem,2vw,1.35rem);
+}
+.hero-split2 .hs-drive-body{ flex:1 1 auto; width:100%; }
+.hero-split2 .hs-drive-name{ font-size:1.05rem; }
+.hero-split2 .hs-stage{ left:48%; }
+.hero-split2 .hs-floor{ left:48%; }
+.hero-split2::after{ left:48%; }
+.hero-split2 .hs-fig.f-net     { left:2%;   right:auto; --h:30%; --b:48%; --sw:0%; --d:120ms; }
+.hero-split2 .hs-fig.f-smile   { left:26%;  right:auto; --h:34%; --b:43%; --sw:0%; --d:220ms; }
+.hero-split2 .hs-fig.f-paddle  { left:auto; right:8%;   --h:32%; --b:45%; --sw:0%; --d:320ms; }
+.hero-split2 .hs-fig.f-forehand{ left:2%;   right:auto; --h:60%; --b:3%;  --sw:76%; --sh:24px; --d:440ms; }
+.hero-split2 .hs-fig.f-dink    { left:auto; right:-16%; --h:68%; --b:2%;  --sw:74%; --sh:26px; --d:540ms; }
+
+@media (max-width:1200px){
+  .hero-split2 .hs-stage{ left:42%; }
+  .hero-split2 .hs-floor{ left:42%; }
+  .hero-split2::after{ left:42%; }
+  .hero-split2 .hs-copy > *,
+  .hero-split2 .hs-copy .display,
+  .hero-split2 .hs-drive-in{ max-width:min(26rem, 100%); }
+  .hero-split2 .hs-fig.f-net{ display:none; }
+  .hero-split2 .hs-fig.f-smile{ left:20%; --h:31%; --b:44%; }
+  .hero-split2 .hs-fig.f-paddle{ right:2%; --h:29%; --b:46%; }
+  .hero-split2 .hs-fig.f-forehand{ left:0%; --h:56%; }
+  .hero-split2 .hs-fig.f-dink{ right:-22%; --h:63%; }
+}
+@media (max-width:900px){
+  /* the split becomes a stack: type first, then the panel as a photo band */
+  .hero-split2{ min-height:auto; }
+  .hero-split2::after{ display:none; }
+  .hero-split2 .hs-stage{ left:0; top:auto; height:min(52vh,420px); }
+  .hero-split2 .hs-floor{ left:-10%; height:min(30vh,240px); }
+  .hero-split2 .hs-scrim{
+    background:linear-gradient(180deg, rgba(8,8,10,0.94) 0%, rgba(8,8,10,0.84) 34%, rgba(8,8,10,0.34) 62%, rgba(8,8,10,0) 88%);
+  }
+  .hero-split2 .hs-copy{
+    min-height:auto; padding-top:clamp(5.5rem,16vh,7rem);
+    padding-bottom:clamp(15rem,44vw,20rem);
+  }
+  .hero-split2 .hs-copy > *,
+  .hero-split2 .hs-copy .display,
+  .hero-split2 .hs-drive-in{ max-width:none; }
+  .hero-split2 .hs-fig.f-paddle, .hero-split2 .hs-fig.f-smile{ display:none; }
+  .hero-split2 .hs-fig.f-forehand{ left:-12%; --h:78%; }
+  .hero-split2 .hs-fig.f-dink{ right:-20%; --h:86%; }
+}
+
+/* ==========================================================================
+   Phone corrections for B and C
+   --------------------------------------------------------------------------
+   Both variants' tablet rules were reaching down to 390px because neither had
+   a narrow block of its own, so C shipped its 900px figure sizes to a phone
+   and put a paddle through the secondary button. At this width all three
+   variants converge: one screen, type in the top half, the two complete
+   athletes standing in the bottom 40%.
+   ========================================================================== */
+@media (max-width:640px){
+  .hero-wall .hs-fig.f-dink    { left:-20%;  right:auto; --h:37%; --b:0%; }
+  .hero-wall .hs-fig.f-forehand{ left:auto;  right:-20%; --h:40%; --b:0%; }
+
+  .hero-split2{ padding-bottom:0; }
+  .hero-split2 .hs-stage{ left:0; top:auto; height:auto; inset:0; }
+  .hero-split2 .hs-copy{
+    min-height:calc(100svh - 4.4rem);
+    padding-top:clamp(4.5rem,13vh,6rem);
+    padding-bottom:clamp(16.5rem,46vw,21rem);
+    justify-content:flex-start;
+  }
+  .hero-split2 .hs-fig.f-smile, .hero-split2 .hs-fig.f-paddle{ display:none; }
+  .hero-split2 .hs-fig.f-forehand{ left:-15%; right:auto; --h:36%; --b:0%; }
+  .hero-split2 .hs-fig.f-dink    { left:auto; right:-26%; --h:41%; --b:0%; }
+  .hero-split2 .hs-floor{ left:-10%; right:-10%; height:38%; }
+  .hero-split2 .hs-haze{ height:30%; }
+}

@@ -90,9 +90,18 @@ export default {
     // /photo-picks rides the same gate: it is a working surface for choosing
     // which athlete photographs land where, not a page of the site, and it must
     // never be reachable on a custom domain even though it is noindex.
-    if ((url.pathname === "/review" || url.pathname === "/review.html" ||
-         url.pathname === "/photo-picks" || url.pathname === "/photo-picks.html") &&
-        env.STAGING !== "1") {
+    //
+    // /hero-review and the three header candidates ride it for the same reason:
+    // they are a working surface for choosing a header, and a candidate
+    // homepage reachable on the real domain is a second front page.
+    //
+    // Listed without .html; the gate strips the extension so both forms are
+    // covered by one entry rather than by two that can drift apart.
+    const STAGING_ONLY = new Set([
+      "/review", "/photo-picks",
+      "/hero-review", "/hero-a", "/hero-b", "/hero-c",
+    ]);
+    if (STAGING_ONLY.has(url.pathname.replace(/\.html$/, "")) && env.STAGING !== "1") {
       return Response.redirect(`${url.origin}/`, 302);
     }
 

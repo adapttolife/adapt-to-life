@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<meta name="robots" content="noindex,nofollow">
+<title>Header review: the athletes go in the header | Adapt To Life</title>
+<link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/site.css">
+<style>
+  body{ background:#faf8f4; }
+  .rv{ max-width:960px; margin:0 auto; padding:clamp(2.2rem,6vw,4rem) var(--gutter) 5rem; }
+  .rv-badge{ display:inline-block; font-family:'Space Mono',monospace; font-size:0.7rem; letter-spacing:0.1em;
+    text-transform:uppercase; color:#fff; background:var(--orange-ink); border-radius:999px; padding:0.35rem 0.9rem; }
+  .rv h1{ font-family:'Newsreader',serif; font-weight:500; font-size:clamp(2rem,5vw,2.9rem); line-height:1.08;
+    letter-spacing:-0.015em; margin:1.1rem 0 0.8rem; max-width:20ch; }
+  .rv .lede{ font-size:1.1rem; color:var(--ink-soft); line-height:1.6; max-width:62ch; }
+  .rv .date{ font-family:'Space Mono',monospace; font-size:0.74rem; color:#9a958a; margin-top:0.7rem; }
+
+  .rv h2{ font-family:'Newsreader',serif; font-weight:500; font-size:clamp(1.4rem,3vw,1.85rem);
+    margin:3.2rem 0 0.9rem; letter-spacing:-0.01em; }
+  .rv h3{ font-size:1.05rem; font-weight:700; margin:0 0 0.3rem; }
+  .rv p{ color:var(--ink-soft); line-height:1.65; max-width:66ch; margin-bottom:0.95rem; }
+  .rv p strong{ color:var(--ink); }
+  .rv code{ font-family:'Space Mono',monospace; font-size:0.86em; background:#efe9dd; padding:0.1em 0.35em; border-radius:4px; }
+  .rule{ border:0; border-top:1px solid var(--hairline); margin:3rem 0 0; }
+
+  /* candidate cards */
+  .cards{ display:grid; grid-template-columns:repeat(3,1fr); gap:1.1rem; margin-top:1.6rem; }
+  @media (max-width:820px){ .cards{ grid-template-columns:1fr; } }
+  .card{ display:flex; flex-direction:column; background:#fff; border:1.5px solid var(--hairline);
+    border-radius:16px; overflow:hidden; text-decoration:none; color:inherit; transition:border-color .15s, transform .15s; }
+  .card:hover{ border-color:var(--orange-ink); transform:translateY(-2px); }
+  .card.pick{ border-color:var(--orange-ink); box-shadow:0 18px 44px -30px rgba(198,63,34,0.5); }
+  .card img{ width:100%; display:block; aspect-ratio:1280/704; object-fit:cover; background:#111; }
+  .card .body{ padding:1rem 1.1rem 1.2rem; }
+  .card .k{ font-family:'Space Mono',monospace; font-size:0.66rem; letter-spacing:0.14em;
+    text-transform:uppercase; color:var(--orange-ink); }
+  .card .d{ font-size:0.92rem; color:#5f5b52; line-height:1.5; margin-top:0.35rem; }
+  .card .go{ margin-top:0.8rem; font-size:0.88rem; font-weight:600; color:var(--orange-ink); }
+  .pill{ display:inline-block; font-family:'Space Mono',monospace; font-size:0.6rem; letter-spacing:0.1em;
+    text-transform:uppercase; background:var(--orange-ink); color:#fff; border-radius:999px;
+    padding:0.16rem 0.5rem; margin-left:0.4rem; vertical-align:0.12em; }
+
+  /* before / after */
+  .ba{ display:grid; grid-template-columns:1fr 1fr; gap:1.1rem; margin-top:1.4rem; }
+  @media (max-width:760px){ .ba{ grid-template-columns:1fr; } }
+  .ba figure{ margin:0; }
+  .ba img{ width:100%; display:block; border-radius:12px; border:1px solid var(--hairline); background:#111; }
+  .ba figcaption{ font-family:'Space Mono',monospace; font-size:0.68rem; letter-spacing:0.1em;
+    text-transform:uppercase; color:#8a857a; margin-bottom:0.5rem; }
+
+  .phones{ display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-top:1.4rem; }
+  @media (max-width:760px){ .phones{ grid-template-columns:repeat(2,1fr); } }
+  .phones img{ width:100%; display:block; border-radius:12px; border:1px solid var(--hairline); background:#111; }
+  .phones figure{ margin:0; }
+  .phones figcaption{ font-family:'Space Mono',monospace; font-size:0.64rem; letter-spacing:0.08em;
+    text-transform:uppercase; color:#8a857a; margin-bottom:0.45rem; }
+
+  .checks{ list-style:none; padding:0; margin:1.2rem 0 0; font-size:0.95rem; }
+  .checks li{ padding:0.55rem 0; border-bottom:1px solid var(--hairline); display:flex; gap:0.7rem; align-items:baseline; color:var(--ink-soft); }
+  .checks li::before{ content:"\2713"; color:#1a7f4f; font-weight:700; flex:0 0 auto; }
+  .checks li b{ color:var(--ink); font-weight:600; }
+
+  .asks{ list-style:none; padding:0; margin:1.2rem 0 0; counter-reset:q; }
+  .asks li{ counter-increment:q; padding:1rem 0; border-bottom:1px solid var(--hairline); }
+  .asks li::before{ content:counter(q,decimal-leading-zero); font-family:'Space Mono',monospace;
+    font-size:0.75rem; color:var(--orange-ink); margin-right:0.7rem; }
+  .asks .q{ font-weight:600; }
+  .asks .a{ display:block; margin-top:0.3rem; font-size:0.93rem; color:#5f5b52; line-height:1.55; }
+</style>
+</head>
+<body>
+<div class="rv">
+
+  <span class="rv-badge">Header review</span>
+  <h1>The athletes go in the header.</h1>
+  <p class="lede">Three candidates, built from the five cut-outs in your Drive folder. Same words, same brand, same page underneath &mdash; the only thing that differs between the three links below is the top screen. Pick one and I will merge it; nothing here is on adapttolife.org yet.</p>
+  <p class="date">Prepared 8 September 2026 &middot; branch <code>hero-lineup-2026-09</code> &middot; not live</p>
+
+  <h2>Start here</h2>
+  <p>Each link is a <strong>complete working homepage</strong>, not a mockup: real nav, real live drive, real scroll. The chips at the bottom of each page flip between the three at any time.</p>
+
+  <div class="cards">
+    <a class="card pick" href="/hero-a">
+      <img src="/images/hero/review/a-desk.jpg" width="1280" height="704" alt="Header A: the headline sits left, five athletes recede into depth on the right.">
+      <div class="body">
+        <span class="k">A &middot; The lineup<span class="pill">my pick</span></span>
+        <div class="d">Type holds the left. The group comes forward out of the dark from back-left to front-right, so the eye lands on the headline, walks the line and finishes on the nearest face.</div>
+        <div class="go">Open A &rarr;</div>
+      </div>
+    </a>
+    <a class="card" href="/hero-b">
+      <img src="/images/hero/review/b-desk.jpg" width="1280" height="704" alt="Header B: centred headline with an athlete standing at each edge of the frame.">
+      <div class="body">
+        <span class="k">B &middot; The wall</span>
+        <div class="d">A centred poster. The athletes form a wall the headline stands inside. Loudest of the three, and the one that would photograph best as a share card or a banner.</div>
+        <div class="go">Open B &rarr;</div>
+      </div>
+    </a>
+    <a class="card" href="/hero-c">
+      <img src="/images/hero/review/c-desk.jpg" width="1280" height="704" alt="Header C: a column of type on the left, the athletes in a panel on the right, split by a hairline.">
+      <div class="body">
+        <span class="k">C &middot; The split</span>
+        <div class="d">A hard editorial column carrying the ask, the group in a bleed panel beside it, one hairline between them. The quietest, and the only one where nothing ever crosses the type.</div>
+        <div class="go">Open C &rarr;</div>
+      </div>
+    </a>
+  </div>
+
+  <h2>What changed, and why it should raise more</h2>
+
+  <div class="ba">
+    <figure>
+      <figcaption>Now, on adapttolife.org</figcaption>
+      <img src="/images/hero/review/before-desk.jpg" width="1280" height="697" alt="The current header: white and orange type on a black field, the right half empty.">
+    </figure>
+    <figure>
+      <figcaption>Candidate A</figcaption>
+      <img src="/images/hero/review/a-desk.jpg" width="1280" height="704" alt="Candidate A.">
+    </figure>
+  </div>
+
+  <p style="margin-top:1.4rem;"><strong>The header had no people in it.</strong> Today the first screen is a sentence about adaptive sport on an empty black field, and the right half of it is nothing. Giving is not moved by a category; it is moved by a person you can picture. Five athletes were sitting in a Drive folder and none of them were above the fold.</p>
+
+  <p><strong>The ask is now on the first screen, with a number attached.</strong> The live drive &mdash; name, goal and the running total &mdash; used to sit in a band below the header. It is in the header now, next to Donate, and it hides itself when no drive is open. So the first screen says who, what it costs, and how far along we are, in that order. When it shows there, the duplicate band below stands down; on a phone the header keeps the picture and the band below keeps the money, because the phone screen cannot carry both well.</p>
+
+  <p><strong>The picture is a room, not a collage.</strong> This is the part that separates it from a banner someone made in Canva, and it is three specific things. Every figure carries the <em>same</em> light: one warm rim from the glow low and right, one cool fill from the left, and nothing gets its own lighting. Depth is contrast, not stacking order &mdash; the athletes further back lose contrast, lose brightness, gain a little blur and sink into a floor haze, which is what twenty feet of gym air actually does. And every figure has a contact shadow on a shared floor line, because a cut-out without one is floating no matter how well it is masked. Then the whole group drifts a few pixels against your pointer and sinks slightly as you scroll, so it reads as a space rather than a picture.</p>
+
+  <h2>One thing worth knowing about the files</h2>
+  <p>The cut-outs in Drive are <strong>banner outline</strong> mattes: the silhouette around each athlete is right, but the holes are not cut &mdash; the grey court between the wheel spokes and under the chair frame is still solid. On a dark header that renders as a pale rectangle behind the athlete's legs, and it is the single detail that tells a viewer the picture is pasted together. So the court is keyed out here, per photograph, because the two front athletes ride different chairs: one is matte black against a smooth bright floor, and one is silver, which is exactly as smooth and as bright as the floor it sits on.</p>
+  <p>Worth saying plainly: I tried the obvious fix first and it was wrong. The local background-removal model produces a beautiful matte and <strong>deletes the wheelchair</strong>, because it is a human segmentation model. For these athletes the chair is the athlete. That is written into the build script so nobody reaches for it again.</p>
+  <p>Nothing about any athlete is altered, nothing is generated, and no photograph is mirrored. An earlier cut of B flipped the right-hand athlete so the group looked inward from both sides; that is not a design move on a page about real people, and the other athlete's shirt reads <em>Different body, same drive</em>, which mirroring would turn into nonsense. Both keep the orientation they were photographed in.</p>
+
+  <h2>On a phone</h2>
+  <p>Most of the people who will ever see this header will see it on a phone, so the first build was a failure there: it pushed every athlete below the fold and handed the majority of the traffic a wall of type. All three candidates now converge at that width &mdash; one screen, headline and Donate in the top half, two athletes standing in the bottom 40%.</p>
+  <div class="phones">
+    <figure><figcaption>Now</figcaption><img src="/images/hero/review/before-phone.jpg" width="640" height="1080" alt="The current header on a phone."></figure>
+    <figure><figcaption>A</figcaption><img src="/images/hero/review/a-phone.jpg" width="640" height="1270" alt="Candidate A on a phone."></figure>
+    <figure><figcaption>B</figcaption><img src="/images/hero/review/b-phone.jpg" width="640" height="1270" alt="Candidate B on a phone."></figure>
+    <figure><figcaption>C</figcaption><img src="/images/hero/review/c-phone.jpg" width="640" height="1270" alt="Candidate C on a phone."></figure>
+  </div>
+
+  <h2>What is machine-checked, not eyeballed</h2>
+  <p>A header is judged by eye, but three things about it are not opinions and a screenshot cannot show them. <code>scripts/check-hero-lab.mjs</code> runs all three candidates at six widths from 320 to 1920 and fails the build on any of these.</p>
+  <ul class="checks">
+    <li><b>No sideways scroll</b> at any width, on any candidate &mdash; the athletes and the floor bleed past both edges on purpose, inside a clipping section.</li>
+    <li><b>The headline and the Donate button are above the fold</b> at every width, including 320px.</li>
+    <li><b>The picture costs 502&nbsp;KB</b> against a 620&nbsp;KB budget. The first cut shipped 1.1&nbsp;MB &mdash; 1600px files for a figure that never paints larger than 260px.</li>
+    <li><b>Reduced motion lands on the finished frame</b>, not the pre-entrance one. No drift, no fade-in, everything visible.</li>
+    <li><b>No console errors and no missing files</b> on any candidate at any width.</li>
+  </ul>
+
+  <h2>What I need from you</h2>
+  <ul class="asks">
+    <li><span class="q">Which one?</span><span class="a">A is my recommendation: it is the only one where the type and the photograph are not competing for the same space, and it holds five athletes instead of two. B is the better poster if you want the header to double as a banner. C is the safest and the least memorable.</span></li>
+    <li><span class="q">Are these five the right five, in the right order?</span><span class="a">The two complete figures &mdash; whole athlete, whole chair &mdash; are the only ones that can stand in the front row; the other three are cropped at the waist in the source and can only sit behind the haze. If you want a specific athlete in front, I need a frame of them that includes the chair.</span></li>
+    <li><span class="q">Do the words stay?</span><span class="a">I did not touch the copy. "Your place in adaptive sports" and the sub-line are exactly what is live today. If you want the header to name the number &mdash; about $3,500 moves one athlete off the sidelines &mdash; say so and I will draft it.</span></li>
+    <li><span class="q">Does anyone in these photographs need to approve being on the front page?</span><span class="a">They are already on the site elsewhere, so I have assumed yes. Tell me if any of the five is a no and I will pull them and recompose.</span></li>
+  </ul>
+
+  <hr class="rule">
+  <p style="margin-top:1.5rem; font-size:0.92rem; color:#7a756b;">Compare against the live site any time: <a class="textlink" href="https://adapttolife.org/">adapttolife.org</a>. Nothing on this branch has been deployed to production.</p>
+</div>
+</body>
+</html>

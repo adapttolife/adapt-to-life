@@ -21,7 +21,7 @@
 //   · the homepage, which has the mosaic.
 import { readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { PAGE_HEADER_SHEET as SHEET, PAGE_HEADER_CLASS as BAND,
-         PAGE_HEADER_VARS as VARS } from "./lib/page-header.mjs";
+         PAGE_HEADER_VARS as VARS, PAGE_PHOTOS, photoVars } from "./lib/page-header.mjs";
 
 const ROOT = new URL("../public/", import.meta.url);
 
@@ -60,7 +60,10 @@ for (const file of readdirSync(ROOT).filter((f) => f.endsWith(".html"))) {
     continue;
   }
 
-  const classes = ["hero", "dark", ...modifiers.filter((c) => c !== BAND), BAND];
+  const photo = PAGE_PHOTOS[file];
+  const classes = ["hero", "dark",
+    ...modifiers.filter((c) => c !== BAND && c !== "pg-photo"),
+    BAND, ...(photo ? ["pg-photo"] : [])];
   html = html.replace(open[0], `<section class="${classes.join(" ")}">`);
   // the sheet, then the hashed band URLs. The vars block is marked so a
   // rebuild replaces it instead of stacking a second one.
@@ -69,7 +72,7 @@ for (const file of readdirSync(ROOT).filter((f) => f.endsWith(".html"))) {
                         `<link rel="stylesheet" href="/css/site.css">\n${SHEET}`);
   }
   const VARS_RE = /\n<!-- band:vars -->[\s\S]*?<\/style>/;
-  const block = `\n<!-- band:vars -->${VARS}`;
+  const block = `\n<!-- band:vars -->${VARS}${photo ? photoVars(photo) : ""}`;
   html = VARS_RE.test(html) ? html.replace(VARS_RE, block)
                             : html.replace(SHEET, `${SHEET}${block}`);
   writeFileSync(url, html);

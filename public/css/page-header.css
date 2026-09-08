@@ -68,6 +68,47 @@
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.16'/%3E%3C/svg%3E");
 }
 
+/* ==========================================================================
+   ONE PHOTOGRAPH INSTEAD OF THE BAND
+   Alec, on /apply: he already loves the colour picture that was sitting lower
+   down the page — two players clasping hands over the net — and wants it as the
+   header rather than the column band, "a little bit black and white", with the
+   text readable over it.
+   So: partial desaturation, not full. The rest of the site is monochrome, but
+   this frame is here BECAUSE it is warm, and taking all of that out would be
+   answering a different request. grayscale(0.78) reads as black and white at a
+   glance and keeps the trace of blue in the shirts. The copy field above does
+   the work of making the type legible; nothing else changes.
+   ========================================================================== */
+.hero.pg-band.pg-photo::before{
+  aspect-ratio:auto; top:0;
+  /* The moment is the clasped hands at about 27% down and the two faces above
+     them. A 2.44:1 header over a 3:2 photograph shows 61% of its height, so the
+     window has to sit near the top or it lands on wheels and a kit bag — which
+     is what a centred crop gave. */
+  background:var(--pg-photo) center 8%/cover no-repeat;
+  filter:grayscale(0.78) contrast(1.05) brightness(0.82);
+}
+.hero.pg-band.pg-photo::after{
+  background:
+    linear-gradient(180deg, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.34) 14%, rgba(0,0,0,0.06) 30%, rgba(0,0,0,0) 44%),
+    linear-gradient(0deg,   rgba(0,0,0,0.80) 0%, rgba(0,0,0,0.28) 14%, rgba(0,0,0,0) 32%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.14'/%3E%3C/svg%3E");
+}
+/* one picture deserves more room than a texture band does */
+.hero.pg-band.pg-photo{ padding-bottom:clamp(15rem, 34vh, 22rem); }
+@media (max-width:900px){
+  /* A portrait box over a 3:2 photograph crops HORIZONTALLY, not vertically —
+     the vertical anchor that works on desktop does nothing here, and the centre
+     lands on the net and a wheel. The clasped hands are at about 52% across and
+     the seated player's face at 25%, so 42% holds both. */
+  .hero.pg-band.pg-photo::before{ background-position:42% center; }
+  /* Shorter than the band's, on purpose. A tall box over a landscape frame
+     shows a narrow vertical slice and fills the rest with net and spokes;
+     bringing the height down widens the slice back onto the two players. */
+  .hero.pg-band.pg-photo{ padding-bottom:clamp(7rem, 20vw, 10rem); }
+}
+
 .hero.pg-band > .wrap{ position:relative; z-index:3; }
 /* The copy keeps to the left so the columns on the right are never negotiated
    with. Scoped to TEXT, not to every child: /donate's hero is a two-column

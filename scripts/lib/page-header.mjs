@@ -29,3 +29,9 @@ export const PAGE_HEADER_VARS =
   `--pg-band-wide:url('${url("pg-band-wide.webp")}');` +
   `--pg-band-tall:url('${url("pg-band-tall.webp")}');` +
   "}</style>";
+
+// Pages whose header is ONE photograph rather than the column band. The value
+// is the asset name; the URL is resolved and hashed like everything else.
+export const PAGE_PHOTOS = { "apply.html": "pg-apply.webp" };
+export const photoVars = (file) =>
+  `<style>:root{--pg-photo:url('${url(file)}');}</style>`;

@@ -356,6 +356,16 @@ def main():
         print(f"{name:14s} {role:5s} {im.size[0]:4d}x{im.size[1]:<4d} {n/1024:6.1f} KB   {src}")
     compose_band()
     compose_roll()
+    # Page photos: a single full-bleed frame for a page that has one picture
+    # worth the whole header. Copied in rather than re-encoded — the source is
+    # already a webp and a second encode only loses detail — so it picks up a
+    # content hash with everything else and can never go stale.
+    import shutil
+    PAGE_PHOTOS = {"pg-apply.webp": "images/athletes/wheelie-58.webp"}
+    for dst, src in PAGE_PHOTOS.items():
+        shutil.copyfile(os.path.join(os.path.dirname(__file__), "..", "public", src),
+                        os.path.join(DST, dst))
+        print(f"{dst:20s} page photo  {os.path.getsize(os.path.join(DST, dst))/1024:6.1f} KB")
     fingerprint()
     with open(os.path.join(DST, "panels.json"), "w") as f:
         json.dump(manifest, f, indent=1, sort_keys=True)

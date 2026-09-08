@@ -275,11 +275,33 @@ fill="currentColor" stroke="none">
 
     <div class="rb-track" aria-hidden="true">
       <div class="rb-run">
-        <img src="/images/hero/panels/roll-strip.webp" width="1568" height="430" alt="" loading="lazy" decoding="async">
-        <img src="/images/hero/panels/roll-strip.webp" width="1568" height="430" alt="" loading="lazy" decoding="async">
+        <img data-src="/images/hero/panels/roll-strip.webp" width="1568" height="430" alt="" decoding="async">
+        <img data-src="/images/hero/panels/roll-strip.webp" width="1568" height="430" alt="" decoding="async">
       </div>
     </div>
     <div class="rb-glow"></div>
+    <script>
+      /* Genuinely deferred, not just loading="lazy".
+         Chrome's lazy heuristic has a generous distance-from-viewport threshold
+         and fetched this on a no-scroll load anyway, which put 49KB of
+         decoration on the initial cost of a payment page — /donate's own-bytes
+         budget caught it. An IntersectionObserver cannot be second-guessed.
+         To be clear about what this does and does not do: anyone who scrolls
+         here still downloads the strip. What changes is that anyone who does
+         not, does not. */
+      (function () {
+        var t = document.currentScript.closest('.roll-band');
+        var imgs = t.querySelectorAll('img[data-src]');
+        var load = function () {
+          imgs.forEach(function (i) { i.src = i.dataset.src; i.removeAttribute('data-src'); });
+        };
+        if (!('IntersectionObserver' in window)) return load();
+        var io = new IntersectionObserver(function (es) {
+          if (es.some(function (e) { return e.isIntersecting; })) { load(); io.disconnect(); }
+        }, { rootMargin: '200px' });
+        io.observe(t);
+      })();
+    </script>
 
     <div class="wrap center rb-copy rb-bottom">
       <p class="lead sub reveal">It takes about a minute, and it covers an athlete's real costs: equipment, travel, and training.</p>

@@ -1,4 +1,10 @@
 {
+ "bench": {
+  "h": 520,
+  "role": "mid",
+  "src": "JLA_5967.jpg",
+  "w": 390
+ },
  "big-brian": {
   "h": 1069,
   "role": "big",
@@ -101,6 +107,18 @@
   "src": "JLA_5922.jpg",
   "w": 615
  },
+ "drive": {
+  "h": 347,
+  "role": "mid",
+  "src": "JLA_5953.jpg",
+  "w": 520
+ },
+ "fence": {
+  "h": 373,
+  "role": "back",
+  "src": "JLA_6236.jpg",
+  "w": 560
+ },
  "forehand": {
   "h": 547,
   "role": "front",
@@ -112,6 +130,12 @@
   "role": "mid",
   "src": "JLA_6073.jpg",
   "w": 390
+ },
+ "lanyard": {
+  "h": 400,
+  "role": "mid",
+  "src": "JLA_6091.jpg",
+  "w": 300
  },
  "laugh": {
   "h": 520,
@@ -185,6 +209,12 @@
   "src": "JLA_6077.jpg",
   "w": 310
  },
+ "profile": {
+  "h": 380,
+  "role": "back",
+  "src": "JLA_5989.jpg",
+  "w": 285
+ },
  "rally": {
   "h": 373,
   "role": "back",
@@ -226,6 +256,12 @@
   "role": "mid",
   "src": "JLA_6066.jpg",
   "w": 390
+ },
+ "turned": {
+  "h": 253,
+  "role": "back",
+  "src": "JLA_5876.jpg",
+  "w": 380
  },
  "two-up": {
   "h": 560,

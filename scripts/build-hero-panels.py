@@ -53,6 +53,18 @@ SIZE = {"front": 820, "mid": 520, "back": 560}
 QUALITY = {"front": 68, "mid": 52, "back": 44, "big": 68, "band": 56}
 DEPTH_DIM = {"front": 1.00, "mid": 0.62, "back": 0.40}
 
+# Per-panel size override. The BUFFER frames are 81% behind the headline on the
+# phone and sit at the very back of the wall on desktop; they are the one place
+# on this page where resolution is provably not being looked at. Sizing them
+# like every other back-plane panel put the homepage 5 KB over its own-bytes
+# budget, and the honest fix is for the new frames to pay for themselves rather
+# than for the cap to go up. A budget that always rises is not a budget.
+#
+# lanyard is here for the same reason measured rather than assumed: it paints at
+# 390 device px in the phone grid and 316 on the wall, so 520 was buying pixels
+# nothing ever resolves.
+SIZE_OVERRIDE = {"turned": 380, "profile": 380, "lanyard": 400}
+
 # name, source frame, aspect (w/h), vertical anchor (0 = top, 1 = bottom),
 # horizontal anchor, ZOOM, depth role
 #
@@ -88,6 +100,30 @@ PANELS = [
     ("pair",         "JLA_6127.jpg", 3/4,  0.48, 0.50, 0.80, "mid"),
     ("two-up",       "JLA_6122.jpg", 3/4,  0.44, 0.50, 0.84, "back"),
     ("lobby",        "JLA_6191.jpg", 3/4,  0.46, 0.48, 0.70, "back"),
+
+    # --- BUFFERS: the two cells the headline sits on top of --------------------
+    # Alec, 2026-09-08: "accept that some pictures will get cropped... be
+    # intentional with the pictures that are going to get cut off behind the
+    # text... a couple of pictures that are not throwaway pictures, but pictures
+    # we are intentional about."
+    #
+    # scripts/check-grid-occlusion.mjs says phone cells 4 and 5 are 81% under the
+    # slab. These two frames are chosen FOR that: a back turned to camera and a
+    # man in profile looking away. Both are real photographs from the same shoot
+    # with the same light, so they hold the column up and give the grid its
+    # flexbox slack — and neither one loses a face to the type, because neither
+    # one is offering a face. A portrait in this slot is a portrait thrown away.
+    ("turned",       "JLA_5876.jpg", 3/2,  0.38, 0.50, 0.72, "back"),
+    ("profile",      "JLA_5989.jpg", 3/4,  0.40, 0.52, 0.80, "back"),
+
+    # --- widening the rotation ------------------------------------------------
+    # Alec: "widen the rotation but not the basketball kids." Four frames from
+    # the same ACE shoot that Favorites had not already skimmed, so the pages
+    # away from the front door stop recycling the banner's own twelve.
+    ("lanyard",      "JLA_6091.jpg", 3/4,  0.30, 0.50, 0.86, "mid"),
+    ("bench",        "JLA_5967.jpg", 3/4,  0.34, 0.50, 0.88, "mid"),
+    ("drive",        "JLA_5953.jpg", 3/2,  0.40, 0.50, 0.66, "mid"),
+    ("fence",        "JLA_6236.jpg", 3/2,  0.42, 0.56, 0.62, "back"),
 ]
 
 # The banner variant is a row of TALL COLUMNS, roughly 1:2. Reframing a 3:4
@@ -332,7 +368,7 @@ def main():
         im.draft("RGB", (im.width // 2, im.height // 2))   # 8k JPEGs, decode at half
         im = im.convert("RGB")
         im = crop_to(im, aspect, ay, ax, zoom)
-        long_edge = BIGW[name] if role == 'big' else (500 if role == 'band' else SIZE[role])
+        long_edge = BIGW[name] if role == 'big' else (500 if role == 'band' else SIZE_OVERRIDE.get(name, SIZE[role]))
         if aspect >= 1:
             size = (long_edge, round(long_edge / aspect))
         elif aspect <= 0.55:

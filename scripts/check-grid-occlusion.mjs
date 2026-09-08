@@ -1,0 +1,103 @@
+#!/usr/bin/env node
+// scripts/check-grid-occlusion.mjs — which mosaic cells can actually be SEEN?
+//
+//   npm run serve &            # or any static server on 8788
+//   node scripts/check-grid-occlusion.mjs
+//
+// WHY THIS EXISTS
+// ---------------
+// Alec, 2026-09-08: "What if we just accept that some pictures will get
+// cropped — that way we're not forced to try to make it all work. We can just
+// be intentional with the pictures that are going to get cut off behind the
+// text... it makes it way easier for us to have a little bit of a buffer when
+// it comes to the flexbox constraints."
+//
+// That is a real design principle and it needs a real instrument, because the
+// thing it depends on — how much of each cell the headline slab covers — is
+// not something you can eyeball from a screenshot. I tried. I put a
+// photograph of somebody's face in a cell that turned out to be 81% black
+// slab, and the only reason anyone noticed was that Alec did.
+//
+// So: render the page at three real widths, and for every visible panel report
+// how much of its box is (a) under the headline slab and (b) below the fold.
+// Anything at or over 45% is a BUFFER SLOT — a position where no face should
+// ever be placed, and where a photograph is doing structural work instead.
+// MOSAIC_GRID in scripts/lib/heroes.mjs is ordered against this output.
+//
+// ONE MEASUREMENT TRAP, PAID FOR ONCE: the first version of this selected
+// `.mw-scrim` as the type's box. The scrim is `inset:0` — it covers the whole
+// hero — so every cell came back 100% occluded and the numbers looked
+// authoritative and meant nothing. It measures `.mw-copy .display`, the
+// headline itself. If a probe reports the same value for everything, the probe
+// is measuring the wrong element.
+import { chromium } from "/home/agentos/pw/node_modules/playwright/index.mjs";
+
+const URL = process.env.SITE_URL || "http://127.0.0.1:8788/index.html";
+const BUFFER_AT = 45; // percent hidden, at or above which a cell carries no face
+
+const VIEWPORTS = [
+  [390, 844, "phone"],
+  [820, 1180, "ipad"],
+  [1440, 900, "desktop"],
+];
+
+const browser = await chromium.launch();
+const report = {};
+
+for (const [width, height, tag] of VIEWPORTS) {
+  const page = await browser.newPage({ viewport: { width, height } });
+  await page.goto(URL, { waitUntil: "load" });
+  await page.evaluate(() => document.fonts.ready);
+  await page.waitForTimeout(1200); // the wall fades in; measure it settled
+
+  const cells = await page.evaluate((vh) => {
+    const slab = document.querySelector(".mw-copy .display").getBoundingClientRect();
+    return [...document.querySelectorAll(".mw-p")]
+      .filter((el) => getComputedStyle(el).display !== "none")
+      .map((el, i) => {
+        const r = el.getBoundingClientRect();
+        const ox = Math.max(0, Math.min(r.right, slab.right) - Math.max(r.left, slab.left));
+        const oy = Math.max(0, Math.min(r.bottom, slab.bottom) - Math.max(r.top, slab.top));
+        return {
+          name: el.className.match(/p-([a-z0-9-]+)/)[1],
+          order: Number(getComputedStyle(el).order) || i,
+          slab: Math.round(((ox * oy) / (r.width * r.height)) * 100),
+          fold: Math.round((Math.max(0, r.bottom - vh) / r.height) * 100),
+          y: Math.round(r.top),
+        };
+      })
+      .sort((a, b) => a.y - b.y);
+  }, height);
+
+  console.log(`\n@${tag}  ${width}x${height}`);
+  for (const c of cells) {
+    const hidden = Math.min(100, c.slab + c.fold);
+    const bar = "█".repeat(Math.round(hidden / 8)).padEnd(13);
+    console.log(
+      `  ${c.name.padEnd(12)} slab ${String(c.slab).padStart(3)}%  ` +
+        `fold ${String(c.fold).padStart(3)}%  ${bar} ` +
+        (hidden >= BUFFER_AT ? "BUFFER" : "visible"),
+    );
+  }
+  report[tag] = cells;
+  await page.close();
+}
+await browser.close();
+
+// The one assertion worth failing on: the cells Alec named have to be clear.
+// smile-close is Aubrey, top-right on the phone — "I don't want to cut off her
+// smile in the top-right picture."
+const FACES_MUST_BE_CLEAR = ["smile-close", "laugh", "brian", "dink"];
+let bad = 0;
+for (const [tag, cells] of Object.entries(report)) {
+  for (const c of cells) {
+    if (!FACES_MUST_BE_CLEAR.includes(c.name)) continue;
+    const hidden = Math.min(100, c.slab + c.fold);
+    if (hidden >= BUFFER_AT) {
+      console.log(`\nFAIL  ${c.name} is ${hidden}% hidden @${tag} — that cell carries a face.`);
+      bad++;
+    }
+  }
+}
+console.log(bad ? `\n${bad} face(s) in a buffer slot.` : "\nEvery named face is in a clear cell.");
+process.exit(bad ? 1 : 0);

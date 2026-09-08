@@ -1,4 +1,5 @@
 {
+ "bench.webp": "bench.dab7e70c.webp",
  "big-brian.webp": "big-brian.6529d331.webp",
  "big-fill.webp": "big-fill.4125b476.webp",
  "big-forehand.webp": "big-forehand.b9452797.webp",
@@ -16,8 +17,11 @@
  "close-dink.webp": "close-dink.1ab84d80.webp",
  "court.webp": "court.78500514.webp",
  "dink.webp": "dink.96f84cd1.webp",
+ "drive.webp": "drive.9bae97ba.webp",
+ "fence.webp": "fence.677cf187.webp",
  "forehand.webp": "forehand.b3f6b821.webp",
  "grin.webp": "grin.b93dbec4.webp",
+ "lanyard.webp": "lanyard.1fe5d442.webp",
  "laugh.webp": "laugh.e088f833.webp",
  "lobby.webp": "lobby.e9a4a6e6.webp",
  "net.webp": "net.d04bb69b.webp",
@@ -33,6 +37,7 @@
  "pg-smile.webp": "pg-smile.f3450272.webp",
  "pg-swing.webp": "pg-swing.ea79e327.webp",
  "pg-white.webp": "pg-white.82fff140.webp",
+ "profile.webp": "profile.c9cb2813.webp",
  "rally.webp": "rally.5e99ca38.webp",
  "reach.webp": "reach.28cf12a7.webp",
  "roll-strip.webp": "roll-strip.ce463201.webp",
@@ -41,6 +46,7 @@
  "shout.webp": "shout.69d79121.webp",
  "smile-close.webp": "smile-close.af71b3b5.webp",
  "swing.webp": "swing.8629e07e.webp",
+ "turned.webp": "turned.9888a36e.webp",
  "two-up.webp": "two-up.8fa13582.webp",
  "whitecap.webp": "whitecap.8ea041ee.webp"
 }

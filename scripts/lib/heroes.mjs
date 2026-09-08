@@ -63,6 +63,13 @@ const MOSAIC = [
   { n: "close-dink", x: 66, y: 36, w: 11, d: 1, r: -0.8, m: "m" },
   { n: "two-up",     x: 62, y: 80, w: 11, d: 1, r:  0.7, m: "m" },
   { n: "lobby",      x: 34, y: 64, w: 11, d: 1, r: -0.6, m: "m" },
+  // The two buffer frames. On the phone they are the cells the headline covers;
+  // on the wall they fill the left-centre hole the copy block leaves, which is
+  // the same job — hold the composition up from behind the type. A back turned
+  // to camera and a man in profile are the right photographs for a place where
+  // being seen is not the point.
+  { n: "turned",     x: 27, y: 30, w: 14, d: 1, r:  0.5, m: "m" },
+  { n: "profile",    x: 47, y: 38, w: 10, d: 1, r: -0.8, m: "m" },
   // mid plane
   { n: "net",        x: 69, y: 0,  w: 17, d: 2, r:  0.5, m: "m" },
   { n: "laugh",      x: 44, y: 4,  w: 12, d: 2, r: -0.9, m: "m" },
@@ -72,6 +79,7 @@ const MOSAIC = [
   { n: "pair",       x: 17, y: 48, w: 13, d: 2, r: -0.7, m: "m" },
   { n: "seated",     x: 87, y: 70, w: 13, d: 2, r:  0.6, m: "m" },
   { n: "grin",       x: 76, y: 50, w: 12, d: 2, r: -0.5, m: "s" },
+  { n: "lanyard",    x: 88, y: 14, w: 11, d: 2, r:  0.6, m: "m" },
   // front plane — four photographs carry the whole header
   { n: "smile-close",x: 82, y: 4,  w: 16, d: 3, r:  0.7, m: "s" },
   { n: "dink",       x: 57, y: 10, w: 19, d: 3, r: -0.6, m: "" },
@@ -110,13 +118,34 @@ const BANNER = [
 // order they appear in, and `lit` is the handful left at full brightness. The
 // rest sit at a fifth, which is what makes four faces read instead of twelve
 // competing.
+// ORDER IS MEASURED, NOT AESTHETIC. Alec, 2026-09-08: "accept that some
+// pictures will get cropped — be intentional with the pictures that are going
+// to get cut off behind the text... it makes it way easier for us to have a
+// little bit of a buffer when it comes to the flexbox constraints."
+//
+// scripts/check-grid-occlusion.mjs renders the phone and reports, per cell, how
+// much of it the headline slab covers. Cells 4 and 5 come back at 81-82%: they
+// are BEHIND the type and always will be. So they are filled deliberately —
+// two real photographs that carry texture and give the column its slack, not
+// faces asking to be seen through a black slab.
+//
+// Everything else is placed by what the same probe says is clear. Aubrey is the
+// top-right cell because the probe says the top row is the only pair of cells
+// nothing ever touches, and Alec asked for exactly that: "I don't want to cut
+// off her smile in the top-right picture."
 const MOSAIC_GRID = [
-  "close-dink", "laugh",
-  "net",        "smile-close",
-  "reach",      "forehand",
-  "pair",       "dink",
-  "whitecap",   "brian",
-  "two-up",     "swing",
+  // The top row is the only pair of cells nothing ever touches, so it gets the
+  // two strongest FRONT-plane frames — and Aubrey is the right-hand one because
+  // Alec named that cell: "I don't want to cut off her smile in the top-right
+  // picture." Both are front plane on purpose: depth is baked into the files,
+  // so a mid-plane frame here renders at 62% brightness next to a full-strength
+  // neighbour and reads as a mistake rather than as distance.
+  "dink",       "smile-close",
+  "net",        "reach",         // clipped ~10% at the foot; action, not faces
+  "turned",     "profile",       // BUFFER: 81% behind the slab, by design
+  "brian",      "forehand",      // clear
+  "laugh",      "grin",          // clear
+  "whitecap",   "lanyard",       // clear
 ];
 // All four must be FRONT-plane panels: depth is baked into the files now, so a
 // "lit" cell drawn from a pre-darkened mid or back file would still be dim.
@@ -128,18 +157,18 @@ const MOSAIC_GRID_LIT = new Set(["smile-close", "dink", "brian", "forehand"]);
 // from a matte of each finished panel — the top of the subject plus a little
 // headroom — so the window lands on the face rather than the torso.
 const MOSAIC_GRID_POS = {
-  "close-dink": 2,
-  "laugh": 5,
-  "net": 0,
+  "dink": 0,
   "smile-close": 7,
+  "net": 0,
   "reach": 22,
-  "forehand": 0,
-  "pair": 45,
-  "dink": 5,
-  "whitecap": 47,
+  "turned": 0,
+  "profile": 37,
   "brian": 19,
-  "two-up": 46,
-  "swing": 27
+  "forehand": 0,
+  "laugh": 5,
+  "grin": 26,
+  "whitecap": 47,
+  "lanyard": 49
 };
 
 const BANNER_PHONE = {

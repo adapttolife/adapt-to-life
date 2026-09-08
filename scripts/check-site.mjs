@@ -504,7 +504,30 @@ const BUDGET = {
   // The alternative was raising this cap by 52KB to let decoration ride on the
   // initial load of a page with a payment form. That would have been the wrong
   // answer, and the check is what made it obvious.
-  "/donate": { own: 131, total: 9000, reqs: 108, hosts: 21, cls: null },
+  // Raised 131 -> 146 on 2026-09-08. Second raise to this page in a day, so
+  // the bar is higher, not lower.
+  //
+  // What changed: the interior header band went from a texture nobody could see
+  // to the vertical column design Alec actually asked for — "the vertical
+  // design I think looks great on the other pages". That is content, not
+  // decoration: it is the athletes, at readable brightness, on every interior
+  // page. The asset tripled because it became visible.
+  //
+  // Cut before raising, as last time. The band was 1600px at q66 and 58KB; a
+  // background at `cover` behind a 60-96% veil, with its back row blurred, does
+  // not need that. 1100 at q56 is 28KB and the difference does not survive the
+  // veil, the blur or a 2x screen — checked at a 100% crop. Half the weight,
+  // no visible change.
+  //
+  // Measured own after that work: 142KB. 146 is that plus the same ~2% CF
+  // allowance the rest of this table carries. The 49KB rolling strip is still
+  // outside this number, deferred behind an IntersectionObserver.
+  //
+  // Running total for the day on this page: 125 -> 146. 100KB of it is what was
+  // always here; the other ~40 is one closing section and one visible header
+  // band, both asked for by name. If it needs to come back down, the lever is
+  // the band asset, not the design.
+  "/donate": { own: 146, total: 9000, reqs: 108, hosts: 21, cls: null },
 };
 
 for (const [path, cap] of Object.entries(BUDGET)) {

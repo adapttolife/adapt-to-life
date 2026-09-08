@@ -186,7 +186,11 @@ def compose_band():
         ("JLA_5973.jpg", 0.15, 0.66, True),  ("JLA_5922.jpg", 0.15, 0.95, False),
         ("JLA_6073.jpg", 0.15, 0.60, True),  ("JLA_6106.jpg", 0.16, 0.78, False),
     ]
-    for name, W, H, step in (("pg-band-wide", 1600, 620, 0.13), ("pg-band-tall", 820, 560, 0.26)):
+    # Sized for what a background at `cover` behind a veil actually needs, not for
+    # the viewport. 1600 wide cost 58 KB and broke /donate's budget the moment
+    # the band became visible; 1100 at q56 is 28 KB and the difference does not
+    # survive the veil, the blur on the back row, or a 2x screen.
+    for name, W, H, step in (("pg-band-wide", 1100, 430, 0.13), ("pg-band-tall", 700, 480, 0.26)):
         canvas = Image.new("RGB", (W, H), (0, 0, 0))
         use = COLS if step < 0.2 else COLS[1::2]
         for i, (src, w, h, dim) in enumerate(use):
@@ -207,7 +211,7 @@ def compose_band():
         a *= np.clip(1.0 - np.maximum(0, (y - 0.88) / 0.12) * 0.85, 0, 1)
         canvas = Image.fromarray((a * 255).astype(np.uint8))
         out = os.path.join(DST, f"{name}.webp")
-        canvas.save(out, "WEBP", quality=66, method=6)
+        canvas.save(out, "WEBP", quality=56, method=6)
         print(f"{name:20s} {W}x{H} {os.path.getsize(out)/1024:6.1f} KB")
 
 

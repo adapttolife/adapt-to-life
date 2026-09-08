@@ -40,8 +40,8 @@ SRC = os.path.join(os.path.dirname(__file__), "..", ".work", "fav")
 DST = os.path.join(os.path.dirname(__file__), "..", "public", "images", "hero", "panels")
 
 # Long edge in device pixels, by depth role. See rule 3.
-SIZE = {"front": 860, "mid": 560, "back": 340}
-QUALITY = {"front": 80, "mid": 76, "back": 70, "big": 68, "band": 56}
+SIZE = {"front": 700, "mid": 400, "back": 250}
+QUALITY = {"front": 74, "mid": 68, "back": 58, "big": 68, "band": 56}
 
 # name, source frame, aspect (w/h), vertical anchor (0 = top, 1 = bottom),
 # horizontal anchor, ZOOM, depth role

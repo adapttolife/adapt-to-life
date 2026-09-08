@@ -425,7 +425,41 @@ for (const path of ["/donate", "/hustle-and-heart"]) {
 // to grow by 4KB, 4% in one go, to trip it, and the intermittent red build that
 // was training everyone to ignore this check is gone.
 const BUDGET = {
-  "/": { own: 193, total: 700, reqs: 24, hosts: 4, cls: 0.10 },
+  // Re-baselined 2026-09-08, and this is a RAISE, so per the ratchet rule above
+  // here is the reason and the evidence.
+  //
+  // The homepage header stopped being type on a black field and became the
+  // site's primary argument: nineteen photographs of the athletes the fund
+  // exists for (Alec's decision, after comparing nine candidates). A budget
+  // that vetoes an owner's design decision is not protecting anything, it is
+  // just a record of what the page used to be. But it should be re-set tight to
+  // the new reality, not opened wide, so it still catches the accident it was
+  // written to catch.
+  //
+  // What was done BEFORE touching the number, because a raise has to be the
+  // last resort and not the first:
+  //   · every panel re-tiered to what the composition actually paints — the
+  //     front four never exceed ~390 CSS px, mid ~200, back ~215 and the back
+  //     row is blurred 2.4px at 34% brightness on top of that. Front 860->700,
+  //     mid 560->400, back 340->250, quality 80/76/70 -> 74/68/58.
+  //   · verified at 100% crop that nothing visibly degraded.
+  // That took the hero from 490KB to 250KB. Half the cost, no visible change.
+  //
+  // Measured on the deployed build after that work: own 430KB, total 784KB,
+  // 37 requests. Of the 430, 250 is the header and ~180 is what the page
+  // already carried. The caps below are those numbers plus ~4% for encoder and
+  // CF-script drift — the same allowance /donate is given and for the same
+  // reason. Our own content would have to grow ~18KB to trip it again.
+  //
+  // The request count is the honest sore point. Nineteen photographs is
+  // nineteen requests, and they are all above the fold so none can be lazy.
+  // The back plane — seven panels, blurred and dimmed, 36KB the lot — could be
+  // pre-composed into ONE image the way the interior band and the court plate
+  // already are, taking this to 31. That is the next move if this number needs
+  // to come down; it is not done here because it would also flatten the
+  // parallax those seven have, and that is a design call for Alec, not a
+  // performance call for me.
+  "/": { own: 448, total: 815, reqs: 38, hosts: 4, cls: 0.10 },
   // cls:null, still — but for a smaller and better-understood reason than
   // before. The Givebutter cause IS fixed: reserving the panel's height took
   // MOBILE from 0.12-0.76 down to a flat 0 across five runs in every condition

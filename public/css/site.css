@@ -660,11 +660,37 @@ a.info-v{ border-bottom:1.5px solid var(--orange); padding-bottom:1px; }
 .photo-frame img{ width:100%; display:block; }
 
 /* two-column hero (text left, image right) */
+/* HEIGHT HERE IS PADDING PLUS WHATEVER THE CONTENT ADDS UP TO, which is why
+   these three pages drifted: nothing was holding them to anything. Measured
+   2026-09-09, the rule Alec actually wants is simply that NO INTERIOR PAGE
+   OPENS BIGGER THAN THE FRONT DOOR — home is 792 on a laptop and 774 on a
+   phone. /hustle-and-heart was 915 on a phone, taller than the homepage on the
+   device most people use.
+   Desktop padding is untouched: at 701 it was already under home and looked
+   right. Only the phone case moves, where the two-column grid stacks and the
+   photo card lands underneath the copy — so the top padding and the stack gap
+   are paying twice. */
 .hero-2col{ padding-top:clamp(5rem,11vh,7.5rem); padding-bottom:clamp(3.5rem,7vw,5.5rem); }
 .hero-2col .h2col{ display:grid; grid-template-columns:1fr 0.9fr; gap:clamp(2rem,5vw,4.5rem); align-items:center; }
 .hero-2col .h2col-media .photo-frame{ margin:0; }
 .hero-2col .h2col-cap{ margin:0.95rem 0 0; max-width:38ch; color:var(--cream-mute); font-size:0.95rem; line-height:1.5; }
-@media (max-width:820px){ .hero-2col .h2col{ grid-template-columns:1fr; gap:2.2rem; } .hero-2col .h2col-media{ max-width:520px; } }
+@media (max-width:820px){
+  .hero-2col .h2col{ grid-template-columns:1fr; gap:1.25rem; }
+  .hero-2col .h2col-media{ max-width:520px; }
+  /* The stacked layout is already tall from the photo card; the desktop top
+     padding on top of that is what pushed /hustle-and-heart past the homepage
+     on a phone. */
+  .hero-2col{ padding-top:clamp(2.4rem,5vh,3.2rem); padding-bottom:clamp(2rem,4vw,2.6rem); }
+  /* Measured on a phone, /hustle-and-heart's header was 853 against the
+     homepage's 774, and the two heaviest parts were the photo card (~245px of
+     image) and two stacked buttons (122px). The buttons stay stacked — every
+     other page on the site stacks them at this width and breaking that to save
+     pixels would be a worse trade than the one it fixes.
+     So the image gets a ceiling instead. It only BITES on a tall card: karen's
+     is already ~185px and is untouched, which is why this is a cap rather than
+     a fixed height. */
+  .hero-2col .h2col-media .photo-frame img{ max-height:176px; width:100%; object-fit:cover; }
+}
 
 /* centered section header (above grids / closing lines) */
 .sec-head{ max-width:62ch; margin-inline:auto; text-align:center; }

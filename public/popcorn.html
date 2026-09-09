@@ -36,7 +36,11 @@
      ========================================================================== */
 
   /* ---- hero ---------------------------------------------------------- */
-  .pop-hero{ position:relative; overflow:hidden; padding-top:clamp(7rem,15vh,10rem); padding-bottom:clamp(3.5rem,8vw,6rem); }
+  /* 834px measured on a laptop — the TALLEST header on the site, taller than
+     the homepage's 792. A side fundraiser opening bigger than the front door is
+     the single clearest inversion in the set, and it came entirely from top
+     padding: 10rem here against 7.5rem on the other unbanded heroes. */
+  .pop-hero{ position:relative; overflow:hidden; padding-top:clamp(5rem,11vh,7rem); padding-bottom:clamp(3rem,6vw,4.5rem); }
   .pop-hero-glow{
     position:absolute; inset:auto -20% -55% 30%; height:78%;
     background:radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,92,57,0.30) 0%, transparent 65%);

@@ -339,8 +339,17 @@ if (missing.status !== 404) fail(`unknown path returned ${missing.status}, expec
 // is slow, so the red build was the harness, not the money path, and a check
 // that goes red on a working form is a check people learn to skip.
 //
-// The retry is loud on purpose. If this starts printing every run, the embed
-// really is degrading and the note above has expired.
+// The retry is loud on purpose — but PRINTING EVERY RUN NO LONGER MEANS THE
+// EMBED IS DEGRADING, and that earlier claim is withdrawn rather than left to
+// mislead. On 2026-09-09 this began printing for /hustle-and-heart on every
+// single run. Measured six times standalone against production, using the exact
+// assertions below: it attaches in 238-294ms and the amount step is visible in
+// 1.6-2.2s with 9-10 pickable inputs, on BOTH pages. The money path is fine.
+//
+// What this line actually reports is that the first attempt was starved while
+// this script was doing other work. Read it as harness load, and check the
+// money path by running these two pages on their own before believing anything
+// is wrong with the form.
 for (const path of ["/donate", "/hustle-and-heart"]) {
   let lastError = null;
   for (let attempt = 1; attempt <= 2; attempt++) {
@@ -348,6 +357,11 @@ for (const path of ["/donate", "/hustle-and-heart"]) {
   try {
     await g.goto(`${BASE}${path}?cb=${Date.now()}`, { waitUntil: "domcontentloaded" });
     const form = g.locator("givebutter-giving-form");
+    // 20s, and RAISING IT WAS TRIED AND REVERTED on 2026-09-09. Going to 45s
+    // did not stop the retry below from firing; it just made the whole run
+    // exceed 300s, which means the element genuinely does not attach for a long
+    // time while this script is busy — not that it was a few seconds short.
+    // The retry is the right tool for that and it already works.
     await form.waitFor({ state: "attached", timeout: 20000 });
 
     // Scroll the panel into view before asserting. The embed is deferred until

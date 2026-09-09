@@ -71,8 +71,12 @@ const MOSAIC = [
   { n: "profile",    x: 47, y: 38, w: 10, d: 1, r: -0.8, m: "m" },
   // mid plane
   { n: "net",        x: 69, y: 0,  w: 17, d: 2, r:  0.5, m: "m" },
-  { n: "laugh",      x: 44, y: 4,  w: 12, d: 2, r: -0.9, m: "m" },
-  { n: "whitecap",   x: 5,  y: 74, w: 13, d: 2, r:  0.8, m: "m" },
+  // Swapped 2026-09-09 at Alec's call: Robby (whitecap) comes up to the
+  // top-centre slot beside the headline and the laughing frame drops to the
+  // bottom-left corner. Same two boxes, same depth plane — only the occupants
+  // changed, so the wall's composition is untouched.
+  { n: "whitecap",   x: 44, y: 4,  w: 12, d: 2, r: -0.9, m: "m" },
+  { n: "laugh",      x: 5,  y: 74, w: 13, d: 2, r:  0.8, m: "m" },
   { n: "reach",      x: 90, y: 40, w: 14, d: 2, r: -0.6, m: "s" },
   { n: "swing",      x: 54, y: 56, w: 11, d: 2, r:  0.9, m: "m" },
   { n: "toss",       x: 17, y: 48, w: 13, d: 2, r: -0.7, m: "m" },

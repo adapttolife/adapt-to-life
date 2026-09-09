@@ -53,6 +53,15 @@ SIZE = {"front": 820, "mid": 520, "back": 560}
 QUALITY = {"front": 68, "mid": 52, "back": 44, "big": 68, "band": 56}
 DEPTH_DIM = {"front": 1.00, "mid": 0.62, "back": 0.40}
 
+# Per-panel brightness override, for when a frame's DEPTH is right but its
+# READING is not. Alec, 2026-09-09: "maybe brighten robby up to be more bright
+# and easier to see?" — he had just moved to the top-centre slot beside the
+# headline, which is a foreground position, and a mid-plane grade of 0.62 left
+# him murky there. This lifts the file rather than promoting him to the front
+# plane, because the front plane is four photographs by design and adding a
+# fifth would flatten the wall's depth to buy one face.
+DIM_OVERRIDE = {"whitecap": 0.92}
+
 # Per-panel size override. The BUFFER frames are 81% behind the headline on the
 # phone and sit at the very back of the wall on desktop; they are the one place
 # on this page where resolution is provably not being looked at. Sizing them
@@ -588,8 +597,8 @@ def main():
         im = mono(im)
         if role == 'band':
             im = ImageEnhance.Brightness(im).enhance(0.62)
-        elif role in DEPTH_DIM and DEPTH_DIM[role] < 1:
-            im = ImageEnhance.Brightness(im).enhance(DEPTH_DIM[role])
+        elif role in DEPTH_DIM and DIM_OVERRIDE.get(name, DEPTH_DIM[role]) < 1:
+            im = ImageEnhance.Brightness(im).enhance(DIM_OVERRIDE.get(name, DEPTH_DIM[role]))
         out = os.path.join(DST, f"{name}.webp")
         im.save(out, "WEBP", quality=QUALITY[role], method=6)
         n = os.path.getsize(out)

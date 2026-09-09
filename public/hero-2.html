@@ -29,6 +29,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
 <link rel="stylesheet" href="/css/hero-mosaic.css">
+<link rel="stylesheet" href="/css/roll-band.css">
 <!-- hero:sheet -->
 <link rel="stylesheet" href="/css/hero-mosaic.css">
 <!-- Preload the LCP image only. This used to point at the mid-page photoband,
@@ -283,15 +284,58 @@ fill="currentColor" stroke="none">
   </section>
 
   <!-- PHOTO BAND — coaching, cinematic full-bleed (constant in both heroes) -->
-  <section class="photoband" aria-label="An adaptive pickleball player turning into a forehand, paddle drawn across his body">
-    <div class="photoband-img" style="background-image:url('/images/athletes/wheelie-9-band.webp'); background-position:62% 50%"></div>
-  </section>
+  <!-- 11 · CLOSING — the rolling band.
+       Alec, 2026-09-09: "I love the bottom of the donate page ... Can we do the
+       same thing for the bottom of the Main page? Besides juan by himself,
+       delete this picture, go all in on this vertical frame banner style layout
+       ... BUT keep the content and text that we have."
 
-  <!-- 11 · CLOSING — dark CTA -->
-  <section class="closing dark band-lg">
-    <div class="wrap center">
+       So the words are untouched and the single full-bleed photograph that sat
+       above them is gone. What replaces it is the same closing shape /donate
+       uses: the ask splits in two and the faces roll between the halves. It
+       ends the front page on people rather than on a paragraph.
+
+       DIFFERENT EIGHT than /donate's strip, deliberately — the same faces on
+       both would read as a template. And the image is lazy, swapped in by
+       IntersectionObserver, so a visitor who never reaches the footer never
+       pays the 53KB. -->
+  <section class="closing roll-band dark">
+    <div class="wrap center rb-copy rb-top">
       <span class="eyebrow orange reveal">Your turn</span>
       <h2 class="serif display reveal">Be the reason the next athlete plays.</h2>
+    </div>
+
+    <div class="rb-track" aria-hidden="true">
+      <div class="rb-run">
+        <img data-src="/images/hero/panels/roll-strip-home.68889c4b.webp" width="1568" height="430" alt="" decoding="async">
+        <img data-src="/images/hero/panels/roll-strip-home.68889c4b.webp" width="1568" height="430" alt="" decoding="async">
+        <img data-src="/images/hero/panels/roll-strip-home.68889c4b.webp" width="1568" height="430" alt="" decoding="async">
+        <img data-src="/images/hero/panels/roll-strip-home.68889c4b.webp" width="1568" height="430" alt="" decoding="async">
+        <img data-src="/images/hero/panels/roll-strip-home.68889c4b.webp" width="1568" height="430" alt="" decoding="async">
+        <img data-src="/images/hero/panels/roll-strip-home.68889c4b.webp" width="1568" height="430" alt="" decoding="async">
+      </div>
+    </div>
+    <div class="rb-glow"></div>
+    <script>
+      /* Deferred on purpose: this sits below the fold at the end of a long
+         page, and the homepage's own-bytes budget should not carry decoration
+         nobody has scrolled to. Anyone who does reach it still downloads the
+         strip — it was made conditional, not free. */
+      (function () {
+        var t = document.currentScript.closest('.roll-band');
+        var imgs = t.querySelectorAll('img[data-src]');
+        var load = function () {
+          imgs.forEach(function (i) { i.src = i.dataset.src; i.removeAttribute('data-src'); });
+        };
+        if (!('IntersectionObserver' in window)) return load();
+        var io = new IntersectionObserver(function (es) {
+          if (es.some(function (e) { return e.isIntersecting; })) { load(); io.disconnect(); }
+        }, { rootMargin: '200px' });
+        io.observe(t);
+      })();
+    </script>
+
+    <div class="wrap center rb-copy rb-bottom">
       <p class="lead sub reveal">About $3,500 covers one athlete's equipment, training, and travel. Any part of it moves someone off the sidelines.</p>
       <div class="actions reveal">
         <a href="/donate" class="btn">Donate</a>

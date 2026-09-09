@@ -41,7 +41,11 @@ const BRAND = {
 // that whoever gets her correction knows exactly what to change and where.
 const BLACK_IS_A_STAND_IN = true;
 
-const css = readFileSync(new URL("../public/css/site.css", import.meta.url), "utf8");
+// src/, not public/. From 2026-09-09 public/css is a BUILD ARTEFACT written by
+// scripts/build-css.mjs, so a failure reported against it would name a file
+// nobody should edit — the same reasoning this file already applies to the
+// Vite admin bundle below.
+const css = readFileSync(new URL("../src/css/site.css", import.meta.url), "utf8");
 let bad = 0;
 const fail = (m) => { console.log(`  FAIL ${m}`); bad++; };
 
@@ -64,6 +68,9 @@ const walk = (dir) => {
     // would only ever report a file nobody should touch. The hand-written admin
     // pages ARE checked; they are on the palette.
     if (e.name === "assets") continue;
+    // public/css is generated from src/css; the source is walked separately
+    // below so a pure-white hex is reported at the file you would fix.
+    if (e.name === "css") continue;
     const url = new URL(e.name + (e.isDirectory() ? "/" : ""), dir);
     if (e.isDirectory()) { walk(url); continue; }
     if (!/\.(html|css)$/.test(e.name)) continue;
@@ -72,6 +79,7 @@ const walk = (dir) => {
   }
 };
 walk(ROOT);
+walk(new URL("../src/css/", import.meta.url));
 
 if (BLACK_IS_A_STAND_IN)
   console.log("  note  --ink #1A1A1A is a STAND-IN; Laura's brand black (#3B3V46) is not valid hex and is still owed.");

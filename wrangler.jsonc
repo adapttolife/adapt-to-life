@@ -18,7 +18,10 @@
   // file in public/ — stamping first would fingerprint a build that does not
   // exist yet and quietly certify the wrong bytes. The budget check is part of
   // the build command, not a separate step someone can forget.
-  "build": { "command": "npm run build:app && node scripts/stamp-build.mjs" },
+  // build-css runs BEFORE the stamp, because the stamp digests every file in
+  // public/ and stamping first would fingerprint stylesheets that do not exist
+  // yet. Same ordering reason as Mission Control above.
+  "build": { "command": "npm run build:app && node scripts/build-css.mjs && node scripts/stamp-build.mjs" },
 
   // Live custom domains (apex + www). Cloudflare manages DNS + TLS for these.
   "routes": [

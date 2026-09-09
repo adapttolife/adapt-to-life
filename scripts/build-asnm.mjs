@@ -27,6 +27,9 @@ import { dirname, join } from "node:path";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const CACHE = join(ROOT, "data", "asnm-stats.json");
+// Written by scripts/shoot-asnm.mjs. Falls back only if someone deletes it.
+let shot = { wide: { w: 1440, h: 925 }, tall: { w: 828, h: 1520 } };
+try { shot = JSON.parse(readFileSync(join(ROOT, "data", "asnm-shot.json"), "utf8")); } catch {}
 const SITE = "https://adaptivesportsnearme.com";
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
 const n = (x) => Number(x).toLocaleString("en-US");
@@ -55,9 +58,23 @@ const chip = (label, count, href) => href
 
 const block = `<!-- asnm:stats -->
   <section class="band dark dir-stats">
+    <div class="dir-ghosts" aria-hidden="true">
+      <img class="dir-ghost gh-a" src="/images/hero/ghost-ben.webp" alt="" width="496" height="620" loading="lazy" decoding="async">
+      <img class="dir-ghost gh-b" src="/images/hero/ghost-aubrey.webp" alt="" width="496" height="620" loading="lazy" decoding="async">
+      <img class="dir-ghost gh-c" src="/images/hero/ghost-brian.webp" alt="" width="496" height="620" loading="lazy" decoding="async">
+    </div>
     <div class="wrap">
       <span class="eyebrow orange reveal">In the directory right now</span>
-      <p class="dir-count reveal"><b>${n(stats.programs)}</b> programs, <b>${n(states.length ? stats.byState.length : 0)}</b> states, <b>${n(stats.sources)}</b> sources. Free to search, no account.</p>
+      <p class="dir-count reveal"><b>${n(stats.programs)}</b> programs, <b>${n(stats.byState.length)}</b> states, <b>${n(stats.sources)}</b> sources. Free to search, no account.</p>
+
+      <a class="dir-shot reveal" href="${SITE}" target="_blank" rel="noopener">
+        <picture>
+          <source media="(max-width: 900px)" srcset="/images/asnm-directory-tall.webp" width="${shot.tall.w}" height="${shot.tall.h}">
+          <img src="/images/asnm-directory.webp" width="${shot.wide.w}" height="${shot.wide.h}" loading="lazy" decoding="async"
+               alt="The Adaptive Sports Near Me directory: a search box for a sport, zip or program, a row of sports to filter by, and cards for real programs across the country with their state and type.">
+        </picture>
+        <span class="dir-shot-cap">adaptivesportsnearme.com <span class="arrow">&rarr;</span></span>
+      </a>
 
       <h2 class="dir-h reveal">By sport</h2>
       <ul class="dir-chips reveal">
@@ -70,8 +87,8 @@ ${states.map((s) => "        " + chip(s.name, s.n, `${SITE}/?state=${encodeURICo
       </ul>
       <!-- No button pair here on purpose. The hero already carries one and the
            closing section carries another; a third set on the same page is
-           noise. Every chip above IS a link into the directory, filtered, which
-           is a better invitation than a button that lands on the front page. -->
+           noise. The screenshot and every chip above are links into the
+           directory already. -->
     </div>
   </section>
   <!-- /asnm:stats -->`;

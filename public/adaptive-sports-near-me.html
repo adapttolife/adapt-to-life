@@ -86,6 +86,72 @@
      border made two thirds of the sports read as broken or unfinished rather
      than simply unfiltered. A span has no pointer and no hover, which is
      affordance enough; the weight difference just needs to be quiet. */
+  /* ---- the figures behind it -------------------------------------------
+     Alec: "take the traced images and put them in the background ... really
+     big, really small, and they're just kind of faded."
+     These are the photographer's cut-outs, the same athletes the homepage wall
+     is built from, drawn at wildly different scales and 6-11% opacity. The
+     depth trick is the one the wall already uses: the small far ones carry a
+     blur, the big near one does not, so the eye reads distance rather than a
+     row of stickers. They bleed off three edges on purpose. Decorative only,
+     aria-hidden, and they never sit above the type. */
+  .dir-stats{ position:relative; overflow:hidden; }
+  .dir-ghosts{ position:absolute; inset:0; z-index:0; pointer-events:none; }
+  .dir-ghost{ position:absolute; display:block; width:auto; filter:grayscale(1); }
+  /* 0.09 -> 0.14. At 0.09 this figure was invisible: it is the darkest of the
+     cut-outs and it sits on near-black, so it was 14KB of image nobody could
+     see. Either it reads or it should not ship. */
+  .gh-a{ height:132%; left:-13%; bottom:-24%; opacity:0.14; }
+  .gh-b{ height:36%;  right:5%;  top:4%;      opacity:0.065; filter:grayscale(1) blur(1.6px); }
+  /* Pushed further off the right edge and dimmed: at -9% and 0.085 the paddle
+     and forearm landed squarely behind the state chips and read as clutter
+     rather than depth. Behind type, a background figure has to lose. */
+  .gh-c{ height:70%;  right:-20%; bottom:-12%; opacity:0.055; filter:grayscale(1) blur(1.2px); }
+  /* gh-d removed. A 25%-tall figure at 0.05 on this ground is not subtle, it is
+     absent — and it was the most expensive of the four at 24.5KB. Three
+     figures, all of which read. */
+  .dir-stats > .wrap{ position:relative; z-index:2; }
+  @media (max-width:900px){
+    /* Two figures on a phone, not four. At this width the others stack on top
+       of each other behind the screenshot and read as smudge rather than depth. */
+    .gh-b{ display:none; }
+    .gh-a{ height:96%; left:-24%; bottom:-14%; }
+    .gh-c{ height:56%; right:-18%; bottom:-8%; }
+  }
+
+  /* ---- the product, shown rather than described -------------------------
+     THE SHADOW IS THE HOMEPAGE WALL'S FRONT-PLANE SHADOW, copied deliberately
+     from .mw-p.d3 in hero-mosaic.css: the same three layers and the same warm
+     1px ring. That is what makes a screenshot of somebody else's website feel
+     like it belongs on this one. */
+  .dir-shot{ display:block; position:relative; margin:clamp(2rem,4.5vw,3.2rem) 0 0;
+    border-radius:6px; overflow:hidden; text-decoration:none;
+    box-shadow:0 42px 80px -34px rgba(0,0,0,0.95),
+               0 8px 22px -12px rgba(0,0,0,0.8),
+               0 0 0 1px rgba(255,150,110,0.16);
+    transition:transform .3s ease, box-shadow .3s ease; }
+  .dir-shot img, .dir-shot picture{ display:block; width:100%; height:auto; }
+  /* The phone frame is portrait and would run the full height of the screen at
+     100% width, so it is held to a sensible column and centred. */
+  @media (max-width:900px){
+    .dir-shot{ max-width:340px; margin-inline:auto; }
+    .dir-shot-cap{ font-size:0.62rem; letter-spacing:0.1em; padding:0.4rem 0.6rem; }
+  }
+  .dir-shot:hover{ transform:translateY(-6px);
+    box-shadow:0 54px 96px -34px rgba(0,0,0,0.95),
+               0 10px 26px -12px rgba(0,0,0,0.85),
+               0 0 0 1px rgba(255,92,57,0.55); }
+  .dir-shot:focus-visible{ outline:2px solid var(--orange); outline-offset:4px; }
+  /* The caption sits ON the shot rather than under it: it is the only thing
+     telling you the picture is a live site you can open, and under the image it
+     read as a photo credit. */
+  .dir-shot-cap{ position:absolute; right:0; bottom:0; z-index:2;
+    padding:0.5rem 0.85rem; border-radius:6px 0 0 0;
+    background:rgba(12,12,14,0.82); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+    font-family:var(--font-label); font-size:0.7rem; letter-spacing:0.14em;
+    text-transform:uppercase; font-weight:700; color:var(--cream); }
+  .dir-shot:hover .dir-shot-cap{ color:var(--orange); }
+
   .dir-chip.is-plain{ color:var(--cream-mute); border-color:rgba(255,255,255,0.09); }
   .dir-chip.is-plain b{ color:rgba(255,255,255,0.38); }
   .dir-stats .actions{ margin-top:clamp(2.2rem,4.5vw,3rem); }
@@ -185,9 +251,23 @@ fill="currentColor" stroke="none">
 
   <!-- asnm:stats -->
   <section class="band dark dir-stats">
+    <div class="dir-ghosts" aria-hidden="true">
+      <img class="dir-ghost gh-a" src="/images/hero/ghost-ben.webp" alt="" width="496" height="620" loading="lazy" decoding="async">
+      <img class="dir-ghost gh-b" src="/images/hero/ghost-aubrey.webp" alt="" width="496" height="620" loading="lazy" decoding="async">
+      <img class="dir-ghost gh-c" src="/images/hero/ghost-brian.webp" alt="" width="496" height="620" loading="lazy" decoding="async">
+    </div>
     <div class="wrap">
       <span class="eyebrow orange reveal">In the directory right now</span>
       <p class="dir-count reveal"><b>1,544</b> programs, <b>51</b> states, <b>22</b> sources. Free to search, no account.</p>
+
+      <a class="dir-shot reveal" href="https://adaptivesportsnearme.com" target="_blank" rel="noopener">
+        <picture>
+          <source media="(max-width: 900px)" srcset="/images/asnm-directory-tall.webp" width="828" height="1520">
+          <img src="/images/asnm-directory.webp" width="1440" height="925" loading="lazy" decoding="async"
+               alt="The Adaptive Sports Near Me directory: a search box for a sport, zip or program, a row of sports to filter by, and cards for real programs across the country with their state and type.">
+        </picture>
+        <span class="dir-shot-cap">adaptivesportsnearme.com <span class="arrow">&rarr;</span></span>
+      </a>
 
       <h2 class="dir-h reveal">By sport</h2>
       <ul class="dir-chips reveal">
@@ -224,8 +304,8 @@ fill="currentColor" stroke="none">
       </ul>
       <!-- No button pair here on purpose. The hero already carries one and the
            closing section carries another; a third set on the same page is
-           noise. Every chip above IS a link into the directory, filtered, which
-           is a better invitation than a button that lands on the front page. -->
+           noise. The screenshot and every chip above are links into the
+           directory already. -->
     </div>
   </section>
   <!-- /asnm:stats -->

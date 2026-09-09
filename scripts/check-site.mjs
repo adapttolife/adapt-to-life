@@ -176,8 +176,32 @@ if (missing.status !== 404) fail(`unknown path returned ${missing.status}, expec
 {
   const OG_BUDGET = 300 * 1024; // WhatsApp-class ceiling; over it, no preview
   const seen = new Map();
+
+  // RETRY ON 429, because otherwise this check lies. It fetches every page and
+  // then every distinct card — 30+ requests in a burst — and against PRODUCTION
+  // Cloudflare rate-limits that and hands back 429s. The check then reported
+  // "og:image ... returned 429" and FAILED, for a card that serves 200 on every
+  // manual request. Twice in one session it also surfaced as "page has no
+  // og:image", because a rate-limited HTML fetch returns an error body with no
+  // meta tags in it.
+  //
+  // A check that fails for reasons unrelated to the site is worse than no
+  // check: it trains you to skim past red, and the day it means something you
+  // will skim past that too. Backoff is short and bounded — three tries, 400ms
+  // then 1200ms — so a genuine 429 storm still ends in a real failure rather
+  // than an infinite wait.
+  const RETRY_STATUS = new Set([429, 503]);
+  async function get(url, tries = 3) {
+    let r;
+    for (let i = 0; i < tries; i++) {
+      r = await fetch(url);
+      if (!RETRY_STATUS.has(r.status)) return r;
+      if (i < tries - 1) await new Promise((ok) => setTimeout(ok, 400 * Math.pow(3, i)));
+    }
+    return r;
+  }
   for (const path of PAGES) {
-    const html = await (await fetch(`${BASE}${path}?cb=${Date.now()}`)).text();
+    const html = await (await get(`${BASE}${path}?cb=${Date.now()}`)).text();
     const src = html.match(/<meta property="og:image" content="([^"]+)"/)?.[1];
     if (!src) { fail(`${path} has no og:image`); continue; }
     if (!/<meta property="og:image:alt" content="[^"]+"/.test(html))
@@ -188,7 +212,7 @@ if (missing.status !== 404) fail(`unknown path returned ${missing.status}, expec
       // og:image must be absolute: crawlers do not resolve relative paths
       if (!/^https:\/\//.test(src)) { fail(`${path} og:image is not absolute: ${src}`); continue; }
       const asset = new URL(src).pathname;
-      const r = await fetch(`${BASE}${asset}?cb=${Date.now()}`);
+      const r = await get(`${BASE}${asset}?cb=${Date.now()}`);
       if (!r.ok) { fail(`og:image ${asset} returned ${r.status}`); seen.set(src, false); continue; }
       const bytes = (await r.arrayBuffer()).byteLength;
       if (bytes > OG_BUDGET)

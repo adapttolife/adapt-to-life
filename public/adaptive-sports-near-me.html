@@ -100,57 +100,39 @@
      than simply unfiltered. A span has no pointer and no hover, which is
      affordance enough; the weight difference just needs to be quiet. */
   /* ---- the ground behind it --------------------------------------------
-     Alec, 2026-09-09: the cut-out figure "looks squeezed and squished and very
-     sloppy ... maybe it doesn't need to be an image of a person, but maybe an
-     image of a gym, or a court ... something open-ended and welcoming."
+     NO PHOTOGRAPH, for now, and that is a decision rather than a gap.
 
-     THE SQUISH WAS A REAL BUG, not a bad crop. The figures were sized
-     height:96% with width:auto, and site.css line 157 sets img{max-width:100%}.
-     On a phone the section is tall and narrow, so the natural width at that
-     height ran well past the container, max-width clamped it, and the aspect
-     ratio was destroyed. A background-size:cover layer cannot do that, which is
-     half of why this is the better instrument.
+     Alec, 2026-09-09: "It's too hard to tell what's going on ... nobody's going
+     to see the post, and no one's going to be able to read the T-shirt ... it's
+     not really giving me any feelings or any vibes."
 
-     The other half is that he is right about the subject. One athlete blown up
-     behind a list of links reads as a person looming over the type; the band
-     reads as a room. This IS the vertical-frame treatment from the page header
-     — four frames, a court and a venue, no single face dominating — and the
-     page has ALREADY downloaded it for its own header, so the whole ground
-     costs zero additional bytes. Wide on a laptop, tall on a phone, exactly the
-     way the header art-directs the same pair. The three ghost-*.webp files are
-     deleted: 44.5KB that no longer ships. */
+     He is right, and the reason is inventory, not taste. Measured across all 32
+     frames in this library: mean luminance 50.7/255 and contrast stdev 43.3 —
+     dark and punchy, which is the house style and is correct. But every single
+     one of the 32 is a PORTRAIT. There is not one room, one empty court, one
+     piece of negative space in the entire set. A photograph of a person cannot
+     be a backdrop: faded far enough not to compete with type it becomes grey
+     mush, and left legible enough to read it competes. Both failures were
+     shipped here today before this was understood.
+
+     So until there is an environment frame to use, the ground is the site's own
+     atmosphere: the warm bloom the hero already carries, plus grain. It reads as
+     deliberate emptiness rather than a picture nobody can make out, and it costs
+     nothing. See the art-direction note handed to Alec for what would replace
+     it. */
   .dir-stats{ position:relative; overflow:hidden; }
   .dir-stats::before{
     content:""; position:absolute; inset:0; z-index:0; pointer-events:none;
-    background:var(--pg-band-wide) center/cover no-repeat;
-    filter:grayscale(1); opacity:0.34;
-  }
-  /* The type has to win. A flat scrim would flatten the photograph to mud, so
-     this is a vertical fall plus the same warm bloom the header carries. */
-  .dir-stats::after{
-    content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
     background:
-      /* A DARK COLUMN UNDER THE TYPE, not a flat scrim over everything. The
-         chips are opaque black so they do not care how bright the ground gets;
-         the eyebrow, the count line and the BY SPORT / BY STATE labels sit
-         directly on it and do. Measured at the brighter setting the orange
-         eyebrow fell to 3.69:1 against a 4.5 floor.
-         So the darkening is horizontal: heavy on the left third where every one
-         of those lines lives, releasing to the right where the band can be as
-         present as Alec wants it. The vertical fall stays for grounding. */
-      linear-gradient(90deg, rgba(12,12,14,0.90) 0%, rgba(12,12,14,0.78) 26%, rgba(12,12,14,0.30) 62%, rgba(12,12,14,0.16) 100%),
-      linear-gradient(180deg, rgba(12,12,14,0.30) 0%, rgba(12,12,14,0.34) 40%, rgba(12,12,14,0.66) 100%),
-      radial-gradient(ellipse 62% 52% at 84% 22%, rgba(255,92,57,0.13) 0%, transparent 68%);
+      radial-gradient(ellipse 70% 60% at 82% 18%, rgba(255,92,57,0.16) 0%, rgba(255,92,57,0.04) 42%, transparent 70%),
+      radial-gradient(ellipse 90% 70% at 8% 96%, rgba(212,168,67,0.06) 0%, transparent 62%),
+      linear-gradient(180deg, rgba(255,255,255,0.028) 0%, transparent 38%);
   }
-  @media (max-width:900px){
-    /* The tall crop, for the same reason the header uses it: a 2.3:1 frame in a
-       portrait box crops to a single face, which is the thing we just removed. */
-    .dir-stats::before{ background-image:var(--pg-band-tall); opacity:0.26; }
-    /* No horizontal release on a phone: the type runs the full width, so there
-       is no "right side" to give back to the photograph. */
-    .dir-stats::after{ background:
-      linear-gradient(180deg, rgba(12,12,14,0.66) 0%, rgba(12,12,14,0.72) 45%, rgba(12,12,14,0.86) 100%),
-      radial-gradient(ellipse 80% 40% at 70% 12%, rgba(255,92,57,0.12) 0%, transparent 70%); }
+  /* The same grain the hero and the share cards carry, so an empty ground still
+     has the site's surface on it rather than reading as flat CSS. */
+  .dir-stats::after{
+    content:""; position:absolute; inset:0; z-index:1; pointer-events:none; opacity:0.5;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.16'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.16'/%3E%3C/svg%3E");
   }
   .dir-stats > .wrap{ position:relative; z-index:2; }
 

@@ -102,8 +102,59 @@
   background:radial-gradient(72% 60% at 50% 116%, rgba(255,92,57,0.30) 0%, rgba(255,92,57,0) 66%);
 }
 
+/* ---- pause control ------------------------------------------------------
+   WCAG 2.2.2 Pause, Stop, Hide is Level A, and this band was failing it: the
+   strip starts on its own, runs forever (well past the five-second threshold)
+   and sits alongside other content. The criterion sets NO SPEED LIMIT — slowing
+   it to 50 px/s was a comfort fix and bought no compliance at all. What it
+   requires is a mechanism.
+
+   prefers-reduced-motion DOES NOT SATISFY IT, which is the part that is easy to
+   get wrong: that query honours an OS setting and maps to SC 2.3.3, whereas
+   2.2.2 asks for something any visitor can operate on the page regardless of
+   their system preferences. We keep both — the query below still stops the
+   animation outright for people who asked their OS for less motion, and this
+   button serves everyone else.
+
+   THE BUTTON IS A SIBLING OF .rb-track, NEVER A CHILD. That track carries
+   aria-hidden="true" because the strip is decoration; a control placed inside
+   it would be invisible to exactly the assistive technology this criterion
+   exists for — a pause button no screen reader can find is not a mechanism.
+
+   44x44 for the same reason the footer icons are (2.5.5 AAA rather than the
+   24x24 of 2.5.8 AA): this audience includes people with limited hand
+   function, and a control that exists but cannot be hit is not a control.
+
+   Hidden under reduced motion because nothing is moving there — a button whose
+   only job is to stop motion that has already stopped is a dead control. */
+/* The stage is the positioning context, so the control sits ON the strip. With
+   .roll-band as the context it landed at the foot of the whole section, past
+   the copy and the buttons — a pause control a long way from the thing it
+   pauses. */
+.rb-stage{ position:relative; }
+.rb-pause{
+  position:absolute; z-index:4;
+  right:clamp(0.9rem, 2.4vw, 1.6rem); bottom:clamp(0.9rem, 2.4vw, 1.6rem);
+  width:44px; height:44px; padding:0;
+  display:inline-flex; align-items:center; justify-content:center;
+  border-radius:999px; cursor:pointer;
+  color:var(--cream);
+  background:rgba(12,12,14,0.62);
+  border:1px solid rgba(255,255,255,0.24);
+  -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+.rb-pause:hover{ background:rgba(12,12,14,0.82); color:var(--orange); border-color:var(--orange); }
+.rb-pause:focus-visible{ outline:2px solid var(--orange); outline-offset:3px; }
+.rb-pause svg{ width:17px; height:17px; display:block; fill:currentColor; }
+.rb-pause .rb-i-play{ display:none; }
+.roll-band.is-paused .rb-run{ animation-play-state:paused; }
+.roll-band.is-paused .rb-pause .rb-i-pause{ display:none; }
+.roll-band.is-paused .rb-pause .rb-i-play{ display:block; }
+
 @media (prefers-reduced-motion: reduce){
   .rb-run{ animation:none; }
+  .rb-pause{ display:none; }
 }
 
 @media (max-width:640px){

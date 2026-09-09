@@ -367,6 +367,7 @@ fill="currentColor" stroke="none">
       <h2 class="serif display reveal">Be the reason the next athlete plays.</h2>
     </div>
 
+    <div class="rb-stage">
     <div class="rb-track" aria-hidden="true">
       <div class="rb-run">
         <img data-src="/images/hero/panels/roll-strip-home.68889c4b.webp" width="1568" height="430" alt="" decoding="async">
@@ -377,6 +378,18 @@ fill="currentColor" stroke="none">
         <img data-src="/images/hero/panels/roll-strip-home.68889c4b.webp" width="1568" height="430" alt="" decoding="async">
       </div>
     </div>
+    <!-- Sibling of .rb-track inside .rb-stage, never a CHILD of the track:
+         that track is aria-hidden="true" because the strip is decoration, and a
+         control inside it would be invisible to exactly the assistive
+         technology WCAG 2.2.2 exists for. The .rb-stage wrapper exists so the
+         button can sit ON the strip it controls rather than at the foot of the
+         whole section, which is where it landed when .roll-band was the
+         positioning context. -->
+    <button type="button" class="rb-pause" data-rb-pause aria-label="Pause the moving photo strip">
+      <svg class="rb-i-pause" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="6.5" y="5" width="4" height="14" rx="1.2"/><rect x="13.5" y="5" width="4" height="14" rx="1.2"/></svg>
+      <svg class="rb-i-play" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.2l11.2 6.8L8 18.8z"/></svg>
+    </button>
+    </div>
     <div class="rb-glow"></div>
     <script>
       /* Deferred on purpose: this sits below the fold at the end of a long
@@ -385,6 +398,19 @@ fill="currentColor" stroke="none">
          strip — it was made conditional, not free. */
       (function () {
         var t = document.currentScript.closest('.roll-band');
+        var band = t;
+        var btn = band.querySelector('[data-rb-pause]');
+        if (btn) {
+          btn.addEventListener('click', function () {
+            var paused = band.classList.toggle('is-paused');
+            /* The accessible NAME changes, not aria-pressed. For a play/pause
+               the name is what a screen reader announces on focus, and
+               "Play the moving photo strip" says what the button will DO —
+               which is the thing a listener needs before activating it. */
+            btn.setAttribute('aria-label',
+              (paused ? 'Play' : 'Pause') + ' the moving photo strip');
+          });
+        }
         var imgs = t.querySelectorAll('img[data-src]');
         var load = function () {
           imgs.forEach(function (i) { i.src = i.dataset.src; i.removeAttribute('data-src'); });

@@ -470,22 +470,37 @@ def compose_roll():
         space as every other join. Get that wrong and the loop stutters once per
         cycle, which is the one thing people always notice.
     """
-    COLS = ["JLA_6045.jpg", "JLA_5922.jpg", "JLA_6106.jpg", "JLA_6066.jpg",
-            "JLA_6073.jpg", "JLA_6077.jpg", "JLA_5973.jpg", "JLA_5920.jpg"]
+    # TWO strips, not one. Alec, 2026-09-09, on the homepage closing: "go all
+    # in on this vertical frame banner style layout with the pictures (maybe
+    # different pictures?)" — and different is the right instinct. The same
+    # eight faces rolling past on both the homepage and /donate would read as a
+    # template rather than as a roster, and it would waste the widened rotation
+    # we built. So /donate keeps its eight and the homepage gets eight others.
+    STRIPS = {
+        # /donate — the original set
+        "roll-strip": ["JLA_6045.jpg", "JLA_5922.jpg", "JLA_6106.jpg", "JLA_6066.jpg",
+                       "JLA_6073.jpg", "JLA_6077.jpg", "JLA_5973.jpg", "JLA_5920.jpg"],
+        # homepage — eight the other strip does not use, drawn from the widened
+        # rotation so the frames at the bottom of the front page are people you
+        # have not already met at the top of it
+        "roll-strip-home": ["JLA_6131.jpg", "JLA_6091.jpg", "JLA_5967.jpg", "JLA_6146.jpg",
+                            "JLA_5953.jpg", "JLA_6236.jpg", "JLA_5989.jpg", "JLA_6168.jpg"],
+    }
     H, CW, GAP = 430, 168, 28
     PITCH = CW + GAP
-    W = PITCH * len(COLS)
-    canvas = Image.new("RGB", (W, H), (0, 0, 0))
-    for i, src in enumerate(COLS):
-        im = Image.open(os.path.join(SRC, src))
-        im.draft("RGB", (im.width // 3, im.height // 3))
-        im = crop_to(im.convert("RGB"), CW / H, 0.40, 0.50, 0.86)
-        im = mono(im.resize((CW, H), Image.LANCZOS))
-        im = ImageEnhance.Brightness(im).enhance(0.82)
-        canvas.paste(im, (i * PITCH + GAP // 2, 0))   # half a gap at each end
-    out = os.path.join(DST, "roll-strip.webp")
-    canvas.save(out, "WEBP", quality=60, method=6)
-    print(f"{'roll-strip':20s} {W}x{H} {os.path.getsize(out)/1024:6.1f} KB  (tileable, pitch {PITCH}px)")
+    for name, COLS in STRIPS.items():
+        W = PITCH * len(COLS)
+        canvas = Image.new("RGB", (W, H), (0, 0, 0))
+        for i, src in enumerate(COLS):
+            im = Image.open(os.path.join(SRC, src))
+            im.draft("RGB", (im.width // 3, im.height // 3))
+            im = crop_to(im.convert("RGB"), CW / H, 0.40, 0.50, 0.86)
+            im = mono(im.resize((CW, H), Image.LANCZOS))
+            im = ImageEnhance.Brightness(im).enhance(0.82)
+            canvas.paste(im, (i * PITCH + GAP // 2, 0))   # half a gap at each end
+        out = os.path.join(DST, name + ".webp")
+        canvas.save(out, "WEBP", quality=60, method=6)
+        print(f"{name:20s} {W}x{H} {os.path.getsize(out)/1024:6.1f} KB  (tileable, pitch {PITCH}px)")
 
 
 def assert_no_withdrawn():

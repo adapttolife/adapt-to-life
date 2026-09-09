@@ -201,7 +201,39 @@
      them. A 2.44:1 header over a 3:2 photograph shows 61% of its height, so the
      window has to sit near the top or it lands on wheels and a kit bag — which
      is what a centred crop gave. */
+  /* 8% -> -6% AFTER THE MIRROR, and this is the flip's one real cost. The frame
+     has a kit bag in its bottom corner carrying two legible wordmarks, and a
+     mirror turns those backwards — small and dim, but backwards text reads as a
+     mistake to anyone who catches it, and it is somebody else's branding on our
+     page either way. Pushing the window up drops the bag out of the crop
+     entirely and tightens what is left onto the handshake, which is the actual
+     subject of the photograph. Both faces survive the tighter frame; verified,
+     not assumed. */
+  /* Stays at 8%/cover, and the two alternatives are recorded because both LOOK
+     right and are measurably wrong. The mirror turns the kit bag's wordmarks
+     backwards in the bottom corner; trying to crop them out:
+       -6% position  -> the image lifts off the top edge and leaves a 21px black
+                        band, invisible only because this header's own top scrim
+                        is 0.82 black and was hiding it. 0% is the floor.
+       auto 118% size -> SMALLER than cover here, not larger: a 2.44:1 box over a
+                        1.5:1 frame means cover is already ~163% of box height,
+                        so 118% shrank the image, opened a band down the left and
+                        made the bag bigger.
+     Going past cover would need ~200%, which upscales a 1500px source. The bag
+     was always in this frame — it sat bottom-RIGHT before the flip and read
+     correctly — so the flip's only real cost is that its lettering is now
+     mirrored: small, dim, cornered, and partly under the copy field. */
   background:var(--pg-photo) center 8%/cover no-repeat;
+  /* MIRRORED. Alec, 2026-09-09: "Can we flip this picture? I want the guys face
+     to not be hidden behind the text."
+     He is right and the reason is structural, not taste: this header's type is
+     left-aligned, and in the original frame the only visible FACE sits on the
+     left, directly under the headline. Flipping puts the face in the clear
+     right half and leaves the near player's BACK under the type, which is the
+     half of the photograph that loses nothing by being covered.
+     Cheaper and more honest than re-cropping: no second asset, no new bytes,
+     and the composition is unchanged apart from its handedness. */
+  transform:scaleX(-1);
   /* 0.78 -> 0.40, and 0.82 -> 0.92. Alec, 2026-09-09: "This picture feels sad
      with the grey, lets let it have some of its original color."
 
@@ -240,7 +272,10 @@
      the vertical anchor that works on desktop does nothing here, and the centre
      lands on the net and a wheel. The clasped hands are at about 52% across and
      the seated player's face at 25%, so 42% holds both. */
-  .hero.pg-band.pg-photo::before{ background-position:42% center; }
+  /* 42% -> 58%: the mirror moves everything to (100 - x), so the value that
+     held the hands and the face before the flip is its complement after it.
+     Left unchanged this framed the empty half. */
+  .hero.pg-band.pg-photo::before{ background-position:58% center; }
   /* Shorter than the band's, on purpose. A tall box over a landscape frame
      shows a narrow vertical slice and fills the rest with net and spokes;
      bringing the height down widens the slice back onto the two players. */

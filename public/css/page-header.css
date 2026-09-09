@@ -210,16 +210,20 @@
      what makes a photograph look sad rather than graded, and the brightness was
      doing as much of that as the grayscale. Both move.
 
-     Not to zero, and the stop is a brand decision rather than a timid one.
-     Compared at 0.78 / 0.55 / 0.40 / 0.22: by 0.22 the navy shirt saturates far
-     enough to compete with the orange accent, and /apply stops looking like the
-     same site as every other page. 0.40 puts the blue back in the shirt, the
-     yellow back in the wristband and the warmth back in skin, while still
-     reading as a graded frame at a glance — which is the original brief
-     ("a little bit black and white"), not a reversal of it.
+     ALL THE WAY TO ZERO, on Alec's second look ("More color"). I had stopped at
+     0.40 arguing the navy would compete with the orange accent; comparing
+     0.40 / 0.25 / 0.12 / 0 side by side, that was wrong. Navy sits opposite
+     orange rather than against it, and this frame is lit by a dim gym, so
+     removing the grade entirely reads as natural rather than loud — there is no
+     saturated colour in the photograph to shout with.
+
+     This is the one page on the site that is not monochrome, and it stays the
+     exception on purpose: it is the page where somebody asks for money to play,
+     and the argument for warmth is strongest exactly there. /apply is the only
+     page using pg-photo, so nothing else moves.
 
      Contrast re-measured after the change, since the headline sits on this. */
-  filter:grayscale(0.40) contrast(1.04) brightness(0.92);
+  filter:grayscale(0) contrast(1.02) brightness(1);
 }
 .hero.pg-band.pg-photo::after{
   background:

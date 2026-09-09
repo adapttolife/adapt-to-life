@@ -334,7 +334,7 @@ fill="currentColor" stroke="none">
     function setStatus(msg, ok){
       if(!statusEl) return;
       statusEl.textContent = msg;
-      statusEl.style.color = ok ? '#2e7d32' : '#c0392b';
+      statusEl.style.color = ok ? 'var(--ok)' : 'var(--err)';
     }
     f.addEventListener('submit', function(e){
       e.preventDefault();

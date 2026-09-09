@@ -269,7 +269,7 @@ fill="currentColor" stroke="none">
     var statusEl = document.getElementById('formStatus');
     var btn = f.querySelector('button[type="submit"]');
     function v(id){ var el=document.getElementById(id); return el ? el.value.trim() : ''; }
-    function setStatus(msg, ok){ if(!statusEl) return; statusEl.textContent = msg; statusEl.style.color = ok ? '#2e7d32' : '#c0392b'; }
+    function setStatus(msg, ok){ if(!statusEl) return; statusEl.textContent = msg; statusEl.style.color = ok ? 'var(--ok)' : 'var(--err)'; }
     f.addEventListener('submit', function(e){
       e.preventDefault();
       if(v('company')) return;

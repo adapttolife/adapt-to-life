@@ -33,7 +33,7 @@
 <style>
   /* Sponsorship page — tier ladder */
   .tier-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:clamp(1.1rem,2.4vw,1.7rem); margin-top:clamp(2.4rem,4vw,3.2rem); }
-  .tier{ display:flex; flex-direction:column; border:1.5px solid #e3e0d9; border-radius:16px; padding:1.6rem 1.4rem; background:#fff; }
+  .tier{ display:flex; flex-direction:column; border:1.5px solid #e3e0d9; border-radius:16px; padding:1.6rem 1.4rem; background:var(--paper); }
   .tier.is-popular{ border-color:var(--orange); box-shadow:0 18px 44px rgba(232,93,4,0.13); }
   .tier-flag{ font-family:'Space Mono',monospace; font-size:0.7rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--orange); min-height:1rem; }
   .tier-price{ font-family:'Newsreader',serif; font-size:2rem; line-height:1; margin:0.25rem 0 0; color:#1A1A1A; }
@@ -44,11 +44,11 @@
   .tier-benefits li{ position:relative; padding-left:1.3rem; font-family:'Hanken Grotesk',sans-serif; font-size:0.9rem; color:#333; line-height:1.4; }
   .tier-benefits li::before{ content:""; position:absolute; left:0; top:0.5em; width:7px; height:7px; border-radius:50%; background:var(--orange); }
   .tier .btn{ width:100%; text-align:center; }
-  .founding{ margin-top:clamp(1.1rem,2.4vw,1.7rem); border-radius:16px; padding:clamp(1.8rem,4vw,2.6rem); background:#1A1A1A; color:#fff; display:grid; grid-template-columns:1.15fr 0.85fr; gap:clamp(1.4rem,3vw,2.4rem); align-items:center; }
+  .founding{ margin-top:clamp(1.1rem,2.4vw,1.7rem); border-radius:16px; padding:clamp(1.8rem,4vw,2.6rem); background:#1A1A1A; color:var(--cream); display:grid; grid-template-columns:1.15fr 0.85fr; gap:clamp(1.4rem,3vw,2.4rem); align-items:center; }
   @media (max-width:760px){ .founding{ grid-template-columns:1fr; } }
   .founding .tier-flag{ color:var(--orange); }
-  .founding .tier-price{ color:#fff; font-size:2.4rem; }
-  .founding .tier-name{ color:#fff; }
+  .founding .tier-price{ color:var(--cream); font-size:2.4rem; }
+  .founding .tier-name{ color:var(--cream); }
   .founding .tier-line{ color:rgba(255,255,255,0.7); }
   .founding .tier-benefits li{ color:rgba(255,255,255,0.82); }
   .deploys{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:clamp(1.2rem,3vw,2rem); margin-top:clamp(2.2rem,4vw,3rem); }

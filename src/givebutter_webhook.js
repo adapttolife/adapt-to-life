@@ -1,6 +1,7 @@
 import {
   cfSend, esc, houseShell, houseSignoff, HOUSE_FROM, HOUSE_INBOX, recordTransactionalFailure,
 } from "./email.js";
+import { recordIntake, notifyIntake } from "./intake.js";
 
 const MAX_EMAIL_ATTEMPTS = 4;
 const MAX_WEBHOOK_BYTES = 64 * 1024;
@@ -47,6 +48,33 @@ export async function handleGivebutterWebhook(request, env, ctx) {
     return json({ ok: false, error: "Temporary persistence failure" }, 503);
   }
   if (gift.email) ctx.waitUntil(claimAndThank(env, gift));
+
+  // Donations notified nobody before this. Runs after the gift is durable and
+  // after we have decided to acknowledge Givebutter, so an intake hiccup can
+  // never turn a successful donation into a webhook retry.
+  ctx.waitUntil((async () => {
+    try {
+      const amount = gift.amount != null ? `$${gift.amount}` : "";
+      const donor = [gift.firstName, gift.lastName].filter(Boolean).join(" ").trim();
+      const who = donor || gift.email || "someone";
+      const rec = await recordIntake(env, {
+        site: "adapttolife.org", kind: "donation",
+        name: donor || null, email: gift.email || null,
+        summary: `New donation${amount ? ` ${amount}` : ""} from ${who}`,
+        source: "givebutter",
+        payload: {
+          Amount: amount,
+          Campaign: gift.campaignTitle || "",
+          Recurring: gift.recurring ? "yes" : "",
+          "Givebutter transaction": gift.transactionId || "",
+        },
+      });
+      if (rec.ok) await notifyIntake(env, rec.id);
+    } catch (err) {
+      console.error("donation intake failed (gift itself already recorded):", err);
+    }
+  })());
+
   return json({ ok: true });
 }
 

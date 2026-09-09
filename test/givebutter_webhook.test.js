@@ -220,7 +220,10 @@ test("a successful gift is recorded and receives the ATL follow-up", async () =>
   const s = setup();
   const res = await handleGivebutterWebhook(signedRequest(payload()), s.env, s.ctx);
   assert.equal(res.status, 200);
-  assert.equal(s.scheduled.length, 1, "email work is handed to ctx.waitUntil");
+  // Two now: the donor thank-you and Alec's intake notification. The guarantee is
+  // unchanged — neither blocks the 200 that tells Givebutter not to retry.
+  assert.equal(s.scheduled.length, 2,
+    "the thank-you and the intake notification are both handed to ctx.waitUntil");
   await finish(s);
   assert.equal(s.sent.length, 1);
   const gift = s.donorDb.gifts.get("tx_123");

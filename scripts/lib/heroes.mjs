@@ -70,7 +70,7 @@ const MOSAIC = [
   { n: "bench",      x: 27, y: 30, w: 14, d: 1, r:  0.5, m: "m" },
   { n: "profile",    x: 47, y: 38, w: 10, d: 1, r: -0.8, m: "m" },
   // mid plane
-  { n: "net",        x: 69, y: 0,  w: 17, d: 2, r:  0.5, m: "m" },
+  { n: "toss",       x: 69, y: 0,  w: 17, d: 2, r:  0.5, m: "m" },
   // Swapped 2026-09-09 at Alec's call: Robby (whitecap) comes up to the
   // top-centre slot beside the headline and the laughing frame drops to the
   // bottom-left corner. Same two boxes, same depth plane — only the occupants
@@ -79,7 +79,7 @@ const MOSAIC = [
   { n: "laugh",      x: 5,  y: 74, w: 13, d: 2, r:  0.8, m: "m" },
   { n: "reach",      x: 90, y: 40, w: 14, d: 2, r: -0.6, m: "s" },
   { n: "swing",      x: 54, y: 56, w: 11, d: 2, r:  0.9, m: "m" },
-  { n: "toss",       x: 17, y: 48, w: 13, d: 2, r: -0.7, m: "m" },
+  { n: "net",        x: 17, y: 48, w: 13, d: 2, r: -0.7, m: "m" },
   { n: "seated",     x: 87, y: 70, w: 13, d: 2, r:  0.6, m: "m" },
   { n: "grin",       x: 76, y: 50, w: 12, d: 2, r: -0.5, m: "s" },
   { n: "lanyard",    x: 88, y: 14, w: 11, d: 2, r:  0.6, m: "m" },

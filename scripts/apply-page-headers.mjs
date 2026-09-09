@@ -78,7 +78,18 @@ for (const file of readdirSync(ROOT).filter((f) => f.endsWith(".html"))) {
     html = html.replace('<link rel="stylesheet" href="/css/site.css">',
                         `<link rel="stylesheet" href="/css/site.css">\n${SHEET}`);
   }
-  const VARS_RE = /\n<!-- band:vars -->[\s\S]*?<\/style>/;
+  // MUST swallow EVERY style element after the marker, not the first one.
+  // This block is two <style> elements on a photo page — the band vars, then
+  // the page's own --pg-photo — and the old non-greedy `[\s\S]*?</style>`
+  // stopped at the first `</style>`. So every run replaced the band vars and
+  // APPENDED a second photo block. /apply had accumulated 23 of them.
+  //
+  // It was invisible for as long as the hash never changed: 23 declarations of
+  // the same URL behave exactly like one. The moment the photo was re-cropped
+  // and its content hash moved, the LAST declaration won, still pointed at the
+  // old file, and that file no longer existed — a black header, from a bug that
+  // had been latent through every previous run.
+  const VARS_RE = /\n<!-- band:vars -->(?:\s*<style>[\s\S]*?<\/style>)+/;
   const block = `\n<!-- band:vars -->${VARS}${photo ? photoVars(photo) : ""}`;
   html = VARS_RE.test(html) ? html.replace(VARS_RE, block)
                             : html.replace(SHEET, `${SHEET}${block}`);

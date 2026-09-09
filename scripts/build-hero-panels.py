@@ -633,11 +633,34 @@ def main():
     # already a webp and a second encode only loses detail — so it picks up a
     # content hash with everything else and can never go stale.
     import shutil
-    PAGE_PHOTOS = {"pg-apply.webp": "images/athletes/wheelie-58.webp"}
-    for dst, src in PAGE_PHOTOS.items():
-        shutil.copyfile(os.path.join(os.path.dirname(__file__), "..", "public", src),
-                        os.path.join(DST, dst))
-        print(f"{dst:20s} page photo  {os.path.getsize(os.path.join(DST, dst))/1024:6.1f} KB")
+    # value is either a source path (straight copy) or (source, keep_top) where
+    # keep_top is the fraction of the frame's HEIGHT to keep, measured from the
+    # top.
+    #
+    # pg-apply keeps 0.55. Alec, 2026-09-09: "crop the bag out... naturally the
+    # bag just will be cut out of the picture." The header mirrors this frame so
+    # the smiling face clears the headline, and the mirror also turns the kit
+    # bag's wordmarks backwards in the corner. The bag sits at roughly y 55-72%,
+    # so cutting the bottom 45% removes it at the source instead of fighting it
+    # with background-position — which I tried, and which cannot work: at -6% the
+    # image lifts off the top edge and leaves a black band.
+    #
+    # A CROP MEANS A RE-ENCODE, which the note above deliberately avoided. Paid
+    # knowingly and at quality 92: one generation of webp loss against a visible
+    # piece of someone else's branding printed backwards on our own page.
+    PAGE_PHOTOS = {"pg-apply.webp": ("images/athletes/wheelie-58.webp", 0.55)}
+    for dst, spec in PAGE_PHOTOS.items():
+        src, keep = (spec, None) if isinstance(spec, str) else spec
+        src_path = os.path.join(os.path.dirname(__file__), "..", "public", src)
+        out_path = os.path.join(DST, dst)
+        if keep is None:
+            shutil.copyfile(src_path, out_path)
+        else:
+            im = Image.open(src_path).convert("RGB")
+            im = im.crop((0, 0, im.width, int(round(im.height * keep))))
+            im.save(out_path, "WEBP", quality=92, method=6)
+        print(f"{dst:20s} page photo  {os.path.getsize(out_path)/1024:6.1f} KB"
+              + (f"  cropped to top {int(keep*100)}%" if keep else ""))
     fingerprint()
     with open(os.path.join(DST, "panels.json"), "w") as f:
         json.dump(manifest, f, indent=1, sort_keys=True)

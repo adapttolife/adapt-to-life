@@ -272,10 +272,17 @@
      the vertical anchor that works on desktop does nothing here, and the centre
      lands on the net and a wheel. The clasped hands are at about 52% across and
      the seated player's face at 25%, so 42% holds both. */
-  /* 42% -> 58%: the mirror moves everything to (100 - x), so the value that
-     held the hands and the face before the flip is its complement after it.
-     Left unchanged this framed the empty half. */
-  .hero.pg-band.pg-photo::before{ background-position:58% center; }
+  /* 40%, and the VERTICAL half of this value is inert — worth saying so that
+     nobody edits it expecting movement. Since the frame was cropped to its top
+     55% it is 2.7:1, and a portrait phone box over that scales by HEIGHT under
+     cover: the height fills exactly, there is no vertical slack, and only X
+     does anything. The face therefore always sits at the same height on a
+     phone and the only choice is WHICH slice of the width to show.
+     40% is the slice holding his whole head above the copy. Read in unflipped
+     coordinates on purpose: background-position resolves before scaleX(-1)
+     mirrors the element, so the value targets where he is in the FILE, and the
+     mirror is what carries him to the right of the screen. */
+  .hero.pg-band.pg-photo::before{ background-position:40% center; }
   /* Shorter than the band's, on purpose. A tall box over a landscape frame
      shows a narrow vertical slice and fills the rest with net and spokes;
      bringing the height down widens the slice back onto the two players. */

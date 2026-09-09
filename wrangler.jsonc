@@ -115,7 +115,8 @@
   "d1_databases": [
     { "binding": "WAIVERS_DB", "database_name": "atl-waivers", "database_id": "d34c2394-57f8-44ca-9089-c4569557dbb1" },
     // Spec 32 agent email: threads/messages/inboxes (source of truth).
-    { "binding": "AGENT_MAIL_DB", "database_name": "agent-mail", "database_id": "8609089a-7d9c-4d46-a527-d7f00c5ca050" }
+    { "binding": "AGENT_MAIL_DB", "database_name": "agent-mail", "database_id": "8609089a-7d9c-4d46-a527-d7f00c5ca050" },
+    { "binding": "INTAKE", "database_name": "atl-intake", "database_id": "916e841e-50cc-4661-806a-865cd24fbb53" }
   ],
   // Outbound email via Cloudflare Email Sending (native binding, no API key). Used by
   // src/email.js cfSend for agent replies + waiver receipts. Sender domains
@@ -132,6 +133,46 @@
   // design review before promoting to production. Front-end only — no data bindings
   // and no cron — so staging can never touch prod ClickUp / D1 / R2 / email.
   "env": {
+    // Dedicated review lane for the intake work (2026-09-09). Unlike "staging",
+    // which is deliberately front-end only, this one carries the real data
+    // bindings so a submission can be followed all the way through: form ->
+    // primary store -> intake row -> notification. INTAKE_INBOX points at a
+    // mailbox readable from the box, because that is the only way this path gets
+    // proven rather than assumed. No routes: reachable only on workers.dev.
+    "intake": {
+      "name": "adapt-to-life-intake",
+      "workers_dev": true,
+      "preview_urls": true,
+      "routes": [],
+      "assets": {
+        "directory": "./public",
+        "binding": "ASSETS",
+        "run_worker_first": ["/review", "/review.html", "/admin/*", "/css/*", "/js/*"]
+      },
+      "vars": {
+        "GIVEBUTTER_CAMPAIGN_ID": "683765",
+        "OFFLINE_RAISED": "3004",
+        "STAGING": "1",
+        "INTAKE_INBOX": "stingel@alectranel.com",
+        // The real list ids: a submission has to reach its primary store before
+        // intake runs, so testing the wiring means letting it get there. Tasks
+        // created by a check are deleted afterwards.
+        "CLICKUP_APPLICATIONS_LIST_ID": "901418622126",
+        "CLICKUP_CONTACTS_LIST_ID": "901418639884",
+        "CLICKUP_VOLUNTEERS_LIST_ID": "901419920230",
+        "CLICKUP_RELATIONSHIPS_LIST_ID": "901418931939"
+      },
+      "d1_databases": [
+        { "binding": "INTAKE", "database_name": "atl-intake", "database_id": "916e841e-50cc-4661-806a-865cd24fbb53" },
+        // The real ones: a submission must reach its primary store before intake
+        // runs, so a review lane that cannot write them proves nothing. Rows
+        // created by a check are deleted afterwards.
+        { "binding": "WAIVERS_DB", "database_name": "atl-waivers", "database_id": "d34c2394-57f8-44ca-9089-c4569557dbb1" },
+        { "binding": "AGENT_MAIL_DB", "database_name": "agent-mail", "database_id": "8609089a-7d9c-4d46-a527-d7f00c5ca050" }
+      ],
+      "send_email": [{ "name": "SEND_EMAIL" }],
+      "triggers": { "crons": ["*/10 * * * *"] }
+    },
     "staging": {
       "name": "adapt-to-life-staging",
       "workers_dev": true,

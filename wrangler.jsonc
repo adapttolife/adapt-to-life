@@ -21,7 +21,11 @@
   // build-css runs BEFORE the stamp, because the stamp digests every file in
   // public/ and stamping first would fingerprint stylesheets that do not exist
   // yet. Same ordering reason as Mission Control above.
-  "build": { "command": "npm run build:app && node scripts/build-css.mjs && node scripts/stamp-build.mjs" },
+  // build-asnm pulls the live directory counts onto /adaptive-sports-near-me
+  // and the homepage. It runs BEFORE the stamp like everything else that writes
+  // into public/, and it cannot fail the build: if the directory's API is
+  // unreachable it reuses the committed data/asnm-stats.json and says so.
+  "build": { "command": "npm run build:app && node scripts/build-css.mjs && node scripts/build-asnm.mjs && node scripts/stamp-build.mjs" },
 
   // Live custom domains (apex + www). Cloudflare manages DNS + TLS for these.
   "routes": [

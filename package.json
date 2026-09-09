@@ -19,7 +19,8 @@
     "typecheck": "tsc --noEmit",
     "dev:app": "vite",
     "photos": "${SITE_PY:-/home/agentos/.venvs/vectorize/bin/python} scripts/build-hero-panels.py && node scripts/apply-hero.mjs 1 && node scripts/apply-page-headers.mjs && node scripts/build-volunteer.mjs && node scripts/build-hero-lab.mjs && npm run stamp",
-    "css": "node scripts/build-css.mjs"
+    "css": "node scripts/build-css.mjs",
+    "asnm": "node scripts/build-asnm.mjs"
   },
   "repository": {
     "type": "git",

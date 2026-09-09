@@ -624,13 +624,36 @@ for (const [path, cap] of Object.entries(BUDGET)) {
   const b = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: "reduce" });
   let own = 0, total = 0, reqs = 0;
   const hosts = new Set();
-  b.on("response", async (r) => {
-    let n = 0;
-    try { n = (await r.body()).length; } catch { /* opaque/aborted */ }
-    const h = new URL(r.url()).host;
-    if (h) hosts.add(h);
-    total += n; reqs++;
-    if (/adapt-to-life|adapttolife/.test(h)) own += n;
+  // EVERY HANDLER MUST BE AWAITED BEFORE THE COUNTERS ARE READ. page.on() is
+  // fire-and-forget: nothing waits for these. Each one awaits r.body() before
+  // it increments, so any handler still in flight when the page closed
+  // contributed NOTHING, and this loop read whatever happened to resolve first.
+  //
+  // It did not look like a bug, it looked like a page. Measured against
+  // production on 2026-09-09 the same build reported /donate at 205KB/102 req
+  // in one run and 37KB/8 req in the next — and the homepage reported that
+  // IDENTICAL 37KB/67KB/8req/CLS 0.0096, which is the tell: two different pages
+  // cannot weigh the same to the byte. Both were really reporting "the handful
+  // of responses that finished first".
+  //
+  // A budget that swings 5x fails spuriously AND passes trivially, and this one
+  // did both in a single session — it went green on a homepage measuring 8
+  // requests, which is how a 40-request ceiling gets cleared by measuring
+  // nothing at all.
+  //
+  // r.body() is kept rather than switching to request.sizes(): body() is the
+  // DECOMPRESSED length every one of these caps was calibrated against, and
+  // swapping the metric would silently re-baseline every budget in this file.
+  const inflight = [];
+  b.on("response", (r) => {
+    inflight.push((async () => {
+      let n = 0;
+      try { n = (await r.body()).length; } catch { /* opaque/aborted */ }
+      const h = new URL(r.url()).host;
+      if (h) hosts.add(h);
+      total += n; reqs++;
+      if (/adapt-to-life|adapttolife/.test(h)) own += n;
+    })());
   });
   await b.addInitScript(`window.__cls = 0;
     new PerformanceObserver((l) => { for (const e of l.getEntries()) if (!e.hadRecentInput) window.__cls += e.value; })
@@ -640,6 +663,9 @@ for (const [path, cap] of Object.entries(BUDGET)) {
   // ~14s on a throttled phone. Settle long enough to bill them for it.
   await b.waitForTimeout(9000);
   const cls = await b.evaluate("+window.__cls.toFixed(4)");
+  // Drain before closing: closing the page rejects any outstanding body() and
+  // those responses would vanish from the totals.
+  await Promise.allSettled(inflight);
   await b.close();
 
   const ownKB = Math.round(own / 1024), totalKB = Math.round(total / 1024);

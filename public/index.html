@@ -169,8 +169,8 @@ fill="currentColor" stroke="none">
       <figure class="mw-p p-close-dink d1" style="--r:-0.8deg; --d:240ms;"><img src="/images/hero/panels/close-dink.1ab84d80.webp" width="420" height="560" alt="" loading="lazy" decoding="async"></figure>
       <figure class="mw-p p-paddle d1" style="--r:0.7deg; --d:285ms;"><img src="/images/hero/panels/paddle.bace1a2a.webp" width="420" height="560" alt="" loading="lazy" decoding="async"></figure>
       <figure class="mw-p p-lobby d1" style="--r:-0.6deg; --d:330ms;"><img src="/images/hero/panels/lobby.e9a4a6e6.webp" width="420" height="560" alt="" loading="lazy" decoding="async"></figure>
-      <figure class="mw-p p-turned d1" style="--r:0.5deg; --d:375ms;"><img src="/images/hero/panels/turned.9888a36e.webp" width="380" height="253" alt="" loading="lazy" decoding="async"></figure>
-      <figure class="mw-p p-profile d1" style="--r:-0.8deg; --d:420ms;"><img src="/images/hero/panels/profile.c9cb2813.webp" width="285" height="380" alt="" loading="lazy" decoding="async"></figure>
+      <figure class="mw-p p-turned d1" style="--r:0.5deg; --d:375ms;"><img src="/images/hero/panels/turned.ccfffec1.webp" width="420" height="280" alt="" loading="lazy" decoding="async"></figure>
+      <figure class="mw-p p-profile d1" style="--r:-0.8deg; --d:420ms;"><img src="/images/hero/panels/profile.a2fdda2a.webp" width="315" height="420" alt="" loading="lazy" decoding="async"></figure>
       <div class="mw-haze h1"></div>
       <figure class="mw-p p-net d2" style="--r:0.5deg; --d:465ms;"><img src="/images/hero/panels/net.d04bb69b.webp" width="520" height="347" alt="" loading="lazy" decoding="async"></figure>
       <figure class="mw-p p-laugh d2" style="--r:-0.9deg; --d:510ms;"><img src="/images/hero/panels/laugh.e088f833.webp" width="390" height="520" alt="" loading="lazy" decoding="async"></figure>
@@ -202,8 +202,8 @@ fill="currentColor" stroke="none">
   .mw-p.p-close-dink{ left:66%; top:36%; width:11%; aspect-ratio:420/560; }
   .mw-p.p-paddle{ left:62%; top:80%; width:11%; aspect-ratio:420/560; }
   .mw-p.p-lobby{ left:34%; top:64%; width:11%; aspect-ratio:420/560; }
-  .mw-p.p-turned{ left:27%; top:30%; width:14%; aspect-ratio:380/253; }
-  .mw-p.p-profile{ left:47%; top:38%; width:10%; aspect-ratio:285/380; }
+  .mw-p.p-turned{ left:27%; top:30%; width:14%; aspect-ratio:420/280; }
+  .mw-p.p-profile{ left:47%; top:38%; width:10%; aspect-ratio:315/420; }
   .mw-p.p-net{ left:69%; top:0%; width:17%; aspect-ratio:520/347; }
   .mw-p.p-laugh{ left:44%; top:4%; width:12%; aspect-ratio:390/520; }
   .mw-p.p-whitecap{ left:5%; top:74%; width:13%; aspect-ratio:390/520; }
@@ -219,34 +219,24 @@ fill="currentColor" stroke="none">
   .mw-p.p-forehand{ left:62%; top:64%; width:27%; aspect-ratio:820/547; }
   @media (max-width:900px){
     .mw-p{ display:none; }
-    .mw-p.p-dink{ display:block; order:0; position:static; left:auto; top:auto; right:auto; bottom:auto; width:auto; height:auto; aspect-ratio:3/2; transform:none; border-radius:0; box-shadow:none; }
-    .mw-p.p-dink img{ object-position:50% 0%; }
-    .mw-p.p-smile-close{ display:block; order:1; position:static; left:auto; top:auto; right:auto; bottom:auto; width:auto; height:auto; aspect-ratio:3/2; transform:none; border-radius:0; box-shadow:none; }
+    .mw-p.p-dink{ display:block; order:0; position:static; left:auto; top:auto; right:auto; bottom:auto; width:auto; height:auto; aspect-ratio:3/4; transform:none; border-radius:0; box-shadow:none; }
+    .mw-p.p-dink img{ object-position:50% 5%; }
+    .mw-p.p-smile-close{ display:block; order:1; position:static; left:auto; top:auto; right:auto; bottom:auto; width:auto; height:auto; aspect-ratio:3/4; transform:none; border-radius:0; box-shadow:none; }
     .mw-p.p-smile-close img{ object-position:50% 7%; }
-    .mw-p.p-net{ display:block; order:2; position:static; left:auto; top:auto; right:auto; bottom:auto; width:auto; height:auto; aspect-ratio:3/2; transform:none; border-radius:0; box-shadow:none; }
-    .mw-p.p-net img{ object-position:50% 0%; }
-    .mw-p.p-reach{ display:block; order:3; position:static; left:auto; top:auto; right:auto; bottom:auto; width:auto; height:auto; aspect-ratio:3/2; transform:none; border-radius:0; box-shadow:none; }
-    .mw-p.p-reach img{ object-position:50% 22%; }
-    .mw-p.p-turned{ display:block; order:4; position:static; left:auto; top:auto; right:auto; bottom:auto; width:auto; height:auto; aspect-ratio:3/2; transform:none; border-radius:0; box-shadow:none; }
+    .mw-p.p-turned{ display:block; order:2; position:static; left:auto; top:auto; right:auto; bottom:auto; width:auto; height:auto; aspect-ratio:3/4; transform:none; border-radius:0; box-shadow:none; }
     .mw-p.p-turned img{ object-position:50% 0%; }
-    .mw-p.p-profile{ display:block; order:5; position:static; left:auto; top:auto; right:auto; bottom:auto; width:auto; height:auto; aspect-ratio:3/2; transform:none; border-radius:0; box-shadow:none; }
+    .mw-p.p-profile{ display:block; order:3; position:static; left:auto; top:auto; right:auto; bottom:auto; width:auto; height:auto; aspect-ratio:3/4; transform:none; border-radius:0; box-shadow:none; }
     .mw-p.p-profile img{ object-position:50% 37%; }
-    .mw-p.p-brian{ display:block; order:6; position:static; left:auto; top:auto; right:auto; bottom:auto; width:auto; height:auto; aspect-ratio:3/2; transform:none; border-radius:0; box-shadow:none; }
+    .mw-p.p-brian{ display:block; order:4; position:static; left:auto; top:auto; right:auto; bottom:auto; width:auto; height:auto; aspect-ratio:3/4; transform:none; border-radius:0; box-shadow:none; }
     .mw-p.p-brian img{ object-position:50% 19%; }
-    .mw-p.p-forehand{ display:block; order:7; position:static; left:auto; top:auto; right:auto; bottom:auto; width:auto; height:auto; aspect-ratio:3/2; transform:none; border-radius:0; box-shadow:none; }
+    .mw-p.p-forehand{ display:block; order:5; position:static; left:auto; top:auto; right:auto; bottom:auto; width:auto; height:auto; aspect-ratio:3/4; transform:none; border-radius:0; box-shadow:none; }
     .mw-p.p-forehand img{ object-position:50% 0%; }
-    .mw-p.p-laugh{ display:block; order:8; position:static; left:auto; top:auto; right:auto; bottom:auto; width:auto; height:auto; aspect-ratio:3/2; transform:none; border-radius:0; box-shadow:none; }
-    .mw-p.p-laugh img{ object-position:50% 5%; }
-    .mw-p.p-grin{ display:block; order:9; position:static; left:auto; top:auto; right:auto; bottom:auto; width:auto; height:auto; aspect-ratio:3/2; transform:none; border-radius:0; box-shadow:none; }
-    .mw-p.p-grin img{ object-position:50% 26%; }
-    .mw-p.p-whitecap{ display:block; order:10; position:static; left:auto; top:auto; right:auto; bottom:auto; width:auto; height:auto; aspect-ratio:3/2; transform:none; border-radius:0; box-shadow:none; }
-    .mw-p.p-whitecap img{ object-position:50% 47%; }
-    .mw-p.p-lanyard{ display:block; order:11; position:static; left:auto; top:auto; right:auto; bottom:auto; width:auto; height:auto; aspect-ratio:3/2; transform:none; border-radius:0; box-shadow:none; }
-    .mw-p.p-lanyard img{ object-position:50% 49%; }
     .mw-p.p-smile-close img{ filter:grayscale(1) brightness(1) contrast(1.04); }
     .mw-p.p-dink img{ filter:grayscale(1) brightness(1) contrast(1.04); }
     .mw-p.p-brian img{ filter:grayscale(1) brightness(1) contrast(1.04); }
     .mw-p.p-forehand img{ filter:grayscale(1) brightness(1) contrast(1.04); }
+    .mw-p.p-turned img{ filter:grayscale(1) brightness(1) contrast(1.04); }
+    .mw-p.p-profile img{ filter:grayscale(1) brightness(1) contrast(1.04); }
   }
 </style>
 

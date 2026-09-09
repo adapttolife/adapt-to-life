@@ -74,7 +74,7 @@ DEPTH_DIM = {"front": 1.00, "mid": 0.62, "back": 0.40}
 # problem is not a layout preference and should not be defended by a comment.
 WITHDRAWN = {"JLA_6122.jpg", "JLA_6123.jpg", "JLA_6127.jpg"}
 
-SIZE_OVERRIDE = {"turned": 380, "profile": 380, "lanyard": 400}
+SIZE_OVERRIDE = {"turned": 420, "profile": 420, "lanyard": 400}
 
 # name, source frame, aspect (w/h), vertical anchor (0 = top, 1 = bottom),
 # horizontal anchor, ZOOM, depth role
@@ -125,8 +125,21 @@ PANELS = [
     # with the same light, so they hold the column up and give the grid its
     # flexbox slack — and neither one loses a face to the type, because neither
     # one is offering a face. A portrait in this slot is a portrait thrown away.
-    ("turned",       "JLA_5876.jpg", 3/2,  0.38, 0.50, 0.72, "back"),
-    ("profile",      "JLA_5989.jpg", 3/4,  0.40, 0.52, 0.80, "back"),
+    # FRONT plane, not back. On the desktop wall these sit far back and a
+    # back-plane grade was right. On the phone the grid went from twelve cells
+    # to six, so each cell doubled in height and the slab now covers 41% of
+    # these rather than 81% — more than half of each one shows. A back-plane
+    # frame is baked to 40% brightness, so what showed was a murky grey band
+    # between two rows of real photographs, which is the same "cannot see
+    # anything" Alec was objecting to, just moved down the page. A frame that
+    # is visible has to be a photograph.
+    #
+    # Sized at 420 in SIZE_OVERRIDE, which is what they actually paint: the
+    # phone cell is 195 CSS px at 2x = 390 device px, and the widest desktop
+    # slot is 14% of 1440 at 2x = 404. 560 was 8KB of pixels nobody resolves,
+    # and it put the homepage over its own-bytes budget.
+    ("turned",       "JLA_5876.jpg", 3/2,  0.38, 0.50, 0.72, "front"),
+    ("profile",      "JLA_5989.jpg", 3/4,  0.40, 0.52, 0.80, "front"),
 
     # --- widening the rotation ------------------------------------------------
     # Alec: "widen the rotation but not the basketball kids." Four frames from

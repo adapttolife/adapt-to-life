@@ -134,22 +134,34 @@ const BANNER = [
 // nothing ever touches, and Alec asked for exactly that: "I don't want to cut
 // off her smile in the top-right picture."
 const MOSAIC_GRID = [
-  // The top row is the only pair of cells nothing ever touches, so it gets the
-  // two strongest FRONT-plane frames — and Aubrey is the right-hand one because
-  // Alec named that cell: "I don't want to cut off her smile in the top-right
-  // picture." Both are front plane on purpose: depth is baked into the files,
-  // so a mid-plane frame here renders at 62% brightness next to a full-strength
-  // neighbour and reads as a mistake rather than as distance.
-  "dink",       "smile-close",
-  "net",        "reach",         // clipped ~10% at the foot; action, not faces
-  "turned",     "profile",       // BUFFER: 81% behind the slab, by design
+  // SIX cells, not twelve. Alec, 2026-09-09: "the mobile design the main banner
+  // lower half is too crammed, we don't need all those pictures, it's almost
+  // too many where we now cannot see anything. Just a bunch of cropped
+  // pictures."
+  //
+  // He is describing two faults that compounded. Twelve cells at 390px meant
+  // each was 195x130, and the lower eight were mid- and back-plane panels
+  // carrying their depth dimming — small AND dark AND cropped hard, which is
+  // exactly "cannot see anything". Halving the count doubles the cell to
+  // 195x260 and lets every remaining one be a FRONT-plane frame, so nothing on
+  // the phone is a dimmed photograph pretending to be depth.
+  //
+  // The four visible cells are the four lit faces and nothing else. The two in
+  // the middle are the buffers, still 80% behind the slab, still doing the job
+  // they were put there to do.
+  "dink",       "smile-close",   // clear
+  "turned",     "profile",       // BUFFER: behind the slab, by design
   "brian",      "forehand",      // clear
-  "laugh",      "grin",          // clear
-  "whitecap",   "lanyard",       // clear
 ];
 // All four must be FRONT-plane panels: depth is baked into the files now, so a
 // "lit" cell drawn from a pre-darkened mid or back file would still be dim.
-const MOSAIC_GRID_LIT = new Set(["smile-close", "dink", "brian", "forehand"]);
+// All six, now that there are only six. With twelve cells a lit/dim split was
+// what made four faces read instead of twelve competing; with six big cells
+// there is nothing to compete and a dimmed cell just looks broken. The two
+// buffers still recede on their own — a back turned to camera and a man in
+// profile are quiet subjects without needing to be darkened into one.
+const MOSAIC_GRID_LIT = new Set(["smile-close", "dink", "brian", "forehand",
+                                 "turned", "profile"]);
 
 // Where the crop window sits in each panel when the grid squashes a portrait
 // into a 3:2 cell. Default is 50%, which centres the window on the middle of
@@ -157,18 +169,12 @@ const MOSAIC_GRID_LIT = new Set(["smile-close", "dink", "brian", "forehand"]);
 // from a matte of each finished panel — the top of the subject plus a little
 // headroom — so the window lands on the face rather than the torso.
 const MOSAIC_GRID_POS = {
-  "dink": 0,
+  "dink": 5,
   "smile-close": 7,
-  "net": 0,
-  "reach": 22,
   "turned": 0,
   "profile": 37,
   "brian": 19,
-  "forehand": 0,
-  "laugh": 5,
-  "grin": 26,
-  "whitecap": 47,
-  "lanyard": 49
+  "forehand": 0
 };
 
 const BANNER_PHONE = {
@@ -237,7 +243,7 @@ const layoutCss = (rows, phone, mode) => {
   // width:auto }` loses and the "grid" renders as nineteen tiny scattered
   // rectangles. It did. The reset therefore ships inside each cell's own rule.
   const RESET = "position:static; left:auto; top:auto; right:auto; bottom:auto; " +
-                "width:auto; height:auto; aspect-ratio:3/2; transform:none; " +
+                "width:auto; height:auto; aspect-ratio:3/4; transform:none; " +
                 "border-radius:0; box-shadow:none;";
   const cells = MOSAIC_GRID.flatMap((n, i) => [
     `    .mw-p.p-${n}{ display:block; order:${i}; ${RESET} }`,

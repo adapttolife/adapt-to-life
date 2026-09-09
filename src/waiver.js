@@ -8,6 +8,7 @@ import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import { cfSend, houseShell, recordTransactionalFailure } from "./email.js";
 import { verifyTurnstile } from "./turnstile.js";
 import { getGoogleAccessToken } from "./google.js";
+import { recordIntake } from "./intake.js";
 
 // ---------------------------------------------------------------------------
 // Document model — SINGLE SOURCE OF TRUTH for both the on-screen text and the
@@ -167,6 +168,23 @@ export async function handleWaiver(request, env) {
     // sendReceiptEmail records its own failures (it swallows them internally).
     // This guards only against an unexpected throw on the way in.
     console.error("waiver email failed:", err);
+  }
+
+  // Recorded in the shared intake table so a signed release appears alongside
+  // every other submission, and stamped as already notified: the receipt above
+  // BCCs hello@adapttolife.org, so a second email would say the same thing
+  // twice. Identity and a pointer only — the release itself is the compliance
+  // record and lives in R2 and the Shared Drive, not in a CRM tab.
+  try {
+    await recordIntake(env, {
+      site: "adapttolife.org", kind: "waiver", name, email,
+      summary: `Signed release: ${name || email}`,
+      source: `${org} ${doc?.title || "release"}`.trim(),
+      payload: { Organisation: org, Document: doc?.title || "", Verify: `/api/waiver/${id}/verify` },
+      alreadyNotified: true,
+    });
+  } catch (err) {
+    console.error("waiver intake record failed (release itself already stored):", err);
   }
 
   return json({ ok: true, id, download: `/api/waiver/${id}`, verify: `/api/waiver/${id}/verify` });

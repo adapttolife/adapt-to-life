@@ -16,6 +16,7 @@ import { syncClickUp } from "./qr_clickup.js";
 import { fundPosition } from "./fund.js";
 import { handleGivebutterWebhook } from "./givebutter_webhook.js";
 import { reconcileDonorJourney } from "./givebutter_reconcile.js";
+import { recordIntake, notifyIntake, sweepIntake, runIntakeCanary, canaryIsFresh } from "./intake.js";
 
 const LEAD_TYPES = [
   "Funding for an athlete",
@@ -173,7 +174,7 @@ export default {
         return json({ ok: false, error: "Method not allowed" }, 405);
       }
       if (await overFormLimit(env, request)) return json(RATE_LIMITED, 429);
-      return handleSubscribe(request, env);
+      return handleSubscribe(request, env, ctx);
     }
 
     // Givebutter signs successful-transaction deliveries. The handler records
@@ -277,6 +278,23 @@ export default {
   // on Givebutter's own transaction id, so a repeated or overlapping run can
   // never double-count a donation.
   async scheduled(event, env, ctx) {
+    // Intake first: re-notify anything owed, then run the end-to-end canary when
+    // none has passed recently. Same one cron the rest of this Worker uses, so
+    // there is no extra schedule that can quietly stop. Guarded so a Worker
+    // without the INTAKE binding (an old preview) simply skips it.
+    if (env.INTAKE) {
+      ctx.waitUntil((async () => {
+        await sweepIntake(env).catch((err) => console.error("intake sweep failed:", err));
+        if (!(await canaryIsFresh(env, INTAKE_CANARY_MAX_AGE_H))) {
+          const r = await runIntakeCanary(env, INTAKE_SITE).catch((err) => {
+            console.error("intake canary failed:", err);
+            return { ok: false, stage: "threw" };
+          });
+          console.log(`intake canary: ok=${r.ok} stage=${r.stage}`);
+        }
+      })());
+    }
+
     ctx.waitUntil(runDriveBacklog(env));
     ctx.waitUntil(runShopCrmBacklog(env).catch((err) => console.error("shop CRM sync crashed:", err)));
     ctx.waitUntil(
@@ -396,6 +414,28 @@ function after(ctx, promise) {
   }
 }
 
+/* One line at every call site, one place for the contract. Records the
+   submission durably, then notifies. Returns a promise the caller hands to
+   after(), so notification never sits on the response path.
+
+   Deliberately swallows its own failures: for every form here the primary store
+   is elsewhere (ClickUp, beehiiv, Drive, Givebutter) and the submission has
+   already succeeded by the time this runs. An intake hiccup must never turn a
+   saved submission into a failed one — and it cannot lose anything either, because
+   an unnotified row is picked up by the sweep cron. */
+async function tellAlec(env, entry) {
+  try {
+    const rec = await recordIntake(env, entry);
+    if (rec.ok) await notifyIntake(env, rec.id);
+  } catch (err) {
+    console.error("intake failed (submission itself already saved):", err);
+  }
+}
+
+const INTAKE_SITE = "adapttolife.org";
+const INTAKE_SITE_SHOP = "adaptbodyshop.com";
+const INTAKE_CANARY_MAX_AGE_H = 6;
+
 async function handleContact(request, env, ctx) {
   let data;
   try {
@@ -455,6 +495,12 @@ async function handleContact(request, env, ctx) {
   // The receipt is a courtesy on top of a saved record and must never be able to
   // turn a successful submission into a failed one, or a slow one.
   after(ctx, sendContactReceipt(env, { name, email, message, type }));
+  after(ctx, tellAlec(env, {
+    site: INTAKE_SITE, kind: "contact", name, email,
+    summary: `New contact: ${name || email}`,
+    source: source || "adapttolife.org contact form",
+    payload: { Type: type || "", Message: message },
+  }));
 
   return json({ ok: true });
 }
@@ -509,6 +555,15 @@ async function handleApply(request, env, ctx) {
   // but it must not be able to fail the submission OR delay it. Sent after the
   // response, same as the contact receipt.
   after(ctx, sendApplyReceipt(env, { name, email, sport: str(data.sport), need: str(data.need) }));
+  // Grant applications carry material that deserves a narrower audience than the
+  // CRM (see GRANTS_INBOX). The intake row records identity and the fact of the
+  // application; the story stays in ClickUp where the reviewers are.
+  after(ctx, tellAlec(env, {
+    site: INTAKE_SITE, kind: "application", name, email,
+    summary: `New Hustle & Heart application: ${name || email}`,
+    source: "adapttolife.org grant application",
+    payload: { Sport: str(data.sport) },
+  }));
 
   return json({ ok: true });
 }
@@ -579,6 +634,12 @@ async function handleVolunteer(request, env, ctx) {
   // Same contract as the other two: the record is already saved, so the receipt
   // is sent after the response and can never fail or slow the submission.
   after(ctx, sendVolunteerReceipt(env, { name, email, roles, bring }));
+  after(ctx, tellAlec(env, {
+    site: INTAKE_SITE, kind: "volunteer", name, email,
+    summary: `New volunteer: ${name || email}`,
+    source: "adapttolife.org volunteer form",
+    payload: { Roles: Array.isArray(roles) ? roles.join(", ") : roles, Bringing: bring },
+  }));
 
   return json({ ok: true });
 }
@@ -594,7 +655,7 @@ export function normalizeRoles(raw) {
 }
 
 // Newsletter / email capture -> beehiiv. API key + publication id are Worker secrets.
-async function handleSubscribe(request, env) {
+async function handleSubscribe(request, env, ctx) {
   let data;
   try {
     const ct = request.headers.get("content-type") || "";
@@ -654,6 +715,13 @@ async function handleSubscribe(request, env) {
     console.error("beehiiv error", res.status, await safeText(res));
     return json({ ok: false, error: "Could not sign you up right now. Please email hello@adapttolife.org." }, 502);
   }
+
+  after(ctx, tellAlec(env, {
+    site: INTAKE_SITE, kind: "newsletter", email,
+    summary: `New newsletter signup: ${email}`,
+    source,
+    payload: {},
+  }));
 
   return json({ ok: true });
 }

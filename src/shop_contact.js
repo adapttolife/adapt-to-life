@@ -35,6 +35,7 @@ import {
 } from "./email.js";
 import { getGoogleAccessToken, SHEETS_SCOPE } from "./google.js";
 import { verifyTurnstile } from "./turnstile.js";
+import { recordIntake, notifyIntake } from "./intake.js";
 
 // How long we tell a customer they will wait. Alec's call, 2026-09-04: two
 // business days. It is a promise printed on a public page and repeated in every
@@ -159,6 +160,24 @@ export async function handleShopContact(request, env, ctx) {
   }
 
   after(ctx, deliver(env, row));
+  // Body Shop messages already email hello@adaptbodyshop.com. Intake adds the
+  // durable cross-property record and the notification to the one inbox Alec
+  // watches (hello@adapttolife.org, 2026-09-09), so nothing depends on him
+  // checking two mailboxes.
+  after(ctx, (async () => {
+    try {
+      const rec = await recordIntake(env, {
+        site: "adaptbodyshop.com", kind: "shop-contact",
+        name: row.name, email: row.email,
+        summary: `New Adapt Body Shop message: ${row.name || row.email}`,
+        source: row.source || "adaptbodyshop.com contact form",
+        payload: { Topic: row.topic, Order: row.orderNumber, Message: row.message },
+      });
+      if (rec.ok) await notifyIntake(env, rec.id);
+    } catch (err) {
+      console.error("shop contact intake failed (message already saved):", err);
+    }
+  })());
 
   return json({ ok: true, id, reply_window: REPLY_WINDOW });
 }

@@ -78,7 +78,12 @@ test("the contact response does not wait for the receipt to send", async () => {
     assert.ok(elapsed < SLOW_MS / 2,
       `response took ${elapsed}ms with a ${SLOW_MS}ms send — the receipt is back on the critical path`);
     assert.equal(finished.length, 0, "send had not finished when the response was returned");
-    assert.equal(scheduled.length, 1, "the send was handed to ctx.waitUntil");
+    // Two now: the submitter's receipt and Alec's intake notification. What this
+    // asserts is unchanged — every piece of mail is deferred, none of it blocks
+    // the response. Asserting >= 1 rather than an exact count would let a future
+    // change put a send back on the critical path without failing here.
+    assert.equal(scheduled.length, 2,
+      "both the receipt and the intake notification were handed to ctx.waitUntil");
 
     // And it does still actually complete afterwards.
     await Promise.all(scheduled);

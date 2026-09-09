@@ -212,12 +212,15 @@
     var lifted = (opts || {}).lifted;
 
     load(function (store) {
-      // Release the reserved height the moment we know the answer, whether or
-      // not there is anything to show. Holding it open on an empty band would
-      // trade a jump for a permanent hole.
-      host.classList.remove("camp-pending");
+      // Release the reserved height only ONCE THE CONTENT IS IN, not on
+       // arrival of the data. Removing it first collapsed the box to nothing
+       // for the frame between the class going and the markup landing, so the
+       // page shifted DOWN and then back UP — measured on /donate as a section
+       // going 67px -> 0 -> 67 at about 1.5s, and CLS 0.247 on the page where
+       // somebody is entering a card. The reservation exists precisely to
+       // cover this gap; releasing it early gave the jump back.
       var c = store && store.campaigns[0];
-      if (!c) return;
+      if (!c) { host.classList.remove("camp-pending"); return; }
 
       var a = el("a", "camp-band" + (lifted ? " lifted" : ""));
       a.href = c.page || "/send-6";
@@ -245,6 +248,7 @@
       card.appendChild(side);
       a.appendChild(card);
       host.appendChild(a);
+      host.classList.remove("camp-pending");
 
       // The live figure lands last. If Givebutter is unreachable the goal
       // stands on its own rather than publishing a $0 we cannot vouch for.
@@ -288,8 +292,9 @@
     }
 
     load(function (store) {
-      host.classList.remove("camp-pending");
-      if (!store) return hideSection();
+      // Same ordering rule as above: the reservation comes off after the band
+      // is populated (or the section is hidden), never before.
+      if (!store) { host.classList.remove("camp-pending"); return hideSection(); }
 
       var done = store.drives
         .filter(function (d) {
@@ -334,6 +339,7 @@
       card.appendChild(fig);
       a.appendChild(card);
       host.appendChild(a);
+      host.classList.remove("camp-pending");
     });
   }
 

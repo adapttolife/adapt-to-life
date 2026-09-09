@@ -164,6 +164,13 @@
     linear-gradient(0deg,   rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.24) 13%, rgba(0,0,0,0) 28%),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.14'/%3E%3C/svg%3E");
 }
+/* NOT tried again: pinning this header's height on desktop. Givebutter's form
+   oscillates 508 -> 709 -> 508px while its iframe boots, and a fixed height
+   turns that swing into the panel's footer being CLIPPED and restored instead
+   of moved — the same CLS, and a payment form briefly cut off. Trading a
+   layout shift for a clipped checkout is a worse page, so the height stays a
+   minimum. See the commit for what was tried and measured. */
+
 /* The copy field hugs the left column only — the right side is the card's. And
    it is LIGHTER here than on the band pages: the mosaic is already graded to a
    mean luma of ~0.10 against the band's ~0.17, so the standard 0.86 field on

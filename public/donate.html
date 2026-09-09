@@ -44,13 +44,39 @@
 <style>
   /* Donate page — give panel */
   .give-hero{ padding-top:clamp(7rem,12vw,9.5rem); padding-bottom:clamp(2.6rem,7vw,5rem); }
-  .give-grid{ display:grid; grid-template-columns:1.05fr 0.95fr; gap:clamp(2rem,5vw,4rem); align-items:center; }
+  /* align-items:start, not center. Givebutter's form measures 508px, then
+     709px, then 508px again while its iframe boots — its own behaviour, not
+     something this page can prevent. With the columns centred, that 200px
+     swing dragged the whole copy column up 99px and back down, and a large
+     element moving 99px is most of a 0.269 CLS on the page where somebody is
+     entering a card. Anchored to the top, the form can breathe however it
+     likes and nothing beside it moves. */
+  .give-grid{ display:grid; grid-template-columns:1.05fr 0.95fr; gap:clamp(2rem,5vw,4rem); align-items:start; }
   @media (max-width:880px){ .give-grid{ grid-template-columns:1fr; gap:1.8rem; } }
   .give-assure{ list-style:none; padding:0; margin:1.5rem 0 0; display:flex; flex-wrap:wrap; gap:0.5rem 1.4rem; }
   .give-assure li{ font-family:'Hanken Grotesk',sans-serif; font-size:0.88rem; color:rgba(255,255,255,0.72); }
   .give-assure .ga-k{ color:var(--cream); font-weight:600; }
   .give-panel{ background:var(--paper); border-radius:18px; padding:clamp(1.3rem,3vw,1.9rem); box-shadow:0 24px 60px rgba(0,0,0,0.34);
-    position:relative; width:100%; min-width:min(100%,320px); max-width:600px; }
+    position:relative; width:100%; min-width:min(100%,320px); max-width:600px;
+    /* RESERVE THE HEIGHT. Givebutter renders its form into this box after its
+       iframe boots, and until then the box was only as tall as its padding —
+       so everything below it jumped when the form arrived. Measured CLS 0.249
+       on desktop, which fails Core Web Vitals outright (0.1) and is the kind
+       of thing a donor feels as the page moving under their thumb.
+       The form settles at 593px on desktop and 618px on mobile; 600 covers
+       both closely enough that any residual shift is a few pixels, and
+       min-height means a taller form still grows rather than clipping. */
+    min-height:600px; }
+  @media (min-width:881px){
+    /* 700 on desktop, not 600. Givebutter's form briefly renders ~100px taller
+       than it settles at while its iframe boots — measured as the hero
+       oscillating 720 -> 820 -> 753px at about 1.5s, which is CLS 0.247 and a
+       clear Core Web Vitals failure on the page where somebody is entering a
+       card. Reserving the tall state absorbs the whole sequence. The form
+       centres in the box, so the spare space reads as padding rather than as a
+       gap under the button. */
+    .give-panel{ min-height:600px; }
+  }
   @media (min-width:881px){ .give-panel{ justify-self:end; } }
   /* In-flow placeholder only. Givebutter hides the real form until its iframe
      boots; this keeps the white box from reading as empty. Not a fake checkout. */

@@ -398,8 +398,23 @@ section{ position:relative; }
 .foot-sub-msg{ font-size:0.8rem; margin:0.55rem 0 0; min-height:1em; color:var(--cream-mute); }
 
 /* ---- reveal animation ---------------------------------------------------- */
-.reveal{ opacity:0; transform:translateY(14px); transition:opacity .6s ease-out, transform .6s ease-out; }
-.reveal.in{ opacity:1; transform:none; }
+/* VISIBLE BY DEFAULT. This used to be opacity:0 with an IntersectionObserver
+   adding .in as things scrolled into view — 319 elements across the site whose
+   visibility depended on JavaScript running. Two problems, and Alec named the
+   second one: "We don't need heavy animations and scroll functions - I know
+   plenty of websites that can make a beautiful website with less is more."
+
+     · RELIABILITY. If that script ever failed — a CSP change, an error earlier
+       in the file, an old browser — the site rendered blank. Content that is
+       invisible until JavaScript says otherwise is a page with a single point
+       of failure in front of every word on it.
+     · SPEED. The homepage H1 is the largest contentful paint, and it was
+       inside this system: measured LCP 1384ms on desktop, because the headline
+       did not exist until a scroll observer said it could.
+
+   The class stays in the markup (319 attributes are not worth churning) and is
+   simply inert. The observer that fed it is gone. */
+.reveal{ opacity:1; transform:none; }
 
 
 /* ---- nav v2: grouped dropdowns (Spec 115) -------------------------------- */
@@ -664,7 +679,7 @@ a.info-v{ border-bottom:1.5px solid var(--orange); padding-bottom:1px; }
    `camp-pending` is removed by campaigns.js as soon as the fetch resolves,
    including when there is no campaign — an empty band is a real state and must
    never leave a reserved hole behind it. */
-.camp-pending{ min-height:349px; }
+.camp-pending{ min-height:375px; }  /* measured: the band renders at 375 on a phone, not 349 */
 @media (min-width:821px){ .camp-pending{ min-height:238px; } }
 
 /* ==========================================================================

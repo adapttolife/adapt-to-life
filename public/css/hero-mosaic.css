@@ -172,14 +172,16 @@
 
 /* ---- entrance ------------------------------------------------------------ */
 /* The wall assembles from the back forward, then the type arrives. */
-.hero-wall-photo .mw-p{ opacity:0; transform:rotate(var(--r,0deg)) translateY(20px) scale(1.02); }
-.hero-wall-photo.lit .mw-p{
-  opacity:1; transform:rotate(var(--r,0deg)) scale(1);
-  transition:opacity .8s ease var(--d,0ms), transform 1s cubic-bezier(.19,.9,.24,1) var(--d,0ms); }
-.hero-wall-photo .mw-rise{ opacity:0; transform:translateY(14px); }
-.hero-wall-photo.lit .mw-rise{
-  opacity:1; transform:none;
-  transition:opacity .8s ease var(--d,0ms), transform .9s cubic-bezier(.19,.9,.24,1) var(--d,0ms); }
+/* The photographs are visible by default too, for the same reason: the wall is
+   the homepage's entire argument, and it should not depend on a script to
+   exist. What is left is a short fade the .lit class applies ON TOP of an
+   already-painted wall — an enhancement, not a precondition. */
+.hero-wall-photo .mw-p{ opacity:1; transform:rotate(var(--r,0deg)); }
+.hero-wall-photo.lit .mw-p{ opacity:1; transform:rotate(var(--r,0deg)); }
+/* The headline paints immediately — it is this page's largest contentful
+   paint, and hiding it behind an animation cost 1.2 seconds of it. */
+.hero-wall-photo .mw-rise{ opacity:1; transform:none; }
+.hero-wall-photo.lit .mw-rise{ opacity:1; transform:none; }
 
 @media (prefers-reduced-motion: reduce){
   .hero-wall-photo .mw-p,

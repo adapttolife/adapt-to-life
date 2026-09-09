@@ -6,8 +6,9 @@
 # Measured 2026-07-25 on prod: four 304 round-trips per page view for files that
 # had not changed. That is a round-trip of latency on every click, paid forever.
 #
-# The constraint that shapes the rest of this file: the site has NO build step
-# and NO content hashing. /css/site.css keeps its name across deploys, so it can
+# The constraint that shapes the rest of this file: the site has no build step,
+# and MOST of it has no content hashing. The hero panels are the exception as of
+# 2026-09-08 and are treated accordingly below. /css/site.css keeps its name across deploys, so it can
 # never be `immutable` — a returning visitor would be pinned to old CSS with no
 # way to break out. So the split below is by "how bad is one stale view":
 #
@@ -39,6 +40,22 @@
 
 # Photos, logos, QR art. Replace by renaming, never in place — a visitor who
 # already has the old bytes will not ask again for up to 30 days.
+#
+# TRIED AND REJECTED, 2026-09-09: the hero panels are content-hashed now
+# (panels/<name>.<hash>.webp), so they could in principle be `immutable` with a
+# one-year max-age. Two things stopped it, both measured with curl -I rather
+# than assumed:
+#   1. Workers Assets applies EVERY matching rule and CONCATENATES them, so a
+#      specific /images/hero/panels/* rule alongside this one emitted
+#      `max-age=2592000, max-age=31536000, immutable` and the browser took the
+#      first. The specific rule was silently doing nothing.
+#   2. _headers has no way to exclude a subpath, and its `*` matches across
+#      slashes — so /images/*.webp re-collides with the panels too. Making the
+#      paths genuinely disjoint means moving the panels out of /images
+#      entirely, which is a URL change across the generator and the manifest.
+# And the prize is small: within 30 days a browser re-fetches neither, so
+# `immutable` only saves a revalidation on an explicit reload. Not worth an
+# asset-path migration. Recorded here so nobody re-derives it.
 /images/*
   Cache-Control: public, max-age=2592000
 

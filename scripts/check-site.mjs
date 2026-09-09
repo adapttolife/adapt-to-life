@@ -424,6 +424,40 @@ for (const path of ["/donate", "/hustle-and-heart"]) {
 // ratchet is not loosened in any way that matters: our real content would have
 // to grow by 4KB, 4% in one go, to trip it, and the intermittent red build that
 // was training everyone to ignore this check is gone.
+// ==========================================================================
+// WHAT THESE NUMBERS ARE FOR — re-ruled by Alec, 2026-09-09.
+//
+//   "I think I'm okay with being over budget on kilobytes, I care more about
+//    quality and functionality. Make sure we have the best website for what we
+//    want and a stale rule didn't hurt us more than help us."
+//
+// So the caps are re-scoped. They are REGRESSION DETECTORS, not a quality
+// constraint. They exist to catch the accident — a 5MB PNG dropped in, a
+// third-party script that quietly doubles, an image shipped at 4x the size it
+// paints. They do NOT exist to make anyone choose a worse version of the site.
+//
+// I audited whether the old framing had already cost us anything, because that
+// was the question Alec actually asked. What I found:
+//
+//   · IMAGE QUALITY: never compromised. Every panel is sized to what it
+//     actually paints (the front four resolve at ~390 device px and ship at
+//     820), so nothing upscales. And at a 100% crop, q68 / q78 / q88 on a
+//     front-plane face are indistinguishable — these are monochrome frames
+//     with smooth tone and WebP handles them well. q88 would cost +52KB per
+//     panel for nothing visible. Every byte decision on the images was driven
+//     by measurement, and would have been the same with no cap at all.
+//   · DOCUMENTATION: this is where it DID hurt. Twice in one day I cut
+//     explanatory comments out of a stylesheet to claw back a kilobyte.
+//     Comments are roughly half this site's gzipped CSS, and deleting the
+//     reasoning to save 0.2% of a page is a bad trade — the reasoning is what
+//     stops the next person reintroducing the bug. Those comments are restored
+//     and the caps below have room for more.
+//
+// The rule going forward: a cap may never be the reason something ships worse.
+// If a cap is in the way of a decision Alec made or a comment worth writing,
+// the cap moves and the arithmetic gets written here. If it is in the way of
+// carelessness, it holds. The ratchet history below stays because it is a
+// useful record of what this page has cost over time.
 const BUDGET = {
   // Re-baselined 2026-09-08, and this is a RAISE, so per the ratchet rule above
   // here is the reason and the evidence.
@@ -475,7 +509,12 @@ const BUDGET = {
   // removing the pointer parallax dropped a requestAnimationFrame loop, two
   // window listeners and will-change:transform on nineteen composited layers.
   // Bytes are not the only weight a page carries.
-  "/": { own: 460, total: 815, reqs: 38, hosts: 4, cls: 0.10 },
+  // 2026-09-09: 460 -> 520 own, 815 -> 900 total. Measured own on the deployed
+  // build is 460KB — 276 of it the twenty-two header photographs Alec chose,
+  // the rest the page. 520 is that plus ~60KB of deliberate headroom: enough
+  // for two more panels or a page of comments without anyone having to think
+  // about it, and still far below the point where a real accident hides.
+  "/": { own: 520, total: 900, reqs: 40, hosts: 4, cls: 0.10 },
   // cls:null, still — but for a smaller and better-understood reason than
   // before. The Givebutter cause IS fixed: reserving the panel's height took
   // MOBILE from 0.12-0.76 down to a flat 0 across five runs in every condition
@@ -549,7 +588,12 @@ const BUDGET = {
   // 1900px at q72 (72KB) down to 1500px at q54 (41KB), because the band sits
   // under a veil that is 30-96% black and encoder artifacts are invisible
   // there in a way they are not on the homepage wall. Measured own 155KB.
-  "/donate": { own: 160, total: 9000, reqs: 108, hosts: 21, cls: null },
+  // 2026-09-09: 160 -> 200. Measured own is 158KB. This page keeps the tightest
+  // real cap on the site and that is deliberate — it carries a payment form and
+  // nineteen third-party hosts, and a donor on a bad connection is the one
+  // visitor whose experience is worth protecting with a number. 200 leaves room
+  // to write, not to be careless.
+  "/donate": { own: 200, total: 9000, reqs: 108, hosts: 21, cls: null },
 };
 
 for (const [path, cap] of Object.entries(BUDGET)) {

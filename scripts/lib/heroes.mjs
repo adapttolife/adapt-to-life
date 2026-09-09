@@ -132,7 +132,7 @@ const BANNER = [
 // top-right cell because the probe says the top row is the only pair of cells
 // nothing ever touches, and Alec asked for exactly that: "I don't want to cut
 // off her smile in the top-right picture."
-const MOSAIC_GRID = [
+export const MOSAIC_GRID = [
   // FOUR cells, and the headline gets a band of its own between them.
   //
   // Alec, 2026-09-09: "Replace this image from the main header banner. I want

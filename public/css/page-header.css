@@ -86,8 +86,9 @@
   background:#000;
   /* Was 13vh; the difference was dead black between nav and eyebrow. */
   padding-top:clamp(4.5rem, 10vh, 6.5rem);
-  /* Was 30vh. That padding held the band clear of the copy; now the band comes
-     up to meet the copy instead, so most of it was just black. */
+  /* Was clamp(12rem, 30vh, 19rem) = 270px at 900. That padding existed to hold
+     the band clear of the copy. The band comes up to meet the copy now, so
+     most of what the padding was reserving was the black Alec kept seeing. */
   /* The band fills the header now, so this no longer reserves space for it —
      it is just the breathing room under the copy. */
   padding-bottom:clamp(3.5rem, 8vh, 5.5rem);

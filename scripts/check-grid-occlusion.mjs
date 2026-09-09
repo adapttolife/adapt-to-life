@@ -33,7 +33,13 @@
 import { chromium } from "/home/agentos/pw/node_modules/playwright/index.mjs";
 
 const URL = process.env.SITE_URL || "http://127.0.0.1:8788/index.html";
-const BUFFER_AT = 45; // percent hidden, at or above which a cell carries no face
+// NO FACE MAY BE COVERED. This was 45% when the grid had twelve cells and two
+// of them were deliberate "buffers" sitting behind the headline. Alec retired
+// that idea on 2026-09-09 — "I want to use the best of the best of our images,
+// not a picture of someone's back" — and the grid is four cells with the type
+// in a band of its own, so nothing is occluded at all. The threshold follows
+// the design: 10% is rounding and reflow, anything more is a regression.
+const OCCLUDED_AT = 10;
 
 const VIEWPORTS = [
   [390, 844, "phone"],
@@ -76,7 +82,7 @@ for (const [width, height, tag] of VIEWPORTS) {
     console.log(
       `  ${c.name.padEnd(12)} slab ${String(c.slab).padStart(3)}%  ` +
         `fold ${String(c.fold).padStart(3)}%  ${bar} ` +
-        (hidden >= BUFFER_AT ? "BUFFER" : "visible"),
+        (hidden >= OCCLUDED_AT ? "COVERED" : "clear"),
     );
   }
   report[tag] = cells;
@@ -87,17 +93,21 @@ await browser.close();
 // The one assertion worth failing on: the cells Alec named have to be clear.
 // smile-close is Aubrey, top-right on the phone — "I don't want to cut off her
 // smile in the top-right picture."
-const FACES_MUST_BE_CLEAR = ["smile-close", "laugh", "brian", "dink"];
+// Every cell in the grid, not a hand-kept subset. The old list named four
+// panels and had gone stale — it still listed `laugh`, which has not been in
+// the mobile grid for two revisions, so the check was silently guarding a cell
+// that did not exist while ignoring ones that did.
+import { MOSAIC_GRID } from "./lib/heroes.mjs";
 let bad = 0;
 for (const [tag, cells] of Object.entries(report)) {
   for (const c of cells) {
-    if (!FACES_MUST_BE_CLEAR.includes(c.name)) continue;
+    if (!MOSAIC_GRID.includes(c.name)) continue;
     const hidden = Math.min(100, c.slab + c.fold);
-    if (hidden >= BUFFER_AT) {
-      console.log(`\nFAIL  ${c.name} is ${hidden}% hidden @${tag} — that cell carries a face.`);
+    if (hidden >= OCCLUDED_AT) {
+      console.log(`\nFAIL  ${c.name} is ${hidden}% covered @${tag} — every grid cell must be whole.`);
       bad++;
     }
   }
 }
-console.log(bad ? `\n${bad} face(s) in a buffer slot.` : "\nEvery named face is in a clear cell.");
+console.log(bad ? `\n${bad} cell(s) covered.` : "\nEvery cell in the grid is whole.");
 process.exit(bad ? 1 : 0);

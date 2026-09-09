@@ -25,10 +25,17 @@
   --orange-hot:#FF765B; --orange-glow:rgba(255,92,57,0.42); --orange-bloom:rgba(255,92,57,0.12);
   --gold:#D4A843;   --gold-press:#BE9233;   /* reserved for Tim / reverence */
 
-  /* Laura's accents — defined, deliberately UNUSED. Orange is the only chroma
-     on the public pages; these exist so a future non-orange signal reaches for
-     her colours instead of inventing one. All three fail AA as small text on
-     the light surfaces: surface/graphic use only. */
+  /* Laura's accents. DEFINED, AND DELIBERATELY UNUSED on the public pages.
+
+     Orange is the only chroma this site uses, and adding three more would be
+     using a palette rather than leveraging one — the restraint IS the colour
+     theory. They live here so that the next thing needing a non-orange signal
+     (data, a state, a second campaign) reaches for one of Laura's colours
+     instead of inventing a fourth, which is exactly how #FBFAF6 and #F4EEE1
+     got into this file.
+
+     All three fail AA as small text on either light surface, so they are
+     surface and graphic colours, never body text. */
   --yellow:#F6BE00; --teal:#00B7BD; --purple:#483698;
 
   /* form status — semantic, not brand. Repainting pass/fail in brand accents
@@ -38,16 +45,39 @@
   /* ink + canvas (warm, never pure white/black) */
   --ink:#1A1A1A;            /* primary text on light */
   --ink-soft:#3C382F;       /* body prose */
-  --muted:#6A675E;          /* labels. Darkened from #6E6B62, which measured
-                               4.37:1 on the beige; this clears 4.5 on both. */
+  --muted:#6A675E;          /* Labels and captions. Darkened from #6E6B62
+                               because Laura's beige is darker than the sand it
+                               replaced, which pushed the old value to 4.37:1 —
+                               under AA. This measures 4.64 on the beige and
+                               5.28 on the off-white, and is imperceptibly
+                               different to the eye. A palette change moves
+                               contrast; check it, do not assume it. */
   --ink-warm:#0C0C0E;       /* dark band base — crisp near-black (was warm brown) */
   --charcoal:#19191C;       /* raised dark surface */
-  /* Laura's palette, 2026-09-09 (checked by scripts/check-palette.mjs).
-     Core set is orange + black + off-white — explicitly no pure white — with
-     beige as the soft companion. The site had invented #FBFAF6 and #F4EEE1. */
+  /* LAURA'S PALETTE, 2026-09-09, from her Aug 13 hex drop (ManyRequests email
+     + brand standards doc). Checked by scripts/check-palette.mjs, which
+     asserts every value below rather than trusting it.
+
+     Her core set is orange + black + off-white, explicitly NOT pure white,
+     with beige as the soft companion. What this file had before: --canvas
+     #FBFAF6 and --sand #F4EEE1, both INVENTED, plus a pure-white --paper and
+     46 more pure-white declarations across fifteen files. Neither invented
+     value is far enough off to spot side by side, and both are far enough off
+     to feel — which is the whole argument for asserting brand values instead
+     of eyeballing them.
+
+     Alec, 2026-09-09: "I don't like the white we have. I prefer off white that
+     Laura recommended." */
   --canvas:#F9F7F2;         /* Laura's off-white — the page */
-  --paper:#F9F7F2;          /* cards: same fill; every card here already had a
-                               --hairline border and a shadow to lift it */
+  --paper:#F9F7F2;          /* Cards get the SAME fill as the page. They do not
+                               need to be brighter than it: every card here
+                               already carries a --hairline border and a
+                               shadow, and the white was only doing work
+                               because the page underneath was nearly white
+                               too. On the beige sections they lift strongly;
+                               on the off-white ones the edge carries them.
+                               Verified at the artifact on /contact and the
+                               homepage before this shipped. */
   --sand:#EFE8DC;           /* Laura's beige — alternating section depth */
   --hairline:#E7E1D5;       /* warm hairline, used sparingly */
 

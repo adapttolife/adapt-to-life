@@ -74,12 +74,25 @@
   /* A chip is a real filtered link into the directory wherever the API gives a
      key for it. The rest are named anyway: the breadth IS the product, and a
      sport with no link still tells an athlete it is in there. */
+  /* SOLID BLACK, NEVER TRANSPARENT. Alec, 2026-09-09: "the buttons are to be
+     pure black ... no matter how bright the background is, we can see the
+     buttons very clearly because the buttons are going to be black, not
+     transparent."
+     He is right and it is what lets the ground be lifted at all: a chip with no
+     fill is a window, so every time the wash behind gets brighter the label
+     inside it gets harder to read, and the two settings fight each other
+     forever. An opaque pill decouples them — the ground can be as present as it
+     likes and the text is always on the same black. Pure black is on-brand
+     here: this palette bans pure WHITE, and the pitch black is deliberate. */
   .dir-chip{ display:inline-flex; align-items:center; gap:0.55rem;
     padding:0.62rem 0.95rem; border-radius:999px; font-size:0.92rem;
+    background:#000;
     border:1px solid rgba(255,255,255,0.16); color:var(--cream);
     text-decoration:none; transition:border-color .15s ease, background .15s ease, color .15s ease; }
   .dir-chip b{ font-variant-numeric:tabular-nums; font-weight:700; color:var(--cream-faint); font-size:0.85rem; }
-  a.dir-chip:hover{ border-color:var(--orange); color:var(--orange); background:rgba(255,92,57,0.07); }
+  /* Hover stays opaque too: a translucent tint would put the ground back behind
+     the label at the exact moment somebody is reading it. */
+  a.dir-chip:hover{ border-color:var(--orange); color:var(--orange); background:#140a07; }
   a.dir-chip:hover b{ color:var(--orange); }
   a.dir-chip:focus-visible{ outline:2px solid var(--orange); outline-offset:3px; }
   /* Not a link, so it must not invite a click that does nothing — but a dashed
@@ -110,20 +123,34 @@
   .dir-stats::before{
     content:""; position:absolute; inset:0; z-index:0; pointer-events:none;
     background:var(--pg-band-wide) center/cover no-repeat;
-    filter:grayscale(1); opacity:0.16;
+    filter:grayscale(1); opacity:0.34;
   }
   /* The type has to win. A flat scrim would flatten the photograph to mud, so
      this is a vertical fall plus the same warm bloom the header carries. */
   .dir-stats::after{
     content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
     background:
-      linear-gradient(180deg, rgba(12,12,14,0.42) 0%, rgba(12,12,14,0.70) 40%, rgba(12,12,14,0.90) 100%),
+      /* A DARK COLUMN UNDER THE TYPE, not a flat scrim over everything. The
+         chips are opaque black so they do not care how bright the ground gets;
+         the eyebrow, the count line and the BY SPORT / BY STATE labels sit
+         directly on it and do. Measured at the brighter setting the orange
+         eyebrow fell to 3.69:1 against a 4.5 floor.
+         So the darkening is horizontal: heavy on the left third where every one
+         of those lines lives, releasing to the right where the band can be as
+         present as Alec wants it. The vertical fall stays for grounding. */
+      linear-gradient(90deg, rgba(12,12,14,0.90) 0%, rgba(12,12,14,0.78) 26%, rgba(12,12,14,0.30) 62%, rgba(12,12,14,0.16) 100%),
+      linear-gradient(180deg, rgba(12,12,14,0.30) 0%, rgba(12,12,14,0.34) 40%, rgba(12,12,14,0.66) 100%),
       radial-gradient(ellipse 62% 52% at 84% 22%, rgba(255,92,57,0.13) 0%, transparent 68%);
   }
   @media (max-width:900px){
     /* The tall crop, for the same reason the header uses it: a 2.3:1 frame in a
        portrait box crops to a single face, which is the thing we just removed. */
-    .dir-stats::before{ background-image:var(--pg-band-tall); opacity:0.14; }
+    .dir-stats::before{ background-image:var(--pg-band-tall); opacity:0.26; }
+    /* No horizontal release on a phone: the type runs the full width, so there
+       is no "right side" to give back to the photograph. */
+    .dir-stats::after{ background:
+      linear-gradient(180deg, rgba(12,12,14,0.66) 0%, rgba(12,12,14,0.72) 45%, rgba(12,12,14,0.86) 100%),
+      radial-gradient(ellipse 80% 40% at 70% 12%, rgba(255,92,57,0.12) 0%, transparent 70%); }
   }
   .dir-stats > .wrap{ position:relative; z-index:2; }
 

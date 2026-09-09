@@ -259,8 +259,16 @@
     justify-content:center;
   }
   .mw-wall{
-    display:grid; grid-template-columns:repeat(2, 1fr); align-content:start;
-    gap:2px; inset:0;
+    display:grid; grid-template-columns:repeat(2, 1fr);
+    /* TWO rows and a band between them. The band is where the headline lives:
+       the slab used to float over the middle row and cut the top 41% off
+       whatever was there, and no portrait in the library survives that (the
+       highest head in any panel sits at 0.35). Giving the type its own gap
+       means four photographs, all whole. 1fr rows so they split whatever the
+       band leaves — at 390x844 that is (774-160)/2 = 307px a cell. */
+    grid-template-rows:1fr 1fr;
+    row-gap:clamp(8rem, 19vh, 10.5rem);
+    column-gap:2px; inset:0;
   }
   .mw-p{ overflow:hidden; }
   .mw-p img{ width:100%; height:100%; object-fit:cover; }
@@ -284,7 +292,8 @@
      contrast problem you cannot solve, because what is behind it changes with
      every crop. The rule under it is the only orange on the screen. */
   .mw-copy{
-    position:absolute; left:0; right:0; top:38%; transform:translateY(-38%);
+    /* centred on the band, not floated over a photograph */
+    position:absolute; left:0; right:0; top:50%; transform:translateY(-50%);
     padding:0 clamp(0.75rem, 3vw, 1.5rem);
   }
   .mw-copy .display{

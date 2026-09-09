@@ -74,7 +74,7 @@ DEPTH_DIM = {"front": 1.00, "mid": 0.62, "back": 0.40}
 # problem is not a layout preference and should not be defended by a comment.
 WITHDRAWN = {"JLA_6122.jpg", "JLA_6123.jpg", "JLA_6127.jpg"}
 
-SIZE_OVERRIDE = {"turned": 420, "profile": 420, "lanyard": 400}
+SIZE_OVERRIDE = {"profile": 420, "lanyard": 400}
 
 # name, source frame, aspect (w/h), vertical anchor (0 = top, 1 = bottom),
 # horizontal anchor, ZOOM, depth role
@@ -138,7 +138,6 @@ PANELS = [
     # phone cell is 195 CSS px at 2x = 390 device px, and the widest desktop
     # slot is 14% of 1440 at 2x = 404. 560 was 8KB of pixels nobody resolves,
     # and it put the homepage over its own-bytes budget.
-    ("turned",       "JLA_5876.jpg", 3/2,  0.38, 0.50, 0.72, "front"),
     ("profile",      "JLA_5989.jpg", 3/4,  0.40, 0.52, 0.80, "front"),
 
     # --- widening the rotation ------------------------------------------------
@@ -146,7 +145,7 @@ PANELS = [
     # the same ACE shoot that Favorites had not already skimmed, so the pages
     # away from the front door stop recycling the banner's own twelve.
     ("lanyard",      "JLA_6091.jpg", 3/4,  0.30, 0.50, 0.86, "mid"),
-    ("bench",        "JLA_5967.jpg", 3/4,  0.34, 0.50, 0.88, "mid"),
+    ("bench",        "JLA_5967.jpg", 3/4,  0.34, 0.50, 0.88, "back"),
     ("drive",        "JLA_5953.jpg", 3/2,  0.40, 0.50, 0.66, "mid"),
     ("fence",        "JLA_6236.jpg", 3/2,  0.42, 0.56, 0.62, "back"),
 ]

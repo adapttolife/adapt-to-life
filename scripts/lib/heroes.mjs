@@ -63,12 +63,11 @@ const MOSAIC = [
   { n: "close-dink", x: 66, y: 36, w: 11, d: 1, r: -0.8, m: "m" },
   { n: "paddle",     x: 62, y: 80, w: 11, d: 1, r:  0.7, m: "m" },
   { n: "lobby",      x: 34, y: 64, w: 11, d: 1, r: -0.6, m: "m" },
-  // The two buffer frames. On the phone they are the cells the headline covers;
-  // on the wall they fill the left-centre hole the copy block leaves, which is
-  // the same job — hold the composition up from behind the type. A back turned
-  // to camera and a man in profile are the right photographs for a place where
-  // being seen is not the point.
-  { n: "turned",     x: 27, y: 30, w: 14, d: 1, r:  0.5, m: "m" },
+  // These two fill the left-centre hole the copy block leaves. `turned` — a
+  // back to camera — used to be the left one, chosen back when this slot was
+  // purely structural. Alec ruled that out for the main banner at any size, so
+  // it is a real portrait now. Same job, no throwaway.
+  { n: "bench",      x: 27, y: 30, w: 14, d: 1, r:  0.5, m: "m" },
   { n: "profile",    x: 47, y: 38, w: 10, d: 1, r: -0.8, m: "m" },
   // mid plane
   { n: "net",        x: 69, y: 0,  w: 17, d: 2, r:  0.5, m: "m" },
@@ -134,24 +133,26 @@ const BANNER = [
 // nothing ever touches, and Alec asked for exactly that: "I don't want to cut
 // off her smile in the top-right picture."
 const MOSAIC_GRID = [
-  // SIX cells, not twelve. Alec, 2026-09-09: "the mobile design the main banner
-  // lower half is too crammed, we don't need all those pictures, it's almost
-  // too many where we now cannot see anything. Just a bunch of cropped
-  // pictures."
+  // FOUR cells, and the headline gets a band of its own between them.
   //
-  // He is describing two faults that compounded. Twelve cells at 390px meant
-  // each was 195x130, and the lower eight were mid- and back-plane panels
-  // carrying their depth dimming — small AND dark AND cropped hard, which is
-  // exactly "cannot see anything". Halving the count doubles the cell to
-  // 195x260 and lets every remaining one be a FRONT-plane frame, so nothing on
-  // the phone is a dimmed photograph pretending to be depth.
+  // Alec, 2026-09-09: "Replace this image from the main header banner. I want
+  // to use the best of the best of our images, not a picture of someone's
+  // back."
   //
-  // The four visible cells are the four lit faces and nothing else. The two in
-  // the middle are the buffers, still 80% behind the slab, still doing the job
-  // they were put there to do.
-  "dink",       "smile-close",   // clear
-  "turned",     "profile",       // BUFFER: behind the slab, by design
-  "brian",      "forehand",      // clear
+  // I went looking for the replacement and found the row was the problem, not
+  // the photograph in it. The slab is 126px tall sitting over a 261px cell, so
+  // it covers the top 41% — and measuring the head position in every panel we
+  // have, the highest is 0.35 and most are near 0.22. There is no photograph in
+  // this library whose face survives that cut, because good portraits put the
+  // head in the upper third. Any "best of the best" frame dropped into that row
+  // loses its eyes. whitecap did, and it is a lovely photograph.
+  //
+  // So the middle row stops being a row. The slab sits in a gap between two
+  // rows of two, every photograph is whole, and the four that remain are the
+  // four Alec has consistently responded to. Fewer pictures, none of them
+  // damaged — which is what he has been asking for three rounds running.
+  "dink",       "smile-close",
+  "brian",      "forehand",
 ];
 // All four must be FRONT-plane panels: depth is baked into the files now, so a
 // "lit" cell drawn from a pre-darkened mid or back file would still be dim.
@@ -160,8 +161,7 @@ const MOSAIC_GRID = [
 // there is nothing to compete and a dimmed cell just looks broken. The two
 // buffers still recede on their own — a back turned to camera and a man in
 // profile are quiet subjects without needing to be darkened into one.
-const MOSAIC_GRID_LIT = new Set(["smile-close", "dink", "brian", "forehand",
-                                 "turned", "profile"]);
+const MOSAIC_GRID_LIT = new Set(["smile-close", "dink", "brian", "forehand"]);
 
 // Where the crop window sits in each panel when the grid squashes a portrait
 // into a 3:2 cell. Default is 50%, which centres the window on the middle of
@@ -171,8 +171,6 @@ const MOSAIC_GRID_LIT = new Set(["smile-close", "dink", "brian", "forehand",
 const MOSAIC_GRID_POS = {
   "dink": 5,
   "smile-close": 7,
-  "turned": 0,
-  "profile": 37,
   "brian": 19,
   "forehand": 0
 };
@@ -243,7 +241,7 @@ const layoutCss = (rows, phone, mode) => {
   // width:auto }` loses and the "grid" renders as nineteen tiny scattered
   // rectangles. It did. The reset therefore ships inside each cell's own rule.
   const RESET = "position:static; left:auto; top:auto; right:auto; bottom:auto; " +
-                "width:auto; height:auto; aspect-ratio:3/4; transform:none; " +
+                "width:auto; height:100%; aspect-ratio:auto; transform:none; " +
                 "border-radius:0; box-shadow:none;";
   const cells = MOSAIC_GRID.flatMap((n, i) => [
     `    .mw-p.p-${n}{ display:block; order:${i}; ${RESET} }`,

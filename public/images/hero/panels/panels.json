@@ -1,9 +1,9 @@
 {
  "bench": {
-  "h": 520,
-  "role": "mid",
+  "h": 560,
+  "role": "back",
   "src": "JLA_5967.jpg",
-  "w": 390
+  "w": 420
  },
  "big-brian": {
   "h": 1069,
@@ -262,12 +262,6 @@
   "role": "mid",
   "src": "JLA_6146.jpg",
   "w": 390
- },
- "turned": {
-  "h": 280,
-  "role": "front",
-  "src": "JLA_5876.jpg",
-  "w": 420
  },
  "whitecap": {
   "h": 520,

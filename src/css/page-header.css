@@ -55,11 +55,43 @@
    empty". So the band now FILLS its header at every tier — a tall header is
    more photograph, not more black. That is the both-worlds he asked for. */
 :root{
-  --pg-h-lg:clamp(560px, 68vh, 720px);   /* section entries: the emotional door */
-  --pg-h-md:clamp(460px, 56vh, 600px);   /* standard interior page */
-  --pg-h-sm:clamp(380px, 44vh, 480px);   /* utility: forms, legal, short asks */
-  --pg-h-give:clamp(660px, 82vh, 900px); /* /donate — sized around the panel */
+  /* The header heights live in site.css — see "HEADER HEIGHTS" there. They
+     moved because five pages (/hustle-and-heart, /karen, /tim, /popcorn,
+     /send-6) never load THIS file, so var(--pg-h-*) resolved to nothing and
+     their min-height was silently dropped. That is the real reason those pages
+     were never on the height system. A site-wide scale belongs in the
+     site-wide stylesheet. */
 }
+/* THE FLOOR IS RAISED ABOVE THE CONTENT — the height is never capped.
+   Alec, 2026-09-09: pages "all have different heights ... it feels sloppy."
+   Measured, the cause was not the rule but the fact that min-height is a FLOOR:
+   a page whose copy fits lands exactly on it, a page with a longer headline
+   grows past it. /sponsorship sat 52px taller than /volunteer purely because
+   "Sponsor an adaptive athlete." wraps to three lines. That is copy length
+   deciding layout, which is what reads as careless.
+
+   THE OBVIOUS FIX — a fixed height — IS THE WRONG ONE, and measuring it is the
+   only reason I know that. At 1280x720 the content needs 655px against a 560px
+   box: 95px of copy and buttons clipped. At 200% text /sponsorship needs
+   1190px against 612px. Capping the box would hide more than half the page and
+   fail WCAG 1.4.4 (resize text to 200% without loss of content) on a site built
+   for disabled athletes. It is also what the practice says: "use min-height
+   instead of height. That way, if the content got longer, the height will
+   expand and there will be no overlap" (Ahmad Shadeed, Responsive Height
+   Design).
+
+   So the floor moves up past the worst-case copy instead. Every page in a group
+   then sits ON the floor at normal text — identical heights, which is the point
+   — and content can still push the box open when it must, so nothing is ever
+   clipped and 200% text still works.
+
+   GATED ON VIEWPORT HEIGHT, which is the standard tool for this and the piece I
+   was missing when I worried tall floors would swallow small screens: the same
+   article recommends height media queries rather than accepting the squeeze.
+   Below 780px tall these raised floors are NOT applied — a 700px header in a
+   720px window is the whole screen, and on those a little variance is the
+   better trade. Gated on width too: phones keep the values above. */
+
 .hero.pg-band{ min-height:var(--pg-h, var(--pg-h-md)); }
 .pg-head--lg{ --pg-h:var(--pg-h-lg); }
 .pg-head--md{ --pg-h:var(--pg-h-md); }

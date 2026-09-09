@@ -662,7 +662,12 @@ const BUDGET = {
   "/donate": { own: 200, total: 9000, reqs: 108, hosts: 21, cls: null },
 };
 
-for (const [path, cap] of Object.entries(BUDGET)) {
+// MEASURE ONE PAGE, ONCE. This was the body of the loop below until the loop
+// needed to call it more than once — see the retry underneath.
+//
+// It returns {ok:false} for an interstitial rather than failing, because
+// "this is not our page" is a reason to try again, not a verdict on the site.
+async function measureBudget(path) {
   const b = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: "reduce" });
   let own = 0, total = 0, reqs = 0;
   const hosts = new Set();
@@ -720,17 +725,52 @@ for (const [path, cap] of Object.entries(BUDGET)) {
   //
   // The footer is on every page of this site and on no Cloudflare page.
   const isOurs = await b.evaluate(() => !!document.querySelector("footer.footer"));
-  if (!isOurs) {
-    const title = await b.title();
-    fail(`${path} budget measured something that is not the page — no site footer found (title: ${title.slice(0, 60)}). Almost always a Cloudflare interstitial; re-run.`);
-  }
+  const title = isOurs ? "" : await b.title();
   // Drain before closing: closing the page rejects any outstanding body() and
   // those responses would vanish from the totals.
   await Promise.allSettled(inflight);
   await b.close();
+  if (!isOurs) return { ok: false, title };
+  return {
+    ok: true, cls,
+    ownKB: Math.round(own / 1024),
+    totalKB: Math.round(total / 1024),
+    reqs,
+    third: [...hosts].filter((h) => !/adapt-to-life|adapttolife/.test(h)),
+  };
+}
 
-  const ownKB = Math.round(own / 1024), totalKB = Math.round(total / 1024);
-  const third = [...hosts].filter((h) => !/adapt-to-life|adapttolife/.test(h));
+for (const [path, cap] of Object.entries(BUDGET)) {
+  // WAIT IT OUT RATHER THAN HANDING THE JOB BACK. The guard above catches the
+  // interstitial reliably; what it used to do was fail the whole run and print
+  // "re-run", which is not a fix, it is a chore. Both production runs on
+  // 2026-09-09 hit it on /donate and both passed clean on a manual re-run
+  // moments later — the block is transient and rate-shaped, so the answer is to
+  // back off and ask again exactly as a person was doing by hand.
+  //
+  // /donate is the one that gets hit because it is the LAST page measured, at
+  // the end of a run that has already made several hundred requests, and it is
+  // the heaviest page on the site: 102 responses across 19 third-party hosts.
+  // It is the natural place for a rate rule to bite.
+  //
+  // Deliberately NOT done here: changing the user agent, or anything else that
+  // dresses this up as a different client. The check is not entitled to get
+  // past a control the site chose to have; it is entitled to be patient. If
+  // these three attempts ever stop being enough, the fix is a WAF rule that
+  // exempts this checker, which is Alec's call to make and not this script's.
+  const BACKOFF = [5000, 15000];
+  let m = null;
+  for (let attempt = 0; ; attempt++) {
+    m = await measureBudget(path);
+    if (m.ok || attempt >= BACKOFF.length) break;
+    console.log(`  ${path} answered with an interstitial (${m.title.slice(0, 40)}); waiting ${BACKOFF[attempt] / 1000}s`);
+    await new Promise((r) => setTimeout(r, BACKOFF[attempt]));
+  }
+  if (!m.ok) {
+    fail(`${path} budget measured something that is not the page after ${BACKOFF.length + 1} attempts — no site footer found (title: ${m.title.slice(0, 60)}). A Cloudflare block that is no longer transient; consider a WAF exemption for this checker.`);
+    continue;   // never assert a budget against numbers we know are not the page
+  }
+  const { ownKB, totalKB, reqs, third, cls } = m;
   if (ownKB > cap.own) fail(`${path} own bytes ${ownKB}KB over budget ${cap.own}KB`);
   if (totalKB > cap.total) fail(`${path} total bytes ${totalKB}KB over budget ${cap.total}KB`);
   if (reqs > cap.reqs) fail(`${path} ${reqs} requests over budget ${cap.reqs}`);

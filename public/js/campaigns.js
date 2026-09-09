@@ -166,6 +166,19 @@
   /* Calls back with the shaped data, or null if the file is unreachable or
      unparseable. Callers must render something honest either way: an empty
      hub is a real state, a broken page is not. */
+  /* ONE FETCH PER PAGE, NOT ONE PER CALLER. The header comment above already
+     says "one data file, three consumers" — and until 2026-09-09 that meant
+     three identical network requests for the same JSON. Measured on the live
+     homepage: /data/campaigns.json appeared three times in a 42-request load,
+     which is also what pushed the page over its own 40-request ratchet.
+
+     The promise is cached rather than the value, so callers that arrive while
+     the first request is still in flight join it instead of starting their own
+     — caching the result would have deduped only the callers that ran late.
+     A failure is cached as null too: three consumers should not retry a
+     missing file three times, and every caller already has to render something
+     honest when the data is unreachable. */
+  var pending = null;
   function load(cb) {
     var settled = false;
     function finish(v) {
@@ -174,16 +187,19 @@
       try { cb(v); } catch (err) { console.error("campaign render failed:", err); }
     }
     if (typeof fetch !== "function") return finish(null);
-    fetch(SRC, { credentials: "omit" })
-      .then(function (r) {
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        return r.json();
-      })
-      .then(function (raw) { finish(shape(raw)); })
-      .catch(function (err) {
-        console.error("campaigns.json unavailable:", err);
-        finish(null);
-      });
+    if (!pending) {
+      pending = fetch(SRC, { credentials: "omit" })
+        .then(function (r) {
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          return r.json();
+        })
+        .then(function (raw) { return shape(raw); })
+        .catch(function (err) {
+          console.error("campaigns.json unavailable:", err);
+          return null;
+        });
+    }
+    pending.then(finish);
   }
 
   /* The site thermometer. Falls back to the campaign's own goal and hides the

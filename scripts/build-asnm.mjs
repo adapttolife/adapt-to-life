@@ -58,11 +58,6 @@ const chip = (label, count, href) => href
 
 const block = `<!-- asnm:stats -->
   <section class="band dark dir-stats">
-    <div class="dir-ghosts" aria-hidden="true">
-      <img class="dir-ghost gh-a" src="/images/hero/ghost-ben.webp" alt="" width="496" height="620" loading="lazy" decoding="async">
-      <img class="dir-ghost gh-b" src="/images/hero/ghost-aubrey.webp" alt="" width="496" height="620" loading="lazy" decoding="async">
-      <img class="dir-ghost gh-c" src="/images/hero/ghost-brian.webp" alt="" width="496" height="620" loading="lazy" decoding="async">
-    </div>
     <div class="wrap">
       <span class="eyebrow orange reveal">In the directory right now</span>
       <p class="dir-count reveal"><b>${n(stats.programs)}</b> programs, <b>${n(stats.byState.length)}</b> states, <b>${n(stats.sources)}</b> sources. Free to search, no account.</p>

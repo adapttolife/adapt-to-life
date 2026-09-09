@@ -397,7 +397,7 @@
   }
  ],
  "lastPipelineRun": {
-  "lane": "sheet-export",
-  "finished_at": "2026-09-09T20:10:45.186Z"
+  "lane": "resolve",
+  "finished_at": "2026-09-09T20:20:39.617Z"
  }
 }

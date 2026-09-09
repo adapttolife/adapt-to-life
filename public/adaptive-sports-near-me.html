@@ -86,38 +86,46 @@
      border made two thirds of the sports read as broken or unfinished rather
      than simply unfiltered. A span has no pointer and no hover, which is
      affordance enough; the weight difference just needs to be quiet. */
-  /* ---- the figures behind it -------------------------------------------
-     Alec: "take the traced images and put them in the background ... really
-     big, really small, and they're just kind of faded."
-     These are the photographer's cut-outs, the same athletes the homepage wall
-     is built from, drawn at wildly different scales and 6-11% opacity. The
-     depth trick is the one the wall already uses: the small far ones carry a
-     blur, the big near one does not, so the eye reads distance rather than a
-     row of stickers. They bleed off three edges on purpose. Decorative only,
-     aria-hidden, and they never sit above the type. */
+  /* ---- the ground behind it --------------------------------------------
+     Alec, 2026-09-09: the cut-out figure "looks squeezed and squished and very
+     sloppy ... maybe it doesn't need to be an image of a person, but maybe an
+     image of a gym, or a court ... something open-ended and welcoming."
+
+     THE SQUISH WAS A REAL BUG, not a bad crop. The figures were sized
+     height:96% with width:auto, and site.css line 157 sets img{max-width:100%}.
+     On a phone the section is tall and narrow, so the natural width at that
+     height ran well past the container, max-width clamped it, and the aspect
+     ratio was destroyed. A background-size:cover layer cannot do that, which is
+     half of why this is the better instrument.
+
+     The other half is that he is right about the subject. One athlete blown up
+     behind a list of links reads as a person looming over the type; the band
+     reads as a room. This IS the vertical-frame treatment from the page header
+     — four frames, a court and a venue, no single face dominating — and the
+     page has ALREADY downloaded it for its own header, so the whole ground
+     costs zero additional bytes. Wide on a laptop, tall on a phone, exactly the
+     way the header art-directs the same pair. The three ghost-*.webp files are
+     deleted: 44.5KB that no longer ships. */
   .dir-stats{ position:relative; overflow:hidden; }
-  .dir-ghosts{ position:absolute; inset:0; z-index:0; pointer-events:none; }
-  .dir-ghost{ position:absolute; display:block; width:auto; filter:grayscale(1); }
-  /* 0.09 -> 0.14. At 0.09 this figure was invisible: it is the darkest of the
-     cut-outs and it sits on near-black, so it was 14KB of image nobody could
-     see. Either it reads or it should not ship. */
-  .gh-a{ height:132%; left:-13%; bottom:-24%; opacity:0.14; }
-  .gh-b{ height:36%;  right:5%;  top:4%;      opacity:0.065; filter:grayscale(1) blur(1.6px); }
-  /* Pushed further off the right edge and dimmed: at -9% and 0.085 the paddle
-     and forearm landed squarely behind the state chips and read as clutter
-     rather than depth. Behind type, a background figure has to lose. */
-  .gh-c{ height:70%;  right:-20%; bottom:-12%; opacity:0.055; filter:grayscale(1) blur(1.2px); }
-  /* gh-d removed. A 25%-tall figure at 0.05 on this ground is not subtle, it is
-     absent — and it was the most expensive of the four at 24.5KB. Three
-     figures, all of which read. */
-  .dir-stats > .wrap{ position:relative; z-index:2; }
-  @media (max-width:900px){
-    /* Two figures on a phone, not four. At this width the others stack on top
-       of each other behind the screenshot and read as smudge rather than depth. */
-    .gh-b{ display:none; }
-    .gh-a{ height:96%; left:-24%; bottom:-14%; }
-    .gh-c{ height:56%; right:-18%; bottom:-8%; }
+  .dir-stats::before{
+    content:""; position:absolute; inset:0; z-index:0; pointer-events:none;
+    background:var(--pg-band-wide) center/cover no-repeat;
+    filter:grayscale(1); opacity:0.16;
   }
+  /* The type has to win. A flat scrim would flatten the photograph to mud, so
+     this is a vertical fall plus the same warm bloom the header carries. */
+  .dir-stats::after{
+    content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+    background:
+      linear-gradient(180deg, rgba(12,12,14,0.42) 0%, rgba(12,12,14,0.70) 40%, rgba(12,12,14,0.90) 100%),
+      radial-gradient(ellipse 62% 52% at 84% 22%, rgba(255,92,57,0.13) 0%, transparent 68%);
+  }
+  @media (max-width:900px){
+    /* The tall crop, for the same reason the header uses it: a 2.3:1 frame in a
+       portrait box crops to a single face, which is the thing we just removed. */
+    .dir-stats::before{ background-image:var(--pg-band-tall); opacity:0.14; }
+  }
+  .dir-stats > .wrap{ position:relative; z-index:2; }
 
   /* ---- the product, shown rather than described -------------------------
      THE SHADOW IS THE HOMEPAGE WALL'S FRONT-PLANE SHADOW, copied deliberately
@@ -251,11 +259,6 @@ fill="currentColor" stroke="none">
 
   <!-- asnm:stats -->
   <section class="band dark dir-stats">
-    <div class="dir-ghosts" aria-hidden="true">
-      <img class="dir-ghost gh-a" src="/images/hero/ghost-ben.webp" alt="" width="496" height="620" loading="lazy" decoding="async">
-      <img class="dir-ghost gh-b" src="/images/hero/ghost-aubrey.webp" alt="" width="496" height="620" loading="lazy" decoding="async">
-      <img class="dir-ghost gh-c" src="/images/hero/ghost-brian.webp" alt="" width="496" height="620" loading="lazy" decoding="async">
-    </div>
     <div class="wrap">
       <span class="eyebrow orange reveal">In the directory right now</span>
       <p class="dir-count reveal"><b>1,544</b> programs, <b>51</b> states, <b>22</b> sources. Free to search, no account.</p>

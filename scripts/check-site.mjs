@@ -191,19 +191,47 @@ if (missing.status !== 404) fail(`unknown path returned ${missing.status}, expec
   // then 1200ms — so a genuine 429 storm still ends in a real failure rather
   // than an infinite wait.
   const RETRY_STATUS = new Set([429, 503]);
-  async function get(url, tries = 3) {
+  const sleep = (ms) => new Promise((ok) => setTimeout(ok, ms));
+  // PACE FIRST, RETRY SECOND. This section fetches 19 pages and then every
+  // distinct card back to back; against production Cloudflare rate-limits that
+  // burst, and a 429 is not a fact about the site. Three tries at 400/1200ms
+  // was still too impatient — the limiter outlasted it — so the throttle below
+  // keeps us under the limit in the first place and the backoff is only there
+  // for when that is not enough.
+  //
+  // 120ms costs this section about three seconds and removes a whole class of
+  // false failure. Bounded on purpose: four tries ending at 4s, so a genuine
+  // rate-limit storm still fails rather than hanging, and a 404 or a 500 still
+  // fails on the first response because those are never transient.
+  let lastFetch = 0;
+  async function get(url, tries = 4) {
     let r;
     for (let i = 0; i < tries; i++) {
+      const gap = Date.now() - lastFetch;
+      if (gap < 120) await sleep(120 - gap);
+      lastFetch = Date.now();
       r = await fetch(url);
       if (!RETRY_STATUS.has(r.status)) return r;
-      if (i < tries - 1) await new Promise((ok) => setTimeout(ok, 400 * Math.pow(3, i)));
+      if (i < tries - 1) await sleep([500, 1500, 4000][i]);
     }
     return r;
   }
   for (const path of PAGES) {
-    const html = await (await get(`${BASE}${path}?cb=${Date.now()}`)).text();
+    const res = await get(`${BASE}${path}?cb=${Date.now()}`);
+    const html = await res.text();
     const src = html.match(/<meta property="og:image" content="([^"]+)"/)?.[1];
-    if (!src) { fail(`${path} has no og:image`); continue; }
+    // SAY WHAT CAME BACK. "has no og:image" is true and useless: it points at
+    // the page's markup when the actual cause is usually the response — a
+    // status, a challenge interstitial, an error body. This failure fired three
+    // times in one session against pages that serve the tag correctly on every
+    // manual request, and each time it cost a round of guessing because the
+    // message described the wrong thing.
+    if (!src) {
+      const ct = res.headers.get("content-type") || "?";
+      const head = html.replace(/\s+/g, " ").trim().slice(0, 160);
+      fail(`${path} has no og:image — HTTP ${res.status}, ${ct}, ${html.length}b: ${head}`);
+      continue;
+    }
     if (!/<meta property="og:image:alt" content="[^"]+"/.test(html))
       fail(`${path} og:image has no alt text`);
 

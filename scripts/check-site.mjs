@@ -705,6 +705,25 @@ for (const [path, cap] of Object.entries(BUDGET)) {
   // ~14s on a throttled phone. Settle long enough to bill them for it.
   await b.waitForTimeout(9000);
   const cls = await b.evaluate("+window.__cls.toFixed(4)");
+  // PROVE WE MEASURED THE PAGE. Draining the handlers fixed the counter race,
+  // and a SECOND cause of the same symptom survived it: Cloudflare sometimes
+  // answers these navigations with a challenge interstitial. That is a real
+  // page — it loads, it has a CLS, it finishes — it is just not ours, and it
+  // measures at about 8 requests and 37KB. Against a 200KB ceiling that reads
+  // as a comfortable pass.
+  //
+  // Both readings were seen on production on 2026-09-09: /donate at 102 req and
+  // at 8 req minutes apart, while the page itself is stable at 102 responses
+  // over five consecutive direct loads. A budget that can silently grade an
+  // interstitial is not a budget, and this is the second time today the same
+  // symptom had a different cause underneath it.
+  //
+  // The footer is on every page of this site and on no Cloudflare page.
+  const isOurs = await b.evaluate(() => !!document.querySelector("footer.footer"));
+  if (!isOurs) {
+    const title = await b.title();
+    fail(`${path} budget measured something that is not the page — no site footer found (title: ${title.slice(0, 60)}). Almost always a Cloudflare interstitial; re-run.`);
+  }
   // Drain before closing: closing the page rejects any outstanding body() and
   // those responses would vanish from the totals.
   await Promise.allSettled(inflight);

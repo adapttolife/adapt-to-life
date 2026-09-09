@@ -54,6 +54,15 @@
   display:flex; height:100%; width:max-content;
   animation:rb-roll 48s linear infinite;
 }
+/* SIX copies, not two — and this is arithmetic, not taste.
+   The animation translates the track by -50%, so after a full cycle only HALF
+   the track is still covering the viewport. One copy scales to 1240px at a
+   340px track height, so two copies left 1240px of coverage and everything
+   past that was black: Alec saw exactly that, "blank space" on the right.
+   Six copies leave 3719px covered, which is every screen this will meet.
+   It costs ONE request. Six <img> tags pointing at the same src is one fetch
+   and one decode; the browser does not download a picture twice. The blank was
+   never a shortage of photographs — it was a shortage of copies. */
 .rb-run img{
   height:100%; width:auto; display:block; flex:0 0 auto;
   /* the strip is already graded and dimmed in the asset; this only unifies it

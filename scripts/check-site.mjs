@@ -53,6 +53,21 @@ const PAGES = [
 
 // Site-wide and benign: the off-screen honeypot every form carries, and
 // aria-hidden decorative atmosphere inside an overflow:hidden parent.
+// A console error that describes THIS MACHINE's network is not a fact about the
+// site, and failing a run on one teaches people to re-run rather than to read.
+// net::ERR_NETWORK_CHANGED means the OS network interface moved under the
+// request (DHCP, VPN, wifi handover); ERR_INTERNET_DISCONNECTED means it went
+// away entirely. Neither can be caused by anything we ship. Seen on a
+// production run on 2026-09-09 that was otherwise clean, on /donate at 390.
+//
+// Kept deliberately narrow: it is two exact transport codes, not a pattern.
+// ERR_NAME_NOT_RESOLVED and friends stay fatal, because a third-party host we
+// reference going missing IS ours to know about.
+const CLIENT_SIDE_NET = /net::ERR_NETWORK_CHANGED|net::ERR_INTERNET_DISCONNECTED/;
+// Turnstile logs a %c%d line as console.error on every page; not ours.
+const isRealConsoleError = (c) =>
+  c.type() === "error" && !c.text().includes("font-size:0") && !CLIENT_SIDE_NET.test(c.text());
+
 const IGNORE_OVERFLOW = `
   if (el.closest('[aria-hidden="true"]') || el.getAttribute('aria-hidden') === 'true') return;
   if (el.matches('input[aria-hidden="true"]')) return;
@@ -69,8 +84,7 @@ for (const path of PAGES) {
   const m = await browser.newPage({ viewport: { width: 390, height: 800 }, reducedMotion: "reduce" });
   const mErrs = [];
   m.on("pageerror", (e) => mErrs.push(String(e).slice(0, 90)));
-  // Turnstile logs a %c%d line as console.error on every page; not ours.
-  m.on("console", (c) => { if (c.type() === "error" && !c.text().includes("font-size:0")) mErrs.push(c.text().slice(0, 90)); });
+  m.on("console", (c) => { if (isRealConsoleError(c)) mErrs.push(c.text().slice(0, 90)); });
   const mRes = await m.goto(`${BASE}${path}?cb=${Date.now()}`, { waitUntil: "domcontentloaded" });
   await m.waitForTimeout(1500);
   if (mRes.status() !== 200) fail(`${path} returned ${mRes.status()}`);
@@ -95,7 +109,7 @@ for (const path of PAGES) {
   const d = await browser.newPage({ viewport: { width: 1440, height: 1000 }, reducedMotion: "reduce" });
   const dErrs = [];
   d.on("pageerror", (e) => dErrs.push(String(e).slice(0, 90)));
-  d.on("console", (c) => { if (c.type() === "error" && !c.text().includes("font-size:0")) dErrs.push(c.text().slice(0, 90)); });
+  d.on("console", (c) => { if (isRealConsoleError(c)) dErrs.push(c.text().slice(0, 90)); });
   await d.goto(`${BASE}${path}?cb=${Date.now()}`, { waitUntil: "domcontentloaded" });
   await d.waitForTimeout(1500);
   await d.click('.nav-toggle[aria-controls="navOurWork"]');

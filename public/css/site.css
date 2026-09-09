@@ -68,17 +68,24 @@
 
      Alec, 2026-09-09: "I don't like the white we have. I prefer off white that
      Laura recommended." */
-  --canvas:#F9F7F2;         /* Laura's off-white — the page */
-  --paper:#F9F7F2;          /* Cards get the SAME fill as the page. They do not
-                               need to be brighter than it: every card here
-                               already carries a --hairline border and a
-                               shadow, and the white was only doing work
-                               because the page underneath was nearly white
-                               too. On the beige sections they lift strongly;
-                               on the off-white ones the edge carries them.
-                               Verified at the artifact on /contact and the
-                               homepage before this shipped. */
-  --sand:#EFE8DC;           /* Laura's beige — alternating section depth */
+  /* THE PAGE IS THE BEIGE, and the off-white is what lifts off it. This was
+     the other way round and Alec called it, twice: "we have way too much
+     white." He is right and the numbers say why — off-white is only 6.9%
+     darker than pure white, so across a full page the eye reads it as white.
+     The beige is 18.8% darker: three and a half times the separation, and the
+     tone he has approved every time he has seen it.
+
+     Laura gave two lights and this is the pairing they are actually for: beige
+     is the "soft companion" that can hold a whole page, off-white is the clean
+     surface that reads as raised on top of it. Using the lighter one for both
+     the page AND the cards is what flattened the landing page into one white
+     field with a white card floating in it. */
+  --canvas:#EFE8DC;         /* Laura's beige — the page */
+  --paper:#F9F7F2;          /* Laura's off-white — cards and raised surfaces.
+                               Now genuinely lifts, because the page beneath it
+                               is the beige. */
+  --sand:#EFE8DC;           /* the beige, for small tinted accents that sit on
+                               a --paper surface (nav panel hover, callouts) */
   --hairline:#E7E1D5;       /* warm hairline, used sparingly */
 
   /* text on dark */
@@ -223,7 +230,10 @@ section{ position:relative; }
 .band{ padding-top:var(--pad); padding-bottom:var(--pad); }
 .band-lg{ padding-top:var(--pad-lg); padding-bottom:var(--pad-lg); }
 .band-sm{ padding-top:var(--pad-sm); padding-bottom:var(--pad-sm); }
-.tint{ background:var(--sand); }
+/* An alternating band is now a LIFT, not a tint: off-white against the beige
+   page. Same two colours, opposite direction, and it reads as light falling on
+   the section rather than as a stain over it. */
+.tint{ background:var(--paper); }
 
 /* full-bleed warm-dark cinematic band */
 .dark{

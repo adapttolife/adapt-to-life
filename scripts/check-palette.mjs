@@ -21,8 +21,12 @@ import { readFileSync, readdirSync } from "node:fs";
 // Laura, via the Aug 13 hex drop (ManyRequests email + brand standards doc).
 const BRAND = {
   "--orange": "#FF5C39",
-  "--canvas": "#F9F7F2",  // off-white
-  "--paper":  "#F9F7F2",  // off-white
+  // The page is the BEIGE and the off-white lifts off it, not the other way
+  // round. Off-white is only 6.9% darker than pure white, so at full-page
+  // scale it reads as white — Alec called that twice. The beige is 18.8%
+  // darker, three and a half times the separation.
+  "--canvas": "#EFE8DC",  // beige — the page
+  "--paper":  "#F9F7F2",  // off-white — cards and lifted bands
   "--cream":  "#F9F7F2",  // off-white, for text on dark
   "--sand":   "#EFE8DC",  // beige
   "--ink":    "#1A1A1A",  // STAND-IN, see below

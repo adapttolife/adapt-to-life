@@ -99,6 +99,28 @@ ${states.map((s) => "        " + chip(s.name, s.n, `${SITE}/?state=${encodeURICo
 
 const page = join(ROOT, "public", "adaptive-sports-near-me.html");
 let html = readFileSync(page, "utf8");
+
+// ---- environment plate vars -------------------------------------------------
+// Same idea as band:vars: the content hash lives here, never in hand-written
+// CSS, so re-cropping a plate cannot leave a stale URL behind.
+//
+// This marker goes AFTER the page's own </style>, not next to band:vars. The
+// band:vars regex in apply-page-headers.mjs swallows every CONSECUTIVE <style>
+// after its marker, and today the only thing stopping it from eating this
+// page's 140-line stylesheet is an unrelated <script> tag sitting between the
+// two. Parking a second <style> up there would be building on that accident.
+// Custom properties on :root resolve wherever they are declared, so the later
+// position costs nothing.
+let plates = null;
+try { plates = JSON.parse(readFileSync(join(ROOT, "data", "env-plates.json"), "utf8")); } catch {}
+if (plates && plates["court-dusk-wide"] && plates["court-dusk-tall"]) {
+  const vars = `:root{--env-dusk-wide:url('${plates["court-dusk-wide"].file}');` +
+               `--env-dusk-tall:url('${plates["court-dusk-tall"].file}');}`;
+  const block = `<!-- env:vars --><style>${vars}</style><!-- /env:vars -->`;
+  const ERE = /<!-- env:vars -->[\s\S]*?<!-- \/env:vars -->/;
+  html = ERE.test(html) ? html.replace(ERE, block)
+                        : html.replace(/(\n<\/head>)/, `\n${block}$1`);
+}
 const RE = /<!-- asnm:stats -->[\s\S]*?<!-- \/asnm:stats -->/;
 if (RE.test(html)) html = html.replace(RE, block);
 else html = html.replace(/(\n  <!-- WHY \(light reading\) -->)/, `\n  ${block}\n${"$1"}`);

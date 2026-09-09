@@ -66,6 +66,23 @@ const browser = await chromium.launch();
 let failed = 0;
 let skipped = 0;
 
+// A HEADER BAND IS NOT THE ONLY PLACE TYPE SITS ON A PHOTOGRAPH. This checked
+// `.hero.pg-band, .hero-wall-photo` and nothing else, which was right for as
+// long as those were the only photographic grounds on the site. On 2026-09-09
+// the directory section got one — an empty dusk court behind .dir-stats — and
+// it would have shipped completely unmeasured, which is the same silent-hole
+// failure the homepage hid in for weeks and the reason the SKIP line below
+// exists at all. Add a region here whenever copy is put over a picture.
+//
+// `required` separates "this page has no such region" from "this region is
+// missing". Every page has a header, so a header that yields no targets is a
+// bug worth shouting about; only one page has a .dir-stats, so its absence
+// everywhere else is not.
+const REGIONS = [
+  { name: "header", sel: ".hero.pg-band, .hero-wall-photo", copy: ".wrap, .mw-copy", required: true },
+  { name: "ground", sel: ".dir-stats",                      copy: ".wrap",           required: false },
+];
+
 for (const page of RUN) {
   // 1920 is here because it is the width this page is WORST at and the only one
   // that was never tested. The wall scales with the viewport while the headline
@@ -79,12 +96,31 @@ for (const page of RUN) {
     await p.evaluate(() => document.fonts.ready);
     await p.waitForTimeout(600);
 
-    const targets = await p.evaluate(() => {
+    for (const region of REGIONS) {
+    // BRING THE REGION INTO VIEW BEFORE MEASURING IT. Every box here is clamped
+    // to the viewport and dropped if under 8px tall, which is right for a
+    // header — a header is always at the top — and quietly wrong for anything
+    // below the fold. .dir-stats is, so the first run of this measured whatever
+    // sliver of the section happened to poke into a 900px window and reported a
+    // number for it: the same target scored at 1920 and 390 but vanished
+    // entirely at 1440, which is the tell. A row that appears and disappears
+    // with the window height is not measuring the thing it names.
+    //
+    // The reveal class has to be forced too. Copy inside .reveal is opacity 0
+    // and translated until an IntersectionObserver fires, so its box is both
+    // in the wrong place and the wrong size until it lands.
+    await p.evaluate((regionSel) => {
+      document.querySelectorAll(".reveal").forEach((e) => e.classList.add("is-in"));
+      document.querySelector(regionSel)?.scrollIntoView({ block: "start", behavior: "instant" });
+    }, region.sel);
+    await p.waitForTimeout(250);
+
+    const targets = await p.evaluate(({ regionSel, copySel }) => {
       // The homepage's hero is .hero-wall-photo, not .hero.pg-band. Selecting
       // only the band meant this returned null on the homepage and the loop
       // below skipped it SILENTLY — which is why the biggest type on the site
       // went unchecked while the check reported success every run.
-      const band = document.querySelector(".hero.pg-band, .hero-wall-photo");
+      const band = document.querySelector(regionSel);
       if (!band) return null;
       const out = [];
       // "em" is here because measuring the h1 is not the same as measuring the
@@ -95,7 +131,7 @@ for (const page of RUN) {
       // ("the 'rts' in sports is kinda hard to see") on a run this check had
       // already passed. The accent gets its own row and its own colour.
       for (const sel of ["h1", "em", ".eyebrow", ".lead", "p"]) {
-        const wrap = band.querySelector(".wrap, .mw-copy");
+        const wrap = band.querySelector(copySel);
         const list = [...(wrap || band).querySelectorAll(sel)];
         for (const [idx, el] of list.entries()) {
           const r = el.getBoundingClientRect();
@@ -106,12 +142,17 @@ for (const page of RUN) {
         }
       }
       return out;
-    });
+    }, { regionSel: region.sel, copySel: region.copy });
     // Loudly, not silently. A skipped page used to look exactly like a passing
     // page, and that is how the homepage hid for weeks.
     if (!targets || !targets.length) {
-      console.log(` SKIP ${page.padEnd(24)} ${tag.padEnd(5)} no measurable header found`);
-      skipped++; await p.close(); continue;
+      if (region.required) {
+        console.log(` SKIP ${page.padEnd(24)} ${tag.padEnd(5)} no measurable ${region.name} found`);
+        skipped++;
+      }
+      continue;   // NOT `await p.close(); continue;` — the page is still needed
+                  // by the next region, and closing it here skipped every
+                  // region after the first one that happened to be absent.
     }
 
     // Make the GLYPHS invisible, not the element.
@@ -144,15 +185,16 @@ for (const page of RUN) {
       // every box below it moves; measuring against stale coordinates sampled a
       // region the text had already left and reported 1.31:1 for a line that
       // reads at 5:1.
-      const live = await p.evaluate(({ sel, i }) => {
+      const live = await p.evaluate(({ sel, i, regionSel, copySel }) => {
         // Same two-hero reality as above: the homepage's copy lives in
         // .mw-copy inside .hero-wall-photo, not .wrap inside .hero.pg-band.
-        const root = document.querySelector(".hero.pg-band .wrap, .hero-wall-photo .mw-copy");
+        const band = document.querySelector(regionSel);
+        const root = (band && band.querySelector(copySel)) || band;
         const el = root && root.querySelectorAll(sel)[i];
         if (!el) return null;
         const r = el.getBoundingClientRect();
         return { x: r.x, y: r.y, width: r.width, height: r.height };
-      }, { sel: t.sel, i: t.idx });
+      }, { sel: t.sel, i: t.idx, regionSel: region.sel, copySel: region.copy });
       if (!live) continue;
       // clamp to the viewport: a header line that is off screen is not a
       // contrast question
@@ -177,19 +219,19 @@ for (const page of RUN) {
       // never a neighbouring word. Buttons are left alone: they are separate
       // blocks below the type and their own fill is legitimately background.
       const TEXT = "h1, h2, em, .eyebrow, .lead, p, li";
-      await p.evaluate((TEXT) => {
-        const band = document.querySelector(".hero.pg-band, .hero-wall-photo");
-        const root = band.querySelector(".wrap") || band.querySelector(".mw-copy");
+      await p.evaluate(({ TEXT, regionSel, copySel }) => {
+        const band = document.querySelector(regionSel);
+        const root = band.querySelector(copySel) || band;
         for (const el of root.querySelectorAll(TEXT)) el.style.setProperty("opacity", "0", "important");
-      }, TEXT);
+      }, { TEXT, regionSel: region.sel, copySel: region.copy });
       const shot = await p.screenshot({ clip: box });
-      await p.evaluate((TEXT) => {
-        const band = document.querySelector(".hero.pg-band, .hero-wall-photo");
-        const root = band.querySelector(".wrap") || band.querySelector(".mw-copy");
+      await p.evaluate(({ TEXT, regionSel, copySel }) => {
+        const band = document.querySelector(regionSel);
+        const root = band.querySelector(copySel) || band;
         // removeProperty, not = "" — an !important inline value is not cleared
         // by assigning the empty string.
         for (const el of root.querySelectorAll(TEXT)) el.style.removeProperty("opacity");
-      }, TEXT);
+      }, { TEXT, regionSel: region.sel, copySel: region.copy });
       // decode with the browser rather than pulling in a node image library
       const px = await p.evaluate(async (b64) => {
         const img = new Image();
@@ -213,7 +255,8 @@ for (const page of RUN) {
       const floor = FLOOR[t.sel] ?? 4.5;
       const ok = cr >= floor;
       if (!ok) failed++;
-      console.log(`${ok ? " ok " : "FAIL"}  ${page.padEnd(24)} ${tag.padEnd(5)} ${t.sel.padEnd(9)} ${cr.toFixed(2)}:1 (floor ${floor})`);
+      console.log(`${ok ? " ok " : "FAIL"}  ${page.padEnd(24)} ${tag.padEnd(5)} ${region.name.padEnd(6)} ${t.sel.padEnd(9)} ${cr.toFixed(2)}:1 (floor ${floor})`);
+    }
     }
     await p.close();
   }

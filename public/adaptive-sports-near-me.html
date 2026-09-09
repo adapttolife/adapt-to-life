@@ -115,18 +115,54 @@
      mush, and left legible enough to read it competes. Both failures were
      shipped here today before this was understood.
 
-     So until there is an environment frame to use, the ground is the site's own
-     atmosphere: the warm bloom the hero already carries, plus grain. It reads as
-     deliberate emptiness rather than a picture nobody can make out, and it costs
-     nothing. See the art-direction note handed to Alec for what would replace
-     it. */
-  .dir-stats{ position:relative; overflow:hidden; }
+     RESOLVED 2026-09-09. The environment frames now exist — ten of them, in
+     Drive under Website Photos / 03 Backgrounds, and they are the category the
+     library was missing. The plate here is env-court-dusk-wide: a wet outdoor
+     court under one floodlight at dusk. It measures mean L 44.0 / stdev 42.0
+     against the library's 50.7 / 43.3, so it is in register as shot and carries
+     no grade at all. Deep blue sky where the type goes, warm light where the
+     bloom already was, and not a single face to compete with a headline.
+
+     TWO THINGS MAKE IT BEHAVE, and they are worth keeping.
+
+     1. IT IS SIZED BY WIDTH: `100% auto`, never `cover`. Rendered height then
+        follows the aspect ratio at every viewport, so the squashing Alec
+        reported is not fixed but impossible — there is no scaling axis left for
+        `cover` to pick wrongly, and no background-position to get inert. Below
+        the plate the scrim has already reached solid --ink-warm, so the section
+        simply continues in its own colour however tall the chips make it.
+     2. EACH BREAKPOINT GETS ITS OWN CROP. Sizing by width means a 3:2 frame is
+        a thin strip on a phone, so --env-plate swaps to a real 3:4 crop of the
+        same photograph below 900px. Same court, same light, composed for the
+        shape — not the wide file squeezed into it.
+
+     The plate is MIRRORED in the builder. Its floodlight was top-left; the warm
+     bloom this site carries sits top-right at 82% 18%. Flipped, the photograph's
+     light and the site's light are one source instead of two, and the frame has
+     no text in it to give the mirror away. */
+  .dir-stats{ position:relative; overflow:hidden;
+    --env-plate:var(--env-dusk-wide); --scrim-top:0.40; }
+  /* On a phone the tall crop puts sky and floodlight exactly where the eyebrow
+     lands, and that line was the tightest number on the page. Deepening only
+     the TOP stop buys it headroom without touching the middle of the frame,
+     which is where the net and the wet asphalt are — the reason to run a
+     photograph here at all. One stop, not the whole scrim. */
+  @media (max-width: 900px){ .dir-stats{ --env-plate:var(--env-dusk-tall); --scrim-top:0.56; } }
   .dir-stats::before{
     content:""; position:absolute; inset:0; z-index:0; pointer-events:none;
     background:
+      /* the scrim IS the grade — the plate is ungraded on purpose */
+      linear-gradient(180deg, rgba(12,12,14,var(--scrim-top)) 0%, rgba(12,12,14,0.56) 30%,
+                              rgba(12,12,14,0.86) 62%, var(--ink-warm) 84%),
       radial-gradient(ellipse 70% 60% at 82% 18%, rgba(255,92,57,0.16) 0%, rgba(255,92,57,0.04) 42%, transparent 70%),
       radial-gradient(ellipse 90% 70% at 8% 96%, rgba(212,168,67,0.06) 0%, transparent 62%),
-      linear-gradient(180deg, rgba(255,255,255,0.028) 0%, transparent 38%);
+      /* the 2.8% white sheen that used to sit here is GONE. It existed to give
+         an empty ground some surface; over a photograph it only lifts the sky
+         under the eyebrow, and that line was measuring 4.50:1 against a 4.50
+         floor at 390px — passing on a rounding error. The plate supplies the
+         surface now. */
+      var(--env-plate) center top / 100% auto no-repeat;
+    background-color:var(--ink-warm);
   }
   /* The same grain the hero and the share cards carry, so an empty ground still
      has the site's surface on it rather than reading as flat CSS. */
@@ -173,6 +209,7 @@
   .dir-chip.is-plain b{ color:rgba(255,255,255,0.38); }
   .dir-stats .actions{ margin-top:clamp(2.2rem,4.5vw,3rem); }
 </style>
+<!-- env:vars --><style>:root{--env-dusk-wide:url('/images/env/court-dusk-wide.ea61a585.webp');--env-dusk-tall:url('/images/env/court-dusk-tall.b218aada.webp');}</style><!-- /env:vars -->
 </head>
 <body>
 

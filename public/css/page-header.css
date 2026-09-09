@@ -277,7 +277,35 @@
     padding-top:clamp(4rem, 10vh, 5.5rem);
     padding-bottom:clamp(3rem, 7vh, 4.5rem);
   }
-  .hero.pg-band > .wrap > *{ max-width:none; }
+  /* THE SELECTOR LIST HAS TO BE REPEATED — `*` DOES NOT WIN.
+     This line used to read `.hero.pg-band > .wrap > *{ max-width:none; }` and it
+     never once applied. The desktop rule it is trying to cancel is
+     `.hero.pg-band > .wrap > :is(.eyebrow, h1, h2, p, ul, ol)`, and :is() takes
+     the specificity of its most specific argument — `.eyebrow`, a class — so it
+     scores (0,4,0). `*` contributes nothing, so this scored (0,3,0) and lost.
+     A media query adds no specificity, so the DESKTOP two-column cap
+     (max-width: min(44ch, 50%)) was applying on every phone.
+
+     Measured before the fix, at 390px: h1 computed min(1232px, 50%) and
+     rendered 175px — the headline in a 175px gutter of a 390px screen, three
+     lines for four words, and a ten-line lead. .actions is not in that list, so
+     it computed `none` and rendered 350px: full-width buttons above half-width
+     type, which is the giveaway you can see without measuring anything.
+
+     Alec, 2026-09-09: "Text is more important... reading and understanding the
+     words." On a phone the column IS the page; there is no second column to
+     hold a photograph beside. */
+  .hero.pg-band > .wrap > :is(.eyebrow, h1, h2, p, ul, ol){ max-width:none; }
+  /* 0.88 -> 0.93. The comment above says this field is "sized so every line
+     clears 4.5:1 on background alone", and that was true for every line the
+     contrast probe knew about — but the probe only measured h1/.eyebrow/.lead/p
+     and never the orange <em> INSIDE the h1. Once it did (2026-09-09),
+     /volunteer's accent came back at 2.71:1 against a 3.0 floor at 390px: the
+     only accent on the site sitting over a bright patch of the tall band.
+     Measured, the brightest patch behind it is luminance 0.076 against the
+     orange's 0.292, and the floor needs 0.064 — about 16% darker. 0.93 buys
+     that with room. It is the field hugging the words that darkens, not the
+     photograph: the band either side of the copy is untouched. */
   .hero.pg-band > .wrap::before{ left:-14%; right:-14%; top:-7%; bottom:-9%;
     background:rgba(0,0,0,0.88); }
   /* Narrow: same rule, the taller asset. The strip fills the header here too —

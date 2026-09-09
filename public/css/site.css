@@ -393,7 +393,35 @@ section{ position:relative; }
 .footer .col h4{ font-family:var(--font-label); font-size:0.7rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--cream-faint); font-weight:700; margin-bottom:1rem; }
 .footer .col a{ display:block; font-size:0.95rem; color:var(--cream); opacity:0.82; margin-bottom:0.65rem; transition:opacity .15s ease, color .15s ease; }
 .footer .col a:hover{ opacity:1; color:var(--orange); }
-.footer-bottom{ display:flex; flex-wrap:wrap; justify-content:flex-end; gap:1rem; margin-top:clamp(2.5rem,5vw,3.5rem); padding-top:1.4rem; border-top:1px solid rgba(255,255,255,0.12); font-size:0.85rem; color:var(--cream-faint); }
+/* space-between, not flex-end: the social row takes the empty left side and the
+   copyright stays exactly where it was on the right. Nothing else in the bar
+   moves. */
+.footer-bottom{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1rem; margin-top:clamp(2.5rem,5vw,3.5rem); padding-top:1.4rem; border-top:1px solid rgba(255,255,255,0.12); font-size:0.85rem; color:var(--cream-faint); }
+
+/* SOCIAL — the only outbound links in the footer, so they sit in the bottom bar
+   rather than inside the internal link columns, where they would read as more
+   site navigation.
+   Quiet on purpose: 0.72 opacity in cream, lifting to the orange on hover, the
+   same behaviour as .footer .col a. The footer's job here is the subscribe
+   field; these are a way to keep following, not a third call to action.
+
+   44x44 TAP TARGETS, WHICH IS THE AAA NUMBER AND DELIBERATE. WCAG 2.5.8 (AA,
+   new in 2.2) asks only 24x24; 2.5.5 (AAA) asks 44x44. For an adaptive sports
+   organisation whose visitors disproportionately include people with limited
+   hand function, the AA floor is the wrong one to design to — a 20px icon is
+   the smallest thing on the page and the hardest to hit. The box is invisible;
+   only the glyph is drawn. */
+.social{ display:flex; align-items:center; gap:0.15rem; margin:-0.6rem 0; }
+.social a{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:44px; height:44px;
+  color:var(--cream); opacity:0.72;
+  border-radius:8px;
+  transition:opacity .15s ease, color .15s ease;
+}
+.social a:hover{ opacity:1; color:var(--orange); }
+.social a:focus-visible{ opacity:1; color:var(--orange); outline:2px solid var(--orange); outline-offset:2px; }
+.social svg{ width:20px; height:20px; display:block; fill:currentColor; }
 
 /* footer inline subscribe */
 .foot-sub{ margin:0 0 1.3rem; max-width:32ch; }

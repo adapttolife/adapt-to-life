@@ -38,6 +38,12 @@ test("social metadata and generated card source carry Spring 2027", async () => 
     text("scripts/make-og.mjs"),
   ]);
 
-  assert.ok(wire.includes(`"send-6": "${CAMPAIGN}. Adapt To Life."`));
+  // OPENS WITH, no longer EQUALS. From 2026-09-09 the alt text continues past
+  // the campaign line into a description of the photograph, because the cards
+  // became photographs and alt that describes a picture nobody can see is the
+  // whole point of alt. The invariant this test exists for is untouched: the
+  // campaign name AND its date still have to reach the share metadata, so the
+  // closing quote is dropped and nothing else.
+  assert.ok(wire.includes(`"send-6": "${CAMPAIGN}. Adapt To Life.`));
   assert.ok(generator.includes(`Send 6 to the <em>US Open</em> Spring 2027.`));
 });

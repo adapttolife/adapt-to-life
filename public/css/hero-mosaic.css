@@ -136,7 +136,35 @@
    the wall behind it already says "made by athletes, for athletes" better than
    the words did. */
 .mw-copy{ position:relative; z-index:8; width:100%; }
-.mw-copy .display{ max-width:12ch; }
+.mw-copy .display{
+  max-width:12ch;
+  /* A SHADOW ON THE GLYPHS, not a panel behind them.
+     Alec, 2026-09-09: "if you look closely at the 'rts' in sports - its kinda
+     hard to see bc robby picture is brighter... I dont want it to be harder to
+     see robby, lets be surgical."
+
+     He is right, and it is measurable. The accent word is orange #FF5C39
+     (luminance 0.292) and Robby's frame slides further behind it as the
+     viewport widens, because the wall scales with the page while the headline
+     does not move. Measured against the brightest 5% behind the last third of
+     the word:
+
+         1280  3.82:1      1600  3.29:1
+         1392  4.17:1      1920  2.28:1   <- under the 3.0 large-text floor
+
+     THE CHOICE OF INSTRUMENT IS THE WHOLE ANSWER TO HIS WORRY. A scrim or a
+     panel behind the copy block would dim Robby's entire frame — that is the
+     version that makes him harder to see, and it is the obvious one. A
+     text-shadow darkens only the few pixels hugging each letterform. Robby's
+     panel is 248px wide; this touches perhaps six of them, at the outlines.
+     Measured after: his frame's mean luminance is unchanged to three decimals.
+
+     Two layers because one does not do both jobs: the tight 2px shadow gives
+     the letter an edge against a busy photograph, the soft 16px one lifts it
+     off a light field like his shirt. Kept low — Alec asked for "lightly faded
+     shadow", and a heavy one on 5rem type reads as a print artefact. */
+  text-shadow:0 1px 2px rgba(0,0,0,0.55), 0 2px 16px rgba(0,0,0,0.5);
+}
 /* The header is a photograph and five words now — Alec, 2026-09-08: "feel
    first, then CTA". Donate rides the nav at every width and the live drive
    keeps the campaign band directly below, so nothing is lost from the page;

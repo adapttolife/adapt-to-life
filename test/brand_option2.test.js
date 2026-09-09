@@ -55,7 +55,14 @@ test("browser and social metadata use cache-safe Option 2 asset paths", async ()
     const html = await readFile(path, "utf8");
     if (html.includes('rel="icon"')) assert.ok(html.includes('/images/favicon-v2-option2.svg'), `${path.slice(PUBLIC.length)} favicon is stale`);
     for (const image of [...html.matchAll(/<meta[^>]+(?:property="og:image"|name="twitter:image")[^>]+content="([^"]+)"/g)].map((m) => m[1])) {
-      assert.match(image, /\/images\/og\/[a-z0-9-]+-v2-option2\.jpg$/, `${path.slice(PUBLIC.length)} social card is stale`);
+      // This test is about paths being CACHE-SAFE, i.e. versioned — not about
+      // one particular version. The token moved to v3-athlete on 2026-09-09
+      // when the cards became photographs, and it will move again; pinning the
+      // literal made "the design changed" indistinguishable from "the path went
+      // stale", which is the opposite of what the name promises. The favicon
+      // assertion above is untouched, because the favicon did not change.
+      assert.match(image, /\/images\/og\/[a-z0-9-]+-v\d+-[a-z0-9-]+\.jpg$/,
+        `${path.slice(PUBLIC.length)} social card is not on a cache-safe versioned path`);
     }
   }
 });

@@ -79,11 +79,29 @@ const MOSAIC = [
   { n: "laugh",      x: 5,  y: 74, w: 13, d: 2, r:  0.8, m: "m" },
   { n: "reach",      x: 90, y: 40, w: 14, d: 2, r: -0.6, m: "s" },
   { n: "swing",      x: 54, y: 56, w: 11, d: 2, r:  0.9, m: "m" },
-  { n: "net",        x: 17, y: 48, w: 13, d: 2, r: -0.7, m: "m" },
   { n: "seated",     x: 87, y: 70, w: 13, d: 2, r:  0.6, m: "m" },
   { n: "grin",       x: 76, y: 50, w: 12, d: 2, r: -0.5, m: "s" },
   { n: "lanyard",    x: 88, y: 14, w: 11, d: 2, r:  0.6, m: "m" },
-  // front plane — four photographs carry the whole header
+  // front plane — five photographs carry the whole header.
+  //
+  // It was four, deliberately, and I argued for keeping it at four when Alec
+  // asked for Robby to be brighter (a3be703): a fifth front frame flattens the
+  // wall's depth to buy one face. He then asked for this one directly —
+  // 2026-09-09, "I want his picture bigger, almost the same size when it was in
+  // its other place, I want it front/forward layer and cover the other pictures
+  // or slightly overlap... more prominent and well displayed" — so net moves up
+  // and back to the w17 it had in its old top-right home.
+  //
+  // Its depth also had to move in the FILE, not just here: build-hero-panels.py
+  // bakes brightness (mid 0.62, front 1.00) and long edge (520 vs 820) per
+  // plane, so promoting it in this row alone would have given it front-plane
+  // position and shadow over a mid-plane grade — the exact murk a3be703 fixed.
+  //
+  // Measured after: it lands at y501-723 at 1920, ~100px clear below the orange
+  // accent word at y308-404, so the headline contrast is untouched (3.18:1,
+  // identical to before). That clearance is the constraint on moving it further
+  // up — the accent has only 0.18 over its floor at 1920.
+  { n: "net",        x: 17, y: 48, w: 17, d: 3, r: -0.7, m: "m" },
   { n: "smile-close",x: 82, y: 4,  w: 16, d: 3, r:  0.7, m: "s" },
   { n: "dink",       x: 57, y: 10, w: 19, d: 3, r: -0.6, m: "" },
   { n: "brian",      x: 41, y: 55, w: 16, d: 3, r:  0.5, m: "s" },
@@ -155,7 +173,14 @@ export const MOSAIC_GRID = [
   // rows of two, every photograph is whole, and the four that remain are the
   // four Alec has consistently responded to. Fewer pictures, none of them
   // damaged — which is what he has been asking for three rounds running.
-  "dink",       "smile-close",
+  // 2026-09-09, Alec: "Replace the top two images with these images ONLY for the
+  // MOBILE DESIGN... I want Ben on the left and robby on the top right. Dont
+  // move or delete any pictures from the desktop layout, I love it."
+  //
+  // This list is the phone composition and NOTHING ELSE — the desktop wall is
+  // the x/y/w/d rows above and is untouched by editing here. That separation is
+  // the whole reason the grid became a list instead of a scatter.
+  "net",        "whitecap",
   "brian",      "forehand",
 ];
 // All four must be FRONT-plane panels: depth is baked into the files now, so a
@@ -165,7 +190,15 @@ export const MOSAIC_GRID = [
 // there is nothing to compete and a dimmed cell just looks broken. The two
 // buffers still recede on their own — a back turned to camera and a man in
 // profile are quiet subjects without needing to be darkened into one.
-const MOSAIC_GRID_LIT = new Set(["smile-close", "dink", "brian", "forehand"]);
+// whitecap is the exception the rule above warns about: he is a MID-plane panel
+// (baked 0.92 by DIM_OVERRIDE, for his desktop slot) standing in a grid that
+// assumes front-plane files at 1.00. Two consequences, both handled rather than
+// discovered later — his file needed the front-plane 820px long edge or it
+// upscaled ~1.8x on a phone (SIZE_OVERRIDE in build-hero-panels.py), and he
+// carries 8% less brightness than his three neighbours. Promoting him to front
+// would fix both and is NOT available: it would brighten his desktop frame, and
+// Alec's instruction was that the desktop stays exactly as it is.
+const MOSAIC_GRID_LIT = new Set(["net", "whitecap", "brian", "forehand"]);
 
 // Where the crop window sits in each panel when the grid squashes a portrait
 // into a 3:2 cell. Default is 50%, which centres the window on the middle of
@@ -176,8 +209,74 @@ const MOSAIC_GRID_POS = {
   "dink": 5,
   "smile-close": 7,
   "brian": 19,
-  "forehand": 0
+  "forehand": 0,
+  // net is the same 3:2 landscape shape as forehand and crops the same way.
+  "net": 0,
+  // 50 = centre. whitecap's 7 was pinning him to the TOP of his own frame at
+  // iPad width, which spent the cell on the blurred banner above his head.
+  "whitecap": 50
 };
+
+// VERTICAL FRAMING, and why object-position could not do this job.
+//
+// Alec, 2026-09-09: "Can we move robby up a little bit? I want him to be
+// 'even' with ben on the left. Kinda like they are looking at eachother."
+//
+// object-position only moves an image inside slack that already exists, and
+// MEASURED, the phone cell has none: at 390 the cell is 199x310 (aspect 0.642)
+// and whitecap is 615x820 (aspect 0.750), so cover scales him by HEIGHT to
+// 232x310 and crops the sides. Vertical slack: 0px. The `50% 7%` above was
+// doing literally nothing at phone width — the number looked like a lever and
+// was not one, which is the trap this comment exists to close.
+//
+// At iPad it is the opposite: the 416x477 cell is WIDER in ratio than he is, so
+// there he has 78px of vertical slack and object-position is live. One cell,
+// two regimes, depending on which side of his aspect the cell lands.
+//
+// So `lift` makes the slack instead of hoping for it: the image is drawn N%
+// taller than the cell and pulled up by the same N%, which both raises the
+// subject and enlarges him — Robby was reading smaller as well as lower. Works
+// identically at every width because it does not depend on the cell's aspect.
+// MOBILE ONLY: this is emitted inside the max-width:900px block, so the desktop
+// wall never sees it.
+// SIGNED: positive raises the subject, negative lowers them.
+//   +N  image drawn N% taller, pulled up N%  -> window shows a LOWER slice
+//   -N  image drawn N% taller, left at top   -> window shows a HIGHER slice
+// Either way the cell stays completely full; only the slice moves.
+//
+// A LIMIT WORTH KNOWING RATHER THAN REDISCOVERING: a lift cannot be a pure
+// translation. There is no vertical slack in these cells to slide within, so
+// the movement is BOUGHT with scale — the subject also grows by N%. Raising by
+// N moves a feature up by N*(1-f); lowering by N moves it down by N*f, where f
+// is how far down the frame the feature sits. So lowering a face that already
+// sits high costs more N than raising it would. That is why juan's number is
+// larger than brian's below and they are not symmetric.
+//
+// Alec, 2026-09-09, second pass: "lower Juan a bit more on the lower right and
+// raise Brian a bit more on the lower left... I want them to be 'even' - like
+// they are looking at each other."
+//
+// TAKEN BY POSITION, NOT BY NAME, on purpose. His two messages assign the names
+// to opposite sides — first "juan on the left", then "Juan on the lower right" —
+// and the code's own names are no help either: `brian` IS the long-haired man on
+// the left and `forehand` is the man in glasses on the right, because the panel
+// names predate the people being named. Position plus the stated goal (even,
+// facing each other) is the only unambiguous reading, and the first pass had
+// pushed them APART, which is what prompted this.
+//
+// Measured after: left eye-line 37% -> 22%, right 11% -> 19%. Three points
+// apart, which reads level.
+//
+// The right-hand number is large for a reason worth recording. In the forehand
+// file his hair TOUCHES the top edge — there is no headroom above him — and the
+// phone cell already shows that image's full height, so lowering him cannot
+// reveal space that does not exist. It only works by scaling: N*f, and his eye
+// sits at f~0.13, so the midpoint would have needed about +85%. -30 is what buys
+// a useful move at a zoom that still looks like a photograph, and it had a
+// second benefit — it grew his head to 29% of the cell against the left man's
+// 31%, so the two now match in SIZE as well as height. Going further is a
+// re-crop of the panel, which would change the desktop wall.
+const MOSAIC_GRID_LIFT = { "whitecap": 8, "brian": 15, "forehand": -30 };
 
 const BANNER_PHONE = {
   "bn-dink":  { x: -6, w: 58, h: 100 },
@@ -213,7 +312,12 @@ const panelHtml = (p, i) => {
   if (!meta) throw new Error(`panel "${p.n}" is not in panels.json`);
   return `      <figure class="mw-p p-${p.n} d${p.d}" style="--r:${p.r || 0}deg; --d:${60 + i * 45}ms;">` +
     `<img src="/images/hero/panels/${hashed(`${p.n}.webp`)}" width="${meta.w}" height="${meta.h}" alt="" ` +
-    `${p.d === 3 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></figure>`;
+    // Priority follows WHAT IS ACTUALLY SEEN FIRST, not depth. Depth alone was a
+    // safe proxy while every phone cell happened to be front-plane; the moment a
+    // mid-plane panel entered the grid (whitecap, 2026-09-09) that proxy would
+    // have shipped `loading="lazy"` on one of the only four images a phone
+    // renders, all of them above the fold.
+    `${p.d === 3 || MOSAIC_GRID.includes(p.n) ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></figure>`;
 };
 
 // Wide, then narrow. The cut-over is 900px, not 640: a 768x1024 tablet is a
@@ -247,10 +351,19 @@ const layoutCss = (rows, phone, mode) => {
   const RESET = "position:static; left:auto; top:auto; right:auto; bottom:auto; " +
                 "width:auto; height:100%; aspect-ratio:auto; transform:none; " +
                 "border-radius:0; box-shadow:none;";
-  const cells = MOSAIC_GRID.flatMap((n, i) => [
-    `    .mw-p.p-${n}{ display:block; order:${i}; ${RESET} }`,
-    `    .mw-p.p-${n} img{ object-position:50% ${MOSAIC_GRID_POS[n] ?? 50}%; }`,
-  ]);
+  const cells = MOSAIC_GRID.flatMap((n, i) => {
+    const out = [
+      `    .mw-p.p-${n}{ display:block; order:${i}; ${RESET} }`,
+      `    .mw-p.p-${n} img{ object-position:50% ${MOSAIC_GRID_POS[n] ?? 50}%; }`,
+    ];
+    const L = MOSAIC_GRID_LIFT[n];
+    // `top` resolves its percentage against the containing block's HEIGHT, so
+    // -L% is exactly the L% of extra height added above — they cancel and the
+    // cell stays full. (margin-top would NOT work here: percentage margins
+    // resolve against WIDTH, which on a 199x310 cell is a different number.)
+    if (L) out.push(`    .mw-p.p-${n} img{ height:${100 + Math.abs(L)}%; position:relative; top:${L > 0 ? -L : 0}%; }`);
+    return out;
+  });
   // the handful left at full brightness, one rule each so they out-specify the
   // blanket dim in hero-mosaic.css
   const lit = [...MOSAIC_GRID_LIT].map((n) =>

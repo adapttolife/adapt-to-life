@@ -25,16 +25,19 @@ const PER_PAGE = {
   "volunteer.html": "volunteer",
 };
 
-// Every card is now the same artwork with a different line, so the alt text
-// leads with the words. The image is the Adapt To Life mark, not a photograph,
-// and describing embossing at length would tell a screen reader nothing useful.
+// ALT DESCRIBES THE PHOTOGRAPH AGAIN, because from 2026-09-09 the cards ARE
+// photographs. The previous text said "the Adapt To Life mark, embossed in
+// black" — accurate for the mono cards and a plain falsehood for these, which
+// is worse than terse alt text. It reads the line first (that is the message)
+// and then who is actually pictured, briefly. An organisation built around
+// disabled athletes does not ship an unlabelled — or a mislabelled — image.
 const ALT = {
-  _default: "Adapt To Life: your place in adaptive sports. The Adapt To Life mark, embossed in black.",
-  donate: "Put an athlete in the game. Adapt To Life.",
-  "send-6": "Send 6 to the US Open Spring 2027. Adapt To Life.",
-  popcorn: "Half of every bag puts an athlete in the game. Adapt To Life.",
-  "hustle-and-heart": "Every dollar goes to an athlete. The Hustle and Heart Fund, Adapt To Life.",
-  volunteer: "Your place on this team. Adapt To Life.",
+  _default: "Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in a headband holds his paddle and looks up from the court.",
+  donate: "Put an athlete in the game. Adapt To Life. A wheelchair pickleball player swings, the ball in the air beside her.",
+  "send-6": "Send 6 to the US Open Spring 2027. Adapt To Life. A wheelchair pickleball player drives across an indoor court.",
+  popcorn: "Half of every bag puts an athlete in the game. Adapt To Life. A wheelchair pickleball player drives across an indoor court.",
+  "hustle-and-heart": "Every dollar goes to an athlete. The Hustle and Heart Fund, Adapt To Life. A wheelchair pickleball player in a headband holds his paddle.",
+  volunteer: "Your place on this team. Adapt To Life. A wheelchair pickleball player in a cap reaches for a shot.",
 };
 
 // Cards live under /images/og/ on their own paths, including the default one.
@@ -43,7 +46,7 @@ const ALT = {
 // references it, so a redesign is never served from a stale third-party cache.
 const url = (card) => {
   const name = card === "_default" ? "home" : card;
-  return `${BASE}/images/og/${name}-v2-option2.jpg`;
+  return `${BASE}/images/og/${name}-v3-athlete.jpg`;
 };
 
 function setMeta(html, selector, attr, value) {
@@ -73,7 +76,7 @@ for (const file of readdirSync(PUB).filter((f) => f.endsWith(".html")).sort()) {
 
   // the card file must exist before a page is allowed to point at it
   const name = card === "_default" ? "home" : card;
-  const local = join(PUB, "images/og", `${name}-v2-option2.jpg`);
+  const local = join(PUB, "images/og", `${name}-v3-athlete.jpg`);
   if (!existsSync(local)) throw new Error(`${file}: card missing at ${local} (run make-og.mjs first)`);
 
   const before = html;

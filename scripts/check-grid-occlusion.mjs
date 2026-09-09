@@ -98,8 +98,27 @@ await browser.close();
 // the mobile grid for two revisions, so the check was silently guarding a cell
 // that did not exist while ignoring ones that did.
 import { MOSAIC_GRID } from "./lib/heroes.mjs";
+
+// THE GRID ONLY EXISTS BELOW 900px, so the rule only means something there.
+// hero-mosaic.css switches to the four-cell grid at max-width:900px; above it
+// the page renders the scattered wall, where MOSAIC_GRID membership carries no
+// meaning at all and panels sitting partly behind the headline is the design —
+// shout is 15% covered at 1440 and bench 24%, both deliberate, neither flagged.
+//
+// This asserted at every width, which was harmless only for as long as every
+// grid cell happened to also be clear of the headline on desktop. whitecap
+// broke that on 2026-09-09 by joining the grid: he is 39% behind the headline
+// at 1440 by DESIGN — that is the frame Alec chose to fix with a text-shadow
+// rather than by moving it. Asserting a phone rule against him at 1440 failed a
+// build over a placement Alec had explicitly approved.
+//
+// Reporting is unchanged at all three widths — desktop numbers are still
+// printed, and still worth reading. Only the ASSERTION is scoped.
+const GRID_MAX = 900;
+const GRID_WIDTHS = new Set(VIEWPORTS.filter(([w]) => w <= GRID_MAX).map(([, , tag]) => tag));
 let bad = 0;
 for (const [tag, cells] of Object.entries(report)) {
+  if (!GRID_WIDTHS.has(tag)) continue;
   for (const c of cells) {
     if (!MOSAIC_GRID.includes(c.name)) continue;
     const hidden = Math.min(100, c.slab + c.fold);
@@ -109,5 +128,6 @@ for (const [tag, cells] of Object.entries(report)) {
     }
   }
 }
-console.log(bad ? `\n${bad} cell(s) covered.` : "\nEvery cell in the grid is whole.");
+console.log(bad ? `\n${bad} cell(s) covered.`
+                : `\nEvery cell in the grid is whole (asserted at ${[...GRID_WIDTHS].join(", ")}).`);
 process.exit(bad ? 1 : 0);

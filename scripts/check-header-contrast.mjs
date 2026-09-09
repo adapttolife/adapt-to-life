@@ -17,11 +17,44 @@
 import { chromium } from "/home/agentos/pw/node_modules/playwright/index.mjs";
 
 const BASE = process.argv[2] || "http://127.0.0.1:8788";
-const PAGES = ["about", "promise", "apply", "donate", "sponsorship", "volunteer",
+// "index" is the HOMEPAGE, and it was missing from this list until 2026-09-09 —
+// which is how the biggest type on the site went unmeasured while eleven
+// interior pages were checked every run. Alec found it by eye: the orange
+// accent word sits over Robby's frame, and his light shirt is the one bright
+// thing behind any headline on the site.
+//
+// SUPERSEDED, kept because the correction is the point. This block used to
+// record hand-measured accent numbers — 3.75:1 at 1440, 3.29:1 at 1600, 2.28:1
+// at 1920 — and treat the 1920 figure as a known failure we were choosing to
+// live with. Those were sampled by hand over the last third of the word. Now
+// that the accent is a measured row at three widths, the instrument says
+// 5.15:1 at 1440 and 3.18:1 at 1920: it passes everywhere, and the "known
+// limit" was an artefact of the hand method, not a property of the page.
+//
+// The real limit is thinner and worth keeping: 3.18:1 at 1920 has 0.18 of
+// margin over the floor. Anything that puts a lit frame behind the second
+// headline line will break it. The lever is moving the panel a few percent
+// clear of the word, not dimming it.
+//
+// It is "index", not "" — the loop fetches `${BASE}/${page}.html`, so an empty
+// string requests /.html, 404s, and the page is silently skipped. I shipped
+// that version first and it printed "every line clears its contrast floor"
+// while measuring nothing at all. A check that passes because it tested
+// nothing is worse than no check; count the rows.
+const PAGES = ["index", "about", "promise", "apply", "donate", "sponsorship", "volunteer",
                "roadmap", "contact", "adaptive-sports-near-me", "subscribe", "waiver"];
+// ONLY=index,donate narrows the run while iterating. The full sweep is 24
+// page-viewport pairs and ~90 clip screenshots, and it OOM-killed this box
+// once — Chromium holds every decode. Keep it out of CI (unset = everything),
+// but reach for it when you are debugging one page.
+const ONLY = (process.env.ONLY || "").split(",").map((x) => x.trim()).filter(Boolean);
+const RUN = ONLY.length ? PAGES.filter((p) => ONLY.includes(p)) : PAGES;
+
 // 4.5 is the WCAG AA floor for body text; large text is allowed 3.0, but a
 // header sub-line is body text and gets the body number.
-const FLOOR = { "h1": 3.0, ".eyebrow": 4.5, ".lead": 4.5, "p": 4.5 };
+// "em" is the display-size accent inside an h1, so it earns the same 3.0
+// large-text allowance the h1 gets — not the 4.5 body number.
+const FLOOR = { "h1": 3.0, "em": 3.0, ".eyebrow": 4.5, ".lead": 4.5, "p": 4.5 };
 
 const lum = (r, g, b) => {
   const f = (c) => { c /= 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
@@ -31,22 +64,40 @@ const ratio = (a, b) => { const [hi, lo] = a > b ? [a, b] : [b, a]; return (hi +
 
 const browser = await chromium.launch();
 let failed = 0;
+let skipped = 0;
 
-for (const page of PAGES) {
-  for (const [w, h, tag] of [[1440, 900, "1440"], [390, 844, "390"]]) {
+for (const page of RUN) {
+  // 1920 is here because it is the width this page is WORST at and the only one
+  // that was never tested. The wall scales with the viewport while the headline
+  // does not move, so the orange accent slides further onto a lit frame as the
+  // window widens — hand-measured at 3.29:1 (1600) and 2.28:1 (1920) against a
+  // 3.0 floor. Checking only 1440 and 390 meant the check passed at every width
+  // except the common one.
+  for (const [w, h, tag] of [[1920, 1080, "1920"], [1440, 900, "1440"], [390, 844, "390"]]) {
     const p = await browser.newPage({ viewport: { width: w, height: h }, reducedMotion: "reduce" });
     await p.goto(`${BASE}/${page}.html`, { waitUntil: "load", timeout: 60000 });
     await p.evaluate(() => document.fonts.ready);
     await p.waitForTimeout(600);
 
     const targets = await p.evaluate(() => {
-      const band = document.querySelector(".hero.pg-band");
+      // The homepage's hero is .hero-wall-photo, not .hero.pg-band. Selecting
+      // only the band meant this returned null on the homepage and the loop
+      // below skipped it SILENTLY — which is why the biggest type on the site
+      // went unchecked while the check reported success every run.
+      const band = document.querySelector(".hero.pg-band, .hero-wall-photo");
       if (!band) return null;
       const out = [];
-      for (const sel of ["h1", ".eyebrow", ".lead", "p"]) {
-        const wrap = band.querySelector(".wrap");
-      const list = [...(wrap || band).querySelectorAll(sel)];
-      for (const [idx, el] of list.entries()) {
+      // "em" is here because measuring the h1 is not the same as measuring the
+      // word that is actually at risk. The homepage headline is white for four
+      // words and orange for one, and the h1 row samples the whole two-line box
+      // against the WHITE — so it reported 9.11:1 while the orange "sports."
+      // sat over a light shirt at a third of that. Alec caught it by eye
+      // ("the 'rts' in sports is kinda hard to see") on a run this check had
+      // already passed. The accent gets its own row and its own colour.
+      for (const sel of ["h1", "em", ".eyebrow", ".lead", "p"]) {
+        const wrap = band.querySelector(".wrap, .mw-copy");
+        const list = [...(wrap || band).querySelectorAll(sel)];
+        for (const [idx, el] of list.entries()) {
           const r = el.getBoundingClientRect();
           if (r.width < 8 || r.height < 8) continue;
           out.push({ sel, idx, colour: getComputedStyle(el).color,
@@ -56,7 +107,12 @@ for (const page of PAGES) {
       }
       return out;
     });
-    if (!targets) { await p.close(); continue; }
+    // Loudly, not silently. A skipped page used to look exactly like a passing
+    // page, and that is how the homepage hid for weeks.
+    if (!targets || !targets.length) {
+      console.log(` SKIP ${page.padEnd(24)} ${tag.padEnd(5)} no measurable header found`);
+      skipped++; await p.close(); continue;
+    }
 
     // Make the GLYPHS invisible, not the element.
     //
@@ -89,7 +145,10 @@ for (const page of PAGES) {
       // region the text had already left and reported 1.31:1 for a line that
       // reads at 5:1.
       const live = await p.evaluate(({ sel, i }) => {
-        const el = document.querySelector(".hero.pg-band .wrap").querySelectorAll(sel)[i];
+        // Same two-hero reality as above: the homepage's copy lives in
+        // .mw-copy inside .hero-wall-photo, not .wrap inside .hero.pg-band.
+        const root = document.querySelector(".hero.pg-band .wrap, .hero-wall-photo .mw-copy");
+        const el = root && root.querySelectorAll(sel)[i];
         if (!el) return null;
         const r = el.getBoundingClientRect();
         return { x: r.x, y: r.y, width: r.width, height: r.height };
@@ -104,17 +163,33 @@ for (const page of PAGES) {
         height: Math.round(Math.min(live.height, h - Math.max(0, live.y))),
       };
       if (box.width < 8 || box.height < 8) continue;
-      await p.evaluate(({ sel, i }) => {
-        const band = document.querySelector(".hero.pg-band");
-        const el = band.querySelector(".wrap").querySelectorAll(sel)[i];
-        if (el) el.style.opacity = "0";
-      }, { sel: t.sel, i: t.idx });
+      // HIDE EVERY LINE OF COPY, not just the one being measured. Hiding only
+      // the target was correct for a block element and silently wrong for an
+      // INLINE one: /volunteer's accent is <em>this team</em> inside the h1 and
+      // it wraps across two lines, so its bounding box also contains the white
+      // words "on" and "." that are NOT part of the em. Sampling that box while
+      // only the em was hidden measured those white GLYPHS — luminance 0.93,
+      // immovable no matter what sits behind the text — and reported a 2.71:1
+      // failure for a line that is fine. The homepage accent has its own line,
+      // which is why it read sane and this one did not.
+      //
+      // "The pixels UNDER each line of copy" means the photograph and the field,
+      // never a neighbouring word. Buttons are left alone: they are separate
+      // blocks below the type and their own fill is legitimately background.
+      const TEXT = "h1, h2, em, .eyebrow, .lead, p, li";
+      await p.evaluate((TEXT) => {
+        const band = document.querySelector(".hero.pg-band, .hero-wall-photo");
+        const root = band.querySelector(".wrap") || band.querySelector(".mw-copy");
+        for (const el of root.querySelectorAll(TEXT)) el.style.setProperty("opacity", "0", "important");
+      }, TEXT);
       const shot = await p.screenshot({ clip: box });
-      await p.evaluate(({ sel, i }) => {
-        const band = document.querySelector(".hero.pg-band");
-        const el = band.querySelector(".wrap").querySelectorAll(sel)[i];
-        if (el) el.style.opacity = "";
-      }, { sel: t.sel, i: t.idx });
+      await p.evaluate((TEXT) => {
+        const band = document.querySelector(".hero.pg-band, .hero-wall-photo");
+        const root = band.querySelector(".wrap") || band.querySelector(".mw-copy");
+        // removeProperty, not = "" — an !important inline value is not cleared
+        // by assigning the empty string.
+        for (const el of root.querySelectorAll(TEXT)) el.style.removeProperty("opacity");
+      }, TEXT);
       // decode with the browser rather than pulling in a node image library
       const px = await p.evaluate(async (b64) => {
         const img = new Image();
@@ -144,5 +219,6 @@ for (const page of PAGES) {
   }
 }
 await browser.close();
+console.log(skipped ? `\n${skipped} header(s) SKIPPED — nothing was measured there.` : "");
 console.log(failed ? `\n${failed} contrast failure(s)` : "\nevery line clears its contrast floor");
 process.exit(failed ? 1 : 0);

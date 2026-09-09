@@ -90,7 +90,22 @@ test("social cards use the Option 2 monogram on cache-busting URLs", async () =>
   const writer = await readFile(join(ROOT, "scripts", "wire-og.mjs"), "utf8");
   assert.ok(generator.includes('brand/atl-logo-v2-option2-ui.svg'), "OG generator should use the Option 2 derivative");
   assert.ok(!generator.includes('public/images/atl-logo.svg'), "OG generator must not use the legacy source");
-  assert.ok(writer.includes('${name}-v2-option2.jpg'), "OG writer should version Option 2 image URLs");
+  // THE VERSION TOKEN IS SUPPOSED TO MOVE. It went v2-option2 -> v3-athlete on
+  // 2026-09-09 when the cards became photographs, and it will move again the
+  // next time the design does, because assets carry a 30-day cache header and a
+  // redesign served at the old URL keeps showing the old picture to everything
+  // that already scraped it. Pinning the literal string meant this assertion
+  // failed for precisely the change it exists to protect.
+  //
+  // So test the invariant instead, and it is a STRONGER one than the original:
+  // the writer must version at all, and the writer and the generator must agree
+  // on the same token. A mismatch there ships pages pointing at cards that were
+  // never rendered — a real, silent, 404-in-the-preview bug that the literal
+  // assertion could not have caught.
+  const writerSuffix = writer.match(/\$\{name\}-([a-z0-9-]+)\.jpg/)?.[1];
+  assert.ok(writerSuffix, "OG writer should version its image URLs");
+  assert.ok(generator.includes(`-${writerSuffix}.jpg`),
+    `OG generator and writer must agree on the card version (writer has ${writerSuffix})`);
 
   const legacyHashes = new Map([
     ["images/atl-logo.svg", "421057c39131ad5431f255733d00af1a289844cfdb151e8ed0b8917ae069d4b2"],
@@ -134,7 +149,17 @@ test("social cards use the Option 2 monogram on cache-busting URLs", async () =>
     const images = [...html.matchAll(/<meta[^>]+(?:property="og:image"|name="twitter:image")[^>]+content="([^"]+)"/g)]
       .map((match) => match[1]);
     for (const image of images) {
-      assert.match(image, /\/images\/og\/[a-z0-9-]+-v2-option2\.jpg$/, `${name} should request a versioned Option 2 social card`);
+      // Version-agnostic, same reasoning as the writer assertion above: the
+      // token moves with the design. Two things must stay true, and the second
+      // is new — the old pattern would happily pass a page pointing at a
+      // versioned filename that had never been rendered, which is a broken
+      // preview on every platform and invisible from the HTML alone.
+      assert.match(image, /\/images\/og\/[a-z0-9-]+-v\d+-[a-z0-9-]+\.jpg$/,
+        `${name} should request a versioned social card`);
+      const rel = image.replace(/^https?:\/\/[^/]+\//, "");
+      let exists = true;
+      try { await readFile(join(PUBLIC, rel)); } catch { exists = false; }
+      assert.ok(exists, `${name} points at a social card that was never rendered: ${image}`);
     }
   }
 });

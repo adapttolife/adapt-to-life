@@ -107,6 +107,52 @@
   .watermark svg{ height:100%; width:auto; display:block; }
   .card.split .watermark, .photo:not([hidden]) ~ .watermark{ display:none; }
 
+  /* ---- athlete variant: the site's own wall, in a share card ----------------
+     Alec, 2026-09-09: "Now that we have leveled up our website and we have new
+     images uploaded... update all the open graph image so when we share the
+     link we have a powerful image and brand."
+
+     THIS DELIBERATELY REPLACES HIS OWN JULY DIRECTION, recorded under .mono
+     above: "all black, clean, simple, minimal, the same imagery on every card."
+     That was the right call for the site as it stood in July. It is the wrong
+     call for the site as it stands now, for three reasons worth writing down:
+
+       1. The site's whole identity became photographic on 2026-09-08 — a wall
+          of black-and-white athletes. A minimal mark card promises one thing
+          and the landing page delivers another.
+       2. The mono card carries the mark at 0.14 opacity in dark grey on near
+          black. At the ~300px a card is actually seen at, that is not a logo,
+          it is an empty rectangle with words on it.
+       3. "The same imagery on every card" means six different links look like
+          the same link in a feed. A face is the one thing that earns a tap,
+          and this organisation's entire proposition is people.
+
+     GRAYSCALE IS NOT A STYLE CHOICE HERE, it is the brand rule: the site is
+     monochrome with exactly one orange accent. The masters are colour, so the
+     grade happens here rather than by shipping a second copy of each file.
+
+     The scrim reaches further and harder than the base variant because a
+     photograph behind type is a contrast problem, not a mood: the headline has
+     to hold at a 4x downscale over whatever the frame happens to contain. */
+  /* BRIGHTNESS IS NOT TASTE HERE. Every one of these frames is a gym interior
+     shot against dark padding, and the first pass put a heavy scrim on top of
+     an already-dark photograph: at 300px the athlete read as texture rather
+     than a person, which is the exact failure the photo was brought in to fix.
+     The lift happens on the PHOTO, before the scrim, so the type side stays as
+     solid as it was and only the subject comes up. */
+  .card.athlete .photo{ filter:grayscale(1) brightness(1.24) contrast(1.1); }
+  /* The right end lets go earlier and further than the base variant: the type
+     needs solid ink for its first ~50% and the athlete needs air for the rest.
+     Feathering to transparent by 92% rather than 100% keeps the frame's own
+     edge from reading as a vignette on top of the grain. */
+  .card.athlete .scrim{ background:
+    linear-gradient(100deg, rgba(12,12,14,0.97) 0%, rgba(12,12,14,0.91) 26%,
+                    rgba(12,12,14,0.54) 50%, rgba(12,12,14,0.10) 78%, transparent 92%),
+    linear-gradient(0deg, rgba(12,12,14,0.55) 0%, transparent 40%); }
+  .card.athlete .atmos{ background:
+    radial-gradient(ellipse 54% 82% at 88% 52%, rgba(255,92,57,0.17) 0%, transparent 64%); }
+  .card.athlete .grain{ opacity:0.16; }
+
   /* ---- split variant: a panel of type beside an untouched photograph ----
      The 1.91:1 crop decapitates most action shots, and a full-bleed scrim
      turns the water to grey mud. A panel keeps the type on solid colour and

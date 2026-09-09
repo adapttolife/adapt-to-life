@@ -52,7 +52,30 @@
 }
 .rb-run{
   display:flex; height:100%; width:max-content;
-  animation:rb-roll 48s linear infinite;
+  /* 48s -> 63s. Alec, 2026-09-09: "The carousel moves too fast."
+     DURATION IS THE WRONG UNIT AND THAT IS THE WHOLE BUG. Speed here is
+     oneCopyWidth / duration, and one copy is a different width at every
+     breakpoint because the strip is sized off the track HEIGHT. So a fixed
+     duration silently means a different speed per screen. Measured:
+
+         desktop  3151px / 48s = 65.6 px/s
+         phone    2770px / 34s = 81.5 px/s   <- FASTER on the small screen
+
+     which is backwards, and it is why it read as frantic on a phone: at
+     81.5 px/s the strip crosses a 390px viewport in 4.8 seconds.
+
+     There is no standard for this. WCAG 2.2.2 (Level A) is the only normative
+     rule that touches it and it sets NO speed limit — it governs duration and
+     user control, not velocity. Nielsen Norman gives no number either; they
+     argue against auto-forwarding outright, and that is about SLIDE carousels,
+     not a photo marquee. The 40-80 px/s figure below is practitioner
+     convention from marquee tooling docs, not a spec. Treated as a sanity
+     band, not a rule.
+
+     Both breakpoints are now solved for the SAME ~50 px/s, low-middle of that
+     band: 3151/50 = 63s here, 2770/50 = 55s on the phone. Recompute both if
+     the track height ever changes — that is what moves the width. */
+  animation:rb-roll 63s linear infinite;
 }
 /* SIX copies, not two — and this is arithmetic, not taste.
    The animation translates the track by -50%, so after a full cycle only HALF
@@ -86,5 +109,8 @@
 @media (max-width:640px){
   .roll-band{ padding:clamp(2.6rem,7vh,4rem) 0; }
   .rb-track{ height:clamp(190px, 30vh, 260px); }
-  .rb-run{ animation-duration:34s; }
+  /* 34s -> 55s. Same ~50 px/s as the wide breakpoint; see the note on .rb-run.
+     This number is NOT free to copy from desktop — the phone's copy is 2770px
+     against 3151px, so an equal duration would be an unequal speed. */
+  .rb-run{ animation-duration:55s; }
 }

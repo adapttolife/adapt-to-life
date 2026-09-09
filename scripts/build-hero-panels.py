@@ -83,7 +83,13 @@ DIM_OVERRIDE = {"whitecap": 0.92}
 # problem is not a layout preference and should not be defended by a comment.
 WITHDRAWN = {"JLA_6122.jpg", "JLA_6123.jpg", "JLA_6127.jpg"}
 
-SIZE_OVERRIDE = {"profile": 420, "lanyard": 400}
+# whitecap goes UP, not down: he joined the four-cell phone grid on 2026-09-09
+# (Alec: "robby on the top right"), where a cell is 197x309 CSS at 3x = 591x927
+# device px. At the mid-plane 520 long edge he upscaled about 1.8x there —
+# soft on the one layout where he is a quarter of the screen. 820 is the
+# front-plane size his three neighbours already use. His BRIGHTNESS stays at the
+# mid-plane 0.92 (see DIM_OVERRIDE): the desktop wall must not change.
+SIZE_OVERRIDE = {"profile": 420, "lanyard": 400, "whitecap": 820}
 
 # name, source frame, aspect (w/h), vertical anchor (0 = top, 1 = bottom),
 # horizontal anchor, ZOOM, depth role
@@ -110,7 +116,21 @@ PANELS = [
     ("dink",         "JLA_5922.jpg", 3/4,  0.44, 0.50, 0.94, "front"),
     ("reach",        "JLA_5920.jpg", 3/4,  0.48, 0.50, 0.86, "mid"),
     ("swing",        "JLA_6066.jpg", 3/4,  0.42, 0.50, 0.84, "mid"),
-    ("net",          "JLA_6084.jpg", 3/2,  0.46, 0.46, 0.76, "mid"),
+    # FRONT, not mid. Alec, 2026-09-09: "I want his picture bigger, almost the
+    # same size when it was in its other place, I want it front/forward layer and
+    # cover the other pictures or slightly overlap... more prominent and well
+    # displayed." The plane has to move in the FILE, not only in the CSS: depth
+    # here is baked brightness (mid 0.62, front 1.00) plus long edge (520 vs
+    # 820). Promoting him in index.html alone would have given him a front-plane
+    # position, shadow and contrast over a 0.62-dimmed 520px file — which is
+    # precisely the murk we spent a3be703 fixing on Robby.
+    #
+    # This does make the front plane five photographs where the wall was designed
+    # around four, and I argued against exactly that for Robby a3be703. The
+    # argument still holds and Alec has now overruled it deliberately for this
+    # frame: he asked for prominence, and prominence on this wall IS the front
+    # plane. Noting it so the next person knows it was a choice, not a drift.
+    ("net",          "JLA_6084.jpg", 3/2,  0.46, 0.46, 0.76, "front"),
     ("close-dink",   "JLA_5883.jpg", 3/4,  0.42, 0.46, 0.90, "back"),
     ("serve",        "JLA_6224.jpg", 4/3,  0.48, 0.52, 0.66, "back"),
 

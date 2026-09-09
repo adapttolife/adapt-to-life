@@ -156,7 +156,21 @@ fill="currentColor" stroke="none">
             <script>
               (function(){
                 var map = { athlete:'Funding for an athlete', sponsor:'Giving or sponsoring', donor:'Giving or sponsoring', program:'A program for the directory' };
-                var q = new URLSearchParams(location.search).get('rsn');
+                var qs = new URLSearchParams(location.search);
+                // A sponsorship tier arrives as ?tier=Captain. Four buttons on
+                // /sponsorship used to look like a choice and all land on the
+                // same blank form, so the one thing that page exists to capture
+                // — which level somebody clicked — was thrown away at the door.
+                // It is prefilled into the message, where the sender can see it
+                // and edit it, rather than smuggled into a hidden field.
+                var tier = qs.get('tier');
+                if (tier && /^[A-Za-z ]{3,20}$/.test(tier)) {
+                  var msg = document.getElementById('msg');
+                  if (msg && !msg.value) {
+                    msg.value = "I'm interested in sponsoring at the " + tier + " level.";
+                  }
+                }
+                var q = qs.get('rsn');
                 var sel = document.getElementById('rsn');
                 if(q && map[q] && sel){ sel.value = map[q]; }
               })();

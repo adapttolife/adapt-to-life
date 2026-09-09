@@ -7,6 +7,29 @@
 <title>Header 6 · Grid | Adapt To Life</title>
 <meta name="description" content="Adapt To Life funds the equipment, training, and travel that get adaptive athletes off the sidelines and into the game.">
 <link rel="canonical" href="https://adapttolife.org/">
+<!-- sameAs is the ONLY machine-readable way to say "these profiles and this
+     site are the same organisation". Without it a search engine has two
+     unconnected accounts and a website; with it they are one entity, which is
+     what puts the right links in a knowledge panel. Visible footer icons do
+     not do this job — they are just outbound links.
+     Homepage only, which is where Organization markup belongs; repeating it on
+     all 25 pages adds nothing and gives 25 places to drift.
+     Every value here is already published on this page or in its footer. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "NGO",
+  "name": "Adapt To Life",
+  "url": "https://adapttolife.org/",
+  "logo": "https://adapttolife.org/images/og/home-v2-option2.jpg",
+  "description": "Adapt To Life funds the equipment, training, and travel that get adaptive athletes off the sidelines and into the game.",
+  "email": "hello@adapttolife.org",
+  "sameAs": [
+    "https://www.instagram.com/adapt_to_life_org/",
+    "https://www.facebook.com/profile.php?id=61592619668321"
+  ]
+}
+</script>
 <link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-v2-option2-32.png">
 <link rel="apple-touch-icon" href="/images/apple-touch-icon-v2-option2.png">
@@ -222,7 +245,7 @@ fill="currentColor" stroke="none">
         </li>
         <li>
           <span class="front-verb">Find it</span>
-          <p>You can't play what you can't find. <strong>Adaptive Sports Near Me</strong> is a free, open directory of adaptive programs nationwide, with no logins and no paywalls. It opens soon.</p>
+          <p>You can't play what you can't find. <strong>Adaptive Sports Near Me</strong> is a free, open directory of <!-- asnm:count -->1,544<!-- /asnm:count --> programs nationwide, with no logins and no paywalls. It is open now.</p>
           <a href="/adaptive-sports-near-me" class="textlink">How the directory works <span class="arrow">&rarr;</span></a>
         </li>
       </ul>

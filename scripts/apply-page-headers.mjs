@@ -89,7 +89,28 @@ for (const file of readdirSync(ROOT).filter((f) => f.endsWith(".html"))) {
   // and its content hash moved, the LAST declaration won, still pointed at the
   // old file, and that file no longer existed — a black header, from a bug that
   // had been latent through every previous run.
-  const VARS_RE = /\n<!-- band:vars -->(?:\s*<style>[\s\S]*?<\/style>)+/;
+  // ...but "every consecutive <style>" was the wrong way to say that, because
+  // `\s*` happily crosses a newline into a stylesheet this script does not own.
+  // On adaptive-sports-near-me.html the marker is followed by the page's OWN
+  // ~140-line <style>, and the only thing that stopped this from deleting it on
+  // every `npm run photos` was an unrelated <script> tag sitting between the
+  // two. Safe by accident of tag ordering is not safe: move that script, or add
+  // a page whose stylesheet follows the marker directly, and the CSS goes.
+  //
+  // So the match is structural now — data-band-vars marks the elements this
+  // script emits, and nothing else can be swallowed however it is spaced.
+  //
+  // The second alternative is the MIGRATION path, and it is deliberately the
+  // stricter of the two. Pages already on disk carry the old bare <style>, and
+  // a regex that only knew the new form would fail to match them, fall through
+  // to the append branch below, and lay a SECOND block down beside the first —
+  // reintroducing the duplicate-declaration bug this greediness exists to kill.
+  // It matches the legacy form only with NO whitespace before it, which is
+  // exactly how the emitter concatenates: `-->` then `<style>` then the next
+  // `<style>`, never a separator. A page's own stylesheet is always on its own
+  // line, so it can never satisfy that. The alternative can be deleted once no
+  // page has a bare <style> after the marker.
+  const VARS_RE = /\n<!-- band:vars -->(?:\s*<style data-band-vars>[\s\S]*?<\/style>|<style>[\s\S]*?<\/style>)+/;
   const block = `\n<!-- band:vars -->${VARS}${photo ? photoVars(photo) : ""}`;
   html = VARS_RE.test(html) ? html.replace(VARS_RE, block)
                             : html.replace(SHEET, `${SHEET}${block}`);

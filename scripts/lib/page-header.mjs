@@ -24,8 +24,11 @@ import { readFileSync } from "node:fs";
 const HASH = JSON.parse(readFileSync(
   new URL("../../public/images/hero/panels/hashes.json", import.meta.url), "utf8"));
 const url = (f) => `/images/hero/panels/${HASH[f] || f}`;
+// data-band-vars is not decoration. It is the only thing that tells the
+// replacement in apply-page-headers.mjs which <style> elements are ITS OWN and
+// which belong to the page — see VARS_RE there for what went wrong without it.
 export const PAGE_HEADER_VARS =
-  "<style>:root{" +
+  "<style data-band-vars>:root{" +
   `--pg-band-wide:url('${url("pg-band-wide.webp")}');` +
   `--pg-band-tall:url('${url("pg-band-tall.webp")}');` +
   // /donate's own mosaic — see compose_give(). Shipped in the same block so a
@@ -38,7 +41,7 @@ export const PAGE_HEADER_VARS =
 // is the asset name; the URL is resolved and hashed like everything else.
 export const PAGE_PHOTOS = { "apply.html": "pg-apply.webp" };
 export const photoVars = (file) =>
-  `<style>:root{--pg-photo:url('${url(file)}');}</style>`;
+  `<style data-band-vars>:root{--pg-photo:url('${url(file)}');}</style>`;
 
 // ==========================================================================
 // THE TIER MAP — which header height each page gets, and why.

@@ -41,7 +41,16 @@ try {
   const d = await r.json();
   if (!d.ok || !d.programs) throw new Error("payload missing programs");
   stats = d; live = true;
-  writeFileSync(CACHE, JSON.stringify(d, null, 1) + "\n");
+  // PERSIST ONLY WHAT THE PAGE USES. The payload also carries lastPipelineRun,
+  // a clock from the directory's own pipeline that moves every few minutes and
+  // that nothing here reads. Caching it meant every build rewrote this file,
+  // the tree went dirty, and public/build.txt was stamped "-dirty" on every
+  // deploy — permanently retiring a flag whose entire job is to warn that a
+  // build came from uncommitted work. A signal that always fires is not a
+  // signal. Now the cache changes only when a number a visitor sees changes,
+  // which is a diff worth committing.
+  const keep = { ok: d.ok, programs: d.programs, sources: d.sources, bySport: d.bySport, byState: d.byState };
+  writeFileSync(CACHE, JSON.stringify(keep, null, 1) + "\n");
 } catch (e) {
   console.log(`  WARN  live stats unavailable (${e.message}); using the last committed copy`);
   stats = JSON.parse(readFileSync(CACHE, "utf8"));

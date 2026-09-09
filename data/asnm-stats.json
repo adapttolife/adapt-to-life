@@ -395,9 +395,5 @@
    "name": "Hawaii",
    "n": 3
   }
- ],
- "lastPipelineRun": {
-  "lane": "resolve",
-  "finished_at": "2026-09-09T20:20:39.617Z"
- }
+ ]
 }

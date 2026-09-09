@@ -41,8 +41,12 @@ const BASE = process.argv[2] || "http://127.0.0.1:8788";
 // that version first and it printed "every line clears its contrast floor"
 // while measuring nothing at all. A check that passes because it tested
 // nothing is worse than no check; count the rows.
+// hustle-and-heart was missing from this list until 2026-09-09 — a page with a
+// photographic two-column hero AND, as of the same day, a dark pull-quote, and
+// neither had ever been measured. It is the fund's own landing page.
 const PAGES = ["index", "about", "promise", "apply", "donate", "sponsorship", "volunteer",
-               "roadmap", "contact", "adaptive-sports-near-me", "subscribe", "waiver"];
+               "roadmap", "contact", "adaptive-sports-near-me", "subscribe", "waiver",
+               "hustle-and-heart"];
 // ONLY=index,donate narrows the run while iterating. The full sweep is 24
 // page-viewport pairs and ~90 clip screenshots, and it OOM-killed this box
 // once — Chromium holds every decode. Keep it out of CI (unset = everything),
@@ -79,7 +83,13 @@ let skipped = 0;
 // bug worth shouting about; only one page has a .dir-stats, so its absence
 // everywhere else is not.
 const REGIONS = [
-  { name: "header", sel: ".hero.pg-band, .hero-wall-photo", copy: ".wrap, .mw-copy", required: true },
+  // THREE hero types, not two. .hero-2col is the two-column "door" header on
+  // /hustle-and-heart — copy in one column, photograph in the other — and it
+  // matched neither of the first two selectors, so that page reported "no
+  // measurable header found" the moment it was added to PAGES. Its .wrap is the
+  // right copy root: the caption under the photo is real copy on the same dark
+  // ground, and no text column overlaps the image.
+  { name: "header", sel: ".hero.pg-band, .hero-wall-photo, .hero-2col", copy: ".wrap, .mw-copy", required: true },
   { name: "ground", sel: ".dir-stats",                      copy: ".wrap",           required: false },
 ];
 
@@ -111,7 +121,23 @@ for (const page of RUN) {
     // in the wrong place and the wrong size until it lands.
     await p.evaluate((regionSel) => {
       document.querySelectorAll(".reveal").forEach((e) => e.classList.add("is-in"));
-      document.querySelector(regionSel)?.scrollIntoView({ block: "start", behavior: "instant" });
+      const el = document.querySelector(regionSel);
+      if (!el) return;
+      el.scrollIntoView({ block: "start", behavior: "instant" });
+      // ...AND THEN BACK OFF, because the nav is FIXED and overlays the top of
+      // the viewport. scrollIntoView aligns the section's top edge with y=0,
+      // which parks its first line UNDER the nav bar — so the clip photographs
+      // the nav instead of the page. On /hustle-and-heart at 390px that put the
+      // eyebrow at viewport y=47 behind a near-white nav and reported 2.08:1
+      // for a line that measures 6.65:1 and is perfectly legible on screen.
+      // Same class of bug as every other phantom this file documents: the
+      // instrument moved the thing it was measuring.
+      const nav = [...document.querySelectorAll("header, nav, .nav")].find((n) => {
+        const pos = getComputedStyle(n).position;
+        return pos === "fixed" || pos === "sticky";
+      });
+      const pad = nav ? Math.ceil(nav.getBoundingClientRect().height) + 8 : 0;
+      if (pad) window.scrollBy(0, -pad);
     }, region.sel);
     await p.waitForTimeout(250);
 

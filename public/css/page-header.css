@@ -202,7 +202,24 @@
      window has to sit near the top or it lands on wheels and a kit bag — which
      is what a centred crop gave. */
   background:var(--pg-photo) center 8%/cover no-repeat;
-  filter:grayscale(0.78) contrast(1.05) brightness(0.82);
+  /* 0.78 -> 0.40, and 0.82 -> 0.92. Alec, 2026-09-09: "This picture feels sad
+     with the grey, lets let it have some of its original color."
+
+     GREY WAS ONLY HALF OF IT. The frame was also dimmed to 82%, so it read
+     flat as well as drained — desaturating and darkening at the same time is
+     what makes a photograph look sad rather than graded, and the brightness was
+     doing as much of that as the grayscale. Both move.
+
+     Not to zero, and the stop is a brand decision rather than a timid one.
+     Compared at 0.78 / 0.55 / 0.40 / 0.22: by 0.22 the navy shirt saturates far
+     enough to compete with the orange accent, and /apply stops looking like the
+     same site as every other page. 0.40 puts the blue back in the shirt, the
+     yellow back in the wristband and the warmth back in skin, while still
+     reading as a graded frame at a glance — which is the original brief
+     ("a little bit black and white"), not a reversal of it.
+
+     Contrast re-measured after the change, since the headline sits on this. */
+  filter:grayscale(0.40) contrast(1.04) brightness(0.92);
 }
 .hero.pg-band.pg-photo::after{
   background:

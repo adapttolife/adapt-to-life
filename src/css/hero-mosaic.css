@@ -320,7 +320,10 @@
   /* The wordmark sits in a solid slab that interrupts the grid rather than
      floating over it — a headline set straight onto a contact sheet is a
      contrast problem you cannot solve, because what is behind it changes with
-     every crop. The rule under it is the only orange on the screen. */
+     every crop. The accent is the WORDS, not trim on the box: the slab ends on
+     a hard black-to-photograph edge and carries no rule, so the only orange in
+     the header is "adaptive sports" — same as the desktop wall, where orange is
+     ink. (Alec, 2026-09-10.) */
   .mw-copy{
     /* centred on the band, not floated over a photograph */
     position:absolute; left:0; right:0; top:50%; transform:translateY(-50%);
@@ -330,20 +333,19 @@
     margin:0; max-width:none;
     background:#000;
     padding:clamp(1.6rem,6vw,2.4rem) clamp(1.2rem,5vw,2rem) clamp(1.5rem,5vw,2.2rem);
-    border-bottom:3px solid var(--orange);
     font-family:var(--font-body);
     font-weight:700; font-style:normal;
     font-size:clamp(2rem, 8.6vw, 3.2rem);
     line-height:1.02; letter-spacing:-0.035em;
     color:#fff;
   }
-  /* The em carries `style="color:var(--orange)"` inline, for the desktop wall
-     where the serif italic in orange IS the treatment. An inline style beats
-     every selector, so matching Alec's mobile reference — both lines white in
-     the grotesk — needs !important here. It is the narrow rule only, and it is
-     beating a hard-coded attribute rather than another stylesheet, which is
-     the one case where !important is the honest tool. */
-  .mw-copy .display em{ font-style:normal; color:#fff !important; }
+  /* The em carries `style="color:var(--orange)"` inline. Desktop sets it as a
+     serif italic in orange; here we keep the orange and drop only the italic,
+     because upright ExtraBold grotesk is the phone's voice. Colour is left to
+     the inline attribute rather than restated — one source for the accent, so
+     a palette change moves both breakpoints at once. #FF5C39 on #000 is 6.84:1,
+     AA at any size. */
+  .mw-copy .display em{ font-style:normal; }
 }
 
 @media (max-width:640px){

@@ -72,6 +72,14 @@ The change is carried through `/promise`, `/hustle-and-heart`, `/about`, `/apply
 
 The internal rubric distinguishes confirmed payment practice from proposed implementation controls. No new payment system, approval workflow, fixed lookback period, reimbursement deadline, or automatic entitlement is created. The archived old-content Google Doc remains unchanged. Separate allocation, fee, restricted-gift, and legal questions below remain open; this clarification does not resolve them.
 
+## Restoring the original voice
+
+Alec asked us to keep the original live site's human voice rather than turn the revised copy into a compliance report. This pass restores concrete language and useful convictions without restoring the unverified percentage promises, vendor-only payment rule, stale launch language, or exact cost equivalents.
+
+How Giving Works restores Safety is not overhead, names program-specific safeguards, and states the funding boundary clearly. Payment methods are brief; application qualifications remain on the application. The homepage, About, fund, sponsorship, campaign, popcorn, roadmap and contact copy lose repetitive qualifications and regain concrete examples. Volunteer culture and the shared application invitation are updated in their source model/generator and regenerated across all 26 roles. Role-specific qualifications, consent and legal disclosures remain.
+
+The application retains one clear funding limitation and a concise case-by-case past-expense answer. The campaign retains its target, cost variation and selection explanation without repeating award disclaimers. Existing donor terms and the legal release are not rewritten, and the archived old-content document is untouched. The editorial standard and regression tests capture this distinction so the next revision does not reintroduce the overcorrection.
+
 ## Decisions that must not be invented by a copy pass
 
 Before any production release, confirm:

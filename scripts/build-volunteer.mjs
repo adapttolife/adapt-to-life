@@ -132,7 +132,7 @@ ${roles.map(card).join("\n")}
     <div class="wrap">
       <span class="eyebrow orange reveal">Volunteer</span>
       <h1 class="serif display reveal">Your place on <em class="italic" style="color:var(--orange)">this team</em>.</h1>
-      <p class="lead sub reveal">Good days of sport take work around them. Bring a skill, some time, or a useful introduction. Explore a role to see the work and what it asks of you.</p>
+      <p class="lead sub reveal">Bring a skill, an introduction, or a few hours on a Tuesday night. There is useful work to do here.</p>
       <div class="actions reveal">
         <a href="#roles" class="btn">See what we need <span class="arrow">&rarr;</span></a>
       </div>
@@ -158,8 +158,8 @@ ${lanes}
   <section class="band tint">
     <div class="wrap reading center">
       <span class="eyebrow orange reveal">Not on the list</span>
-      <h2 class="serif h3 reveal" style="margin-top:0.7rem;">Have something else to offer?</h2>
-      <p class="prose reveal" style="margin-top:1rem;">Tell us below if you have a skill or idea not listed here. Giving is another way to support the work. <a class="textlink" href="/donate">See the ways to give <span class="arrow">&rarr;</span></a></p>
+      <h2 class="serif h3 reveal" style="margin-top:0.7rem;">We wrote down what we know we need.</h2>
+      <p class="prose reveal" style="margin-top:1rem;">Not the same as everything we need. Tell us below if you have something we did not think to ask for.</p>
     </div>
   </section>
 
@@ -188,7 +188,7 @@ ${lanes}
     <div class="wrap">
       <div class="reveal sec-head">
         <span class="eyebrow orange">Nothing fit</span>
-        <h2 class="serif h2" style="margin-top:0.8rem;">Tell us what you have in mind.</h2>
+        <h2 class="serif h2" style="margin-top:0.8rem;">Then tell us in your own words.</h2>
         <p class="lane-blurb">If a role above is you, open it and apply there. This form is for everything else.</p>
       </div>
 

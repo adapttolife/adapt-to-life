@@ -47,29 +47,29 @@ export const SHARED = {
   terms: [
     ["Built around participation", "A recognized 501(c)(3) helping people find adaptive sports and get support to take part."],
     ["A scope, not a shift", "Every role has a defined job and a person to work with. If we cannot say what done looks like, we will not ask for your time."],
-    ["Flexible contributions", "Remote roles can often fit around your schedule. Event and athlete-facing work has agreed times and requirements."],
+    ["Flexible contributions", "Two hours on a Tuesday night is a real contribution. For events and coaching, we agree on a time together."],
     ["You hear back either way", "A person reads every one. If there is no fit now, we say so."],
   ],
   // One short paragraph on a role page, not a two-paragraph essay.
   about:
-    "Adapt To Life helps people find adaptive sports and get support to take part. Our work grows around the athlete, from finding a program to equipment, training, and travel.",
+    "Adapt To Life helps people find their place in adaptive sports, and supports the equipment, training, and travel that help them keep playing.",
   apply:
-    "Start with your name and email. We will discuss the role, scope, and any screening or credentials before work begins. This form expresses interest; it does not confirm a placement.",
+    "Start with your name and email. We'll talk through the work, timing, and any screening or credentials before you begin.",
   legal:
     "Unpaid volunteer role, and no employment relationship. Volunteer time is not a tax-deductible gift, though out-of-pocket expenses sometimes are. Adapt To Life is a recognized 501(c)(3), EIN 41-3213344.",
 };
 
 export const LANES = [
-  { key: "fund", name: "Fundraising", head: "Help fund the next opportunity.",
-    blurb: "Build support for equipment, training, and travel." },
-  { key: "clean", name: "Operations", head: "Help the organization work responsibly.",
-    blurb: "Clear records, appropriate advice, and thoughtful review keep the work accountable." },
-  { key: "tell", name: "Stories", head: "Help people understand the work.",
-    blurb: "Share real stories and useful information, with the people involved." },
-  { key: "court", name: "Participation", head: "Support the people taking part.",
-    blurb: "Coaching, equipment, events, and connections to programs." },
-  { key: "notitle", name: "Connections", head: "Start with what you can offer.",
-    blurb: "An introduction, a place to gather, or an idea can be a useful start." },
+  { key: "fund", name: "Fundraising", head: "Money, and the people who move it.",
+    blurb: "Making the Hustle & Heart Fund bigger than one person's checkbook." },
+  { key: "clean", name: "Operations", head: "The unglamorous work that protects athletes.",
+    blurb: "The books. The insurance. The advice that keeps the work on solid ground." },
+  { key: "tell", name: "Stories", head: "Reach, so the next athlete finds us.",
+    blurb: "An athlete cannot apply to a fund they have never heard of." },
+  { key: "court", name: "Participation", head: "The part that looks like sport.",
+    blurb: "Coaching a session, fixing a chair, making a first introduction." },
+  { key: "notitle", name: "Connections", head: "You do not need a profession to change this.",
+    blurb: "Most people who want to help have a relationship, a room, or a reason to organize something." },
 ];
 
 export const ROLES = [
@@ -86,7 +86,7 @@ export const ROLES = [
     "Write the applications, and reuse ruthlessly. Most ask the same nine questions.",
   ],
   first: [
-    "Read our published grant rubric and tell us where a funder would poke a hole in it.",
+    "Read our grant review guidance and tell us where a funder would poke a hole in it.",
     "Bring back five funders worth applying to. Five real ones beat forty maybes.",
     "Take the nearest deadline and draft it with us.",
   ],

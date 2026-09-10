@@ -37,7 +37,7 @@ test('fund categories follow equipment, training, travel without unsupported pri
 
 test('campaign owns its target, and popcorn links instead of duplicating a budget', () => {
   const campaign = read('public/send-6.html');
-  assert.ok(campaign.includes('fundraising target, not a fixed price'));
+  assert.ok(campaign.includes('The target is $3,500 per athlete; individual needs and costs will vary.'));
   assert.ok(!/about \$(450|500|2,300)/.test(campaign));
   const popcorn = read('public/popcorn.html');
   assert.ok(popcorn.includes('href="/send-6">Send 6 to the US Open Spring 2027</a>'));
@@ -47,7 +47,9 @@ test('campaign owns its target, and popcorn links instead of duplicating a budge
 });
 
 test('volunteer interest is not automatic placement and the shared mission sentence is correct', () => {
-  assert.ok(SHARED.apply.includes('does not confirm a placement'));
+  assert.ok(SHARED.apply.includes("We'll talk through the work"));
+  assert.ok(SHARED.apply.includes('before you begin'));
+  assert.ok(!SHARED.apply.includes("You're on the team"));
   assert.ok(SHARED.apply.includes('screening or credentials'));
   assert.ok(!SHARED.about.includes('keep athletes on the sidelines'));
   assert.ok(!SHARED.apply.includes('No interview'));

@@ -6,11 +6,12 @@ const read = p => readFileSync(new URL('../' + p, import.meta.url), 'utf8');
 const core = ['index','about','adaptive-sports-near-me','apply','contact','donate','hustle-and-heart','karen','promise','roadmap','send-6','popcorn','subscribe','tim','volunteer','sponsorship','waiver'];
 const pages = [...core.map(p => `public/${p}.html`), ...ROLES.map(r => `public/volunteer/${r.slug}.html`)];
 
-for (const slug of ['promise','hustle-and-heart','about','apply']) {
+// Explain methods where readers need them; About links to that explanation.
+for (const slug of ['promise','hustle-and-heart','apply']) {
   test(`${slug} explains both payment methods`, () => {
     const html = read(`public/${slug}.html`);
-    assert.match(html, /direct (?:payment|payments)|paid directly/);
-    assert.match(html, /reimbursement/);
+    assert.match(html, /direct payments?|pay a vendor or program directly/);
+    assert.match(html, /reimburs(?:ement|e)/);
     assert.match(html, /approved/);
   });
 }
@@ -35,9 +36,11 @@ test('all current public pages avoid the superseded vendor-only promises', () =>
 test('past-expense application guidance allows review but never guarantees reimbursement', () => {
   const html = read('public/apply.html');
   assert.ok(html.includes('Can I apply for an expense I have already paid?'));
-  assert.ok(html.includes('Past expenses may be considered case by case'));
-  assert.ok(html.includes('does not guarantee reimbursement'));
-  assert.ok(html.includes('Estimated cost or amount already paid (optional)'));
+  assert.ok(html.includes('We consider past expenses case by case'));
+  assert.ok(html.includes('Applying does not guarantee an award.'));
+  assert.equal((html.match(/does not guarantee/g) || []).length, 1,
+    'one clear application limitation, not a disclaimer after each answer');
+  assert.ok(html.includes('Cost, or what you already paid (optional)'));
   assert.ok(html.includes('id="cost" name="cost" type="text"'));
 });
 

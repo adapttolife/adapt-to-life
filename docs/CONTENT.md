@@ -28,6 +28,16 @@ Keep the accepted imagery, crops, layout system, typography, and brand palette. 
 - Preserve direct quotes verbatim. Do not improve, paraphrase, or assign a quote to someone who did not say it.
 - Do not assume a photograph depicts a selected grant recipient or the final campaign roster.
 
+## Keep the original voice, not the overcorrection
+
+Start with the live/original wording and preserve what works: concrete scenes, conversational rhythm, and a clear point. The chair shop, the court time, and a coach's tank of gas explain more than abstract statements about responsible participation. Correct inaccuracies without replacing every sentence.
+
+The giving page explains the approach, not every application contingency. Keep direct payments and reimbursement in one short explanation. Safety remains a firm principle: clinic insurance, SafeSport certification, training and relevant safeguards are program costs, and programs must meet the safety standards their athletes need. Do not soften this into generic assurances or follow it with an unrelated funding disclaimer.
+
+Put the general funding limitation and the past-expense answer beside the application. State each clearly, once; do not append a no-guarantee sentence to every FAQ or campaign paragraph. Keep the campaign target and cost variation together on the campaign page. About tells the human story and links to How Giving Works rather than restating payment mechanics.
+
+Do not confuse less defensive copy with fewer safeguards. Preserve material donor terms, tax disclosures, unpaid volunteer status, and relevant professional qualifications/consent. Keep detailed grant procedures in the internal guidance. Tests should protect these meanings, not require the old defensive sentences word for word.
+
 ## Page responsibilities
 
 | Page | Owns | Primary next step |

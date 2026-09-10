@@ -74,6 +74,16 @@ This repository owns three deliberately separate Workers:
 | `amelioration-reports` | `reports.amelioration.is` | `src/reports_worker.js` | Human report views behind Cloudflare Access |
 | `amelioration-agent-mail` | `api.amelioration.is` | `src/agent_mail_worker.js` | Machine mail API plus inbound Email Worker events |
 
+**Production ships from `main`, and only from `main`.** On 2026-09-10 the live build stamp
+resolved to `fix/tim-mobile-framing` while `main` sat 272 commits behind without the homepage
+hero — so every deploy started by working out what production actually was, and anyone branching
+from `main` would have built against a site that did not exist. `scripts/guard-prod-branch.mjs`
+now refuses a production deploy unless HEAD is `main`, the tree is clean, and `main` matches
+`origin/main`. It runs from the `build` hook, so a bare `cfrun npx wrangler deploy` hits it too.
+Staging is unguarded on purpose — it exists to look at a branch — and opts out through
+`ATL_TARGET=staging`, which `deploy:staging` and `preview` set for you. Emergencies:
+`ATL_ALLOW_UNSAFE_DEPLOY=<reason>`, which logs loudly.
+
 The Cloudflare API token is injected at runtime from 1Password through `cfrun`; no secrets live in Git. Always name the intended deployment explicitly:
 
 ```sh

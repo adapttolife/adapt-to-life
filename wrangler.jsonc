@@ -21,11 +21,19 @@
   // build-css runs BEFORE the stamp, because the stamp digests every file in
   // public/ and stamping first would fingerprint stylesheets that do not exist
   // yet. Same ordering reason as Mission Control above.
+  // guard-prod-branch runs FIRST and refuses a production deploy that is not
+  // main, clean and pushed. It is in the build hook, not the deploy:prod npm
+  // script, for the same reason the stamp is: a bare `wrangler deploy` has to
+  // hit it. It cannot read the target from wrangler — MEASURED 2026-09-10, the
+  // build command receives only CLOUDFLARE_* and WRANGLER_COMMAND=deploy, which
+  // are identical for prod and `--env staging` — so the STAGING scripts opt out
+  // by exporting ATL_TARGET=staging and anything else is treated as production.
+  // That is the fail-closed direction: an unrecognised invocation is guarded.
   // build-asnm pulls the live directory counts onto /adaptive-sports-near-me
   // and the homepage. It runs BEFORE the stamp like everything else that writes
   // into public/, and it cannot fail the build: if the directory's API is
   // unreachable it reuses the committed data/asnm-stats.json and says so.
-  "build": { "command": "npm run build:app && node scripts/build-css.mjs && node scripts/build-asnm.mjs && node scripts/stamp-build.mjs" },
+  "build": { "command": "node scripts/guard-prod-branch.mjs && npm run build:app && node scripts/build-css.mjs && node scripts/build-asnm.mjs && node scripts/stamp-build.mjs" },
 
   // Live custom domains (apex + www). Cloudflare manages DNS + TLS for these.
   "routes": [

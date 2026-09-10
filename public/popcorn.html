@@ -369,11 +369,11 @@ fill="currentColor" stroke="none">
       <span class="eyebrow orange reveal">Popcorn fundraiser</span>
       <h1 class="serif display reveal">Popcorn that helps athletes play.</h1>
       <p class="lead sub reveal" style="color:var(--cream-mute);">Our Double Good fundraisers return 50% of popcorn sales to the fund. Double Good handles orders and shipping. Each drive supports a named campaign.</p>
-      <div class="actions reveal">
+      <p class="pop-hero-meta reveal" id="popHeroMeta"></p>
+      <div class="actions reveal" style="display:flex; flex-wrap:wrap; gap:0.8rem;">
         <a class="btn" id="popHeroCta" href="/donate">Buy popcorn</a>
         <a class="btn ghost" href="#goes">Where the money goes</a>
       </div>
-      <p class="pop-hero-meta reveal" id="popHeroMeta"></p>
     </div>
     <div class="pop-hero-art reveal" aria-hidden="true">
       <img class="pb pb-1" src="/images/popcorn/caramel-cheesy.webp" alt="" width="700" height="1085" loading="eager">
@@ -740,7 +740,7 @@ fill="currentColor" stroke="none">
     var meta = document.getElementById('popHeroMeta');
     if (meta){
       if (!current){
-        meta.textContent = 'No popcorn store is open right now. You can still give directly.';
+        meta.textContent = 'No popcorn drive is open. You can still give directly.';
       } else if (status(current) === 'open'){
         meta.innerHTML = '<span class="on">Open now</span> · closes ' + fmt(localDate(current.closes));
       } else {
@@ -782,7 +782,7 @@ fill="currentColor" stroke="none">
         ns.appendChild(el('span','dot'));
         ns.appendChild(document.createTextNode('No popcorn drive open'));
         nl.appendChild(ns);
-        nl.appendChild(el('h2','serif h2','The next store has not opened yet.'));
+        nl.appendChild(el('h2','serif h2','Hear about the next popcorn drive.'));
         nl.appendChild(el('p','pop-card-sub','Join the list for future fundraiser updates.'));
         var nr = el('div','pop-card-cta');
         var na = el('a','btn','Get notified'); na.href = '/subscribe';

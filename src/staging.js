@@ -7,7 +7,7 @@ const PAGES = new Set([
   '/subscribe', '/tim', '/volunteer', '/send-6', '/popcorn', '/waiver',
 ]);
 const STATIC = /^\/(?:css|js|images|fonts|docs)\/[\w./-]+$/;
-const DATA = new Set(['/data/campaigns.json', '/data/staging-raised.json']);
+const DATA = new Set(['/data/campaigns.json', '/data/staging-raised.json', '/data/staging-waiver.json']);
 const NOTICE = 'Content staging. Forms, payments, and outbound links are disabled. Nothing is submitted.';
 const CSP = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; frame-src 'none'; form-action 'none'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'";
 
@@ -37,8 +37,9 @@ export default {
     if (url.pathname === '/robots.txt') {
       return new Response('User-agent: *\nDisallow: /\n', { headers: headers({ 'Content-Type': 'text/plain' }) });
     }
-    if (url.pathname === '/api/raised') {
-      const snapshot = new URL('/data/staging-raised.json', url);
+    const snapshots = { '/api/raised': '/data/staging-raised.json', '/api/waiver/doc': '/data/staging-waiver.json' };
+    if (snapshots[url.pathname]) {
+      const snapshot = new URL(snapshots[url.pathname], url);
       const response = await env.ASSETS.fetch(new Request(snapshot, { method: request.method }));
       return new Response(response.body, { status: response.status, headers: headers({ 'Content-Type': 'application/json' }) });
     }
@@ -60,6 +61,11 @@ export default {
     if (!(asset.headers.get('Content-Type') || '').includes('text/html') || request.method === 'HEAD') return response;
     return new HTMLRewriter()
       .on('body', { element(el) { el.append(CHROME, { html: true }); } })
+      .on('link[href]', { element(el) {
+        const rel = el.getAttribute('rel') || '';
+        const href = el.getAttribute('href') || '';
+        if (/preload|preconnect|dns-prefetch/.test(rel) && /^https?:\/\//.test(href) && !/^https:\/\/fonts\.(?:googleapis|gstatic)\.com\//.test(href)) el.remove();
+      } })
       .on('script[src]', { element(el) {
         const src = el.getAttribute('src') || '';
         if (/^https?:\/\//.test(src) || /(?:givebutter|turnstile|subscribe)/i.test(src)) el.remove();

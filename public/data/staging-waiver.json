@@ -1,0 +1,72 @@
+{
+  "ok": true,
+  "org": "atl",
+  "doc": {
+    "org": "Adapt To Life NFP",
+    "domains": "adapttolife.org  \u00b7  adaptivesportsnearme.com",
+    "title": "Photo, Video, and Media Release",
+    "version": "media-release-2026-06-27-v3",
+    "intro": "By signing below, you give Adapt To Life NFP permission to take and use photos, video, and recordings of you (or your child) from our programs and activities. Please read it. It explains how the materials may be used, your consent to sign electronically, and how to withdraw permission.",
+    "sections": [
+      {
+        "h": "Who this is with",
+        "p": [
+          "Adapt To Life NFP is an Illinois not-for-profit corporation, tax-exempt under Section 501(c)(3) of the Internal Revenue Code (EIN 41-3213344). This release covers Adapt To Life NFP and all of its programs, projects, and initiatives, including Adaptive Sports Near Me (adaptivesportsnearme.com), now and in the future, along with its successors, assigns, and anyone it authorizes such as staff, volunteers, contractors, partners, and sponsors.",
+          "In this release, \"Materials\" means photographs, video, film, and audio recordings of the participant, together with the participant's name, image, likeness, and voice."
+        ]
+      },
+      {
+        "h": "Permission to record and use",
+        "p": [
+          "In consideration of the opportunity to take part in Adapt To Life NFP's programs and to support its charitable mission, I irrevocably grant Adapt To Life NFP and those it authorizes the right to photograph, film, and record the participant, and to use, edit, reproduce, publish, distribute, and display the Materials for any lawful purpose connected to its mission. This includes its websites, social media, print, email, fundraising, and promotional and educational materials, in any media now known or later developed, worldwide, and for as long as Adapt To Life NFP finds them useful.",
+          "This is my written consent under any applicable right of publicity and privacy laws. Adapt To Life NFP is not required to use the Materials."
+        ]
+      },
+      {
+        "h": "Ownership and no payment",
+        "p": [
+          "All Materials are owned by Adapt To Life NFP. I have no right to inspect or approve how they are used, and I will not be paid for this release or for any use of the Materials."
+        ]
+      },
+      {
+        "h": "Images from adaptive sports programs",
+        "p": [
+          "I understand the Materials may identify the participant as a person with a disability or as someone who takes part in adaptive sports programs, and I consent to their use on that basis."
+        ]
+      },
+      {
+        "h": "Release of claims",
+        "p": [
+          "I release Adapt To Life NFP and its directors, officers, employees, volunteers, and those it authorizes from any claim arising out of the authorized recording, use, or publication of the Materials. This includes any claim for invasion of privacy, right of publicity, defamation, false light, or emotional distress, and any claim based on how the Materials are edited or used."
+        ]
+      },
+      {
+        "h": "If I am signing for a minor",
+        "p": [
+          "If the participant is under 18, I confirm that I am the participant's parent or legal guardian, that I have authority to grant these rights on the participant's behalf, and that I am signing for the participant. I understand a minor cannot grant these rights alone. This release binds the participant, me, and our heirs."
+        ]
+      },
+      {
+        "h": "Electronic signature and records",
+        "p": [
+          "I agree to do business electronically and to sign this release electronically. My electronic signature has the same legal effect as a handwritten one. Adapt To Life NFP will keep an electronic record of this signed release, and I may request a paper copy by emailing hello@adapttolife.org."
+        ]
+      },
+      {
+        "h": "Withdrawing permission",
+        "p": [
+          "Although this grant is irrevocable, I may ask Adapt To Life NFP to stop future use by writing to hello@adapttolife.org. It will make reasonable efforts to stop using the participant's image in new Materials, but Materials already shared or published may continue to circulate."
+        ]
+      },
+      {
+        "h": "General",
+        "p": [
+          "This release is binding on me, the participant, and our heirs, and benefits Adapt To Life NFP and its successors and assigns. It is governed by the laws of the State of Illinois, except where the law of the participant's home state must apply, in which case it will be enforced to the fullest extent that law allows. If any part is unenforceable, the rest stays in effect. This is the entire agreement on this subject."
+        ]
+      }
+    ]
+  },
+  "staging": true,
+  "snapshot_at": "2026-09-10T04:32:09.191331+00:00",
+  "source": "https://adapttolife.org/api/waiver/doc?org=atl"
+}

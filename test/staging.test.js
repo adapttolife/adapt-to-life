@@ -17,7 +17,7 @@ test('content staging refuses every write method on every representative route b
 });
 
 test('content staging has no admin, report, old design, or operational read surface', async () => {
-  for (const path of ['/admin', '/admin/app/index.html', '/r/private', '/lib/private', '/api/waiver/doc', '/api/agent-mail', '/photo-picks', '/hero-1', '/preview/receipt']) {
+  for (const path of ['/admin', '/admin/app/index.html', '/r/private', '/lib/private', '/api/waiver/private-id', '/api/agent-mail', '/photo-picks', '/hero-1', '/preview/receipt']) {
     const r = await worker.fetch(request(path), forbiddenAssets);
     assert.equal(r.status, 404, path);
   }
@@ -31,14 +31,16 @@ test('one stable review route points into the actual website rather than an old 
   }
 });
 
-test('fundraising preview reads only a local, explicitly labelled snapshot', async () => {
+test('fundraising and unsigned release previews read only local, explicitly labelled snapshots', async () => {
+  for (const [path, file] of [['/api/raised', '/data/staging-raised.json'], ['/api/waiver/doc', '/data/staging-waiver.json']]) {
   let seen;
   const fixture = { raised: 123, staging: true, snapshot_at: 'test-fixture-not-live' };
   const env = { ASSETS: { async fetch(req) { seen = new URL(req.url); return Response.json(fixture); } } };
-  const r = await worker.fetch(request('/api/raised'), env);
-  assert.equal(seen.pathname, '/data/staging-raised.json');
+  const r = await worker.fetch(request(path), env);
+  assert.equal(seen.pathname, file);
   assert.equal(seen.hostname, 'staging.example');
   assert.deepEqual(await r.json(), fixture);
+  }
 });
 
 test('search exclusions and content security cover responses, not merely HTML meta tags', async () => {

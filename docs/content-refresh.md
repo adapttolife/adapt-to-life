@@ -32,7 +32,7 @@ The normal build hook handles generated assets and the commit/content stamp. Use
 
 Payment widgets, frames and external submission scripts are removed at response time; form controls and outbound links are disabled. Same-site links stay in staging, and the signing hostname becomes the local release-copy preview. CSP forbids offsite fetches, frames and form submissions. This does not change any production forms.
 
-Fundraising figures are a real dated snapshot from the public production API, stored at `public/data/staging-raised.json`, not a fake total or a live integration. Keep the snapshot explicitly marked and refresh deliberately when required for content review. Never claim it is a financial reconciliation.
+Fundraising figures are a real dated snapshot from the public production API, stored at `public/data/staging-raised.json`, not a fake total or a live integration. The unsigned release document is likewise preserved verbatim from the public document endpoint in `public/data/staging-waiver.json`, so its words can be reviewed without any signing or record-download capability. Both snapshots record their source and capture time. Refresh deliberately for review; they are not a second policy source or financial reconciliation.
 
 Search exclusion is `robots.txt` plus response-level `X-Robots-Tag`. It is not authentication. Version preview URLs are disabled so there is one stable review ingress.
 
@@ -52,4 +52,6 @@ Check the deployed build stamp against the exact source commit and digest. Read 
 
 Preserve every reviewed revision as a normal commit. Subsequent changes revise this branch and environment rather than starting a new stack. To undo an unapproved content change, revert its commit on the content branch and redeploy staging; do not alter main or roll back production.
 
-Inherited dependency advisory items were present before this work (fflate and nanoid). No unrelated dependency upgrade is included in a content release. The newly added Playwright dependency is pinned to the patched 1.55.1 release rather than the vulnerable 1.55.0 local tooling version.
+The CLI is pinned to Wrangler 4.130.0, the version exercised for this staging release, so `npx` cannot silently select a different version on the next deploy. Playwright is pinned to patched 1.55.1 rather than the vulnerable 1.55.0 local tooling version.
+
+`npm audit` reports five dependency entries: inherited fflate and nanoid advisories, plus the development-only sharp → miniflare → wrangler chain. The suggested Wrangler downgrade is not applied. None of those modules is imported by the isolated staging Worker. These advisories remain open; passing application tests is not a dependency security clearance.

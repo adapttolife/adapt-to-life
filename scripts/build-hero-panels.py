@@ -350,8 +350,13 @@ BANDS = {
     #     page is an invitation to join a group, so show the group.
     "1": [
         ("JLA_6119.jpg", 0.74, True,  0.32, 0.60, 0.72),  # the floor, chairs everywhere
-        ("JLA_6077.jpg", 1.00, False, 0.44, 0.30, 0.88),  # tan cap, laughing mid-point
-        ("JLA_6143.jpg", 0.88, False, 0.52, 0.28, 0.88),  # laughing back over her shoulder
+        # Alec, 2026-09-10: "flip these two pictures with each other." She takes
+        # the tall column and he takes the short one. Same two photographs, and
+        # the anchors move with them — a column's aspect comes from its height
+        # share, so a frame that swaps slots needs its crop cut again rather
+        # than carried across.
+        ("JLA_6143.jpg", 1.00, False, 0.54, 0.30, 0.94),  # laughing back over her shoulder
+        ("JLA_6077.jpg", 0.88, False, 0.44, 0.30, 0.88),  # tan cap, laughing mid-point
         ("JLA_6168.jpg", 0.70, True,  0.53, 0.33, 0.88),  # two of them between games
     ],
     # 2 — competition. /sponsorship: a sponsor is buying court time and travel,

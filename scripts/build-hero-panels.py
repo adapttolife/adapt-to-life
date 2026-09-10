@@ -319,8 +319,74 @@ def check_frames(kind, entries):
                         f"{im.height}, under the {floor}px floor for this frame.")
 
 
-def compose_band():
-    """The interior page band: one pre-composed strip of vertical columns.
+# THE FOUR BANDS. Alec, 2026-09-10: "we have four pages that all have the exact
+# same pictures ... we have really good pictures, let's leverage them."
+#
+# One band on every interior page was the cheapest thing to ship and it made the
+# site look like one page repeated. These are four sets of four, and no
+# photograph appears in more than one — sixteen athletes where there were four.
+# page-header.mjs decides which page gets which; a page still loads exactly one
+# band, so the variants cost a visitor nothing.
+#
+# A set is [BACK, FRONT, FRONT, BACK]. Two things decide what goes where, and
+# they pull in different directions:
+#   · a phone gets columns 1 and 2 only (see `use` below), so those two are the
+#     faces.
+#   · on desktop the type field sits over the LEFT half, so column 2 is the one
+#     seen clean and column 0 spends its life behind the veil.
+# Column 2 is the only slot that wins both, so the strongest face goes there
+# every time, and column 0 gets a frame that still reads when it is dimmed —
+# a room, a wall, a scene, never the photograph the page is selling.
+#
+# Columns: source, height share, back row, ax, ay, zoom.
+# ax/ay are fractions of the ORIGINAL frame — ax is where the subject actually
+# is, ay where the head is. Every one was set by cutting the crop at the
+# column's true aspect and looking at it. Assuming ax=0.5 is what "squeezed and
+# squished" meant the last four times. ZOOM is the fraction of the largest valid
+# crop to take: a small subject in a big room needs a punch-in or the column
+# reads as grey texture at 200px wide.
+BANDS = {
+    # 1 — the room and the people in it. /volunteer and its role pages: the
+    #     page is an invitation to join a group, so show the group.
+    "1": [
+        ("JLA_6119.jpg", 0.74, True,  0.32, 0.60, 0.72),  # the floor, chairs everywhere
+        ("JLA_6077.jpg", 1.00, False, 0.44, 0.30, 0.88),  # tan cap, laughing mid-point
+        ("JLA_6143.jpg", 0.88, False, 0.52, 0.28, 0.88),  # laughing back over her shoulder
+        ("JLA_6168.jpg", 0.70, True,  0.53, 0.33, 0.88),  # two of them between games
+    ],
+    # 2 — competition. /sponsorship: a sponsor is buying court time and travel,
+    #     so the band is the thing being bought.
+    "2": [
+        ("JLA_6224.jpg", 0.74, True,  0.55, 0.52, 0.62),  # down at the floor for a dig
+        ("JLA_6073.jpg", 1.00, False, 0.42, 0.32, 0.88),  # grinning, whole chair
+        ("JLA_6091.jpg", 0.88, False, 0.56, 0.26, 0.88),  # squared up, waiting on serve
+        ("JLA_6146.jpg", 0.70, True,  0.55, 0.42, 0.62),  # coaching under START NOW PLAY FOREVER
+    ],
+    # 3 — faces. /promise asks to be believed about money, and a face is the
+    #     only argument that page has.
+    "3": [
+        ("JLA_6236.jpg", 0.74, True,  0.55, 0.42, 0.88),  # watching from behind the fence
+        ("JLA_5989.jpg", 1.00, False, 0.45, 0.32, 0.88),  # profile, Great Lakes Games shirt
+        ("JLA_5973.jpg", 0.88, False, 0.50, 0.28, 0.88),  # smiling, paddle down
+        ("JLA_5918.jpg", 0.70, True,  0.52, 0.40, 0.88),  # ball in hand, about to serve
+    ],
+    # 4 — the story. /about: the people who built it, doing the thing.
+    "4": [
+        ("JLA_6191.jpg", 0.74, True,  0.55, 0.40, 0.75),  # rolling in past LEARN PLAY COMPETE
+        ("JLA_6074.jpg", 1.00, False, 0.45, 0.30, 0.88),  # calling the score
+        # Brian takes column 2 and not column 1 on purpose. It is the darkest
+        # frame in any of the four sets — black tank, black background — and
+        # column 1 spends its life under the type veil, where a dark frame
+        # stops being a photograph and becomes a smudge. In column 2 it is seen
+        # clean, which is what a frame this good is for.
+        ("JLA_6045.jpg", 0.88, False, 0.50, 0.40, 0.88),  # headband, paddle up
+        ("JLA_6131.jpg", 0.70, True,  0.50, 0.55, 0.78),  # white chair, waiting to go on
+    ],
+}
+
+
+def compose_band(variant, cols):
+    """One interior page band: a pre-composed strip of vertical columns.
 
     Alec, 2026-09-08, comparing the interior pages against variant 2: "I like
     the second version ... the vertical design I think looks great on the other
@@ -331,49 +397,27 @@ def compose_band():
     darkens the corner the words sit in rather than the whole picture. Same
     logic the homepage wall uses.
 
-    It stays ONE image rather than eight <img> columns: the band never reflows,
-    only crops, and shipping the columns individually cost /donate 450 KB and
-    broke its own-bytes budget. Because the frame is still mostly black it
-    compresses to a fraction of its parts.
+    It stays ONE image per variant rather than four <img> columns: the band
+    never reflows, only crops, and shipping the columns individually cost
+    /donate 450 KB and broke its own-bytes budget. Because the frame is still
+    mostly black it compresses to a fraction of its parts.
+
+    FEWER and TALLER: four frames on desktop and two on a phone, each around
+    0.5-0.7 aspect — real portrait proportions — and the band is tall enough to
+    fill most of the hero, because the black around it was the other half of
+    the complaint.
     """
     import numpy as np
-    # Alec, three times: "the pictures still look squeezed and squished."
-    #
-    # He was right and the reason was not distortion. Every column has been
-    # cropped at exactly the aspect of its box since the stretch bug, and the
-    # rendered strip matches the asset to 0.001 — checked end to end. What was
-    # wrong is WHERE the crop was taken: ax=0.50 for every photograph, on the
-    # assumption the athlete is centred. Run a human matte over these five and
-    # they are not:
-    #
-    #     JLA_5884  subject centre 0.392      JLA_6071  0.381
-    #     JLA_5904  0.544                     JLA_6105  0.486
-    #     JLA_6168  0.526
-    #
-    # So a narrow frame cut into four of the five, which is exactly what
-    # "squeezed" looks like. The anchors below are measured from those mattes,
-    # not guessed, and ay is set from where each subject's head actually starts.
-    #
-    # Also: FEWER and TALLER. Four frames on desktop and two on a phone, each
-    # around 0.5-0.7 aspect — real portrait proportions — and the band is tall
-    # enough to fill most of the hero, because the black around it was the other
-    # half of the complaint.
-    COLS = [  # source, height share, back row, ax, ay  (ax/ay from the matte)
-        ("JLA_5884.jpg", 0.74, True,  0.39, 0.20),  # reaching low for a dig
-        ("JLA_6071.jpg", 1.00, False, 0.38, 0.33),  # grinning, whole chair
-        ("JLA_6105.jpg", 0.88, False, 0.49, 0.23),  # laughing between points
-        ("JLA_6168.jpg", 0.70, True,  0.53, 0.33),  # two at the net
-    ]
-    check_frames("column", [(c[0], c[0], 0.62, c[3], c[4]) for c in COLS])
-    for name, W, H, n, pitch, cwf in (("pg-band-wide", 1500, 650, 4, 0.235, 0.205),
-                                      ("pg-band-tall", 900, 805, 2, 0.460, 0.440)):
+    check_frames("column", [(c[0], c[0], 0.62, c[3], c[4]) for c in cols])
+    for name, W, H, n, pitch, cwf in ((f"pg-band-{variant}-wide", 1500, 650, 4, 0.235, 0.205),
+                                      (f"pg-band-{variant}-tall", 900, 805, 2, 0.460, 0.440)):
         canvas = Image.new("RGB", (W, H), (0, 0, 0))
-        use = COLS if n == 4 else [COLS[1], COLS[2]]
-        for i, (src, h, dim, ax, ay) in enumerate(use):
+        use = cols if n == 4 else [cols[1], cols[2]]
+        for i, (src, h, dim, ax, ay, zoom) in enumerate(use):
             im = Image.open(os.path.join(SRC, src))
             im.draft("RGB", (im.width // 3, im.height // 3))
             cw, ch = int(W * cwf), int(H * h)
-            im = crop_to(im.convert("RGB"), cw / ch, ay, ax, 0.88)
+            im = crop_to(im.convert("RGB"), cw / ch, ay, ax, zoom)
             assert abs((im.width / im.height) - (cw / ch)) < 0.02, \
                 f"{src}: cropped {im.width}x{im.height} for a {cw}x{ch} box"
             im = mono(im.resize((cw, ch), Image.LANCZOS))
@@ -381,13 +425,9 @@ def compose_band():
             # reads as a bad photograph instead — Alec: "the picture all the way
             # to the right is way too blurry, I want these crisp and clear." A
             # small brightness step is enough to seat a frame behind another.
-            # 0.74 for the back row, not 0.82. The frame that replaced the
-            # withdrawn one is a bright daylight court shot where the old one
-            # was dark, and a busy bright frame both sits forward of where a
-            # back-row column should sit AND compresses worse — it put /donate
-            # a kilobyte over its own-bytes budget. Seating it properly in the
-            # depth order is the fix for both, which is the good kind of
-            # constraint: the cheaper file is also the better composition.
+            # 0.74 for the back row, not 0.82: a bright busy frame in the back
+            # row both sits forward of where it belongs AND compresses worse,
+            # and once put /donate a kilobyte over its own-bytes budget.
             im = ImageEnhance.Brightness(im).enhance(0.74 if dim else 1.0)
             x = int(W * (0.5 * (1 - n * pitch) + i * pitch + (pitch - cwf) / 2))
             canvas.paste(im, (x, H - ch))
@@ -401,6 +441,10 @@ def compose_band():
         canvas.save(out, "WEBP", quality=54, method=6)
         print(f"{name:20s} {W}x{H} {n} frames  {os.path.getsize(out)/1024:6.1f} KB")
 
+
+def compose_bands():
+    for variant, cols in BANDS.items():
+        compose_band(variant, cols)
 
 
 def compose_give():
@@ -551,7 +595,7 @@ def assert_no_withdrawn():
         )
 
 
-def fingerprint():
+def fingerprint(only=None):
     """Rename every generated image to include a hash of its own bytes.
 
     public/_headers gives media a 30-day max-age and says, in as many words:
@@ -564,8 +608,16 @@ def fingerprint():
 
     Content-hashed names make that impossible: change a pixel and the URL
     changes, so nothing can be stale and nothing has to be remembered.
+
+    `only` is a filename prefix and makes this safe for a PARTIAL run: the
+    existing manifest is carried forward and the prune only judges that family.
+    Without it, rebuilding the bands alone would delete every homepage panel on
+    disk, because none of them was regenerated to be kept.
     """
     manifest = {}
+    if only:
+        with open(os.path.join(DST, "hashes.json")) as fh:
+            manifest = json.load(fh)
     for f in sorted(os.listdir(DST)):
         if not f.endswith(".webp") or "." in f[:-5]:
             continue                      # already fingerprinted
@@ -577,8 +629,11 @@ def fingerprint():
     # drop fingerprinted files that are no longer current
     keep = set(manifest.values())
     for f in os.listdir(DST):
-        if f.endswith(".webp") and "." in f[:-5] and f not in keep:
-            os.remove(os.path.join(DST, f))
+        if not (f.endswith(".webp") and "." in f[:-5]) or f in keep:
+            continue
+        if only and not f.startswith(only):
+            continue                      # another family, not this run's to judge
+        os.remove(os.path.join(DST, f))
     with open(os.path.join(DST, "hashes.json"), "w") as fh:
         json.dump(manifest, fh, indent=1, sort_keys=True)
     print(f"{'fingerprinted':20s} {len(manifest)} files -> hashes.json")
@@ -587,6 +642,14 @@ def fingerprint():
 def main():
     assert_no_withdrawn()
     os.makedirs(DST, exist_ok=True)
+    if "--bands-only" in sys.argv:
+        # Rebuild ONLY the interior page bands, for the common case of swapping
+        # a photograph in BANDS. The full run re-encodes forty panels to produce
+        # the same bytes; this does the one thing that changed. The scoped
+        # fingerprint leaves every other family on disk alone.
+        compose_bands()
+        fingerprint("pg-band-")
+        return
     manifest, total = {}, 0
     jobs = [(n, s_, a, y, x, z, r) for n, s_, a, y, x, z, r in PANELS + BANNER]
     # same frames and anchors as the banner columns, at band size
@@ -625,7 +688,7 @@ def main():
         total += n
         manifest[name] = {"w": im.size[0], "h": im.size[1], "role": role, "src": src}
         print(f"{name:14s} {role:5s} {im.size[0]:4d}x{im.size[1]:<4d} {n/1024:6.1f} KB   {src}")
-    compose_band()
+    compose_bands()
     compose_give()
     compose_roll()
     # Page photos: a single full-bleed frame for a page that has one picture

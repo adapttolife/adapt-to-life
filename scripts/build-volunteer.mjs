@@ -14,7 +14,7 @@
 // change with it and nobody has to remember they exist. `--check` is wired into
 // the test suite so a nav edit that skips the generator fails the build.
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync, rmSync } from "node:fs";
-import { PAGE_HEADER_SHEET, PAGE_HEADER_CLASS, PAGE_HEADER_VARS,
+import { PAGE_HEADER_SHEET, PAGE_HEADER_CLASS, bandVars,
          TIER_CLASS } from "./lib/page-header.mjs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -35,7 +35,7 @@ const NAVJS = afterFooter.slice(afterFooter.indexOf("<script>"), afterFooter.ind
 const esc = (s) => String(s).replace(/&(?!(amp|lt|gt|quot|#39|rarr|mdash|nbsp);)/g, "&amp;");
 const strip = (s) => String(s).replace(/<[^>]*>/g, "").replace(/&amp;/g, "&").trim();
 
-function head({ title, desc, canonical, card, cardAlt }) {
+function head({ title, desc, canonical, card, cardAlt, page }) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -65,7 +65,7 @@ function head({ title, desc, canonical, card, cardAlt }) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
-${PAGE_HEADER_SHEET}\n${PAGE_HEADER_VARS}
+${PAGE_HEADER_SHEET}\n${bandVars(page)}
 <script src="/js/attribution.js" defer></script>
 </head>
 <body>
@@ -121,6 +121,7 @@ ${roles.map(card).join("\n")}
     title: "Volunteer | Adapt To Life",
     desc: "Adapt To Life is building a team. Grant writers, accountants, coaches, storytellers, equipment techs, and people who can open a door. Every role says what it costs you.",
     canonical: `${SITE}/volunteer`,
+    page: "volunteer.html",
     card: "/images/og/volunteer-v3-athlete.jpg",
     cardAlt: "Your place on this team. Adapt To Life. A wheelchair pickleball player in a cap reaches for a shot.",
   }) + HEADER + `
@@ -300,6 +301,7 @@ function rolePage(r) {
     title,
     desc: strip(r.card).slice(0, 200),
     canonical: `${SITE}/volunteer/${r.slug}`,
+    page: `volunteer/${r.slug}.html`,
     card: `/images/og/role-${r.slug}-v3-athlete.jpg`,
     // The role cards became photographs on 2026-09-09 like everything else, so
     // the alt says what is in the picture as well as which role it is.

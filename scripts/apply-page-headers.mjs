@@ -21,7 +21,7 @@
 //   · the homepage, which has the mosaic.
 import { readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { PAGE_HEADER_SHEET as SHEET, PAGE_HEADER_CLASS as BAND,
-         PAGE_HEADER_VARS as VARS, PAGE_PHOTOS, photoVars,
+         bandVars, bandOf, PAGE_PHOTOS, photoVars,
          TIER_CLASS } from "./lib/page-header.mjs";
 
 const ROOT = new URL("../public/", import.meta.url);
@@ -111,11 +111,11 @@ for (const file of readdirSync(ROOT).filter((f) => f.endsWith(".html"))) {
   // line, so it can never satisfy that. The alternative can be deleted once no
   // page has a bare <style> after the marker.
   const VARS_RE = /\n<!-- band:vars -->(?:\s*<style data-band-vars>[\s\S]*?<\/style>|<style>[\s\S]*?<\/style>)+/;
-  const block = `\n<!-- band:vars -->${VARS}${photo ? photoVars(photo) : ""}`;
+  const block = `\n<!-- band:vars -->${bandVars(file)}${photo ? photoVars(photo) : ""}`;
   html = VARS_RE.test(html) ? html.replace(VARS_RE, block)
                             : html.replace(SHEET, `${SHEET}${block}`);
   writeFileSync(url, html);
   changed += 1;
-  console.log(`${file.padEnd(30)} banded`);
+  console.log(`${file.padEnd(30)} banded  (band ${bandOf(file)})`);
 }
 console.log(`\n${changed} page header(s) written. Next: npm run stamp`);

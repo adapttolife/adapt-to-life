@@ -152,21 +152,17 @@
   "env": {
     "staging": {
       "name": "adapt-to-life-staging",
+      "main": "src/staging.js",
       "workers_dev": true,
-      "preview_urls": true,
-      "vars": { "GIVEBUTTER_CAMPAIGN_ID": "683765", "OFFLINE_RAISED": "3004", "STAGING": "1" },
-      // CRITICAL: empty routes overrides the inherited production routes, so a
-      // staging deploy can never reassign the live apex domains to this Worker.
+      "preview_urls": false,
+      "vars": { "STAGING": "1" },
       "routes": [],
-      // /css/* and /js/* run the Worker on STAGING ONLY so it can mark them
-      // no-store. Staging is the review surface and must never hand Alec new
-      // markup against last-deploy CSS. Production deliberately does NOT list
-      // them: there it keeps the _headers cache policy and pays no Worker
-      // invocation for the stylesheet every page fetches.
-      "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": ["/review", "/review.html", "/photo-picks", "/photo-picks.html",
-        "/hero-review", "/hero-review.html", "/hero-1", "/hero-1.html", "/hero-2", "/hero-2.html", "/hero-3", "/hero-3.html",
-        "/hero-4", "/hero-4.html", "/hero-5", "/hero-5.html", "/hero-6", "/hero-6.html", "/hero-7", "/hero-7.html", "/hero-9", "/hero-9.html",
-        "/admin/*", "/css/*", "/js/*"] },
+      // Every route crosses the review-only entrypoint, including assets.
+      // HTML rewrites disable payment widgets and forms without changing prod.
+      "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": true },
+      "d1_databases": [],
+      "r2_buckets": [],
+      "send_email": [],
       "triggers": { "crons": [] }
     }
   }

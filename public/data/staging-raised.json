@@ -1,0 +1,9 @@
+{
+  "raised": 3509,
+  "online": 505,
+  "offline": 3004,
+  "goal": 21000,
+  "staging": true,
+  "snapshot_at": "2026-09-10T04:22:02.066446+00:00",
+  "source": "https://adapttolife.org/api/raised"
+}

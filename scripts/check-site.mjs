@@ -23,10 +23,12 @@
 // scale, so without it the overflow probe caught the image mid-scale and the
 // same build passed or failed depending on when it ran.
 //
-// Box-local dev tool (not Worker code): Playwright lives at ~/pw on the box.
+// Uses the repository's pinned Playwright dependency. A provisioned Chromium
+// can be selected with PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH; otherwise use the
+// browser installed through Playwright. No machine-specific import path.
 // Usage: node scripts/check-site.mjs [base-url]
 //   default base: the staging Worker. Pass https://adapttolife.org to check prod.
-import { chromium } from "/home/agentos/pw/node_modules/playwright/index.mjs";
+import { chromium } from "playwright";
 import { readFileSync } from "node:fs";
 import { execSync } from "node:child_process";
 import { ROLES } from "../data/volunteer-roles.mjs";
@@ -73,7 +75,7 @@ const IGNORE_OVERFLOW = `
   if (el.matches('input[aria-hidden="true"]')) return;
 `;
 
-const browser = await chromium.launch();
+const browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined });
 let failed = false;
 const fail = (msg) => { failed = true; console.log("FAIL " + msg); };
 
@@ -311,11 +313,13 @@ if (missing.status !== 404) fail(`unknown path returned ${missing.status}, expec
   console.log(`share cards: ${seen.size} distinct, all fetched`);
 }
 
-// ---- /review: the one link Alec gets ------------------------------------
-// It is the tour of the current iteration, so it going stale is a bug in the
-// iteration, not a chore for later. This session it described a build three
-// weeks old, including a goal figure we had already retired.
-{
+// Production retains its existing tour gate. Content staging instead points
+// /review at the actual draft homepage; it must not revive the old design tour.
+if (IS_STAGING) {
+  const rv = await fetch(`${BASE}/review`, { redirect: "manual" });
+  if (rv.status !== 302 || rv.headers.get("location") !== "/#participation")
+    fail("staging /review must redirect to the draft homepage section");
+} else {
   const tour = readFileSync(new URL("../public/review.html", import.meta.url), "utf8");
   const stamped = tour.match(/updated (\d{4}-\d{2}-\d{2})/)?.[1];
   const lastTouched = execSync(
@@ -401,6 +405,15 @@ if (missing.status !== 404) fail(`unknown path returned ${missing.status}, expec
 // money path by running these two pages on their own before believing anything
 // is wrong with the form.
 for (const path of ["/donate", "/hustle-and-heart"]) {
+  if (IS_STAGING) {
+    const g = await browser.newPage({ viewport: { width: 1440, height: 1000 }, reducedMotion: "reduce" });
+    await g.goto(`${BASE}${path}`, { waitUntil: "domcontentloaded" });
+    await g.locator(".staging-payment").waitFor({ state: "visible" });
+    if (await g.locator("givebutter-giving-form, iframe").count()) fail(`${path}: staging must not load a payment or signing frame`);
+    if (await g.locator("form input:not([disabled]), form button:not([disabled])").count()) fail(`${path}: staging form controls must be disabled`);
+    await g.close();
+    continue;
+  }
   let lastError = null;
   for (let attempt = 1; attempt <= 2; attempt++) {
   const g = await browser.newPage({ viewport: { width: 1440, height: 1000 }, reducedMotion: "reduce" });

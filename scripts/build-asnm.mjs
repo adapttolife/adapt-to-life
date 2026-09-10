@@ -126,13 +126,7 @@ if (RE.test(html)) html = html.replace(RE, block);
 else html = html.replace(/(\n  <!-- WHY \(light reading\) -->)/, `\n  ${block}\n${"$1"}`);
 writeFileSync(page, html);
 
-// the homepage claims the directory exists; give it the number
-const home = join(ROOT, "public", "index.html");
-let h = readFileSync(home, "utf8");
-const HRE = /(<strong>Adaptive Sports Near Me<\/strong> is a free, open directory of )[\s\S]*?( programs nationwide)/;
-if (HRE.test(h)) {
-  h = h.replace(HRE, `$1<!-- asnm:count -->${n(stats.programs)}<!-- /asnm:count -->$2`);
-  writeFileSync(home, h);
-}
+// Homepage narrative intentionally does not duplicate live directory counts.
+// /adaptive-sports-near-me owns the generated statistics and browse links.
 
 console.log(`  asnm stats ${live ? "LIVE" : "from cache"}: ${n(stats.programs)} programs, ${stats.byState.length} states, ${stats.sources} sources, ${stats.bySport.length} sports`);

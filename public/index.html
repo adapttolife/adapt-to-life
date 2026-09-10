@@ -14,14 +14,29 @@
      not do this job — they are just outbound links.
      Homepage only, which is where Organization markup belongs; repeating it on
      all 25 pages adds nothing and gives 25 places to drift.
-     Every value here is already published on this page or in its footer. -->
+     Every value here is already published on this page or in its footer.
+
+     `logo` IS THE MARK, NOT A SHARE CARD. It had been pointing at
+     home-v2-option2.jpg, which is a 1200x630 share card with a headline across
+     it and, by 2026-09-10, two versions out of date. Google reads this field
+     for the knowledge panel, so what it was actually publishing as the
+     organisation's logo was last quarter's marketing copy. The file it points
+     at now is the mark alone, rendered from the brand SVG at the same size on
+     the canvas as the app icon so the brand reads identically everywhere:
+       sed 's/currentColor/#1A1A1A/g' brand/atl-logo-v2-option2-ui.svg \
+         | rsvg-convert -h 364 -b none \
+         | convert - -background '#F7F4EE' -gravity center -extent 512x512 \
+             -strip public/images/brand/atl-logo-512.png
+     Cream rather than transparent because a transparent mark in near-black
+     disappears on any dark surface that composites it, and Google surfaces
+     choose their own background. -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "NGO",
   "name": "Adapt To Life",
   "url": "https://adapttolife.org/",
-  "logo": "https://adapttolife.org/images/og/home-v2-option2.jpg",
+  "logo": "https://adapttolife.org/images/brand/atl-logo-512.png",
   "description": "Adapt To Life funds the equipment, training, and travel that get adaptive athletes off the sidelines and into the game.",
   "email": "hello@adapttolife.org",
   "sameAs": [

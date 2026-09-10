@@ -76,6 +76,29 @@ const IGNORE_OVERFLOW = `
 const browser = await chromium.launch();
 let failed = false;
 const fail = (msg) => { failed = true; console.log("FAIL " + msg); };
+
+// NAVIGATE, AND BE PATIENT WITH 429. Cloudflare rate-limits this checker: it
+// walks 19 pages at two viewports and then measures budgets, several hundred
+// requests in a few minutes, and run it a few times in a row and the site
+// starts answering 429. That is the site behaving correctly and the checker
+// being impatient.
+//
+// Worse than the failure was the SHAPE of it. `if (status !== 200) fail(...)`
+// recorded the problem and then fell through to `page.click("#menuBtn")` on a
+// 429 body that has no such button, so the run died on an unhandled
+// TimeoutError with a stack trace instead of a readable line. A check that
+// crashes when the site pushes back tells you nothing about the site.
+const RETRY_STATUS = new Set([429, 503]);
+const NAV_BACKOFF = [3000, 9000, 20000];
+async function gotoPage(pg, path) {
+  let res = null;
+  for (let attempt = 0; ; attempt++) {
+    res = await pg.goto(`${BASE}${path}?cb=${Date.now()}`, { waitUntil: "domcontentloaded" });
+    if (!res || !RETRY_STATUS.has(res.status()) || attempt >= NAV_BACKOFF.length) return res;
+    console.log(`  ${path} returned ${res.status()}; waiting ${NAV_BACKOFF[attempt] / 1000}s`);
+    await new Promise((r) => setTimeout(r, NAV_BACKOFF[attempt]));
+  }
+}
 const targets = new Set();
 let reference = null;
 
@@ -85,9 +108,14 @@ for (const path of PAGES) {
   const mErrs = [];
   m.on("pageerror", (e) => mErrs.push(String(e).slice(0, 90)));
   m.on("console", (c) => { if (isRealConsoleError(c)) mErrs.push(c.text().slice(0, 90)); });
-  const mRes = await m.goto(`${BASE}${path}?cb=${Date.now()}`, { waitUntil: "domcontentloaded" });
+  const mRes = await gotoPage(m, path);
   await m.waitForTimeout(1500);
-  if (mRes.status() !== 200) fail(`${path} returned ${mRes.status()}`);
+  if (!mRes || mRes.status() !== 200) {
+    // Stop here rather than clicking into a page that is not the page.
+    fail(`${path} returned ${mRes ? mRes.status() : "no response"} after ${NAV_BACKOFF.length + 1} attempts`);
+    await m.close();
+    continue;
+  }
   await m.click("#menuBtn");
   await m.waitForTimeout(450);
   const mob = await m.evaluate(`(() => ({
@@ -110,7 +138,12 @@ for (const path of PAGES) {
   const dErrs = [];
   d.on("pageerror", (e) => dErrs.push(String(e).slice(0, 90)));
   d.on("console", (c) => { if (isRealConsoleError(c)) dErrs.push(c.text().slice(0, 90)); });
-  await d.goto(`${BASE}${path}?cb=${Date.now()}`, { waitUntil: "domcontentloaded" });
+  const dRes = await gotoPage(d, path);
+  if (!dRes || dRes.status() !== 200) {
+    fail(`${path} @1440 returned ${dRes ? dRes.status() : "no response"} after ${NAV_BACKOFF.length + 1} attempts`);
+    await d.close();
+    continue;
+  }
   await d.waitForTimeout(1500);
   await d.click('.nav-toggle[aria-controls="navOurWork"]');
   await d.waitForTimeout(350);

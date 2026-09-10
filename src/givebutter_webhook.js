@@ -187,7 +187,7 @@ export async function sendDonorThankYou(env, gift) {
     "",
     "Thank you for putting an athlete in the game.",
     "",
-    "Your gift helps cover the real costs that keep adaptive athletes competing: equipment, training, and travel. One hundred percent reaches athletes because operating costs are covered separately, on purpose.",
+    "Your gift helps adaptive athletes take part through equipment, training, and travel.",
     "",
     "Givebutter sent your official receipt separately. " + updates,
     "",
@@ -200,7 +200,7 @@ export async function sendDonorThankYou(env, gift) {
   const html = houseShell(
     `<p>Hi ${esc(name)},</p>` +
     `<p><strong>Thank you for putting an athlete in the game.</strong></p>` +
-    `<p>Your gift helps cover the real costs that keep adaptive athletes competing: equipment, training, and travel. One hundred percent reaches athletes because operating costs are covered separately, on purpose.</p>` +
+    `<p>Your gift helps adaptive athletes take part through equipment, training, and travel.</p>` +
     `<p>Givebutter sent your official receipt separately. ${esc(updates)}</p>` +
     `<p><a href="https://adapttolife.org/send-6">See where the money goes</a><br>` +
     `<a href="https://adapttolife.org/roadmap">Follow our progress</a></p>` +

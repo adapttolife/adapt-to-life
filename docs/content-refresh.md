@@ -80,14 +80,15 @@ How Giving Works restores Safety is not overhead, names program-specific safegua
 
 The application retains one clear funding limitation and a concise case-by-case past-expense answer. The campaign retains its target, cost variation and selection explanation without repeating award disclaimers. Existing donor terms and the legal release are not rewritten, and the archived old-content document is untouched. The editorial standard and regression tests capture this distinction so the next revision does not reintroduce the overcorrection.
 
-## Decisions that must not be invented by a copy pass
+## Confirmed decisions and remaining verification
 
-Before any production release, confirm:
+Alec approved prospective disclosure of campaign fallback to the Hustle & Heart Fund, protection of existing gift terms, a deliverable sponsorship offer with larger naming/multiyear arrangements individually negotiated, and confirmed that he covers overhead while revenue is developed through Adaptive Sports Near Me, Adapt Body Shop and future work.
 
-- **Gift allocation and fees.** The draft replaces broad 100%/0% headlines with specific grant-payment and program-support explanations. It does not establish a new accounting, processor-fee, overhead, or shop-transfer policy. Confirm the final promise wording and current operating facts with the responsible decision-maker.
-- **Restricted campaign gifts.** The existing `/promise` clause about a funded or cancelled campaign is retained, not silently rewritten. Its treatment of donor restrictions needs appropriate review before publication. Do not invent a new refund or reassignment policy here.
-- **Legal and operational facts.** The donor legal name, legal release name, tax statement, registrations, and current grant/program claims require source-backed confirmation. The IRS letter stays available. Renaming the footer link to Photo and media release is a label correction, not a rewrite of the agreement.
-- **Sponsorship commitments.** Prices and existing benefit tiers remain the baseline. Added consent/scope qualifications and removal of unsupported dollar-to-outcome equivalences need review as part of the final offer. The draft is not authority to grant naming rights or commit the organization.
+These decisions are implemented in the staging copy. They are not open questions to ask Alec again. They do not approve production publication, reallocate earlier gifts, cancel existing sponsor agreements, or establish a transfer/allocation percentage.
+
+The formal donor entity is now Adapt To Life NFP, matching the published IRS determination letter, the IRS public listing and reviewed incorporation documents. The release name is consistent and its agreement remains unchanged. State charitable registration and current financial/program claims require separate evidence; these are not proved by an IRS letter.
+
+See [giving-release-alignment.md](giving-release-alignment.md) for the staged changes, prepared Givebutter wording and controlled release sequence. Live Givebutter still contains the old percentage promise; it has not been silently edited. The future thank-you templates are aligned in this branch. Historical donor terms and private records remain intact. The failed remote Cloudflare build remains a separate unresolved check, not a staging deployment failure.
 
 The Send 6 target remains $21,000 for six athletes, or $3,500 per athlete. It is labelled as a target, not an exact trip price. The unexplained line-item total is not filled with an invented expense. The popcorn page links to the campaign rather than maintaining its own budget.
 

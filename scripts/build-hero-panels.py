@@ -359,8 +359,19 @@ BANDS = {
     "2": [
         ("JLA_6224.jpg", 0.74, True,  0.55, 0.52, 0.62),  # down at the floor for a dig
         ("JLA_6073.jpg", 1.00, False, 0.42, 0.32, 0.88),  # grinning, whole chair
-        ("JLA_6091.jpg", 0.88, False, 0.56, 0.26, 0.88),  # squared up, waiting on serve
-        ("JLA_6146.jpg", 0.70, True,  0.55, 0.42, 0.62),  # coaching under START NOW PLAY FOREVER
+        # Alec, 2026-09-10, on the two frames that were here (6091 squared up
+        # with a lanyard, 6146 coaching under the wall): "I don't like these
+        # pictures." They were the two this page shows CLEAN — column 2 is the
+        # only slot the type never covers — and neither was playing. A page
+        # asking a business to fund court time should be showing court time.
+        # Both replacements are in kit and in a point.
+        # zoom 1.0, not the usual 0.88: at 0.88 this column keeps 88% of the
+        # frame height and the 12% it drops is the paddle. A sponsorship page
+        # showing an athlete with no paddle is the one crop this set cannot
+        # afford, and the column's aspect is narrow enough that the full height
+        # still fits without stretching.
+        ("JLA_5883.jpg", 0.88, False, 0.50, 0.50, 1.00),  # paddle down, set for the dink
+        ("JLA_5905.jpg", 0.70, True,  0.50, 0.44, 0.54),  # mid-swing, ball still in the air
     ],
     # 3 — faces. /promise asks to be believed about money, and a face is the
     #     only argument that page has.

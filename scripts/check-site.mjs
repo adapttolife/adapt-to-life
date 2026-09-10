@@ -88,13 +88,16 @@ const fail = (msg) => { failed = true; console.log("FAIL " + msg); };
 // 429 body that has no such button, so the run died on an unhandled
 // TimeoutError with a stack trace instead of a readable line. A check that
 // crashes when the site pushes back tells you nothing about the site.
-const RETRY_STATUS = new Set([429, 503]);
+// NAV_ prefixed: there is a second, function-scoped RETRY_STATUS further down
+// in the share-card fetcher. Same values, different job, and two constants of
+// the same name in one file is a trap even when the scopes make it legal.
+const NAV_RETRY_STATUS = new Set([429, 503]);
 const NAV_BACKOFF = [3000, 9000, 20000];
 async function gotoPage(pg, path) {
   let res = null;
   for (let attempt = 0; ; attempt++) {
     res = await pg.goto(`${BASE}${path}?cb=${Date.now()}`, { waitUntil: "domcontentloaded" });
-    if (!res || !RETRY_STATUS.has(res.status()) || attempt >= NAV_BACKOFF.length) return res;
+    if (!res || !NAV_RETRY_STATUS.has(res.status()) || attempt >= NAV_BACKOFF.length) return res;
     console.log(`  ${path} returned ${res.status()}; waiting ${NAV_BACKOFF[attempt] / 1000}s`);
     await new Promise((r) => setTimeout(r, NAV_BACKOFF[attempt]));
   }

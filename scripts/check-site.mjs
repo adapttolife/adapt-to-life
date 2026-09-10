@@ -35,22 +35,14 @@ import { ROLES } from "../data/volunteer-roles.mjs";
 
 const BASE = process.argv[2] || "https://adapt-to-life-staging.alec-af3.workers.dev";
 const IS_STAGING = BASE.includes("staging");
-// The volunteer role pages are all generated from one template by
-// scripts/build-volunteer.mjs, so this samples the first and last rather than
-// loading all twenty-seven: what differs between them is prose and one apply
-// href, and test/volunteer_pages.test.js checks every page's structure, share
-// card and apply link statically. The sample is DERIVED from the data so it
-// follows a slug rename instead of going stale.
-//
-// /volunteer itself was missing from this list for a day after it shipped, which
-// is exactly the failure mode of a hand-maintained page list: the sweep silently
-// stops covering the newest thing on the site.
-const ROLE_SAMPLE = [ROLES[0], ROLES[ROLES.length - 1]].map((r) => `/volunteer/${r.slug}`);
+// Every role page is part of a whole-site copy release. Exercise all of them,
+// not only template samples, so long role-specific wording cannot slip through.
+const ROLE_PAGES = ROLES.map((r) => `/volunteer/${r.slug}`);
 const PAGES = [
   "/", "/about", "/adaptive-sports-near-me", "/apply", "/contact", "/donate",
   "/hustle-and-heart", "/karen", "/popcorn", "/promise", "/roadmap", "/send-6",
   "/sponsorship", "/subscribe", "/tim", "/volunteer", "/waiver",
-  ...ROLE_SAMPLE,
+  ...ROLE_PAGES,
 ];
 
 // Site-wide and benign: the off-screen honeypot every form carries, and

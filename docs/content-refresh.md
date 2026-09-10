@@ -1,57 +1,111 @@
-# Content refresh: the existing staging workflow
+# ATL content refresh: working review
 
-## One source, one review environment
+## One source and one preview
 
-- Production source is `main`. Start content work from its latest fetched commit.
-- This review branch is `content/atl-story-2026-09`, based on `8fb2c1e76cfbc10114eae2d978d85bb13ea45df9`.
-- Use the existing `adapt-to-life-staging` Worker and `env.staging`. No parallel Worker, hostname, or deployment configuration.
-- Stable review URL: `https://adapt-to-life-staging.alec-af3.workers.dev/`.
-- This is link-accessible website staging, not a private document host. Publish website copy only; no internal audit, private notes, source correspondence or personal data.
-- `/review` on staging redirects to the draft homepage section. Retired design tours, admin applications, report viewers and production APIs are unavailable here.
+Production source is `main`. This session's branch is `content/atl-story-2026-09`, based on main `8fb2c1e76cfbc10114eae2d978d85bb13ea45df9`. The draft PR targets main; nothing authorizes merge or production deployment.
 
-## Build and deploy
+The one review site remains https://adapt-to-life-staging.alec-af3.workers.dev/ on the standard `env.staging`. There is no second staging stack.
 
-```sh
+## Full draft, not a homepage sample
+
+The content pass covers the homepage, all main and footer destinations, every volunteer role, shared navigation/footer, page descriptions, relevant form help, client-generated campaign text, and the fund/popcorn social previews. Direct quotes are retained. The existing photographs, crops, shared visual styles, and layout system remain the baseline.
+
+The persistent content-staging banner and its page-bottom padding are removed at Alec's request. Do not replace them with another persistent alert. Forms and payments remain disabled. The unsigned release's legal agreement is unchanged; only shared navigation/footer wording is aligned.
+
+The editorial standard is `docs/CONTENT.md`: one participation story, not two barriers/two program pillars. Equipment, training, and travel stays in that order. Individual pages own useful detail instead of repeating it everywhere.
+
+### Page inventory
+
+These entries describe completed draft scope, not production approval or financial certification.
+
+| Page | Draft scope |
+| --- | --- |
+| `/` | Content, navigation/footer, metadata |
+| `/about` | Content, navigation/footer, metadata |
+| `/adaptive-sports-near-me` | Content, navigation/footer, metadata |
+| `/apply` | Content, navigation/footer, metadata |
+| `/contact` | Content, navigation/footer, metadata |
+| `/donate` | Content, navigation/footer, metadata |
+| `/hustle-and-heart` | Content, navigation/footer, metadata |
+| `/karen` | Content, navigation/footer, metadata |
+| `/promise` | Content, navigation/footer, metadata |
+| `/roadmap` | Content, navigation/footer, metadata |
+| `/sponsorship` | Content, navigation/footer, metadata |
+| `/subscribe` | Content, navigation/footer, metadata |
+| `/tim` | Content, navigation/footer, metadata |
+| `/volunteer` | Content, navigation/footer, metadata |
+| `/send-6` | Content, navigation/footer, metadata |
+| `/popcorn` | Content, navigation/footer, metadata |
+| `/volunteer/grant-writer` | Role-specific copy and regenerated shared template |
+| `/volunteer/fundraising-lead` | Role-specific copy and regenerated shared template |
+| `/volunteer/sponsorship-and-partnership-lead` | Role-specific copy and regenerated shared template |
+| `/volunteer/corporate-matching-champion` | Role-specific copy and regenerated shared template |
+| `/volunteer/planned-and-major-giving-advisor` | Role-specific copy and regenerated shared template |
+| `/volunteer/cpa-or-tax-preparer` | Role-specific copy and regenerated shared template |
+| `/volunteer/bookkeeper` | Role-specific copy and regenerated shared template |
+| `/volunteer/nonprofit-attorney` | Role-specific copy and regenerated shared template |
+| `/volunteer/trademark-counsel` | Role-specific copy and regenerated shared template |
+| `/volunteer/insurance-and-risk` | Role-specific copy and regenerated shared template |
+| `/volunteer/grant-reviewer` | Role-specific copy and regenerated shared template |
+| `/volunteer/social-media-manager` | Role-specific copy and regenerated shared template |
+| `/volunteer/writer-or-editor` | Role-specific copy and regenerated shared template |
+| `/volunteer/photographer-or-videographer` | Role-specific copy and regenerated shared template |
+| `/volunteer/graphic-designer` | Role-specific copy and regenerated shared template |
+| `/volunteer/press-and-media` | Role-specific copy and regenerated shared template |
+| `/volunteer/accessibility-reviewer` | Role-specific copy and regenerated shared template |
+| `/volunteer/adaptive-sports-coach` | Role-specific copy and regenerated shared template |
+| `/volunteer/event-crew` | Role-specific copy and regenerated shared template |
+| `/volunteer/equipment-technician` | Role-specific copy and regenerated shared template |
+| `/volunteer/athlete-mentor` | Role-specific copy and regenerated shared template |
+| `/volunteer/program-scout` | Role-specific copy and regenerated shared template |
+| `/volunteer/clinical-referral-partner` | Role-specific copy and regenerated shared template |
+| `/volunteer/make-an-introduction` | Role-specific copy and regenerated shared template |
+| `/volunteer/host-something` | Role-specific copy and regenerated shared template |
+| `/volunteer/board-and-advisory` | Role-specific copy and regenerated shared template |
+| `/waiver` | Shared navigation/footer only; legal agreement preserved |
+
+## Decisions that must not be invented by a copy pass
+
+Before any production release, confirm:
+
+- **Gift allocation and fees.** The draft replaces broad 100%/0% headlines with specific grant-payment and program-support explanations. It does not establish a new accounting, processor-fee, overhead, or shop-transfer policy. Confirm the final promise wording and current operating facts with the responsible decision-maker.
+- **Restricted campaign gifts.** The existing `/promise` clause about a funded or cancelled campaign is retained, not silently rewritten. Its treatment of donor restrictions needs appropriate review before publication. Do not invent a new refund or reassignment policy here.
+- **Legal and operational facts.** The donor legal name, legal release name, tax statement, registrations, and current grant/program claims require source-backed confirmation. The IRS letter stays available. Renaming the footer link to Photo and media release is a label correction, not a rewrite of the agreement.
+- **Sponsorship commitments.** Prices and existing benefit tiers remain the baseline. Added consent/scope qualifications and removal of unsupported dollar-to-outcome equivalences need review as part of the final offer. The draft is not authority to grant naming rights or commit the organization.
+
+The Send 6 target remains $21,000 for six athletes, or $3,500 per athlete. It is labelled as a target, not an exact trip price. The unexplained line-item total is not filled with an invented expense. The popcorn page links to the campaign rather than maintaining its own budget.
+
+## Review isolation
+
+`src/staging.js` is the existing staging entrypoint and has only ASSETS and STAGING. It has no production database, email binding, secrets, schedules, production routes, or operational handler imports. It refuses every non-GET/HEAD request before asset handling. All paths run through it.
+
+Payment scripts/preloads and frames are removed; form controls and outbound actions are disabled, including links added by client JavaScript. Same-site navigation stays in staging. CSP forbids offsite connections, frames, and form submission. None of this changes production form behavior.
+
+Fundraising and unsigned-release snapshots in `public/data/staging-*.json` preserve real public source responses and capture timestamps. They are review data, not live balances, reconciled finances, or a second policy source. They contain no signed document or private applicant records.
+
+This is link-accessible website staging, not a private document host. Search exclusions are not authentication. Do not put internal audits, private notes, personal information, or credentials in public assets. Cloudflare Access application creation remains separately permission-blocked. Version preview URLs are off, leaving one stable review ingress.
+
+## Build, verify, and revise
+
+Use the repository's existing commands:
+
+```text
 npm ci
+npm run volunteer
 npm run build:app
-npm run css
-npm run asnm
+node scripts/build-css.mjs
+node scripts/build-asnm.mjs
 npm test
-# Commit and push the reviewed branch, then:
 npm run deploy:staging
 npm run check
 ```
 
-The normal build hook handles generated assets and the commit/content stamp. Use the existing deployment script so `ATL_TARGET=staging` is explicit. Never bypass the production branch guard to deploy content work.
+For social headline changes, run the existing named-card generator and wire its output. Make the new card URL versioned. Use the repository-pinned Playwright and Wrangler; a provisioned browser can be selected through `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` without a machine-specific import path.
 
-`npm run check` uses the repository's pinned Playwright dependency. Install its browser normally, or supply `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` for an already provisioned Chromium. Do not hardcode workstation paths or install symlinks into another user's home.
+The standing browser check now covers every role, not just a template sample. After the final deploy, check exact build/commit identity, phone and desktop layout, menu behavior, links, forms, share cards, and staging write refusal. Recheck production's build and active version; they must remain unchanged. Keep source committed, pushed, and recoverable in the same branch/PR.
 
-## Review safety
+Do not promote until Alec approves the content and the policy/evidence questions are resolved. Revert unwanted draft changes on this branch and redeploy staging; never roll back production to undo a draft.
 
-`env.staging.main` selects `src/staging.js`; production retains `src/index.js`. Staging has only static ASSETS and its STAGING marker. Every request crosses that entrypoint. It rejects writes before any asset handling and cannot call the operational backend.
+## Tooling limits retained
 
-Payment widgets, frames and external submission scripts are removed at response time; form controls and outbound links are disabled. Same-site links stay in staging, and the signing hostname becomes the local release-copy preview. CSP forbids offsite fetches, frames and form submissions. This does not change any production forms.
-
-Fundraising figures are a real dated snapshot from the public production API, stored at `public/data/staging-raised.json`, not a fake total or a live integration. The unsigned release document is likewise preserved verbatim from the public document endpoint in `public/data/staging-waiver.json`, so its words can be reviewed without any signing or record-download capability. Both snapshots record their source and capture time. Refresh deliberately for review; they are not a second policy source or financial reconciliation.
-
-Search exclusion is `robots.txt` plus response-level `X-Robots-Tag`. It is not authentication. Version preview URLs are disabled so there is one stable review ingress.
-
-## Editorial state
-
-FIRST DRAFT: the homepage participation section replaces the initiative panels with one short narrative and useful next steps. Unused panel CSS and the obsolete homepage directory-count writer are removed rather than left to drift.
-
-UNCHANGED BASELINE: the hero imagery, photo assets, visual system, all other homepage sections and all other website pages. Existing promises and eligibility statements on those pages have not been approved anew merely by appearing in staging.
-
-The editorial sequence is homepage direction, mission/fund/directory/trust pages together, practical conversion pages, human stories, then shared navigation/footer/forms/metadata and every volunteer role. AdaptiveSportsNearMe and Adapt Body Shop are later coordinated site updates, not part of this deployment.
-
-Before calling the whole-site revision finished, check each page and its dependencies. Do not treat a homepage sample as completion of the site refresh. No merge to main or production deployment is implied by staging approval.
-
-## Verification and rollback
-
-Check the deployed build stamp against the exact source commit and digest. Read back Cloudflare bindings, routes and scheduled triggers. Exercise nav and page links at phone and desktop widths, look at real screenshots, and verify writes are refused on staging. Confirm the live production build and active version are unchanged by the staging release.
-
-Preserve every reviewed revision as a normal commit. Subsequent changes revise this branch and environment rather than starting a new stack. To undo an unapproved content change, revert its commit on the content branch and redeploy staging; do not alter main or roll back production.
-
-The CLI is pinned to Wrangler 4.130.0, the version exercised for this staging release, so `npx` cannot silently select a different version on the next deploy. Playwright is pinned to patched 1.55.1 rather than the vulnerable 1.55.0 local tooling version.
-
-`npm audit` reports five dependency entries: inherited fflate and nanoid advisories, plus the development-only sharp → miniflare → wrangler chain. The suggested Wrangler downgrade is not applied. None of those modules is imported by the isolated staging Worker. These advisories remain open; passing application tests is not a dependency security clearance.
+Wrangler 4.130.0 and patched Playwright 1.55.1 are pinned. npm audit reports inherited fflate/nanoid advisories and the development-only sharp → miniflare → wrangler chain. These are recorded, not silently declared fixed; the isolated deployed staging module does not import them. Test success is not a dependency security clearance.

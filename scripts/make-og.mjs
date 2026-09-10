@@ -23,12 +23,11 @@
 //   node scripts/make-og.mjs                 # render every card in CARDS
 //   node scripts/make-og.mjs home popcorn    # render named cards only
 //   node scripts/make-og.mjs --out ~/scratch/stingel/og-candidate  # candidates
-import { chromium } from "/home/agentos/pw/node_modules/playwright/index.mjs";
+import { chromium } from "playwright";
 import { readFileSync, writeFileSync, mkdirSync, mkdtempSync, rmSync, statSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { homedir } from "node:os";
 import { ROLES } from "../data/volunteer-roles.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -125,11 +124,11 @@ const CARDS = {
     out: "public/images/og/send-6-v3-athlete.jpg", page: "send-6.html",
     headline: "Send 6 to the <em>US Open</em> Spring 2027." },
   popcorn: { ...ATHLETE, photo: "chair-drive", size: 62, measure: "16ch",
-    out: "public/images/og/popcorn-v3-athlete.jpg", page: "popcorn.html",
-    headline: "Half of every bag <em>puts an athlete in the game</em>." },
+    out: "public/images/og/popcorn-v4-content.jpg", page: "popcorn.html",
+    headline: "Popcorn that helps <em>athletes play</em>." },
   "hustle-and-heart": { ...ATHLETE, photo: "paddle-portrait", size: 70, measure: "14ch",
-    out: "public/images/og/hustle-and-heart-v3-athlete.jpg", page: "hustle-and-heart.html",
-    headline: "Every dollar goes to <em>an athlete</em>." },
+    out: "public/images/og/hustle-and-heart-v4-content.jpg", page: "hustle-and-heart.html",
+    headline: "Keep your game <em>going</em>." },
   volunteer: { ...ATHLETE, photo: "cap-profile",
     out: "public/images/og/volunteer-v3-athlete.jpg", page: "volunteer.html",
     headline: "Your place on <em>this team</em>." },
@@ -193,7 +192,7 @@ const CANDIDATES = {
   "a-volunteer":    { out: "a-volunteer.jpg",    variant: "athlete", photo: "paddle-portrait",
     headline: "Your place on <em>this team</em>.", size: 76, measure: "13ch" },
   "a-hustle":       { out: "a-hustle.jpg",       variant: "athlete", photo: "court-swing",
-    headline: "Every dollar goes to <em>an athlete</em>.", size: 70, measure: "14ch" },
+    headline: "Keep your game <em>going</em>.", size: 70, measure: "14ch" },
 
   "b-paper": { out: "b-paper.jpg", variant: "light", headline: LINE, size: 96, measure: "13ch" },
   "c-split": { ...SPLIT, out: "c-split.jpg" },
@@ -240,7 +239,7 @@ function sourceScale({ box, src, zoom }) {
   return (renderedH * DSF) / src.h;
 }
 
-const browser = await chromium.launch();
+const browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined });
 const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 2 });
 await page.goto(`file://${join(ROOT, "src/og/card.html")}`);
 await page.waitForFunction(() => document.fonts.ready.then(() => true));
@@ -327,7 +326,7 @@ for (const name of todo) {
   mkdirSync(dirname(out), { recursive: true });
   // Render at 2x (2400x1260) and supersample down to 1200x630: serif type at
   // 90px has thin strokes that alias badly when rasterised once at 1x.
-  const scratchRoot = join(homedir(), "scratch", "stingel");
+  const scratchRoot = join(ROOT, "node_modules", ".cache", "atl-og-render");
   mkdirSync(scratchRoot, { recursive: true });
   const scratch = mkdtempSync(join(scratchRoot, "atl-og-render-"));
   const tmp = join(scratch, `og-2x-${name}.png`);

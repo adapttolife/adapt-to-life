@@ -69,7 +69,7 @@ const block = `<!-- asnm:stats -->
   <section class="band dark dir-stats">
     <div class="wrap">
       <span class="eyebrow orange reveal">In the directory right now</span>
-      <p class="dir-count reveal"><b>${n(stats.programs)}</b> programs, <b>${n(stats.byState.length)}</b> states, <b>${n(stats.sources)}</b> sources. Free to search, no account.</p>
+      <p class="dir-count reveal"><b>${n(stats.programs)}</b> programs, <b>${n(stats.byState.filter(s => s.state !== "DC").length)}</b> states${stats.byState.some(s => s.state === "DC") ? " + D.C." : ""}, <b>${n(stats.sources)}</b> sources. Free to search, no account.</p>
 
       <a class="dir-shot reveal" href="${SITE}" target="_blank" rel="noopener">
         <picture>

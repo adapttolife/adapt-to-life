@@ -1,6 +1,5 @@
 {
-  "_comment": "Spec 115 — the campaign layer's single source. A CAMPAIGN is what we are raising for and who it reaches; it gets a page. A DRIVE is a dated way we raise it; it feeds exactly one campaign and is a row on that campaign's page until it earns its own page (as popcorn did). Adding a drive is appending one object here. Set published:false to keep a verified record on file without publishing it. Dates are ISO (YYYY-MM-DD) and read as LOCAL dates. raised stays null until a number is real.",
-
+  "_comment": "Spec 115 \u2014 the campaign layer's single source. A CAMPAIGN is what we are raising for and who it reaches; it gets a page. A DRIVE is a dated way we raise it; it feeds exactly one campaign and is a row on that campaign's page until it earns its own page (as popcorn did). Adding a drive is appending one object here. Set published:false to keep a verified record on file without publishing it. Dates are ISO (YYYY-MM-DD) and read as LOCAL dates. raised stays null until a number is real.",
   "campaigns": [
     {
       "slug": "send-6-us-open",
@@ -9,7 +8,7 @@
       "published": true,
       "beneficiary": "Six adaptive pickleball athletes",
       "when": "Spring 2027, Naples, Florida",
-      "blurb": "Six adaptive athletes at the US Open in Naples, with nothing out of pocket. About $3,500 covers one athlete's equipment, training, and travel.",
+      "blurb": "Help six adaptive pickleball athletes prepare for the US Open in Naples. Our $21,000 target supports equipment, training, and travel.",
       "goal": 21000,
       "raised": null,
       "raised_source": "api",
@@ -17,7 +16,6 @@
       "cta_url": "/send-6"
     }
   ],
-
   "drives": [
     {
       "slug": "popcorn-2026-08",
@@ -27,8 +25,8 @@
       "campaign": "send-6-us-open",
       "published": true,
       "page": "/popcorn",
-      "supports": "Every bag moves us toward Send 6 to the US Open Spring 2027: six adaptive athletes on the court in Naples with nothing out of pocket.",
-      "summary": "Small batch popcorn, shipped to your door. Half of every order comes back to the fund.",
+      "supports": "The August popcorn drive supports Send 6 to the US Open Spring 2027: equipment, training, and travel for six adaptive pickleball athletes.",
+      "summary": "Double Good handles orders and shipping. The fund receives 50% of popcorn sales toward the campaign.",
       "opens": "2026-08-06",
       "closes": "2026-08-13",
       "time_note": "",

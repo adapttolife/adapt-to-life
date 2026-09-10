@@ -119,7 +119,7 @@ ${roles.map(card).join("\n")}
 
   return head({
     title: "Volunteer | Adapt To Life",
-    desc: "Adapt To Life is building a team. Grant writers, accountants, coaches, storytellers, equipment techs, and people who can open a door. Every role says what it costs you.",
+    desc: "Help more people take part in adaptive sports. Explore volunteer roles, time commitments, and ways to contribute your skills.",
     canonical: `${SITE}/volunteer`,
     page: "volunteer.html",
     card: "/images/og/volunteer-v3-athlete.jpg",
@@ -132,7 +132,7 @@ ${roles.map(card).join("\n")}
     <div class="wrap">
       <span class="eyebrow orange reveal">Volunteer</span>
       <h1 class="serif display reveal">Your place on <em class="italic" style="color:var(--orange)">this team</em>.</h1>
-      <p class="lead sub reveal">We are early, and we need people more than hours. Open any role to see what you would own and what it costs you. Applying takes a name and an email.</p>
+      <p class="lead sub reveal">Good days of sport take work around them. Bring a skill, some time, or a useful introduction. Explore a role to see the work and what it asks of you.</p>
       <div class="actions reveal">
         <a href="#roles" class="btn">See what we need <span class="arrow">&rarr;</span></a>
       </div>
@@ -158,8 +158,8 @@ ${lanes}
   <section class="band tint">
     <div class="wrap reading center">
       <span class="eyebrow orange reveal">Not on the list</span>
-      <h2 class="serif h3 reveal" style="margin-top:0.7rem;">We wrote down what we know we need.</h2>
-      <p class="prose reveal" style="margin-top:1rem;">Not the same as everything we need, so tell us below if you have something we did not think to ask for. And if none of it is you, somebody still has to pay for the chair. <a class="textlink" href="/donate">See the ways to give <span class="arrow">&rarr;</span></a></p>
+      <h2 class="serif h3 reveal" style="margin-top:0.7rem;">Have something else to offer?</h2>
+      <p class="prose reveal" style="margin-top:1rem;">Tell us below if you have a skill or idea not listed here. Giving is another way to support the work. <a class="textlink" href="/donate">See the ways to give <span class="arrow">&rarr;</span></a></p>
     </div>
   </section>
 
@@ -188,7 +188,7 @@ ${lanes}
     <div class="wrap">
       <div class="reveal sec-head">
         <span class="eyebrow orange">Nothing fit</span>
-        <h2 class="serif h2" style="margin-top:0.8rem;">Then tell us in your own words.</h2>
+        <h2 class="serif h2" style="margin-top:0.8rem;">Tell us what you have in mind.</h2>
         <p class="lane-blurb">If a role above is you, open it and apply there. This form is for everything else.</p>
       </div>
 
@@ -346,7 +346,7 @@ ${sec("Not this", "          " + ul(r.isNot, "jd-no"))}
           <span class="gl-k">You would work with</span>
           <span class="gl-v">${esc(r.withWhom)}</span>
           <a href="#apply" class="btn jd-side-btn">Apply for this role</a>
-          <p class="gl-foot">A name and an email.</p>
+          <p class="gl-foot">Start a conversation.</p>
         </div>
       </aside>
     </div>

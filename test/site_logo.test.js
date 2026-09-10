@@ -87,25 +87,56 @@ test("favicon assets use the cache-safe Option 2 monogram", async () => {
 
 test("social cards use the Option 2 monogram on cache-busting URLs", async () => {
   const generator = await readFile(join(ROOT, "scripts", "make-og.mjs"), "utf8");
-  const writer = await readFile(join(ROOT, "scripts", "wire-og.mjs"), "utf8");
   assert.ok(generator.includes('brand/atl-logo-v2-option2-ui.svg'), "OG generator should use the Option 2 derivative");
   assert.ok(!generator.includes('public/images/atl-logo.svg'), "OG generator must not use the legacy source");
-  // THE VERSION TOKEN IS SUPPOSED TO MOVE. It went v2-option2 -> v3-athlete on
-  // 2026-09-09 when the cards became photographs, and it will move again the
-  // next time the design does, because assets carry a 30-day cache header and a
-  // redesign served at the old URL keeps showing the old picture to everything
-  // that already scraped it. Pinning the literal string meant this assertion
-  // failed for precisely the change it exists to protect.
+
+  // THE VERSION TOKEN IS SUPPOSED TO MOVE, and so is the SHAPE of the code that
+  // emits it. v2-option2 -> v3-athlete moved every card at once (2026-09-09);
+  // home-v4-color moved exactly one (2026-09-10), which is why wire-og.mjs now
+  // carries a per-card override map instead of a single template literal.
   //
-  // So test the invariant instead, and it is a STRONGER one than the original:
-  // the writer must version at all, and the writer and the generator must agree
-  // on the same token. A mismatch there ships pages pointing at cards that were
-  // never rendered — a real, silent, 404-in-the-preview bug that the literal
-  // assertion could not have caught.
-  const writerSuffix = writer.match(/\$\{name\}-([a-z0-9-]+)\.jpg/)?.[1];
-  assert.ok(writerSuffix, "OG writer should version its image URLs");
-  assert.ok(generator.includes(`-${writerSuffix}.jpg`),
-    `OG generator and writer must agree on the card version (writer has ${writerSuffix})`);
+  // Two earlier versions of this assertion read the WRITER'S SOURCE, and both
+  // broke on the change they existed to protect: first a pinned literal string,
+  // then `${name}-<token>.jpg`, which stopped matching the moment that template
+  // gained a ternary. A test that reads source SHAPE fails whenever the source
+  // is refactored — it is measuring the wrong thing, and a red test nobody can
+  // action is a test that gets ignored, which is how the real bug would ship.
+  //
+  // So assert against the ARTIFACT: the tags actually written into the pages.
+  // Shape-independent — any writer that produces correct pages passes — and
+  // strictly stronger than what it replaces, because it catches an unversioned
+  // URL, a URL whose card was never rendered, and og/twitter disagreement, none
+  // of which a source regex can see.
+  const VERSIONED = /^https:\/\/adapttolife\.org\/images\/og\/[a-z0-9-]+-v\d+-[a-z0-9-]+\.jpg$/;
+  const rendered = new Set(await readdir(join(PUBLIC, "images", "og")));
+  let carded = 0;
+
+  for (const name of (await readdir(PUBLIC)).filter((n) => n.endsWith(".html"))) {
+    const html = await readFile(join(PUBLIC, name), "utf8");
+    const og = html.match(/<meta property="og:image" content="([^"]*)">/)?.[1];
+    if (!og) continue;
+    carded++;
+
+    assert.match(og, VERSIONED, `${name}: og:image must be a versioned card URL, got ${og}`);
+    assert.ok(rendered.has(og.split("/").pop()),
+      `${name}: og:image points at ${og.split("/").pop()}, which was never rendered into public/images/og/ — run make-og.mjs before wire-og.mjs`);
+
+    // waiver.html carries og tags but no twitter block on purpose; wire-og.mjs
+    // treats that half as optional, so this is conditional rather than required.
+    const tw = html.match(/<meta name="twitter:image" content="([^"]*)">/)?.[1];
+    if (tw !== undefined) assert.equal(tw, og, `${name}: twitter:image must be the same card as og:image`);
+
+    // /images/og-image.jpg is still regenerated for third parties that already
+    // point at it (Givebutter, signatures), but no PAGE may reference it: an
+    // unversioned path serves the old picture to every thread that scraped it.
+    assert.ok(!html.includes("/images/og-image.jpg"),
+      `${name} must not reference the unversioned legacy card`);
+  }
+
+  // A floor, not a count: it trips if the writer silently stops running or the
+  // meta block is dropped from the page template, which would otherwise pass
+  // every assertion above by simply having nothing to assert on.
+  assert.ok(carded >= 20, `expected the site to carry cards, only ${carded} pages have og:image`);
 
   const legacyHashes = new Map([
     ["images/atl-logo.svg", "421057c39131ad5431f255733d00af1a289844cfdb151e8ed0b8917ae069d4b2"],

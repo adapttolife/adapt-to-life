@@ -284,7 +284,9 @@ if (missing.status !== 404) fail(`unknown path returned ${missing.status}, expec
       // og:image must be absolute: crawlers do not resolve relative paths
       if (!/^https:\/\//.test(src)) { fail(`${path} og:image is not absolute: ${src}`); continue; }
       const asset = new URL(src).pathname;
-      const r = await get(`${BASE}${asset}?cb=${Date.now()}`);
+      // Fetch exactly what a share crawler receives. Rebasing onto BASE hid
+      // staging tags that pointed to new cards absent from production.
+      const r = await get(src);
       if (!r.ok) { fail(`og:image ${asset} returned ${r.status}`); seen.set(src, false); continue; }
       const bytes = (await r.arrayBuffer()).byteLength;
       if (bytes > OG_BUDGET)

@@ -61,6 +61,17 @@ export default {
     if (!(asset.headers.get('Content-Type') || '').includes('text/html') || request.method === 'HEAD') return response;
     return new HTMLRewriter()
       .on('body', { element(el) { el.append(CHROME, { html: true }); } })
+      // A new share card may exist only in this draft. Its declared URL must
+      // work for a real crawler, without borrowing the production asset map.
+      .on('meta[property="og:image"], meta[name="twitter:image"], meta[property="og:url"]', { element(el) {
+        const value = el.getAttribute('content') || '';
+        if (!/^https?:\/\//.test(value)) return;
+        const target = new URL(value);
+        if (['adapttolife.org', 'www.adapttolife.org'].includes(target.hostname)) {
+          target.protocol = url.protocol; target.host = url.host;
+          el.setAttribute('content', target.href);
+        }
+      } })
       .on('link[href]', { element(el) {
         const rel = el.getAttribute('rel') || '';
         const href = el.getAttribute('href') || '';

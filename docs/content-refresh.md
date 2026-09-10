@@ -81,6 +81,8 @@ The Send 6 target remains $21,000 for six athletes, or $3,500 per athlete. It is
 
 Payment scripts/preloads and frames are removed; form controls and outbound actions are disabled, including links added by client JavaScript. Same-site navigation stays in staging. CSP forbids offsite connections, frames, and form submission. None of this changes production form behavior.
 
+Staging rewrites own-site social image and page metadata URLs to its actual origin so draft-only cards resolve for real crawlers. Production template URLs remain unchanged. The standing checker fetches the exact declared image URL; it must not silently rebase a broken URL onto the test host.
+
 Fundraising and unsigned-release snapshots in `public/data/staging-*.json` preserve real public source responses and capture timestamps. They are review data, not live balances, reconciled finances, or a second policy source. They contain no signed document or private applicant records.
 
 This is link-accessible website staging, not a private document host. Search exclusions are not authentication. Do not put internal audits, private notes, personal information, or credentials in public assets. Cloudflare Access application creation remains separately permission-blocked. Version preview URLs are off, leaving one stable review ingress.

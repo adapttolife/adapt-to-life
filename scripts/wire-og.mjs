@@ -32,7 +32,7 @@ const PER_PAGE = {
 // and then who is actually pictured, briefly. An organisation built around
 // disabled athletes does not ship an unlabelled — or a mislabelled — image.
 const ALT = {
-  _default: "Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in a headband holds his paddle and looks up from the court.",
+  _default: "Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.",
   donate: "Put an athlete in the game. Adapt To Life. A wheelchair pickleball player swings, the ball in the air beside her.",
   "send-6": "Send 6 to the US Open Spring 2027. Adapt To Life. A wheelchair pickleball player drives across an indoor court.",
   popcorn: "Half of every bag puts an athlete in the game. Adapt To Life. A wheelchair pickleball player drives across an indoor court.",
@@ -44,10 +44,16 @@ const ALT = {
 // /images/og-image.jpg is left in place, still regenerated, for anything outside
 // this repo that already points at it (Givebutter, signatures) — but no page
 // references it, so a redesign is never served from a stale third-party cache.
-const url = (card) => {
-  const name = card === "_default" ? "home" : card;
-  return `${BASE}/images/og/${name}-v3-athlete.jpg`;
+// THE SUFFIX IS PER CARD, NOT PER SITE. The -v3-athlete rename moved every card
+// at once; the colour home card (2026-09-10) moved one. Both moves exist for the
+// same reason — a card that changes picture at an old URL keeps serving the old
+// picture to every thread that already scraped it — so the version lives beside
+// the card it belongs to and the next single-card change costs one line here.
+const FILE = {
+  _default: "home-v4-color.jpg",
 };
+const fileFor = (card) => FILE[card] ?? `${card === "_default" ? "home" : card}-v3-athlete.jpg`;
+const url = (card) => `${BASE}/images/og/${fileFor(card)}`;
 
 function setMeta(html, selector, attr, value) {
   // one tag, replaced in place; the tag must already exist (every page has both)
@@ -75,8 +81,7 @@ for (const file of readdirSync(PUB).filter((f) => f.endsWith(".html")).sort()) {
   const alt = ALT[card];
 
   // the card file must exist before a page is allowed to point at it
-  const name = card === "_default" ? "home" : card;
-  const local = join(PUB, "images/og", `${name}-v3-athlete.jpg`);
+  const local = join(PUB, "images/og", fileFor(card));
   if (!existsSync(local)) throw new Error(`${file}: card missing at ${local} (run make-og.mjs first)`);
 
   const before = html;

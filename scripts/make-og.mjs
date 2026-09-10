@@ -76,6 +76,11 @@ const PHOTOS = {
   // gentler scale with the window pulled UP rather than a tighter one centred.
   "court-swing":     { file: "assets/photos/court-swing.jpg",     pos: "36% 16%", zoom: "auto 158%" },
   "cap-profile":     { file: "assets/photos/cap-profile.jpg",     pos: "18% 40%", zoom: "auto 165%" },
+  // The one frame that stays in colour (see .card.athlete.color in card.html).
+  // Chosen by Alec off the live card, 2026-09-10. He sits well right of centre
+  // and side-on, so the type side stays empty wall at every zoom that keeps him
+  // legible, and a gentler 138% is enough because he is already large in frame.
+  "paddle-raise":    { file: "assets/photos/paddle-raise.jpg",    pos: "58% 40%", zoom: "auto 138%" },
 
   // Brand artwork, not a photograph: the mark rendered as an object. Both files
   // arrived with a Gemini sparkle in the corner and are cropped to exclude it.
@@ -107,8 +112,11 @@ const CARDS = {
   // the old picture to every platform and thread that already scraped it — the
   // most-shared link would be the last one to update. Same rule the v2 cards
   // followed; -v3-athlete is theirs.
-  home: { ...ATHLETE, photo: "paddle-portrait",
-    out: "public/images/og/home-v3-athlete.jpg", page: "index.html",
+  // The home card alone runs the colour treatment, on its own -v4 path for the
+  // same cache reason the -v3 rename was made: a card that changes picture at
+  // an old URL keeps serving the old picture to every thread that scraped it.
+  home: { ...ATHLETE, variant: "athlete color", photo: "paddle-raise",
+    out: "public/images/og/home-v4-color.jpg", page: "index.html",
     headline: "Your place in <em>adaptive sports</em>." },
   donate: { ...ATHLETE, photo: "court-swing",
     out: "public/images/og/donate-v3-athlete.jpg", page: "donate.html",

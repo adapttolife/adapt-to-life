@@ -153,6 +153,27 @@
     radial-gradient(ellipse 54% 82% at 88% 52%, rgba(255,92,57,0.17) 0%, transparent 64%); }
   .card.athlete .grain{ opacity:0.16; }
 
+  /* ---- athlete + colour: the one card that keeps its colour ----------------
+     Alec, 2026-09-10, looking at the home card in a chat thread: "If anything,
+     I don't want to use black and white. I want to use this picture instead."
+
+     This is the exception to the monochrome rule stated above, and it is scoped
+     to the card it was asked for rather than swapped in for every card, because
+     the wall the card opens onto is still black and white: a colour card is a
+     deliberate step out of the grade, not a new house style. Adding `color` to
+     the variant is how a card opts in.
+
+     No grayscale, and a lighter lift than the mono grade needs: brightness that
+     high on a colour frame washes the skin and the court out to paper. Saturate
+     slightly instead, because the scrim and the grain both mute what is under
+     them and the frame has one real colour note in it (the green spokes). */
+  .card.athlete.color .photo{ filter:brightness(1.12) contrast(1.05) saturate(1.08); }
+  /* Warmth already comes off the photograph, so the orange wash that keeps a
+     grey frame from reading as dead weight is dialled back here — left at full
+     strength it lands as an orange cast across the athlete's shoulder. */
+  .card.athlete.color .atmos{ background:
+    radial-gradient(ellipse 54% 82% at 88% 52%, rgba(255,92,57,0.09) 0%, transparent 64%); }
+
   /* ---- split variant: a panel of type beside an untouched photograph ----
      The 1.91:1 crop decapitates most action shots, and a full-bleed scrim
      turns the water to grey mud. A panel keeps the type on solid colour and

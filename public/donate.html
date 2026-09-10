@@ -13,16 +13,16 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="Donate | Adapt To Life">
 <meta property="og:description" content="Your gift covers the equipment, travel, and training that keep adaptive athletes in the game. One hundred percent reaches the athlete.">
-<meta property="og:image" content="https://adapttolife.org/images/og/donate-v2-option2.jpg">
+<meta property="og:image" content="https://adapttolife.org/images/og/donate-v3-athlete.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Put an athlete in the game. Adapt To Life.">
+<meta property="og:image:alt" content="Put an athlete in the game. Adapt To Life. A wheelchair pickleball player swings, the ball in the air beside her.">
 <meta property="og:url" content="https://adapttolife.org/donate">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Donate | Adapt To Life">
 <meta name="twitter:description" content="Your gift covers the equipment, travel, and training that keep adaptive athletes in the game.">
-<meta name="twitter:image" content="https://adapttolife.org/images/og/donate-v2-option2.jpg">
-<meta name="twitter:image:alt" content="Put an athlete in the game. Adapt To Life.">
+<meta name="twitter:image" content="https://adapttolife.org/images/og/donate-v3-athlete.jpg">
+<meta name="twitter:image:alt" content="Put an athlete in the game. Adapt To Life. A wheelchair pickleball player swings, the ball in the air beside her.">
 <link rel="preconnect" href="https://widgets.givebutter.com" crossorigin>
 <link rel="preconnect" href="https://givebuttercdn.com" crossorigin>
 <link rel="preconnect" href="https://givebutter.com">
@@ -38,19 +38,45 @@
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
 <link rel="stylesheet" href="/css/page-header.css">
-<!-- band:vars --><style>:root{--pg-band-wide:url('/images/hero/panels/pg-band-wide.dc08206a.webp');--pg-band-tall:url('/images/hero/panels/pg-band-tall.6cc30378.webp');}</style>
+<!-- band:vars --><style data-band-vars>:root{--pg-band-wide:url('/images/hero/panels/pg-band-3-wide.3f0c6f24.webp');--pg-band-tall:url('/images/hero/panels/pg-band-3-tall.f37597ee.webp');--pg-give-wide:url('/images/hero/panels/pg-give-wide.b46beed5.webp');--pg-give-tall:url('/images/hero/panels/pg-give-tall.5cece3a5.webp');}</style>
 <link rel="stylesheet" href="/css/roll-band.css">
 <script src="/js/attribution.js" defer></script>
 <style>
   /* Donate page — give panel */
   .give-hero{ padding-top:clamp(7rem,12vw,9.5rem); padding-bottom:clamp(2.6rem,7vw,5rem); }
-  .give-grid{ display:grid; grid-template-columns:1.05fr 0.95fr; gap:clamp(2rem,5vw,4rem); align-items:center; }
+  /* align-items:start, not center. Givebutter's form measures 508px, then
+     709px, then 508px again while its iframe boots — its own behaviour, not
+     something this page can prevent. With the columns centred, that 200px
+     swing dragged the whole copy column up 99px and back down, and a large
+     element moving 99px is most of a 0.269 CLS on the page where somebody is
+     entering a card. Anchored to the top, the form can breathe however it
+     likes and nothing beside it moves. */
+  .give-grid{ display:grid; grid-template-columns:1.05fr 0.95fr; gap:clamp(2rem,5vw,4rem); align-items:start; }
   @media (max-width:880px){ .give-grid{ grid-template-columns:1fr; gap:1.8rem; } }
   .give-assure{ list-style:none; padding:0; margin:1.5rem 0 0; display:flex; flex-wrap:wrap; gap:0.5rem 1.4rem; }
   .give-assure li{ font-family:'Hanken Grotesk',sans-serif; font-size:0.88rem; color:rgba(255,255,255,0.72); }
-  .give-assure .ga-k{ color:#fff; font-weight:600; }
-  .give-panel{ background:#fff; border-radius:18px; padding:clamp(1.3rem,3vw,1.9rem); box-shadow:0 24px 60px rgba(0,0,0,0.34);
-    position:relative; width:100%; min-width:min(100%,320px); max-width:600px; }
+  .give-assure .ga-k{ color:var(--cream); font-weight:600; }
+  .give-panel{ background:var(--paper); border-radius:18px; padding:clamp(1.3rem,3vw,1.9rem); box-shadow:0 24px 60px rgba(0,0,0,0.34);
+    position:relative; width:100%; min-width:min(100%,320px); max-width:600px;
+    /* RESERVE THE HEIGHT. Givebutter renders its form into this box after its
+       iframe boots, and until then the box was only as tall as its padding —
+       so everything below it jumped when the form arrived. Measured CLS 0.249
+       on desktop, which fails Core Web Vitals outright (0.1) and is the kind
+       of thing a donor feels as the page moving under their thumb.
+       The form settles at 593px on desktop and 618px on mobile; 600 covers
+       both closely enough that any residual shift is a few pixels, and
+       min-height means a taller form still grows rather than clipping. */
+    min-height:600px; }
+  @media (min-width:881px){
+    /* 700 on desktop, not 600. Givebutter's form briefly renders ~100px taller
+       than it settles at while its iframe boots — measured as the hero
+       oscillating 720 -> 820 -> 753px at about 1.5s, which is CLS 0.247 and a
+       clear Core Web Vitals failure on the page where somebody is entering a
+       card. Reserving the tall state absorbs the whole sequence. The form
+       centres in the box, so the spare space reads as padding rather than as a
+       gap under the button. */
+    .give-panel{ min-height:600px; }
+  }
   @media (min-width:881px){ .give-panel{ justify-self:end; } }
   /* In-flow placeholder only. Givebutter hides the real form until its iframe
      boots; this keeps the white box from reading as empty. Not a fake checkout. */
@@ -163,7 +189,7 @@ fill="currentColor" stroke="none">
 <main>
 
   <!-- HERO + GIVE PANEL -->
-  <section class="hero dark give-hero pg-band">
+  <section class="hero dark give-hero pg-band pg-head--give">
     <div class="wrap">
       <div class="give-grid">
         <div class="give-intro">
@@ -193,12 +219,12 @@ fill="currentColor" stroke="none">
   </section>
 
   <!-- CAMPAIGN BAND — what the gift you just considered is going toward -->
-  <section class="band-sm">
+  <section class="band-sm tint">
     <div class="wrap"><div id="donateBand" class="camp-pending"></div></div>
   </section>
 
   <!-- IMPACT -->
-  <section class="band tint">
+  <section class="band">
     <div class="wrap">
       <div class="reveal sec-head">
         <span class="eyebrow orange">Your impact</span>
@@ -251,7 +277,7 @@ fill="currentColor" stroke="none">
     <!-- FOR ADVISORS — merged from /ways-to-give, which redirects here. A donor
        whose gift comes through a broker, a DAF or a will needs these five
        facts, and they existed on a page nobody landed on. -->
-  <section class="band-sm tint" id="details">
+  <section class="band-sm" id="details">
     <div class="wrap">
       <div class="sec-head">
         <span class="eyebrow reveal">For your advisor, broker, or attorney</span>
@@ -278,11 +304,28 @@ fill="currentColor" stroke="none">
       <h2 class="serif display reveal">Finish your gift.</h2>
     </div>
 
+    <div class="rb-stage">
     <div class="rb-track" aria-hidden="true">
       <div class="rb-run">
         <img data-src="/images/hero/panels/roll-strip.ce463201.webp" width="1568" height="430" alt="" decoding="async">
         <img data-src="/images/hero/panels/roll-strip.ce463201.webp" width="1568" height="430" alt="" decoding="async">
+        <img data-src="/images/hero/panels/roll-strip.ce463201.webp" width="1568" height="430" alt="" decoding="async">
+        <img data-src="/images/hero/panels/roll-strip.ce463201.webp" width="1568" height="430" alt="" decoding="async">
+        <img data-src="/images/hero/panels/roll-strip.ce463201.webp" width="1568" height="430" alt="" decoding="async">
+        <img data-src="/images/hero/panels/roll-strip.ce463201.webp" width="1568" height="430" alt="" decoding="async">
       </div>
+    </div>
+    <!-- Sibling of .rb-track inside .rb-stage, never a CHILD of the track:
+         that track is aria-hidden="true" because the strip is decoration, and a
+         control inside it would be invisible to exactly the assistive
+         technology WCAG 2.2.2 exists for. The .rb-stage wrapper exists so the
+         button can sit ON the strip it controls rather than at the foot of the
+         whole section, which is where it landed when .roll-band was the
+         positioning context. -->
+    <button type="button" class="rb-pause" data-rb-pause aria-label="Pause the moving photo strip">
+      <svg class="rb-i-pause" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="6.5" y="5" width="4" height="14" rx="1.2"/><rect x="13.5" y="5" width="4" height="14" rx="1.2"/></svg>
+      <svg class="rb-i-play" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.2l11.2 6.8L8 18.8z"/></svg>
+    </button>
     </div>
     <div class="rb-glow"></div>
     <script>
@@ -296,6 +339,19 @@ fill="currentColor" stroke="none">
          not, does not. */
       (function () {
         var t = document.currentScript.closest('.roll-band');
+        var band = t;
+        var btn = band.querySelector('[data-rb-pause]');
+        if (btn) {
+          btn.addEventListener('click', function () {
+            var paused = band.classList.toggle('is-paused');
+            /* The accessible NAME changes, not aria-pressed. For a play/pause
+               the name is what a screen reader announces on focus, and
+               "Play the moving photo strip" says what the button will DO —
+               which is the thing a listener needs before activating it. */
+            btn.setAttribute('aria-label',
+              (paused ? 'Play' : 'Pause') + ' the moving photo strip');
+          });
+        }
         var imgs = t.querySelectorAll('img[data-src]');
         var load = function () {
           imgs.forEach(function (i) { i.src = i.dataset.src; i.removeAttribute('data-src'); });
@@ -311,7 +367,13 @@ fill="currentColor" stroke="none">
     <div class="wrap center rb-copy rb-bottom">
       <p class="lead sub reveal">It takes about a minute, and it covers an athlete's real costs: equipment, travel, and training.</p>
       <div class="actions reveal">
-        <a href="#givePanel" class="btn">Donate</a>
+        <!-- NOT "Donate". Alec, 2026-09-09: "It feels weird putting a donate
+             button here." He is right, and the reason is that this button is on
+             the donate page — it was asking somebody to do the thing they are
+             already doing, and naming the page rather than the next step. It
+             does not leave the page either; it returns to the form. So it says
+             what actually happens when you press it. -->
+        <a href="#givePanel" class="btn">Choose an amount</a>
       </div>
     </div>
   </section>
@@ -385,6 +447,10 @@ fill="currentColor" stroke="none">
       </div>
     </div>
     <div class="footer-bottom">
+      <div class="social">
+        <a href="https://www.instagram.com/adapt_to_life_org/" aria-label="Adapt To Life on Instagram" target="_blank" rel="me noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16M12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63c-.79.3-1.46.72-2.13 1.38C1.35 2.68.93 3.35.63 4.14.33 4.9.13 5.78.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.3.79.72 1.46 1.38 2.13.67.66 1.34 1.08 2.13 1.38.76.3 1.64.5 2.91.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56.79-.3 1.46-.72 2.13-1.38.66-.67 1.08-1.34 1.38-2.13.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91-.3-.79-.72-1.46-1.38-2.13C21.32 1.35 20.65.93 19.86.63c-.76-.3-1.64-.5-2.91-.56C15.67.01 15.26 0 12 0z"/><path d="M12 5.84A6.16 6.16 0 1 0 18.16 12 6.16 6.16 0 0 0 12 5.84zm0 10.16A4 4 0 1 1 16 12a4 4 0 0 1-4 4z"/><circle cx="18.41" cy="5.59" r="1.44"/></svg></a>
+        <a href="https://www.facebook.com/profile.php?id=61592619668321" aria-label="Adapt To Life on Facebook" target="_blank" rel="me noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.96h-1.51c-1.49 0-1.96.93-1.96 1.89v2.26h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z"/></svg></a>
+      </div>
       <span>&copy; 2026 Adapt To Life</span>
     </div>
   </div>

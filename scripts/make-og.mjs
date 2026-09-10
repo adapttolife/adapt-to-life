@@ -55,6 +55,33 @@ const PHOTOS = {
   // organisation's logo was legible on it, and a partner's branding does not
   // belong on our card (the same call as the popcorn vendor's bag).
   pickle:   { file: "assets/photos/pickleball-court.jpg",    pos: "27% 58%" },
+  // ---- the wall, at card size (added 2026-09-09) -------------------------
+  // The same 45MP frames the homepage wall is built from, so a share card and
+  // the page it opens are visibly the same shoot. `pos` is VERTICAL-ONLY here
+  // and that is arithmetic, not preference: these masters are 1.5:1 going into
+  // a 1.905:1 card, so `cover` scales by WIDTH and the full width is always
+  // shown. There is ~170px of vertical slack to place a head in and no
+  // horizontal slack at all — which is why every frame chosen has its subject
+  // naturally right of centre, clear of the type. A left-sitting subject cannot
+  // be slid out of the way.
+  // `zoom` is what makes a small subject usable. At plain `cover` these frames
+  // are wide gym shots and the athlete is a speck at 300px. auto-N% scales past
+  // cover, which enlarges the subject AND opens horizontal slack so `pos` can
+  // place a face clear of the type. The resolution gate has room to spare: even
+  // 220% uses about half the master's height, so none of this upscales.
+  "paddle-portrait": { file: "assets/photos/paddle-portrait.jpg", pos: "44% 36%", zoom: "auto 150%" },
+  "chair-drive":     { file: "assets/photos/chair-drive.jpg",     pos: "62% 34%", zoom: "auto 145%" },
+  // 190% took her head off. She is framed full-body mid-swing, so the zoom that
+  // makes her big enough is also the zoom that crops her, and the answer is a
+  // gentler scale with the window pulled UP rather than a tighter one centred.
+  "court-swing":     { file: "assets/photos/court-swing.jpg",     pos: "36% 16%", zoom: "auto 158%" },
+  "cap-profile":     { file: "assets/photos/cap-profile.jpg",     pos: "18% 40%", zoom: "auto 165%" },
+  // The one frame that stays in colour (see .card.athlete.color in card.html).
+  // Chosen by Alec off the live card, 2026-09-10. He sits well right of centre
+  // and side-on, so the type side stays empty wall at every zoom that keeps him
+  // legible, and a gentler 138% is enough because he is already large in frame.
+  "paddle-raise":    { file: "assets/photos/paddle-raise.jpg",    pos: "58% 40%", zoom: "auto 138%" },
+
   // Brand artwork, not a photograph: the mark rendered as an object. Both files
   // arrived with a Gemini sparkle in the corner and are cropped to exclude it.
   black:    { file: "assets/art/mark-black.jpg",             pos: "50% 42%" },
@@ -76,26 +103,35 @@ const PHOTOS = {
 // Only the pages people actually send to each other get their own card. Every
 // other page falls back to the default, which is now worth falling back to.
 const MONO = { variant: "mono", size: 74, measure: "13ch" };
+// The photo-led default. See the .athlete block in src/og/card.html for why this
+// replaced MONO as the house style on 2026-09-09.
+const ATHLETE = { variant: "athlete", size: 76, measure: "13ch" };
 const CARDS = {
-  // the default: adapttolife.org/ and any page without its own card
-  // On its own path, NOT the historical /images/og-image.jpg. Assets ship with
-  // a 30-day cache header, so reusing that URL means every platform and thread
-  // that already scraped the June card keeps serving it. A new design needs a
-  // new URL or the most-shared link is the last one to update.
-  home: { ...MONO, out: "public/images/og/home-v2-option2.jpg", page: "index.html",
+  // NEW FILENAMES, NOT NEW CONTENT AT THE OLD PATHS. Assets ship with a 30-day
+  // cache header, so a card that changes design at the same URL keeps serving
+  // the old picture to every platform and thread that already scraped it — the
+  // most-shared link would be the last one to update. Same rule the v2 cards
+  // followed; -v3-athlete is theirs.
+  // The home card alone runs the colour treatment, on its own -v4 path for the
+  // same cache reason the -v3 rename was made: a card that changes picture at
+  // an old URL keeps serving the old picture to every thread that scraped it.
+  home: { ...ATHLETE, variant: "athlete color", photo: "paddle-raise",
+    out: "public/images/og/home-v4-color.jpg", page: "index.html",
     headline: "Your place in <em>adaptive sports</em>." },
-  donate: { ...MONO, out: "public/images/og/donate-v2-option2.jpg", page: "donate.html",
+  donate: { ...ATHLETE, photo: "court-swing",
+    out: "public/images/og/donate-v3-athlete.jpg", page: "donate.html",
     headline: "Put an athlete <em>in the game</em>." },
-  "send-6": { ...MONO, out: "public/images/og/send-6-v2-option2.jpg", page: "send-6.html",
+  "send-6": { ...ATHLETE, photo: "chair-drive", size: 66, measure: "15ch",
+    out: "public/images/og/send-6-v3-athlete.jpg", page: "send-6.html",
     headline: "Send 6 to the <em>US Open</em> Spring 2027." },
-  popcorn: { ...MONO, out: "public/images/og/popcorn-v2-option2.jpg", page: "popcorn.html",
-    headline: "Half of every bag <em>puts an athlete in the game</em>.",
-    size: 64, measure: "16ch" },
-  "hustle-and-heart": { ...MONO, out: "public/images/og/hustle-and-heart-v2-option2.jpg",
-    page: "hustle-and-heart.html",
-    headline: "Every dollar goes to <em>an athlete</em>.", measure: "14ch" },
-    volunteer: { ...MONO, out: "public/images/og/volunteer-v2-option2.jpg",
-    page: "volunteer.html",
+  popcorn: { ...ATHLETE, photo: "chair-drive", size: 62, measure: "16ch",
+    out: "public/images/og/popcorn-v3-athlete.jpg", page: "popcorn.html",
+    headline: "Half of every bag <em>puts an athlete in the game</em>." },
+  "hustle-and-heart": { ...ATHLETE, photo: "paddle-portrait", size: 70, measure: "14ch",
+    out: "public/images/og/hustle-and-heart-v3-athlete.jpg", page: "hustle-and-heart.html",
+    headline: "Every dollar goes to <em>an athlete</em>." },
+  volunteer: { ...ATHLETE, photo: "cap-profile",
+    out: "public/images/og/volunteer-v3-athlete.jpg", page: "volunteer.html",
     headline: "Your place on <em>this team</em>." },
 };
 
@@ -116,8 +152,13 @@ for (const r of ROLES) {
     ? `${words.slice(0, -1).join(" ")} <em>${words[words.length - 1]}</em>`
     : `<em>${r.name}</em>`;
   CARDS[`role-${r.slug}`] = {
-    ...MONO, size: 68, measure: "16ch",
-    out: `public/images/og/role-${r.slug}-v2-option2.jpg`,
+    // The roles are children of /volunteer, so they carry /volunteer's athlete.
+    // One shared frame across 27 cards is right here in a way it was NOT right
+    // across the six editorial cards: those are six different propositions and
+    // needed to look different in a feed; these are one proposition with 27
+    // job titles, and the title is the thing that has to change.
+    ...ATHLETE, size: 68, measure: "16ch", photo: "cap-profile",
+    out: `public/images/og/role-${r.slug}-v3-athlete.jpg`,
     page: `volunteer/${r.slug}.html`,
     headline: accented,
   };
@@ -138,6 +179,22 @@ const CANDIDATES = {
     headline: "Put an athlete <em>in the game</em>.", size: 76, measure: "13ch" },
   "m4-home-fire":    { out: "m4-home-fire.jpg", variant: "mono", photo: "fire",
     headline: "Your place in <em>adaptive sports</em>.", size: 76, measure: "13ch" },
+  // ---- athlete set, 2026-09-09 -------------------------------------------
+  "a-home-paddle":  { out: "a-home-paddle.jpg",  variant: "athlete", photo: "paddle-portrait",
+    headline: "Your place in <em>adaptive sports</em>.", size: 76, measure: "13ch" },
+  "a-home-cap":     { out: "a-home-cap.jpg",     variant: "athlete", photo: "cap-profile",
+    headline: "Your place in <em>adaptive sports</em>.", size: 76, measure: "13ch" },
+  "a-donate-swing": { out: "a-donate-swing.jpg", variant: "athlete", photo: "court-swing",
+    headline: "Put an athlete <em>in the game</em>.", size: 76, measure: "13ch" },
+  "a-donate-drive": { out: "a-donate-drive.jpg", variant: "athlete", photo: "chair-drive",
+    headline: "Put an athlete <em>in the game</em>.", size: 76, measure: "13ch" },
+  "a-send6-drive":  { out: "a-send6-drive.jpg",  variant: "athlete", photo: "chair-drive",
+    headline: "Send 6 to the <em>US Open</em> Spring 2027.", size: 66, measure: "15ch" },
+  "a-volunteer":    { out: "a-volunteer.jpg",    variant: "athlete", photo: "paddle-portrait",
+    headline: "Your place on <em>this team</em>.", size: 76, measure: "13ch" },
+  "a-hustle":       { out: "a-hustle.jpg",       variant: "athlete", photo: "court-swing",
+    headline: "Every dollar goes to <em>an athlete</em>.", size: 70, measure: "14ch" },
+
   "b-paper": { out: "b-paper.jpg", variant: "light", headline: LINE, size: 96, measure: "13ch" },
   "c-split": { ...SPLIT, out: "c-split.jpg" },
   "d-split-light": { ...SPLIT, out: "d-split-light.jpg", variant: "split light" },

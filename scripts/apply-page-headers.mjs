@@ -21,7 +21,8 @@
 //   · the homepage, which has the mosaic.
 import { readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { PAGE_HEADER_SHEET as SHEET, PAGE_HEADER_CLASS as BAND,
-         PAGE_HEADER_VARS as VARS, PAGE_PHOTOS, photoVars } from "./lib/page-header.mjs";
+         bandVars, bandOf, PAGE_PHOTOS, photoVars,
+         TIER_CLASS } from "./lib/page-header.mjs";
 
 const ROOT = new URL("../public/", import.meta.url);
 
@@ -61,9 +62,15 @@ for (const file of readdirSync(ROOT).filter((f) => f.endsWith(".html"))) {
   }
 
   const photo = PAGE_PHOTOS[file];
+  // The tier class is rewritten every run, so moving a page between tiers is
+  // one edit in PAGE_TIERS rather than a hunt through the HTML. hero-atmos goes
+  // with it: it existed only to make two pages' headlines bigger, which is what
+  // the tier type scale does now, and leaving it in would have it fight the
+  // tier for the same property.
   const classes = ["hero", "dark",
-    ...modifiers.filter((c) => c !== BAND && c !== "pg-photo"),
-    BAND, ...(photo ? ["pg-photo"] : [])];
+    ...modifiers.filter((c) => c !== BAND && c !== "pg-photo"
+                            && c !== "hero-atmos" && !c.startsWith("pg-head--")),
+    BAND, TIER_CLASS(file), ...(photo ? ["pg-photo"] : [])];
   html = html.replace(open[0], `<section class="${classes.join(" ")}">`);
   // the sheet, then the hashed band URLs. The vars block is marked so a
   // rebuild replaces it instead of stacking a second one.
@@ -71,12 +78,44 @@ for (const file of readdirSync(ROOT).filter((f) => f.endsWith(".html"))) {
     html = html.replace('<link rel="stylesheet" href="/css/site.css">',
                         `<link rel="stylesheet" href="/css/site.css">\n${SHEET}`);
   }
-  const VARS_RE = /\n<!-- band:vars -->[\s\S]*?<\/style>/;
-  const block = `\n<!-- band:vars -->${VARS}${photo ? photoVars(photo) : ""}`;
+  // MUST swallow EVERY style element after the marker, not the first one.
+  // This block is two <style> elements on a photo page — the band vars, then
+  // the page's own --pg-photo — and the old non-greedy `[\s\S]*?</style>`
+  // stopped at the first `</style>`. So every run replaced the band vars and
+  // APPENDED a second photo block. /apply had accumulated 23 of them.
+  //
+  // It was invisible for as long as the hash never changed: 23 declarations of
+  // the same URL behave exactly like one. The moment the photo was re-cropped
+  // and its content hash moved, the LAST declaration won, still pointed at the
+  // old file, and that file no longer existed — a black header, from a bug that
+  // had been latent through every previous run.
+  // ...but "every consecutive <style>" was the wrong way to say that, because
+  // `\s*` happily crosses a newline into a stylesheet this script does not own.
+  // On adaptive-sports-near-me.html the marker is followed by the page's OWN
+  // ~140-line <style>, and the only thing that stopped this from deleting it on
+  // every `npm run photos` was an unrelated <script> tag sitting between the
+  // two. Safe by accident of tag ordering is not safe: move that script, or add
+  // a page whose stylesheet follows the marker directly, and the CSS goes.
+  //
+  // So the match is structural now — data-band-vars marks the elements this
+  // script emits, and nothing else can be swallowed however it is spaced.
+  //
+  // The second alternative is the MIGRATION path, and it is deliberately the
+  // stricter of the two. Pages already on disk carry the old bare <style>, and
+  // a regex that only knew the new form would fail to match them, fall through
+  // to the append branch below, and lay a SECOND block down beside the first —
+  // reintroducing the duplicate-declaration bug this greediness exists to kill.
+  // It matches the legacy form only with NO whitespace before it, which is
+  // exactly how the emitter concatenates: `-->` then `<style>` then the next
+  // `<style>`, never a separator. A page's own stylesheet is always on its own
+  // line, so it can never satisfy that. The alternative can be deleted once no
+  // page has a bare <style> after the marker.
+  const VARS_RE = /\n<!-- band:vars -->(?:\s*<style data-band-vars>[\s\S]*?<\/style>|<style>[\s\S]*?<\/style>)+/;
+  const block = `\n<!-- band:vars -->${bandVars(file)}${photo ? photoVars(photo) : ""}`;
   html = VARS_RE.test(html) ? html.replace(VARS_RE, block)
                             : html.replace(SHEET, `${SHEET}${block}`);
   writeFileSync(url, html);
   changed += 1;
-  console.log(`${file.padEnd(30)} banded`);
+  console.log(`${file.padEnd(30)} banded  (band ${bandOf(file)})`);
 }
 console.log(`\n${changed} page header(s) written. Next: npm run stamp`);

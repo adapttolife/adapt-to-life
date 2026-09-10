@@ -1,4 +1,10 @@
 {
+ "bench": {
+  "h": 560,
+  "role": "back",
+  "src": "JLA_5967.jpg",
+  "w": 420
+ },
  "big-brian": {
   "h": 1069,
   "role": "big",
@@ -8,7 +14,7 @@
  "big-fill": {
   "h": 680,
   "role": "big",
-  "src": "JLA_6122.jpg",
+  "src": "JLA_6119.jpg",
   "w": 1700
  },
  "big-forehand": {
@@ -101,6 +107,18 @@
   "src": "JLA_5922.jpg",
   "w": 615
  },
+ "drive": {
+  "h": 347,
+  "role": "mid",
+  "src": "JLA_5953.jpg",
+  "w": 520
+ },
+ "fence": {
+  "h": 373,
+  "role": "back",
+  "src": "JLA_6236.jpg",
+  "w": 560
+ },
  "forehand": {
   "h": 547,
   "role": "front",
@@ -112,6 +130,12 @@
   "role": "mid",
   "src": "JLA_6073.jpg",
   "w": 390
+ },
+ "lanyard": {
+  "h": 400,
+  "role": "mid",
+  "src": "JLA_6091.jpg",
+  "w": 300
  },
  "laugh": {
   "h": 520,
@@ -126,16 +150,16 @@
   "w": 420
  },
  "net": {
-  "h": 347,
-  "role": "mid",
+  "h": 547,
+  "role": "front",
   "src": "JLA_6084.jpg",
-  "w": 520
+  "w": 820
  },
- "pair": {
-  "h": 520,
-  "role": "mid",
-  "src": "JLA_6127.jpg",
-  "w": 390
+ "paddle": {
+  "h": 560,
+  "role": "back",
+  "src": "JLA_6131.jpg",
+  "w": 420
  },
  "pg-brian": {
   "h": 738,
@@ -185,6 +209,12 @@
   "src": "JLA_6077.jpg",
   "w": 310
  },
+ "profile": {
+  "h": 420,
+  "role": "front",
+  "src": "JLA_5989.jpg",
+  "w": 315
+ },
  "rally": {
   "h": 373,
   "role": "back",
@@ -227,16 +257,16 @@
   "src": "JLA_6066.jpg",
   "w": 390
  },
- "two-up": {
-  "h": 560,
-  "role": "back",
-  "src": "JLA_6122.jpg",
-  "w": 420
- },
- "whitecap": {
+ "toss": {
   "h": 520,
   "role": "mid",
-  "src": "JLA_6077.jpg",
+  "src": "JLA_6146.jpg",
   "w": 390
+ },
+ "whitecap": {
+  "h": 820,
+  "role": "mid",
+  "src": "JLA_6077.jpg",
+  "w": 615
  }
 }

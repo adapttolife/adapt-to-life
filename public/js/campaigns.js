@@ -166,6 +166,19 @@
   /* Calls back with the shaped data, or null if the file is unreachable or
      unparseable. Callers must render something honest either way: an empty
      hub is a real state, a broken page is not. */
+  /* ONE FETCH PER PAGE, NOT ONE PER CALLER. The header comment above already
+     says "one data file, three consumers" — and until 2026-09-09 that meant
+     three identical network requests for the same JSON. Measured on the live
+     homepage: /data/campaigns.json appeared three times in a 42-request load,
+     which is also what pushed the page over its own 40-request ratchet.
+
+     The promise is cached rather than the value, so callers that arrive while
+     the first request is still in flight join it instead of starting their own
+     — caching the result would have deduped only the callers that ran late.
+     A failure is cached as null too: three consumers should not retry a
+     missing file three times, and every caller already has to render something
+     honest when the data is unreachable. */
+  var pending = null;
   function load(cb) {
     var settled = false;
     function finish(v) {
@@ -174,16 +187,19 @@
       try { cb(v); } catch (err) { console.error("campaign render failed:", err); }
     }
     if (typeof fetch !== "function") return finish(null);
-    fetch(SRC, { credentials: "omit" })
-      .then(function (r) {
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        return r.json();
-      })
-      .then(function (raw) { finish(shape(raw)); })
-      .catch(function (err) {
-        console.error("campaigns.json unavailable:", err);
-        finish(null);
-      });
+    if (!pending) {
+      pending = fetch(SRC, { credentials: "omit" })
+        .then(function (r) {
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          return r.json();
+        })
+        .then(function (raw) { return shape(raw); })
+        .catch(function (err) {
+          console.error("campaigns.json unavailable:", err);
+          return null;
+        });
+    }
+    pending.then(finish);
   }
 
   /* The site thermometer. Falls back to the campaign's own goal and hides the
@@ -212,12 +228,15 @@
     var lifted = (opts || {}).lifted;
 
     load(function (store) {
-      // Release the reserved height the moment we know the answer, whether or
-      // not there is anything to show. Holding it open on an empty band would
-      // trade a jump for a permanent hole.
-      host.classList.remove("camp-pending");
+      // Release the reserved height only ONCE THE CONTENT IS IN, not on
+       // arrival of the data. Removing it first collapsed the box to nothing
+       // for the frame between the class going and the markup landing, so the
+       // page shifted DOWN and then back UP — measured on /donate as a section
+       // going 67px -> 0 -> 67 at about 1.5s, and CLS 0.247 on the page where
+       // somebody is entering a card. The reservation exists precisely to
+       // cover this gap; releasing it early gave the jump back.
       var c = store && store.campaigns[0];
-      if (!c) return;
+      if (!c) { host.classList.remove("camp-pending"); return; }
 
       var a = el("a", "camp-band" + (lifted ? " lifted" : ""));
       a.href = c.page || "/send-6";
@@ -245,6 +264,7 @@
       card.appendChild(side);
       a.appendChild(card);
       host.appendChild(a);
+      host.classList.remove("camp-pending");
 
       // The live figure lands last. If Givebutter is unreachable the goal
       // stands on its own rather than publishing a $0 we cannot vouch for.
@@ -288,8 +308,9 @@
     }
 
     load(function (store) {
-      host.classList.remove("camp-pending");
-      if (!store) return hideSection();
+      // Same ordering rule as above: the reservation comes off after the band
+      // is populated (or the section is hidden), never before.
+      if (!store) { host.classList.remove("camp-pending"); return hideSection(); }
 
       var done = store.drives
         .filter(function (d) {
@@ -334,6 +355,7 @@
       card.appendChild(fig);
       a.appendChild(card);
       host.appendChild(a);
+      host.classList.remove("camp-pending");
     });
   }
 

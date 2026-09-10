@@ -17,13 +17,13 @@
 
   .ix-badge{ display:inline-flex; align-items:center; gap:0.5rem;
     font-family:'Space Mono',monospace; font-size:0.68rem; letter-spacing:0.14em;
-    text-transform:uppercase; color:#fff; background:var(--orange-ink);
+    text-transform:uppercase; color:var(--cream); background:var(--orange-ink);
     border-radius:999px; padding:0.4rem 0.9rem; }
   .ix h1{ font-family:'Hanken Grotesk',sans-serif; font-weight:700;
     font-size:clamp(2.1rem,6.5vw,3.2rem); line-height:1.0; letter-spacing:-0.035em;
-    margin:1.1rem 0 0.9rem; color:#fff; }
+    margin:1.1rem 0 0.9rem; color:var(--cream); }
   .ix .lede{ font-size:1.06rem; line-height:1.6; color:#CFC9BD; max-width:62ch; }
-  .ix .lede strong{ color:#fff; }
+  .ix .lede strong{ color:var(--cream); }
   .ix .stamp{ font-family:'Space Mono',monospace; font-size:0.72rem; color:#7d7870; margin-top:1rem; }
 
   .grp{ margin-top:clamp(2.6rem,6vw,3.6rem); padding-top:clamp(1.6rem,4vw,2.2rem);
@@ -33,16 +33,16 @@
     text-transform:uppercase; color:var(--orange); }
   .grp h2{ font-family:'Hanken Grotesk',sans-serif; font-weight:700;
     font-size:clamp(1.35rem,3.6vw,1.8rem); letter-spacing:-0.02em; margin:0.5rem 0 0.6rem;
-    color:#fff; }
+    color:var(--cream); }
   .grp p{ color:#B9B3A8; line-height:1.62; max-width:66ch; margin-bottom:0.8rem; font-size:0.98rem; }
-  .grp p strong{ color:#fff; font-weight:600; }
-  .grp p em{ color:#fff; font-style:normal; background:rgba(255,92,57,0.14); padding:0 0.25em; }
+  .grp p strong{ color:var(--cream); font-weight:600; }
+  .grp p em{ color:var(--cream); font-style:normal; background:rgba(255,92,57,0.14); padding:0 0.25em; }
 
   .btns{ display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
     gap:0.7rem; margin-top:1.3rem; }
   .btns a{ display:flex; flex-direction:column; gap:0.22rem;
     background:#16161A; border:1px solid rgba(255,255,255,0.14); border-radius:13px;
-    padding:0.9rem 1rem; text-decoration:none; color:#fff;
+    padding:0.9rem 1rem; text-decoration:none; color:var(--cream);
     transition:border-color .15s, background .15s, transform .15s; }
   .btns a:hover{ border-color:var(--orange); background:#1D1D22; transform:translateY(-2px); }
   .btns .t{ font-weight:600; font-size:0.98rem; display:flex; align-items:center; gap:0.4rem; }
@@ -52,15 +52,15 @@
 
   .note{ margin-top:1.2rem; padding:0.95rem 1.1rem; border-left:2px solid var(--orange);
     background:rgba(255,92,57,0.07); font-size:0.92rem; color:#C9C3B8; line-height:1.6; }
-  .note strong{ color:#fff; }
+  .note strong{ color:var(--cream); }
 
   .facts{ list-style:none; padding:0; margin:1.2rem 0 0; font-size:0.94rem; }
   .facts li{ padding:0.6rem 0; border-bottom:1px solid rgba(255,255,255,0.10);
     display:flex; gap:0.7rem; align-items:baseline; color:#B9B3A8; }
   .facts li::before{ content:"\2713"; color:#5BD08A; font-weight:700; flex:0 0 auto; }
-  .facts b{ color:#fff; font-weight:600; }
+  .facts b{ color:var(--cream); font-weight:600; }
   code{ font-family:'Space Mono',monospace; font-size:0.85em;
-    background:rgba(255,255,255,0.09); padding:0.12em 0.4em; border-radius:4px; color:#fff; }
+    background:rgba(255,255,255,0.09); padding:0.12em 0.4em; border-radius:4px; color:var(--cream); }
 </style>
 </head>
 <body>
@@ -72,14 +72,16 @@
   <!-- check-site.mjs greps this line for `updated YYYY-MM-DD` and fails the
        build if it is older than the last change under public/. The date is the
        machine-readable half; keep both. -->
-  <p class="stamp">updated 2026-09-08 &middot; branch <code>hero-lineup-2026-09</code></p>
+  <p class="stamp">updated 2026-09-10 &middot; branch <code>hero-lineup-2026-09</code></p>
 
   <!-- 1 ------------------------------------------------------------------- -->
   <div class="grp">
     <span class="grp-n">01 &middot; The decision</span>
     <h2>The homepage header</h2>
     <p>The header used to be a sentence on an empty black field with the right half doing nothing. It is now <strong>nineteen photographs of your athletes</strong>, three planes deep, with the words in the corner. <strong>There are no buttons in it</strong> &mdash; feel first, then the ask &mdash; because Donate moved into the nav at every width.</p>
-    <p><em>Open it on a phone as well as a laptop.</em> They are two different layouts of the same photographs: a wall on desktop, the two-column grid you picked on mobile. Same files either way, so a phone downloads nothing extra.</p>
+    <p><em>Open it on a phone as well as a laptop.</em> They are two different layouts of the same photographs: a wall of twenty-two on desktop, and on mobile <strong>four</strong> &mdash; whole, big, nothing cropped.</p>
+    <p>The phone went twelve cells &rarr; six &rarr; four over three rounds, and each cut was the same lesson: twelve cells meant each was 195&times;130 and the lower eight were dimmed depth frames, so the bottom half read as mush. Then at six, the headline slab still covered the top 41% of the middle row &mdash; and measuring the head position in every panel we own, the highest sits at 0.35. <strong>No portrait in the library survives that cut</strong>, because good portraits put the head in the upper third. So the headline got a band of its own instead of floating over a row. Four photographs, all whole.</p>
+    <p>It made the phone lighter without anyone optimising anything: it fetches <strong>4 panels and 152KB</strong> where desktop fetches 22 and 276KB. The cells it does not show are never requested.</p>
     <div class="btns">
       <a class="hero" href="/"><span class="t">The homepage</span><span class="d">The mosaic. Try it on both a phone and a laptop.</span></a>
     </div>
@@ -88,7 +90,8 @@
   <!-- 2 ------------------------------------------------------------------- -->
   <div class="grp">
     <span class="grp-n">02 &middot; Rolled across the site</span>
-    <h2>Eleven interior pages</h2>
+    <h2>Eleven interior pages &mdash; now on a height rule</h2>
+    <p><strong>Header heights are now chosen, not inherited.</strong> They used to be whatever the copy needed plus fixed padding, which measured 553px to 1072px across the site &mdash; a 1.9&times; spread nobody picked. There are four tiers now: <code>lg</code> 68vh for section doors, <code>md</code> 56vh for standard pages, <code>sm</code> 44vh for forms and legal, and a dedicated tier for Donate sized around the Givebutter panel. And the band <strong>fills</strong> its header at every tier, so every page measures <strong>0% black</strong> &mdash; a taller header is now more photograph, not more empty space.</p>
     <p>Every one of these got the banner language: the same bottom-aligned columns, the same pitch black, the same orange as a floor bloom &mdash; held well back behind each page's own words. It takes variant 2's <em>language</em>, not its layout, because a page header is not five words; it is an eyebrow, a headline and a sub-line, and all of those had to stay readable.</p>
     <div class="btns">
       <a href="/about"><span class="t">About</span><span class="d">Built by the community it serves</span></a>
@@ -187,6 +190,36 @@
       <a href="/promise"><span class="t">The Promise</span><span class="d">Big two-line headline &mdash; the clearest look at ExtraBold</span></a>
       <a href="/about"><span class="t">About</span><span class="d">A long single-line headline</span></a>
       <a href="/images/og/home-v2-option2.jpg"><span class="t">A share card</span><span class="d">The OG image, re-rendered</span></a>
+    </div>
+  </div>
+
+  <!-- 7c ------------------------------------------------------------------ -->
+  <div class="grp">
+    <span class="grp-n">07c &middot; New &middot; live</span>
+    <h2>The link preview is your photograph, in colour</h2>
+    <p>You picked the frame off the card itself: the athlete in glasses turning his paddle up against the gym padding. <strong>It is the only card in colour</strong> &mdash; everything else stays in the monochrome grade, because the wall this link opens onto is still black and white and a colour card is a deliberate step out of it rather than a new rule.</p>
+    <p>It ships on a <strong>new filename</strong>, which is the whole trick with share cards: they cache for thirty days, so a card that changes picture at its old address keeps showing the old picture in every thread that already saw it. New picture, new URL, every time.</p>
+    <ul class="facts">
+      <li><b>Nineteen pages moved with it</b> &mdash; every page without a card of its own falls back to this one.</li>
+      <li><b>The alt text describes this photograph</b>, not the last one. It had been calling him a man in a headband.</li>
+      <li><b>Readable at 300px</b>, which is the size a card is actually seen at in a message.</li>
+    </ul>
+    <div class="btns">
+      <a class="hero" href="/images/og/home-v4-color.jpg"><span class="t">The new card</span><span class="d">Full size &mdash; or just text yourself adapttolife.org</span></a>
+    </div>
+  </div>
+
+  <!-- 7d ------------------------------------------------------------------ -->
+  <div class="grp">
+    <span class="grp-n">07d &middot; New &middot; live</span>
+    <h2>Google was being told our logo is a poster</h2>
+    <p>Buried in the homepage's structured data &mdash; the block that tells search engines we and our social accounts are one organisation &mdash; the <code>logo</code> field pointed at <strong>a share card</strong>: 1200&times;630, a headline across it, and two versions out of date. That is the image Google reaches for when it builds a knowledge panel. <strong>It is the mark now</strong>, on its own, rendered from the brand file at the same proportions as the app icon so it reads the same wherever it lands.</p>
+    <ul class="facts">
+      <li><b>Cream behind it, not transparent</b> &mdash; a near-black mark on a transparent background vanishes on any dark surface, and Google picks its own.</li>
+      <li><b>Eight candidate pages carried the same stale line</b> and were corrected with it, so the next person to copy one does not copy the mistake.</li>
+    </ul>
+    <div class="btns">
+      <a href="/images/brand/atl-logo-512.png"><span class="t">The logo file</span><span class="d">What search engines now get</span></a>
     </div>
   </div>
 

@@ -1,0 +1,399 @@
+{
+ "ok": true,
+ "programs": 1544,
+ "sources": 22,
+ "bySport": [
+  {
+   "label": "Multi-Sport",
+   "key": null,
+   "n": 1048
+  },
+  {
+   "label": "Wheelchair Basketball",
+   "key": "basketball",
+   "n": 230
+  },
+  {
+   "label": "Sled Hockey",
+   "key": "sledhockey",
+   "n": 47
+  },
+  {
+   "label": "Adaptive Skiing",
+   "key": "skiing",
+   "n": 30
+  },
+  {
+   "label": "Adaptive Rowing",
+   "key": null,
+   "n": 26
+  },
+  {
+   "label": "Track & Field",
+   "key": null,
+   "n": 21
+  },
+  {
+   "label": "Adaptive Sailing",
+   "key": null,
+   "n": 18
+  },
+  {
+   "label": "Wheelchair Tennis",
+   "key": "tennis",
+   "n": 13
+  },
+  {
+   "label": "Running",
+   "key": null,
+   "n": 12
+  },
+  {
+   "label": "Archery",
+   "key": null,
+   "n": 12
+  },
+  {
+   "label": "Adaptive Swimming",
+   "key": null,
+   "n": 12
+  },
+  {
+   "label": "Adaptive Cycling",
+   "key": "cycling",
+   "n": 12
+  },
+  {
+   "label": "Equestrian",
+   "key": null,
+   "n": 11
+  },
+  {
+   "label": "Wheelchair Curling",
+   "key": null,
+   "n": 10
+  },
+  {
+   "label": "Adaptive Golf",
+   "key": null,
+   "n": 7
+  },
+  {
+   "label": "Adaptive Surfing",
+   "key": null,
+   "n": 6
+  },
+  {
+   "label": "Wheelchair Rugby",
+   "key": "rugby",
+   "n": 5
+  },
+  {
+   "label": "Shooting Sports",
+   "key": null,
+   "n": 5
+  },
+  {
+   "label": "Sitting Volleyball",
+   "key": null,
+   "n": 3
+  },
+  {
+   "label": "Martial Arts",
+   "key": null,
+   "n": 3
+  },
+  {
+   "label": "Boccia",
+   "key": null,
+   "n": 3
+  },
+  {
+   "label": "Blind Sports",
+   "key": null,
+   "n": 3
+  },
+  {
+   "label": "Wheelchair Fencing",
+   "key": null,
+   "n": 2
+  },
+  {
+   "label": "Adaptive Baseball",
+   "key": "baseball",
+   "n": 2
+  },
+  {
+   "label": "Wheelchair Lacrosse",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive Water Skiing",
+   "key": "waterskiing",
+   "n": 1
+  },
+  {
+   "label": "Adaptive Climbing",
+   "key": null,
+   "n": 1
+  }
+ ],
+ "byState": [
+  {
+   "state": "CA",
+   "name": "California",
+   "n": 86
+  },
+  {
+   "state": "TX",
+   "name": "Texas",
+   "n": 69
+  },
+  {
+   "state": "CO",
+   "name": "Colorado",
+   "n": 61
+  },
+  {
+   "state": "IL",
+   "name": "Illinois",
+   "n": 46
+  },
+  {
+   "state": "NY",
+   "name": "New York",
+   "n": 42
+  },
+  {
+   "state": "FL",
+   "name": "Florida",
+   "n": 40
+  },
+  {
+   "state": "PA",
+   "name": "Pennsylvania",
+   "n": 32
+  },
+  {
+   "state": "NC",
+   "name": "North Carolina",
+   "n": 32
+  },
+  {
+   "state": "MA",
+   "name": "Massachusetts",
+   "n": 29
+  },
+  {
+   "state": "VA",
+   "name": "Virginia",
+   "n": 28
+  },
+  {
+   "state": "OH",
+   "name": "Ohio",
+   "n": 26
+  },
+  {
+   "state": "MI",
+   "name": "Michigan",
+   "n": 23
+  },
+  {
+   "state": "GA",
+   "name": "Georgia",
+   "n": 23
+  },
+  {
+   "state": "MD",
+   "name": "Maryland",
+   "n": 22
+  },
+  {
+   "state": "WI",
+   "name": "Wisconsin",
+   "n": 21
+  },
+  {
+   "state": "UT",
+   "name": "Utah",
+   "n": 20
+  },
+  {
+   "state": "WA",
+   "name": "Washington",
+   "n": 19
+  },
+  {
+   "state": "NJ",
+   "name": "New Jersey",
+   "n": 19
+  },
+  {
+   "state": "OR",
+   "name": "Oregon",
+   "n": 18
+  },
+  {
+   "state": "AZ",
+   "name": "Arizona",
+   "n": 18
+  },
+  {
+   "state": "OK",
+   "name": "Oklahoma",
+   "n": 17
+  },
+  {
+   "state": "NH",
+   "name": "New Hampshire",
+   "n": 17
+  },
+  {
+   "state": "MO",
+   "name": "Missouri",
+   "n": 17
+  },
+  {
+   "state": "ID",
+   "name": "Idaho",
+   "n": 17
+  },
+  {
+   "state": "MN",
+   "name": "Minnesota",
+   "n": 15
+  },
+  {
+   "state": "NM",
+   "name": "New Mexico",
+   "n": 14
+  },
+  {
+   "state": "AL",
+   "name": "Alabama",
+   "n": 14
+  },
+  {
+   "state": "SC",
+   "name": "South Carolina",
+   "n": 13
+  },
+  {
+   "state": "CT",
+   "name": "Connecticut",
+   "n": 13
+  },
+  {
+   "state": "VT",
+   "name": "Vermont",
+   "n": 12
+  },
+  {
+   "state": "KY",
+   "name": "Kentucky",
+   "n": 12
+  },
+  {
+   "state": "IN",
+   "name": "Indiana",
+   "n": 12
+  },
+  {
+   "state": "TN",
+   "name": "Tennessee",
+   "n": 11
+  },
+  {
+   "state": "ME",
+   "name": "Maine",
+   "n": 11
+  },
+  {
+   "state": "KS",
+   "name": "Kansas",
+   "n": 10
+  },
+  {
+   "state": "NE",
+   "name": "Nebraska",
+   "n": 9
+  },
+  {
+   "state": "MT",
+   "name": "Montana",
+   "n": 9
+  },
+  {
+   "state": "NV",
+   "name": "Nevada",
+   "n": 8
+  },
+  {
+   "state": "IA",
+   "name": "Iowa",
+   "n": 8
+  },
+  {
+   "state": "DC",
+   "name": "District of Columbia",
+   "n": 8
+  },
+  {
+   "state": "RI",
+   "name": "Rhode Island",
+   "n": 7
+  },
+  {
+   "state": "LA",
+   "name": "Louisiana",
+   "n": 7
+  },
+  {
+   "state": "MS",
+   "name": "Mississippi",
+   "n": 6
+  },
+  {
+   "state": "ND",
+   "name": "North Dakota",
+   "n": 5
+  },
+  {
+   "state": "DE",
+   "name": "Delaware",
+   "n": 5
+  },
+  {
+   "state": "AK",
+   "name": "Alaska",
+   "n": 5
+  },
+  {
+   "state": "WV",
+   "name": "West Virginia",
+   "n": 4
+  },
+  {
+   "state": "SD",
+   "name": "South Dakota",
+   "n": 4
+  },
+  {
+   "state": "AR",
+   "name": "Arkansas",
+   "n": 4
+  },
+  {
+   "state": "WY",
+   "name": "Wyoming",
+   "n": 3
+  },
+  {
+   "state": "HI",
+   "name": "Hawaii",
+   "n": 3
+  }
+ ]
+}

@@ -53,6 +53,44 @@ SIZE = {"front": 820, "mid": 520, "back": 560}
 QUALITY = {"front": 68, "mid": 52, "back": 44, "big": 68, "band": 56}
 DEPTH_DIM = {"front": 1.00, "mid": 0.62, "back": 0.40}
 
+# Per-panel brightness override, for when a frame's DEPTH is right but its
+# READING is not. Alec, 2026-09-09: "maybe brighten robby up to be more bright
+# and easier to see?" — he had just moved to the top-centre slot beside the
+# headline, which is a foreground position, and a mid-plane grade of 0.62 left
+# him murky there. This lifts the file rather than promoting him to the front
+# plane, because the front plane is four photographs by design and adding a
+# fifth would flatten the wall's depth to buy one face.
+DIM_OVERRIDE = {"whitecap": 0.92}
+
+# Per-panel size override. The BUFFER frames are 81% behind the headline on the
+# phone and sit at the very back of the wall on desktop; they are the one place
+# on this page where resolution is provably not being looked at. Sizing them
+# like every other back-plane panel put the homepage 5 KB over its own-bytes
+# budget, and the honest fix is for the new frames to pay for themselves rather
+# than for the cap to go up. A budget that always rises is not a budget.
+#
+# lanyard is here for the same reason measured rather than assumed: it paints at
+# 390 device px in the phone grid and 316 on the wall, so 520 was buying pixels
+# nothing ever resolves.
+# Photographs we may not publish. Alec, 2026-09-08: "We cannot use this image."
+# Two frames of one moment — the same two men seated by Court 6 — were on the
+# homepage wall, in the interior band on eleven pages, and behind the spectrum
+# variants. They are gone from all three.
+#
+# This list is the reason it stays that way. The builder refuses to run if any
+# of these files is present in the source folder, so the frame cannot come back
+# by someone dropping the shoot into .work/fav again and rebuilding. A consent
+# problem is not a layout preference and should not be defended by a comment.
+WITHDRAWN = {"JLA_6122.jpg", "JLA_6123.jpg", "JLA_6127.jpg"}
+
+# whitecap goes UP, not down: he joined the four-cell phone grid on 2026-09-09
+# (Alec: "robby on the top right"), where a cell is 197x309 CSS at 3x = 591x927
+# device px. At the mid-plane 520 long edge he upscaled about 1.8x there —
+# soft on the one layout where he is a quarter of the screen. 820 is the
+# front-plane size his three neighbours already use. His BRIGHTNESS stays at the
+# mid-plane 0.92 (see DIM_OVERRIDE): the desktop wall must not change.
+SIZE_OVERRIDE = {"profile": 420, "lanyard": 400, "whitecap": 820}
+
 # name, source frame, aspect (w/h), vertical anchor (0 = top, 1 = bottom),
 # horizontal anchor, ZOOM, depth role
 #
@@ -78,16 +116,67 @@ PANELS = [
     ("dink",         "JLA_5922.jpg", 3/4,  0.44, 0.50, 0.94, "front"),
     ("reach",        "JLA_5920.jpg", 3/4,  0.48, 0.50, 0.86, "mid"),
     ("swing",        "JLA_6066.jpg", 3/4,  0.42, 0.50, 0.84, "mid"),
-    ("net",          "JLA_6084.jpg", 3/2,  0.46, 0.46, 0.76, "mid"),
+    # FRONT, not mid. Alec, 2026-09-09: "I want his picture bigger, almost the
+    # same size when it was in its other place, I want it front/forward layer and
+    # cover the other pictures or slightly overlap... more prominent and well
+    # displayed." The plane has to move in the FILE, not only in the CSS: depth
+    # here is baked brightness (mid 0.62, front 1.00) plus long edge (520 vs
+    # 820). Promoting him in index.html alone would have given him a front-plane
+    # position, shadow and contrast over a 0.62-dimmed 520px file — which is
+    # precisely the murk we spent a3be703 fixing on Robby.
+    #
+    # This does make the front plane five photographs where the wall was designed
+    # around four, and I argued against exactly that for Robby a3be703. The
+    # argument still holds and Alec has now overruled it deliberately for this
+    # frame: he asked for prominence, and prominence on this wall IS the front
+    # plane. Noting it so the next person knows it was a choice, not a drift.
+    ("net",          "JLA_6084.jpg", 3/2,  0.46, 0.46, 0.76, "front"),
     ("close-dink",   "JLA_5883.jpg", 3/4,  0.42, 0.46, 0.90, "back"),
     ("serve",        "JLA_6224.jpg", 4/3,  0.48, 0.52, 0.66, "back"),
 
     # --- the room: wide frames that give the wall its depth -------------------
     ("court",        "JLA_5905.jpg", 3/2,  0.32, 0.46, 0.60, "back"),
     ("rally",        "JLA_5918.jpg", 3/2,  0.30, 0.62, 0.62, "back"),
-    ("pair",         "JLA_6127.jpg", 3/4,  0.48, 0.50, 0.80, "mid"),
-    ("two-up",       "JLA_6122.jpg", 3/4,  0.44, 0.50, 0.84, "back"),
+    ("toss",         "JLA_6146.jpg", 3/4,  0.34, 0.50, 0.72, "mid"),
+    # Replaced a withdrawn frame on 2026-09-08 (see WITHDRAWN, below).
+    ("paddle",       "JLA_6131.jpg", 3/4,  0.42, 0.50, 0.86, "back"),
     ("lobby",        "JLA_6191.jpg", 3/4,  0.46, 0.48, 0.70, "back"),
+
+    # --- BUFFERS: the two cells the headline sits on top of --------------------
+    # Alec, 2026-09-08: "accept that some pictures will get cropped... be
+    # intentional with the pictures that are going to get cut off behind the
+    # text... a couple of pictures that are not throwaway pictures, but pictures
+    # we are intentional about."
+    #
+    # scripts/check-grid-occlusion.mjs says phone cells 4 and 5 are 81% under the
+    # slab. These two frames are chosen FOR that: a back turned to camera and a
+    # man in profile looking away. Both are real photographs from the same shoot
+    # with the same light, so they hold the column up and give the grid its
+    # flexbox slack — and neither one loses a face to the type, because neither
+    # one is offering a face. A portrait in this slot is a portrait thrown away.
+    # FRONT plane, not back. On the desktop wall these sit far back and a
+    # back-plane grade was right. On the phone the grid went from twelve cells
+    # to six, so each cell doubled in height and the slab now covers 41% of
+    # these rather than 81% — more than half of each one shows. A back-plane
+    # frame is baked to 40% brightness, so what showed was a murky grey band
+    # between two rows of real photographs, which is the same "cannot see
+    # anything" Alec was objecting to, just moved down the page. A frame that
+    # is visible has to be a photograph.
+    #
+    # Sized at 420 in SIZE_OVERRIDE, which is what they actually paint: the
+    # phone cell is 195 CSS px at 2x = 390 device px, and the widest desktop
+    # slot is 14% of 1440 at 2x = 404. 560 was 8KB of pixels nobody resolves,
+    # and it put the homepage over its own-bytes budget.
+    ("profile",      "JLA_5989.jpg", 3/4,  0.40, 0.52, 0.80, "front"),
+
+    # --- widening the rotation ------------------------------------------------
+    # Alec: "widen the rotation but not the basketball kids." Four frames from
+    # the same ACE shoot that Favorites had not already skimmed, so the pages
+    # away from the front door stop recycling the banner's own twelve.
+    ("lanyard",      "JLA_6091.jpg", 3/4,  0.30, 0.50, 0.86, "mid"),
+    ("bench",        "JLA_5967.jpg", 3/4,  0.34, 0.50, 0.88, "back"),
+    ("drive",        "JLA_5953.jpg", 3/2,  0.40, 0.50, 0.66, "mid"),
+    ("fence",        "JLA_6236.jpg", 3/2,  0.42, 0.56, 0.62, "back"),
 ]
 
 # The banner variant is a row of TALL COLUMNS, roughly 1:2. Reframing a 3:4
@@ -118,7 +207,7 @@ BIG = [
     ("big-reach",    "JLA_6084.jpg", 16/9,  0.42, 0.50, 0.86, 1900),
     ("big-ryan",     "JLA_5922.jpg", 3/4,   0.44, 0.50, 0.94, 1200),
     ("big-brian",    "JLA_6045.jpg", 16/9,  0.44, 0.46, 0.82, 1900),
-    ("big-fill",     "JLA_6122.jpg", 5/2,   0.40, 0.50, 0.92, 1700),
+    ("big-fill",     "JLA_6119.jpg", 5/2,   0.44, 0.50, 0.94, 1700),
 ]
 
 
@@ -172,8 +261,148 @@ def crop_to(im, aspect, ay, ax, zoom=1.0):
     return im.crop((x, y, x + nw, y + nh))
 
 
-def compose_band():
-    """The interior page band: one pre-composed strip of vertical columns.
+
+# ==========================================================================
+# FRAME SPEC — the parameters a photograph must satisfy to go in a frame.
+#
+# Alec, 2026-09-08: "each of these vertical frames should have specific
+# parameters that set us up for success. When we rotate different pictures,
+# it's very streamlined, and nothing breaks."
+#
+# Everything that puts a photograph on this site now goes through one of three
+# frame kinds, and each kind states its numbers here rather than carrying them
+# inline where the next person has to reverse-engineer them from a crop call.
+# check_frames() runs on every build and refuses to ship a violation, so
+# swapping a photograph is a one-line edit that either works or tells you why.
+#
+#   column   the interior band's vertical frames. FIXED aspect — this is the
+#            one that used to drift between 0.5 and 0.7 per column, which is
+#            why faces looked squeezed in some and not others. A column is
+#            0.62 wide-to-tall, full stop, and a photo that cannot give that
+#            crop is the wrong photo for a column.
+#   tile     a mosaic frame, on the homepage wall or /donate. Free aspect,
+#            because tiles overlap and variety is the point, but bounded so a
+#            near-square or a letterbox cannot sneak in and break the rhythm.
+#   plate    a single full-bleed photograph (/apply). Landscape only: a
+#            portrait under `cover` in a wide header crops to a torso.
+FRAME_SPEC = {
+    "column": {"aspect": (0.62, 0.62), "min_src_px": 2400, "anchor": "required"},
+    "tile":   {"aspect": (0.66, 1.60), "min_src_px": 1800, "anchor": "required"},
+    "plate":  {"aspect": (1.30, 1.90), "min_src_px": 3000, "anchor": "required"},
+}
+
+
+def check_frames(kind, entries):
+    """Refuse to build a frame whose photograph cannot fill it.
+
+    The failures this catches are the ones that are invisible in a thumbnail
+    and obvious on a phone: an aspect the crop has to stretch to reach, a
+    source too small for the box it lands in, a missing anchor that silently
+    defaults to dead centre and lands the window on somebody's chest. All three
+    have shipped to Alec at least once.
+    """
+    lo, hi = FRAME_SPEC[kind]["aspect"]
+    floor = FRAME_SPEC[kind]["min_src_px"]
+    for name, src, ar, ax, ay in entries:
+        if not (lo - 0.02 <= ar <= hi + 0.02):
+            raise SystemExit(
+                f"FRAME SPEC — {kind} '{name}' has aspect {ar:.2f}, outside "
+                f"{lo}-{hi}. Reframe it or use a different frame kind.")
+        if not (0.0 <= ax <= 1.0 and 0.0 <= ay <= 1.0):
+            raise SystemExit(f"FRAME SPEC — {kind} '{name}' anchor out of range.")
+        path = os.path.join(SRC, src)
+        if os.path.exists(path):
+            with Image.open(path) as im:
+                if max(im.size) < floor:
+                    raise SystemExit(
+                        f"FRAME SPEC — {kind} '{name}': source is {im.width}x"
+                        f"{im.height}, under the {floor}px floor for this frame.")
+
+
+# THE FOUR BANDS. Alec, 2026-09-10: "we have four pages that all have the exact
+# same pictures ... we have really good pictures, let's leverage them."
+#
+# One band on every interior page was the cheapest thing to ship and it made the
+# site look like one page repeated. These are four sets of four, and no
+# photograph appears in more than one — sixteen athletes where there were four.
+# page-header.mjs decides which page gets which; a page still loads exactly one
+# band, so the variants cost a visitor nothing.
+#
+# A set is [BACK, FRONT, FRONT, BACK]. Two things decide what goes where, and
+# they pull in different directions:
+#   · a phone gets columns 1 and 2 only (see `use` below), so those two are the
+#     faces.
+#   · on desktop the type field sits over the LEFT half, so column 2 is the one
+#     seen clean and column 0 spends its life behind the veil.
+# Column 2 is the only slot that wins both, so the strongest face goes there
+# every time, and column 0 gets a frame that still reads when it is dimmed —
+# a room, a wall, a scene, never the photograph the page is selling.
+#
+# Columns: source, height share, back row, ax, ay, zoom.
+# ax/ay are fractions of the ORIGINAL frame — ax is where the subject actually
+# is, ay where the head is. Every one was set by cutting the crop at the
+# column's true aspect and looking at it. Assuming ax=0.5 is what "squeezed and
+# squished" meant the last four times. ZOOM is the fraction of the largest valid
+# crop to take: a small subject in a big room needs a punch-in or the column
+# reads as grey texture at 200px wide.
+BANDS = {
+    # 1 — the room and the people in it. /volunteer and its role pages: the
+    #     page is an invitation to join a group, so show the group.
+    "1": [
+        ("JLA_6119.jpg", 0.74, True,  0.32, 0.60, 0.72),  # the floor, chairs everywhere
+        # Alec, 2026-09-10: "flip these two pictures with each other." She takes
+        # the tall column and he takes the short one. Same two photographs, and
+        # the anchors move with them — a column's aspect comes from its height
+        # share, so a frame that swaps slots needs its crop cut again rather
+        # than carried across.
+        ("JLA_6143.jpg", 1.00, False, 0.54, 0.30, 0.94),  # laughing back over her shoulder
+        ("JLA_6077.jpg", 0.88, False, 0.44, 0.30, 0.88),  # tan cap, laughing mid-point
+        ("JLA_6168.jpg", 0.70, True,  0.53, 0.33, 0.88),  # two of them between games
+    ],
+    # 2 — competition. /sponsorship: a sponsor is buying court time and travel,
+    #     so the band is the thing being bought.
+    "2": [
+        ("JLA_6224.jpg", 0.74, True,  0.55, 0.52, 0.62),  # down at the floor for a dig
+        ("JLA_6073.jpg", 1.00, False, 0.42, 0.32, 0.88),  # grinning, whole chair
+        # Alec, 2026-09-10, on the two frames that were here (6091 squared up
+        # with a lanyard, 6146 coaching under the wall): "I don't like these
+        # pictures." They were the two this page shows CLEAN — column 2 is the
+        # only slot the type never covers — and neither was playing. A page
+        # asking a business to fund court time should be showing court time.
+        # Both replacements are in kit and in a point.
+        # zoom 1.0, not the usual 0.88: at 0.88 this column keeps 88% of the
+        # frame height and the 12% it drops is the paddle. A sponsorship page
+        # showing an athlete with no paddle is the one crop this set cannot
+        # afford, and the column's aspect is narrow enough that the full height
+        # still fits without stretching.
+        ("JLA_5883.jpg", 0.88, False, 0.50, 0.50, 1.00),  # paddle down, set for the dink
+        ("JLA_5905.jpg", 0.70, True,  0.50, 0.44, 0.54),  # mid-swing, ball still in the air
+    ],
+    # 3 — faces. /promise asks to be believed about money, and a face is the
+    #     only argument that page has.
+    "3": [
+        ("JLA_6236.jpg", 0.74, True,  0.55, 0.42, 0.88),  # watching from behind the fence
+        ("JLA_5989.jpg", 1.00, False, 0.45, 0.32, 0.88),  # profile, Great Lakes Games shirt
+        ("JLA_5973.jpg", 0.88, False, 0.50, 0.28, 0.88),  # smiling, paddle down
+        ("JLA_5918.jpg", 0.70, True,  0.52, 0.40, 0.88),  # ball in hand, about to serve
+    ],
+    # 4 — the story. /about: the people who built it, doing the thing.
+    "4": [
+        ("JLA_6191.jpg", 0.74, True,  0.55, 0.40, 0.75),  # rolling in past LEARN PLAY COMPETE
+        ("JLA_6074.jpg", 1.00, False, 0.45, 0.30, 0.88),  # calling the score
+        # Brian takes column 2 and not column 1 on purpose. It is the darkest
+        # frame in any of the four sets — black tank, black background — and
+        # column 1 spends its life under the type veil, where a dark frame
+        # stops being a photograph and becomes a smudge. In column 2 it is seen
+        # clean, which is what a frame this good is for.
+        ("JLA_6045.jpg", 0.88, False, 0.50, 0.40, 0.88),  # headband, paddle up
+        ("JLA_6131.jpg", 0.70, True,  0.50, 0.55, 0.78),  # white chair, waiting to go on
+    ],
+}
+
+
+def compose_band(variant, cols):
+    """One interior page band: a pre-composed strip of vertical columns.
 
     Alec, 2026-09-08, comparing the interior pages against variant 2: "I like
     the second version ... the vertical design I think looks great on the other
@@ -184,48 +413,27 @@ def compose_band():
     darkens the corner the words sit in rather than the whole picture. Same
     logic the homepage wall uses.
 
-    It stays ONE image rather than eight <img> columns: the band never reflows,
-    only crops, and shipping the columns individually cost /donate 450 KB and
-    broke its own-bytes budget. Because the frame is still mostly black it
-    compresses to a fraction of its parts.
+    It stays ONE image per variant rather than four <img> columns: the band
+    never reflows, only crops, and shipping the columns individually cost
+    /donate 450 KB and broke its own-bytes budget. Because the frame is still
+    mostly black it compresses to a fraction of its parts.
+
+    FEWER and TALLER: four frames on desktop and two on a phone, each around
+    0.5-0.7 aspect — real portrait proportions — and the band is tall enough to
+    fill most of the hero, because the black around it was the other half of
+    the complaint.
     """
     import numpy as np
-    # Alec, three times: "the pictures still look squeezed and squished."
-    #
-    # He was right and the reason was not distortion. Every column has been
-    # cropped at exactly the aspect of its box since the stretch bug, and the
-    # rendered strip matches the asset to 0.001 — checked end to end. What was
-    # wrong is WHERE the crop was taken: ax=0.50 for every photograph, on the
-    # assumption the athlete is centred. Run a human matte over these five and
-    # they are not:
-    #
-    #     JLA_5884  subject centre 0.392      JLA_6071  0.381
-    #     JLA_5904  0.544                     JLA_6105  0.486
-    #     JLA_6123  0.615
-    #
-    # So a narrow frame cut into four of the five, which is exactly what
-    # "squeezed" looks like. The anchors below are measured from those mattes,
-    # not guessed, and ay is set from where each subject's head actually starts.
-    #
-    # Also: FEWER and TALLER. Four frames on desktop and two on a phone, each
-    # around 0.5-0.7 aspect — real portrait proportions — and the band is tall
-    # enough to fill most of the hero, because the black around it was the other
-    # half of the complaint.
-    COLS = [  # source, height share, back row, ax, ay  (ax/ay from the matte)
-        ("JLA_5884.jpg", 0.74, True,  0.39, 0.20),  # reaching low for a dig
-        ("JLA_6071.jpg", 1.00, False, 0.38, 0.33),  # grinning, whole chair
-        ("JLA_6105.jpg", 0.88, False, 0.49, 0.23),  # laughing between points
-        ("JLA_6123.jpg", 0.70, True,  0.62, 0.42),  # two at the net
-    ]
-    for name, W, H, n, pitch, cwf in (("pg-band-wide", 1500, 650, 4, 0.235, 0.205),
-                                      ("pg-band-tall", 900, 805, 2, 0.460, 0.440)):
+    check_frames("column", [(c[0], c[0], 0.62, c[3], c[4]) for c in cols])
+    for name, W, H, n, pitch, cwf in ((f"pg-band-{variant}-wide", 1500, 650, 4, 0.235, 0.205),
+                                      (f"pg-band-{variant}-tall", 900, 805, 2, 0.460, 0.440)):
         canvas = Image.new("RGB", (W, H), (0, 0, 0))
-        use = COLS if n == 4 else [COLS[1], COLS[2]]
-        for i, (src, h, dim, ax, ay) in enumerate(use):
+        use = cols if n == 4 else [cols[1], cols[2]]
+        for i, (src, h, dim, ax, ay, zoom) in enumerate(use):
             im = Image.open(os.path.join(SRC, src))
             im.draft("RGB", (im.width // 3, im.height // 3))
             cw, ch = int(W * cwf), int(H * h)
-            im = crop_to(im.convert("RGB"), cw / ch, ay, ax, 0.88)
+            im = crop_to(im.convert("RGB"), cw / ch, ay, ax, zoom)
             assert abs((im.width / im.height) - (cw / ch)) < 0.02, \
                 f"{src}: cropped {im.width}x{im.height} for a {cw}x{ch} box"
             im = mono(im.resize((cw, ch), Image.LANCZOS))
@@ -233,7 +441,10 @@ def compose_band():
             # reads as a bad photograph instead — Alec: "the picture all the way
             # to the right is way too blurry, I want these crisp and clear." A
             # small brightness step is enough to seat a frame behind another.
-            im = ImageEnhance.Brightness(im).enhance(0.82 if dim else 1.0)
+            # 0.74 for the back row, not 0.82: a bright busy frame in the back
+            # row both sits forward of where it belongs AND compresses worse,
+            # and once put /donate a kilobyte over its own-bytes budget.
+            im = ImageEnhance.Brightness(im).enhance(0.74 if dim else 1.0)
             x = int(W * (0.5 * (1 - n * pitch) + i * pitch + (pitch - cwf) / 2))
             canvas.paste(im, (x, H - ch))
         a = np.asarray(canvas, np.float32) / 255.0
@@ -245,6 +456,91 @@ def compose_band():
         # are invisible here in a way they are not on the homepage wall
         canvas.save(out, "WEBP", quality=54, method=6)
         print(f"{name:20s} {W}x{H} {n} frames  {os.path.getsize(out)/1024:6.1f} KB")
+
+
+def compose_bands():
+    for variant, cols in BANDS.items():
+        compose_band(variant, cols)
+
+
+def compose_give():
+    """The /donate header: a mosaic, not a column band.
+
+    Alec, 2026-09-08: "maybe for the donate page, we don't do vertical frames.
+    We may do one or two pictures. Maybe it becomes a version of the main
+    banner, where we have kind of a mosaic style, but just fewer pictures ...
+    it will also give us a little bit more breathing room ... to complement the
+    Givebutter functionalities within the donate page."
+
+    So it borrows the HOMEPAGE's language rather than the interior band's:
+    overlapping frames at three depths, scattered, tilted off-square. But where
+    the wall is nineteen panels competing for attention, this is EIGHT. /donate
+    is where somebody decides, and the picture's job is warmth behind a form.
+
+    Shaped around the Givebutter panel, in two ways:
+
+      · A CLEAR RIGHT THIRD. The panel is a white card floating over this, and
+        a busy frame behind a white card is noise around the edges. The mosaic
+        is weighted left and centre; one low, deeply-dimmed frame sits right.
+      · A LOWER CEILING than the wall, because the copy is white and the card
+        is white and both have to win.
+
+    IT GRADES FROM THE SOURCE PHOTOGRAPHS, NOT FROM THE PANELS. The first cut
+    read the finished panel files, which already carry their depth dimming
+    baked in (front 1.00, mid 0.62, back 0.40), and multiplied a second dimming
+    on top. A mid-plane frame came out at 0.62 x 0.38 = 0.24 and the whole
+    header measured mean luma 0.066 against the band's 0.171 — it shipped as
+    black mush, which is the exact complaint this page exists to fix. Reading
+    the originals means one grade, one place, and the numbers below mean what
+    they say. Measured, not eyeballed: check the asset's mean luma if it ever
+    looks wrong again.
+
+    Composed rather than shipped as elements for the same reason as the band:
+    /donate carries a payment form and nineteen third-party requests, and has
+    the tightest byte budget on the site. One image, one request.
+    """
+    import numpy as np
+    # source, x, y, w (fractions), depth 1-3, tilt, aspect, ax, ay
+    # Anchors are the measured ones from PANELS/compose_band, not fresh guesses.
+    TILES = [
+        ("JLA_5945.jpg", 0.00, 0.00, 0.19, 1,  0.6, 3/2, 0.60, 0.42),
+        ("JLA_6143.jpg", 0.19, 0.00, 0.15, 1, -0.9, 3/4, 0.52, 0.30),
+        ("JLA_6073.jpg", 0.58, 0.14, 0.14, 1,  0.4, 3/4, 0.50, 0.40),
+        ("JLA_6084.jpg", 0.44, 0.48, 0.19, 1,  0.5, 3/2, 0.46, 0.46),
+        ("JLA_6077.jpg", 0.80, 0.54, 0.16, 1, -0.6, 3/4, 0.50, 0.36),
+        ("JLA_5922.jpg", 0.33, 0.06, 0.20, 2, -0.7, 3/4, 0.50, 0.44),
+        ("JLA_6045.jpg", 0.01, 0.26, 0.21, 3, -1.1, 4/5, 0.46, 0.42),
+        ("JLA_6106.jpg", 0.19, 0.44, 0.18, 3,  0.8, 3/4, 0.50, 0.34),
+    ]
+    # Graded ONCE, from full-brightness originals. Below the wall's own steps
+    # because a white card and white copy both sit on top of this.
+    DIM = {3: 0.92, 2: 0.66, 1: 0.44}
+    check_frames("tile", [(t[0], t[0], t[6], t[7], t[8]) for t in TILES])
+    for name, W, H in (("pg-give-wide", 1500, 720), ("pg-give-tall", 900, 1000)):
+        canvas = Image.new("RGB", (W, H), (0, 0, 0))
+        tall = H > W
+        for src, x, y, w, d, rot, ar, ax, ay in sorted(TILES, key=lambda t: t[4]):
+            im = Image.open(os.path.join(SRC, src))
+            im.draft("RGB", (im.width // 3, im.height // 3))
+            tw = int(W * w * (1.55 if tall else 1.0))
+            th = int(tw / ar)
+            im = crop_to(im.convert("RGB"), ar, ay, ax, 0.88)
+            im = mono(im.resize((tw, th), Image.LANCZOS))
+            im = ImageEnhance.Brightness(im).enhance(DIM[d])
+            im = im.rotate(rot, expand=True, resample=Image.BICUBIC, fillcolor=(0, 0, 0))
+            canvas.paste(im, (int(W * x), int(H * y)))
+        # the floor grade the wall and the band share: the top edge dissolves
+        # into the black the nav sits on, light pools low
+        a = np.asarray(canvas, np.float32) / 255.0
+        yy = np.linspace(0, 1, H)[:, None, None]
+        a *= np.clip(1.0 - np.maximum(0, (0.16 - yy) / 0.16) * 0.70, 0, 1)
+        a *= np.clip(1.0 - np.maximum(0, (yy - 0.94) / 0.06) * 0.75, 0, 1)
+        canvas = Image.fromarray((a * 255).astype(np.uint8))
+        out = os.path.join(DST, f"{name}.webp")
+        canvas.save(out, "WEBP", quality=QUALITY["band"], method=6)
+        lum = (np.asarray(Image.open(out).convert("L"), np.float32) / 255).mean()
+        print(f"{name:20} {W}x{H} {len(TILES)} tiles  "
+              f"{os.path.getsize(out)/1024:6.1f} KB  mean luma {lum:.3f}")
 
 
 def compose_roll():
@@ -263,25 +559,59 @@ def compose_roll():
         space as every other join. Get that wrong and the loop stutters once per
         cycle, which is the one thing people always notice.
     """
-    COLS = ["JLA_6045.jpg", "JLA_5922.jpg", "JLA_6106.jpg", "JLA_6066.jpg",
-            "JLA_6073.jpg", "JLA_6077.jpg", "JLA_5973.jpg", "JLA_5920.jpg"]
+    # TWO strips, not one. Alec, 2026-09-09, on the homepage closing: "go all
+    # in on this vertical frame banner style layout with the pictures (maybe
+    # different pictures?)" — and different is the right instinct. The same
+    # eight faces rolling past on both the homepage and /donate would read as a
+    # template rather than as a roster, and it would waste the widened rotation
+    # we built. So /donate keeps its eight and the homepage gets eight others.
+    STRIPS = {
+        # /donate — the original set
+        "roll-strip": ["JLA_6045.jpg", "JLA_5922.jpg", "JLA_6106.jpg", "JLA_6066.jpg",
+                       "JLA_6073.jpg", "JLA_6077.jpg", "JLA_5973.jpg", "JLA_5920.jpg"],
+        # homepage — eight the other strip does not use, drawn from the widened
+        # rotation so the frames at the bottom of the front page are people you
+        # have not already met at the top of it
+        "roll-strip-home": ["JLA_6131.jpg", "JLA_6091.jpg", "JLA_5967.jpg", "JLA_6146.jpg",
+                            "JLA_5953.jpg", "JLA_6236.jpg", "JLA_5989.jpg", "JLA_6168.jpg"],
+    }
     H, CW, GAP = 430, 168, 28
     PITCH = CW + GAP
-    W = PITCH * len(COLS)
-    canvas = Image.new("RGB", (W, H), (0, 0, 0))
-    for i, src in enumerate(COLS):
-        im = Image.open(os.path.join(SRC, src))
-        im.draft("RGB", (im.width // 3, im.height // 3))
-        im = crop_to(im.convert("RGB"), CW / H, 0.40, 0.50, 0.86)
-        im = mono(im.resize((CW, H), Image.LANCZOS))
-        im = ImageEnhance.Brightness(im).enhance(0.82)
-        canvas.paste(im, (i * PITCH + GAP // 2, 0))   # half a gap at each end
-    out = os.path.join(DST, "roll-strip.webp")
-    canvas.save(out, "WEBP", quality=60, method=6)
-    print(f"{'roll-strip':20s} {W}x{H} {os.path.getsize(out)/1024:6.1f} KB  (tileable, pitch {PITCH}px)")
+    for name, COLS in STRIPS.items():
+        W = PITCH * len(COLS)
+        canvas = Image.new("RGB", (W, H), (0, 0, 0))
+        for i, src in enumerate(COLS):
+            im = Image.open(os.path.join(SRC, src))
+            im.draft("RGB", (im.width // 3, im.height // 3))
+            im = crop_to(im.convert("RGB"), CW / H, 0.40, 0.50, 0.86)
+            im = mono(im.resize((CW, H), Image.LANCZOS))
+            im = ImageEnhance.Brightness(im).enhance(0.82)
+            canvas.paste(im, (i * PITCH + GAP // 2, 0))   # half a gap at each end
+        out = os.path.join(DST, name + ".webp")
+        canvas.save(out, "WEBP", quality=60, method=6)
+        print(f"{name:20s} {W}x{H} {os.path.getsize(out)/1024:6.1f} KB  (tileable, pitch {PITCH}px)")
 
 
-def fingerprint():
+def assert_no_withdrawn():
+    """Refuse to build if a withdrawn photograph is sitting in the source folder.
+
+    Deleting the file and editing the panel list is enough to fix the site
+    today. It is not enough to keep it fixed: the next person to sync the shoot
+    into .work/fav restores the frame, and nothing anywhere would notice. The
+    only durable version of "we cannot use this image" is a build that stops.
+    """
+    present = sorted(WITHDRAWN & set(os.listdir(SRC)))
+    if present:
+        raise SystemExit(
+            "REFUSING TO BUILD — withdrawn photograph(s) in " + SRC + ":\n  "
+            + "\n  ".join(present)
+            + "\n\nThese frames may not be published (Alec, 2026-09-08). Delete them\n"
+              "from the source folder. If a withdrawal has genuinely been lifted,\n"
+              "take the name out of WITHDRAWN in this file and say so in the commit."
+        )
+
+
+def fingerprint(only=None):
     """Rename every generated image to include a hash of its own bytes.
 
     public/_headers gives media a 30-day max-age and says, in as many words:
@@ -294,8 +624,16 @@ def fingerprint():
 
     Content-hashed names make that impossible: change a pixel and the URL
     changes, so nothing can be stale and nothing has to be remembered.
+
+    `only` is a filename prefix and makes this safe for a PARTIAL run: the
+    existing manifest is carried forward and the prune only judges that family.
+    Without it, rebuilding the bands alone would delete every homepage panel on
+    disk, because none of them was regenerated to be kept.
     """
     manifest = {}
+    if only:
+        with open(os.path.join(DST, "hashes.json")) as fh:
+            manifest = json.load(fh)
     for f in sorted(os.listdir(DST)):
         if not f.endswith(".webp") or "." in f[:-5]:
             continue                      # already fingerprinted
@@ -307,15 +645,27 @@ def fingerprint():
     # drop fingerprinted files that are no longer current
     keep = set(manifest.values())
     for f in os.listdir(DST):
-        if f.endswith(".webp") and "." in f[:-5] and f not in keep:
-            os.remove(os.path.join(DST, f))
+        if not (f.endswith(".webp") and "." in f[:-5]) or f in keep:
+            continue
+        if only and not f.startswith(only):
+            continue                      # another family, not this run's to judge
+        os.remove(os.path.join(DST, f))
     with open(os.path.join(DST, "hashes.json"), "w") as fh:
         json.dump(manifest, fh, indent=1, sort_keys=True)
     print(f"{'fingerprinted':20s} {len(manifest)} files -> hashes.json")
 
 
 def main():
+    assert_no_withdrawn()
     os.makedirs(DST, exist_ok=True)
+    if "--bands-only" in sys.argv:
+        # Rebuild ONLY the interior page bands, for the common case of swapping
+        # a photograph in BANDS. The full run re-encodes forty panels to produce
+        # the same bytes; this does the one thing that changed. The scoped
+        # fingerprint leaves every other family on disk alone.
+        compose_bands()
+        fingerprint("pg-band-")
+        return
     manifest, total = {}, 0
     jobs = [(n, s_, a, y, x, z, r) for n, s_, a, y, x, z, r in PANELS + BANNER]
     # same frames and anchors as the banner columns, at band size
@@ -332,7 +682,7 @@ def main():
         im.draft("RGB", (im.width // 2, im.height // 2))   # 8k JPEGs, decode at half
         im = im.convert("RGB")
         im = crop_to(im, aspect, ay, ax, zoom)
-        long_edge = BIGW[name] if role == 'big' else (500 if role == 'band' else SIZE[role])
+        long_edge = BIGW[name] if role == 'big' else (500 if role == 'band' else SIZE_OVERRIDE.get(name, SIZE[role]))
         if aspect >= 1:
             size = (long_edge, round(long_edge / aspect))
         elif aspect <= 0.55:
@@ -346,26 +696,50 @@ def main():
         im = mono(im)
         if role == 'band':
             im = ImageEnhance.Brightness(im).enhance(0.62)
-        elif role in DEPTH_DIM and DEPTH_DIM[role] < 1:
-            im = ImageEnhance.Brightness(im).enhance(DEPTH_DIM[role])
+        elif role in DEPTH_DIM and DIM_OVERRIDE.get(name, DEPTH_DIM[role]) < 1:
+            im = ImageEnhance.Brightness(im).enhance(DIM_OVERRIDE.get(name, DEPTH_DIM[role]))
         out = os.path.join(DST, f"{name}.webp")
         im.save(out, "WEBP", quality=QUALITY[role], method=6)
         n = os.path.getsize(out)
         total += n
         manifest[name] = {"w": im.size[0], "h": im.size[1], "role": role, "src": src}
         print(f"{name:14s} {role:5s} {im.size[0]:4d}x{im.size[1]:<4d} {n/1024:6.1f} KB   {src}")
-    compose_band()
+    compose_bands()
+    compose_give()
     compose_roll()
     # Page photos: a single full-bleed frame for a page that has one picture
     # worth the whole header. Copied in rather than re-encoded — the source is
     # already a webp and a second encode only loses detail — so it picks up a
     # content hash with everything else and can never go stale.
     import shutil
-    PAGE_PHOTOS = {"pg-apply.webp": "images/athletes/wheelie-58.webp"}
-    for dst, src in PAGE_PHOTOS.items():
-        shutil.copyfile(os.path.join(os.path.dirname(__file__), "..", "public", src),
-                        os.path.join(DST, dst))
-        print(f"{dst:20s} page photo  {os.path.getsize(os.path.join(DST, dst))/1024:6.1f} KB")
+    # value is either a source path (straight copy) or (source, keep_top) where
+    # keep_top is the fraction of the frame's HEIGHT to keep, measured from the
+    # top.
+    #
+    # pg-apply keeps 0.55. Alec, 2026-09-09: "crop the bag out... naturally the
+    # bag just will be cut out of the picture." The header mirrors this frame so
+    # the smiling face clears the headline, and the mirror also turns the kit
+    # bag's wordmarks backwards in the corner. The bag sits at roughly y 55-72%,
+    # so cutting the bottom 45% removes it at the source instead of fighting it
+    # with background-position — which I tried, and which cannot work: at -6% the
+    # image lifts off the top edge and leaves a black band.
+    #
+    # A CROP MEANS A RE-ENCODE, which the note above deliberately avoided. Paid
+    # knowingly and at quality 92: one generation of webp loss against a visible
+    # piece of someone else's branding printed backwards on our own page.
+    PAGE_PHOTOS = {"pg-apply.webp": ("images/athletes/wheelie-58.webp", 0.55)}
+    for dst, spec in PAGE_PHOTOS.items():
+        src, keep = (spec, None) if isinstance(spec, str) else spec
+        src_path = os.path.join(os.path.dirname(__file__), "..", "public", src)
+        out_path = os.path.join(DST, dst)
+        if keep is None:
+            shutil.copyfile(src_path, out_path)
+        else:
+            im = Image.open(src_path).convert("RGB")
+            im = im.crop((0, 0, im.width, int(round(im.height * keep))))
+            im.save(out_path, "WEBP", quality=92, method=6)
+        print(f"{dst:20s} page photo  {os.path.getsize(out_path)/1024:6.1f} KB"
+              + (f"  cropped to top {int(keep*100)}%" if keep else ""))
     fingerprint()
     with open(os.path.join(DST, "panels.json"), "w") as f:
         json.dump(manifest, f, indent=1, sort_keys=True)

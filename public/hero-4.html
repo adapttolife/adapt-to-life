@@ -7,22 +7,45 @@
 <title>Header 4 · Knockout | Adapt To Life</title>
 <meta name="description" content="Adapt To Life funds the equipment, training, and travel that get adaptive athletes off the sidelines and into the game.">
 <link rel="canonical" href="https://adapttolife.org/">
+<!-- sameAs is the ONLY machine-readable way to say "these profiles and this
+     site are the same organisation". Without it a search engine has two
+     unconnected accounts and a website; with it they are one entity, which is
+     what puts the right links in a knowledge panel. Visible footer icons do
+     not do this job — they are just outbound links.
+     Homepage only, which is where Organization markup belongs; repeating it on
+     all 25 pages adds nothing and gives 25 places to drift.
+     Every value here is already published on this page or in its footer. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "NGO",
+  "name": "Adapt To Life",
+  "url": "https://adapttolife.org/",
+  "logo": "https://adapttolife.org/images/brand/atl-logo-512.png",
+  "description": "Adapt To Life funds the equipment, training, and travel that get adaptive athletes off the sidelines and into the game.",
+  "email": "hello@adapttolife.org",
+  "sameAs": [
+    "https://www.instagram.com/adapt_to_life_org/",
+    "https://www.facebook.com/profile.php?id=61592619668321"
+  ]
+}
+</script>
 <link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-v2-option2-32.png">
 <link rel="apple-touch-icon" href="/images/apple-touch-icon-v2-option2.png">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Adapt To Life | Your Place in Adaptive Sports">
 <meta property="og:description" content="We fund the equipment, training, and travel that get adaptive athletes off the sidelines and into the game.">
-<meta property="og:image" content="https://adapttolife.org/images/og/home-v2-option2.jpg">
+<meta property="og:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Adapt To Life: your place in adaptive sports. The Adapt To Life mark, embossed in black.">
+<meta property="og:image:alt" content="Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.">
 <meta property="og:url" content="https://adapttolife.org/">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Adapt To Life | Your Place in Adaptive Sports">
 <meta name="twitter:description" content="We fund the equipment, training, and travel that get adaptive athletes off the sidelines and into the game.">
-<meta name="twitter:image" content="https://adapttolife.org/images/og/home-v2-option2.jpg">
-<meta name="twitter:image:alt" content="Adapt To Life: your place in adaptive sports. The Adapt To Life mark, embossed in black.">
+<meta name="twitter:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
+<meta name="twitter:image:alt" content="Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.">
 <link rel="preload" href="/css/site.css" as="style">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,6 +53,7 @@
 <link rel="stylesheet" href="/css/site.css">
 <link rel="stylesheet" href="/css/hero-mosaic.css">
 <link rel="stylesheet" href="/css/hero-spectrum.css">
+<link rel="stylesheet" href="/css/roll-band.css">
 <!-- hero:sheet -->
 <link rel="stylesheet" href="/css/hero-mosaic.css">
 <!-- Preload the LCP image only. This used to point at the mid-page photoband,
@@ -200,7 +224,7 @@ fill="currentColor" stroke="none">
         </li>
         <li>
           <span class="front-verb">Find it</span>
-          <p>You can't play what you can't find. <strong>Adaptive Sports Near Me</strong> is a free, open directory of adaptive programs nationwide, with no logins and no paywalls. It opens soon.</p>
+          <p>You can't play what you can't find. <strong>Adaptive Sports Near Me</strong> is a free, open directory of <!-- asnm:count -->1,544<!-- /asnm:count --> programs nationwide, with no logins and no paywalls. It is open now.</p>
           <a href="/adaptive-sports-near-me" class="textlink">How the directory works <span class="arrow">&rarr;</span></a>
         </li>
       </ul>
@@ -256,19 +280,88 @@ fill="currentColor" stroke="none">
   </section>
 
   <!-- PHOTO BAND — coaching, cinematic full-bleed (constant in both heroes) -->
-  <section class="photoband" aria-label="An adaptive pickleball player turning into a forehand, paddle drawn across his body">
-    <div class="photoband-img" style="background-image:url('/images/athletes/wheelie-9-band.webp'); background-position:62% 50%"></div>
-  </section>
+  <!-- 11 · CLOSING — the rolling band.
+       Alec, 2026-09-09: "I love the bottom of the donate page ... Can we do the
+       same thing for the bottom of the Main page? Besides juan by himself,
+       delete this picture, go all in on this vertical frame banner style layout
+       ... BUT keep the content and text that we have."
 
-  <!-- 11 · CLOSING — dark CTA -->
-  <section class="closing dark band-lg">
-    <div class="wrap center">
+       So the words are untouched and the single full-bleed photograph that sat
+       above them is gone. What replaces it is the same closing shape /donate
+       uses: the ask splits in two and the faces roll between the halves. It
+       ends the front page on people rather than on a paragraph.
+
+       DIFFERENT EIGHT than /donate's strip, deliberately — the same faces on
+       both would read as a template. And the image is lazy, swapped in by
+       IntersectionObserver, so a visitor who never reaches the footer never
+       pays the 53KB. -->
+  <section class="closing roll-band dark">
+    <div class="wrap center rb-copy rb-top">
       <span class="eyebrow orange reveal">Your turn</span>
       <h2 class="serif display reveal">Be the reason the next athlete plays.</h2>
+    </div>
+
+    <div class="rb-stage">
+    <div class="rb-track" aria-hidden="true">
+      <div class="rb-run">
+        <img data-src="/images/hero/panels/roll-strip-home.68889c4b.webp" width="1568" height="430" alt="" decoding="async">
+        <img data-src="/images/hero/panels/roll-strip-home.68889c4b.webp" width="1568" height="430" alt="" decoding="async">
+        <img data-src="/images/hero/panels/roll-strip-home.68889c4b.webp" width="1568" height="430" alt="" decoding="async">
+        <img data-src="/images/hero/panels/roll-strip-home.68889c4b.webp" width="1568" height="430" alt="" decoding="async">
+        <img data-src="/images/hero/panels/roll-strip-home.68889c4b.webp" width="1568" height="430" alt="" decoding="async">
+        <img data-src="/images/hero/panels/roll-strip-home.68889c4b.webp" width="1568" height="430" alt="" decoding="async">
+      </div>
+    </div>
+    <!-- Sibling of .rb-track inside .rb-stage, never a CHILD of the track:
+         that track is aria-hidden="true" because the strip is decoration, and a
+         control inside it would be invisible to exactly the assistive
+         technology WCAG 2.2.2 exists for. The .rb-stage wrapper exists so the
+         button can sit ON the strip it controls rather than at the foot of the
+         whole section, which is where it landed when .roll-band was the
+         positioning context. -->
+    <button type="button" class="rb-pause" data-rb-pause aria-label="Pause the moving photo strip">
+      <svg class="rb-i-pause" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="6.5" y="5" width="4" height="14" rx="1.2"/><rect x="13.5" y="5" width="4" height="14" rx="1.2"/></svg>
+      <svg class="rb-i-play" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.2l11.2 6.8L8 18.8z"/></svg>
+    </button>
+    </div>
+    <div class="rb-glow"></div>
+    <script>
+      /* Deferred on purpose: this sits below the fold at the end of a long
+         page, and the homepage's own-bytes budget should not carry decoration
+         nobody has scrolled to. Anyone who does reach it still downloads the
+         strip — it was made conditional, not free. */
+      (function () {
+        var t = document.currentScript.closest('.roll-band');
+        var band = t;
+        var btn = band.querySelector('[data-rb-pause]');
+        if (btn) {
+          btn.addEventListener('click', function () {
+            var paused = band.classList.toggle('is-paused');
+            /* The accessible NAME changes, not aria-pressed. For a play/pause
+               the name is what a screen reader announces on focus, and
+               "Play the moving photo strip" says what the button will DO —
+               which is the thing a listener needs before activating it. */
+            btn.setAttribute('aria-label',
+              (paused ? 'Play' : 'Pause') + ' the moving photo strip');
+          });
+        }
+        var imgs = t.querySelectorAll('img[data-src]');
+        var load = function () {
+          imgs.forEach(function (i) { i.src = i.dataset.src; i.removeAttribute('data-src'); });
+        };
+        if (!('IntersectionObserver' in window)) return load();
+        var io = new IntersectionObserver(function (es) {
+          if (es.some(function (e) { return e.isIntersecting; })) { load(); io.disconnect(); }
+        }, { rootMargin: '200px' });
+        io.observe(t);
+      })();
+    </script>
+
+    <div class="wrap center rb-copy rb-bottom">
       <p class="lead sub reveal">About $3,500 covers one athlete's equipment, training, and travel. Any part of it moves someone off the sidelines.</p>
       <div class="actions reveal">
         <a href="/donate" class="btn">Donate</a>
-        <a href="/donate" class="btn ghost">Other ways to give <span class="arrow">&rarr;</span></a>
+        <a href="/promise" class="btn ghost">See where the money goes <span class="arrow">&rarr;</span></a>
       </div>
       <p class="reveal" style="margin-top:1.6rem; color:var(--cream-mute); font-size:0.95rem;">Not money? We also need a grant writer, a bookkeeper, and someone who can make an introduction. <a class="textlink" href="/volunteer" style="color:var(--orange)">See the board <span class="arrow">&rarr;</span></a></p>
     </div>
@@ -343,6 +436,10 @@ fill="currentColor" stroke="none">
       </div>
     </div>
     <div class="footer-bottom">
+      <div class="social">
+        <a href="https://www.instagram.com/adapt_to_life_org/" aria-label="Adapt To Life on Instagram" target="_blank" rel="me noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16M12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63c-.79.3-1.46.72-2.13 1.38C1.35 2.68.93 3.35.63 4.14.33 4.9.13 5.78.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.3.79.72 1.46 1.38 2.13.67.66 1.34 1.08 2.13 1.38.76.3 1.64.5 2.91.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56.79-.3 1.46-.72 2.13-1.38.66-.67 1.08-1.34 1.38-2.13.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91-.3-.79-.72-1.46-1.38-2.13C21.32 1.35 20.65.93 19.86.63c-.76-.3-1.64-.5-2.91-.56C15.67.01 15.26 0 12 0z"/><path d="M12 5.84A6.16 6.16 0 1 0 18.16 12 6.16 6.16 0 0 0 12 5.84zm0 10.16A4 4 0 1 1 16 12a4 4 0 0 1-4 4z"/><circle cx="18.41" cy="5.59" r="1.44"/></svg></a>
+        <a href="https://www.facebook.com/profile.php?id=61592619668321" aria-label="Adapt To Life on Facebook" target="_blank" rel="me noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.96h-1.51c-1.49 0-1.96.93-1.96 1.89v2.26h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z"/></svg></a>
+      </div>
       <span>&copy; 2026 Adapt To Life</span>
     </div>
   </div>

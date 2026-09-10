@@ -1,0 +1,427 @@
+/* ==========================================================================
+   Adapt To Life — interior page headers
+   --------------------------------------------------------------------------
+   Alec, 2026-09-08: the mosaic is the front page, "the other one for the other
+   pages in the website".
+
+   Variant 2 puts its type on the floor beneath a row of columns, which works
+   when the header is five words. An interior page header is not five words —
+   it is an eyebrow, a headline, a sub-line and sometimes a button, and all of
+   those have to stay. So this takes the LANGUAGE of 2 rather than its layout:
+
+     · the same bottom-aligned row of portrait columns, bleeding both edges
+     · the same pitch black, the same orange only as a floor bloom
+     · the same skyline top edge, heights varying so it is never a ruler
+
+   and then holds it well back — a band of texture the page's own words sit
+   above, not a picture competing with them. The homepage is the loud one; a
+   page about the grant process is not, and the family reads better for the
+   contrast.
+
+   One rule inherited from the front page and worth restating here: the strip
+   is decoration and is marked aria-hidden. Every athlete in it appears
+   somewhere on the site as a photograph with a name attached. It is texture
+   here, not testimony.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   THE HEADER TIER SCALE
+   --------------------------------------------------------------------------
+   Alec, 2026-09-08: "there should be a clear number, a clear rule on the
+   height that we want each of those sections to be. We should not have to
+   guess." And, ruling on the shape of it: "I do not need each one to be all of
+   the same ... if we were too rigid and we had one size fits all, it would end
+   up hurting us more than helping us."
+
+   So: four tiers, not one number and not twelve accidents.
+
+   WHAT WAS WRONG. Height was an OUTPUT. The rule was "whatever the copy needs,
+   plus fixed padding", so a header's size was decided by its word count.
+   Measured across the site that produced 553px to 1072px — a 1.9x spread, and
+   not one of those numbers was ever chosen by anybody. Two pages in the same
+   nav dropdown looked unrelated because one had a longer headline.
+
+   WHAT IS TRUE NOW. Height is an INPUT, set by what the page is for. min-height
+   rather than height, so long copy can still push a header taller instead of
+   being clipped — but scripts/check-page-tier.mjs fails when it does, so the
+   overflow is a bug report rather than a silent drift.
+
+   THE OTHER HALF OF THE FIX, and the reason this is not just "go shorter":
+   Alec was right to be nervous about shortening. The data says height was never
+   the complaint. /about is the SHORTEST page on the site and also the only one
+   at 0% black; /apply is taller than /promise and has never been mentioned,
+   because it is 0% black too. What he was reading as "too tall" was "too
+   empty". So the band now FILLS its header at every tier — a tall header is
+   more photograph, not more black. That is the both-worlds he asked for. */
+:root{
+  /* The header heights live in site.css — see "HEADER HEIGHTS" there. They
+     moved because five pages (/hustle-and-heart, /karen, /tim, /popcorn,
+     /send-6) never load THIS file, so var(--pg-h-*) resolved to nothing and
+     their min-height was silently dropped. That is the real reason those pages
+     were never on the height system. A site-wide scale belongs in the
+     site-wide stylesheet. */
+}
+/* THE FLOOR IS RAISED ABOVE THE CONTENT — the height is never capped.
+   Alec, 2026-09-09: pages "all have different heights ... it feels sloppy."
+   Measured, the cause was not the rule but the fact that min-height is a FLOOR:
+   a page whose copy fits lands exactly on it, a page with a longer headline
+   grows past it. /sponsorship sat 52px taller than /volunteer purely because
+   "Sponsor an adaptive athlete." wraps to three lines. That is copy length
+   deciding layout, which is what reads as careless.
+
+   THE OBVIOUS FIX — a fixed height — IS THE WRONG ONE, and measuring it is the
+   only reason I know that. At 1280x720 the content needs 655px against a 560px
+   box: 95px of copy and buttons clipped. At 200% text /sponsorship needs
+   1190px against 612px. Capping the box would hide more than half the page and
+   fail WCAG 1.4.4 (resize text to 200% without loss of content) on a site built
+   for disabled athletes. It is also what the practice says: "use min-height
+   instead of height. That way, if the content got longer, the height will
+   expand and there will be no overlap" (Ahmad Shadeed, Responsive Height
+   Design).
+
+   So the floor moves up past the worst-case copy instead. Every page in a group
+   then sits ON the floor at normal text — identical heights, which is the point
+   — and content can still push the box open when it must, so nothing is ever
+   clipped and 200% text still works.
+
+   GATED ON VIEWPORT HEIGHT, which is the standard tool for this and the piece I
+   was missing when I worried tall floors would swallow small screens: the same
+   article recommends height media queries rather than accepting the squeeze.
+   Below 780px tall these raised floors are NOT applied — a 700px header in a
+   720px window is the whole screen, and on those a little variance is the
+   better trade. Gated on width too: phones keep the values above. */
+
+.hero.pg-band{ min-height:var(--pg-h, var(--pg-h-md)); }
+.pg-head--lg{ --pg-h:var(--pg-h-lg); }
+.pg-head--md{ --pg-h:var(--pg-h-md); }
+.pg-head--sm{ --pg-h:var(--pg-h-sm); }
+.pg-head--give{ --pg-h:var(--pg-h-give); }
+
+/* Type is part of the tier, not a per-page decision. Three different headline
+   sizes were doing one job — .statement at 56px on /about, .display at 80px on
+   most pages, and .hero-atmos overriding .display to 96px on the two Get
+   Involved pages. Sponsorship's seven words at 96px wrapped to five lines and
+   470px of headline, which WAS its 1072px header. A tier sets its own size so
+   the same words cost the same height wherever they land. */
+.hero.pg-band .display,
+.hero.pg-band .statement{ font-size:clamp(2.6rem, 5.6vw, 4.5rem); }
+.hero.pg-band.pg-head--lg .display,
+.hero.pg-band.pg-head--lg .statement{ font-size:clamp(2.9rem, 6.6vw, 5.25rem); }
+.hero.pg-band.pg-head--sm .display,
+.hero.pg-band.pg-head--sm .statement{ font-size:clamp(2.2rem, 4.4vw, 3.4rem); }
+
+.hero.pg-band{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  background:#000;
+  /* Was 13vh; the difference was dead black between nav and eyebrow. */
+  padding-top:clamp(4.5rem, 10vh, 6.5rem);
+  /* Was clamp(12rem, 30vh, 19rem) = 270px at 900. That padding existed to hold
+     the band clear of the copy. The band comes up to meet the copy now, so
+     most of what the padding was reserving was the black Alec kept seeing. */
+  /* The band fills the header now, so this no longer reserves space for it —
+     it is just the breathing room under the copy. */
+  padding-bottom:clamp(3.5rem, 8vh, 5.5rem);
+}
+
+/* ONE pre-composed strip, not eight <img> columns.
+   The homepage wall is real elements because it is the subject and has to
+   reflow. This band never reflows, only crops — and shipping the columns
+   individually put 450 KB on /donate and broke its own-bytes budget. Flattened,
+   the frame is mostly black and compresses to a fraction of the parts, in one
+   request. The skyline and the depth falloff bake into the asset, which is why
+   there is no markup here beyond a class. */
+.hero.pg-band::before{
+  content:""; position:absolute; left:0; right:0; bottom:0; z-index:0;
+  /* A FIXED-ASPECT STRIP anchored to the bottom, not a background stretched
+     over the hero. Interior heroes run from 1.50:1 on /donate to 2.75:1 on
+     /contact at 1920, and a single image under `cover` cannot serve that range
+     — it scaled to the width and cropped the faces off the top. Giving the
+     strip the asset's own aspect means `cover` is an exact fit at every width
+     and the whole band is always visible; what changes with the page is how
+     much black sits above it, which is where the type goes anyway. */
+  /* FILLS THE HEADER. It used to be a fixed-aspect strip on the floor of the
+     hero, which is why the black existed at all: the strip's height came from
+     its aspect ratio and the hero's came from its copy, two unrelated systems
+     in one box, and the gap between them was what Alec kept seeing. Now the
+     tier owns the height and the band simply fills it, bottom-anchored so a
+     crop only ever takes ceiling and never an athlete. Zero black, every tier,
+     every width. */
+  top:0;
+  background:var(--pg-band-wide) center bottom/cover no-repeat;
+}
+
+/* The veil is now only what the PAGE needs, not what the type needs.
+   The type is protected by its own field (.wrap::before, below), so the big
+   corner radial that used to live here was doing the job twice — and the
+   second time it was dimming the middle columns to about 60% and taking the
+   faces with them. What is left: a top band so the nav stays legible over a
+   bright column, a bottom grounding so the band sits on the black the next
+   section starts from, and grain. */
+.hero.pg-band::after{
+  content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,0.80) 0%, rgba(0,0,0,0.30) 12%, rgba(0,0,0,0) 26%),
+    linear-gradient(0deg,   rgba(0,0,0,0.86) 0%, rgba(0,0,0,0.30) 11%, rgba(0,0,0,0) 26%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.16'/%3E%3C/svg%3E");
+}
+
+/* ==========================================================================
+   /donate — A MOSAIC INSTEAD OF THE BAND
+   Alec, 2026-09-08: "maybe for the donate page, we don't do vertical frames...
+   Maybe it becomes a version of the main banner, where we have kind of a
+   mosaic style, but just fewer pictures ... it will also give us a little bit
+   more breathing room ... to complement the Givebutter functionalities."
+
+   Seven overlapping frames at three depths instead of four columns in a row,
+   weighted left and centre so the right third stays quiet under the giving
+   card. The art is composed in compose_give(); all this does is point at it
+   and lift the veil, because the mosaic is already graded far darker than the
+   band (0.52 at the front against 1.00 on the homepage wall) and the band's
+   veil on top of that would take it to nothing.
+
+   It is also the LIGHTEST header on the site — 15KB against the band's 42 —
+   which matters here more than anywhere: /donate carries a payment form and
+   nineteen third-party hosts, and has the tightest byte budget we have.
+   ========================================================================== */
+.hero.pg-band.pg-head--give::before{
+  background-image:var(--pg-give-wide);
+  background-position:center top;
+}
+.hero.pg-band.pg-head--give::after{
+  background:
+    linear-gradient(180deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.22) 14%, rgba(0,0,0,0) 30%),
+    linear-gradient(0deg,   rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.24) 13%, rgba(0,0,0,0) 28%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.14'/%3E%3C/svg%3E");
+}
+/* NOT tried again: pinning this header's height on desktop. Givebutter's form
+   oscillates 508 -> 709 -> 508px while its iframe boots, and a fixed height
+   turns that swing into the panel's footer being CLIPPED and restored instead
+   of moved — the same CLS, and a payment form briefly cut off. Trading a
+   layout shift for a clipped checkout is a worse page, so the height stays a
+   minimum. See the commit for what was tried and measured. */
+
+/* The copy field hugs the left column only — the right side is the card's. And
+   it is LIGHTER here than on the band pages: the mosaic is already graded to a
+   mean luma of ~0.10 against the band's ~0.17, so the standard 0.86 field on
+   top of it took the left half to flat black and threw away the photographs
+   this page was given. The contrast probe still governs — every line has to
+   clear its floor on background alone, and it does. */
+.hero.pg-band.pg-head--give > .wrap::before{ right:52%; background:rgba(0,0,0,0.62); }
+@media (max-width:900px){
+  .hero.pg-band.pg-head--give::before{ background-image:var(--pg-give-tall); }
+  .hero.pg-band.pg-head--give > .wrap::before{ right:-14%; }
+}
+
+/* ==========================================================================
+   ONE PHOTOGRAPH INSTEAD OF THE BAND
+   Alec, on /apply: he already loves the colour picture that was sitting lower
+   down the page — two players clasping hands over the net — and wants it as the
+   header rather than the column band, "a little bit black and white", with the
+   text readable over it.
+   So: partial desaturation, not full. The rest of the site is monochrome, but
+   this frame is here BECAUSE it is warm, and taking all of that out would be
+   answering a different request. grayscale(0.78) reads as black and white at a
+   glance and keeps the trace of blue in the shirts. The copy field above does
+   the work of making the type legible; nothing else changes.
+   ========================================================================== */
+.hero.pg-band.pg-photo::before{
+  aspect-ratio:auto; top:0;
+  /* The moment is the clasped hands at about 27% down and the two faces above
+     them. A 2.44:1 header over a 3:2 photograph shows 61% of its height, so the
+     window has to sit near the top or it lands on wheels and a kit bag — which
+     is what a centred crop gave. */
+  /* 8% -> -6% AFTER THE MIRROR, and this is the flip's one real cost. The frame
+     has a kit bag in its bottom corner carrying two legible wordmarks, and a
+     mirror turns those backwards — small and dim, but backwards text reads as a
+     mistake to anyone who catches it, and it is somebody else's branding on our
+     page either way. Pushing the window up drops the bag out of the crop
+     entirely and tightens what is left onto the handshake, which is the actual
+     subject of the photograph. Both faces survive the tighter frame; verified,
+     not assumed. */
+  /* Stays at 8%/cover, and the two alternatives are recorded because both LOOK
+     right and are measurably wrong. The mirror turns the kit bag's wordmarks
+     backwards in the bottom corner; trying to crop them out:
+       -6% position  -> the image lifts off the top edge and leaves a 21px black
+                        band, invisible only because this header's own top scrim
+                        is 0.82 black and was hiding it. 0% is the floor.
+       auto 118% size -> SMALLER than cover here, not larger: a 2.44:1 box over a
+                        1.5:1 frame means cover is already ~163% of box height,
+                        so 118% shrank the image, opened a band down the left and
+                        made the bag bigger.
+     Going past cover would need ~200%, which upscales a 1500px source. The bag
+     was always in this frame — it sat bottom-RIGHT before the flip and read
+     correctly — so the flip's only real cost is that its lettering is now
+     mirrored: small, dim, cornered, and partly under the copy field. */
+  background:var(--pg-photo) center 8%/cover no-repeat;
+  /* MIRRORED. Alec, 2026-09-09: "Can we flip this picture? I want the guys face
+     to not be hidden behind the text."
+     He is right and the reason is structural, not taste: this header's type is
+     left-aligned, and in the original frame the only visible FACE sits on the
+     left, directly under the headline. Flipping puts the face in the clear
+     right half and leaves the near player's BACK under the type, which is the
+     half of the photograph that loses nothing by being covered.
+     Cheaper and more honest than re-cropping: no second asset, no new bytes,
+     and the composition is unchanged apart from its handedness. */
+  transform:scaleX(-1);
+  /* 0.78 -> 0.40, and 0.82 -> 0.92. Alec, 2026-09-09: "This picture feels sad
+     with the grey, lets let it have some of its original color."
+
+     GREY WAS ONLY HALF OF IT. The frame was also dimmed to 82%, so it read
+     flat as well as drained — desaturating and darkening at the same time is
+     what makes a photograph look sad rather than graded, and the brightness was
+     doing as much of that as the grayscale. Both move.
+
+     ALL THE WAY TO ZERO, on Alec's second look ("More color"). I had stopped at
+     0.40 arguing the navy would compete with the orange accent; comparing
+     0.40 / 0.25 / 0.12 / 0 side by side, that was wrong. Navy sits opposite
+     orange rather than against it, and this frame is lit by a dim gym, so
+     removing the grade entirely reads as natural rather than loud — there is no
+     saturated colour in the photograph to shout with.
+
+     This is the one page on the site that is not monochrome, and it stays the
+     exception on purpose: it is the page where somebody asks for money to play,
+     and the argument for warmth is strongest exactly there. /apply is the only
+     page using pg-photo, so nothing else moves.
+
+     Contrast re-measured after the change, since the headline sits on this. */
+  filter:grayscale(0) contrast(1.02) brightness(1);
+}
+.hero.pg-band.pg-photo::after{
+  background:
+    linear-gradient(180deg, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.34) 14%, rgba(0,0,0,0.06) 30%, rgba(0,0,0,0) 44%),
+    linear-gradient(0deg,   rgba(0,0,0,0.80) 0%, rgba(0,0,0,0.28) 14%, rgba(0,0,0,0) 32%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.14'/%3E%3C/svg%3E");
+}
+/* No bottom-padding override any more. This existed to hold the header open
+   below the copy so the photograph had somewhere to be; the photograph fills
+   the header now and the tier sets the height, so all this added was 306px of
+   black — and it was what pushed /apply 147px past its tier ceiling. */
+@media (max-width:900px){
+  /* A portrait box over a 3:2 photograph crops HORIZONTALLY, not vertically —
+     the vertical anchor that works on desktop does nothing here, and the centre
+     lands on the net and a wheel. The clasped hands are at about 52% across and
+     the seated player's face at 25%, so 42% holds both. */
+  /* 40%, and the VERTICAL half of this value is inert — worth saying so that
+     nobody edits it expecting movement. Since the frame was cropped to its top
+     55% it is 2.7:1, and a portrait phone box over that scales by HEIGHT under
+     cover: the height fills exactly, there is no vertical slack, and only X
+     does anything. The face therefore always sits at the same height on a
+     phone and the only choice is WHICH slice of the width to show.
+     40% is the slice holding his whole head above the copy. Read in unflipped
+     coordinates on purpose: background-position resolves before scaleX(-1)
+     mirrors the element, so the value targets where he is in the FILE, and the
+     mirror is what carries him to the right of the screen. */
+  .hero.pg-band.pg-photo::before{ background-position:40% center; }
+  /* Shorter than the band's, on purpose. A tall box over a landscape frame
+     shows a narrow vertical slice and fills the rest with net and spokes;
+     bringing the height down widens the slice back onto the two players. */
+
+}
+
+.hero.pg-band > .wrap{ position:relative; z-index:3; }
+/* The copy keeps to the left so the columns on the right are never negotiated
+   with. Scoped to TEXT, not to every child: /donate's hero is a two-column
+   grid whose second column is the Givebutter panel, and a blanket
+   `.wrap > * { max-width:50% }` squeezed the donation form into a gutter. A
+   layout rule aimed at prose has to name prose. */
+.hero.pg-band > .wrap > :is(.eyebrow, h1, h2, p, ul, ol),
+.hero.pg-band .give-intro > :is(.eyebrow, h1, p, ul){ max-width:min(44ch, 100%); }
+.hero.pg-band > .wrap > :is(.eyebrow, h1, h2, p, ul, ol){ max-width:min(44ch, 50%); }
+
+/* SHADING BEHIND THE TEXT, not a panel over the picture.
+   Alec: "add a little bit of shading/shadow behind the text so the text is
+   easier to read, but still keep the same layout."
+
+   Two layers, because one of them is not enough on its own:
+
+     · a soft field that HUGS THE COPY — tight to the block, not to the column,
+       so the band shows above it, below it and to the right of it. The version
+       before this ran the full height of the strip and blacked out three
+       columns to protect four lines of type.
+     · a text-shadow on the glyphs themselves, which is what makes the letters
+       sit ON the picture rather than in front of a rectangle.
+
+   The field carries the measurable part. text-shadow is real legibility but
+   WCAG gives it no credit and neither does the contrast probe, so the field is
+   sized so every line clears 4.5:1 on background alone — the shadow is the
+   finish on top of a number that already passes. */
+.hero.pg-band > .wrap::before{
+  content:""; position:absolute; z-index:-1;
+  left:-6%; right:44%; top:-9%; bottom:-11%;
+  background:rgba(0,0,0,0.86);
+  filter:blur(42px);
+  pointer-events:none;
+}
+.hero.pg-band > .wrap :is(.eyebrow, h1, h2, p, a, li){
+  text-shadow:0 1px 2px rgba(0,0,0,0.55), 0 2px 14px rgba(0,0,0,0.45);
+}
+
+@media (max-width:900px){
+  /* Narrow: the words take the top, the columns take everything under them —
+     the same shape the homepage uses at this width. The veil turns vertical to
+     match, and the hero grows so there is real room for the band rather than a
+     sliver behind a paragraph. */
+  .hero.pg-band{
+    /* Less black. Alec: "I want the vertical layout to be taller, I don't like
+       all the black space." The strip is 760/680 of the viewport width now —
+       349px at 390 rather than 257 — and the padding above the type comes down
+       so the dead band between the nav and the eyebrow goes with it. */
+    padding-top:clamp(4rem, 10vh, 5.5rem);
+    padding-bottom:clamp(3rem, 7vh, 4.5rem);
+  }
+  /* THE SELECTOR LIST HAS TO BE REPEATED — `*` DOES NOT WIN.
+     This line used to read `.hero.pg-band > .wrap > *{ max-width:none; }` and it
+     never once applied. The desktop rule it is trying to cancel is
+     `.hero.pg-band > .wrap > :is(.eyebrow, h1, h2, p, ul, ol)`, and :is() takes
+     the specificity of its most specific argument — `.eyebrow`, a class — so it
+     scores (0,4,0). `*` contributes nothing, so this scored (0,3,0) and lost.
+     A media query adds no specificity, so the DESKTOP two-column cap
+     (max-width: min(44ch, 50%)) was applying on every phone.
+
+     Measured before the fix, at 390px: h1 computed min(1232px, 50%) and
+     rendered 175px — the headline in a 175px gutter of a 390px screen, three
+     lines for four words, and a ten-line lead. .actions is not in that list, so
+     it computed `none` and rendered 350px: full-width buttons above half-width
+     type, which is the giveaway you can see without measuring anything.
+
+     Alec, 2026-09-09: "Text is more important... reading and understanding the
+     words." On a phone the column IS the page; there is no second column to
+     hold a photograph beside. */
+  .hero.pg-band > .wrap > :is(.eyebrow, h1, h2, p, ul, ol){ max-width:none; }
+  /* 0.88 -> 0.93. The comment above says this field is "sized so every line
+     clears 4.5:1 on background alone", and that was true for every line the
+     contrast probe knew about — but the probe only measured h1/.eyebrow/.lead/p
+     and never the orange <em> INSIDE the h1. Once it did (2026-09-09),
+     /volunteer's accent came back at 2.71:1 against a 3.0 floor at 390px: the
+     only accent on the site sitting over a bright patch of the tall band.
+     Measured, the brightest patch behind it is luminance 0.076 against the
+     orange's 0.292, and the floor needs 0.064 — about 16% darker. 0.93 buys
+     that with room. It is the field hugging the words that darkens, not the
+     photograph: the band either side of the copy is untouched. */
+  .hero.pg-band > .wrap::before{ left:-14%; right:-14%; top:-7%; bottom:-9%;
+    background:rgba(0,0,0,0.88); }
+  /* Narrow: same rule, the taller asset. The strip fills the header here too —
+     at 390 the tall band is 900x805 against a ~430px box, so it downscales at
+     every tier and nothing is upscaled on a phone. */
+  .hero.pg-band::before{ background-image:var(--pg-band-tall); }
+  .hero.pg-band::after{
+    /* The top veil reaches FURTHER DOWN than it used to. The band fills the
+       header now instead of sitting on its floor, so the eyebrow — the
+       smallest, lowest-contrast text on the page, orange on dark — sits over
+       photograph where it used to sit over flat black. It measured 4.23:1
+       against a 4.5 floor on three pages. The veil now covers the band where
+       the eyebrow actually is, around 17-22% down, rather than fading out
+       just above it. */
+    background:
+      linear-gradient(180deg, rgba(0,0,0,0.90) 0%, rgba(0,0,0,0.60) 15%, rgba(0,0,0,0.20) 30%, rgba(0,0,0,0) 42%),
+      linear-gradient(0deg,   rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.30) 12%, rgba(0,0,0,0) 26%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.16'/%3E%3C/svg%3E");
+  }
+}
+
+@media (max-width:640px){
+  .hero.pg-band{ padding-bottom:clamp(2.5rem, 6vh, 4rem); }
+}

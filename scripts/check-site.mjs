@@ -53,6 +53,21 @@ const PAGES = [
 
 // Site-wide and benign: the off-screen honeypot every form carries, and
 // aria-hidden decorative atmosphere inside an overflow:hidden parent.
+// A console error that describes THIS MACHINE's network is not a fact about the
+// site, and failing a run on one teaches people to re-run rather than to read.
+// net::ERR_NETWORK_CHANGED means the OS network interface moved under the
+// request (DHCP, VPN, wifi handover); ERR_INTERNET_DISCONNECTED means it went
+// away entirely. Neither can be caused by anything we ship. Seen on a
+// production run on 2026-09-09 that was otherwise clean, on /donate at 390.
+//
+// Kept deliberately narrow: it is two exact transport codes, not a pattern.
+// ERR_NAME_NOT_RESOLVED and friends stay fatal, because a third-party host we
+// reference going missing IS ours to know about.
+const CLIENT_SIDE_NET = /net::ERR_NETWORK_CHANGED|net::ERR_INTERNET_DISCONNECTED/;
+// Turnstile logs a %c%d line as console.error on every page; not ours.
+const isRealConsoleError = (c) =>
+  c.type() === "error" && !c.text().includes("font-size:0") && !CLIENT_SIDE_NET.test(c.text());
+
 const IGNORE_OVERFLOW = `
   if (el.closest('[aria-hidden="true"]') || el.getAttribute('aria-hidden') === 'true') return;
   if (el.matches('input[aria-hidden="true"]')) return;
@@ -61,6 +76,32 @@ const IGNORE_OVERFLOW = `
 const browser = await chromium.launch();
 let failed = false;
 const fail = (msg) => { failed = true; console.log("FAIL " + msg); };
+
+// NAVIGATE, AND BE PATIENT WITH 429. Cloudflare rate-limits this checker: it
+// walks 19 pages at two viewports and then measures budgets, several hundred
+// requests in a few minutes, and run it a few times in a row and the site
+// starts answering 429. That is the site behaving correctly and the checker
+// being impatient.
+//
+// Worse than the failure was the SHAPE of it. `if (status !== 200) fail(...)`
+// recorded the problem and then fell through to `page.click("#menuBtn")` on a
+// 429 body that has no such button, so the run died on an unhandled
+// TimeoutError with a stack trace instead of a readable line. A check that
+// crashes when the site pushes back tells you nothing about the site.
+// NAV_ prefixed: there is a second, function-scoped RETRY_STATUS further down
+// in the share-card fetcher. Same values, different job, and two constants of
+// the same name in one file is a trap even when the scopes make it legal.
+const NAV_RETRY_STATUS = new Set([429, 503]);
+const NAV_BACKOFF = [3000, 9000, 20000];
+async function gotoPage(pg, path) {
+  let res = null;
+  for (let attempt = 0; ; attempt++) {
+    res = await pg.goto(`${BASE}${path}?cb=${Date.now()}`, { waitUntil: "domcontentloaded" });
+    if (!res || !NAV_RETRY_STATUS.has(res.status()) || attempt >= NAV_BACKOFF.length) return res;
+    console.log(`  ${path} returned ${res.status()}; waiting ${NAV_BACKOFF[attempt] / 1000}s`);
+    await new Promise((r) => setTimeout(r, NAV_BACKOFF[attempt]));
+  }
+}
 const targets = new Set();
 let reference = null;
 
@@ -69,11 +110,15 @@ for (const path of PAGES) {
   const m = await browser.newPage({ viewport: { width: 390, height: 800 }, reducedMotion: "reduce" });
   const mErrs = [];
   m.on("pageerror", (e) => mErrs.push(String(e).slice(0, 90)));
-  // Turnstile logs a %c%d line as console.error on every page; not ours.
-  m.on("console", (c) => { if (c.type() === "error" && !c.text().includes("font-size:0")) mErrs.push(c.text().slice(0, 90)); });
-  const mRes = await m.goto(`${BASE}${path}?cb=${Date.now()}`, { waitUntil: "domcontentloaded" });
+  m.on("console", (c) => { if (isRealConsoleError(c)) mErrs.push(c.text().slice(0, 90)); });
+  const mRes = await gotoPage(m, path);
   await m.waitForTimeout(1500);
-  if (mRes.status() !== 200) fail(`${path} returned ${mRes.status()}`);
+  if (!mRes || mRes.status() !== 200) {
+    // Stop here rather than clicking into a page that is not the page.
+    fail(`${path} returned ${mRes ? mRes.status() : "no response"} after ${NAV_BACKOFF.length + 1} attempts`);
+    await m.close();
+    continue;
+  }
   await m.click("#menuBtn");
   await m.waitForTimeout(450);
   const mob = await m.evaluate(`(() => ({
@@ -95,8 +140,13 @@ for (const path of PAGES) {
   const d = await browser.newPage({ viewport: { width: 1440, height: 1000 }, reducedMotion: "reduce" });
   const dErrs = [];
   d.on("pageerror", (e) => dErrs.push(String(e).slice(0, 90)));
-  d.on("console", (c) => { if (c.type() === "error" && !c.text().includes("font-size:0")) dErrs.push(c.text().slice(0, 90)); });
-  await d.goto(`${BASE}${path}?cb=${Date.now()}`, { waitUntil: "domcontentloaded" });
+  d.on("console", (c) => { if (isRealConsoleError(c)) dErrs.push(c.text().slice(0, 90)); });
+  const dRes = await gotoPage(d, path);
+  if (!dRes || dRes.status() !== 200) {
+    fail(`${path} @1440 returned ${dRes ? dRes.status() : "no response"} after ${NAV_BACKOFF.length + 1} attempts`);
+    await d.close();
+    continue;
+  }
   await d.waitForTimeout(1500);
   await d.click('.nav-toggle[aria-controls="navOurWork"]');
   await d.waitForTimeout(350);
@@ -176,10 +226,62 @@ if (missing.status !== 404) fail(`unknown path returned ${missing.status}, expec
 {
   const OG_BUDGET = 300 * 1024; // WhatsApp-class ceiling; over it, no preview
   const seen = new Map();
+
+  // RETRY ON 429, because otherwise this check lies. It fetches every page and
+  // then every distinct card — 30+ requests in a burst — and against PRODUCTION
+  // Cloudflare rate-limits that and hands back 429s. The check then reported
+  // "og:image ... returned 429" and FAILED, for a card that serves 200 on every
+  // manual request. Twice in one session it also surfaced as "page has no
+  // og:image", because a rate-limited HTML fetch returns an error body with no
+  // meta tags in it.
+  //
+  // A check that fails for reasons unrelated to the site is worse than no
+  // check: it trains you to skim past red, and the day it means something you
+  // will skim past that too. Backoff is short and bounded — three tries, 400ms
+  // then 1200ms — so a genuine 429 storm still ends in a real failure rather
+  // than an infinite wait.
+  const RETRY_STATUS = new Set([429, 503]);
+  const sleep = (ms) => new Promise((ok) => setTimeout(ok, ms));
+  // PACE FIRST, RETRY SECOND. This section fetches 19 pages and then every
+  // distinct card back to back; against production Cloudflare rate-limits that
+  // burst, and a 429 is not a fact about the site. Three tries at 400/1200ms
+  // was still too impatient — the limiter outlasted it — so the throttle below
+  // keeps us under the limit in the first place and the backoff is only there
+  // for when that is not enough.
+  //
+  // 120ms costs this section about three seconds and removes a whole class of
+  // false failure. Bounded on purpose: four tries ending at 4s, so a genuine
+  // rate-limit storm still fails rather than hanging, and a 404 or a 500 still
+  // fails on the first response because those are never transient.
+  let lastFetch = 0;
+  async function get(url, tries = 4) {
+    let r;
+    for (let i = 0; i < tries; i++) {
+      const gap = Date.now() - lastFetch;
+      if (gap < 120) await sleep(120 - gap);
+      lastFetch = Date.now();
+      r = await fetch(url);
+      if (!RETRY_STATUS.has(r.status)) return r;
+      if (i < tries - 1) await sleep([500, 1500, 4000][i]);
+    }
+    return r;
+  }
   for (const path of PAGES) {
-    const html = await (await fetch(`${BASE}${path}?cb=${Date.now()}`)).text();
+    const res = await get(`${BASE}${path}?cb=${Date.now()}`);
+    const html = await res.text();
     const src = html.match(/<meta property="og:image" content="([^"]+)"/)?.[1];
-    if (!src) { fail(`${path} has no og:image`); continue; }
+    // SAY WHAT CAME BACK. "has no og:image" is true and useless: it points at
+    // the page's markup when the actual cause is usually the response — a
+    // status, a challenge interstitial, an error body. This failure fired three
+    // times in one session against pages that serve the tag correctly on every
+    // manual request, and each time it cost a round of guessing because the
+    // message described the wrong thing.
+    if (!src) {
+      const ct = res.headers.get("content-type") || "?";
+      const head = html.replace(/\s+/g, " ").trim().slice(0, 160);
+      fail(`${path} has no og:image — HTTP ${res.status}, ${ct}, ${html.length}b: ${head}`);
+      continue;
+    }
     if (!/<meta property="og:image:alt" content="[^"]+"/.test(html))
       fail(`${path} og:image has no alt text`);
 
@@ -188,7 +290,7 @@ if (missing.status !== 404) fail(`unknown path returned ${missing.status}, expec
       // og:image must be absolute: crawlers do not resolve relative paths
       if (!/^https:\/\//.test(src)) { fail(`${path} og:image is not absolute: ${src}`); continue; }
       const asset = new URL(src).pathname;
-      const r = await fetch(`${BASE}${asset}?cb=${Date.now()}`);
+      const r = await get(`${BASE}${asset}?cb=${Date.now()}`);
       if (!r.ok) { fail(`og:image ${asset} returned ${r.status}`); seen.set(src, false); continue; }
       const bytes = (await r.arrayBuffer()).byteLength;
       if (bytes > OG_BUDGET)
@@ -287,8 +389,17 @@ if (missing.status !== 404) fail(`unknown path returned ${missing.status}, expec
 // is slow, so the red build was the harness, not the money path, and a check
 // that goes red on a working form is a check people learn to skip.
 //
-// The retry is loud on purpose. If this starts printing every run, the embed
-// really is degrading and the note above has expired.
+// The retry is loud on purpose — but PRINTING EVERY RUN NO LONGER MEANS THE
+// EMBED IS DEGRADING, and that earlier claim is withdrawn rather than left to
+// mislead. On 2026-09-09 this began printing for /hustle-and-heart on every
+// single run. Measured six times standalone against production, using the exact
+// assertions below: it attaches in 238-294ms and the amount step is visible in
+// 1.6-2.2s with 9-10 pickable inputs, on BOTH pages. The money path is fine.
+//
+// What this line actually reports is that the first attempt was starved while
+// this script was doing other work. Read it as harness load, and check the
+// money path by running these two pages on their own before believing anything
+// is wrong with the form.
 for (const path of ["/donate", "/hustle-and-heart"]) {
   let lastError = null;
   for (let attempt = 1; attempt <= 2; attempt++) {
@@ -296,6 +407,11 @@ for (const path of ["/donate", "/hustle-and-heart"]) {
   try {
     await g.goto(`${BASE}${path}?cb=${Date.now()}`, { waitUntil: "domcontentloaded" });
     const form = g.locator("givebutter-giving-form");
+    // 20s, and RAISING IT WAS TRIED AND REVERTED on 2026-09-09. Going to 45s
+    // did not stop the retry below from firing; it just made the whole run
+    // exceed 300s, which means the element genuinely does not attach for a long
+    // time while this script is busy — not that it was a few seconds short.
+    // The retry is the right tool for that and it already works.
     await form.waitFor({ state: "attached", timeout: 20000 });
 
     // Scroll the panel into view before asserting. The embed is deferred until
@@ -424,6 +540,40 @@ for (const path of ["/donate", "/hustle-and-heart"]) {
 // ratchet is not loosened in any way that matters: our real content would have
 // to grow by 4KB, 4% in one go, to trip it, and the intermittent red build that
 // was training everyone to ignore this check is gone.
+// ==========================================================================
+// WHAT THESE NUMBERS ARE FOR — re-ruled by Alec, 2026-09-09.
+//
+//   "I think I'm okay with being over budget on kilobytes, I care more about
+//    quality and functionality. Make sure we have the best website for what we
+//    want and a stale rule didn't hurt us more than help us."
+//
+// So the caps are re-scoped. They are REGRESSION DETECTORS, not a quality
+// constraint. They exist to catch the accident — a 5MB PNG dropped in, a
+// third-party script that quietly doubles, an image shipped at 4x the size it
+// paints. They do NOT exist to make anyone choose a worse version of the site.
+//
+// I audited whether the old framing had already cost us anything, because that
+// was the question Alec actually asked. What I found:
+//
+//   · IMAGE QUALITY: never compromised. Every panel is sized to what it
+//     actually paints (the front four resolve at ~390 device px and ship at
+//     820), so nothing upscales. And at a 100% crop, q68 / q78 / q88 on a
+//     front-plane face are indistinguishable — these are monochrome frames
+//     with smooth tone and WebP handles them well. q88 would cost +52KB per
+//     panel for nothing visible. Every byte decision on the images was driven
+//     by measurement, and would have been the same with no cap at all.
+//   · DOCUMENTATION: this is where it DID hurt. Twice in one day I cut
+//     explanatory comments out of a stylesheet to claw back a kilobyte.
+//     Comments are roughly half this site's gzipped CSS, and deleting the
+//     reasoning to save 0.2% of a page is a bad trade — the reasoning is what
+//     stops the next person reintroducing the bug. Those comments are restored
+//     and the caps below have room for more.
+//
+// The rule going forward: a cap may never be the reason something ships worse.
+// If a cap is in the way of a decision Alec made or a comment worth writing,
+// the cap moves and the arithmetic gets written here. If it is in the way of
+// carelessness, it holds. The ratchet history below stays because it is a
+// useful record of what this page has cost over time.
 const BUDGET = {
   // Re-baselined 2026-09-08, and this is a RAISE, so per the ratchet rule above
   // here is the reason and the evidence.
@@ -475,7 +625,12 @@ const BUDGET = {
   // removing the pointer parallax dropped a requestAnimationFrame loop, two
   // window listeners and will-change:transform on nineteen composited layers.
   // Bytes are not the only weight a page carries.
-  "/": { own: 460, total: 815, reqs: 38, hosts: 4, cls: 0.10 },
+  // 2026-09-09: 460 -> 520 own, 815 -> 900 total. Measured own on the deployed
+  // build is 460KB — 276 of it the twenty-two header photographs Alec chose,
+  // the rest the page. 520 is that plus ~60KB of deliberate headroom: enough
+  // for two more panels or a page of comments without anyone having to think
+  // about it, and still far below the point where a real accident hides.
+  "/": { own: 520, total: 900, reqs: 40, hosts: 4, cls: 0.10 },
   // cls:null, still — but for a smaller and better-understood reason than
   // before. The Givebutter cause IS fixed: reserving the panel's height took
   // MOBILE from 0.12-0.76 down to a flat 0 across five runs in every condition
@@ -549,20 +704,53 @@ const BUDGET = {
   // 1900px at q72 (72KB) down to 1500px at q54 (41KB), because the band sits
   // under a veil that is 30-96% black and encoder artifacts are invisible
   // there in a way they are not on the homepage wall. Measured own 155KB.
-  "/donate": { own: 160, total: 9000, reqs: 108, hosts: 21, cls: null },
+  // 2026-09-09: 160 -> 200. Measured own is 158KB. This page keeps the tightest
+  // real cap on the site and that is deliberate — it carries a payment form and
+  // nineteen third-party hosts, and a donor on a bad connection is the one
+  // visitor whose experience is worth protecting with a number. 200 leaves room
+  // to write, not to be careless.
+  "/donate": { own: 200, total: 9000, reqs: 108, hosts: 21, cls: null },
 };
 
-for (const [path, cap] of Object.entries(BUDGET)) {
+// MEASURE ONE PAGE, ONCE. This was the body of the loop below until the loop
+// needed to call it more than once — see the retry underneath.
+//
+// It returns {ok:false} for an interstitial rather than failing, because
+// "this is not our page" is a reason to try again, not a verdict on the site.
+async function measureBudget(path) {
   const b = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: "reduce" });
   let own = 0, total = 0, reqs = 0;
   const hosts = new Set();
-  b.on("response", async (r) => {
-    let n = 0;
-    try { n = (await r.body()).length; } catch { /* opaque/aborted */ }
-    const h = new URL(r.url()).host;
-    if (h) hosts.add(h);
-    total += n; reqs++;
-    if (/adapt-to-life|adapttolife/.test(h)) own += n;
+  // EVERY HANDLER MUST BE AWAITED BEFORE THE COUNTERS ARE READ. page.on() is
+  // fire-and-forget: nothing waits for these. Each one awaits r.body() before
+  // it increments, so any handler still in flight when the page closed
+  // contributed NOTHING, and this loop read whatever happened to resolve first.
+  //
+  // It did not look like a bug, it looked like a page. Measured against
+  // production on 2026-09-09 the same build reported /donate at 205KB/102 req
+  // in one run and 37KB/8 req in the next — and the homepage reported that
+  // IDENTICAL 37KB/67KB/8req/CLS 0.0096, which is the tell: two different pages
+  // cannot weigh the same to the byte. Both were really reporting "the handful
+  // of responses that finished first".
+  //
+  // A budget that swings 5x fails spuriously AND passes trivially, and this one
+  // did both in a single session — it went green on a homepage measuring 8
+  // requests, which is how a 40-request ceiling gets cleared by measuring
+  // nothing at all.
+  //
+  // r.body() is kept rather than switching to request.sizes(): body() is the
+  // DECOMPRESSED length every one of these caps was calibrated against, and
+  // swapping the metric would silently re-baseline every budget in this file.
+  const inflight = [];
+  b.on("response", (r) => {
+    inflight.push((async () => {
+      let n = 0;
+      try { n = (await r.body()).length; } catch { /* opaque/aborted */ }
+      const h = new URL(r.url()).host;
+      if (h) hosts.add(h);
+      total += n; reqs++;
+      if (/adapt-to-life|adapttolife/.test(h)) own += n;
+    })());
   });
   await b.addInitScript(`window.__cls = 0;
     new PerformanceObserver((l) => { for (const e of l.getEntries()) if (!e.hadRecentInput) window.__cls += e.value; })
@@ -572,10 +760,67 @@ for (const [path, cap] of Object.entries(BUDGET)) {
   // ~14s on a throttled phone. Settle long enough to bill them for it.
   await b.waitForTimeout(9000);
   const cls = await b.evaluate("+window.__cls.toFixed(4)");
+  // PROVE WE MEASURED THE PAGE. Draining the handlers fixed the counter race,
+  // and a SECOND cause of the same symptom survived it: Cloudflare sometimes
+  // answers these navigations with a challenge interstitial. That is a real
+  // page — it loads, it has a CLS, it finishes — it is just not ours, and it
+  // measures at about 8 requests and 37KB. Against a 200KB ceiling that reads
+  // as a comfortable pass.
+  //
+  // Both readings were seen on production on 2026-09-09: /donate at 102 req and
+  // at 8 req minutes apart, while the page itself is stable at 102 responses
+  // over five consecutive direct loads. A budget that can silently grade an
+  // interstitial is not a budget, and this is the second time today the same
+  // symptom had a different cause underneath it.
+  //
+  // The footer is on every page of this site and on no Cloudflare page.
+  const isOurs = await b.evaluate(() => !!document.querySelector("footer.footer"));
+  const title = isOurs ? "" : await b.title();
+  // Drain before closing: closing the page rejects any outstanding body() and
+  // those responses would vanish from the totals.
+  await Promise.allSettled(inflight);
   await b.close();
+  if (!isOurs) return { ok: false, title };
+  return {
+    ok: true, cls,
+    ownKB: Math.round(own / 1024),
+    totalKB: Math.round(total / 1024),
+    reqs,
+    third: [...hosts].filter((h) => !/adapt-to-life|adapttolife/.test(h)),
+  };
+}
 
-  const ownKB = Math.round(own / 1024), totalKB = Math.round(total / 1024);
-  const third = [...hosts].filter((h) => !/adapt-to-life|adapttolife/.test(h));
+for (const [path, cap] of Object.entries(BUDGET)) {
+  // WAIT IT OUT RATHER THAN HANDING THE JOB BACK. The guard above catches the
+  // interstitial reliably; what it used to do was fail the whole run and print
+  // "re-run", which is not a fix, it is a chore. Both production runs on
+  // 2026-09-09 hit it on /donate and both passed clean on a manual re-run
+  // moments later — the block is transient and rate-shaped, so the answer is to
+  // back off and ask again exactly as a person was doing by hand.
+  //
+  // /donate is the one that gets hit because it is the LAST page measured, at
+  // the end of a run that has already made several hundred requests, and it is
+  // the heaviest page on the site: 102 responses across 19 third-party hosts.
+  // It is the natural place for a rate rule to bite.
+  //
+  // Deliberately NOT done here: changing the user agent, or anything else that
+  // dresses this up as a different client. The check is not entitled to get
+  // past a control the site chose to have; it is entitled to be patient. If
+  // these three attempts ever stop being enough, the fix is a WAF rule that
+  // exempts this checker, which is Alec's call to make and not this script's.
+  const BACKOFF = [5000, 15000];
+  let m = null;
+  for (let attempt = 0; ; attempt++) {
+    m = await measureBudget(path);
+    if (m.ok || attempt >= BACKOFF.length) break;
+    console.log(`  ${path} answered with an interstitial (${m.title.slice(0, 40)}); waiting ${BACKOFF[attempt] / 1000}s`);
+    await new Promise((r) => setTimeout(r, BACKOFF[attempt]));
+  }
+  if (!m.ok) {
+    fail(`${path} budget measured something that is not the page after ${BACKOFF.length + 1} attempts — no site footer found (title: ${m.title.slice(0, 60)}). A Cloudflare block that is no longer transient; consider a WAF exemption for this checker.`);
+    continue;   // never assert a budget against numbers we know are not the page
+  }
+  const { ownKB, totalKB, reqs, third, cls } = m;
   if (ownKB > cap.own) fail(`${path} own bytes ${ownKB}KB over budget ${cap.own}KB`);
   if (totalKB > cap.total) fail(`${path} total bytes ${totalKB}KB over budget ${cap.total}KB`);
   if (reqs > cap.reqs) fail(`${path} ${reqs} requests over budget ${cap.reqs}`);

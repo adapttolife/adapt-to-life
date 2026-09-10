@@ -1,0 +1,351 @@
+/* ==========================================================================
+   Adapt To Life — header, photograph wall
+   --------------------------------------------------------------------------
+   Two variants share this file because they share one idea: the header is made
+   of PHOTOGRAPHS AS PHOTOGRAPHS — rectangles with edges — rather than of
+   figures cut out of them. That is a different craft problem from the cut-out
+   stage in hero-stadium.css, and it has one failure mode: a pile of rectangles
+   is a mood board, not a header.
+
+   Four things stop it being a mood board.
+
+     1. THREE DEPTHS, HARD SEPARATED. Back panels are dim, low-contrast and
+        genuinely blurred; front panels are sharp and full-brightness. There is
+        no middle ground where a viewer has to decide what to look at.
+     2. ATMOSPHERE BETWEEN THE LAYERS, not just on top. Two haze planes sit
+        INSIDE the stack — one above the back panels, one above the mid — so
+        the depth is something the light does, not something the CSS asserts.
+        This is the part that makes it read as a room.
+     3. ONE LIGHT SOURCE. A warm rake from the lower right. Every panel carries
+        the same hairline warm edge and drops its shadow the same way.
+     4. A QUIET ZONE FOR THE TYPE. The wall is authored so its darkest, emptiest
+        region is wherever the headline goes. Contrast is not left to luck.
+
+   The photographs stay black and white. The orange is environment — glow
+   behind the wall, warm edges, haze — and never a tint on an athlete.
+   ========================================================================== */
+
+.hero-wall-photo{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  background:#000;
+  min-height:clamp(580px, 88svh, 900px);
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  padding-top:clamp(6.5rem, 16vh, 10.5rem);
+  padding-bottom:clamp(2rem, 5vh, 3.5rem);
+}
+
+/* ---- the room ------------------------------------------------------------ */
+.mw-sky{
+  position:absolute; inset:0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(110% 80% at 82% 104%, rgba(255,92,57,0.46) 0%, rgba(255,92,57,0.14) 34%, rgba(255,92,57,0) 64%),
+    radial-gradient(60% 44% at 88% 86%,  rgba(255,150,90,0.34) 0%, rgba(255,92,57,0) 72%),
+    linear-gradient(180deg, #000 0%, #030304 42%, #120B08 100%);
+}
+
+/* ---- the wall ------------------------------------------------------------ */
+.mw-wall{ position:absolute; inset:0; z-index:1; pointer-events:none; }
+
+.mw-p{
+  position:absolute; margin:0; overflow:hidden;
+  border-radius:3px;
+  transform:rotate(var(--r,0deg));
+}
+.mw-p img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+/* Depth. Brightness and blur do the work; the shadow only confirms it.
+   A panel two planes back that is merely SMALLER still reads as near, which is
+   why the first pass looked like a contact sheet. */
+.mw-p.d3{ /* front */
+  z-index:6;
+  box-shadow:
+    0 42px 80px -34px rgba(0,0,0,0.95),
+    0 8px 22px -12px rgba(0,0,0,0.8),
+    0 0 0 1px rgba(255,150,110,0.16);
+}
+.mw-p.d3 img{ filter:contrast(1.06); }
+
+.mw-p.d2{ /* mid */
+  z-index:4;
+  box-shadow:
+    0 28px 56px -30px rgba(0,0,0,0.9),
+    0 0 0 1px rgba(255,150,110,0.10);
+}
+/* Brightness is baked into the file now (see DEPTH_DIM in build-hero-panels.py),
+   which is what paid for the resolution. The mid plane keeps NO blur: it is
+   middle ground, and blurring it was half of the inconsistency Alec could see. */
+.mw-p.d2 img{ filter:contrast(0.96); }
+
+.mw-p.d1{ /* back */
+  z-index:2;
+  box-shadow:0 18px 40px -26px rgba(0,0,0,0.85);
+}
+/* The back plane keeps a DELIBERATE, gentle blur — Alec is fine with background
+   frames being soft, he objected to it being inconsistent. 1.2px on a frame
+   that is no longer being upscaled reads as depth of field. 2.4px on one that
+   was upscaled 2.5x read as a bad file. */
+.mw-p.d1 img{ filter:contrast(0.92) blur(1.2px); }
+
+/* Atmosphere INSIDE the stack. Rule 2: the haze planes are interleaved with
+   the panels, so a mid panel is genuinely seen through the air in front of the
+   back row. Warm low and to the right, because that is where the light is. */
+.mw-haze{ position:absolute; inset:0; pointer-events:none; }
+.mw-haze.h1{
+  z-index:3;
+  background:
+    radial-gradient(90% 70% at 84% 96%, rgba(255,110,70,0.20) 0%, rgba(255,110,70,0) 62%),
+    linear-gradient(180deg, rgba(8,8,10,0.55) 0%, rgba(8,8,10,0.28) 46%, rgba(10,8,8,0.60) 100%);
+}
+.mw-haze.h2{
+  z-index:5;
+  background:
+    radial-gradient(80% 60% at 86% 98%, rgba(255,120,80,0.16) 0%, rgba(255,120,80,0) 60%),
+    linear-gradient(180deg, rgba(8,8,10,0.30) 0%, rgba(8,8,10,0.06) 44%, rgba(10,8,8,0.34) 100%);
+}
+
+/* The quiet zone. Rule 4: a wedge of dark on the left that the headline sits
+   in, whatever the wall happens to be doing behind it. */
+/* A CORNER, not a column. While the header carried a headline, a sub-line, two
+   buttons and a meter, the quiet zone had to be a full-height left wedge. Now
+   it is five words in the top-left, so the shade is radial from that corner —
+   which hands the entire bottom-left back to the photographs. */
+.mw-scrim{
+  position:absolute; inset:0; z-index:7; pointer-events:none;
+  background:radial-gradient(118% 86% at 6% 6%,
+    rgba(6,6,8,0.95) 0%,
+    rgba(6,6,8,0.84) 26%,
+    rgba(6,6,8,0.46) 44%,
+    rgba(6,6,8,0.12) 64%,
+    rgba(6,6,8,0) 80%);
+}
+
+.mw-grain{
+  position:absolute; inset:0; z-index:9; pointer-events:none;
+  opacity:0.26; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+.mw-vig{
+  position:absolute; inset:0; z-index:9; pointer-events:none;
+  background:radial-gradient(126% 104% at 52% 46%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.50) 100%); }
+
+/* ---- copy ---------------------------------------------------------------- */
+/* Less is more, so this is a headline and a button. No eyebrow, no sub-line —
+   the wall behind it already says "made by athletes, for athletes" better than
+   the words did. */
+.mw-copy{ position:relative; z-index:8; width:100%; }
+.mw-copy .display{
+  max-width:12ch;
+  /* A SHADOW ON THE GLYPHS, not a panel behind them.
+     Alec, 2026-09-09: "if you look closely at the 'rts' in sports - its kinda
+     hard to see bc robby picture is brighter... I dont want it to be harder to
+     see robby, lets be surgical."
+
+     He is right, and it is measurable. The accent word is orange #FF5C39
+     (luminance 0.292) and Robby's frame slides further behind it as the
+     viewport widens, because the wall scales with the page while the headline
+     does not move. Measured against the brightest 5% behind the last third of
+     the word:
+
+         1280  3.82:1      1600  3.29:1
+         1392  4.17:1      1920  2.28:1   <- under the 3.0 large-text floor
+
+     THE CHOICE OF INSTRUMENT IS THE WHOLE ANSWER TO HIS WORRY. A scrim or a
+     panel behind the copy block would dim Robby's entire frame — that is the
+     version that makes him harder to see, and it is the obvious one. A
+     text-shadow darkens only the few pixels hugging each letterform. Robby's
+     panel is 248px wide; this touches perhaps six of them, at the outlines.
+     Measured after: his frame's mean luminance is unchanged to three decimals.
+
+     Two layers because one does not do both jobs: the tight 2px shadow gives
+     the letter an edge against a busy photograph, the soft 16px one lifts it
+     off a light field like his shirt. Kept low — Alec asked for "lightly faded
+     shadow", and a heavy one on 5rem type reads as a print artefact. */
+  text-shadow:0 1px 2px rgba(0,0,0,0.55), 0 2px 16px rgba(0,0,0,0.5);
+}
+/* The header is a photograph and five words now — Alec, 2026-09-08: "feel
+   first, then CTA". Donate rides the nav at every width and the live drive
+   keeps the campaign band directly below, so nothing is lost from the page;
+   it is just no longer arguing with the picture. */
+.mw-copy .actions{ display:flex; flex-wrap:wrap; align-items:center; gap:0.9rem 1.2rem; margin-top:2.2rem; }
+.mw-copy .mw-quiet{ font-size:0.95rem; color:var(--cream-mute); border-bottom:1.5px solid var(--orange); padding-bottom:2px; }
+.mw-copy .mw-quiet:hover{ color:#fff; border-bottom-color:var(--orange-hot); }
+
+/* One line, not a card. The header still has to say money is moving, and it
+   still stands the duplicate band below down when it shows — but at this size
+   the goal is a sentence, not a dashboard. */
+.mw-drive{ position:relative; z-index:8; margin-top:clamp(1.8rem,4vh,2.6rem); }
+.mw-drive-in{
+  display:inline-flex; align-items:center; gap:0.85rem; flex-wrap:wrap;
+  font-size:0.9rem; color:var(--cream-mute);
+}
+.mw-drive-dot{
+  width:7px; height:7px; border-radius:50%; background:var(--orange); flex:0 0 auto;
+  box-shadow:0 0 0 0 rgba(255,92,57,0.55); animation:mw-pulse 2.6s ease-out infinite; }
+@keyframes mw-pulse{
+  0%{ box-shadow:0 0 0 0 rgba(255,92,57,0.5); }
+  70%{ box-shadow:0 0 0 9px rgba(255,92,57,0); }
+  100%{ box-shadow:0 0 0 0 rgba(255,92,57,0); } }
+.mw-drive-in b{ color:#fff; font-weight:600; }
+.mw-drive-in .mw-bar{
+  width:120px; height:3px; border-radius:999px; background:rgba(255,255,255,0.16); overflow:hidden; }
+.mw-drive-in .mw-bar i{
+  display:block; height:100%; width:0; border-radius:999px;
+  background:linear-gradient(90deg,var(--orange-ink),var(--orange-hot));
+  box-shadow:0 0 14px -2px rgba(255,92,57,0.8);
+  transition:width 1.1s cubic-bezier(.22,.9,.28,1) .5s; }
+.mw-drive-in a{ color:#fff; border-bottom:1.5px solid var(--orange); padding-bottom:1px; }
+
+/* ---- entrance ------------------------------------------------------------ */
+/* The wall assembles from the back forward, then the type arrives. */
+/* The photographs are visible by default too, for the same reason: the wall is
+   the homepage's entire argument, and it should not depend on a script to
+   exist. What is left is a short fade the .lit class applies ON TOP of an
+   already-painted wall — an enhancement, not a precondition. */
+.hero-wall-photo .mw-p{ opacity:1; transform:rotate(var(--r,0deg)); }
+.hero-wall-photo.lit .mw-p{ opacity:1; transform:rotate(var(--r,0deg)); }
+/* The headline paints immediately — it is this page's largest contentful
+   paint, and hiding it behind an animation cost 1.2 seconds of it. */
+.hero-wall-photo .mw-rise{ opacity:1; transform:none; }
+.hero-wall-photo.lit .mw-rise{ opacity:1; transform:none; }
+
+@media (prefers-reduced-motion: reduce){
+  .hero-wall-photo .mw-p,
+  .hero-wall-photo .mw-rise{ opacity:1 !important; transform:rotate(var(--r,0deg)) !important; transition:none !important; }
+  .mw-drive-dot{ animation:none; }
+  .mw-drive-in .mw-bar i{ transition:none; }
+}
+
+/* ==========================================================================
+   E — THE BANNER
+   The arena version: one row of portrait panels across the full width, bottom
+   aligned, varying heights, packed with a hairline of dark between them. The
+   type is knocked out over the middle in the site's grotesk rather than its
+   serif, because that is the register a stadium banner is actually set in —
+   and because seeing the two side by side is the only way to decide.
+   ========================================================================== */
+.hero-banner{ justify-content:flex-end; padding-bottom:0; }
+.hero-banner .mw-wall{ inset:auto 0 0 0; height:100%; }
+.hero-banner .mw-p{ border-radius:0; }
+/* every panel is bottom-anchored to one baseline: that is what makes a row of
+   different heights read as a team photograph and not as a broken grid */
+.hero-banner .mw-p{ bottom:0; top:auto; }
+/* when a column is narrower than its crop, give up shoulders, never faces */
+.hero-banner .mw-p img{ object-position:50% 22%; }
+.hero-banner .mw-p.d3{ box-shadow:0 0 0 1px rgba(255,150,110,0.13), -18px 0 44px -18px rgba(0,0,0,0.95); }
+.hero-banner .mw-p.d2{ box-shadow:0 0 0 1px rgba(255,150,110,0.09), -14px 0 36px -18px rgba(0,0,0,0.9); }
+.hero-banner .mw-p.d2 img{ filter:brightness(0.68) contrast(0.96) blur(0.5px); }
+.hero-banner .mw-p.d1 img{ filter:brightness(0.42) contrast(0.88) blur(1.6px); }
+.hero-banner .mw-haze.h1{
+  background:linear-gradient(180deg, rgba(8,8,10,0.86) 0%, rgba(8,8,10,0.30) 34%, rgba(8,8,10,0.10) 62%, rgba(12,8,7,0.72) 100%); }
+.hero-banner .mw-haze.h2{
+  background:
+    radial-gradient(70% 46% at 50% 108%, rgba(255,110,70,0.26) 0%, rgba(255,110,70,0) 66%),
+    linear-gradient(180deg, rgba(8,8,10,0.72) 0%, rgba(8,8,10,0.10) 40%, rgba(8,8,10,0) 70%); }
+/* The type lives in the bottom third — where a team banner actually puts it —
+   so the faces in the upper two thirds are never crossed by a word. The scrim
+   is therefore a floor, not a centre pool. */
+.hero-banner .mw-scrim{
+  background:
+    linear-gradient(0deg,
+      rgba(6,6,8,0.97) 0%, rgba(6,6,8,0.94) 26%, rgba(6,6,8,0.72) 42%,
+      rgba(6,6,8,0.30) 56%, rgba(6,6,8,0.04) 72%, rgba(6,6,8,0) 84%),
+    linear-gradient(180deg, rgba(6,6,8,0.55) 0%, rgba(6,6,8,0) 26%); }
+.hero-banner .mw-copy{ text-align:center; padding-bottom:clamp(2.5rem,6vh,4.5rem); }
+.hero-banner .mw-copy .display{
+  font-family:var(--font-body);
+  font-weight:700; font-style:normal;
+  letter-spacing:-0.035em; line-height:0.94;
+  font-size:clamp(2.6rem, 6.6vw, 6rem);
+  max-width:14ch; margin-inline:auto; }
+.hero-banner .mw-copy .display em{ font-style:normal; }
+.hero-banner .mw-copy .actions{ justify-content:center; }
+.hero-banner .mw-drive-in{ justify-content:center; }
+.hero-banner .mw-drive{ text-align:center; }
+
+/* ---- responsive ---------------------------------------------------------- */
+@media (max-width:1100px){
+  .mw-copy .display{ max-width:11ch; }
+  .mw-scrim{
+    background:linear-gradient(94deg,
+      rgba(6,6,8,0.96) 0%, rgba(6,6,8,0.90) 28%, rgba(6,6,8,0.62) 46%,
+      rgba(6,6,8,0.18) 60%, rgba(6,6,8,0) 74%); }
+}
+
+@media (max-width:900px){
+  /* ==========================================================================
+     NARROW — the grid.
+     Alec, 2026-09-08: "I want this to be the main banner style for mobile."
+     A portrait box wants a grid rather than a scatter: every cell the same
+     size, the arrangement a rule instead of nineteen hand-placed decisions,
+     and nothing that can fall apart at a width nobody tested. Same twelve
+     files the desktop wall already loaded, so a phone downloads nothing extra.
+     ========================================================================== */
+  .hero-wall-photo{
+    min-height:calc(100svh - 4.4rem);
+    padding:0;
+    justify-content:center;
+  }
+  .mw-wall{
+    display:grid; grid-template-columns:repeat(2, 1fr);
+    /* TWO rows and a band between them. The band is where the headline lives:
+       the slab used to float over the middle row and cut the top 41% off
+       whatever was there, and no portrait in the library survives that (the
+       highest head in any panel sits at 0.35). Giving the type its own gap
+       means four photographs, all whole. 1fr rows so they split whatever the
+       band leaves — at 390x844 that is (774-160)/2 = 307px a cell. */
+    grid-template-rows:1fr 1fr;
+    row-gap:clamp(8rem, 19vh, 10.5rem);
+    column-gap:2px; inset:0;
+  }
+  .mw-p{ overflow:hidden; }
+  .mw-p img{ width:100%; height:100%; object-fit:cover; }
+  /* Depth stops being three planes and becomes two states: most of the grid is
+     held at a fifth so four faces can carry it. Twelve photographs all at full
+     brightness is twelve photographs competing. */
+  /* .mw-wall .mw-p img matches the (0,2,1) of the wide `.mw-p.d3 img` rules and
+     sits later in the file, so it wins without !important; the lit cells are
+     emitted at (0,3,1) by the generator and out-specify it in turn. */
+  .mw-wall .mw-p img{ filter:grayscale(1) brightness(0.34) contrast(0.92); }
+
+  /* the haze planes are a wide-layout device; a grid has no air between rows */
+  .mw-haze{ display:none; }
+  .mw-scrim{
+    background:linear-gradient(180deg,
+      rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.18) 22%, rgba(0,0,0,0) 40%,
+      rgba(0,0,0,0) 68%, rgba(0,0,0,0.34) 88%, rgba(0,0,0,0.72) 100%); }
+
+  /* The wordmark sits in a solid slab that interrupts the grid rather than
+     floating over it — a headline set straight onto a contact sheet is a
+     contrast problem you cannot solve, because what is behind it changes with
+     every crop. The rule under it is the only orange on the screen. */
+  .mw-copy{
+    /* centred on the band, not floated over a photograph */
+    position:absolute; left:0; right:0; top:50%; transform:translateY(-50%);
+    padding:0 clamp(0.75rem, 3vw, 1.5rem);
+  }
+  .mw-copy .display{
+    margin:0; max-width:none;
+    background:#000;
+    padding:clamp(1.6rem,6vw,2.4rem) clamp(1.2rem,5vw,2rem) clamp(1.5rem,5vw,2.2rem);
+    border-bottom:3px solid var(--orange);
+    font-family:var(--font-body);
+    font-weight:700; font-style:normal;
+    font-size:clamp(2rem, 8.6vw, 3.2rem);
+    line-height:1.02; letter-spacing:-0.035em;
+    color:#fff;
+  }
+  /* The em carries `style="color:var(--orange)"` inline, for the desktop wall
+     where the serif italic in orange IS the treatment. An inline style beats
+     every selector, so matching Alec's mobile reference — both lines white in
+     the grotesk — needs !important here. It is the narrow rule only, and it is
+     beating a hard-coded attribute rather than another stylesheet, which is
+     the one case where !important is the honest tool. */
+  .mw-copy .display em{ font-style:normal; color:#fff !important; }
+}
+
+@media (max-width:640px){
+  .mw-copy .display{ font-size:clamp(1.9rem, 9.2vw, 2.7rem); }
+}

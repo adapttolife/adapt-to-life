@@ -1,0 +1,167 @@
+/* ==========================================================================
+   Adapt To Life — the rolling band
+   --------------------------------------------------------------------------
+   Alec, 2026-09-08, pointing at variant 5: "I want this to be on the last
+   section before the footer on the donate page. This design layout left to
+   right rolling pictures."
+
+   It is variant 5's marquee turned into a closing section: the headline above
+   the strip, the strip, the ask below it. On /donate that keeps the section
+   doing its actual job — it is the last thing before the footer on the page
+   where somebody decides — while the faces roll past between the two halves of
+   the sentence.
+
+   Three things it is careful about:
+
+     1. IT LOOPS PROPERLY. The track is two copies of one tileable image and
+        the animation moves it by exactly one copy's width. The image itself is
+        built on a uniform pitch with HALF a gap at each end (see compose_roll
+        in build-hero-panels.py), so the seam where copy 2 begins is spaced
+        exactly like every other join. A marquee that stutters once per cycle
+        is the one thing everybody notices.
+     2. IT COSTS THE PAGE NOTHING. One <img loading="lazy"> at the bottom of a
+        long page is not fetched on load. /donate's own-bytes budget is 125KB
+        and the page already sits at 123 — eight columns would have broken it,
+        and raising the cap for decoration on a payment page would have been
+        the wrong answer twice over.
+     3. IT STOPS. prefers-reduced-motion gets a still frame, not a slower one.
+        Motion sickness is not a speed setting.
+   ========================================================================== */
+
+.roll-band{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  background:#000;
+  padding:clamp(3.5rem,8vh,5.5rem) 0 clamp(3.5rem,8vh,5.5rem);
+}
+
+.roll-band .rb-copy{ position:relative; z-index:3; text-align:center; }
+.roll-band .rb-top{ margin-bottom:clamp(2rem,5vh,3rem); }
+.roll-band .rb-bottom{ margin-top:clamp(2rem,5vh,3rem); }
+
+/* ---- the track ----------------------------------------------------------- */
+.rb-track{
+  position:relative; z-index:1;
+  height:clamp(220px, 32vh, 340px);
+  overflow:hidden;
+  /* the ends fade into the black the section sits on, so the strip reads as
+     passing through the frame rather than starting and stopping in it */
+  -webkit-mask-image:linear-gradient(90deg, transparent 0%, #000 9%, #000 91%, transparent 100%);
+  mask-image:linear-gradient(90deg, transparent 0%, #000 9%, #000 91%, transparent 100%);
+}
+.rb-run{
+  display:flex; height:100%; width:max-content;
+  /* 48s -> 63s. Alec, 2026-09-09: "The carousel moves too fast."
+     DURATION IS THE WRONG UNIT AND THAT IS THE WHOLE BUG. Speed here is
+     oneCopyWidth / duration, and one copy is a different width at every
+     breakpoint because the strip is sized off the track HEIGHT. So a fixed
+     duration silently means a different speed per screen. Measured:
+
+         desktop  3151px / 48s = 65.6 px/s
+         phone    2770px / 34s = 81.5 px/s   <- FASTER on the small screen
+
+     which is backwards, and it is why it read as frantic on a phone: at
+     81.5 px/s the strip crosses a 390px viewport in 4.8 seconds.
+
+     There is no standard for this. WCAG 2.2.2 (Level A) is the only normative
+     rule that touches it and it sets NO speed limit — it governs duration and
+     user control, not velocity. Nielsen Norman gives no number either; they
+     argue against auto-forwarding outright, and that is about SLIDE carousels,
+     not a photo marquee. The 40-80 px/s figure below is practitioner
+     convention from marquee tooling docs, not a spec. Treated as a sanity
+     band, not a rule.
+
+     Both breakpoints are now solved for the SAME ~50 px/s, low-middle of that
+     band: 3151/50 = 63s here, 2770/50 = 55s on the phone. Recompute both if
+     the track height ever changes — that is what moves the width. */
+  animation:rb-roll 63s linear infinite;
+}
+/* SIX copies, not two — and this is arithmetic, not taste.
+   The animation translates the track by -50%, so after a full cycle only HALF
+   the track is still covering the viewport. One copy scales to 1240px at a
+   340px track height, so two copies left 1240px of coverage and everything
+   past that was black: Alec saw exactly that, "blank space" on the right.
+   Six copies leave 3719px covered, which is every screen this will meet.
+   It costs ONE request. Six <img> tags pointing at the same src is one fetch
+   and one decode; the browser does not download a picture twice. The blank was
+   never a shortage of photographs — it was a shortage of copies. */
+.rb-run img{
+  height:100%; width:auto; display:block; flex:0 0 auto;
+  /* the strip is already graded and dimmed in the asset; this only unifies it
+     with the rest of the dark bands */
+  filter:grayscale(1) contrast(1.02);
+}
+@keyframes rb-roll{ from{ transform:translate3d(0,0,0); } to{ transform:translate3d(-50%,0,0); } }
+
+/* a low warm bloom under the strip, the same orange-as-light rule the header
+   follows — never a tint on the photographs themselves */
+.rb-glow{
+  position:absolute; left:0; right:0; bottom:0; height:60%; z-index:2;
+  pointer-events:none;
+  background:radial-gradient(72% 60% at 50% 116%, rgba(255,92,57,0.30) 0%, rgba(255,92,57,0) 66%);
+}
+
+/* ---- pause control ------------------------------------------------------
+   WCAG 2.2.2 Pause, Stop, Hide is Level A, and this band was failing it: the
+   strip starts on its own, runs forever (well past the five-second threshold)
+   and sits alongside other content. The criterion sets NO SPEED LIMIT — slowing
+   it to 50 px/s was a comfort fix and bought no compliance at all. What it
+   requires is a mechanism.
+
+   prefers-reduced-motion DOES NOT SATISFY IT, which is the part that is easy to
+   get wrong: that query honours an OS setting and maps to SC 2.3.3, whereas
+   2.2.2 asks for something any visitor can operate on the page regardless of
+   their system preferences. We keep both — the query below still stops the
+   animation outright for people who asked their OS for less motion, and this
+   button serves everyone else.
+
+   THE BUTTON IS A SIBLING OF .rb-track, NEVER A CHILD. That track carries
+   aria-hidden="true" because the strip is decoration; a control placed inside
+   it would be invisible to exactly the assistive technology this criterion
+   exists for — a pause button no screen reader can find is not a mechanism.
+
+   44x44 for the same reason the footer icons are (2.5.5 AAA rather than the
+   24x24 of 2.5.8 AA): this audience includes people with limited hand
+   function, and a control that exists but cannot be hit is not a control.
+
+   Hidden under reduced motion because nothing is moving there — a button whose
+   only job is to stop motion that has already stopped is a dead control. */
+/* The stage is the positioning context, so the control sits ON the strip. With
+   .roll-band as the context it landed at the foot of the whole section, past
+   the copy and the buttons — a pause control a long way from the thing it
+   pauses. */
+.rb-stage{ position:relative; }
+.rb-pause{
+  position:absolute; z-index:4;
+  right:clamp(0.9rem, 2.4vw, 1.6rem); bottom:clamp(0.9rem, 2.4vw, 1.6rem);
+  width:44px; height:44px; padding:0;
+  display:inline-flex; align-items:center; justify-content:center;
+  border-radius:999px; cursor:pointer;
+  color:var(--cream);
+  background:rgba(12,12,14,0.62);
+  border:1px solid rgba(255,255,255,0.24);
+  -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+.rb-pause:hover{ background:rgba(12,12,14,0.82); color:var(--orange); border-color:var(--orange); }
+.rb-pause:focus-visible{ outline:2px solid var(--orange); outline-offset:3px; }
+.rb-pause svg{ width:17px; height:17px; display:block; fill:currentColor; }
+.rb-pause .rb-i-play{ display:none; }
+.roll-band.is-paused .rb-run{ animation-play-state:paused; }
+.roll-band.is-paused .rb-pause .rb-i-pause{ display:none; }
+.roll-band.is-paused .rb-pause .rb-i-play{ display:block; }
+
+@media (prefers-reduced-motion: reduce){
+  .rb-run{ animation:none; }
+  .rb-pause{ display:none; }
+}
+
+@media (max-width:640px){
+  .roll-band{ padding:clamp(2.6rem,7vh,4rem) 0; }
+  .rb-track{ height:clamp(190px, 30vh, 260px); }
+  /* 34s -> 55s. Same ~50 px/s as the wide breakpoint; see the note on .rb-run.
+     This number is NOT free to copy from desktop — the phone's copy is 2770px
+     against 3151px, so an equal duration would be an unequal speed. */
+  .rb-run{ animation-duration:55s; }
+}

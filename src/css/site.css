@@ -1,0 +1,941 @@
+/* ==========================================================================
+   Adapt To Life — shared design system
+   "Hybrid cinematic": editorial light reading passages (serif voice, narrow
+   column, generous whitespace) punctuated by full-bleed warm-dark bands.
+   Serif = Newsreader · Body = Hanken Grotesk · Labels = Space Mono.
+   ========================================================================== */
+
+:root{
+  color-scheme: only light;
+
+  /* type — Sofia Sans throughout, ExtraBold for the loud voice (Alec, 2026-09-08).
+     One family in three roles, declared once here so the next change to the
+     site's voice is three lines and not sixty files. It also settles the
+     serif-or-grotesk question that had the desktop homepage in Newsreader and
+     the mobile one in a grotesk: the voice no longer changes with screen size.
+     Display is 800 — Sofia's ExtraBold — and it is tight, so headlines carry
+     negative tracking; body is 400/500; the label role keeps its role by being
+     small, uppercase and widely tracked rather than by being another family. */
+  --font-display:"Sofia Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body:"Sofia Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-label:"Sofia Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* brand */
+  --orange:#FF5C39; --orange-ink:#C63F22; --orange-press:#A72F17;
+  --orange-hot:#FF765B; --orange-glow:rgba(255,92,57,0.42); --orange-bloom:rgba(255,92,57,0.12);
+  --gold:#D4A843;   --gold-press:#BE9233;   /* reserved for Tim / reverence */
+
+  /* Laura's accents. DEFINED, AND DELIBERATELY UNUSED on the public pages.
+
+     Orange is the only chroma this site uses, and adding three more would be
+     using a palette rather than leveraging one — the restraint IS the colour
+     theory. They live here so that the next thing needing a non-orange signal
+     (data, a state, a second campaign) reaches for one of Laura's colours
+     instead of inventing a fourth, which is exactly how #FBFAF6 and #F4EEE1
+     got into this file.
+
+     All three fail AA as small text on either light surface, so they are
+     surface and graphic colours, never body text. */
+  --yellow:#F6BE00; --teal:#00B7BD; --purple:#483698;
+
+  /* form status — semantic, not brand. Repainting pass/fail in brand accents
+     would cost legibility to buy consistency nobody asked for. */
+  --ok:#2E7D32; --err:#C0392B;
+
+  /* ink + canvas (warm, never pure white/black) */
+  --ink:#1A1A1A;            /* primary text on light */
+  --ink-soft:#3C382F;       /* body prose */
+  --muted:#6A675E;          /* Labels and captions. Darkened from #6E6B62
+                               because Laura's beige is darker than the sand it
+                               replaced, which pushed the old value to 4.37:1 —
+                               under AA. This measures 4.64 on the beige and
+                               5.28 on the off-white, and is imperceptibly
+                               different to the eye. A palette change moves
+                               contrast; check it, do not assume it. */
+  --ink-warm:#0C0C0E;       /* dark band base — crisp near-black (was warm brown) */
+  --charcoal:#19191C;       /* raised dark surface */
+  /* LAURA'S PALETTE, 2026-09-09, from her Aug 13 hex drop (ManyRequests email
+     + brand standards doc). Checked by scripts/check-palette.mjs, which
+     asserts every value below rather than trusting it.
+
+     Her core set is orange + black + off-white, explicitly NOT pure white,
+     with beige as the soft companion. What this file had before: --canvas
+     #FBFAF6 and --sand #F4EEE1, both INVENTED, plus a pure-white --paper and
+     46 more pure-white declarations across fifteen files. Neither invented
+     value is far enough off to spot side by side, and both are far enough off
+     to feel — which is the whole argument for asserting brand values instead
+     of eyeballing them.
+
+     Alec, 2026-09-09: "I don't like the white we have. I prefer off white that
+     Laura recommended." */
+  /* THE PAGE IS THE BEIGE, and the off-white is what lifts off it. This was
+     the other way round and Alec called it, twice: "we have way too much
+     white." He is right and the numbers say why — off-white is only 6.9%
+     darker than pure white, so across a full page the eye reads it as white.
+     The beige is 18.8% darker: three and a half times the separation, and the
+     tone he has approved every time he has seen it.
+
+     Laura gave two lights and this is the pairing they are actually for: beige
+     is the "soft companion" that can hold a whole page, off-white is the clean
+     surface that reads as raised on top of it. Using the lighter one for both
+     the page AND the cards is what flattened the landing page into one white
+     field with a white card floating in it. */
+  --canvas:#EFE8DC;         /* Laura's beige — the page */
+  --paper:#F9F7F2;          /* Laura's off-white — cards and raised surfaces.
+                               Now genuinely lifts, because the page beneath it
+                               is the beige. */
+  --sand:#EFE8DC;           /* the beige, for small tinted accents that sit on
+                               a --paper surface (nav panel hover, callouts) */
+  --hairline:#E7E1D5;       /* warm hairline, used sparingly */
+
+  /* text on dark */
+  --cream:#F9F7F2;          /* text on dark = the same off-white, not #fff */
+  --cream-mute:#CFC9BD;
+  --cream-faint:#9C968A;
+
+  /* widths */
+  --wrap:1140px;            /* outer max */
+  --reading:720px;         /* prose column (documentary) */
+  --narrow:620px;          /* tightest column */
+
+  /* vertical rhythm — varied, not one global value */
+  --pad:clamp(4.25rem, 7.5vw, 6.5rem);
+  --pad-lg:clamp(5.5rem, 9.5vw, 8.5rem);
+  --pad-sm:clamp(3rem, 6vw, 4.75rem);
+
+  --gutter:clamp(1.25rem, 4vw, 2.5rem);
+}
+
+/* ================= HEADER HEIGHTS =================
+   Every page's first section is sized from these three numbers, so a
+   visitor moving between pages does not feel the header resize.
+   They live HERE, in the stylesheet every page loads, because in
+   page-header.css five pages could not see them at all.
+   ================================================== */
+:root{
+  /* svh, NOT vh, and this was a real bug rather than a preference. vh resolves
+     against the LARGEST viewport — mobile toolbars hidden — so on a phone at
+     first paint, while the address bar is still showing, a vh-sized header is
+     taller than the visible area. svh is the small-viewport unit that exists to
+     fix exactly that, Baseline widely available since June 2025. The homepage
+     wall already used svh (hero-mosaic.css) while these eleven interior pages
+     used vh: same site, two answers, and the wrong one on the pages nobody had
+     measured on a phone.
+
+     These values govern PHONES AND TABLETS and are deliberately unchanged
+     otherwise — measured at 390x844 the banded pages already land within 30px
+     of each other, so there is nothing to fix there. The desktop override is
+     below. */
+  --pg-h-lg:clamp(560px, 68svh, 720px);   /* section entries: the emotional door */
+  --pg-h-md:clamp(460px, 56svh, 600px);   /* standard interior page */
+  --pg-h-sm:clamp(380px, 44svh, 480px);   /* utility: forms, legal, short asks */
+  --pg-h-give:clamp(660px, 82svh, 900px); /* /donate — sized around the panel */
+}
+
+@media (min-width: 901px) and (min-height: 780px){
+  :root{
+    /* each clears the tallest copy in its group, measured at 100% text:
+       doors need up to 716 (sponsorship @1920), reading 607 (roadmap),
+       utility 430 (contact). */
+    --pg-h-lg:clamp(700px, 74svh, 760px);
+    --pg-h-md:clamp(590px, 62svh, 640px);
+    --pg-h-sm:clamp(415px, 46svh, 490px);
+  }
+}
+
+
+*{ box-sizing:border-box; margin:0; padding:0; }
+html{ -webkit-text-size-adjust:100%; scroll-behavior:smooth; }
+body{
+  background:var(--canvas); color:var(--ink);
+  font-family:var(--font-body);
+  font-size:clamp(1.04rem, 0.55vw + 0.92rem, 1.2rem);
+  line-height:1.62; -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility; overflow-x:hidden;
+}
+a{ color:inherit; text-decoration:none; }
+img{ max-width:100%; display:block; }
+::selection{ background:var(--orange); color:var(--cream); }
+
+/* ---- layout helpers ------------------------------------------------------ */
+.wrap{ width:100%; max-width:var(--wrap); margin:0 auto; padding-inline:var(--gutter); }
+.reading{ max-width:var(--reading); }
+.narrow{ max-width:var(--narrow); }
+.center{ text-align:center; }
+.center.reading, .center.narrow{ margin-inline:auto; }
+
+/* ---- type ---------------------------------------------------------------- */
+.serif{ font-family:var(--font-display); }
+h1,h2,h3{
+  font-family:var(--font-display);
+  /* Sofia Sans ExtraBold. A 500-weight serif and an 800-weight grotesk are not
+     the same instrument: the grotesk needs real negative tracking at display
+     sizes or it reads loose, and it does not need the serif's extra leading. */
+  font-weight:800; line-height:1.02; letter-spacing:-0.032em;
+  color:var(--ink); text-wrap:balance;
+}
+/* the accent voice: still italic, but it has to hold its weight next to
+   an ExtraBold line or it reads as a mistake rather than as emphasis */
+.italic{ font-style:italic; font-weight:800; }
+p{ text-wrap:pretty; }
+
+.display{ font-size:clamp(2.7rem, 6.2vw, 5rem); font-weight:800; line-height:0.98; letter-spacing:-0.04em; }
+.statement{ font-size:clamp(2.05rem, 4.8vw, 3.5rem); line-height:1.04; letter-spacing:-0.034em; }
+.h2{ font-size:clamp(1.75rem, 3.2vw, 2.7rem); }
+.h3{ font-size:clamp(1.35rem, 1.9vw, 1.7rem); font-weight:700; letter-spacing:-0.022em; }
+
+.lead{ font-size:clamp(1.12rem, 0.6vw + 0.98rem, 1.4rem); line-height:1.55; color:var(--ink-soft); }
+.prose{ color:var(--ink-soft); }
+.prose + .prose{ margin-top:1.2rem; }
+
+/* eyebrow + tick */
+.eyebrow{
+  font-family:var(--font-label); font-size:0.74rem; font-weight:700;
+  letter-spacing:0.2em; text-transform:uppercase; color:var(--muted);
+  display:inline-block;
+}
+.eyebrow.orange{ color:var(--orange-ink); }
+.eyebrow.gold{ color:var(--gold); }
+.tick{ width:40px; height:2px; background:var(--hairline); border:0; margin:1.4rem 0; }
+.tick.orange{ background:var(--orange); width:34px; box-shadow:0 0 12px -2px var(--orange-glow); }
+.tick.gold{ background:var(--gold); width:34px; }
+.tick.faint{ background:rgba(255,255,255,0.28); }
+
+/* ---- buttons + links ----------------------------------------------------- */
+.btn{
+  display:inline-flex; align-items:center; gap:0.5rem;
+  font-family:var(--font-body); font-weight:600; font-size:0.98rem;
+  padding:0.82rem 1.55rem; border-radius:999px;
+  background:var(--orange-ink); color:var(--cream); border:1.5px solid var(--orange-ink);
+  box-shadow:0 8px 26px -10px var(--orange-glow);
+  transition:background .18s ease, transform .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease;
+  cursor:pointer; white-space:nowrap;
+}
+.btn:hover{ background:var(--orange-press); border-color:var(--orange-press); transform:translateY(-2px); box-shadow:0 12px 30px -12px rgba(255,92,57,0.55); }
+.btn.ghost{ background:transparent; color:var(--ink); border-color:rgba(28,26,21,0.28); }
+.btn.ghost:hover{ background:var(--ink); color:var(--cream); border-color:var(--ink); }
+
+.textlink{
+  display:inline-flex; align-items:center; gap:0.4rem;
+  font-weight:600; font-size:0.98rem; color:var(--ink);
+  border-bottom:1.5px solid var(--orange-ink); padding-bottom:2px;
+  transition:color .15s ease, border-color .15s ease;
+}
+.textlink:hover{ color:var(--orange-hot); border-bottom-color:var(--orange-hot); }
+.arrow{ display:inline-block; transition:transform .18s ease; }
+.textlink:hover .arrow, .prog:hover .arrow{ transform:translateX(4px); }
+
+/* ---- nav ----------------------------------------------------------------- */
+.nav{
+  position:sticky; top:0; z-index:50;
+  background:transparent; border-bottom:1px solid transparent;
+  transition:background .25s ease, border-color .25s ease, box-shadow .25s ease;
+}
+.nav.scrolled{
+  background:rgba(251,250,246,0.86); backdrop-filter:saturate(140%) blur(10px);
+  border-bottom-color:var(--hairline);
+}
+.nav-inner{ display:flex; align-items:center; justify-content:space-between; height:70px; }
+.brand{ display:flex; align-items:center; gap:0.6rem; font-family:var(--font-body); font-weight:700; font-size:1.12rem; letter-spacing:-0.01em; color:var(--ink); }
+.brand-logo{ height:36px; width:auto; flex:none; display:block; }
+.nav-links{ display:flex; align-items:center; gap:1.6rem; }
+.nav-links a.lk{ font-size:0.92rem; font-weight:500; color:var(--ink); opacity:0.78; transition:opacity .15s ease, color .15s ease; }
+.nav-links a.lk:hover{ opacity:1; }
+/* featured nav link (Grant Application) — coral, stands out short of a button */
+.nav-links a.lk.featured{ color:var(--orange-ink); opacity:1; font-weight:600; }
+.nav-links a.lk.featured:hover{ color:var(--orange-press); opacity:1; }
+.nav-cta{ font-weight:600; font-size:0.9rem; background:var(--orange-ink); color:var(--cream); padding:0.55rem 1.15rem; border-radius:999px; box-shadow:0 6px 18px -8px var(--orange-glow); transition:background .18s ease, box-shadow .18s ease; }
+.nav-cta:hover{ background:var(--orange-press); box-shadow:0 9px 22px -10px rgba(255,92,57,0.5); }
+.menu-btn{ display:none; background:none; border:none; cursor:pointer; padding:0.4rem; }
+.menu-btn span{ display:block; width:24px; height:2px; background:var(--ink); margin:5px 0; transition:transform .2s ease, opacity .2s ease, background .25s ease; }
+.mobile-menu{ display:none; }
+
+/* nav sitting over a dark hero before scroll → dark bar, cream text
+   (the sticky nav is ABOVE the hero in flow, so it needs its own dark
+   background; transparent here would show the white canvas behind it) */
+.nav.over-dark:not(.scrolled){
+  background-color:var(--ink-warm);
+  background-image:none;
+}
+.nav.over-dark:not(.scrolled) .brand{ color:var(--cream); }
+.nav.over-dark:not(.scrolled) .nav-links a.lk{ color:var(--cream); opacity:0.82; }
+.nav.over-dark:not(.scrolled) .nav-links a.lk.featured{ color:var(--orange); opacity:1; }
+.nav.over-dark:not(.scrolled) .nav-links a.lk.featured:hover{ color:var(--orange-hot); opacity:1; }
+.nav.over-dark:not(.scrolled) .menu-btn span{ background:var(--cream); }
+
+/* ---- section base -------------------------------------------------------- */
+section{ position:relative; }
+.band{ padding-top:var(--pad); padding-bottom:var(--pad); }
+.band-lg{ padding-top:var(--pad-lg); padding-bottom:var(--pad-lg); }
+.band-sm{ padding-top:var(--pad-sm); padding-bottom:var(--pad-sm); }
+/* An alternating band is now a LIFT, not a tint: off-white against the beige
+   page. Same two colours, opposite direction, and it reads as light falling on
+   the section rather than as a stain over it. */
+.tint{ background:var(--paper); }
+
+/* full-bleed warm-dark cinematic band */
+.dark{
+  color:var(--cream);
+  background-color:var(--ink-warm);
+  /* crisp near-black + subtle orange/gold atmosphere (no brown) */
+  background-image:radial-gradient(ellipse 72% 60% at 80% 26%, rgba(255,92,57,0.11) 0%, transparent 62%),
+                   radial-gradient(ellipse 60% 72% at 8% 104%, rgba(212,168,67,0.045) 0%, transparent 60%);
+}
+.dark h1,.dark h2,.dark h3{ color:var(--cream); }
+.dark .prose,.dark .lead{ color:var(--cream-mute); }
+.dark .eyebrow{ color:var(--cream-faint); }
+.dark .eyebrow.gold{ color:var(--gold); }
+.dark .eyebrow.orange{ color:var(--orange); }
+.dark .btn.ghost{ color:var(--cream); border-color:rgba(255,255,255,0.5); }
+.dark .btn.ghost:hover{ background:var(--paper); color:var(--ink-warm); border-color:var(--paper); }
+.dark .textlink{ color:var(--cream); border-bottom-color:var(--orange); }
+.dark .textlink:hover{ color:var(--orange-hot); border-bottom-color:var(--orange-hot); }
+/* optional background photo hook: add inline style="--bg:url(...)" + class .has-bg */
+.dark.has-bg::before{
+  content:""; position:absolute; inset:0; z-index:0;
+  background-image:var(--bg); background-size:cover; background-position:center;
+  opacity:0.22; mix-blend-mode:luminosity;
+}
+.dark.has-bg > .wrap{ position:relative; z-index:1; }
+
+/* ---- hero ---------------------------------------------------------------- */
+.hero{ padding-top:clamp(7rem, 16vh, 11rem); padding-bottom:clamp(5rem, 11vw, 8.5rem); }
+.hero .display{ max-width:16ch; margin-top:1.5rem; }
+.hero .sub{ max-width:46ch; margin-top:1.7rem; }
+.hero .actions{ display:flex; flex-wrap:wrap; align-items:center; gap:0.9rem 1rem; margin-top:2.4rem; }
+
+/* ---- statement (large serif reading moment) ------------------------------ */
+.statement-block .statement{ max-width:18ch; }
+.statement-block .prose{ max-width:54ch; margin-top:clamp(1.6rem, 3vw, 2.4rem); font-size:clamp(1.08rem,0.5vw+0.96rem,1.32rem); }
+
+/* ---- programs (editorial, airy — no orange bars) ------------------------- */
+.progs{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(1.5rem, 4vw, 3.5rem); margin-top:clamp(2.4rem,4vw,3.4rem); }
+.prog{ display:flex; flex-direction:column; }
+.prog .tag{ font-family:var(--font-label); font-size:0.7rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); }
+.prog h3{ margin:0.7rem 0 0.85rem; }
+.prog p{ color:var(--ink-soft); margin-bottom:1.4rem; }
+.prog .go{ margin-top:auto; align-self:flex-start; }
+
+/* ---- eligibility cue (compact self-check beside the apply form) ----------- */
+.elig-cue{ margin-top:1.9rem; padding:clamp(1.3rem,3vw,1.7rem); background:var(--sand);
+  border:1px solid var(--hairline); border-radius:16px; }
+.elig-head{ font-family:var(--font-label); font-size:0.72rem; letter-spacing:0.16em;
+  text-transform:uppercase; font-weight:700; color:var(--orange-ink); }
+.elig-list{ list-style:none; margin:0.9rem 0 0; padding:0; }
+.elig-list li{ position:relative; padding-left:1.6rem; margin-bottom:0.55rem;
+  color:var(--ink); font-size:0.98rem; line-height:1.45; }
+.elig-list li:last-child{ margin-bottom:0; }
+.elig-list li::before{ content:"\2713"; position:absolute; left:0; top:0;
+  font-family:var(--font-label); font-weight:700; color:var(--orange-ink); }
+.elig-no{ margin:1rem 0 0; color:var(--muted); font-size:0.92rem; line-height:1.5; }
+
+/* ---- faq (native <details>, zero JS) ------------------------------------- */
+.faq{ border-top:1px solid var(--hairline); }
+.faq-item{ border-bottom:1px solid var(--hairline); }
+.faq-item summary{
+  list-style:none; cursor:pointer; position:relative;
+  padding:1.15rem 2.4rem 1.15rem 0;
+  font-family:var(--font-body); font-weight:600; font-size:1.06rem; color:var(--ink);
+  transition:color .15s ease;
+}
+.faq-item summary::-webkit-details-marker{ display:none; }
+.faq-item summary::after{
+  content:"+"; position:absolute; right:0.15rem; top:50%; transform:translateY(-50%);
+  font-family:var(--font-label); font-size:1.35rem; font-weight:400; color:var(--orange-ink);
+  transition:color .15s ease;
+}
+.faq-item[open] summary::after{ content:"\2212"; } /* minus sign when open */
+.faq-item summary:hover{ color:var(--orange-ink); }
+.faq-item p{ color:var(--ink-soft); margin:0 0 1.25rem; max-width:60ch; }
+
+/* ---- big editorial pull-quote (light) ------------------------------------ */
+.bigquote blockquote{ font-family:var(--font-display); font-style:italic; font-weight:400;
+  font-size:clamp(1.6rem, 3.4vw, 2.6rem); line-height:1.28; letter-spacing:-0.01em;
+  max-width:24ch; color:var(--ink); }
+.bigquote .qname,.dark .qname{ display:block; font-weight:600; font-size:1rem; margin-top:1.8rem; }
+.bigquote .qrole,.dark .qrole{ display:block; font-family:var(--font-label); font-size:0.74rem;
+  letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); margin-top:0.3rem; }
+.dark .qname{ color:var(--cream); }
+.dark .qrole{ color:var(--cream-faint); }
+
+/* cinematic quote on dark */
+.dark.bigquote blockquote{ color:var(--cream); max-width:26ch; }
+
+/* ---- send5 (dark fundraising moment) ------------------------------------- */
+.send5 .statement{ margin-top:1.1rem; }
+.send5 .intro{ max-width:52ch; margin-top:1.2rem; }
+.progress-wrap{ max-width:640px; margin-top:2.4rem; }
+.progress-labels{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:0.6rem; font-family:var(--font-label); }
+.progress-labels .raised{ font-size:1.1rem; font-weight:700; color:var(--cream); }
+.progress-labels .goal{ font-size:0.82rem; color:var(--cream-faint); }
+.progress-bar{ height:12px; background:rgba(255,255,255,0.12); border-radius:999px; overflow:hidden; }
+.progress-bar .fill{ height:100%; background:var(--orange); border-radius:999px; box-shadow:0 0 24px -2px rgba(232,93,4,0.7); }
+.metrics{ display:grid; grid-template-columns:repeat(4,1fr); gap:1.5rem; margin-top:2.6rem; max-width:760px; }
+.metrics .n{ font-family:var(--font-display); font-weight:500; font-size:clamp(1.7rem,3.4vw,2.5rem); line-height:1; color:var(--cream); font-variant-numeric:tabular-nums; }
+.metrics .l{ font-family:var(--font-label); font-size:0.66rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--cream-faint); margin-top:0.55rem; }
+.send5 .actions{ margin-top:2.6rem; }
+
+/* ---- founder steward (light, narrow) ------------------------------------- */
+.steward .prose{ margin-top:1.3rem; }
+.pullquote{ font-family:var(--font-display); font-style:italic; font-weight:400;
+  font-size:clamp(1.4rem, 2.6vw, 2rem); line-height:1.32; color:var(--ink);
+  margin:2.2rem 0 0; padding-left:1.4rem; border-left:2px solid var(--orange); max-width:34ch; }
+.pullquote .qname{ font-style:normal; }
+.dark .pullquote{ color:var(--cream); border-left-color:var(--orange); }
+
+/* ---- building in public (two-up) ----------------------------------------- */
+.split{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(2rem,5vw,4rem); align-items:end; }
+.split .links{ display:flex; flex-direction:column; gap:1rem; align-items:flex-start; }
+
+/* ---- impact (light, big serif numerals) ---------------------------------- */
+.impact-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(1.6rem,2.8vw,2.6rem); margin-top:clamp(2rem,3.6vw,2.8rem); }
+.impact-n{ font-family:var(--font-display); font-weight:500; font-size:clamp(2.3rem,4.6vw,3.4rem); color:var(--orange-ink); line-height:1; letter-spacing:-0.01em; font-variant-numeric:tabular-nums; }
+.impact-l{ color:var(--ink-soft); font-size:0.98rem; line-height:1.45; margin-top:0.7rem; max-width:22ch; }
+
+/* ---- community strip ----------------------------------------------------- */
+.community .label{ font-family:var(--font-label); font-size:0.7rem; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted); text-align:center; margin-bottom:1.4rem; }
+.community .row{ display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:clamp(1.4rem,4vw,3.4rem); }
+.community .row span{ font-family:var(--font-display); font-style:italic; font-weight:400; font-size:clamp(1.05rem,1.5vw,1.35rem); color:#9a958d; transition:color .15s ease; }
+.community .row span:hover{ color:var(--ink); }
+
+/* ---- closing CTA (dark) -------------------------------------------------- */
+.closing .display{ max-width:18ch; margin-inline:auto; margin-top:1.2rem; }
+.closing .sub{ max-width:44ch; margin:1.5rem auto 2.2rem; }
+.closing .actions{ display:flex; justify-content:center; gap:0.9rem 1rem; margin-top:2rem; } /* gap and margin were missing here while .hero .actions had both, so closing    buttons touched each other on every page, and any closing without a    paragraph above them sat flush against the heading. */
+
+/* ---- footer (dark) ------------------------------------------------------- */
+.footer{ color:var(--cream); padding-top:clamp(3.5rem,7vw,5rem); padding-bottom:2.5rem; border-top:3px solid var(--orange);
+  background-color:var(--ink-warm); background-image:radial-gradient(ellipse 70% 95% at 86% -10%, rgba(255,92,57,0.07) 0%, transparent 56%); }
+.footer-top{ display:grid; grid-template-columns:1.6fr 1fr 1fr; gap:2.5rem; }
+.footer .brand{ color:var(--cream); margin-bottom:0.9rem; }
+.footer .tagline{ color:var(--cream-mute); max-width:30ch; font-size:0.95rem; margin-bottom:1.2rem; }
+.footer .legal{ color:var(--cream-faint); font-size:0.78rem; line-height:1.55; max-width:42ch; }
+.footer .col h4{ font-family:var(--font-label); font-size:0.7rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--cream-faint); font-weight:700; margin-bottom:1rem; }
+.footer .col a{ display:block; font-size:0.95rem; color:var(--cream); opacity:0.82; margin-bottom:0.65rem; transition:opacity .15s ease, color .15s ease; }
+.footer .col a:hover{ opacity:1; color:var(--orange); }
+/* space-between, not flex-end: the social row takes the empty left side and the
+   copyright stays exactly where it was on the right. Nothing else in the bar
+   moves. */
+.footer-bottom{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1rem; margin-top:clamp(2.5rem,5vw,3.5rem); padding-top:1.4rem; border-top:1px solid rgba(255,255,255,0.12); font-size:0.85rem; color:var(--cream-faint); }
+
+/* SOCIAL — the only outbound links in the footer, so they sit in the bottom bar
+   rather than inside the internal link columns, where they would read as more
+   site navigation.
+   Quiet on purpose: 0.72 opacity in cream, lifting to the orange on hover, the
+   same behaviour as .footer .col a. The footer's job here is the subscribe
+   field; these are a way to keep following, not a third call to action.
+
+   44x44 TAP TARGETS, WHICH IS THE AAA NUMBER AND DELIBERATE. WCAG 2.5.8 (AA,
+   new in 2.2) asks only 24x24; 2.5.5 (AAA) asks 44x44. For an adaptive sports
+   organisation whose visitors disproportionately include people with limited
+   hand function, the AA floor is the wrong one to design to — a 20px icon is
+   the smallest thing on the page and the hardest to hit. The box is invisible;
+   only the glyph is drawn. */
+.social{ display:flex; align-items:center; gap:0.15rem; margin:-0.6rem 0; }
+.social a{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:44px; height:44px;
+  color:var(--cream); opacity:0.72;
+  border-radius:8px;
+  transition:opacity .15s ease, color .15s ease;
+}
+.social a:hover{ opacity:1; color:var(--orange); }
+.social a:focus-visible{ opacity:1; color:var(--orange); outline:2px solid var(--orange); outline-offset:2px; }
+.social svg{ width:20px; height:20px; display:block; fill:currentColor; }
+
+/* footer inline subscribe */
+.foot-sub{ margin:0 0 1.3rem; max-width:32ch; }
+.foot-sub-label{ display:block; font-family:var(--font-label); font-size:0.7rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--cream-faint); font-weight:700; margin-bottom:0.6rem; }
+.foot-sub-row{ display:flex; gap:0.5rem; }
+.foot-sub-input{ flex:1; min-width:0; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.18); border-radius:8px; padding:0.6rem 0.75rem; color:var(--cream); font-size:0.95rem; }
+.foot-sub-input::placeholder{ color:var(--cream-faint); }
+.foot-sub-input:focus{ outline:none; border-color:var(--orange); background:rgba(255,255,255,0.09); }
+.foot-sub-btn{ flex:none; background:var(--orange); color:var(--cream); border:none; border-radius:8px; padding:0 1rem; font-size:1.15rem; line-height:1; font-weight:700; cursor:pointer; transition:background .15s ease; }
+.foot-sub-btn:hover{ background:var(--orange-hot); }
+.foot-sub-btn:disabled{ opacity:0.6; cursor:default; }
+.foot-sub-msg{ font-size:0.8rem; margin:0.55rem 0 0; min-height:1em; color:var(--cream-mute); }
+
+/* ---- reveal animation ---------------------------------------------------- */
+/* VISIBLE BY DEFAULT. This used to be opacity:0 with an IntersectionObserver
+   adding .in as things scrolled into view — 319 elements across the site whose
+   visibility depended on JavaScript running. Two problems, and Alec named the
+   second one: "We don't need heavy animations and scroll functions - I know
+   plenty of websites that can make a beautiful website with less is more."
+
+     · RELIABILITY. If that script ever failed — a CSP change, an error earlier
+       in the file, an old browser — the site rendered blank. Content that is
+       invisible until JavaScript says otherwise is a page with a single point
+       of failure in front of every word on it.
+     · SPEED. The homepage H1 is the largest contentful paint, and it was
+       inside this system: measured LCP 1384ms on desktop, because the headline
+       did not exist until a scroll observer said it could.
+
+   The class stays in the markup (319 attributes are not worth churning) and is
+   simply inert. The observer that fed it is gone. */
+.reveal{ opacity:1; transform:none; }
+
+
+/* ---- nav v2: grouped dropdowns (Spec 115) -------------------------------- */
+.nav-group{ position:relative; display:flex; align-items:center; }
+.nav-toggle{
+  display:inline-flex; align-items:center; gap:0.34rem;
+  background:none; border:none; padding:0; cursor:pointer;
+  font-family:inherit; font-size:0.92rem; font-weight:500; color:var(--ink);
+  opacity:0.78; transition:opacity .15s ease, color .15s ease;
+}
+.nav-toggle:hover, .nav-group:focus-within .nav-toggle, .nav-toggle[aria-expanded="true"]{ opacity:1; }
+.nav-toggle .caret{ width:9px; height:9px; transition:transform .2s ease; }
+.nav-toggle[aria-expanded="true"] .caret{ transform:rotate(180deg); }
+
+.nav-panel{
+  position:absolute; top:calc(100% + 0.85rem); left:50%; transform:translateX(-50%) translateY(-6px);
+  min-width:290px; padding:0.5rem; z-index:60;
+  background:var(--paper); border:1px solid var(--hairline); border-radius:16px;
+  box-shadow:0 26px 60px -28px rgba(28,26,21,0.45);
+  opacity:0; visibility:hidden; pointer-events:none;
+  transition:opacity .18s ease, transform .18s ease, visibility .18s;
+}
+.nav-group:hover .nav-panel,
+.nav-group:focus-within .nav-panel,
+.nav-panel.open{ opacity:1; visibility:visible; pointer-events:auto; transform:translateX(-50%) translateY(0); }
+/* hover bridge so the pointer can travel from the label to the panel */
+.nav-group::after{ content:""; position:absolute; top:100%; left:0; right:0; height:0.9rem; }
+
+.nav-panel a{ display:block; padding:0.62rem 0.75rem; border-radius:11px; transition:background .15s ease; }
+.nav-panel a:hover, .nav-panel a:focus-visible{ background:var(--sand); }
+.np-t{ display:block; font-size:0.94rem; font-weight:600; color:var(--ink); }
+.np-d{ display:block; margin-top:0.12rem; font-size:0.8rem; line-height:1.4; color:var(--muted); }
+
+.nav.over-dark:not(.scrolled) .nav-toggle{ color:var(--cream); opacity:0.82; }
+
+/* mobile: groups render expanded, no accordion to hunt through */
+.mobile-menu .m-group{
+  display:block; padding:1.1rem 0 0.45rem;
+  font-family:var(--font-label); font-size:0.68rem; font-weight:700;
+  letter-spacing:0.18em; text-transform:uppercase; color:var(--muted);
+}
+.mobile-menu a.m-sub{ padding-left:0.9rem; font-size:1rem; }
+
+/* ---- responsive ---------------------------------------------------------- */
+@media (max-width:860px){
+  /* Donate rides the bar on a phone too, immediately left of the hamburger.
+     It is the same element as the desktop CTA rather than a second copy: the
+     nav list stays in flow and every child except the button is hidden, so
+     there is one Donate link in the markup on every page and no chance of the
+     two drifting apart. Its DOM position already puts it before the menu
+     button, which is where it belongs. */
+  .nav-links{ display:flex; gap:0; margin-left:auto; }
+  .nav-links > *:not(.nav-cta){ display:none; }
+  .nav-cta{ font-size:0.85rem; padding:0.5rem 1.05rem; }
+  .menu-btn{ display:block; margin-left:0.9rem; }
+  /* The brand is the one thing in this bar that must not wrap. Adding Donate
+     took the smallest phones (320px) below the width where "Adapt To Life"
+     fits on one line, and it broke to two. */
+  .brand{ white-space:nowrap; }
+  .nav.open .menu-btn span:nth-child(1){ transform:translateY(7px) rotate(45deg); }
+  .nav.open .menu-btn span:nth-child(2){ opacity:0; }
+  .nav.open .menu-btn span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }
+  .mobile-menu{ display:block; max-height:0; overflow:hidden; background:var(--canvas); transition:max-height .28s ease; }
+  .nav.open .mobile-menu{ max-height:760px; border-bottom:1px solid var(--hairline); }
+  .mobile-menu .mwrap{ display:flex; flex-direction:column; padding:0.8rem var(--gutter) 1.4rem; }
+  .mobile-menu a{ padding:0.8rem 0; font-size:1.05rem; font-weight:600; color:var(--ink); border-bottom:1px solid var(--hairline); }
+  .mobile-menu a.m-cta{ color:var(--orange); border-bottom:none; }
+  .mobile-menu a.featured{ color:var(--orange-ink); }
+  /* keep mobile menu legible even when nav is over-dark (open panel is light) */
+  .nav.over-dark.open{ background:var(--canvas); background-image:none; }
+  .nav.over-dark.open .menu-btn span{ background:var(--ink); }
+  .nav.over-dark.open .brand{ color:var(--ink); }
+  .progs{ grid-template-columns:1fr; }
+  .split{ grid-template-columns:1fr; gap:2.2rem; }
+  .footer-top{ grid-template-columns:1fr 1fr; gap:2rem; }
+  .footer .brandcol{ grid-column:1 / -1; }
+}
+@media (max-width:380px){
+  /* 320px: give the bar back the room the Donate button took */
+  .brand{ font-size:1rem; gap:0.45rem; }
+  .brand-logo{ height:30px; }
+  .nav-cta{ font-size:0.8rem; padding:0.45rem 0.85rem; }
+  .menu-btn{ margin-left:0.55rem; padding:0.3rem; }
+}
+@media (max-width:560px){
+  .metrics{ grid-template-columns:repeat(2,1fr); gap:1.6rem 1.2rem; }
+  .impact-grid{ grid-template-columns:1fr 1fr; gap:1.8rem 1.4rem; }
+  .hero .actions .btn{ width:100%; justify-content:center; }
+  .closing .actions{ flex-direction:column; align-items:stretch; }
+  .closing .actions .btn{ width:100%; justify-content:center; }
+}
+@media (max-width:480px){
+  .footer-top{ grid-template-columns:1fr; }
+  .impact-grid{ grid-template-columns:1fr; }
+}
+@media (prefers-reduced-motion: reduce){
+  *{ scroll-behavior:auto !important; }
+  .reveal{ opacity:1; transform:none; transition:none; }
+  .btn,.arrow,.nav{ transition:none; }
+}
+
+/* ---- campaign band (Spec 115) --------------------------------------------
+   One partial, four pages: /, /donate, /hustle-and-heart, /roadmap. It answers
+   the question an identity page never answers, which is "what is happening
+   right now." The goal figure comes from /api/raised on every instance, so
+   changing it in Givebutter changes it everywhere and it can never disagree
+   with itself across pages.
+   -------------------------------------------------------------------------- */
+.camp-band{ display:block; }
+.camp-band-card{
+  display:grid; grid-template-columns:1fr minmax(0,290px);
+  gap:1.2rem clamp(1.6rem,3.4vw,3rem); align-items:center;
+  background:var(--paper); border:1px solid var(--hairline); border-radius:20px;
+  padding:clamp(1.4rem,3vw,2.2rem);
+  box-shadow:0 28px 64px -34px rgba(28,26,21,0.42);
+  transition:border-color .2s ease, transform .2s ease;
+}
+a.camp-band:hover .camp-band-card{ border-color:rgba(255,92,57,0.4); transform:translateY(-2px); }
+a.camp-band:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:4px; border-radius:20px; }
+@media (max-width:820px){ .camp-band-card{ grid-template-columns:1fr; } }
+
+/* pulled up over the dark band above it, the way /popcorn's active card sits */
+.camp-band.lifted{ margin-top:clamp(-3.6rem,-5vw,-2.2rem); position:relative; z-index:5; }
+
+.cb-eyebrow{
+  display:inline-flex; align-items:center; gap:0.5rem;
+  font-family:var(--font-label); font-size:0.68rem; font-weight:700;
+  letter-spacing:0.16em; text-transform:uppercase; color:var(--orange-ink);
+}
+.cb-eyebrow .dot{ width:8px; height:8px; border-radius:50%; background:var(--orange); box-shadow:0 0 0 4px var(--orange-bloom); }
+.cb-name{ display:block; margin-top:0.7rem; font-family:var(--font-display); font-weight:500;
+  font-size:clamp(1.5rem,2.6vw,2.05rem); line-height:1.1; letter-spacing:-0.012em; color:var(--ink); }
+.cb-blurb{ display:block; margin-top:0.6rem; color:var(--ink-soft); max-width:52ch; font-size:1rem; }
+.cb-side{ display:flex; flex-direction:column; gap:0.9rem; }
+.cb-bar{ display:block; height:8px; border-radius:999px; background:rgba(28,26,21,0.10); overflow:hidden; }
+.cb-fill{ display:block; height:100%; width:0; min-width:3px; border-radius:999px;
+  background:linear-gradient(90deg,var(--orange-ink),var(--orange-hot));
+  transition:width 1.2s cubic-bezier(.2,.8,.2,1); }
+.cb-label{ display:block; margin-top:-0.35rem; font-family:var(--font-label); font-size:0.78rem; color:var(--muted); }
+.cb-cta{
+  display:inline-flex; align-items:center; justify-content:center; gap:0.5rem;
+  font-weight:600; font-size:0.98rem; padding:0.82rem 1.55rem; border-radius:999px;
+  background:var(--orange-ink); color:var(--cream); border:1.5px solid var(--orange-ink);
+  box-shadow:0 8px 26px -10px var(--orange-glow);
+}
+a.camp-band:hover .cb-cta{ background:var(--orange-press); border-color:var(--orange-press); }
+
+/* ---- contact ------------------------------------------------------------- */
+.contact-grid{ display:grid; grid-template-columns:0.9fr 1.1fr; gap:clamp(2rem,5vw,4rem); align-items:start; margin-top:clamp(1.5rem,3vw,2.5rem); }
+.info-item{ padding:1.05rem 0; border-top:1px solid var(--hairline); }
+.info-item:first-of-type{ margin-top:1.2rem; }
+.info-l{ font-family:var(--font-label); font-size:0.7rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); display:block; margin-bottom:0.35rem; }
+.info-v{ font-size:1.05rem; color:var(--ink); }
+a.info-v{ border-bottom:1.5px solid var(--orange); padding-bottom:1px; }
+.quick-links{ margin-top:1.8rem; display:flex; flex-direction:column; gap:0.85rem; align-items:flex-start; }
+.ql-head{ font-family:var(--font-label); font-size:0.7rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); }
+.contact-form{ background:var(--paper); border:1px solid var(--hairline); border-radius:14px; padding:clamp(1.6rem,3vw,2.4rem); box-shadow:0 2px 10px -4px rgba(20,16,9,0.08); }
+.field{ margin-bottom:1.15rem; }
+.field-row{ display:grid; grid-template-columns:1fr 1fr; gap:1.1rem; }
+.field label{ display:block; font-family:var(--font-label); font-size:0.7rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:0.45rem; }
+.field input,.field select,.field textarea{ width:100%; font-family:var(--font-body); font-size:1rem; color:var(--ink); background:var(--paper); border:1px solid var(--hairline); border-radius:8px; padding:0.78rem 0.9rem; transition:border-color .15s ease; }
+.field input:focus,.field select:focus,.field textarea:focus{ outline:none; border-color:var(--orange); }
+.field textarea{ resize:vertical; }
+.contact-form .btn{ width:100%; justify-content:center; margin-top:0.3rem; }
+.form-note{ font-size:0.82rem; color:var(--muted); margin-top:0.9rem; text-align:center; }
+@media (max-width:860px){ .contact-grid{ grid-template-columns:1fr; gap:2.4rem; } }
+@media (max-width:560px){ .field-row{ grid-template-columns:1fr; } }
+.apply-steps{ margin-top:0.6rem; }
+.apply-steps p{ margin-bottom:0.5rem; font-size:0.95rem; color:var(--ink-soft); line-height:1.5; }
+.apply-steps strong{ color:var(--ink); }
+
+/* ---- image treatments (About hero A/B + founder portrait) -------------- */
+@keyframes kenburns{ from{ transform:scale(1.0); } to{ transform:scale(1.05); } }
+
+/* V1 cinematic full-bleed */
+.hero-cine{ position:relative; overflow:hidden; }
+.hero-cine .hero-media{ position:absolute; inset:0; z-index:0; background:url('/images/coaching.webp') center/cover no-repeat; transform-origin:62% 42%; }
+.hero-cine.kenburns .hero-media{ animation:kenburns 28s ease-in-out infinite alternate; }
+.hero-cine::after{ content:""; position:absolute; inset:0; z-index:1;
+  background:linear-gradient(100deg, rgba(22,20,15,0.95) 0%, rgba(22,20,15,0.74) 44%, rgba(22,20,15,0.30) 100%),
+            linear-gradient(to top, rgba(22,20,15,0.65), rgba(22,20,15,0) 42%); }
+.hero-cine > .wrap{ position:relative; z-index:2; }
+
+/* V2 split */
+.hero-split{ padding:0; }
+.hero-split .split-grid{ display:grid; grid-template-columns:1.04fr 0.96fr; min-height:clamp(440px,64vh,640px); }
+.hero-split .split-text{ display:flex; flex-direction:column; justify-content:center; padding:clamp(3rem,7vw,6rem) clamp(1.5rem,5vw,4rem); }
+.hero-split .split-media{ background:url('/images/coaching.webp') center/cover no-repeat; }
+@media (max-width:760px){ .hero-split .split-grid{ grid-template-columns:1fr; } .hero-split .split-media{ min-height:300px; order:-1; } }
+
+/* V3 editorial framed */
+.hero-frame .frame-media{ margin-top:clamp(2.4rem,5vw,3.6rem); border-radius:18px; overflow:hidden; aspect-ratio:16/9;
+  box-shadow:0 34px 90px -44px rgba(0,0,0,0.85); border:1px solid rgba(255,255,255,0.08); }
+.hero-frame .frame-media img{ width:100%; height:100%; object-fit:cover; object-position:center 38%; display:block; filter:saturate(1.05) contrast(1.02); }
+
+/* founder portrait (all versions) */
+.founder-portrait{ width:clamp(140px,22vw,196px); aspect-ratio:1/1; border-radius:50%; overflow:hidden; margin-bottom:1.6rem;
+  border:3px solid var(--paper); box-shadow:0 14px 34px -18px rgba(20,16,9,0.45); }
+.founder-portrait img{ width:100%; height:100%; object-fit:cover; object-position:center 22%; display:block; }
+
+@media (prefers-reduced-motion: reduce){ .hero-cine.kenburns .hero-media{ animation:none; } }
+
+/* reusable framed photo (Tim memorial, etc.) */
+.photo-frame{ border-radius:14px; overflow:hidden; box-shadow:0 30px 76px -42px rgba(0,0,0,0.85); border:1px solid rgba(255,255,255,0.12); }
+.photo-frame img{ width:100%; display:block; }
+
+/* two-column hero (text left, image right) */
+/* HEIGHT HERE IS PADDING PLUS WHATEVER THE CONTENT ADDS UP TO, which is why
+   these three pages drifted: nothing was holding them to anything. Measured
+   2026-09-09, the rule Alec actually wants is simply that NO INTERIOR PAGE
+   OPENS BIGGER THAN THE FRONT DOOR — home is 792 on a laptop and 774 on a
+   phone. /hustle-and-heart was 915 on a phone, taller than the homepage on the
+   device most people use.
+   Desktop padding is untouched: at 701 it was already under home and looked
+   right. Only the phone case moves, where the two-column grid stacks and the
+   photo card lands underneath the copy — so the top padding and the stack gap
+   are paying twice. */
+/* ON THE SAME HEIGHTS AS THE REST OF THE SITE. /hustle-and-heart, /karen and
+   /tim were the only pages with no height rule at all — padding plus whatever
+   the content added up to — so they drifted independently of every other page.
+   They now take the same two numbers the banded pages use, which is the whole
+   point: a visitor moving between pages should not feel the header resize.
+   min-height, never height, for the same reason as everywhere else. */
+.hero-2col{ min-height:var(--pg-h, var(--pg-h-md)); padding-top:clamp(5rem,11vh,7.5rem); padding-bottom:clamp(3.5rem,7vw,5.5rem); }
+/* /hustle-and-heart is a door into the site rather than a page you arrive at
+   from one, so it takes the taller of the two. */
+.hero-2col.h2col-door{ --pg-h:var(--pg-h-lg); }
+.hero-2col .h2col{ display:grid; grid-template-columns:1fr 0.9fr; gap:clamp(2rem,5vw,4.5rem); align-items:center; }
+.hero-2col .h2col-media .photo-frame{ margin:0; }
+.hero-2col .h2col-cap{ margin:0.95rem 0 0; max-width:38ch; color:var(--cream-mute); font-size:0.95rem; line-height:1.5; }
+@media (max-width:820px){
+  .hero-2col .h2col{ grid-template-columns:1fr; gap:1.25rem; }
+  .hero-2col .h2col-media{ max-width:520px; }
+  /* The stacked layout is already tall from the photo card; the desktop top
+     padding on top of that is what pushed /hustle-and-heart past the homepage
+     on a phone. */
+  .hero-2col{ padding-top:clamp(2.4rem,5vh,3.2rem); padding-bottom:clamp(2rem,4vw,2.6rem); }
+  /* Measured on a phone, /hustle-and-heart's header was 853 against the
+     homepage's 774, and the two heaviest parts were the photo card (~245px of
+     image) and two stacked buttons (122px). The buttons stay stacked — every
+     other page on the site stacks them at this width and breaking that to save
+     pixels would be a worse trade than the one it fixes.
+     So the image gets a ceiling instead. It only BITES on a tall card: karen's
+     is already ~185px and is untouched, which is why this is a cap rather than
+     a fixed height. */
+  .hero-2col .h2col-media .photo-frame img{ max-height:176px; width:100%; object-fit:cover; }
+}
+
+/* centered section header (above grids / closing lines) */
+.sec-head{ max-width:62ch; margin-inline:auto; text-align:center; }
+.sec-head > *{ margin-inline:auto; }
+
+/* two paths — the give/get loop (apply vs fund) */
+.paths{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(1.2rem,2.6vw,1.8rem); margin-top:clamp(2.4rem,4vw,3.4rem); }
+.path{ display:flex; flex-direction:column; align-items:flex-start; gap:0.7rem; padding:clamp(1.8rem,3.4vw,2.6rem); background:var(--canvas); border:1px solid rgba(28,26,21,0.09); border-radius:18px; box-shadow:0 18px 40px -28px rgba(28,26,21,0.28); }
+.path h3{ margin:0; }
+.path p{ margin:0; flex:1 1 auto; max-width:42ch; }
+.path .btn{ margin-top:0.9rem; }
+@media (max-width:720px){ .paths{ grid-template-columns:1fr; } }
+
+/* mid-page cinematic photo band (constant in both hero options) */
+.photoband{ position:relative; height:clamp(360px,40vw,740px); overflow:hidden; }
+.photoband-img{ position:absolute; inset:0; background:url('/images/coaching.webp') center/cover no-repeat; transform-origin:55% 45%; animation:kenburns 30s ease-in-out infinite alternate; }
+.photoband::after{ content:""; position:absolute; inset:0; background:linear-gradient(to top, rgba(22,20,15,0.72) 0%, rgba(22,20,15,0) 40%); }
+.photoband-cap{ position:absolute; left:0; right:0; bottom:clamp(1.2rem,3vw,2rem); z-index:2; }
+.photoband-cap .eyebrow{ color:var(--cream-mute); }
+@media (prefers-reduced-motion: reduce){ .photoband-img{ animation:none; } }
+
+/* Hero A — designed "startline" (no photo) */
+.hero-startline{ position:relative; }
+.hero-startline::after{ content:""; position:absolute; inset:0; pointer-events:none; z-index:1; opacity:0.32; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+.hero-startline > .wrap{ position:relative; z-index:2; }
+.startline-hero{ position:relative; height:3px; width:min(560px,82%); margin-top:clamp(2.6rem,5vw,3.6rem); background:rgba(255,255,255,0.10); border-radius:3px; overflow:hidden; }
+.startline-hero::before{ content:""; position:absolute; top:0; bottom:0; left:0; right:100%; background:var(--orange); box-shadow:0 0 20px -1px rgba(255,92,57,0.7); border-radius:3px; animation:drawline 1.5s 0.6s cubic-bezier(.2,.7,.2,1) forwards; }
+@keyframes drawline{ to{ right:0; } }
+@media (prefers-reduced-motion: reduce){ .startline-hero::before{ right:0; animation:none; } }
+
+/* Home hero — atmosphere only: crisp black + orange/gold glow, bold type */
+.hero-atmos{
+  background-image:
+    radial-gradient(ellipse 60% 84% at 84% 48%, rgba(255,92,57,0.20) 0%, rgba(255,92,57,0.05) 40%, transparent 64%),
+    radial-gradient(ellipse 48% 62% at 102% 102%, rgba(212,168,67,0.06) 0%, transparent 58%);
+}
+.hero-atmos .display{ max-width:15ch; font-size:clamp(3.1rem,7.4vw,6rem); }
+.hero-atmos .sub{ max-width:48ch; }
+.hero-atmos .startline-hero{ width:min(460px,82%); }
+
+
+/* Space held for the campaign band while /data/campaigns.json is in flight.
+   The band is injected by JS, so without this the page jumps when it lands —
+   which is what was left on /donate once the Givebutter shift was fixed, and
+   what put desktop CLS at 0.112 while mobile sat at 0.
+
+   Heights are measured, not guessed: the rendered card is 238px at 1440 and
+   349px stacked below its own 820px breakpoint, identical on all three hosts.
+   `camp-pending` is removed by campaigns.js as soon as the fetch resolves,
+   including when there is no campaign — an empty band is a real state and must
+   never leave a reserved hole behind it. */
+.camp-pending{ min-height:375px; }  /* measured: the band renders at 375 on a phone, not 349 */
+@media (min-width:821px){ .camp-pending{ min-height:238px; } }
+
+/* ==========================================================================
+   Photography pass + drive results (2026-08-29)
+   ========================================================================== */
+
+/* Photographed hero. .hero-cine already lays a photo under a dark gradient;
+   this keeps the brand's orange bloom ON TOP of the photo so a hero with a
+   picture still reads as ours and not as stock. Sits between the gradient
+   (z-1) and the copy (z-2). */
+.hero-cine .hero-glow{
+  position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 84% at 84% 48%, rgba(255,92,57,0.26) 0%, rgba(255,92,57,0.07) 40%, transparent 64%),
+    radial-gradient(ellipse 48% 62% at 102% 102%, rgba(212,168,67,0.08) 0%, transparent 58%);
+}
+/* Photo heroes need a floor under the type that atmosphere heroes do not:
+   the picture is busiest exactly where the sub-line sits. */
+.hero-cine.hero-photo::after{
+  background:
+    linear-gradient(100deg, rgba(12,12,14,0.94) 0%, rgba(12,12,14,0.80) 46%, rgba(12,12,14,0.42) 100%),
+    linear-gradient(to top, rgba(12,12,14,0.78), rgba(12,12,14,0) 46%);
+}
+.hero-cine .hero-media{ background-position:center 34%; }
+
+/* Photoband caption — the band already carries a bottom scrim; this is the
+   line that says who is in the picture. Unlabelled photography of real
+   athletes reads as stock, which is the opposite of the point. */
+.photoband-cap .pb-line{
+  display:block; color:var(--cream); font-size:clamp(1rem,2vw,1.2rem);
+  max-width:46ch; margin-top:0.35rem;
+}
+
+/* ---- drive result band ("we finished one") ----------------------------
+   The counterpart to .camp-band. That one says what we are raising NOW;
+   this says what a finished drive actually brought in. Rendered from
+   campaigns.json by ATLCampaigns.result(), never hand-typed, so the
+   number cannot drift from the source the rest of the site reads. */
+.win-band{ display:block; }
+.win-card{
+  display:grid; grid-template-columns:1fr auto; gap:clamp(1.1rem,3vw,2.4rem);
+  align-items:center; padding:clamp(1.5rem,3.2vw,2.2rem) clamp(1.5rem,3.4vw,2.4rem);
+  background:var(--charcoal); border:1px solid rgba(255,255,255,0.10); border-radius:20px;
+  box-shadow:0 26px 60px -40px rgba(0,0,0,0.9);
+  transition:border-color .2s ease, transform .2s ease;
+}
+a.win-band:hover .win-card{ border-color:rgba(255,92,57,0.42); transform:translateY(-2px); }
+a.win-band:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:4px; border-radius:20px; }
+.win-eyebrow{
+  display:inline-flex; align-items:center; gap:0.55rem; font-family:var(--font-label);
+  font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--orange);
+}
+.win-eyebrow .tick{ width:8px; height:8px; border-radius:50%; background:var(--orange); box-shadow:0 0 0 4px var(--orange-bloom); }
+.win-name{ display:block; margin-top:0.6rem; color:var(--cream); font-size:clamp(1.15rem,2.3vw,1.45rem); font-weight:600; }
+.win-sub{ display:block; margin-top:0.35rem; color:var(--cream-mute); font-size:0.97rem; max-width:52ch; }
+.win-figure{ text-align:right; }
+.win-amount{
+  display:block; font-family:var(--font-display); font-size:clamp(2.1rem,5.2vw,3.1rem);
+  line-height:1; color:var(--cream); letter-spacing:-0.01em;
+}
+.win-of{ display:block; margin-top:0.45rem; font-family:var(--font-label); font-size:0.72rem;
+  letter-spacing:0.1em; text-transform:uppercase; color:var(--orange); }
+@media (max-width:720px){
+  .win-card{ grid-template-columns:1fr; }
+  .win-figure{ text-align:left; }
+}
+
+/* ==========================================================================
+   Volunteer board + role pages (generated by scripts/build-volunteer.mjs).
+   Lives here rather than in a per-page <style> because 28 pages share it and
+   duplicating it 28 times is how the board and the postings drift apart.
+   ========================================================================== */
+
+/* ---- the board: every card is one link to its role page ---------------- */
+/* The first version made each card a <label> around a checkbox so a reader
+   could pick several roles at once. Alec, 2026-09-02: almost everyone applies
+   for one role, so the shortest path wins and the multi-select went. The card
+   being an anchor is why it can hold no inner link and no form control. */
+.lane-blurb{ max-width:62ch; margin-top:0.9rem; color:var(--ink-soft); }
+.roles{ display:grid; grid-template-columns:repeat(auto-fit,minmax(265px,1fr)); gap:clamp(0.9rem,1.8vw,1.2rem); margin-top:clamp(1.8rem,3.4vw,2.6rem); list-style:none; padding:0; }
+.role{ display:flex; flex-direction:column; height:100%; border:1.5px solid var(--hairline); border-radius:16px; padding:1.25rem 1.2rem 1.1rem; background:var(--paper); transition:border-color .16s ease, box-shadow .16s ease, transform .16s ease; }
+.role:hover{ border-color:var(--orange); transform:translateY(-2px); box-shadow:0 14px 34px rgba(255,92,57,0.13); }
+.role:focus-visible{ outline:2px solid var(--orange); outline-offset:3px; }
+.role-n{ font-family:var(--font-body); font-weight:700; font-size:1rem; color:var(--ink); line-height:1.3; }
+.role:hover .role-n{ color:var(--orange-ink); }
+.role-d{ font-family:var(--font-body); font-size:0.9rem; line-height:1.5; color:var(--ink-soft); margin-top:0.45rem; flex:1; }
+.role-foot{ display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:0.4rem 0.9rem; margin-top:1rem; padding-top:0.85rem; border-top:1px solid var(--hairline); }
+.role-t{ font-family:var(--font-label); font-size:0.68rem; letter-spacing:0.07em; text-transform:uppercase; color:var(--muted); }
+/* Just an arrow. The whole card is a link, so "read the role" on all
+   twenty-seven of them was noise competing with the time chip. */
+.role-go{ font-size:1rem; line-height:1; color:var(--orange); transition:transform .16s ease; }
+.role:hover .role-go{ transform:translateX(3px); }
+
+.terms{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:clamp(1.4rem,3vw,2.4rem); margin-top:clamp(2.2rem,4vw,3rem); }
+@media (min-width:1000px){ .terms{ grid-template-columns:repeat(4,minmax(0,1fr)); } }
+.term h3{ font-family:var(--font-display); font-size:1.22rem; font-weight:500; color:var(--ink); margin-bottom:0.5rem; }
+.term p{ font-family:var(--font-body); font-size:0.95rem; line-height:1.55; color:var(--ink-soft); }
+
+.vform{ max-width:680px; margin-inline:auto; }
+.to-form{ scroll-margin-top:90px; }
+#roles{ display:block; scroll-margin-top:64px; }
+
+/* ---- one role page ------------------------------------------------------ */
+.jd-hero{ padding-block:clamp(3.2rem,7vw,5rem) clamp(2.6rem,5vw,3.6rem); }
+.jd-back{ display:block; width:fit-content; font-family:var(--font-label); font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--cream-mute); margin-bottom:1.4rem; }
+.jd-back:hover{ color:var(--orange); }
+.jd-title{ font-size:clamp(2.1rem,5.4vw,3.4rem); line-height:1.06; margin:0.7rem 0 0; }
+.jd-chips{ display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:1.5rem; }
+.jd-chip{ font-family:var(--font-label); font-size:0.68rem; letter-spacing:0.07em; text-transform:uppercase; color:var(--cream); background:rgba(247,244,238,0.1); border:1px solid rgba(247,244,238,0.18); border-radius:999px; padding:0.35rem 0.8rem; }
+
+.jd-grid{ display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:clamp(2rem,4vw,3.4rem); align-items:start; }
+@media (max-width:900px){ .jd-grid{ grid-template-columns:1fr; } }
+.jd-main{ max-width:64ch; }
+.jd-sec + .jd-sec{ margin-top:clamp(2rem,3.4vw,2.8rem); }
+.jd-h{ font-family:var(--font-display); font-size:clamp(1.3rem,2.4vw,1.6rem); font-weight:500; color:var(--ink); margin-bottom:0.8rem; }
+.jd-p{ font-family:var(--font-body); color:var(--ink-soft); line-height:1.62; }
+/* Opens the page in place of a "why this role exists" heading. */
+.jd-lede{ font-family:var(--font-display); font-size:clamp(1.12rem,2.1vw,1.32rem); line-height:1.5; color:var(--ink); margin-bottom:clamp(2rem,3.4vw,2.6rem); }
+/* One line of relief, in place of a second list. */
+.jd-skip{ font-family:var(--font-body); font-size:0.92rem; line-height:1.55; color:var(--muted); margin-top:0.9rem; }
+.jd-note{ font-size:0.92rem; color:var(--muted); margin-bottom:0.9rem; }
+.jd-list{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:0.6rem; }
+.jd-list li{ position:relative; padding-left:1.5rem; font-family:var(--font-body); color:var(--ink-soft); line-height:1.55; }
+.jd-list li::before{ content:""; position:absolute; left:0; top:0.62em; width:7px; height:7px; border-radius:50%; background:var(--orange); }
+.jd-ordered{ counter-reset:jd; }
+.jd-ordered li{ padding-left:2.1rem; counter-increment:jd; }
+.jd-ordered li::before{ content:counter(jd); width:auto; height:auto; background:none; top:0.16em; font-family:var(--font-label); font-size:0.86rem; font-weight:700; color:var(--orange); }
+.jd-no li::before{ background:none; content:""; top:0.72em; width:11px; height:1.5px; background:var(--hairline); border-radius:0; }
+.jd-payoff{ font-family:var(--font-display); font-style:italic; font-size:clamp(1.15rem,2.2vw,1.35rem); line-height:1.4; color:var(--ink); margin-top:clamp(2.2rem,4vw,3rem); padding-top:clamp(1.6rem,3vw,2rem); border-top:1px solid var(--hairline); }
+
+.jd-side{ position:sticky; top:96px; }
+@media (max-width:900px){ .jd-side{ position:static; } }
+.jd-glance{ border:1.5px solid var(--hairline); border-radius:16px; background:var(--paper); padding:1.3rem 1.25rem; }
+.gl-head{ display:block; font-family:var(--font-label); font-size:0.7rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:0.9rem; }
+.gl-k{ display:block; font-family:var(--font-label); font-size:0.65rem; letter-spacing:0.09em; text-transform:uppercase; color:var(--muted); }
+.gl-v{ display:block; font-family:var(--font-body); font-size:0.92rem; line-height:1.45; color:var(--ink); margin-top:0.2rem; }
+.jd-side-btn{ width:100%; justify-content:center; margin-top:1.1rem; }
+.gl-foot{ font-family:var(--font-body); font-size:0.82rem; color:var(--muted); margin-top:0.8rem; text-align:center; }
+.jd-legal{ font-family:var(--font-body); font-size:0.8rem; line-height:1.6; color:var(--cream-faint); max-width:60ch; margin:clamp(2rem,4vw,2.8rem) auto 0; }
+.closing .jd-list li{ color:var(--ink-soft); }
+
+/* ---- the apply form, on the role page's closing band ------------------- */
+/* Name, email, one button. Everything else is behind a <details> that is shut,
+   so the default path is two fields. The role travels in a hidden input, which
+   is the click the old flow made a reader spend. */
+.jd-apply{ text-align:left; }
+.jd-apply-grid{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,420px); gap:clamp(2rem,5vw,4rem); align-items:start; }
+@media (max-width:900px){ .jd-apply-grid{ grid-template-columns:1fr; gap:2.2rem; } }
+.jd-apply-copy .lead{ max-width:46ch; }
+.jd-form{ background:rgba(247,244,238,0.05); border:1px solid rgba(247,244,238,0.16); border-radius:16px; padding:clamp(1.4rem,3vw,1.9rem); }
+.jd-form .field label{ color:var(--cream-mute); }
+.jd-form .field input, .jd-form .field textarea{ background:rgba(12,12,14,0.5); border-color:rgba(247,244,238,0.22); color:var(--cream); }
+.jd-form .field input::placeholder, .jd-form .field textarea::placeholder{ color:var(--cream-faint); }
+.jd-form .field input:focus, .jd-form .field textarea:focus{ border-color:var(--orange); outline:none; }
+.jd-form .btn{ width:100%; justify-content:center; margin-top:0.2rem; }
+.jd-more{ margin:0 0 1.1rem; }
+/* 44px tall so it is a real tap target on a phone; the label itself is one
+   line of text, which measured 23px. */
+.jd-more summary{ cursor:pointer; font-family:var(--font-body); font-size:0.88rem; color:var(--cream-mute); list-style:none; display:inline-flex; align-items:center; gap:0.45rem; min-height:44px; padding-right:0.5rem; }
+.jd-more summary::-webkit-details-marker{ display:none; }
+.jd-more summary::before{ content:"+"; font-family:var(--font-label); color:var(--orange); font-size:1rem; line-height:1; }
+.jd-more[open] summary::before{ content:"\2013"; }
+.jd-more summary:hover{ color:var(--cream); }
+.jd-form-note{ font-family:var(--font-body); font-size:0.82rem; line-height:1.5; color:var(--cream-faint); margin-top:0.9rem; }
+.jd-form-note a{ color:var(--orange); text-decoration:underline; text-underline-offset:2px; }
+.jd-apply .jd-legal{ margin-inline:0; }

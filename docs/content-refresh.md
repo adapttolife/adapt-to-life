@@ -64,6 +64,14 @@ These entries describe completed draft scope, not production approval or financi
 | `/volunteer/board-and-advisory` | Role-specific copy and regenerated shared template |
 | `/waiver` | Shared navigation/footer only; legal agreement preserved |
 
+## Payment-method refinement
+
+Alec confirmed both direct vendor/program payments and reimbursements, and approved updating the site with case-by-case consideration of past expenses without guaranteeing reimbursement. This supersedes the earlier vendor-only wording.
+
+The change is carried through `/promise`, `/hustle-and-heart`, `/about`, `/apply`, the application cost label and FAQ, the grant-review guidance, the README, and the editorial standard. The homepage and About links use How Giving Works consistently. The shared campaign-result label identifies the supported campaign without absolute every-dollar shorthand. Other current pages, shared templates, metadata, and client/server messages are checked for contrary claims rather than burdened with repetitive payment explanations. Regression tests cover both methods and the absence of the old vendor-only statements across all current public pages.
+
+The internal rubric distinguishes confirmed payment practice from proposed implementation controls. No new payment system, approval workflow, fixed lookback period, reimbursement deadline, or automatic entitlement is created. The archived old-content Google Doc remains unchanged. Separate allocation, fee, restricted-gift, and legal questions below remain open; this clarification does not resolve them.
+
 ## Decisions that must not be invented by a copy pass
 
 Before any production release, confirm:

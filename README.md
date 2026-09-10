@@ -62,7 +62,7 @@ Edit the relevant `.html` file under `public/`. CSS is shared in `public/css/sit
 
 ## Fund & grant process
 
-The Hustle & Heart Fund pages are `public/hustle-and-heart.html` (the fund explainer — includes the "How we decide", "What the fund is for", and FAQ sections) and `public/apply.html` (the application form → `POST /api/apply`). The internal grant review rubric — scoring criteria, approval-stage checklist, and the direct-to-vendor payment policy (adopted from the Kelly Brush Foundation model) — lives in [`docs/grant-review-rubric.md`](docs/grant-review-rubric.md). The public "how we decide / what we don't fund" copy and that rubric are kept in sync on purpose.
+The Hustle & Heart Fund pages are `public/hustle-and-heart.html` (purpose and athlete context), `public/promise.html` (How Giving Works), and `public/apply.html` (eligibility, review, payment questions, and the application form → `POST /api/apply`). Support includes direct vendor/program payments and reimbursements for approved expenses; past expenses may be considered case by case without a guarantee. The internal review guidance lives in [`docs/grant-review-rubric.md`](docs/grant-review-rubric.md). Keep public wording and internal guidance aligned without treating draft controls as already implemented procedures.
 
 ## Deploy
 

@@ -34,7 +34,7 @@ Keep the accepted imagery, crops, layout system, typography, and brand palette. 
 | --- | --- | --- |
 | `/` | Shared purpose, human context, current work, and routes into it | Give, with secondary athlete pathways |
 | `/hustle-and-heart` | Fund purpose and equipment, training, and travel | Give or explore the application |
-| `/apply` | Eligibility, review, limitations, direct vendor payment, and application | Apply for support |
+| `/apply` | Eligibility, review, limitations, payment methods, past-expense questions, and application | Apply for support |
 | `/donate` | Giving choices, checkout, and donor administration details | Give |
 | `/promise` | How giving works and the relationship between support and sustainability | Understand the terms before giving |
 | `/send-6` | The campaign goal, selection process, cost categories, and progress | Give toward the campaign |
@@ -63,7 +63,9 @@ The footer keeps the brand promise, useful routes, newsletter entry, social link
 
 ## Claims and source ownership
 
-- Explain approved grants and direct provider payments rather than using blanket percentage shorthand. Do not restore `every dollar reaches an athlete`, `0% overhead`, or exact donation equivalences without a verified allocation and fee policy.
+- Explain approved support through direct vendor/program payments or reimbursement for approved expenses. Payment method can vary with the request and athlete's circumstances. Do not turn it into a vendor-only promise or treat reimbursement as inherently less trustworthy.
+- Prior expenses can be considered case by case, not automatically approved or automatically excluded. Keep detailed application guidance on `/apply`. Do not invent a fixed lookback period, a mandatory preapproval rule, or automatic reimbursement. Update the internal grant rubric whenever this public guidance changes.
+- Do not use a payment channel as proof of a donation percentage. Do not restore `every dollar reaches an athlete`, `0% overhead`, or exact donation equivalences without a verified allocation and fee policy.
 - A target is not a quote, a reconciled expense, a guaranteed award, or a confirmed roster. Describe the Send 6 budget as a fundraising target.
 - Do not invent a balancing expense to make illustrative line items equal a fundraising goal.
 - `/send-6` owns the campaign explanation. `/popcorn` links to it instead of maintaining another budget.

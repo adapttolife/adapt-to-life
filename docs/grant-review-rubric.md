@@ -1,75 +1,78 @@
-# Hustle & Heart Fund — Grant Review Rubric
+# Hustle & Heart Fund: grant review guidance
 
-Internal document. Not published. This is the spine behind the public "How we decide" copy: it lets us make consistent, defensible award decisions and protect the "100% reaches the athlete" promise as volume grows.
+Internal working guidance, not public copy or evidence that every control below is already implemented. Alec confirmed that the fund uses direct vendor/program payments and reimbursements. He approved updating the website to allow case-by-case consideration of past expenses without guaranteeing reimbursement.
 
-Modeled on the Kelly Brush Foundation Active Fund, adapted for our stage. KBF rations scarce money across 50 states with heavy up-front paperwork. We are a young fund whose job right now is to learn who needs help and what it costs, so we keep the **front door light** and move the diligence to the **approval step**, once someone is a finalist.
+This replaces the former vendor-only wording. Stewardship depends on a charitable purpose, fair decisions, appropriate records, and respect for funding restrictions, not on a single payment channel. Payment method does not prove a donation-allocation percentage.
 
-## 1. Scoring rubric (applied to every application)
+Keep the application approachable. Request supporting evidence as the request moves toward an award, rather than collecting unnecessary sensitive information at the front door. Finance and governance owners must confirm the detailed controls and their implementation before this is treated as a formally adopted operating policy.
 
-Score each 1–3. This is a guide for consistency, not a cutoff.
+## 1. Review rubric
+
+Score each 1–3 as a consistency guide, not an automatic cutoff. Record the reason for the decision, including the reason for a departure from the guide.
 
 | Criterion | 1 | 2 | 3 |
-|---|---|---|---|
-| **Need** — is cost the real barrier? | Nice-to-have; other funding exists | Real cost, some other options | Cost is the only thing keeping them out |
-| **Use** — will the gear/trip actually get used? | Unclear intent or readiness | Willing, some plan | Ready now, clear place to compete/train |
-| **Cost reasonableness** — is the ask honest? | No sense of cost, or inflated | Ballpark, unverified | Real quote or tight estimate |
-| **Fit to mission** — adaptive sport | Not a sport need | Adjacent | Squarely adaptive-sport |
+| --- | --- | --- | --- |
+| Need: is cost limiting participation? | Other funding can cover the cost | Cost is a constraint; some other options | Cost is preventing participation |
+| Use: will the support help the athlete take part? | Purpose or use unclear | Willing, with some plan | Clear participation, practice, or competition plan |
+| Cost reasonableness | Cost unclear or inflated | Ballpark, unverified | Quote, invoice, or other appropriate evidence |
+| Fit to mission | Not a sport need | Connection needs clarification | Clearly supports adaptive sport |
 
-**Reach:** no geographic limit. We fund adaptive athletes wherever they are (Alec, 2026-07-16). Location is captured for our own map of demand, never as a filter.
+Preserve the existing invitation to athletes wherever they live. Do not promise an award in every jurisdiction: review eligibility and whether the organization can support the particular request before approving it.
 
-## 2. Approval-stage checklist (finalists only)
+## 2. Payment approach
 
-Do NOT ask for these at application. Collect only once we intend to fund:
+Support for equipment, training, and travel can take either form:
 
-- [ ] **One real vendor quote** (or invoice/entry-fee page) confirming the actual cost
-- [ ] **Need confirmed** in one sentence: what this unlocks and why cost is the barrier
-- [ ] **Payment routed** per policy below
-- [ ] **Logged** in the ClickUp "Grants Awarded" list: amount, vendor paid, funded from (general fund vs Send 6, so restricted gifts stay separable), quote on file, application URL
+- Direct payment to a vendor or program for approved support.
+- Reimbursement for approved expenses, with appropriate evidence of the expense and payment.
 
-## 3. Payment policy — DECIDED (Alec, adopts KBF exactly)
+Choose the approach based on the request, expense, and athlete's circumstances. Confirm the approved amount, purpose, covered expenses, payee, and payment method with the recipient. Approval of one expense is not approval of every related expense.
 
-**We pay the vendor or program directly. We do not send money to the athlete, and we do not reimburse gear already purchased.** This mirrors the Kelly Brush Foundation model verbatim, chosen as the safe, defensible starting position. It is our strongest fraud and stewardship control and it lets us say "100% reaches the athlete" without an asterisk.
+A request involving an expense already incurred can be considered case by case. Purchase timing alone should not be described as automatic approval or automatic rejection. A purchase, receipt, or submitted application is not a promise of reimbursement. Encourage applicants to check with the fund before committing to costs they cannot cover without assistance; do not promise advance funding or a decision timeline.
 
-- Applicants apply *before* buying. If someone already bought the gear, it is a case-by-case exception, not the rule.
-- Stated publicly on `/about#promise`, `/hustle-and-heart` ("How we decide" + FAQ), and `/apply` ("What happens next").
-- We can loosen later if a real case demands it. Starting strict and relaxing is safer than the reverse.
+This guidance does not establish a fixed lookback period, automatic award, universal preapproval requirement, dollar cap, reimbursement deadline, or eligibility for any particular payee. Resolve such details through the appropriate decision-maker rather than inventing them in website copy.
 
-## 4. What we don't fund — PUBLISHED (positive-framing clarity, not exclusion)
+## 3. Proposed approval and recordkeeping controls
 
-Live on `/hustle-and-heart` as the "What the fund is for" section, paired with what we DO fund. Framed as clarity that invites people in ("if you're unsure, apply anyway and ask"), which reads as professional and premium rather than gatekeeping.
+Confirm these with the finance/governance owners and implement them consistently for both payment methods:
 
-- Everyday medical or mobility equipment not tied to a sport
-- Costs already covered by an existing program or insurance
-- Gear bought before applying (we pay the vendor directly, so apply first)
+- [ ] Record the charitable purpose, eligibility basis, review decision, and authorized approver.
+- [ ] Confirm the amount and reasonable cost using evidence appropriate to the request, such as a quote, invoice, entry-fee information, receipt, or comparable documentation. Reimbursement requires evidence that the expense was paid.
+- [ ] Check whether the same cost has already been covered by another source; do not fund a duplicate expense.
+- [ ] Identify the funding source and any donor or campaign restrictions before approving payment. Do not reassign a restricted gift merely because another expense is eligible.
+- [ ] Confirm the payee and payment method. For reimbursement, establish the payee's relationship to the expense rather than assuming the vendor is the recipient.
+- [ ] Identify conflicts or related-party interests and use the applicable conflict process and independent review where required.
+- [ ] Record amount, purpose, payee, payment method, funding source, supporting evidence, approval, and payment confirmation in the approved recordkeeping system. Verify that the relevant tracker and its access controls are operational; this document is not proof of that.
+- [ ] Record the rationale for any case-specific exception. Keep discretion accountable without publishing a rigid rule that has not been adopted.
 
-Kept deliberately short and warm. Tighten only if volume forces it.
+Do not collect more personal or financial information than is needed to assess and document the request. Keep applicant records access-controlled; do not turn internal grant evidence into public storytelling without appropriate consent.
 
-## 5. What we tell an applicant, and when (added 2026-07-29)
+## 4. Scope of support
 
-The review rubric decides who gets funded. This section decides what someone hears while they wait,
-which at this stage matters more, because **as of 2026-07-29 the fund has made zero grants and holds
-a few hundred dollars.** Every applicant right now is applying to a fund whose money is small.
+The fund supports adaptive-sport equipment, training, and travel. Preserve the current public distinction between sport needs and everyday medical or mobility equipment not tied to a sport. Costs already covered by another source are not a second funding opportunity.
 
-**Scope the scarcity to the fund, never to the organization.** ATL is a recognized 501(c)(3) with an
-EIN and a public determination letter. The federal work is finished. Copy that says "Adapt To Life is
-young" to soften a funding delay gives away standing the org already earned, and it reads especially
-badly near any mention of a pending filing. Say "the Hustle & Heart Fund is new and the money in it
-is small." Name the fund, name the money. Pinned in `test/receipts.test.js`.
+Past expenses belong in case-by-case review, not a blanket exclusion. Keep that answer on `/apply`, next to the actual application. Applicants who are unsure can ask without being promised an award.
 
-- **State the stage, in the receipt, with the real number.** The application receipt reads the live
-  fund position from `src/fund.js` and says it plainly. If Givebutter is unreachable the sentence is
-  dropped rather than estimated.
-- **Promise only what we control.** A person reads it, and you hear where it stands. No timeline: we
-  cannot hold one yet, and "within X days" is the promise that turns a slow month into a broken word.
-- **The invitation to help is optional and severed.** Applicants may be invited to share the fund.
-  They are never told, or allowed to infer, that doing so improves their chances. Money they help
-  raise goes to the fund, never earmarked as their grant. Earmarking would create donor-restricted
-  funds and make the accounting and the fairness story much harder, and it is the natural instinct to
-  resist here.
-- **Applicant data is not general correspondence.** Applications carry disability detail and
-  financial need. The internal copy is routed by the `GRANTS_INBOX` Worker var so it can be moved off
-  the shared `hello@` seat to a restricted mailbox without a code change.
+## 5. What an applicant hears
 
-## 6. Track from grant #1
+- State current funding limits truthfully. Do not reuse historical claims about zero grants or a particular cash balance as if they described today. The existing receipt uses the fund position from `src/fund.js`; when the source is unavailable, omit the number rather than estimate it.
+- Promise only what the team can deliver. A person reviews the request and follows up; do not invent a fixed decision or payment timeline.
+- Keep fundraising optional and separate from selection. Donating, sharing, or raising money does not improve an applicant's eligibility or guarantee their own grant.
+- Do not imply that a contribution raised by an applicant is automatically reserved for that applicant. Actual campaign terms and restrictions govern, and need separate review.
+- Keep applicant information out of general correspondence. The application workflow uses `GRANTS_INBOX`; confirm the actual mailbox and access scope when reviewing operations.
 
-KBF's "1,900 athletes across 50 states" is proof the machine works. We start counting now: athletes funded, dollars to athletes, sports and towns reached. Every application is the dataset. The moment we can show it, we do.
+This copy revision does not change email delivery, approval workflows, payment systems, or record permissions. Verify those systems separately before claiming an operational change.
+
+## 6. Keep public and internal wording aligned
+
+- `/promise` owns the concise explanation of both payment methods and purpose.
+- `/hustle-and-heart` stays focused on the fund and athletes, with a short explanation and a link to How Giving Works.
+- `/about` describes support without suggesting that only vendors receive payments.
+- `/apply` owns the review steps, past-expense question, limitations, and form guidance.
+- `docs/CONTENT.md` and the README must reflect the same approach.
+
+Keep equipment, training, and travel in that order. Do not revive vendor-only wording, claim that reimbursement is inherently less responsible, or use payment routing to justify an unverified percentage promise. Leave the historical content archive unchanged.
+
+## 7. Evidence of impact
+
+Track actual approved and paid support, athletes served, sports, and locations using verified records. Distinguish awarded amounts from paid amounts, and campaign fundraising totals from grant expenditure. Share appropriate aggregate evidence without exposing private applicant information.

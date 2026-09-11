@@ -9,7 +9,7 @@ mkdirSync(out, {recursive:true});
 const browser = await chromium.launch({executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined});
 const results = [];
 try {
-  for (const width of [320,390,768,1440]) {
+  for (const width of [320,390,600,768,1024,1440]) {
     const page = await browser.newPage({viewport:{width,height:900},reducedMotion:'reduce'});
     const errors=[];page.on('pageerror',e=>errors.push(String(e)));
     const response=await page.goto(base, {waitUntil:'networkidle'});
@@ -22,7 +22,7 @@ try {
       headings:[...document.querySelectorAll('main h2')].filter(x=>x.getClientRects().length).map(x=>x.textContent.trim()),
       overflow:document.documentElement.scrollWidth > innerWidth+1,
       brokenImages:[...document.querySelectorAll('main img[src]')].filter(x=>x.getClientRects().length && (!x.complete||!x.naturalWidth)).map(x=>x.src),
-      welcomeLinks:[...document.querySelectorAll('.home-welcome a')].map(a=>({href:a.getAttribute('href'),height:a.getBoundingClientRect().height})),
+      welcomeLinks:[...document.querySelectorAll('.home-welcome a')].map(a=>({href:a.getAttribute('href'),height:a.getBoundingClientRect().height,width:a.getBoundingClientRect().width,x:a.getBoundingClientRect().x,y:a.getBoundingClientRect().y})),
       campaignAfterStory:document.querySelector('#homeBand').getBoundingClientRect().top > document.querySelector('#next-step').getBoundingClientRect().top,
       oldResult:!!document.querySelector('#homeResult'),
       campaignText:document.querySelector('#homeBand').innerText,
@@ -30,7 +30,13 @@ try {
     }));
     assert.equal(state.h1.length,1);assert.equal(state.overflow,false,`overflow ${width}`);
     assert.deepEqual(state.brokenImages,[]);assert.ok(state.campaignAfterStory);assert.equal(state.oldResult,false);
-    assert.ok(state.welcomeLinks.every(a=>a.height>=44));assert.deepEqual(errors,[]);
+    assert.ok(state.welcomeLinks.every(a=>a.height>=52));assert.deepEqual(errors,[]);
+    const [primary,help,volunteer]=state.welcomeLinks;
+    assert.ok(primary.width>help.width*1.9,'primary spans the action group');
+    assert.ok(primary.y+primary.height<help.y,'secondary row follows primary');
+    assert.ok(Math.abs(help.y-volunteer.y)<1,'secondary actions share a row');
+    assert.ok(Math.abs(help.width-volunteer.width)<1,'secondary actions are equal width');
+    assert.ok(Math.abs(help.height-volunteer.height)<1,'secondary actions are equal height');
     await page.evaluate(()=>window.scrollTo(0,0));
     await page.waitForFunction(()=>window.scrollY===0);
     const navBox=await page.locator('#nav').boundingBox();

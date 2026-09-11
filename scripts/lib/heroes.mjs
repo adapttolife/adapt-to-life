@@ -279,6 +279,27 @@ const MOSAIC_GRID_POS = {
 // second benefit — it grew his head to 29% of the cell against the left man's
 // 31%, so the two now match in SIZE as well as height. Going further is a
 // re-crop of the panel, which would change the desktop wall.
+// WHITECAP PUT BACK 2026-09-11, same day, second pass. Alec: "the top-right
+// one, which is Robby... I like how it looked before better." The zoom-out was
+// right for the other three and wrong for him, and the reason is the subject,
+// not the arithmetic: Robby is a VERTICAL subject with nothing beside him, so
+// widening his window bought a strip of empty fence and shrank the only thing
+// in the cell worth looking at. More frame is not more picture.
+//
+// AN EXACT REVERT OF ONE CELL IS NOT AVAILABLE, and the constraint is worth
+// writing down rather than rediscovering. His old framing was scale 0.407 of
+// the file showing 92.6% of its height — which needs 309px of cell, and the
+// cell is now 235. A shorter cell can match his old SCALE or his old EXTENT,
+// never both. Scale is what he was reacting to (presence next to the man on
+// his left), so scale is what this restores: 42 redraws him at 0.407, the same
+// number as before the pass, and gives back the side-crop that kept him
+// filling the frame. What it costs is the top ~22% of his headroom.
+//
+// Measured: 500x668 device px at DPR2 against a 615x820 file, so still a
+// downscale. At DPR3 it is a 1.22x upscale — EXACTLY what shipped before the
+// zoom-out pass at the same 0.407, so this is a restoration and not a new
+// regression. The SIZE_OVERRIDE that gives him the front-plane 820px long edge
+// is what keeps that number survivable; do not drop it.
 // RE-TUNED 2026-09-11 for the zoom-out pass (whitecap 8->0, brian 15->14,
 // forehand -30->0). Everything above still holds; what changed underneath it is
 // the CELL. A lift is not free — it BUYS movement with scale, so every lift is
@@ -293,7 +314,7 @@ const MOSAIC_GRID_POS = {
 // paid for by RAISING the left man rather than LOWERING the right one, because
 // lowering forehand is the one move that hides the wheel. Measured after: eye
 // lines ~20px apart at 390 — level to the eye, and both chairs visible.
-const MOSAIC_GRID_LIFT = { "whitecap": 0, "brian": 14, "forehand": 0 };
+const MOSAIC_GRID_LIFT = { "whitecap": 42, "brian": 14, "forehand": 0 };
 
 const BANNER_PHONE = {
   "bn-dink":  { x: -6, w: 58, h: 100 },

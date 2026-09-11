@@ -37,7 +37,7 @@
   "name": "Adapt To Life",
   "url": "https://adapttolife.org/",
   "logo": "https://adapttolife.org/images/brand/atl-logo-512.png",
-  "description": "Adapt To Life funds the equipment, training, and travel that get adaptive athletes off the sidelines and into the game.",
+  "description": "Adapt To Life helps people find adaptive sports programs and supports equipment, training, and travel so more athletes can take part.",
   "email": "hello@adapttolife.org",
   "sameAs": [
     "https://www.instagram.com/adapt_to_life_org/",
@@ -75,6 +75,30 @@
      all (60KB for nothing). The hero background is the LCP element now. -->
 <script src="/js/attribution.js" defer></script>
 <style>
+  /* Homepage-only composition. No new fonts, image crops, or shared overrides. */
+  .home-welcome{ padding:clamp(1.6rem,4vw,2.6rem) 0; text-align:center; }
+  .home-welcome .lead{ max-width:42ch; margin-inline:auto; }
+  .home-actions{ display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:0.8rem 1.8rem; margin-top:1.5rem; }
+  .home-actions .textlink{ display:inline-flex; align-items:center; min-height:44px; }
+  .home-story{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(2rem,6vw,6rem); align-items:start; }
+  .home-story h2{ margin-top:0.8rem; max-width:18ch; text-wrap:balance; }
+  .home-story-body{ padding-top:1.8rem; }
+  .home-story-body p + p{ margin-top:1.1rem; }
+  .home-story-body > a{ margin-top:1.4rem; }
+  #nextStepTitle{ text-wrap:balance; }
+  #nextStepTitle span{ display:block; }
+  .steward .home-actions{ justify-content:flex-start; }
+  .home-campaign{ padding:clamp(2rem,5vw,4rem) 0; }
+  .home-campaign:has(#homeBand:empty:not(.camp-pending)){ display:none; }
+  .home-closing-quote{ max-width:36ch; margin:0 auto; font-size:clamp(1.3rem,3vw,1.9rem); line-height:1.45; }
+  .home-closing-name{ margin-top:1.2rem; }
+  .home-closing-invite{ max-width:48ch; margin:1.8rem auto 0; color:var(--cream-mute); }
+  @media(max-width:760px){
+    .home-story{ grid-template-columns:1fr; gap:1.4rem; }
+    .home-story-body{ padding-top:0; }
+    .home-story h2{ max-width:20ch; }
+    .home-welcome .home-actions{ column-gap:1.3rem; }
+  }
   /* On the calendar: dated proof the org is moving. Compact by design, because
      the hub at /ways-to-give is where the full list belongs. */
   .home-cal{ list-style:none; padding:0; margin:clamp(1.8rem,3vw,2.4rem) 0 0; max-width:860px; margin-inline:auto; }
@@ -247,34 +271,53 @@ fill="currentColor" stroke="none">
   }
 </style>
 
-  <!-- 2 · CAMPAIGN BAND — the answer to "what is happening right now",
-         lifted over the hero. Renders nothing if there is no live campaign. -->
-  <section style="padding:0;">
-    <div class="wrap"><div id="homeBand" class="camp-pending"></div></div>
-  </section>
+  <!-- Keep the accepted photo crops and headline clear. Orientation and
+       visitor actions sit just below the mosaic, never over an athlete. -->
+  <div class="home-welcome dark">
+    <div class="wrap">
+      <p class="lead">We help people find a sport and get the support to take part.</p>
+      <div class="home-actions" aria-label="Start here">
+        <a href="/adaptive-sports-near-me" class="btn">Find a place to play</a>
+        <a href="/donate" class="textlink">Help an athlete play <span class="arrow">&rarr;</span></a>
+        <a href="/volunteer" class="textlink">Volunteer <span class="arrow">&rarr;</span></a>
+      </div>
+    </div>
+  </div>
 
-  <!-- 2b · DRIVE RESULT — what the last finished drive actually brought in.
-         Rendered from campaigns.json by ATLCampaigns.result(); renders
-         nothing at all when no closed drive has a counted figure. -->
-  <section id="homeResultSection" style="padding:clamp(1.6rem,3vw,2.4rem) 0 0;">
-    <div class="wrap"><div id="homeResult"></div></div>
-  </section>
-
-  <!-- The mission is one participation story. Program detail belongs on its
-       own page; these links are useful next steps, not competing pillars. -->
-  <section class="band" id="participation">
-    <div class="wrap narrow">
-      <div class="reveal sec-head">
+  <!-- A lived reason for the work, not an inventory of programs. -->
+  <section class="band" id="participation" aria-labelledby="participationTitle">
+    <div class="wrap home-story">
+      <div class="reveal">
         <span class="eyebrow orange">Why we're here</span>
-        <h2 class="serif h2" style="margin-top:0.8rem;">More people playing. More often.</h2>
-        <p class="prose" style="margin-top:1rem;">Wanting to play is one thing. Finding a program, getting the right equipment, and covering the cost of taking part is another.</p>
-        <p class="prose" style="margin-top:1rem;">We help close that gap, so adaptive sports can become part of your life. A first game. A weekly practice. A competition you have been working toward.</p>
-        <div class="actions" style="display:flex; flex-wrap:wrap; gap:1rem 1.6rem; justify-content:center; margin-top:1.8rem;">
-          <a href="/adaptive-sports-near-me" class="textlink">Find a place to play <span class="arrow">&rarr;</span></a>
+        <h2 id="participationTitle" class="serif h2">A chance to play should not come down to luck.</h2>
+      </div>
+      <div class="home-story-body reveal">
+        <p class="prose">A brochure introduced our founder, Alec, to adaptive sports when he was six. What followed was more than twenty years as an athlete and a coach, and a community he is still part of today.</p>
+        <p class="prose">Not everyone knows where to start or has the support to keep going. Adapt To Life exists to help change that.</p>
+        <a href="/about" class="textlink">How it started <span class="arrow">&rarr;</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="band-sm tint" id="next-step" aria-labelledby="nextStepTitle">
+    <div class="wrap narrow">
+      <div class="sec-head reveal">
+        <span class="eyebrow orange">Your next step</span>
+        <h2 id="nextStepTitle" class="serif h2" style="margin-top:0.8rem;"><span>Find a place to start.</span> <span>Get support for what comes next.</span></h2>
+        <p class="prose" style="margin-top:1.2rem;">Adaptive Sports Near Me helps you find a program. The Hustle &amp; Heart Fund helps with equipment, training, and travel.</p>
+        <p class="prose" style="margin-top:1rem;">You might be trying a sport for the first time, finding a regular game, or preparing for a competition. What comes next is up to you.</p>
+        <div class="home-actions">
+          <a href="/adaptive-sports-near-me" class="textlink">Explore the directory <span class="arrow">&rarr;</span></a>
           <a href="/hustle-and-heart" class="textlink">Explore athlete funding <span class="arrow">&rarr;</span></a>
         </div>
       </div>
     </div>
+  </section>
+
+  <!-- Current work follows the reason for giving. Shared campaign data owns
+       the target and progress. Completed drives remain on the campaign page. -->
+  <section class="home-campaign" aria-label="Current fundraising campaign">
+    <div class="wrap"><div id="homeBand" class="camp-pending"></div></div>
   </section>
 
   <!-- 4 · ON THE CALENDAR — dated proof the org is moving. Whole section
@@ -298,50 +341,32 @@ fill="currentColor" stroke="none">
       <span class="eyebrow gold reveal">Why "Hustle &amp; Heart"</span>
       <h2 class="serif statement italic reveal" style="margin-top:1rem;">Hustle &amp; Heart is how Tim played.</h2>
       <hr class="tick gold reveal">
-      <p class="prose reveal">Tim brought everything he had to the court. The Hustle &amp; Heart Fund carries his name and helps other athletes get their chance to play.</p>
+      <p class="prose reveal">Tim Gruensfelder brought everything he had to the basketball court. The Hustle &amp; Heart Fund carries his name and helps other athletes get their chance to play.</p>
       <a href="/tim" class="textlink reveal" style="margin-top:1.6rem;">Read Tim's story <span class="arrow">&rarr;</span></a>
     </div>
   </section>
 
-  <!-- 6 · THE ENGINE — the north star, and why growth is the method rather than
-         the goal. This used to sit here as a founder's aside next to "Meet the
-         team," which read as Alec's feelings about the work instead of the
-         organisation's operating principle. The promise itself stays owned by
-         /promise: one line and a link, per the content standard. -->
+  <!-- From individual help to lasting support. Detailed revenue and giving
+       explanations stay on their own pages. -->
   <section class="steward band">
     <div class="wrap narrow">
       <span class="eyebrow orange reveal">Our north star</span>
       <h2 class="serif statement italic reveal" style="margin-top:1rem;">The more we grow, the more we give.</h2>
-      <p class="prose reveal" style="margin-top:1.3rem;">Growth is not the goal here, it's the method. More support means more athletes can find their place in sport and keep coming back. <a class="textlink" href="/promise">How Giving Works <span class="arrow">&rarr;</span></a></p>
-      <blockquote class="pullquote reveal">I got into this because someone handed me a brochure when I was six. Now it's our turn to be that for the next athlete.</blockquote>
-      <div class="reveal" style="margin-top:1.1rem;">
-        <span class="qname">Alec Tranel</span>
-        <span class="qrole">Founder &amp; Executive Director</span>
+      <p class="prose reveal" style="margin-top:1.3rem;">For years, Alec helped cover costs himself, one athlete at a time. Adapt To Life gives that work a shared home.</p>
+      <p class="prose reveal" style="margin-top:1rem;">We are building support that lasts beyond the next fundraiser, so more athletes can find a sport and keep coming back.</p>
+      <div class="home-actions reveal">
+        <a href="/roadmap" class="textlink">Where we're headed <span class="arrow">&rarr;</span></a>
+        <a href="/promise" class="textlink">How Giving Works <span class="arrow">&rarr;</span></a>
       </div>
-      <a href="/about" class="textlink reveal" style="margin-top:1.7rem;">Meet the team <span class="arrow">&rarr;</span></a>
     </div>
   </section>
 
-  <!-- PHOTO BAND — coaching, cinematic full-bleed (constant in both heroes) -->
-  <!-- 11 · CLOSING — the rolling band.
-       Alec, 2026-09-09: "I love the bottom of the donate page ... Can we do the
-       same thing for the bottom of the Main page? Besides juan by himself,
-       delete this picture, go all in on this vertical frame banner style layout
-       ... BUT keep the content and text that we have."
-
-       So the words are untouched and the single full-bleed photograph that sat
-       above them is gone. What replaces it is the same closing shape /donate
-       uses: the ask splits in two and the faces roll between the halves. It
-       ends the front page on people rather than on a paragraph.
-
-       DIFFERENT EIGHT than /donate's strip, deliberately — the same faces on
-       both would read as a template. And the image is lazy, swapped in by
-       IntersectionObserver, so a visitor who never reaches the footer never
-       pays the 53KB. -->
+  <!-- Close the brochure story on people. Preserve the accepted rolling
+       photographs, deferred loading, and accessible motion control. -->
   <section class="closing roll-band dark">
     <div class="wrap center rb-copy rb-top">
       <span class="eyebrow orange reveal">Your turn</span>
-      <h2 class="serif display reveal">Help the next athlete play.</h2>
+      <h2 class="serif display reveal">Help the next athlete find their place.</h2>
     </div>
 
     <div class="rb-stage">
@@ -401,12 +426,16 @@ fill="currentColor" stroke="none">
     </script>
 
     <div class="wrap center rb-copy rb-bottom">
-      <p class="lead sub reveal">Help cover equipment, training, and travel. Your gift supports the practical things an athlete needs to take part.</p>
+      <blockquote class="home-closing-quote reveal">I got into this because someone handed me a brochure when I was six. Now it's our turn to be that for the next athlete.</blockquote>
+      <div class="home-closing-name reveal">
+        <span class="qname">Alec Tranel</span>
+        <span class="qrole">Founder &amp; Executive Director</span>
+      </div>
+      <p class="home-closing-invite reveal">A gift helps cover the cost of playing. Your time, skills, and introductions can help too.</p>
       <div class="actions reveal">
         <a href="/donate" class="btn">Donate</a>
-        <a href="/promise" class="btn ghost">See where the money goes <span class="arrow">&rarr;</span></a>
+        <a href="/volunteer" class="btn ghost">Find your role <span class="arrow">&rarr;</span></a>
       </div>
-      <p class="reveal" style="margin-top:1.6rem; color:var(--cream-mute); font-size:0.95rem;">Your time, skills, and introductions can help too. <a class="textlink" href="/volunteer" style="color:var(--orange)">Find your role <span class="arrow">&rarr;</span></a></p>
     </div>
   </section>
 
@@ -550,12 +579,8 @@ fill="currentColor" stroke="none">
 (function(){
   var C = window.ATLCampaigns;
 
-  // The campaign band, lifted over the hero.
-  C.band('homeBand', { lifted: true });
-
-  // The last finished drive's result. Hides its own section when there is
-  // nothing to report, so the page never carries an empty band.
-  C.result('homeResult');
+  // The active campaign follows the participation story, without overlapping it.
+  C.band('homeBand', { lifted: false });
 
   // On the calendar: at most three, soonest first. The whole section stays
   // hidden unless there is something real and upcoming to put in it.
@@ -633,9 +658,8 @@ fill="currentColor" stroke="none">
   // and will-change:transform on nineteen composited layers, which is the
   // cheapest thing on this page to give back.
 
-  // There is no drive strip in the header any more. Alec, 2026-09-08: feel
-  // first, then the ask. The campaign band directly below the hero still
-  // renders the live drive, and no longer has to stand down for a duplicate.
+  // Feel first, then the reason for the work, then the current campaign.
+  // No duplicate campaign strip in the hero.
 })();
 </script>
 <!-- /hero:script -->

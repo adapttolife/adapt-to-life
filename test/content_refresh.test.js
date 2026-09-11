@@ -22,7 +22,19 @@ test('every reviewed page uses current shared navigation and the funding order',
 test('homepage tells participation story without the two-program comparison panel', () => {
   const html = read('public/index.html');
   assert.ok(html.includes('id="participation"'));
-  assert.ok(html.includes('More people playing. More often.'));
+  assert.ok(html.includes('A chance to play should not come down to luck.'));
+  assert.ok(html.indexOf('id="participation"') < html.indexOf('id="homeBand"'));
+  assert.ok(html.indexOf('id="next-step"') < html.indexOf('id="homeBand"'));
+  assert.ok(!html.includes('id="homeResult"'));
+  assert.ok(html.includes("C.band('homeBand', { lifted: false })"));
+  for (const target of ['/adaptive-sports-near-me', '/donate', '/volunteer']) {
+    const welcome = html.split('class="home-welcome dark"')[1].split('</div>')[0];
+    assert.ok(welcome.includes(`href="${target}"`));
+  }
+  const quote = "I got into this because someone handed me a brochure when I was six. Now it's our turn to be that for the next athlete.";
+  assert.equal(html.split(quote).length, 2, 'original founder quote appears once');
+  assert.ok(html.includes('Help the next athlete find their place.'));
+  assert.ok(html.includes('What comes next is up to you.'));
   assert.ok(!html.includes('class="fronts'));
   assert.ok(!html.includes('Two of them today'));
 });

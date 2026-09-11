@@ -24,7 +24,8 @@ test('the giving and story pages explain the approach rather than application co
   }
   const about = read('public/about.html');
   assert.ok(about.includes('href="/promise"'));
-  assert.ok(about.includes('A coach, a place to practice, a chair that fits.'));
+  assert.ok(about.includes('There are people doing good work in adaptive sports all over the country.'));
+  assert.ok(about.includes('What we build next should come from what the community needs.'));
   assert.ok(!about.includes('reimbursement'), 'About links to methods instead of repeating them');
 });
 

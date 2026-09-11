@@ -2,7 +2,7 @@
 // operational backend. This entrypoint has only ASSETS: no production imports,
 // credentials, databases, email, scheduled handlers, or outbound fetch calls.
 const PAGES = new Set([
-  '/', '/about', '/adaptive-sports-near-me', '/apply', '/contact', '/donate',
+  '/', '/about', '/adapt-body-shop', '/adaptive-sports-near-me', '/apply', '/contact', '/donate',
   '/hustle-and-heart', '/karen', '/promise', '/roadmap', '/sponsorship',
   '/subscribe', '/tim', '/volunteer', '/send-6', '/popcorn', '/waiver',
 ]);

@@ -16,8 +16,10 @@ test('overhead confirmation includes both revenue projects without an allocation
  const p=read('public/promise.html');
  assert.match(p,/Alec covers the overhead himself/);
  assert.match(p,/building revenue/);
- assert.ok(p.includes('https://adaptivesportsnearme.com'));
- assert.ok(p.includes('https://adaptbodyshop.com'));
+ assert.ok(p.includes('href="/adaptive-sports-near-me"'));
+ assert.ok(p.includes('href="/adapt-body-shop"'));
+ assert.ok(p.includes('upcoming store'));
+ assert.ok(p.includes('Finding a program in the directory is free.'));
  assert.ok(!/hundred percent|100% of/.test(p));
 });
 test('sponsorship removes automatic recurring and naming commitments',()=>{

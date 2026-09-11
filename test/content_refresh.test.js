@@ -34,7 +34,10 @@ test('homepage tells participation story without the two-program comparison pane
   const quote = "I got into this because someone handed me a brochure when I was six. Now it's our turn to be that for the next athlete.";
   assert.equal(html.split(quote).length, 2, 'original founder quote appears once');
   assert.ok(html.includes('Help the next athlete find their place.'));
-  assert.ok(html.includes('What comes next is up to you.'));
+  assert.ok(html.includes('We build more ways into adaptive sports.'));
+  assert.ok(html.includes('What we build will keep evolving with the community.'));
+  assert.ok(html.includes('We expand access to adaptive sports so athletes can find their place.'));
+  assert.ok(html.includes('Our upcoming store,'));
   assert.ok(!html.includes('class="fronts'));
   assert.ok(!html.includes('Two of them today'));
 });

@@ -45,14 +45,14 @@
 export const SHARED = {
   // The board carries the terms of joining. Role pages do not repeat them.
   terms: [
-    ["Built around participation", "A recognized 501(c)(3) helping people find adaptive sports and get support to take part."],
+    ["Built around participation", "A recognized 501(c)(3) expanding access to adaptive sports so athletes can find their place."],
     ["A scope, not a shift", "Every role has a defined job and a person to work with. If we cannot say what done looks like, we will not ask for your time."],
     ["Flexible contributions", "Two hours on a Tuesday night is a real contribution. For events and coaching, we agree on a time together."],
     ["You hear back either way", "A person reads every one. If there is no fit now, we say so."],
   ],
   // One short paragraph on a role page, not a two-paragraph essay.
   about:
-    "Adapt To Life helps people find their place in adaptive sports, and supports the equipment, training, and travel that help them keep playing.",
+    "Adapt To Life expands access to adaptive sports so athletes can find their place. We bring people and opportunities together and build the support around participation.",
   apply:
     "Start with your name and email. We'll talk through the work, timing, and any screening or credentials before you begin.",
   legal:
@@ -65,7 +65,7 @@ export const LANES = [
   { key: "clean", name: "Operations", head: "The unglamorous work that protects athletes.",
     blurb: "The books. The insurance. The advice that keeps the work on solid ground." },
   { key: "tell", name: "Stories", head: "Reach, so the next athlete finds us.",
-    blurb: "An athlete cannot apply to a fund they have never heard of." },
+    blurb: "Help people discover what is possible in adaptive sports and how they can take part." },
   { key: "court", name: "Participation", head: "The part that looks like sport.",
     blurb: "Coaching a session, fixing a chair, making a first introduction." },
   { key: "notitle", name: "Connections", head: "You do not need a profession to change this.",

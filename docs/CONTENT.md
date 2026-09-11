@@ -6,7 +6,9 @@ This is the current editorial standard for adapttolife.org. It replaces the form
 
 **Your place in adaptive sports.**
 
-The problem is the gap between wanting to participate and having a practical way to do it. Adapt To Life is building the support that helps more people make adaptive sports part of their lives.
+**We expand access to adaptive sports so athletes can find their place.**
+
+**We build more ways into adaptive sports.** Sport is also belonging, choice, a regular part of life, and something to work toward. ATL connects and supports an existing community; it does not claim to create or operate every program. Current initiatives demonstrate the mission but do not define its limits.
 
 The directory, fund, shop, and future work serve that purpose. Do not organize the mission as an inventory of initiatives, a choice between access and finance, or two boxes renamed to sound more connected.
 
@@ -42,7 +44,7 @@ Do not confuse less defensive copy with fewer safeguards. Preserve material dono
 
 | Page | Owns | Primary next step |
 | --- | --- | --- |
-| `/` | Shared purpose, human context, current work, and routes into it | Give, with secondary athlete pathways |
+| `/` | Enduring mission, belonging, human context, current proof, and sustainable growth | Find a place to play, help an athlete, or volunteer |
 | `/hustle-and-heart` | Fund purpose and equipment, training, and travel | Give or explore the application |
 | `/apply` | Eligibility, review, limitations, payment methods, past-expense questions, and application | Apply for support |
 | `/donate` | Giving choices, checkout, and donor administration details | Give |
@@ -50,7 +52,8 @@ Do not confuse less defensive copy with fewer safeguards. Preserve material dono
 | `/send-6` | The campaign goal, selection process, cost categories, and progress | Give toward the campaign |
 | `/popcorn` | Drive status, vendor sales model, ordering, participation, and past results | Buy during a drive; otherwise give or subscribe |
 | `/adaptive-sports-near-me` | Directory utility and the first step into a program | Browse the directory |
-| `/about` | People, origins, and shared purpose | Meet the team and get involved |
+| `/about` | People, origins, shared purpose, and current work at `#our-work` | Meet the community and explore the work |
+| `/adapt-body-shop` | Truthful coming-soon shop context within the same mission | Share an idea, get ATL updates, or find a role |
 | `/tim` | Tim's story and why the fund carries his name | Explore or support the fund |
 | `/karen` | Karen's role and connection to finding programs | Continue the conversation |
 | `/sponsorship` | Partnership scope, levels, recognition, and conditions | Discuss a partnership |
@@ -67,7 +70,7 @@ Do not confuse less defensive copy with fewer safeguards. Preserve material dono
 
 Use the same navigation across pages. Keep Donate and Apply for support easy to find. The existing Our Work, Get Involved, and About groups provide orientation; they are not the story itself.
 
-Descriptions must reflect what is available now. The directory is open, not opening soon. `How Giving Works` leads to `/promise`. `Photo and media release` describes the signing link accurately; do not call it a sports-liability waiver.
+Descriptions must reflect what is available now. The directory is open, not opening soon. Adapt Body Shop is coming soon, not a live store: use `/adapt-body-shop` for its current explanation, including in mobile navigation and the footer. `How Giving Works` leads to `/promise`. `Photo and media release` describes the signing link accurately; do not call it a sports-liability waiver.
 
 The footer keeps the brand promise, useful routes, newsletter entry, social links, and legal disclosure. It does not need another mission essay.
 
@@ -84,7 +87,7 @@ The footer keeps the brand promise, useful routes, newsletter entry, social link
 - Double Good's published model returns 50% of popcorn sales to the fundraiser. Vendor prices, minimums, shipping, and availability belong at vendor checkout; do not hard-code them without a current reason.
 - The directory's generated statistics come from its current API through `scripts/build-asnm.mjs`. Distinguish states from D.C. and do not describe the database as nationally complete or every listing as independently verified.
 - The directory is a starting point. Readers confirm schedules, eligibility, equipment, and accessibility with providers.
-- Adapt Body Shop contributes to the organization's longer term sustainability story. Do not invent a current transfer formula or portray the free directory as a confirmed revenue source.
+- Adapt Body Shop contributes to the organization's longer term sustainability story. The store is forthcoming. Do not invent products already for sale, launch dates, a profit-transfer percentage, or purchase deductibility. Keep the directory free to browse; describe revenue development as a plan, not proof of current earnings.
 - Tax language, legal entity details, restricted gifts, and grant policy require evidence and the appropriate decision-maker. A staging copy edit is not authority to establish a new policy.
 
 ## Generated and connected content
@@ -97,7 +100,7 @@ Descriptions, social titles, image alt text, captions, form help, and client-gen
 
 Share-card headlines match their pages. Keep the accepted photographs and treatment, change only the wording needed, generate new versioned assets, and wire the image URLs and accurate alt text. Do not leave an old promise embedded in a social preview after removing it from the page.
 
-Adaptivesportsnearme.com and adaptbodyshop.com remain separate later passes. Their voices and operating facts must be checked on those sites, not inferred from ATL copy.
+The separate adaptivesportsnearme.com directory and adaptbodyshop.com storefront remain outside this ATL-site staging pass. The new ATL `/adapt-body-shop` page explains its forthcoming role; it is not a storefront launch. Their voices and operating facts must be checked on those sites, not inferred from ATL copy.
 
 ## Review and release
 

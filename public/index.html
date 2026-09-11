@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light only">
 <title>Adapt To Life | Your Place in Adaptive Sports</title>
-<meta name="description" content="Adapt To Life funds the equipment, training, and travel that get adaptive athletes off the sidelines and into the game.">
+<meta name="description" content="Adapt To Life expands access to adaptive sports so athletes can find their place. Built by the community, for the community.">
 <link rel="canonical" href="https://adapttolife.org/">
 <!-- sameAs is the ONLY machine-readable way to say "these profiles and this
      site are the same organisation". Without it a search engine has two
@@ -37,7 +37,7 @@
   "name": "Adapt To Life",
   "url": "https://adapttolife.org/",
   "logo": "https://adapttolife.org/images/brand/atl-logo-512.png",
-  "description": "Adapt To Life funds the equipment, training, and travel that get adaptive athletes off the sidelines and into the game.",
+  "description": "Adapt To Life expands access to adaptive sports so athletes can find their place.",
   "email": "hello@adapttolife.org",
   "sameAs": [
     "https://www.instagram.com/adapt_to_life_org/",
@@ -50,7 +50,7 @@
 <link rel="apple-touch-icon" href="/images/apple-touch-icon-v2-option2.png">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Adapt To Life | Your Place in Adaptive Sports">
-<meta property="og:description" content="We fund the equipment, training, and travel that get adaptive athletes off the sidelines and into the game.">
+<meta property="og:description" content="Adapt To Life expands access to adaptive sports so athletes can find their place. Built by the community, for the community.">
 <meta property="og:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -58,7 +58,7 @@
 <meta property="og:url" content="https://adapttolife.org/">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Adapt To Life | Your Place in Adaptive Sports">
-<meta name="twitter:description" content="We fund the equipment, training, and travel that get adaptive athletes off the sidelines and into the game.">
+<meta name="twitter:description" content="Adapt To Life expands access to adaptive sports so athletes can find their place. Built by the community, for the community.">
 <meta name="twitter:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
 <meta name="twitter:image:alt" content="Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.">
 <link rel="preload" href="/css/site.css" as="style">
@@ -75,6 +75,26 @@
      all (60KB for nothing). The hero background is the LCP element now. -->
 <script src="/js/attribution.js" defer></script>
 <style>
+  /* Homepage-only composition. No new fonts, image crops, or shared overrides. */
+  .home-welcome{ padding:1.5rem 0 2rem; text-align:center; }
+  .home-welcome .lead{ max-width:42ch; margin-inline:auto; }
+  #participation{ padding-block:clamp(2.5rem,5vw,4rem); }
+  .home-story{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(2rem,6vw,6rem); align-items:start; }
+  .home-story h2{ margin-top:0.8rem; max-width:18ch; text-wrap:balance; }
+  .home-story-body{ padding-top:1.8rem; }
+  .home-story-body p + p{ margin-top:1.1rem; }
+  .home-story-body > a{ margin-top:1.4rem; }
+  #nextStepTitle{ text-wrap:balance; }
+  .home-campaign{ padding:clamp(2rem,5vw,4rem) 0; }
+  .home-campaign:has(#homeBand:empty:not(.camp-pending)){ display:none; }
+  .home-closing-quote{ max-width:36ch; margin:0 auto; font-size:clamp(1.3rem,3vw,1.9rem); line-height:1.45; }
+  .home-closing-name{ margin-top:1.2rem; }
+  .home-closing-invite{ max-width:48ch; margin:1.8rem auto 0; color:var(--cream-mute); }
+  @media(max-width:760px){
+    .home-story{ grid-template-columns:1fr; gap:1.4rem; }
+    .home-story-body{ padding-top:0; }
+    .home-story h2{ max-width:20ch; }
+  }
   /* On the calendar: dated proof the org is moving. Compact by design, because
      the hub at /ways-to-give is where the full list belongs. */
   .home-cal{ list-style:none; padding:0; margin:clamp(1.8rem,3vw,2.4rem) 0 0; max-width:860px; margin-inline:auto; }
@@ -88,34 +108,6 @@
   .hc-sub{ margin-top:0.2rem; font-size:0.93rem; color:var(--ink-soft); max-width:56ch; }
   .hc-go{ flex:0 0 auto; font-size:0.9rem; }
 
-  /* Our work: ONE object with two facets, not two cards.
-     The old version asserted "one job, two sides" in a headline and then put
-     two headings, two paragraphs and two links side by side, which on a phone
-     collapsed into a plain list of two products. Cohesion has to be structural.
-     The verb leads (Afford it / Find it, the spec's own athlete-side framing)
-     and each program name lives inside its sentence rather than standing up as
-     a rival headline. */
-  .fronts{
-    list-style:none; margin:clamp(2.2rem,4vw,3rem) auto 0; padding:clamp(1.7rem,3.2vw,2.6rem);
-    max-width:960px;
-    background:var(--paper); border:1px solid var(--hairline); border-radius:20px;
-    box-shadow:0 26px 60px -36px rgba(28,26,21,0.36);
-    display:grid; grid-template-columns:1fr 1fr; gap:clamp(1.6rem,3.4vw,3rem);
-  }
-  .fronts > li{ display:flex; flex-direction:column; align-items:flex-start; }
-  .fronts > li + li{ border-left:1px solid var(--hairline); padding-left:clamp(1.6rem,3.4vw,3rem); }
-  @media (max-width:760px){
-    .fronts{ grid-template-columns:1fr; gap:1.6rem; }
-    .fronts > li + li{ border-left:0; padding-left:0; border-top:1px solid var(--hairline); padding-top:1.6rem; }
-  }
-  .front-verb{
-    font-family:"Space Mono",monospace; font-size:0.72rem; font-weight:700;
-    letter-spacing:0.18em; text-transform:uppercase; color:var(--orange-ink);
-  }
-  .fronts p{ margin-top:0.8rem; color:var(--ink-soft); flex:1 1 auto; }
-  .fronts p strong{ color:var(--ink); font-weight:600; }
-  .fronts .textlink{ margin-top:1.3rem; font-size:0.94rem; }
-  .fronts-more{ margin-top:1.3rem; text-align:center; color:var(--muted); font-size:0.95rem; }
 </style>
 </head>
 <body>
@@ -153,25 +145,26 @@ fill="currentColor" stroke="none">
       <div class="nav-group">
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navOurWork">Our Work<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 3 3-3"/></svg></button>
         <div class="nav-panel" id="navOurWork">
-          <a href="/hustle-and-heart"><span class="np-t">Hustle &amp; Heart Fund</span><span class="np-d">Equipment, training, and travel, so cost is never why an athlete sits out</span></a>
-          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d">A free national directory of adaptive programs, opening soon</span></a>
+          <a href="/hustle-and-heart"><span class="np-t">Hustle &amp; Heart Fund</span><span class="np-d">Support for equipment, training, and travel</span></a>
+          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d">Find adaptive programs by sport and location</span></a>
+          <a href="/adapt-body-shop"><span class="np-t">Adapt Body Shop</span><span class="np-d">Coming soon · Gear for the community</span></a>
         </div>
       </div>
       <div class="nav-group">
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navJoin">Get Involved<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 3 3-3"/></svg></button>
         <div class="nav-panel" id="navJoin">
-          <a href="/volunteer"><span class="np-t">Volunteer</span><span class="np-d">The roles we actually need, and roughly what each one costs you</span></a>
-          <a href="/sponsorship"><span class="np-t">Sponsor</span><span class="np-d">Put your business behind athletes, with levels and recognition</span></a>
+          <a href="/volunteer"><span class="np-t">Volunteer</span><span class="np-d">Explore roles, time commitments, and ways to contribute</span></a>
+          <a href="/sponsorship"><span class="np-t">Sponsor</span><span class="np-d">Partnership options and recognition for your business</span></a>
         </div>
       </div>
       <div class="nav-group">
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navAbout">About<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 3 3-3"/></svg></button>
         <div class="nav-panel" id="navAbout">
-          <a href="/promise"><span class="np-t">The Promise</span><span class="np-d">100% to the community, 0% to admin, and what both of those mean</span></a>
+          <a href="/promise"><span class="np-t">How Giving Works</span><span class="np-d">How gifts support athletes and the work around them</span></a>
           <a href="/about"><span class="np-t">Our Story</span><span class="np-d">The people who built this, and why</span></a>
         </div>
       </div>
-      <a class="lk featured" href="/apply">Grant Application</a>
+      <a class="lk featured" href="/apply">Apply for support</a>
       <a class="nav-cta" href="/donate">Donate</a>
     </nav>
     <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
@@ -183,13 +176,14 @@ fill="currentColor" stroke="none">
       <span class="m-group">Our Work</span>
       <a class="m-sub" href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
       <a class="m-sub" href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
+      <a class="m-sub" href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
       <span class="m-group">Get Involved</span>
       <a class="m-sub" href="/volunteer">Volunteer</a>
       <a class="m-sub" href="/sponsorship">Sponsor</a>
       <span class="m-group">About</span>
-      <a class="m-sub" href="/promise">The Promise</a>
+      <a class="m-sub" href="/promise">How Giving Works</a>
       <a class="m-sub" href="/about">Our Story</a>
-      <a class="featured" href="/apply">Grant Application</a>
+      <a class="featured" href="/apply">Apply for support</a>
       <a class="m-cta" href="/donate">Donate &rarr;</a>
     </div>
   </div>
@@ -275,43 +269,33 @@ fill="currentColor" stroke="none">
   }
 </style>
 
-  <!-- 2 · CAMPAIGN BAND — the answer to "what is happening right now",
-         lifted over the hero. Renders nothing if there is no live campaign. -->
-  <section style="padding:0;">
-    <div class="wrap"><div id="homeBand" class="camp-pending"></div></div>
-  </section>
-
-  <!-- 2b · DRIVE RESULT — what the last finished drive actually brought in.
-         Rendered from campaigns.json by ATLCampaigns.result(); renders
-         nothing at all when no closed drive has a counted figure. -->
-  <section id="homeResultSection" style="padding:clamp(1.6rem,3vw,2.4rem) 0 0;">
-    <div class="wrap"><div id="homeResult"></div></div>
-  </section>
-
-  <!-- 3 · OUR WORK — two fronts of one job, not a choice between two products -->
-  <section class="band">
+  <!-- Keep the accepted photo crops and headline clear. The mission sits
+       below the mosaic; the story continues without an audience-selection gate. -->
+  <div class="home-welcome dark">
     <div class="wrap">
-      <div class="reveal sec-head">
-        <span class="eyebrow orange">Our work</span>
-        <h2 class="serif h2" style="margin-top:0.8rem;">How we make more of it.</h2>
-        <p class="prose" style="margin-top:1rem;">Adaptive sport is scarce. It costs too much, there is too little of it, and what exists is hard to find. None of that is a fact of life. It's a list of problems, and we're working down it.</p>
-      </div>
-      <ul class="fronts reveal">
-        <li>
-          <span class="front-verb">Afford it</span>
-          <p>Adaptive gear is brutally expensive, and a racing chair can cost more than a car. The <strong>Hustle &amp; Heart Fund</strong> covers equipment, training, and travel, so money is never the reason someone stops.</p>
-          <a href="/hustle-and-heart" class="textlink">How the fund works <span class="arrow">&rarr;</span></a>
-        </li>
-        <li>
-          <span class="front-verb">Find it</span>
-          <p>You can't play what you can't find. <strong>Adaptive Sports Near Me</strong> is a free, open directory of <!-- asnm:count -->1,544<!-- /asnm:count --> programs nationwide, with no logins and no paywalls. It is open now.</p>
-          <a href="/adaptive-sports-near-me" class="textlink">How the directory works <span class="arrow">&rarr;</span></a>
-        </li>
-      </ul>
-      <!-- The sentence that keeps this uncapped. A third surface is a new row
-           here, not a rewrite of the section above it. -->
-      <p class="fronts-more reveal">Two of them today. There will be more.</p>
+      <p class="lead">We expand access to adaptive sports so athletes can find their place.</p>
     </div>
+  </div>
+
+  <!-- A lived reason for the work, not an inventory of programs. -->
+  <section class="band" id="participation" aria-labelledby="participationTitle">
+    <div class="wrap home-story">
+      <div class="reveal">
+        <span class="eyebrow orange">Why we're here</span>
+        <h2 id="participationTitle" class="serif h2">A chance to play should not come down to luck.</h2>
+      </div>
+      <div class="home-story-body reveal">
+        <p class="prose">A brochure introduced our founder, Alec, to adaptive sports when he was six. Sport gave him somewhere to belong and something to work toward. He went on to become a coach in the community that helped raise him.</p>
+        <p class="prose">That first introduction should not depend on luck. Neither should having the support to keep playing. Adapt To Life is built by people who know what that opportunity can mean.</p>
+        <a href="/about" class="textlink">How it started <span class="arrow">&rarr;</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Current work follows the reason for giving. Shared campaign data owns
+       the target and progress. Completed drives remain on the campaign page. -->
+  <section class="home-campaign" aria-label="Current fundraising campaign">
+    <div class="wrap"><div id="homeBand" class="camp-pending"></div></div>
   </section>
 
   <!-- 4 · ON THE CALENDAR — dated proof the org is moving. Whole section
@@ -335,50 +319,31 @@ fill="currentColor" stroke="none">
       <span class="eyebrow gold reveal">Why "Hustle &amp; Heart"</span>
       <h2 class="serif statement italic reveal" style="margin-top:1rem;">Hustle &amp; Heart is how Tim played.</h2>
       <hr class="tick gold reveal">
-      <p class="prose reveal">Tim was the hardest-working player in every gym he rolled into. Cancer changed his body, never what drove him. He set the standard for how the game should be played, and he's the reason this fund exists.</p>
+      <p class="prose reveal">Tim Gruensfelder brought everything he had to the basketball court. The Hustle &amp; Heart Fund carries his name and helps other athletes get their chance to play.</p>
       <a href="/tim" class="textlink reveal" style="margin-top:1.6rem;">Read Tim's story <span class="arrow">&rarr;</span></a>
     </div>
   </section>
 
-  <!-- 6 · THE ENGINE — the north star, and why growth is the method rather than
-         the goal. This used to sit here as a founder's aside next to "Meet the
-         team," which read as Alec's feelings about the work instead of the
-         organisation's operating principle. The promise itself stays owned by
-         /promise: one line and a link, per the content standard. -->
-  <section class="steward band">
+  <!-- The current campaign and Tim's story make the work tangible first.
+       The broader mission and its future now form one chapter, not two menus. -->
+  <section class="steward band" id="next-step" aria-labelledby="nextStepTitle">
     <div class="wrap narrow">
-      <span class="eyebrow orange reveal">Our north star</span>
-      <h2 class="serif statement italic reveal" style="margin-top:1rem;">The more we grow, the more we give.</h2>
-      <p class="prose reveal" style="margin-top:1.3rem;">Growth is not the goal here, it's the method. One hundred percent of your gift reaches the athlete. So the bigger this gets, the more of it lands in the community. <a class="textlink" href="/promise">How every dollar works <span class="arrow">&rarr;</span></a></p>
-      <blockquote class="pullquote reveal">I got into this because someone handed me a brochure when I was six. Now it's our turn to be that for the next athlete.</blockquote>
-      <div class="reveal" style="margin-top:1.1rem;">
-        <span class="qname">Alec Tranel</span>
-        <span class="qrole">Founder &amp; Executive Director</span>
-      </div>
-      <a href="/about" class="textlink reveal" style="margin-top:1.7rem;">Meet the team <span class="arrow">&rarr;</span></a>
+      <span class="eyebrow orange reveal">The work keeps growing</span>
+      <h2 id="nextStepTitle" class="serif h2 reveal" style="margin-top:0.8rem;">We build more ways into adaptive sports.</h2>
+      <p class="prose reveal" style="margin-top:1.2rem;">The community is already here. We bring people and opportunities together and build the support that makes taking part possible. What we build will keep evolving with the community. The mission stays the same.</p>
+      <h3 class="serif h3 reveal" style="margin-top:2rem;">The more we grow, the more we give.</h3>
+      <p class="prose reveal" style="margin-top:1rem;">We are developing revenue and partnerships that help us keep building useful resources and supporting athletes, beyond the next fundraiser.</p>
+      <p class="prose reveal" style="margin-top:1rem;">Our upcoming store, <a href="/adapt-body-shop" class="textlink" style="font:inherit;letter-spacing:inherit;">Adapt Body Shop</a>, is part of that work. Gear for the community, and another way to help sustain what we're building.</p>
+      <p class="reveal" style="margin-top:1.4rem;"><a href="/about#our-work" class="textlink">How we're building it <span class="arrow">&rarr;</span></a></p>
     </div>
   </section>
 
-  <!-- PHOTO BAND — coaching, cinematic full-bleed (constant in both heroes) -->
-  <!-- 11 · CLOSING — the rolling band.
-       Alec, 2026-09-09: "I love the bottom of the donate page ... Can we do the
-       same thing for the bottom of the Main page? Besides juan by himself,
-       delete this picture, go all in on this vertical frame banner style layout
-       ... BUT keep the content and text that we have."
-
-       So the words are untouched and the single full-bleed photograph that sat
-       above them is gone. What replaces it is the same closing shape /donate
-       uses: the ask splits in two and the faces roll between the halves. It
-       ends the front page on people rather than on a paragraph.
-
-       DIFFERENT EIGHT than /donate's strip, deliberately — the same faces on
-       both would read as a template. And the image is lazy, swapped in by
-       IntersectionObserver, so a visitor who never reaches the footer never
-       pays the 53KB. -->
+  <!-- Close the brochure story on people. Preserve the accepted rolling
+       photographs, deferred loading, and accessible motion control. -->
   <section class="closing roll-band dark">
     <div class="wrap center rb-copy rb-top">
       <span class="eyebrow orange reveal">Your turn</span>
-      <h2 class="serif display reveal">Be the reason the next athlete plays.</h2>
+      <h2 class="serif display reveal">Help the next athlete find their place.</h2>
     </div>
 
     <div class="rb-stage">
@@ -438,12 +403,16 @@ fill="currentColor" stroke="none">
     </script>
 
     <div class="wrap center rb-copy rb-bottom">
-      <p class="lead sub reveal">About $3,500 covers one athlete's equipment, training, and travel. Any part of it moves someone off the sidelines.</p>
+      <blockquote class="home-closing-quote reveal">I got into this because someone handed me a brochure when I was six. Now it's our turn to be that for the next athlete.</blockquote>
+      <div class="home-closing-name reveal">
+        <span class="qname">Alec Tranel</span>
+        <span class="qrole">Founder &amp; Executive Director</span>
+      </div>
+      <p class="home-closing-invite reveal">Your gift helps more athletes find their place and keep playing.</p>
       <div class="actions reveal">
         <a href="/donate" class="btn">Donate</a>
-        <a href="/promise" class="btn ghost">See where the money goes <span class="arrow">&rarr;</span></a>
       </div>
-      <p class="reveal" style="margin-top:1.6rem; color:var(--cream-mute); font-size:0.95rem;">Not money? We also need a grant writer, a bookkeeper, and someone who can make an introduction. <a class="textlink" href="/volunteer" style="color:var(--orange)">See the board <span class="arrow">&rarr;</span></a></p>
+      <p class="home-closing-invite reveal">Your time, skills, and introductions can help too. <a href="/volunteer" class="textlink" style="font:inherit;letter-spacing:inherit;">Find your role</a>.</p>
     </div>
   </section>
 
@@ -482,7 +451,7 @@ fill="currentColor" stroke="none">
 </g></svg>Adapt To Life</a>
         <p class="tagline">Your place in adaptive sports.</p>
         <form class="foot-sub js-subscribe" data-source="footer" novalidate>
-          <label class="foot-sub-label" for="footEm">Stay in the game</label>
+          <label class="foot-sub-label" for="footEm">Follow the work</label>
           <div class="foot-sub-row">
             <input class="foot-sub-input" id="footEm" name="em" type="email" autocomplete="email" placeholder="you@example.com" aria-label="Your email">
             <button class="foot-sub-btn" type="submit" aria-label="Join the list">&rarr;</button>
@@ -500,16 +469,17 @@ fill="currentColor" stroke="none">
         <a href="/tim">Tim&#39;s Story</a>
         <a href="/karen">Karen&#39;s Story</a>
         <a href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
+        <a href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
                 <a href="/roadmap">Roadmap</a>
       </div>
       <div class="col">
         <h4>Get involved</h4>
         <a href="/donate">Donate</a>
-        <a href="/promise">The Promise</a>
+        <a href="/promise">How Giving Works</a>
         <a href="/volunteer">Volunteer</a>
-        <a href="/sponsorship">Sponsor us</a>
-        <a href="/apply">Grant Application</a>
-        <a href="https://sign.adapttolife.org/waiver?source=atl">Sign waiver</a>
+        <a href="/sponsorship">Become a sponsor</a>
+        <a href="/apply">Apply for support</a>
+        <a href="https://sign.adapttolife.org/waiver?source=atl">Photo and media release</a>
         <a href="/subscribe">Join the list</a>
         <a href="/contact">Contact</a>
         <a href="mailto:hello@adapttolife.org">hello@adapttolife.org</a>
@@ -587,12 +557,8 @@ fill="currentColor" stroke="none">
 (function(){
   var C = window.ATLCampaigns;
 
-  // The campaign band, lifted over the hero.
-  C.band('homeBand', { lifted: true });
-
-  // The last finished drive's result. Hides its own section when there is
-  // nothing to report, so the page never carries an empty band.
-  C.result('homeResult');
+  // The active campaign follows the participation story, without overlapping it.
+  C.band('homeBand', { lifted: false });
 
   // On the calendar: at most three, soonest first. The whole section stays
   // hidden unless there is something real and upcoming to put in it.
@@ -670,9 +636,8 @@ fill="currentColor" stroke="none">
   // and will-change:transform on nineteen composited layers, which is the
   // cheapest thing on this page to give back.
 
-  // There is no drive strip in the header any more. Alec, 2026-09-08: feel
-  // first, then the ask. The campaign band directly below the hero still
-  // renders the live drive, and no longer has to stand down for a duplicate.
+  // Feel first, then the reason for the work, then the current campaign.
+  // No duplicate campaign strip in the hero.
 })();
 </script>
 <!-- /hero:script -->

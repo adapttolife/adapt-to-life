@@ -335,7 +335,7 @@
       left.appendChild(el("span", "win-name", d.name));
       if (camp) {
         left.appendChild(el("span", "win-sub",
-          "Every dollar of it goes to " + camp.name + "."));
+          "This drive supports " + camp.name + "."));
       } else if (d.summary) {
         left.appendChild(el("span", "win-sub", d.summary));
       }

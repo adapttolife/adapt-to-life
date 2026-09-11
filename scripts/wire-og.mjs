@@ -35,8 +35,8 @@ const ALT = {
   _default: "Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.",
   donate: "Put an athlete in the game. Adapt To Life. A wheelchair pickleball player swings, the ball in the air beside her.",
   "send-6": "Send 6 to the US Open Spring 2027. Adapt To Life. A wheelchair pickleball player drives across an indoor court.",
-  popcorn: "Half of every bag puts an athlete in the game. Adapt To Life. A wheelchair pickleball player drives across an indoor court.",
-  "hustle-and-heart": "Every dollar goes to an athlete. The Hustle and Heart Fund, Adapt To Life. A wheelchair pickleball player in a headband holds his paddle.",
+  popcorn: "Popcorn that helps athletes play. Adapt To Life. A wheelchair pickleball player drives across an indoor court.",
+  "hustle-and-heart": "Keep your game going. The Hustle and Heart Fund, Adapt To Life. A wheelchair pickleball player in a headband holds his paddle.",
   volunteer: "Your place on this team. Adapt To Life. A wheelchair pickleball player in a cap reaches for a shot.",
 };
 
@@ -51,6 +51,8 @@ const ALT = {
 // the card it belongs to and the next single-card change costs one line here.
 const FILE = {
   _default: "home-v4-color.jpg",
+  popcorn: "popcorn-v4-content.jpg",
+  "hustle-and-heart": "hustle-and-heart-v4-content.jpg",
 };
 const fileFor = (card) => FILE[card] ?? `${card === "_default" ? "home" : card}-v3-athlete.jpg`;
 const url = (card) => `${BASE}/images/og/${fileFor(card)}`;

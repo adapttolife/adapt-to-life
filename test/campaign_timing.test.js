@@ -28,7 +28,8 @@ test("campaign page and supporting cards name Spring 2027", async () => {
   assert.ok(page.includes(`<meta property="og:title" content="${CAMPAIGN} | Adapt To Life">`));
   assert.ok(page.includes(`<meta name="twitter:title" content="${CAMPAIGN} | Adapt To Life">`));
   assert.ok(page.includes(`<h1 class="serif display reveal">${CAMPAIGN}.</h1>`));
-  assert.ok(fund.includes(`>Toward ${CAMPAIGN} <span class="arrow">`));
+  assert.ok(fund.includes(`>${CAMPAIGN}</p>`));
+  assert.ok(fund.includes('href="/send-6" class="thermo-link">View the Send 6 campaign'));
   assert.ok(popcorn.includes(`>${CAMPAIGN}</a>`));
 });
 

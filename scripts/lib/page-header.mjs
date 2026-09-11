@@ -108,6 +108,7 @@ export const PAGE_TIERS = {
   // arrive at from one. It also carries a single photograph instead of the
   // band, which wants the room.
   "about.html":                   "md",
+  "adapt-body-shop.html":         "md",
   "apply.html":                   "lg",
   "roadmap.html":                 "md",
   "karen.html":                   "md",

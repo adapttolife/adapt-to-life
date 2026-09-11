@@ -23,32 +23,26 @@
 // scale, so without it the overflow probe caught the image mid-scale and the
 // same build passed or failed depending on when it ran.
 //
-// Box-local dev tool (not Worker code): Playwright lives at ~/pw on the box.
+// Uses the repository's pinned Playwright dependency. A provisioned Chromium
+// can be selected with PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH; otherwise use the
+// browser installed through Playwright. No machine-specific import path.
 // Usage: node scripts/check-site.mjs [base-url]
 //   default base: the staging Worker. Pass https://adapttolife.org to check prod.
-import { chromium } from "/home/agentos/pw/node_modules/playwright/index.mjs";
+import { chromium } from "playwright";
 import { readFileSync } from "node:fs";
 import { execSync } from "node:child_process";
 import { ROLES } from "../data/volunteer-roles.mjs";
 
 const BASE = process.argv[2] || "https://adapt-to-life-staging.alec-af3.workers.dev";
 const IS_STAGING = BASE.includes("staging");
-// The volunteer role pages are all generated from one template by
-// scripts/build-volunteer.mjs, so this samples the first and last rather than
-// loading all twenty-seven: what differs between them is prose and one apply
-// href, and test/volunteer_pages.test.js checks every page's structure, share
-// card and apply link statically. The sample is DERIVED from the data so it
-// follows a slug rename instead of going stale.
-//
-// /volunteer itself was missing from this list for a day after it shipped, which
-// is exactly the failure mode of a hand-maintained page list: the sweep silently
-// stops covering the newest thing on the site.
-const ROLE_SAMPLE = [ROLES[0], ROLES[ROLES.length - 1]].map((r) => `/volunteer/${r.slug}`);
+// Every role page is part of a whole-site copy release. Exercise all of them,
+// not only template samples, so long role-specific wording cannot slip through.
+const ROLE_PAGES = ROLES.map((r) => `/volunteer/${r.slug}`);
 const PAGES = [
   "/", "/about", "/adaptive-sports-near-me", "/apply", "/contact", "/donate",
-  "/hustle-and-heart", "/karen", "/popcorn", "/promise", "/roadmap", "/send-6",
+  "/adapt-body-shop", "/hustle-and-heart", "/karen", "/popcorn", "/promise", "/roadmap", "/send-6",
   "/sponsorship", "/subscribe", "/tim", "/volunteer", "/waiver",
-  ...ROLE_SAMPLE,
+  ...ROLE_PAGES,
 ];
 
 // Site-wide and benign: the off-screen honeypot every form carries, and
@@ -73,7 +67,7 @@ const IGNORE_OVERFLOW = `
   if (el.matches('input[aria-hidden="true"]')) return;
 `;
 
-const browser = await chromium.launch();
+const browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined });
 let failed = false;
 const fail = (msg) => { failed = true; console.log("FAIL " + msg); };
 
@@ -290,7 +284,9 @@ if (missing.status !== 404) fail(`unknown path returned ${missing.status}, expec
       // og:image must be absolute: crawlers do not resolve relative paths
       if (!/^https:\/\//.test(src)) { fail(`${path} og:image is not absolute: ${src}`); continue; }
       const asset = new URL(src).pathname;
-      const r = await get(`${BASE}${asset}?cb=${Date.now()}`);
+      // Fetch exactly what a share crawler receives. Rebasing onto BASE hid
+      // staging tags that pointed to new cards absent from production.
+      const r = await get(src);
       if (!r.ok) { fail(`og:image ${asset} returned ${r.status}`); seen.set(src, false); continue; }
       const bytes = (await r.arrayBuffer()).byteLength;
       if (bytes > OG_BUDGET)
@@ -311,11 +307,13 @@ if (missing.status !== 404) fail(`unknown path returned ${missing.status}, expec
   console.log(`share cards: ${seen.size} distinct, all fetched`);
 }
 
-// ---- /review: the one link Alec gets ------------------------------------
-// It is the tour of the current iteration, so it going stale is a bug in the
-// iteration, not a chore for later. This session it described a build three
-// weeks old, including a goal figure we had already retired.
-{
+// Production retains its existing tour gate. Content staging instead points
+// /review at the actual draft homepage; it must not revive the old design tour.
+if (IS_STAGING) {
+  const rv = await fetch(`${BASE}/review`, { redirect: "manual" });
+  if (rv.status !== 302 || rv.headers.get("location") !== "/#participation")
+    fail("staging /review must redirect to the draft homepage section");
+} else {
   const tour = readFileSync(new URL("../public/review.html", import.meta.url), "utf8");
   const stamped = tour.match(/updated (\d{4}-\d{2}-\d{2})/)?.[1];
   const lastTouched = execSync(
@@ -401,6 +399,15 @@ if (missing.status !== 404) fail(`unknown path returned ${missing.status}, expec
 // money path by running these two pages on their own before believing anything
 // is wrong with the form.
 for (const path of ["/donate", "/hustle-and-heart"]) {
+  if (IS_STAGING) {
+    const g = await browser.newPage({ viewport: { width: 1440, height: 1000 }, reducedMotion: "reduce" });
+    await g.goto(`${BASE}${path}`, { waitUntil: "domcontentloaded" });
+    await g.locator(".staging-payment").waitFor({ state: "visible" });
+    if (await g.locator("givebutter-giving-form, iframe").count()) fail(`${path}: staging must not load a payment or signing frame`);
+    if (await g.locator("form input:not([disabled]), form button:not([disabled])").count()) fail(`${path}: staging form controls must be disabled`);
+    await g.close();
+    continue;
+  }
   let lastError = null;
   for (let attempt = 1; attempt <= 2; attempt++) {
   const g = await browser.newPage({ viewport: { width: 1440, height: 1000 }, reducedMotion: "reduce" });

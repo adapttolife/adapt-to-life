@@ -119,7 +119,7 @@ ${roles.map(card).join("\n")}
 
   return head({
     title: "Volunteer | Adapt To Life",
-    desc: "Adapt To Life is building a team. Grant writers, accountants, coaches, storytellers, equipment techs, and people who can open a door. Every role says what it costs you.",
+    desc: "Help more people take part in adaptive sports. Explore volunteer roles, time commitments, and ways to contribute your skills.",
     canonical: `${SITE}/volunteer`,
     page: "volunteer.html",
     card: "/images/og/volunteer-v3-athlete.jpg",
@@ -132,7 +132,7 @@ ${roles.map(card).join("\n")}
     <div class="wrap">
       <span class="eyebrow orange reveal">Volunteer</span>
       <h1 class="serif display reveal">Your place on <em class="italic" style="color:var(--orange)">this team</em>.</h1>
-      <p class="lead sub reveal">We are early, and we need people more than hours. Open any role to see what you would own and what it costs you. Applying takes a name and an email.</p>
+      <p class="lead sub reveal">Bring a skill, an introduction, or a few hours on a Tuesday night. There is useful work to do here.</p>
       <div class="actions reveal">
         <a href="#roles" class="btn">See what we need <span class="arrow">&rarr;</span></a>
       </div>
@@ -159,7 +159,7 @@ ${lanes}
     <div class="wrap reading center">
       <span class="eyebrow orange reveal">Not on the list</span>
       <h2 class="serif h3 reveal" style="margin-top:0.7rem;">We wrote down what we know we need.</h2>
-      <p class="prose reveal" style="margin-top:1rem;">Not the same as everything we need, so tell us below if you have something we did not think to ask for. And if none of it is you, somebody still has to pay for the chair. <a class="textlink" href="/donate">See the ways to give <span class="arrow">&rarr;</span></a></p>
+      <p class="prose reveal" style="margin-top:1rem;">Not the same as everything we need. Tell us below if you have something we did not think to ask for.</p>
     </div>
   </section>
 
@@ -346,7 +346,7 @@ ${sec("Not this", "          " + ul(r.isNot, "jd-no"))}
           <span class="gl-k">You would work with</span>
           <span class="gl-v">${esc(r.withWhom)}</span>
           <a href="#apply" class="btn jd-side-btn">Apply for this role</a>
-          <p class="gl-foot">A name and an email.</p>
+          <p class="gl-foot">Start a conversation.</p>
         </div>
       </aside>
     </div>

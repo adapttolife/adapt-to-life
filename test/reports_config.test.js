@@ -127,11 +127,15 @@ test("the production ATL Worker has no alternate workers.dev or version-preview 
   assert.equal(atl.preview_urls, false);
 });
 
-test("the separate front-end-only staging Worker keeps its review URL", () => {
+test("the isolated staging Worker keeps one stable review URL and no operational bindings", () => {
   assert.equal(atl.env.staging.workers_dev, true);
-  assert.equal(atl.env.staging.preview_urls, true);
+  assert.equal(atl.env.staging.preview_urls, false);
+  assert.equal(atl.env.staging.main, "src/staging.js");
+  assert.equal(atl.env.staging.assets.run_worker_first, true);
   assert.deepEqual(atl.env.staging.routes, []);
-  assert.equal(atl.env.staging.d1_databases, undefined);
-  assert.equal(atl.env.staging.r2_buckets, undefined);
-  assert.equal(atl.env.staging.send_email, undefined);
+  assert.deepEqual(atl.env.staging.d1_databases, []);
+  assert.deepEqual(atl.env.staging.r2_buckets, []);
+  assert.deepEqual(atl.env.staging.send_email, []);
+  assert.deepEqual(atl.env.staging.triggers.crons, []);
+  assert.deepEqual(atl.env.staging.vars, { STAGING: "1" });
 });

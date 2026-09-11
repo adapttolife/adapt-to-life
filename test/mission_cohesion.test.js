@@ -8,7 +8,9 @@ test('homepage defines one enduring mission before current work',()=>{
  assert.ok(h.includes('We expand access to adaptive sports so athletes can find their place.'));
  assert.ok(h.includes('We build more ways into adaptive sports.'));
  const bridge=h.split('id="next-step"')[1].split('</section>')[0];
- for(const name of ['Adaptive Sports Near Me','Hustle &amp; Heart','Adapt Body Shop']) assert.ok(!bridge.includes(name));
+ const enduringPurpose=bridge.split('<h3')[0];
+ for(const name of ['Adaptive Sports Near Me','Hustle &amp; Heart','Adapt Body Shop']) assert.ok(!enduringPurpose.includes(name));
+ assert.ok(bridge.includes('Our upcoming store,'), 'future example stays explicitly forthcoming');
  assert.ok(bridge.includes('href="/about#our-work"'));
  assert.ok(!h.includes('supports equipment, training, and travel so more athletes can take part.'));
  const ld=JSON.parse(h.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);

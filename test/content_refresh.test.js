@@ -24,13 +24,18 @@ test('homepage tells participation story without the two-program comparison pane
   assert.ok(html.includes('id="participation"'));
   assert.ok(html.includes('A chance to play should not come down to luck.'));
   assert.ok(html.indexOf('id="participation"') < html.indexOf('id="homeBand"'));
-  assert.ok(html.indexOf('id="next-step"') < html.indexOf('id="homeBand"'));
+  assert.ok(html.indexOf('id="homeBand"') < html.indexOf('id="next-step"'));
   assert.ok(!html.includes('id="homeResult"'));
   assert.ok(html.includes("C.band('homeBand', { lifted: false })"));
+  const welcome = html.split('class="home-welcome dark"')[1].split('</div>')[0];
+  assert.ok(!welcome.includes('<a '), 'mission does not branch into audience selection');
   for (const target of ['/adaptive-sports-near-me', '/donate', '/volunteer']) {
-    const welcome = html.split('class="home-welcome dark"')[1].split('</div>')[0];
-    assert.ok(welcome.includes(`href="${target}"`));
+    assert.ok(html.split('<main')[0].includes(`href="${target}"`), 'utility route stays in navigation');
   }
+  assert.ok(!html.includes('class="home-actions'));
+  const closing = html.split('class="wrap center rb-copy rb-bottom"')[1].split('</section>')[0];
+  assert.equal((closing.match(/class="btn/g) || []).length, 1);
+  assert.ok(closing.includes('href="/volunteer" class="textlink"'));
   const quote = "I got into this because someone handed me a brochure when I was six. Now it's our turn to be that for the next athlete.";
   assert.equal(html.split(quote).length, 2, 'original founder quote appears once');
   assert.ok(html.includes('Help the next athlete find their place.'));

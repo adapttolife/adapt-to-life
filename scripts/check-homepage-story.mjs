@@ -23,20 +23,18 @@ try {
       overflow:document.documentElement.scrollWidth > innerWidth+1,
       brokenImages:[...document.querySelectorAll('main img[src]')].filter(x=>x.getClientRects().length && (!x.complete||!x.naturalWidth)).map(x=>x.src),
       welcomeLinks:[...document.querySelectorAll('.home-welcome a')].map(a=>({href:a.getAttribute('href'),height:a.getBoundingClientRect().height,width:a.getBoundingClientRect().width,x:a.getBoundingClientRect().x,y:a.getBoundingClientRect().y})),
-      campaignAfterStory:document.querySelector('#homeBand').getBoundingClientRect().top > document.querySelector('#next-step').getBoundingClientRect().top,
+      campaignAfterStory:document.querySelector('#homeBand').getBoundingClientRect().top > document.querySelector('#participation').getBoundingClientRect().top,
+      campaignBeforeFuture:document.querySelector('#homeBand').getBoundingClientRect().top < document.querySelector('#next-step').getBoundingClientRect().top,
       oldResult:!!document.querySelector('#homeResult'),
       campaignText:document.querySelector('#homeBand').innerText,
       imageUrls:[...document.querySelectorAll('#heroStage img')].map(x=>x.getAttribute('src')),
     }));
     assert.equal(state.h1.length,1);assert.equal(state.overflow,false,`overflow ${width}`);
     assert.deepEqual(state.brokenImages,[]);assert.ok(state.campaignAfterStory);assert.equal(state.oldResult,false);
-    assert.ok(state.welcomeLinks.every(a=>a.height>=52));assert.deepEqual(errors,[]);
-    const [primary,help,volunteer]=state.welcomeLinks;
-    assert.ok(primary.width>help.width*1.9,'primary spans the action group');
-    assert.ok(primary.y+primary.height<help.y,'secondary row follows primary');
-    assert.ok(Math.abs(help.y-volunteer.y)<1,'secondary actions share a row');
-    assert.ok(Math.abs(help.width-volunteer.width)<1,'secondary actions are equal width');
-    assert.ok(Math.abs(help.height-volunteer.height)<1,'secondary actions are equal height');
+    assert.deepEqual(state.welcomeLinks, [], 'opening establishes mission without branching');
+    assert.ok(state.campaignBeforeFuture);assert.deepEqual(errors,[]);
+    assert.equal(await page.locator('.rb-bottom .btn').count(),1);
+    assert.equal(await page.locator('.rb-bottom a[href="/volunteer"].textlink').count(),1);
     await page.evaluate(()=>window.scrollTo(0,0));
     await page.waitForFunction(()=>window.scrollY===0);
     const navBox=await page.locator('#nav').boundingBox();
@@ -46,7 +44,16 @@ try {
     await page.locator('#participation').screenshot({path:`${out}/story-${width}.png`});
     await page.locator('.home-welcome').screenshot({path:`${out}/welcome-${width}.png`});
     for (const href of ['/adaptive-sports-near-me','/donate','/volunteer']) {
-      await page.locator(`.home-welcome a[href="${href}"]`).click();
+      const menu = page.locator('#menuBtn');
+      if (await menu.isVisible()) {
+        await menu.click();
+        await page.locator(`.mobile-menu a[href="${href}"]`).first().click();
+      } else {
+        // Exercise preserved navigation, not the removed hero shortcuts.
+        if(href==='/adaptive-sports-near-me') await page.locator('[aria-controls="navOurWork"]').click();
+        if(href==='/volunteer') await page.locator('[aria-controls="navJoin"]').click();
+        await page.locator(`#nav a[href="${href}"]:visible`).first().click();
+      }
       await page.waitForURL(base+href);assert.equal(new URL(page.url()).origin,new URL(base).origin);
       assert.equal(await page.locator('h1').count(),1);
       await page.goBack({waitUntil:'networkidle'});

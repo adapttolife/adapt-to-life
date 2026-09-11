@@ -9,11 +9,11 @@ try{
   assert.equal((await p.goto(base+'/hustle-and-heart',{waitUntil:'networkidle'})).status(),200);
   await p.locator('.give-moment').scrollIntoViewIfNeeded();
   const state=await p.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,buttons:[...document.querySelectorAll('.fund-actions a')].map(x=>({href:x.getAttribute('href'),x:x.offsetLeft,y:x.offsetTop,w:x.offsetWidth,h:x.offsetHeight})),termsBeforeForm:document.querySelector('.fund-terms').compareDocumentPosition(document.querySelector('.staging-payment'))&Node.DOCUMENT_POSITION_FOLLOWING,padding:parseFloat(getComputedStyle(document.querySelector('.give-moment')).paddingTop)}));
-  const [a,b,c]=state.buttons;assert.equal(state.overflow,false);assert.ok(a.w>b.w*1.9);assert.equal(b.y,c.y);assert.ok(Math.abs(b.w-c.w)<=1);assert.equal(b.h,c.h);assert.ok(a.y+a.h<b.y);assert.ok(state.buttons.every(x=>x.h>=52));assert.ok(state.termsBeforeForm);assert.ok(state.padding<=72);assert.deepEqual(errors,[]);
+  assert.equal(state.overflow,false);assert.equal(state.buttons.length,1);assert.equal(state.buttons[0].href,'#fund-donation');assert.ok(state.buttons[0].h>=52);assert.ok(state.termsBeforeForm);assert.ok(state.padding<=72);assert.deepEqual(errors,[]);
   await p.locator('.fund-actions .btn').scrollIntoViewIfNeeded();await p.locator('.fund-actions .btn').focus();assert.ok(await p.locator('.fund-actions .btn').evaluate(x=>x===document.activeElement));await p.keyboard.press('Enter');await p.waitForURL(base+'/hustle-and-heart#fund-donation');
   const target=await p.locator('#fund-donation').boundingBox();assert.ok(target.y>=60&&target.y<900,'form target visible below header');
   assert.ok(await p.locator('.staging-payment').isVisible());
-  for(const [selector,path]of [['.fund-actions a[href="/tim"]','/tim'],['.fund-actions a[href="/sponsorship"]','/sponsorship'],['.fund-terms a','/promise#campaign-gifts'],['.thermo-link','/send-6']]){await p.locator(selector).click();await p.waitForURL(base+path);await p.goBack({waitUntil:'networkidle'});}
+  for(const [selector,path]of [['.fund-terms a','/promise#campaign-gifts'],['.thermo-link','/send-6']]){await p.locator(selector).click();await p.waitForURL(base+path);await p.goBack({waitUntil:'networkidle'});}
   await p.evaluate(()=>{const y=document.querySelector('.give-moment').getBoundingClientRect().top+scrollY-document.querySelector('#nav').offsetHeight;scrollTo(0,y)});
   await p.screenshot({path:`${out}/fund-actions-${width}.png`});results.push({width,...state});await p.close();
  }

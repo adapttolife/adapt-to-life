@@ -78,17 +78,6 @@
   /* Homepage-only composition. No new fonts, image crops, or shared overrides. */
   .home-welcome{ padding:1.5rem 0 2rem; text-align:center; }
   .home-welcome .lead{ max-width:42ch; margin-inline:auto; }
-  .home-actions{ display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:0.8rem 1.8rem; margin-top:1.5rem; }
-  .home-actions .textlink{ display:inline-flex; align-items:center; min-height:44px; }
-  /* This is one composed action group, never a flex row that leaves a lone
-     link behind at phone/tablet widths. Keep the same hierarchy everywhere. */
-  .home-welcome .home-actions{ display:grid; align-items:stretch; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.65rem; max-width:28rem; margin:1.15rem auto 0; }
-  .home-welcome .home-actions > a{ display:flex; align-items:center; justify-content:center; width:100%; min-width:0; min-height:52px; margin:0; padding:0.8rem 0.65rem; border-radius:999px; text-align:center; line-height:1.3; white-space:normal; }
-  .home-welcome .home-actions > .btn{ grid-column:1 / -1; font-size:1rem; box-shadow:none; }
-  .home-welcome .home-actions > .textlink{ border:1px solid #777575; background:rgba(255,255,255,0.035); color:var(--cream); font-size:0.95rem; letter-spacing:0; }
-  .home-welcome .home-actions > .textlink .arrow{ display:none; }
-  .home-welcome .home-actions > .textlink:hover{ border-color:var(--cream); background:rgba(255,255,255,0.1); }
-  .home-welcome .home-actions > a:focus-visible{ outline:3px solid var(--orange); outline-offset:4px; }
   #participation{ padding-block:clamp(2.5rem,5vw,4rem); }
   .home-story{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(2rem,6vw,6rem); align-items:start; }
   .home-story h2{ margin-top:0.8rem; max-width:18ch; text-wrap:balance; }
@@ -96,8 +85,6 @@
   .home-story-body p + p{ margin-top:1.1rem; }
   .home-story-body > a{ margin-top:1.4rem; }
   #nextStepTitle{ text-wrap:balance; }
-  #nextStepTitle span{ display:block; }
-  .steward .home-actions{ justify-content:flex-start; }
   .home-campaign{ padding:clamp(2rem,5vw,4rem) 0; }
   .home-campaign:has(#homeBand:empty:not(.camp-pending)){ display:none; }
   .home-closing-quote{ max-width:36ch; margin:0 auto; font-size:clamp(1.3rem,3vw,1.9rem); line-height:1.45; }
@@ -282,16 +269,11 @@ fill="currentColor" stroke="none">
   }
 </style>
 
-  <!-- Keep the accepted photo crops and headline clear. Orientation and
-       visitor actions sit just below the mosaic, never over an athlete. -->
+  <!-- Keep the accepted photo crops and headline clear. The mission sits
+       below the mosaic; the story continues without an audience-selection gate. -->
   <div class="home-welcome dark">
     <div class="wrap">
       <p class="lead">We expand access to adaptive sports so athletes can find their place.</p>
-      <div class="home-actions" aria-label="Start here">
-        <a href="/adaptive-sports-near-me" class="btn">Find a place to play</a>
-        <a href="/donate" class="textlink">Help an athlete play <span class="arrow">&rarr;</span></a>
-        <a href="/volunteer" class="textlink">Volunteer <span class="arrow">&rarr;</span></a>
-      </div>
     </div>
   </div>
 
@@ -306,21 +288,6 @@ fill="currentColor" stroke="none">
         <p class="prose">A brochure introduced our founder, Alec, to adaptive sports when he was six. Sport gave him somewhere to belong and something to work toward. He went on to become a coach in the community that helped raise him.</p>
         <p class="prose">That first introduction should not depend on luck. Neither should having the support to keep playing. Adapt To Life is built by people who know what that opportunity can mean.</p>
         <a href="/about" class="textlink">How it started <span class="arrow">&rarr;</span></a>
-      </div>
-    </div>
-  </section>
-
-  <section class="band-sm tint" id="next-step" aria-labelledby="nextStepTitle">
-    <div class="wrap narrow">
-      <div class="sec-head reveal">
-        <span class="eyebrow orange">Our work</span>
-        <h2 id="nextStepTitle" class="serif h2" style="margin-top:0.8rem;">We build more ways into adaptive sports.</h2>
-        <p class="prose" style="margin-top:1.2rem;">The community is already here. Athletes, coaches, local programs, and people ready to help. Too often, the connections between them are missing.</p>
-        <p class="prose" style="margin-top:1rem;">We bring those people and opportunities together and build the support that makes taking part possible. What we build will keep evolving with the community. The mission stays the same.</p>
-        <div class="home-actions">
-          <a href="/about#our-work" class="textlink">Explore what we're building <span class="arrow">&rarr;</span></a>
-          <a href="/volunteer" class="textlink">Help build it with us <span class="arrow">&rarr;</span></a>
-        </div>
       </div>
     </div>
   </section>
@@ -357,18 +324,17 @@ fill="currentColor" stroke="none">
     </div>
   </section>
 
-  <!-- From individual help to lasting support. Detailed revenue and giving
-       explanations stay on their own pages. -->
-  <section class="steward band">
+  <!-- The current campaign and Tim's story make the work tangible first.
+       The broader mission and its future now form one chapter, not two menus. -->
+  <section class="steward band" id="next-step" aria-labelledby="nextStepTitle">
     <div class="wrap narrow">
-      <span class="eyebrow orange reveal">Our north star</span>
-      <h2 class="serif statement italic reveal" style="margin-top:1rem;">The more we grow, the more we give.</h2>
-      <p class="prose reveal" style="margin-top:1.3rem;">Growth is not the goal. It is how we create more access. We are developing revenue and partnerships that help us keep building useful resources and supporting athletes, beyond the next fundraiser.</p>
+      <span class="eyebrow orange reveal">The work keeps growing</span>
+      <h2 id="nextStepTitle" class="serif h2 reveal" style="margin-top:0.8rem;">We build more ways into adaptive sports.</h2>
+      <p class="prose reveal" style="margin-top:1.2rem;">The community is already here. We bring people and opportunities together and build the support that makes taking part possible. What we build will keep evolving with the community. The mission stays the same.</p>
+      <h3 class="serif h3 reveal" style="margin-top:2rem;">The more we grow, the more we give.</h3>
+      <p class="prose reveal" style="margin-top:1rem;">We are developing revenue and partnerships that help us keep building useful resources and supporting athletes, beyond the next fundraiser.</p>
       <p class="prose reveal" style="margin-top:1rem;">Our upcoming store, <a href="/adapt-body-shop" class="textlink" style="font:inherit;letter-spacing:inherit;">Adapt Body Shop</a>, is part of that work. Gear for the community, and another way to help sustain what we're building.</p>
-      <div class="home-actions reveal">
-        <a href="/roadmap" class="textlink">Where we're headed <span class="arrow">&rarr;</span></a>
-        <a href="/promise" class="textlink">How Giving Works <span class="arrow">&rarr;</span></a>
-      </div>
+      <p class="reveal" style="margin-top:1.4rem;"><a href="/about#our-work" class="textlink">How we're building it <span class="arrow">&rarr;</span></a></p>
     </div>
   </section>
 
@@ -442,11 +408,11 @@ fill="currentColor" stroke="none">
         <span class="qname">Alec Tranel</span>
         <span class="qrole">Founder &amp; Executive Director</span>
       </div>
-      <p class="home-closing-invite reveal">Whether you are here to play or to help, there is a place for you in this community.</p>
+      <p class="home-closing-invite reveal">Your gift helps more athletes find their place and keep playing.</p>
       <div class="actions reveal">
         <a href="/donate" class="btn">Donate</a>
-        <a href="/volunteer" class="btn ghost">Find your role <span class="arrow">&rarr;</span></a>
       </div>
+      <p class="home-closing-invite reveal">Your time, skills, and introductions can help too. <a href="/volunteer" class="textlink" style="font:inherit;letter-spacing:inherit;">Find your role</a>.</p>
     </div>
   </section>
 

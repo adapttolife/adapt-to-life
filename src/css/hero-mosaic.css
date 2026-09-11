@@ -350,4 +350,25 @@
 
 @media (max-width:640px){
   .mw-copy .display{ font-size:clamp(1.9rem, 9.2vw, 2.7rem); }
+
+  /* ZOOM OUT — phones only. Alec, 2026-09-11: "we're a little bit too zoomed
+     in on the mobile version, and you can't tell that they're in wheelchairs.
+     You don't really have any context for what's going on."
+     MEASURED at 390x844 before touching anything: the cell is 199x310 (aspect
+     0.64) and two of the four panels are 3:2 LANDSCAPE files, so `cover` was
+     showing 43% of one and 33% of the other. A wheelchair is the widest thing
+     in these frames and it is the first thing a portrait crop throws away —
+     which is exactly the context he is missing.
+     The lever is the CELL, not the photograph. Rows here split whatever the
+     hero leaves after the headline band, so shortening the hero shortens the
+     cells, and a squarer cell keeps more of a landscape frame. 74svh puts the
+     cell at 199x232 (aspect 0.86) and the two landscape panels at 57% each.
+     The height does not go to black — it goes to the campaign band below,
+     which was already half on screen.
+     PHONES ONLY (<=640) on purpose: at iPad width the same hero already gives
+     a near-square cell, and shortening it there would rotate the cell past
+     landscape and start cropping the two PORTRAIT panels instead. One
+     breakpoint's fix is another's regression; this one is measured for the
+     screen that has the problem. */
+  .hero-wall-photo{ min-height:74svh; }
 }

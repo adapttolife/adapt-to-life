@@ -211,7 +211,10 @@ const MOSAIC_GRID_POS = {
   "brian": 19,
   "forehand": 0,
   // net is the same 3:2 landscape shape as forehand and crops the same way.
-  "net": 0,
+  // x is the live axis here (see the emit): 38 walks the window left, onto the
+  // chair at the edge of the frame. Alec, 2026-09-11 — the whole point of the
+  // pass is that the chairs read.
+  "net": [38, 0],
   // 50 = centre. whitecap's 7 was pinning him to the TOP of his own frame at
   // iPad width, which spent the cell on the blurred banner above his head.
   "whitecap": 50
@@ -276,7 +279,42 @@ const MOSAIC_GRID_POS = {
 // second benefit — it grew his head to 29% of the cell against the left man's
 // 31%, so the two now match in SIZE as well as height. Going further is a
 // re-crop of the panel, which would change the desktop wall.
-const MOSAIC_GRID_LIFT = { "whitecap": 8, "brian": 15, "forehand": -30 };
+// WHITECAP PUT BACK 2026-09-11, same day, second pass. Alec: "the top-right
+// one, which is Robby... I like how it looked before better." The zoom-out was
+// right for the other three and wrong for him, and the reason is the subject,
+// not the arithmetic: Robby is a VERTICAL subject with nothing beside him, so
+// widening his window bought a strip of empty fence and shrank the only thing
+// in the cell worth looking at. More frame is not more picture.
+//
+// AN EXACT REVERT OF ONE CELL IS NOT AVAILABLE, and the constraint is worth
+// writing down rather than rediscovering. His old framing was scale 0.407 of
+// the file showing 92.6% of its height — which needs 309px of cell, and the
+// cell is now 235. A shorter cell can match his old SCALE or his old EXTENT,
+// never both. Scale is what he was reacting to (presence next to the man on
+// his left), so scale is what this restores: 42 redraws him at 0.407, the same
+// number as before the pass, and gives back the side-crop that kept him
+// filling the frame. What it costs is the top ~22% of his headroom.
+//
+// Measured: 500x668 device px at DPR2 against a 615x820 file, so still a
+// downscale. At DPR3 it is a 1.22x upscale — EXACTLY what shipped before the
+// zoom-out pass at the same 0.407, so this is a restoration and not a new
+// regression. The SIZE_OVERRIDE that gives him the front-plane 820px long edge
+// is what keeps that number survivable; do not drop it.
+// RE-TUNED 2026-09-11 for the zoom-out pass (whitecap 8->0, brian 15->14,
+// forehand -30->0). Everything above still holds; what changed underneath it is
+// the CELL. A lift is not free — it BUYS movement with scale, so every lift is
+// also a zoom-in, and forehand's -30 was the single most zoomed-in thing on the
+// phone: 130% height on a cell that was already showing 33% of a 3:2 file. It
+// was cutting the bottom of his frame, which is where his chair is.
+// The 74svh rule in hero-mosaic.css makes the cell squarer, and that gives the
+// two PORTRAIT panels real vertical slack for the first time — so whitecap's
+// lift is now redundant (object-position does that job without scaling) and
+// brian keeps his, because he is the one being levelled.
+// Alec's 9/9 request still governs: brian and forehand read level. It is now
+// paid for by RAISING the left man rather than LOWERING the right one, because
+// lowering forehand is the one move that hides the wheel. Measured after: eye
+// lines ~20px apart at 390 — level to the eye, and both chairs visible.
+const MOSAIC_GRID_LIFT = { "whitecap": 42, "brian": 14, "forehand": 0 };
 
 const BANNER_PHONE = {
   "bn-dink":  { x: -6, w: 58, h: 100 },
@@ -354,7 +392,14 @@ const layoutCss = (rows, phone, mode) => {
   const cells = MOSAIC_GRID.flatMap((n, i) => {
     const out = [
       `    .mw-p.p-${n}{ display:block; order:${i}; ${RESET} }`,
-      `    .mw-p.p-${n} img{ object-position:50% ${MOSAIC_GRID_POS[n] ?? 50}%; }`,
+      // A value may be a number (vertical only, horizontal centred) or an
+      // [x, y] pair. The pair exists because the two 3:2 LANDSCAPE panels crop
+      // SIDEWAYS in this cell, not vertically — for them the vertical number is
+      // inert and x is the only live lever. Same trap the lift comment below
+      // records: which axis has slack depends on which side of the cell's aspect
+      // the file lands, so a number that looks like a control can be doing
+      // nothing at all.
+      `    .mw-p.p-${n} img{ object-position:${Array.isArray(MOSAIC_GRID_POS[n]) ? MOSAIC_GRID_POS[n][0] : 50}% ${Array.isArray(MOSAIC_GRID_POS[n]) ? MOSAIC_GRID_POS[n][1] : (MOSAIC_GRID_POS[n] ?? 50)}%; }`,
     ];
     const L = MOSAIC_GRID_LIFT[n];
     // `top` resolves its percentage against the containing block's HEIGHT, so

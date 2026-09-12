@@ -72,13 +72,37 @@
   }
 }
 
+/* The close control. Alec, 2026-09-12: "it's a little bit tough to click on...
+ * kind of tight in the corner."
+ *
+ * It was 38x38 sitting 10px off the right edge — under the 44x44 that both
+ * Apple's HIG and WCAG 2.5.8 call the floor for a touch target, and pressed up
+ * against the one part of a phone screen a thumb is least accurate at AND where
+ * iOS reads an edge swipe as "go back".
+ *
+ * The glyph does not move and does not grow. On a phone this button has no
+ * visible box at all — the background is transparent and the tint only appears
+ * on hover, which a touch screen never does — so the box is free to be bigger
+ * than it looks. 44x44 with the glyph still centred moves it 1.4px. Nobody will
+ * see the difference; a thumb will feel it.
+ *
+ * The ::before then extends the HIT AREA another 6px in every direction, to
+ * 56x56, without painting anything. That overhang also reclaims the dead zone
+ * over the sheet's rounded corner, where a tap previously did nothing at all. */
 .sheet-close{
-  position:absolute; top:0.55rem; right:0.6rem;
-  width:38px; height:38px; display:grid; place-items:center;
+  position:absolute; top:0.5rem; right:0.5rem; z-index:2;
+  width:44px; height:44px; display:grid; place-items:center;
   border:none; border-radius:50%; background:transparent;
-  color:var(--muted); font-size:1.45rem; line-height:1; cursor:pointer;
+  color:var(--muted); font-size:1.5rem; line-height:1; cursor:pointer;
+  /* No 300ms tap delay and no double-tap zoom on a control this close to the
+     edge; both read as "the button did not work". */
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:rgba(28,26,21,0.10);
 }
+.sheet-close::before{ content:""; position:absolute; inset:-6px; border-radius:50%; }
 .sheet-close:hover{ background:rgba(28,26,21,0.06); color:var(--ink); }
+/* A touch device gets the confirmation a hover state would otherwise give it. */
+.sheet-close:active{ background:rgba(28,26,21,0.10); color:var(--ink); }
 
 /* --- head: the tier, restated ------------------------------------------- */
 /* The one thing the old flow lost. Whatever they tapped is named and priced at
@@ -99,6 +123,26 @@
 .sheet-give{ margin-top:1.15rem; }
 .sheet-give .btn{ width:100%; justify-content:center; }
 .sheet-give-note{ font-size:0.78rem; color:var(--muted); text-align:center; margin:0.5rem 0 0; }
+
+/* SHIPPED BUG, 2026-09-12, caught by Alec on a live phone: the "or" divider was
+ * still painted on Captain, Champion and Founding Partner — tiers that have no
+ * give-now button for it to divide.
+ *
+ * The JavaScript sets `el.hidden = true` correctly. But `hidden` works by way of
+ * a User-Agent rule, `[hidden] { display: none }`, which carries the lowest
+ * specificity there is, and ANY author rule naming a display wins against it.
+ * `.sheet-give` had no display of its own so it vanished properly; `.sheet-or`
+ * declared `display:flex` and therefore never obeyed.
+ *
+ * Fixed here for every element in the sheet, current and future, rather than for
+ * this one rule — the next `display:` added to a toggled element would have
+ * reintroduced it silently. `.sheet [hidden]` is (0,1,1) against `.sheet-or`'s
+ * (0,1,0), so it wins on specificity and needs no !important.
+ *
+ * The test that let this through asserted the element's `.hidden` PROPERTY,
+ * which just reflects the attribute the code had already set — it could not have
+ * failed. test/sponsor_sheet.test.js now reads computed display instead. */
+.sheet [hidden]{ display:none; }
 
 /* A rule with a word in it, rather than a heading, because the two paths are
    equals — "or" is the whole relationship between them. */

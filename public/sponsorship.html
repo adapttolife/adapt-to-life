@@ -28,6 +28,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
 <link rel="stylesheet" href="/css/page-header.css">
+<link rel="stylesheet" href="/css/sponsor-sheet.css">
 <!-- band:vars --><style data-band-vars>:root{--pg-band-wide:url('/images/hero/panels/pg-band-2-wide.9ac73821.webp');--pg-band-tall:url('/images/hero/panels/pg-band-2-tall.f9278c2d.webp');--pg-give-wide:url('/images/hero/panels/pg-give-wide.b46beed5.webp');--pg-give-tall:url('/images/hero/panels/pg-give-tall.5cece3a5.webp');}</style>
 <script src="/js/attribution.js" defer></script>
 <style>
@@ -35,13 +36,13 @@
   .tier-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:clamp(1.1rem,2.4vw,1.7rem); margin-top:clamp(2.4rem,4vw,3.2rem); }
   .tier{ display:flex; flex-direction:column; border:1.5px solid #e3e0d9; border-radius:16px; padding:1.6rem 1.4rem; background:var(--paper); }
   .tier.is-popular{ border-color:var(--orange); box-shadow:0 18px 44px rgba(232,93,4,0.13); }
-  .tier-flag{ font-family:'Space Mono',monospace; font-size:0.7rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--orange); min-height:1rem; }
-  .tier-price{ font-family:'Newsreader',serif; font-size:2rem; line-height:1; margin:0.25rem 0 0; color:#1A1A1A; }
-  .tier-price small{ font-size:0.9rem; color:#6b6b6b; font-family:'Hanken Grotesk',sans-serif; }
-  .tier-name{ font-family:'Hanken Grotesk',sans-serif; font-weight:700; font-size:1.05rem; margin:0.5rem 0 0.2rem; color:#1A1A1A; }
-  .tier-line{ font-family:'Hanken Grotesk',sans-serif; font-size:0.9rem; color:#6b6b6b; margin:0 0 1rem; }
+  .tier-flag{ font-family:var(--font-label); font-weight:700; font-size:0.7rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--orange); min-height:1rem; }
+  .tier-price{ font-family:var(--font-display); font-weight:800; letter-spacing:-0.02em; font-size:2rem; line-height:1; margin:0.25rem 0 0; color:#1A1A1A; }
+  .tier-price small{ font-size:0.9rem; color:#6b6b6b; font-family:var(--font-body); }
+  .tier-name{ font-family:var(--font-body); font-weight:700; font-size:1.05rem; margin:0.5rem 0 0.2rem; color:#1A1A1A; }
+  .tier-line{ font-family:var(--font-body); font-size:0.9rem; color:#6b6b6b; margin:0 0 1rem; }
   .tier-benefits{ list-style:none; padding:0; margin:0 0 1.4rem; display:flex; flex-direction:column; gap:0.5rem; flex:1; }
-  .tier-benefits li{ position:relative; padding-left:1.3rem; font-family:'Hanken Grotesk',sans-serif; font-size:0.9rem; color:#333; line-height:1.4; }
+  .tier-benefits li{ position:relative; padding-left:1.3rem; font-family:var(--font-body); font-size:0.9rem; color:#333; line-height:1.4; }
   .tier-benefits li::before{ content:""; position:absolute; left:0; top:0.5em; width:7px; height:7px; border-radius:50%; background:var(--orange); }
   .tier .btn{ width:100%; text-align:center; }
   .founding{ margin-top:clamp(1.1rem,2.4vw,1.7rem); border-radius:16px; padding:clamp(1.8rem,4vw,2.6rem); background:#1A1A1A; color:var(--cream); display:grid; grid-template-columns:1.15fr 0.85fr; gap:clamp(1.4rem,3vw,2.4rem); align-items:center; }
@@ -53,7 +54,7 @@
   .founding .tier-benefits li{ color:rgba(255,255,255,0.82); }
   .deploys{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:clamp(1.2rem,3vw,2rem); margin-top:clamp(2.2rem,4vw,3rem); }
   .deploys .impact-n{ font-size:clamp(1.6rem,4vw,2.1rem); }
-  .tax-note{ font-family:'Hanken Grotesk',sans-serif; font-size:0.9rem; color:#6b6b6b; max-width:60ch; line-height:1.55; }
+  .tax-note{ font-family:var(--font-body); font-size:0.9rem; color:#6b6b6b; max-width:60ch; line-height:1.55; }
   @media (min-width:880px){ .progs{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
 </style>
 </head>
@@ -198,7 +199,7 @@ fill="currentColor" stroke="none">
             <li>A thank-you across our social channels</li>
             <li>Help cover equipment and repairs</li>
           </ul>
-          <a href="/contact?rsn=sponsor&amp;tier=Teammate" class="btn ghost">Become a Teammate</a>
+          <a href="/contact?rsn=sponsor&amp;tier=Teammate" data-sponsor-tier="Teammate" data-sponsor-price="$500" data-sponsor-line="Where every partner starts." data-sponsor-amount="500" class="btn ghost">Become a Teammate</a>
         </div>
 
         <div class="tier reveal">
@@ -211,7 +212,7 @@ fill="currentColor" stroke="none">
             <li>Logo on our donate page</li>
             <li>Help support regular training</li>
           </ul>
-          <a href="/contact?rsn=sponsor&amp;tier=Coach" class="btn ghost">Become a Coach</a>
+          <a href="/contact?rsn=sponsor&amp;tier=Coach" data-sponsor-tier="Coach" data-sponsor-price="$2,500" data-sponsor-line="Get your brand in the picture." data-sponsor-amount="2500" class="btn ghost">Become a Coach</a>
         </div>
 
         <div class="tier reveal is-popular">
@@ -224,7 +225,7 @@ fill="currentColor" stroke="none">
             <li>Talk with us about event recognition</li>
             <li>Support equipment, training, and travel</li>
           </ul>
-          <a href="/contact?rsn=sponsor&amp;tier=Captain" class="btn">Become a Captain</a>
+          <a href="/contact?rsn=sponsor&amp;tier=Captain" data-sponsor-tier="Captain" data-sponsor-price="$10,000" data-sponsor-line="Lead from the front." class="btn">Become a Captain</a>
         </div>
 
         <div class="tier reveal">
@@ -237,7 +238,7 @@ fill="currentColor" stroke="none">
             <li>Plan a partnership around a program or event</li>
             <li>Help more athletes take part</li>
           </ul>
-          <a href="/contact?rsn=sponsor&amp;tier=Champion" class="btn ghost">Become a Champion</a>
+          <a href="/contact?rsn=sponsor&amp;tier=Champion" data-sponsor-tier="Champion" data-sponsor-price="$25,000" data-sponsor-line="Put your name on the mission." class="btn ghost">Become a Champion</a>
         </div>
       </div>
 
@@ -248,7 +249,7 @@ fill="currentColor" stroke="none">
           <div class="tier-price">$50,000<small>&nbsp;and up</small></div>
           <div class="tier-name">Founding Partner</div>
           <p class="tier-line">Build something athletes remember.</p>
-          <a href="/contact?rsn=sponsor" class="btn" style="margin-top:0.6rem;">Talk to us</a>
+          <a href="/contact?rsn=sponsor&amp;tier=Founding%20Partner" data-sponsor-tier="Founding Partner" data-sponsor-price="$50,000+" data-sponsor-line="Build something athletes remember." class="btn" style="margin-top:0.6rem;">Talk to us</a>
         </div>
         <ul class="tier-benefits">
           <li>Everything in Champion</li>
@@ -432,7 +433,68 @@ fill="currentColor" stroke="none">
   })();
 </script>
 
+
+<!-- SPONSORSHIP SHEET — one dialog, reused by every tier button. Populated from
+     the button's data-sponsor-* attributes; see /js/sponsor-sheet.js. Deliberately
+     ONE element rather than five: five copies of a form is five Turnstile widgets
+     and five places for a fix to be applied four times. -->
+<dialog class="sheet" id="sponsorSheet" aria-labelledby="sheetTitle">
+  <div class="sheet-grip" aria-hidden="true"></div>
+  <button type="button" class="sheet-close" data-sheet-close aria-label="Close">&times;</button>
+  <div class="sheet-inner">
+
+    <div data-sheet-body>
+      <span class="sheet-eyebrow">Sponsorship</span>
+      <h2 class="sheet-title" id="sheetTitle"><span data-sheet-tier></span><span class="sheet-amount" data-sheet-amount></span></h2>
+      <p class="sheet-line" data-sheet-line></p>
+
+      <div class="sheet-give" data-sheet-give hidden>
+        <a class="btn" data-sheet-give-btn href="/donate">Give now</a>
+        <p class="sheet-give-note">Secure checkout, with the amount already set.</p>
+      </div>
+
+      <div class="sheet-or" data-sheet-or hidden>or</div>
+
+      <form class="sheet-form" id="sponsorForm" novalidate>
+        <div class="field">
+          <label for="sheetName">Your name</label>
+          <input id="sheetName" name="sheetName" type="text" autocomplete="name" autocapitalize="words">
+        </div>
+        <div class="field">
+          <label for="sheetEmail">Email</label>
+          <input id="sheetEmail" name="sheetEmail" type="email" autocomplete="email" inputmode="email">
+        </div>
+
+        <details class="sheet-note">
+          <summary>Add a note</summary>
+          <div class="field">
+            <label class="sr-only" for="sheetMsg">Message</label>
+            <textarea id="sheetMsg" name="sheetMsg" rows="3"></textarea>
+          </div>
+        </details>
+
+        <input type="hidden" name="sheet_source" value="">
+        <input type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only"></div>
+
+        <button type="submit" class="btn ghost" data-sheet-submit>Start the conversation</button>
+        <p class="sheet-status" data-sheet-status role="status" aria-live="polite"></p>
+        <p class="sheet-fine">We&#39;ll reply at the email you provide.</p>
+      </form>
+    </div>
+
+    <div class="sheet-sent" data-sheet-sent hidden>
+      <div class="sheet-sent-mark" aria-hidden="true">&check;</div>
+      <h3>Thank you.</h3>
+      <p>We have your interest in the <strong data-sheet-sent-tier></strong> level and we will be in touch at the email you gave us.</p>
+      <button type="button" class="btn ghost" data-sheet-close>Close</button>
+    </div>
+
+  </div>
+</dialog>
+
 <script src="/js/subscribe.js" defer></script>
 <script src="/js/turnstile-lazy.js" defer></script>
+<script src="/js/sponsor-sheet.js" defer></script>
 </body>
 </html>

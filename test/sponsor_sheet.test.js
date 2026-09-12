@@ -115,7 +115,11 @@ test("the Turnstile widget in the sheet is primed on open", () => {
   // and a token is single-use, so a second sponsorship in one visit needs a
   // reset. Both are the same call site.
   assert.ok(js.includes("primeTurnstile"), "sheet primes Turnstile");
-  assert.ok(/turnstile\.reset/.test(js) && /turnstile\.render/.test(js), "reset and render both handled");
+  assert.ok(/turnstile\.remove/.test(js) && /turnstile\.render/.test(js),
+    "every open tears the old widget down and renders a fresh one while visible");
+  assert.ok(/turnstile\.reset/.test(js), "reset is the recovery when render() throws on an auto-rendered box");
+  assert.ok(!/querySelector\("\[name=company\]"\)\.value/.test(js),
+    "the honeypot read is null-guarded; a throw here would swallow the submission");
   assert.ok(html.includes('id="sponsorSheet"') && /class="cf-turnstile"[\s\S]{0,400}data-sheet-submit/.test(html),
     "the widget sits inside the sheet's form, above its submit");
 });

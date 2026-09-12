@@ -55,21 +55,39 @@
     );
   }
 
-  // Turnstile lives inside a dialog, which is display:none until it opens, and a
-  // widget rendered into a hidden box is a widget that may never run its
-  // challenge. The footer subscribe form on this page carries its own widget, so
-  // the API can well have loaded — and auto-rendered ours blind — long before
-  // anyone taps a tier. Priming on every open covers both cases and doubles as
-  // the reset a second submission needs, since a token is single-use.
+  // THE ONE THING THAT CAN SILENTLY BREAK THIS FORM.
+  //
+  // Turnstile lives inside a <dialog>, which is display:none until it opens, and
+  // a widget rendered into a hidden, zero-sized box is a widget that may never
+  // run its challenge. That is not hypothetical here: the footer subscribe form
+  // on this page carries its own widget, so scrolling toward the footer trips
+  // turnstile-lazy's observer and the API auto-renders OURS blind, long before
+  // anyone taps a tier.
+  //
+  // So the sheet does not inherit whatever state that left behind. Every open
+  // tears any existing widget down and renders a fresh one into a box that is
+  // on screen, which also settles the second problem — a token is single-use, so
+  // a visitor who sponsors twice in one visit needs a new one either way.
+  //
+  // If none of this runs (the API has not loaded yet), turnstile-lazy.js renders
+  // the widget on first touch of the form and HOLDS the submit until a token
+  // lands. And if even that fails, verifyTurnstile on the server fails closed
+  // with a message the sender can act on. Three layers, because a sponsorship
+  // that vanishes silently is the worst outcome this page has.
   function primeTurnstile() {
     var box = sheet.querySelector(".cf-turnstile");
-    if (!box || !window.turnstile) return; // not loaded yet: turnstile-lazy.js will render it
+    if (!box) return;                       // staging strips the widget entirely
+    if (!window.turnstile) return;          // not loaded yet: turnstile-lazy.js will render it
     try {
-      if (box.childElementCount) window.turnstile.reset(box);
-      else window.turnstile.render(box);
+      if (box.dataset.wid) {
+        window.turnstile.remove(box.dataset.wid);
+        box.innerHTML = "";
+      }
+      box.dataset.wid = window.turnstile.render(box) || "";
     } catch (e) {
-      /* A reset on a widget mid-render throws; the lazy loader's submit hold
-         still waits for a token, and the server fails closed without one. */
+      // render() throws if the API auto-rendered this box before we tracked an
+      // id. Reset is the recovery: same widget, fresh challenge, now visible.
+      try { window.turnstile.reset(box); } catch (e2) { /* the submit hold covers us */ }
     }
   }
 
@@ -151,7 +169,8 @@
   // server for anyone who types quickly.
   els.form.addEventListener("submit", function (e) {
     e.preventDefault();
-    if (els.form.querySelector("[name=company]").value) return; // honeypot
+    var pot = els.form.querySelector("[name=company]");
+    if (pot && pot.value) return; // honeypot: bots fill it, accept silently
 
     var name = sheet.querySelector("#sheetName").value.trim();
     var email = sheet.querySelector("#sheetEmail").value.trim();

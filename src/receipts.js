@@ -54,8 +54,25 @@ async function send(env, msg, label) {
       console.log(`${label}: SEND_EMAIL not bound, skipping`);
       return false;
     }
-    if (env.INTAKE_SEPARATE_NOTIFICATION) { msg = {...msg}; delete msg.bcc; }
-    await cfSend(env, msg);
+    // Contact acknowledgments are part of the house correspondence record,
+    // not a second notification service. Keep their original-content BCC.
+    // Other forms retain their existing audience/privacy boundary.
+    if (env.INTAKE_SEPARATE_NOTIFICATION && label !== 'contact receipt') { msg = {...msg}; delete msg.bcc; }
+    if (env.INTAKE_SUBMISSION_ID) {
+      const id = String(env.INTAKE_SUBMISSION_ID);
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)) throw Error('Invalid intake reference');
+      msg = {...msg, text: `${msg.text}\n\nReference: ${id}`,
+        html: `${msg.html}<p style="font-size:12px;color:#6b6b70">Reference: ${esc(id)}</p>`,
+        headers: {...msg.headers, 'X-ATL-Intake-ID': id, 'Auto-Submitted':'auto-generated'}};
+    }
+    const result = await cfSend(env, msg);
+    if (env.INTAKE_CAPTURE_RECEIPT) {
+      if (typeof result?.messageId !== 'string' || !result.messageId.trim()) {
+        throw Error('Email send returned no provider identifier; verify before retry');
+      }
+      return {messageId:result.messageId, status:'accepted', provider:'cloudflare',
+        to:msg.to, bcc:msg.bcc||null};
+    }
     return true;
   } catch (err) {
     console.error(`${label} failed:`, err);
@@ -68,19 +85,22 @@ async function send(env, msg, label) {
 
 // Contact form. Short on purpose — it confirms receipt and sets the reply
 // expectation the page already makes, and does not pretend to be more.
-export async function sendContactReceipt(env, { name, email, message, type }) {
+export async function sendContactReceipt(env, { name, email, message, type, tier, amount }) {
   const first = String(name || "").trim().split(/\s+/)[0] || "there";
   const subject = "We got your message";
+  const sponsorship = tier ? `Sponsorship interest: ${tier}${amount ? ` ($${amount})` : ''}. This is an inquiry, not a payment or commitment.` : '';
   const text =
     `Hi ${first},\n\n` +
     `Thanks for reaching out. Your message reached us and a person will read it.\n\n` +
     `We reply as soon as we can. If it is urgent, just answer this email.\n\n` +
+    (sponsorship ? `${sponsorship}\n\n` : '') +
     `What you sent:\n${message || "(no message)"}\n\n` +
     `Adapt To Life\n501(c)(3) nonprofit, EIN 41-3213344`;
   const html = houseShell(
     `<p>Hi ${esc(first)},</p>` +
       `<p>Thanks for reaching out. Your message reached us and a person will read it.</p>` +
       `<p>We reply as soon as we can. If it is urgent, just answer this email.</p>` +
+      (sponsorship ? `<p>${esc(sponsorship)}</p>` : '') +
       houseLabel("What you sent") +
       houseQuote(esc(message || "(no message)"))
   );

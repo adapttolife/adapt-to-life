@@ -11,7 +11,7 @@ const OUT=process.env.FORM_TEST_OUTPUT || path.join(ROOT,'.wrangler/form-proof')
 const contexts=[];let current,mail=[],tasks=[];
 const originalFetch=globalThis.fetch;
 globalThis.fetch=async(url,opts)=>{if(!String(url).startsWith('https://api.clickup.com/api/v2/list/'))throw Error('ISOLATED TEST forbids external network');const body=JSON.parse(opts.body);tasks.push(body);return Response.json({id:'offline-'+tasks.length,url:'https://app.clickup.com/t/offline-'+tasks.length})};
-function reset(){mail=[];tasks=[];current={...formBindings(),TURNSTILE_MODE:'off',FORM_LIMITER:{limit:async()=>({success:true})},CLICKUP_TOKEN:'isolated',CLICKUP_CONTACTS_LIST_ID:'isolated',SEND_EMAIL:{send:async m=>mail.push(m)}};}
+function reset(){mail=[];tasks=[];current={...formBindings(),TURNSTILE_MODE:'off',FORM_LIMITER:{limit:async()=>({success:true})},CLICKUP_TOKEN:'isolated',CLICKUP_CONTACTS_LIST_ID:'isolated',SEND_EMAIL:{send:async m=>{mail.push(m);return {messageId:'offline-mail-'+mail.length}}}};}
 reset();
 const server=http.createServer(async(req,res)=>{try{
  if(req.url.startsWith('/api/')) {let data='';for await(const c of req)data+=c;const pending=[];const response=await worker.fetch(new Request('http://127.0.0.1'+req.url,{method:req.method,headers:req.headers,body:data}),current,{waitUntil:p=>pending.push(p)});res.writeHead(response.status,Object.fromEntries(response.headers));res.end(await response.text());contexts.push(Promise.all(pending));return;}
@@ -39,7 +39,7 @@ for(const width of [390,1440]) {
  await page.locator('[data-sheet-submit]').click();await page.locator('[data-sheet-status]').filter({hasText:'Network error'}).waitFor();await Promise.all(contexts.splice(0));
  assert.equal(current.WAIVERS_DB.sql.prepare('SELECT count(*) n FROM form_submissions').get().n,1);
  await page.locator('[data-sheet-submit]').click();await page.locator('[data-sheet-sent]').waitFor({state:'visible'});await Promise.all(contexts.splice(0));
- assert.equal(ids.length,2);assert.equal(ids[0],ids[1]);assert.equal(tasks.length,1);assert.equal(mail.length,1);
+ assert.equal(ids.length,2);assert.equal(ids[0],ids[1]);assert.equal(tasks.length,1);assert.equal(mail.length,1);assert.equal(mail[0].bcc,'hello@adapttolife.org');assert(current.WAIVERS_DB.sql.prepare("SELECT receipt FROM form_deliveries WHERE channel='receipt'").get().receipt.includes('offline-mail-1'));
  const raw=current.WAIVERS_DB.sql.prepare('SELECT * FROM form_submissions').get();const payload=JSON.parse(raw.payload);assert.equal(payload.message,'Preserve this sponsorship note exactly.');assert.equal(payload.tier,tiers[0].tier);
  const mirrored=current.INTAKE.sql.prepare('SELECT * FROM intake').get();assert.equal(mirrored.kind,'sponsor');assert(JSON.parse(mirrored.payload).clickup_url);
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);

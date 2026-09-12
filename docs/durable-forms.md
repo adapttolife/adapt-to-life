@@ -28,6 +28,35 @@ Beehiiv merely because it supplied an email address.
 This is a routing inventory, not a claim that a real grant, signature, payment,
 or newsletter subscriber was created during this repair.
 
+## Email-backed contact record
+
+Contact/sponsor acknowledgments retain a BCC to the existing house inbox. This
+is the actual customer-facing acknowledgment, with the original note, sponsor
+interest (explicitly not payment/commitment), and the durable intake reference.
+The separate internal notification remains the actionable intake notice; its
+Reply-To points to the customer. The acknowledgment copy is correspondence
+history, not another inbound request. Staff/agents must not blindly reply to
+its house Reply-To as though it came from the customer.
+
+The form dispatcher attempts the receipt before calling ClickUp, so a hanging
+CRM API cannot hold that correspondence step behind it. It retains the actual
+Cloudflare `messageId`, acceptance state and intended recipient/BCC in the
+existing delivery receipt field. Missing provider IDs are review cases, never
+invented success IDs. Case references are present in body and an X-header;
+automated acknowledgments are marked Auto-Submitted. No custom Message-ID is
+invented: Cloudflare generates that platform-controlled header.
+
+The provider ID, RFC Message-ID, mailbox message/thread IDs and delivered/read
+states are different evidence. A real received acknowledgment and subsequent
+reply must still be inspected to certify native threading and mailbox delivery.
+This change does not build a universal inbound/outbound archive, wire bounce
+webhooks, add filters, send staff replies, subscribe anyone, or widen the grant
+and volunteer receipt audiences. Existing historical receipt strings lacking a
+provider identifier must not be relabeled as identified or delivered.
+
+Cloudflare API contract: https://developers.cloudflare.com/email-service/api/send-emails/workers-api/
+Header allowlist: https://developers.cloudflare.com/email-service/reference/headers/
+
 ## Recovery and ambiguity
 
 `adapt-to-life` owns form-delivery recovery on its existing ten-minute schedule.

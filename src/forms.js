@@ -74,7 +74,8 @@ export async function processForm(env,id) {
   const row=await db.prepare('SELECT * FROM form_submissions WHERE id=?').bind(id).first();
   if (!row) throw Error('Missing durable form');
   const sub=JSON.parse(row.payload);
-  for (const channel of ['clickup','intake','receipt']) {
+  // A slow CRM must not hold the correspondence receipt behind its API call.
+  for (const channel of ['receipt','clickup','intake']) {
     // A conditional UPDATE is the cross-isolate lock. Running external sends
     // are NEVER blindly reclaimed: a crash may follow provider acceptance.
     const claim=await db.prepare("UPDATE form_deliveries SET state='running',attempts=attempts+1,started_at=?,error=NULL WHERE submission_id=? AND channel=? AND state='pending' RETURNING submission_id")
@@ -97,9 +98,12 @@ export async function processForm(env,id) {
       } else {
         if (!env.SEND_EMAIL) throw Error('Receipt mail binding missing');
         externalStarted=true;
-        const sent=await receipts[row.kind]({...env,INTAKE_SEPARATE_NOTIFICATION:true},sub);
-        if (!sent) throw Error('Email acceptance uncertain; review delivery ledger before retry');
-        receipt='Cloudflare binding accepted; recipient delivery is separately observable';
+        const sent=await receipts[row.kind]({...env,INTAKE_SEPARATE_NOTIFICATION:true,
+          INTAKE_SUBMISSION_ID:id,INTAKE_CAPTURE_RECEIPT:true},sub);
+        if (!sent?.messageId) throw Error('Email acceptance uncertain; review delivery ledger before retry');
+        // Provider correlation is not an RFC Message-ID or recipient delivery.
+        // Keep the actual provider response, never a pre-minted success marker.
+        receipt=JSON.stringify(sent);
       }
       await finish(db,id,channel,'done',receipt,null);
       if (channel==='clickup') await db.prepare("UPDATE form_deliveries SET state='pending' WHERE submission_id=? AND channel='intake' AND state='done'").bind(id).run();

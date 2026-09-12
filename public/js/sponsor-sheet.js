@@ -169,6 +169,7 @@
   // server for anyone who types quickly.
   els.form.addEventListener("submit", function (e) {
     e.preventDefault();
+    if (els.submit.disabled) return;
     var pot = els.form.querySelector("[name=company]");
     if (pot && pot.value) return; // honeypot: bots fill it, accept silently
 
@@ -184,9 +185,12 @@
       rsn: "Giving or sponsoring",
       msg: els.msg.value.trim(),
       source: els.source.value,
+      sponsor_tier: current ? current.tier : "",
+      sponsor_amount: current ? current.amount : "",
       cf_token: tk ? tk.value : "",
     };
 
+    window.ATLFormSubmission(els.form, payload);
     var label = els.submit.textContent;
     els.submit.disabled = true;
     els.submit.textContent = "Sending...";
@@ -199,7 +203,7 @@
     })
       .then(function (r) {
         return r.json().catch(function () {
-          return { ok: r.ok };
+          return { ok: false, error: "We could not verify receipt. Please try again." };
         });
       })
       .then(function (d) {
@@ -208,6 +212,7 @@
           els.body.hidden = true;
           els.sent.hidden = false;
           els.form.reset();
+          delete els.form._atlSubmission;
         } else {
           setStatus((d && d.error) || "Something went wrong. Please email hello@adapttolife.org.", false);
         }
@@ -216,6 +221,7 @@
         setStatus("Network error. Please email hello@adapttolife.org.", false);
       })
       .then(function () {
+        if (!els.body.hidden) primeTurnstile();
         els.submit.disabled = false;
         els.submit.textContent = label;
       });

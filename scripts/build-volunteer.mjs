@@ -214,6 +214,7 @@ ${lanes}
 ` + FOOTER + "\n\n" + NAVJS + "\n" + FORM_JS + `
 
 <script src="/js/subscribe.js" defer></script>
+<script src="/js/form-submission.js" defer></script>
 <script src="/js/turnstile-lazy.js" defer></script>
 </body>
 </html>
@@ -252,6 +253,8 @@ const FORM_JS = `<script>
         name: val('name'), em: val('em'), role: val('role'),
         bring: val('bring'), links: val('links'), cf_token: tk ? tk.value : ''
       };
+      if (btn && btn.disabled) return;
+      window.ATLFormSubmission(f, payload);
       var orig = btn ? btn.textContent : '';
       if(btn){ btn.disabled = true; btn.textContent = 'Sending...'; }
       setStatus('', true);
@@ -260,7 +263,7 @@ const FORM_JS = `<script>
         headers:{'Content-Type':'application/json'},
         body: JSON.stringify(payload)
       })
-      .then(function(r){ return r.json().catch(function(){ return { ok:r.ok }; }); })
+      .then(function(r){ return r.json().catch(function(){ return { ok:false }; }); })
       .then(function(d){
         if(d && d.ok){
           f.reset();
@@ -391,6 +394,7 @@ ${sec("Not this", "          " + ul(r.isNot, "jd-no"))}
 ` + FOOTER + "\n\n" + NAVJS + "\n" + FORM_JS + `
 
 <script src="/js/subscribe.js" defer></script>
+<script src="/js/form-submission.js" defer></script>
 <script src="/js/turnstile-lazy.js" defer></script>
 </body>
 </html>

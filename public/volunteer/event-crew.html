@@ -360,6 +360,8 @@ fill="currentColor" stroke="none">
         name: val('name'), em: val('em'), role: val('role'),
         bring: val('bring'), links: val('links'), cf_token: tk ? tk.value : ''
       };
+      if (btn && btn.disabled) return;
+      window.ATLFormSubmission(f, payload);
       var orig = btn ? btn.textContent : '';
       if(btn){ btn.disabled = true; btn.textContent = 'Sending...'; }
       setStatus('', true);
@@ -368,7 +370,7 @@ fill="currentColor" stroke="none">
         headers:{'Content-Type':'application/json'},
         body: JSON.stringify(payload)
       })
-      .then(function(r){ return r.json().catch(function(){ return { ok:r.ok }; }); })
+      .then(function(r){ return r.json().catch(function(){ return { ok:false }; }); })
       .then(function(d){
         if(d && d.ok){
           f.reset();
@@ -384,6 +386,7 @@ fill="currentColor" stroke="none">
 </script>
 
 <script src="/js/subscribe.js" defer></script>
+<script src="/js/form-submission.js" defer></script>
 <script src="/js/turnstile-lazy.js" defer></script>
 </body>
 </html>

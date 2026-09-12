@@ -1,0 +1,14 @@
+{
+  "name":"adapt-to-life-intake",
+  "main":"src/intake-worker.js",
+  "build":{"command":"node scripts/guard-prod-branch.mjs && node scripts/build-css.mjs && npm test"},
+  "compatibility_date":"2026-06-24",
+  "workers_dev":false,
+  "preview_urls":false,
+  "routes":[],
+  "vars":{"INTAKE_INBOX":"hello@adapttolife.org"},
+  "d1_databases":[{"binding":"INTAKE","database_name":"atl-intake","database_id":"916e841e-50cc-4661-806a-865cd24fbb53"}],
+  "send_email":[{"name":"SEND_EMAIL"}],
+  "triggers":{"crons":["*/10 * * * *"]},
+  "observability":{"enabled":true}
+}

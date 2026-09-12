@@ -361,6 +361,8 @@ fill="currentColor" stroke="none">
       if(!v('fn') && !v('ln')){ setStatus('Please add your name.', false); return; }
       var tk=f.querySelector('[name="cf-turnstile-response"]');
       var payload = { fn:v('fn'), ln:v('ln'), em:v('em'), phone:v('phone'), sport:v('sport'), location:v('location'), need:v('need'), cost:v('cost'), about:v('about'), cf_token: tk?tk.value:'' };
+      if (btn && btn.disabled) return;
+      window.ATLFormSubmission(f, payload);
       var orig = btn ? btn.textContent : '';
       if(btn){ btn.disabled = true; btn.textContent = 'Sending...'; }
       setStatus('', true);
@@ -369,7 +371,7 @@ fill="currentColor" stroke="none">
         headers:{'Content-Type':'application/json'},
         body: JSON.stringify(payload)
       })
-      .then(function(r){ return r.json().catch(function(){ return { ok:r.ok }; }); })
+      .then(function(r){ return r.json().catch(function(){ return { ok:false }; }); })
       .then(function(d){
         if(d && d.ok){
           f.reset();
@@ -385,6 +387,7 @@ fill="currentColor" stroke="none">
 </script>
 
 <script src="/js/subscribe.js" defer></script>
+<script src="/js/form-submission.js" defer></script>
 <script src="/js/turnstile-lazy.js" defer></script>
 </body>
 </html>

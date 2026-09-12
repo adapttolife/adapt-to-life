@@ -11,6 +11,7 @@
 // SEND_EMAIL binding — same no-new-deps convention as the other tests here.
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import {formBindings} from "./helpers/form-db.js";
 
 const SLOW_MS = 1500;
 
@@ -36,6 +37,7 @@ function stubFetch() {
 
 function env(sendStarted, sendFinished) {
   return {
+    ...formBindings(),
     CLICKUP_TOKEN: "tok", CLICKUP_CONTACTS_LIST_ID: "901418639884",
     // No TURNSTILE_SECRET_KEY; verifyTurnstile fails CLOSED unless a lane says
     // so explicitly. This test is about latency, not the challenge.
@@ -72,18 +74,17 @@ test("the contact response does not wait for the receipt to send", async () => {
     const elapsed = Date.now() - t0;
 
     assert.equal(res.status, 200);
-    assert.deepEqual(await res.json(), { ok: true });
+    const result = await res.json();
+    assert.equal(result.ok, true);
+    assert.match(result.receipt, /^[0-9a-f-]{36}$/);
 
     // The whole point. A 1.5s send must not show up in the response time.
     assert.ok(elapsed < SLOW_MS / 2,
       `response took ${elapsed}ms with a ${SLOW_MS}ms send — the receipt is back on the critical path`);
     assert.equal(finished.length, 0, "send had not finished when the response was returned");
-    // Two now: the submitter's receipt and Alec's intake notification. What this
-    // asserts is unchanged — every piece of mail is deferred, none of it blocks
-    // the response. Asserting >= 1 rather than an exact count would let a future
-    // change put a send back on the critical path without failing here.
-    assert.equal(scheduled.length, 2,
-      "both the receipt and the intake notification were handed to ctx.waitUntil");
+    // One durable dispatcher; raw record + independent steps already exist.
+    // Losing waitUntil cannot lose the work: scheduled recovery reads the outbox.
+    assert.equal(scheduled.length, 1, "one durable dispatcher accelerates the persisted work");
 
     // And it does still actually complete afterwards.
     await Promise.all(scheduled);

@@ -54,6 +54,7 @@ async function send(env, msg, label) {
       console.log(`${label}: SEND_EMAIL not bound, skipping`);
       return false;
     }
+    if (env.INTAKE_SEPARATE_NOTIFICATION) { msg = {...msg}; delete msg.bcc; }
     await cfSend(env, msg);
     return true;
   } catch (err) {

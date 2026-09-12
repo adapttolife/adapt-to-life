@@ -170,6 +170,7 @@ async function post(env, listId, body) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(body),
+    signal: AbortSignal.timeout(20000),
   });
 }
 
@@ -195,13 +196,14 @@ async function createTask(env, listId, label, name, markdown_description, custom
   if (!res.ok) {
     const detail = await safeText(res);
     console.error(`ClickUp ${label} error`, res.status, detail);
+    if (![400,422].includes(res.status)) return {ok:false,error:detail,retryable:[401,403,404,429].includes(res.status)};
     try {
       res = await post(env, listId, { name, markdown_description });
     } catch (err) {
       console.error(`ClickUp ${label} bare retry failed:`, err);
       return { ok: false, error: detail };
     }
-    if (!res.ok) return { ok: false, error: await safeText(res) };
+    if (!res.ok) return { ok: false, retryable:[400,401,403,404,422,429].includes(res.status), error: await safeText(res) };
     console.error(`ClickUp ${label} saved WITHOUT custom fields — check the field ids`);
   }
 
@@ -220,7 +222,7 @@ export async function createApplication(env, sub, now = Date.now()) {
     env.CLICKUP_APPLICATIONS_LIST_ID,
     "apply",
     sub.sport ? `${sub.name} — ${sub.sport}` : sub.name,
-    describe(sub),
+    describe(sub) + (sub.submission_id ? `\n\nIntake ID: ${sub.submission_id}` : ""),
     customFields(sub, now)
   );
 }
@@ -231,7 +233,7 @@ export async function createContact(env, sub, now = Date.now()) {
     env.CLICKUP_CONTACTS_LIST_ID,
     "contact",
     sub.type ? `${sub.name} — ${sub.type}` : sub.name,
-    describeContact(sub),
+    describeContact(sub) + (sub.submission_id ? `\n\nIntake ID: ${sub.submission_id}` : ""),
     contactFields(sub, now)
   );
 }
@@ -294,7 +296,7 @@ export async function createVolunteer(env, sub, now = Date.now()) {
     env.CLICKUP_VOLUNTEERS_LIST_ID,
     "volunteer",
     volunteerTitle(sub.name, sub.roles),
-    describeVolunteer(sub),
+    describeVolunteer(sub) + (sub.submission_id ? `\n\nIntake ID: ${sub.submission_id}` : ""),
     volunteerFields(sub, now)
   );
 }

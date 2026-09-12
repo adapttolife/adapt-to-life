@@ -1,4 +1,5 @@
-import {safeNewsletterSubscribe} from './newsletter.js';
+import { safeNewsletterSubscribe } from "./newsletter.js";
+import { acceptForm, sweepForms } from "./forms.js";
 // Adapt To Life — Worker entry.
 // Serves the static site (env.ASSETS) and handles form submissions at /api/contact,
 // /api/apply and /api/volunteer, writing all three to ClickUp. The ClickUp token stays server-side
@@ -279,22 +280,7 @@ export default {
   // on Givebutter's own transaction id, so a repeated or overlapping run can
   // never double-count a donation.
   async scheduled(event, env, ctx) {
-    // Intake first: re-notify anything owed, then run the end-to-end canary when
-    // none has passed recently. Same one cron the rest of this Worker uses, so
-    // there is no extra schedule that can quietly stop. Guarded so a Worker
-    // without the INTAKE binding (an old preview) simply skips it.
-    if (env.INTAKE) {
-      ctx.waitUntil((async () => {
-        await sweepIntake(env).catch((err) => console.error("intake sweep failed:", err));
-        if (!(await canaryIsFresh(env, INTAKE_CANARY_MAX_AGE_H))) {
-          const r = await runIntakeCanary(env, INTAKE_SITE).catch((err) => {
-            console.error("intake canary failed:", err);
-            return { ok: false, stage: "threw" };
-          });
-          console.log(`intake canary: ok=${r.ok} stage=${r.stage}`);
-        }
-      })());
-    }
+    ctx.waitUntil(sweepForms(env).catch((err) => console.error("form outbox failed:", err)));
 
     ctx.waitUntil(runDriveBacklog(env));
     ctx.waitUntil(runShopCrmBacklog(env).catch((err) => console.error("shop CRM sync crashed:", err)));
@@ -475,35 +461,13 @@ async function handleContact(request, env, ctx) {
   }
 
   // Contacts land in the ClickUp "Contacts" list. See src/clickup.js.
-  const saved = await createContact(env, {
-    name: name || "(no name given)",
-    email,
-    phone: "",
-    type: LEAD_TYPES.includes(type) ? type : "",
-    message,
-    source: source || "Submitted through the contact form on adapttolife.org.",
-  });
-
-  if (!saved.ok) {
-    return json({ ok: false, error: "Could not save right now. Please email hello@adapttolife.org." }, 502);
+  const sub = {name:name||"(no name given)",email,phone:"",type:LEAD_TYPES.includes(type)?type:"",message,source:source||"Submitted through the contact form on adapttolife.org."};
+  if (data.sponsor_tier) {
+    sub.tier = str(data.sponsor_tier).slice(0,80);
+    sub.amount = Number(data.sponsor_amount) || 0;
   }
-
-  // The record is saved. Send the receipt AFTER responding: awaiting it here put
-  // a live SMTP round-trip on the critical path and the form visibly hung for
-  // seconds while the submitter watched a spinner. ctx.waitUntil keeps the
-  // Worker alive until the send settles without making anyone wait for it.
-  //
-  // The receipt is a courtesy on top of a saved record and must never be able to
-  // turn a successful submission into a failed one, or a slow one.
-  after(ctx, sendContactReceipt(env, { name, email, message, type }));
-  after(ctx, tellAlec(env, {
-    site: INTAKE_SITE, kind: "contact", name, email,
-    summary: `New contact: ${name || email}`,
-    source: source || "adapttolife.org contact form",
-    payload: { Type: type || "", Message: message },
-  }));
-
-  return json({ ok: true });
+  const result = await acceptForm(env, "contact", sub, data.submission_id, ctx);
+  return json(result.ok ? {ok:true, receipt:result.id} : {ok:false,error:result.error}, result.status);
 }
 
 async function handleApply(request, env, ctx) {
@@ -536,37 +500,9 @@ async function handleApply(request, env, ctx) {
 
   // Applications go to the ClickUp "Hustle & Heart — Applications" list — the
   // applicant tracker, and the list ATL actually works from. See src/clickup.js.
-  const saved = await createApplication(env, {
-    name,
-    email,
-    phone: str(data.phone),
-    sport: str(data.sport),
-    location: str(data.location),
-    need: str(data.need),
-    cost: str(data.cost),
-    about: str(data.about),
-  });
-
-  if (!saved.ok) {
-    return json({ ok: false, error: "Could not save right now. Please email hello@adapttolife.org." }, 502);
-  }
-
-  // Saved. The acknowledgement matters more here than on the contact form —
-  // silence after asking for equipment money reads as "it did not go through" —
-  // but it must not be able to fail the submission OR delay it. Sent after the
-  // response, same as the contact receipt.
-  after(ctx, sendApplyReceipt(env, { name, email, sport: str(data.sport), need: str(data.need) }));
-  // Grant applications carry material that deserves a narrower audience than the
-  // CRM (see GRANTS_INBOX). The intake row records identity and the fact of the
-  // application; the story stays in ClickUp where the reviewers are.
-  after(ctx, tellAlec(env, {
-    site: INTAKE_SITE, kind: "application", name, email,
-    summary: `New Hustle & Heart application: ${name || email}`,
-    source: "adapttolife.org grant application",
-    payload: { Sport: str(data.sport) },
-  }));
-
-  return json({ ok: true });
+  const sub = {name,email,phone:str(data.phone),sport:str(data.sport),location:str(data.location),need:str(data.need),cost:str(data.cost),about:str(data.about)};
+  const result = await acceptForm(env, "apply", sub, data.submission_id, ctx);
+  return json(result.ok ? {ok:true, receipt:result.id} : {ok:false,error:result.error}, result.status);
 }
 
 // Volunteer board -> the ClickUp "Volunteers" list.
@@ -616,33 +552,9 @@ async function handleVolunteer(request, env, ctx) {
     return json({ ok: false, error: "Add a role, or tell us what you would want to do." }, 422);
   }
 
-  const saved = await createVolunteer(env, {
-    name,
-    email,
-    phone: str(data.phone),
-    based: str(data.based),
-    time: str(data.time),
-    links: str(data.links),
-    bring,
-    roles,
-    source: str(data.source).slice(0, 80) || "Submitted through the volunteer form on adapttolife.org.",
-  });
-
-  if (!saved.ok) {
-    return json({ ok: false, error: "Could not save right now. Please email hello@adapttolife.org." }, 502);
-  }
-
-  // Same contract as the other two: the record is already saved, so the receipt
-  // is sent after the response and can never fail or slow the submission.
-  after(ctx, sendVolunteerReceipt(env, { name, email, roles, bring }));
-  after(ctx, tellAlec(env, {
-    site: INTAKE_SITE, kind: "volunteer", name, email,
-    summary: `New volunteer: ${name || email}`,
-    source: "adapttolife.org volunteer form",
-    payload: { Roles: Array.isArray(roles) ? roles.join(", ") : roles, Bringing: bring },
-  }));
-
-  return json({ ok: true });
+  const sub = {name,email,phone:str(data.phone),based:str(data.based),time:str(data.time),links:str(data.links),bring,roles,source:str(data.source).slice(0,80)||"Submitted through the volunteer form on adapttolife.org."};
+  const result = await acceptForm(env, "volunteer", sub, data.submission_id, ctx);
+  return json(result.ok ? {ok:true, receipt:result.id} : {ok:false,error:result.error}, result.status);
 }
 
 // Roles arrive as an array from the page and as a comma string from a plain form

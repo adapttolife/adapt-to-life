@@ -51,31 +51,15 @@ export async function recordIntake(env, entry) {
     return { ok: false, id: null, error: "no INTAKE binding" };
   }
   try {
-    await env.INTAKE.prepare(
-      `INSERT INTO intake
-         (id, received_at, site, kind, name, email, phone, summary, payload, source, is_canary)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?)`
-    ).bind(
-      id, now,
-      entry.site || "unknown",
-      entry.kind || "unknown",
-      entry.name || null,
-      entry.email || null,
-      entry.phone || null,
-      entry.summary || `${entry.kind} from ${entry.site}`,
-      JSON.stringify(entry.payload ?? {}),
-      entry.source || null,
-      entry.isCanary ? 1 : 0
-    ).run();
-    // Some forms already have a notification Alec receives (the waiver receipt
-    // BCCs him a copy of the signed release). Those are recorded for the shared
-    // record and the sheet, but stamped as notified so the sweeper does not send
-    // a second email about the same submission.
-    if (entry.alreadyNotified) {
-      await env.INTAKE.prepare(
-        `UPDATE intake SET notified_at = ?, notify_error = 'covered by this form''s own receipt' WHERE id = ?`
-      ).bind(now, id).run();
-    }
+    await env.INTAKE.batch([
+      env.INTAKE.prepare(`INSERT INTO intake
+        (id,received_at,site,kind,name,email,phone,summary,payload,source,is_canary,notified_at)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`).bind(id,now,entry.site||"unknown",entry.kind||"unknown",
+        entry.name||null,entry.email||null,entry.phone||null,entry.summary||`${entry.kind} from ${entry.site}`,
+        JSON.stringify(entry.payload??{}),entry.source||null,entry.isCanary?1:0,entry.alreadyNotified?now:null),
+      env.INTAKE.prepare("INSERT INTO intake_delivery_claims(intake_id,state) VALUES (?,?)")
+        .bind(id,entry.alreadyNotified||entry.isCanary?'done':'pending')
+    ]);
     return { ok: true, id };
   } catch (err) {
     console.error("intake: insert failed:", err);
@@ -134,39 +118,32 @@ function notificationBody(row) {
  * an unstamped row is one the sweeper must pick up again.
  */
 export async function notifyIntakeRow(env, row) {
-  if (!env.SEND_EMAIL) {
-    console.error("intake: SEND_EMAIL binding missing — cannot notify", row.id);
-    await bumpAttempt(env, row.id, "no SEND_EMAIL binding");
-    return false;
-  }
-  const { text, html } = notificationBody(row);
-  const subject = row.is_canary
-    ? `[canary] ${row.summary}`
-    : row.summary;
+  if (row.is_canary) return false;
+  if (row.notified_at) return true;
+  // Only upgraded producers create a claim, atomically with the record. An old
+  // unclaimed row may already have sent mail before losing its stamp; alert on
+  // that debt rather than inventing safe-to-retry evidence.
+  if (!env.SEND_EMAIL) return false;
+  const claim = await env.INTAKE.prepare("UPDATE intake_delivery_claims SET state='sending',started_at=? WHERE intake_id=? AND state='pending' RETURNING intake_id")
+    .bind(new Date().toISOString(),row.id).first();
+  if (!claim) return false;
+  const {text,html}=notificationBody(row);
   try {
-    await env.SEND_EMAIL.send({
-      from: INTAKE_FROM,
-      to: intakeInbox(env),
-      // Reply goes to the person who submitted, so answering is one tap.
-      replyTo: row.email || intakeInbox(env),
-      subject,
-      text,
-      html,
-    });
-  } catch (err) {
-    console.error("intake: notify failed", row.id, err);
-    await bumpAttempt(env, row.id, String(err).slice(0, 400));
-    return false;
-  }
-  try {
-    await env.INTAKE.prepare(
-      `UPDATE intake SET notified_at = ?, notify_error = NULL WHERE id = ?`
-    ).bind(new Date().toISOString(), row.id).run();
+    await env.SEND_EMAIL.send({from:INTAKE_FROM,to:intakeInbox(env),replyTo:row.email||intakeInbox(env),subject:row.summary,text,html});
+    const now=new Date().toISOString();
+    await env.INTAKE.batch([
+      env.INTAKE.prepare("UPDATE intake SET notified_at=?,notify_error=NULL WHERE id=?").bind(now,row.id),
+      env.INTAKE.prepare("UPDATE intake_delivery_claims SET state='done',completed_at=?,error=NULL WHERE intake_id=? AND state='sending'").bind(now,row.id)
+    ]);
     return true;
-  } catch (err) {
-    // Sent but not stamped: the sweeper will send again. A duplicate
-    // notification is a far smaller failure than a silent one.
-    console.error("intake: stamp failed after send", row.id, err);
+  } catch(e) {
+    // A transport exception or failed post-send stamp is ambiguous. Keep it
+    // reviewable; automatically resending can duplicate the visitor's message.
+    const error=String(e.message).slice(0,300);
+    await env.INTAKE.batch([
+      env.INTAKE.prepare("UPDATE intake_delivery_claims SET state='review',error=? WHERE intake_id=? AND state='sending'").bind(error,row.id),
+      env.INTAKE.prepare("UPDATE intake SET notify_attempts=notify_attempts+1,notify_error=? WHERE id=? AND notified_at IS NULL").bind('Needs review: '+error,row.id)
+    ]);
     return false;
   }
 }
@@ -195,25 +172,16 @@ export async function notifyIntake(env, id) {
  * The cron's job: anything still unnotified gets another try. This is what makes
  * an email outage a delay instead of a loss.
  */
-export async function sweepIntake(env, limit = 25) {
-  let rows = [];
-  try {
-    const res = await env.INTAKE.prepare(
-      `SELECT * FROM intake
-        WHERE notified_at IS NULL AND notify_attempts < 20
-        ORDER BY received_at ASC LIMIT ?`
-    ).bind(limit).all();
-    rows = res.results || [];
-  } catch (err) {
-    console.error("intake: sweep query failed:", err);
-    return { swept: 0, sent: 0, failed: 0 };
-  }
-  let sent = 0, failed = 0;
-  for (const row of rows) {
-    if (await notifyIntakeRow(env, row)) sent++; else failed++;
-  }
-  if (rows.length) console.log(`intake sweep: ${rows.length} owed, ${sent} sent, ${failed} failed`);
-  return { swept: rows.length, sent, failed };
+export async function sweepIntake(env, limit=25) {
+  const expired=new Date(Date.now()-15*60_000).toISOString();
+  await env.INTAKE.prepare("UPDATE intake_delivery_claims SET state='review',error='Sender interrupted: verify provider acceptance before retry' WHERE state='sending' AND started_at<?").bind(expired).run();
+  const {results:rows}=await env.INTAKE.prepare(`SELECT intake.* FROM intake
+    JOIN intake_delivery_claims c ON c.intake_id=intake.id
+    WHERE notified_at IS NULL AND COALESCE(is_canary,0)=0 AND c.state='pending'
+    ORDER BY received_at ASC LIMIT ?`).bind(limit).all();
+  let sent=0;
+  for(const row of rows) if(await notifyIntakeRow(env,row))sent++;
+  return {swept:rows.length,sent,failed:rows.length-sent};
 }
 
 /**
@@ -238,27 +206,4 @@ export async function canaryIsFresh(env, hours = 6) {
   }
 }
 
-export async function runIntakeCanary(env, site) {
-  const stamp = new Date().toISOString();
-  const rec = await recordIntake(env, {
-    site,
-    kind: "canary",
-    name: "Intake canary",
-    email: intakeInbox(env),
-    summary: `Intake canary from ${site}`,
-    source: "scheduled-canary",
-    payload: { note: "Automated end-to-end check. If this stops arriving, intake is broken.", at: stamp },
-    isCanary: true,
-  });
-  if (!rec.ok) {
-    console.error("intake canary: could not write a row —", rec.error);
-    return { ok: false, stage: "write" };
-  }
-  const notified = await notifyIntake(env, rec.id);
-  try {
-    await env.INTAKE.prepare(
-      `DELETE FROM intake WHERE is_canary = 1 AND received_at < ?`
-    ).bind(new Date(Date.now() - 7 * 864e5).toISOString()).run();
-  } catch (_) { /* housekeeping only */ }
-  return { ok: notified, stage: notified ? "done" : "notify", id: rec.id };
-}
+export async function runIntakeCanary() { return { ok: false, stage: "disabled-by-owner" }; }

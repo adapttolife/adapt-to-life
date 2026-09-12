@@ -34,6 +34,7 @@ import {
   recordTransactionalFailure,
 } from "./email.js";
 import { getGoogleAccessToken, SHEETS_SCOPE } from "./google.js";
+import { verifyTurnstile } from "./turnstile.js";
 
 // How long we tell a customer they will wait. Alec's call, 2026-09-04: two
 // business days. It is a promise printed on a public page and repeated in every
@@ -422,18 +423,6 @@ function timingSafeEqual(a, b) {
   return diff === 0;
 }
 
-async function verifyTurnstile(env, token, ip) {
-  if (!env.TURNSTILE_SECRET_KEY) return true;
-  if (!token) return false;
-  try {
-    const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ secret: env.TURNSTILE_SECRET_KEY, response: token, remoteip: ip || undefined }),
-    });
-    return !!(await res.json()).success;
-  } catch (err) { console.error("turnstile verify failed:", err); return false; }
-}
 
 function str(v, max = 5000) { return (typeof v === "string" ? v : "").trim().slice(0, max); }
 

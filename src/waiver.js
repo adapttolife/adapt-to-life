@@ -6,6 +6,7 @@
 
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import { cfSend, houseShell, recordTransactionalFailure } from "./email.js";
+import { verifyTurnstile } from "./turnstile.js";
 import { getGoogleAccessToken } from "./google.js";
 
 // ---------------------------------------------------------------------------
@@ -425,17 +426,6 @@ async function sha256Hex(bytes) {
   return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 function isUuid(s) { return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s); }
-async function verifyTurnstile(env, token, ip) {
-  if (!env.TURNSTILE_SECRET_KEY) return true;
-  if (!token) return false;
-  try {
-    const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ secret: env.TURNSTILE_SECRET_KEY, response: token, remoteip: ip || undefined }),
-    });
-    return !!(await res.json()).success;
-  } catch (err) { console.error("turnstile verify failed:", err); return false; }
-}
 function str(v, max = 5000) { return (typeof v === "string" ? v : "").trim().slice(0, max); }
 function json(obj, status = 200) {
   return new Response(JSON.stringify(obj), { status, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } });

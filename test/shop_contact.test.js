@@ -71,9 +71,10 @@ function stubEnv({ sendThrows = false, insertThrows = false, key = KEY } = {}) {
     env: {
       SHOP_CONTACT_KEY: key,
       WAIVERS_DB: db.binding,
-      // No TURNSTILE_SECRET_KEY: the handler treats an unconfigured secret as
-      // "not enforcing", which is the documented behaviour of every other form
-      // on this Worker and is what lets these tests exercise the real path.
+      // No TURNSTILE_SECRET_KEY: since 2026-09-12 that REFUSES unless the lane
+      // says TURNSTILE_MODE="off" out loud (src/turnstile.js). These tests are
+      // about the handler's real path, not the challenge.
+      TURNSTILE_MODE: "off",
       SEND_EMAIL: {
         send(msg) {
           if (sendThrows) throw new Error("simulated Email Service outage");

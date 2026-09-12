@@ -5,6 +5,7 @@
 
 import { handleWaiver, handleWaiverDownload, handleWaiverVerify, handleWaiverDoc, runDriveBacklog } from "./waiver.js";
 import { sendContactReceipt, sendApplyReceipt, sendVolunteerReceipt } from "./receipts.js";
+import { verifyTurnstile, overFormLimit, RATE_LIMITED } from "./turnstile.js";
 import { createApplication, createContact, createVolunteer } from "./clickup.js";
 import { handleEmail, handleAgentMailApi } from "./agent_mail.js";
 import { handleShopContact, runShopCrmBacklog } from "./shop_contact.js";
@@ -140,6 +141,7 @@ export default {
       if (request.method !== "POST") {
         return json({ ok: false, error: "Method not allowed" }, 405);
       }
+      if (await overFormLimit(env, request)) return json(RATE_LIMITED, 429);
       return handleContact(request, env, ctx);
     }
 
@@ -147,6 +149,7 @@ export default {
       if (request.method !== "POST") {
         return json({ ok: false, error: "Method not allowed" }, 405);
       }
+      if (await overFormLimit(env, request)) return json(RATE_LIMITED, 429);
       return handleApply(request, env, ctx);
     }
 
@@ -155,11 +158,13 @@ export default {
     // by a shared secret AND Turnstile. See src/shop_contact.js.
     if (url.pathname === "/api/shop-contact") {
       if (request.method !== "POST") return json({ ok: false, error: "Method not allowed" }, 405);
+      if (await overFormLimit(env, request)) return json(RATE_LIMITED, 429);
       return handleShopContact(request, env, ctx);
     }
 
     if (url.pathname === "/api/volunteer") {
       if (request.method !== "POST") return json({ ok: false, error: "Method not allowed." }, 405);
+      if (await overFormLimit(env, request)) return json(RATE_LIMITED, 429);
       return handleVolunteer(request, env, ctx);
     }
 
@@ -167,6 +172,7 @@ export default {
       if (request.method !== "POST") {
         return json({ ok: false, error: "Method not allowed" }, 405);
       }
+      if (await overFormLimit(env, request)) return json(RATE_LIMITED, 429);
       return handleSubscribe(request, env);
     }
 
@@ -188,6 +194,7 @@ export default {
       if (request.method !== "POST") {
         return json({ ok: false, error: "Method not allowed" }, 405);
       }
+      if (await overFormLimit(env, request)) return json(RATE_LIMITED, 429);
       return handleWaiver(request, env);
     }
     if (url.pathname === "/api/waiver/doc") {
@@ -664,24 +671,6 @@ async function handleRaised(request, env) {
   });
 }
 
-// Cloudflare Turnstile server-side verification. Fail-open if no secret is configured
-// (so a missing binding never hard-breaks the forms); fail-closed on a bad/absent token.
-async function verifyTurnstile(env, token, ip) {
-  if (!env.TURNSTILE_SECRET_KEY) return true;
-  if (!token) return false;
-  try {
-    const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ secret: env.TURNSTILE_SECRET_KEY, response: token, remoteip: ip || undefined }),
-    });
-    const data = await res.json();
-    return !!data.success;
-  } catch (err) {
-    console.error("turnstile verify failed:", err);
-    return false;
-  }
-}
 
 function str(v) {
   return (typeof v === "string" ? v : "").trim().slice(0, 5000);

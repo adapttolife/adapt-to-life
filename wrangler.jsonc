@@ -143,6 +143,13 @@
     { "name": "SEND_EMAIL" }
   ],
   // Compliance archive runs every 10 minutes: push new signed releases to Drive.
+  // Per-network form rate limit (Workers Rate Limiting binding; src/turnstile.js
+  // overFormLimit): 6 form POSTs / 60 s per connecting IP on every /api form
+  // route. The zone rule (100 req / 10 s) only stops floods. Bindings are not
+  // inherited by environments, so staging declares the same one.
+  "ratelimits": [
+    { "name": "FORM_LIMITER", "namespace_id": "1001", "simple": { "limit": 6, "period": 60 } }
+  ],
   "triggers": {
     "crons": ["*/10 * * * *"]
   },
@@ -163,6 +170,7 @@
       "d1_databases": [],
       "r2_buckets": [],
       "send_email": [],
+      "ratelimits": [{ "name": "FORM_LIMITER", "namespace_id": "1001", "simple": { "limit": 6, "period": 60 } }],
       "triggers": { "crons": [] }
     }
   }

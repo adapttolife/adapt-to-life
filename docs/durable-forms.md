@@ -38,8 +38,21 @@ Reply-To points to the customer. The acknowledgment copy is correspondence
 history, not another inbound request. Staff/agents must not blindly reply to
 its house Reply-To as though it came from the customer.
 
-The form dispatcher attempts the receipt before calling ClickUp, so a hanging
-CRM API cannot hold that correspondence step behind it. It retains the actual
+New contact/sponsor submissions also commit a `form_record_deliveries` claim in
+the same restricted database transaction. Its internal email preserves the exact
+original note and case reference, goes only to the existing house inbox, and
+uses the visitor as Reply-To. It does not send to the visitor, rely on a BCC,
+change the grant/volunteer audience, or backfill old correspondence.
+
+The independent original replaces the metadata-only actionable notice for these
+new rows; the shared retry Worker receives no competing pending send claim.
+The acknowledgment BCC remains the actual outgoing correspondence history.
+Internal acceptance is mirrored to the shared notification timestamp separately;
+a failed cross-DB stamp retries that stamp without resending the original.
+
+The dispatcher starts the internal original, acknowledgment, and CRM/projection
+work independently. Initial metadata projection precedes ClickUp and is refreshed
+after its result, so a hung API cannot block email or initial CRM reconciliation. It retains the actual
 Cloudflare `messageId`, acceptance state and intended recipient/BCC in the
 existing delivery receipt field. Missing provider IDs are review cases, never
 invented success IDs. Case references are present in body and an X-header;
@@ -69,8 +82,9 @@ actual task/provider receipt before marking that step done or reauthorizing it.
 `adapt-to-life-intake` is now defined by `wrangler.intake.jsonc` and
 `src/intake-worker.js`: a notification-recovery worker, not a second complete
 website with parallel gift, Drive and CRM jobs. No routes, assets, workers.dev or
-preview ingress. Its source is in this same repository. Each modern intake row
-and notification claim are committed atomically. Retired canaries never send.
+preview ingress. Its source is in this same repository. Other modern intake rows
+and their notification claims are committed atomically. New contact originals
+are owned exclusively by the raw-form outbox instead. Retired canaries never send.
 An old row with no trustworthy claim may have sent before losing its stamp; it
 is not automatically replayed. The health meter must report any real debt.
 
@@ -95,7 +109,8 @@ public build/source fingerprints, the host sheet-sync service and debt meter.
 Before release: full `npm test`, `npm run typecheck`, the real isolated browser
 script `scripts/verify-sponsor-browser.mjs` at phone/desktop sizes, and the host
 sync/monitor tests. Browser simulation deliberately drops an accepted response,
-then resubmits the unchanged form and proves one record/task/receipt. It checks
+then resubmits the unchanged form and proves one record/task, one acknowledgment,
+and one independently claimed internal original. It checks
 all sponsor tiers and preset checkout links without paying. Isolated tests use
 in-memory SQLite and mock transport, never public fake grant/waiver/payment data.
 

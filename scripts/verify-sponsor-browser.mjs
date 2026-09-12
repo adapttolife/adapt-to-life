@@ -39,7 +39,7 @@ for(const width of [390,1440]) {
  await page.locator('[data-sheet-submit]').click();await page.locator('[data-sheet-status]').filter({hasText:'Network error'}).waitFor();await Promise.all(contexts.splice(0));
  assert.equal(current.WAIVERS_DB.sql.prepare('SELECT count(*) n FROM form_submissions').get().n,1);
  await page.locator('[data-sheet-submit]').click();await page.locator('[data-sheet-sent]').waitFor({state:'visible'});await Promise.all(contexts.splice(0));
- assert.equal(ids.length,2);assert.equal(ids[0],ids[1]);assert.equal(tasks.length,1);assert.equal(mail.length,1);assert.equal(mail[0].bcc,'hello@adapttolife.org');assert(current.WAIVERS_DB.sql.prepare("SELECT receipt FROM form_deliveries WHERE channel='receipt'").get().receipt.includes('offline-mail-1'));
+ assert.equal(ids.length,2);assert.equal(ids[0],ids[1]);assert.equal(tasks.length,1);assert.equal(mail.length,2);assert.equal(mail.filter(m=>m.to==='hello@adapttolife.org').length,1);assert.equal(mail[0].bcc,'hello@adapttolife.org');assert(current.WAIVERS_DB.sql.prepare("SELECT receipt FROM form_deliveries WHERE channel='receipt'").get().receipt.includes('offline-mail-1'));
  const raw=current.WAIVERS_DB.sql.prepare('SELECT * FROM form_submissions').get();const payload=JSON.parse(raw.payload);assert.equal(payload.message,'Preserve this sponsorship note exactly.');assert.equal(payload.tier,tiers[0].tier);
  const mirrored=current.INTAKE.sql.prepare('SELECT * FROM intake').get();assert.equal(mirrored.kind,'sponsor');assert(JSON.parse(mirrored.payload).clickup_url);
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);

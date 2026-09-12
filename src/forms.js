@@ -1,5 +1,6 @@
 // Durable acceptance, independent delivery steps, one scheduled recovery owner.
 // No marketing enrollment. Raw application detail never enters shared intake.
+import {queueOriginal,processOriginal,recoverOriginals,reconcileOriginal} from './form-records.js';
 import { createContact, createApplication, createVolunteer } from './clickup.js';
 import { sendContactReceipt, sendApplyReceipt, sendVolunteerReceipt } from './receipts.js';
 
@@ -20,6 +21,7 @@ export async function acceptForm(env, kind, sub, suppliedId, ctx) {
     await db.batch([
       db.prepare('INSERT OR IGNORE INTO form_submissions (id,kind,payload,received_at) VALUES (?,?,?,?)').bind(id,kind,payload,now()),
       ...['clickup','intake','receipt'].map(channel=>pending(db,id,channel)),
+      ...(kind==='contact'?[queueOriginal(db,id,payload)]:[]),
     ]);
     const stored=await db.prepare('SELECT kind,payload FROM form_submissions WHERE id=?').bind(id).first();
     if (!stored || stored.kind!==kind || stored.payload!==payload) {
@@ -51,16 +53,20 @@ async function mirror(env,row,sub) {
   if (task?.receipt) { const value=JSON.parse(task.receipt); details.clickup_url=value.url||`https://app.clickup.com/t/${value.id}`; details.clickup_id=value.id; }
   // Stable ID makes retries safe across the two databases. The existing shared
   // intake worker owns internal notification; the existing host sync owns Sheets.
+  const original=await env.WAIVERS_DB.prepare('SELECT submission_id FROM form_record_deliveries WHERE submission_id=?').bind(row.id).first();
   await env.INTAKE.batch([
     env.INTAKE.prepare(`INSERT OR IGNORE INTO intake
     (id,received_at,site,kind,name,email,phone,summary,payload,source,is_canary)
     VALUES (?,?,?,?,?,?,?,?,?,?,0)
     ON CONFLICT(id) DO UPDATE SET payload=excluded.payload,
       sheet_synced_at=CASE WHEN intake.payload<>excluded.payload THEN NULL ELSE intake.sheet_synced_at END`).bind(row.id,row.received_at,'adapttolife.org',kind,sub.name,sub.email,sub.phone||null,summary,JSON.stringify(details),sub.source||`adapttolife.org/${row.kind}`),
-    env.INTAKE.prepare("INSERT OR IGNORE INTO intake_delivery_claims(intake_id,state) VALUES (?,'pending')").bind(row.id)
+    // New contact requests have their own durable original-email owner. Do not
+    // also enqueue the old metadata-only notice. Other producers remain unchanged.
+    ...(original?[]:[env.INTAKE.prepare("INSERT OR IGNORE INTO intake_delivery_claims(intake_id,state) VALUES (?,'pending')").bind(row.id)])
   ]);
   const saved=await env.INTAKE.prepare('SELECT id FROM intake WHERE id=?').bind(row.id).first();
   if (!saved) throw Error('Intake mirror readback missing');
+  await reconcileOriginal(env,row.id);
   return row.id;
 }
 
@@ -74,13 +80,12 @@ export async function processForm(env,id) {
   const row=await db.prepare('SELECT * FROM form_submissions WHERE id=?').bind(id).first();
   if (!row) throw Error('Missing durable form');
   const sub=JSON.parse(row.payload);
-  // A slow CRM must not hold the correspondence receipt behind its API call.
-  for (const channel of ['receipt','clickup','intake']) {
+  async function deliver(channel) {
     // A conditional UPDATE is the cross-isolate lock. Running external sends
     // are NEVER blindly reclaimed: a crash may follow provider acceptance.
     const claim=await db.prepare("UPDATE form_deliveries SET state='running',attempts=attempts+1,started_at=?,error=NULL WHERE submission_id=? AND channel=? AND state='pending' RETURNING submission_id")
       .bind(now(),id,channel).first();
-    if (!claim) continue;
+    if (!claim) return;
     let externalStarted=false;
     try {
       let receipt;
@@ -113,6 +118,11 @@ export async function processForm(env,id) {
       await finish(db,id,channel,externalStarted?'review':'pending',null,String(e.message).slice(0,400));
     }
   }
+  // Start both correspondence paths independently. Mirror before CRM, then
+  // refresh the idempotent projection after a successful CRM receipt.
+  await Promise.allSettled([processOriginal(env,id),deliver('receipt'),(async()=>{
+    await deliver('intake'); await deliver('clickup'); await deliver('intake');
+  })()]);
 }
 
 export async function sweepForms(env) {
@@ -121,6 +131,6 @@ export async function sweepForms(env) {
   const cut=new Date(Date.now()-15*60e3).toISOString();
   await db.prepare("UPDATE form_deliveries SET state=CASE WHEN channel='intake' THEN 'pending' ELSE 'review' END,error='Interrupted delivery; inspect destination before retry' WHERE state='running' AND started_at<?").bind(cut).run();
   const rows=await db.prepare("SELECT DISTINCT submission_id FROM form_deliveries WHERE state='pending' ORDER BY submission_id LIMIT 25").all();
-  for(const row of rows.results||[]) await processForm(env,row.submission_id);
+  await Promise.allSettled([recoverOriginals(env),...(rows.results||[]).map(row=>processForm(env,row.submission_id))]);
   return {processed:(rows.results||[]).length};
 }

@@ -47,7 +47,7 @@ function env(sendStarted, sendFinished) {
         sendStarted.push(Date.now());
         await new Promise((r) => setTimeout(r, SLOW_MS));
         sendFinished.push(Date.now());
-        return {};
+        return {messageId:"offline-provider-"+sendFinished.length};
       },
     },
   };
@@ -88,7 +88,7 @@ test("the contact response does not wait for the receipt to send", async () => {
 
     // And it does still actually complete afterwards.
     await Promise.all(scheduled);
-    assert.equal(finished.length, 1, "the receipt still sends after the response");
+    assert.equal(finished.length, 2, "both independent correspondence sends run after the response");
   } finally {
     restore();
   }

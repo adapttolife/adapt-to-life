@@ -139,6 +139,10 @@
 
   sheet.addEventListener("close", function () {
     document.documentElement.classList.remove("sheet-open");
+    // Escape, the close button and a committed drag all land here. Whatever the
+    // route out, the next open must start from rest.
+    sheet.style.transform = "";
+    sheet.classList.remove("is-dragging", "is-settling");
     if (current) {
       var back = document.querySelector('[data-sponsor-tier="' + current.tier + '"]');
       if (back && back.focus) back.focus();
@@ -148,9 +152,86 @@
   // Clicking the backdrop. <dialog> reports backdrop clicks as clicks on the
   // dialog itself, so the test is "did this land on the element and not inside
   // its content", which is what the inner wrapper is for.
+  //
+  // BOTH ends of the gesture are checked, not just the click target. A `click`
+  // fires on the common ancestor of where the press began and where it ended, so
+  // a drag that starts inside the sheet and finishes anywhere else resolves to
+  // the dialog and used to dismiss the sheet mid-sentence — selecting text in
+  // the note field was enough. Measured on the deployed page 2026-09-12.
+  var pressedOnBackdrop = false;
+  sheet.addEventListener("pointerdown", function (e) { pressedOnBackdrop = e.target === sheet; });
   sheet.addEventListener("click", function (e) {
-    if (e.target === sheet) close();
+    if (e.target === sheet && pressedOnBackdrop) close();
+    pressedOnBackdrop = false;
   });
+
+  // DRAG THE SHEET DOWN TO DISMISS IT.
+  //
+  // The grab handle was drawing a promise the sheet did not keep. On a phone,
+  // flicking a bottom sheet away is the gesture people reach for first, and its
+  // absence is most of why the close button was carrying all the traffic and
+  // getting blamed for it — the corner of the screen is the furthest point from
+  // a thumb that is already resting near the bottom.
+  //
+  // Deliberately narrow: it arms ONLY from the grab strip, so it can never
+  // compete with scrolling the form, selecting text, or a stray downward swipe
+  // over the fields. Pointer events, so a trackpad drag on a small window works
+  // the same way. Phones only — on desktop this is a centred dialog with a
+  // cursor, and there is nothing to flick.
+  var grab = sheet.querySelector("[data-sheet-grab]");
+  if (grab && window.PointerEvent) {
+    var startY = 0, dy = 0, dragging = false, pid = null;
+    var CLOSE_AT = 90;      // px pulled down that commits to a dismiss
+    var FLICK = 0.55;       // or a fast flick, however short
+    var startedAt = 0;
+
+    function moveTo(y) { sheet.style.transform = y ? "translateY(" + y + "px)" : ""; }
+
+    function endDrag(commit) {
+      if (!dragging) return;
+      dragging = false;
+      sheet.classList.remove("is-dragging");
+      if (pid !== null && grab.releasePointerCapture) {
+        try { grab.releasePointerCapture(pid); } catch (err) { /* already gone */ }
+      }
+      pid = null;
+      if (commit) {
+        close();
+        // Cleared after the dialog is gone, so the next open starts square
+        // rather than animating up from wherever the last one was let go.
+        moveTo(0);
+        return;
+      }
+      // Not far enough: spring back, and take the transition off again once it
+      // lands so the next drag is direct.
+      sheet.classList.add("is-settling");
+      moveTo(0);
+      window.setTimeout(function () { sheet.classList.remove("is-settling"); }, 240);
+    }
+
+    grab.addEventListener("pointerdown", function (e) {
+      if (!window.matchMedia("(max-width: 640px)").matches) return;
+      dragging = true; startY = e.clientY; dy = 0; startedAt = Date.now(); pid = e.pointerId;
+      sheet.classList.add("is-dragging");
+      sheet.classList.remove("is-settling");
+      if (grab.setPointerCapture) { try { grab.setPointerCapture(e.pointerId); } catch (err) { /* no capture */ } }
+    });
+
+    grab.addEventListener("pointermove", function (e) {
+      if (!dragging) return;
+      dy = e.clientY - startY;
+      // Upward drag resists rather than lifting the sheet off the bottom edge:
+      // there is nothing above it to reveal, and a gap under a bottom sheet
+      // looks broken.
+      moveTo(dy > 0 ? dy : dy / 4);
+    });
+
+    grab.addEventListener("pointerup", function () {
+      var speed = dy / Math.max(Date.now() - startedAt, 1);
+      endDrag(dy > CLOSE_AT || (dy > 24 && speed > FLICK));
+    });
+    grab.addEventListener("pointercancel", function () { endDrag(false); });
+  }
   sheet.querySelectorAll("[data-sheet-close]").forEach(function (b) {
     b.addEventListener("click", close);
   });

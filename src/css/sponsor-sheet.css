@@ -108,7 +108,7 @@
  * over the sheet's rounded corner, where a tap previously did nothing at all. */
 .sheet-close{
   position:absolute; top:0.5rem; right:0.5rem; z-index:3;
-  width:44px; height:44px; display:grid; place-items:center;
+  width:44px; height:44px; padding:0; display:grid; place-items:center;
   border:none; border-radius:50%; cursor:pointer;
   /* GIVE IT A SURFACE. Alec reported it still hard to hit after the box went to
      44x44 with a 56px hit area — and a coordinate probe showed every tap inside
@@ -129,6 +129,8 @@
 /* The hit area runs 8px past the chip in every direction — 60x60 — so a thumb
    that lands beside the circle still closes the sheet. It paints nothing; it
    also reclaims the dead corner outside the sheet's border radius. */
+/* A symmetric SVG centers the visible mark, not a font baseline. */
+.sheet-close svg{ display:block; width:20px; height:20px; pointer-events:none; }
 .sheet-close::before{ content:""; position:absolute; inset:-8px; border-radius:50%; }
 .sheet-close:hover{ background:rgba(28,26,21,0.11); color:var(--ink); }
 /* Touch has no hover, so the pressed state is the ONLY feedback a thumb gets.

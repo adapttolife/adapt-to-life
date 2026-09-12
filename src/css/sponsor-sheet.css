@@ -64,12 +64,29 @@
 
 /* The grab handle is decoration on desktop and affordance on a phone: it is the
    universal "this panel came up from the bottom and can go back down" mark. */
+/* The grab handle. It was decoration; on a bottom sheet it is a promise, and the
+   sheet now keeps it — see the drag-to-dismiss handler in sponsor-sheet.js. It
+   sits inside a 44px-tall touch strip so the promise is reachable, while the bar
+   itself stays the same slim mark it always was. */
 .sheet-grip{ display:none; }
 @media (max-width:640px){
+  .sheet-grab{ display:block; height:30px; position:relative; touch-action:none; cursor:grab; }
+  .sheet-grab:active{ cursor:grabbing; }
   .sheet-grip{
-    display:block; width:38px; height:4px; border-radius:99px;
-    background:rgba(28,26,21,0.18); margin:0.7rem auto 0;
+    display:block; width:44px; height:5px; border-radius:99px;
+    background:rgba(28,26,21,0.22); margin:0.7rem auto 0;
+    transition:background-color .15s ease;
   }
+  .sheet-grab:active .sheet-grip{ background:rgba(28,26,21,0.38); }
+}
+@media (min-width:641px){ .sheet-grab{ display:none; } }
+
+/* While a finger is dragging the sheet, it follows exactly — no easing between
+   the finger and the surface, or it feels like lag rather than direct handling.
+   The release animates; the drag does not. */
+.sheet.is-dragging{ transition:none; }
+@media (prefers-reduced-motion: no-preference){
+  .sheet.is-settling{ transition:transform .22s cubic-bezier(.22,1,.36,1); }
 }
 
 /* The close control. Alec, 2026-09-12: "it's a little bit tough to click on...
@@ -90,19 +107,34 @@
  * 56x56, without painting anything. That overhang also reclaims the dead zone
  * over the sheet's rounded corner, where a tap previously did nothing at all. */
 .sheet-close{
-  position:absolute; top:0.5rem; right:0.5rem; z-index:2;
+  position:absolute; top:0.5rem; right:0.5rem; z-index:3;
   width:44px; height:44px; display:grid; place-items:center;
-  border:none; border-radius:50%; background:transparent;
-  color:var(--muted); font-size:1.5rem; line-height:1; cursor:pointer;
+  border:none; border-radius:50%; cursor:pointer;
+  /* GIVE IT A SURFACE. Alec reported it still hard to hit after the box went to
+     44x44 with a 56px hit area — and a coordinate probe showed every tap inside
+     that area DID register. So the problem was never the hit box: it was a thin
+     grey glyph floating on cream with no button under it. People aim at what
+     they can see, so an invisible 56px target gets aimed at like a 14px one, and
+     a near miss reads as "it did not work" rather than "I missed".
+     The chip is what the hand was looking for. */
+  background:rgba(28,26,21,0.06);
+  color:var(--ink-soft);
+  font-size:1.45rem; line-height:1;
   /* No 300ms tap delay and no double-tap zoom on a control this close to the
      edge; both read as "the button did not work". */
   touch-action:manipulation;
-  -webkit-tap-highlight-color:rgba(28,26,21,0.10);
+  -webkit-tap-highlight-color:transparent;
+  transition:background-color .12s ease, transform .12s ease;
 }
-.sheet-close::before{ content:""; position:absolute; inset:-6px; border-radius:50%; }
-.sheet-close:hover{ background:rgba(28,26,21,0.06); color:var(--ink); }
-/* A touch device gets the confirmation a hover state would otherwise give it. */
-.sheet-close:active{ background:rgba(28,26,21,0.10); color:var(--ink); }
+/* The hit area runs 8px past the chip in every direction — 60x60 — so a thumb
+   that lands beside the circle still closes the sheet. It paints nothing; it
+   also reclaims the dead corner outside the sheet's border radius. */
+.sheet-close::before{ content:""; position:absolute; inset:-8px; border-radius:50%; }
+.sheet-close:hover{ background:rgba(28,26,21,0.11); color:var(--ink); }
+/* Touch has no hover, so the pressed state is the ONLY feedback a thumb gets.
+   Unmistakable on purpose: darker, and it moves. */
+.sheet-close:active{ background:rgba(28,26,21,0.20); color:var(--ink); transform:scale(0.92); }
+.sheet-close:focus-visible{ outline:2px solid var(--orange); outline-offset:2px; }
 
 /* --- head: the tier, restated ------------------------------------------- */
 /* The one thing the old flow lost. Whatever they tapped is named and priced at

@@ -160,4 +160,35 @@ test("the close control meets the 44px touch-target floor", () => {
     "the hit area is extended past the visible box, so a near miss still closes");
   assert.ok(/touch-action:\s*manipulation/.test(rule[1]),
     "no tap delay or double-tap zoom on a control this close to the screen edge");
+
+  // Alec reported it STILL hard to hit at 44x44 with a 56px hit area, and a
+  // coordinate probe showed every tap inside that area did register. The hit box
+  // was never the problem: a thin grey glyph on cream reads as decoration, so an
+  // invisible 56px target gets aimed at like a 14px one. It needs a surface.
+  assert.ok(/background:\s*rgba\([^)]+\)/.test(rule[1]) && !/background:\s*transparent/.test(rule[1]),
+    "the close control paints a visible chip, so the target looks as big as it is");
+  assert.ok(/\.sheet-close:active\{[^}]*transform:\s*scale/.test(css),
+    "touch has no hover, so the pressed state must be unmistakable");
+});
+
+test("the sheet can be dismissed by dragging the handle down", () => {
+  // The grab handle was drawing a promise the sheet did not keep. Flicking a
+  // bottom sheet away is the gesture a thumb reaches for before it travels to
+  // the far corner of the screen.
+  assert.ok(html.includes("data-sheet-grab"), "there is a grab strip to drag from");
+  assert.ok(/grab\.addEventListener\("pointerdown"/.test(js), "the drag arms on the grab strip");
+  assert.ok(/grab\.addEventListener\("pointermove"/.test(js) && /grab\.addEventListener\("pointerup"/.test(js),
+    "and follows and releases");
+  assert.ok(/matchMedia\("\(max-width: 640px\)"\)/.test(js),
+    "phones only — a centred desktop dialog has nothing to flick");
+  assert.ok(/pointercancel/.test(js), "an interrupted drag springs back rather than sticking");
+});
+
+test("a drag that starts inside the sheet cannot dismiss it", () => {
+  // A `click` fires on the common ancestor of press and release, so a drag from
+  // inside the sheet to outside used to resolve to the dialog and close it —
+  // selecting text in the note field was enough. Both ends must be the backdrop.
+  assert.ok(/pressedOnBackdrop/.test(js), "the press target is remembered, not just the click target");
+  assert.ok(/e\.target === sheet && pressedOnBackdrop/.test(js),
+    "dismissal requires the gesture to begin AND end on the backdrop");
 });

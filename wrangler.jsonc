@@ -77,6 +77,7 @@
     // ATL actually reviews from; nothing writes to Airtable any more. Lists live in
     // Team Space -> Adapt To Life. The token is a secret:
     //   cfrun wrangler secret put CLICKUP_TOKEN
+    "BEEHIIV_PUBLICATION_ID": "pub_d1bfe66c-074f-464a-a94a-d0cce6d21943",
     "CLICKUP_APPLICATIONS_LIST_ID": "901418622126",
     "CLICKUP_CONTACTS_LIST_ID": "901418639884",
     "CLICKUP_VOLUNTEERS_LIST_ID": "901419920230",

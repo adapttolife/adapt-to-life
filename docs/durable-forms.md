@@ -64,7 +64,7 @@ from that same source. Verify exact live versions, binding identities, schedules
 public build/source fingerprints, the host sheet-sync service and debt meter.
 
 Before release: full `npm test`, `npm run typecheck`, the real isolated browser
-script `scripts/test-sponsor-browser.mjs` at phone/desktop sizes, and the host
+script `scripts/verify-sponsor-browser.mjs` at phone/desktop sizes, and the host
 sync/monitor tests. Browser simulation deliberately drops an accepted response,
 then resubmits the unchanged form and proves one record/task/receipt. It checks
 all sponsor tiers and preset checkout links without paying. Isolated tests use

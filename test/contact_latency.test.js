@@ -37,8 +37,9 @@ function stubFetch() {
 function env(sendStarted, sendFinished) {
   return {
     CLICKUP_TOKEN: "tok", CLICKUP_CONTACTS_LIST_ID: "901418639884",
-    // No TURNSTILE_SECRET_KEY, so verifyTurnstile fails open — this test is
-    // about latency, not the challenge.
+    // No TURNSTILE_SECRET_KEY; verifyTurnstile fails CLOSED unless a lane says
+    // so explicitly. This test is about latency, not the challenge.
+    TURNSTILE_MODE: "off",
     SEND_EMAIL: {
       async send() {
         sendStarted.push(Date.now());

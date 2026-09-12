@@ -186,7 +186,7 @@ test("a failed insert never reports success", async () => {
   const body = await res.json();
   assert.equal(body.ok, false);
   // It hands over an address that does not depend on this Worker.
-  assert.match(body.error, /hello@adaptbodyshop\.com/);
+  assert.match(body.error, /hello@adapttolife\.org/);
   assert.equal(sent.length, 0);
 });
 
@@ -223,14 +223,14 @@ test("the customer copy carries the promise and the shop copy replies to them", 
   const [customer, shop] = sent;
 
   assert.equal(customer.to, "dana@example.com");
-  assert.equal(customer.replyTo, "hello@adaptbodyshop.com");
+  assert.equal(customer.replyTo, "hello@adapttolife.org");
   assert.match(customer.subject, /order #1042/);
   assert.match(customer.text, new RegExp(REPLY_WINDOW));
   assert.match(customer.html, new RegExp(REPLY_WINDOW));
   // The customer must never see internal metadata.
   assert.doesNotMatch(customer.html, /Referral code/);
 
-  assert.equal(shop.to, "hello@adaptbodyshop.com");
+  assert.equal(shop.to, "hello@adapttolife.org");
   assert.match(shop.replyTo, /dana@example\.com/);
   assert.match(shop.subject, /^\[shop\]/);
   assert.match(shop.subject, /order #1042/);

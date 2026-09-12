@@ -134,12 +134,12 @@ export async function recordTransactionalFailure(env, route, toAddr, err) {
 // shirt money went somewhere" is the single most valuable thing this footer can
 // say and it is true.
 export const SHOP_NAME = "Adapt Body Shop";
-export const SHOP_INBOX = "hello@adaptbodyshop.com";
+export const SHOP_INBOX = "hello@adapttolife.org";
 // FROM stays on the onboarded apex (Alec, 2026-09-04). adaptbodyshop.com is a
 // Google Workspace alias domain but is NOT onboarded to Cloudflare Email
-// Sending, so a From: on it would leave here unsigned. Reply-To carries the
-// shop address, which is where the customer's answer should land. To flip the
-// From later: onboard the zone (cf-bounce MX + SPF + DKIM, the exact three
+// Sending, so a From: on it would leave here unsigned. Reply-To and internal
+// notifications use hello@adapttolife.org, the owner-selected organizational inbox.
+// To flip the From later: onboard the zone (cf-bounce MX + SPF + DKIM, the exact three
 // records adapttolife.org already has) and change this one line.
 export const SHOP_FROM = `Adapt Body Shop <${HOUSE_INBOX}>`;
 

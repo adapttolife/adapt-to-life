@@ -133,10 +133,10 @@
     { "binding": "AGENT_MAIL_BUCKET", "bucket_name": "agent-mail" }
   ],
   "d1_databases": [
-    { "binding": "WAIVERS_DB", "database_name": "atl-waivers", "database_id": "d34c2394-57f8-44ca-9089-c4569557dbb1" },
+    { "binding": "WAIVERS_DB", "database_name": "atl-waivers", "database_id": "a1050703-c625-4028-962b-49cc3fa317fd" },
     // Spec 32 agent email: threads/messages/inboxes (source of truth).
-    { "binding": "AGENT_MAIL_DB", "database_name": "agent-mail", "database_id": "8609089a-7d9c-4d46-a527-d7f00c5ca050" },
-    { "binding": "INTAKE", "database_name": "atl-intake", "database_id": "916e841e-50cc-4661-806a-865cd24fbb53" }
+    { "binding": "AGENT_MAIL_DB", "database_name": "agent-mail", "database_id": "a280a0e4-96db-4b39-a1fb-99f57b8d27be" },
+    { "binding": "INTAKE", "database_name": "atl-intake", "database_id": "5f9c4771-25ba-4e83-aadf-00bc698329bf" }
   ],
   // Outbound email via Cloudflare Email Sending (native binding, no API key). Used by
   // src/email.js cfSend for agent replies + waiver receipts. Sender domains

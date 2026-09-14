@@ -38,7 +38,7 @@
     { "binding": "AGENT_MAIL_BUCKET", "bucket_name": "agent-mail" }
   ],
   "d1_databases": [
-    { "binding": "AGENT_MAIL_DB", "database_name": "agent-mail", "database_id": "8609089a-7d9c-4d46-a527-d7f00c5ca050" }
+    { "binding": "AGENT_MAIL_DB", "database_name": "agent-mail", "database_id": "a280a0e4-96db-4b39-a1fb-99f57b8d27be" }
   ],
 
   // Required for /send and /reply. The sender remains each agent's registered

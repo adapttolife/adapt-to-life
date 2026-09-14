@@ -127,9 +127,8 @@
     "GIVEBUTTER_DONOR_CUTOFF": "2026-08-08T22:40:55Z",
     "OFFLINE_RAISED": "3004"
   },
-  // Signed-waiver storage: PDFs in R2, the signing record index in D1.
+  // Signed-waiver storage: archived to Google Drive, with the signing record in D1.
   "r2_buckets": [
-    { "binding": "WAIVERS_BUCKET", "bucket_name": "atl-waivers" },
     // Spec 32 agent email: raw .eml + attachments.
     { "binding": "AGENT_MAIL_BUCKET", "bucket_name": "agent-mail" }
   ],

@@ -137,28 +137,29 @@ export async function handleWaiver(request, env) {
   }
 
   const pdfSha = await sha256Hex(pdfBytes);
-  const r2Key = `waivers/${org}/${signedAt.slice(0, 10)}/${id}.pdf`;
+  let driveFileId = "";
+  let driveLink = "";
   try {
-    await env.WAIVERS_BUCKET.put(r2Key, pdfBytes, { httpMetadata: { contentType: "application/pdf" }, customMetadata: { org, email, version: doc.version, sha256: pdfSha } });
+    const uploaded = await uploadWaiverToDrive(env, { id, pdfBytes, org, email, docVersion: doc.version });
+    driveFileId = uploaded.drive_file_id || "";
+    driveLink = uploaded.drive_link || "";
   } catch (err) {
-    console.error("waiver R2 put failed:", err);
-    return json({ ok: false, error: "Could not save your document. Please try again." }, 502);
+    console.error("waiver Drive upload failed:", err);
   }
 
   try {
     await env.WAIVERS_DB.prepare(
       `INSERT INTO waivers
-       (id, org, waiver_version, signer_name, signer_email, signed_at, signature_type, signer_kind, minor_name, relationship, program, consent, ip, user_agent, country, region, city, doc_sha256, pdf_sha256, r2_key)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
-    ).bind(id, org, doc.version, name, email, signedAt, signatureType, isMinor ? "guardian" : "adult", minorName, relationship, program, 1, ip, ua, geo.country, geo.region, geo.city, docSha, pdfSha, r2Key).run();
+       (id, org, waiver_version, signer_name, signer_email, signed_at, signature_type, signer_kind, minor_name, relationship, program, consent, ip, user_agent, country, region, city, doc_sha256, pdf_sha256, drive_file_id, drive_link)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+    ).bind(id, org, doc.version, name, email, signedAt, signatureType, isMinor ? "guardian" : "adult", minorName, relationship, program, 1, ip, ua, geo.country, geo.region, geo.city, docSha, pdfSha, driveFileId, driveLink).run();
   } catch (err) {
     console.error("waiver D1 insert failed:", err);
   }
 
-  // The compliance record is D1 (index, above) + R2 (the signed PDF) + the Google
-  // Shared Drive archive (filed by the cron below). There is deliberately no
-  // fourth mirror: a signed release is a record to retrieve, not a task to work,
-  // so it does not belong in ClickUp either.
+  // The compliance record is D1 (index, above) + the Google Shared Drive archive.
+  // There is deliberately no fourth mirror: a signed release is a record to retrieve,
+  // not a task to work, so it does not belong in ClickUp either.
 
   // Email a copy of the signed PDF to the signer (and the org), from hello@adapttolife.org.
   // Best-effort; never blocks the signer. Sent via the SEND_EMAIL binding.
@@ -193,24 +194,29 @@ export async function handleWaiver(request, env) {
 export async function handleWaiverDownload(request, env, id) {
   if (!isUuid(id)) return new Response("Not found", { status: 404 });
   let row;
-  try { row = await env.WAIVERS_DB.prepare("SELECT r2_key FROM waivers WHERE id = ?").bind(id).first(); }
+  try { row = await env.WAIVERS_DB.prepare("SELECT drive_link, drive_file_id FROM waivers WHERE id = ?").bind(id).first(); }
   catch (err) { console.error("waiver lookup failed:", err); return new Response("Error", { status: 500 }); }
-  if (!row) return new Response("Not found", { status: 404 });
-  const obj = await env.WAIVERS_BUCKET.get(row.r2_key);
-  if (!obj) return new Response("Not found", { status: 404 });
-  return new Response(obj.body, { headers: { "Content-Type": "application/pdf", "Content-Disposition": `inline; filename="release-${id.slice(0, 8)}.pdf"`, "Cache-Control": "private, no-store" } });
+  if (!row || (!row.drive_link && !row.drive_file_id)) return new Response("Not found", { status: 404 });
+  const target = row.drive_link || `https://drive.google.com/file/d/${row.drive_file_id}/view`;
+  return Response.redirect(target, 302);
 }
 
 export async function handleWaiverVerify(request, env, id) {
   if (!isUuid(id)) return json({ ok: false, error: "Not found" }, 404);
   let row;
   try {
-    row = await env.WAIVERS_DB.prepare("SELECT signer_name, signer_email, signed_at, waiver_version, pdf_sha256, doc_sha256, r2_key, country, region, city FROM waivers WHERE id = ?").bind(id).first();
+    row = await env.WAIVERS_DB.prepare("SELECT signer_name, signer_email, signed_at, waiver_version, pdf_sha256, doc_sha256, drive_file_id, country, region, city FROM waivers WHERE id = ?").bind(id).first();
   } catch { return json({ ok: false, error: "Lookup failed" }, 500); }
   if (!row) return json({ ok: false, error: "No such document" }, 404);
-  const obj = await env.WAIVERS_BUCKET.get(row.r2_key);
-  if (!obj) return json({ ok: false, error: "Document file missing" }, 404);
-  const current = await sha256Hex(new Uint8Array(await obj.arrayBuffer()));
+  if (!row.drive_file_id) return json({ ok: false, error: "Document file missing" }, 404);
+  let bytes;
+  try {
+    bytes = await fetchDrivePdf(env, row.drive_file_id);
+  } catch (err) {
+    console.error("waiver drive fetch failed:", err);
+    return json({ ok: false, error: "Document file missing" }, 404);
+  }
+  const current = await sha256Hex(bytes);
   return json({
     ok: true, document_id: id, intact: current === row.pdf_sha256,
     signer: { name: row.signer_name, email: row.signer_email }, signed_at: row.signed_at,
@@ -378,38 +384,35 @@ function bytesToB64(bytes) {
 }
 
 // ---------------------------------------------------------------------------
-// Google Drive archive (compliance backlog). Runs on a cron: any signed release
-// not yet in Drive gets uploaded to the Shared Drive, and its Drive File ID +
-// link are written back to D1. Off the signing hot path, so
-// a Drive hiccup never blocks a signer. Files land in a Shared Drive (owned by the
-// drive, not the service account), which is why uploads succeed.
+// Google Drive archive (compliance archive). Signed releases are uploaded directly
+// to the Shared Drive at signing time, so there is no R2 mirror to reconcile later.
+// The cron remains in place for the overall workflow, but it no longer tries to
+// rehydrate PDFs from a bucket that no longer exists.
 // ---------------------------------------------------------------------------
 export async function runDriveBacklog(env) {
   if (!env.GOOGLE_SA_JSON || !env.WAIVERS_DRIVE_ID) { console.error("Drive backlog not configured"); return; }
-  let rows;
-  try {
-    rows = (await env.WAIVERS_DB.prepare(
-      "SELECT id, org, r2_key FROM waivers WHERE drive_file_id IS NULL OR drive_file_id = '' ORDER BY created_at ASC LIMIT 10"
-    ).all()).results || [];
-  } catch (err) { console.error("Drive backlog D1 query failed:", err); return; }
-  if (!rows.length) return;
+  // No R2 copy remains, so there is nothing this backfill can recover without
+  // the original PDF bytes. New signature records upload to Drive immediately;
+  // older rows are not restorable from D1 alone.
+  return;
+}
 
-  let token;
-  try { token = await getGoogleAccessToken(env); }
-  catch (err) { console.error("Drive backlog token mint failed:", err); return; }
+async function uploadWaiverToDrive(env, { id, pdfBytes, org, email, docVersion }) {
+  if (!env.GOOGLE_SA_JSON || !env.WAIVERS_DRIVE_ID) return { drive_file_id: "", drive_link: "" };
+  const token = await getGoogleAccessToken(env);
+  const file = await driveUpload(token, env.WAIVERS_DRIVE_ID, `release-${id}.pdf`, pdfBytes);
+  const link = file.webViewLink || `https://drive.google.com/file/d/${file.id}/view`;
+  return { drive_file_id: file.id || "", drive_link: link };
+}
 
-  for (const row of rows) {
-    try {
-      const obj = await env.WAIVERS_BUCKET.get(row.r2_key);
-      if (!obj) { console.error("Drive backlog: R2 object missing", row.r2_key); continue; }
-      const bytes = new Uint8Array(await obj.arrayBuffer());
-      const file = await driveUpload(token, env.WAIVERS_DRIVE_ID, `release-${row.id}.pdf`, bytes);
-      const link = file.webViewLink || `https://drive.google.com/file/d/${file.id}/view`;
-      await env.WAIVERS_DB.prepare("UPDATE waivers SET drive_file_id = ?, drive_link = ? WHERE id = ?").bind(file.id, link, row.id).run();
-    } catch (err) {
-      console.error("Drive backlog: failed for", row.id, err);
-    }
-  }
+async function fetchDrivePdf(env, fileId) {
+  if (!fileId) throw new Error("missing drive file id");
+  const token = await getGoogleAccessToken(env);
+  const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error(`drive media fetch ${res.status}: ${await res.text().catch(() => "")}`);
+  return new Uint8Array(await res.arrayBuffer());
 }
 
 async function driveUpload(token, driveId, filename, bytes) {

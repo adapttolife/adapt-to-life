@@ -1,6 +1,6 @@
--- Signed-release record index + audit trail. The signed PDF lives in R2 (key =
--- r2_key); this table is the queryable, tamper-checkable log of who signed what,
--- when, from where, and how. No real rows exist yet, so this is the full schema.
+-- Signed-release record index + audit trail. The signed PDF lives in Google Drive;
+-- this table is the queryable, tamper-checkable log of who signed what, when,
+-- from where, and how. No real rows exist yet, so this is the full schema.
 DROP TABLE IF EXISTS waivers;
 CREATE TABLE waivers (
   id              TEXT PRIMARY KEY,        -- uuid, also the unguessable download token
@@ -22,7 +22,8 @@ CREATE TABLE waivers (
   city            TEXT,
   doc_sha256      TEXT,                    -- hash of the exact text agreed to
   pdf_sha256      TEXT,                    -- hash of the stored PDF (tamper-evidence)
-  r2_key          TEXT NOT NULL,
+  drive_file_id   TEXT,
+  drive_link      TEXT,
   created_at      TEXT NOT NULL DEFAULT (datetime('now'))
 );
 CREATE INDEX idx_waivers_email ON waivers(signer_email);

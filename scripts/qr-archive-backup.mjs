@@ -23,7 +23,7 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 
-const DRIVE_ID = '0AIG-pWrds0g7Uk9PVA';       // shared drive "Adapt To Life"
+const DRIVE_ID = '1NAW-FAeJKJnGgmMgzgRGS78CxE5WYo-p';       // shared drive "Adapt To Life"
 const TRAIL = ['Marketing', 'QR codes'];
 
 const argv = process.argv.slice(2);

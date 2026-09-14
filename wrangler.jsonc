@@ -93,7 +93,7 @@
     // Alec's PERSONAL Drive and the service account reaches it only because the
     // file is shared with it as an editor — Shared Drive membership buys nothing
     // there. See src/google.js.
-    "WAIVERS_DRIVE_ID": "0AIG-pWrds0g7Uk9PVA",
+    "WAIVERS_DRIVE_ID": "1NAW-FAeJKJnGgmMgzgRGS78CxE5WYo-p",
     // POST /api/shop-contact is the Adapt Body Shop storefront's contact form
     // (a separate Worker with no database and no mail binding). The shared
     // secret both Workers hold is SHOP_CONTACT_KEY, a secret and never a var:

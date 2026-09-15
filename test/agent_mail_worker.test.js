@@ -144,8 +144,16 @@ test("handleEmail archives and records before forwarding Stingel mail", async ()
   };
   const env = {
     AGENT_MAIL_DB: db,
-    AGENT_MAIL_BUCKET: {
-      async put() { events.push("archive"); },
+    R2_ACCESS_KEY_ID: "test-access-key",
+    R2_SECRET_ACCESS_KEY: "test-secret-key",
+    AGENT_MAIL_S3_CLIENT: {
+      async send(command) {
+        assert.equal(command.input.Bucket, "agent-mail");
+        assert.match(command.input.Key, /^raw\/stingel@alectranel\.com\//);
+        assert.equal(command.input.ContentType, "message/rfc822");
+        assert.equal(command.input.Metadata.inbox, "stingel@alectranel.com");
+        events.push("archive");
+      },
     },
   };
 

@@ -35,7 +35,6 @@ const atl = parseJsonc(read("wrangler.jsonc"));
 const pkg = JSON.parse(read("package.json"));
 
 const expectedD1 = atl.d1_databases.find((b) => b.binding === "AGENT_MAIL_DB");
-const expectedR2 = atl.r2_buckets.find((b) => b.binding === "AGENT_MAIL_BUCKET");
 
 // Config establishes the edge boundary. Access protects only the custom domain;
 // alternate Worker hostnames would bypass it.
@@ -50,7 +49,7 @@ test("agent-mail is a distinct Worker on its private custom domain only", () => 
 
 test("agent-mail holds its mail stores, outbound binding, and lifecycle consumer", () => {
   assert.deepEqual(agentMail.d1_databases, [expectedD1]);
-  assert.deepEqual(agentMail.r2_buckets, [expectedR2]);
+  assert.equal(agentMail.r2_buckets, undefined);
   assert.deepEqual(agentMail.send_email, [{ name: "SEND_EMAIL" }]);
   assert.deepEqual(agentMail.queues, { consumers: [{
     queue: "agent-mail-email-events",

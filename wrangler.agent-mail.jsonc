@@ -33,10 +33,8 @@
     "REPORT_LINK_BASE": "https://reports.amelioration.is"
   },
 
-  // One source of truth: these are the existing agent-mail stores, not copies.
-  "r2_buckets": [
-    { "binding": "AGENT_MAIL_BUCKET", "bucket_name": "agent-mail" }
-  ],
+  // Agent-mail R2 lives in another Cloudflare account. R2_ACCESS_KEY_ID and
+  // R2_SECRET_ACCESS_KEY are Worker secrets used by the S3-compatible client.
   "d1_databases": [
     { "binding": "AGENT_MAIL_DB", "database_name": "agent-mail", "database_id": "a280a0e4-96db-4b39-a1fb-99f57b8d27be" }
   ],
@@ -60,4 +58,5 @@
 
   // Worker secrets, set out-of-band and never committed:
   //   AGENT_MAIL_TOKEN  MAIL_BELL_SECRETS  REPORT_LINK_SECRET
+  //   R2_ACCESS_KEY_ID  R2_SECRET_ACCESS_KEY
 }

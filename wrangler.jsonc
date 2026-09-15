@@ -128,10 +128,6 @@
     "OFFLINE_RAISED": "3004"
   },
   // Signed-waiver storage: archived to Google Drive, with the signing record in D1.
-  "r2_buckets": [
-    // Spec 32 agent email: raw .eml + attachments.
-    { "binding": "AGENT_MAIL_BUCKET", "bucket_name": "agent-mail" }
-  ],
   "d1_databases": [
     { "binding": "WAIVERS_DB", "database_name": "atl-waivers", "database_id": "a1050703-c625-4028-962b-49cc3fa317fd" },
     // Spec 32 agent email: threads/messages/inboxes (source of truth).

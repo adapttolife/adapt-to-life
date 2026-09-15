@@ -4,11 +4,49 @@
 //   handleEmail(message, env, ctx)      Cloudflare Email Worker — inbound mail for *@agents.adapttolife.org
 //   handleAgentMailApi(request, env, url) authenticated HTTP API the agentos MCP calls
 //
-// Source of truth: D1 (env.AGENT_MAIL_DB) for threads/messages; R2 (env.AGENT_MAIL_BUCKET) for raw .eml.
+// Source of truth: D1 (env.AGENT_MAIL_DB) for threads/messages; S3-compatible R2 for raw .eml.
 // That is the whole record — there is no mirror. Humans read threads through the
 // API and the reports viewer. Outbound via Cloudflare Email Sending (src/email.js cfSend).
 
+const AGENT_MAIL_BUCKET = "agent-mail";
+const AGENT_MAIL_R2_ENDPOINT = "https://af37fa2a6ec0470579368cff4bd5bee7.r2.cloudflarestorage.com";
+
+function agentMailS3(env) {
+  return env.AGENT_MAIL_S3_CLIENT || new S3Client({
+    region: "auto",
+    endpoint: AGENT_MAIL_R2_ENDPOINT,
+    credentials: {
+      accessKeyId: env.R2_ACCESS_KEY_ID,
+      secretAccessKey: env.R2_SECRET_ACCESS_KEY,
+    },
+  });
+}
+
+async function putRawMessage(env, key, body, metadata) {
+  await agentMailS3(env).send(new PutObjectCommand({
+    Bucket: AGENT_MAIL_BUCKET,
+    Key: key,
+    Body: body,
+    ContentType: "message/rfc822",
+    Metadata: metadata,
+  }));
+}
+
+async function getRawMessage(env, key) {
+  try {
+    const response = await agentMailS3(env).send(new GetObjectCommand({
+      Bucket: AGENT_MAIL_BUCKET,
+      Key: key,
+    }));
+    return response.Body ? new Uint8Array(await response.Body.transformToByteArray()) : null;
+  } catch (error) {
+    if (error?.$metadata?.httpStatusCode === 404 || error?.name === "NoSuchKey") return null;
+    throw error;
+  }
+}
+
 import PostalMime from "postal-mime";
+import { GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { cfSend } from "./email.js";
 import { resolveMarkdownBody } from "./md_render.js";
 import { renderMarkdownChartPngs } from "./chart_png.js";
@@ -215,10 +253,7 @@ export async function handleEmail(message, env, ctx) {
 
   // Archive the raw message + attachments in R2; D1 stores the pointer.
   const r2Key = `raw/${inbox}/${isoDay()}/${crypto.randomUUID()}.eml`;
-  await env.AGENT_MAIL_BUCKET.put(r2Key, rawBuf, {
-    httpMetadata: { contentType: "message/rfc822" },
-    customMetadata: { inbox, from: fromAddr, message_id: messageId || "" },
-  });
+  await putRawMessage(env, r2Key, rawBuf, { inbox, from: fromAddr, message_id: messageId || "" });
 
   const db = env.AGENT_MAIL_DB;
   const thread = await findOrCreateThread(db, { inbox, fromAddr, subject, inReplyTo });
@@ -680,9 +715,9 @@ async function apiAttachments(env, messageId, caller) {
   if (thread && !(await callerOwnsThread(env, caller, thread))) return forbidden();
   if (!msg.r2_key) return jsonResp({ outcome: "error", error: "message has no archived raw copy (outbound message?)" }, 404);
 
-  const obj = await env.AGENT_MAIL_BUCKET.get(msg.r2_key);
-  if (!obj) return jsonResp({ outcome: "error", error: "raw message missing from R2 archive" }, 404);
-  const parsed = await PostalMime.parse(await obj.arrayBuffer());
+  const rawMessage = await getRawMessage(env, msg.r2_key);
+  if (!rawMessage) return jsonResp({ outcome: "error", error: "raw message missing from R2 archive" }, 404);
+  const parsed = await PostalMime.parse(rawMessage);
 
   let total = 0;
   const attachments = [];

@@ -24,7 +24,7 @@
 import { chromium } from "/home/agentos/pw/node_modules/playwright/index.mjs";
 import { PAGE_TIERS } from "./lib/page-header.mjs";
 
-const BASE = process.env.SITE_URL || "https://adapt-to-life-staging.alec-af3.workers.dev";
+const BASE = process.env.SITE_URL || "https://adapt-to-life-staging.adapt-to-life.workers.dev";
 // The ceilings from --pg-h-*, as resolved at each viewport. Kept here in px so
 // this file fails loudly if somebody changes the CSS and not the rule.
 const CEIL = { lg: 720, md: 600, sm: 480, give: 900 };

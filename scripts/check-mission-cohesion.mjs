@@ -3,7 +3,7 @@ import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
 import {mkdirSync,writeFileSync} from 'node:fs';
 const base=process.argv[2],out=process.argv[3];
-assert.ok(base==='http://localhost:8787'||base==='https://adapt-to-life-staging.alec-af3.workers.dev');
+assert.ok(base==='http://localhost:8787'||base==='https://adapt-to-life-staging.adapt-to-life.workers.dev');
 mkdirSync(out,{recursive:true});
 const browser=await chromium.launch({executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH||undefined});
 const results=[];

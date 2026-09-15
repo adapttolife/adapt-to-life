@@ -118,8 +118,8 @@ test("sign.adapttolife.org does not redirect report paths", async () => {
 
 test("staging and workers.dev hosts do not redirect", async () => {
   for (const host of [
-    "adapt-to-life-staging.alec-af3.workers.dev",
-    "adapt-to-life.alec-af3.workers.dev",
+    "adapt-to-life-staging.adapt-to-life.workers.dev",
+    "adapt-to-life.adapt-to-life.workers.dev",
     "localhost:8787",
   ]) {
     const res = await fetchUrl(`https://${host}/r/garbage`);
@@ -208,8 +208,8 @@ function servingEnv(queries, extra = {}) {
 // Every hostname this Worker answers on that Access does not cover.
 const UNPROTECTED_HOSTS = [
   "sign.adapttolife.org",
-  "adapt-to-life.alec-af3.workers.dev",
-  "adapt-to-life-staging.alec-af3.workers.dev",
+  "adapt-to-life.adapt-to-life.workers.dev",
+  "adapt-to-life-staging.adapt-to-life.workers.dev",
   "localhost:8787",
 ];
 
@@ -243,7 +243,7 @@ test("the fail-closed 404 is the generic one: no-store, noindex, nothing to fing
   const token = await makeReportToken(SECRET, MSG_ID);
   for (const url of [
     `https://sign.adapttolife.org/r/${token}`,
-    `https://adapt-to-life.alec-af3.workers.dev/lib/anything`,
+    `https://adapt-to-life.adapt-to-life.workers.dev/lib/anything`,
   ]) {
     const res = await fetchUrl(url, {}, servingEnv([]));
     assert.equal(res.status, 404);

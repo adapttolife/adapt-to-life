@@ -105,7 +105,7 @@ the review link handed over served a month-old card.
 
 ```sh
 npm run preview
-# → Version Preview URL: https://<version-prefix>-adapt-to-life-staging.alec-af3.workers.dev
+# → Version Preview URL: https://<version-prefix>-adapt-to-life-staging.adapt-to-life.workers.dev
 ```
 
 That URL is yours alone, it is a full working copy of the site, and it does not change what
@@ -117,7 +117,7 @@ bindings, no cron, so it can never touch prod ClickUp/D1/R2/email):
 
 ```sh
 npm run deploy:staging
-# → https://adapt-to-life-staging.alec-af3.workers.dev
+# → https://adapt-to-life-staging.adapt-to-life.workers.dev
 ```
 
 Every wrangler invocation stamps `public/build.txt` through the `build` hook in `wrangler.jsonc`,

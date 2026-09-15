@@ -33,7 +33,7 @@ import { readFileSync } from "node:fs";
 import { execSync } from "node:child_process";
 import { ROLES } from "../data/volunteer-roles.mjs";
 
-const BASE = process.argv[2] || "https://adapt-to-life-staging.alec-af3.workers.dev";
+const BASE = process.argv[2] || "https://adapt-to-life-staging.adapt-to-life.workers.dev";
 const IS_STAGING = BASE.includes("staging");
 // Every role page is part of a whole-site copy release. Exercise all of them,
 // not only template samples, so long role-specific wording cannot slip through.

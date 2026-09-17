@@ -1,3 +1,4 @@
+import { mailConfigured } from './mail-transport.js';
 // Durable acceptance, independent delivery steps, one scheduled recovery owner.
 // No marketing enrollment. Raw application detail never enters shared intake.
 import {queueOriginal,processOriginal,recoverOriginals,reconcileOriginal} from './form-records.js';
@@ -101,7 +102,7 @@ export async function processForm(env,id) {
         }
         receipt=JSON.stringify({id:result.id,url:result.url});
       } else {
-        if (!env.SEND_EMAIL) throw Error('Receipt mail binding missing');
+        if (!mailConfigured(env)) throw Error('Receipt mail binding missing');
         externalStarted=true;
         const sent=await receipts[row.kind]({...env,INTAKE_SEPARATE_NOTIFICATION:true,
           INTAKE_SUBMISSION_ID:id,INTAKE_CAPTURE_RECEIPT:true},sub);

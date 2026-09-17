@@ -1,3 +1,4 @@
+import { mailConfigured } from './mail-transport.js';
 // Adapt Body Shop contact form — the server half.
 //
 // The shop is a headless Hydrogen storefront on its own Worker
@@ -285,7 +286,7 @@ async function notifyShop(env, row) {
 // fleet watchdog already pages on, and stays quiet where staging has no binding.
 async function send(env, msg, label) {
   try {
-    if (!env.SEND_EMAIL) {
+    if (!mailConfigured(env)) {
       console.log(`${label}: SEND_EMAIL not bound, skipping`);
       return false;
     }

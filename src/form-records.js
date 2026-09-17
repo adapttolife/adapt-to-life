@@ -1,3 +1,4 @@
+import { mailConfigured } from './mail-transport.js';
 // Independent internal correspondence for contact/sponsor forms only.
 // No historical backfill; no customer resend; no grant/volunteer audience expansion.
 import {cfSend,HOUSE_FROM,HOUSE_INBOX,esc,houseShell} from './email.js';
@@ -22,7 +23,7 @@ export async function processOriginal(env,id) {
     if(!row||row.kind!=='contact')throw Error('Original-record scope mismatch');
     if(!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id))throw Error('Invalid case reference');
     const sub=JSON.parse(row.payload);
-    if(!env.SEND_EMAIL)throw Error('Original-record mail binding missing');
+    if(!mailConfigured(env))throw Error('Original-record mail binding missing');
     // Whitelist accepted contact fields, never forward challenge tokens or raw extras.
     const fields={Reference:id,Received:row.received_at,Name:sub.name,Email:sub.email,Phone:sub.phone,Type:sub.type,Source:sub.source,Tier:sub.tier,Amount:sub.amount};
     const sponsor=sub.type==='Giving or sponsoring';
@@ -37,7 +38,7 @@ export async function processOriginal(env,id) {
       headers:{'Auto-Submitted':'auto-generated','X-ATL-Form':'contact','X-ATL-Record':'original-request','X-ATL-Intake-ID':id}});
     if(typeof result.messageId!=='string'||!result.messageId.trim())throw Error('Original-record acceptance uncertain: missing provider ID');
     await db.prepare("UPDATE form_record_deliveries SET state='done',completed_at=?,receipt=?,error=NULL WHERE submission_id=? AND state='running'")
-      .bind(now(),JSON.stringify({messageId:result.messageId,provider:'cloudflare',status:'accepted',to:HOUSE_INBOX}),id).run();
+      .bind(now(),JSON.stringify({messageId:result.messageId,provider:result.provider || 'cloudflare',status:'accepted',to:HOUSE_INBOX}),id).run();
   }catch(e){
     await db.prepare("UPDATE form_record_deliveries SET state=?,error=? WHERE submission_id=? AND state='running'")
       .bind(externalStarted?'review':'pending',String(e.message).slice(0,400),id).run();

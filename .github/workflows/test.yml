@@ -2,6 +2,7 @@ name: Test ATL changes
 on:
   pull_request:
     branches: [staging, main]
+    types: [opened, synchronize, reopened, edited, ready_for_review]
   push:
     branches: [staging]
 permissions:
@@ -33,6 +34,7 @@ jobs:
         with:
           node-version: '26.5.1'
       - run: npm ci --ignore-scripts
+      - run: npm run css
       - run: node --test
 # No deployment job, runtime secrets, remote D1 writes or production permissions.
 # Required-check enforcement depends on separately configured repository protections.

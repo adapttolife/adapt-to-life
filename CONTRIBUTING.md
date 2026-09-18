@@ -19,6 +19,6 @@ git merge-base --is-ancestor origin/staging HEAD
 
 The read-only test workflow checks PR routing, staging ancestry and the full suite. It has no deployment job or runtime secrets. GitHub reports that this private repository's current plan does not support branch protection/rulesets: these checks are not a guaranteed merge lock. Do not change visibility or purchase a plan to hide that limitation.
 
-Existing Cloudflare Builds upload non-main versions; only main triggers production deployment. Generated versions may inherit production bindings: they are not isolated test sandboxes. Keep production-backed preview URLs disabled and verify active deployment versions after publishing.
+ATL Cloudflare Builds validate non-main branches with the app build, CSS generation and tests only; they no longer attempt production-config version uploads. The guarded main release trigger is unchanged. Previously generated versions can inherit production bindings: they are not isolated test sandboxes. Keep production-backed preview URLs disabled and verify active deployment versions after publishing.
 
 Do not commit credentials, `.env`, vault output, customer fixtures or local bundle-check configs. Preserve actual provider receipts separately from mocked tests; a successful build is not live form-delivery acceptance.

@@ -1,6 +1,6 @@
 # Contributing
 
-ATL and ASNM use the same integration method, authorized by Alec and following Faisal's staging workflow.
+ATL, ASNM and Adapt Body Shop's Hydrogen storefront use the same standing integration method, authorized by Alec and following Faisal's staging workflow. Agents consume the existing shared `Tranel-Labs/agentos:skills/github-publication-review/SKILL.md`; its source promotion is proposed in [AgentOS #742](https://github.com/Tranel-Labs/agentos/pull/742), not yet a claim of merged/runtime adoption. Do not create per-bot variants.
 
 1. Fetch origin and start every feature/fix branch from current `origin/staging`, not main.
 2. Open the feature/fix PR **into staging**. Keep one current review for a repair in this repository; link a companion in another repo when relevant.

@@ -12,10 +12,6 @@
 // tampered token gets. That is the point: a prober cannot tell a wrong token
 // from a route that does not exist here, and cannot enumerate what this Worker
 // is by watching which paths answer differently.
-//
-// Deployed from wrangler.reports.jsonc with workers_dev and preview_urls off,
-// so the custom domain (and the Cloudflare Access policy in front of it) is the
-// only way in.
 
 import { handleReportView, handleLibraryView, notFound } from "./report_view.js";
 

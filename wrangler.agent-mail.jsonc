@@ -15,8 +15,8 @@
 
   // Access protects only the custom domain. Either alternate hostname would be
   // a direct bypass to the same Worker, so both remain off in every deployment.
-  "workers_dev": false,
-  "preview_urls": false,
+  "workers_dev": true,
+  "preview_urls": true,
 
   "observability": {
     "enabled": true

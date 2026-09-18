@@ -1,8 +1,8 @@
 # Gmail site-mail candidate
 
-Current cross-repository review: [ASNM PR #25](https://github.com/adapttolife/adaptivesportsnearme/pull/25). Alec requested one current review rather than another repair PR. This branch remains separate source; the ASNM PR cannot merge ATL code.
+Coordinated staging reviews: [ATL #135](https://github.com/adapttolife/adapt-to-life/pull/135) and [ASNM #25](https://github.com/adapttolife/adaptivesportsnearme/pull/25). Alec authorized standardizing both repositories on feature branches from staging, PRs into staging, and separately reviewed staging-to-main releases. ATL staging was initialized from main at `b0d4b7260f3faa0bc132734b39e12e4189890b04`, also the existing repair base; full staging ancestry is verified without rewriting code history. The PRs are parallel companions, not a Git stack; neither imports the other.
 
-This branch prepares Gmail sending for the existing site-mail paths. It is not deployed; dedicated runtime credentials have now been provisioned separately as documented below. The repository has no git branch named `staging`; the existing Wrangler `env.staging` is a separate, front-end-only Worker. Do not create a git branch or modify the integration process to hide that distinction. Confirm the intended review base with the project lead before opening/merging a release PR.
+This branch prepares Gmail sending for the existing site-mail paths. It is not deployed; dedicated runtime credentials have now been provisioned separately as documented below. Git `staging` now exists. The existing Wrangler `env.staging` remains a separate, front-end-only Worker; creating a Git branch does not provision backend staging or prove Gmail form delivery. See CONTRIBUTING.md for the shared integration standard.
 
 ## Scope
 
@@ -39,7 +39,7 @@ Automated tests use explicit local fixtures: one token refresh + one send, no cr
 
 ## Release acceptance
 
-1. Resolve the correct integration base/review process and review the exact candidate.
+1. Review the exact candidate into staging; obtain separate approval for the staging-to-main release.
 2. Preserve the now-provisioned, verified dedicated sender secrets when uploading reviewed source; confirm Google app audience/publishing policy and explicit sender/transport variables.
 3. Inspect current delivery debt before activating Gmail. Preserve captured forms and original content; do not auto-replay ambiguous historical claims.
 4. Use explicitly approved recipient-controlled checks for contact, waiver attachment, donation and ASNM welcome/notification. Verify both provider acceptance ID and actual recipient receipt; check BCC/Reply-To and privacy boundaries.

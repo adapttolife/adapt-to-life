@@ -1,3 +1,4 @@
+import { mailConfigured } from "./mail-transport.js";
 // Submission receipts — the contact form and the grant application.
 //
 // Why this exists: for weeks neither form sent anything. A message or a grant
@@ -45,7 +46,7 @@ const grantsInbox = (env) => env.GRANTS_INBOX || HOUSE_INBOX;
 
 async function send(env, msg, label) {
   try {
-    if (!env.SEND_EMAIL) {
+    if (!mailConfigured(env)) {
       // Staging has no send_email binding by design, so this is the normal path
       // there and must stay quiet rather than look like a fault. Deliberately
       // NOT recorded as a failure: staging is supposed to look like this, and a
@@ -70,7 +71,7 @@ async function send(env, msg, label) {
       if (typeof result?.messageId !== 'string' || !result.messageId.trim()) {
         throw Error('Email send returned no provider identifier; verify before retry');
       }
-      return {messageId:result.messageId, status:'accepted', provider:'cloudflare',
+      return {messageId:result.messageId, status:'accepted', provider:result.provider || 'cloudflare',
         to:msg.to, bcc:msg.bcc||null};
     }
     return true;

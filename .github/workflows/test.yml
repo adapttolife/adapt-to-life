@@ -1,0 +1,40 @@
+name: Test ATL changes
+on:
+  pull_request:
+    branches: [staging, main]
+    types: [opened, synchronize, reopened, edited, ready_for_review]
+  push:
+    branches: [staging]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Verify staging review route and ancestry
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          THIS_REPO: ${{ github.repository }}
+        run: |
+          if [ "$BASE_REF" = main ]; then
+            test "$HEAD_REF" = staging && test "$HEAD_REPO" = "$THIS_REPO" || {
+              printf '%s\n' 'Only a separately reviewed staging-to-main release may target main.'
+              exit 1
+            }
+          fi
+          git merge-base --is-ancestor origin/staging HEAD
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '26.5.1'
+      - run: npm ci --ignore-scripts
+      - run: npm run css
+      - run: node --test
+# No deployment job, runtime secrets, remote D1 writes or production permissions.
+# Required-check enforcement depends on separately configured repository protections.

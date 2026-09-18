@@ -1,3 +1,4 @@
+import { mailConfigured, sendMail } from './mail-transport.js';
 // Intake — every form submission across every Adapt To Life property lands here,
 // and Alec gets an email about it.
 //
@@ -123,13 +124,13 @@ export async function notifyIntakeRow(env, row) {
   // Only upgraded producers create a claim, atomically with the record. An old
   // unclaimed row may already have sent mail before losing its stamp; alert on
   // that debt rather than inventing safe-to-retry evidence.
-  if (!env.SEND_EMAIL) return false;
+  if (!mailConfigured(env)) return false;
   const claim = await env.INTAKE.prepare("UPDATE intake_delivery_claims SET state='sending',started_at=? WHERE intake_id=? AND state='pending' RETURNING intake_id")
     .bind(new Date().toISOString(),row.id).first();
   if (!claim) return false;
   const {text,html}=notificationBody(row);
   try {
-    await env.SEND_EMAIL.send({from:INTAKE_FROM,to:intakeInbox(env),replyTo:row.email||intakeInbox(env),subject:row.summary,text,html});
+    await sendMail(env, {from:INTAKE_FROM,to:intakeInbox(env),replyTo:row.email||intakeInbox(env),subject:row.summary,text,html});
     const now=new Date().toISOString();
     await env.INTAKE.batch([
       env.INTAKE.prepare("UPDATE intake SET notified_at=?,notify_error=NULL WHERE id=?").bind(now,row.id),

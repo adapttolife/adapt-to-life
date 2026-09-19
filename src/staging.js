@@ -3,7 +3,7 @@
 // credentials, databases, email, scheduled handlers, or outbound fetch calls.
 const PAGES = new Set([
   '/', '/about', '/adapt-body-shop', '/adaptive-sports-near-me', '/apply', '/contact', '/donate',
-  '/hustle-and-heart', '/karen', '/promise', '/roadmap', '/sponsorship',
+  '/hustle-and-heart', '/juan', '/karen', '/promise', '/roadmap', '/sponsorship',
   '/subscribe', '/tim', '/volunteer', '/send-6', '/popcorn', '/waiver',
 ]);
 const STATIC = /^\/(?:css|js|images|fonts|docs)\/[\w./-]+$/;

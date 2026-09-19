@@ -13,26 +13,6 @@
  * SAME orange, at opacity.
  */
 
-/* ---- the draft ribbon ----------------------------------------------------
- * Removed on approval, and deliberately built so that removing it is deleting
- * one element rather than untangling a layout. It sits ABOVE the sticky nav in
- * document order, so it scrolls away and never fights the header.
- */
-.draftbar{
-  background:var(--ink-warm);
-  border-bottom:2px solid var(--orange);
-  color:var(--cream);
-  padding:0.9rem 0 1rem;
-}
-.draftbar .wrap{ display:flex; flex-wrap:wrap; gap:0.5rem 1.4rem; align-items:baseline; }
-.draftbar .db-tag{
-  font-family:var(--font-label); font-size:0.66rem; font-weight:700;
-  letter-spacing:0.18em; text-transform:uppercase; color:var(--orange);
-  border:1px solid var(--orange); border-radius:2px; padding:0.22rem 0.5rem;
-}
-.draftbar p{ font-size:0.9rem; line-height:1.5; color:var(--cream-mute); max-width:78ch; margin:0; }
-.draftbar strong{ color:var(--cream); font-weight:600; }
-
 /* ---- hero: the cut-out stage ---------------------------------------------
  * Same light logic as the homepage lineup, and it is worth restating because
  * it is what separates a cut-out from a sticker:

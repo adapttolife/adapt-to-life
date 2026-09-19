@@ -1,0 +1,223 @@
+/* athlete.css — the athlete profile page (Spec 191).
+ *
+ * WHY A SEPARATE SHEET. There is exactly one of these pages today (/juan) and
+ * the pattern is still moving, so none of it belongs in site.css yet. When the
+ * third profile ships and the shape has stopped changing, the durable half of
+ * this file earns its way into site.css and the rest is deleted. Until then it
+ * loads on one page and nowhere else, which is also why it can afford to be
+ * this specific.
+ *
+ * WHAT IT DOES NOT DO. No colours, no type scale, no spacing rhythm. Every one
+ * of those comes from site.css tokens, so a brand change still lands here for
+ * free. The only new colour in the file is a translucent orange, and it is the
+ * SAME orange, at opacity.
+ */
+
+/* ---- the draft ribbon ----------------------------------------------------
+ * Removed on approval, and deliberately built so that removing it is deleting
+ * one element rather than untangling a layout. It sits ABOVE the sticky nav in
+ * document order, so it scrolls away and never fights the header.
+ */
+.draftbar{
+  background:var(--ink-warm);
+  border-bottom:2px solid var(--orange);
+  color:var(--cream);
+  padding:0.9rem 0 1rem;
+}
+.draftbar .wrap{ display:flex; flex-wrap:wrap; gap:0.5rem 1.4rem; align-items:baseline; }
+.draftbar .db-tag{
+  font-family:var(--font-label); font-size:0.66rem; font-weight:700;
+  letter-spacing:0.18em; text-transform:uppercase; color:var(--orange);
+  border:1px solid var(--orange); border-radius:2px; padding:0.22rem 0.5rem;
+}
+.draftbar p{ font-size:0.9rem; line-height:1.5; color:var(--cream-mute); max-width:78ch; margin:0; }
+.draftbar strong{ color:var(--cream); font-weight:600; }
+
+/* ---- hero: the cut-out stage ---------------------------------------------
+ * Same light logic as the homepage lineup, and it is worth restating because
+ * it is what separates a cut-out from a sticker:
+ *   1. ONE light source. The rim is a drop-shadow that follows the silhouette
+ *      exactly, warm, offset toward the glow. Nothing gets its own lighting.
+ *   2. A contact shadow on a floor line. Without one the figure floats no
+ *      matter how good the matte is.
+ * The glow is painted BEHIND the figure with a radial-gradient rather than a
+ * filter, so it costs no compositing layer on scroll.
+ */
+.ath-hero{
+  position:relative; overflow:hidden;
+  padding-top:clamp(3.5rem, 8vh, 5.5rem);
+  padding-bottom:clamp(3rem, 7vw, 5rem);
+}
+.ath-hero::before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(ellipse 52% 62% at 74% 46%, rgba(255,92,57,0.20) 0%, transparent 62%);
+}
+.ath-hero > .wrap{ position:relative; z-index:1; }
+.ath-grid{
+  display:grid; grid-template-columns:1fr 0.92fr;
+  gap:clamp(1.5rem, 4vw, 3.5rem); align-items:end;
+}
+.ath-figure{ position:relative; justify-self:center; width:100%; max-width:440px; }
+.ath-figure img{
+  display:block; width:100%; height:auto; position:relative; z-index:1;
+  filter:drop-shadow(-10px -6px 16px rgba(255,140,90,0.30))
+         drop-shadow(6px 10px 22px rgba(0,0,0,0.55));
+}
+/* the floor. An ellipse under the wheels, not a box-shadow on the image box,
+   because the image box is a rectangle and the athlete is not. */
+.ath-figure::after{
+  content:""; position:absolute; z-index:0;
+  left:8%; right:8%; bottom:-0.6rem; height:34px;
+  background:radial-gradient(ellipse 50% 50% at 50% 50%, rgba(0,0,0,0.62) 0%, transparent 70%);
+}
+.ath-eyebrow-row{ display:flex; flex-wrap:wrap; gap:0.6rem; align-items:center; }
+.ath-hero h1{ margin-top:1.1rem; }
+.ath-hero .sub{ max-width:38ch; margin-top:1.4rem; }
+.ath-meta{
+  display:flex; flex-wrap:wrap; gap:0.5rem 0.65rem; margin-top:1.9rem; padding:0; list-style:none;
+}
+.ath-meta li{
+  font-family:var(--font-label); font-size:0.72rem; font-weight:600;
+  letter-spacing:0.1em; text-transform:uppercase; color:var(--cream-mute);
+  border:1px solid rgba(255,255,255,0.22); border-radius:2px; padding:0.34rem 0.6rem;
+}
+
+/* ---- the "we need your words" card ---------------------------------------
+ * The honest alternative to lorem ipsum, and to inventing a quote and putting
+ * a real person's name under it. Each card holds the actual question, so the
+ * prototype IS the interview: Juan reads the page and answers in place.
+ * Every one of these is deleted as his words arrive.
+ */
+.ask{
+  border:1px dashed rgba(255,92,57,0.55);
+  background:rgba(255,92,57,0.05);
+  border-radius:4px;
+  padding:clamp(1.1rem, 2.4vw, 1.6rem);
+  margin-top:1.6rem;
+}
+.ask .ask-l{
+  font-family:var(--font-label); font-size:0.64rem; font-weight:700;
+  letter-spacing:0.18em; text-transform:uppercase; color:var(--orange-ink);
+  display:block; margin-bottom:0.7rem;
+}
+.ask p{ color:var(--ink-soft); font-size:1rem; line-height:1.55; margin:0; }
+.ask p + p{ margin-top:0.7rem; }
+.dark .ask{ border-color:rgba(255,92,57,0.6); background:rgba(255,92,57,0.08); }
+.dark .ask p{ color:var(--cream-mute); }
+.dark .ask .ask-l{ color:var(--orange); }
+
+/* ---- portrait + text two-up ---------------------------------------------- */
+.ath-two{
+  display:grid; grid-template-columns:0.85fr 1fr;
+  gap:clamp(1.8rem, 4.5vw, 3.6rem); align-items:center;
+}
+.ath-portrait{ margin:0; }
+.ath-portrait img{
+  display:block; width:100%; height:auto; border-radius:3px;
+  box-shadow:0 26px 60px -30px rgba(0,0,0,0.55);
+}
+.ath-portrait figcaption{
+  font-size:0.8rem; color:var(--muted); line-height:1.5; margin-top:0.8rem; max-width:34ch;
+}
+
+/* ---- full-bleed photograph band ------------------------------------------
+ * `100vw` with a negative half-viewport margin rather than a wrapper, so it
+ * sits inside the normal band rhythm and still breaks the gutter.
+ */
+.ath-bleed{ position:relative; width:100vw; margin-inline:calc(50% - 50vw); }
+.ath-bleed img{
+  display:block; width:100%; height:clamp(320px, 52vw, 620px); object-fit:cover;
+  object-position:center 34%;
+}
+.ath-bleed figcaption{
+  font-size:0.8rem; color:var(--cream-faint); line-height:1.5;
+  padding:0.85rem var(--gutter) 0;
+}
+
+/* ---- the kit -------------------------------------------------------------- */
+.kit{
+  display:grid; grid-template-columns:repeat(2, 1fr);
+  gap:clamp(1.4rem, 3vw, 2.4rem); margin-top:clamp(1.8rem, 3.4vw, 2.6rem);
+}
+.kit-item{ border-top:2px solid var(--hairline); padding-top:1.1rem; }
+.kit-l{
+  font-family:var(--font-label); font-size:0.66rem; font-weight:700;
+  letter-spacing:0.18em; text-transform:uppercase; color:var(--muted);
+}
+.kit-v{
+  font-family:var(--font-display); font-weight:800; letter-spacing:-0.02em;
+  font-size:clamp(1.35rem, 2.2vw, 1.75rem); color:var(--ink); line-height:1.15; margin-top:0.5rem;
+}
+.kit-d{ color:var(--ink-soft); font-size:0.98rem; line-height:1.55; margin-top:0.6rem; max-width:34ch; }
+
+/* ---- the disclosure ------------------------------------------------------
+ * Its own block, not a footnote, because the FTC test is whether the material
+ * connection is clear and unavoidable. It carries the orange rule so it reads
+ * as deliberate rather than as small print someone hoped you would skip.
+ */
+.disclose{
+  border-left:3px solid var(--orange);
+  background:var(--sand);
+  padding:clamp(1.1rem, 2.4vw, 1.5rem) clamp(1.2rem, 2.6vw, 1.7rem);
+  margin-top:clamp(2rem, 3.6vw, 2.8rem);
+  border-radius:0 3px 3px 0;
+}
+.disclose .kit-l{ color:var(--orange-ink); }
+.disclose p{ color:var(--ink-soft); font-size:0.98rem; line-height:1.6; margin:0.7rem 0 0; max-width:60ch; }
+.code-chip{
+  display:inline-block; font-family:var(--font-label); font-weight:700;
+  letter-spacing:0.08em; font-size:0.95rem; color:var(--ink);
+  background:var(--paper); border:1px solid var(--hairline);
+  border-radius:3px; padding:0.3rem 0.62rem; margin-top:0.9rem;
+}
+
+/* ---- the seat ------------------------------------------------------------- */
+.seat-lines{ list-style:none; padding:0; margin:clamp(1.8rem,3.4vw,2.6rem) 0 0; }
+.seat-lines li{
+  display:grid; grid-template-columns:auto 1fr auto; gap:0.8rem 1.2rem;
+  align-items:baseline; padding:1rem 0; border-top:1px solid rgba(255,255,255,0.14);
+}
+.seat-lines li:last-child{ border-bottom:1px solid rgba(255,255,255,0.14); }
+.seat-n{
+  font-family:var(--font-label); font-size:0.66rem; font-weight:700;
+  letter-spacing:0.18em; text-transform:uppercase; color:var(--orange);
+}
+.seat-d{ color:var(--cream-mute); font-size:0.96rem; line-height:1.5; }
+.seat-a{
+  font-family:var(--font-display); font-weight:800; font-size:1.25rem;
+  color:var(--cream); font-variant-numeric:tabular-nums; letter-spacing:-0.01em;
+}
+.seat-total{
+  font-family:var(--font-display); font-weight:800; letter-spacing:-0.025em;
+  font-size:clamp(1.5rem, 2.6vw, 2rem); color:var(--cream); margin-top:1.6rem;
+}
+
+/* ---- share ---------------------------------------------------------------- */
+.share-row{ display:flex; flex-wrap:wrap; gap:0.8rem; align-items:center; margin-top:1.8rem; }
+.share-url{
+  font-family:var(--font-label); font-size:0.95rem; color:var(--ink);
+  background:var(--paper); border:1px solid var(--hairline); border-radius:3px;
+  padding:0.62rem 0.8rem;
+}
+.share-btn{
+  font-family:inherit; font-size:0.9rem; font-weight:600; cursor:pointer;
+  background:var(--ink); color:var(--cream); border:1px solid var(--ink);
+  border-radius:3px; padding:0.66rem 1rem; transition:background .15s ease, color .15s ease;
+}
+.share-btn:hover{ background:var(--orange); border-color:var(--orange); color:#fff; }
+.share-msg{ font-size:0.88rem; color:var(--ok); }
+
+/* ---- phone ---------------------------------------------------------------
+ * One breakpoint, because the page is three stacked ideas and none of them
+ * needs a tablet-specific arrangement. Everything becomes one column and the
+ * cut-out keeps its stage.
+ */
+@media (max-width: 880px){
+  .ath-grid{ grid-template-columns:1fr; gap:2.4rem; }
+  .ath-figure{ max-width:330px; order:2; }
+  .ath-two{ grid-template-columns:1fr; }
+  .ath-portrait{ max-width:420px; }
+  .kit{ grid-template-columns:1fr; }
+  .seat-lines li{ grid-template-columns:1fr auto; }
+  .seat-n{ grid-column:1 / -1; }
+}

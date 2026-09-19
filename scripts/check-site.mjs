@@ -41,7 +41,7 @@ const ROLE_PAGES = ROLES.map((r) => `/volunteer/${r.slug}`);
 const PAGES = [
   "/", "/about", "/adaptive-sports-near-me", "/apply", "/contact", "/donate",
   "/adapt-body-shop", "/hustle-and-heart", "/karen", "/popcorn", "/promise", "/roadmap", "/send-6",
-  "/sponsorship", "/subscribe", "/tim", "/volunteer", "/waiver",
+  "/juan", "/sponsorship", "/subscribe", "/tim", "/volunteer", "/waiver",
   ...ROLE_PAGES,
 ];
 

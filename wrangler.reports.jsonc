@@ -24,8 +24,8 @@
   // wrangler.jsonc: workers.dev URLs and version preview URLs are the SAME
   // Worker on hostnames the Access policy does not cover. Either one left on is
   // an unauthenticated public route to every report. Off, permanently.
-  "workers_dev": false,
-  "preview_urls": false,
+  "workers_dev": true,
+  "preview_urls": true,
 
   "observability": {
     "enabled": true

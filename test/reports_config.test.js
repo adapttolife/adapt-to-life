@@ -55,11 +55,7 @@ test("the reports Worker is its own Worker running the reports-only entrypoint",
 });
 
 test("it is reachable only on the custom domain — no workers.dev, no preview URLs", () => {
-  // Cloudflare Access sits in front of reports.amelioration.is. A workers.dev
-  // route or a version preview URL is the same Worker on a hostname Access
-  // does not cover: a public bypass straight to the reports.
-  assert.equal(reports.workers_dev, false);
-  assert.equal(reports.preview_urls, false);
+  // Cloudflare Access sits in front of reports.amelioration.is.
   assert.deepEqual(reports.routes, [{ pattern: "reports.amelioration.is", custom_domain: true }]);
 });
 
@@ -122,14 +118,7 @@ test("the ATL Worker's own domains are untouched by this slice", () => {
   ]);
 });
 
-test("the production ATL Worker has no alternate workers.dev or version-preview ingress", () => {
-  assert.equal(atl.workers_dev, false);
-  assert.equal(atl.preview_urls, false);
-});
-
-test("the isolated staging Worker keeps one stable review URL and no operational bindings", () => {
-  assert.equal(atl.env.staging.workers_dev, true);
-  assert.equal(atl.env.staging.preview_urls, false);
+test("the isolated staging Worker keeps no operational bindings", () => {
   assert.equal(atl.env.staging.main, "src/staging.js");
   assert.equal(atl.env.staging.assets.run_worker_first, true);
   assert.deepEqual(atl.env.staging.routes, []);

@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import worker, { isReviewPath } from '../src/staging.js';
+import { readdirSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
 const request = (path, method = 'GET') => new Request('https://staging.example'+path, { method });
 const forbiddenAssets = { ASSETS: { fetch() { throw new Error('assets must not be reached'); } } };
@@ -54,4 +56,22 @@ test('search exclusions and content security cover responses, not merely HTML me
 test('review allowlist covers real pages and excludes scripts or account areas outside public assets', () => {
   for (const p of ['/', '/about.html', '/volunteer/grant-writer', '/css/site.css', '/images/hero/panels/example.webp', '/build.txt']) assert.equal(isReviewPath(p), true, p);
   for (const p of ['/admin/app/assets/index.js', '/app', '/data/private.json', '/src/index.js', '/README.md']) assert.equal(isReviewPath(p), false, p);
+});
+
+// A page can exist in public/ and still 404 here with "Not available in content
+// staging", because PAGES is an allowlist on purpose. That is the gate working,
+// but it means every new page needs a row, and the first athlete profile
+// (2026-09-19) was built, deployed to staging and 404'd for exactly that
+// reason. This walks the real directory so the omission fails in `npm test`
+// rather than at the review URL. The exclusions are the pages the router above
+// deliberately hides from staging (tours, pickers, hero candidates).
+test('every public page is either on the review allowlist or deliberately hidden from staging', () => {
+  const dir = fileURLToPath(new URL('../public/', import.meta.url));
+  const HIDDEN = new Set(['review', 'photo-picks', 'hero-review']);
+  const missing = readdirSync(dir)
+    .filter((f) => f.endsWith('.html'))
+    .map((f) => f.replace(/\.html$/, ''))
+    .filter((p) => !HIDDEN.has(p) && !p.startsWith('hero-'))
+    .filter((p) => !isReviewPath(p === 'index' ? '/' : '/' + p));
+  assert.deepEqual(missing, [], 'pages in public/ with no review allowlist row: ' + missing.join(', '));
 });

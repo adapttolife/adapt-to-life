@@ -81,6 +81,14 @@ const PHOTOS = {
   // legible, and a gentler 138% is enough because he is already large in frame.
   "paddle-raise":    { file: "assets/photos/paddle-raise.jpg",    pos: "58% 40%", zoom: "auto 138%" },
 
+  // Juan (Spec 191). The master is pre-cropped to card ratio with him RIGHT of
+  // centre, because the athlete variant lays its type down the left. The source
+  // frame is a 3495x7546 portrait, so a plain `cover` would have shown a
+  // full-width sliver of gym and a very small athlete. Cropping the master is
+  // the fix, not zooming the card. The crop keeps his shirt legible, which is
+  // the only sport context a head-and-shoulders card gets to carry.
+  "juan-portrait":  { file: "assets/photos/juan-portrait.jpg",  pos: "62% 46%" },
+
   // Brand artwork, not a photograph: the mark rendered as an object. Both files
   // arrived with a Gemini sparkle in the corner and are cropped to exclude it.
   black:    { file: "assets/art/mark-black.jpg",             pos: "50% 42%" },
@@ -129,6 +137,12 @@ const CARDS = {
   "hustle-and-heart": { ...ATHLETE, photo: "paddle-portrait", size: 70, measure: "14ch",
     out: "public/images/og/hustle-and-heart-v4-content.jpg", page: "hustle-and-heart.html",
     headline: "Keep your game <em>going</em>." },
+  // An athlete profile card is the page's h1 and nothing else (GATE 0), and for
+  // a profile that is exactly right: the card is a poster with his name on it,
+  // sent by him, to people who know him.
+  juan: { ...ATHLETE, photo: "juan-portrait", size: 120, measure: "8ch",
+    out: "public/images/og/juan-v1-athlete.jpg", page: "juan.html",
+    headline: "<em>Juan</em>" },
   volunteer: { ...ATHLETE, photo: "cap-profile",
     out: "public/images/og/volunteer-v3-athlete.jpg", page: "volunteer.html",
     headline: "Your place on <em>this team</em>." },

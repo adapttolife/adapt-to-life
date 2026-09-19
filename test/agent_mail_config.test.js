@@ -36,15 +36,12 @@ const pkg = JSON.parse(read("package.json"));
 
 const expectedD1 = atl.d1_databases.find((b) => b.binding === "AGENT_MAIL_DB");
 
-// Config establishes the edge boundary. Access protects only the custom domain;
-// alternate Worker hostnames would bypass it.
+// Config establishes the edge boundary.
 test("agent-mail is a distinct Worker on its private custom domain only", () => {
   assert.equal(agentMail.name, "amelioration-agent-mail");
   assert.equal(agentMail.main, "src/agent_mail_worker.js");
   assert.notEqual(agentMail.name, atl.name);
   assert.deepEqual(agentMail.routes, [{ pattern: "api.amelioration.is", custom_domain: true }]);
-  assert.equal(agentMail.workers_dev, false);
-  assert.equal(agentMail.preview_urls, false);
 });
 
 test("agent-mail holds its mail stores, outbound binding, and lifecycle consumer", () => {

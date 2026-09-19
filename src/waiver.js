@@ -1,3 +1,4 @@
+import { mailConfigured } from './mail-transport.js';
 // Waiver / release e-signature — Cloudflare-native.
 // Same shape as the other /api handlers: honeypot -> Turnstile -> validate -> act.
 // "Act" = render a clean, branded signed PDF (document + signature certificate) with
@@ -339,7 +340,7 @@ async function buildPdf(d) {
 // Service via SPF/DKIM TXT records only — no MX change — so Google Workspace mail on the
 // root domain is unaffected. Best-effort: a send failure never blocks signing.
 async function sendReceiptEmail(env, { to, pdfBytes, name, doc, isMinor, minorName }) {
-  if (!env.SEND_EMAIL) { console.error("SEND_EMAIL binding not configured; skipping receipt email"); return; }
+  if (!mailConfigured(env)) { console.error("SEND_EMAIL binding not configured; skipping receipt email"); return; }
   const who = isMinor ? `${minorName} (signed by ${name})` : name;
   const subject = `Your signed ${doc.org} release`;
   const text =

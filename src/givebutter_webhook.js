@@ -1,3 +1,4 @@
+import { mailConfigured } from './mail-transport.js';
 import {
   cfSend, esc, houseShell, houseSignoff, HOUSE_FROM, HOUSE_INBOX, recordTransactionalFailure,
 } from "./email.js";
@@ -112,6 +113,7 @@ export async function claimAndThank(env, gift) {
         SET email_status = 'sending', email_attempted_at = ?, updated_at = ?,
             lease_token = ?, attempt_count = attempt_count + 1
       WHERE transaction_id = ? AND attempt_count < ?
+        ${env.MAIL_TRANSPORT === 'gmail' ? "AND email_status = 'pending' AND attempt_count = 0" : ''}
         AND (email_status = 'pending'
           OR (email_status = 'sending' AND email_attempted_at < ?)
           OR (email_status = 'retry' AND next_attempt_at <= ?))`
@@ -137,7 +139,7 @@ export async function claimAndThank(env, gift) {
     return completed?.meta?.changes ? { emailed: true } : { emailed: false, obsolete: true };
   } catch (err) {
     const failedAt = new Date().toISOString();
-    const terminal = attemptNumber >= MAX_EMAIL_ATTEMPTS;
+    const terminal = env.MAIL_TRANSPORT === 'gmail' || attemptNumber >= MAX_EMAIL_ATTEMPTS;
     const retryAt = terminal ? null : new Date(Date.now() + retryDelayMs(attemptNumber)).toISOString();
     const updated = await env.WAIVERS_DB.prepare(
       `UPDATE donor_gifts
@@ -164,9 +166,18 @@ export async function claimAndThank(env, gift) {
 // deliberately at-least-once after a crash rather than silently at-most-once.
 export async function recoverDonorEmails(env) {
   if (!env.WAIVERS_DB) return { ok: false, scanned: 0, sent: 0, queued: 0, failed: 0, error: "WAIVERS_DB binding not configured" };
-  if (!env.SEND_EMAIL) return { ok: false, scanned: 0, sent: 0, queued: 0, failed: 0, error: "SEND_EMAIL binding not configured" };
+  if (!mailConfigured(env)) return { ok: false, scanned: 0, sent: 0, queued: 0, failed: 0, error: "SEND_EMAIL binding not configured" };
   const staleBefore = new Date(Date.now() - 15 * 60 * 1000).toISOString();
   const now = new Date().toISOString();
+  // Gmail has no caller idempotency key. Never inherit uncertain legacy retries
+  // or reclaim a post-send crash as permission to send again.
+  if (env.MAIL_TRANSPORT === 'gmail') {
+    await env.WAIVERS_DB.prepare(`UPDATE donor_gifts SET email_status='failed',
+      lease_token=NULL, last_error='Gmail cutover: ambiguous prior attempt requires review', updated_at=?
+      WHERE (email_status='sending' AND email_attempted_at < ?)
+         OR email_status='retry' OR (email_status='pending' AND attempt_count > 0)`)
+      .bind(now, staleBefore).run();
+  }
   await env.WAIVERS_DB.prepare(
     `UPDATE donor_gifts
         SET email_status = 'failed', lease_token = NULL,

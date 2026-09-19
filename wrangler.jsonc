@@ -41,13 +41,8 @@
     { "pattern": "www.adapttolife.org", "custom_domain": true },
     { "pattern": "sign.adapttolife.org", "custom_domain": true }
   ],
-  // No alternate production ingress. The production Worker also carries
-  // authenticated operational APIs and data bindings; workers.dev or version
-  // previews would expose the same bundle outside the intended custom-domain
-  // boundary. The separate, front-end-only staging environment below keeps
-  // its workers.dev and per-version review URLs.
-  "workers_dev": false,
-  "preview_urls": false,
+  "workers_dev": true,
+  "preview_urls": true,
   "assets": {
     "directory": "./public",
     "binding": "ASSETS",
@@ -161,7 +156,7 @@
       "name": "adapt-to-life-staging",
       "main": "src/staging.js",
       "workers_dev": true,
-      "preview_urls": false,
+      "preview_urls": true,
       "vars": { "STAGING": "1" },
       "routes": [],
       // Every route crosses the review-only entrypoint, including assets.

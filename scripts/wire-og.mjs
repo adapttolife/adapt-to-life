@@ -23,6 +23,7 @@ const PER_PAGE = {
   "popcorn.html": "popcorn",
   "hustle-and-heart.html": "hustle-and-heart",
   "volunteer.html": "volunteer",
+  "juan.html": "juan",
 };
 
 // ALT DESCRIBES THE PHOTOGRAPH AGAIN, because from 2026-09-09 the cards ARE
@@ -38,6 +39,9 @@ const ALT = {
   popcorn: "Popcorn that helps athletes play. Adapt To Life. A wheelchair pickleball player drives across an indoor court.",
   "hustle-and-heart": "Keep your game going. The Hustle and Heart Fund, Adapt To Life. A wheelchair pickleball player in a headband holds his paddle.",
   volunteer: "Your place on this team. Adapt To Life. A wheelchair pickleball player in a cap reaches for a shot.",
+  // An athlete profile card is his name over his own face, so the alt is the
+  // name and then the man, in that order.
+  juan: "Juan. Adapt To Life. Juan, a wheelchair pickleball player in glasses, sits courtside in a Chicago Adaptive Sports shirt.",
 };
 
 // Cards live under /images/og/ on their own paths, including the default one.
@@ -51,6 +55,7 @@ const ALT = {
 // the card it belongs to and the next single-card change costs one line here.
 const FILE = {
   _default: "home-v4-color.jpg",
+  juan: "juan-v1-athlete.jpg",
   popcorn: "popcorn-v4-content.jpg",
   "hustle-and-heart": "hustle-and-heart-v4-content.jpg",
 };

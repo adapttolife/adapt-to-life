@@ -113,6 +113,22 @@ Worker version, so a successful build has no preview URL. Replace that command
 with `npm run preview`. It already runs the build and tests via Wrangler's hook.
 The preview command is separate from the guarded production command.
 
+Pushing changes to `package.json` does not update the command saved in Cloudflare.
+Open the build configuration editor (not just Branch control) and replace the
+build/test-only deploy command. If only a single deploy command is available,
+set it to `npm run deploy:ci`. A staging build must log `Uploading review version
+for branch staging`, then `Worker Version ID`, `Version Preview URL`, and
+`Version Preview Alias URL`. A successful run that ends after tests has not
+published a preview. The version URL identifies that particular upload; the
+staging alias advances to the latest staging upload.
+
+The generated `public/css/` directory stays gitignored. `npm run preview` builds
+it from `src/css/` before uploading; the CSS CLI entrypoint must use
+`pathToFileURL` so this also works on Windows. To identify what a preview is
+actually serving, read its `/build.txt` and compare the commit with the pushed
+commit. Pausing Cloudflare Access on the preview hostname does not grant the
+CLI account access to the Cloudflare Builds API.
+
 As an alternative for a shared deploy command, `deploy:ci` reads Cloudflare's
 `WORKERS_CI_BRANCH`. On `main`, it preserves the
 existing check that HEAD equals the fetched `origin/main`, checks out `main`, and

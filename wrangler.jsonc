@@ -153,6 +153,10 @@
   // Staging preview: Front-end only — no data bindings and no cron — so staging can never touch prod ClickUp / D1 / R2 / email.
   "env": {
     "staging": {
+      // Intentionally targets versions of the existing Worker for dashboard Builds.
+      // Use npm run preview (versions upload), NEVER deploy --env staging:
+      // deploying this environment would replace the production entrypoint.
+      // Branch URLs require --preview-alias; env names do not create aliases.
       "name": "adapt-to-life",
       "main": "src/staging.js",
       "workers_dev": true,

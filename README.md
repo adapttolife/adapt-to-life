@@ -96,6 +96,55 @@ cfrun npm run deploy:agent-mail
 
 ### Two sessions at once: use a per-version preview URL, not shared staging
 
+Cloudflare Workers Builds must be configured under **Settings > Builds**:
+
+| Setting | Value |
+|---|---|
+| Production branch | `main` |
+| Production deploy command | Keep the existing guarded `main` deployment command |
+| Builds for non-production branches / Enable Preview Builds | Enabled |
+| Non-production / preview deploy command | `npm run preview` |
+| Branch include patterns (if configured) | `*` |
+| Branch exclude patterns | None |
+
+The failing branch build logged `Executing user deploy command: npm run build:app
+&& npm run css && npm test`. That command only builds and tests; it never uploads a
+Worker version, so a successful build has no preview URL. Replace that command
+with `npm run preview`. It already runs the build and tests via Wrangler's hook.
+The preview command is separate from the guarded production command.
+
+As an alternative for a shared deploy command, `deploy:ci` reads Cloudflare's
+`WORKERS_CI_BRANCH`. On `main`, it preserves the
+existing check that HEAD equals the fetched `origin/main`, checks out `main`, and
+runs `wrangler deploy --env=""`. On every other branch it runs the preview upload.
+If the dashboard exposes only one deploy command, use `npm run deploy:ci` there.
+If logs show a separate default preview command, that command must be changed to
+`npm run preview` through the build configuration; changing the production command
+alone does not change a separate preview trigger.
+
+The Wrangler build hook builds the assets when these commands run. Branch controls
+live in Cloudflare, not in `wrangler.jsonc`.
+The command must be present on every branch being built; merge this change into
+existing branches before rebuilding them.
+
+`npm run preview` reads `WORKERS_CI_BRANCH` in Cloudflare Builds (or the local Git
+branch) and uploads the review-only `staging` configuration with an explicit
+`--preview-alias`. It prints the immutable version URL and the stable branch URL.
+For `staging`, that alias URL is
+`https://staging-adapt-to-life.adapt-to-life.workers.dev`.
+Branch names needing DNS normalization receive a short hash to distinguish them.
+This also works for a manual preview from `main`; production builds continue to
+deploy the production entrypoint, with `preview_urls` enabled for version URLs.
+
+Both URL flags must also be enabled on the existing Worker's **Settings > Domains
+& Routes**. `versions upload` does not update the Worker's routing settings;
+having the flags in the file alone does not repair disabled server-side routing.
+
+`deploy:staging` is an alias for this same safe upload. **Do not run
+`wrangler deploy --env staging`**: this configuration deliberately uses the
+production Worker name so uploaded versions appear under the same dashboard
+Worker, and deploying it would promote the review entrypoint to live traffic.
+
 `--env staging` is ONE Worker. Two concurrent workstreams deploying to it silently replace each
 other, and every check you run afterwards passes against whichever build landed last. On
 2026-07-25 that happened for real: eleven staging deploys in ninety minutes from two sessions, and
@@ -108,7 +157,7 @@ npm run preview
 # → Version Preview URL: https://<version-prefix>-adapt-to-life.adapt-to-life.workers.dev
 ```
 
-That URL is yours alone, it is a full working copy of the site, and it does not change what
+That URL is yours alone, it is a review-only copy of the site, and it does not change what
 `adapt-to-life` serves. No second Worker, no second environment, no config change: the
 isolation already exists in Wrangler. Check and hand over THAT link.
 

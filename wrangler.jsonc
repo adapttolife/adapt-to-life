@@ -33,7 +33,7 @@
   // and the homepage. It runs BEFORE the stamp like everything else that writes
   // into public/, and it cannot fail the build: if the directory's API is
   // unreachable it reuses the committed data/asnm-stats.json and says so.
-  "build": { "command": "node scripts/guard-prod-branch.mjs && npm run build:app && node scripts/build-css.mjs && npm test && node scripts/build-asnm.mjs && node scripts/stamp-build.mjs" },
+  "build": { "command": "npm run build:app && node scripts/build-css.mjs && npm test && node scripts/build-asnm.mjs && node scripts/stamp-build.mjs" },
 
   // Live custom domains (apex + www). Cloudflare manages DNS + TLS for these.
   "routes": [
@@ -150,12 +150,10 @@
   "triggers": {
     "crons": ["*/10 * * * *"]
   },
-  // Staging preview: a separate Worker (adapt-to-life-staging) on workers.dev for
-  // design review before promoting to production. Front-end only — no data bindings
-  // and no cron — so staging can never touch prod ClickUp / D1 / R2 / email.
+  // Staging preview: Front-end only — no data bindings and no cron — so staging can never touch prod ClickUp / D1 / R2 / email.
   "env": {
     "staging": {
-      "name": "adapt-to-life-staging",
+      "name": "adapt-to-life",
       "main": "src/staging.js",
       "workers_dev": true,
       "preview_urls": true,

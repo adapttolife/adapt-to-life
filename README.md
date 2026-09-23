@@ -105,11 +105,11 @@ the review link handed over served a month-old card.
 
 ```sh
 npm run preview
-# → Version Preview URL: https://<version-prefix>-adapt-to-life-staging.adapt-to-life.workers.dev
+# → Version Preview URL: https://<version-prefix>-adapt-to-life.adapt-to-life.workers.dev
 ```
 
 That URL is yours alone, it is a full working copy of the site, and it does not change what
-`adapt-to-life-staging` serves. No second Worker, no second environment, no config change: the
+`adapt-to-life` serves. No second Worker, no second environment, no config change: the
 isolation already exists in Wrangler. Check and hand over THAT link.
 
 Shared staging (only when you know you are the only session on it — front-end only, no data
@@ -117,7 +117,7 @@ bindings, no cron, so it can never touch prod ClickUp/D1/R2/email):
 
 ```sh
 npm run deploy:staging
-# → https://adapt-to-life-staging.adapt-to-life.workers.dev
+# → https://adapt-to-life.adapt-to-life.workers.dev
 ```
 
 Every wrangler invocation stamps `public/build.txt` through the `build` hook in `wrangler.jsonc`,

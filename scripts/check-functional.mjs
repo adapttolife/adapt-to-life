@@ -19,7 +19,7 @@
 // something, confirm you are pointing at the right thing before believing the
 // site is broken.
 import { chromium } from "/home/agentos/pw/node_modules/playwright/index.mjs";
-const B = process.env.SITE_URL || 'https://adapt-to-life-staging.adapt-to-life.workers.dev';
+const B = process.env.SITE_URL || 'https://adapt-to-life.adapt-to-life.workers.dev';
 let failed = 0;
 const b=await chromium.launch();
 const ok=(n,v)=>{ if(!v) failed++; console.log(`  ${v?'PASS':'FAIL'}  ${n}`); };

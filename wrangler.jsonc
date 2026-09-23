@@ -121,7 +121,9 @@
     // reconciliation must never send retroactive thank-yous for the baseline.
     "GIVEBUTTER_DONOR_CUTOFF": "2026-08-08T22:40:55Z",
     "OFFLINE_RAISED": "3004",
-    "R2_ACCESS_KEY_ID": "d27b427aadef63a7ec1e05eaec108bc0"
+    "R2_ACCESS_KEY_ID": "d27b427aadef63a7ec1e05eaec108bc0",
+    "MAIL_TRANSPORT": "gmail",
+    "GMAIL_FROM": "hello@adapttolife.org"
   },
   // Signed-waiver storage: archived to Google Drive, with the signing record in D1.
   "d1_databases": [

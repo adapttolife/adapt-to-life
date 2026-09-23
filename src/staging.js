@@ -14,7 +14,7 @@ const CSP = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 's
 export function isReviewPath(path) {
   const page = path.replace(/\.html$/, '').replace(/\/$/, '') || '/';
   return PAGES.has(page) || /^\/volunteer\/[a-z0-9-]+$/.test(page) ||
-    STATIC.test(path) || DATA.has(path) || path === '/build.txt';
+    STATIC.test(path) || DATA.has(path) || path === '/build.txt' || path === '/build.json';
 }
 
 function headers(extra = {}) {

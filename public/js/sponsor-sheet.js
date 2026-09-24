@@ -76,7 +76,7 @@
   // that vanishes silently is the worst outcome this page has.
   function primeTurnstile() {
     var box = sheet.querySelector(".cf-turnstile");
-    if (!box) return;                       // staging strips the widget entirely
+    if (!box) return;
     if (!window.turnstile) return;          // not loaded yet: turnstile-lazy.js will render it
     try {
       if (box.dataset.wid) {

@@ -1,10 +1,11 @@
+import { fileURLToPath } from "node:url";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { createHash } from "node:crypto";
 
-const ROOT = new URL("..", import.meta.url).pathname;
+const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const PUBLIC = join(ROOT, "public");
 const NEW_VIEWBOX = 'viewBox="0 0 500.000000 457.000000"';
 const OLD_VIEWBOX = 'viewBox="217.61900000000003 211.68400000000003 1485.031 1351.756"';
@@ -172,7 +173,9 @@ test("social cards use the Option 2 monogram on cache-busting URLs", async () =>
     ["images/og/ways-to-give-v2-option2.jpg", "fb161a09235e53bd59f94468aa6c97eaf30b637540abbb955de215798800d282"],
   ]);
   for (const [relative, expected] of [...legacyHashes, ...approvedCardHashes, ...option2CardHashes]) {
-    const bytes = await readFile(join(PUBLIC, relative));
+    const file = await readFile(join(PUBLIC, relative));
+    // Git may check text SVGs out with CRLF on Windows. Keep binary pins exact.
+    const bytes = relative.endsWith('.svg') ? file.toString('utf8').replace(/\r\n/g, '\n') : file;
     assert.equal(createHash("sha256").update(bytes).digest("hex"), expected, `${relative} hash drifted`);
   }
 

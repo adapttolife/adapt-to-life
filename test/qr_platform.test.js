@@ -290,7 +290,7 @@ test("on staging /admin is 404 — Access cannot protect a workers.dev host", as
       new Request(`https://adapt-to-life-staging.workers.dev${path}`),
       siteEnv({ STAGING: "1" }), { waitUntil() {} }
     );
-    assert.equal(res.status, 404, `${path} must not exist on staging`);
+    assert.equal(res.status, 403, `${path} requires authentication on staging`);
   }
 });
 
@@ -412,10 +412,10 @@ test("built assets are NOT swallowed by the shell fallback", async () => {
   assert.equal(asked, "/admin/app/assets/index-abc.js", "asset requests must pass straight through");
 });
 
-test("Mission Control does not exist on staging either", async () => {
+test("Mission Control requires authentication on staging", async () => {
   const res = await worker.fetch(
     new Request("https://staging.workers.dev/admin/app/qr"),
     siteEnv({ STAGING: "1" }), { waitUntil() {} }
   );
-  assert.equal(res.status, 404);
+  assert.equal(res.status, 403);
 });

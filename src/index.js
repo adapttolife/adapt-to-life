@@ -12,7 +12,7 @@ import { createApplication, createContact, createVolunteer } from "./clickup.js"
 import { handleEmail, handleAgentMailApi } from "./agent_mail.js";
 import { handleShopContact, runShopCrmBacklog } from "./shop_contact.js";
 import { handleQr } from "./qr.js";
-import { handleAdmin } from "./qr_admin.js";
+import { handleAdmin, verifyAccess } from "./qr_admin.js";
 import { syncGifts } from "./qr_gifts.js";
 import { syncClickUp } from "./qr_clickup.js";
 import { fundPosition } from "./fund.js";
@@ -225,15 +225,14 @@ export default {
     // Spec 116 P2: the QR admin, behind the "ATL QR Admin" Cloudflare Access
     // application on adapttolife.org/admin.
     //
-    // Production-only, and the gate has to live here rather than rely on Access
-    // alone: an Access application is bound to a HOSTNAME, and the staging
-    // Worker answers on workers.dev where no such application exists. Assets
-    // normally serve before the Worker, so without this (and the matching
-    // run_worker_first in wrangler.jsonc) the admin page would be readable by
-    // anyone who guessed the staging URL. The API itself already fails closed
-    // on a missing Access JWT; this closes the page too.
+    // Staging supports the admin surface too. Because Access is hostname-bound,
+    // verify authentication on staging pages as well as the existing API checks.
     if (url.pathname.startsWith("/admin")) {
-      if (env.STAGING === "1") return new Response("Not found", { status: 404 });
+      // Preview hosts do not necessarily have an edge Access application.
+      // Allow authenticated staging access instead of disabling the route.
+      if (env.STAGING === "1" && !url.pathname.startsWith("/admin/api/") && !await verifyAccess(request)) {
+        return new Response("Forbidden", { status: 403 });
+      }
       // Access gates the edge; src/qr_admin.js verifies the JWT again here, so
       // the API cannot be reached by deleting or re-scoping the Access app.
       if (url.pathname.startsWith("/admin/api/")) {
@@ -263,7 +262,7 @@ export default {
     if (moved) return moved;
 
     // Anything left under /r/ or /lib/ is a report request on a host that is
-    // not one of the two published ones — sign.adapttolife.org, workers.dev, a
+    // not a published or staging host — sign.adapttolife.org, workers.dev, a
     // preview URL. This Worker no longer renders reports, so those fail closed.
     if (LEGACY_REPORT_PATHS.some((p) => url.pathname.startsWith(p))) {
       return reportsMovedNotFound();
@@ -339,7 +338,7 @@ const LEGACY_REPORT_PATHS = ["/r/", "/lib/"];
 // become an open redirect no matter what a prober puts in the URL.
 function legacyReportRedirect(request, env, url) {
   if (request.method !== "GET" && request.method !== "HEAD") return null;
-  if (!LEGACY_REPORT_HOSTS.has(url.hostname)) return null;
+  if (!LEGACY_REPORT_HOSTS.has(url.hostname) && env.STAGING !== "1") return null;
   if (!LEGACY_REPORT_PATHS.some((p) => url.pathname.startsWith(p))) return null;
 
   let dest;

@@ -109,22 +109,29 @@ Cloudflare Workers Builds must be configured under **Settings > Builds**:
 | Setting | Value |
 |---|---|
 | Production branch | `main` |
-| Production deploy command | Keep the existing guarded `main` deployment command |
-| Builds for non-production branches / Enable Preview Builds | Enabled |
-| Non-production / preview deploy command | `npm run preview` |
+| Build command | Empty (Wrangler's build hook builds and tests) |
+| Deploy command | `npm run deploy:ci` |
+| Version command | `npm run preview` |
+| Root directory | Repository root |
+| Builds for non-production branches | Enabled |
 | Branch include patterns (if configured) | `*` |
 | Branch exclude patterns | None |
 
 The failing branch build logged `Executing user deploy command: npm run build:app
 && npm run css && npm test`. That command only builds and tests; it never uploads a
 Worker version, so a successful build has no preview URL. Replace that command
-with `npm run preview`. It already runs the build and tests via Wrangler's hook.
-The preview command is separate from the guarded production command.
+with `npm run preview` in the **Version command** field. It already runs the build
+and tests via Wrangler's hook. Cloudflare labels this step "user deploy command"
+in logs even when it runs the Version command for a non-production branch.
+
+This Worker uses version preview URLs (`wrangler versions upload`), not the
+separate Worker Previews feature (`wrangler preview`). No migration to Worker
+Previews is required. The npm script named `preview` invokes `versions upload`.
 
 Pushing changes to `package.json` does not update the command saved in Cloudflare.
 Open the build configuration editor (not just Branch control) and replace the
-build/test-only deploy command. If only a single deploy command is available,
-set it to `npm run deploy:ci`. A staging build must log `Uploading review version
+build/test-only **Version command**. Changing **Deploy command** alone does not
+change staging builds. Save, then retry the latest staging build. It must log `Uploading review version
 for branch staging`, then `Worker Version ID`, `Version Preview URL`, and
 `Version Preview Alias URL`. A successful run that ends after tests has not
 published a preview. The version URL identifies that particular upload; the
@@ -137,14 +144,12 @@ actually serving, read its `/build.txt` and compare the commit with the pushed
 commit. Pausing Cloudflare Access on the preview hostname does not grant the
 CLI account access to the Cloudflare Builds API.
 
-As an alternative for a shared deploy command, `deploy:ci` reads Cloudflare's
+`deploy:ci` reads Cloudflare's
 `WORKERS_CI_BRANCH`. On `main`, it preserves the
 existing check that HEAD equals the fetched `origin/main`, checks out `main`, and
 runs `wrangler deploy --env=""`. On every other branch it runs the preview upload.
-If the dashboard exposes only one deploy command, use `npm run deploy:ci` there.
-If logs show a separate default preview command, that command must be changed to
-`npm run preview` through the build configuration; changing the production command
-alone does not change a separate preview trigger.
+For this dashboard, set the separate **Version command** to `npm run preview`;
+the fallback branch handling in `deploy:ci` does not override that saved setting.
 
 The Wrangler build hook builds the assets when these commands run. Branch controls
 live in Cloudflare, not in `wrangler.jsonc`.
@@ -152,7 +157,7 @@ The command must be present on every branch being built; merge this change into
 existing branches before rebuilding them.
 
 `npm run preview` reads `WORKERS_CI_BRANCH` in Cloudflare Builds (or the local Git
-branch) and uploads the review-only `staging` configuration with an explicit
+branch) and uploads the fully functional `staging` configuration with an explicit
 `--preview-alias`. It prints the immutable version URL and the stable branch URL.
 For `staging`, that alias URL is
 `https://staging-adapt-to-life.adapt-to-life.workers.dev`.
@@ -167,7 +172,7 @@ having the flags in the file alone does not repair disabled server-side routing.
 `deploy:staging` is an alias for this same safe upload. **Do not run
 `wrangler deploy --env staging`**: this configuration deliberately uses the
 production Worker name so uploaded versions appear under the same dashboard
-Worker, and deploying it would promote the review entrypoint to live traffic.
+Worker, and deploying it would promote the staging entrypoint to live traffic.
 
 `--env staging` is ONE Worker. Two concurrent workstreams deploying to it silently replace each
 other, and every check you run afterwards passes against whichever build landed last. On
@@ -181,17 +186,23 @@ npm run preview
 # → Version Preview URL: https://<version-prefix>-adapt-to-life.adapt-to-life.workers.dev
 ```
 
-That URL is yours alone, it is a review-only copy of the site, and it does not change what
+That URL is yours alone, it is a fully functional copy of the site, and it does not change what
 `adapt-to-life` serves. No second Worker, no second environment, no config change: the
 isolation already exists in Wrangler. Check and hand over THAT link.
 
-Shared staging (only when you know you are the only session on it — front-end only, no data
-bindings, no cron, so it can never touch prod ClickUp/D1/R2/email):
+Staging uses live production databases, email, ClickUp, newsletter, waiver storage,
+and payment services. Inputs, submissions, widgets, external links, and application
+routes use the normal application behavior. Existing validation, Turnstile, rate
+limits, and authentication still apply. Preview hosts must be allowed by the
+Turnstile widget and any authentication provider being tested.
 
-```sh
-npm run deploy:staging
-# → https://adapt-to-life.adapt-to-life.workers.dev
-```
+Staging exports only the HTTP handler and has an empty cron list. Production
+continues to own scheduled jobs. Non-inherited Wrangler vars and bindings are
+repeated under `env.staging`; keep their service settings aligned with production.
+Secrets stay in the existing Worker secret configuration, not in committed vars.
+
+`npm run deploy:staging` is another name for `npm run preview` and updates the
+current branch alias without deploying it to production.
 
 Every wrangler invocation stamps `public/build.txt` through the `build` hook in `wrangler.jsonc`,
 including a bare `cfrun npx wrangler deploy`, and `check-site.mjs` fails if the build it reaches is

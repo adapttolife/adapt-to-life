@@ -1,4 +1,4 @@
-// Upload a review-only version of the existing Worker; never promote it to live traffic.
+// Upload a staging version using live services; never promote it to production traffic.
 import { createHash } from 'node:crypto';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';

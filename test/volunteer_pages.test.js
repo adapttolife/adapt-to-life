@@ -26,8 +26,8 @@ const body = (html) => html.slice(html.indexOf("<main>"), html.indexOf("</main>"
 
 test("the generated tree is up to date", () => {
   // Regenerates in a scratch check and fails if anything on disk differs.
-  execFileSync("node", ["scripts/build-volunteer.mjs", "--check"], {
-    cwd: new URL(".", root).pathname, stdio: "pipe",
+  execFileSync(process.execPath, ["scripts/build-volunteer.mjs", "--check"], {
+    cwd: root, stdio: "pipe",
   });
 });
 

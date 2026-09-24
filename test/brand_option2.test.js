@@ -1,9 +1,10 @@
+import { fileURLToPath } from "node:url";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 import { join } from "node:path";
 
-const ROOT = new URL("..", import.meta.url).pathname;
+const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const PUBLIC = join(ROOT, "public");
 const CORAL = "#FF5C39";
 const INK = "#1A1A1A";
@@ -11,7 +12,7 @@ const INK = "#1A1A1A";
 async function filesUnder(dir, extensions = new Set([".html", ".css", ".js", ".mjs", ".svg"])) {
   const files = [];
   for (const entry of await readdir(dir, { withFileTypes: true })) {
-    if ([".git", "node_modules"].includes(entry.name)) continue;
+    if ([".git", ".wrangler", "node_modules"].includes(entry.name)) continue;
     const path = join(dir, entry.name);
     if (entry.isDirectory()) files.push(...await filesUnder(path, extensions));
     else if ([...extensions].some((ext) => entry.name.endsWith(ext))) files.push(path);
@@ -25,7 +26,7 @@ test("Option 2 is the canonical public brand palette", async () => {
   assert.match(css, /--ink:#1A1A1A\b/, "primary ink must match the vector PDF exactly");
 
   for (const path of await filesUnder(ROOT)) {
-    const relative = path.slice(ROOT.length);
+    const relative = path.slice(ROOT.length).replaceAll("\\", "/");
     // Historical long-cached assets remain byte-identical by policy. Tests also
     // name the retired values explicitly so regressions can reject them.
     if (relative.startsWith("test/") || relative.startsWith("public/images/") || relative.startsWith("brand/") || relative.startsWith("docs/")) continue;

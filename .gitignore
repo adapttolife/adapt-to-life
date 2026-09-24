@@ -4,6 +4,7 @@ node_modules/
 *.log
 .DS_Store
 public/build.txt
+public/build.json
 
 # Mission Control build output — produced by `npm run build:app` at deploy
 # time (wrangler build.command), so committing it would only create churn and

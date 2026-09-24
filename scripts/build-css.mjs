@@ -27,7 +27,7 @@
 // `a{b:c}` would save a little more and is where minifiers introduce subtle
 // selector bugs. Comments are the bulk; take the safe 80%.
 import { readFileSync, writeFileSync, readdirSync, mkdirSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { dirname, join } from "node:path";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -85,7 +85,7 @@ export function stripCss(css) {
   return out.replace(/\s+/g, " ").replace(/^\s+|\s+$/g, "") + "\n";
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   mkdirSync(OUT, { recursive: true });
   let before = 0, after = 0;
   for (const f of readdirSync(SRC).filter((f) => f.endsWith(".css")).sort()) {

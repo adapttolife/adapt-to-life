@@ -26,7 +26,7 @@ const CHECK = process.argv.includes("--check");
 const SITE = "https://adapttolife.org";
 
 // ---- chrome, lifted from a shipped page ---------------------------------
-const donor = readFileSync(join(PUB, "contact.html"), "utf8");
+const donor = readFileSync(join(PUB, "contact.html"), "utf8").replace(/\r\n/g, "\n");
 const HEADER = donor.slice(donor.indexOf('<header class="nav'), donor.indexOf("</header>") + 9);
 const FOOTER = donor.slice(donor.indexOf('<footer class="footer">'), donor.indexOf("</footer>") + 9);
 const afterFooter = donor.slice(donor.indexOf("</footer>") + 9);
@@ -417,7 +417,7 @@ const stale = existsSync(join(PUB, "volunteer"))
 
 let drift = [];
 for (const [path, body] of files) {
-  const current = existsSync(path) ? readFileSync(path, "utf8") : null;
+  const current = existsSync(path) ? readFileSync(path, "utf8").replace(/\r\n/g, "\n") : null;
   if (current !== body) drift.push(path.replace(ROOT + "/", ""));
 }
 

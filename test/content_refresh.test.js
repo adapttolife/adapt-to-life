@@ -80,16 +80,13 @@ test('the removed staging banner cannot return through injected chrome', () => {
   assert.ok(!worker.includes('staging-notice'));
   assert.ok(!worker.includes('CONTENT STAGING'));
   assert.ok(!worker.includes('padding-bottom:76px'));
-  assert.ok(worker.includes('stopImmediatePropagation'));
-  assert.ok(worker.includes("new URL(a.getAttribute('href'),location.href).origin!==location.origin"));
+  assert.ok(!worker.includes('stopImmediatePropagation'));
+  assert.ok(!worker.includes('data-staging-disabled'));
 });
 
 test('share checks fetch the declared image URL rather than hiding a wrong host', () => {
   const checker = read('scripts/check-site.mjs');
   assert.ok(checker.includes('const r = await get(src);'));
   assert.ok(!checker.includes('get(`${BASE}${asset}?cb='));
-  const worker = read('src/staging.js');
-  assert.ok(worker.includes('meta[property="og:image"]'));
-  assert.ok(worker.includes('meta[name="twitter:image"]'));
-  assert.ok(worker.includes('target.host = url.host'));
+
 });

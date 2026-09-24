@@ -1,7 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {isReviewPath} from '../src/staging.js';
 const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
 test('homepage defines one enduring mission before current work',()=>{
  const h=read('public/index.html');
@@ -18,7 +17,7 @@ test('homepage defines one enduring mission before current work',()=>{
 });
 test('shop is a coming-soon part of the mission, not a premature store',()=>{
  const h=read('public/adapt-body-shop.html');
- assert.ok(isReviewPath('/adapt-body-shop'));assert.ok(isReviewPath('/adapt-body-shop.html'));
+
  assert.ok(h.includes('The store is not open yet.'));
  assert.ok(h.includes('A purchase is not the same as a charitable gift.'));
  assert.ok(!/Shop now|Buy now|Add to cart|100%|all profits/i.test(h));

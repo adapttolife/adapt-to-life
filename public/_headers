@@ -35,6 +35,15 @@
 /css/*
   Cache-Control: public, max-age=300, stale-while-revalidate=3600
 
+# Build identity must reflect this URL's current deployment on every request.
+/build.json
+  Cache-Control: no-store
+  X-Robots-Tag: noindex
+
+/build.txt
+  Cache-Control: no-store
+  X-Robots-Tag: noindex
+
 /js/*
   Cache-Control: public, max-age=300, stale-while-revalidate=3600
 

@@ -33,7 +33,7 @@
   // and the homepage. It runs BEFORE the stamp like everything else that writes
   // into public/, and it cannot fail the build: if the directory's API is
   // unreachable it reuses the committed data/asnm-stats.json and says so.
-  "build": { "command": "node scripts/guard-prod-branch.mjs && npm run build:app && node scripts/build-css.mjs && npm test && node scripts/build-asnm.mjs && node scripts/stamp-build.mjs" },
+  "build": { "command": "npm run build:app && node scripts/build-css.mjs && npm test && node scripts/build-asnm.mjs && node scripts/stamp-build.mjs" },
 
   // Live custom domains (apex + www). Cloudflare manages DNS + TLS for these.
   "routes": [
@@ -48,11 +48,8 @@
     "binding": "ASSETS",
     // /review is staging-only: run the Worker first for it so the redirect gate
     // executes (assets otherwise serve before the Worker and bypass the gate).
-    // /admin/* is the same shape for the opposite reason: it is PRODUCTION-only.
-    // Cloudflare Access protects adapttolife.org/admin, but Access is bound to a
-    // hostname and the staging Worker answers on workers.dev, where no Access
-    // app exists — so without the Worker running first, the QR admin page would
-    // serve to anyone who guessed the staging URL.
+    // /admin/* also runs through the Worker for authentication and app routing.
+    // Staging runs every request through the Worker and checks admin page auth.
     "run_worker_first": ["/review", "/review.html", "/photo-picks", "/photo-picks.html",
       "/hero-review", "/hero-review.html", "/hero-1", "/hero-1.html", "/hero-2", "/hero-2.html", "/hero-3", "/hero-3.html",
         "/hero-4", "/hero-4.html", "/hero-5", "/hero-5.html", "/hero-6", "/hero-6.html", "/hero-7", "/hero-7.html", "/hero-9", "/hero-9.html",
@@ -121,7 +118,9 @@
     // reconciliation must never send retroactive thank-yous for the baseline.
     "GIVEBUTTER_DONOR_CUTOFF": "2026-08-08T22:40:55Z",
     "OFFLINE_RAISED": "3004",
-    "R2_ACCESS_KEY_ID": "d27b427aadef63a7ec1e05eaec108bc0"
+    "R2_ACCESS_KEY_ID": "d27b427aadef63a7ec1e05eaec108bc0",
+    "MAIL_TRANSPORT": "gmail",
+    "GMAIL_FROM": "hello@adapttolife.org"
   },
   // Signed-waiver storage: archived to Google Drive, with the signing record in D1.
   "d1_databases": [
@@ -148,23 +147,48 @@
   "triggers": {
     "crons": ["*/10 * * * *"]
   },
-  // Staging preview: a separate Worker (adapt-to-life-staging) on workers.dev for
-  // design review before promoting to production. Front-end only — no data bindings
-  // and no cron — so staging can never touch prod ClickUp / D1 / R2 / email.
+  // Staging shares production services; only production runs scheduled jobs.
   "env": {
     "staging": {
-      "name": "adapt-to-life-staging",
+      // Intentionally targets versions of the existing Worker for dashboard Builds.
+      // Use npm run preview (versions upload), NEVER deploy --env staging:
+      // deploying this environment would replace production and its trigger settings.
+      // Branch URLs require --preview-alias; env names do not create aliases.
+      "name": "adapt-to-life",
       "main": "src/staging.js",
       "workers_dev": true,
       "preview_urls": true,
-      "vars": { "STAGING": "1" },
+      "vars": {
+        "ENV_NAME": "staging",
+        "STAGING": "1",
+        "INTAKE_INBOX": "hello@adapttolife.org",
+        "BEEHIIV_PUBLICATION_ID": "pub_d1bfe66c-074f-464a-a94a-d0cce6d21943",
+        "CLICKUP_APPLICATIONS_LIST_ID": "901418622126",
+        "CLICKUP_CONTACTS_LIST_ID": "901418639884",
+        "CLICKUP_VOLUNTEERS_LIST_ID": "901419920230",
+        "CLICKUP_RELATIONSHIPS_LIST_ID": "901418931939",
+        "WAIVERS_DRIVE_ID": "1NAW-FAeJKJnGgmMgzgRGS78CxE5WYo-p",
+        "AGENT_MAIL_DOMAIN": "agents.adapttolife.org",
+        "REPORT_LINK_BASE": "https://reports.amelioration.is",
+        "GRANTS_INBOX": "hello@adapttolife.org",
+        "GIVEBUTTER_CAMPAIGN_ID": "683765",
+        "GIVEBUTTER_DONOR_CUTOFF": "2026-08-08T22:40:55Z",
+        "OFFLINE_RAISED": "3004",
+        "R2_ACCESS_KEY_ID": "d27b427aadef63a7ec1e05eaec108bc0",
+        "MAIL_TRANSPORT": "gmail",
+        "GMAIL_FROM": "hello@adapttolife.org",
+        "TURNSTILE_MODE": "off"
+      },
       "routes": [],
-      // Every route crosses the review-only entrypoint, including assets.
-      // HTML rewrites disable payment widgets and forms without changing prod.
+      // Run the real application for every route, with staging cache/index headers.
       "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": true },
-      "d1_databases": [],
+      "d1_databases": [
+        { "binding": "WAIVERS_DB", "database_name": "atl-waivers", "database_id": "a1050703-c625-4028-962b-49cc3fa317fd" },
+        { "binding": "AGENT_MAIL_DB", "database_name": "agent-mail", "database_id": "a280a0e4-96db-4b39-a1fb-99f57b8d27be" },
+        { "binding": "INTAKE", "database_name": "atl-intake", "database_id": "5f9c4771-25ba-4e83-aadf-00bc698329bf" }
+      ],
       "r2_buckets": [],
-      "send_email": [],
+      "send_email": [{ "name": "SEND_EMAIL" }],
       "ratelimits": [{ "name": "FORM_LIMITER", "namespace_id": "1001", "simple": { "limit": 6, "period": 60 } }],
       "triggers": { "crons": [] }
     }

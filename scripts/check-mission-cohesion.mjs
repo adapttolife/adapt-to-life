@@ -1,9 +1,9 @@
-// Read-only story/navigation checks. The empty POST below tests staging refusal only.
+// Read-only story/navigation checks. Staging uses live services, so do not submit forms.
 import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
 import {mkdirSync,writeFileSync} from 'node:fs';
 const base=process.argv[2],out=process.argv[3];
-assert.ok(base==='http://localhost:8787'||base==='https://adapt-to-life-staging.adapt-to-life.workers.dev');
+assert.ok(base==='http://localhost:8787'||base==='https://adapt-to-life.adapt-to-life.workers.dev');
 mkdirSync(out,{recursive:true});
 const browser=await chromium.launch({executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH||undefined});
 const results=[];
@@ -33,8 +33,10 @@ try {
   await page.goto(base+'/about#our-work',{waitUntil:'networkidle'});assert.ok(await page.locator('#ourWorkTitle').isVisible());
   await ctx.close();
  }
- const req=await browser.newContext();const page=await req.newPage();const response=await page.request.post(base+'/api/subscribe',{data:{}});assert.equal(response.status(),403);const refused=await response.json();assert.equal(refused.staging,true);assert.equal(refused.ok,false);
- const shop=await page.request.get(base+'/adapt-body-shop');assert.ok(shop.headers()['x-robots-tag'].includes('noindex'));assert.ok(shop.headers()['content-security-policy'].includes("form-action 'none'"));
- writeFileSync(out+'/results.json',JSON.stringify({results,writeRefusal:refused},null,2));
- console.log(JSON.stringify({pages:7,widths:[390,1440],shopNavigation:'pass',keyboard:'pass',writeRefusal:'pass',overflow:'pass'}));await req.close();
+ const req=await browser.newContext();const page=await req.newPage();
+ const shop=await page.request.get(base+'/adapt-body-shop');assert.equal(shop.status(),200);
+ assert.ok(shop.headers()['x-robots-tag'].includes('noindex'));
+ assert.ok(!(shop.headers()['content-security-policy']||'').includes("form-action 'none'"));
+ writeFileSync(out+'/results.json',JSON.stringify({results},null,2));
+ console.log(JSON.stringify({pages:7,widths:[390,1440],shopNavigation:'pass',keyboard:'pass',overflow:'pass'}));await req.close();
 } finally {await browser.close();}

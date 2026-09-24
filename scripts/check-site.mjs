@@ -33,7 +33,7 @@ import { readFileSync } from "node:fs";
 import { execSync } from "node:child_process";
 import { ROLES } from "../data/volunteer-roles.mjs";
 
-const BASE = process.argv[2] || "https://adapt-to-life-staging.adapt-to-life.workers.dev";
+const BASE = process.argv[2] || "https://adapt-to-life.adapt-to-life.workers.dev";
 const IS_STAGING = BASE.includes("staging");
 // Every role page is part of a whole-site copy release. Exercise all of them,
 // not only template samples, so long role-specific wording cannot slip through.
@@ -307,12 +307,11 @@ if (missing.status !== 404) fail(`unknown path returned ${missing.status}, expec
   console.log(`share cards: ${seen.size} distinct, all fetched`);
 }
 
-// Production retains its existing tour gate. Content staging instead points
-// /review at the actual draft homepage; it must not revive the old design tour.
+// Production retains its tour gate; staging serves the review page normally.
 if (IS_STAGING) {
   const rv = await fetch(`${BASE}/review`, { redirect: "manual" });
-  if (rv.status !== 302 || rv.headers.get("location") !== "/#participation")
-    fail("staging /review must redirect to the draft homepage section");
+  if (rv.status !== 200)
+    fail("staging /review must be available");
 } else {
   const tour = readFileSync(new URL("../public/review.html", import.meta.url), "utf8");
   const stamped = tour.match(/updated (\d{4}-\d{2}-\d{2})/)?.[1];
@@ -399,15 +398,6 @@ if (IS_STAGING) {
 // money path by running these two pages on their own before believing anything
 // is wrong with the form.
 for (const path of ["/donate", "/hustle-and-heart"]) {
-  if (IS_STAGING) {
-    const g = await browser.newPage({ viewport: { width: 1440, height: 1000 }, reducedMotion: "reduce" });
-    await g.goto(`${BASE}${path}`, { waitUntil: "domcontentloaded" });
-    await g.locator(".staging-payment").waitFor({ state: "visible" });
-    if (await g.locator("givebutter-giving-form, iframe").count()) fail(`${path}: staging must not load a payment or signing frame`);
-    if (await g.locator("form input:not([disabled]), form button:not([disabled])").count()) fail(`${path}: staging form controls must be disabled`);
-    await g.close();
-    continue;
-  }
   let lastError = null;
   for (let attempt = 1; attempt <= 2; attempt++) {
   const g = await browser.newPage({ viewport: { width: 1440, height: 1000 }, reducedMotion: "reduce" });

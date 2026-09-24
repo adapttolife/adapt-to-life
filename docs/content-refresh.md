@@ -4,7 +4,7 @@
 
 Production source is `main`. This session's branch is `content/atl-story-2026-09`, based on main `8fb2c1e76cfbc10114eae2d978d85bb13ea45df9`. The draft PR targets main; nothing authorizes merge or production deployment.
 
-The one review site remains https://adapt-to-life-staging.adapt-to-life.workers.dev/ on the standard `env.staging`. There is no second staging stack.
+The one review site remains https://adapt-to-life.adapt-to-life.workers.dev/ on the standard `env.staging`. There is no second staging stack.
 
 ## Full draft, not a homepage sample
 

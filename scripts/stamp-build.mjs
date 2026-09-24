@@ -22,6 +22,8 @@ const PUB = join(ROOT, "public");
 
 const sha = execFileSync("git", ["rev-parse", "HEAD"], { cwd: ROOT, encoding: "utf8" }).trim();
 const dirty = execFileSync("git", ["status", "--porcelain"], { cwd: ROOT, encoding: "utf8" }).trim();
+const branch = process.env.WORKERS_CI_BRANCH ||
+  execFileSync("git", ["branch", "--show-current"], { cwd: ROOT, encoding: "utf8" }).trim() || null;
 
 // digest every deployed file, so the stamp changes when the payload does
 const h = createHash("sha256");
@@ -29,7 +31,7 @@ function walk(dir) {
   for (const e of readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
     const p = join(dir, e.name);
     if (e.isDirectory()) { walk(p); continue; }
-    if (relative(PUB, p) === "build.txt") continue; // never digest the stamp
+    if (["build.txt", "build.json"].includes(relative(PUB, p))) continue; // never digest build metadata
     h.update(relative(PUB, p));
     h.update(String(statSync(p).size));
     h.update(readFileSync(p));
@@ -37,6 +39,15 @@ function walk(dir) {
 }
 walk(PUB);
 
-const stamp = `${sha}${dirty ? "-dirty" : ""} ${h.digest("hex").slice(0, 16)}\n`;
+const digest = h.digest("hex").slice(0, 16);
+const stamp = `${sha}${dirty ? "-dirty" : ""} ${digest}\n`;
 writeFileSync(join(PUB, "build.txt"), stamp);
+writeFileSync(join(PUB, "build.json"), JSON.stringify({
+  commit: sha,
+  branch,
+  builtAt: new Date().toISOString(),
+  dirty: Boolean(dirty),
+  assetDigest: digest,
+  commitUrl: `https://github.com/coldcrippy/adapt-to-life/commit/${sha}`,
+}, null, 2) + "\n");
 console.log(`stamped public/build.txt: ${stamp.trim()}`);

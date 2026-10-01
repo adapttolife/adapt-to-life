@@ -30,34 +30,68 @@
 <script src="/js/attribution.js" defer></script>
 <link rel="preload" as="image" href="/images/brickhouse/ready.webp">
 <style>
-  /* Brick House partner page */
-  .fill{ background:var(--yellow); color:var(--ink); padding:0 0.3em; border-radius:3px; }
-  .bh-hero{ position:relative; isolation:isolate; overflow:hidden; min-height:clamp(620px, 92svh, 900px); display:flex; align-items:flex-end; padding:clamp(7rem,14vh,9rem) 0 clamp(3.5rem,8vh,5.5rem); }
-  .bh-hero-media{ position:absolute; inset:0; z-index:-2; background:url('/images/brickhouse/ready.webp') 70% 22%/cover no-repeat; }
-  .bh-hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:linear-gradient(0deg, rgba(12,12,14,0.96) 0%, rgba(12,12,14,0.78) 38%, rgba(12,12,14,0.15) 72%, rgba(12,12,14,0.55) 100%); }
-  @media (min-width:900px){ .bh-hero::after{ background:linear-gradient(90deg, rgba(12,12,14,0.95) 0%, rgba(12,12,14,0.8) 42%, rgba(12,12,14,0.1) 75%), linear-gradient(0deg, rgba(12,12,14,0.6) 0%, transparent 30%); } .bh-hero-media{ background-position:right 18%; left:30%; -webkit-mask-image:linear-gradient(90deg, transparent 0%, #000 22%); mask-image:linear-gradient(90deg, transparent 0%, #000 22%); } }
-  .bh-hero-inner{ position:relative; }
-  .bh-hero .display{ max-width:13ch; margin-top:1.6rem; }
-  .bh-hero .sub{ max-width:44ch; margin-top:1.4rem; }
+  /* Brick House partner page. Told in pictures: their court, our athlete on it,
+     their new start, ours, the day, and a wall with room left to build. Uses the
+     site's own pieces (dark bands with the orange bloom, tick + eyebrow, the italic
+     orange accent, the closing) plus one motif of its own, the brick. */
+
+  /* 1. Hero: their court as the wallpaper, Bob in the Brick House shirt up front. */
+  .bh-hero{ position:relative; isolation:isolate; overflow:hidden; padding:clamp(3rem,7vh,5.5rem) 0 clamp(3.5rem,8vh,6rem); }
+  .bh-hero::before{ content:""; position:absolute; inset:-12px; z-index:-2; background:url('/images/brickhouse/court-wide.webp') 50% 40%/cover no-repeat; filter:blur(1px) saturate(0.95) brightness(0.9); }
+  .bh-hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:
+      radial-gradient(ellipse 50% 60% at 72% 55%, rgba(255,92,57,0.20) 0%, transparent 70%),
+      linear-gradient(90deg, rgba(12,12,14,0.93) 0%, rgba(12,12,14,0.74) 42%, rgba(12,12,14,0.28) 100%),
+      linear-gradient(0deg, rgba(12,12,14,0.9) 0%, transparent 35%); }
+  .bh-hero-grid{ display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,0.9fr); gap:clamp(2rem,5vw,4.5rem); align-items:center; }
+  .bh-hero .display{ max-width:12ch; margin-top:1.6rem; }
+  .bh-hero .sub{ max-width:40ch; margin-top:1.4rem; }
   .bh-hero .actions{ display:flex; flex-wrap:wrap; gap:0.9rem 1rem; margin-top:2rem; }
   .bh-duo{ display:flex; align-items:center; gap:clamp(1rem,3vw,1.6rem); }
-  .bh-atl{ width:clamp(64px,9vw,92px); height:auto; color:var(--cream); }
-  .bh-bhlogo{ width:clamp(120px,17vw,176px); height:auto; }
+  .bh-atl{ width:clamp(60px,8vw,86px); height:auto; color:var(--cream); }
+  .bh-bhlogo{ width:clamp(116px,15vw,164px); height:auto; }
   .bh-net{ width:3px; align-self:stretch; min-height:56px; background:var(--orange); border-radius:2px; box-shadow:0 0 16px -2px var(--orange-glow); }
+  .bh-bob{ position:relative; margin:0; justify-self:center; width:min(100%, 430px); }
+  .bh-bob img{ display:block; width:100%; height:auto; aspect-ratio:4/5; object-fit:cover; object-position:50% 28%; border-radius:18px; box-shadow:0 0 0 1px rgba(255,255,255,0.08), 0 30px 70px -20px rgba(0,0,0,0.8), 0 0 80px -10px rgba(255,92,57,0.35); transform:rotate(1.5deg); }
+  .bh-bob figcaption{ margin-top:1.1rem; text-align:center; font-family:var(--font-label); font-size:0.74rem; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:var(--cream-faint); }
+  @media (max-width:900px){
+    .bh-hero-grid{ grid-template-columns:1fr; }
+    .bh-bob{ order:-1; width:min(100%, 360px); margin-bottom:0.6rem; }
+    .bh-hero::after{ background: radial-gradient(ellipse 80% 40% at 50% 25%, rgba(255,92,57,0.18) 0%, transparent 70%), linear-gradient(180deg, rgba(12,12,14,0.35) 0%, rgba(12,12,14,0.8) 42%, rgba(12,12,14,0.96) 100%); }
+  }
+
   .bh-bricks{ display:block; width:100%; height:48px; background:#F9F7F2; }
-  .bh-story{ display:grid; grid-template-columns:1.05fr 0.95fr; gap:clamp(2.5rem,6vw,5rem); align-items:center; }
-  .bh-copy .h2{ margin-top:0.8rem; max-width:14ch; }
-  .bh-copy .prose{ margin-top:1.2rem; max-width:54ch; }
-  .bh-stack{ position:relative; margin:0; min-height:clamp(380px,48vw,560px); }
-  .bh-ph{ height:auto; position:absolute; border-radius:14px; object-fit:cover; box-shadow:0 22px 50px -18px rgba(12,12,14,0.45); }
-  .bh-ph-a{ width:64%; aspect-ratio:3/4; left:0; top:0; }
-  .bh-ph-b{ width:52%; aspect-ratio:3/4; right:0; bottom:0; outline:6px solid var(--paper); }
-  @media (max-width:860px){ .bh-story{ grid-template-columns:1fr; } .bh-stack{ min-height:clamp(380px,110vw,520px); } }
+
+  /* 2 + 3. Two new starts, each a picture first. */
+  .bh-start-head{ max-width:40ch; }
+  .bh-start-head .tick{ margin:0 0 1rem; }
+  .bh-start-head .statement{ margin-top:0.7rem; }
+  .bh-start-head .prose{ margin-top:1rem; }
+  .bh-num{ font-family:var(--font-display); font-weight:900; font-style:italic; color:var(--orange); }
+  .bh-place{ display:grid; grid-template-columns:2fr 1fr; grid-template-rows:1fr 1fr; gap:clamp(0.6rem,1.4vw,1rem); margin-top:clamp(2rem,4vw,3rem); }
+  .bh-place img{ width:100%; height:100%; object-fit:cover; border-radius:14px; display:block; }
+  .bh-place img:first-child{ grid-row:span 2; aspect-ratio:3/2; }
+  .bh-play{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(0.6rem,1.4vw,1rem); margin-top:clamp(2rem,4vw,3rem); }
+  .bh-play img{ width:100%; height:auto; aspect-ratio:4/5; object-fit:cover; border-radius:14px; display:block; }
+  .bh-play img:nth-child(1){ object-position:50% 40%; }
+  .bh-play img:nth-child(3){ object-position:50% 45%; }
+  @media (max-width:640px){
+    .bh-place{ grid-template-columns:1fr 1fr; grid-template-rows:auto auto; }
+    .bh-place img:first-child{ grid-column:span 2; grid-row:auto; }
+    .bh-place img:not(:first-child){ aspect-ratio:1/1; }
+    .bh-play{ grid-template-columns:repeat(3,72%); overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:0.5rem; }
+    .bh-play img{ scroll-snap-align:start; }
+  }
+  .bh-together{ margin:clamp(3rem,6vw,4.5rem) auto 0; max-width:30ch; text-align:center; font-family:var(--font-display); font-weight:800; font-size:clamp(1.5rem,3.2vw,2.3rem); line-height:1.15; letter-spacing:-0.025em; }
+
+  /* 4. The day: a faint wall in the mortar, the bloom behind the date. */
+  .bh-open{ position:relative; isolation:isolate; overflow:hidden; }
+  .bh-open::before{ content:""; position:absolute; inset:0; z-index:-1; opacity:0.5; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='48'%3E%3Cg fill='none' stroke='%23F9F7F2' stroke-opacity='0.06'%3E%3Cpath d='M0 .5h96M0 24.5h96M.5 0v24M48.5 0v24M24.5 24v24M72.5 24v24'/%3E%3C/g%3E%3C/svg%3E"); -webkit-mask-image:linear-gradient(180deg, transparent, #000 30%, #000 70%, transparent); mask-image:linear-gradient(180deg, transparent, #000 30%, #000 70%, transparent); }
   .bh-event{ display:grid; grid-template-columns:minmax(220px,0.8fr) 1.4fr; gap:clamp(2rem,5vw,4.5rem); align-items:start; }
   @media (max-width:820px){ .bh-event{ grid-template-columns:1fr; } }
-  .bh-date{ border-left:4px solid var(--orange); padding-left:clamp(1rem,2.5vw,1.6rem); }
+  .bh-date{ position:relative; border-left:4px solid var(--orange); padding-left:clamp(1rem,2.5vw,1.6rem); }
+  .bh-date::before{ content:""; position:absolute; z-index:-1; left:-30%; top:-20%; width:150%; height:140%; background:radial-gradient(ellipse at 40% 55%, rgba(255,92,57,0.22) 0%, transparent 65%); pointer-events:none; }
   .bh-day{ margin-top:1rem; font-weight:700; font-size:1.2rem; color:var(--cream-mute); }
-  .bh-big{ font-family:var(--font-display); font-weight:900; font-size:clamp(4.2rem,12vw,8rem); line-height:0.88; letter-spacing:-0.05em; color:var(--orange); }
+  .bh-big{ font-family:var(--font-display); font-weight:900; font-size:clamp(4.2rem,12vw,8rem); line-height:0.88; letter-spacing:-0.05em; color:var(--orange); text-shadow:0 0 42px rgba(255,92,57,0.35); }
   .bh-note{ margin-top:1rem; color:var(--cream-mute); max-width:22ch; }
   .bh-detail .prose{ margin-top:1.1rem; max-width:52ch; }
   .bh-facts{ margin-top:1.8rem; border-top:1px solid rgba(255,255,255,0.14); }
@@ -65,11 +99,27 @@
   .bh-facts dt{ font-weight:700; color:var(--cream-faint); }
   .bh-facts dd{ color:var(--cream); }
   .bh-actions{ display:flex; flex-wrap:wrap; gap:0.9rem 1rem; margin-top:2rem; }
-  .bh-strip{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(0.6rem,1.5vw,1rem); margin-top:clamp(3rem,6vw,4.5rem); }
-  .bh-strip img{ height:auto; width:100%; aspect-ratio:4/5; object-fit:cover; border-radius:12px; }
-  .bh-strip img:nth-child(2){ object-position:50% 30%; }
-  @media (max-width:640px){ .bh-strip{ grid-template-columns:repeat(3,72%); overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:0.5rem; } .bh-strip img{ scroll-snap-align:start; } }
-  .bh-sign{ margin-top:clamp(2.5rem,5vw,3.5rem); font-family:var(--font-display); font-weight:800; font-size:clamp(1.3rem,2.4vw,1.7rem); letter-spacing:-0.02em; color:var(--orange-ink); }
+
+  /* 5. Grow together: our athletes laid as a wall, with bricks still to lay. */
+  .bh-close{ text-align:center; }
+  .bh-close .tick{ margin:0 auto 1rem; }
+  .bh-close .display{ max-width:14ch; margin:0.9rem auto 0; }
+  .bh-close .prose{ max-width:46ch; margin:1.3rem auto 0; color:var(--cream-mute); }
+  .bh-close .bh-actions{ justify-content:center; margin-top:2.2rem; }
+  .bh-wall{ display:grid; grid-template-columns:repeat(12,1fr); gap:clamp(5px,0.6vw,8px); margin:clamp(2.5rem,5vw,3.5rem) auto 0; max-width:980px; }
+  .bk{ grid-column:span 2; aspect-ratio:1.7/1; border-radius:4px; }
+  .bk.half{ grid-column:span 1; aspect-ratio:auto; }
+  .bk.o{ background:var(--orange); box-shadow:inset 0 -6px 0 rgba(0,0,0,0.14); }
+  .bk.c{ background:var(--cream); box-shadow:inset 0 -6px 0 rgba(0,0,0,0.09); }
+  .bk.ph{ background:#1d1d1f var(--img) var(--pos, 50% 30%)/cover no-repeat; filter:grayscale(1) contrast(1.1); }
+  .bk.ph.lit{ filter:none; box-shadow:0 0 0 2px var(--orange), 0 14px 34px -12px rgba(255,92,57,0.6); }
+  .bk.next{ border:2px dashed rgba(255,92,57,0.85); background:rgba(255,92,57,0.07); }
+  .bh-wall.in .bk{ animation:bh-lay 0.6s cubic-bezier(.2,.7,.2,1) both; animation-delay:calc(var(--i) * 45ms); }
+  .bh-wall.in .bk.next{ animation:bh-lay 0.6s cubic-bezier(.2,.7,.2,1) both, bh-wait 2.4s ease-in-out 1.6s infinite; animation-delay:calc(var(--i) * 45ms), calc(var(--i) * 45ms + 1.4s); }
+  @keyframes bh-lay{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:none; } }
+  @keyframes bh-wait{ 0%,100%{ border-color:rgba(255,92,57,0.85); } 50%{ border-color:rgba(255,92,57,0.35); } }
+  @media (prefers-reduced-motion: reduce){ .bh-wall.in .bk, .bh-wall.in .bk.next{ animation:none; } }
+  .bh-sign{ margin-top:clamp(2.5rem,5vw,3.5rem); font-family:var(--font-display); font-weight:800; font-style:italic; font-size:clamp(1.5rem,3vw,2.2rem); letter-spacing:-0.02em; color:var(--orange); }
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Event","name":"Brick House Pickleball Grand Opening","startDate":"2026-10-25","eventStatus":"https://schema.org/EventScheduled","eventAttendanceMode":"https://schema.org/OfflineEventAttendanceMode","location":{"@type":"Place","name":"Brick House Pickleball","address":{"@type":"PostalAddress","streetAddress":"28457 Ballard Drive, Unit H","addressLocality":"Lake Forest","addressRegion":"IL","postalCode":"60045","addressCountry":"US"}},"organizer":[{"@type":"Organization","name":"Brick House Pickleball"}],"sponsor":{"@type":"Organization","name":"Adapt To Life","url":"https://adapttolife.org"},"isAccessibleForFree":true}</script>
 </head>
@@ -154,12 +204,12 @@ fill="currentColor" stroke="none">
 
 <main>
 
-  <!-- HERO -->
+  <!-- 1. ONE COURT: their court, our athlete on it -->
   <section class="bh-hero dark">
-    <div class="bh-hero-media" role="img" aria-label="An athlete in a sport wheelchair, paddle in hand, on the new courts at Brick House Pickleball in Lake Forest"></div>
-    <div class="wrap bh-hero-inner">
-      <div class="bh-duo">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500.000000 457.000000" class="bh-atl" role="img" aria-label="Adapt To Life" focusable="false"><g transform="translate(0.000000,457.000000) scale(0.100000,-0.100000)"
+    <div class="wrap bh-hero-grid">
+      <div class="bh-hero-copy">
+        <div class="bh-duo">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500.000000 457.000000" class="bh-atl" role="img" aria-label="Adapt To Life" focusable="false"><g transform="translate(0.000000,457.000000) scale(0.100000,-0.100000)"
 fill="currentColor" stroke="none">
 <path d="M2059 4548 c-14 -13 -99 -185 -198 -403 -96 -209 -238 -519 -316
 -690 -202 -440 -304 -662 -333 -725 -29 -65 -163 -358 -237 -520 -29 -63 -139
@@ -186,38 +236,61 @@ fill="currentColor" stroke="none">
 -338 -665 -446 -974 -226 -323 230 -382 720 -118 982 42 42 42 42 42 186 0 96
 5 163 15 201 25 97 17 99 -102 26z"/>
 </g></svg>
-        <span class="bh-net" aria-hidden="true"></span>
-        <img src="/images/brickhouse/brick-house-logo-orange-black-reverse.svg" alt="Brick House Pickleball" class="bh-bhlogo" width="372" height="265">
+          <span class="bh-net" aria-hidden="true"></span>
+          <img src="/images/brickhouse/brick-house-logo-orange-black-reverse.svg" alt="Brick House Pickleball" class="bh-bhlogo" width="372" height="265">
+        </div>
+        <h1 class="serif display">Two new starts. <em class="italic" style="color:var(--orange)">One court.</em></h1>
+        <p class="lead sub">Brick House Pickleball is the first partner of Adapt To Life. We would rather start together.</p>
+        <div class="actions">
+          <a href="#opening" class="btn">See the grand opening</a>
+          <a href="#story" class="btn ghost">Why this partnership</a>
+        </div>
       </div>
-      <h1 class="serif display">Two new starts. One court.</h1>
-      <p class="lead sub">Brick House Pickleball is the first partner of Adapt To Life. They are opening their doors in Lake Forest under new ownership. We are a young nonprofit finding our footing. We would rather start together.</p>
-      <div class="actions">
-        <a href="#opening" class="btn">See the grand opening</a>
-        <a href="#story" class="btn ghost">Why this partnership</a>
-      </div>
-    </div>
-  </section>
-
-  <svg class="bh-bricks" aria-hidden="true" focusable="false"><defs><pattern id="bhb" width="96" height="48" patternUnits="userSpaceOnUse"><rect x="2" y="2" width="44" height="20" rx="2" fill="#FF5C39"/><rect x="50" y="2" width="44" height="20" rx="2" fill="#0C0C0E"/><rect x="-22" y="26" width="44" height="20" rx="2" fill="#0C0C0E"/><rect x="26" y="26" width="44" height="20" rx="2" fill="#FF5C39"/><rect x="74" y="26" width="44" height="20" rx="2" fill="#0C0C0E"/></pattern></defs><rect width="100%" height="100%" fill="url(#bhb)"/></svg>
-
-  <!-- STORY -->
-  <section class="band tint" id="story">
-    <div class="wrap bh-story">
-      <div class="bh-copy">
-        <span class="eyebrow orange">Our first partner</span>
-        <h2 class="serif h2">A place to play is where it starts.</h2>
-        <p class="prose">Every athlete we support needs somewhere to play. A club that welcomes adaptive athletes changes what is possible for the people around it: a first rally, a regular game, a reason to come back next week.</p>
-        <p class="prose">Brick House has just finished a full renovation. Wheelchair pickleball is where our support for athletes began. This partnership puts the two side by side, in public, from the first day the new courts open.</p>
-        <p class="prose">What we build together will grow from here. Today, we are getting started.</p>
-      </div>
-      <figure class="bh-stack">
-        <img src="/images/brickhouse/serve.webp" alt="Ball in one hand, paddle in the other, an athlete lines up a serve at Brick House" class="bh-ph bh-ph-a" loading="lazy" width="1078" height="1600">
-        <img src="/images/brickhouse/push.webp" alt="An athlete pushes hard to cover the court, paddle on the wheel" class="bh-ph bh-ph-b" loading="lazy" width="1064" height="1600">
+      <figure class="bh-bob">
+        <img src="/images/brickhouse/ready.webp" alt="An athlete in a sport wheelchair and a Brick House Pickleball shirt, paddle in hand, on the new courts" width="1080" height="1600" fetchpriority="high">
+        <figcaption>On the new courts at Brick House</figcaption>
       </figure>
     </div>
   </section>
 
-  <!-- GRAND OPENING -->
+  <svg class="bh-bricks" aria-hidden="true" focusable="false"><defs><pattern id="bhb1" width="96" height="48" patternUnits="userSpaceOnUse"><rect x="2" y="2" width="44" height="20" rx="2" fill="#FF5C39"/><rect x="50" y="2" width="44" height="20" rx="2" fill="#0C0C0E"/><rect x="-22" y="26" width="44" height="20" rx="2" fill="#0C0C0E"/><rect x="26" y="26" width="44" height="20" rx="2" fill="#FF5C39"/><rect x="74" y="26" width="44" height="20" rx="2" fill="#0C0C0E"/></pattern></defs><rect width="100%" height="100%" fill="url(#bhb1)"/></svg>
+
+  <!-- 2. THEIR NEW START -->
+  <section class="band tint" id="story">
+    <div class="wrap">
+      <div class="bh-start-head">
+        <hr class="tick orange">
+        <span class="eyebrow orange">Brick House Pickleball</span>
+        <h2 class="serif statement">Their new start.</h2>
+        <p class="prose">Brick House has just finished a full renovation. They are opening their doors in Lake Forest under new ownership.</p>
+      </div>
+      <div class="bh-place">
+        <img src="/images/brickhouse/court-wide.webp" alt="Two renovated courts at Brick House, the Brick House name on the padding along the block wall" loading="lazy" width="860" height="573">
+        <img src="/images/brickhouse/court-net.webp" alt="A new net post on the blue court" loading="lazy" width="500" height="333">
+        <img src="/images/brickhouse/court-one.webp" alt="Court one, a bench and Brick House padding along the wall" loading="lazy" width="500" height="333">
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. OURS -->
+  <section class="band">
+    <div class="wrap">
+      <div class="bh-start-head">
+        <hr class="tick orange">
+        <span class="eyebrow orange">Adapt To Life</span>
+        <h2 class="serif statement">Ours.</h2>
+        <p class="prose">We are a young nonprofit finding our footing. Wheelchair pickleball is where our support for athletes began.</p>
+      </div>
+      <div class="bh-play">
+        <img src="/images/brickhouse/serve.webp" alt="Ball in one hand, paddle in the other, an athlete lines up a serve at Brick House" loading="lazy" width="1078" height="1600">
+        <img src="/images/brickhouse/push.webp" alt="An athlete pushes hard to cover the court, paddle on the wheel" loading="lazy" width="1064" height="1600">
+        <img src="/images/brickhouse/ball.webp" alt="Ball resting on the push rim between points" loading="lazy" width="1100" height="1416">
+      </div>
+      <p class="bh-together">This partnership puts the two side by side, in public, from the first day the new courts open.</p>
+    </div>
+  </section>
+
+  <!-- 4. THE DAY -->
   <section class="band dark bh-open" id="opening">
     <div class="wrap">
       <div class="bh-event">
@@ -241,24 +314,40 @@ fill="currentColor" stroke="none">
           </div>
         </div>
       </div>
-      <div class="bh-strip">
-        <img src="/images/brickhouse/ball.webp" alt="Ball resting on the push rim between points" loading="lazy" width="1100" height="1416">
-        <img src="/images/brickhouse/ready.webp" alt="Ready position against the brick wall" loading="lazy" width="1080" height="1600">
-        <img src="/images/brickhouse/scoop.webp" alt="Scooping the ball up off the blue court" loading="lazy" width="907" height="1600">
-      </div>
     </div>
   </section>
 
-  <svg class="bh-bricks" aria-hidden="true" focusable="false"><defs><pattern id="bhb" width="96" height="48" patternUnits="userSpaceOnUse"><rect x="2" y="2" width="44" height="20" rx="2" fill="#FF5C39"/><rect x="50" y="2" width="44" height="20" rx="2" fill="#0C0C0E"/><rect x="-22" y="26" width="44" height="20" rx="2" fill="#0C0C0E"/><rect x="26" y="26" width="44" height="20" rx="2" fill="#FF5C39"/><rect x="74" y="26" width="44" height="20" rx="2" fill="#0C0C0E"/></pattern></defs><rect width="100%" height="100%" fill="url(#bhb)"/></svg>
+  <svg class="bh-bricks" aria-hidden="true" focusable="false"><defs><pattern id="bhb2" width="96" height="48" patternUnits="userSpaceOnUse"><rect x="2" y="2" width="44" height="20" rx="2" fill="#FF5C39"/><rect x="50" y="2" width="44" height="20" rx="2" fill="#0C0C0E"/><rect x="-22" y="26" width="44" height="20" rx="2" fill="#0C0C0E"/><rect x="26" y="26" width="44" height="20" rx="2" fill="#FF5C39"/><rect x="74" y="26" width="44" height="20" rx="2" fill="#0C0C0E"/></pattern></defs><rect width="100%" height="100%" fill="url(#bhb2)"/></svg>
 
-  <!-- WHAT COMES NEXT -->
-  <section class="band">
+  <!-- 5. GROW TOGETHER: our athletes laid as a wall, Brick House the newest brick, room left to build -->
+  <section class="closing dark band-lg">
     <div class="wrap">
-      <div class="reading">
+      <div class="bh-close">
+        <hr class="tick orange">
         <span class="eyebrow orange">Partner number one</span>
-        <h2 class="serif h2" style="margin-top:0.8rem;">The first of several.</h2>
-        <p class="prose" style="margin-top:1.2rem;">Over the coming weeks we will introduce the clubs and programs we are building with. Each one adds another place to play and another way into adaptive sports.</p>
-        <p class="prose">Run a club, a program, or a business that wants in? Start the conversation.</p>
+        <h2 class="serif display">The first of <em class="italic" style="color:var(--orange)">several.</em></h2>
+        <div class="bh-wall reveal" role="img" aria-label="A wall of Adapt To Life athletes with Brick House laid in as the newest brick, and empty bricks still to be laid">
+          <span class="bk ph" style="--i:0; --img:url('/images/athletes/pickleball1-29.webp')"></span>
+          <span class="bk ph" style="--i:1; --img:url('/images/athletes/pickleball1-3.webp'); --pos:45% 40%"></span>
+          <span class="bk ph" style="--i:2; --img:url('/images/athletes/pickleball1-11.webp'); --pos:50% 25%"></span>
+          <span class="bk ph" style="--i:3; --img:url('/images/athletes/pickleball1-34.webp'); --pos:50% 35%"></span>
+          <span class="bk ph" style="--i:4; --img:url('/images/athletes/pickleball1-5.webp'); --pos:45% 45%"></span>
+          <span class="bk next" style="--i:5"></span>
+          <span class="bk half o" style="--i:6"></span>
+          <span class="bk ph" style="--i:7; --img:url('/images/athletes/pickleball1-13.webp'); --pos:50% 30%"></span>
+          <span class="bk ph" style="--i:8; --img:url('/images/brickhouse/ready.webp'); --pos:50% 24%"></span>
+          <span class="bk ph lit" style="--i:9; --img:url('/images/brickhouse/brick-house-logo-orange-black.svg'); --pos:50% 50%; background-color:var(--cream); background-size:auto 78%"></span>
+          <span class="bk next" style="--i:10"></span>
+          <span class="bk next" style="--i:11"></span>
+          <span class="bk half c" style="--i:12"></span>
+          <span class="bk ph" style="--i:13; --img:url('/images/athletes/pickleball1-4.webp'); --pos:40% 40%"></span>
+          <span class="bk ph" style="--i:14; --img:url('/images/athletes/pickleball1-14.webp'); --pos:50% 25%"></span>
+          <span class="bk o" style="--i:15"></span>
+          <span class="bk next" style="--i:16"></span>
+          <span class="bk next" style="--i:17"></span>
+          <span class="bk next" style="--i:18"></span>
+        </div>
+        <p class="prose">Over the coming weeks we will introduce the clubs and programs we are building with. Each one adds another place to play and another way into adaptive sports.</p>
         <div class="bh-actions">
           <a href="/sponsorship" class="btn">Partner with us</a>
           <a href="/subscribe" class="btn ghost">Get the next announcement</a>

@@ -70,18 +70,36 @@
   .bh-place{ display:grid; grid-template-columns:2fr 1fr; grid-template-rows:1fr 1fr; gap:clamp(0.6rem,1.4vw,1rem); margin-top:clamp(2rem,4vw,3rem); }
   .bh-place img{ width:100%; height:100%; object-fit:cover; border-radius:14px; display:block; }
   .bh-place img:first-child{ grid-row:span 2; aspect-ratio:3/2; }
-  .bh-play{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(0.6rem,1.4vw,1rem); margin-top:clamp(2rem,4vw,3rem); }
-  .bh-play img{ width:100%; height:auto; aspect-ratio:4/5; object-fit:cover; border-radius:14px; display:block; }
-  .bh-play img:nth-child(1){ object-position:50% 40%; }
-  .bh-play img:nth-child(3){ object-position:50% 45%; }
-  @media (max-width:640px){
-    .bh-place{ grid-template-columns:1fr 1fr; grid-template-rows:auto auto; }
-    .bh-place img:first-child{ grid-column:span 2; grid-row:auto; }
-    .bh-place img:not(:first-child){ aspect-ratio:1/1; }
-    .bh-play{ grid-template-columns:repeat(3,72%); overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:0.5rem; }
-    .bh-play img{ scroll-snap-align:start; }
+  /* 3. Ours: who we are, many athletes and many moments, laid out like a spread. */
+  .bh-ours{ display:grid; grid-template-columns:repeat(6,1fr); grid-auto-rows:clamp(120px,14vw,190px); gap:clamp(0.5rem,1vw,0.8rem); margin-top:clamp(2rem,4vw,3rem);
+    grid-template-areas:"a a a b c c" "a a a b d e" "f f g g h h"; }
+  .bh-ours img{ width:100%; height:100%; object-fit:cover; border-radius:12px; display:block; }
+  .bh-ours img:nth-child(1){ grid-area:a; object-position:50% 45%; }
+  .bh-ours img:nth-child(2){ grid-area:b; object-position:50% 60%; }
+  .bh-ours img:nth-child(3){ grid-area:c; object-position:50% 40%; }
+  .bh-ours img:nth-child(4){ grid-area:d; object-position:50% 78%; }
+  .bh-ours img:nth-child(5){ grid-area:e; object-position:50% 45%; }
+  .bh-ours img:nth-child(6){ grid-area:f; object-position:50% 55%; }
+  .bh-ours img:nth-child(7){ grid-area:g; object-position:50% 50%; }
+  .bh-ours img:nth-child(8){ grid-area:h; object-position:50% 45%; }
+  @media (max-width:700px){
+    .bh-ours{ grid-template-columns:1fr 1fr; grid-auto-rows:clamp(130px,40vw,190px); grid-template-areas:"a a" "a a" "b c" "b d" "e f" "g g" "h h"; }
   }
-  .bh-together{ margin:clamp(3rem,6vw,4.5rem) auto 0; max-width:30ch; text-align:center; font-family:var(--font-display); font-weight:800; font-size:clamp(1.5rem,3.2vw,2.3rem); line-height:1.15; letter-spacing:-0.025em; }
+  .bh-more{ display:inline-block; margin-top:1.2rem; font-weight:700; color:var(--orange-ink); border-bottom:2px solid currentColor; padding-bottom:2px; }
+
+  /* Side by side: their court and our athletes, one line across both. */
+  .bh-side{ position:relative; display:grid; grid-template-columns:1fr 1fr; min-height:clamp(380px,46vw,620px); background:var(--ink-warm); overflow:hidden; }
+  .bh-side img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .bh-side img:first-child{ object-position:40% 60%; }
+  .bh-side img:nth-child(2){ object-position:45% 40%; }
+  .bh-side::after{ content:""; position:absolute; inset:0; background:radial-gradient(ellipse 60% 70% at 50% 55%, rgba(12,12,14,0.78) 0%, rgba(12,12,14,0.45) 55%, rgba(12,12,14,0.2) 100%); }
+  .bh-side .bh-seam{ position:absolute; left:50%; top:0; bottom:0; width:3px; transform:translateX(-50%); background:var(--orange); box-shadow:0 0 22px 0 var(--orange-glow); z-index:1; }
+  .bh-together{ position:absolute; z-index:2; left:50%; top:50%; transform:translate(-50%,-50%); width:min(92%, 30ch); margin:0; text-align:center; color:var(--cream); font-family:var(--font-display); font-weight:800; font-size:clamp(1.5rem,3.4vw,2.6rem); line-height:1.12; letter-spacing:-0.025em; text-shadow:0 2px 24px rgba(0,0,0,0.7); }
+  @media (max-width:700px){
+    .bh-side{ grid-template-columns:1fr; grid-template-rows:1fr 1fr; min-height:clamp(520px,150vw,700px); }
+    .bh-side .bh-seam{ left:0; right:0; top:50%; bottom:auto; width:auto; height:3px; transform:translateY(-50%); }
+    .bh-together{ width:min(90%, 26ch); padding:1rem 1.2rem; border-radius:14px; background:rgba(12,12,14,0.82); box-shadow:0 0 0 1px rgba(255,92,57,0.5); }
+  }
 
   /* 4. The day: a faint wall in the mortar, the bloom behind the date. */
   .bh-open{ position:relative; isolation:isolate; overflow:hidden; }
@@ -272,7 +290,7 @@ fill="currentColor" stroke="none">
     </div>
   </section>
 
-  <!-- 3. OURS -->
+  <!-- 3. OURS: who Adapt To Life is, for people meeting us here first -->
   <section class="band">
     <div class="wrap">
       <div class="bh-start-head">
@@ -280,14 +298,27 @@ fill="currentColor" stroke="none">
         <span class="eyebrow orange">Adapt To Life</span>
         <h2 class="serif statement">Ours.</h2>
         <p class="prose">We are a young nonprofit finding our footing. Wheelchair pickleball is where our support for athletes began.</p>
+        <a class="bh-more" href="/about">Meet Adapt To Life &rarr;</a>
       </div>
-      <div class="bh-play">
-        <img src="/images/brickhouse/serve.webp" alt="Ball in one hand, paddle in the other, an athlete lines up a serve at Brick House" loading="lazy" width="1078" height="1600">
-        <img src="/images/brickhouse/push.webp" alt="An athlete pushes hard to cover the court, paddle on the wheel" loading="lazy" width="1064" height="1600">
-        <img src="/images/brickhouse/ball.webp" alt="Ball resting on the push rim between points" loading="lazy" width="1100" height="1416">
+      <div class="bh-ours">
+        <img src="/images/athletes/wheelie-42.webp" alt="A player in a sport wheelchair reaches low for a forehand" loading="lazy" width="1500" height="1000">
+        <img src="/images/athletes/wheelie-10.webp" alt="A young athlete rolls onto the court with friends close behind" loading="lazy" width="1129" height="1500">
+        <img src="/images/athletes/wheelie-51.webp" alt="Three friends crowd together for a photo at a night event" loading="lazy" width="1500" height="863">
+        <img src="/images/athletes/wheelie-133.webp" alt="A grinning athlete takes a selfie on an outdoor court" loading="lazy" width="1127" height="1500">
+        <img src="/images/athletes/wheelie-68.webp" alt="A player lines up a return on a blue court" loading="lazy" width="1000" height="1500">
+        <img src="/images/coaching.webp" alt="A gym full of young athletes in sport wheelchairs at a coaching day" loading="lazy" width="2048" height="1367">
+        <img src="/images/athletes/wheelie-26.webp" alt="A player scoops a low ball off the court" loading="lazy" width="1500" height="1000">
+        <img src="/images/athletes/wheelie-47.webp" alt="A player stretches wide for a ball, paddle out" loading="lazy" width="1500" height="1000">
       </div>
-      <p class="bh-together">This partnership puts the two side by side, in public, from the first day the new courts open.</p>
     </div>
+  </section>
+
+  <!-- SIDE BY SIDE: their court, our athletes, one line across both -->
+  <section class="bh-side" aria-label="The Brick House court beside Adapt To Life athletes meeting at the net">
+    <img src="/images/brickhouse/court-three.webp" alt="" loading="lazy" width="500" height="333">
+    <img src="/images/athletes/wheelie-58.webp" alt="" loading="lazy" width="1500" height="1000">
+    <span class="bh-seam" aria-hidden="true"></span>
+    <p class="bh-together">This partnership puts the two side by side, in public, from the first day the new courts open.</p>
   </section>
 
   <!-- 4. THE DAY -->
@@ -335,7 +366,7 @@ fill="currentColor" stroke="none">
           <span class="bk next" style="--i:5"></span>
           <span class="bk half o" style="--i:6"></span>
           <span class="bk ph" style="--i:7; --img:url('/images/athletes/pickleball1-13.webp'); --pos:50% 30%"></span>
-          <span class="bk ph" style="--i:8; --img:url('/images/brickhouse/ready.webp'); --pos:50% 24%"></span>
+          <span class="bk ph" style="--i:8; --img:url('/images/athletes/wheelie-5.webp'); --pos:50% 40%"></span>
           <span class="bk ph lit" style="--i:9; --img:url('/images/brickhouse/brick-house-logo-orange-black.svg'); --pos:50% 50%; background-color:var(--cream); background-size:auto 78%"></span>
           <span class="bk next" style="--i:10"></span>
           <span class="bk next" style="--i:11"></span>

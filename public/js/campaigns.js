@@ -125,17 +125,44 @@
     if (n > 1 && n <= 45) return "In " + n + " days";
     return "";
   }
+  /* Where, as one plain line: "Brick House Pickleball, Lake Forest, IL".
+     Commas, not separators, so it can wrap anywhere without a stray dot. */
   function eventPlace(d) {
-    return [d.venue, [d.city, d.state].filter(Boolean).join(", ")].filter(Boolean).join(" · ");
+    return [d.venue, [d.city, d.state].filter(Boolean).join(", ")].filter(Boolean).join(", ");
   }
+  /* Static icon markup only. Event data never reaches innerHTML. */
+  var ICON = {
+    time: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+    place: '<path d="M12 21s-6.5-5.7-6.5-11a6.5 6.5 0 0 1 13 0c0 5.3-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>',
+    group: '<circle cx="9" cy="9" r="3"/><path d="M3.5 19.5c.7-3 2.9-4.6 5.5-4.6s4.8 1.6 5.5 4.6"/><circle cx="17" cy="8.2" r="2.3"/><path d="M15.9 13.4c2.2.2 3.9 1.6 4.6 4"/>',
+    cal: '<rect x="4" y="5.5" width="16" height="14.5" rx="2.5"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/>'
+  };
+  function icon(name) {
+    var i = el("span", "evc-ico");
+    i.setAttribute("aria-hidden", "true");
+    i.innerHTML = '<svg viewBox="0 0 24 24" focusable="false">' + ICON[name] + "</svg>";
+    return i;
+  }
+  function fact(kind, text, href) {
+    var li = el("li", "evc-fact is-" + kind);
+    li.appendChild(icon(kind));
+    if (href) { var a = el("a"); wire(a, href, text); li.appendChild(a); }
+    else li.appendChild(el("span", null, text));
+    return li;
+  }
+  /* Every child is a direct child of the card, placed by named grid areas
+     (site.css), so phones and desktops rearrange without wrappers. */
   function eventCard(d, opts) {
     opts = opts || {};
-    var card = el("article", "evc" + (opts.media && d.image ? " has-media" : ""));
-    if (opts.media && d.image) {
+    var media = !!(opts.media && d.image);
+    var card = el("article", "evc" + (media ? " has-media" : ""));
+    var box = el("div", "evc-in");
+    card.appendChild(box);
+    if (media) {
       var fig = el("a", "evc-media");
       fig.href = driveCta(d).href; fig.setAttribute("tabindex", "-1"); fig.setAttribute("aria-hidden", "true");
-      var img = el("img"); img.src = d.image; img.alt = ""; img.loading = "lazy"; img.decoding = "async";
-      fig.appendChild(img); card.appendChild(fig);
+      var img = el("img"); img.src = d.image; img.alt = ""; img.decoding = "async";
+      fig.appendChild(img); box.appendChild(fig);
     }
     var o = driveOpens(d), x = driveCloses(d) || o;
     var date = el("div", "evc-date");
@@ -144,19 +171,21 @@
       date.appendChild(el("span", "evc-day", String(o.getDate())));
       date.appendChild(el("span", "evc-sub", +o === +x ? DAYS[o.getDay()] : "to " + (x.getMonth() === o.getMonth() ? x.getDate() : fmtDate(x))));
     }
-    card.appendChild(date);
-    var body = el("div", "evc-body");
+    box.appendChild(date);
     var meta = el("p", "evc-meta");
     meta.appendChild(el("span", "evc-tag", eventTag(d)));
     var soon = countdown(d);
     if (soon) meta.appendChild(el("span", "evc-soon", soon));
-    body.appendChild(meta);
-    body.appendChild(el(opts.heading || "h3", "evc-name", d.name));
-    var where = [d.time_note, eventPlace(d)].filter(Boolean).join(" · ");
-    if (where) body.appendChild(el("p", "evc-place", where));
-    if (d.summary) body.appendChild(el("p", "evc-sum", d.summary));
+    box.appendChild(meta);
+    box.appendChild(el(opts.heading || "h3", "evc-name", d.name));
+    var facts = el("ul", "evc-facts");
+    if (d.time_note) facts.appendChild(fact("time", d.time_note.charAt(0).toUpperCase() + d.time_note.slice(1)));
+    if (eventPlace(d)) facts.appendChild(fact("place", eventPlace(d)));
+    if (d.group_url) facts.appendChild(fact("group", d.group_label || "Group", d.group_url));
+    if (facts.children.length) box.appendChild(facts);
+    if (d.summary) box.appendChild(el("p", "evc-sum", d.summary));
     var acts = el("div", "evc-acts");
-    var cta = driveCta(d), go = el("a", "evc-go");
+    var cta = driveCta(d), go = el("a", "evc-btn is-primary");
     wire(go, cta.href, cta.label);
     go.appendChild(el("span", "arrow", " →"));
     acts.appendChild(go);
@@ -171,17 +200,13 @@
       atc.dataset.location = [d.venue, d.address].filter(Boolean).join(", ");
       atc.dataset.details = [d.summary, d.page ? "adapttolife.org" + d.page : d.cta_url].filter(Boolean).join(" ");
       atc.dataset.ics = d.ics || "/cal/" + d.slug + ".ics";
-      var cal = el("a", "evc-cal", "Add to calendar"); cal.href = atc.dataset.ics;
+      var cal = el("a", "evc-btn is-alt"); cal.href = atc.dataset.ics;
+      cal.appendChild(icon("cal"));
+      cal.appendChild(document.createTextNode("Add to calendar"));
       atc.appendChild(cal); acts.appendChild(atc);
       global.ATLCalendar.mount(atc);
     }
-    if (d.group_url) {
-      var grp = el("a", "evc-link");
-      wire(grp, d.group_url, d.group_label || "Group");
-      acts.appendChild(grp);
-    }
-    body.appendChild(acts);
-    card.appendChild(body);
+    box.appendChild(acts);
     return card;
   }
 

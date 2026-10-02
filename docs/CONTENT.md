@@ -59,7 +59,9 @@ Do not confuse less defensive copy with fewer safeguards. Preserve material dono
 | `/karen` | Karen's role and connection to finding programs | Continue the conversation |
 | `/sponsorship` (nav: Partners) | The mission for partners, our partners (one card each, linking to their page), what support makes possible, levels, recognition, and conditions | Start a conversation |
 | `/brickhouse` (and each future partner page) | One partner's story: who they are, what we do together, their events | Visit, attend, or explore partnering |
-| `/volunteer` | Roles and the terms of contributing | Explore a role or offer another idea |
+| `/volunteer` | Ambassadors first (a band linking to `/ambassadors`), then roles and the terms of contributing | Explore a role or offer another idea |
+| `/ambassadors` | The program: who ambassadors are, the three ways in (athlete, coach or program builder, community connector), what we give and ask, one card per ambassador linking to their page | Raise your hand (`/contact?rsn=ambassador`) |
+| `/juan` (and each future athlete or ambassador page) | One person's story in their own words, their seat or role, and a share link | Support their seat, or share |
 | `/volunteer/<role>` | A bounded contribution, time, suitability, scope, and interest form | Express interest, not automatic placement |
 | `/roadmap` | Current capability, ongoing work, and future direction | Follow or support the work |
 | `/contact` | Route the visitor to the right conversation | Contact |
@@ -71,6 +73,10 @@ Do not confuse less defensive copy with fewer safeguards. Preserve material dono
 ## Partner pages
 
 Each partner gets its own page at a short root URL (`/brickhouse`), modeled on `/brickhouse`: the co-branded lockup, their place, our athletes there, and their events. The page owns the partner's story; `/sponsorship` carries one card per partner that links to it, and the nav lists Partners, not individual partners. Every partner page has its own share card (`public/images/og/<slug>-v<N>-<tag>.jpg`, usually the page's hero photo), a link back to `/sponsorship`, and a sitemap entry. `test/partners.test.js` enforces all four. Never publish deal terms, a partner's level, or background shared in conversation.
+
+## People pages
+
+Athletes and ambassadors get their own page at a short root URL (`/juan`). Their words are quoted verbatim (punctuation only), facts come from a source they or Alec approved, and the page has its own share card from a clean photo of them. `/ambassadors` carries one card per ambassador; `test/ambassadors.test.js` enforces that each card leads to a public page with its own card, a link back, and a sitemap entry. Being an ambassador never depends on receiving Hustle & Heart support, and support never depends on being an ambassador. An `/athletes` index waits until there are three profiles.
 
 ## Navigation and footer
 

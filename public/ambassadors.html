@@ -4,31 +4,78 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light only">
-<title>Contact | Adapt To Life</title>
-<meta name="description" content="Ask about adaptive sports, funding, volunteering, or a partnership. Get in touch with Adapt To Life.">
-<link rel="canonical" href="https://adapttolife.org/contact">
+<title>Ambassadors | Adapt To Life</title>
+<meta name="description" content="Adapt To Life ambassadors are athletes, coaches, and connectors who bring the next athlete into adaptive sports. Juan Ortiz is the first.">
+<link rel="canonical" href="https://adapttolife.org/ambassadors">
 <link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-v2-option2-32.png">
 <link rel="apple-touch-icon" href="/images/apple-touch-icon-v2-option2.png">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Contact | Adapt To Life">
-<meta property="og:description" content="Ask about adaptive sports, funding, volunteering, or a partnership. Get in touch with Adapt To Life.">
+<meta property="og:title" content="Ambassadors | Adapt To Life">
+<meta property="og:description" content="Adapt To Life ambassadors are athletes, coaches, and connectors who bring the next athlete into adaptive sports. Juan Ortiz is the first.">
 <meta property="og:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.">
-<meta property="og:url" content="https://adapttolife.org/contact">
+<meta property="og:url" content="https://adapttolife.org/ambassadors">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Contact | Adapt To Life">
-<meta name="twitter:description" content="Ask about adaptive sports, funding, volunteering, or a partnership. Get in touch with Adapt To Life.">
+<meta name="twitter:title" content="Ambassadors | Adapt To Life">
+<meta name="twitter:description" content="Adapt To Life ambassadors are athletes, coaches, and connectors who bring the next athlete into adaptive sports. Juan Ortiz is the first.">
 <meta name="twitter:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
 <meta name="twitter:image:alt" content="Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
-<link rel="stylesheet" href="/css/page-header.css">
-<!-- band:vars --><style data-band-vars>:root{--pg-band-wide:url('/images/hero/panels/pg-band-3-wide.3f0c6f24.webp');--pg-band-tall:url('/images/hero/panels/pg-band-3-tall.f37597ee.webp');--pg-give-wide:url('/images/hero/panels/pg-give-wide.b46beed5.webp');--pg-give-tall:url('/images/hero/panels/pg-give-tall.5cece3a5.webp');}</style>
+<style>
+  /* Ambassadors: the program. One card per ambassador, each linking to their
+     own page (/juan is the pattern), the same way Partners works. */
+  .am-hero{ position:relative; isolation:isolate; overflow:hidden; min-height:clamp(540px,74svh,720px); display:flex; align-items:center; padding:clamp(4rem,9vh,6rem) 0; background:#0C0C0E; }
+  .am-hero-img{ position:absolute; inset:0; z-index:-2; }
+  .am-hero-img img{ width:100%; height:100%; object-fit:cover; object-position:70% 35%; }
+  .am-hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:
+      linear-gradient(90deg, rgba(12,12,14,0.97) 0%, rgba(12,12,14,0.88) 36%, rgba(12,12,14,0.35) 66%, rgba(12,12,14,0.1) 90%),
+      radial-gradient(ellipse 40% 55% at 22% 60%, rgba(255,92,57,0.18) 0%, transparent 70%); }
+  .am-kicker{ display:flex; align-items:center; gap:0.9rem; font-family:var(--font-label); font-weight:800; font-size:0.85rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--orange); }
+  .am-kicker::before{ content:""; width:2.2rem; height:2px; background:var(--orange); box-shadow:0 0 12px var(--orange-glow); }
+  .am-hero .display{ max-width:12ch; margin-top:1.4rem; font-size:clamp(2.8rem,5.8vw,5.2rem); line-height:0.97; }
+  .am-hero .sub{ max-width:38ch; margin-top:1.3rem; color:var(--cream-mute); }
+  .am-hero .actions{ display:flex; flex-wrap:wrap; gap:0.9rem 1rem; margin-top:1.8rem; }
+  @media (max-width:820px){
+    .am-hero{ display:block; min-height:0; padding:0 0 clamp(2.5rem,7vh,3.5rem); }
+    .am-hero-img{ position:relative; display:block; height:min(58svh,520px); }
+    .am-hero-img img{ object-position:62% 30%; }
+    .am-hero::after{ background:linear-gradient(180deg, transparent 55%, rgba(12,12,14,0.75) 80%, #0C0C0E 96%); }
+    .am-hero .wrap{ margin-top:1.6rem; }
+    .am-hero .display{ font-size:clamp(2.5rem,10.5vw,3.3rem); }
+  }
+  .am-list{ display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr)); gap:clamp(1rem,2vw,1.4rem); margin-top:clamp(2rem,4vw,2.8rem); }
+  .am-card{ display:grid; grid-template-columns:minmax(0,0.9fr) minmax(0,1.1fr); border-radius:22px; overflow:hidden; background:#0C0C0E; color:var(--cream); position:relative; isolation:isolate; box-shadow:0 30px 70px -34px rgba(0,0,0,0.6); }
+  .am-card::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 60% 70% at 85% 30%, rgba(255,92,57,0.18) 0%, transparent 70%); }
+  .am-card-photo{ display:block; min-height:clamp(320px,36vw,440px); }
+  .am-card-photo img{ width:100%; height:100%; object-fit:cover; object-position:40% 30%; }
+  .am-card-body{ padding:clamp(1.6rem,3.5vw,2.8rem); display:flex; flex-direction:column; justify-content:center; align-items:flex-start; }
+  .am-card .tag{ font-family:var(--font-label); font-weight:800; font-size:0.78rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--orange); }
+  .am-card .h3{ margin-top:0.4rem; color:var(--cream); font-size:clamp(1.8rem,3vw,2.6rem); letter-spacing:-0.02em; line-height:1.02; }
+  .am-card .line{ margin-top:0.8rem; color:var(--cream-mute); max-width:38ch; }
+  .am-card .q{ margin-top:1rem; padding-left:1rem; border-left:3px solid var(--orange); color:var(--cream); font-weight:600; max-width:36ch; }
+  .am-more{ margin-top:1.5rem; font-weight:700; color:var(--orange); border-bottom:2px solid currentColor; padding-bottom:2px; }
+  @media (max-width:700px){ .am-card{ grid-template-columns:1fr; } .am-card-photo{ min-height:0; aspect-ratio:4/3.6; } }
+  .am-ways{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(1rem,2vw,1.4rem); margin-top:clamp(2rem,4vw,2.8rem); }
+  @media (max-width:860px){ .am-ways{ grid-template-columns:1fr; } }
+  .am-way{ padding:1.6rem 1.5rem; border-radius:18px; background:var(--paper); box-shadow:0 0 0 1px var(--hairline); }
+  .am-way .n{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:1.6rem; color:var(--orange); }
+  .am-way h3{ margin-top:0.4rem; font-family:var(--font-display); font-weight:800; font-size:1.3rem; letter-spacing:-0.01em; color:var(--ink); }
+  .am-way p{ margin-top:0.6rem; color:var(--ink-soft); }
+  .am-note{ margin-top:1.6rem; color:var(--muted); max-width:56ch; }
+  .am-two{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(1.4rem,4vw,3rem); margin-top:clamp(2rem,4vw,2.6rem); }
+  @media (max-width:760px){ .am-two{ grid-template-columns:1fr; } }
+  .am-two h3{ font-family:var(--font-label); font-weight:800; font-size:0.8rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--orange); }
+  .am-two ul{ list-style:none; padding:0; margin:1rem 0 0; display:grid; gap:0.7rem; }
+  .am-two li{ position:relative; padding-left:1.3rem; color:var(--cream); line-height:1.45; }
+  .am-two li::before{ content:""; position:absolute; left:0; top:0.55em; width:7px; height:7px; border-radius:2px; background:var(--orange); }
+  .am-promise{ margin-top:2.2rem; padding:1.3rem 1.4rem; border-radius:16px; box-shadow:inset 0 0 0 1px rgba(255,255,255,0.14); color:var(--cream-mute); max-width:60ch; }
+</style>
 <script src="/js/attribution.js" defer></script>
 </head>
 <body>
@@ -116,82 +163,96 @@ fill="currentColor" stroke="none">
 
 <main>
 
-  <section class="hero dark pg-band pg-head--sm">
+  <section class="am-hero dark">
+    <picture class="am-hero-img">
+      <img src="/images/athletes/juan-serve.webp" alt="Juan Ortiz tosses the ball to serve from his sport wheelchair" width="1500" height="1474" fetchpriority="high">
+    </picture>
     <div class="wrap">
-      <span class="eyebrow reveal">Contact</span>
-      <h1 class="serif display reveal">Let's talk.</h1>
-      <p class="lead sub reveal">Looking for a program, asking about funding, or bringing an idea? Tell us how we can help.</p>
+      <p class="am-kicker">Ambassadors</p>
+      <h1 class="serif display">Bring the next athlete <em class="italic" style="color:var(--orange)">into the game.</em></h1>
+      <p class="lead sub">Our ambassadors are athletes, coaches, and connectors who grow adaptive sports where they live. Juan Ortiz is the first.</p>
+      <div class="actions">
+        <a href="#meet" class="btn">Meet our ambassadors <span class="arrow">&rarr;</span></a>
+        <a href="#join" class="btn ghost">Become one</a>
+      </div>
     </div>
   </section>
 
+  <!-- MEET: one card per ambassador, each linking to their page. -->
+  <section class="band" id="meet">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow orange">Meet our ambassadors</span>
+        <h2 class="serif h2" style="margin-top:0.8rem;">It starts with <em class="italic" style="color:var(--orange-ink)">a pioneer.</em></h2>
+      </div>
+      <div class="am-list">
+        <article class="am-card reveal">
+          <a class="am-card-photo" href="/juan" tabindex="-1" aria-hidden="true"><img src="/images/hero/trace-juan.webp" alt="" width="752" height="1100" loading="lazy" decoding="async" style="object-fit:contain; background:#141416;"></a>
+          <div class="am-card-body">
+            <p class="tag">Our first ambassador</p>
+            <h3 class="serif h3">Juan Ortiz</h3>
+            <p class="line">Wheelchair Softball Hall of Famer. Got the APP Tour its first wheelchair division. Leading Send 6 to the US Open.</p>
+            <p class="q">&ldquo;If an adaptive athlete wants to try a sport, that sport has to exist first.&rdquo;</p>
+            <a class="am-more" href="/juan">Read Juan&rsquo;s story <span class="arrow">&rarr;</span></a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE WAYS IN: capabilities, not ranks. -->
   <section class="band tint">
     <div class="wrap">
-      <div class="contact-grid">
-        <div class="contact-info reveal">
-          <span class="eyebrow orange">Get in touch</span>
-          <div class="info-item"><span class="info-l">Email</span><a class="info-v" href="mailto:hello@adapttolife.org">hello@adapttolife.org</a></div>
-          <div class="info-item"><span class="info-l">Your message</span><span class="info-v">We read every one.</span></div>
-          <div class="quick-links">
-            <span class="ql-head">Find the right next step</span>
-            <a class="textlink" href="/donate">Donate <span class="arrow">&rarr;</span></a>
-            <a class="textlink" href="/apply">Apply for a grant <span class="arrow">&rarr;</span></a>
-            <a class="textlink" href="/sponsorship">Explore sponsorship <span class="arrow">&rarr;</span></a>
-            <a class="textlink" href="/volunteer">Volunteer with us <span class="arrow">&rarr;</span></a>
-            <a class="textlink" href="/about">Our story <span class="arrow">&rarr;</span></a>
-          </div>
+      <div class="sec-head reveal">
+        <span class="eyebrow orange">What ambassadors do</span>
+        <h2 class="serif h2" style="margin-top:0.8rem;">More than a following.</h2>
+      </div>
+      <div class="am-ways reveal">
+        <div class="am-way"><span class="n">01</span><h3>Athlete ambassador</h3><p>Welcome newcomers, show the sport, share the parts of your story you choose, and represent the community at events.</p></div>
+        <div class="am-way"><span class="n">02</span><h3>Coach or program builder</h3><p>Lead sessions within your experience, support local staff, and help a host keep the sport going after the first day.</p></div>
+        <div class="am-way"><span class="n">03</span><h3>Community connector</h3><p>Make the introductions that matter: schools, families, clinics, and programs, so people find a place to play.</p></div>
+      </div>
+      <p class="am-note reveal">These are ways in, not ranks. Nobody has to do all three.</p>
+    </div>
+  </section>
+
+  <!-- THE AGREEMENT: what we give, what we ask, and the line we never cross. -->
+  <section class="band dark">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow orange">How it works</span>
+        <h2 class="serif h2" style="margin-top:0.8rem; color:var(--cream);">A real role, with real support.</h2>
+      </div>
+      <div class="am-two reveal">
+        <div>
+          <h3>What you get</h3>
+          <ul>
+            <li>A clear role and a named contact.</li>
+            <li>Travel and access support for the work we ask you to do.</li>
+            <li>Training, materials, and introductions.</li>
+            <li>Your own page on this site, if you want one.</li>
+          </ul>
         </div>
-        <div class="contact-form-wrap reveal">
-          <form id="contactForm" class="contact-form" novalidate>
-            <div class="field-row">
-              <div class="field"><label for="fn">First name</label><input id="fn" name="fn" type="text" autocomplete="given-name"></div>
-              <div class="field"><label for="ln">Last name</label><input id="ln" name="ln" type="text" autocomplete="family-name"></div>
-            </div>
-            <div class="field"><label for="em">Email</label><input id="em" name="em" type="email" autocomplete="email"></div>
-            <div class="field">
-              <label for="rsn">How can we help?</label>
-              <select id="rsn" name="rsn">
-                <option value="">Select one</option>
-                <option>Funding for an athlete</option>
-                <option>Giving or sponsoring</option>
-                <option>A program for the directory</option>
-                <option>Volunteering</option>
-                <option>Something else</option>
-              </select>
-            </div>
-            <div class="field"><label for="msg">Message</label><textarea id="msg" name="msg" rows="5"></textarea></div>
-            <script>
-              (function(){
-                var map = { athlete:'Funding for an athlete', sponsor:'Giving or sponsoring', donor:'Giving or sponsoring', program:'A program for the directory', ambassador:'Volunteering' };
-                var qs = new URLSearchParams(location.search);
-                // A sponsorship tier arrives as ?tier=Captain. Four buttons on
-                // /sponsorship used to look like a choice and all land on the
-                // same blank form, so the one thing that page exists to capture
-                // — which level somebody clicked — was thrown away at the door.
-                // It is prefilled into the message, where the sender can see it
-                // and edit it, rather than smuggled into a hidden field.
-                var tier = qs.get('tier');
-                if (tier && /^[A-Za-z ]{3,20}$/.test(tier)) {
-                  var msg = document.getElementById('msg');
-                  if (msg && !msg.value) {
-                    msg.value = "I'm interested in sponsoring at the " + tier + " level.";
-                  }
-                }
-                var q = qs.get('rsn');
-                if (q === 'ambassador') {
-                  var am = document.getElementById('msg');
-                  if (am && !am.value) am.value = "I'm interested in becoming an Adapt To Life ambassador.";
-                }
-                var sel = document.getElementById('rsn');
-                if(q && map[q] && sel){ sel.value = map[q]; }
-              })();
-            </script>
-            <input type="text" name="company" id="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
-            <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only" style="margin-bottom:1rem;"></div>
-            <button type="submit" class="btn">Send message</button>
-            <p class="form-status" id="formStatus" role="status" aria-live="polite" style="margin-top:.9rem;font-weight:600"></p>
-            <p class="form-note">We'll reply at the email you provide.</p>
-          </form>
+        <div>
+          <h3>What we ask</h3>
+          <ul>
+            <li>Show up for what you agree to.</li>
+            <li>Represent the community honestly.</li>
+            <li>Tell us about any paid brand relationships, so we can tell everyone else.</li>
+          </ul>
         </div>
+      </div>
+      <p class="am-promise reveal">Being an ambassador never depends on receiving support from the Hustle &amp; Heart Fund, and support never depends on being an ambassador.</p>
+    </div>
+  </section>
+
+  <section class="closing dark band-lg" id="join">
+    <div class="wrap center">
+      <span class="eyebrow orange reveal">Become an ambassador</span>
+      <h2 class="serif display reveal">Who did you bring <em class="italic" style="color:var(--orange)">to the court?</em></h2>
+      <p class="lead sub reveal" style="margin:1.2rem auto 0; max-width:42ch;">We are growing this group a few people at a time. Tell us about yourself, or about someone who should be here.</p>
+      <div class="actions reveal" style="justify-content:center; margin-top:2rem;">
+        <a href="/contact?rsn=ambassador" class="btn">Raise your hand</a>
       </div>
     </div>
   </section>
@@ -333,51 +394,7 @@ fill="currentColor" stroke="none">
     }
   })();
 </script>
-<script>
-  (function(){
-    var f = document.getElementById('contactForm');
-    if(!f) return;
-    var statusEl = document.getElementById('formStatus');
-    var btn = f.querySelector('button[type="submit"]');
-    function v(id){ var el=document.getElementById(id); return el ? el.value.trim() : ''; }
-    function setStatus(msg, ok){
-      if(!statusEl) return;
-      statusEl.textContent = msg;
-      statusEl.style.color = ok ? 'var(--ok)' : 'var(--err)';
-    }
-    f.addEventListener('submit', function(e){
-      e.preventDefault();
-      if(v('company')) return; // honeypot: silently drop bots
-      if(!v('em')){ setStatus('Please enter your email so we can reply.', false); return; }
-      var tk=f.querySelector('[name="cf-turnstile-response"]');
-      var payload = { fn:v('fn'), ln:v('ln'), em:v('em'), rsn:v('rsn'), msg:v('msg'), cf_token: tk?tk.value:'' };
-      if (btn && btn.disabled) return;
-      window.ATLFormSubmission(f, payload);
-      var orig = btn ? btn.textContent : '';
-      if(btn){ btn.disabled = true; btn.textContent = 'Sending...'; }
-      setStatus('', true);
-      fetch('/api/contact', {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify(payload)
-      })
-      .then(function(r){ return r.json().catch(function(){ return { ok:false }; }); })
-      .then(function(d){
-        if(d && d.ok){
-          f.reset();
-          setStatus("Thanks, we got your message and will be in touch.", true);
-        } else {
-          setStatus((d && d.error) || 'Something went wrong. Please email hello@adapttolife.org.', false);
-        }
-      })
-      .catch(function(){ setStatus('Network error. Please email hello@adapttolife.org.', false); })
-      .then(function(){ if(btn){ btn.disabled = false; btn.textContent = orig; } });
-    });
-  })();
-</script>
-
 <script src="/js/subscribe.js" defer></script>
-<script src="/js/form-submission.js" defer></script>
 <script src="/js/turnstile-lazy.js" defer></script>
 </body>
 </html>

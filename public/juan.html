@@ -4,35 +4,76 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light only">
-<title>Juan | Adapt To Life</title>
-<meta name="description" content="Juan plays wheelchair pickleball in Chicago. An Adapt To Life athlete profile.">
-<!-- UNLISTED PROTOTYPE (Spec 191). Nothing on the site links here and it is
-     kept out of the index until Juan has read it and approved his own page.
-     Removing this one line is what publishes it. -->
-<meta name="robots" content="noindex, nofollow">
+<title>Juan Ortiz | Adapt To Life</title>
+<meta name="description" content="Paralyzed at 14, Hall of Famer in wheelchair softball, and now chasing his first US Open in wheelchair pickleball. Meet Juan Ortiz, Adapt To Life's first ambassador.">
 <link rel="canonical" href="https://adapttolife.org/juan">
 <link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-v2-option2-32.png">
 <link rel="apple-touch-icon" href="/images/apple-touch-icon-v2-option2.png">
 <meta property="og:type" content="profile">
-<meta property="og:title" content="Juan | Adapt To Life">
-<meta property="og:description" content="Juan plays wheelchair pickleball in Chicago. An Adapt To Life athlete profile.">
-<meta property="og:image" content="https://adapttolife.org/images/og/juan-v1-athlete.jpg">
+<meta property="og:title" content="Juan Ortiz | Adapt To Life">
+<meta property="og:description" content="Paralyzed at 14, Hall of Famer in wheelchair softball, and now chasing his first US Open in wheelchair pickleball. Meet Juan Ortiz, Adapt To Life's first ambassador.">
+<meta property="og:image" content="https://adapttolife.org/images/og/juan-v2-serve.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Juan. Adapt To Life. Juan, a wheelchair pickleball player in glasses, sits courtside in a Chicago Adaptive Sports shirt.">
+<meta property="og:image:alt" content="Juan Ortiz. Adapt To Life. Juan, a wheelchair pickleball player in glasses, tosses the ball to serve from his sport wheelchair.">
 <meta property="og:url" content="https://adapttolife.org/juan">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Juan | Adapt To Life">
-<meta name="twitter:description" content="Juan plays wheelchair pickleball in Chicago. An Adapt To Life athlete profile.">
-<meta name="twitter:image" content="https://adapttolife.org/images/og/juan-v1-athlete.jpg">
-<meta name="twitter:image:alt" content="Juan. Adapt To Life. Juan, a wheelchair pickleball player in glasses, sits courtside in a Chicago Adaptive Sports shirt.">
+<meta name="twitter:title" content="Juan Ortiz | Adapt To Life">
+<meta name="twitter:description" content="Paralyzed at 14, Hall of Famer in wheelchair softball, and now chasing his first US Open in wheelchair pickleball. Meet Juan Ortiz, Adapt To Life's first ambassador.">
+<meta name="twitter:image" content="https://adapttolife.org/images/og/juan-v2-serve.jpg">
+<meta name="twitter:image:alt" content="Juan Ortiz. Adapt To Life. Juan, a wheelchair pickleball player in glasses, tosses the ball to serve from his sport wheelchair.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
 <link rel="stylesheet" href="/css/athlete.css">
 <script src="/js/attribution.js" defer></script>
+<style>
+  /* Juan's page: his story in his words. Facts come from Alec's approved CAF
+     letter; quotes are Juan's own answers (Sept 22), punctuation only. */
+  .jn-chips{ list-style:none; padding:0; margin:1.4rem 0 0; display:flex; flex-wrap:wrap; gap:0.5rem; }
+  .jn-chips li{ font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--cream); padding:0.5rem 0.8rem; border-radius:999px; box-shadow:inset 0 0 0 1px rgba(255,255,255,0.22); }
+  .jn-chips li:first-child{ color:var(--orange); box-shadow:inset 0 0 0 1.5px var(--orange); }
+  .jn-acts{ display:flex; flex-wrap:wrap; gap:0.9rem 1rem; margin-top:1.8rem; }
+  .jn-start{ position:relative; isolation:isolate; overflow:hidden; background:#0C0C0E; }
+  .jn-start-img{ position:absolute; inset:0; z-index:-2; }
+  .jn-start-img img{ width:100%; height:100%; object-fit:cover; object-position:60% 40%; opacity:0.55; }
+  .jn-start::after{ content:""; position:absolute; inset:0; z-index:-1; background:linear-gradient(90deg, rgba(12,12,14,0.96) 0%, rgba(12,12,14,0.82) 45%, rgba(12,12,14,0.35) 100%), radial-gradient(ellipse 40% 60% at 15% 70%, rgba(255,92,57,0.16) 0%, transparent 70%); }
+  .jn-big{ font-family:var(--font-display); font-weight:900; font-size:clamp(5rem,16vw,11rem); line-height:0.85; letter-spacing:-0.05em; color:var(--orange); text-shadow:0 0 60px rgba(255,92,57,0.35); }
+  .jn-words{ margin-top:1.6rem; max-width:44ch; font-size:clamp(1.15rem,1.9vw,1.45rem); line-height:1.5; color:var(--cream); }
+  .jn-words p + p{ margin-top:1rem; }
+  .jn-by{ margin-top:1.4rem; font-family:var(--font-label); font-weight:800; font-size:0.78rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--orange); }
+  .jn-time{ list-style:none; padding:0; margin:clamp(2rem,4vw,3rem) 0 0; position:relative; display:grid; gap:0; }
+  .jn-time::before{ content:""; position:absolute; left:7px; top:6px; bottom:6px; width:2px; background:linear-gradient(180deg, rgba(255,92,57,0.35), var(--orange)); }
+  .jn-time li{ position:relative; padding:0 0 1.6rem 2.2rem; display:grid; grid-template-columns:9rem 1fr; gap:1rem; align-items:baseline; }
+  .jn-time li::before{ content:""; position:absolute; left:0; top:0.35rem; width:16px; height:16px; border-radius:50%; background:var(--paper); box-shadow:inset 0 0 0 2px var(--orange); }
+  .jn-time li.lit::before{ background:var(--orange); box-shadow:0 0 18px 2px var(--orange-glow); }
+  .jn-time b{ font-family:var(--font-display); font-weight:800; font-size:1.05rem; color:var(--orange-ink); }
+  .jn-time span{ color:var(--ink); font-size:1.02rem; line-height:1.45; }
+  .jn-time li.lit span{ font-weight:700; }
+  @media (max-width:640px){ .jn-time li{ grid-template-columns:1fr; gap:0.2rem; } }
+  .jn-split{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(2rem,5vw,4.5rem); align-items:center; }
+  @media (max-width:820px){ .jn-split{ grid-template-columns:1fr; } }
+  .jn-photo{ margin:0; border-radius:20px; overflow:hidden; box-shadow:0 30px 70px -34px rgba(0,0,0,0.6); }
+  .jn-photo img{ width:100%; height:auto; display:block; }
+  .jn-q{ margin-top:1.2rem; padding-left:1.2rem; border-left:3px solid var(--orange); font-size:1.08rem; line-height:1.55; color:var(--ink); }
+  .jn-q + .jn-q{ margin-top:1rem; }
+  .jn-quote{ text-align:center; }
+  .jn-quote blockquote{ margin:0 auto; max-width:22ch; font-family:var(--font-display); font-weight:800; font-size:clamp(2rem,4.6vw,3.6rem); line-height:1.08; letter-spacing:-0.025em; color:var(--cream); }
+  .jn-quote blockquote em{ color:var(--orange); }
+  .jn-quote .jn-by{ margin-top:1.8rem; }
+  .jn-kit{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; margin-top:1.8rem; }
+  @media (max-width:640px){ .jn-kit{ grid-template-columns:1fr; } }
+  .jn-kit div{ padding:1.3rem 1.4rem; border-radius:16px; background:var(--paper); box-shadow:0 0 0 1px var(--hairline); }
+  .jn-kit b{ display:block; font-family:var(--font-display); font-weight:800; font-size:1.25rem; color:var(--ink); }
+  .jn-kit span{ display:block; margin-top:0.35rem; color:var(--ink-soft); }
+  .jn-code{ margin-top:1.6rem; padding:1.4rem; border-radius:16px; background:#0C0C0E; color:var(--cream); }
+  .jn-code .code-chip{ display:inline-block; margin-top:0.6rem; font-family:var(--font-display); font-weight:900; font-size:1.6rem; letter-spacing:0.02em; color:var(--orange); }
+  .jn-code p{ color:var(--cream-mute); font-size:0.95rem; margin-top:0.6rem; }
+  .jn-code a{ color:var(--orange); font-weight:700; }
+  .jn-seat-total{ margin-top:1.4rem; font-family:var(--font-display); font-weight:800; font-size:clamp(1.6rem,3vw,2.2rem); color:var(--orange); }
+</style>
 </head>
 <body>
 
@@ -79,6 +120,7 @@ fill="currentColor" stroke="none">
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navJoin">Get Involved<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 3 3-3"/></svg></button>
         <div class="nav-panel" id="navJoin">
           <a href="/volunteer"><span class="np-t">Volunteer</span><span class="np-d">Explore roles, time commitments, and ways to contribute</span></a>
+          <a href="/ambassadors"><span class="np-t">Ambassadors</span><span class="np-d">Athletes and connectors who grow the sport</span></a>
           <a href="/sponsorship"><span class="np-t">Partners</span><span class="np-d">Our partners, and how to join them</span></a>
           <a href="/events"><span class="np-t">Events</span><span class="np-d">Tournaments, fundraisers, and gatherings</span></a>
         </div>
@@ -105,6 +147,7 @@ fill="currentColor" stroke="none">
       <a class="m-sub" href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
       <span class="m-group">Get Involved</span>
       <a class="m-sub" href="/volunteer">Volunteer</a>
+      <a class="m-sub" href="/ambassadors">Ambassadors</a>
       <a class="m-sub" href="/sponsorship">Partners</a>
       <a class="m-sub" href="/events">Events</a>
       <span class="m-group">About</span>
@@ -118,143 +161,131 @@ fill="currentColor" stroke="none">
 
 <main>
 
-  <!-- HERO — dark cut-out stage. Same light logic as the homepage lineup:
-       one warm source, a rim that follows the silhouette, a contact shadow on
-       a shared floor line. -->
+  <!-- HERO: his name, the three facts that stop a reader, two ways in. -->
   <section class="ath-hero dark">
     <div class="wrap">
       <div class="ath-grid">
         <div class="ath-text">
           <div class="ath-eyebrow-row">
-            <span class="eyebrow orange reveal">Adapt To Life athlete</span>
+            <span class="eyebrow orange reveal">Our first ambassador</span>
           </div>
-          <h1 class="serif display reveal">Juan</h1>
+          <h1 class="serif display reveal">Juan Ortiz</h1>
           <hr class="tick orange reveal">
-          <p class="lead sub reveal">Wheelchair pickleball, out of Chicago. If you have been on the front of this website, you have already met him. He is the one turning into the forehand.</p>
-          <ul class="ath-meta reveal">
-            <li>Wheelchair pickleball</li>
-            <li>Chicago</li>
-            <li>PER4MAX</li>
+          <p class="lead sub reveal">Paralyzed at 14. Hall of Famer in wheelchair softball. Now he is chasing his first US Open in wheelchair pickleball, and building the sport for everyone behind him.</p>
+          <ul class="jn-chips reveal">
+            <li>Wheelchair Softball Hall of Fame</li>
+            <li>University of Illinois basketball</li>
+            <li>16 hours a week on court</li>
           </ul>
+          <div class="jn-acts reveal">
+            <a href="#seat" class="btn">Send Juan to Naples <span class="arrow">&rarr;</span></a>
+            <a href="#story" class="btn ghost">Read his story</a>
+          </div>
         </div>
         <figure class="ath-figure reveal">
-          <img src="/images/hero/trace-juan.webp" width="752" height="1100" alt="Juan turning into a forehand in his sport wheelchair" fetchpriority="high" decoding="async">
+          <img src="/images/hero/trace-juan.webp" width="752" height="1100" alt="Juan Ortiz turning into a forehand in his sport wheelchair" fetchpriority="high" decoding="async">
         </figure>
       </div>
     </div>
   </section>
 
-  <!-- WHO HE IS — portrait left, his story right -->
-  <section class="band-lg">
+  <!-- WHERE IT STARTED: his words, raw. -->
+  <section class="jn-start band-lg" id="story">
+    <div class="jn-start-img" aria-hidden="true"><img src="/images/athletes/juan-court.webp" alt="" loading="lazy" decoding="async" width="2000" height="1333"></div>
     <div class="wrap">
-      <div class="ath-two">
-        <figure class="ath-portrait reveal">
-          <img src="/images/athletes/juan-portrait.webp" width="1000" height="1500" alt="Juan seated in his sport wheelchair holding a pickleball paddle, looking at the camera" loading="lazy" decoding="async">
-          <figcaption>Courtside at ACE. The chair is a PER4MAX, and the green spokes are how you find him from the far court.</figcaption>
-        </figure>
-        <div class="ath-body">
-          <span class="eyebrow orange reveal">Who he is</span>
-          <h2 class="serif statement italic reveal" style="margin-top:1rem;">Push. Play. Persist.</h2>
-          <hr class="tick orange reveal">
-          <p class="prose reveal">That line is printed on his team shirt, and it is a fair description of how he plays. Juan trains with the Chicago wheelchair pickleball program, on the court Adapt To Life helps pay for, most weeks of the year.</p>
-          <p class="prose reveal">We put his photograph on the front of this website before we ever gave him a page of his own. This is us fixing that.</p>
-          <div class="ask reveal">
-            <span class="ask-l">Juan, this part is yours</span>
-            <p>How did you get here? What you were doing before pickleball, how you found it, and what that first session was actually like.</p>
-            <p>Three or four sentences in your own voice will beat anything we could write about you.</p>
-          </div>
-        </div>
+      <span class="eyebrow orange reveal">Where it started</span>
+      <p class="jn-big reveal" aria-hidden="true">14.</p>
+      <div class="jn-words reveal">
+        <p>&ldquo;My journey in adaptive sports started at 14, during one of the darkest periods of my life. I was newly disabled, paralyzed by gun violence in Chicago, and struggling to accept being in a wheelchair and attending a new school.</p>
+        <p>Then I found wheelchair basketball. It completely opened my eyes to a world of pushing past limitations and breaking barriers people set for you.&rdquo;</p>
       </div>
+      <p class="jn-by reveal">Juan, in his own words</p>
     </div>
   </section>
 
-  <!-- THE PHOTOGRAPH — full bleed, dark surround -->
-  <section class="dark band-sm">
-    <figure class="ath-bleed">
-      <img src="/images/athletes/juan-celebrate.webp" width="1600" height="1200" alt="Juan celebrating on court with his arms out, mid shout" loading="lazy" decoding="async">
-      <figcaption>Chicago Adaptive Sports. The shirt is not wrong about him.</figcaption>
-    </figure>
-  </section>
-
-  <!-- IN HIS WORDS -->
-  <section class="band-lg">
+  <!-- THE CAREER: twenty years, one line. -->
+  <section class="band">
     <div class="wrap reading">
-      <span class="eyebrow orange reveal">In his words</span>
-      <h2 class="serif statement italic reveal" style="margin-top:1rem;">What the game gave him.</h2>
-      <hr class="tick orange reveal">
-      <p class="prose reveal">Most people find adaptive sport by accident. Somebody hands them a flyer, or drags them to a gym, and then a whole part of their life opens up that nobody had mentioned was available.</p>
-      <div class="ask reveal">
-        <span class="ask-l">Juan, this part is yours</span>
-        <p>If someone asked you what wheelchair pickleball changed for you, what is the honest answer? One or two sentences.</p>
-        <p>We will set it in large type, and it will probably be the thing people remember from this page.</p>
+      <span class="eyebrow orange reveal">Twenty years in the game</span>
+      <h2 class="serif h2 reveal" style="margin-top:0.8rem;">He has been to the top before.</h2>
+      <ol class="jn-time reveal">
+        <li><b>Age 14</b><span>Finds wheelchair basketball.</span></li>
+        <li><b>High school</b><span>MVP of his high school and men&rsquo;s wheelchair basketball teams. Picks up wheelchair softball. Basketball in the winter, softball in the summer.</span></li>
+        <li><b>College</b><span>Plays wheelchair basketball at the University of Illinois for Coach Mike Frogley.</span></li>
+        <li><b>Summers</b><span>Wins wheelchair softball national championships.</span></li>
+        <li><b>Hall of Fame</b><span>Inducted into the Wheelchair Softball Hall of Fame.</span></li>
+        <li><b>Sports dad</b><span>Three kids, every practice, every Saturday. &ldquo;That became my new championship.&rdquo;</span></li>
+        <li><b>Late 2025</b><span>Tries an eight week pickleball clinic with the Chicago Park District. Hooked from day one.</span></li>
+        <li><b>August 2026</b><span>Gets a wheelchair division added at the APP Tour&rsquo;s Vlasic Classic. The APP&rsquo;s first.</span></li>
+        <li class="lit"><b>Spring 2027</b><span>Naples. His first US Open.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- PULLED BACK IN: the clinic, in his words. -->
+  <section class="band tint">
+    <div class="wrap jn-split">
+      <figure class="jn-photo reveal">
+        <img src="/images/athletes/juan-serve.webp" alt="Juan Ortiz tosses the ball to serve from his sport wheelchair" loading="lazy" decoding="async" width="1500" height="1474">
+      </figure>
+      <div class="reveal">
+        <span class="eyebrow orange">Pulled back in</span>
+        <h2 class="serif h2" style="margin-top:0.8rem;">From retired sports dad to 16 hours a week.</h2>
+        <p class="jn-q">&ldquo;That first day was hilarious and humbling. None of us knew what we were doing. If we managed to get to a third shot in a rally, everyone congratulated each other.&rdquo;</p>
+        <p class="jn-q">&ldquo;At the end of that first session, the coach asked, &lsquo;Who&rsquo;s coming back next week?&rsquo; It was an immediate, hard yes from everyone.&rdquo;</p>
+        <p class="jn-q">&ldquo;I even passed up on softball nationals this year to fully dedicate myself to the court.&rdquo;</p>
       </div>
     </div>
   </section>
 
-  <!-- THE SETUP — gear, in his voice, with the disclosure -->
+  <!-- THE LINE PEOPLE WILL REMEMBER -->
+  <section class="dark band-lg jn-quote">
+    <div class="wrap">
+      <blockquote class="reveal">&ldquo;Pickleball is the ultimate equalizer. It&rsquo;s the first sport I&rsquo;ve ever found where <em>the wheelchair vanishes.</em>&rdquo;</blockquote>
+      <p class="jn-by reveal">Juan Ortiz</p>
+    </div>
+  </section>
+
+  <!-- BUILDING IT FOR EVERYONE: the pioneer. -->
+  <section class="band">
+    <div class="wrap reading">
+      <span class="eyebrow orange reveal">Building the sport</span>
+      <h2 class="serif h2 reveal" style="margin-top:0.8rem;">&ldquo;That sport has to exist first.&rdquo;</h2>
+      <p class="prose reveal" style="margin-top:1.2rem;">This August, Juan asked the APP Tour&rsquo;s Vlasic Classic for a wheelchair division, and got one. It was the APP&rsquo;s first, and five full teams played it. When a tournament has no wheelchair division, he signs up anyway and plays able bodied players.</p>
+      <p class="jn-q reveal">&ldquo;In basketball and softball, I was lucky to have huge, established adaptive programs supporting us. Wheelchair pickleball doesn&rsquo;t have that infrastructure yet. If an adaptive athlete wants to try a sport, that sport has to exist first.&rdquo;</p>
+      <p class="prose reveal" style="margin-top:1.2rem;">Juan is leading the fundraising for <a class="textlink" href="/send-6" style="font:inherit;letter-spacing:inherit;">Send 6 to the US Open</a>, and he is the first of our <a class="textlink" href="/ambassadors" style="font:inherit;letter-spacing:inherit;">ambassadors</a>.</p>
+    </div>
+  </section>
+
+  <!-- THE SETUP: his gear and his code, said plainly. -->
   <section class="band-lg" style="background:var(--sand);">
     <div class="wrap reading">
       <span class="eyebrow orange reveal">What he plays with</span>
-      <h2 class="serif statement italic reveal" style="margin-top:1rem;">The setup.</h2>
-      <hr class="tick orange reveal">
-      <p class="prose reveal">Gear talk is half of what athletes actually talk to each other about, so it belongs on an athlete's page rather than nowhere.</p>
-
-      <div class="kit reveal">
-        <div class="kit-item">
-          <span class="kit-l">The chair</span>
-          <p class="kit-v">PER4MAX</p>
-          <p class="kit-d">His sport chair. Green spokes, white frame, orange casters, and enough miles on it to be recognisable across a gym.</p>
-        </div>
-        <div class="kit-item">
-          <span class="kit-l">The paddle</span>
-          <p class="kit-v">Bread &amp; Butter Loco</p>
-          <p class="kit-d">Juan's own pick, and he will tell you so before you ask.</p>
-        </div>
+      <h2 class="serif h2 reveal" style="margin-top:0.8rem;">The setup.</h2>
+      <div class="jn-kit reveal">
+        <div><b>PER4MAX</b><span>His chair. Three sets of tires in ten months; one set used to last him a year.</span></div>
+        <div><b>Bread &amp; Butter Loco</b><span>&ldquo;The moment I tried it, I was sold.&rdquo;</span></div>
       </div>
-
-      <div class="disclose reveal">
-        <span class="kit-l">Worth saying plainly</span>
-        <p>Juan is a paid brand ambassador for Bread &amp; Butter. Sales made with his code send a share back to Adapt To Life. We are telling you that before you go looking for it, because you should know when a recommendation comes with a relationship attached.</p>
-        <p class="code-chip">JuanitoLoco</p>
-      </div>
-
-      <div class="ask reveal">
-        <span class="ask-l">Juan, this part is yours</span>
-        <p>Anything else in the bag worth naming? Gloves, wheels, shoes, the thing you always forget and have to borrow.</p>
+      <div class="jn-code reveal">
+        <span class="eyebrow orange">His code</span><br>
+        <span class="code-chip">JuanitoLoco</span>
+        <p>Juan is a Bread &amp; Butter ambassador. His code takes 10% off, and the commission Bread &amp; Butter pays him goes to Adapt To Life for the trip to Naples. <a href="https://breadandbutterpickleball.com/?utm_source=adapttolife&amp;utm_medium=referral&amp;utm_campaign=juan" rel="sponsored nofollow noopener" target="_blank">Shop Bread &amp; Butter &rarr;</a></p>
+        <p>&ldquo;If you see me out on the court, come try my Loco yourself.&rdquo;</p>
       </div>
     </div>
   </section>
 
-  <!-- THE SEAT — why a donate button is on an athlete's page -->
-  <section class="dark band-lg">
+  <!-- THE SEAT -->
+  <section class="dark band-lg" id="seat">
     <div class="wrap reading">
-      <span class="eyebrow orange reveal">Why there is a donate button on this page</span>
-      <h2 class="serif display reveal" style="margin-top:1rem;">A seat is one athlete.</h2>
-      <p class="lead sub reveal">Adapt To Life is raising $21,000 to send six adaptive pickleball athletes to the US Open in Naples in the spring of 2027. Not a hardship discount. Covered.</p>
-
-      <ul class="seat-lines reveal">
-        <li>
-          <span class="seat-n">Equipment</span>
-          <span class="seat-d">Tires that survive tournament surfaces, and a paddle that does not crack on day two.</span>
-          <span class="seat-a">$450</span>
-        </li>
-        <li>
-          <span class="seat-n">Training</span>
-          <span class="seat-d">Court time and coaching all year, not just the week before the flight.</span>
-          <span class="seat-a">$500</span>
-        </li>
-        <li>
-          <span class="seat-n">Travel</span>
-          <span class="seat-d">Airfare, six nights, entry fees, and accessible ground transport in Naples.</span>
-          <span class="seat-a">$2,300</span>
-        </li>
-      </ul>
-      <p class="seat-total reveal">About $3,500 puts one athlete on that court.</p>
-      <p class="prose reveal" style="margin-top:1.2rem; font-size:0.92rem;">These are our own numbers from the last trip and the published entry fees, not estimates. If the campaign is funded, or it cannot go ahead, the money moves to the Hustle &amp; Heart Fund. It stays in adaptive sport either way.</p>
-
-      <div class="actions reveal" style="display:flex; flex-wrap:wrap; gap:0.9rem 1rem; margin-top:2.4rem;">
-        <a href="/donate?utm_source=athlete-profile&amp;utm_medium=web&amp;utm_campaign=juan" class="btn">Cover part of a seat <span class="arrow">&rarr;</span></a>
-        <a href="/send-6" class="btn ghost">How the six seats work</a>
+      <span class="eyebrow orange reveal">His seat</span>
+      <h2 class="serif display reveal" style="margin-top:1rem;">Send Juan to <em class="italic" style="color:var(--orange)">his first US Open.</em></h2>
+      <p class="lead sub reveal">Adapt To Life is raising $21,000 to send six wheelchair pickleball athletes to the US Open in Naples in spring 2027: equipment, training, and travel. Juan is the first of the six.</p>
+      <p class="jn-seat-total reveal">About $3,500 puts Juan on that court.</p>
+      <p class="prose reveal" style="margin-top:1rem; font-size:0.92rem; color:var(--cream-mute);">If the campaign is fully funded or cannot go ahead, remaining campaign funds support the Hustle &amp; Heart Fund. <a class="textlink" href="/promise" style="font:inherit;letter-spacing:inherit;">How giving works</a></p>
+      <div class="actions reveal" style="display:flex; flex-wrap:wrap; gap:0.9rem 1rem; margin-top:2.2rem;">
+        <a href="/donate?utm_source=athlete-profile&amp;utm_medium=web&amp;utm_campaign=juan" class="btn">Cover part of Juan&rsquo;s seat <span class="arrow">&rarr;</span></a>
+        <a href="/send-6" class="btn ghost">About Send 6</a>
       </div>
     </div>
   </section>
@@ -263,9 +294,9 @@ fill="currentColor" stroke="none">
   <section class="band">
     <div class="wrap reading">
       <span class="eyebrow orange reveal">Share</span>
-      <h2 class="serif statement italic reveal" style="margin-top:1rem;">Post it yourself.</h2>
+      <h2 class="serif statement italic reveal" style="margin-top:1rem;">Share Juan&rsquo;s story.</h2>
       <hr class="tick orange reveal">
-      <p class="prose reveal">This page exists so Juan can send it. People give to someone they know, and his network is not ours.</p>
+      <p class="prose reveal">People give to someone they know. Send his page to yours and help get him to Naples.</p>
       <div class="share-row reveal">
         <span class="share-url" id="shareUrl">adapttolife.org/juan</span>
         <button class="share-btn" type="button" id="shareBtn">Copy link</button>
@@ -336,6 +367,7 @@ fill="currentColor" stroke="none">
         <a href="/donate">Donate</a>
         <a href="/promise">How Giving Works</a>
         <a href="/volunteer">Volunteer</a>
+        <a href="/ambassadors">Ambassadors</a>
         <a href="/sponsorship">Become a partner</a>
         <a href="/events">Events</a>
         <a href="/apply">Apply for support</a>

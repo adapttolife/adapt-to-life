@@ -89,6 +89,12 @@ const PHOTOS = {
   // the only sport context a head-and-shoulders card gets to carry.
   "juan-portrait":  { file: "assets/photos/juan-portrait.jpg",  pos: "62% 46%" },
 
+  // Brick House (2026-10-02): the /brickhouse hero, from the 4K clip, already
+  // graded black and white with the page's own recipe. A 2160px portrait cannot
+  // fill a full-bleed card without upscaling, so it runs in the split variant's
+  // photo panel, where it is sharp and he stays clear of the type.
+  "brickhouse-hero": { file: "assets/photos/brickhouse-hero.jpg", pos: "58% 30%" },
+
   // Brand artwork, not a photograph: the mark rendered as an object. Both files
   // arrived with a Gemini sparkle in the corner and are cropped to exclude it.
   black:    { file: "assets/art/mark-black.jpg",             pos: "50% 42%" },
@@ -143,6 +149,10 @@ const CARDS = {
   juan: { ...ATHLETE, photo: "juan-portrait", size: 120, measure: "8ch",
     out: "public/images/og/juan-v1-athlete.jpg", page: "juan.html",
     headline: "<em>Juan</em>" },
+  // The grand opening card. Split, not athlete: see "brickhouse-hero" above.
+  brickhouse: { variant: "split", photo: "brickhouse-hero", size: 66, measure: "11ch",
+    out: "public/images/og/brickhouse-v1-opening.jpg", page: "brickhouse.html",
+    headline: "Come play with us <em>at Brick House</em>." },
   volunteer: { ...ATHLETE, photo: "cap-profile",
     out: "public/images/og/volunteer-v3-athlete.jpg", page: "volunteer.html",
     headline: "Your place on <em>this team</em>." },

@@ -4,23 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light only">
-<title>Sponsorship | Adapt To Life</title>
-<meta name="description" content="Partner with Adapt To Life to support equipment, training, and travel. Explore sponsorship options, recognition, and ways your business can contribute.">
+<title>Partners | Adapt To Life</title>
+<meta name="description" content="Partner with Adapt To Life to help adaptive athletes get equipped, keep training, and travel to compete.">
 <link rel="canonical" href="https://adapttolife.org/sponsorship">
 <link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-v2-option2-32.png">
 <link rel="apple-touch-icon" href="/images/apple-touch-icon-v2-option2.png">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Sponsorship | Adapt To Life">
-<meta property="og:description" content="Partner with Adapt To Life to support equipment, training, and travel. Explore sponsorship options, recognition, and ways your business can contribute.">
+<meta property="og:title" content="Partners | Adapt To Life">
+<meta property="og:description" content="Partner with Adapt To Life to help adaptive athletes get equipped, keep training, and travel to compete.">
 <meta property="og:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.">
 <meta property="og:url" content="https://adapttolife.org/sponsorship">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Sponsorship | Adapt To Life">
-<meta name="twitter:description" content="Partner with Adapt To Life to support equipment, training, and travel. Explore sponsorship options, recognition, and ways your business can contribute.">
+<meta name="twitter:title" content="Partners | Adapt To Life">
+<meta name="twitter:description" content="Partner with Adapt To Life to help adaptive athletes get equipped, keep training, and travel to compete.">
 <meta name="twitter:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
 <meta name="twitter:image:alt" content="Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -32,30 +32,116 @@
 <!-- band:vars --><style data-band-vars>:root{--pg-band-wide:url('/images/hero/panels/pg-band-2-wide.9ac73821.webp');--pg-band-tall:url('/images/hero/panels/pg-band-2-tall.f9278c2d.webp');--pg-give-wide:url('/images/hero/panels/pg-give-wide.b46beed5.webp');--pg-give-tall:url('/images/hero/panels/pg-give-tall.5cece3a5.webp');}</style>
 <script src="/js/attribution.js" defer></script>
 <style>
-  /* Sponsorship page — tier ladder */
-  .tier-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:clamp(1.1rem,2.4vw,1.7rem); margin-top:clamp(2.4rem,4vw,3.2rem); }
-  .tier{ display:flex; flex-direction:column; border:1.5px solid #e3e0d9; border-radius:16px; padding:1.6rem 1.4rem; background:var(--paper); }
-  .tier.is-popular{ border-color:var(--orange); box-shadow:0 18px 44px rgba(232,93,4,0.13); }
-  .tier-flag{ font-family:var(--font-label); font-weight:700; font-size:0.7rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--orange); min-height:1rem; }
-  .tier-price{ font-family:var(--font-display); font-weight:800; letter-spacing:-0.02em; font-size:2rem; line-height:1; margin:0.25rem 0 0; color:#1A1A1A; }
-  .tier-price small{ font-size:0.9rem; color:#6b6b6b; font-family:var(--font-body); }
-  .tier-name{ font-family:var(--font-body); font-weight:700; font-size:1.05rem; margin:0.5rem 0 0.2rem; color:#1A1A1A; }
-  .tier-line{ font-family:var(--font-body); font-size:0.9rem; color:#6b6b6b; margin:0 0 1rem; }
-  .tier-benefits{ list-style:none; padding:0; margin:0 0 1.4rem; display:flex; flex-direction:column; gap:0.5rem; flex:1; }
-  .tier-benefits li{ position:relative; padding-left:1.3rem; font-family:var(--font-body); font-size:0.9rem; color:#333; line-height:1.4; }
-  .tier-benefits li::before{ content:""; position:absolute; left:0; top:0.5em; width:7px; height:7px; border-radius:50%; background:var(--orange); }
-  .tier .btn{ width:100%; text-align:center; }
-  .founding{ margin-top:clamp(1.1rem,2.4vw,1.7rem); border-radius:16px; padding:clamp(1.8rem,4vw,2.6rem); background:#1A1A1A; color:var(--cream); display:grid; grid-template-columns:1.15fr 0.85fr; gap:clamp(1.4rem,3vw,2.4rem); align-items:center; }
-  @media (max-width:760px){ .founding{ grid-template-columns:1fr; } }
-  .founding .tier-flag{ color:var(--orange); }
-  .founding .tier-price{ color:var(--cream); font-size:2.4rem; }
-  .founding .tier-name{ color:var(--cream); }
-  .founding .tier-line{ color:rgba(255,255,255,0.7); }
-  .founding .tier-benefits li{ color:rgba(255,255,255,0.82); }
-  .deploys{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:clamp(1.2rem,3vw,2rem); margin-top:clamp(2.2rem,4vw,3rem); }
-  .deploys .impact-n{ font-size:clamp(1.6rem,4vw,2.1rem); }
-  .tax-note{ font-family:var(--font-body); font-size:0.9rem; color:#6b6b6b; max-width:60ch; line-height:1.55; }
-  @media (min-width:880px){ .progs{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
+  /* Partners. Proof first (our first partner), then where support goes (the
+     road to the US Open), the levels as a ladder on a dark band, and the
+     supporters wall with room left on it. Shares /brickhouse's language: dark
+     bands with the orange bloom, the italic orange accent, the ATL x Brick
+     House lockup with the painted optic yellow x, and the brick. */
+  .sp-hero{ position:relative; isolation:isolate; overflow:hidden; min-height:clamp(560px,78svh,760px); display:flex; align-items:center; padding:clamp(4rem,9vh,6rem) 0; background:#0C0C0E; }
+  .sp-hero-img, .sp-hero-img img{ position:absolute; inset:0; width:100%; height:100%; z-index:-2; }
+  .sp-hero-img img{ object-fit:cover; object-position:62% 40%; }
+  .sp-hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:
+      linear-gradient(90deg, rgba(12,12,14,0.96) 0%, rgba(12,12,14,0.86) 34%, rgba(12,12,14,0.35) 62%, rgba(12,12,14,0.05) 85%),
+      radial-gradient(ellipse 40% 55% at 22% 60%, rgba(255,92,57,0.18) 0%, transparent 70%),
+      linear-gradient(0deg, rgba(12,12,14,0.6) 0%, transparent 30%); }
+  .sp-kicker{ display:flex; align-items:center; gap:0.9rem; font-family:var(--font-label); font-weight:800; font-size:0.85rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--orange); }
+  .sp-kicker::before{ content:""; width:2.2rem; height:2px; background:var(--orange); box-shadow:0 0 12px var(--orange-glow); }
+  .sp-hero .display{ max-width:11ch; margin-top:1.4rem; font-size:clamp(2.9rem,6vw,5.6rem); line-height:0.96; }
+  .sp-hero .sub{ max-width:36ch; margin-top:1.3rem; color:var(--cream-mute); }
+  .sp-hero .actions{ display:flex; flex-wrap:wrap; gap:0.9rem 1rem; margin-top:1.8rem; }
+  @media (max-width:820px){
+    .sp-hero{ display:block; min-height:0; padding:0 0 clamp(2.5rem,7vh,3.5rem); }
+    .sp-hero-img{ position:relative; display:block; height:min(62svh,560px); }
+    .sp-hero-img img{ object-position:50% 30%; }
+    .sp-hero::after{ background:linear-gradient(180deg, transparent 55%, rgba(12,12,14,0.75) 80%, #0C0C0E 96%); }
+    .sp-hero-copy{ margin-top:1.8rem; position:relative; }
+    .sp-hero .display{ font-size:clamp(2.6rem,11vw,3.4rem); }
+  }
+
+  /* Where support goes: the words and the road on the left, two frames from
+     the courts hung at different heights on the right. */
+  .sp-go{ display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,0.8fr); gap:clamp(2rem,5vw,4.5rem); align-items:start; }
+  .sp-go .prose{ max-width:52ch; margin-top:1rem; }
+  .sp-go-pics{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(0.6rem,1.4vw,1rem); }
+  .sp-go-pics img{ width:100%; height:auto; aspect-ratio:9/14; object-fit:cover; border-radius:14px; display:block; }
+  .sp-go-pics img:nth-child(1){ object-position:50% 25%; }
+  .sp-go-pics img:nth-child(2){ margin-top:clamp(2rem,5vw,4rem); }
+  @media (max-width:820px){ .sp-go{ grid-template-columns:1fr; } .sp-go-pics{ order:-1; } .sp-go-pics img{ aspect-ratio:4/5; } }
+  .bh-road{ margin-top:clamp(2.2rem,4.5vw,3.2rem); }
+  .bh-road ol{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(1rem,2.2vw,1.6rem); position:relative; }
+  .bh-road ol::before{ content:""; position:absolute; left:0; right:0; top:7px; height:2px; background:linear-gradient(90deg, var(--orange), rgba(255,92,57,0.25)); }
+  .bh-road li{ position:relative; padding-top:1.6rem; }
+  .bh-road li::before{ content:""; position:absolute; left:0; top:0; width:16px; height:16px; border-radius:50%; background:var(--paper); box-shadow:inset 0 0 0 2px rgba(255,92,57,0.7); }
+  .bh-road li.lit::before{ background:var(--orange); box-shadow:0 0 18px 2px var(--orange-glow); }
+  .bh-road b{ display:block; font-family:var(--font-display); font-weight:800; font-size:clamp(1.05rem,1.6vw,1.25rem); color:var(--ink); letter-spacing:-0.01em; }
+  .bh-road li.lit b{ color:var(--orange-ink); }
+  .bh-road span{ display:block; margin-top:0.35rem; color:var(--ink-soft); font-size:0.95rem; line-height:1.45; }
+  .bh-more{ display:inline-block; margin-top:1.8rem; font-weight:700; color:var(--orange-ink); border-bottom:2px solid currentColor; padding-bottom:2px; }
+  @media (max-width:700px){
+    .bh-road ol{ grid-template-columns:1fr; gap:1.3rem; padding-left:1.8rem; }
+    .bh-road ol::before{ left:7px; right:auto; top:0; bottom:0; width:2px; height:auto; background:linear-gradient(180deg, var(--orange), rgba(255,92,57,0.25)); }
+    .bh-road li{ padding-top:0; }
+    .bh-road li::before{ left:-1.8rem; top:0.2rem; }
+  }
+
+  /* The levels: a ladder on a dark band. Name first, the price as the accent,
+     the flagship lit. Founding Partner is the summit, framed in brick. */
+  .sp-levels{ position:relative; isolation:isolate; overflow:hidden; }
+  .sp-levels::before{ content:""; position:absolute; inset:0; z-index:-1; background:
+      radial-gradient(ellipse 50% 40% at 60% 38%, rgba(255,92,57,0.16) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 8% 90%, rgba(255,92,57,0.10) 0%, transparent 70%); }
+  .sp-levels .sec-head .prose{ color:var(--cream-mute); max-width:52ch; margin-top:1rem; }
+  .tier-grid{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:clamp(0.8rem,1.6vw,1.2rem); margin-top:clamp(2.4rem,4vw,3.2rem); align-items:end; }
+  @media (max-width:1000px){ .tier-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); align-items:stretch; } }
+  @media (max-width:560px){ .tier-grid{ grid-template-columns:1fr; } }
+  .tier{ display:flex; flex-direction:column; border-radius:18px; padding:1.6rem 1.4rem 1.4rem; background:rgba(255,255,255,0.04); box-shadow:inset 0 0 0 1px rgba(255,255,255,0.10); }
+  /* Each step up the ladder stands a little taller. */
+  @media (min-width:1001px){ .tier:nth-child(1){ min-height:400px; } .tier:nth-child(2){ min-height:428px; } .tier:nth-child(3){ min-height:456px; } .tier:nth-child(4){ min-height:484px; } }
+  .tier.is-popular{ background:linear-gradient(180deg, rgba(255,92,57,0.16), rgba(255,92,57,0.04)); box-shadow:inset 0 0 0 1.5px var(--orange), 0 0 70px -18px rgba(255,92,57,0.55); }
+  .tier-flag{ font-family:var(--font-label); font-weight:800; font-size:0.7rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--orange); min-height:1rem; }
+  .tier-name{ font-family:var(--font-display); font-weight:800; font-size:clamp(1.6rem,2.2vw,1.9rem); letter-spacing:-0.02em; line-height:1; margin-top:0.6rem; color:var(--cream); }
+  .tier-price{ font-family:var(--font-display); font-weight:800; font-style:italic; font-size:clamp(1.3rem,1.8vw,1.5rem); letter-spacing:-0.01em; color:var(--orange); margin-top:0.45rem; }
+  .tier-price small{ font-size:0.9rem; font-style:normal; color:var(--cream-mute); font-family:var(--font-body); }
+  .tier-line{ font-size:0.95rem; color:var(--cream-mute); margin:0.7rem 0 0; padding-bottom:1.1rem; border-bottom:1px solid rgba(255,255,255,0.12); }
+  .tier-benefits{ list-style:none; padding:0; margin:1.1rem 0 1.4rem; display:flex; flex-direction:column; gap:0.55rem; flex:1; }
+  .tier-benefits li{ position:relative; padding-left:1.3rem; font-size:0.92rem; color:rgba(249,247,242,0.86); line-height:1.4; }
+  .tier-benefits li::before{ content:""; position:absolute; left:0; top:0.5em; width:7px; height:7px; border-radius:2px; background:var(--orange); }
+  .tier .btn{ width:100%; text-align:center; justify-content:center; }
+  .tier .btn.ghost{ color:var(--cream); box-shadow:inset 0 0 0 1.5px rgba(249,247,242,0.5); background:transparent; }
+  .founding{ position:relative; margin-top:clamp(1rem,2vw,1.4rem); border-radius:18px; padding:clamp(1.8rem,4vw,2.8rem); color:var(--cream); display:grid; grid-template-columns:1fr 1fr; gap:clamp(1.4rem,3vw,2.4rem); align-items:center; overflow:hidden; isolation:isolate;
+    background:#141416; box-shadow:inset 0 0 0 1.5px rgba(255,92,57,0.55), 0 30px 80px -30px rgba(0,0,0,0.9); }
+  .founding::before{ content:""; position:absolute; inset:0; z-index:-1; opacity:0.9; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='48'%3E%3Cg fill='none' stroke='%23FF5C39' stroke-opacity='0.13'%3E%3Cpath d='M0 .5h96M0 24.5h96M.5 0v24M48.5 0v24M24.5 24v24M72.5 24v24'/%3E%3C/g%3E%3C/svg%3E");
+    -webkit-mask-image:linear-gradient(90deg, transparent 0%, #000 70%); mask-image:linear-gradient(90deg, transparent 0%, #000 70%); }
+  @media (max-width:760px){ .founding{ grid-template-columns:1fr; } .founding::before{ -webkit-mask-image:linear-gradient(180deg, transparent 0%, #000 90%); mask-image:linear-gradient(180deg, transparent 0%, #000 90%); } }
+  .founding .tier-name{ font-size:clamp(2rem,3.4vw,2.8rem); }
+  .founding .tier-price{ font-size:clamp(1.5rem,2.4vw,1.9rem); }
+  .founding .tier-line{ border-bottom:0; padding-bottom:0; }
+  .founding .tier-benefits{ margin:0; }
+  .sp-fine{ margin-top:clamp(2rem,4vw,2.8rem); display:grid; grid-template-columns:1fr 1fr; gap:clamp(1.2rem,3vw,2.4rem); color:var(--cream-mute); font-size:0.92rem; line-height:1.55; }
+  @media (max-width:760px){ .sp-fine{ grid-template-columns:1fr; } }
+  .sp-fine .textlink{ color:var(--orange); }
+
+
+  /* Our partners: each partner is a dark card with their picture and their
+     mark, linking to the page that tells their story. One reads as a feature;
+     more wrap into a grid without new CSS. */
+  .partner-list{ display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr)); gap:clamp(1rem,2vw,1.4rem); margin-top:clamp(2rem,4vw,2.8rem); }
+  .partner{ display:grid; grid-template-columns:minmax(0,0.9fr) minmax(0,1.1fr); border-radius:22px; overflow:hidden; background:#0C0C0E; color:var(--cream); isolation:isolate; position:relative;
+    box-shadow:0 30px 70px -34px rgba(0,0,0,0.6); }
+  .partner::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 60% 70% at 85% 30%, rgba(255,92,57,0.18) 0%, transparent 70%); }
+  .partner-photo{ display:block; min-height:clamp(320px,36vw,460px); }
+  .partner-photo img{ width:100%; height:100%; object-fit:cover; object-position:50% 30%; transition:transform .6s ease; }
+  .partner:hover .partner-photo img{ transform:scale(1.03); }
+  .partner-body{ padding:clamp(1.6rem,3.5vw,2.8rem); display:flex; flex-direction:column; align-items:flex-start; justify-content:center; }
+  .partner-logo{ height:clamp(58px,6vw,78px); width:auto; }
+  .partner-kicker{ margin-top:1.4rem; font-family:var(--font-label); font-weight:800; font-size:0.78rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--orange); }
+  .partner .h3{ margin-top:0.4rem; color:var(--cream); font-size:clamp(1.7rem,2.8vw,2.4rem); letter-spacing:-0.02em; line-height:1.05; }
+  .partner-line{ margin-top:0.8rem; color:var(--cream-mute); max-width:38ch; }
+  .partner-when{ margin-top:1.1rem; display:flex; align-items:center; gap:0.8rem; flex-wrap:wrap; font-family:var(--font-label); font-weight:800; font-size:0.78rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--cream); }
+  .partner-when span{ display:inline-flex; align-items:center; gap:0.8rem; color:var(--orange); }
+  .partner-when span::after{ content:""; width:2px; height:1.1em; background:var(--orange); box-shadow:0 0 12px 0 var(--orange-glow); }
+  .partner-more{ margin-top:1.5rem; font-weight:700; color:var(--orange); border-bottom:2px solid currentColor; padding-bottom:2px; }
+  @media (max-width:700px){ .partner{ grid-template-columns:1fr; } .partner-photo{ min-height:0; aspect-ratio:4/3.6; } .partner-when{ flex-wrap:nowrap; gap:0.6rem; font-size:0.72rem; letter-spacing:0.1em; } .partner-when span{ gap:0.6rem; white-space:nowrap; } }
 </style>
 </head>
 <body>
@@ -102,7 +188,8 @@ fill="currentColor" stroke="none">
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navJoin">Get Involved<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 3 3-3"/></svg></button>
         <div class="nav-panel" id="navJoin">
           <a href="/volunteer"><span class="np-t">Volunteer</span><span class="np-d">Explore roles, time commitments, and ways to contribute</span></a>
-          <a href="/sponsorship"><span class="np-t">Sponsor</span><span class="np-d">Partnership options and recognition for your business</span></a>
+          <a href="/sponsorship"><span class="np-t">Partners</span><span class="np-d">Our partners, and how to join them</span></a>
+          <a href="/events"><span class="np-t">Events</span><span class="np-d">Tournaments, fundraisers, and gatherings</span></a>
         </div>
       </div>
       <div class="nav-group">
@@ -127,7 +214,8 @@ fill="currentColor" stroke="none">
       <a class="m-sub" href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
       <span class="m-group">Get Involved</span>
       <a class="m-sub" href="/volunteer">Volunteer</a>
-      <a class="m-sub" href="/sponsorship">Sponsor</a>
+      <a class="m-sub" href="/sponsorship">Partners</a>
+      <a class="m-sub" href="/events">Events</a>
       <span class="m-group">About</span>
       <a class="m-sub" href="/promise">How Giving Works</a>
       <a class="m-sub" href="/about">Our Story</a>
@@ -139,73 +227,112 @@ fill="currentColor" stroke="none">
 
 <main>
 
-  <!-- HERO -->
-  <section class="hero dark pg-band pg-head--lg">
-    <div class="wrap">
-      <span class="eyebrow orange reveal">Partner with Adapt To Life</span>
-      <h1 class="serif display reveal">Sponsor an <em class="italic" style="color:var(--orange)">adaptive athlete.</em></h1>
-      <p class="lead sub reveal">Help make adaptive sports part of more lives. Partner with us to support equipment, training, and travel.</p>
-      <div class="actions reveal">
+  <!-- 1. THE MISSION: an athlete at full size, the invitation beside him. -->
+  <section class="sp-hero dark">
+    <picture class="sp-hero-img">
+      <source media="(max-width: 820px)" srcset="/images/partners/hero-tall.webp">
+      <img src="/images/partners/hero-wide.webp" alt="A wheelchair pickleball player in glasses swings his paddle across his body" width="2400" height="1600" fetchpriority="high">
+    </picture>
+    <div class="wrap sp-hero-copy">
+      <p class="sp-kicker">Partner with Adapt To Life</p>
+      <h1 class="serif display">Grow adaptive sports <em class="italic" style="color:var(--orange)">with us.</em></h1>
+      <p class="lead sub">Partners help athletes get equipped, keep training, and travel to compete. Together we reach more of them as we grow.</p>
+      <div class="actions">
         <a href="#tiers" class="btn">See the levels <span class="arrow">&rarr;</span></a>
-        <a href="/contact?rsn=sponsor" class="btn ghost">Talk to us</a>
+        <a href="#partners" class="btn ghost">Our partners</a>
       </div>
     </div>
   </section>
 
-  <!-- WHY SPONSOR -->
-  <section class="band tint">
+  <!-- OUR PARTNERS: proof right after the mission, and the supporters wall.
+       One <article class="partner"> per partner, each linking to its own page
+       (/brickhouse is the pattern). The list becomes a grid as it grows. -->
+  <section class="band sp-partners" id="partners">
+    <span id="wall"></span>
     <div class="wrap">
-      <div class="reveal sec-head">
-        <span class="eyebrow orange">Why partner with us</span>
-        <h2 class="serif h2" style="margin-top:0.8rem;">A partnership with something to show for it.</h2>
+      <div class="sec-head reveal">
+        <span class="eyebrow orange">Our partners</span>
+        <h2 class="serif h2" style="margin-top:0.8rem;">With thanks to <em class="italic" style="color:var(--orange-ink)">our partners.</em></h2>
       </div>
-      <div class="progs" style="margin-top:clamp(2.4rem,4vw,3.4rem);">
-        <div class="prog reveal">
-          <span class="tag">The athlete</span>
-          <h3 class="serif h3">Your dollars, on the court</h3>
-          <p>A sport chair. A season of coaching. A trip to a tournament. Your partnership helps cover the things that get athletes on the court.</p>
+      <div class="partner-list">
+        <article class="partner reveal">
+          <a class="partner-photo" href="/brickhouse" tabindex="-1" aria-hidden="true">
+            <img src="/images/brickhouse/hero-bob.webp" alt="" width="1200" height="2000" loading="lazy" decoding="async">
+          </a>
+          <div class="partner-body">
+            <img class="partner-logo" src="/images/brickhouse/brick-house-logo-orange-black-reverse.svg" alt="Brick House Pickleball" width="372" height="265">
+            <p class="partner-kicker">Our first partner</p>
+            <h3 class="serif h3">Brick House Pickleball</h3>
+            <p class="partner-line">Our home court in Lake Forest, open 24/7/365. Our athletes train there every week, all four seasons.</p>
+            <p class="partner-when" data-until="2026-10-25"><span>Grand opening</span> Sunday, October 25</p>
+            <a class="partner-more" href="/brickhouse">See the partnership <span class="arrow">&rarr;</span></a>
+          </div>
+        </article>
+      </div>
+    </div>
+    <script>
+      (function(){
+        var el = document.querySelector('.partner-when[data-until]');
+        if (!el) return;
+        var d = new Date(), t = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        if (t > el.getAttribute('data-until')) el.remove();
+      })();
+    </script>
+  </section>
+
+  <!-- 2. WHERE YOUR SUPPORT GOES: through the fund, into a campaign. Today
+       that campaign is Send 6; the sentence says "right now" so it never caps
+       the list. -->
+  <section class="band tint" id="where">
+    <div class="wrap sp-go">
+      <div>
+        <span class="eyebrow orange reveal">What partnership makes possible</span>
+        <h2 class="serif h2 reveal" style="margin-top:0.8rem;">Equipment, training, and travel. <em class="italic" style="color:var(--orange-ink)">Right now, the road to Naples.</em></h2>
+        <p class="prose reveal">Partner support generally goes to the <a class="textlink" href="/hustle-and-heart" style="font:inherit;letter-spacing:inherit;">Hustle &amp; Heart Fund</a>, then to a campaign. Right now, that campaign is Send 6 to the US Open.</p>
+        <div class="bh-road reveal">
+          <ol>
+            <li class="lit"><b>Train every week</b><span>At Brick House, all four seasons.</span></li>
+            <li><b>Play tournaments</b><span>Match play you cannot get in practice.</span></li>
+            <li><b>Travel</b><span>Entry fees, flights, and a place to stay, to earn a ranking.</span></li>
+            <li><b>The US Open</b><span>Naples, spring 2027. Our goal is to send six.</span></li>
+          </ol>
+          <a class="bh-more" href="/send-6">Send 6 to the US Open &rarr;</a>
         </div>
-        <div class="prog reveal">
-          <span class="tag">Your name</span>
-          <h3 class="serif h3">Seen where it happens</h3>
-          <p>From the supporters wall to a banner at a clinic, your name belongs alongside the work you back.</p>
-        </div>
-        <div class="prog reveal">
-          <span class="tag">Your people</span>
-          <h3 class="serif h3">A story they'll retell</h3>
-          <p>Your team has more to offer than a logo. Skills, equipment, a place to play. Tell us what you have in mind.</p>
-        </div>
+      </div>
+      <div class="sp-go-pics reveal">
+        <img src="/images/brickhouse/on-overhead.webp" alt="A player reaches high with his paddle for an overhead" loading="lazy" width="1200" height="2133">
+        <img src="/images/brickhouse/on-rally.webp" alt="Two players trade shots, the ball in the air and a Brick House banner on the wall" loading="lazy" width="1200" height="2133">
       </div>
     </div>
   </section>
 
-  <!-- THE LADDER -->
-  <section class="band" id="tiers">
+  <!-- 3. THE LEVELS: names, prices, one-liners and benefits are the sheet's
+       contract (test/sponsor_sheet.test.js); change them only together. -->
+  <section class="band dark sp-levels" id="tiers">
     <div class="wrap">
       <div class="reveal sec-head">
-        <span class="eyebrow orange">Sponsorship levels</span>
-        <h2 class="serif h2" style="margin-top:0.8rem;">Find the right fit.</h2>
-        <p class="prose" style="max-width:56ch; margin-top:1rem;">Each level builds on the one before it. Start with the support you want to give, and we will talk through the partnership together.</p>
+        <span class="eyebrow orange">Partnership levels</span>
+        <h2 class="serif h2" style="margin-top:0.8rem;">Find your place <em class="italic" style="color:var(--orange)">on the team.</em></h2>
+        <p class="prose">Each level includes everything before it, and every partnership is shaped together.</p>
       </div>
 
       <div class="tier-grid">
         <div class="tier reveal">
           <span class="tier-flag">&nbsp;</span>
-          <div class="tier-price">$500</div>
           <div class="tier-name">Teammate</div>
+          <div class="tier-price">$500</div>
           <p class="tier-line">Where every partner starts.</p>
           <ul class="tier-benefits">
             <li>Your name or logo on our supporters wall</li>
-            <li>A thank-you across our social channels</li>
+            <li>A thank you across our social channels</li>
             <li>Help cover equipment and repairs</li>
           </ul>
           <a href="/contact?rsn=sponsor&amp;tier=Teammate" data-sponsor-tier="Teammate" data-sponsor-price="$500" data-sponsor-line="Where every partner starts." data-sponsor-amount="500" class="btn ghost">Become a Teammate</a>
         </div>
-
         <div class="tier reveal">
           <span class="tier-flag">&nbsp;</span>
-          <div class="tier-price">$2,500</div>
           <div class="tier-name">Coach</div>
+          <div class="tier-price">$2,500</div>
           <p class="tier-line">Get your brand in the picture.</p>
           <ul class="tier-benefits">
             <li>Everything in Teammate</li>
@@ -214,11 +341,10 @@ fill="currentColor" stroke="none">
           </ul>
           <a href="/contact?rsn=sponsor&amp;tier=Coach" data-sponsor-tier="Coach" data-sponsor-price="$2,500" data-sponsor-line="Get your brand in the picture." data-sponsor-amount="2500" class="btn ghost">Become a Coach</a>
         </div>
-
         <div class="tier reveal is-popular">
           <span class="tier-flag">Our flagship</span>
-          <div class="tier-price">$10,000</div>
           <div class="tier-name">Captain</div>
+          <div class="tier-price">$10,000</div>
           <p class="tier-line">Lead from the front.</p>
           <ul class="tier-benefits">
             <li>Everything in Coach</li>
@@ -227,11 +353,10 @@ fill="currentColor" stroke="none">
           </ul>
           <a href="/contact?rsn=sponsor&amp;tier=Captain" data-sponsor-tier="Captain" data-sponsor-price="$10,000" data-sponsor-line="Lead from the front." class="btn">Become a Captain</a>
         </div>
-
         <div class="tier reveal">
           <span class="tier-flag">&nbsp;</span>
-          <div class="tier-price">$25,000</div>
           <div class="tier-name">Champion</div>
+          <div class="tier-price">$25,000</div>
           <p class="tier-line">Put your name on the mission.</p>
           <ul class="tier-benefits">
             <li>Everything in Captain</li>
@@ -242,14 +367,14 @@ fill="currentColor" stroke="none">
         </div>
       </div>
 
-      <!-- FOUNDING PARTNER — the anchor tier -->
+      <!-- FOUNDING PARTNER: the summit, framed in brick -->
       <div class="founding reveal">
         <div>
           <span class="tier-flag">Limited founding partnerships</span>
-          <div class="tier-price">$50,000<small>&nbsp;and up</small></div>
           <div class="tier-name">Founding Partner</div>
+          <div class="tier-price">$50,000<small>&nbsp;and up</small></div>
           <p class="tier-line">Build something athletes remember.</p>
-          <a href="/contact?rsn=sponsor&amp;tier=Founding%20Partner" data-sponsor-tier="Founding Partner" data-sponsor-price="$50,000+" data-sponsor-line="Build something athletes remember." class="btn" style="margin-top:0.6rem;">Talk to us</a>
+          <a href="/contact?rsn=sponsor&amp;tier=Founding%20Partner" data-sponsor-tier="Founding Partner" data-sponsor-price="$50,000+" data-sponsor-line="Build something athletes remember." class="btn" style="margin-top:1.4rem;">Talk to us</a>
         </div>
         <ul class="tier-benefits">
           <li>Everything in Champion</li>
@@ -259,44 +384,25 @@ fill="currentColor" stroke="none">
         </ul>
       </div>
 
-      <p class="prose reveal" style="margin-top:2rem;">Naming recognition and partnerships across several years are worked out individually, not included automatically at a giving level. Equipment, services, a place to play: we welcome those ideas too. <a class="textlink" href="/contact?rsn=sponsor">Design a custom partnership <span class="arrow">&rarr;</span></a></p>
-    </div>
-  </section>
-
-
-  <!-- TAX / TRUST -->
-  <section class="band">
-    <div class="wrap reading">
-      <span class="eyebrow orange reveal">Good to know</span>
-      <h2 class="serif h3 reveal" style="margin-top:0.7rem;">The details matter.</h2>
-      <p class="tax-note reveal" style="margin-top:1rem;">Adapt To Life is a recognized 501(c)(3) nonprofit (EIN 41-3213344). Sponsorships may be tax-deductible to the extent allowed by law, and we provide documentation for every partnership. Because some levels include benefits, check with your tax advisor on the deductible portion.</p>
-    </div>
-  </section>
-
-  <!-- CLOSING -->
-  <!-- PHOTO BAND — real athletes, before the closing ask. -->
-  <section class="photoband" aria-label="An adaptive pickleball player mid-swing, driving a return on an indoor court">
-    <div class="photoband-img" style="background-image:url('/images/athletes/wheelie-4.webp')"></div>
-    <div class="photoband-cap">
-      <div class="wrap">
-        <span class="eyebrow">What a sponsor moves</span>
-        <span class="pb-line">Help make the next season possible.</span>
+      <div class="sp-fine reveal">
+        <p>Naming recognition and partnerships across several years are worked out individually, not included automatically at a giving level. Equipment, services, a place to play: we welcome those ideas too. <a class="textlink" href="/contact?rsn=sponsor">Design a custom partnership <span class="arrow">&rarr;</span></a></p>
+        <p>Adapt To Life is a recognized 501(c)(3) nonprofit (EIN 41-3213344). Sponsorships may be tax deductible to the extent allowed by law, and we provide documentation for every partnership. Because some levels include benefits, check with your tax advisor on the deductible portion.</p>
       </div>
     </div>
   </section>
 
+
+  <!-- 4. CLOSING: the engine, and one way in. -->
   <section class="closing dark band-lg">
     <div class="wrap center">
-      <span class="eyebrow orange reveal">Let's talk</span>
-      <h2 class="serif display reveal">Put your name behind the next athlete.</h2>
-      <p class="lead sub reveal">Tell us which level fits, or bring an idea of your own.</p>
-      <div class="actions reveal" style="gap:0.9rem 1rem; flex-wrap:wrap;">
-        <a href="/contact?rsn=sponsor" class="btn">Talk to us</a>
-        <a href="/donate" class="btn ghost">Donate</a>
+      <hr class="tick orange reveal" style="margin:0 auto 1rem;">
+      <h2 class="serif display reveal" style="max-width:14ch; margin:0 auto;">The more we grow, <em class="italic" style="color:var(--orange)">the more we give.</em></h2>
+      <p class="lead sub reveal" style="margin:1.3rem auto 0; max-width:40ch;">Tell us what you have in mind. We will shape the partnership together.</p>
+      <div class="actions reveal" style="justify-content:center; margin-top:2rem;">
+        <a href="/contact?rsn=sponsor" class="btn">Start a conversation</a>
       </div>
     </div>
   </section>
-
 </main>
 
 <footer class="footer">
@@ -341,7 +447,7 @@ fill="currentColor" stroke="none">
           <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only"></div>
           <p class="foot-sub-msg" role="status" aria-live="polite"></p>
         </form>
-        <p class="legal">Adapt To Life is a recognized 501(c)(3) nonprofit organization. Donations are tax-deductible to the extent allowed by law. EIN 41-3213344.</p>
+        <p class="legal">Adapt To Life is a recognized 501(c)(3) nonprofit organization. Donations are tax deductible to the extent allowed by law. EIN 41-3213344.</p>
       </div>
       <div class="col">
         <h4>Organization</h4>
@@ -358,7 +464,8 @@ fill="currentColor" stroke="none">
         <a href="/donate">Donate</a>
         <a href="/promise">How Giving Works</a>
         <a href="/volunteer">Volunteer</a>
-        <a href="/sponsorship">Become a sponsor</a>
+        <a href="/sponsorship">Become a partner</a>
+        <a href="/events">Events</a>
         <a href="/apply">Apply for support</a>
         <a href="https://sign.adapttolife.org/waiver?source=atl">Photo and media release</a>
         <a href="/subscribe">Join the list</a>

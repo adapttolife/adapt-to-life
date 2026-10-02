@@ -83,7 +83,9 @@
   @keyframes bh-push{ from{ transform:scale(1); } to{ transform:scale(1.07); } }
   @media (prefers-reduced-motion: reduce){ .bh-film img{ animation:none; } }
   .bh-film::after{ content:""; position:absolute; inset:0; background:linear-gradient(0deg, rgba(12,12,14,0.35), transparent 30%); pointer-events:none; }
-  .bh-city{ font-style:normal; }
+  .bh-city, .bh-hours{ font-style:normal; }
+  .bh-dot{ font-weight:inherit; }
+  @media (max-width:480px){ .bh-hero .bh-when{ flex-wrap:wrap; row-gap:0.35rem; } .bh-hours{ flex-basis:100%; } .bh-dot{ display:none; } }
   @media (max-width:480px){ .bh-city{ display:none; } }
   @media (max-width:480px){ .bh-when{ flex-wrap:nowrap; gap:0.6rem; font-size:0.74rem; letter-spacing:0.11em; } .bh-when span{ gap:0.6rem; white-space:nowrap; } }
   @media (max-width:900px){
@@ -247,7 +249,7 @@
   @media (prefers-reduced-motion: reduce){ .bh-wall.in .bk, .bh-wall.in .bk.next{ animation:none; } }
   .bh-sign{ margin-top:clamp(2.5rem,5vw,3.5rem); font-family:var(--font-display); font-weight:800; font-style:italic; font-size:clamp(1.5rem,3vw,2.2rem); letter-spacing:-0.02em; color:var(--orange); }
 </style>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Event","name":"Brick House Pickleball Grand Opening","startDate":"2026-10-25","eventStatus":"https://schema.org/EventScheduled","eventAttendanceMode":"https://schema.org/OfflineEventAttendanceMode","location":{"@type":"Place","name":"Brick House Pickleball","address":{"@type":"PostalAddress","streetAddress":"28457 Ballard Drive, Unit H","addressLocality":"Lake Forest","addressRegion":"IL","postalCode":"60045","addressCountry":"US"}},"organizer":[{"@type":"Organization","name":"Brick House Pickleball"}],"sponsor":{"@type":"Organization","name":"Adapt To Life","url":"https://adapttolife.org"},"isAccessibleForFree":true}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Event","name":"Brick House Pickleball Grand Opening","startDate":"2026-10-25T12:00:00-05:00","endDate":"2026-10-25T17:00:00-05:00","eventStatus":"https://schema.org/EventScheduled","eventAttendanceMode":"https://schema.org/OfflineEventAttendanceMode","location":{"@type":"Place","name":"Brick House Pickleball","address":{"@type":"PostalAddress","streetAddress":"28457 Ballard Drive, Unit H","addressLocality":"Lake Forest","addressRegion":"IL","postalCode":"60045","addressCountry":"US"}},"organizer":[{"@type":"Organization","name":"Brick House Pickleball"}],"sponsor":{"@type":"Organization","name":"Adapt To Life","url":"https://adapttolife.org"},"isAccessibleForFree":true}</script>
 </head>
 <body>
 
@@ -398,9 +400,9 @@ fill="currentColor" stroke="none">
         </div>
         <h1 class="serif display">Come play with us <em class="italic" style="color:var(--orange)">at Brick House.</em></h1>
         <p class="lead sub">Brick House Pickleball is opening its renovated facility in Lake Forest, and we are proud to call them our first partner. Our athletes will be on court. Come join us.</p>
-        <p class="bh-when"><span>Grand opening</span> Sunday, October 25<i class="bh-city"> · Lake Forest</i></p>
+        <p class="bh-when"><span>Grand opening</span> Sunday, October 25<i class="bh-hours"><b class="bh-dot"> · </b>12 to 5 pm</i></p>
         <div class="actions">
-          <div class="atc" data-title="Brick House Pickleball grand opening" data-start="2026-10-25" data-location="Brick House Pickleball, 28457 Ballard Drive Unit H, Lake Forest, IL 60045" data-details="Come play with Adapt To Life at Brick House. adapttolife.org/brickhouse" data-ics="/cal/brickhouse-grand-opening-2026.ics"><a class="btn" href="/cal/brickhouse-grand-opening-2026.ics">Add to calendar</a></div>
+          <div class="atc" data-title="Brick House Pickleball grand opening" data-start="2026-10-25" data-time-start="12:00" data-time-end="17:00" data-location="Brick House Pickleball, 28457 Ballard Drive Unit H, Lake Forest, IL 60045" data-details="Come play with Adapt To Life at Brick House. adapttolife.org/brickhouse" data-ics="/cal/brickhouse-grand-opening-2026.ics"><a class="btn" href="/cal/brickhouse-grand-opening-2026.ics">Add to calendar</a></div>
           <a href="#opening" class="btn ghost">Grand opening details</a>
         </div>
       </div>
@@ -426,13 +428,13 @@ fill="currentColor" stroke="none">
           <h2 class="serif h2">Come see the new facility.</h2>
           <p class="prose">This is Brick House's day. Tour the new facility, meet the people behind the club, and play a few games with the Adapt To Life team. Bring a friend who has never picked up a paddle.</p>
           <dl class="bh-facts">
-            <div><dt>When</dt><dd>Sunday, October 25, 2026<br>Start time TBD</dd></div>
+            <div><dt>When</dt><dd>Sunday, October 25, 2026<br>12 to 5 pm</dd></div>
             <div><dt>Where</dt><dd>Brick House Pickleball<br>28457 Ballard Drive, Unit H<br>Lake Forest, IL 60045</dd></div>
-            <div><dt>RSVP</dt><dd>None needed. Just come.</dd></div>
+            <div><dt>RSVP</dt><dd>None needed. Come and go as you please.</dd></div>
           </dl>
           <div class="bh-actions">
             <a href="https://www.google.com/maps/search/?api=1&amp;query=Brick+House+Pickleball+28457+Ballard+Drive+Unit+H+Lake+Forest+IL+60045" class="btn" target="_blank" rel="noopener">Get directions</a>
-            <div class="atc" data-title="Brick House Pickleball grand opening" data-start="2026-10-25" data-location="Brick House Pickleball, 28457 Ballard Drive Unit H, Lake Forest, IL 60045" data-details="Come play with Adapt To Life at Brick House. adapttolife.org/brickhouse" data-ics="/cal/brickhouse-grand-opening-2026.ics"><a class="btn ghost" href="/cal/brickhouse-grand-opening-2026.ics">Add to calendar</a></div>
+            <div class="atc" data-title="Brick House Pickleball grand opening" data-start="2026-10-25" data-time-start="12:00" data-time-end="17:00" data-location="Brick House Pickleball, 28457 Ballard Drive Unit H, Lake Forest, IL 60045" data-details="Come play with Adapt To Life at Brick House. adapttolife.org/brickhouse" data-ics="/cal/brickhouse-grand-opening-2026.ics"><a class="btn ghost" href="/cal/brickhouse-grand-opening-2026.ics">Add to calendar</a></div>
           </div>
         </div>
       </div>

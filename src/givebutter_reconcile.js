@@ -1,6 +1,4 @@
 import { recordGift, recoverDonorEmails } from "./givebutter_webhook.js";
-import { syncDonorRelationships } from "./donor_clickup.js";
-import { syncGiftRelationships } from "./gift_clickup.js";
 
 const TRANSACTIONS_API = "https://api.givebutter.com/v1/transactions";
 const MAX_STABILIZATION_PASSES = 3;
@@ -99,28 +97,20 @@ async function scanStableRange({ env, fetcher, cutoff, before, providerAfter, pr
 
 // One scheduled owner sequences discovery before closure. A Givebutter outage is
 // preserved as a red receipt, but cannot strand transactions already durable in
-// D1: email and projection recovery still run. Gift subtasks remain gated on a
-// successful parent-donor projection.
+// D1: email recovery still runs. The Google Sheet CRM reads donor_gifts directly,
+// so there is no second projection to close (ClickUp was retired 2026-10-02).
 export async function reconcileDonorJourney(env, opts = {}) {
   const reconcile = opts.reconcile || reconcileGivebutterTransactions;
   const recoverEmails = opts.recoverEmails || recoverDonorEmails;
-  const syncDonors = opts.syncDonors || syncDonorRelationships;
-  const syncGifts = opts.syncGifts || syncGiftRelationships;
   const writeReceipt = opts.writeReceipt || persistDonorJourneyReceipt;
 
   const reconciliation = await outcome(() => reconcile(env));
   const email = await outcome(() => recoverEmails(env));
-  const donors = await outcome(() => syncDonors(env));
-  const gifts = donors.ok
-    ? await outcome(() => syncGifts(env))
-    : { ok: false, skipped: true, error: "donor projection failed" };
   const base = {
-    ok: reconciliation.ok === true && email.ok === true && donors.ok === true && gifts.ok === true,
+    ok: reconciliation.ok === true && email.ok === true,
     completedAt: new Date().toISOString(),
     reconciliation,
     email,
-    donors,
-    gifts,
   };
   const receipt = await outcome(() => writeReceipt(env, receiptPayload(base)));
   return { ...base, ok: base.ok && receipt.ok === true, receipt };
@@ -138,13 +128,11 @@ export async function persistDonorJourneyReceipt(env, receipt) {
 
 function receiptPayload(result) {
   return {
-    version: 1,
+    version: 2,
     ok: result.ok,
     completedAt: result.completedAt,
     reconciliation: pick(result.reconciliation, ["ok", "passes", "pages", "scanned", "eligible", "written", "error"]),
     email: pick(result.email, ["ok", "scanned", "sent", "queued", "failed", "error"]),
-    donors: pick(result.donors, ["ok", "created", "updated", "failed", "error"]),
-    gifts: pick(result.gifts, ["ok", "created", "updated", "failed", "skipped", "error"]),
   };
 }
 

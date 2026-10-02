@@ -18,40 +18,32 @@ public/
   hustle-and-heart.html         # /hustle-and-heart
   adaptive-sports-near-me.html  # /adaptive-sports-near-me
   images/                       # logo, favicon, touch icon
-src/index.js                    # Worker: serves assets + form posts → ClickUp
+src/index.js                    # Worker: serves assets + form posts → D1 outbox
 wrangler.jsonc                  # Cloudflare deploy config
 ```
 
 Clean URLs (`/about`) are handled automatically by Cloudflare; the source file is `about.html`.
 
-## The forms → ClickUp
+## The forms → D1 → the Google Sheet
 
-Both public forms write to ClickUp. Nothing writes to Airtable — that was the
-prototype, and the line was cut on 2026-07-30. The full map of the three trackers,
-including the one that is deliberately **not** automated, is
-[`docs/clickup-trackers.md`](docs/clickup-trackers.md).
+Every public form is saved durably in D1 before the visitor sees a success
+(`form_submissions` + `form_deliveries`, see [`docs/durable-forms.md`](docs/durable-forms.md)).
+From there, independent steps run:
 
-| Form | Endpoint | Lands in |
+| Form | Endpoint | What happens |
 |---|---|---|
-| `/contact` | `POST /api/contact` | **Contacts** (`901418639884`) |
-| `/apply` | `POST /api/apply` | **Hustle & Heart — Applications** (`901418622126`) |
+| `/contact` | `POST /api/contact` | Receipt to the sender, the original message to hello@, a shared intake record |
+| `/apply` | `POST /api/apply` | Receipt to the applicant, a shared intake record (identity only; the full answers stay in D1) |
+| `/volunteer/*` | `POST /api/volunteer` | Receipt to the volunteer, a shared intake record |
 
-Both validate before writing (email required, honeypot spam guard, Turnstile), put
-the sender's own words verbatim in the task description, and set Stage `New`. List
-IDs are non-secret `vars` in `wrangler.jsonc`; field IDs are a schema contract and
-live in `src/clickup.js`.
+The Worker's 10-minute schedule notifies hello@ about every intake record still
+waiting (`sweepIntake`), and Julia's hourly CRM refresh projects D1 into the
+**Adapt To Life CRM** Google Sheet (Intake Register, Donations, Donor Reference).
+The Sheet is the CRM. Nothing writes to Airtable (cut 2026-07-30) or ClickUp
+(cut 2026-10-02).
 
-**Last contacted** is the staleness rung on both lists. The receipt emails promise
-every sender they will hear back, so anything sitting in `New` with a stale Last
-contacted is a broken promise, not a backlog.
-
-The token is a **Worker secret**, never in the repo:
-
-```sh
-op read "op://Stingel/ClickUp API/credential" | cfrun npx wrangler secret put CLICKUP_TOKEN
-```
-
-It authenticates as Alec, so tasks show as created by him.
+The receipt emails promise every sender they will hear back, so an intake record
+nobody has followed up is a broken promise, not a backlog.
 
 
 _Roadmap: Beehiiv (newsletter / "Join the list") and Givebutter (donations) are not wired yet._
@@ -190,7 +182,7 @@ That URL is yours alone, it is a fully functional copy of the site, and it does 
 `adapt-to-life` serves. No second Worker, no second environment, no config change: the
 isolation already exists in Wrangler. Check and hand over THAT link.
 
-Staging uses live production databases, email, ClickUp, newsletter, waiver storage,
+Staging uses live production databases, email, newsletter, waiver storage,
 and payment services. Inputs, submissions, widgets, external links, and application
 routes use the normal application behavior. Existing validation, Turnstile, rate
 limits, and authentication still apply. Preview hosts must be allowed by the

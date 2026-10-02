@@ -1,8 +1,8 @@
 // Unit tests for src/receipts.js — the contact and grant-application receipts.
 //
 // What this pins, in order of how much it would hurt to get wrong:
-//   1. A receipt can NEVER throw. By the time it runs the record is already in
-//      ClickUp, so a thrown error would turn a saved grant application into a
+//   1. A receipt can NEVER throw. By the time it runs the record is already
+//      durable in D1, so a thrown error would turn a saved grant application into a
 //      "could not save" for the applicant. Every failure mode is swallowed.
 //   2. The bcc to hello@ is present, because that single header is the entire
 //      internal-notification mechanism. Losing it silently returns us to the

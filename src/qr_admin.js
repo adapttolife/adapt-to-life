@@ -16,7 +16,6 @@
 //      October" has an answer.
 
 import { syncGifts, giftsBySlug } from "./qr_gifts.js";
-import { syncClickUp } from "./qr_clickup.js";
 import { _resetCaches } from "./qr.js";
 
 const TEAM_DOMAIN = "theateam1.cloudflareaccess.com";
@@ -293,10 +292,7 @@ export async function handleAdmin(request, env, url) {
   // waiting for the next cron.
   if (path === "/admin/api/sync" && request.method === "POST") {
     const result = await syncGifts(env);
-    // Push the fresh numbers straight into the ClickUp register too, so the
-    // two surfaces never disagree right after someone has looked at one.
-    const clickup = await syncClickUp(env, { force: true });
-    return json({ ok: result.ok, result, clickup });
+    return json({ ok: result.ok, result });
   }
 
   return json({ ok: false, error: "unknown admin route" }, 404);

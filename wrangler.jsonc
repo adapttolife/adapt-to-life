@@ -1,7 +1,7 @@
 {
   // Cloudflare Worker for Adapt To Life.
-  // Serves the static site from ./public and handles POST /api/contact and
-  // POST /api/apply in src/index.js, writing both to ClickUp. Production is
+  // Serves the static site from ./public and handles the public form posts in
+  // src/index.js through the durable D1 form outbox. Production is
   // published only on the three custom domains below; review builds use the
   // separate staging environment.
   "name": "adapt-to-life",
@@ -67,17 +67,9 @@
   "vars": {
     "ENV_NAME": "production",
     "INTAKE_INBOX": "hello@adapttolife.org",
-    // Non-secret config. Both public forms write to ClickUp, which is the tracker
-    // ATL actually reviews from; nothing writes to Airtable any more. Lists live in
-    // Team Space -> Adapt To Life. The token is a secret:
-    //   cfrun wrangler secret put CLICKUP_TOKEN
+    // Non-secret config. Forms, gifts and waivers live in D1; the Google Sheet CRM
+    // is refreshed from D1. Nothing writes to ClickUp or Airtable any more.
     "BEEHIIV_PUBLICATION_ID": "pub_d1bfe66c-074f-464a-a94a-d0cce6d21943",
-    "CLICKUP_APPLICATIONS_LIST_ID": "901418622126",
-    "CLICKUP_CONTACTS_LIST_ID": "901418639884",
-    "CLICKUP_VOLUNTEERS_LIST_ID": "901419920230",
-    // Human action layer for donors, vendors, organizations, partners,
-    // sponsorships, and grants ATL is pursuing. D1 remains source of truth.
-    "CLICKUP_RELATIONSHIPS_LIST_ID": "901418931939",
     // Google Shared Drive ("Adapt To Life") for the signed-release archive.
     // The service account JSON is a secret: cfrun wrangler secret put GOOGLE_SA_JSON
     // That SAME credential also mirrors Adapt Body Shop contact-form messages
@@ -163,10 +155,6 @@
         "STAGING": "1",
         "INTAKE_INBOX": "hello@adapttolife.org",
         "BEEHIIV_PUBLICATION_ID": "pub_d1bfe66c-074f-464a-a94a-d0cce6d21943",
-        "CLICKUP_APPLICATIONS_LIST_ID": "901418622126",
-        "CLICKUP_CONTACTS_LIST_ID": "901418639884",
-        "CLICKUP_VOLUNTEERS_LIST_ID": "901419920230",
-        "CLICKUP_RELATIONSHIPS_LIST_ID": "901418931939",
         "WAIVERS_DRIVE_ID": "1NAW-FAeJKJnGgmMgzgRGS78CxE5WYo-p",
         "AGENT_MAIL_DOMAIN": "agents.adapttolife.org",
         "REPORT_LINK_BASE": "https://reports.amelioration.is",

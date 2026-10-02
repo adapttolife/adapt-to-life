@@ -207,7 +207,7 @@
   </header>
 
   <div class="why">
-    <b>This page and ClickUp do different jobs.</b> Here is live truth &mdash; where every code points right now, and every number that moves. <a href="https://app.clickup.com/90146343249/v/li/901418690965" target="_blank" rel="noopener">The ClickUp register</a> is the physical world: what is actually printed, how many, and where they are. Scans and dollars are mirrored there once a day so it is glanceable, stamped with when they were read. Nothing you change here needs changing there.
+    <b>This page and ClickUp do different jobs.</b> Here is live truth &mdash; where every code points right now, and every number that moves. <a href="https://app.clickup.com/90146343249/v/li/901418690965" target="_blank" rel="noopener">The ClickUp register</a> is the physical world: what is actually printed, how many, and where they are. Scans and dollars live only here; nothing is mirrored to ClickUp any more (retired 2026-10-02). Nothing you change here needs changing there.
   </div>
 
   <div class="why">
@@ -452,8 +452,7 @@
     b.disabled = true; b.textContent = 'Pulling…';
     try {
       var r = await api('/sync', { method: 'POST' });
-      var extra = (r.clickup && r.clickup.updated) ? ' ClickUp updated (' + r.clickup.updated + ' codes).' : '';
-      say('Read ' + r.result.scanned + ' transactions, ' + r.result.written + ' carried a QR code.' + extra);
+      say('Read ' + r.result.scanned + ' transactions, ' + r.result.written + ' carried a QR code.');
       load();
     } catch (err) { say(err.message, 'err'); }
     b.disabled = false; b.textContent = 'Pull gifts from Givebutter';

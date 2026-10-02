@@ -64,7 +64,20 @@
   .bh-bob figcaption{ margin-top:1.1rem; text-align:center; font-family:var(--font-label); font-size:0.74rem; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:var(--cream-faint); }
   @media (max-width:900px){
     .bh-hero-grid{ grid-template-columns:1fr; }
-    .bh-bob{ order:-1; width:min(100%, 360px); margin-bottom:0.6rem; }
+    /* Phones: the partnership lockup leads, then the photo, then the words.
+       The copy column dissolves into the grid so the logos can sit above the
+       photo while everything else stays below it. */
+    .bh-hero{ padding-top:clamp(1.6rem,4vh,2.4rem); }
+    .bh-hero-grid{ gap:1.4rem; }
+    .bh-hero-copy{ display:contents; }
+    .bh-duo{ order:-2; }
+    .bh-bob{ order:-1; width:100%; max-width:420px; justify-self:start; margin:0; }
+    .bh-bob img{ aspect-ratio:1/1.12; object-position:50% 40%; transform:none; }
+    .bh-bob figcaption{ display:none; }
+    .bh-hero .bh-when{ margin-top:0.2rem; }
+    .bh-hero .display{ margin-top:0; }
+    .bh-hero .sub{ margin-top:0; }
+    .bh-hero .actions{ margin-top:0.4rem; }
     .bh-hero::after{ background: radial-gradient(ellipse 80% 40% at 50% 25%, rgba(255,92,57,0.18) 0%, transparent 70%), linear-gradient(180deg, rgba(12,12,14,0.35) 0%, rgba(12,12,14,0.8) 42%, rgba(12,12,14,0.96) 100%); }
   }
 

@@ -103,6 +103,88 @@
     return { href: "/donate", label: "Give to the fund", external: false };
   }
 
+  /* ---- events: one card, everywhere ---------------------------------------
+     Home and /events render the same card from the same entry, so a monthly
+     fundraiser or a tournament is one object in campaigns.json and nothing
+     else. The calendar file lives at /cal/<slug>.ics (scripts/build-calendar.mjs). */
+  var DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  function eventTag(d) {
+    if (d.type === "tournament") return "Tournament";
+    if (d.type === "fundraiser") return "Fundraiser";
+    if (d.relationship === "partner_event") return "Partner event";
+    if (d.relationship === "we_host") return "We host this";
+    return "Event";
+  }
+  /* Urgency, read from the visitor's own calendar day. */
+  function countdown(d) {
+    var t = today(), o = driveOpens(d), x = driveCloses(d) || o;
+    if (!o) return "";
+    if (t >= o && t <= x) return +o === +x ? "Today" : "Happening now";
+    var n = Math.round((o - t) / 864e5);
+    if (n === 1) return "Tomorrow";
+    if (n > 1 && n <= 45) return "In " + n + " days";
+    return "";
+  }
+  function eventPlace(d) {
+    return [d.venue, [d.city, d.state].filter(Boolean).join(", ")].filter(Boolean).join(" · ");
+  }
+  function eventCard(d, opts) {
+    opts = opts || {};
+    var card = el("article", "evc" + (opts.media && d.image ? " has-media" : ""));
+    if (opts.media && d.image) {
+      var fig = el("a", "evc-media");
+      fig.href = driveCta(d).href; fig.setAttribute("tabindex", "-1"); fig.setAttribute("aria-hidden", "true");
+      var img = el("img"); img.src = d.image; img.alt = ""; img.loading = "lazy"; img.decoding = "async";
+      fig.appendChild(img); card.appendChild(fig);
+    }
+    var o = driveOpens(d), x = driveCloses(d) || o;
+    var date = el("div", "evc-date");
+    if (o) {
+      date.appendChild(el("span", "evc-mon", MON[o.getMonth()]));
+      date.appendChild(el("span", "evc-day", String(o.getDate())));
+      date.appendChild(el("span", "evc-sub", +o === +x ? DAYS[o.getDay()] : "to " + (x.getMonth() === o.getMonth() ? x.getDate() : fmtDate(x))));
+    }
+    card.appendChild(date);
+    var body = el("div", "evc-body");
+    var meta = el("p", "evc-meta");
+    meta.appendChild(el("span", "evc-tag", eventTag(d)));
+    var soon = countdown(d);
+    if (soon) meta.appendChild(el("span", "evc-soon", soon));
+    body.appendChild(meta);
+    body.appendChild(el(opts.heading || "h3", "evc-name", d.name));
+    var where = [d.time_note, eventPlace(d)].filter(Boolean).join(" · ");
+    if (where) body.appendChild(el("p", "evc-place", where));
+    if (d.summary) body.appendChild(el("p", "evc-sum", d.summary));
+    var acts = el("div", "evc-acts");
+    var cta = driveCta(d), go = el("a", "evc-go");
+    wire(go, cta.href, cta.label);
+    go.appendChild(el("span", "arrow", " →"));
+    acts.appendChild(go);
+    var start = d.starts_at || d.opens;
+    if (start && global.ATLCalendar) {
+      var atc = el("div", "atc");
+      atc.dataset.title = d.calendar_title || d.name;
+      atc.dataset.start = start;
+      atc.dataset.end = d.ends_at || d.closes || start;
+      if (d.time_start && d.time_end) { atc.dataset.timeStart = d.time_start; atc.dataset.timeEnd = d.time_end; }
+      if (d.tz) atc.dataset.tz = d.tz;
+      atc.dataset.location = [d.venue, d.address].filter(Boolean).join(", ");
+      atc.dataset.details = [d.summary, d.page ? "adapttolife.org" + d.page : d.cta_url].filter(Boolean).join(" ");
+      atc.dataset.ics = d.ics || "/cal/" + d.slug + ".ics";
+      var cal = el("a", "evc-cal", "Add to calendar"); cal.href = atc.dataset.ics;
+      atc.appendChild(cal); acts.appendChild(atc);
+      global.ATLCalendar.mount(atc);
+    }
+    if (d.group_url) {
+      var grp = el("a", "evc-link");
+      wire(grp, d.group_url, d.group_label || "Group");
+      acts.appendChild(grp);
+    }
+    body.appendChild(acts);
+    card.appendChild(body);
+    return card;
+  }
+
   /* ---- dom helpers ------------------------------------------------------- */
   function el(tag, cls, text) {
     var n = document.createElement(tag);
@@ -376,6 +458,9 @@
     driveCloses: driveCloses,
     driveCta: driveCta,
     relationshipLabel: relationshipLabel,
+    eventTag: eventTag,
+    eventCard: eventCard,
+    countdown: countdown,
     el: el,
     wire: wire
   };

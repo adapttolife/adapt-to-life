@@ -43,7 +43,7 @@ const ALT = {
   // An athlete profile card is his name over his own face, so the alt is the
   // name and then the man, in that order.
   brickhouse: "Come play with us at Brick House. Adapt To Life. An athlete in a sport wheelchair and a Brick House Pickleball shirt rolls across the Brick House courts.",
-  juan: "Juan. Adapt To Life. Juan, a wheelchair pickleball player in glasses, sits courtside in a Chicago Adaptive Sports shirt.",
+  juan: "Juan Ortiz. Adapt To Life. Juan, a wheelchair pickleball player in glasses, tosses the ball to serve from his sport wheelchair.",
 };
 
 // Cards live under /images/og/ on their own paths, including the default one.
@@ -57,7 +57,7 @@ const ALT = {
 // the card it belongs to and the next single-card change costs one line here.
 const FILE = {
   _default: "home-v4-color.jpg",
-  juan: "juan-v1-athlete.jpg",
+  juan: "juan-v2-serve.jpg",
   brickhouse: "brickhouse-v1-opening.jpg",
   popcorn: "popcorn-v4-content.jpg",
   "hustle-and-heart": "hustle-and-heart-v4-content.jpg",

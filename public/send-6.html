@@ -156,6 +156,7 @@ fill="currentColor" stroke="none">
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navJoin">Get Involved<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 3 3-3"/></svg></button>
         <div class="nav-panel" id="navJoin">
           <a href="/volunteer"><span class="np-t">Volunteer</span><span class="np-d">Explore roles, time commitments, and ways to contribute</span></a>
+          <a href="/ambassadors"><span class="np-t">Ambassadors</span><span class="np-d">Athletes and connectors who grow the sport</span></a>
           <a href="/sponsorship"><span class="np-t">Partners</span><span class="np-d">Our partners, and how to join them</span></a>
           <a href="/events"><span class="np-t">Events</span><span class="np-d">Tournaments, fundraisers, and gatherings</span></a>
         </div>
@@ -182,6 +183,7 @@ fill="currentColor" stroke="none">
       <a class="m-sub" href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
       <span class="m-group">Get Involved</span>
       <a class="m-sub" href="/volunteer">Volunteer</a>
+      <a class="m-sub" href="/ambassadors">Ambassadors</a>
       <a class="m-sub" href="/sponsorship">Partners</a>
       <a class="m-sub" href="/events">Events</a>
       <span class="m-group">About</span>
@@ -227,7 +229,7 @@ fill="currentColor" stroke="none">
       <p class="reveal" style="margin-top:1rem; color:var(--ink-soft);">Our fundraising target is $3,500 per athlete. Together, the six seats make up the $21,000 campaign goal.</p>
     </div>
     <ul class="s6-seats" id="s6Seats"></ul>
-    <p class="s6-seats-note reveal">Athletes are selected through the same grant process as everyone else the fund backs. We will name them here once they are confirmed.</p>
+    <p class="s6-seats-note reveal"><a class="textlink" href="/juan" style="font:inherit;letter-spacing:inherit;">Juan Ortiz</a> holds the first seat and is leading the campaign. The other athletes are selected through the fund&rsquo;s grant process, and we will name them here once they are confirmed.</p>
   </div>
 </section>
 
@@ -383,6 +385,7 @@ fill="currentColor" stroke="none">
         <a href="/donate">Donate</a>
         <a href="/promise">How Giving Works</a>
         <a href="/volunteer">Volunteer</a>
+        <a href="/ambassadors">Ambassadors</a>
         <a href="/sponsorship">Become a partner</a>
         <a href="/events">Events</a>
         <a href="/apply">Apply for support</a>
@@ -486,7 +489,15 @@ fill="currentColor" stroke="none">
       ico.innerHTML = SEAT_ICO;
       li.appendChild(fill);
       li.appendChild(ico);
-      li.appendChild(C.el('p','s6-seat-n','Seat ' + (i + 1)));
+      if (i === 0) {
+        /* Seat one has a name. Juan is confirmed and leads the campaign. */
+        var who = C.el('p','s6-seat-n');
+        var a = C.el('a', null, 'Juan Ortiz'); a.href = '/juan'; a.style.color = 'inherit'; a.style.borderBottom = '2px solid var(--orange)';
+        who.appendChild(a);
+        li.appendChild(who);
+      } else {
+        li.appendChild(C.el('p','s6-seat-n','Seat ' + (i + 1)));
+      }
       li.appendChild(C.el('p','s6-seat-amt', C.money(PER_SEAT)));
       host.appendChild(li);
       seatFills.push({ tile:li, fill:fill });

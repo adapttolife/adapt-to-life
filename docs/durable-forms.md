@@ -9,20 +9,20 @@ D1. It does not claim an email has reached a recipient or a grant has been appro
 The existing `WAIVERS_DB` holds raw operational forms; full application stories,
 financial need and volunteered personal detail are not exported into the shared
 CRM. The shared `INTAKE` projection carries identity, form type, sponsor tier,
-source, tracking ID and the resulting ClickUp link. No form is auto-subscribed to
+source and tracking ID. No form is auto-subscribed to
 Beehiiv merely because it supplied an email address.
 
 ## Owners and routing
 
 | Entry point | Durable primary | Follow-up owner | Context destination |
 | --- | --- | --- | --- |
-| Sponsorship conversation, general contact, Karen contact | `form_submissions` + `form_deliveries` in existing WAIVERS_DB | ClickUp Contacts; separate submitter receipt and hello@ notification | Existing CRM `Form Submissions`, sponsor tier/source + ClickUp link |
-| Grant application | Same operational D1, full private snapshot | Existing ClickUp Applications; applicant receipt; identity-only internal intake notification | Shared CRM identity/tracking only, not the application narrative |
-| Volunteer board and role pages | Same operational D1 | Existing ClickUp Volunteers and submitter receipt | Shared CRM role list/tracking link, not the personal narrative |
+| Sponsorship conversation, general contact, Karen contact | `form_submissions` + `form_deliveries` in existing WAIVERS_DB | Separate submitter receipt and hello@ notification | Existing CRM `Form Submissions`, sponsor tier/source |
+| Grant application | Same operational D1, full private snapshot | Applicant receipt; identity-only internal intake notification | Shared CRM identity/tracking only, not the application narrative |
+| Volunteer board and role pages | Same operational D1 | Submitter receipt and internal intake notification | Shared CRM role list/tracking link, not the personal narrative |
 | Newsletter signup | Beehiiv plus existing suppression/welcome claim | Beehiiv owns ATL welcome; existing opt-outs are preserved | Publication audience, with explicit newsletter intent |
 | Adapt Body Shop contact | Existing `shop_messages` D1 | Existing shop receipt + hello@ notification | Existing Shop Messages mirror; no duplicate shared-intake notification |
 | Waiver | Existing signing record/R2 | Existing signing receipt and Drive backlog | Restricted signed-document Drive path; no new signature or fake waiver test |
-| Donation | Givebutter and existing donation D1 ledger | Existing signed-webhook/poll reconciliation | Existing donor/gift ClickUp context; no invented payment test |
+| Donation | Givebutter and existing donation D1 ledger | Existing signed-webhook/poll reconciliation | CRM Sheet Donations and Donor Reference (hourly projection); no invented payment test |
 | Personal Alec correspondence | Existing personal intake contract | Julia exercises contextual judgment | Obsidian only when personally meaningful; no automatic ATL-to-personal-vault feed |
 
 This is a routing inventory, not a claim that a real grant, signature, payment,
@@ -51,8 +51,9 @@ Internal acceptance is mirrored to the shared notification timestamp separately;
 a failed cross-DB stamp retries that stamp without resending the original.
 
 The dispatcher starts the internal original, acknowledgment, and CRM/projection
-work independently. Initial metadata projection precedes ClickUp and is refreshed
-after its result, so a hung API cannot block email or initial CRM reconciliation. It retains the actual
+work independently, so a hung provider cannot block email or CRM reconciliation.
+The main Worker's 10-minute schedule runs the intake notification sweep. ClickUp
+was retired on 2026-10-02; the Google Sheet CRM is the single human-facing record. It retains the actual
 Cloudflare `messageId`, acceptance state and intended recipient/BCC in the
 existing delivery receipt field. Missing provider IDs are review cases, never
 invented success IDs. Case references are present in body and an X-header;

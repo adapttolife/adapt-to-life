@@ -2,16 +2,14 @@ import { mailConfigured } from './mail-transport.js';
 // Durable acceptance, independent delivery steps, one scheduled recovery owner.
 // No marketing enrollment. Raw application detail never enters shared intake.
 import {queueOriginal,processOriginal,recoverOriginals,reconcileOriginal} from './form-records.js';
-import { createContact, createApplication, createVolunteer } from './clickup.js';
 import { sendContactReceipt, sendApplyReceipt, sendVolunteerReceipt } from './receipts.js';
 
-const creators = {contact:createContact,apply:createApplication,volunteer:createVolunteer};
 const receipts = {contact:sendContactReceipt,apply:sendApplyReceipt,volunteer:sendVolunteerReceipt};
 const now = () => new Date().toISOString();
 const pending = (db,id,channel) => db.prepare("INSERT OR IGNORE INTO form_deliveries (submission_id,channel) VALUES (?,?)").bind(id,channel);
 
 export async function acceptForm(env, kind, sub, suppliedId, ctx) {
-  if (!Object.hasOwn(creators,kind)) throw Error('Unsupported form');
+  if (!Object.hasOwn(receipts,kind)) throw Error('Unsupported form');
   const db=env.WAIVERS_DB;
   const id=typeof suppliedId==='string' && /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(suppliedId) ? suppliedId : crypto.randomUUID();
   const payload=JSON.stringify(sub);
@@ -21,7 +19,7 @@ export async function acceptForm(env, kind, sub, suppliedId, ctx) {
     // and outbox exist. INSERT OR IGNORE never overwrites an accepted original.
     await db.batch([
       db.prepare('INSERT OR IGNORE INTO form_submissions (id,kind,payload,received_at) VALUES (?,?,?,?)').bind(id,kind,payload,now()),
-      ...['clickup','intake','receipt'].map(channel=>pending(db,id,channel)),
+      ...['intake','receipt'].map(channel=>pending(db,id,channel)),
       ...(kind==='contact'?[queueOriginal(db,id,payload)]:[]),
     ]);
     const stored=await db.prepare('SELECT kind,payload FROM form_submissions WHERE id=?').bind(id).first();
@@ -41,7 +39,7 @@ export function intakeProjection(row,sub) {
   const sponsor=row.kind==='contact' && sub.type==='Giving or sponsoring';
   const kind=sponsor?'sponsor':row.kind;
   const details=row.kind==='apply'
-    ? {note:'Application received. Sensitive details remain in the restricted application record and ClickUp.'}
+    ? {note:'Application received. Sensitive details remain in the restricted application record.'}
     : row.kind==='volunteer'
       ? {roles:sub.roles,source:sub.source}
       : {type:sub.type,source:sub.source,tier:sub.tier||'',amount:sub.amount||''};
@@ -50,8 +48,6 @@ export function intakeProjection(row,sub) {
 
 async function mirror(env,row,sub) {
   const {kind,summary,details}=intakeProjection(row,sub);
-  const task = await env.WAIVERS_DB.prepare("SELECT receipt FROM form_deliveries WHERE submission_id=? AND channel='clickup' AND state='done'").bind(row.id).first();
-  if (task?.receipt) { const value=JSON.parse(task.receipt); details.clickup_url=value.url||`https://app.clickup.com/t/${value.id}`; details.clickup_id=value.id; }
   // Stable ID makes retries safe across the two databases. The existing shared
   // intake worker owns internal notification; the existing host sync owns Sheets.
   const original=await env.WAIVERS_DB.prepare('SELECT submission_id FROM form_record_deliveries WHERE submission_id=?').bind(row.id).first();
@@ -91,17 +87,7 @@ export async function processForm(env,id) {
     try {
       let receipt;
       if (channel==='intake') receipt=await mirror(env,row,sub);
-      else if (channel==='clickup') {
-        const list=env[{contact:'CLICKUP_CONTACTS_LIST_ID',apply:'CLICKUP_APPLICATIONS_LIST_ID',volunteer:'CLICKUP_VOLUNTEERS_LIST_ID'}[row.kind]];
-        if (!list || !env.CLICKUP_TOKEN) throw Error('ClickUp configuration missing');
-        externalStarted=true;
-        const result=await creators[row.kind](env,{...sub,submission_id:id});
-        if (!result.ok || !result.id) {
-          if (result.retryable) externalStarted=false;
-          throw Error(result.error||'ClickUp acceptance could not be verified');
-        }
-        receipt=JSON.stringify({id:result.id,url:result.url});
-      } else {
+      else {
         if (!mailConfigured(env)) throw Error('Receipt mail binding missing');
         externalStarted=true;
         const sent=await receipts[row.kind]({...env,INTAKE_SEPARATE_NOTIFICATION:true,
@@ -112,24 +98,24 @@ export async function processForm(env,id) {
         receipt=JSON.stringify(sent);
       }
       await finish(db,id,channel,'done',receipt,null);
-      if (channel==='clickup') await db.prepare("UPDATE form_deliveries SET state='pending' WHERE submission_id=? AND channel='intake' AND state='done'").bind(id).run();
     } catch(e) {
       // Local/confirmed failures retry automatically. Ambiguous non-idempotent
       // writes remain reviewable rather than duplicating tasks or mail.
       await finish(db,id,channel,externalStarted?'review':'pending',null,String(e.message).slice(0,400));
     }
   }
-  // Start both correspondence paths independently. Mirror before CRM, then
-  // refresh the idempotent projection after a successful CRM receipt.
-  await Promise.allSettled([processOriginal(env,id),deliver('receipt'),(async()=>{
-    await deliver('intake'); await deliver('clickup'); await deliver('intake');
-  })()]);
+  // Correspondence and the shared intake record run independently.
+  await Promise.allSettled([processOriginal(env,id),deliver('receipt'),deliver('intake')]);
 }
 
 export async function sweepForms(env) {
   const db=env.WAIVERS_DB;
   if (!db) throw Error('WAIVERS_DB missing');
   const cut=new Date(Date.now()-15*60e3).toISOString();
+  // ClickUp was retired on 2026-10-02 (Alec: everything feeds the Google Sheet).
+  // A ClickUp step queued before then has no deliverer; close it with the reason
+  // instead of leaving the submission owed forever.
+  await db.prepare("UPDATE form_deliveries SET state='done',completed_at=?,error='ClickUp retired 2026-10-02; no task created' WHERE channel='clickup' AND state='pending'").bind(now()).run();
   await db.prepare("UPDATE form_deliveries SET state=CASE WHEN channel='intake' THEN 'pending' ELSE 'review' END,error='Interrupted delivery; inspect destination before retry' WHERE state='running' AND started_at<?").bind(cut).run();
   const rows=await db.prepare("SELECT DISTINCT submission_id FROM form_deliveries WHERE state='pending' ORDER BY submission_id LIMIT 25").all();
   await Promise.allSettled([recoverOriginals(env),...(rows.results||[]).map(row=>processForm(env,row.submission_id))]);

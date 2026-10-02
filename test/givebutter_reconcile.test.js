@@ -263,17 +263,21 @@ test("provider pagination beyond the Cloudflare request budget is durably red", 
   assert.equal(calls, 1);
 });
 
-test("the scheduled owner reconciles before email and ClickUp closure", async () => {
+test("the scheduled owner reconciles before email closure, with no second projection", async () => {
   const calls = [];
   const result = await reconcileDonorJourney({}, {
     reconcile: async () => { calls.push("reconcile"); return { ok: true, written: 1 }; },
     recoverEmails: async () => { calls.push("email"); return { ok: true, scanned: 1, sent: 1, queued: 0, failed: 0 }; },
-    syncDonors: async () => { calls.push("donors"); return { ok: true, created: 1, updated: 0 }; },
-    syncGifts: async () => { calls.push("gifts"); return { ok: true, created: 1, updated: 0 }; },
-    writeReceipt: async (_env, receipt) => { calls.push("receipt"); assert.equal(receipt.ok, true); return { ok: true }; },
+    writeReceipt: async (_env, receipt) => {
+      calls.push("receipt");
+      assert.equal(receipt.ok, true);
+      assert.equal(receipt.version, 2);
+      assert.deepEqual(Object.keys(receipt).sort(), ["completedAt", "email", "ok", "reconciliation", "version"]);
+      return { ok: true };
+    },
   });
 
-  assert.deepEqual(calls, ["reconcile", "email", "donors", "gifts", "receipt"]);
+  assert.deepEqual(calls, ["reconcile", "email", "receipt"]);
   assert.equal(result.ok, true);
   assert.equal(result.reconciliation.written, 1);
   assert.equal(result.email.sent, 1);
@@ -286,12 +290,10 @@ test("provider outage stays red but cannot block already-durable donor closure",
   const result = await reconcileDonorJourney({}, {
     reconcile: async () => { calls.push("reconcile"); return { ok: false, error: "givebutter 503" }; },
     recoverEmails: async () => { calls.push("email"); return { ok: true, scanned: 1, sent: 1, queued: 0, failed: 0 }; },
-    syncDonors: async () => { calls.push("donors"); return { ok: true, created: 0, updated: 1 }; },
-    syncGifts: async () => { calls.push("gifts"); return { ok: true, created: 0, updated: 1 }; },
     writeReceipt: async (_env, receipt) => { calls.push("receipt"); stored = receipt; return { ok: true }; },
   });
 
-  assert.deepEqual(calls, ["reconcile", "email", "donors", "gifts", "receipt"]);
+  assert.deepEqual(calls, ["reconcile", "email", "receipt"]);
   assert.equal(result.ok, false);
   assert.equal(result.reconciliation.error, "givebutter 503");
   assert.equal(result.email.sent, 1);
@@ -303,8 +305,6 @@ test("queued or terminal thank-you work makes the journey receipt red", async ()
   const result = await reconcileDonorJourney({}, {
     reconcile: async () => ({ ok: true, written: 0 }),
     recoverEmails: async () => ({ ok: false, scanned: 50, sent: 50, queued: 1, failed: 0 }),
-    syncDonors: async () => ({ ok: true, created: 0, updated: 0 }),
-    syncGifts: async () => ({ ok: true, created: 0, updated: 0 }),
     writeReceipt: async (_env, receipt) => { stored = receipt; return { ok: true }; },
   });
 

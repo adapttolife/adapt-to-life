@@ -2,19 +2,18 @@ import { safeNewsletterSubscribe } from "./newsletter.js";
 import { acceptForm, sweepForms } from "./forms.js";
 // Adapt To Life — Worker entry.
 // Serves the static site (env.ASSETS) and handles form submissions at /api/contact,
-// /api/apply and /api/volunteer, writing all three to ClickUp. The ClickUp token stays server-side
-// (Worker secret). See src/clickup.js and docs/clickup-trackers.md.
+// /api/apply and /api/volunteer through the durable form outbox (src/forms.js): a
+// receipt to the submitter and one shared intake record, which notifies hello@ and
+// feeds the Google Sheet CRM. ClickUp was retired 2026-10-02.
 
 import { handleWaiver, handleWaiverDownload, handleWaiverVerify, handleWaiverDoc, runDriveBacklog } from "./waiver.js";
 import { sendContactReceipt, sendApplyReceipt, sendVolunteerReceipt } from "./receipts.js";
 import { verifyTurnstile, overFormLimit, RATE_LIMITED } from "./turnstile.js";
-import { createApplication, createContact, createVolunteer } from "./clickup.js";
 import { handleEmail, handleAgentMailApi } from "./agent_mail.js";
 import { handleShopContact, runShopCrmBacklog } from "./shop_contact.js";
 import { handleQr } from "./qr.js";
 import { handleAdmin, verifyAccess } from "./qr_admin.js";
 import { syncGifts } from "./qr_gifts.js";
-import { syncClickUp } from "./qr_clickup.js";
 import { fundPosition } from "./fund.js";
 import { handleGivebutterWebhook } from "./givebutter_webhook.js";
 import { reconcileDonorJourney } from "./givebutter_reconcile.js";
@@ -34,7 +33,7 @@ const LEAD_TYPES = [
 // into a field people filter on. The submitter's own words always survive in
 // "What would you bring", so nothing they actually said is ever lost to this.
 //
-// PINNED BY test/volunteer_clickup.test.js against public/volunteer.html. Adding
+// PINNED BY test/volunteer_roles.test.js against public/volunteer/. Adding
 // a role to the page without adding it here silently drops it, which is exactly
 // the kind of quiet failure that only shows up as "why does nobody tick that
 // one" six months later. The test fails the build instead.
@@ -280,6 +279,12 @@ export default {
   // never double-count a donation.
   async scheduled(event, env, ctx) {
     ctx.waitUntil(sweepForms(env).catch((err) => console.error("form outbox failed:", err)));
+    // Tell hello@ about every intake record still waiting for its notification.
+    // This Worker owns the sweep: the separate intake Worker never moved to the
+    // live Cloudflare account, so form notifications sat pending from 2026-09-14
+    // until this ran. Each row is claimed before sending, so a row is never
+    // mailed twice.
+    ctx.waitUntil(sweepIntake(env).catch((err) => console.error("intake notification sweep failed:", err)));
 
     ctx.waitUntil(runDriveBacklog(env));
     ctx.waitUntil(runShopCrmBacklog(env).catch((err) => console.error("shop CRM sync crashed:", err)));
@@ -291,26 +296,18 @@ export default {
     );
     // The webhook is only the fast path. This single scheduled owner polls every
     // successful post-activation Givebutter transaction into D1 first, then closes
-    // thank-you and ClickUp work in order. A provider failure remains visible as a
-    // red receipt but cannot block recovery of work already durable in D1.
+    // thank-you work. A provider failure remains visible as a red receipt but
+    // cannot block recovery of work already durable in D1.
     ctx.waitUntil(
       reconcileDonorJourney(env).then((r) => {
         if (!r.ok) {
           console.error("donor journey reconciliation failed:", JSON.stringify(r));
           return;
         }
-        if (r.reconciliation.written || r.email.sent || r.donors.created || r.donors.updated || r.gifts.created || r.gifts.updated) {
+        if (r.reconciliation.written || r.email.sent) {
           console.log("donor journey reconciled:", JSON.stringify(r));
         }
       }).catch((err) => console.error("donor journey reconciliation crashed:", err))
-    );
-    // Mirror observations into the ClickUp register once a day. Self-limiting:
-    // it records the date it ran and no-ops for the rest of the day's ticks.
-    ctx.waitUntil(
-      syncClickUp(env).then((r) => {
-        if (!r.ok) console.error("qr clickup sync failed:", r.error);
-        else if (r.updated) console.log(`qr clickup sync: ${r.updated} task(s) updated`);
-      })
     );
   },
 
@@ -405,7 +402,7 @@ function after(ctx, promise) {
    after(), so notification never sits on the response path.
 
    Deliberately swallows its own failures: for every form here the primary store
-   is elsewhere (ClickUp, beehiiv, Drive, Givebutter) and the submission has
+   is elsewhere (the D1 form outbox, beehiiv, Drive, Givebutter) and the submission has
    already succeeded by the time this runs. An intake hiccup must never turn a
    saved submission into a failed one — and it cannot lose anything either, because
    an unnotified row is picked up by the sweep cron. */
@@ -459,7 +456,8 @@ async function handleContact(request, env, ctx) {
     return json({ ok: false, error: "Please add your name or a message." }, 422);
   }
 
-  // Contacts land in the ClickUp "Contacts" list. See src/clickup.js.
+  // Contacts land in the durable form outbox (src/forms.js): a receipt, the
+  // shared intake record, and the original message to hello@.
   const sub = {name:name||"(no name given)",email,phone:"",type:LEAD_TYPES.includes(type)?type:"",message,source:source||"Submitted through the contact form on adapttolife.org."};
   if (data.sponsor_tier) {
     sub.tier = str(data.sponsor_tier).slice(0,80);
@@ -497,14 +495,15 @@ async function handleApply(request, env, ctx) {
     return json({ ok: false, error: "Please add your name." }, 422);
   }
 
-  // Applications go to the ClickUp "Hustle & Heart — Applications" list — the
-  // applicant tracker, and the list ATL actually works from. See src/clickup.js.
+  // Applications land in the durable form outbox (src/forms.js): the applicant's
+  // receipt and the shared intake record. The full answers stay in the restricted
+  // D1 record, never in shared intake.
   const sub = {name,email,phone:str(data.phone),sport:str(data.sport),location:str(data.location),need:str(data.need),cost:str(data.cost),about:str(data.about)};
   const result = await acceptForm(env, "apply", sub, data.submission_id, ctx);
   return json(result.ok ? {ok:true, receipt:result.id} : {ok:false,error:result.error}, result.status);
 }
 
-// Volunteer board -> the ClickUp "Volunteers" list.
+// Volunteer board -> the durable form outbox (src/forms.js).
 //
 // Deliberately its own list and its own route rather than a sixth option on the
 // contact form. A CPA offering to do our first Form 990 and someone asking where

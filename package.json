@@ -23,6 +23,8 @@
     "photos": "${SITE_PY:-/home/agentos/.venvs/vectorize/bin/python} scripts/build-hero-panels.py && node scripts/apply-hero.mjs 1 && node scripts/apply-page-headers.mjs && node scripts/build-volunteer.mjs && node scripts/build-hero-lab.mjs && npm run stamp",
     "css": "node scripts/build-css.mjs && node scripts/version-assets.mjs",
     "assets": "node scripts/version-assets.mjs",
+    "release": "node scripts/release.mjs",
+    "check:layout": "node scripts/check-layout.mjs",
     "asnm": "node scripts/build-asnm.mjs",
     "asnm:shot": "node scripts/shoot-asnm.mjs"
   },

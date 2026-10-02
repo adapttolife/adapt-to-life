@@ -21,4 +21,6 @@ The read-only test workflow checks PR routing, staging ancestry and the full sui
 
 ATL Cloudflare Builds validate non-main branches with the app build, CSS generation and tests only; they no longer attempt production-config version uploads. The guarded main release trigger is unchanged. Previously generated versions can inherit production bindings: they are not isolated test sandboxes. Keep production-backed preview URLs disabled and verify active deployment versions after publishing.
 
+Releasing: `npm run release -- --dry-run` runs every gate without merging. `cfrun npm run release` opens or reuses the staging to main release PR and merges it at the exact commit that passed. It reports LIVE only after adapttolife.org serves that commit with no `-dirty` and the same files staging had, and after `scripts/check-layout.mjs` passes in Chrome's and Safari's engines at phone and desktop sizes. `npm run release -- --verify-live` checks production on its own. Release only with approval.
+
 Do not commit credentials, `.env`, vault output, customer fixtures or local bundle-check configs. Preserve actual provider receipts separately from mocked tests; a successful build is not live form-delivery acceptance.

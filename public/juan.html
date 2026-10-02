@@ -91,6 +91,15 @@
   .jn-chair-q{ margin-top:1.2rem !important; padding-left:1rem; border-left:3px solid var(--orange); color:var(--cream) !important; font-weight:600; }
   @media (max-width:760px){ .jn-chair{ grid-template-columns:1fr; } .jn-chair figure{ aspect-ratio:1600/1345; } }
   .jn-kit{ grid-template-columns:1fr !important; }
+  .jn-paddle{ grid-template-columns:minmax(0,1.1fr) minmax(0,0.9fr); }
+  .jn-paddle figure{ order:2; background:#0C0C0E; }
+  .jn-paddle figure img{ object-position:50% 40%; }
+  .jn-code-in{ margin-top:1.3rem; padding:1.1rem 0; border-top:1px solid rgba(255,255,255,0.12); border-bottom:1px solid rgba(255,255,255,0.12); }
+  .jn-code-in > span{ display:block; font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--orange); }
+  .jn-code-in .code-chip{ display:inline-block; margin-top:0.5rem; font-family:var(--font-display); font-weight:900; font-size:clamp(1.6rem,3vw,2.1rem); letter-spacing:0.01em; color:var(--orange); }
+  .jn-code-in p{ margin-top:0.6rem; font-size:0.92rem; color:var(--cream-mute); }
+  .jn-code-in a{ color:var(--orange); font-weight:700; }
+  @media (max-width:760px){ .jn-paddle{ grid-template-columns:1fr; } .jn-paddle figure{ order:0; aspect-ratio:4/5; } }
   .jn-seat-total{ margin-top:1.4rem; font-family:var(--font-display); font-weight:800; font-size:clamp(1.6rem,3vw,2.2rem); color:var(--orange); }
 </style>
 </head>
@@ -309,15 +318,20 @@ fill="currentColor" stroke="none">
           <p class="jn-chair-q">&ldquo;I even have the Adapt To Life QR code right on my sports chair. Scan it and help send our team to the US Open.&rdquo;</p>
         </div>
       </article>
-      <div class="jn-kit reveal">
-        <div><b>Bread &amp; Butter Loco</b><span>&ldquo;It&rsquo;s highly rated, super user friendly, and plays with unbelievable pop and control. The moment I tried it, I was sold.&rdquo;</span></div>
-      </div>
-      <div class="jn-code reveal">
-        <span class="eyebrow orange">His code</span><br>
-        <span class="code-chip">JuanitoLoco</span>
-        <p>Juan is a Bread &amp; Butter ambassador. His code takes 10% off, and the commission Bread &amp; Butter pays him goes to Adapt To Life for the trip to Naples. <a href="https://breadandbutterpickleball.com/?utm_source=adapttolife&amp;utm_medium=referral&amp;utm_campaign=juan" rel="sponsored nofollow noopener" target="_blank">Shop Bread &amp; Butter &rarr;</a></p>
-        <p>&ldquo;If you see me out on the court, come try my Loco yourself.&rdquo;</p>
-      </div>
+      <article class="jn-chair jn-paddle reveal">
+        <figure><img src="/images/athletes/juan-loco.webp" alt="Juan's Bread and Butter Loco paddle in its cover: a skull in a sombrero with two pistols, Loco in orange, and Bring The Smoke" width="1100" height="1765" loading="lazy" decoding="async"></figure>
+        <div class="jn-chair-body">
+          <span class="eyebrow orange">His paddle</span>
+          <h3>Bread &amp; Butter Loco</h3>
+          <p class="jn-chair-q">&ldquo;It&rsquo;s highly rated, super user friendly, and plays with unbelievable pop and control. The moment I tried it, I was sold.&rdquo;</p>
+          <div class="jn-code-in">
+            <span>His code</span>
+            <b class="code-chip">JuanitoLoco</b>
+            <p>Juan is a Bread &amp; Butter ambassador. His code takes 10% off, and the commission Bread &amp; Butter pays him goes to Adapt To Life for the trip to Naples. <a href="https://breadandbutterpickleball.com/?utm_source=adapttolife&amp;utm_medium=referral&amp;utm_campaign=juan" rel="sponsored nofollow noopener" target="_blank">Shop Bread &amp; Butter &rarr;</a></p>
+          </div>
+          <p class="jn-chair-q">&ldquo;If you see me out on the court, come try my Loco yourself.&rdquo;</p>
+        </div>
+      </article>
     </div>
   </section>
 

@@ -122,14 +122,26 @@
   .sp-fine .textlink{ color:var(--orange); }
 
 
-  /* The supporters wall: gratitude first. One tile per partner, logos on
-     paper, so the wall grows by adding an <li>. */
-  .sp-wall .display{ margin-top:0.8rem; }
-  .sp-logos{ list-style:none; padding:0; margin:clamp(2rem,4vw,3rem) auto 0; display:flex; flex-wrap:wrap; justify-content:center; gap:clamp(1rem,2vw,1.4rem); }
-  .sp-logos a{ display:flex; align-items:center; justify-content:center; width:clamp(220px,28vw,300px); aspect-ratio:3/2; border-radius:18px; background:var(--paper); box-shadow:0 0 0 1px var(--hairline), 0 24px 50px -28px rgba(0,0,0,0.35); transition:transform .2s ease, box-shadow .2s ease; }
-  .sp-logos a:hover{ transform:translateY(-3px); box-shadow:0 0 0 1.5px var(--orange), 0 28px 60px -28px rgba(255,92,57,0.45); }
-  .sp-logos img{ width:58%; height:auto; }
-  .sp-logo-note{ margin:1.2rem auto 0; max-width:40ch; color:var(--ink-soft); font-size:0.98rem; }
+  /* Our partners: each partner is a dark card with their picture and their
+     mark, linking to the page that tells their story. One reads as a feature;
+     more wrap into a grid without new CSS. */
+  .partner-list{ display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr)); gap:clamp(1rem,2vw,1.4rem); margin-top:clamp(2rem,4vw,2.8rem); }
+  .partner{ display:grid; grid-template-columns:minmax(0,0.9fr) minmax(0,1.1fr); border-radius:22px; overflow:hidden; background:#0C0C0E; color:var(--cream); isolation:isolate; position:relative;
+    box-shadow:0 30px 70px -34px rgba(0,0,0,0.6); }
+  .partner::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 60% 70% at 85% 30%, rgba(255,92,57,0.18) 0%, transparent 70%); }
+  .partner-photo{ display:block; min-height:clamp(320px,36vw,460px); }
+  .partner-photo img{ width:100%; height:100%; object-fit:cover; object-position:50% 30%; transition:transform .6s ease; }
+  .partner:hover .partner-photo img{ transform:scale(1.03); }
+  .partner-body{ padding:clamp(1.6rem,3.5vw,2.8rem); display:flex; flex-direction:column; align-items:flex-start; justify-content:center; }
+  .partner-logo{ height:clamp(58px,6vw,78px); width:auto; }
+  .partner-kicker{ margin-top:1.4rem; font-family:var(--font-label); font-weight:800; font-size:0.78rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--orange); }
+  .partner .h3{ margin-top:0.4rem; color:var(--cream); font-size:clamp(1.7rem,2.8vw,2.4rem); letter-spacing:-0.02em; line-height:1.05; }
+  .partner-line{ margin-top:0.8rem; color:var(--cream-mute); max-width:38ch; }
+  .partner-when{ margin-top:1.1rem; display:flex; align-items:center; gap:0.8rem; flex-wrap:wrap; font-family:var(--font-label); font-weight:800; font-size:0.78rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--cream); }
+  .partner-when span{ display:inline-flex; align-items:center; gap:0.8rem; color:var(--orange); }
+  .partner-when span::after{ content:""; width:2px; height:1.1em; background:var(--orange); box-shadow:0 0 12px 0 var(--orange-glow); }
+  .partner-more{ margin-top:1.5rem; font-weight:700; color:var(--orange); border-bottom:2px solid currentColor; padding-bottom:2px; }
+  @media (max-width:700px){ .partner{ grid-template-columns:1fr; } .partner-photo{ min-height:0; aspect-ratio:4/3.6; } .partner-when{ flex-wrap:nowrap; gap:0.6rem; font-size:0.72rem; letter-spacing:0.1em; } .partner-when span{ gap:0.6rem; white-space:nowrap; } }
 </style>
 </head>
 <body>
@@ -177,7 +189,6 @@ fill="currentColor" stroke="none">
         <div class="nav-panel" id="navJoin">
           <a href="/volunteer"><span class="np-t">Volunteer</span><span class="np-d">Explore roles, time commitments, and ways to contribute</span></a>
           <a href="/sponsorship"><span class="np-t">Partners</span><span class="np-d">Our partners, and how to join them</span></a>
-          <a href="/brickhouse"><span class="np-t">Brick House</span><span class="np-d">Our first partner and home court</span></a>
         </div>
       </div>
       <div class="nav-group">
@@ -203,7 +214,6 @@ fill="currentColor" stroke="none">
       <span class="m-group">Get Involved</span>
       <a class="m-sub" href="/volunteer">Volunteer</a>
       <a class="m-sub" href="/sponsorship">Partners</a>
-      <a class="m-sub" href="/brickhouse">Brick House</a>
       <span class="m-group">About</span>
       <a class="m-sub" href="/promise">How Giving Works</a>
       <a class="m-sub" href="/about">Our Story</a>
@@ -227,9 +237,45 @@ fill="currentColor" stroke="none">
       <p class="lead sub">Partners help athletes get equipped, keep training, and travel to compete. Together we reach more of them as we grow.</p>
       <div class="actions">
         <a href="#tiers" class="btn">See the levels <span class="arrow">&rarr;</span></a>
-        <a href="#where" class="btn ghost">What it makes possible</a>
+        <a href="#partners" class="btn ghost">Our partners</a>
       </div>
     </div>
+  </section>
+
+  <!-- OUR PARTNERS: proof right after the mission, and the supporters wall.
+       One <article class="partner"> per partner, each linking to its own page
+       (/brickhouse is the pattern). The list becomes a grid as it grows. -->
+  <section class="band sp-partners" id="partners">
+    <span id="wall"></span>
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow orange">Our partners</span>
+        <h2 class="serif h2" style="margin-top:0.8rem;">With thanks to <em class="italic" style="color:var(--orange-ink)">our partners.</em></h2>
+      </div>
+      <div class="partner-list">
+        <article class="partner reveal">
+          <a class="partner-photo" href="/brickhouse" tabindex="-1" aria-hidden="true">
+            <img src="/images/brickhouse/hero-bob.webp" alt="" width="1200" height="2000" loading="lazy" decoding="async">
+          </a>
+          <div class="partner-body">
+            <img class="partner-logo" src="/images/brickhouse/brick-house-logo-orange-black-reverse.svg" alt="Brick House Pickleball" width="372" height="265">
+            <p class="partner-kicker">Our first partner</p>
+            <h3 class="serif h3">Brick House Pickleball</h3>
+            <p class="partner-line">Our home court in Lake Forest, open 24/7/365. Our athletes train there every week, all four seasons.</p>
+            <p class="partner-when" data-until="2026-10-25"><span>Grand opening</span> Sunday, October 25</p>
+            <a class="partner-more" href="/brickhouse">See the partnership <span class="arrow">&rarr;</span></a>
+          </div>
+        </article>
+      </div>
+    </div>
+    <script>
+      (function(){
+        var el = document.querySelector('.partner-when[data-until]');
+        if (!el) return;
+        var d = new Date(), t = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        if (t > el.getAttribute('data-until')) el.remove();
+      })();
+    </script>
   </section>
 
   <!-- 2. WHERE YOUR SUPPORT GOES: through the fund, into a campaign. Today
@@ -344,20 +390,7 @@ fill="currentColor" stroke="none">
   </section>
 
 
-  <!-- 4. THE SUPPORTERS WALL: gratitude, not a vacancy sign. A partner's
-       logo is one more <li>; supporters who opt in can be named here too. -->
-  <section class="band tint sp-wall" id="wall">
-    <div class="wrap center">
-      <span class="eyebrow orange reveal">Supporters wall</span>
-      <h2 class="serif display reveal">Thank you.</h2>
-      <ul class="sp-logos reveal">
-        <li><a href="/brickhouse" aria-label="Brick House Pickleball, our first partner"><img src="/images/brickhouse/brick-house-logo-orange-black.svg" alt="Brick House Pickleball" width="372" height="265"></a></li>
-      </ul>
-      <p class="sp-logo-note reveal">Brick House Pickleball, our first partner and our home court in Lake Forest.</p>
-    </div>
-  </section>
-
-  <!-- 5. CLOSING: the engine, and one way in. -->
+  <!-- 4. CLOSING: the engine, and one way in. -->
   <section class="closing dark band-lg">
     <div class="wrap center">
       <hr class="tick orange reveal" style="margin:0 auto 1rem;">
@@ -430,7 +463,6 @@ fill="currentColor" stroke="none">
         <a href="/promise">How Giving Works</a>
         <a href="/volunteer">Volunteer</a>
         <a href="/sponsorship">Become a partner</a>
-        <a href="/brickhouse">Brick House</a>
         <a href="/apply">Apply for support</a>
         <a href="https://sign.adapttolife.org/waiver?source=atl">Photo and media release</a>
         <a href="/subscribe">Join the list</a>

@@ -56,7 +56,8 @@ Do not confuse less defensive copy with fewer safeguards. Preserve material dono
 | `/adapt-body-shop` | Truthful coming-soon shop context within the same mission | Share an idea, get ATL updates, or find a role |
 | `/tim` | Tim's story and why the fund carries his name | Explore or support the fund |
 | `/karen` | Karen's role and connection to finding programs | Continue the conversation |
-| `/sponsorship` | Partnership scope, levels, recognition, and conditions | Discuss a partnership |
+| `/sponsorship` (nav: Partners) | The mission for partners, our partners (one card each, linking to their page), what support makes possible, levels, recognition, and conditions | Start a conversation |
+| `/brickhouse` (and each future partner page) | One partner's story: who they are, what we do together, their events | Visit, attend, or explore partnering |
 | `/volunteer` | Roles and the terms of contributing | Explore a role or offer another idea |
 | `/volunteer/<role>` | A bounded contribution, time, suitability, scope, and interest form | Express interest, not automatic placement |
 | `/roadmap` | Current capability, ongoing work, and future direction | Follow or support the work |
@@ -65,6 +66,10 @@ Do not confuse less defensive copy with fewer safeguards. Preserve material dono
 | `/waiver` | The existing unsigned photo/media release and consent interface | Read the terms; signing stays off in staging |
 
 `/ways-to-give` is a redirect to `/donate`, not a second giving page. Keep useful secondary text links, but do not give every section a competing primary action.
+
+## Partner pages
+
+Each partner gets its own page at a short root URL (`/brickhouse`), modeled on `/brickhouse`: the co-branded lockup, their place, our athletes there, and their events. The page owns the partner's story; `/sponsorship` carries one card per partner that links to it, and the nav lists Partners, not individual partners. Every partner page has its own share card (`public/images/og/<slug>-v<N>-<tag>.jpg`, usually the page's hero photo), a link back to `/sponsorship`, and a sitemap entry. `test/partners.test.js` enforces all four. Never publish deal terms, a partner's level, or background shared in conversation.
 
 ## Navigation and footer
 

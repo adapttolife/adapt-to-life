@@ -76,6 +76,21 @@
   .jn-code .code-chip{ display:inline-block; margin-top:0.6rem; font-family:var(--font-display); font-weight:900; font-size:1.6rem; letter-spacing:0.02em; color:var(--orange); }
   .jn-code p{ color:var(--cream-mute); font-size:0.95rem; margin-top:0.6rem; }
   .jn-code a{ color:var(--orange); font-weight:700; }
+  .jn-chair{ margin-top:1.8rem; display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,0.95fr); border-radius:22px; overflow:hidden; background:#0C0C0E; color:var(--cream); box-shadow:0 30px 70px -34px rgba(0,0,0,0.6); position:relative; isolation:isolate; }
+  .jn-chair::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 55% 70% at 90% 20%, rgba(255,92,57,0.18) 0%, transparent 70%); }
+  .jn-chair figure{ margin:0; min-height:100%; }
+  .jn-chair figure img{ width:100%; height:100%; object-fit:cover; object-position:55% 60%; display:block; }
+  .jn-chair-body{ padding:clamp(1.6rem,3.4vw,2.6rem); }
+  .jn-chair h3{ margin-top:0.4rem; font-family:var(--font-display); font-weight:900; font-size:clamp(2rem,3.6vw,2.8rem); letter-spacing:-0.02em; line-height:1; color:var(--cream); }
+  .jn-chair-body > p{ margin-top:0.9rem; color:var(--cream-mute); }
+  .jn-stats{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1.4rem; padding:1.1rem 0; border-top:1px solid rgba(255,255,255,0.12); border-bottom:1px solid rgba(255,255,255,0.12); }
+  .jn-stats b{ display:block; font-family:var(--font-display); font-weight:900; font-size:clamp(2.4rem,4vw,3.2rem); line-height:0.9; color:var(--orange); text-shadow:0 0 30px rgba(255,92,57,0.3); }
+  .jn-stats span{ display:block; margin-top:0.4rem; font-size:0.92rem; color:var(--cream-mute); line-height:1.35; }
+  .jn-next{ margin-top:1.2rem !important; color:var(--cream) !important; }
+  .jn-next span{ display:block; font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--orange); margin-bottom:0.35rem; }
+  .jn-chair-q{ margin-top:1.2rem !important; padding-left:1rem; border-left:3px solid var(--orange); color:var(--cream) !important; font-weight:600; }
+  @media (max-width:760px){ .jn-chair{ grid-template-columns:1fr; } .jn-chair figure{ aspect-ratio:1600/1345; } }
+  .jn-kit{ grid-template-columns:1fr !important; }
   .jn-seat-total{ margin-top:1.4rem; font-family:var(--font-display); font-weight:800; font-size:clamp(1.6rem,3vw,2.2rem); color:var(--orange); }
 </style>
 </head>
@@ -275,12 +290,27 @@ fill="currentColor" stroke="none">
 
   <!-- THE SETUP: his gear and his code, said plainly. -->
   <section class="band-lg" style="background:var(--sand);">
-    <div class="wrap reading">
+    <div class="wrap" style="max-width:980px;">
       <span class="eyebrow orange reveal">What he plays with</span>
       <h2 class="serif h2 reveal" style="margin-top:0.8rem;">The setup.</h2>
+      <!-- THE CHAIR: a feature of its own. Facts from Alec's approved CAF
+           letter and Juan's own words; no claim of a brand relationship. -->
+      <article class="jn-chair reveal">
+        <figure><img src="/images/athletes/juan-chair.webp" alt="Juan's PER4MAX chair mid serve: green spokes, white frame, red rims, and orange casters" width="1600" height="1345" loading="lazy" decoding="async"></figure>
+        <div class="jn-chair-body">
+          <span class="eyebrow orange">His chair</span>
+          <h3>PER4MAX</h3>
+          <p>Juan plays in his PER4MAX basketball chair. It was built for contact, and on the pickleball court it does double duty.</p>
+          <div class="jn-stats">
+            <div><b>3</b><span>sets of tires in ten months</span></div>
+            <div><b>1</b><span>set used to last him a year</span></div>
+          </div>
+          <p class="jn-next"><span>What&rsquo;s next</span>Pickleball needs a lighter chair that turns quick. Next for Juan: a PER4MAX built for pickleball.</p>
+          <p class="jn-chair-q">&ldquo;I even have the Adapt To Life QR code right on my sports chair. Scan it and help send our team to the US Open.&rdquo;</p>
+        </div>
+      </article>
       <div class="jn-kit reveal">
-        <div><b>PER4MAX</b><span>His basketball chair, built for contact, and doing double duty on the pickleball court. Three sets of tires in ten months. One set used to last him a year. Look for the Adapt To Life QR code on it.</span></div>
-        <div><b>Bread &amp; Butter Loco</b><span>&ldquo;The moment I tried it, I was sold.&rdquo;</span></div>
+        <div><b>Bread &amp; Butter Loco</b><span>&ldquo;It&rsquo;s highly rated, super user friendly, and plays with unbelievable pop and control. The moment I tried it, I was sold.&rdquo;</span></div>
       </div>
       <div class="jn-code reveal">
         <span class="eyebrow orange">His code</span><br>

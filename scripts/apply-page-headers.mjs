@@ -20,6 +20,7 @@
 //     two pictures arguing.
 //   · the homepage, which has the mosaic.
 import { readFileSync, writeFileSync, readdirSync } from "node:fs";
+import { versionHtml, unversionHtml } from "./version-assets.mjs";
 import { PAGE_HEADER_SHEET as SHEET, PAGE_HEADER_CLASS as BAND,
          bandVars, bandOf, PAGE_PHOTOS, photoVars,
          TIER_CLASS } from "./lib/page-header.mjs";
@@ -36,7 +37,7 @@ let changed = 0;
 for (const file of readdirSync(ROOT).filter((f) => f.endsWith(".html"))) {
   if (SKIP.has(file) || file.startsWith("hero-")) continue;
   const url = new URL(file, ROOT);
-  let html = readFileSync(url, "utf8");
+  let html = unversionHtml(readFileSync(url, "utf8"));
 
   // idempotence first: clear any markup an earlier version of this script left
   // behind, from when the band was eight <img> columns instead of one image
@@ -55,7 +56,7 @@ for (const file of readdirSync(ROOT).filter((f) => f.endsWith(".html"))) {
   const eligible = open && !modifiers.some((c) => c === "hero-2col" || c === "hero-cine" || c === "hero-split");
   if (!eligible) {
     if (html.includes(SHEET)) {
-      writeFileSync(url, html.replace(`\n${SHEET}`, ""));
+      writeFileSync(url, versionHtml(html.replace(`\n${SHEET}`, "")));
       console.log(`${file.padEnd(30)} not a plain hero — stripped`);
     }
     continue;
@@ -114,7 +115,7 @@ for (const file of readdirSync(ROOT).filter((f) => f.endsWith(".html"))) {
   const block = `\n<!-- band:vars -->${bandVars(file)}${photo ? photoVars(photo) : ""}`;
   html = VARS_RE.test(html) ? html.replace(VARS_RE, block)
                             : html.replace(SHEET, `${SHEET}${block}`);
-  writeFileSync(url, html);
+  writeFileSync(url, versionHtml(html));
   changed += 1;
   console.log(`${file.padEnd(30)} banded  (band ${bandOf(file)})`);
 }

@@ -140,7 +140,9 @@
   function icon(name) {
     var i = el("span", "evc-ico");
     i.setAttribute("aria-hidden", "true");
-    i.innerHTML = '<svg viewBox="0 0 24 24" focusable="false">' + ICON[name] + "</svg>";
+    /* width/height here, not only in CSS: a page that ever meets an older
+       stylesheet still draws a 16px icon, never a full-width shape. */
+    i.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" focusable="false">' + ICON[name] + "</svg>";
     return i;
   }
   function fact(kind, text, href) {

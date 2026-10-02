@@ -16,6 +16,7 @@
 // lib/heroes.mjs, the same file the comparison lab reads, so what Alec approved
 // at /hero-N and what ships are the same bytes.
 import { readFileSync, writeFileSync } from "node:fs";
+import { versionHtml, unversionHtml } from "./version-assets.mjs";
 import { VARIANTS, LABEL, STAGE_JS, ROOT, HERO_START, HERO_END, sheetFor } from "./lib/heroes.mjs";
 
 const key = String(process.argv[2] || "").trim();
@@ -25,7 +26,7 @@ if (!VARIANTS[key]) {
 }
 
 const FILE = new URL("index.html", ROOT);
-let html = readFileSync(FILE, "utf8");
+let html = unversionHtml(readFileSync(FILE, "utf8"));
 
 // 1 · the hero region itself
 const a = html.indexOf(HERO_START);
@@ -46,6 +47,6 @@ const JS_RE = /\n<!-- hero:script -->[\s\S]*?<!-- \/hero:script -->/;
 const js = `\n<!-- hero:script -->${STAGE_JS}<!-- /hero:script -->`;
 html = JS_RE.test(html) ? html.replace(JS_RE, js) : html.replace("</body>", `${js}\n</body>`);
 
-writeFileSync(FILE, html);
+writeFileSync(FILE, versionHtml(html));
 console.log(`public/index.html now carries ${LABEL[key]} (${sheetFor(key)}.css)`);
 console.log("next: node scripts/build-hero-lab.mjs && npm run stamp");

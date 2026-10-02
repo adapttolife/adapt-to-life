@@ -50,7 +50,6 @@
   .ev-feature-body{ padding:clamp(1.6rem,3.6vw,3rem); display:flex; flex-direction:column; justify-content:center; align-items:flex-start; }
   .ev-feature .h2{ color:var(--cream); margin-top:0.5rem; }
   .ev-feature .ev-sum{ color:var(--cream-mute); margin-top:0.9rem; max-width:42ch; }
-  .ev-feature .btn{ margin-top:1.6rem; }
   @media (max-width:760px){ .ev-feature{ grid-template-columns:1fr; } .ev-feature-photo{ min-height:0; aspect-ratio:4/3.4; } }
   .ev-date{ display:flex; align-items:baseline; gap:0.7rem; }
   .ev-date b{ font-family:var(--font-display); font-weight:900; font-size:clamp(2.6rem,5vw,3.6rem); line-height:0.9; letter-spacing:-0.04em; color:var(--orange); text-shadow:0 0 36px rgba(255,92,57,0.3); }
@@ -330,6 +329,7 @@ fill="currentColor" stroke="none">
     }
   })();
 </script>
+<script src="/js/add-to-calendar.js"></script>
 <script src="/js/campaigns.js"></script>
 <script>
 (function(){
@@ -377,9 +377,21 @@ fill="currentColor" stroke="none">
     b.appendChild(C.el('h3', 'serif h2', d.name));
     if (place(d)) b.appendChild(C.el('p', 'ev-place', place(d)));
     if (d.summary) b.appendChild(C.el('p', 'ev-sum', d.summary));
+    var acts = C.el('div'); acts.style.cssText = 'display:flex;flex-wrap:wrap;gap:0.9rem 1rem;margin-top:1.6rem;';
     var cta = C.driveCta(d), btn = C.el('a', 'btn');
     C.wire(btn, cta.href, cta.label);
-    b.appendChild(btn);
+    acts.appendChild(btn);
+    if (d.ics && window.ATLCalendar) {
+      var atc = C.el('div', 'atc');
+      atc.dataset.title = d.name; atc.dataset.start = d.starts_at || d.opens; atc.dataset.end = d.ends_at || d.closes || atc.dataset.start;
+      atc.dataset.location = [d.venue, d.address].filter(Boolean).join(', ');
+      atc.dataset.details = (d.summary || '') + (d.page ? ' adapttolife.org' + d.page : '');
+      atc.dataset.ics = d.ics;
+      var ab = C.el('a', 'btn ghost', 'Add to calendar'); ab.href = d.ics;
+      atc.appendChild(ab); acts.appendChild(atc);
+      window.ATLCalendar.mount(atc);
+    }
+    b.appendChild(acts);
     box.appendChild(b);
     return box;
   }

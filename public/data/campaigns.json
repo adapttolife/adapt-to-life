@@ -72,6 +72,8 @@
       "state": "IL",
       "image": "/images/brickhouse/hero-bob.webp",
       "page": "/brickhouse",
+      "ics": "/cal/brickhouse-grand-opening-2026.ics",
+      "address": "28457 Ballard Drive Unit H, Lake Forest, IL 60045",
       "cta_label": "Grand opening details"
     }
   ]

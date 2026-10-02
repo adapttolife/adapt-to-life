@@ -45,11 +45,11 @@
   }
   /* "-05:00" for America/Chicago on that date, so Outlook does not read a
      bare time in the visitor's own zone. Falls back to no offset. */
-  function offset(date, time) {
+  function offset(date, time, tz) {
     try {
       var p = date.split("-"), t = time.split(":");
       var guess = new Date(Date.UTC(+p[0], +p[1] - 1, +p[2], +t[0] + 6, +t[1]));
-      var name = new Intl.DateTimeFormat("en-US", { timeZone: TZ, timeZoneName: "shortOffset" })
+      var name = new Intl.DateTimeFormat("en-US", { timeZone: tz || TZ, timeZoneName: "shortOffset" })
         .formatToParts(guess).filter(function (x) { return x.type === "timeZoneName"; })[0].value;
       var m = name.match(/GMT([+-])(\d{1,2})(?::(\d{2}))?/);
       if (!m) return "";
@@ -63,12 +63,12 @@
       : ymd(e.start) + "/" + ymd(nextDay(e.end));
     var g = "https://calendar.google.com/calendar/render?action=TEMPLATE" +
       "&text=" + encodeURIComponent(e.title) + "&dates=" + gDates +
-      (timed ? "&ctz=" + encodeURIComponent(TZ) : "") +
+      (timed ? "&ctz=" + encodeURIComponent(e.tz) : "") +
       "&details=" + encodeURIComponent(e.details) + "&location=" + encodeURIComponent(e.location);
     var o = "https://outlook.live.com/calendar/0/action/compose?path=%2Fcalendar%2Faction%2Fcompose&rru=addevent" +
       "&subject=" + encodeURIComponent(e.title) +
-      "&startdt=" + encodeURIComponent(timed ? e.start + "T" + e.ts + ":00" + offset(e.start, e.ts) : e.start) +
-      "&enddt=" + encodeURIComponent(timed ? e.end + "T" + e.te + ":00" + offset(e.end, e.te) : nextDay(e.end)) +
+      "&startdt=" + encodeURIComponent(timed ? e.start + "T" + e.ts + ":00" + offset(e.start, e.ts, e.tz) : e.start) +
+      "&enddt=" + encodeURIComponent(timed ? e.end + "T" + e.te + ":00" + offset(e.end, e.te, e.tz) : nextDay(e.end)) +
       (timed ? "" : "&allday=true") +
       "&body=" + encodeURIComponent(e.details) + "&location=" + encodeURIComponent(e.location);
     return { google: g, outlook: o, apple: e.ics };
@@ -85,7 +85,7 @@
     if (box.__atc) return; box.__atc = true;
     var d = box.dataset, btn = box.querySelector("a,button");
     if (!btn) return;
-    var e = { title: d.title, start: d.start, end: d.end || d.start, ts: d.timeStart, te: d.timeEnd,
+    var e = { title: d.title, start: d.start, end: d.end || d.start, ts: d.timeStart, te: d.timeEnd, tz: d.tz || TZ,
               location: d.location || "", details: d.details || "", ics: d.ics };
     var L = links(e);
     var apple = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent);

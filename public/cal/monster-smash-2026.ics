@@ -1,0 +1,20 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Adapt To Life//Events//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:monster-smash-2026@adapttolife.org
+DTSTAMP:20261002T120000Z
+DTSTART;VALUE=DATE:20261023
+DTEND;VALUE=DATE:20261026
+SUMMARY:Monster Smash
+LOCATION:The Pickle Lodge at Lunken Landing\, 669 Wilmer Ave\, Cincinnati\,
+  OH 45206
+DESCRIPTION:A Halloween tournament weekend in Cincinnati. Our athletes are 
+ in the wheelchair brackets. https://pickleballtournaments.com/tournaments/
+ monster-smash-2026
+URL:https://pickleballtournaments.com/tournaments/monster-smash-2026
+SEQUENCE:0
+END:VEVENT
+END:VCALENDAR

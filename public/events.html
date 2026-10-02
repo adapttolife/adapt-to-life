@@ -44,13 +44,6 @@
 
   .ev-up{ padding-top:clamp(0.5rem,2vw,1.5rem); }
   .ev-up > .wrap > .eyebrow{ display:block; margin-bottom:1.2rem; }
-  .ev-feature{ display:grid; grid-template-columns:minmax(0,0.95fr) minmax(0,1.05fr); border-radius:22px; overflow:hidden; background:#141416; color:var(--cream); box-shadow:0 0 0 1px rgba(255,255,255,0.07), 0 40px 90px -40px rgba(0,0,0,0.9), 0 0 110px -30px rgba(255,92,57,0.45); }
-  .ev-feature-photo{ position:relative; min-height:clamp(320px,38vw,480px); background:#0C0C0E; }
-  .ev-feature-photo img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 30%; }
-  .ev-feature-body{ padding:clamp(1.6rem,3.6vw,3rem); display:flex; flex-direction:column; justify-content:center; align-items:flex-start; }
-  .ev-feature .h2{ color:var(--cream); margin-top:0.5rem; }
-  .ev-feature .ev-sum{ color:var(--cream-mute); margin-top:0.9rem; max-width:42ch; }
-  @media (max-width:760px){ .ev-feature{ grid-template-columns:1fr; } .ev-feature-photo{ min-height:0; aspect-ratio:4/3.4; } }
   .ev-date{ display:flex; align-items:baseline; gap:0.7rem; }
   .ev-date b{ font-family:var(--font-display); font-weight:900; font-size:clamp(2.6rem,5vw,3.6rem); line-height:0.9; letter-spacing:-0.04em; color:var(--orange); text-shadow:0 0 36px rgba(255,92,57,0.3); }
   .ev-date span{ font-family:var(--font-label); font-weight:800; font-size:0.8rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--cream); }
@@ -161,12 +154,12 @@ fill="currentColor" stroke="none">
     </div>
   </section>
 
-  <!-- COMING UP: the soonest event as a feature, the rest as rows. -->
+  <!-- COMING UP: every upcoming event as the shared card (campaigns.js
+       eventCard), soonest first, with its own photo when it has one. -->
   <section class="band dark ev-up" aria-labelledby="evUpTitle">
     <div class="wrap">
       <h2 id="evUpTitle" class="eyebrow orange">Coming up</h2>
-      <div id="evFeature"></div>
-      <ul class="ev-list" id="evUpcoming"></ul>
+      <div class="evc-list is-stack" id="evUpcoming"></div>
       <p class="ev-empty" id="evEmpty" hidden style="color:var(--cream-mute);">Nothing on the calendar right now. New dates are added as they are set.</p>
       <noscript><p class="ev-empty" style="color:var(--cream-mute);">The calendar needs JavaScript. Email <a class="textlink" href="mailto:hello@adapttolife.org">hello@adapttolife.org</a> for upcoming dates.</p></noscript>
     </div>
@@ -358,53 +351,32 @@ fill="currentColor" stroke="none">
     if (!past || d.page) li.appendChild(link(d)); else li.appendChild(C.el('span'));
     return li;
   }
-  function feature(d){
-    var box = C.el('article', 'ev-feature');
-    if (d.image) {
-      var ph = C.el('a', 'ev-feature-photo'); ph.href = C.driveCta(d).href; ph.setAttribute('tabindex', '-1'); ph.setAttribute('aria-hidden', 'true');
-      var img = C.el('img'); img.src = d.image; img.alt = ''; img.decoding = 'async';
-      ph.appendChild(img); box.appendChild(ph);
-    }
-    var b = C.el('div', 'ev-feature-body');
-    var o = C.driveOpens(d), c = C.driveCloses(d);
-    var date = C.el('p', 'ev-date');
-    date.appendChild(C.el('b', null, o ? C.fmtDate(o) : ''));
-    if (o && (!c || +o === +c)) date.appendChild(C.el('span', null, DAYS[o.getDay()]));
-    else if (c) date.appendChild(C.el('span', null, 'to ' + C.fmtDate(c)));
-    b.appendChild(date);
-    b.appendChild(C.el('p', 'ev-tag', label(d)));
-    b.appendChild(C.el('h3', 'serif h2', d.name));
-    if (place(d) || d.time_note) b.appendChild(C.el('p', 'ev-place', [d.time_note, place(d)].filter(Boolean).join(' · ')));
-    if (d.summary) b.appendChild(C.el('p', 'ev-sum', d.summary));
-    var acts = C.el('div'); acts.style.cssText = 'display:flex;flex-wrap:wrap;gap:0.9rem 1rem;margin-top:1.6rem;';
-    var cta = C.driveCta(d), btn = C.el('a', 'btn');
-    C.wire(btn, cta.href, cta.label);
-    acts.appendChild(btn);
-    if (d.ics && window.ATLCalendar) {
-      var atc = C.el('div', 'atc');
-      atc.dataset.title = d.name; atc.dataset.start = d.starts_at || d.opens; atc.dataset.end = d.ends_at || d.closes || atc.dataset.start;
-      atc.dataset.location = [d.venue, d.address].filter(Boolean).join(', ');
-      atc.dataset.details = (d.summary || '') + (d.page ? ' adapttolife.org' + d.page : '');
-      atc.dataset.ics = d.ics;
-      if (d.time_start && d.time_end) { atc.dataset.timeStart = d.time_start; atc.dataset.timeEnd = d.time_end; }
-      var ab = C.el('a', 'btn ghost', 'Add to calendar'); ab.href = d.ics;
-      atc.appendChild(ab); acts.appendChild(atc);
-      window.ATLCalendar.mount(atc);
-    }
-    b.appendChild(acts);
-    box.appendChild(b);
-    return box;
+  function iso(date, time, tz){
+    if (!time) return date;
+    try {
+      var p = date.split('-'), t = time.split(':');
+      var guess = new Date(Date.UTC(+p[0], +p[1] - 1, +p[2], +t[0] + 6, +t[1]));
+      var name = new Intl.DateTimeFormat('en-US', { timeZone: tz || 'America/Chicago', timeZoneName: 'shortOffset' })
+        .formatToParts(guess).filter(function(x){ return x.type === 'timeZoneName'; })[0].value;
+      var m = name.match(/GMT([+-])(\d{1,2})(?::(\d{2}))?/);
+      return date + 'T' + time + ':00' + (m ? m[1] + ('0' + m[2]).slice(-2) + ':' + (m[3] || '00') : '');
+    } catch (err) { return date + 'T' + time + ':00'; }
   }
   function ld(list){
     var items = list.map(function(d){
+      var start = d.starts_at || d.opens, end = d.ends_at || d.closes || start;
       var e = { '@context': 'https://schema.org', '@type': 'Event', name: d.name,
-        startDate: (d.starts_at || d.opens) + (d.time_start ? 'T' + d.time_start + ':00-05:00' : ''), endDate: (d.ends_at || d.closes) + (d.time_end ? 'T' + d.time_end + ':00-05:00' : ''),
+        startDate: iso(start, d.time_start, d.tz), endDate: iso(end, d.time_end, d.tz),
         eventStatus: 'https://schema.org/EventScheduled',
-        organizer: { '@type': 'Organization', name: 'Adapt To Life', url: 'https://adapttolife.org' } };
+        url: d.page ? 'https://adapttolife.org' + d.page : (d.cta_url || 'https://adapttolife.org/events'),
+        organizer: { '@type': 'Organization', name: d.host || 'Adapt To Life', url: d.host ? undefined : 'https://adapttolife.org' } };
       if (d.summary) e.description = d.summary;
+      if (d.image) e.image = 'https://adapttolife.org' + d.image;
       if (d.venue || d.city) {
         e.eventAttendanceMode = 'https://schema.org/OfflineEventAttendanceMode';
-        e.location = { '@type': 'Place', name: d.venue || d.city, address: { '@type': 'PostalAddress', addressLocality: d.city, addressRegion: d.state, addressCountry: 'US' } };
+        e.location = { '@type': 'Place', name: d.venue || d.city, address: { '@type': 'PostalAddress',
+          streetAddress: d.address ? d.address.split(', ')[0] : undefined,
+          addressLocality: d.city, addressRegion: d.state, addressCountry: 'US' } };
       } else {
         e.eventAttendanceMode = 'https://schema.org/OnlineEventAttendanceMode';
         e.location = { '@type': 'VirtualLocation', url: 'https://adapttolife.org' + (d.page || '/events') };
@@ -422,8 +394,7 @@ fill="currentColor" stroke="none">
     var up = all.filter(function(d){ return C.driveStatus(d) !== 'past'; }).sort(by);
     var past = all.filter(function(d){ return C.driveStatus(d) === 'past'; }).sort(by).reverse();
     if (up.length) {
-      document.getElementById('evFeature').appendChild(feature(up[0]));
-      up.slice(1).forEach(function(d){ document.getElementById('evUpcoming').appendChild(row(d, false)); });
+      up.forEach(function(d){ document.getElementById('evUpcoming').appendChild(C.eventCard(d, { media: true })); });
       ld(up);
     } else {
       document.getElementById('evEmpty').hidden = false;

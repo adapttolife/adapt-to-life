@@ -1,0 +1,19 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Adapt To Life//Events//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:app-vlasic-classic-2026@adapttolife.org
+DTSTAMP:20260805T120000Z
+DTSTART;VALUE=DATE:20260805
+DTEND;VALUE=DATE:20260810
+SUMMARY:APP Vlasic Classic Chicago
+LOCATION:Danny Cunniff Park\, Highland Park\, IL
+DESCRIPTION:Our athletes play the Wheelchair Open Doubles bracket on Sunday
+  the 9th. Free to watch\, and the best look you will get at what the fund 
+ pays for. https://app.pickleballden.com/external-tournament/1359608
+URL:https://app.pickleballden.com/external-tournament/1359608
+SEQUENCE:0
+END:VEVENT
+END:VCALENDAR

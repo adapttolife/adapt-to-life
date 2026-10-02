@@ -77,7 +77,32 @@
       "page": "/brickhouse",
       "ics": "/cal/brickhouse-grand-opening-2026.ics",
       "address": "28457 Ballard Drive Unit H, Lake Forest, IL 60045",
-      "cta_label": "Grand opening details"
+      "cta_label": "Grand opening details",
+      "calendar_title": "Brick House Pickleball grand opening",
+      "calendar_sequence": 1,
+      "updated": "2026-10-02"
+    },
+    {
+      "_note": "A tournament our athletes play in. The Pickle Lodge hosts it and it raises nothing for us, so it has no campaign field and QR campaign-follow ignores it. Dates, venue and address from the official listing (pickleballtournaments.com/tournaments/monster-smash-2026, read 2026-10-02). Eastern time.",
+      "slug": "monster-smash-2026",
+      "name": "Monster Smash",
+      "type": "tournament",
+      "relationship": "we_compete",
+      "published": true,
+      "summary": "A Halloween tournament weekend in Cincinnati. Our athletes are in the wheelchair brackets.",
+      "starts_at": "2026-10-23",
+      "ends_at": "2026-10-25",
+      "tz": "America/New_York",
+      "venue": "The Pickle Lodge at Lunken Landing",
+      "address": "669 Wilmer Ave, Cincinnati, OH 45206",
+      "city": "Cincinnati",
+      "state": "OH",
+      "host": "The Pickle Lodge",
+      "cta_label": "Tournament details",
+      "cta_url": "https://pickleballtournaments.com/tournaments/monster-smash-2026",
+      "group_url": "https://www.facebook.com/groups/441240107886329/",
+      "group_label": "Facebook group",
+      "updated": "2026-10-02"
     }
   ]
 }

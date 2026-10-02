@@ -95,18 +95,11 @@
     .home-story-body{ padding-top:0; }
     .home-story h2{ max-width:20ch; }
   }
-  /* On the calendar: dated proof the org is moving. Compact by design, because
-     the hub at /ways-to-give is where the full list belongs. */
-  .home-cal{ list-style:none; padding:0; margin:clamp(1.8rem,3vw,2.4rem) 0 0; max-width:860px; margin-inline:auto; }
-  .home-cal li{ display:flex; flex-wrap:wrap; align-items:center; gap:0.5rem 1.2rem;
-    padding:1.15rem 0; border-bottom:1px solid var(--hairline); }
-  .home-cal li:first-child{ border-top:1px solid var(--hairline); }
-  .hc-main{ flex:1 1 20rem; min-width:0; }
-  .hc-when{ font-family:"Space Mono",monospace; font-size:0.7rem; font-weight:700;
-    letter-spacing:0.14em; text-transform:uppercase; color:var(--orange-ink); }
-  .hc-name{ margin-top:0.3rem; font-weight:600; font-size:1.04rem; }
-  .hc-sub{ margin-top:0.2rem; font-size:0.93rem; color:var(--ink-soft); max-width:56ch; }
-  .hc-go{ flex:0 0 auto; font-size:0.9rem; }
+  /* On the calendar: dated proof the org is moving. Up to three event cards
+     (the shared .evc component); /events holds the full list. */
+  .home-events-head{ display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:0.8rem 2rem; }
+  .home-events-head .h2{ margin-top:0.7rem; }
+  .home-events-foot{ margin-top:1.4rem; font-size:0.95rem; color:var(--ink-soft); }
 
 </style>
 </head>
@@ -329,16 +322,17 @@ fill="currentColor" stroke="none">
 
   <!-- 4 · ON THE CALENDAR — dated proof the org is moving. Whole section
          removes itself when nothing is coming up, rather than sitting empty. -->
-  <section class="band-sm tint" id="homeCalendarSection" hidden>
+  <section class="band tint" id="homeCalendarSection" hidden aria-labelledby="homeEventsTitle">
     <div class="wrap">
-      <div class="reveal sec-head">
-        <span class="eyebrow">On the calendar</span>
-        <h2 class="serif h2" style="margin-top:0.7rem;">What is coming up.</h2>
-      </div>
-      <ul class="home-cal" id="homeCalendar"></ul>
-      <p class="center reveal" style="margin-top:1.8rem;">
+      <div class="home-events-head reveal">
+        <div>
+          <span class="eyebrow orange">On the calendar</span>
+          <h2 id="homeEventsTitle" class="serif h2">Come find us.</h2>
+        </div>
         <a class="textlink" href="/events">See all events <span class="arrow">&rarr;</span></a>
-      </p>
+      </div>
+      <div class="evc-list" id="homeCalendar"></div>
+      <p class="home-events-foot reveal">New dates go up as they are set. <a class="textlink" href="/subscribe" style="font:inherit;letter-spacing:inherit;">Get them by email</a></p>
     </div>
   </section>
 
@@ -584,6 +578,7 @@ fill="currentColor" stroke="none">
   })();
 </script>
 
+<script src="/js/add-to-calendar.js"></script>
 <script src="/js/campaigns.js"></script>
 <script>
 (function(){
@@ -606,22 +601,7 @@ fill="currentColor" stroke="none">
       .slice(0, 3);
     if (!upcoming.length) return;
 
-    upcoming.forEach(function(d){
-      var li = C.el('li','reveal in');
-      var main = C.el('div','hc-main');
-      main.appendChild(C.el('p','hc-when', C.driveWhen(d) + (d.time_note ? ' · ' + d.time_note : '')));
-      main.appendChild(C.el('p','hc-name', d.name));
-      if (d.summary) main.appendChild(C.el('p','hc-sub', d.summary));
-
-      var cta = C.driveCta(d);
-      var go = C.el('a','textlink hc-go');
-      C.wire(go, cta.href, cta.label);
-      go.appendChild(C.el('span','arrow','→'));
-
-      li.appendChild(main);
-      li.appendChild(go);
-      host.appendChild(li);
-    });
+    upcoming.forEach(function(d){ host.appendChild(C.eventCard(d)); });
     section.hidden = false;
   });
 })();

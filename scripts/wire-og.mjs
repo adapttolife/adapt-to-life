@@ -24,6 +24,7 @@ const PER_PAGE = {
   "hustle-and-heart.html": "hustle-and-heart",
   "volunteer.html": "volunteer",
   "juan.html": "juan",
+  "brickhouse.html": "brickhouse",
 };
 
 // ALT DESCRIBES THE PHOTOGRAPH AGAIN, because from 2026-09-09 the cards ARE
@@ -41,6 +42,7 @@ const ALT = {
   volunteer: "Your place on this team. Adapt To Life. A wheelchair pickleball player in a cap reaches for a shot.",
   // An athlete profile card is his name over his own face, so the alt is the
   // name and then the man, in that order.
+  brickhouse: "Come play with us at Brick House. Adapt To Life. An athlete in a sport wheelchair and a Brick House Pickleball shirt rolls across the Brick House courts.",
   juan: "Juan. Adapt To Life. Juan, a wheelchair pickleball player in glasses, sits courtside in a Chicago Adaptive Sports shirt.",
 };
 
@@ -56,6 +58,7 @@ const ALT = {
 const FILE = {
   _default: "home-v4-color.jpg",
   juan: "juan-v1-athlete.jpg",
+  brickhouse: "brickhouse-v1-opening.jpg",
   popcorn: "popcorn-v4-content.jpg",
   "hustle-and-heart": "hustle-and-heart-v4-content.jpg",
 };

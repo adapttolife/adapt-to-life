@@ -29,8 +29,8 @@
 <link rel="stylesheet" href="/css/site.css">
 <script src="/js/attribution.js" defer></script>
 <style>
-  /* Brick House partner page. Told in pictures: the partnership lockup over a slow
-     overhead on their court, and the grand opening up front (until Oct 25; then the day moves to the bottom as the
+  /* Brick House partner page. Told in pictures: the partnership lockup over Bob in the Brick House shirt
+     on their court, and the grand opening up front (until Oct 25; then the day moves to the bottom as the
      first entry in the partnership's timeline), their place (open 24/7/365), ours,
      the two side by side, a season of training and the road it serves (the US
      Open), and a wall with room for the next partner. Uses the
@@ -38,7 +38,7 @@
      orange accent, the closing) plus one motif of its own, the brick. */
 
   /* 1. Hero. Our first partnership, said with motion: the two marks as the
-     headline, a slow overhead from the first session on their courts, and the
+     headline, Bob in the Brick House shirt on their courts (a slow push in), and the
      grand opening as the action. The nav mark steps aside at the top so Adapt To
      Life appears once, in the lockup. */
   .nav.over-dark:not(.scrolled):not(.open) .brand{ opacity:0; visibility:hidden; transition:opacity .25s ease; }
@@ -66,7 +66,9 @@
   /* The moving picture: a tall frame, tilted like a card on the wall. */
   .bh-film{ position:relative; margin:0; justify-self:center; width:min(100%, 420px, calc((100svh - 160px) * 0.6)); aspect-ratio:9/15; border-radius:22px; overflow:hidden; transform:rotate(1.5deg);
     box-shadow:0 0 0 1px rgba(255,255,255,0.08), 0 40px 90px -24px rgba(0,0,0,0.85), 0 0 110px -10px rgba(255,92,57,0.45); background:#141414; }
-  .bh-film img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 45%; display:block; }
+  .bh-film img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 40%; display:block; transform-origin:50% 42%; animation:bh-push 16s ease-in-out infinite alternate; }
+  @keyframes bh-push{ from{ transform:scale(1); } to{ transform:scale(1.07); } }
+  @media (prefers-reduced-motion: reduce){ .bh-film img{ animation:none; } }
   .bh-film::after{ content:""; position:absolute; inset:0; background:linear-gradient(0deg, rgba(12,12,14,0.35), transparent 30%); pointer-events:none; }
   @media (max-width:480px){ .bh-when{ flex-wrap:nowrap; gap:0.6rem; font-size:0.74rem; letter-spacing:0.11em; } .bh-when span{ gap:0.6rem; white-space:nowrap; } }
   @media (max-width:900px){
@@ -80,8 +82,11 @@
     .bh-hero-copy{ display:contents; }
     .bh-film, .bh-kicker, .bh-duo{ grid-row:1; grid-column:1; }
     .bh-film{ width:100vw; max-width:none; margin-inline:calc(50% - 50vw); aspect-ratio:auto; height:min(76svh, 660px); border-radius:0; transform:none; box-shadow:none; }
-    .bh-film img{ object-position:50% 70%; }
-    .bh-film::after{ background:linear-gradient(180deg, rgba(12,12,14,0.82) 0%, rgba(12,12,14,0.35) 30%, transparent 46%, transparent 66%, rgba(12,12,14,0.9) 90%, #0C0C0E 100%); }
+    /* The photo starts below the lockup and fades up into the dark, so the
+       marks sit on black and never on his head. */
+    .bh-film img{ top:8.6rem; height:calc(100% - 8.6rem); object-position:50% 30%; animation:none; }
+    .bh-film{ background:#0C0C0E; }
+    .bh-film::after{ background:linear-gradient(180deg, #0C0C0E 0%, #0C0C0E 8.6rem, rgba(12,12,14,0.55) calc(8.6rem + 3.5rem), transparent calc(8.6rem + 9rem), transparent 70%, rgba(12,12,14,0.9) 90%, #0C0C0E 100%); }
     .bh-kicker, .bh-duo{ position:relative; z-index:2; align-self:start; justify-self:center; }
     .bh-kicker{ margin-top:1.3rem; font-size:0.78rem; }
     .bh-kicker::before{ width:1.4rem; }
@@ -120,18 +125,16 @@
   }
   /* 3. Ours: who we are, many athletes and many moments, laid out like a spread. */
   .bh-ours{ display:grid; grid-template-columns:repeat(6,1fr); grid-auto-rows:clamp(120px,14vw,190px); gap:clamp(0.5rem,1vw,0.8rem); margin-top:clamp(2rem,4vw,3rem);
-    grid-template-areas:"a a a b c c" "a a a b d e" "f f g g h h"; }
+    grid-template-areas:"a a a b c c" "a a a b d d" "e e e f f f"; }
   .bh-ours img{ width:100%; height:100%; object-fit:cover; border-radius:12px; display:block; }
-  .bh-ours img:nth-child(1){ grid-area:a; object-position:50% 45%; }
+  .bh-ours img:nth-child(1){ grid-area:a; object-position:50% 50%; }
   .bh-ours img:nth-child(2){ grid-area:b; object-position:50% 60%; }
   .bh-ours img:nth-child(3){ grid-area:c; object-position:50% 40%; }
-  .bh-ours img:nth-child(4){ grid-area:d; object-position:50% 78%; }
-  .bh-ours img:nth-child(5){ grid-area:e; object-position:50% 45%; }
-  .bh-ours img:nth-child(6){ grid-area:f; object-position:50% 55%; }
-  .bh-ours img:nth-child(7){ grid-area:g; object-position:50% 50%; }
-  .bh-ours img:nth-child(8){ grid-area:h; object-position:50% 45%; }
+  .bh-ours img:nth-child(4){ grid-area:d; object-position:50% 70%; }
+  .bh-ours img:nth-child(5){ grid-area:e; object-position:50% 40%; }
+  .bh-ours img:nth-child(6){ grid-area:f; object-position:50% 50%; }
   @media (max-width:700px){
-    .bh-ours{ grid-template-columns:1fr 1fr; grid-auto-rows:clamp(130px,40vw,190px); grid-template-areas:"a a" "a a" "b c" "b d" "e f" "g g" "h h"; }
+    .bh-ours{ grid-template-columns:1fr 1fr; grid-auto-rows:clamp(130px,40vw,190px); grid-template-areas:"a a" "a a" "b c" "b d" "e f"; }
   }
   .bh-more{ display:inline-block; margin-top:1.2rem; font-weight:700; color:var(--orange-ink); border-bottom:2px solid currentColor; padding-bottom:2px; }
 
@@ -357,11 +360,7 @@ fill="currentColor" stroke="none">
         </div>
       </div>
       <figure class="bh-film">
-        <picture>
-          <source media="(prefers-reduced-motion: reduce)" srcset="/images/brickhouse/hero-overhead-poster.webp">
-          <source type="image/avif" srcset="/images/brickhouse/hero-overhead.avif">
-          <img src="/images/brickhouse/hero-overhead-poster.webp" alt="An athlete in a sport wheelchair and a Brick House Pickleball shirt tosses the ball and swings an overhead, in slow motion" width="720" height="1280" fetchpriority="high">
-        </picture>
+        <img src="/images/brickhouse/hero-bob.webp" alt="An athlete in a sport wheelchair and a Brick House Pickleball shirt rolls toward the camera on the Brick House courts, the net behind him" width="1200" height="2000" fetchpriority="high">
       </figure>
     </div>
   </section>
@@ -402,7 +401,7 @@ fill="currentColor" stroke="none">
         <hr class="tick orange">
         <span class="eyebrow orange">Brick House Pickleball</span>
         <h2 class="serif statement">Open <em class="italic" style="color:var(--orange)">24/7/365.</em></h2>
-        <p class="prose">Our founder grew up five minutes from these courts. Under new ownership and newly renovated, Brick House is now officially our home base, and the doors never close.</p>
+        <p class="prose">Newly renovated and under new ownership in Lake Forest. We have trained on these courts for years, and now Brick House is officially our home base. The doors never close.</p>
       </div>
       <div class="bh-place">
         <img src="/images/brickhouse/bh-space.webp" alt="A new net stretches across the blue court toward the Brick House banner and a row of lockers on the block wall" loading="lazy" width="1200" height="2133">
@@ -423,14 +422,12 @@ fill="currentColor" stroke="none">
         <a class="bh-more" href="/about">Meet Adapt To Life &rarr;</a>
       </div>
       <div class="bh-ours">
-        <img src="/images/athletes/wheelie-42.webp" alt="A player in a sport wheelchair reaches low for a forehand" loading="lazy" width="1500" height="1000">
+        <img src="/images/athletes/pickleball1-4.webp" alt="A player in a sport wheelchair drives a forehand, the ball just off his paddle" loading="lazy" width="1500" height="999">
         <img src="/images/athletes/wheelie-10.webp" alt="A young athlete rolls onto the court with friends close behind" loading="lazy" width="1129" height="1500">
         <img src="/images/athletes/wheelie-51.webp" alt="Three friends crowd together for a photo at a night event" loading="lazy" width="1500" height="863">
         <img src="/images/athletes/wheelie-133.webp" alt="A grinning athlete takes a selfie on an outdoor court" loading="lazy" width="1127" height="1500">
-        <img src="/images/athletes/wheelie-68.webp" alt="A player lines up a return on a blue court" loading="lazy" width="1000" height="1500">
-        <img src="/images/athletes/wheelie-4.webp" alt="A player in a sport wheelchair leans into a forehand, the ball just off his paddle" loading="lazy" width="1500" height="1000">
+        <img src="/images/athletes/wheelie-4.webp" alt="A player in a gray shirt swings at a ball up by his shoulder" loading="lazy" width="1500" height="1000">
         <img src="/images/athletes/wheelie-26.webp" alt="A player scoops a low ball off the court" loading="lazy" width="1500" height="1000">
-        <img src="/images/athletes/wheelie-47.webp" alt="A player stretches wide for a ball, paddle out" loading="lazy" width="1500" height="1000">
       </div>
     </div>
   </section>
@@ -450,7 +447,7 @@ fill="currentColor" stroke="none">
         <hr class="tick orange">
         <span class="eyebrow orange">Brick House and Adapt To Life</span>
         <h2 class="serif statement">Every week. <em class="italic" style="color:var(--orange)">Every season.</em></h2>
-        <p class="prose">Brick House gives our athletes a discount on court time. That opens the door for people trying pickleball for the first time, and gives competitors the practice it takes to get really good.</p>
+        <p class="prose">A home court changes what is possible. More people get to try pickleball for the first time, and the athletes chasing bigger goals get the practice it takes to get really good.</p>
       </div>
       <div class="bh-reel">
         <div>
@@ -492,19 +489,19 @@ fill="currentColor" stroke="none">
         <div class="bh-wall reveal" role="img" aria-label="A wall of Adapt To Life athletes with Brick House laid in as the newest brick, and empty bricks still to be laid">
           <span class="bk ph" style="--i:0; --img:url('/images/athletes/wheelie-9-band.webp'); --pos:50% 50%"></span>
           <span class="bk ph" style="--i:1; --img:url('/images/athletes/pickleball1-3.webp'); --pos:45% 40%"></span>
-          <span class="bk ph" style="--i:2; --img:url('/images/athletes/pickleball1-11.webp'); --pos:50% 25%"></span>
+          <span class="bk next" style="--i:2"></span>
           <span class="bk next" style="--i:3"></span>
           <span class="bk ph" style="--i:4; --img:url('/images/athletes/pickleball1-5.webp'); --pos:45% 45%"></span>
           <span class="bk next" style="--i:5"></span>
           <span class="bk half o" style="--i:6"></span>
-          <span class="bk ph" style="--i:7; --img:url('/images/athletes/pickleball1-13.webp'); --pos:50% 30%"></span>
+          <span class="bk o" style="--i:7"></span>
           <span class="bk ph" style="--i:8; --img:url('/images/athletes/wheelie-138.webp'); --pos:50% 45%"></span>
           <span class="bk ph lit" style="--i:9; --img:url('/images/brickhouse/brick-house-logo-orange-black.svg'); --pos:50% 50%; background-color:var(--cream); background-size:auto 78%"></span>
           <span class="bk next" style="--i:10"></span>
           <span class="bk next" style="--i:11"></span>
           <span class="bk half c" style="--i:12"></span>
-          <span class="bk ph" style="--i:13; --img:url('/images/athletes/pickleball1-4.webp'); --pos:40% 40%"></span>
-          <span class="bk ph" style="--i:14; --img:url('/images/athletes/pickleball1-14.webp'); --pos:50% 25%"></span>
+          <span class="bk c" style="--i:13"></span>
+          <span class="bk next" style="--i:14"></span>
           <span class="bk o" style="--i:15"></span>
           <span class="bk next" style="--i:16"></span>
           <span class="bk next" style="--i:17"></span>

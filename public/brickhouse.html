@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<title>Brick House Pickleball | Adapt To Life</title>
+<meta name="description" content="Brick House Pickleball celebrates its grand opening in Lake Forest on Sunday, October 25, 2026. Brick House is the first partner of Adapt To Life. Come play with us.">
+<link rel="canonical" href="https://adapttolife.org/brickhouse">
+<link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-v2-option2-32.png">
+<link rel="apple-touch-icon" href="/images/apple-touch-icon-v2-option2.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Brick House grand opening, Sunday, October 25 | Adapt To Life">
+<meta property="og:description" content="Brick House Pickleball celebrates its grand opening in Lake Forest on Sunday, October 25, 2026. Brick House is the first partner of Adapt To Life. Come play with us.">
+<meta property="og:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.">
+<meta property="og:url" content="https://adapttolife.org/brickhouse">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Brick House grand opening, Sunday, October 25 | Adapt To Life">
+<meta name="twitter:description" content="Brick House Pickleball celebrates its grand opening in Lake Forest on Sunday, October 25, 2026. Brick House is the first partner of Adapt To Life. Come play with us.">
+<meta name="twitter:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
+<meta name="twitter:image:alt" content="Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/site.css">
+<script src="/js/attribution.js" defer></script>
+<style>
+  /* Brick House partner page. Told in pictures: the partnership lockup over Bob in the Brick House shirt
+     on their court, and the grand opening up front (until Oct 25; then the day moves to the bottom as the
+     first entry in the partnership's timeline), their place (open 24/7/365), ours,
+     the two side by side, a season of training and the road it serves (the US
+     Open), and a wall with room for the next partner. Uses the
+     site's own pieces (dark bands with the orange bloom, tick + eyebrow, the italic
+     orange accent, the closing) plus one motif of its own, the brick. */
+
+  /* 1. Hero. Our first partnership, said with motion: the two marks as the
+     headline, Bob in the Brick House shirt on their courts (a slow push in), and the
+     grand opening as the action. */
+  .bh-hero{ position:relative; isolation:isolate; overflow:hidden; padding:clamp(2.5rem,6vh,4.5rem) 0 clamp(3.5rem,8vh,6rem); }
+  .bh-hero::before{ content:""; position:absolute; inset:-12px; z-index:-2; background:url('/images/brickhouse/court-wide.webp') 50% 40%/cover no-repeat; filter:blur(2px) saturate(0.9) brightness(0.75); }
+  .bh-hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:
+      radial-gradient(ellipse 45% 60% at 74% 50%, rgba(255,92,57,0.26) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 50% at 12% 20%, rgba(255,92,57,0.10) 0%, transparent 70%),
+      linear-gradient(90deg, rgba(12,12,14,0.96) 0%, rgba(12,12,14,0.86) 45%, rgba(12,12,14,0.5) 100%); }
+  .bh-hero-grid{ display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,0.85fr); gap:clamp(2rem,5vw,4.5rem); align-items:center; }
+  .bh-kicker{ display:flex; align-items:center; gap:0.9rem; font-family:var(--font-label); font-weight:800; font-size:0.9rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--orange); }
+  .bh-kicker::before{ content:""; width:2.2rem; height:2px; background:var(--orange); box-shadow:0 0 12px var(--orange-glow); }
+  .bh-duo{ display:flex; align-items:center; gap:clamp(1.2rem,2.6vw,2rem); margin-top:clamp(1.2rem,2.4vw,1.8rem); }
+  .bh-atl{ height:clamp(84px,9vw,118px); width:auto; color:var(--cream); filter:drop-shadow(0 6px 24px rgba(0,0,0,0.5)); }
+  .bh-bhlogo{ height:clamp(84px,9vw,118px); width:auto; filter:drop-shadow(0 6px 24px rgba(0,0,0,0.5)); }
+  /* The ×: an optic yellow mark, painted like a court line. Overspray halo,
+     a hand curved paint stroke, a thin sheen on top, and a bloom. It paints
+     itself once on load; with reduced motion it is simply there. */
+  .bh-x{ --ball:#DFF23D; flex:none; width:clamp(54px,5.6vw,74px); height:auto; overflow:visible; filter:drop-shadow(0 0 8px rgba(223,242,61,0.22)); }
+  .bh-x path{ fill:none; stroke-linecap:round; stroke-dasharray:1; stroke-dashoffset:0; }
+  .bh-x-spray path{ stroke:var(--ball); stroke-width:16; opacity:0.6; }
+  .bh-x-paint path{ stroke:var(--ball); stroke-width:11; }
+  .bh-x-shine path{ stroke:#FCFFE6; stroke-width:2.4; opacity:0.6; }
+  @media (prefers-reduced-motion: no-preference){
+    .bh-x path{ stroke-dashoffset:1; animation:bh-paint 0.42s cubic-bezier(.6,.05,.3,1) forwards; }
+    .bh-x g path:first-child{ animation-delay:0.35s; }
+    .bh-x g path:last-child{ animation-delay:0.72s; }
+    .bh-x-shine path:first-child{ animation-delay:0.5s; }
+    .bh-x-shine path:last-child{ animation-delay:0.87s; }
+  }
+  @keyframes bh-paint{ to{ stroke-dashoffset:0; } }
+  .bh-hero .display{ max-width:16ch; margin-top:clamp(1.4rem,3vw,2.2rem); font-size:clamp(2.8rem,5.6vw,5.2rem); line-height:0.98; }
+  .bh-hero .sub{ max-width:38ch; margin-top:1.2rem; color:var(--cream-mute); }
+  .bh-hero .actions{ display:flex; flex-wrap:wrap; gap:0.9rem 1rem; margin-top:1.1rem; }
+  /* A label, not a button: orange words, the same glowing divider as the logo
+     pair, then the date. No fill, no pill. */
+  .bh-when{ margin-top:1.8rem; display:flex; align-items:center; gap:0.9rem; flex-wrap:wrap; font-family:var(--font-label); font-weight:800; font-size:0.9rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--cream); }
+  .bh-when span{ display:inline-flex; align-items:center; gap:0.9rem; color:var(--orange); }
+  .bh-when span::after{ content:""; width:2px; height:1.15em; background:var(--orange); border-radius:2px; box-shadow:0 0 12px 0 var(--orange-glow); }
+  /* The moving picture: a tall frame, tilted like a card on the wall. */
+  .bh-film{ position:relative; margin:0; justify-self:center; width:min(100%, 420px, calc((100svh - 160px) * 0.6)); aspect-ratio:9/15; border-radius:22px; overflow:hidden; transform:rotate(1.5deg);
+    box-shadow:0 0 0 1px rgba(255,255,255,0.08), 0 40px 90px -24px rgba(0,0,0,0.85), 0 0 110px -10px rgba(255,92,57,0.45); background:#141414; }
+  .bh-film img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 40%; display:block; transform-origin:50% 42%; animation:bh-push 16s ease-in-out infinite alternate; }
+  @keyframes bh-push{ from{ transform:scale(1); } to{ transform:scale(1.07); } }
+  @media (prefers-reduced-motion: reduce){ .bh-film img{ animation:none; } }
+  .bh-film::after{ content:""; position:absolute; inset:0; background:linear-gradient(0deg, rgba(12,12,14,0.35), transparent 30%); pointer-events:none; }
+  .bh-city{ font-style:normal; }
+  @media (max-width:480px){ .bh-city{ display:none; } }
+  @media (max-width:480px){ .bh-when{ flex-wrap:nowrap; gap:0.6rem; font-size:0.74rem; letter-spacing:0.11em; } .bh-when span{ gap:0.6rem; white-space:nowrap; } }
+  @media (max-width:900px){
+    /* Phones: a poster. The film runs edge to edge; the two marks sit on the
+       plain block wall above the player; the words follow below. */
+    .bh-hero{ padding:0 0 clamp(2.5rem,7vh,3.5rem); }
+    .bh-hero{ background:#0C0C0E; }
+    .bh-hero::before{ display:none; }
+    .bh-hero::after{ background: radial-gradient(ellipse 90% 22% at 30% 88%, rgba(255,92,57,0.16) 0%, transparent 70%); }
+    .bh-hero-grid{ grid-template-columns:1fr; gap:0; }
+    .bh-hero-copy{ display:contents; }
+    .bh-film, .bh-kicker, .bh-duo{ grid-row:1; grid-column:1; }
+    .bh-film{ width:100vw; max-width:none; margin-inline:calc(50% - 50vw); aspect-ratio:auto; height:min(76svh, 660px); border-radius:0; transform:none; box-shadow:none; }
+    /* The photo starts below the lockup and fades up into the dark, so the
+       marks sit on black and never on his head. */
+    .bh-film img{ top:8.6rem; height:calc(100% - 8.6rem); object-position:50% 30%; animation:none; }
+    .bh-film{ background:#0C0C0E; }
+    .bh-film::after{ background:linear-gradient(180deg, #0C0C0E 0%, #0C0C0E 8.6rem, rgba(12,12,14,0.55) calc(8.6rem + 3.5rem), transparent calc(8.6rem + 9rem), transparent 70%, rgba(12,12,14,0.9) 90%, #0C0C0E 100%); }
+    .bh-kicker, .bh-duo{ position:relative; z-index:2; align-self:start; justify-self:center; }
+    .bh-kicker{ margin-top:1.3rem; font-size:0.78rem; }
+    .bh-kicker::before{ width:1.4rem; }
+    .bh-kicker::after{ content:""; width:1.4rem; height:2px; background:var(--orange); box-shadow:0 0 12px var(--orange-glow); }
+    .bh-duo{ margin-top:3.3rem; }
+    .bh-atl, .bh-bhlogo{ height:76px; }
+    .bh-x{ width:50px; }
+    /* The date rides on the bottom of the film, right above the headline, so
+       the grand opening is on the first screen. */
+    .bh-hero .bh-when{ order:1; position:relative; z-index:2; margin-top:-3.4rem; }
+    .bh-hero .display{ order:2; margin-top:0.7rem; font-size:clamp(2.6rem,11vw,3.4rem); }
+    .bh-hero .sub{ order:3; margin-top:1rem; }
+    .bh-hero .actions{ order:4; }
+  }
+
+  .bh-bricks{ display:block; width:100%; height:48px; background:#F9F7F2; }
+
+  /* 2 + 3. Theirs and ours, each a picture first. */
+  .bh-start-head{ max-width:40ch; }
+  .bh-start-head .tick{ margin:0 0 1rem; }
+  .bh-start-head .statement{ margin-top:0.7rem; }
+  .bh-start-head .prose{ margin-top:1rem; }
+  .bh-num{ font-family:var(--font-display); font-weight:900; font-style:italic; color:var(--orange); }
+  /* Their place: three tall frames from the first session on the new courts,
+     set at different heights like pictures hung on the block wall. */
+  .bh-place{ display:grid; grid-template-columns:1.25fr 1fr 1fr; gap:clamp(0.6rem,1.4vw,1rem); align-items:start; margin-top:clamp(2rem,4vw,3rem); }
+  .bh-place img{ width:100%; height:auto; object-fit:cover; border-radius:14px; display:block; }
+  .bh-place img:nth-child(1){ aspect-ratio:4/5.6; object-position:50% 40%; }
+  .bh-place img:nth-child(2){ aspect-ratio:3/4; object-position:62% 60%; margin-top:clamp(2rem,6vw,5rem); }
+  .bh-place img:nth-child(3){ aspect-ratio:3/4.4; object-position:50% 55%; margin-top:clamp(1rem,3vw,2.2rem); }
+  @media (max-width:700px){
+    .bh-place{ grid-template-columns:1fr 1fr; }
+    .bh-place img:nth-child(1){ grid-column:span 2; aspect-ratio:4/5; }
+    .bh-place img:nth-child(2){ margin-top:0; }
+    .bh-place img:nth-child(3){ margin-top:1.6rem; aspect-ratio:3/4; }
+  }
+  /* 3. Ours: who we are, many athletes and many moments, laid out like a spread. */
+  .bh-ours{ display:grid; grid-template-columns:repeat(6,1fr); grid-auto-rows:clamp(120px,14vw,190px); gap:clamp(0.5rem,1vw,0.8rem); margin-top:clamp(2rem,4vw,3rem);
+    grid-template-areas:"a a a b c c" "a a a b d d" "e e e f f f"; }
+  .bh-ours img{ width:100%; height:100%; object-fit:cover; border-radius:12px; display:block; }
+  .bh-ours img:nth-child(1){ grid-area:a; object-position:50% 50%; }
+  .bh-ours img:nth-child(2){ grid-area:b; object-position:50% 60%; }
+  .bh-ours img:nth-child(3){ grid-area:c; object-position:50% 40%; }
+  .bh-ours img:nth-child(4){ grid-area:d; object-position:50% 70%; }
+  .bh-ours img:nth-child(5){ grid-area:e; object-position:50% 40%; }
+  .bh-ours img:nth-child(6){ grid-area:f; object-position:50% 50%; }
+  @media (max-width:700px){
+    .bh-ours{ grid-template-columns:1fr 1fr; grid-auto-rows:clamp(130px,40vw,190px); grid-template-areas:"a a" "a a" "b c" "b d" "e f"; }
+  }
+  .bh-more{ display:inline-block; margin-top:1.2rem; font-weight:700; color:var(--orange-ink); border-bottom:2px solid currentColor; padding-bottom:2px; }
+
+  /* Side by side: their court and our athletes, one line across both. */
+  .bh-side{ position:relative; display:grid; grid-template-columns:1fr 1fr; min-height:clamp(380px,46vw,620px); background:var(--ink-warm); overflow:hidden; }
+  .bh-side img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .bh-side img:first-child{ object-position:50% 32%; }
+  .bh-side img:nth-child(2){ object-position:45% 40%; }
+  .bh-side::after{ content:""; position:absolute; inset:0; background:radial-gradient(ellipse 60% 70% at 50% 55%, rgba(12,12,14,0.78) 0%, rgba(12,12,14,0.45) 55%, rgba(12,12,14,0.2) 100%); }
+  .bh-side .bh-seam{ position:absolute; left:50%; top:0; bottom:0; width:3px; transform:translateX(-50%); background:var(--orange); box-shadow:0 0 22px 0 var(--orange-glow); z-index:1; }
+  .bh-together{ position:absolute; z-index:2; left:50%; top:50%; transform:translate(-50%,-50%); width:min(92%, 30ch); margin:0; text-align:center; color:var(--cream); font-family:var(--font-display); font-weight:800; font-size:clamp(1.5rem,3.4vw,2.6rem); line-height:1.12; letter-spacing:-0.025em; text-shadow:0 2px 24px rgba(0,0,0,0.7); }
+  @media (max-width:700px){
+    .bh-side{ grid-template-columns:1fr; grid-template-rows:1fr 1fr; min-height:clamp(520px,150vw,700px); }
+    .bh-side .bh-seam{ left:0; right:0; top:50%; bottom:auto; width:auto; height:3px; transform:translateY(-50%); }
+    .bh-together{ width:min(90%, 26ch); padding:1rem 1.2rem; border-radius:14px; background:rgba(12,12,14,0.82); box-shadow:0 0 0 1px rgba(255,92,57,0.5); }
+  }
+
+  /* On the new courts: our athletes already playing at Brick House. A dark band with
+     the bloom; three staggered columns of tall frames, like a strip of film laid
+     down twice, so it reads as a day on court and not a grid of products. */
+  .bh-on{ position:relative; isolation:isolate; overflow:hidden; }
+  .bh-on::before{ content:""; position:absolute; inset:0; z-index:-1; background:
+      radial-gradient(ellipse 55% 45% at 78% 30%, rgba(255,92,57,0.20) 0%, transparent 70%),
+      radial-gradient(ellipse 45% 40% at 10% 85%, rgba(255,92,57,0.12) 0%, transparent 70%); }
+  .bh-on .bh-start-head .statement{ color:var(--cream); }
+  .bh-on .bh-start-head .prose{ color:var(--cream-mute); }
+  .bh-reel{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(0.6rem,1.6vw,1.2rem); margin-top:clamp(2.2rem,4.5vw,3.5rem); align-items:start; }
+  .bh-reel > div{ display:flex; flex-direction:column; gap:clamp(0.6rem,1.6vw,1.2rem); }
+  .bh-reel > div:nth-child(2){ margin-top:clamp(2.5rem,7vw,6rem); }
+  .bh-reel > div:nth-child(3){ margin-top:clamp(1.2rem,3.5vw,3rem); }
+  .bh-reel img{ display:block; width:100%; height:auto; object-fit:cover; border-radius:14px; box-shadow:0 0 0 1px rgba(255,255,255,0.06), 0 24px 50px -24px rgba(0,0,0,0.8); }
+  .bh-reel .tall{ aspect-ratio:9/14; }
+  .bh-reel .mid{ aspect-ratio:4/5; }
+  .bh-reel .lead-shot{ box-shadow:0 0 0 2px var(--orange), 0 0 60px -12px rgba(255,92,57,0.55); }
+  @media (max-width:700px){
+    .bh-reel{ grid-template-columns:1fr 1fr; }
+    .bh-reel > div:nth-child(2){ margin-top:2.2rem; }
+    .bh-reel > div:nth-child(3){ margin-top:0; grid-column:span 2; flex-direction:row; }
+    .bh-reel > div:nth-child(3) img{ width:calc(50% - 0.3rem); }
+    .bh-reel > div:nth-child(3) img:first-child{ margin-top:-2.2rem; }
+  }
+
+  /* The road to the US Open: four stops on one orange court line, the first lit. */
+  .bh-road{ margin-top:clamp(3rem,6vw,4.5rem); }
+  .bh-road ol{ list-style:none; margin:1.2rem 0 0; padding:0; display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(1rem,2.5vw,2rem); position:relative; }
+  .bh-road ol::before{ content:""; position:absolute; left:0; right:0; top:7px; height:2px; background:linear-gradient(90deg, var(--orange), rgba(255,92,57,0.25)); }
+  .bh-road li{ position:relative; padding-top:1.6rem; }
+  .bh-road li::before{ content:""; position:absolute; left:0; top:0; width:16px; height:16px; border-radius:50%; background:var(--ink-warm, #141414); box-shadow:inset 0 0 0 2px rgba(255,92,57,0.6); }
+  .bh-road li.lit::before{ background:var(--orange); box-shadow:0 0 18px 2px var(--orange-glow); }
+  .bh-road b{ display:block; font-family:var(--font-display); font-weight:800; font-size:clamp(1.1rem,1.8vw,1.35rem); color:var(--cream); letter-spacing:-0.01em; }
+  .bh-road li.lit b{ color:var(--orange); }
+  .bh-road span{ display:block; margin-top:0.4rem; color:var(--cream-mute); max-width:24ch; }
+  .bh-road .bh-more{ color:var(--orange); margin-top:1.8rem; }
+  @media (max-width:700px){
+    .bh-road ol{ grid-template-columns:1fr; gap:1.4rem; padding-left:1.8rem; }
+    .bh-road ol::before{ left:7px; right:auto; top:0; bottom:0; width:2px; height:auto; background:linear-gradient(180deg, var(--orange), rgba(255,92,57,0.25)); }
+    .bh-road li{ padding-top:0; }
+    .bh-road li::before{ left:-1.8rem; top:0.2rem; }
+  }
+
+  /* 4. The day: a faint wall in the mortar, the bloom behind the date. */
+  .bh-open{ position:relative; isolation:isolate; overflow:hidden; }
+  .bh-open::before{ content:""; position:absolute; inset:0; z-index:-1; opacity:0.5; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='48'%3E%3Cg fill='none' stroke='%23F9F7F2' stroke-opacity='0.06'%3E%3Cpath d='M0 .5h96M0 24.5h96M.5 0v24M48.5 0v24M24.5 24v24M72.5 24v24'/%3E%3C/g%3E%3C/svg%3E"); -webkit-mask-image:linear-gradient(180deg, transparent, #000 30%, #000 70%, transparent); mask-image:linear-gradient(180deg, transparent, #000 30%, #000 70%, transparent); }
+  .bh-event{ display:grid; grid-template-columns:minmax(220px,0.8fr) 1.4fr; gap:clamp(2rem,5vw,4.5rem); align-items:start; }
+  @media (max-width:820px){ .bh-event{ grid-template-columns:1fr; } }
+  .bh-date{ position:relative; border-left:4px solid var(--orange); padding-left:clamp(1rem,2.5vw,1.6rem); }
+  .bh-date::before{ content:""; position:absolute; z-index:-1; left:-30%; top:-20%; width:150%; height:140%; background:radial-gradient(ellipse at 40% 55%, rgba(255,92,57,0.22) 0%, transparent 65%); pointer-events:none; }
+  .bh-day{ margin-top:1rem; font-weight:700; font-size:1.2rem; color:var(--cream-mute); }
+  .bh-big{ font-family:var(--font-display); font-weight:900; font-size:clamp(4.2rem,12vw,8rem); line-height:0.88; letter-spacing:-0.05em; color:var(--orange); text-shadow:0 0 42px rgba(255,92,57,0.35); }
+  .bh-detail .prose{ margin-top:1.1rem; max-width:52ch; }
+  .bh-facts{ margin-top:1.8rem; border-top:1px solid rgba(255,255,255,0.14); }
+  .bh-facts > div{ display:grid; grid-template-columns:6rem 1fr; gap:1rem; padding:0.95rem 0; border-bottom:1px solid rgba(255,255,255,0.14); }
+  .bh-facts dt{ font-weight:700; color:var(--cream-faint); }
+  .bh-facts dd{ color:var(--cream); }
+  .bh-actions{ display:flex; flex-wrap:wrap; gap:0.9rem 1rem; margin-top:2rem; }
+
+  /* 5. Grow together: our athletes laid as a wall, with bricks still to lay. */
+  .bh-close{ text-align:center; }
+  .bh-close .tick{ margin:0 auto 1rem; }
+  .bh-close .display{ max-width:14ch; margin:0.9rem auto 0; }
+  .bh-close .prose{ max-width:46ch; margin:1.3rem auto 0; color:var(--cream-mute); }
+  .bh-close .bh-actions{ justify-content:center; margin-top:2.2rem; }
+  .bh-wall{ display:grid; grid-template-columns:repeat(12,1fr); gap:clamp(5px,0.6vw,8px); margin:clamp(2.5rem,5vw,3.5rem) auto 0; max-width:980px; }
+  .bk{ grid-column:span 2; aspect-ratio:1.7/1; border-radius:4px; }
+  .bk.half{ grid-column:span 1; aspect-ratio:auto; }
+  .bk.o{ background:var(--orange); box-shadow:inset 0 -6px 0 rgba(0,0,0,0.14); }
+  .bk.c{ background:var(--cream); box-shadow:inset 0 -6px 0 rgba(0,0,0,0.09); }
+  .bk.ph{ background:#1d1d1f var(--img) var(--pos, 50% 30%)/cover no-repeat; filter:grayscale(1) contrast(1.1); }
+  .bk.ph.lit{ filter:none; box-shadow:0 0 0 2px var(--orange), 0 14px 34px -12px rgba(255,92,57,0.6); }
+  .bk.next{ border:2px dashed rgba(255,92,57,0.85); background:rgba(255,92,57,0.07); }
+  .bh-wall.in .bk{ animation:bh-lay 0.6s cubic-bezier(.2,.7,.2,1) both; animation-delay:calc(var(--i) * 45ms); }
+  .bh-wall.in .bk.next{ animation:bh-lay 0.6s cubic-bezier(.2,.7,.2,1) both, bh-wait 2.4s ease-in-out 1.6s infinite; animation-delay:calc(var(--i) * 45ms), calc(var(--i) * 45ms + 1.4s); }
+  @keyframes bh-lay{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:none; } }
+  @keyframes bh-wait{ 0%,100%{ border-color:rgba(255,92,57,0.85); } 50%{ border-color:rgba(255,92,57,0.35); } }
+  @media (prefers-reduced-motion: reduce){ .bh-wall.in .bk, .bh-wall.in .bk.next{ animation:none; } }
+  .bh-sign{ margin-top:clamp(2.5rem,5vw,3.5rem); font-family:var(--font-display); font-weight:800; font-style:italic; font-size:clamp(1.5rem,3vw,2.2rem); letter-spacing:-0.02em; color:var(--orange); }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Event","name":"Brick House Pickleball Grand Opening","startDate":"2026-10-25","eventStatus":"https://schema.org/EventScheduled","eventAttendanceMode":"https://schema.org/OfflineEventAttendanceMode","location":{"@type":"Place","name":"Brick House Pickleball","address":{"@type":"PostalAddress","streetAddress":"28457 Ballard Drive, Unit H","addressLocality":"Lake Forest","addressRegion":"IL","postalCode":"60045","addressCountry":"US"}},"organizer":[{"@type":"Organization","name":"Brick House Pickleball"}],"sponsor":{"@type":"Organization","name":"Adapt To Life","url":"https://adapttolife.org"},"isAccessibleForFree":true}</script>
+</head>
+<body>
+
+<header class="nav over-dark" id="nav">
+  <div class="wrap nav-inner">
+    <a href="/" class="brand"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500.000000 457.000000" class="brand-logo" aria-hidden="true" focusable="false"><g transform="translate(0.000000,457.000000) scale(0.100000,-0.100000)"
+fill="currentColor" stroke="none">
+<path d="M2059 4548 c-14 -13 -99 -185 -198 -403 -96 -209 -238 -519 -316
+-690 -202 -440 -304 -662 -333 -725 -29 -65 -163 -358 -237 -520 -29 -63 -139
+-304 -245 -535 -291 -637 -404 -882 -445 -970 -20 -44 -56 -123 -80 -175 -53
+-118 -172 -375 -191 -414 -53 -108 -28 -116 371 -116 356 0 369 2 394 57 11
+23 190 440 524 1217 72 168 77 206 52 406 -69 554 79 859 585 1205 111 76 137
+101 165 155 20 40 233 517 330 742 23 53 45 90 56 93 20 7 59 -10 59 -26 0 -9
+208 -480 215 -488 3 -2 35 25 72 59 169 156 360 182 566 79 51 -27 51 -24 -54
+206 -134 293 -232 511 -306 675 -93 210 -35 190 -539 190 -421 0 -421 0 -445
+-22z"/>
+<path d="M3060 3404 c-127 -44 -200 -148 -200 -284 0 -358 507 -412 590 -62
+52 220 -174 420 -390 346z"/>
+<path d="M2334 2885 c-396 -102 -739 -406 -825 -732 -32 -119 -37 -419 -7
+-373 2 3 32 61 67 130 180 354 428 530 745 530 135 0 133 2 115 -107 -53 -333
+27 -498 243 -498 106 0 119 9 95 60 -36 75 -15 139 134 406 128 229 134 355
+26 476 -106 117 -372 166 -593 108z"/>
+<path fill="#FF5C39" d="M2242 2133 c-193 -421 -156 -742 101 -859 127 -58 282 -41 606 66
+403 134 502 93 711 -292 386 -708 698 -982 1176 -1030 158 -17 167 -8 53 50
+-349 178 -546 441 -794 1062 -293 734 -505 846 -1178 623 -249 -82 -337 -90
+-440 -40 -116 58 -187 202 -190 389 -2 116 -5 118 -45 31z"/>
+<path d="M1893 1869 c-616 -376 -623 -1289 -11 -1695 117 -78 206 -113 411
+-163 57 -13 236 -15 286 -2 20 6 68 17 106 26 399 93 694 425 771 869 45 256
+-59 389 -280 362 -87 -11 -104 -30 -80 -92 46 -119 16 -335 -66 -474 -199
+-338 -665 -446 -974 -226 -323 230 -382 720 -118 982 42 42 42 42 42 186 0 96
+5 163 15 201 25 97 17 99 -102 26z"/>
+</g></svg>Adapt To Life</a>
+    <nav class="nav-links">
+      <div class="nav-group">
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navOurWork">Our Work<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 3 3-3"/></svg></button>
+        <div class="nav-panel" id="navOurWork">
+          <a href="/hustle-and-heart"><span class="np-t">Hustle &amp; Heart Fund</span><span class="np-d">Support for equipment, training, and travel</span></a>
+          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d">Find adaptive programs by sport and location</span></a>
+          <a href="/adapt-body-shop"><span class="np-t">Adapt Body Shop</span><span class="np-d">Coming soon · Gear for the community</span></a>
+        </div>
+      </div>
+      <div class="nav-group">
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navJoin">Get Involved<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 3 3-3"/></svg></button>
+        <div class="nav-panel" id="navJoin">
+          <a href="/volunteer"><span class="np-t">Volunteer</span><span class="np-d">Explore roles, time commitments, and ways to contribute</span></a>
+          <a href="/sponsorship"><span class="np-t">Sponsor</span><span class="np-d">Partnership options and recognition for your business</span></a>
+        </div>
+      </div>
+      <div class="nav-group">
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navAbout">About<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 3 3-3"/></svg></button>
+        <div class="nav-panel" id="navAbout">
+          <a href="/promise"><span class="np-t">How Giving Works</span><span class="np-d">How gifts support athletes and the work around them</span></a>
+          <a href="/about"><span class="np-t">Our Story</span><span class="np-d">The people who built this, and why</span></a>
+        </div>
+      </div>
+      <a class="lk featured" href="/apply">Apply for support</a>
+      <a class="nav-cta" href="/donate">Donate</a>
+    </nav>
+    <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="mobile-menu">
+    <div class="wrap mwrap">
+      <span class="m-group">Our Work</span>
+      <a class="m-sub" href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
+      <a class="m-sub" href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
+      <a class="m-sub" href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
+      <span class="m-group">Get Involved</span>
+      <a class="m-sub" href="/volunteer">Volunteer</a>
+      <a class="m-sub" href="/sponsorship">Sponsor</a>
+      <span class="m-group">About</span>
+      <a class="m-sub" href="/promise">How Giving Works</a>
+      <a class="m-sub" href="/about">Our Story</a>
+      <a class="featured" href="/apply">Apply for support</a>
+      <a class="m-cta" href="/donate">Donate &rarr;</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- 1. ONE COURT: their court, our athlete on it -->
+  <section class="bh-hero dark">
+    <div class="wrap bh-hero-grid">
+      <div class="bh-hero-copy">
+        <p class="bh-kicker">Our first partnership</p>
+        <div class="bh-duo">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500.000000 457.000000" class="bh-atl" role="img" aria-label="Adapt To Life" focusable="false"><g transform="translate(0.000000,457.000000) scale(0.100000,-0.100000)"
+fill="currentColor" stroke="none">
+<path d="M2059 4548 c-14 -13 -99 -185 -198 -403 -96 -209 -238 -519 -316
+-690 -202 -440 -304 -662 -333 -725 -29 -65 -163 -358 -237 -520 -29 -63 -139
+-304 -245 -535 -291 -637 -404 -882 -445 -970 -20 -44 -56 -123 -80 -175 -53
+-118 -172 -375 -191 -414 -53 -108 -28 -116 371 -116 356 0 369 2 394 57 11
+23 190 440 524 1217 72 168 77 206 52 406 -69 554 79 859 585 1205 111 76 137
+101 165 155 20 40 233 517 330 742 23 53 45 90 56 93 20 7 59 -10 59 -26 0 -9
+208 -480 215 -488 3 -2 35 25 72 59 169 156 360 182 566 79 51 -27 51 -24 -54
+206 -134 293 -232 511 -306 675 -93 210 -35 190 -539 190 -421 0 -421 0 -445
+-22z"/>
+<path d="M3060 3404 c-127 -44 -200 -148 -200 -284 0 -358 507 -412 590 -62
+52 220 -174 420 -390 346z"/>
+<path d="M2334 2885 c-396 -102 -739 -406 -825 -732 -32 -119 -37 -419 -7
+-373 2 3 32 61 67 130 180 354 428 530 745 530 135 0 133 2 115 -107 -53 -333
+27 -498 243 -498 106 0 119 9 95 60 -36 75 -15 139 134 406 128 229 134 355
+26 476 -106 117 -372 166 -593 108z"/>
+<path fill="#FF5C39" d="M2242 2133 c-193 -421 -156 -742 101 -859 127 -58 282 -41 606 66
+403 134 502 93 711 -292 386 -708 698 -982 1176 -1030 158 -17 167 -8 53 50
+-349 178 -546 441 -794 1062 -293 734 -505 846 -1178 623 -249 -82 -337 -90
+-440 -40 -116 58 -187 202 -190 389 -2 116 -5 118 -45 31z"/>
+<path d="M1893 1869 c-616 -376 -623 -1289 -11 -1695 117 -78 206 -113 411
+-163 57 -13 236 -15 286 -2 20 6 68 17 106 26 399 93 694 425 771 869 45 256
+-59 389 -280 362 -87 -11 -104 -30 -80 -92 46 -119 16 -335 -66 -474 -199
+-338 -665 -446 -974 -226 -323 230 -382 720 -118 982 42 42 42 42 42 186 0 96
+5 163 15 201 25 97 17 99 -102 26z"/>
+</g></svg>
+          <svg class="bh-x" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+            <defs>
+              <filter id="bhSpray" x="-40%" y="-40%" width="180%" height="180%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="haze"/>
+                <feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="1" seed="4" result="grain"/>
+                <feComponentTransfer in="grain" result="dots"><feFuncA type="discrete" tableValues="0 0 0 0 0 1"/></feComponentTransfer>
+                <feMorphology in="SourceGraphic" operator="dilate" radius="6" result="area"/><feGaussianBlur in="area" stdDeviation="4" result="soft"/><feComposite in="soft" in2="dots" operator="in" result="sp0"/><feComponentTransfer in="sp0" result="speckle"><feFuncA type="linear" slope="2.4"/></feComponentTransfer>
+                <feMerge><feMergeNode in="haze"/><feMergeNode in="speckle"/></feMerge>
+              </filter>
+              <filter id="bhRough" x="-10%" y="-10%" width="120%" height="120%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.55" numOctaves="2" seed="11" result="n"/>
+                <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G"/>
+              </filter>
+            </defs>
+            <g class="bh-x-spray" filter="url(#bhSpray)">
+              <path pathLength="1" d="M17 15 Q48 46 84 86"/>
+              <path pathLength="1" d="M83 14 Q52 47 15 85"/>
+            </g>
+            <g class="bh-x-paint" filter="url(#bhRough)">
+              <path pathLength="1" d="M17 15 Q48 46 84 86"/>
+              <path pathLength="1" d="M83 14 Q52 47 15 85"/>
+            </g>
+            <g class="bh-x-shine">
+              <path pathLength="1" d="M27 22 Q44 39.5 58 55"/>
+              <path pathLength="1" d="M76 20 Q62 34.5 50 47"/>
+            </g>
+          </svg>
+          <img src="/images/brickhouse/brick-house-logo-orange-black-reverse.svg" alt="Brick House Pickleball" class="bh-bhlogo" width="372" height="265">
+        </div>
+        <h1 class="serif display">Come play with us <em class="italic" style="color:var(--orange)">at Brick House.</em></h1>
+        <p class="lead sub">Brick House Pickleball is opening its renovated facility in Lake Forest, and we are proud to call them our first partner. Our athletes will be on court. Come join us.</p>
+        <p class="bh-when"><span>Grand opening</span> Sunday, October 25<i class="bh-city"> · Lake Forest</i></p>
+        <div class="actions">
+          <a class="btn" download="brick-house-grand-opening.ics" href="data:text/calendar;charset=utf-8,BEGIN%3AVCALENDAR%0D%0AVERSION%3A2.0%0D%0APRODID%3A-//Adapt%20To%20Life//EN%0D%0ABEGIN%3AVEVENT%0D%0AUID%3Abrickhouse-2026%40adapttolife.org%0D%0ADTSTAMP%3A20261001T000000Z%0D%0ADTSTART%3BVALUE%3DDATE%3A20261025%0D%0ADTEND%3BVALUE%3DDATE%3A20261026%0D%0ASUMMARY%3ABrick%20House%20Pickleball%20Grand%20Opening%0D%0ALOCATION%3ABrick%20House%20Pickleball%2C%2028457%20Ballard%20Drive%20Unit%20H%2C%20Lake%20Forest%2C%20IL%2060045%0D%0ADESCRIPTION%3AWith%20Adapt%20To%20Life.%20adapttolife.org/brickhouse%0D%0AEND%3AVEVENT%0D%0AEND%3AVCALENDAR">Add to calendar</a>
+          <a href="#opening" class="btn ghost">Grand opening details</a>
+        </div>
+      </div>
+      <figure class="bh-film">
+        <img src="/images/brickhouse/hero-bob.webp" alt="An athlete in a sport wheelchair and a Brick House Pickleball shirt rolls toward the camera on the Brick House courts, the net behind him" width="1200" height="2000" fetchpriority="high">
+      </figure>
+    </div>
+  </section>
+
+  <svg class="bh-bricks" aria-hidden="true" focusable="false"><defs><pattern id="bhb1" width="96" height="48" patternUnits="userSpaceOnUse"><rect x="2" y="2" width="44" height="20" rx="2" fill="#FF5C39"/><rect x="50" y="2" width="44" height="20" rx="2" fill="#0C0C0E"/><rect x="-22" y="26" width="44" height="20" rx="2" fill="#0C0C0E"/><rect x="26" y="26" width="44" height="20" rx="2" fill="#FF5C39"/><rect x="74" y="26" width="44" height="20" rx="2" fill="#0C0C0E"/></pattern></defs><rect width="100%" height="100%" fill="url(#bhb1)"/></svg>
+
+  <!-- THE DAY. Up front until the grand opening on Oct 25; after it, this moves to the
+       bottom as the first entry in the timeline of the partnership. -->
+  <section class="band dark bh-open" id="opening">
+    <div class="wrap">
+      <div class="bh-event">
+        <div class="bh-date">
+          <span class="eyebrow orange">Grand opening</span>
+          <p class="bh-day">Sunday</p>
+          <p class="bh-big">Oct 25</p>
+        </div>
+        <div class="bh-detail">
+          <h2 class="serif h2">Come see the new facility.</h2>
+          <p class="prose">This is Brick House's day. Tour the new facility, meet the people behind the club, and play a few games with the Adapt To Life team. Bring a friend who has never picked up a paddle.</p>
+          <dl class="bh-facts">
+            <div><dt>When</dt><dd>Sunday, October 25, 2026<br>Start time TBD</dd></div>
+            <div><dt>Where</dt><dd>Brick House Pickleball<br>28457 Ballard Drive, Unit H<br>Lake Forest, IL 60045</dd></div>
+            <div><dt>RSVP</dt><dd>None needed. Just come.</dd></div>
+          </dl>
+          <div class="bh-actions">
+            <a href="https://www.google.com/maps/search/?api=1&amp;query=Brick+House+Pickleball+28457+Ballard+Drive+Unit+H+Lake+Forest+IL+60045" class="btn" target="_blank" rel="noopener">Get directions</a>
+            <a class="btn ghost" download="brick-house-grand-opening.ics" href="data:text/calendar;charset=utf-8,BEGIN%3AVCALENDAR%0D%0AVERSION%3A2.0%0D%0APRODID%3A-//Adapt%20To%20Life//EN%0D%0ABEGIN%3AVEVENT%0D%0AUID%3Abrickhouse-2026%40adapttolife.org%0D%0ADTSTAMP%3A20261001T000000Z%0D%0ADTSTART%3BVALUE%3DDATE%3A20261025%0D%0ADTEND%3BVALUE%3DDATE%3A20261026%0D%0ASUMMARY%3ABrick%20House%20Pickleball%20Grand%20Opening%0D%0ALOCATION%3ABrick%20House%20Pickleball%2C%2028457%20Ballard%20Drive%20Unit%20H%2C%20Lake%20Forest%2C%20IL%2060045%0D%0ADESCRIPTION%3AWith%20Adapt%20To%20Life.%20adapttolife.org/brickhouse%0D%0AEND%3AVEVENT%0D%0AEND%3AVCALENDAR">Add to calendar</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. THEIR NEW START -->
+  <section class="band tint" id="story">
+    <div class="wrap">
+      <div class="bh-start-head">
+        <hr class="tick orange">
+        <span class="eyebrow orange">Brick House Pickleball</span>
+        <h2 class="serif statement">Open <em class="italic" style="color:var(--orange)">24/7/365.</em></h2>
+        <p class="prose">Newly renovated, under new ownership, and open around the clock in Lake Forest.</p>
+      </div>
+      <div class="bh-place">
+        <img src="/images/brickhouse/bh-space.webp" alt="A new net stretches across the blue court toward the Brick House banner and a row of lockers on the block wall" loading="lazy" width="1200" height="2133">
+        <img src="/images/brickhouse/bh-courts.webp" alt="The courts under a high white ceiling, a net post in front and a Brick House banner along the far wall" loading="lazy" width="1200" height="2360">
+        <img src="/images/brickhouse/bh-across.webp" alt="A player in a sport wheelchair waits at the baseline, the Brick House paddle mark on the wall beyond the net" loading="lazy" width="1200" height="2133">
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. OURS: who Adapt To Life is, for people meeting us here first -->
+  <section class="band">
+    <div class="wrap">
+      <div class="bh-start-head">
+        <hr class="tick orange">
+        <span class="eyebrow orange">Adapt To Life</span>
+        <h2 class="serif statement">Who we are.</h2>
+        <p class="prose">Adapt To Life raises money for the equipment, training, and travel that keep adaptive athletes in the game.</p>
+        <a class="bh-more" href="/about">Meet Adapt To Life &rarr;</a>
+      </div>
+      <div class="bh-ours">
+        <img src="/images/athletes/pickleball1-4.webp" alt="A player in a sport wheelchair drives a forehand, the ball just off his paddle" loading="lazy" width="1500" height="999">
+        <img src="/images/athletes/wheelie-10.webp" alt="A young athlete rolls onto the court with friends close behind" loading="lazy" width="1129" height="1500">
+        <img src="/images/athletes/wheelie-51.webp" alt="Three friends crowd together for a photo at a night event" loading="lazy" width="1500" height="863">
+        <img src="/images/athletes/wheelie-133.webp" alt="A grinning athlete takes a selfie on an outdoor court" loading="lazy" width="1127" height="1500">
+        <img src="/images/athletes/wheelie-4.webp" alt="A player in a gray shirt swings at a ball up by his shoulder" loading="lazy" width="1500" height="1000">
+        <img src="/images/athletes/wheelie-26.webp" alt="A player scoops a low ball off the court" loading="lazy" width="1500" height="1000">
+      </div>
+    </div>
+  </section>
+
+  <!-- SIDE BY SIDE: their court, our athletes, one line across both -->
+  <section class="bh-side" aria-label="Their courts beside our athletes: the Brick House net and lockers, and Adapt To Life players meeting at the net">
+    <img src="/images/brickhouse/bh-lockers.webp" alt="" loading="lazy" width="1200" height="2133">
+    <img src="/images/athletes/wheelie-58.webp" alt="" loading="lazy" width="1500" height="1000">
+    <span class="bh-seam" aria-hidden="true"></span>
+    <p class="bh-together">Their courts. Our athletes. <em class="italic" style="color:var(--orange)">One home.</em></p>
+  </section>
+
+  <!-- ON THE NEW COURTS: our athletes already playing at Brick House -->
+  <section class="band dark bh-on">
+    <div class="wrap">
+      <div class="bh-start-head">
+        <hr class="tick orange">
+        <span class="eyebrow orange">Brick House and Adapt To Life</span>
+        <h2 class="serif statement">Every week. <em class="italic" style="color:var(--orange)">Every season.</em></h2>
+        <p class="prose">Our athletes have trained at Brick House for years. A home court changes what is possible. More people get to try pickleball for the first time, and the athletes chasing bigger goals get the practice it takes to get really good.</p>
+      </div>
+      <div class="bh-reel">
+        <div>
+          <img class="tall lead-shot" src="/images/brickhouse/on-at-the-net.webp" alt="Three players in sport wheelchairs talk at the net under the Brick House banner" loading="lazy" width="1200" height="2133">
+          <img class="mid" src="/images/brickhouse/on-forehand.webp" alt="A player in an olive shirt swings a forehand toward the net" loading="lazy" width="1200" height="2133">
+        </div>
+        <div>
+          <img class="mid" src="/images/brickhouse/on-smile.webp" alt="A player with long hair and a blue headband grins on his way across the court" loading="lazy" width="1200" height="2133">
+          <img class="tall" src="/images/brickhouse/on-banner.webp" alt="A player in a headband and glasses rolls past the Brick House Pickleball banner, paddle in his lap" loading="lazy" width="1080" height="1920">
+        </div>
+        <div>
+          <img class="tall" src="/images/brickhouse/on-overhead.webp" alt="A player reaches high with his paddle for an overhead" loading="lazy" width="1200" height="2133">
+          <img class="mid" src="/images/brickhouse/on-rally.webp" alt="Two players trade shots, the ball in the air and a Brick House banner on the wall" loading="lazy" width="1200" height="2133">
+        </div>
+      </div>
+      <div class="bh-road">
+        <p class="eyebrow orange">What it takes to reach the US Open</p>
+        <ol>
+          <li class="lit"><b>Train every week</b><span>At Brick House, all four seasons.</span></li>
+          <li><b>Play tournaments</b><span>Match play you cannot get in practice.</span></li>
+          <li><b>Travel</b><span>Entry fees, flights, and a place to stay, to earn a ranking.</span></li>
+          <li><b>The US Open</b><span>Naples, spring 2027. Our goal is to send six.</span></li>
+        </ol>
+        <a class="bh-more" href="/send-6">Help send six &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+
+  <svg class="bh-bricks" aria-hidden="true" focusable="false"><defs><pattern id="bhb2" width="96" height="48" patternUnits="userSpaceOnUse"><rect x="2" y="2" width="44" height="20" rx="2" fill="#FF5C39"/><rect x="50" y="2" width="44" height="20" rx="2" fill="#0C0C0E"/><rect x="-22" y="26" width="44" height="20" rx="2" fill="#0C0C0E"/><rect x="26" y="26" width="44" height="20" rx="2" fill="#FF5C39"/><rect x="74" y="26" width="44" height="20" rx="2" fill="#0C0C0E"/></pattern></defs><rect width="100%" height="100%" fill="url(#bhb2)"/></svg>
+
+  <!-- 5. GROW TOGETHER: our athletes laid as a wall, Brick House the newest brick, room left to build -->
+  <section class="closing dark band-lg">
+    <div class="wrap">
+      <div class="bh-close">
+        <hr class="tick orange">
+        <span class="eyebrow orange">Our partners</span>
+        <h2 class="serif display">There is room <em class="italic" style="color:var(--orange)">on the wall.</em></h2>
+        <div class="bh-wall reveal" role="img" aria-label="A wall of Adapt To Life athletes with Brick House laid in as the newest brick, and empty bricks still to be laid">
+          <span class="bk ph" style="--i:0; --img:url('/images/athletes/wheelie-9-band.webp'); --pos:50% 50%"></span>
+          <span class="bk ph" style="--i:1; --img:url('/images/athletes/pickleball1-3.webp'); --pos:45% 40%"></span>
+          <span class="bk next" style="--i:2"></span>
+          <span class="bk next" style="--i:3"></span>
+          <span class="bk ph" style="--i:4; --img:url('/images/athletes/pickleball1-5.webp'); --pos:45% 45%"></span>
+          <span class="bk next" style="--i:5"></span>
+          <span class="bk half o" style="--i:6"></span>
+          <span class="bk o" style="--i:7"></span>
+          <span class="bk ph" style="--i:8; --img:url('/images/athletes/wheelie-138.webp'); --pos:50% 45%"></span>
+          <span class="bk ph lit" style="--i:9; --img:url('/images/brickhouse/brick-house-logo-orange-black.svg'); --pos:50% 50%; background-color:var(--cream); background-size:auto 78%"></span>
+          <span class="bk next" style="--i:10"></span>
+          <span class="bk next" style="--i:11"></span>
+          <span class="bk half c" style="--i:12"></span>
+          <span class="bk c" style="--i:13"></span>
+          <span class="bk next" style="--i:14"></span>
+          <span class="bk o" style="--i:15"></span>
+          <span class="bk next" style="--i:16"></span>
+          <span class="bk next" style="--i:17"></span>
+          <span class="bk next" style="--i:18"></span>
+        </div>
+        <p class="prose">Brick House gave us a home. Every partner after them helps with the rest: equipment, entry fees, and travel, starting with our goal to send six athletes to the US Open.</p>
+        <div class="bh-actions">
+          <a href="/sponsorship" class="btn">Become a partner</a>
+          <a href="/send-6" class="btn ghost">See where it goes</a>
+        </div>
+        <p class="bh-sign">The more we grow, the more we give.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="brandcol">
+        <a href="/" class="brand"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500.000000 457.000000" class="brand-logo" aria-hidden="true" focusable="false"><g transform="translate(0.000000,457.000000) scale(0.100000,-0.100000)"
+fill="currentColor" stroke="none">
+<path d="M2059 4548 c-14 -13 -99 -185 -198 -403 -96 -209 -238 -519 -316
+-690 -202 -440 -304 -662 -333 -725 -29 -65 -163 -358 -237 -520 -29 -63 -139
+-304 -245 -535 -291 -637 -404 -882 -445 -970 -20 -44 -56 -123 -80 -175 -53
+-118 -172 -375 -191 -414 -53 -108 -28 -116 371 -116 356 0 369 2 394 57 11
+23 190 440 524 1217 72 168 77 206 52 406 -69 554 79 859 585 1205 111 76 137
+101 165 155 20 40 233 517 330 742 23 53 45 90 56 93 20 7 59 -10 59 -26 0 -9
+208 -480 215 -488 3 -2 35 25 72 59 169 156 360 182 566 79 51 -27 51 -24 -54
+206 -134 293 -232 511 -306 675 -93 210 -35 190 -539 190 -421 0 -421 0 -445
+-22z"/>
+<path d="M3060 3404 c-127 -44 -200 -148 -200 -284 0 -358 507 -412 590 -62
+52 220 -174 420 -390 346z"/>
+<path d="M2334 2885 c-396 -102 -739 -406 -825 -732 -32 -119 -37 -419 -7
+-373 2 3 32 61 67 130 180 354 428 530 745 530 135 0 133 2 115 -107 -53 -333
+27 -498 243 -498 106 0 119 9 95 60 -36 75 -15 139 134 406 128 229 134 355
+26 476 -106 117 -372 166 -593 108z"/>
+<path fill="#FF5C39" d="M2242 2133 c-193 -421 -156 -742 101 -859 127 -58 282 -41 606 66
+403 134 502 93 711 -292 386 -708 698 -982 1176 -1030 158 -17 167 -8 53 50
+-349 178 -546 441 -794 1062 -293 734 -505 846 -1178 623 -249 -82 -337 -90
+-440 -40 -116 58 -187 202 -190 389 -2 116 -5 118 -45 31z"/>
+<path d="M1893 1869 c-616 -376 -623 -1289 -11 -1695 117 -78 206 -113 411
+-163 57 -13 236 -15 286 -2 20 6 68 17 106 26 399 93 694 425 771 869 45 256
+-59 389 -280 362 -87 -11 -104 -30 -80 -92 46 -119 16 -335 -66 -474 -199
+-338 -665 -446 -974 -226 -323 230 -382 720 -118 982 42 42 42 42 42 186 0 96
+5 163 15 201 25 97 17 99 -102 26z"/>
+</g></svg>Adapt To Life</a>
+        <p class="tagline">Your place in adaptive sports.</p>
+        <form class="foot-sub js-subscribe" data-source="footer" novalidate>
+          <label class="foot-sub-label" for="footEm">Follow the work</label>
+          <div class="foot-sub-row">
+            <input class="foot-sub-input" id="footEm" name="em" type="email" autocomplete="email" placeholder="you@example.com" aria-label="Your email">
+            <button class="foot-sub-btn" type="submit" aria-label="Join the list">&rarr;</button>
+          </div>
+          <input type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only"></div>
+          <p class="foot-sub-msg" role="status" aria-live="polite"></p>
+        </form>
+        <p class="legal">Adapt To Life is a recognized 501(c)(3) nonprofit organization. Donations are tax-deductible to the extent allowed by law. EIN 41-3213344.</p>
+      </div>
+      <div class="col">
+        <h4>Organization</h4>
+        <a href="/about">Our Story</a>
+        <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
+        <a href="/tim">Tim&#39;s Story</a>
+        <a href="/karen">Karen&#39;s Story</a>
+        <a href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
+        <a href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
+                <a href="/roadmap">Roadmap</a>
+      </div>
+      <div class="col">
+        <h4>Get involved</h4>
+        <a href="/donate">Donate</a>
+        <a href="/promise">How Giving Works</a>
+        <a href="/volunteer">Volunteer</a>
+        <a href="/sponsorship">Become a sponsor</a>
+        <a href="/apply">Apply for support</a>
+        <a href="https://sign.adapttolife.org/waiver?source=atl">Photo and media release</a>
+        <a href="/subscribe">Join the list</a>
+        <a href="/contact">Contact</a>
+        <a href="mailto:hello@adapttolife.org">hello@adapttolife.org</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="social">
+        <a href="https://www.instagram.com/adapt_to_life_org/" aria-label="Adapt To Life on Instagram" target="_blank" rel="me noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16M12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63c-.79.3-1.46.72-2.13 1.38C1.35 2.68.93 3.35.63 4.14.33 4.9.13 5.78.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.3.79.72 1.46 1.38 2.13.67.66 1.34 1.08 2.13 1.38.76.3 1.64.5 2.91.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56.79-.3 1.46-.72 2.13-1.38.66-.67 1.08-1.34 1.38-2.13.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91-.3-.79-.72-1.46-1.38-2.13C21.32 1.35 20.65.93 19.86.63c-.76-.3-1.64-.5-2.91-.56C15.67.01 15.26 0 12 0z"/><path d="M12 5.84A6.16 6.16 0 1 0 18.16 12 6.16 6.16 0 0 0 12 5.84zm0 10.16A4 4 0 1 1 16 12a4 4 0 0 1-4 4z"/><circle cx="18.41" cy="5.59" r="1.44"/></svg></a>
+        <a href="https://www.facebook.com/profile.php?id=61592619668321" aria-label="Adapt To Life on Facebook" target="_blank" rel="me noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.96h-1.51c-1.49 0-1.96.93-1.96 1.89v2.26h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z"/></svg></a>
+      </div>
+      <span>&copy; 2026 Adapt To Life</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var toggles = document.querySelectorAll('.nav-toggle');
+    function closeAll(except){
+      toggles.forEach(function(t){
+        if (t === except) return;
+        t.setAttribute('aria-expanded','false');
+        var pnl = document.getElementById(t.getAttribute('aria-controls'));
+        if (pnl) pnl.classList.remove('open');
+      });
+    }
+    toggles.forEach(function(t){
+      var panel = document.getElementById(t.getAttribute('aria-controls'));
+      t.addEventListener('click', function(e){
+        e.stopPropagation();
+        var open = t.getAttribute('aria-expanded') === 'true';
+        closeAll(t);
+        t.setAttribute('aria-expanded', open ? 'false' : 'true');
+        if (panel) panel.classList.toggle('open', !open);
+      });
+    });
+    document.addEventListener('click', function(){ closeAll(null); });
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape') closeAll(null);
+    });
+  })();
+  (function(){
+    var nav = document.getElementById('nav');
+    var menuBtn = document.getElementById('menuBtn');
+    menuBtn.addEventListener('click', function(){
+      var open = nav.classList.toggle('open');
+      menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    nav.querySelectorAll('.mobile-menu a').forEach(function(a){
+      a.addEventListener('click', function(){ nav.classList.remove('open'); menuBtn.setAttribute('aria-expanded','false'); });
+    });
+    var onScroll = function(){ if(window.scrollY > 8){ nav.classList.add('scrolled'); } else { nav.classList.remove('scrolled'); } };
+    window.addEventListener('scroll', onScroll, { passive:true });
+    onScroll();
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var reveals = document.querySelectorAll('.reveal');
+    if(reduce || !('IntersectionObserver' in window)){
+      reveals.forEach(function(el){ el.classList.add('in'); });
+    } else {
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+      }, { threshold:0.12, rootMargin:'0px 0px -8% 0px' });
+      reveals.forEach(function(el){ io.observe(el); });
+      window.addEventListener('load', function(){
+        document.querySelectorAll('.hero .reveal').forEach(function(el, i){
+          setTimeout(function(){ el.classList.add('in'); }, 60 + i*70);
+        });
+      });
+    }
+  })();
+</script>
+
+<script src="/js/subscribe.js" defer></script>
+<script src="/js/turnstile-lazy.js" defer></script>
+</body>
+</html>

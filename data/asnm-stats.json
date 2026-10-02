@@ -1,7 +1,7 @@
 {
  "ok": true,
- "programs": 1544,
- "sources": 22,
+ "programs": 2465,
+ "sources": 67,
  "bySport": [
   {
    "label": "Multi-Sport",
@@ -9,24 +9,49 @@
    "n": 1048
   },
   {
+   "label": "Adaptive tennis",
+   "key": null,
+   "n": 297
+  },
+  {
    "label": "Wheelchair Basketball",
    "key": "basketball",
-   "n": 230
+   "n": 254
+  },
+  {
+   "label": "Adaptive sports and recreation",
+   "key": null,
+   "n": 228
   },
   {
    "label": "Sled Hockey",
    "key": "sledhockey",
+   "n": 52
+  },
+  {
+   "label": "TOPSoccer adaptive soccer training and team participation",
+   "key": null,
    "n": 47
+  },
+  {
+   "label": "TOPSoccer adaptive soccer",
+   "key": null,
+   "n": 39
+  },
+  {
+   "label": "Adaptive Baseball",
+   "key": "baseball",
+   "n": 37
   },
   {
    "label": "Adaptive Skiing",
    "key": "skiing",
-   "n": 30
+   "n": 31
   },
   {
    "label": "Adaptive Rowing",
    "key": null,
-   "n": 26
+   "n": 28
   },
   {
    "label": "Track & Field",
@@ -34,14 +59,39 @@
    "n": 21
   },
   {
+   "label": "Wheelchair Tennis",
+   "key": "tennis",
+   "n": 19
+  },
+  {
+   "label": "TOPSoccer / adaptive soccer",
+   "key": null,
+   "n": 18
+  },
+  {
+   "label": "Archery",
+   "key": null,
+   "n": 18
+  },
+  {
+   "label": "Adaptive baseball using accessible fields and a buddy system",
+   "key": null,
+   "n": 18
+  },
+  {
    "label": "Adaptive Sailing",
    "key": null,
    "n": 18
   },
   {
-   "label": "Wheelchair Tennis",
-   "key": "tennis",
-   "n": 13
+   "label": "Adaptive Swimming",
+   "key": null,
+   "n": 14
+  },
+  {
+   "label": "Adaptive Cycling",
+   "key": "cycling",
+   "n": 14
   },
   {
    "label": "Running",
@@ -49,19 +99,9 @@
    "n": 12
   },
   {
-   "label": "Archery",
+   "label": "Wheelchair Curling",
    "key": null,
-   "n": 12
-  },
-  {
-   "label": "Adaptive Swimming",
-   "key": null,
-   "n": 12
-  },
-  {
-   "label": "Adaptive Cycling",
-   "key": "cycling",
-   "n": 12
+   "n": 11
   },
   {
    "label": "Equestrian",
@@ -69,17 +109,27 @@
    "n": 11
   },
   {
-   "label": "Wheelchair Curling",
+   "label": "Adaptive baseball on an accessible field with buddy support",
    "key": null,
    "n": 10
   },
   {
    "label": "Adaptive Golf",
    "key": null,
-   "n": 7
+   "n": 10
   },
   {
    "label": "Adaptive Surfing",
+   "key": null,
+   "n": 7
+  },
+  {
+   "label": "Traditional-format baseball training, games and exhibitions",
+   "key": null,
+   "n": 6
+  },
+  {
+   "label": "Adaptive soccer",
    "key": null,
    "n": 6
   },
@@ -94,22 +144,57 @@
    "n": 5
   },
   {
+   "label": "Competitive power soccer",
+   "key": null,
+   "n": 5
+  },
+  {
+   "label": "TOPSoccer recreational soccer training and team placement",
+   "key": null,
+   "n": 4
+  },
+  {
    "label": "Sitting Volleyball",
    "key": null,
-   "n": 3
+   "n": 4
   },
   {
    "label": "Martial Arts",
    "key": null,
-   "n": 3
+   "n": 4
   },
   {
    "label": "Boccia",
    "key": null,
-   "n": 3
+   "n": 4
+  },
+  {
+   "label": "Adaptive riding and equine-assisted activities",
+   "key": null,
+   "n": 4
+  },
+  {
+   "label": "Adaptive Climbing",
+   "key": null,
+   "n": 4
   },
   {
    "label": "Blind Sports",
+   "key": null,
+   "n": 3
+  },
+  {
+   "label": "Adaptive tennis and pickleball",
+   "key": null,
+   "n": 3
+  },
+  {
+   "label": "Adaptive baseball with volunteer buddies",
+   "key": null,
+   "n": 3
+  },
+  {
+   "label": "Adaptive and therapeutic horseback riding",
    "key": null,
    "n": 3
   },
@@ -119,12 +204,622 @@
    "n": 2
   },
   {
-   "label": "Adaptive Baseball",
-   "key": "baseball",
+   "label": "Therapeutic horseback riding and horsemanship",
+   "key": null,
    "n": 2
   },
   {
+   "label": "Therapeutic horseback riding and equine-assisted activities",
+   "key": null,
+   "n": 2
+  },
+  {
+   "label": "Therapeutic horseback riding",
+   "key": null,
+   "n": 2
+  },
+  {
+   "label": "Power Soccer",
+   "key": "soccer",
+   "n": 2
+  },
+  {
+   "label": "Goalball",
+   "key": "goalball",
+   "n": 2
+  },
+  {
+   "label": "Adaptive kayaking and paddlesports",
+   "key": null,
+   "n": 2
+  },
+  {
+   "label": "Year-round recreational therapeutic riding and horse camp",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Year-round inclusive recreation, fitness, sports, aquatics and special events",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Year-round Special Olympics training and competition in multiple sports",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Wheelchair tennis instruction and play",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Wheelchair tennis clinics, play opportunities and program connections",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Wheelchair tennis clinics, competition and the Cajun Classic",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Wheelchair tennis clinics and sanctioned singles/doubles tournament",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Wheelchair sports, cycling, yoga, fitness and outdoor recreation",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Wheelchair sports, clinics, specialized equipment, competition and travel support",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Wheelchair sports, National Veterans Wheelchair Games preparation and adaptive recreation",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Wheelchair rugby, lacrosse and other wheelchair sports, cycling, boccia, adaptive golf, swimming and equipment loans",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Wheelchair football",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Wheelchair fencing instruction and integrated training",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Wheelchair basketball and developing adaptive-sports opportunities",
+   "key": null,
+   "n": 1
+  },
+  {
    "label": "Wheelchair Lacrosse",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Unified tennis and other interscholastic Unified Sports",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Unified soccer",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Therapeutic riding and equine-assisted activities",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Therapeutic horsemanship and equine-assisted services",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Therapeutic horseback riding, horsemanship and equine activities",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Therapeutic horseback riding and individualized equine-based wellness programs",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Therapeutic horseback riding and hippotherapy incorporating physical, occupational and speech therapy",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Therapeutic horseback riding and equine-assisted learning",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Therapeutic horseback riding and Silver Saddles horsemanship",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Therapeutic and recreational horseback riding",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "TOPSoccer program support, training, equipment and adaptive soccer",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "TOPSoccer governance, club support, registration and adaptive soccer resources",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Supports adaptive Challenger baseball teams with equipment, events, recognition and community connections",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Supports Carolina Miracle League and Area 12 Special Olympics athletic opportunities",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Supported running and road racing using adaptive racing chairs and volunteer Wingman teams",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Supported adaptive mountain-bike group rides, skills development, adaptive equipment use and trail community",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Support for inclusion, classification and participation in sanctioned competitive swimming",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Sports, games, recreation, camps and Special Olympics training",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Special Olympics and Unified tennis",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Sled hockey clinics",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Seasonal sports, fitness, recreation, leisure and play programs",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Recreational and competitive sled hockey",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Recreation",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Power soccer training and play",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Power soccer program development, teams, competition and equipment support",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Para-dressage and para-driving governance, classification, competition pathways and accommodations",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Novice, prep and varsity wheelchair basketball",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Noncompetitive adaptive Challenger baseball",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Monthly adaptive golf clinics and events",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Modified buddy soccer / US Youth Soccer TOPSoccer",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Low-stimulation, sensory-friendly open swimming",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Individualized adaptive swim lessons",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Individualized adaptive swim instruction and water safety",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Inclusive/adaptive baseball with volunteer buddies",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Inclusive and adaptive youth athletics",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Hippotherapy, aquatherapy, adapted sports and outdoor therapeutic activities",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Guided nature hikes using an all-terrain Action Trackchair",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Funds nonprofit sailing, boating, kayaking, canoeing, paddleboarding and surfing programs on Maryland waters",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Free noncompetitive adaptive baseball with buddy teams",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Free adaptive tennis clinics and tournaments in nearly 30 North Carolina communities",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Free adaptive tennis clinics",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Free adaptive Challenger baseball with volunteer buddies",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Five-day adaptive cycling camp using specialized bikes and one-to-one support to teach independent two-wheel riding",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Equine-assisted activities and therapies",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Division III wheelchair basketball",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Deaf youth tennis camp",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Deaf soccer",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Connects participants to BISCIS, Cajun Crushers, Ski-Dawgs and other sports/recreation partners",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Connections to community adaptive-sports and Paralympic Sport Club programs",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Competitive wheelchair rugby",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "CP soccer",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Boccia, goalball, handcycling, power soccer, sitting volleyball, sled hockey, wheelchair basketball and wheelchair rugby",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Boccia, Challenger baseball, fitness, aquatics and inclusive recreation",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Blind soccer and adaptive soccer",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Beep baseball and adaptive sports/physical-activity camp experiences",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Amputee soccer",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive-sports participation support, referrals and community events including Walk-N-Roll",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive waterskiing and tubing",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive waterskiing",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive tennis, racquet sports and communication-focused movement programs",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive tennis, fitness and social programming",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive tennis and sports clinics",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive tennis and racquet-sport instruction",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive tennis and pickleball clinics",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive tennis and military tennis programming",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive tennis and inclusive sports",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive tennis and fitness",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive surfing events",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive surfing and kayaking",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive surf camps and inclusive surf instruction",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive stand-up paddleboarding and inclusive water recreation",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive sports, fitness, aquatics and inclusive recreation",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive soccer training and team placement",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive soccer / TOPSoccer",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive scuba diving",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive sailing, kayaking, fishing, watersports, camps and physical conditioning",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive sailing, boating and marine recreation",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive running, walking, wheelchair racing and handcycling",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive recreation, independent-living support and community-inclusion activities",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive outdoor-recreation equipment loans and community participation support",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive kayaking and other paddlesports",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive ice skating",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive hunting, fishing, shooting and outdoor-sport opportunities, education and advocacy",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive horseback riding and horsemanship",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive golf instruction and rehabilitation clinics",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive functional fitness, strength, movement and yoga/flow classes",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive cycling through custom-fitted AmTryke tricycles",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive climbing and other chapter adventure-sport events as scheduled",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive climbing and adaptive mountain biking",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive beach days, swimming, ocean access and watersports",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive baseball using an accessible field and buddy system",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive baseball on the Washington Nationals Miracle Field with volunteer buddies",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive baseball on rubberized accessible field",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive baseball on an inclusive field with buddies",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive baseball on an accessible field",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive baseball on a rubberized field with volunteer buddies",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive baseball clinics and play on Challenger Field",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive baseball and other adaptive divisions when scheduled",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive baseball and bowling",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive archery",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive aquatics, swimming instruction and water safety",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive and wheelchair tennis",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adaptive and Special Olympics tennis",
    "key": null,
    "n": 1
   },
@@ -134,16 +829,86 @@
    "n": 1
   },
   {
-   "label": "Adaptive Climbing",
+   "label": "Adaptive Challenger baseball with skills taught at each player's level",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adapted tennis, wheelchair tennis, para-standing tennis, blind/low-vision tennis and inclusive tennis",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adapted baseball with youth and adult spring and fall leagues",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Adapted baseball on a barrier-free rubberized field",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Accessible guided hunting and outdoor adventures using adaptive equipment",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "Accessible camp recreation including swimming, horseback riding, boating, archery, sports, games and outdoor adventure",
+   "key": null,
+   "n": 1
+  },
+  {
+   "label": "#GameON Autism golf and tennis, adaptive fitness, recreation and aquatics",
    "key": null,
    "n": 1
   }
  ],
  "byState": [
   {
+   "state": "FL",
+   "name": "Florida",
+   "n": 134
+  },
+  {
+   "state": "VA",
+   "name": "Virginia",
+   "n": 119
+  },
+  {
+   "state": "GA",
+   "name": "Georgia",
+   "n": 118
+  },
+  {
+   "state": "NC",
+   "name": "North Carolina",
+   "n": 88
+  },
+  {
    "state": "CA",
    "name": "California",
-   "n": 86
+   "n": 87
+  },
+  {
+   "state": "NY",
+   "name": "New York",
+   "n": 82
+  },
+  {
+   "state": "MD",
+   "name": "Maryland",
+   "n": 78
+  },
+  {
+   "state": "TN",
+   "name": "Tennessee",
+   "n": 72
+  },
+  {
+   "state": "CO",
+   "name": "Colorado",
+   "n": 71
   },
   {
    "state": "TX",
@@ -151,173 +916,168 @@
    "n": 69
   },
   {
-   "state": "CO",
-   "name": "Colorado",
-   "n": 61
-  },
-  {
-   "state": "IL",
-   "name": "Illinois",
-   "n": 46
-  },
-  {
-   "state": "NY",
-   "name": "New York",
-   "n": 42
-  },
-  {
-   "state": "FL",
-   "name": "Florida",
-   "n": 40
-  },
-  {
-   "state": "PA",
-   "name": "Pennsylvania",
-   "n": 32
-  },
-  {
-   "state": "NC",
-   "name": "North Carolina",
-   "n": 32
-  },
-  {
-   "state": "MA",
-   "name": "Massachusetts",
-   "n": 29
-  },
-  {
-   "state": "VA",
-   "name": "Virginia",
-   "n": 28
-  },
-  {
-   "state": "OH",
-   "name": "Ohio",
-   "n": 26
-  },
-  {
-   "state": "MI",
-   "name": "Michigan",
-   "n": 23
-  },
-  {
-   "state": "GA",
-   "name": "Georgia",
-   "n": 23
-  },
-  {
-   "state": "MD",
-   "name": "Maryland",
-   "n": 22
-  },
-  {
-   "state": "WI",
-   "name": "Wisconsin",
-   "n": 21
-  },
-  {
-   "state": "UT",
-   "name": "Utah",
-   "n": 20
-  },
-  {
-   "state": "WA",
-   "name": "Washington",
-   "n": 19
-  },
-  {
-   "state": "NJ",
-   "name": "New Jersey",
-   "n": 19
-  },
-  {
-   "state": "OR",
-   "name": "Oregon",
-   "n": 18
-  },
-  {
-   "state": "AZ",
-   "name": "Arizona",
-   "n": 18
-  },
-  {
-   "state": "OK",
-   "name": "Oklahoma",
-   "n": 17
-  },
-  {
-   "state": "NH",
-   "name": "New Hampshire",
-   "n": 17
-  },
-  {
-   "state": "MO",
-   "name": "Missouri",
-   "n": 17
-  },
-  {
-   "state": "ID",
-   "name": "Idaho",
-   "n": 17
-  },
-  {
-   "state": "MN",
-   "name": "Minnesota",
-   "n": 15
-  },
-  {
-   "state": "NM",
-   "name": "New Mexico",
-   "n": 14
-  },
-  {
    "state": "AL",
    "name": "Alabama",
-   "n": 14
+   "n": 69
   },
   {
    "state": "SC",
    "name": "South Carolina",
-   "n": 13
-  },
-  {
-   "state": "CT",
-   "name": "Connecticut",
-   "n": 13
-  },
-  {
-   "state": "VT",
-   "name": "Vermont",
-   "n": 12
+   "n": 68
   },
   {
    "state": "KY",
    "name": "Kentucky",
-   "n": 12
+   "n": 67
   },
   {
-   "state": "IN",
-   "name": "Indiana",
-   "n": 12
+   "state": "PA",
+   "name": "Pennsylvania",
+   "n": 59
   },
   {
-   "state": "TN",
-   "name": "Tennessee",
-   "n": 11
+   "state": "LA",
+   "name": "Louisiana",
+   "n": 59
   },
   {
-   "state": "ME",
-   "name": "Maine",
-   "n": 11
+   "state": "IL",
+   "name": "Illinois",
+   "n": 58
+  },
+  {
+   "state": "MI",
+   "name": "Michigan",
+   "n": 39
+  },
+  {
+   "state": "MA",
+   "name": "Massachusetts",
+   "n": 38
+  },
+  {
+   "state": "OH",
+   "name": "Ohio",
+   "n": 33
+  },
+  {
+   "state": "NJ",
+   "name": "New Jersey",
+   "n": 33
+  },
+  {
+   "state": "WA",
+   "name": "Washington",
+   "n": 27
+  },
+  {
+   "state": "WI",
+   "name": "Wisconsin",
+   "n": 25
+  },
+  {
+   "state": "MO",
+   "name": "Missouri",
+   "n": 25
+  },
+  {
+   "state": "UT",
+   "name": "Utah",
+   "n": 23
+  },
+  {
+   "state": "OK",
+   "name": "Oklahoma",
+   "n": 23
+  },
+  {
+   "state": "AZ",
+   "name": "Arizona",
+   "n": 22
+  },
+  {
+   "state": "MN",
+   "name": "Minnesota",
+   "n": 21
+  },
+  {
+   "state": "IA",
+   "name": "Iowa",
+   "n": 21
+  },
+  {
+   "state": "OR",
+   "name": "Oregon",
+   "n": 20
+  },
+  {
+   "state": "NH",
+   "name": "New Hampshire",
+   "n": 19
+  },
+  {
+   "state": "CT",
+   "name": "Connecticut",
+   "n": 19
   },
   {
    "state": "KS",
    "name": "Kansas",
-   "n": 10
+   "n": 18
+  },
+  {
+   "state": "IN",
+   "name": "Indiana",
+   "n": 18
+  },
+  {
+   "state": "ID",
+   "name": "Idaho",
+   "n": 18
+  },
+  {
+   "state": "NM",
+   "name": "New Mexico",
+   "n": 15
   },
   {
    "state": "NE",
    "name": "Nebraska",
+   "n": 14
+  },
+  {
+   "state": "VT",
+   "name": "Vermont",
+   "n": 13
+  },
+  {
+   "state": "ME",
+   "name": "Maine",
+   "n": 13
+  },
+  {
+   "state": "MS",
+   "name": "Mississippi",
+   "n": 12
+  },
+  {
+   "state": "NV",
+   "name": "Nevada",
+   "n": 11
+  },
+  {
+   "state": "AR",
+   "name": "Arkansas",
+   "n": 10
+  },
+  {
+   "state": "WV",
+   "name": "West Virginia",
+   "n": 9
+  },
+  {
+   "state": "RI",
+   "name": "Rhode Island",
    "n": 9
   },
   {
@@ -326,13 +1086,8 @@
    "n": 9
   },
   {
-   "state": "NV",
-   "name": "Nevada",
-   "n": 8
-  },
-  {
-   "state": "IA",
-   "name": "Iowa",
+   "state": "SD",
+   "name": "South Dakota",
    "n": 8
   },
   {
@@ -341,19 +1096,14 @@
    "n": 8
   },
   {
-   "state": "RI",
-   "name": "Rhode Island",
-   "n": 7
-  },
-  {
-   "state": "LA",
-   "name": "Louisiana",
-   "n": 7
-  },
-  {
-   "state": "MS",
-   "name": "Mississippi",
+   "state": "DE",
+   "name": "Delaware",
    "n": 6
+  },
+  {
+   "state": "WY",
+   "name": "Wyoming",
+   "n": 5
   },
   {
    "state": "ND",
@@ -361,34 +1111,9 @@
    "n": 5
   },
   {
-   "state": "DE",
-   "name": "Delaware",
-   "n": 5
-  },
-  {
    "state": "AK",
    "name": "Alaska",
    "n": 5
-  },
-  {
-   "state": "WV",
-   "name": "West Virginia",
-   "n": 4
-  },
-  {
-   "state": "SD",
-   "name": "South Dakota",
-   "n": 4
-  },
-  {
-   "state": "AR",
-   "name": "Arkansas",
-   "n": 4
-  },
-  {
-   "state": "WY",
-   "name": "Wyoming",
-   "n": 3
   },
   {
    "state": "HI",

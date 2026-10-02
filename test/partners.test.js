@@ -29,3 +29,11 @@ for (const slug of pages.filter(Boolean)) {
     assert.ok(read("sitemap.xml").includes(`https://adapttolife.org/${slug}</loc>`), `/${slug} is in the sitemap`);
   });
 }
+
+test("donate page partner logos (the Coach benefit) link to partners listed on /sponsorship", () => {
+  const donate = read("donate.html");
+  const block = (donate.match(/<section class="band-sm tint dn-partners"[\s\S]*?<\/section>/) || [""])[0];
+  const linked = [...block.matchAll(/<li><a href="\/([a-z0-9-]+)"/g)].map((m) => m[1]);
+  assert.ok(linked.length >= 1, "donate page shows partner logos");
+  for (const slug of linked) assert.ok(pages.includes(slug), `/${slug} on /donate is not a partner card on /sponsorship`);
+});

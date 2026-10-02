@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light only">
 <title>Partners | Adapt To Life</title>
-<meta name="description" content="Brick House Pickleball is our first partner. Join them and support equipment, training, and travel for adaptive athletes.">
+<meta name="description" content="Partner with Adapt To Life to help adaptive athletes get equipped, keep training, and travel to compete.">
 <link rel="canonical" href="https://adapttolife.org/sponsorship">
 <link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-v2-option2-32.png">
 <link rel="apple-touch-icon" href="/images/apple-touch-icon-v2-option2.png">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Partners | Adapt To Life">
-<meta property="og:description" content="Brick House Pickleball is our first partner. Join them and support equipment, training, and travel for adaptive athletes.">
+<meta property="og:description" content="Partner with Adapt To Life to help adaptive athletes get equipped, keep training, and travel to compete.">
 <meta property="og:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -20,7 +20,7 @@
 <meta property="og:url" content="https://adapttolife.org/sponsorship">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Partners | Adapt To Life">
-<meta name="twitter:description" content="Brick House Pickleball is our first partner. Join them and support equipment, training, and travel for adaptive athletes.">
+<meta name="twitter:description" content="Partner with Adapt To Life to help adaptive athletes get equipped, keep training, and travel to compete.">
 <meta name="twitter:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
 <meta name="twitter:image:alt" content="Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -37,43 +37,26 @@
      supporters wall with room left on it. Shares /brickhouse's language: dark
      bands with the orange bloom, the italic orange accent, the ATL x Brick
      House lockup with the painted optic yellow x, and the brick. */
-  .sp-hero{ position:relative; isolation:isolate; overflow:hidden; padding:clamp(3rem,7vh,5rem) 0 clamp(3.5rem,8vh,6rem); }
+  .sp-hero{ position:relative; isolation:isolate; overflow:hidden; min-height:clamp(560px,78svh,760px); display:flex; align-items:center; padding:clamp(4rem,9vh,6rem) 0; background:#0C0C0E; }
+  .sp-hero-img, .sp-hero-img img{ position:absolute; inset:0; width:100%; height:100%; z-index:-2; }
+  .sp-hero-img img{ object-fit:cover; object-position:62% 40%; }
   .sp-hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:
-      radial-gradient(ellipse 45% 60% at 76% 50%, rgba(255,92,57,0.24) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 50% at 10% 15%, rgba(255,92,57,0.10) 0%, transparent 70%); }
-  .sp-hero-grid{ display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,0.85fr); gap:clamp(2rem,5vw,4.5rem); align-items:center; }
-  .bh-kicker{ display:flex; align-items:center; gap:0.9rem; font-family:var(--font-label); font-weight:800; font-size:0.9rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--orange); }
-  .bh-kicker::before{ content:""; width:2.2rem; height:2px; background:var(--orange); box-shadow:0 0 12px var(--orange-glow); }
-  .bh-duo{ display:flex; align-items:center; gap:clamp(1rem,2.2vw,1.7rem); margin-top:clamp(1.2rem,2.4vw,1.8rem); }
-  .bh-atl{ height:clamp(64px,7vw,92px); width:auto; color:var(--cream); filter:drop-shadow(0 6px 24px rgba(0,0,0,0.5)); }
-  .bh-bhlogo{ height:clamp(64px,7vw,92px); width:auto; filter:drop-shadow(0 6px 24px rgba(0,0,0,0.5)); }
-  .bh-x{ --ball:#DFF23D; flex:none; width:clamp(44px,4.4vw,58px); height:auto; overflow:visible; filter:drop-shadow(0 0 8px rgba(223,242,61,0.22)); }
-  .bh-x path{ fill:none; stroke-linecap:round; stroke-dasharray:1; stroke-dashoffset:0; }
-  .bh-x-spray path{ stroke:var(--ball); stroke-width:16; opacity:0.6; }
-  .bh-x-paint path{ stroke:var(--ball); stroke-width:11; }
-  .bh-x-shine path{ stroke:#FCFFE6; stroke-width:2.4; opacity:0.6; }
-  @media (prefers-reduced-motion: no-preference){
-    .bh-x path{ stroke-dashoffset:1; animation:bh-paint 0.42s cubic-bezier(.6,.05,.3,1) forwards; }
-    .bh-x g path:first-child{ animation-delay:0.35s; }
-    .bh-x g path:last-child{ animation-delay:0.72s; }
-    .bh-x-shine path:first-child{ animation-delay:0.5s; }
-    .bh-x-shine path:last-child{ animation-delay:0.87s; }
+      linear-gradient(90deg, rgba(12,12,14,0.96) 0%, rgba(12,12,14,0.86) 34%, rgba(12,12,14,0.35) 62%, rgba(12,12,14,0.05) 85%),
+      radial-gradient(ellipse 40% 55% at 22% 60%, rgba(255,92,57,0.18) 0%, transparent 70%),
+      linear-gradient(0deg, rgba(12,12,14,0.6) 0%, transparent 30%); }
+  .sp-kicker{ display:flex; align-items:center; gap:0.9rem; font-family:var(--font-label); font-weight:800; font-size:0.85rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--orange); }
+  .sp-kicker::before{ content:""; width:2.2rem; height:2px; background:var(--orange); box-shadow:0 0 12px var(--orange-glow); }
+  .sp-hero .display{ max-width:11ch; margin-top:1.4rem; font-size:clamp(2.9rem,6vw,5.6rem); line-height:0.96; }
+  .sp-hero .sub{ max-width:36ch; margin-top:1.3rem; color:var(--cream-mute); }
+  .sp-hero .actions{ display:flex; flex-wrap:wrap; gap:0.9rem 1rem; margin-top:1.8rem; }
+  @media (max-width:820px){
+    .sp-hero{ display:block; min-height:0; padding:0 0 clamp(2.5rem,7vh,3.5rem); }
+    .sp-hero-img{ position:relative; display:block; height:min(62svh,560px); }
+    .sp-hero-img img{ object-position:50% 30%; }
+    .sp-hero::after{ background:linear-gradient(180deg, transparent 55%, rgba(12,12,14,0.75) 80%, #0C0C0E 96%); }
+    .sp-hero-copy{ margin-top:1.8rem; position:relative; }
+    .sp-hero .display{ font-size:clamp(2.6rem,11vw,3.4rem); }
   }
-  @keyframes bh-paint{ to{ stroke-dashoffset:0; } }
-  .sp-hero .display{ max-width:13ch; margin-top:clamp(1.4rem,3vw,2.2rem); font-size:clamp(2.7rem,5.4vw,5rem); line-height:0.98; }
-  .sp-hero .sub{ max-width:40ch; margin-top:1.2rem; color:var(--cream-mute); }
-  .sp-hero .actions{ display:flex; flex-wrap:wrap; gap:0.9rem 1rem; margin-top:1.6rem; }
-  .sp-film{ position:relative; margin:0; justify-self:center; width:min(100%, 400px); aspect-ratio:9/14; border-radius:22px; overflow:hidden; transform:rotate(1.5deg);
-    box-shadow:0 0 0 1px rgba(255,255,255,0.08), 0 40px 90px -24px rgba(0,0,0,0.85), 0 0 110px -10px rgba(255,92,57,0.45); background:#141414; }
-  .sp-film img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:40% 55%; filter:grayscale(1) contrast(1.08) brightness(0.96); }
-  .sp-film figcaption{ position:absolute; left:0; right:0; bottom:0; padding:2.6rem 1.2rem 1rem; background:linear-gradient(0deg, rgba(12,12,14,0.85), transparent); color:var(--cream); font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.16em; text-transform:uppercase; }
-  .sp-film figcaption b{ color:var(--orange); font-weight:800; }
-  @media (max-width:900px){
-    .sp-hero-grid{ grid-template-columns:1fr; }
-    .sp-film{ width:100%; aspect-ratio:4/3.4; transform:none; border-radius:16px; }
-    .sp-film img{ object-position:40% 50%; }
-  }
-  @media (max-width:480px){ .bh-atl, .bh-bhlogo{ height:58px; } .bh-x{ width:40px; } .bh-kicker{ font-size:0.78rem; } }
 
   /* Where support goes: the words and the road on the left, two frames from
      the courts hung at different heights on the right. */
@@ -138,30 +121,15 @@
   @media (max-width:760px){ .sp-fine{ grid-template-columns:1fr; } }
   .sp-fine .textlink{ color:var(--orange); }
 
-  .bh-bricks{ display:block; width:100%; height:48px; background:#F9F7F2; }
 
-  /* The supporters wall: Brick House laid first, room left for the next. */
-  .bh-close{ text-align:center; }
-  .bh-close .tick{ margin:0 auto 1rem; }
-  .bh-close .display{ max-width:14ch; margin:0.9rem auto 0; }
-  .bh-close .prose{ max-width:44ch; margin:1.4rem auto 0; color:var(--cream-mute); }
-  .bh-actions{ display:flex; flex-wrap:wrap; gap:0.9rem 1rem; justify-content:center; margin-top:2.2rem; }
-  .bh-wall{ display:grid; grid-template-columns:repeat(12,1fr); gap:clamp(5px,0.6vw,8px); margin:clamp(2.5rem,5vw,3.5rem) auto 0; max-width:980px; }
-  .bk{ grid-column:span 2; aspect-ratio:1.7/1; border-radius:4px; }
-  .bk.half{ grid-column:span 1; aspect-ratio:auto; }
-  .bk.o{ background:var(--orange); box-shadow:inset 0 -6px 0 rgba(0,0,0,0.14); }
-  .bk.c{ background:var(--cream); box-shadow:inset 0 -6px 0 rgba(0,0,0,0.09); }
-  .bk.next{ border:2px dashed rgba(255,92,57,0.85); background:rgba(255,92,57,0.07); }
-  .bk.first{ grid-column:span 4; aspect-ratio:3.5/1; display:flex; align-items:center; justify-content:center; background:var(--cream); box-shadow:0 0 0 2px var(--orange), 0 14px 40px -12px rgba(255,92,57,0.7); transition:transform .2s ease; }
-  .bk.first:hover{ transform:translateY(-2px); }
-  .bk.first img{ height:78%; width:auto; }
-  @media (max-width:560px){ .bh-wall{ grid-template-columns:repeat(6,1fr); } .bk.first{ grid-column:span 6; aspect-ratio:3/1; } .bk.wide-only{ display:none; } }
-  .bh-wall.in .bk{ animation:bh-lay 0.6s cubic-bezier(.2,.7,.2,1) both; animation-delay:calc(var(--i) * 45ms); }
-  .bh-wall.in .bk.next{ animation:bh-lay 0.6s cubic-bezier(.2,.7,.2,1) both, bh-wait 2.4s ease-in-out 1.6s infinite; animation-delay:calc(var(--i) * 45ms), calc(var(--i) * 45ms + 1.4s); }
-  @keyframes bh-lay{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:none; } }
-  @keyframes bh-wait{ 0%,100%{ border-color:rgba(255,92,57,0.85); } 50%{ border-color:rgba(255,92,57,0.35); } }
-  @media (prefers-reduced-motion: reduce){ .bh-wall.in .bk, .bh-wall.in .bk.next{ animation:none; } }
-  .bh-sign{ margin-top:clamp(2.5rem,5vw,3.5rem); font-family:var(--font-display); font-weight:800; font-style:italic; font-size:clamp(1.5rem,3vw,2.2rem); letter-spacing:-0.02em; color:var(--orange); }
+  /* The supporters wall: gratitude first. One tile per partner, logos on
+     paper, so the wall grows by adding an <li>. */
+  .sp-wall .display{ margin-top:0.8rem; }
+  .sp-logos{ list-style:none; padding:0; margin:clamp(2rem,4vw,3rem) auto 0; display:flex; flex-wrap:wrap; justify-content:center; gap:clamp(1rem,2vw,1.4rem); }
+  .sp-logos a{ display:flex; align-items:center; justify-content:center; width:clamp(220px,28vw,300px); aspect-ratio:3/2; border-radius:18px; background:var(--paper); box-shadow:0 0 0 1px var(--hairline), 0 24px 50px -28px rgba(0,0,0,0.35); transition:transform .2s ease, box-shadow .2s ease; }
+  .sp-logos a:hover{ transform:translateY(-3px); box-shadow:0 0 0 1.5px var(--orange), 0 28px 60px -28px rgba(255,92,57,0.45); }
+  .sp-logos img{ width:58%; height:auto; }
+  .sp-logo-note{ margin:1.2rem auto 0; max-width:40ch; color:var(--ink-soft); font-size:0.98rem; }
 </style>
 </head>
 <body>
@@ -247,79 +215,20 @@ fill="currentColor" stroke="none">
 
 <main>
 
-  <!-- 1. PROOF: our first partner, the lockup, a picture from their courts. -->
+  <!-- 1. THE MISSION: an athlete at full size, the invitation beside him. -->
   <section class="sp-hero dark">
-    <div class="wrap sp-hero-grid">
-      <div>
-        <p class="bh-kicker">Our partners</p>
-        <div class="bh-duo">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500.000000 457.000000" class="bh-atl" role="img" aria-label="Adapt To Life" focusable="false"><g transform="translate(0.000000,457.000000) scale(0.100000,-0.100000)"
-fill="currentColor" stroke="none">
-<path d="M2059 4548 c-14 -13 -99 -185 -198 -403 -96 -209 -238 -519 -316
--690 -202 -440 -304 -662 -333 -725 -29 -65 -163 -358 -237 -520 -29 -63 -139
--304 -245 -535 -291 -637 -404 -882 -445 -970 -20 -44 -56 -123 -80 -175 -53
--118 -172 -375 -191 -414 -53 -108 -28 -116 371 -116 356 0 369 2 394 57 11
-23 190 440 524 1217 72 168 77 206 52 406 -69 554 79 859 585 1205 111 76 137
-101 165 155 20 40 233 517 330 742 23 53 45 90 56 93 20 7 59 -10 59 -26 0 -9
-208 -480 215 -488 3 -2 35 25 72 59 169 156 360 182 566 79 51 -27 51 -24 -54
-206 -134 293 -232 511 -306 675 -93 210 -35 190 -539 190 -421 0 -421 0 -445
--22z"/>
-<path d="M3060 3404 c-127 -44 -200 -148 -200 -284 0 -358 507 -412 590 -62
-52 220 -174 420 -390 346z"/>
-<path d="M2334 2885 c-396 -102 -739 -406 -825 -732 -32 -119 -37 -419 -7
--373 2 3 32 61 67 130 180 354 428 530 745 530 135 0 133 2 115 -107 -53 -333
-27 -498 243 -498 106 0 119 9 95 60 -36 75 -15 139 134 406 128 229 134 355
-26 476 -106 117 -372 166 -593 108z"/>
-<path fill="#FF5C39" d="M2242 2133 c-193 -421 -156 -742 101 -859 127 -58 282 -41 606 66
-403 134 502 93 711 -292 386 -708 698 -982 1176 -1030 158 -17 167 -8 53 50
--349 178 -546 441 -794 1062 -293 734 -505 846 -1178 623 -249 -82 -337 -90
--440 -40 -116 58 -187 202 -190 389 -2 116 -5 118 -45 31z"/>
-<path d="M1893 1869 c-616 -376 -623 -1289 -11 -1695 117 -78 206 -113 411
--163 57 -13 236 -15 286 -2 20 6 68 17 106 26 399 93 694 425 771 869 45 256
--59 389 -280 362 -87 -11 -104 -30 -80 -92 46 -119 16 -335 -66 -474 -199
--338 -665 -446 -974 -226 -323 230 -382 720 -118 982 42 42 42 42 42 186 0 96
-5 163 15 201 25 97 17 99 -102 26z"/>
-</g></svg>
-          <svg class="bh-x" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
-            <defs>
-              <filter id="bhSpray" x="-40%" y="-40%" width="180%" height="180%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="haze"/>
-                <feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="1" seed="4" result="grain"/>
-                <feComponentTransfer in="grain" result="dots"><feFuncA type="discrete" tableValues="0 0 0 0 0 1"/></feComponentTransfer>
-                <feMorphology in="SourceGraphic" operator="dilate" radius="6" result="area"/><feGaussianBlur in="area" stdDeviation="4" result="soft"/><feComposite in="soft" in2="dots" operator="in" result="sp0"/><feComponentTransfer in="sp0" result="speckle"><feFuncA type="linear" slope="2.4"/></feComponentTransfer>
-                <feMerge><feMergeNode in="haze"/><feMergeNode in="speckle"/></feMerge>
-              </filter>
-              <filter id="bhRough" x="-10%" y="-10%" width="120%" height="120%">
-                <feTurbulence type="fractalNoise" baseFrequency="0.55" numOctaves="2" seed="11" result="n"/>
-                <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G"/>
-              </filter>
-            </defs>
-            <g class="bh-x-spray" filter="url(#bhSpray)">
-              <path pathLength="1" d="M17 15 Q48 46 84 86"/>
-              <path pathLength="1" d="M83 14 Q52 47 15 85"/>
-            </g>
-            <g class="bh-x-paint" filter="url(#bhRough)">
-              <path pathLength="1" d="M17 15 Q48 46 84 86"/>
-              <path pathLength="1" d="M83 14 Q52 47 15 85"/>
-            </g>
-            <g class="bh-x-shine">
-              <path pathLength="1" d="M27 22 Q44 39.5 58 55"/>
-              <path pathLength="1" d="M76 20 Q62 34.5 50 47"/>
-            </g>
-          </svg>
-          <img src="/images/brickhouse/brick-house-logo-orange-black-reverse.svg" alt="Brick House Pickleball" class="bh-bhlogo" width="372" height="265">
-        </div>
-        <h1 class="serif display">Brick House was first. <em class="italic" style="color:var(--orange)">Who&rsquo;s next?</em></h1>
-        <p class="lead sub">Brick House Pickleball is our first partner and our home court in Lake Forest, where our athletes train every week, all four seasons. Join them, and help our athletes go further.</p>
-        <div class="actions">
-          <a href="#tiers" class="btn">See the levels <span class="arrow">&rarr;</span></a>
-          <a href="/brickhouse" class="btn ghost">Our first partnership</a>
-        </div>
+    <picture class="sp-hero-img">
+      <source media="(max-width: 820px)" srcset="/images/partners/hero-tall.webp">
+      <img src="/images/partners/hero-wide.webp" alt="A wheelchair pickleball player in glasses swings his paddle across his body" width="2400" height="1600" fetchpriority="high">
+    </picture>
+    <div class="wrap sp-hero-copy">
+      <p class="sp-kicker">Partner with Adapt To Life</p>
+      <h1 class="serif display">Grow adaptive sports <em class="italic" style="color:var(--orange)">with us.</em></h1>
+      <p class="lead sub">Partners help athletes get equipped, keep training, and travel to compete. Together we reach more of them as we grow.</p>
+      <div class="actions">
+        <a href="#tiers" class="btn">See the levels <span class="arrow">&rarr;</span></a>
+        <a href="#where" class="btn ghost">What it makes possible</a>
       </div>
-      <figure class="sp-film">
-        <img src="/images/brickhouse/on-forehand.webp" alt="A player in a sport wheelchair swings a forehand toward the net on the Brick House courts" width="1200" height="2133" fetchpriority="high">
-        <figcaption><b>Brick House</b> &middot; Our home court</figcaption>
-      </figure>
     </div>
   </section>
 
@@ -329,7 +238,7 @@ fill="currentColor" stroke="none">
   <section class="band tint" id="where">
     <div class="wrap sp-go">
       <div>
-        <span class="eyebrow orange reveal">Where your support goes</span>
+        <span class="eyebrow orange reveal">What partnership makes possible</span>
         <h2 class="serif h2 reveal" style="margin-top:0.8rem;">Equipment, training, and travel. <em class="italic" style="color:var(--orange-ink)">Right now, the road to Naples.</em></h2>
         <p class="prose reveal">Partner support generally goes to the <a class="textlink" href="/hustle-and-heart" style="font:inherit;letter-spacing:inherit;">Hustle &amp; Heart Fund</a>, then to a campaign. Right now, that campaign is Send 6 to the US Open.</p>
         <div class="bh-road reveal">
@@ -434,40 +343,28 @@ fill="currentColor" stroke="none">
     </div>
   </section>
 
-    <svg class="bh-bricks" aria-hidden="true" focusable="false"><defs><pattern id="spb1" width="96" height="48" patternUnits="userSpaceOnUse"><rect x="2" y="2" width="44" height="20" rx="2" fill="#FF5C39"/><rect x="50" y="2" width="44" height="20" rx="2" fill="#0C0C0E"/><rect x="-22" y="26" width="44" height="20" rx="2" fill="#0C0C0E"/><rect x="26" y="26" width="44" height="20" rx="2" fill="#FF5C39"/><rect x="74" y="26" width="44" height="20" rx="2" fill="#0C0C0E"/></pattern></defs><rect width="100%" height="100%" fill="url(#spb1)"/></svg>
 
-  <!-- 4. THE SUPPORTERS WALL: Brick House laid first, room for the next. -->
-  <section class="closing dark band-lg" id="wall">
-    <div class="wrap">
-      <div class="bh-close">
-        <hr class="tick orange">
-        <span class="eyebrow orange">Supporters wall</span>
-        <h2 class="serif display">There is room <em class="italic" style="color:var(--orange)">on the wall.</em></h2>
-        <div class="bh-wall reveal">
-          <span class="bk next" style="--i:0" aria-hidden="true"></span>
-          <span class="bk o" style="--i:1" aria-hidden="true"></span>
-          <span class="bk next" style="--i:2" aria-hidden="true"></span>
-          <a class="bk first" style="--i:3" href="/brickhouse" aria-label="Brick House Pickleball, our first partner"><img src="/images/brickhouse/brick-house-logo-orange-black.svg" alt="" width="372" height="265"></a>
-          <span class="bk next" style="--i:4" aria-hidden="true"></span>
-          <span class="bk c" style="--i:5" aria-hidden="true"></span>
-          <span class="bk half o" style="--i:6" aria-hidden="true"></span>
-          <span class="bk next" style="--i:7" aria-hidden="true"></span>
-          <span class="bk next" style="--i:8" aria-hidden="true"></span>
-          <span class="bk o" style="--i:9" aria-hidden="true"></span>
-          <span class="bk next wide-only" style="--i:10" aria-hidden="true"></span>
-          <span class="bk half c" style="--i:11" aria-hidden="true"></span>
-          <span class="bk next" style="--i:12" aria-hidden="true"></span>
-          <span class="bk c" style="--i:13" aria-hidden="true"></span>
-          <span class="bk next" style="--i:14" aria-hidden="true"></span>
-          <span class="bk next wide-only" style="--i:15" aria-hidden="true"></span>
-          <span class="bk o" style="--i:16" aria-hidden="true"></span>
-          <span class="bk next" style="--i:17" aria-hidden="true"></span>
-        </div>
-        <p class="prose">Brick House is the first name on our wall. Yours could be next.</p>
-        <div class="bh-actions">
-          <a href="/contact?rsn=sponsor" class="btn">Become a partner</a>
-        </div>
-        <p class="bh-sign">The more we grow, the more we give.</p>
+  <!-- 4. THE SUPPORTERS WALL: gratitude, not a vacancy sign. A partner's
+       logo is one more <li>; supporters who opt in can be named here too. -->
+  <section class="band tint sp-wall" id="wall">
+    <div class="wrap center">
+      <span class="eyebrow orange reveal">Supporters wall</span>
+      <h2 class="serif display reveal">Thank you.</h2>
+      <ul class="sp-logos reveal">
+        <li><a href="/brickhouse" aria-label="Brick House Pickleball, our first partner"><img src="/images/brickhouse/brick-house-logo-orange-black.svg" alt="Brick House Pickleball" width="372" height="265"></a></li>
+      </ul>
+      <p class="sp-logo-note reveal">Brick House Pickleball, our first partner and our home court in Lake Forest.</p>
+    </div>
+  </section>
+
+  <!-- 5. CLOSING: the engine, and one way in. -->
+  <section class="closing dark band-lg">
+    <div class="wrap center">
+      <hr class="tick orange reveal" style="margin:0 auto 1rem;">
+      <h2 class="serif display reveal" style="max-width:14ch; margin:0 auto;">The more we grow, <em class="italic" style="color:var(--orange)">the more we give.</em></h2>
+      <p class="lead sub reveal" style="margin:1.3rem auto 0; max-width:40ch;">Tell us what you have in mind. We will shape the partnership together.</p>
+      <div class="actions reveal" style="justify-content:center; margin-top:2rem;">
+        <a href="/contact?rsn=sponsor" class="btn">Start a conversation</a>
       </div>
     </div>
   </section>

@@ -610,7 +610,7 @@ fill="currentColor" stroke="none">
     upcoming.forEach(function(d){
       var li = C.el('li','reveal in');
       var main = C.el('div','hc-main');
-      main.appendChild(C.el('p','hc-when', C.driveWhen(d)));
+      main.appendChild(C.el('p','hc-when', C.driveWhen(d) + (d.time_note ? ' · ' + d.time_note : '')));
       main.appendChild(C.el('p','hc-name', d.name));
       if (d.summary) main.appendChild(C.el('p','hc-sub', d.summary));
 

@@ -5,12 +5,13 @@ CALSCALE:GREGORIAN
 METHOD:PUBLISH
 BEGIN:VEVENT
 UID:brickhouse-grand-opening-2026@adapttolife.org
-DTSTAMP:20261002T000000Z
-DTSTART;VALUE=DATE:20261025
-DTEND;VALUE=DATE:20261026
+DTSTAMP:20261002T120000Z
+DTSTART:20261025T170000Z
+DTEND:20261025T220000Z
 SUMMARY:Brick House Pickleball grand opening
 LOCATION:Brick House Pickleball\, 28457 Ballard Drive Unit H\, Lake Forest\, IL 60045
-DESCRIPTION:Come play with Adapt To Life at Brick House. adapttolife.org/brickhouse
+DESCRIPTION:12 to 5 pm. Come and go as you please. Come play with Adapt To Life at Brick House. adapttolife.org/brickhouse
 URL:https://adapttolife.org/brickhouse
+SEQUENCE:1
 END:VEVENT
 END:VCALENDAR

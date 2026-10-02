@@ -43,6 +43,19 @@
     var p = s.split("-"), d = new Date(Date.UTC(+p[0], +p[1] - 1, +p[2] + 1));
     return d.toISOString().slice(0, 10);
   }
+  /* "-05:00" for America/Chicago on that date, so Outlook does not read a
+     bare time in the visitor's own zone. Falls back to no offset. */
+  function offset(date, time) {
+    try {
+      var p = date.split("-"), t = time.split(":");
+      var guess = new Date(Date.UTC(+p[0], +p[1] - 1, +p[2], +t[0] + 6, +t[1]));
+      var name = new Intl.DateTimeFormat("en-US", { timeZone: TZ, timeZoneName: "shortOffset" })
+        .formatToParts(guess).filter(function (x) { return x.type === "timeZoneName"; })[0].value;
+      var m = name.match(/GMT([+-])(\d{1,2})(?::(\d{2}))?/);
+      if (!m) return "";
+      return m[1] + ("0" + m[2]).slice(-2) + ":" + (m[3] || "00");
+    } catch (err) { return ""; }
+  }
   function links(e) {
     var timed = e.ts && e.te;
     var gDates = timed
@@ -54,8 +67,8 @@
       "&details=" + encodeURIComponent(e.details) + "&location=" + encodeURIComponent(e.location);
     var o = "https://outlook.live.com/calendar/0/action/compose?path=%2Fcalendar%2Faction%2Fcompose&rru=addevent" +
       "&subject=" + encodeURIComponent(e.title) +
-      "&startdt=" + encodeURIComponent(timed ? e.start + "T" + e.ts + ":00" : e.start) +
-      "&enddt=" + encodeURIComponent(timed ? e.end + "T" + e.te + ":00" : nextDay(e.end)) +
+      "&startdt=" + encodeURIComponent(timed ? e.start + "T" + e.ts + ":00" + offset(e.start, e.ts) : e.start) +
+      "&enddt=" + encodeURIComponent(timed ? e.end + "T" + e.te + ":00" + offset(e.end, e.te) : nextDay(e.end)) +
       (timed ? "" : "&allday=true") +
       "&body=" + encodeURIComponent(e.details) + "&location=" + encodeURIComponent(e.location);
     return { google: g, outlook: o, apple: e.ics };

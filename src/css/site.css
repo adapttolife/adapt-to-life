@@ -939,3 +939,49 @@ a.win-band:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:4p
 .jd-form-note{ font-family:var(--font-body); font-size:0.82rem; line-height:1.5; color:var(--cream-faint); margin-top:0.9rem; }
 .jd-form-note a{ color:var(--orange); text-decoration:underline; text-underline-offset:2px; }
 .jd-apply .jd-legal{ margin-inline:0; }
+
+/* ---- Event cards: one component for Home and /events (campaigns.js eventCard).
+   A dark date tile, the type and how soon, where, why, and the actions. With
+   .has-media the event's own photo leads (used on /events). */
+.evc-list{ display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr)); gap:clamp(0.8rem,1.6vw,1.2rem); margin-top:clamp(1.6rem,3vw,2.2rem); }
+.evc-list.is-stack{ grid-template-columns:1fr; }
+.evc{ display:grid; grid-template-columns:auto minmax(0,1fr); gap:1.1rem; align-items:start; padding:1.3rem; border-radius:18px; background:var(--paper); box-shadow:0 0 0 1px var(--hairline), 0 20px 44px -30px rgba(0,0,0,0.35); }
+.evc-date{ width:4.4rem; padding:0.7rem 0.3rem 0.65rem; border-radius:14px; background:#0C0C0E; text-align:center; box-shadow:0 12px 26px -16px rgba(255,92,57,0.55); }
+.evc-mon{ display:block; font-family:var(--font-label); font-weight:800; font-size:0.7rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--orange); }
+.evc-day{ display:block; margin-top:0.15rem; font-family:var(--font-display); font-weight:900; font-size:2.1rem; line-height:1; letter-spacing:-0.03em; color:var(--cream); }
+.evc-sub{ display:block; margin-top:0.3rem; font-size:0.68rem; font-weight:600; color:var(--cream-mute); }
+.evc-meta{ display:flex; flex-wrap:wrap; align-items:center; gap:0.4rem 0.6rem; }
+.evc-tag{ font-family:var(--font-label); font-weight:800; font-size:0.7rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--orange-ink); }
+.evc-soon{ font-family:var(--font-label); font-weight:800; font-size:0.68rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--orange-ink); background:rgba(255,92,57,0.12); padding:0.22rem 0.55rem; border-radius:999px; }
+.evc .evc-name{ margin-top:0.4rem; font-family:var(--font-display); font-weight:800; font-size:clamp(1.2rem,1.8vw,1.4rem); letter-spacing:-0.015em; line-height:1.15; color:var(--ink); }
+.evc-place{ margin-top:0.35rem; font-size:0.92rem; font-weight:600; color:var(--ink-soft); }
+.evc-sum{ margin-top:0.5rem; font-size:0.95rem; line-height:1.5; color:var(--ink-soft); }
+.evc-acts{ display:flex; flex-wrap:wrap; align-items:center; gap:0.6rem 1.2rem; margin-top:1rem; }
+.evc-go{ font-weight:700; color:var(--orange-ink); border-bottom:2px solid currentColor; padding-bottom:2px; }
+.evc-cal, .evc-link{ font-weight:600; font-size:0.95rem; color:var(--ink); border-bottom:1px solid var(--hairline); padding-bottom:2px; }
+.evc-cal:hover, .evc-link:hover{ border-color:var(--orange); }
+.evc.has-media{ grid-template-columns:minmax(0,0.85fr) auto minmax(0,1.15fr); padding:0; overflow:hidden; align-items:stretch; }
+.evc.has-media .evc-date{ margin:1.3rem 0 0 0; align-self:start; }
+.evc.has-media .evc-body{ padding:1.3rem 1.3rem 1.3rem 0; }
+.evc-media{ position:relative; display:block; min-height:260px; background:#0C0C0E; }
+.evc-media img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 16%; display:block; }
+@media (max-width:720px){
+  .evc.has-media{ grid-template-columns:auto minmax(0,1fr); padding:0 0 1.3rem; }
+  .evc.has-media .evc-media{ grid-column:1 / -1; aspect-ratio:16/10; min-height:0; }
+  .evc.has-media .evc-media img{ object-position:50% 25%; }
+  .evc.has-media .evc-date{ margin:0 0 0 1.3rem; }
+  .evc.has-media .evc-body{ padding:0 1.3rem 0 0; }
+}
+/* Phones: the date tile sits beside the tag and title; where, why, and the
+   actions run the full width of the card underneath. */
+@media (max-width:520px){
+  .evc{ row-gap:0.2rem; }
+  .evc .evc-body{ display:contents; }
+  .evc .evc-date{ grid-row:span 2; }
+  .evc .evc-meta{ grid-column:2; align-self:end; }
+  .evc .evc-name{ grid-column:2; margin-top:0.2rem; align-self:start; }
+  .evc .evc-place, .evc .evc-sum, .evc .evc-acts{ grid-column:1 / -1; }
+  .evc .evc-place{ margin-top:0.6rem; }
+  .evc.has-media .evc-meta, .evc.has-media .evc-name{ padding-right:1.3rem; }
+  .evc.has-media .evc-place, .evc.has-media .evc-sum, .evc.has-media .evc-acts{ padding:0 1.3rem; }
+}

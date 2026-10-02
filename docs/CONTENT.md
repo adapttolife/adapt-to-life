@@ -106,6 +106,8 @@ The footer keeps the brand promise, useful routes, newsletter entry, social link
 
 ## Generated and connected content
 
+Add an event by appending one object to `public/data/campaigns.json` (`slug`, `name`, `type` of `fundraiser`, `tournament`, or `event`, `relationship`, `summary` in one or two sentences, `starts_at`/`ends_at`, optional `time_start`/`time_end` with `tz`, `venue`, `address`, `city`, `state`, and the action: `page` for an event with its own page, otherwise `cta_url` and `cta_label`; `group_url` for a community group). Then run `npm run calendar`. The home card, the `/events` card, Add to calendar, the Event JSON-LD, and `/cal/<slug>.ics` all come from that one object, and the home section shows the next three. Bump `calendar_sequence` when a published time changes. `test/calendar.test.js` fails if a calendar file is stale.
+
 Edit volunteer content in `data/volunteer-roles.mjs` and its existing generator. Run `npm run volunteer`; never hand-edit the generated role pages as a parallel source.
 
 Keep role-specific introductions short and practical. State the relevant work and boundaries. Do not claim a current deadline, missing policy, published rubric, or lack of prior work unless verified. Expressing interest does not confirm placement. Scope, qualifications, screening, consent, and supervision are agreed before relevant work begins.

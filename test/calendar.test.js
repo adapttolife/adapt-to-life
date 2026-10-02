@@ -26,12 +26,28 @@ test("every Add to calendar block names a hosted file that exists, and loads the
   }
 });
 
-test("each event's .ics file has the same date as campaigns.json", () => {
+test("every dated event has a calendar file, generated from campaigns.json and current", async () => {
+  const { calendarFiles } = await import("../scripts/build-calendar.mjs");
   const data = JSON.parse(read("data/campaigns.json"));
-  for (const d of data.drives.filter((x) => x.ics)) {
-    const ics = read(d.ics.slice(1));
-    const start = (d.starts_at || d.opens).replace(/-/g, "");
-    assert.ok(new RegExp(`DTSTART(;VALUE=DATE)?[:;][^\\r\\n]*${start}`).test(ics), `${d.ics} DTSTART != ${start}`);
-    assert.ok(!/[^\r]\n/.test(ics), `${d.ics} uses CRLF on every line`);
+  const files = calendarFiles(data);
+  assert.ok(files.size >= 1, "at least one event has a date");
+  for (const [rel, body] of files) {
+    const p = rel.replace(/^public\//, "");
+    assert.ok(existsSync(new URL(p, pub)), `${p} is missing; run npm run calendar`);
+    assert.equal(read(p), body, `${p} is out of date; run npm run calendar`);
+    assert.ok(!/[^\r]\n/.test(body), `${p} uses CRLF on every line`);
+    assert.ok(body.split("\r\n").every((l) => Buffer.byteLength(l, "utf8") <= 75), `${p} folds lines at 75 octets`);
   }
+});
+
+test("a timed event is written in UTC from its own time zone", async () => {
+  const { icsFor } = await import("../scripts/build-calendar.mjs");
+  const chicago = icsFor({ slug: "t", name: "T", starts_at: "2026-10-25", time_start: "12:00", time_end: "17:00" });
+  assert.ok(chicago.includes("DTSTART:20261025T170000Z") && chicago.includes("DTEND:20261025T220000Z"), "noon Chicago in October is 17:00Z");
+  const cincy = icsFor({ slug: "t", name: "T", starts_at: "2026-10-24", time_start: "09:00", time_end: "10:00", tz: "America/New_York" });
+  assert.ok(cincy.includes("DTSTART:20261024T130000Z"), "9 am Eastern in October is 13:00Z");
+  const winter = icsFor({ slug: "t", name: "T", starts_at: "2026-12-05", time_start: "12:00", time_end: "13:00" });
+  assert.ok(winter.includes("DTSTART:20261205T180000Z"), "noon Chicago in December is 18:00Z");
+  const allday = icsFor({ slug: "t", name: "T", starts_at: "2026-10-23", ends_at: "2026-10-25" });
+  assert.ok(allday.includes("DTSTART;VALUE=DATE:20261023") && allday.includes("DTEND;VALUE=DATE:20261026"), "all day runs through the last day");
 });

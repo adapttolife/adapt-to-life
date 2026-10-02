@@ -1,0 +1,18 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Adapt To Life//Events//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:popcorn-2026-08@adapttolife.org
+DTSTAMP:20260806T120000Z
+DTSTART;VALUE=DATE:20260806
+DTEND;VALUE=DATE:20260814
+SUMMARY:August popcorn drive
+LOCATION:
+DESCRIPTION:Double Good handles orders and shipping. The fund receives 50% 
+ of popcorn sales toward the campaign. https://adapttolife.org/popcorn
+URL:https://adapttolife.org/popcorn
+SEQUENCE:0
+END:VEVENT
+END:VCALENDAR

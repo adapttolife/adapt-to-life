@@ -82,6 +82,8 @@ Athletes and ambassadors get their own page at a short root URL (`/juan`). Their
 
 Use the same navigation across pages. Keep Donate and Apply for support easy to find. The existing Our Work, Get Involved, and About groups provide orientation; they are not the story itself.
 
+Each group answers one question with at most three links: Our Work is what we do, Get Involved is how to help, About is who we are. Individual partners, people, and events are reached through their index pages (`/sponsorship`, `/ambassadors` via the first band on `/volunteer`, `/events`), never their own menu item. The footer may list more. `test/nav.test.js` enforces all of this.
+
 Descriptions must reflect what is available now. The directory is open, not opening soon. Adapt Body Shop is coming soon, not a live store: use `/adapt-body-shop` for its current explanation, including in mobile navigation and the footer. `How Giving Works` leads to `/promise`. `Photo and media release` describes the signing link accurately; do not call it a sports-liability waiver.
 
 The footer keeps the brand promise, useful routes, newsletter entry, social links, and legal disclosure. It does not need another mission essay.

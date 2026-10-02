@@ -32,6 +32,6 @@ test("each event's .ics file has the same date as campaigns.json", () => {
     const ics = read(d.ics.slice(1));
     const start = (d.starts_at || d.opens).replace(/-/g, "");
     assert.ok(new RegExp(`DTSTART(;VALUE=DATE)?[:;][^\\r\\n]*${start}`).test(ics), `${d.ics} DTSTART != ${start}`);
-    assert.ok(ics.includes("\r\n"), `${d.ics} uses CRLF line endings`);
+    assert.ok(!/[^\r]\n/.test(ics), `${d.ics} uses CRLF on every line`);
   }
 });

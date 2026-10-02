@@ -349,7 +349,7 @@ fill="currentColor" stroke="none">
   }
   function row(d, past){
     var li = C.el('li', 'ev-row');
-    li.appendChild(C.el('p', 'ev-when', C.driveWhen(d)));
+    li.appendChild(C.el('p', 'ev-when', C.driveWhen(d) + (d.time_note && !past ? ' · ' + d.time_note : '')));
     var mid = C.el('div');
     mid.appendChild(C.el('p', 'ev-name', d.name));
     var meta = [label(d), place(d)];
@@ -375,7 +375,7 @@ fill="currentColor" stroke="none">
     b.appendChild(date);
     b.appendChild(C.el('p', 'ev-tag', label(d)));
     b.appendChild(C.el('h3', 'serif h2', d.name));
-    if (place(d)) b.appendChild(C.el('p', 'ev-place', place(d)));
+    if (place(d) || d.time_note) b.appendChild(C.el('p', 'ev-place', [d.time_note, place(d)].filter(Boolean).join(' · ')));
     if (d.summary) b.appendChild(C.el('p', 'ev-sum', d.summary));
     var acts = C.el('div'); acts.style.cssText = 'display:flex;flex-wrap:wrap;gap:0.9rem 1rem;margin-top:1.6rem;';
     var cta = C.driveCta(d), btn = C.el('a', 'btn');
@@ -387,6 +387,7 @@ fill="currentColor" stroke="none">
       atc.dataset.location = [d.venue, d.address].filter(Boolean).join(', ');
       atc.dataset.details = (d.summary || '') + (d.page ? ' adapttolife.org' + d.page : '');
       atc.dataset.ics = d.ics;
+      if (d.time_start && d.time_end) { atc.dataset.timeStart = d.time_start; atc.dataset.timeEnd = d.time_end; }
       var ab = C.el('a', 'btn ghost', 'Add to calendar'); ab.href = d.ics;
       atc.appendChild(ab); acts.appendChild(atc);
       window.ATLCalendar.mount(atc);
@@ -398,7 +399,7 @@ fill="currentColor" stroke="none">
   function ld(list){
     var items = list.map(function(d){
       var e = { '@context': 'https://schema.org', '@type': 'Event', name: d.name,
-        startDate: d.starts_at || d.opens, endDate: d.ends_at || d.closes,
+        startDate: (d.starts_at || d.opens) + (d.time_start ? 'T' + d.time_start + ':00-05:00' : ''), endDate: (d.ends_at || d.closes) + (d.time_end ? 'T' + d.time_end + ':00-05:00' : ''),
         eventStatus: 'https://schema.org/EventScheduled',
         organizer: { '@type': 'Organization', name: 'Adapt To Life', url: 'https://adapttolife.org' } };
       if (d.summary) e.description = d.summary;

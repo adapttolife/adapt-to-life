@@ -1,5 +1,5 @@
 // Airtable was the prototype. Everything that lived there was test data, and on
-// 2026-07-30 the line was cut: both public forms write to ClickUp, and the
+// 2026-07-30 the line was cut: the public forms write to the D1 outbox, and the
 // waiver + agent-mail mirrors are gone (their records are D1/R2/Drive and D1).
 //
 // This is the rung that keeps it cut. A mirror is the kind of thing that gets

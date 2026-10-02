@@ -7,8 +7,8 @@
 // SEND. So the send here is deliberately slow, and the test asserts the handler
 // returns long before it finishes.
 //
-// Standalone `node --test` with a stubbed global fetch (ClickUp) and a stubbed
-// SEND_EMAIL binding — same no-new-deps convention as the other tests here.
+// Standalone `node --test` with a global fetch that fails on any call (this path
+// makes no outbound request) and a stubbed SEND_EMAIL binding — same no-new-deps convention as the other tests here.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {formBindings} from "./helpers/form-db.js";
@@ -24,12 +24,6 @@ async function loadWorker() {
 function stubFetch() {
   const realFetch = globalThis.fetch;
   globalThis.fetch = async (url) => {
-    // ClickUp task create — the only outbound call on this path.
-    if (String(url).includes("api.clickup.com")) {
-      return new Response(JSON.stringify({ id: "86bTEST", url: "https://app.clickup.com/t/86bTEST" }), {
-        status: 200, headers: { "Content-Type": "application/json" },
-      });
-    }
     throw new Error("unexpected fetch to " + url);
   };
   return () => { globalThis.fetch = realFetch; };
@@ -38,7 +32,6 @@ function stubFetch() {
 function env(sendStarted, sendFinished) {
   return {
     ...formBindings(),
-    CLICKUP_TOKEN: "tok", CLICKUP_CONTACTS_LIST_ID: "901418639884",
     // No TURNSTILE_SECRET_KEY; verifyTurnstile fails CLOSED unless a lane says
     // so explicitly. This test is about latency, not the challenge.
     TURNSTILE_MODE: "off",

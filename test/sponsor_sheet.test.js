@@ -94,7 +94,7 @@ test("the buttons stay real links, so the sheet is an enhancement and not the on
 test("the sheet posts what the contact API actually reads", () => {
   // handleContact in src/index.js reads fn/ln/em/rsn/msg/source/cf_token, and
   // "Giving or sponsoring" must be a member of LEAD_TYPES or the reason is
-  // dropped on the floor and the ClickUp task loses its type.
+  // dropped on the floor and the intake record loses its type.
   const worker = readFileSync(new URL("../src/index.js", import.meta.url), "utf8");
   assert.ok(worker.includes('"Giving or sponsoring"'), "LEAD_TYPES still carries the sponsor reason");
   for (const key of ["fn:", "em:", "rsn:", "msg:", "source:", "cf_token:"]) {
@@ -104,7 +104,7 @@ test("the sheet posts what the contact API actually reads", () => {
 });
 
 test("the tier is recorded in a field that can be filtered, not only in prose", () => {
-  // src/clickup.js puts `source` on CONTACT_FIELD.source, which is what makes
+  // src/forms.js carries `source` and `tier` into the intake record, which is what makes
   // "how many Captain enquiries this quarter" a view instead of a read-through.
   assert.ok(js.includes('"Sponsorship page: "'), "source names the page and the tier");
   assert.ok(js.includes(".slice(0, 80)"), "source stays inside the 80-char cap handleContact applies");

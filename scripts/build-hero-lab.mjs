@@ -13,9 +13,10 @@
 // Regenerate after ANY edit to index.html or to a variant:
 //   node scripts/build-hero-lab.mjs && npm run stamp
 import { readFileSync, writeFileSync } from "node:fs";
+import { versionHtml, unversionHtml } from "./version-assets.mjs";
 import { VARIANTS, LABEL, STAGE_JS, ROOT, HERO_START, HERO_END, sheetFor } from "./lib/heroes.mjs";
 
-const src = readFileSync(new URL("index.html", ROOT), "utf8");
+const src = unversionHtml(readFileSync(new URL("index.html", ROOT), "utf8"));
 const a = src.indexOf(HERO_START);
 const b = src.indexOf(HERO_END);
 if (a < 0 || b < 0) throw new Error("hero markers not found in index.html");
@@ -60,6 +61,6 @@ for (const [key, hero] of Object.entries(VARIANTS)) {
       `<title>Header ${LABEL[key]} | Adapt To Life</title>`,
     )
     .replace("</body>", `${STAGE_JS}${switcher(key)}</body>`);
-  writeFileSync(new URL(`hero-${key}.html`, ROOT), out);
+  writeFileSync(new URL(`hero-${key}.html`, ROOT), versionHtml(out));
   console.log(`wrote public/hero-${key}.html (${(out.length / 1024).toFixed(1)} KB)`);
 }

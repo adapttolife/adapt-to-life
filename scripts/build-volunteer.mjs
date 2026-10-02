@@ -14,6 +14,7 @@
 // change with it and nobody has to remember they exist. `--check` is wired into
 // the test suite so a nav edit that skips the generator fails the build.
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync, rmSync } from "node:fs";
+import { assetVersions, versionHtml } from "./version-assets.mjs";
 import { PAGE_HEADER_SHEET, PAGE_HEADER_CLASS, bandVars,
          TIER_CLASS } from "./lib/page-header.mjs";
 import { dirname, join } from "node:path";
@@ -427,9 +428,11 @@ ${sec("Not this", "          " + ul(r.isNot, "jd-no"))}
 }
 
 // ---- write / check ------------------------------------------------------
+// Pages ask for the CSS and JS version they were built with (scripts/version-assets.mjs).
+const VERSIONS = assetVersions();
 const files = new Map();
-files.set(join(PUB, "volunteer.html"), boardPage());
-for (const r of ROLES) files.set(join(PUB, "volunteer", `${r.slug}.html`), rolePage(r));
+files.set(join(PUB, "volunteer.html"), versionHtml(boardPage(), VERSIONS));
+for (const r of ROLES) files.set(join(PUB, "volunteer", `${r.slug}.html`), versionHtml(rolePage(r), VERSIONS));
 
 mkdirSync(join(PUB, "volunteer"), { recursive: true });
 

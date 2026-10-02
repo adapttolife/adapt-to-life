@@ -21,9 +21,11 @@ test("the homepage hero is the mosaic", () => {
 });
 
 test("the hero stylesheet is linked exactly once", () => {
-  const links = html.match(/<link rel="stylesheet" href="\/css\/hero-[a-z]+\.css">/g) || [];
+  // Stylesheet links carry ?v=<hash> (scripts/version-assets.mjs); the check is
+  // about WHICH sheet and HOW MANY, so the version is allowed but not required.
+  const links = html.match(/<link rel="stylesheet" href="\/css\/hero-[a-z]+\.css(?:\?v=[0-9a-f]+)?">/g) || [];
   assert.equal(links.length, 1, `expected one hero stylesheet, found ${links.length}`);
-  assert.equal(links[0], '<link rel="stylesheet" href="/css/hero-mosaic.css">');
+  assert.match(links[0], /^<link rel="stylesheet" href="\/css\/hero-mosaic\.css(?:\?v=[0-9a-f]+)?">$/);
 });
 
 test("the hero script block is present and not duplicated", () => {

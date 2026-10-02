@@ -52,7 +52,22 @@
   .bh-duo{ display:flex; align-items:center; gap:clamp(1.2rem,2.6vw,2rem); margin-top:clamp(1.2rem,2.4vw,1.8rem); }
   .bh-atl{ height:clamp(84px,9vw,118px); width:auto; color:var(--cream); filter:drop-shadow(0 6px 24px rgba(0,0,0,0.5)); }
   .bh-bhlogo{ height:clamp(84px,9vw,118px); width:auto; filter:drop-shadow(0 6px 24px rgba(0,0,0,0.5)); }
-  .bh-x{ flex:none; width:clamp(30px,3.2vw,42px); height:auto; color:var(--orange); filter:drop-shadow(0 0 10px var(--orange-glow)) drop-shadow(0 0 2px rgba(255,92,57,0.6)); }
+  /* The ×: an optic yellow mark, painted like a court line. Overspray halo,
+     a hand curved paint stroke, a thin sheen on top, and a bloom. It paints
+     itself once on load; with reduced motion it is simply there. */
+  .bh-x{ --ball:#DFF23D; flex:none; width:clamp(54px,5.6vw,74px); height:auto; overflow:visible; filter:drop-shadow(0 0 8px rgba(223,242,61,0.22)); }
+  .bh-x path{ fill:none; stroke-linecap:round; stroke-dasharray:1; stroke-dashoffset:0; }
+  .bh-x-spray path{ stroke:var(--ball); stroke-width:16; opacity:0.6; }
+  .bh-x-paint path{ stroke:var(--ball); stroke-width:11; }
+  .bh-x-shine path{ stroke:#FCFFE6; stroke-width:2.4; opacity:0.6; }
+  @media (prefers-reduced-motion: no-preference){
+    .bh-x path{ stroke-dashoffset:1; animation:bh-paint 0.42s cubic-bezier(.6,.05,.3,1) forwards; }
+    .bh-x g path:first-child{ animation-delay:0.35s; }
+    .bh-x g path:last-child{ animation-delay:0.72s; }
+    .bh-x-shine path:first-child{ animation-delay:0.5s; }
+    .bh-x-shine path:last-child{ animation-delay:0.87s; }
+  }
+  @keyframes bh-paint{ to{ stroke-dashoffset:0; } }
   .bh-hero .display{ max-width:13ch; margin-top:clamp(1.4rem,3vw,2.2rem); font-size:clamp(2.8rem,5.6vw,5.2rem); line-height:0.98; }
   .bh-hero .sub{ max-width:38ch; margin-top:1.2rem; color:var(--cream-mute); }
   .bh-hero .actions{ display:flex; flex-wrap:wrap; gap:0.9rem 1rem; margin-top:1.1rem; }
@@ -91,7 +106,7 @@
     .bh-kicker::after{ content:""; width:1.4rem; height:2px; background:var(--orange); box-shadow:0 0 12px var(--orange-glow); }
     .bh-duo{ margin-top:3.3rem; }
     .bh-atl, .bh-bhlogo{ height:76px; }
-    .bh-x{ width:30px; }
+    .bh-x{ width:50px; }
     /* The date rides on the bottom of the film, right above the headline, so
        the grand opening is on the first screen. */
     .bh-hero .bh-when{ order:1; position:relative; z-index:2; margin-top:-3.4rem; }
@@ -346,7 +361,33 @@ fill="currentColor" stroke="none">
 -338 -665 -446 -974 -226 -323 230 -382 720 -118 982 42 42 42 42 42 186 0 96
 5 163 15 201 25 97 17 99 -102 26z"/>
 </g></svg>
-          <svg class="bh-x" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><path d="M6 6 L34 34 M34 6 L6 34" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/></svg>
+          <svg class="bh-x" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+            <defs>
+              <filter id="bhSpray" x="-40%" y="-40%" width="180%" height="180%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="haze"/>
+                <feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="1" seed="4" result="grain"/>
+                <feComponentTransfer in="grain" result="dots"><feFuncA type="discrete" tableValues="0 0 0 0 0 1"/></feComponentTransfer>
+                <feMorphology in="SourceGraphic" operator="dilate" radius="6" result="area"/><feGaussianBlur in="area" stdDeviation="4" result="soft"/><feComposite in="soft" in2="dots" operator="in" result="sp0"/><feComponentTransfer in="sp0" result="speckle"><feFuncA type="linear" slope="2.4"/></feComponentTransfer>
+                <feMerge><feMergeNode in="haze"/><feMergeNode in="speckle"/></feMerge>
+              </filter>
+              <filter id="bhRough" x="-10%" y="-10%" width="120%" height="120%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.55" numOctaves="2" seed="11" result="n"/>
+                <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G"/>
+              </filter>
+            </defs>
+            <g class="bh-x-spray" filter="url(#bhSpray)">
+              <path pathLength="1" d="M17 15 Q48 46 84 86"/>
+              <path pathLength="1" d="M83 14 Q52 47 15 85"/>
+            </g>
+            <g class="bh-x-paint" filter="url(#bhRough)">
+              <path pathLength="1" d="M17 15 Q48 46 84 86"/>
+              <path pathLength="1" d="M83 14 Q52 47 15 85"/>
+            </g>
+            <g class="bh-x-shine">
+              <path pathLength="1" d="M27 22 Q44 39.5 58 55"/>
+              <path pathLength="1" d="M76 20 Q62 34.5 50 47"/>
+            </g>
+          </svg>
           <img src="/images/brickhouse/brick-house-logo-orange-black-reverse.svg" alt="Brick House Pickleball" class="bh-bhlogo" width="372" height="265">
         </div>
         <h1 class="serif display">This place <em class="italic" style="color:var(--orange)">feels like home.</em></h1>

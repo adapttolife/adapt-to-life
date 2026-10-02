@@ -28,7 +28,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
 <script src="/js/attribution.js" defer></script>
-<link rel="preload" as="image" href="/images/brickhouse/hero-overhead-poster.webp">
 <style>
   /* Brick House partner page. Told in pictures: the partnership lockup over a slow
      overhead on their court, and the grand opening up front (until Oct 25; then the day moves to the bottom as the
@@ -67,7 +66,7 @@
   /* The moving picture: a tall frame, tilted like a card on the wall. */
   .bh-film{ position:relative; margin:0; justify-self:center; width:min(100%, 420px, calc((100svh - 160px) * 0.6)); aspect-ratio:9/15; border-radius:22px; overflow:hidden; transform:rotate(1.5deg);
     box-shadow:0 0 0 1px rgba(255,255,255,0.08), 0 40px 90px -24px rgba(0,0,0,0.85), 0 0 110px -10px rgba(255,92,57,0.45); background:#141414; }
-  .bh-film video, .bh-film img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 45%; display:block; }
+  .bh-film img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 45%; display:block; }
   .bh-film::after{ content:""; position:absolute; inset:0; background:linear-gradient(0deg, rgba(12,12,14,0.35), transparent 30%); pointer-events:none; }
   @media (max-width:480px){ .bh-when{ flex-wrap:nowrap; gap:0.6rem; font-size:0.74rem; letter-spacing:0.11em; } .bh-when span{ gap:0.6rem; white-space:nowrap; } }
   @media (max-width:900px){
@@ -81,7 +80,7 @@
     .bh-hero-copy{ display:contents; }
     .bh-film, .bh-kicker, .bh-duo{ grid-row:1; grid-column:1; }
     .bh-film{ width:100vw; max-width:none; margin-inline:calc(50% - 50vw); aspect-ratio:auto; height:min(76svh, 660px); border-radius:0; transform:none; box-shadow:none; }
-    .bh-film video, .bh-film img{ object-position:50% 70%; }
+    .bh-film img{ object-position:50% 70%; }
     .bh-film::after{ background:linear-gradient(180deg, rgba(12,12,14,0.82) 0%, rgba(12,12,14,0.35) 30%, transparent 46%, transparent 66%, rgba(12,12,14,0.9) 90%, #0C0C0E 100%); }
     .bh-kicker, .bh-duo{ position:relative; z-index:2; align-self:start; justify-self:center; }
     .bh-kicker{ margin-top:1.3rem; font-size:0.78rem; }
@@ -358,10 +357,11 @@ fill="currentColor" stroke="none">
         </div>
       </div>
       <figure class="bh-film">
-        <video autoplay muted loop playsinline preload="metadata" poster="/images/brickhouse/hero-overhead-poster.webp" aria-label="An athlete in a sport wheelchair and a Brick House Pickleball shirt tosses the ball and swings an overhead, in slow motion">
-          <source src="/images/brickhouse/hero-overhead.webm" type="video/webm">
-          <source src="/images/brickhouse/hero-overhead.mp4" type="video/mp4">
-        </video>
+        <picture>
+          <source media="(prefers-reduced-motion: reduce)" srcset="/images/brickhouse/hero-overhead-poster.webp">
+          <source type="image/avif" srcset="/images/brickhouse/hero-overhead.avif">
+          <img src="/images/brickhouse/hero-overhead-poster.webp" alt="An athlete in a sport wheelchair and a Brick House Pickleball shirt tosses the ball and swings an overhead, in slow motion" width="720" height="1280" fetchpriority="high">
+        </picture>
       </figure>
     </div>
   </section>
@@ -639,8 +639,6 @@ fill="currentColor" stroke="none">
     window.addEventListener('scroll', onScroll, { passive:true });
     onScroll();
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var film = document.querySelector('.bh-film video');
-    if (film && reduce) { film.removeAttribute('autoplay'); film.pause(); }
     var reveals = document.querySelectorAll('.reveal');
     if(reduce || !('IntersectionObserver' in window)){
       reveals.forEach(function(el){ el.classList.add('in'); });

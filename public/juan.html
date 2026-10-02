@@ -59,6 +59,10 @@
   .jn-photo img{ width:100%; height:auto; display:block; }
   .jn-q{ margin-top:1.2rem; padding-left:1.2rem; border-left:3px solid var(--orange); font-size:1.08rem; line-height:1.55; color:var(--ink); }
   .jn-q + .jn-q{ margin-top:1rem; }
+  .jn-pair{ display:grid; grid-template-columns:1.25fr 1fr; gap:clamp(0.8rem,2vw,1.4rem); align-items:center; }
+  .jn-pair .jn-photo:first-child{ transform:rotate(-1deg); }
+  .jn-pair .jn-photo:last-child{ transform:rotate(1.2deg); }
+  @media (max-width:640px){ .jn-pair{ grid-template-columns:1fr; } .jn-pair .jn-photo{ transform:none !important; } }
   .jn-quote{ text-align:center; }
   .jn-quote blockquote{ margin:0 auto; max-width:22ch; font-family:var(--font-display); font-weight:800; font-size:clamp(2rem,4.6vw,3.6rem); line-height:1.08; letter-spacing:-0.025em; color:var(--cream); }
   .jn-quote blockquote em{ color:var(--orange); }
@@ -243,6 +247,14 @@ fill="currentColor" stroke="none">
     <div class="wrap">
       <blockquote class="reveal">&ldquo;Pickleball is the ultimate equalizer. It&rsquo;s the first sport I&rsquo;ve ever found where <em>the wheelchair vanishes.</em>&rdquo;</blockquote>
       <p class="jn-by reveal">Juan Ortiz</p>
+    </div>
+  </section>
+
+  <!-- ON COURT: the raw ones. Variety is the point; this is Juan, unposed. -->
+  <section class="band-sm" style="background:#0C0C0E;">
+    <div class="wrap jn-pair">
+      <figure class="jn-photo reveal"><img src="/images/athletes/juan-celebrate.webp" width="1600" height="1200" alt="Juan Ortiz sticks his tongue out and throws his arms wide courtside, paddle in his lap" loading="lazy" decoding="async"></figure>
+      <figure class="jn-photo reveal"><img src="/images/athletes/juan-portrait.webp" width="1000" height="1500" alt="Juan Ortiz sits in his sport wheelchair with his paddle, looking straight at the camera" loading="lazy" decoding="async"></figure>
     </div>
   </section>
 

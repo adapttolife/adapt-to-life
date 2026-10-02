@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<title>Events | Adapt To Life</title>
+<meta name="description" content="Tournaments, fundraisers, and gatherings with Adapt To Life athletes and partners. See what is coming up and where to find us.">
+<link rel="canonical" href="https://adapttolife.org/events">
+<link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-v2-option2-32.png">
+<link rel="apple-touch-icon" href="/images/apple-touch-icon-v2-option2.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Events | Adapt To Life">
+<meta property="og:description" content="Tournaments, fundraisers, and gatherings with Adapt To Life athletes and partners. See what is coming up and where to find us.">
+<meta property="og:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.">
+<meta property="og:url" content="https://adapttolife.org/events">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Events | Adapt To Life">
+<meta name="twitter:description" content="Tournaments, fundraisers, and gatherings with Adapt To Life athletes and partners. See what is coming up and where to find us.">
+<meta name="twitter:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
+<meta name="twitter:image:alt" content="Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/site.css">
+<style>
+  /* Events: the index. Every dated thing we take part in comes from
+     /data/campaigns.json (the same file as the home calendar), so a date is
+     written once. Each event card links to its own page when it has one
+     (/brickhouse, /popcorn); that page tells the story, this one keeps the
+     calendar. */
+  .ev-hero{ position:relative; isolation:isolate; overflow:hidden; padding:clamp(4.5rem,11vh,7rem) 0 clamp(3rem,7vh,4.5rem); }
+  .ev-hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:
+      radial-gradient(ellipse 50% 70% at 80% 40%, rgba(255,92,57,0.22) 0%, transparent 70%),
+      radial-gradient(ellipse 35% 50% at 8% 90%, rgba(255,92,57,0.10) 0%, transparent 70%); }
+  .ev-kicker{ display:flex; align-items:center; gap:0.9rem; font-family:var(--font-label); font-weight:800; font-size:0.85rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--orange); }
+  .ev-kicker::before{ content:""; width:2.2rem; height:2px; background:var(--orange); box-shadow:0 0 12px var(--orange-glow); }
+  .ev-hero .display{ margin-top:1.3rem; max-width:12ch; font-size:clamp(2.9rem,6vw,5.4rem); line-height:0.96; }
+  .ev-hero .sub{ margin-top:1.2rem; max-width:40ch; color:var(--cream-mute); }
+
+  .ev-up{ padding-top:clamp(0.5rem,2vw,1.5rem); }
+  .ev-up > .wrap > .eyebrow{ display:block; margin-bottom:1.2rem; }
+  .ev-feature{ display:grid; grid-template-columns:minmax(0,0.95fr) minmax(0,1.05fr); border-radius:22px; overflow:hidden; background:#141416; color:var(--cream); box-shadow:0 0 0 1px rgba(255,255,255,0.07), 0 40px 90px -40px rgba(0,0,0,0.9), 0 0 110px -30px rgba(255,92,57,0.45); }
+  .ev-feature-photo{ position:relative; min-height:clamp(320px,38vw,480px); background:#0C0C0E; }
+  .ev-feature-photo img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 30%; }
+  .ev-feature-body{ padding:clamp(1.6rem,3.6vw,3rem); display:flex; flex-direction:column; justify-content:center; align-items:flex-start; }
+  .ev-feature .h2{ color:var(--cream); margin-top:0.5rem; }
+  .ev-feature .ev-sum{ color:var(--cream-mute); margin-top:0.9rem; max-width:42ch; }
+  @media (max-width:760px){ .ev-feature{ grid-template-columns:1fr; } .ev-feature-photo{ min-height:0; aspect-ratio:4/3.4; } }
+  .ev-date{ display:flex; align-items:baseline; gap:0.7rem; }
+  .ev-date b{ font-family:var(--font-display); font-weight:900; font-size:clamp(2.6rem,5vw,3.6rem); line-height:0.9; letter-spacing:-0.04em; color:var(--orange); text-shadow:0 0 36px rgba(255,92,57,0.3); }
+  .ev-date span{ font-family:var(--font-label); font-weight:800; font-size:0.8rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--cream); }
+  .ev-tag{ margin-top:1rem; font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--orange); }
+  .ev-place{ margin-top:0.5rem; font-weight:600; color:var(--cream); }
+
+  .ev-list{ list-style:none; padding:0; margin:clamp(1.2rem,2.4vw,1.8rem) 0 0; display:grid; gap:0.9rem; }
+  .ev-row{ display:grid; grid-template-columns:7.5rem minmax(0,1fr) auto; gap:clamp(1rem,2.5vw,2rem); align-items:center; padding:1.3rem 1.4rem; border-radius:16px; background:var(--paper); box-shadow:0 0 0 1px var(--hairline); }
+  .ev-row .ev-when{ font-family:var(--font-display); font-weight:800; font-size:1.15rem; letter-spacing:-0.01em; color:var(--orange-ink); line-height:1.15; }
+  .ev-row .ev-name{ font-family:var(--font-display); font-weight:800; font-size:1.2rem; letter-spacing:-0.01em; color:var(--ink); }
+  .ev-row .ev-meta{ margin-top:0.25rem; color:var(--muted); font-size:0.92rem; }
+  .ev-row .ev-go{ font-weight:700; color:var(--orange-ink); white-space:nowrap; border-bottom:2px solid currentColor; padding-bottom:2px; }
+  @media (max-width:640px){ .ev-row{ grid-template-columns:1fr; gap:0.4rem; } .ev-row .ev-go{ justify-self:start; margin-top:0.5rem; } }
+  .ev-empty{ margin-top:1.2rem; color:var(--ink-soft); max-width:46ch; }
+  .ev-past .ev-row{ background:transparent; box-shadow:none; border-bottom:1px solid var(--hairline); border-radius:0; padding:1rem 0; }
+  .ev-past .ev-when{ color:var(--muted); }
+</style>
+<script src="/js/attribution.js" defer></script>
+</head>
+<body>
+
+<header class="nav over-dark" id="nav">
+  <div class="wrap nav-inner">
+    <a href="/" class="brand"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500.000000 457.000000" class="brand-logo" aria-hidden="true" focusable="false"><g transform="translate(0.000000,457.000000) scale(0.100000,-0.100000)"
+fill="currentColor" stroke="none">
+<path d="M2059 4548 c-14 -13 -99 -185 -198 -403 -96 -209 -238 -519 -316
+-690 -202 -440 -304 -662 -333 -725 -29 -65 -163 -358 -237 -520 -29 -63 -139
+-304 -245 -535 -291 -637 -404 -882 -445 -970 -20 -44 -56 -123 -80 -175 -53
+-118 -172 -375 -191 -414 -53 -108 -28 -116 371 -116 356 0 369 2 394 57 11
+23 190 440 524 1217 72 168 77 206 52 406 -69 554 79 859 585 1205 111 76 137
+101 165 155 20 40 233 517 330 742 23 53 45 90 56 93 20 7 59 -10 59 -26 0 -9
+208 -480 215 -488 3 -2 35 25 72 59 169 156 360 182 566 79 51 -27 51 -24 -54
+206 -134 293 -232 511 -306 675 -93 210 -35 190 -539 190 -421 0 -421 0 -445
+-22z"/>
+<path d="M3060 3404 c-127 -44 -200 -148 -200 -284 0 -358 507 -412 590 -62
+52 220 -174 420 -390 346z"/>
+<path d="M2334 2885 c-396 -102 -739 -406 -825 -732 -32 -119 -37 -419 -7
+-373 2 3 32 61 67 130 180 354 428 530 745 530 135 0 133 2 115 -107 -53 -333
+27 -498 243 -498 106 0 119 9 95 60 -36 75 -15 139 134 406 128 229 134 355
+26 476 -106 117 -372 166 -593 108z"/>
+<path fill="#FF5C39" d="M2242 2133 c-193 -421 -156 -742 101 -859 127 -58 282 -41 606 66
+403 134 502 93 711 -292 386 -708 698 -982 1176 -1030 158 -17 167 -8 53 50
+-349 178 -546 441 -794 1062 -293 734 -505 846 -1178 623 -249 -82 -337 -90
+-440 -40 -116 58 -187 202 -190 389 -2 116 -5 118 -45 31z"/>
+<path d="M1893 1869 c-616 -376 -623 -1289 -11 -1695 117 -78 206 -113 411
+-163 57 -13 236 -15 286 -2 20 6 68 17 106 26 399 93 694 425 771 869 45 256
+-59 389 -280 362 -87 -11 -104 -30 -80 -92 46 -119 16 -335 -66 -474 -199
+-338 -665 -446 -974 -226 -323 230 -382 720 -118 982 42 42 42 42 42 186 0 96
+5 163 15 201 25 97 17 99 -102 26z"/>
+</g></svg>Adapt To Life</a>
+    <nav class="nav-links">
+      <div class="nav-group">
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navOurWork">Our Work<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 3 3-3"/></svg></button>
+        <div class="nav-panel" id="navOurWork">
+          <a href="/hustle-and-heart"><span class="np-t">Hustle &amp; Heart Fund</span><span class="np-d">Support for equipment, training, and travel</span></a>
+          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d">Find adaptive programs by sport and location</span></a>
+          <a href="/adapt-body-shop"><span class="np-t">Adapt Body Shop</span><span class="np-d">Coming soon · Gear for the community</span></a>
+        </div>
+      </div>
+      <div class="nav-group">
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navJoin">Get Involved<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 3 3-3"/></svg></button>
+        <div class="nav-panel" id="navJoin">
+          <a href="/volunteer"><span class="np-t">Volunteer</span><span class="np-d">Explore roles, time commitments, and ways to contribute</span></a>
+          <a href="/ambassadors"><span class="np-t">Ambassadors</span><span class="np-d">Athletes and connectors who grow the sport</span></a>
+          <a href="/sponsorship"><span class="np-t">Partners</span><span class="np-d">Our partners, and how to join them</span></a>
+          <a href="/events"><span class="np-t">Events</span><span class="np-d">Tournaments, fundraisers, and gatherings</span></a>
+        </div>
+      </div>
+      <div class="nav-group">
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navAbout">About<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 3 3-3"/></svg></button>
+        <div class="nav-panel" id="navAbout">
+          <a href="/promise"><span class="np-t">How Giving Works</span><span class="np-d">How gifts support athletes and the work around them</span></a>
+          <a href="/about"><span class="np-t">Our Story</span><span class="np-d">The people who built this, and why</span></a>
+        </div>
+      </div>
+      <a class="lk featured" href="/apply">Apply for support</a>
+      <a class="nav-cta" href="/donate">Donate</a>
+    </nav>
+    <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="mobile-menu">
+    <div class="wrap mwrap">
+      <span class="m-group">Our Work</span>
+      <a class="m-sub" href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
+      <a class="m-sub" href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
+      <a class="m-sub" href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
+      <span class="m-group">Get Involved</span>
+      <a class="m-sub" href="/volunteer">Volunteer</a>
+      <a class="m-sub" href="/ambassadors">Ambassadors</a>
+      <a class="m-sub" href="/sponsorship">Partners</a>
+      <a class="m-sub" href="/events">Events</a>
+      <span class="m-group">About</span>
+      <a class="m-sub" href="/promise">How Giving Works</a>
+      <a class="m-sub" href="/about">Our Story</a>
+      <a class="featured" href="/apply">Apply for support</a>
+      <a class="m-cta" href="/donate">Donate &rarr;</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section class="ev-hero dark">
+    <div class="wrap">
+      <p class="ev-kicker">Events</p>
+      <h1 class="serif display">Join us <em class="italic" style="color:var(--orange)">in person.</em></h1>
+      <p class="lead sub">Tournaments, fundraisers, and gatherings with our athletes and partners.</p>
+    </div>
+  </section>
+
+  <!-- COMING UP: the soonest event as a feature, the rest as rows. -->
+  <section class="band dark ev-up" aria-labelledby="evUpTitle">
+    <div class="wrap">
+      <h2 id="evUpTitle" class="eyebrow orange">Coming up</h2>
+      <div id="evFeature"></div>
+      <ul class="ev-list" id="evUpcoming"></ul>
+      <p class="ev-empty" id="evEmpty" hidden style="color:var(--cream-mute);">Nothing on the calendar right now. New dates are added as they are set.</p>
+      <noscript><p class="ev-empty" style="color:var(--cream-mute);">The calendar needs JavaScript. Email <a class="textlink" href="mailto:hello@adapttolife.org">hello@adapttolife.org</a> for upcoming dates.</p></noscript>
+    </div>
+  </section>
+
+  <!-- PAST: the record. -->
+  <section class="band tint ev-past" id="evPastSection" hidden aria-labelledby="evPastTitle">
+    <div class="wrap">
+      <h2 id="evPastTitle" class="serif h2">Past events</h2>
+      <ul class="ev-list" id="evPast"></ul>
+    </div>
+  </section>
+
+  <section class="closing dark band-lg">
+    <div class="wrap center">
+      <span class="eyebrow orange reveal">Stay in the loop</span>
+      <h2 class="serif display reveal">Hear about new dates first.</h2>
+      <div class="actions reveal" style="justify-content:center;">
+        <a href="/subscribe" class="btn">Join the list</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="brandcol">
+        <a href="/" class="brand"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500.000000 457.000000" class="brand-logo" aria-hidden="true" focusable="false"><g transform="translate(0.000000,457.000000) scale(0.100000,-0.100000)"
+fill="currentColor" stroke="none">
+<path d="M2059 4548 c-14 -13 -99 -185 -198 -403 -96 -209 -238 -519 -316
+-690 -202 -440 -304 -662 -333 -725 -29 -65 -163 -358 -237 -520 -29 -63 -139
+-304 -245 -535 -291 -637 -404 -882 -445 -970 -20 -44 -56 -123 -80 -175 -53
+-118 -172 -375 -191 -414 -53 -108 -28 -116 371 -116 356 0 369 2 394 57 11
+23 190 440 524 1217 72 168 77 206 52 406 -69 554 79 859 585 1205 111 76 137
+101 165 155 20 40 233 517 330 742 23 53 45 90 56 93 20 7 59 -10 59 -26 0 -9
+208 -480 215 -488 3 -2 35 25 72 59 169 156 360 182 566 79 51 -27 51 -24 -54
+206 -134 293 -232 511 -306 675 -93 210 -35 190 -539 190 -421 0 -421 0 -445
+-22z"/>
+<path d="M3060 3404 c-127 -44 -200 -148 -200 -284 0 -358 507 -412 590 -62
+52 220 -174 420 -390 346z"/>
+<path d="M2334 2885 c-396 -102 -739 -406 -825 -732 -32 -119 -37 -419 -7
+-373 2 3 32 61 67 130 180 354 428 530 745 530 135 0 133 2 115 -107 -53 -333
+27 -498 243 -498 106 0 119 9 95 60 -36 75 -15 139 134 406 128 229 134 355
+26 476 -106 117 -372 166 -593 108z"/>
+<path fill="#FF5C39" d="M2242 2133 c-193 -421 -156 -742 101 -859 127 -58 282 -41 606 66
+403 134 502 93 711 -292 386 -708 698 -982 1176 -1030 158 -17 167 -8 53 50
+-349 178 -546 441 -794 1062 -293 734 -505 846 -1178 623 -249 -82 -337 -90
+-440 -40 -116 58 -187 202 -190 389 -2 116 -5 118 -45 31z"/>
+<path d="M1893 1869 c-616 -376 -623 -1289 -11 -1695 117 -78 206 -113 411
+-163 57 -13 236 -15 286 -2 20 6 68 17 106 26 399 93 694 425 771 869 45 256
+-59 389 -280 362 -87 -11 -104 -30 -80 -92 46 -119 16 -335 -66 -474 -199
+-338 -665 -446 -974 -226 -323 230 -382 720 -118 982 42 42 42 42 42 186 0 96
+5 163 15 201 25 97 17 99 -102 26z"/>
+</g></svg>Adapt To Life</a>
+        <p class="tagline">Your place in adaptive sports.</p>
+        <form class="foot-sub js-subscribe" data-source="footer" novalidate>
+          <label class="foot-sub-label" for="footEm">Follow the work</label>
+          <div class="foot-sub-row">
+            <input class="foot-sub-input" id="footEm" name="em" type="email" autocomplete="email" placeholder="you@example.com" aria-label="Your email">
+            <button class="foot-sub-btn" type="submit" aria-label="Join the list">&rarr;</button>
+          </div>
+          <input type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only"></div>
+          <p class="foot-sub-msg" role="status" aria-live="polite"></p>
+        </form>
+        <p class="legal">Adapt To Life is a recognized 501(c)(3) nonprofit organization. Donations are tax deductible to the extent allowed by law. EIN 41-3213344.</p>
+      </div>
+      <div class="col">
+        <h4>Organization</h4>
+        <a href="/about">Our Story</a>
+        <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
+        <a href="/tim">Tim&#39;s Story</a>
+        <a href="/karen">Karen&#39;s Story</a>
+        <a href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
+        <a href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
+                <a href="/roadmap">Roadmap</a>
+      </div>
+      <div class="col">
+        <h4>Get involved</h4>
+        <a href="/donate">Donate</a>
+        <a href="/promise">How Giving Works</a>
+        <a href="/volunteer">Volunteer</a>
+        <a href="/ambassadors">Ambassadors</a>
+        <a href="/sponsorship">Become a partner</a>
+        <a href="/events">Events</a>
+        <a href="/apply">Apply for support</a>
+        <a href="https://sign.adapttolife.org/waiver?source=atl">Photo and media release</a>
+        <a href="/subscribe">Join the list</a>
+        <a href="/contact">Contact</a>
+        <a href="mailto:hello@adapttolife.org">hello@adapttolife.org</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="social">
+        <a href="https://www.instagram.com/adapt_to_life_org/" aria-label="Adapt To Life on Instagram" target="_blank" rel="me noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16M12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63c-.79.3-1.46.72-2.13 1.38C1.35 2.68.93 3.35.63 4.14.33 4.9.13 5.78.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.3.79.72 1.46 1.38 2.13.67.66 1.34 1.08 2.13 1.38.76.3 1.64.5 2.91.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56.79-.3 1.46-.72 2.13-1.38.66-.67 1.08-1.34 1.38-2.13.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91-.3-.79-.72-1.46-1.38-2.13C21.32 1.35 20.65.93 19.86.63c-.76-.3-1.64-.5-2.91-.56C15.67.01 15.26 0 12 0z"/><path d="M12 5.84A6.16 6.16 0 1 0 18.16 12 6.16 6.16 0 0 0 12 5.84zm0 10.16A4 4 0 1 1 16 12a4 4 0 0 1-4 4z"/><circle cx="18.41" cy="5.59" r="1.44"/></svg></a>
+        <a href="https://www.facebook.com/profile.php?id=61592619668321" aria-label="Adapt To Life on Facebook" target="_blank" rel="me noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.96h-1.51c-1.49 0-1.96.93-1.96 1.89v2.26h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z"/></svg></a>
+      </div>
+      <span>&copy; 2026 Adapt To Life</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var toggles = document.querySelectorAll('.nav-toggle');
+    function closeAll(except){
+      toggles.forEach(function(t){
+        if (t === except) return;
+        t.setAttribute('aria-expanded','false');
+        var pnl = document.getElementById(t.getAttribute('aria-controls'));
+        if (pnl) pnl.classList.remove('open');
+      });
+    }
+    toggles.forEach(function(t){
+      var panel = document.getElementById(t.getAttribute('aria-controls'));
+      t.addEventListener('click', function(e){
+        e.stopPropagation();
+        var open = t.getAttribute('aria-expanded') === 'true';
+        closeAll(t);
+        t.setAttribute('aria-expanded', open ? 'false' : 'true');
+        if (panel) panel.classList.toggle('open', !open);
+      });
+    });
+    document.addEventListener('click', function(){ closeAll(null); });
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape') closeAll(null);
+    });
+  })();
+  (function(){
+    var nav = document.getElementById('nav');
+    var menuBtn = document.getElementById('menuBtn');
+    menuBtn.addEventListener('click', function(){
+      var open = nav.classList.toggle('open');
+      menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    nav.querySelectorAll('.mobile-menu a').forEach(function(a){
+      a.addEventListener('click', function(){ nav.classList.remove('open'); menuBtn.setAttribute('aria-expanded','false'); });
+    });
+    var onScroll = function(){ if(window.scrollY > 8){ nav.classList.add('scrolled'); } else { nav.classList.remove('scrolled'); } };
+    window.addEventListener('scroll', onScroll, { passive:true });
+    onScroll();
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var reveals = document.querySelectorAll('.reveal');
+    if(reduce || !('IntersectionObserver' in window)){
+      reveals.forEach(function(el){ el.classList.add('in'); });
+    } else {
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+      }, { threshold:0.12, rootMargin:'0px 0px -8% 0px' });
+      reveals.forEach(function(el){ io.observe(el); });
+      window.addEventListener('load', function(){
+        document.querySelectorAll('.hero .reveal').forEach(function(el, i){
+          setTimeout(function(){ el.classList.add('in'); }, 60 + i*70);
+        });
+      });
+    }
+  })();
+</script>
+<script src="/js/add-to-calendar.js"></script>
+<script src="/js/campaigns.js"></script>
+<script>
+(function(){
+  var C = window.ATLCampaigns;
+  var DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  function place(d){ return [d.venue, [d.city, d.state].filter(Boolean).join(', ')].filter(Boolean).join(' · '); }
+  function label(d){
+    if (d.type === 'fundraiser') return 'Fundraiser';
+    if (d.type === 'tournament') return 'Tournament';
+    return C.relationshipLabel(d) === 'We fundraise with this' ? 'Event' : C.relationshipLabel(d);
+  }
+  function link(d){
+    var cta = C.driveCta(d), a = C.el('a', 'ev-go');
+    C.wire(a, cta.href, cta.label);
+    a.appendChild(C.el('span', 'arrow', '\u00a0→'));
+    return a;
+  }
+  function row(d, past){
+    var li = C.el('li', 'ev-row');
+    li.appendChild(C.el('p', 'ev-when', C.driveWhen(d)));
+    var mid = C.el('div');
+    mid.appendChild(C.el('p', 'ev-name', d.name));
+    var meta = [label(d), place(d)];
+    if (past && typeof d.raised === 'number' && d.raised > 0) meta.push(C.money(d.raised) + ' raised');
+    mid.appendChild(C.el('p', 'ev-meta', meta.filter(Boolean).join(' · ')));
+    li.appendChild(mid);
+    if (!past || d.page) li.appendChild(link(d)); else li.appendChild(C.el('span'));
+    return li;
+  }
+  function feature(d){
+    var box = C.el('article', 'ev-feature');
+    if (d.image) {
+      var ph = C.el('a', 'ev-feature-photo'); ph.href = C.driveCta(d).href; ph.setAttribute('tabindex', '-1'); ph.setAttribute('aria-hidden', 'true');
+      var img = C.el('img'); img.src = d.image; img.alt = ''; img.decoding = 'async';
+      ph.appendChild(img); box.appendChild(ph);
+    }
+    var b = C.el('div', 'ev-feature-body');
+    var o = C.driveOpens(d), c = C.driveCloses(d);
+    var date = C.el('p', 'ev-date');
+    date.appendChild(C.el('b', null, o ? C.fmtDate(o) : ''));
+    if (o && (!c || +o === +c)) date.appendChild(C.el('span', null, DAYS[o.getDay()]));
+    else if (c) date.appendChild(C.el('span', null, 'to ' + C.fmtDate(c)));
+    b.appendChild(date);
+    b.appendChild(C.el('p', 'ev-tag', label(d)));
+    b.appendChild(C.el('h3', 'serif h2', d.name));
+    if (place(d)) b.appendChild(C.el('p', 'ev-place', place(d)));
+    if (d.summary) b.appendChild(C.el('p', 'ev-sum', d.summary));
+    var acts = C.el('div'); acts.style.cssText = 'display:flex;flex-wrap:wrap;gap:0.9rem 1rem;margin-top:1.6rem;';
+    var cta = C.driveCta(d), btn = C.el('a', 'btn');
+    C.wire(btn, cta.href, cta.label);
+    acts.appendChild(btn);
+    if (d.ics && window.ATLCalendar) {
+      var atc = C.el('div', 'atc');
+      atc.dataset.title = d.name; atc.dataset.start = d.starts_at || d.opens; atc.dataset.end = d.ends_at || d.closes || atc.dataset.start;
+      atc.dataset.location = [d.venue, d.address].filter(Boolean).join(', ');
+      atc.dataset.details = (d.summary || '') + (d.page ? ' adapttolife.org' + d.page : '');
+      atc.dataset.ics = d.ics;
+      var ab = C.el('a', 'btn ghost', 'Add to calendar'); ab.href = d.ics;
+      atc.appendChild(ab); acts.appendChild(atc);
+      window.ATLCalendar.mount(atc);
+    }
+    b.appendChild(acts);
+    box.appendChild(b);
+    return box;
+  }
+  function ld(list){
+    var items = list.map(function(d){
+      var e = { '@context': 'https://schema.org', '@type': 'Event', name: d.name,
+        startDate: d.starts_at || d.opens, endDate: d.ends_at || d.closes,
+        eventStatus: 'https://schema.org/EventScheduled',
+        organizer: { '@type': 'Organization', name: 'Adapt To Life', url: 'https://adapttolife.org' } };
+      if (d.summary) e.description = d.summary;
+      if (d.venue || d.city) {
+        e.eventAttendanceMode = 'https://schema.org/OfflineEventAttendanceMode';
+        e.location = { '@type': 'Place', name: d.venue || d.city, address: { '@type': 'PostalAddress', addressLocality: d.city, addressRegion: d.state, addressCountry: 'US' } };
+      } else {
+        e.eventAttendanceMode = 'https://schema.org/OnlineEventAttendanceMode';
+        e.location = { '@type': 'VirtualLocation', url: 'https://adapttolife.org' + (d.page || '/events') };
+      }
+      return e;
+    });
+    if (!items.length) return;
+    var s = document.createElement('script'); s.type = 'application/ld+json';
+    s.textContent = JSON.stringify(items);
+    document.head.appendChild(s);
+  }
+  C.load(function(store){
+    var all = store ? store.drives.slice() : [];
+    var by = function(a, b){ return (C.driveOpens(a) || 0) - (C.driveOpens(b) || 0); };
+    var up = all.filter(function(d){ return C.driveStatus(d) !== 'past'; }).sort(by);
+    var past = all.filter(function(d){ return C.driveStatus(d) === 'past'; }).sort(by).reverse();
+    if (up.length) {
+      document.getElementById('evFeature').appendChild(feature(up[0]));
+      up.slice(1).forEach(function(d){ document.getElementById('evUpcoming').appendChild(row(d, false)); });
+      ld(up);
+    } else {
+      document.getElementById('evEmpty').hidden = false;
+    }
+    if (past.length) {
+      past.forEach(function(d){ document.getElementById('evPast').appendChild(row(d, true)); });
+      document.getElementById('evPastSection').hidden = false;
+    }
+  });
+})();
+</script>
+<script src="/js/subscribe.js" defer></script>
+<script src="/js/turnstile-lazy.js" defer></script>
+</body>
+</html>

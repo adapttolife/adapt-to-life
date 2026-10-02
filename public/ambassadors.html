@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<title>Ambassadors | Adapt To Life</title>
+<meta name="description" content="Adapt To Life ambassadors are athletes, coaches, and connectors who bring the next athlete into adaptive sports. Juan Ortiz is the first.">
+<link rel="canonical" href="https://adapttolife.org/ambassadors">
+<link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-v2-option2-32.png">
+<link rel="apple-touch-icon" href="/images/apple-touch-icon-v2-option2.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Ambassadors | Adapt To Life">
+<meta property="og:description" content="Adapt To Life ambassadors are athletes, coaches, and connectors who bring the next athlete into adaptive sports. Juan Ortiz is the first.">
+<meta property="og:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.">
+<meta property="og:url" content="https://adapttolife.org/ambassadors">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Ambassadors | Adapt To Life">
+<meta name="twitter:description" content="Adapt To Life ambassadors are athletes, coaches, and connectors who bring the next athlete into adaptive sports. Juan Ortiz is the first.">
+<meta name="twitter:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
+<meta name="twitter:image:alt" content="Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/site.css">
+<style>
+  /* Ambassadors: the program. One card per ambassador, each linking to their
+     own page (/juan is the pattern), the same way Partners works. */
+  .am-hero{ position:relative; isolation:isolate; overflow:hidden; min-height:clamp(540px,74svh,720px); display:flex; align-items:center; padding:clamp(4rem,9vh,6rem) 0; background:#0C0C0E; }
+  .am-hero-img{ position:absolute; inset:0; z-index:-2; }
+  .am-hero-img img{ width:100%; height:100%; object-fit:cover; object-position:70% 35%; }
+  .am-hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:
+      linear-gradient(90deg, rgba(12,12,14,0.97) 0%, rgba(12,12,14,0.88) 36%, rgba(12,12,14,0.35) 66%, rgba(12,12,14,0.1) 90%),
+      radial-gradient(ellipse 40% 55% at 22% 60%, rgba(255,92,57,0.18) 0%, transparent 70%); }
+  .am-kicker{ display:flex; align-items:center; gap:0.9rem; font-family:var(--font-label); font-weight:800; font-size:0.85rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--orange); }
+  .am-kicker::before{ content:""; width:2.2rem; height:2px; background:var(--orange); box-shadow:0 0 12px var(--orange-glow); }
+  .am-hero .display{ max-width:12ch; margin-top:1.4rem; font-size:clamp(2.8rem,5.8vw,5.2rem); line-height:0.97; }
+  .am-hero .sub{ max-width:38ch; margin-top:1.3rem; color:var(--cream-mute); }
+  .am-hero .actions{ display:flex; flex-wrap:wrap; gap:0.9rem 1rem; margin-top:1.8rem; }
+  @media (max-width:820px){
+    .am-hero{ display:block; min-height:0; padding:0 0 clamp(2.5rem,7vh,3.5rem); }
+    .am-hero-img{ position:relative; display:block; height:min(58svh,520px); }
+    .am-hero-img img{ object-position:62% 30%; }
+    .am-hero::after{ background:linear-gradient(180deg, transparent 55%, rgba(12,12,14,0.75) 80%, #0C0C0E 96%); }
+    .am-hero .wrap{ margin-top:1.6rem; }
+    .am-hero .display{ font-size:clamp(2.5rem,10.5vw,3.3rem); }
+  }
+  .am-list{ display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr)); gap:clamp(1rem,2vw,1.4rem); margin-top:clamp(2rem,4vw,2.8rem); }
+  .am-card{ display:grid; grid-template-columns:minmax(0,0.9fr) minmax(0,1.1fr); border-radius:22px; overflow:hidden; background:#0C0C0E; color:var(--cream); position:relative; isolation:isolate; box-shadow:0 30px 70px -34px rgba(0,0,0,0.6); }
+  .am-card::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 60% 70% at 85% 30%, rgba(255,92,57,0.18) 0%, transparent 70%); }
+  .am-card-photo{ display:block; min-height:clamp(320px,36vw,440px); }
+  .am-card-photo img{ width:100%; height:100%; object-fit:cover; object-position:40% 30%; }
+  .am-card-body{ padding:clamp(1.6rem,3.5vw,2.8rem); display:flex; flex-direction:column; justify-content:center; align-items:flex-start; }
+  .am-card .tag{ font-family:var(--font-label); font-weight:800; font-size:0.78rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--orange); }
+  .am-card .h3{ margin-top:0.4rem; color:var(--cream); font-size:clamp(1.8rem,3vw,2.6rem); letter-spacing:-0.02em; line-height:1.02; }
+  .am-card .line{ margin-top:0.8rem; color:var(--cream-mute); max-width:38ch; }
+  .am-card .q{ margin-top:1rem; padding-left:1rem; border-left:3px solid var(--orange); color:var(--cream); font-weight:600; max-width:36ch; }
+  .am-more{ margin-top:1.5rem; font-weight:700; color:var(--orange); border-bottom:2px solid currentColor; padding-bottom:2px; }
+  @media (max-width:700px){ .am-card{ grid-template-columns:1fr; } .am-card-photo{ min-height:0; aspect-ratio:4/3.6; } }
+  .am-ways{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(1rem,2vw,1.4rem); margin-top:clamp(2rem,4vw,2.8rem); }
+  @media (max-width:860px){ .am-ways{ grid-template-columns:1fr; } }
+  .am-way{ padding:1.6rem 1.5rem; border-radius:18px; background:var(--paper); box-shadow:0 0 0 1px var(--hairline); }
+  .am-way .n{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:1.6rem; color:var(--orange); }
+  .am-way h3{ margin-top:0.4rem; font-family:var(--font-display); font-weight:800; font-size:1.3rem; letter-spacing:-0.01em; color:var(--ink); }
+  .am-way p{ margin-top:0.6rem; color:var(--ink-soft); }
+  .am-note{ margin-top:1.6rem; color:var(--muted); max-width:56ch; }
+  .am-two{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(1.4rem,4vw,3rem); margin-top:clamp(2rem,4vw,2.6rem); }
+  @media (max-width:760px){ .am-two{ grid-template-columns:1fr; } }
+  .am-two h3{ font-family:var(--font-label); font-weight:800; font-size:0.8rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--orange); }
+  .am-two ul{ list-style:none; padding:0; margin:1rem 0 0; display:grid; gap:0.7rem; }
+  .am-two li{ position:relative; padding-left:1.3rem; color:var(--cream); line-height:1.45; }
+  .am-two li::before{ content:""; position:absolute; left:0; top:0.55em; width:7px; height:7px; border-radius:2px; background:var(--orange); }
+  .am-promise{ margin-top:2.2rem; padding:1.3rem 1.4rem; border-radius:16px; box-shadow:inset 0 0 0 1px rgba(255,255,255,0.14); color:var(--cream-mute); max-width:60ch; }
+</style>
+<script src="/js/attribution.js" defer></script>
+</head>
+<body>
+
+<header class="nav over-dark" id="nav">
+  <div class="wrap nav-inner">
+    <a href="/" class="brand"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500.000000 457.000000" class="brand-logo" aria-hidden="true" focusable="false"><g transform="translate(0.000000,457.000000) scale(0.100000,-0.100000)"
+fill="currentColor" stroke="none">
+<path d="M2059 4548 c-14 -13 -99 -185 -198 -403 -96 -209 -238 -519 -316
+-690 -202 -440 -304 -662 -333 -725 -29 -65 -163 -358 -237 -520 -29 -63 -139
+-304 -245 -535 -291 -637 -404 -882 -445 -970 -20 -44 -56 -123 -80 -175 -53
+-118 -172 -375 -191 -414 -53 -108 -28 -116 371 -116 356 0 369 2 394 57 11
+23 190 440 524 1217 72 168 77 206 52 406 -69 554 79 859 585 1205 111 76 137
+101 165 155 20 40 233 517 330 742 23 53 45 90 56 93 20 7 59 -10 59 -26 0 -9
+208 -480 215 -488 3 -2 35 25 72 59 169 156 360 182 566 79 51 -27 51 -24 -54
+206 -134 293 -232 511 -306 675 -93 210 -35 190 -539 190 -421 0 -421 0 -445
+-22z"/>
+<path d="M3060 3404 c-127 -44 -200 -148 -200 -284 0 -358 507 -412 590 -62
+52 220 -174 420 -390 346z"/>
+<path d="M2334 2885 c-396 -102 -739 -406 -825 -732 -32 -119 -37 -419 -7
+-373 2 3 32 61 67 130 180 354 428 530 745 530 135 0 133 2 115 -107 -53 -333
+27 -498 243 -498 106 0 119 9 95 60 -36 75 -15 139 134 406 128 229 134 355
+26 476 -106 117 -372 166 -593 108z"/>
+<path fill="#FF5C39" d="M2242 2133 c-193 -421 -156 -742 101 -859 127 -58 282 -41 606 66
+403 134 502 93 711 -292 386 -708 698 -982 1176 -1030 158 -17 167 -8 53 50
+-349 178 -546 441 -794 1062 -293 734 -505 846 -1178 623 -249 -82 -337 -90
+-440 -40 -116 58 -187 202 -190 389 -2 116 -5 118 -45 31z"/>
+<path d="M1893 1869 c-616 -376 -623 -1289 -11 -1695 117 -78 206 -113 411
+-163 57 -13 236 -15 286 -2 20 6 68 17 106 26 399 93 694 425 771 869 45 256
+-59 389 -280 362 -87 -11 -104 -30 -80 -92 46 -119 16 -335 -66 -474 -199
+-338 -665 -446 -974 -226 -323 230 -382 720 -118 982 42 42 42 42 42 186 0 96
+5 163 15 201 25 97 17 99 -102 26z"/>
+</g></svg>Adapt To Life</a>
+    <nav class="nav-links">
+      <div class="nav-group">
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navOurWork">Our Work<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 3 3-3"/></svg></button>
+        <div class="nav-panel" id="navOurWork">
+          <a href="/hustle-and-heart"><span class="np-t">Hustle &amp; Heart Fund</span><span class="np-d">Support for equipment, training, and travel</span></a>
+          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d">Find adaptive programs by sport and location</span></a>
+          <a href="/adapt-body-shop"><span class="np-t">Adapt Body Shop</span><span class="np-d">Coming soon · Gear for the community</span></a>
+        </div>
+      </div>
+      <div class="nav-group">
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navJoin">Get Involved<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 3 3-3"/></svg></button>
+        <div class="nav-panel" id="navJoin">
+          <a href="/volunteer"><span class="np-t">Volunteer</span><span class="np-d">Explore roles, time commitments, and ways to contribute</span></a>
+          <a href="/ambassadors"><span class="np-t">Ambassadors</span><span class="np-d">Athletes and connectors who grow the sport</span></a>
+          <a href="/sponsorship"><span class="np-t">Partners</span><span class="np-d">Our partners, and how to join them</span></a>
+          <a href="/events"><span class="np-t">Events</span><span class="np-d">Tournaments, fundraisers, and gatherings</span></a>
+        </div>
+      </div>
+      <div class="nav-group">
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navAbout">About<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 3 3-3"/></svg></button>
+        <div class="nav-panel" id="navAbout">
+          <a href="/promise"><span class="np-t">How Giving Works</span><span class="np-d">How gifts support athletes and the work around them</span></a>
+          <a href="/about"><span class="np-t">Our Story</span><span class="np-d">The people who built this, and why</span></a>
+        </div>
+      </div>
+      <a class="lk featured" href="/apply">Apply for support</a>
+      <a class="nav-cta" href="/donate">Donate</a>
+    </nav>
+    <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="mobile-menu">
+    <div class="wrap mwrap">
+      <span class="m-group">Our Work</span>
+      <a class="m-sub" href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
+      <a class="m-sub" href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
+      <a class="m-sub" href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
+      <span class="m-group">Get Involved</span>
+      <a class="m-sub" href="/volunteer">Volunteer</a>
+      <a class="m-sub" href="/ambassadors">Ambassadors</a>
+      <a class="m-sub" href="/sponsorship">Partners</a>
+      <a class="m-sub" href="/events">Events</a>
+      <span class="m-group">About</span>
+      <a class="m-sub" href="/promise">How Giving Works</a>
+      <a class="m-sub" href="/about">Our Story</a>
+      <a class="featured" href="/apply">Apply for support</a>
+      <a class="m-cta" href="/donate">Donate &rarr;</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section class="am-hero dark">
+    <picture class="am-hero-img">
+      <img src="/images/athletes/juan-serve.webp" alt="Juan Ortiz tosses the ball to serve from his sport wheelchair" width="1500" height="1474" fetchpriority="high">
+    </picture>
+    <div class="wrap">
+      <p class="am-kicker">Ambassadors</p>
+      <h1 class="serif display">Bring the next athlete <em class="italic" style="color:var(--orange)">into the game.</em></h1>
+      <p class="lead sub">Our ambassadors are athletes, coaches, and connectors who grow adaptive sports where they live. Juan Ortiz is the first.</p>
+      <div class="actions">
+        <a href="#meet" class="btn">Meet our ambassadors <span class="arrow">&rarr;</span></a>
+        <a href="#join" class="btn ghost">Become one</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- MEET: one card per ambassador, each linking to their page. -->
+  <section class="band" id="meet">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow orange">Meet our ambassadors</span>
+        <h2 class="serif h2" style="margin-top:0.8rem;">It starts with <em class="italic" style="color:var(--orange-ink)">a pioneer.</em></h2>
+      </div>
+      <div class="am-list">
+        <article class="am-card reveal">
+          <a class="am-card-photo" href="/juan" tabindex="-1" aria-hidden="true"><img src="/images/hero/trace-juan.webp" alt="" width="752" height="1100" loading="lazy" decoding="async" style="object-fit:contain; background:#141416;"></a>
+          <div class="am-card-body">
+            <p class="tag">Our first ambassador</p>
+            <h3 class="serif h3">Juan Ortiz</h3>
+            <p class="line">Wheelchair Softball Hall of Famer. Got the APP Tour its first wheelchair division. Leading Send 6 to the US Open.</p>
+            <p class="q">&ldquo;If an adaptive athlete wants to try a sport, that sport has to exist first.&rdquo;</p>
+            <a class="am-more" href="/juan">Read Juan&rsquo;s story <span class="arrow">&rarr;</span></a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE WAYS IN: capabilities, not ranks. -->
+  <section class="band tint">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow orange">What ambassadors do</span>
+        <h2 class="serif h2" style="margin-top:0.8rem;">More than a following.</h2>
+      </div>
+      <div class="am-ways reveal">
+        <div class="am-way"><span class="n">01</span><h3>Athlete ambassador</h3><p>Welcome newcomers, show the sport, share the parts of your story you choose, and represent the community at events.</p></div>
+        <div class="am-way"><span class="n">02</span><h3>Coach or program builder</h3><p>Lead sessions within your experience, support local staff, and help a host keep the sport going after the first day.</p></div>
+        <div class="am-way"><span class="n">03</span><h3>Community connector</h3><p>Make the introductions that matter: schools, families, clinics, and programs, so people find a place to play.</p></div>
+      </div>
+      <p class="am-note reveal">These are ways in, not ranks. Nobody has to do all three.</p>
+    </div>
+  </section>
+
+  <!-- THE AGREEMENT: what we give, what we ask, and the line we never cross. -->
+  <section class="band dark">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow orange">How it works</span>
+        <h2 class="serif h2" style="margin-top:0.8rem; color:var(--cream);">A real role, with real support.</h2>
+      </div>
+      <div class="am-two reveal">
+        <div>
+          <h3>What you get</h3>
+          <ul>
+            <li>A clear role and a named contact.</li>
+            <li>Travel and access support for the work we ask you to do.</li>
+            <li>Training, materials, and introductions.</li>
+            <li>Your own page on this site, if you want one.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>What we ask</h3>
+          <ul>
+            <li>Show up for what you agree to.</li>
+            <li>Represent the community honestly.</li>
+            <li>Tell us about any paid brand relationships, so we can tell everyone else.</li>
+          </ul>
+        </div>
+      </div>
+      <p class="am-promise reveal">Being an ambassador never depends on receiving support from the Hustle &amp; Heart Fund, and support never depends on being an ambassador.</p>
+    </div>
+  </section>
+
+  <section class="closing dark band-lg" id="join">
+    <div class="wrap center">
+      <span class="eyebrow orange reveal">Become an ambassador</span>
+      <h2 class="serif display reveal">Who did you bring <em class="italic" style="color:var(--orange)">to the court?</em></h2>
+      <p class="lead sub reveal" style="margin:1.2rem auto 0; max-width:42ch;">We are growing this group a few people at a time. Tell us about yourself, or about someone who should be here.</p>
+      <div class="actions reveal" style="justify-content:center; margin-top:2rem;">
+        <a href="/contact?rsn=ambassador" class="btn">Raise your hand</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="brandcol">
+        <a href="/" class="brand"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500.000000 457.000000" class="brand-logo" aria-hidden="true" focusable="false"><g transform="translate(0.000000,457.000000) scale(0.100000,-0.100000)"
+fill="currentColor" stroke="none">
+<path d="M2059 4548 c-14 -13 -99 -185 -198 -403 -96 -209 -238 -519 -316
+-690 -202 -440 -304 -662 -333 -725 -29 -65 -163 -358 -237 -520 -29 -63 -139
+-304 -245 -535 -291 -637 -404 -882 -445 -970 -20 -44 -56 -123 -80 -175 -53
+-118 -172 -375 -191 -414 -53 -108 -28 -116 371 -116 356 0 369 2 394 57 11
+23 190 440 524 1217 72 168 77 206 52 406 -69 554 79 859 585 1205 111 76 137
+101 165 155 20 40 233 517 330 742 23 53 45 90 56 93 20 7 59 -10 59 -26 0 -9
+208 -480 215 -488 3 -2 35 25 72 59 169 156 360 182 566 79 51 -27 51 -24 -54
+206 -134 293 -232 511 -306 675 -93 210 -35 190 -539 190 -421 0 -421 0 -445
+-22z"/>
+<path d="M3060 3404 c-127 -44 -200 -148 -200 -284 0 -358 507 -412 590 -62
+52 220 -174 420 -390 346z"/>
+<path d="M2334 2885 c-396 -102 -739 -406 -825 -732 -32 -119 -37 -419 -7
+-373 2 3 32 61 67 130 180 354 428 530 745 530 135 0 133 2 115 -107 -53 -333
+27 -498 243 -498 106 0 119 9 95 60 -36 75 -15 139 134 406 128 229 134 355
+26 476 -106 117 -372 166 -593 108z"/>
+<path fill="#FF5C39" d="M2242 2133 c-193 -421 -156 -742 101 -859 127 -58 282 -41 606 66
+403 134 502 93 711 -292 386 -708 698 -982 1176 -1030 158 -17 167 -8 53 50
+-349 178 -546 441 -794 1062 -293 734 -505 846 -1178 623 -249 -82 -337 -90
+-440 -40 -116 58 -187 202 -190 389 -2 116 -5 118 -45 31z"/>
+<path d="M1893 1869 c-616 -376 -623 -1289 -11 -1695 117 -78 206 -113 411
+-163 57 -13 236 -15 286 -2 20 6 68 17 106 26 399 93 694 425 771 869 45 256
+-59 389 -280 362 -87 -11 -104 -30 -80 -92 46 -119 16 -335 -66 -474 -199
+-338 -665 -446 -974 -226 -323 230 -382 720 -118 982 42 42 42 42 42 186 0 96
+5 163 15 201 25 97 17 99 -102 26z"/>
+</g></svg>Adapt To Life</a>
+        <p class="tagline">Your place in adaptive sports.</p>
+        <form class="foot-sub js-subscribe" data-source="footer" novalidate>
+          <label class="foot-sub-label" for="footEm">Follow the work</label>
+          <div class="foot-sub-row">
+            <input class="foot-sub-input" id="footEm" name="em" type="email" autocomplete="email" placeholder="you@example.com" aria-label="Your email">
+            <button class="foot-sub-btn" type="submit" aria-label="Join the list">&rarr;</button>
+          </div>
+          <input type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only"></div>
+          <p class="foot-sub-msg" role="status" aria-live="polite"></p>
+        </form>
+        <p class="legal">Adapt To Life is a recognized 501(c)(3) nonprofit organization. Donations are tax deductible to the extent allowed by law. EIN 41-3213344.</p>
+      </div>
+      <div class="col">
+        <h4>Organization</h4>
+        <a href="/about">Our Story</a>
+        <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
+        <a href="/tim">Tim&#39;s Story</a>
+        <a href="/karen">Karen&#39;s Story</a>
+        <a href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
+        <a href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
+                <a href="/roadmap">Roadmap</a>
+      </div>
+      <div class="col">
+        <h4>Get involved</h4>
+        <a href="/donate">Donate</a>
+        <a href="/promise">How Giving Works</a>
+        <a href="/volunteer">Volunteer</a>
+        <a href="/ambassadors">Ambassadors</a>
+        <a href="/sponsorship">Become a partner</a>
+        <a href="/events">Events</a>
+        <a href="/apply">Apply for support</a>
+        <a href="https://sign.adapttolife.org/waiver?source=atl">Photo and media release</a>
+        <a href="/subscribe">Join the list</a>
+        <a href="/contact">Contact</a>
+        <a href="mailto:hello@adapttolife.org">hello@adapttolife.org</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="social">
+        <a href="https://www.instagram.com/adapt_to_life_org/" aria-label="Adapt To Life on Instagram" target="_blank" rel="me noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16M12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63c-.79.3-1.46.72-2.13 1.38C1.35 2.68.93 3.35.63 4.14.33 4.9.13 5.78.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.3.79.72 1.46 1.38 2.13.67.66 1.34 1.08 2.13 1.38.76.3 1.64.5 2.91.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56.79-.3 1.46-.72 2.13-1.38.66-.67 1.08-1.34 1.38-2.13.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91-.3-.79-.72-1.46-1.38-2.13C21.32 1.35 20.65.93 19.86.63c-.76-.3-1.64-.5-2.91-.56C15.67.01 15.26 0 12 0z"/><path d="M12 5.84A6.16 6.16 0 1 0 18.16 12 6.16 6.16 0 0 0 12 5.84zm0 10.16A4 4 0 1 1 16 12a4 4 0 0 1-4 4z"/><circle cx="18.41" cy="5.59" r="1.44"/></svg></a>
+        <a href="https://www.facebook.com/profile.php?id=61592619668321" aria-label="Adapt To Life on Facebook" target="_blank" rel="me noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.96h-1.51c-1.49 0-1.96.93-1.96 1.89v2.26h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z"/></svg></a>
+      </div>
+      <span>&copy; 2026 Adapt To Life</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var toggles = document.querySelectorAll('.nav-toggle');
+    function closeAll(except){
+      toggles.forEach(function(t){
+        if (t === except) return;
+        t.setAttribute('aria-expanded','false');
+        var pnl = document.getElementById(t.getAttribute('aria-controls'));
+        if (pnl) pnl.classList.remove('open');
+      });
+    }
+    toggles.forEach(function(t){
+      var panel = document.getElementById(t.getAttribute('aria-controls'));
+      t.addEventListener('click', function(e){
+        e.stopPropagation();
+        var open = t.getAttribute('aria-expanded') === 'true';
+        closeAll(t);
+        t.setAttribute('aria-expanded', open ? 'false' : 'true');
+        if (panel) panel.classList.toggle('open', !open);
+      });
+    });
+    document.addEventListener('click', function(){ closeAll(null); });
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape') closeAll(null);
+    });
+  })();
+  (function(){
+    var nav = document.getElementById('nav');
+    var menuBtn = document.getElementById('menuBtn');
+    menuBtn.addEventListener('click', function(){
+      var open = nav.classList.toggle('open');
+      menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    nav.querySelectorAll('.mobile-menu a').forEach(function(a){
+      a.addEventListener('click', function(){ nav.classList.remove('open'); menuBtn.setAttribute('aria-expanded','false'); });
+    });
+    var onScroll = function(){ if(window.scrollY > 8){ nav.classList.add('scrolled'); } else { nav.classList.remove('scrolled'); } };
+    window.addEventListener('scroll', onScroll, { passive:true });
+    onScroll();
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var reveals = document.querySelectorAll('.reveal');
+    if(reduce || !('IntersectionObserver' in window)){
+      reveals.forEach(function(el){ el.classList.add('in'); });
+    } else {
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+      }, { threshold:0.12, rootMargin:'0px 0px -8% 0px' });
+      reveals.forEach(function(el){ io.observe(el); });
+      window.addEventListener('load', function(){
+        document.querySelectorAll('.hero .reveal').forEach(function(el, i){
+          setTimeout(function(){ el.classList.add('in'); }, 60 + i*70);
+        });
+      });
+    }
+  })();
+</script>
+<script src="/js/subscribe.js" defer></script>
+<script src="/js/turnstile-lazy.js" defer></script>
+</body>
+</html>

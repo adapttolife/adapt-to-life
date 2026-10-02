@@ -79,3 +79,11 @@
 # on a page do not both pay full latency.
 /data/*
   Cache-Control: public, max-age=60, stale-while-revalidate=600
+
+# Calendar files. Served inline as text/calendar so a phone opens its own
+# "Add to calendar" screen instead of downloading a file. Short cache: a time
+# gets added to an event the day it is known.
+/cal/*
+  Content-Type: text/calendar; charset=utf-8
+  Content-Disposition: inline
+  Cache-Control: public, max-age=300

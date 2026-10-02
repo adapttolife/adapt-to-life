@@ -153,7 +153,9 @@ fill="currentColor" stroke="none">
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navJoin">Get Involved<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 3 3-3"/></svg></button>
         <div class="nav-panel" id="navJoin">
           <a href="/volunteer"><span class="np-t">Volunteer</span><span class="np-d">Explore roles, time commitments, and ways to contribute</span></a>
-          <a href="/sponsorship"><span class="np-t">Sponsor</span><span class="np-d">Partnership options and recognition for your business</span></a>
+          <a href="/ambassadors"><span class="np-t">Ambassadors</span><span class="np-d">Athletes and connectors who grow the sport</span></a>
+          <a href="/sponsorship"><span class="np-t">Partners</span><span class="np-d">Our partners, and how to join them</span></a>
+          <a href="/events"><span class="np-t">Events</span><span class="np-d">Tournaments, fundraisers, and gatherings</span></a>
         </div>
       </div>
       <div class="nav-group">
@@ -178,7 +180,9 @@ fill="currentColor" stroke="none">
       <a class="m-sub" href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
       <span class="m-group">Get Involved</span>
       <a class="m-sub" href="/volunteer">Volunteer</a>
-      <a class="m-sub" href="/sponsorship">Sponsor</a>
+      <a class="m-sub" href="/ambassadors">Ambassadors</a>
+      <a class="m-sub" href="/sponsorship">Partners</a>
+      <a class="m-sub" href="/events">Events</a>
       <span class="m-group">About</span>
       <a class="m-sub" href="/promise">How Giving Works</a>
       <a class="m-sub" href="/about">Our Story</a>
@@ -280,6 +284,26 @@ fill="currentColor" stroke="none">
     <!-- FOR ADVISORS — merged from /ways-to-give, which redirects here. A donor
        whose gift comes through a broker, a DAF or a will needs these five
        facts, and they existed on a page nobody landed on. -->
+  <!-- PARTNER LOGOS: the Coach level benefit ("Logo on our donate page").
+       One <li> per partner, each linking to its own page. -->
+  <section class="band-sm tint dn-partners" aria-labelledby="dnPartnersTitle">
+    <style>
+      .dn-partners .wrap{ text-align:center; }
+      .dn-partners ul{ list-style:none; padding:0; margin:1.4rem 0 0; display:flex; flex-wrap:wrap; justify-content:center; gap:1rem; }
+      .dn-partners li a{ display:flex; align-items:center; justify-content:center; width:clamp(180px,22vw,230px); aspect-ratio:3/2; border-radius:16px; background:var(--paper); box-shadow:0 0 0 1px var(--hairline), 0 18px 40px -26px rgba(0,0,0,0.35); transition:transform .2s ease, box-shadow .2s ease; }
+      .dn-partners li a:hover{ transform:translateY(-2px); box-shadow:0 0 0 1.5px var(--orange), 0 22px 50px -26px rgba(255,92,57,0.45); }
+      .dn-partners li img{ width:58%; height:auto; }
+      .dn-partners .textlink{ margin-top:1.4rem; }
+    </style>
+    <div class="wrap reveal">
+      <span class="eyebrow orange" id="dnPartnersTitle">With thanks to our partners</span>
+      <ul>
+        <li><a href="/brickhouse" aria-label="Brick House Pickleball, our first partner"><img src="/images/brickhouse/brick-house-logo-orange-black.svg" alt="Brick House Pickleball" width="372" height="265" loading="lazy"></a></li>
+      </ul>
+      <a class="textlink" href="/sponsorship">Become a partner <span class="arrow">&rarr;</span></a>
+    </div>
+  </section>
+
   <section class="band-sm" id="details">
     <div class="wrap">
       <div class="sec-head">
@@ -425,7 +449,7 @@ fill="currentColor" stroke="none">
           <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only"></div>
           <p class="foot-sub-msg" role="status" aria-live="polite"></p>
         </form>
-        <p class="legal">Adapt To Life is a recognized 501(c)(3) nonprofit organization. Donations are tax-deductible to the extent allowed by law. EIN 41-3213344.</p>
+        <p class="legal">Adapt To Life is a recognized 501(c)(3) nonprofit organization. Donations are tax deductible to the extent allowed by law. EIN 41-3213344.</p>
       </div>
       <div class="col">
         <h4>Organization</h4>
@@ -442,7 +466,9 @@ fill="currentColor" stroke="none">
         <a href="/donate">Donate</a>
         <a href="/promise">How Giving Works</a>
         <a href="/volunteer">Volunteer</a>
-        <a href="/sponsorship">Become a sponsor</a>
+        <a href="/ambassadors">Ambassadors</a>
+        <a href="/sponsorship">Become a partner</a>
+        <a href="/events">Events</a>
         <a href="/apply">Apply for support</a>
         <a href="https://sign.adapttolife.org/waiver?source=atl">Photo and media release</a>
         <a href="/subscribe">Join the list</a>

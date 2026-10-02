@@ -59,7 +59,32 @@ try {
 // Sports first by size. The ones carrying a `key` deep-link into the directory
 // already filtered; the rest are still worth naming because the breadth IS the
 // product, and a name with no link still tells you it is in there.
-const sports = [...stats.bySport].sort((a, b) => b.n - a.n).slice(0, 14);
+//
+// The directory's labels are raw: three spellings of TOPSoccer, "Adaptive
+// tennis" beside "Wheelchair Tennis". Fold look-alikes into one family and add
+// their counts. A merged chip links only when every label in it shares one
+// directory key; otherwise the link would open a filter showing a fraction of
+// the number on the chip.
+const FAMILIES = [
+  [/power soccer/i, "Power Soccer"],
+  [/soccer/i, "Adaptive Soccer"],
+  [/tennis/i, "Adaptive Tennis"],
+  [/baseball/i, "Adaptive Baseball"],
+  [/equestrian|equine|horse|riding/i, "Equestrian"],
+  [/^multi-?sport$|^adaptive sports and recreation$/i, "Multisport"],
+];
+const family = (label) => (FAMILIES.find(([re]) => re.test(label)) || [null, label])[1];
+const merged = new Map();
+for (const s of stats.bySport) {
+  const label = family(s.label);
+  const m = merged.get(label) || { label, n: 0, keys: new Set() };
+  m.n += s.n;
+  m.keys.add(s.key || null);
+  merged.set(label, m);
+}
+const sports = [...merged.values()]
+  .map((m) => ({ label: m.label, n: m.n, key: m.keys.size === 1 ? [...m.keys][0] : null }))
+  .sort((a, b) => b.n - a.n).slice(0, 14);
 const states = [...stats.byState].sort((a, b) => b.n - a.n).slice(0, 12);
 const chip = (label, count, href) => href
   ? `<li><a class="dir-chip" href="${esc(href)}" target="_blank" rel="noopener">${esc(label)}<b>${n(count)}</b></a></li>`

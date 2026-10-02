@@ -51,6 +51,7 @@ Do not confuse less defensive copy with fewer safeguards. Preserve material dono
 | `/promise` | How giving works and the relationship between support and sustainability | Understand the terms before giving |
 | `/send-6` | The campaign goal, selection process, cost categories, and progress | Give toward the campaign |
 | `/popcorn` | Drive status, vendor sales model, ordering, participation, and past results | Buy during a drive; otherwise give or subscribe |
+| `/events` | The index of every dated thing we take part in: upcoming (soonest featured) and past, each linking to its own page when it has one | Attend, or join the list for new dates |
 | `/adaptive-sports-near-me` | Directory utility and the first step into a program | Browse the directory |
 | `/about` | People, origins, shared purpose, and current work at `#our-work` | Meet the community and explore the work |
 | `/adapt-body-shop` | Truthful coming-soon shop context within the same mission | Share an idea, get ATL updates, or find a role |
@@ -87,7 +88,7 @@ The footer keeps the brand promise, useful routes, newsletter entry, social link
 - A target is not a quote, a reconciled expense, a guaranteed award, or a confirmed roster. Describe the Send 6 budget as a fundraising target.
 - Do not invent a balancing expense to make illustrative line items equal a fundraising goal.
 - `/send-6` owns the campaign explanation. `/popcorn` links to it instead of maintaining another budget.
-- `/public/data/campaigns.json` owns campaign and drive names, dates, relationships, and shared card copy. Keep campaign and drive distinct: no open popcorn drive does not mean the Send 6 campaign has ended.
+- `/public/data/campaigns.json` owns campaign and drive names, dates, relationships, and shared card copy. It is also the events calendar: every entry has a `type` (`fundraiser`, `tournament`, or `event`), and adding an event is appending one object. Only fundraisers feed a campaign or steer QR campaign-follow codes. A big event gets its own page (like `/brickhouse`) and its entry links there with `page`. Keep campaign and drive distinct: no open popcorn drive does not mean the Send 6 campaign has ended.
 - The public fundraising API is a displayed total, not independent financial reconciliation. Review-only snapshots must record their source and capture time.
 - Double Good's published model returns 50% of popcorn sales to the fundraiser. Vendor prices, minimums, shipping, and availability belong at vendor checkout; do not hard-code them without a current reason.
 - The directory's generated statistics come from its current API through `scripts/build-asnm.mjs`. Distinguish states from D.C. and do not describe the database as nationally complete or every listing as independently verified.

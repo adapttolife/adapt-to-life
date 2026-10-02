@@ -110,10 +110,16 @@ export function chicagoToday(nowMs) {
 
 // Mirrors driveStatus() in public/js/campaigns.js: open when today is inside
 // the window, and a drive with no dates at all is never "open".
+//
+// FUNDRAISERS ONLY. campaigns.json also carries tournaments we play in and
+// events (a partner's grand opening, a fireside chat). A printed code that
+// "follows the campaign" exists to raise money, so on an event's date it must
+// not jump to that event's page. Untyped entries are skipped: fail closed.
 export function liveDrive(campaigns, todayISO) {
   const drives = (campaigns && campaigns.drives) || [];
   for (const d of drives) {
     if (d.published === false) continue;
+    if (d.type !== "fundraiser") continue;
     const opens = d.opens || d.starts_at;
     const closes = d.closes || d.ends_at;
     if (!opens && !closes) continue;

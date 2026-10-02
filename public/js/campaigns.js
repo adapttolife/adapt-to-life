@@ -36,7 +36,7 @@
     if (!b) return fmtDate(a) + ", " + a.getFullYear();
     var tail = ", " + b.getFullYear();
     return a.getMonth() === b.getMonth()
-      ? MON[a.getMonth()] + " " + a.getDate() + "–" + b.getDate() + tail
+      ? (a.getDate() === b.getDate() ? fmtDate(a) : MON[a.getMonth()] + " " + a.getDate() + " to " + b.getDate()) + tail
       : fmtDate(a) + " to " + fmtDate(b) + tail;
   }
   function money(n) {
@@ -64,6 +64,7 @@
   function relationshipLabel(d) {
     if (d.relationship === "we_host") return "We host this";
     if (d.relationship === "we_compete") return "We compete here";
+    if (d.relationship === "partner_event") return "With our partner";
     return "We fundraise with this";
   }
 

@@ -51,8 +51,10 @@ function db(rows, { failReads = false } = {}) {
 
 const CAMPAIGNS = {
   drives: [
-    { slug: "popcorn-2026-08", published: true, page: "/popcorn", opens: "2026-08-06", closes: "2026-08-13" },
-    { slug: "old-drive", published: true, page: "/old", opens: "2026-01-01", closes: "2026-01-08" },
+    { slug: "popcorn-2026-08", type: "fundraiser", published: true, page: "/popcorn", opens: "2026-08-06", closes: "2026-08-13" },
+    { slug: "old-drive", type: "fundraiser", published: true, page: "/old", opens: "2026-01-01", closes: "2026-01-08" },
+    { slug: "grand-opening", type: "event", published: true, page: "/brickhouse", starts_at: "2026-10-25", ends_at: "2026-10-25" },
+    { slug: "tournament", type: "tournament", published: true, cta_url: "https://example.org/t", starts_at: "2026-08-10", ends_at: "2026-08-10" },
   ],
 };
 
@@ -142,6 +144,15 @@ test("an existing query string on the destination survives", async () => {
 });
 
 // --- campaign-follow --------------------------------------------------------
+
+test("campaign-follow never follows an event or a tournament, only a fundraiser", () => {
+  // Oct 25: only the grand opening is live. The code keeps its own destination.
+  assert.equal(resolveDest({ dest: "/send-6", rule: "campaign-follow" }, CAMPAIGNS, "2026-10-25"), "/send-6");
+  // Aug 10: a tournament and the popcorn drive are both live. Popcorn wins.
+  assert.equal(resolveDest({ dest: "/send-6", rule: "campaign-follow" }, CAMPAIGNS, "2026-08-10"), "/popcorn");
+  // An untyped entry is not assumed to be a fundraiser.
+  assert.equal(liveDrive({ drives: [{ slug: "x", published: true, page: "/x", opens: "2026-01-01", closes: "2026-12-31" }] }, "2026-06-01"), null);
+});
 
 test("campaign-follow routes to the drive that is open today", () => {
   assert.equal(resolveDest({ dest: "/donate", rule: "campaign-follow" }, CAMPAIGNS, "2026-08-10"), "/popcorn");

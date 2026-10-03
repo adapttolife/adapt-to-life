@@ -3,7 +3,8 @@ import {readFileSync} from 'node:fs';
 export function sqliteD1(schema) {
   const sql=new DatabaseSync(':memory:');sql.exec(schema);
   function prepare(text){return {bind(...args){return stmt(text,args)},...stmt(text,[])}};
-  function stmt(text,args){return {
+  // D1 binds an ArrayBuffer as a BLOB; node:sqlite wants a typed array.
+  function stmt(text,raw){const args=raw.map(v=>v instanceof ArrayBuffer?new Uint8Array(v):v);return {
     bind(...values){return stmt(text,values)},
     async first(){return sql.prepare(text).get(...args)||null},
     async all(){return {success:true,results:sql.prepare(text).all(...args)}},

@@ -2,8 +2,9 @@ import { mailConfigured } from './mail-transport.js';
 // Waiver / release e-signature — Cloudflare-native.
 // Same shape as the other /api handlers: honeypot -> Turnstile -> validate -> act.
 // "Act" = render a clean, branded signed PDF (document + signature certificate) with
-// pdf-lib, hash it for tamper-evidence, store it in R2, log a full audit row in D1,
-// and return an unguessable download link. No external server, no SMTP.
+// pdf-lib, hash it for tamper-evidence, capture the audit row AND the PDF bytes in
+// D1 before answering, archive to the Shared Drive, and return an unguessable
+// download link. No external server, no SMTP.
 
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import { cfSend, houseShell, recordTransactionalFailure } from "./email.js";
@@ -138,28 +139,41 @@ export async function handleWaiver(request, env) {
   }
 
   const pdfSha = await sha256Hex(pdfBytes);
-  let driveFileId = "";
-  let driveLink = "";
-  try {
-    const uploaded = await uploadWaiverToDrive(env, { id, pdfBytes, org, email, docVersion: doc.version });
-    driveFileId = uploaded.drive_file_id || "";
-    driveLink = uploaded.drive_link || "";
-  } catch (err) {
-    console.error("waiver Drive upload failed:", err);
+  if (pdfBytes.byteLength > MAX_STORED_PDF_BYTES) {
+    // D1 caps a row at 2 MB. Refusing here is honest; accepting a release we
+    // cannot keep is not. A canvas signature is tens of kilobytes, so only a
+    // pathological signature image reaches this.
+    return json({ ok: false, error: "Your signature image is too large. Please clear it, sign again, and resubmit." }, 413);
   }
 
+  // Capture first. The audit row and the signed PDF bytes commit together in
+  // one D1 batch BEFORE anything else happens. Only this write decides whether
+  // the signer hears "done": Drive, email and the intake record are follow-up
+  // work that may fail and be retried, but the release itself already exists.
+  // The row starts as 'uploading' (this request is attempt 1) so the cron does
+  // not race the in-flight upload below.
   try {
-    await env.WAIVERS_DB.prepare(
-      `INSERT INTO waivers
-       (id, org, waiver_version, signer_name, signer_email, signed_at, signature_type, signer_kind, minor_name, relationship, program, consent, ip, user_agent, country, region, city, doc_sha256, pdf_sha256, drive_file_id, drive_link)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
-    ).bind(id, org, doc.version, name, email, signedAt, signatureType, isMinor ? "guardian" : "adult", minorName, relationship, program, 1, ip, ua, geo.country, geo.region, geo.city, docSha, pdfSha, driveFileId, driveLink).run();
+    await env.WAIVERS_DB.batch([
+      env.WAIVERS_DB.prepare(
+        `INSERT INTO waivers
+         (id, org, waiver_version, signer_name, signer_email, signed_at, signature_type, signer_kind, minor_name, relationship, program, consent, ip, user_agent, country, region, city, doc_sha256, pdf_sha256, drive_file_id, drive_link, drive_status, drive_attempts, drive_last_attempt_at)
+         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'uploading',1,?)`
+      ).bind(id, org, doc.version, name, email, signedAt, signatureType, isMinor ? "guardian" : "adult", minorName, relationship, program, 1, ip, ua, geo.country, geo.region, geo.city, docSha, pdfSha, "", "", signedAt),
+      env.WAIVERS_DB.prepare(
+        "INSERT INTO waiver_documents (waiver_id, pdf, pdf_sha256, byte_length, created_at) VALUES (?,?,?,?,?)"
+      ).bind(id, toArrayBuffer(pdfBytes), pdfSha, pdfBytes.byteLength, signedAt),
+    ]);
   } catch (err) {
-    console.error("waiver D1 insert failed:", err);
+    console.error("waiver D1 capture failed:", err);
+    return json({ ok: false, error: "We could not save your signed release, so nothing was recorded. Please try again in a moment." }, 503);
   }
 
-  // The compliance record is D1 (index, above) + the Google Shared Drive archive.
-  // There is deliberately no fourth mirror: a signed release is a record to retrieve,
+  // Drive is the archive, not the capture. A failure here leaves the row
+  // 'pending' with the bytes in waiver_documents; runDriveBacklog retries it.
+  await attemptDriveArchive(env, { id, pdfBytes, org, email, docVersion: doc.version, attempts: 1, lookupFirst: false });
+
+  // The compliance record is D1 (audit row + signed bytes, above) + the Google
+  // Shared Drive archive. There is deliberately no fourth mirror: a signed release is a record to retrieve,
   // not a task to work, so it does not belong in ClickUp either.
 
   // Email a copy of the signed PDF to the signer (and the org), from hello@adapttolife.org.
@@ -176,7 +190,7 @@ export async function handleWaiver(request, env) {
   // every other submission, and stamped as already notified: the receipt above
   // BCCs hello@adapttolife.org, so a second email would say the same thing
   // twice. Identity and a pointer only — the release itself is the compliance
-  // record and lives in R2 and the Shared Drive, not in a CRM tab.
+  // record and lives in D1 and the Shared Drive, not in a CRM tab.
   try {
     await recordIntake(env, {
       site: "adapttolife.org", kind: "waiver", name, email,
@@ -197,9 +211,16 @@ export async function handleWaiverDownload(request, env, id) {
   let row;
   try { row = await env.WAIVERS_DB.prepare("SELECT drive_link, drive_file_id FROM waivers WHERE id = ?").bind(id).first(); }
   catch (err) { console.error("waiver lookup failed:", err); return new Response("Error", { status: 500 }); }
-  if (!row || (!row.drive_link && !row.drive_file_id)) return new Response("Not found", { status: 404 });
-  const target = row.drive_link || `https://drive.google.com/file/d/${row.drive_file_id}/view`;
-  return Response.redirect(target, 302);
+  if (!row) return new Response("Not found", { status: 404 });
+  if (row.drive_link || row.drive_file_id) {
+    const target = row.drive_link || `https://drive.google.com/file/d/${row.drive_file_id}/view`;
+    return Response.redirect(target, 302);
+  }
+  // Not archived to Drive yet: serve the captured copy, so the signer's
+  // download link works the moment they are told the release is signed.
+  const bytes = await storedPdf(env, id);
+  if (!bytes) return new Response("Not found", { status: 404 });
+  return new Response(bytes, { headers: { "Content-Type": "application/pdf", "Content-Disposition": `inline; filename="release-${id.slice(0, 8)}.pdf"`, "Cache-Control": "private, no-store" } });
 }
 
 export async function handleWaiverVerify(request, env, id) {
@@ -209,14 +230,13 @@ export async function handleWaiverVerify(request, env, id) {
     row = await env.WAIVERS_DB.prepare("SELECT signer_name, signer_email, signed_at, waiver_version, pdf_sha256, doc_sha256, drive_file_id, country, region, city FROM waivers WHERE id = ?").bind(id).first();
   } catch { return json({ ok: false, error: "Lookup failed" }, 500); }
   if (!row) return json({ ok: false, error: "No such document" }, 404);
-  if (!row.drive_file_id) return json({ ok: false, error: "Document file missing" }, 404);
-  let bytes;
-  try {
-    bytes = await fetchDrivePdf(env, row.drive_file_id);
-  } catch (err) {
-    console.error("waiver drive fetch failed:", err);
-    return json({ ok: false, error: "Document file missing" }, 404);
+  let bytes = null;
+  if (row.drive_file_id) {
+    try { bytes = await fetchDrivePdf(env, row.drive_file_id); }
+    catch (err) { console.error("waiver drive fetch failed:", err); }
   }
+  if (!bytes) bytes = await storedPdf(env, id);
+  if (!bytes) return json({ ok: false, error: "Document file missing" }, 404);
   const current = await sha256Hex(bytes);
   return json({
     ok: true, document_id: id, intact: current === row.pdf_sha256,
@@ -224,6 +244,16 @@ export async function handleWaiverVerify(request, env, id) {
     waiver_version: row.waiver_version, location: [row.city, row.region, row.country].filter(Boolean).join(", "),
     recorded_sha256: row.pdf_sha256, current_sha256: current, document_text_sha256: row.doc_sha256,
   });
+}
+
+async function storedPdf(env, id) {
+  try {
+    const doc = await env.WAIVERS_DB.prepare("SELECT pdf FROM waiver_documents WHERE waiver_id = ?").bind(id).first();
+    return doc && doc.pdf ? blobBytes(doc.pdf) : null;
+  } catch (err) {
+    console.error("waiver stored copy lookup failed:", err);
+    return null;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -385,25 +415,114 @@ function bytesToB64(bytes) {
 }
 
 // ---------------------------------------------------------------------------
-// Google Drive archive (compliance archive). Signed releases are uploaded directly
-// to the Shared Drive at signing time, so there is no R2 mirror to reconcile later.
-// The cron remains in place for the overall workflow, but it no longer tries to
-// rehydrate PDFs from a bucket that no longer exists.
+// Google Drive archive. D1 captures every signed release (audit row + PDF bytes)
+// at signing time; Drive is the long-term archive filed from that copy. The
+// signing request makes attempt 1. Anything it could not file is retried here,
+// on the 10-minute cron, from the D1 copy, up to MAX_DRIVE_ATTEMPTS, after
+// which the row is 'failed' and stays visible until an operator resets it.
+//
+// drive_status: uploading (claimed) -> done | pending (retry owed) | failed
+// (cap reached, bytes still held). 'unrecoverable' marks pre-migration rows
+// that never reached Drive and have no stored bytes.
+//
+// Idempotent: every retry first looks for release-<id>.pdf in the folder, so a
+// lost upload response or a failed D1 stamp can never file a second copy.
+// Each row is claimed with a conditional UPDATE, so overlapping runs cannot
+// both upload it. The D1 copy is deleted DOC_RETENTION_DAYS after Drive
+// confirmed the file, keeping Drive the single long-term file store.
 // ---------------------------------------------------------------------------
+const MAX_DRIVE_ATTEMPTS = 20;
+const STALE_CLAIM = "-15 minutes";
+const DOC_RETENTION_DAYS = 30;
+const MAX_STORED_PDF_BYTES = 1_900_000;
+const RETRYABLE = `(drive_status = 'pending' OR (drive_status = 'uploading' AND (drive_last_attempt_at IS NULL OR julianday(drive_last_attempt_at) < julianday('now', '${STALE_CLAIM}'))))`;
+
 export async function runDriveBacklog(env) {
-  if (!env.GOOGLE_SA_JSON || !env.WAIVERS_DRIVE_ID) { console.error("Drive backlog not configured"); return; }
-  // No R2 copy remains, so there is nothing this backfill can recover without
-  // the original PDF bytes. New signature records upload to Drive immediately;
-  // older rows are not restorable from D1 alone.
-  return;
+  if (!env.WAIVERS_DB) return { retried: 0 };
+  if (!env.GOOGLE_SA_JSON || !env.WAIVERS_DRIVE_ID) { console.error("Drive backlog not configured"); return { retried: 0 }; }
+  let rows;
+  try {
+    rows = (await env.WAIVERS_DB.prepare(
+      `SELECT id, org, signer_email, waiver_version, pdf_sha256, drive_attempts FROM waivers WHERE ${RETRYABLE} ORDER BY signed_at ASC LIMIT 10`
+    ).all()).results || [];
+  } catch (err) { console.error("Drive backlog D1 query failed:", err); return { retried: 0 }; }
+
+  let retried = 0;
+  for (const row of rows) {
+    const now = new Date().toISOString();
+    let claim;
+    try {
+      claim = await env.WAIVERS_DB.prepare(
+        `UPDATE waivers SET drive_status = 'uploading', drive_attempts = COALESCE(drive_attempts, 0) + 1, drive_last_attempt_at = ? WHERE id = ? AND ${RETRYABLE}`
+      ).bind(now, row.id).run();
+    } catch (err) { console.error("Drive backlog claim failed for", row.id, err); continue; }
+    if (!claim || !claim.meta || claim.meta.changes !== 1) continue; // another run has it
+    const attempts = (Number(row.drive_attempts) || 0) + 1;
+    const pdfBytes = await storedPdf(env, row.id);
+    if (!pdfBytes) {
+      await markDrive(env, row.id, "unrecoverable", "no stored PDF bytes to archive");
+      continue;
+    }
+    retried++;
+    await attemptDriveArchive(env, { id: row.id, pdfBytes, org: row.org, email: row.signer_email, docVersion: row.waiver_version, attempts, lookupFirst: true });
+  }
+
+  try {
+    await env.WAIVERS_DB.prepare(
+      `DELETE FROM waiver_documents WHERE waiver_id IN (SELECT id FROM waivers WHERE drive_status = 'done' AND drive_file_id <> '' AND julianday(drive_done_at) < julianday('now', '-${DOC_RETENTION_DAYS} days'))`
+    ).run();
+  } catch (err) { console.error("Drive backlog retention sweep failed:", err); }
+  return { retried };
 }
 
-async function uploadWaiverToDrive(env, { id, pdfBytes, org, email, docVersion }) {
-  if (!env.GOOGLE_SA_JSON || !env.WAIVERS_DRIVE_ID) return { drive_file_id: "", drive_link: "" };
-  const token = await getGoogleAccessToken(env);
-  const file = await driveUpload(token, env.WAIVERS_DRIVE_ID, `release-${id}.pdf`, pdfBytes);
+// One archive attempt for a row this caller has claimed. Never throws: the
+// outcome is written to the row, which is what the backlog and meter read.
+async function attemptDriveArchive(env, { id, pdfBytes, org, email, docVersion, attempts, lookupFirst }) {
+  let file;
+  try {
+    if (!env.GOOGLE_SA_JSON || !env.WAIVERS_DRIVE_ID) throw new Error("Drive archive not configured");
+    const token = await getGoogleAccessToken(env);
+    const name = `release-${id}.pdf`;
+    if (lookupFirst) file = await driveFind(token, env.WAIVERS_DRIVE_ID, name);
+    if (!file) file = await driveUpload(token, env.WAIVERS_DRIVE_ID, name, pdfBytes);
+    if (!file || !file.id) throw new Error("drive upload returned no file id");
+  } catch (err) {
+    console.error("waiver Drive archive failed:", id, err);
+    await markDrive(env, id, attempts >= MAX_DRIVE_ATTEMPTS ? "failed" : "pending", String((err && err.message) || err).slice(0, 500));
+    return false;
+  }
   const link = file.webViewLink || `https://drive.google.com/file/d/${file.id}/view`;
-  return { drive_file_id: file.id || "", drive_link: link };
+  try {
+    await env.WAIVERS_DB.prepare(
+      "UPDATE waivers SET drive_file_id = ?, drive_link = ?, drive_status = 'done', drive_done_at = ?, drive_error = NULL WHERE id = ?"
+    ).bind(file.id, link, new Date().toISOString(), id).run();
+  } catch (err) {
+    // The file is in Drive but unstamped. The row stays 'uploading'; once the
+    // claim goes stale the backlog finds the file by name and stamps it.
+    console.error("waiver Drive stamp failed:", id, err);
+    return false;
+  }
+  return true;
+}
+
+async function markDrive(env, id, status, error) {
+  try {
+    await env.WAIVERS_DB.prepare("UPDATE waivers SET drive_status = ?, drive_error = ? WHERE id = ?").bind(status, error, id).run();
+  } catch (err) {
+    console.error("waiver Drive status write failed:", id, err);
+  }
+}
+
+async function driveFind(token, folderId, filename) {
+  const q = `name = '${filename.replace(/['\\]/g, "")}' and '${folderId.replace(/['\\]/g, "")}' in parents and trashed = false`;
+  const url = "https://www.googleapis.com/drive/v3/files?" + new URLSearchParams({
+    q, fields: "files(id,webViewLink)", supportsAllDrives: "true", includeItemsFromAllDrives: "true", corpora: "allDrives", pageSize: "10",
+  });
+  const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+  if (!res.ok) throw new Error(`drive lookup ${res.status}: ${await res.text().catch(() => "")}`);
+  const files = (await res.json()).files || [];
+  if (files.length > 1) console.error("waiver Drive lookup: duplicate files for", filename, files.map((f) => f.id));
+  return files[0] || null;
 }
 
 async function fetchDrivePdf(env, fileId) {
@@ -439,6 +558,9 @@ function wrap(text, font, size, maxWidth) {
   if (line) lines.push(line);
   return lines.length ? lines : [""];
 }
+// D1 binds a BLOB from an ArrayBuffer and returns it as an array of numbers.
+function toArrayBuffer(bytes) { return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength); }
+function blobBytes(v) { return v instanceof Uint8Array ? v : new Uint8Array(v); }
 function dataUrlToBytes(dataUrl) {
   const bin = atob(dataUrl.split(",")[1] || ""); const bytes = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i); return bytes;

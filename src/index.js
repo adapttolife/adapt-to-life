@@ -10,7 +10,7 @@ import { handleWaiver, handleWaiverDownload, handleWaiverVerify, handleWaiverDoc
 import { sendContactReceipt, sendApplyReceipt, sendVolunteerReceipt } from "./receipts.js";
 import { verifyTurnstile, overFormLimit, RATE_LIMITED } from "./turnstile.js";
 import { handleEmail, handleAgentMailApi } from "./agent_mail.js";
-import { handleShopContact, runShopCrmBacklog } from "./shop_contact.js";
+import { handleShopContact, runShopCrmBacklog, runShopNewsletterBacklog } from "./shop_contact.js";
 import { handleQr } from "./qr.js";
 import { handleAdmin, verifyAccess } from "./qr_admin.js";
 import { syncGifts } from "./qr_gifts.js";
@@ -288,6 +288,7 @@ export default {
 
     ctx.waitUntil(runDriveBacklog(env));
     ctx.waitUntil(runShopCrmBacklog(env).catch((err) => console.error("shop CRM sync crashed:", err)));
+    ctx.waitUntil(runShopNewsletterBacklog(env).catch((err) => console.error("shop newsletter CRM sync crashed:", err)));
     ctx.waitUntil(
       syncGifts(env).then((r) => {
         if (!r.ok) console.error("qr gift sync failed:", r.error);

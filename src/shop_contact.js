@@ -100,6 +100,10 @@ export async function handleShopContact(request, env, ctx) {
     return json({ ok: false, error: "Verification failed. Please reload the page and try again." }, 403);
   }
 
+  // The footer newsletter sign-up shares this door (and every gate above) but
+  // not the contact form's validation, record or mail. See handleShopNewsletter.
+  if (str(data.kind) === "newsletter") return handleShopNewsletter(request, env, data);
+
   const name = str(data.name, 120);
   const email = str(data.email, 200).toLowerCase();
   const rawTopic = str(data.topic, 120);
@@ -168,6 +172,54 @@ export async function handleShopContact(request, env, ctx) {
   // Do not duplicate its internal notification through shared intake.
 
   return json({ ok: true, id, reply_window: REPLY_WINDOW });
+}
+
+// ---------------------------------------------------------------------------
+// Newsletter sign-up (kind: "newsletter", from the storefront footer).
+//
+// Reached only after the shop key, honeypot and Turnstile gates in
+// handleShopContact, and behind the same form limiter in index.js. It asks for
+// an email and nothing else, so the contact form's name/message checks do not
+// apply.
+//
+// What it deliberately does NOT do: send the contact auto-reply ("your message
+// is in, a person will answer within two business days") or the hello@ shop
+// notice. Neither is true of a sign-up. The only side effect is the row; the
+// cron copies it to the "Shop Newsletter" tab, and mirroring it into Shopify as
+// a customer with email marketing consent is Spec 197 P3, which waits on
+// Alec's consent settings.
+//
+// The storefront (adapt-body-shop-storefront app/lib/newsletter.ts) shows
+// "you are on the list" only for {ok:true, subscribed:true}, so that pair is
+// returned only after the write. A repeat address is the same answer and no
+// new row (ON CONFLICT DO NOTHING); the response does not say which, so the
+// form cannot be used to test whether someone is subscribed.
+// ---------------------------------------------------------------------------
+async function handleShopNewsletter(request, env, data) {
+  const email = str(data.email, 200).toLowerCase();
+  if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    return json({ ok: false, error: "A valid email address is required." }, 422);
+  }
+  const cf = request.cf || {};
+  try {
+    await env.WAIVERS_DB.prepare(
+      `INSERT INTO shop_subscribers (email, created_at, source, ref, ip, country, user_agent)
+       VALUES (?,?,?,?,?,?,?)
+       ON CONFLICT(email) DO NOTHING`
+    ).bind(
+      email,
+      new Date().toISOString(),
+      str(data.source, 300),
+      str(data.ref, 80),
+      request.headers.get("CF-Connecting-IP") || "",
+      cf.country || "",
+      str(data.user_agent, 300) || (request.headers.get("User-Agent") || "").slice(0, 300),
+    ).run();
+  } catch (err) {
+    console.error("shop newsletter D1 insert failed:", err);
+    return json({ ok: false, error: "Could not save your sign-up. Please try again." }, 502);
+  }
+  return json({ ok: true, subscribed: true });
 }
 
 // Both emails, in one place, after the response. The customer's auto-reply and
@@ -329,7 +381,7 @@ export async function runShopCrmBacklog(env) {
   try { token = await getGoogleAccessToken(env, SHEETS_SCOPE); }
   catch (err) { console.error("shop CRM token mint failed:", err); return; }
 
-  try { await ensureCrmTab(token); }
+  try { await ensureCrmTab(token, CRM_TAB, CRM_HEADER); }
   catch (err) { console.error("shop CRM tab check failed:", err); return; }
 
   // One append for the whole batch — the API returns the exact range it wrote,
@@ -372,18 +424,74 @@ export async function runShopCrmBacklog(env) {
   console.log(`shop CRM sync: ${rows.length} message(s) filed to ${updatedRange}`);
 }
 
+// Newsletter rows go to their own tab: a sign-up is neither a customer question
+// nor a curated relationship, and a person working the Shop Messages queue
+// should not have to step over them. Same mark-after-append contract.
+const NEWSLETTER_TAB = "Shop Newsletter";
+const NEWSLETTER_HEADER = ["Date", "Email", "Page", "Referral code"];
+
+export async function runShopNewsletterBacklog(env) {
+  if (!env.GOOGLE_SA_JSON) { console.error("shop newsletter CRM sync not configured (no GOOGLE_SA_JSON)"); return; }
+  if (!env.WAIVERS_DB) return;
+
+  let rows;
+  try {
+    rows = (await env.WAIVERS_DB.prepare(
+      "SELECT * FROM shop_subscribers WHERE crm_row IS NULL ORDER BY created_at ASC LIMIT 25"
+    ).all()).results || [];
+  } catch (err) { console.error("shop newsletter backlog query failed:", err); return; }
+  if (!rows.length) return;
+
+  let token;
+  try { token = await getGoogleAccessToken(env, SHEETS_SCOPE); }
+  catch (err) { console.error("shop newsletter token mint failed:", err); return; }
+
+  try { await ensureCrmTab(token, NEWSLETTER_TAB, NEWSLETTER_HEADER); }
+  catch (err) { console.error("shop newsletter tab check failed:", err); return; }
+
+  const values = rows.map((r) => [r.created_at, r.email, r.source || "", r.ref || ""]);
+  let updatedRange;
+  try {
+    const res = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${CRM_SHEET_ID}/values/` +
+        `${encodeURIComponent(NEWSLETTER_TAB)}!A:D:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ values }),
+      }
+    );
+    if (!res.ok) throw new Error(`sheets append ${res.status} ${await res.text().catch(() => "")}`);
+    updatedRange = (await res.json())?.updates?.updatedRange || "appended";
+  } catch (err) {
+    console.error("shop newsletter CRM append failed:", err);
+    return;
+  }
+
+  for (const r of rows) {
+    try {
+      await env.WAIVERS_DB.prepare("UPDATE shop_subscribers SET crm_row = ? WHERE email = ?")
+        .bind(updatedRange, r.email).run();
+    } catch (err) {
+      console.error("shop newsletter CRM mark failed for", r.email, err);
+    }
+  }
+  console.log(`shop newsletter CRM sync: ${rows.length} sign-up(s) filed to ${updatedRange}`);
+}
+
 // Create the tab and its header the first time, so nobody has to hand-prepare
 // the sheet before the first customer writes in. Idempotent: an existing tab is
 // left exactly as it is, header included, because a human may have reordered or
 // renamed columns and this code has no business overwriting that.
-async function ensureCrmTab(token) {
+async function ensureCrmTab(token, tab, header) {
+  const lastCol = String.fromCharCode(64 + header.length);
   const metaRes = await fetch(
     `https://sheets.googleapis.com/v4/spreadsheets/${CRM_SHEET_ID}?fields=sheets.properties.title`,
     { headers: { Authorization: `Bearer ${token}` } }
   );
   if (!metaRes.ok) throw new Error(`sheets meta ${metaRes.status} ${await metaRes.text().catch(() => "")}`);
   const titles = ((await metaRes.json()).sheets || []).map((s) => s.properties.title);
-  if (titles.includes(CRM_TAB)) return;
+  if (titles.includes(tab)) return;
 
   const addRes = await fetch(
     `https://sheets.googleapis.com/v4/spreadsheets/${CRM_SHEET_ID}:batchUpdate`,
@@ -391,7 +499,7 @@ async function ensureCrmTab(token) {
       method: "POST",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        requests: [{ addSheet: { properties: { title: CRM_TAB, gridProperties: { frozenRowCount: 1 } } } }],
+        requests: [{ addSheet: { properties: { title: tab, gridProperties: { frozenRowCount: 1 } } } }],
       }),
     }
   );
@@ -399,11 +507,11 @@ async function ensureCrmTab(token) {
 
   const headRes = await fetch(
     `https://sheets.googleapis.com/v4/spreadsheets/${CRM_SHEET_ID}/values/` +
-      `${encodeURIComponent(CRM_TAB)}!A1:I1?valueInputOption=RAW`,
+      `${encodeURIComponent(tab)}!A1:${lastCol}1?valueInputOption=RAW`,
     {
       method: "PUT",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ values: [CRM_HEADER] }),
+      body: JSON.stringify({ values: [header] }),
     }
   );
   if (!headRes.ok) throw new Error(`sheets header ${headRes.status} ${await headRes.text().catch(() => "")}`);

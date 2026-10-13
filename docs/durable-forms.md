@@ -21,7 +21,7 @@ Beehiiv merely because it supplied an email address.
 | Volunteer board and role pages | Same operational D1 | Submitter receipt and internal intake notification | Shared CRM role list/tracking link, not the personal narrative |
 | Newsletter signup | Beehiiv plus existing suppression/welcome claim | Beehiiv owns ATL welcome; existing opt-outs are preserved | Publication audience, with explicit newsletter intent |
 | Adapt Body Shop contact | Existing `shop_messages` D1 | Existing shop receipt + hello@ notification | Existing Shop Messages mirror; no duplicate shared-intake notification |
-| Waiver | Existing signing record/R2 | Existing signing receipt and Drive backlog | Restricted signed-document Drive path; no new signature or fake waiver test |
+| Waiver | `waivers` row + signed PDF bytes in `waiver_documents`, one D1 batch, before any success | Signing receipt; Drive archive retried by `runDriveBacklog` (`drive_status`) | Restricted signed-document Drive path; no new signature or fake waiver test |
 | Donation | Givebutter and existing donation D1 ledger | Existing signed-webhook/poll reconciliation | CRM Sheet Donations and Donor Reference (hourly projection); no invented payment test |
 | Personal Alec correspondence | Existing personal intake contract | Julia exercises contextual judgment | Obsidian only when personally meaningful; no automatic ATL-to-personal-vault feed |
 
@@ -98,7 +98,9 @@ and update that same row; duplicate IDs or drifted headers stop the writer.
 ## Release and acceptance
 
 Apply `src/schema_forms.sql` to the already-bound WAIVERS_DB and
-`src/schema_intake_delivery.sql` to INTAKE before promoting this code. Migrations
+`src/schema_intake_delivery.sql` to INTAKE before promoting this code. Signed
+waivers need `schema/migrations/2026-10-03-waiver-capture-first.sql` on
+WAIVERS_DB before the capture-first waiver code ships. Migrations
 are additive; do not delete existing records or replace credentials.
 
 Production comes from clean, pushed main through the existing Workers Builds

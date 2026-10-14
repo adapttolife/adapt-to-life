@@ -56,6 +56,7 @@
       "/admin/*"]
   },
   "observability": {
+    "issues": { "enabled": true },
     "enabled": true
   },
   // Spec 70 P2: the PNG chart pipeline (src/chart_assets_worker.js) imports the

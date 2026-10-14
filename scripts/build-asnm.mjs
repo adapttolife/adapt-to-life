@@ -1,10 +1,12 @@
 // scripts/build-asnm.mjs — put the real directory on the page.
 //
-// /adaptive-sports-near-me used to describe a directory that had not launched.
-// It has: adaptivesportsnearme.com serves 1,544 programs across 51 states from
-// 22 sources, all free to look up. A page that only DESCRIBES that is selling it
-// short, so this pulls the live counts and renders them as something a visitor
-// can click straight into.
+// adaptivesportsnearme.com is still PRELAUNCH (its /api/config says
+// prelaunch:true): the door is a coming-soon gate that says "Opening soon".
+// This page must say the same thing. It pulls the live public count from the
+// directory's own /api/stats (the production D1 behind the domain) so the
+// number here is the number on the gate, and it must never claim the directory
+// is open or free to search until the gate comes down. 2026-10-09: this block
+// said "Free to search, no account" while live was locked, and CCO caught it.
 //
 // WHY GENERATED AND NOT TYPED. A hand-written "1,544 programs" is correct for a
 // week and wrong forever after, and this codebase has already been bitten by
@@ -93,8 +95,8 @@ const chip = (label, count, href) => href
 const block = `<!-- asnm:stats -->
   <section class="band dark dir-stats">
     <div class="wrap">
-      <span class="eyebrow orange reveal">In the directory right now</span>
-      <p class="dir-count reveal"><b>${n(stats.programs)}</b> programs, <b>${n(stats.byState.filter(s => s.state !== "DC").length)}</b> states${stats.byState.some(s => s.state === "DC") ? " + D.C." : ""}, <b>${n(stats.sources)}</b> sources. Free to search, no account.</p>
+      <span class="eyebrow orange reveal">Going in right now</span>
+      <p class="dir-count reveal">Opening soon. <b>${n(stats.programs)}</b> adaptive sports programs are in, across <b>${n(stats.byState.filter(s => s.state !== "DC").length)}</b> states${stats.byState.some(s => s.state === "DC") ? " + D.C." : ""} from <b>${n(stats.sources)}</b> sources.</p>
 
       <a class="dir-shot reveal" href="${SITE}" target="_blank" rel="noopener">
         <picture>

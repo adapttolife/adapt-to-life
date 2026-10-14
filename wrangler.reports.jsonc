@@ -28,6 +28,7 @@
   "preview_urls": true,
 
   "observability": {
+    "issues": { "enabled": true },
     "enabled": true
   },
 

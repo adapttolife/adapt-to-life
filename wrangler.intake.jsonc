@@ -10,5 +10,5 @@
   "d1_databases":[{"binding":"INTAKE","database_name":"atl-intake","database_id":"5f9c4771-25ba-4e83-aadf-00bc698329bf"}],
   "send_email":[{"name":"SEND_EMAIL"}],
   "triggers":{"crons":["*/10 * * * *"]},
-  "observability":{"enabled":true}
+  "observability":{ "enabled": true, "issues": { "enabled": true } }
 }

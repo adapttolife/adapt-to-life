@@ -1,12 +1,12 @@
 {
  "ok": true,
- "programs": 3525,
+ "programs": 3453,
  "sources": 67,
  "bySport": [
   {
    "label": "Multi-Sport",
    "key": null,
-   "n": 1048
+   "n": 985
   },
   {
    "label": "Veteran meetup",
@@ -31,7 +31,7 @@
   {
    "label": "Wheelchair Basketball",
    "key": "basketball",
-   "n": 254
+   "n": 249
   },
   {
    "label": "Adaptive sports and recreation",
@@ -56,7 +56,7 @@
   {
    "label": "Adaptive Baseball",
    "key": "baseball",
-   "n": 37
+   "n": 36
   },
   {
    "label": "Adaptive Skiing",
@@ -131,7 +131,7 @@
   {
    "label": "Adaptive Golf",
    "key": null,
-   "n": 10
+   "n": 8
   },
   {
    "label": "Adaptive Surfing",
@@ -149,11 +149,6 @@
    "n": 6
   },
   {
-   "label": "Wheelchair Rugby",
-   "key": "rugby",
-   "n": 5
-  },
-  {
    "label": "Shooting Sports",
    "key": null,
    "n": 5
@@ -162,6 +157,11 @@
    "label": "Competitive power soccer",
    "key": null,
    "n": 5
+  },
+  {
+   "label": "Wheelchair Rugby",
+   "key": "rugby",
+   "n": 4
   },
   {
    "label": "TOPSoccer recreational soccer training and team placement",
@@ -883,22 +883,17 @@
   {
    "state": "FL",
    "name": "Florida",
-   "n": 228
+   "n": 227
   },
   {
    "state": "VA",
    "name": "Virginia",
-   "n": 142
+   "n": 140
   },
   {
    "state": "GA",
    "name": "Georgia",
-   "n": 138
-  },
-  {
-   "state": "TX",
-   "name": "Texas",
-   "n": 115
+   "n": 137
   },
   {
    "state": "CA",
@@ -906,38 +901,38 @@
    "n": 115
   },
   {
+   "state": "TX",
+   "name": "Texas",
+   "n": 109
+  },
+  {
    "state": "NY",
    "name": "New York",
-   "n": 111
+   "n": 109
   },
   {
    "state": "NC",
    "name": "North Carolina",
-   "n": 111
+   "n": 109
   },
   {
    "state": "CO",
    "name": "Colorado",
-   "n": 97
+   "n": 96
   },
   {
    "state": "MD",
    "name": "Maryland",
-   "n": 96
+   "n": 95
   },
   {
    "state": "TN",
    "name": "Tennessee",
-   "n": 90
+   "n": 89
   },
   {
    "state": "SC",
    "name": "South Carolina",
-   "n": 89
-  },
-  {
-   "state": "PA",
-   "name": "Pennsylvania",
    "n": 88
   },
   {
@@ -946,9 +941,14 @@
    "n": 87
   },
   {
+   "state": "PA",
+   "name": "Pennsylvania",
+   "n": 86
+  },
+  {
    "state": "AL",
    "name": "Alabama",
-   "n": 87
+   "n": 86
   },
   {
    "state": "KY",
@@ -963,22 +963,22 @@
   {
    "state": "NJ",
    "name": "New Jersey",
-   "n": 62
+   "n": 61
   },
   {
    "state": "MI",
    "name": "Michigan",
-   "n": 59
-  },
-  {
-   "state": "MA",
-   "name": "Massachusetts",
-   "n": 57
+   "n": 58
   },
   {
    "state": "WI",
    "name": "Wisconsin",
-   "n": 56
+   "n": 55
+  },
+  {
+   "state": "MA",
+   "name": "Massachusetts",
+   "n": 55
   },
   {
    "state": "AZ",
@@ -988,17 +988,12 @@
   {
    "state": "WA",
    "name": "Washington",
-   "n": 50
+   "n": 48
   },
   {
    "state": "OH",
    "name": "Ohio",
-   "n": 49
-  },
-  {
-   "state": "MO",
-   "name": "Missouri",
-   "n": 43
+   "n": 48
   },
   {
    "state": "ID",
@@ -1006,19 +1001,24 @@
    "n": 43
   },
   {
+   "state": "MO",
+   "name": "Missouri",
+   "n": 41
+  },
+  {
    "state": "OK",
    "name": "Oklahoma",
-   "n": 41
+   "n": 40
   },
   {
    "state": "CT",
    "name": "Connecticut",
-   "n": 41
+   "n": 40
   },
   {
    "state": "OR",
    "name": "Oregon",
-   "n": 40
+   "n": 39
   },
   {
    "state": "NH",
@@ -1028,12 +1028,12 @@
   {
    "state": "MN",
    "name": "Minnesota",
-   "n": 38
+   "n": 36
   },
   {
    "state": "UT",
    "name": "Utah",
-   "n": 37
+   "n": 35
   },
   {
    "state": "NM",
@@ -1041,14 +1041,14 @@
    "n": 35
   },
   {
-   "state": "IN",
-   "name": "Indiana",
-   "n": 33
-  },
-  {
    "state": "IA",
    "name": "Iowa",
    "n": 33
+  },
+  {
+   "state": "IN",
+   "name": "Indiana",
+   "n": 32
   },
   {
    "state": "NE",
@@ -1061,24 +1061,24 @@
    "n": 30
   },
   {
-   "state": "NV",
-   "name": "Nevada",
-   "n": 29
-  },
-  {
    "state": "MT",
    "name": "Montana",
-   "n": 29
-  },
-  {
-   "state": "ME",
-   "name": "Maine",
    "n": 29
   },
   {
    "state": "AR",
    "name": "Arkansas",
    "n": 29
+  },
+  {
+   "state": "NV",
+   "name": "Nevada",
+   "n": 28
+  },
+  {
+   "state": "ME",
+   "name": "Maine",
+   "n": 28
   },
   {
    "state": "VT",
@@ -1091,13 +1091,13 @@
    "n": 25
   },
   {
-   "state": "RI",
-   "name": "Rhode Island",
-   "n": 24
-  },
-  {
    "state": "SD",
    "name": "South Dakota",
+   "n": 23
+  },
+  {
+   "state": "RI",
+   "name": "Rhode Island",
    "n": 23
   },
   {

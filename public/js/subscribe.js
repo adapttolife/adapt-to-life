@@ -29,7 +29,12 @@
       })
         .then(function (r) { return r.json().catch(function () { return { ok: r.ok }; }); })
         .then(function (d) {
-          if (d && d.ok) { f.reset(); setStatus("You're in. Watch your inbox.", true); }
+          if (d && d.ok) {
+            f.reset();
+            setStatus(d.confirm ? "Almost done. Check your inbox and tap the button in our email to confirm."
+              : d.existing ? "You're already on the list. Thanks for being here."
+              : "You're in. Watch your inbox.", true);
+          }
           else { setStatus((d && d.error) || "Something went wrong. Email hello@adapttolife.org.", false); }
         })
         .catch(function () { setStatus("Network error. Email hello@adapttolife.org.", false); })

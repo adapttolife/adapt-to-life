@@ -595,7 +595,7 @@ async function handleSubscribe(request, env, ctx) {
     summary: `New newsletter signup: ${email}`, source,
     payload: { consent: "Explicit newsletter signup; not inferred from other forms" },
   }));
-  return json({ ok: true });
+  return json({ ok: true, ...(result.confirm ? { confirm: true } : {}), ...(result.existing ? { existing: true } : {}) });
 }
 
 // Public fundraising total for the site thermometer: Givebutter's live "raised" for the

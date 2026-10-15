@@ -294,7 +294,12 @@ fill="currentColor" stroke="none">
       fetch('/api/subscribe', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) })
       .then(function(r){ return r.json().catch(function(){ return { ok:r.ok }; }); })
       .then(function(d){
-        if(d && d.ok){ f.reset(); setStatus("You're in. Watch your inbox.", true); }
+        if(d && d.ok){
+          f.reset();
+          setStatus(d.confirm ? "Almost done. Check your inbox and tap the button in our email to confirm."
+            : d.existing ? "You're already on the list. Thanks for being here."
+            : "You're in. Watch your inbox.", true);
+        }
         else { setStatus((d && d.error) || 'Something went wrong. Please email hello@adapttolife.org.', false); }
       })
       .catch(function(){ setStatus('Network error. Please email hello@adapttolife.org.', false); })
@@ -303,7 +308,7 @@ fill="currentColor" stroke="none">
   })();
 </script>
 
-<script src="/js/subscribe.js?v=fade6839" defer></script>
+<script src="/js/subscribe.js?v=e8aeb3cc" defer></script>
 <script src="/js/turnstile-lazy.js?v=6b5d6c4a" defer></script>
 </body>
 </html>

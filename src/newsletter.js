@@ -16,7 +16,7 @@ export async function safeNewsletterSubscribe(env, email, campaign, extra = {}) 
   }
   try {
     const old=await lookup(PUBLICATION);
-    if(old)return ['active','pending','validating'].includes(old.status)?{ok:true,existing:true}:suppressed;
+    if(old)return ['active','pending','validating'].includes(old.status)?{ok:true,existing:true,...(old.status==='pending'?{confirm:true}:{})}:suppressed;
     let legacy=null;
     if(BRAND==='asnm') {
       const candidate=await lookup('pub_d1bfe66c-074f-464a-a94a-d0cce6d21943');
@@ -31,6 +31,8 @@ export async function safeNewsletterSubscribe(env, email, campaign, extra = {}) 
     if(!res.ok){await db.prepare("UPDATE newsletter_delivery_claims SET state='needs-review' WHERE claim_key=?").bind(digest).run();return fail;}
     const sub=(await res.json()).data;if(!sub?.id||!sub.status)throw Error('Invalid creation response');
     await db.prepare('UPDATE newsletter_delivery_claims SET subscription_id=?,state=? WHERE claim_key=?').bind(sub.id,BRAND==='atl'?'beehiiv-welcome-requested':legacy?'legacy-no-welcome':'awaiting-validation',digest).run();
-    return {ok:true};
+    // Not active yet means Beehiiv is waiting on the subscriber: with double
+    // opt-in on (Settings > Emails > Preset Emails), a confirmation email.
+    return {ok:true,...(sub.status!=='active'?{confirm:true}:{})};
   }catch(e){console.error('newsletter signup failed closed',String(e.message));return fail;}
 }

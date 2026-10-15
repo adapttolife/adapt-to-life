@@ -40,6 +40,7 @@ const BAND_OF = {
   "volunteer.html":               "1", // your place on this team
   "adaptive-sports-near-me.html": "1", // the question is where do I go, so show the place
   "subscribe.html":               "1",
+  "confirmed.html":               "1", // where a confirmed subscriber lands; continues /subscribe
   "sponsorship.html":             "2", // sponsor an adaptive athlete
   "roadmap.html":                 "2",
   "promise.html":                 "3", // 100% to the community
@@ -117,6 +118,7 @@ export const PAGE_TIERS = {
   "contact.html":                 "sm",
   "waiver.html":                  "sm",
   "subscribe.html":               "sm",
+  "confirmed.html":               "sm",
   "donate.html":                  "give",
 };
 export const TIER_CLASS = (file) => `pg-head--${PAGE_TIERS[file] || "md"}`;

@@ -84,7 +84,15 @@ export default {
     // wild: /ways-to-give was in the nav, the footer and 21 body links before
     // /donate absorbed it. A merged page that still answers is worse than one
     // that redirects, because the two slowly drift apart.
-    const MERGED = { "/ways-to-give": "/donate", "/ways-to-give.html": "/donate" };
+    // /give is the same kind of stale URL: adaptbodyshop.com/promise links to
+    // it, and there was never a page there. The trailing-slash form is listed
+    // too, so a slash does not 404 the same link. url.search keeps the query.
+    const MERGED = {
+      "/ways-to-give": "/donate",
+      "/ways-to-give.html": "/donate",
+      "/give": "/donate",
+      "/give/": "/donate",
+    };
     if (MERGED[url.pathname]) {
       return Response.redirect(`${url.origin}${MERGED[url.pathname]}${url.search}`, 301);
     }

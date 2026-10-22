@@ -120,3 +120,43 @@ test('staging receipt preview renders from the capturing stub and never reaches 
   const mailHosts = fetchCalls.filter((u) => /googleapis\.com|gmail/.test(u));
   assert.deepEqual(mailHosts, []);
 });
+
+// Routes that reach Beehiiv or another outside system straight from the request.
+// Staging must answer 404 before the app runs, so neither the shared databases
+// nor any outside service is touched.
+for (const [route, body] of [
+  ['/api/subscribe', { em: 'subscriber@example.test', source: 'staging-test', cf_token: 'test' }],
+  ['/api/waiver', { name: 'Test Signer', email: 'signer@example.test', signature: 'Test Signer', cf_token: 'test' }],
+]) {
+  test(`staging returns 404 for ${route} and never calls an outside service`, async () => {
+    const dbCalls = [];
+    const fetchCalls = [];
+    const env = {
+      ...staging.vars, ...SHARED_SECRETS,
+      BEEHIIV_API_KEY: 'test-beehiiv-key', GOOGLE_SA_JSON: '{}',
+      WAIVERS_DB: recordingDb(dbCalls), AGENT_MAIL_DB: recordingDb(dbCalls), INTAKE: recordingDb(dbCalls),
+      FORM_LIMITER: { limit: async () => ({ success: true }) },
+      ASSETS: { fetch: async () => new Response('asset') },
+    };
+    const waits = [];
+    const ctx = { waitUntil: (p) => waits.push(p) };
+    const old = globalThis.fetch;
+    globalThis.fetch = async (url) => { fetchCalls.push(String(url)); return Response.json({ success: true, data: {} }); };
+    try {
+      for (const path of [route, route + '/']) {
+        for (const method of ['POST', 'GET']) {
+          const init = { method, headers: { 'Content-Type': 'application/json', 'CF-Connecting-IP': '203.0.113.9' } };
+          if (method === 'POST') init.body = JSON.stringify(body);
+          const response = await worker.fetch(new Request('https://staging.example' + path, init), env, ctx);
+          assert.equal(response.status, 404, `${method} ${path}`);
+        }
+      }
+      await Promise.allSettled(waits);
+    } finally {
+      globalThis.fetch = old;
+    }
+    assert.deepEqual(fetchCalls.filter((u) => u.includes('beehiiv')), [], 'no Beehiiv call');
+    assert.deepEqual(fetchCalls, [], 'no outside call of any kind');
+    assert.deepEqual(dbCalls, [], 'no shared database call');
+  });
+}

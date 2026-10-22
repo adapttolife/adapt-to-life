@@ -29,7 +29,7 @@ test('staging delegates writes, backend routes and HTML without modifying contro
   const body = '<form><input><button>Submit</button></form><givebutter-giving-form></givebutter-giving-form><iframe></iframe><script src="https://challenges.cloudflare.com/turnstile/v0/api.js"></script><a href="https://example.com">External</a>';
   const env = { STAGING: '1', INTAKE: {} };
   const ctx = { waitUntil() {} };
-  for (const [method, path] of [['GET', '/contact'], ['POST', '/api/contact'], ['POST', '/api/waiver'], ['GET', '/api/raised'], ['GET', '/admin/api/codes']]) {
+  for (const [method, path] of [['GET', '/contact'], ['POST', '/api/contact'], ['GET', '/api/waiver/doc'], ['GET', '/api/raised'], ['GET', '/admin/api/codes']]) {
     const request = new Request(`https://staging.example${path}`, { method });
     let called = false;
     application.fetch = async (received, bindings, context) => {

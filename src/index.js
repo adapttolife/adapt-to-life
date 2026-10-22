@@ -637,7 +637,10 @@ async function previewReceipt(env, url) {
   const asked = url.searchParams.get("type");
   const kind = asked === "contact" || asked === "volunteer" ? asked : "apply";
   const captured = [];
-  const stub = { ...env, SEND_EMAIL: { send: (msg) => (captured.push(msg), {}) } };
+  // Force the capturing binding as the transport. Staging's own transport is
+  // "none" and the Worker shares production mail credentials, so inheriting
+  // env.MAIL_TRANSPORT would either capture nothing or send for real.
+  const stub = { ...env, MAIL_TRANSPORT: "cloudflare", SEND_EMAIL: { send: (msg) => (captured.push(msg), {}) } };
 
   if (kind === "volunteer") {
     await sendVolunteerReceipt(stub, {

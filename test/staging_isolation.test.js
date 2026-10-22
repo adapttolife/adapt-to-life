@@ -99,3 +99,24 @@ test('staging mail with transport none sends nothing, even with shared credentia
   assert.deepEqual(fetchCalls, []);
   assert.deepEqual(mailCalls, []);
 });
+
+test('staging receipt preview renders from the capturing stub and never reaches a mail provider', async () => {
+  const fetchCalls = [];
+  const env = {
+    ...staging.vars, ...SHARED_SECRETS,
+    ASSETS: { fetch: async () => new Response('asset') },
+  };
+  const old = globalThis.fetch;
+  globalThis.fetch = async (url) => { fetchCalls.push(String(url)); return new Response('{}', { status: 503 }); };
+  try {
+    for (const type of ['apply', 'contact', 'volunteer']) {
+      const response = await worker.fetch(new Request('https://staging.example/preview/receipt?type=' + type), env, { waitUntil() {} });
+      assert.equal(response.status, 200, type);
+      assert.match(await response.text(), /Staging preview of the real send/, type);
+    }
+  } finally {
+    globalThis.fetch = old;
+  }
+  const mailHosts = fetchCalls.filter((u) => /googleapis\.com|gmail/.test(u));
+  assert.deepEqual(mailHosts, []);
+});

@@ -118,16 +118,17 @@ test("the ATL Worker's own domains are untouched by this slice", () => {
   ]);
 });
 
-test("staging shares live services but has no cron triggers", () => {
+test("staging shares live data services but has no cron triggers and no mail", () => {
   assert.equal(atl.env.staging.main, "src/staging.js");
   assert.equal(atl.env.staging.assets.run_worker_first, true);
   assert.deepEqual(atl.env.staging.routes, []);
   assert.deepEqual(atl.env.staging.d1_databases, atl.d1_databases);
   assert.deepEqual(atl.env.staging.r2_buckets, []);
-  assert.deepEqual(atl.env.staging.send_email, atl.send_email);
+  // Staging sends no mail of its own: no binding and an unsupported transport.
+  assert.equal(atl.env.staging.send_email, undefined);
   assert.deepEqual(atl.env.staging.triggers.crons, []);
   assert.deepEqual(atl.env.staging.vars, {
-    ...atl.vars, ENV_NAME: "staging", STAGING: "1", TURNSTILE_MODE: "off",
+    ...atl.vars, ENV_NAME: "staging", STAGING: "1", TURNSTILE_MODE: "off", MAIL_TRANSPORT: "none",
   });
   assert.notEqual(atl.vars.TURNSTILE_MODE, "off", "production must not disable Turnstile");
 });

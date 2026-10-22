@@ -7,13 +7,16 @@ import staging from '../src/staging.js';
 const config = JSON.parse(readFileSync(new URL('../wrangler.jsonc', import.meta.url), 'utf8')
   .replace(/^\s*\/\/.*$/gm, '').replace(/,\s*([}\]])/g, '$1'));
 
-test('staging shares production service bindings and has no scheduled handler or cron', () => {
+test('staging shares production data bindings, sends no mail and has no scheduled handler or cron', () => {
   const preview = config.env.staging;
-  for (const key of ['d1_databases', 'send_email', 'ratelimits']) {
+  for (const key of ['d1_databases', 'ratelimits']) {
     assert.deepEqual(preview[key], config[key], key);
   }
+  // Staging sends no mail of its own: no binding and an unsupported transport.
+  assert.equal(preview.send_email, undefined);
+  assert.equal(preview.vars.MAIL_TRANSPORT, 'none');
   for (const [key, value] of Object.entries(config.vars)) {
-    if (key !== 'ENV_NAME') assert.equal(preview.vars[key], value, key);
+    if (key !== 'ENV_NAME' && key !== 'MAIL_TRANSPORT') assert.equal(preview.vars[key], value, key);
   }
   assert.deepEqual(preview.triggers.crons, []);
   assert.ok(config.triggers.crons.length > 0);

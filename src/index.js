@@ -110,7 +110,8 @@ export default {
 
     // Staging-only: render a receipt so it can actually be reviewed.
     //
-    // Staging has no send_email binding by design, so the most consequential
+    // Staging has no send_email binding and sends no mail (MAIL_TRANSPORT
+    // "none") by design, so the most consequential
     // copy we write, the email an applicant gets after asking for equipment
     // money, was the one artifact nobody could look at before approving it.
     // Pasting the wording into the review page would have created a second copy

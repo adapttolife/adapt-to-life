@@ -47,7 +47,7 @@ function recordingDb(calls) {
       all: async () => { calls.push(sql); return { results: [] }; },
     }),
   });
-  return { prepare: (sql) => stmt(sql) };
+  return { prepare: (sql) => stmt(sql), batch: async (stmts) => { calls.push(`batch(${stmts.length})`); return stmts.map(() => ({ meta: { changes: 1 } })); } };
 }
 
 test('staging returns 404 for the Givebutter webhook and never touches the donor database', async () => {
@@ -119,4 +119,80 @@ test('staging receipt preview renders from the capturing stub and never reaches 
   }
   const mailHosts = fetchCalls.filter((u) => /googleapis\.com|gmail/.test(u));
   assert.deepEqual(mailHosts, []);
+});
+
+// Routes that reach Beehiiv or another outside system straight from the request.
+// Staging must answer 404 before the app runs, so neither the shared databases
+// nor any outside service is touched. Bodies are valid for the real handlers, so
+// without the staging gate each request gets past validation and reaches its
+// database write and outside call. Side effects are asserted before status, so a
+// missing gate fails on the database or outside-call check, not only on status.
+const PNG_1X1 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
+const VALID_BODIES = {
+  // handleSubscribe (src/index.js): em, Turnstile token.
+  '/api/subscribe': { em: 'subscriber@example.test', source: 'staging-test', cf_token: 'test' },
+  // handleWaiver (src/waiver.js): name, em, agree, PNG signature data URL, Turnstile token.
+  '/api/waiver': { org: 'atl', name: 'Test Signer', em: 'signer@example.test', agree: 'true', signature: PNG_1X1, signature_type: 'drawn', program: 'staging-test', cf_token: 'test' },
+};
+
+function gatedEnv(dbCalls) {
+  return {
+    ...staging.vars, ...SHARED_SECRETS,
+    BEEHIIV_API_KEY: 'test-beehiiv-key', GOOGLE_SA_JSON: '{}',
+    WAIVERS_DB: recordingDb(dbCalls), AGENT_MAIL_DB: recordingDb(dbCalls), INTAKE: recordingDb(dbCalls),
+    FORM_LIMITER: { limit: async () => ({ success: true }) },
+    ASSETS: { fetch: async () => new Response('asset') },
+  };
+}
+
+async function probe(path, methods, body) {
+  const dbCalls = [];
+  const fetchCalls = [];
+  const statuses = [];
+  const env = gatedEnv(dbCalls);
+  const waits = [];
+  const ctx = { waitUntil: (p) => waits.push(p) };
+  const old = globalThis.fetch;
+  globalThis.fetch = async (url) => { fetchCalls.push(String(url)); return Response.json({ success: true, data: {} }); };
+  try {
+    for (const method of methods) {
+      const init = { method, headers: { 'Content-Type': 'application/json', 'CF-Connecting-IP': '203.0.113.9' } };
+      if (method === 'POST') init.body = JSON.stringify(body);
+      const response = await worker.fetch(new Request('https://staging.example' + path, init), env, ctx);
+      statuses.push([`${method} ${path}`, response.status]);
+    }
+    await Promise.allSettled(waits);
+  } finally {
+    globalThis.fetch = old;
+  }
+  return { dbCalls, fetchCalls, statuses };
+}
+
+for (const route of ['/api/subscribe', '/api/waiver']) {
+  test(`staging returns 404 for ${route} and never calls an outside service`, async () => {
+    const { dbCalls, fetchCalls, statuses } = await probe(route, ['POST', 'GET'], VALID_BODIES[route]);
+    assert.deepEqual(dbCalls, [], 'no shared database call');
+    assert.deepEqual(fetchCalls.filter((u) => u.includes('beehiiv')), [], 'no Beehiiv call');
+    assert.deepEqual(fetchCalls, [], 'no outside call of any kind');
+    for (const [label, status] of statuses) assert.equal(status, 404, label);
+  });
+}
+
+// Regression guard only: at base, /api/subscribe/ never reached the handler
+// (src/index.js matches the exact path, so it fell through to static assets).
+test('/api/subscribe/ (trailing slash) is 404 on staging with no side effects (never reached the handler at base)', async () => {
+  const { dbCalls, fetchCalls, statuses } = await probe('/api/subscribe/', ['POST', 'GET'], VALID_BODIES['/api/subscribe']);
+  assert.deepEqual(dbCalls, []);
+  assert.deepEqual(fetchCalls, []);
+  for (const [label, status] of statuses) assert.equal(status, 404, label);
+});
+
+// Regression guard only: /api/waiver/ already returned 404 at base, because
+// src/index.js routes it to the download handler with an empty id, which is not
+// a UUID. It is not evidence for the staging gate.
+test('/api/waiver/ (trailing slash) stays 404 on staging (already 404 at base)', async () => {
+  const { dbCalls, fetchCalls, statuses } = await probe('/api/waiver/', ['POST', 'GET'], VALID_BODIES['/api/waiver']);
+  assert.deepEqual(fetchCalls, []);
+  assert.equal(dbCalls.filter((c) => /INSERT|UPDATE|batch/i.test(c)).length, 0);
+  for (const [label, status] of statuses) assert.equal(status, 404, label);
 });

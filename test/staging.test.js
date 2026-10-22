@@ -18,7 +18,7 @@ test('staging serves forms, widgets, scripts and outbound links unchanged', asyn
 });
 
 test('staging backend routes use normal method validation rather than a blanket denial', async () => {
-  for (const path of ['/api/contact', '/api/apply', '/api/volunteer', '/api/subscribe', '/api/waiver']) {
+  for (const path of ['/api/contact', '/api/apply', '/api/volunteer']) {
     const response = await worker.fetch(request(path), env, {});
     assert.equal(response.status, 405, path);
   }

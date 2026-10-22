@@ -47,8 +47,9 @@ const grantsInbox = (env) => env.GRANTS_INBOX || HOUSE_INBOX;
 async function send(env, msg, label) {
   try {
     if (!mailConfigured(env)) {
-      // Staging has no send_email binding by design, so this is the normal path
-      // there and must stay quiet rather than look like a fault. Deliberately
+      // Staging has no send_email binding and MAIL_TRANSPORT "none" by design,
+      // so this is the normal path there and must stay quiet rather than look
+      // like a fault. Deliberately
       // NOT recorded as a failure: staging is supposed to look like this, and a
       // ledger that cries wolf on every staging deploy gets ignored on the day
       // it is right.

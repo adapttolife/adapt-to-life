@@ -263,20 +263,12 @@ fill="currentColor" stroke="none">
             <p class="partner-kicker">Our first partner</p>
             <h3 class="serif h3">Brick House Pickleball</h3>
             <p class="partner-line">Our home court in Lake Forest, open 24/7/365. Our athletes train there every week, all four seasons.</p>
-            <p class="partner-when" data-until="2026-10-25"><span>Grand opening</span> Sunday, October 25</p>
+            <p class="partner-when"><span>Home court</span> Lake Forest, IL</p>
             <a class="partner-more" href="/brickhouse">See the partnership <span class="arrow">&rarr;</span></a>
           </div>
         </article>
       </div>
     </div>
-    <script>
-      (function(){
-        var el = document.querySelector('.partner-when[data-until]');
-        if (!el) return;
-        var d = new Date(), t = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-        if (t > el.getAttribute('data-until')) el.remove();
-      })();
-    </script>
   </section>
 
   <!-- 2. WHERE YOUR SUPPORT GOES: through the fund, into a campaign. Today

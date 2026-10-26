@@ -153,10 +153,12 @@ const CARDS = {
   juan: { ...ATHLETE, photo: "juan-serve", size: 104, measure: "7ch",
     out: "public/images/og/juan-v2-serve.jpg", page: "juan.html",
     headline: "Juan <em>Ortiz</em>" },
-  // The grand opening card. Split, not athlete: see "brickhouse-hero" above.
+  // Home court card. Split, not athlete: see "brickhouse-hero" above.
+  // Same photograph and split treatment. v2 because the headline changed after
+  // the reopening, and an old URL would keep serving the old line.
   brickhouse: { variant: "split", photo: "brickhouse-hero", size: 66, measure: "11ch",
-    out: "public/images/og/brickhouse-v1-opening.jpg", page: "brickhouse.html",
-    headline: "Come play with us <em>at Brick House</em>." },
+    out: "public/images/og/brickhouse-v2-homecourt.jpg", page: "brickhouse.html",
+    headline: "Our home court <em>is Brick House</em>." },
   volunteer: { ...ATHLETE, photo: "cap-profile",
     out: "public/images/og/volunteer-v3-athlete.jpg", page: "volunteer.html",
     headline: "Your place on <em>this team</em>." },

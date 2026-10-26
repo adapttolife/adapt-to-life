@@ -42,7 +42,7 @@ const ALT = {
   volunteer: "Your place on this team. Adapt To Life. A wheelchair pickleball player in a cap reaches for a shot.",
   // An athlete profile card is his name over his own face, so the alt is the
   // name and then the man, in that order.
-  brickhouse: "Come play with us at Brick House. Adapt To Life. An athlete in a sport wheelchair and a Brick House Pickleball shirt rolls across the Brick House courts.",
+  brickhouse: "Our home court is Brick House. Adapt To Life. An athlete in a sport wheelchair and a Brick House Pickleball shirt rolls across the Brick House courts.",
   juan: "Juan Ortiz. Adapt To Life. Juan, a wheelchair pickleball player in glasses, tosses the ball to serve from his sport wheelchair.",
 };
 
@@ -58,7 +58,7 @@ const ALT = {
 const FILE = {
   _default: "home-v4-color.jpg",
   juan: "juan-v2-serve.jpg",
-  brickhouse: "brickhouse-v1-opening.jpg",
+  brickhouse: "brickhouse-v2-homecourt.jpg",
   popcorn: "popcorn-v4-content.jpg",
   "hustle-and-heart": "hustle-and-heart-v4-content.jpg",
 };

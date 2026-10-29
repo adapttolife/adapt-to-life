@@ -39,6 +39,9 @@ One meaning, one picture, everywhere. Pages ask for a meaning (`giving`, `place`
 
 | File | Use it for |
 |---|---|
+| `icons/README.md` | **Start here for icons.** The catalog of the current collection, with a preview of every symbol and logo. GitHub renders it. Generated. |
+| `icons/svg/` | One SVG per meaning per style (`giving.svg`, `giving-duotone.svg`, …), ready for Figma, Canva or a slide. Generated. |
+| `icons/logos/` | The platform and tool logos we use, one SVG each. Generated. |
 | `icons/sheet.html` | Every meaning in every style at 18, 28 and 56px on both page colors. Generated; open it before shipping a new icon. |
 
 Each library has one job, so they complement each other instead of clashing:
@@ -70,6 +73,7 @@ The research behind these choices (packages, licenses, GitHub and X activity, 20
 | `obsolete/icons-2026-10-custom/icons.mjs` | The thirteen custom line icons (wheel, court, paddle, paddle tap), as they were in `scripts/lib/icons.mjs`. |
 | `obsolete/icons-2026-10-custom/reel-covers.json` | The six line-art reel covers from `/social`. |
 | `obsolete/icons-2026-10-custom/sheet.html` | Open to see the retired set and covers at real sizes. |
+| `obsolete/icons-2026-10-custom/svg/` | Each retired icon and cover as its own SVG, previewed in that folder's README. |
 | 3D sport icons (adaptivesportsnearme repo, `design/retired/3d-sport-icons/`) | **Retired 2026-10-29.** Eleven 3D sport renders that ASNM's category chips used before Alec's flat drawings replaced them. Nothing on the site uses them; they are labeled and kept there. |
 
 ## Design assets across the three sites

@@ -847,24 +847,75 @@ a.win-band:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:4p
    ========================================================================== */
 
 /* ---- the board: every card is one link to its role page ---------------- */
-/* The first version made each card a <label> around a checkbox so a reader
-   could pick several roles at once. Alec, 2026-09-02: almost everyone applies
-   for one role, so the shortest path wins and the multi-select went. The card
-   being an anchor is why it can hold no inner link and no form control. */
 .lane-blurb{ max-width:62ch; margin-top:0.9rem; color:var(--ink-soft); }
-.roles{ display:grid; grid-template-columns:repeat(auto-fit,minmax(265px,1fr)); gap:clamp(0.9rem,1.8vw,1.2rem); margin-top:clamp(1.8rem,3.4vw,2.6rem); list-style:none; padding:0; }
-.role{ display:flex; flex-direction:column; height:100%; border:1.5px solid var(--hairline); border-radius:16px; padding:1.25rem 1.2rem 1.1rem; background:var(--paper); transition:border-color .16s ease, box-shadow .16s ease, transform .16s ease; }
-.role:hover{ border-color:var(--orange); transform:translateY(-2px); box-shadow:0 14px 34px rgba(255,92,57,0.13); }
-.role:focus-visible{ outline:2px solid var(--orange); outline-offset:3px; }
-.role-n{ font-family:var(--font-body); font-weight:700; font-size:1rem; color:var(--ink); line-height:1.3; }
-.role:hover .role-n{ color:var(--orange-ink); }
-.role-d{ font-family:var(--font-body); font-size:0.9rem; line-height:1.5; color:var(--ink-soft); margin-top:0.45rem; flex:1; }
-.role-foot{ display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:0.4rem 0.9rem; margin-top:1rem; padding-top:0.85rem; border-top:1px solid var(--hairline); }
-.role-t{ font-family:var(--font-label); font-size:0.68rem; letter-spacing:0.07em; text-transform:uppercase; color:var(--muted); }
-/* Just an arrow. The whole card is a link, so "read the role" on all
-   twenty-seven of them was noise competing with the time chip. */
-.role-go{ font-size:1rem; line-height:1; color:var(--orange); transition:transform .16s ease; }
-.role:hover .role-go{ transform:translateX(3px); }
+
+/* INDEX: the pattern for the pages between the hooks. Alec, 2026-10-29: the
+   landing pages are great, but the middle "ends up becoming a lot of grid
+   layout, lists, bullet points", and photographs there are "a little bit too
+   much wasted space". So the middle carries meaning with symbols and spends
+   the room on content:
+   - .ix-head: the group's symbol in a dark tile (a meaning from
+     data/icons.mjs, drawn in duotone), the group name and count, the heading,
+     and one line, all in one compact row.
+   - .ix-list: the items as a ruled list, two columns on desktop. A row is not
+     a card: no box, no shadow, a hairline above it. Its name is the one link
+     (.ix-link), stretched over the whole row, so the row is one tap.
+   - .ix-tools: what the item works in. These links sit above the stretched
+     one, so they stay their own targets without nesting an anchor. */
+.ix-head{ display:grid; grid-template-columns:auto minmax(0,1fr) minmax(0,0.8fr); gap:1.2rem clamp(1.4rem,3vw,2.6rem); align-items:end; padding-bottom:clamp(1.4rem,2.6vw,2rem); }
+.ix-tile{ width:56px; height:56px; border-radius:14px; display:grid; place-items:center; background:var(--ink-warm); color:var(--orange); box-shadow:0 12px 28px -14px rgba(0,0,0,0.55); align-self:start; }
+.ix-tile .ix-svg{ width:28px; height:28px; }
+.dark .ix-tile{ background:rgba(255,92,57,0.12); box-shadow:inset 0 0 0 1px rgba(255,92,57,0.35); }
+.ix-head .eyebrow b{ color:var(--muted); font-weight:800; }
+.dark .ix-head .eyebrow b{ color:var(--cream-mute); }
+.ix-head .h2{ margin-top:0.5rem; }
+.ix-blurb{ color:var(--ink-soft); max-width:42ch; }
+.dark .ix-blurb{ color:var(--cream-mute); }
+.ix-list{ list-style:none; padding:0; margin:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:clamp(2rem,4vw,3.5rem); }
+.ix-row{ position:relative; display:grid; grid-template-columns:minmax(0,1fr) auto; column-gap:1.2rem; padding:1.15rem 0.2rem 1.2rem; border-top:1px solid var(--hairline); }
+.dark .ix-row{ border-color:rgba(249,247,242,0.12); }
+.ix-n{ font-family:var(--font-display); font-weight:800; font-size:1.18rem; letter-spacing:-0.01em; line-height:1.2; color:var(--ink); margin:0; }
+.dark .ix-n{ color:var(--cream); }
+.ix-link{ color:inherit; }
+.ix-link::after{ content:""; position:absolute; inset:0; border-radius:8px; }
+.ix-link:focus-visible{ outline:none; }
+.ix-link:focus-visible::after{ outline:2px solid var(--orange); outline-offset:2px; }
+.ix-row:hover .ix-n{ color:var(--orange-ink); }
+.dark .ix-row:hover .ix-n{ color:var(--orange); }
+.ix-d{ margin-top:0.3rem; color:var(--ink-soft); font-size:0.96rem; line-height:1.5; max-width:50ch; }
+.dark .ix-d{ color:var(--cream-mute); }
+.ix-meta{ display:flex; flex-wrap:wrap; align-items:center; gap:0.35rem 1rem; margin-top:0.65rem; font-family:var(--font-label); font-weight:800; font-size:0.7rem; letter-spacing:0.13em; text-transform:uppercase; color:var(--muted); }
+.dark .ix-meta{ color:var(--cream-mute); }
+.ix-meta > span{ display:inline-flex; align-items:center; gap:0.4rem; }
+.ix-meta .ix-svg{ width:14px; height:14px; color:var(--orange-ink); }
+.dark .ix-meta .ix-svg{ color:var(--orange); }
+.ix-tools{ position:relative; z-index:1; display:flex; flex-wrap:wrap; align-items:center; gap:0.4rem; margin-top:0.7rem; }
+.ix-tools-l{ font-size:0.8rem; color:var(--muted); margin-right:0.2rem; }
+.ix-tools a{ display:inline-flex; align-items:center; min-height:32px; padding:0 0.7rem; border-radius:999px; font-size:0.84rem; font-weight:600; color:var(--ink); background:rgba(28,26,21,0.05); transition:background-color .16s ease, color .16s ease; }
+.ix-tools a .ix-svg{ width:14px; height:14px; margin-right:0.4rem; flex:none; }
+.ix-tools a:hover{ background:rgba(255,92,57,0.12); color:var(--orange-ink); }
+.ix-tools a:focus-visible{ outline:2px solid var(--orange); outline-offset:2px; }
+.ix-go{ align-self:start; margin-top:0.15rem; color:var(--orange-ink); transition:transform .16s ease; }
+.ix-go .ix-svg{ width:20px; height:20px; }
+.dark .ix-go{ color:var(--orange); }
+.ix-row:hover .ix-go{ transform:translateX(3px); }
+.ix-group + .ix-group{ margin-top:clamp(2.4rem,5vw,3.6rem); }
+@media (max-width:900px){
+  .ix-head{ grid-template-columns:auto minmax(0,1fr); }
+  .ix-blurb{ grid-column:1 / -1; }
+  .ix-list{ grid-template-columns:1fr; }
+}
+@media (prefers-reduced-motion:reduce){ .ix-go, .ix-tools a{ transition:none; } }
+
+/* The jump bar: a long index says up front what is in it and how much, so a
+   reader can go straight to their part instead of scrolling to find it. */
+.jump{ display:flex; flex-wrap:wrap; gap:0.6rem; margin-top:clamp(1.6rem,3vw,2.2rem); list-style:none; padding:0; }
+.jump a{ display:inline-flex; align-items:center; gap:0.6rem; min-height:44px; padding:0 1.1rem; border-radius:999px; box-shadow:inset 0 0 0 1.5px var(--hairline); background:var(--paper); font-weight:700; color:var(--ink); transition:box-shadow .16s ease, color .16s ease; }
+.jump a:hover{ box-shadow:inset 0 0 0 1.5px var(--orange); color:var(--orange-ink); }
+.jump a:focus-visible{ outline:2px solid var(--orange); outline-offset:2px; }
+.jump .ix-svg{ width:18px; height:18px; color:var(--orange-ink); }
+.jump b{ font-family:var(--font-label); font-weight:800; font-size:0.74rem; color:var(--orange-ink); }
+.lane-anchor{ scroll-margin-top:84px; }
 
 .terms{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:clamp(1.4rem,3vw,2.4rem); margin-top:clamp(2.2rem,4vw,3rem); }
 @media (min-width:1000px){ .terms{ grid-template-columns:repeat(4,minmax(0,1fr)); } }

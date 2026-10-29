@@ -149,40 +149,57 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=e2740b17">
+<link rel="stylesheet" href="/css/site.css?v=18e778d2">
 <style>
-  /* Social: where Instagram meets the site. Reels link out rather than embed,
-     because an embed is a third-party script on every view and the credit for
-     the video stays with Instagram either way. The organizations below are the
-     ones the @adapt_to_life_org feed tagged or heard from, named for how we
-     crossed paths; individuals stay off this page unless they have said yes. */
-  .so-hero{ position:relative; isolation:isolate; overflow:hidden; padding:clamp(4.5rem,11vh,7rem) 0 clamp(3rem,7vh,4.5rem); }
-  .so-hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:
-      radial-gradient(ellipse 50% 70% at 80% 40%, rgba(255,92,57,0.22) 0%, transparent 70%),
-      radial-gradient(ellipse 35% 50% at 8% 90%, rgba(255,92,57,0.10) 0%, transparent 70%); }
+  /* Social: where Instagram meets the site. Built on the index pattern
+     (site.css): symbols from the dictionary, not photographs, and the room
+     spent on content.
+     Reels are a strip of short tiles, each with the dictionary's play symbol
+     in duotone (data/icons.mjs). The custom covers that were here are retired
+     in brand/obsolete/icons-2026-10-custom/. They link out rather than embed: an embed is a
+     third-party script on every view, and the credit for the video stays
+     with Instagram either way. Organizations are the ones the
+     @adapt_to_life_org feed tagged or heard from, named for how we crossed
+     paths; individuals stay off this page unless they have said yes. */
+  .so-hero{ position:relative; isolation:isolate; overflow:hidden; padding:clamp(4rem,9vh,5.5rem) 0 clamp(2.4rem,5vh,3.2rem); }
+  .so-hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 50% 80% at 85% 30%, rgba(255,92,57,0.22) 0%, transparent 70%); }
   .so-kicker{ display:flex; align-items:center; gap:0.9rem; font-family:var(--font-label); font-weight:800; font-size:0.85rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--orange); }
   .so-kicker::before{ content:""; width:2.2rem; height:2px; background:var(--orange); box-shadow:0 0 12px var(--orange-glow); }
-  .so-hero .display{ margin-top:1.3rem; max-width:12ch; font-size:clamp(2.9rem,6vw,5.4rem); line-height:0.96; }
-  .so-hero .sub{ margin-top:1.2rem; max-width:40ch; color:var(--cream-mute); }
-  .so-hero .actions{ margin-top:1.8rem; display:flex; align-items:center; gap:1.4rem; flex-wrap:wrap; }
+  .so-hero .display{ margin-top:1.2rem; max-width:14ch; font-size:clamp(2.7rem,5.4vw,4.8rem); line-height:0.96; }
+  .so-hero .sub{ margin-top:1.1rem; max-width:44ch; color:var(--cream-mute); }
+  .so-hero .actions{ margin-top:1.6rem; display:flex; align-items:center; gap:1.4rem; flex-wrap:wrap; }
 
-  .so-reels{ list-style:none; padding:0; margin:clamp(1.2rem,2.4vw,1.8rem) 0 0; display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr)); gap:0.9rem; }
-  .so-reel a{ display:flex; flex-direction:column; height:100%; padding:1.4rem; border-radius:16px; background:var(--charcoal); color:var(--cream); box-shadow:0 0 0 1px rgba(249,247,242,0.08); transition:box-shadow .2s ease; }
-  .so-reel a:hover{ box-shadow:0 0 0 1px var(--orange); }
-  .so-reel time{ font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--orange); }
-  .so-reel-t{ margin-top:0.6rem; font-family:var(--font-display); font-weight:800; font-size:1.25rem; letter-spacing:-0.01em; line-height:1.15; }
-  .so-reel-l{ margin-top:0.4rem; color:var(--cream-mute); font-size:0.95rem; flex:1; }
-  .so-go{ margin-top:1.1rem; font-weight:700; color:var(--orange); }
+  /* The reel strip. Each tile is 9:16, a play mark, a date, and two lines. */
+  .so-reels-band{ padding:clamp(1.2rem,3vw,2rem) 0 clamp(3.2rem,6vw,4.5rem); }
+  .so-reels{ list-style:none; padding:0; margin:clamp(1.4rem,2.6vw,2rem) 0 0; display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:clamp(0.7rem,1.4vw,1rem); }
+  .so-reel a{ position:relative; display:flex; flex-direction:column; aspect-ratio:4/5; padding:1rem; border-radius:18px; overflow:hidden; color:var(--cream);
+    background:linear-gradient(165deg, rgba(255,92,57,0.24) 0%, rgba(255,92,57,0.04) 45%, transparent 70%), var(--charcoal);
+    box-shadow:inset 0 0 0 1px rgba(249,247,242,0.1); transition:box-shadow .2s ease, transform .2s ease; }
+  .so-reel a:hover{ box-shadow:inset 0 0 0 1.5px var(--orange); transform:translateY(-3px); }
+  .so-reel a:focus-visible{ outline:2px solid var(--orange); outline-offset:3px; }
+  .so-play{ display:block; color:var(--orange); line-height:0; }
+  .so-play .ix-svg{ width:44px; height:44px; }
+  .so-reel time{ margin-top:auto; font-family:var(--font-label); font-weight:800; font-size:0.7rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--orange); }
+  .so-reel-t{ margin-top:0.4rem; font-family:var(--font-display); font-weight:800; font-size:1.05rem; line-height:1.15; letter-spacing:-0.01em; }
+  .so-reel-l{ margin-top:0.35rem; font-size:0.82rem; line-height:1.4; color:var(--cream-mute); }
+  .so-strip-head{ display:flex; align-items:end; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+  .so-strip-head .textlink{ color:var(--orange); }
+  @media (max-width:1000px){
+    .so-reels{ grid-auto-flow:column; grid-template-columns:none; grid-auto-columns:minmax(168px,44vw); overflow-x:auto; scroll-snap-type:x mandatory; scroll-padding-inline:var(--gutter, 20px); padding-bottom:0.6rem; margin-inline:calc(var(--gutter, 20px) * -1); padding-inline:var(--gutter, 20px); scrollbar-width:thin; }
+    .so-reel{ scroll-snap-align:start; }
+  }
+  @media (prefers-reduced-motion:reduce){ .so-reel a{ transition:none; } .so-reel a:hover{ transform:none; } }
 
-  .so-intro{ margin-top:0.9rem; max-width:52ch; color:var(--ink-soft); }
-  .so-group{ margin-top:clamp(2rem,4vw,2.6rem); font-family:var(--font-label); font-weight:800; font-size:0.8rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--orange-ink); }
-  .so-orgs{ list-style:none; padding:0; margin:0.9rem 0 0; display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr)); gap:0.9rem; }
-  .so-org{ display:flex; flex-direction:column; padding:1.3rem 1.4rem; border-radius:16px; background:#fff; box-shadow:0 0 0 1px var(--hairline); }
-  .so-org-n{ font-family:var(--font-display); font-weight:800; font-size:1.2rem; letter-spacing:-0.01em; color:var(--ink); line-height:1.15; }
-  .so-org-p{ margin-top:0.2rem; color:var(--muted); font-size:0.88rem; }
-  .so-org-l{ margin-top:0.6rem; color:var(--ink-soft); font-size:0.95rem; flex:1; }
-  .so-handle, .so-more{ margin-top:0.9rem; align-self:flex-start; font-weight:700; color:var(--orange-ink); border-bottom:2px solid currentColor; padding-bottom:2px; }
-  .so-more{ margin-top:0.5rem; }
+  /* Brick House leads: the mark, not a photograph. */
+  .so-lead{ display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:clamp(1.2rem,3vw,2.4rem); align-items:center; padding:clamp(1.4rem,3vw,2rem) clamp(1.4rem,3vw,2.2rem); border-radius:20px; background:var(--ink-warm); color:var(--cream); margin-bottom:clamp(2.6rem,5vw,3.6rem); box-shadow:0 30px 60px -36px rgba(0,0,0,0.6); }
+  .so-lead img{ height:clamp(52px,6vw,70px); width:auto; }
+  .so-lead .eyebrow{ color:var(--orange); }
+  .so-lead .h3{ margin-top:0.35rem; color:var(--cream); font-size:clamp(1.5rem,2.4vw,2rem); letter-spacing:-0.02em; line-height:1.05; }
+  .so-lead p{ margin-top:0.5rem; color:var(--cream-mute); max-width:52ch; }
+  .so-lead-links{ display:flex; flex-direction:column; gap:0.7rem; align-items:flex-start; }
+  .so-lead-links a{ font-weight:700; color:var(--orange); border-bottom:2px solid currentColor; padding-bottom:2px; white-space:nowrap; }
+  @media (max-width:760px){ .so-lead{ grid-template-columns:1fr; } .so-lead-links{ flex-direction:row; flex-wrap:wrap; gap:1.2rem; } }
+  .so-note{ margin:0 0 clamp(2rem,4vw,2.8rem); max-width:62ch; color:var(--ink-soft); }
 </style>
 </head>
 <body>
@@ -280,155 +297,203 @@ fill="currentColor" stroke="none">
     </div>
   </section>
 
-  <section class="band dark" aria-labelledby="soReelsTitle">
+  <section class="dark so-reels-band" aria-labelledby="soReelsTitle">
     <div class="wrap">
-      <h2 id="soReelsTitle" class="eyebrow orange">Recent reels</h2>
+      <div class="so-strip-head">
+        <h2 id="soReelsTitle" class="eyebrow orange">Recent reels</h2>
+        <a class="textlink" href="https://www.instagram.com/adapt_to_life_org/" target="_blank" rel="noopener noreferrer">All of them on Instagram <span class="arrow">&rarr;</span></a>
+      </div>
       <ul class="so-reels">
-        <li class="so-reel">
-          <a href="https://www.instagram.com/reel/De4NJ9TNJGR/" target="_blank" rel="noopener noreferrer">
-            <time datetime="2026-10-24">Oct 24</time>
-            <span class="so-reel-t">Monster Smash, Cincinnati</span>
-            <span class="so-reel-l">The crew made the trip to The Pickle Lodge.</span>
-            <span class="so-go">Watch on Instagram <span aria-hidden="true">&rarr;</span></span>
-          </a>
-        </li>
-        <li class="so-reel">
-          <a href="https://www.instagram.com/reel/DehEwDutWJQ/" target="_blank" rel="noopener noreferrer">
-            <time datetime="2026-10-15">Oct 15</time>
-            <span class="so-reel-t">Meet the mascot</span>
-            <span class="so-reel-l">Adapt To Life has a mascot now. Say hello.</span>
-            <span class="so-go">Watch on Instagram <span aria-hidden="true">&rarr;</span></span>
-          </a>
-        </li>
-        <li class="so-reel">
-          <a href="https://www.instagram.com/reel/DeQFw1fNPb_/" target="_blank" rel="noopener noreferrer">
-            <time datetime="2026-10-08">Oct 8</time>
-            <span class="so-reel-t">Bad Bunny on repeat</span>
-            <span class="so-reel-l">Another day of pickleball, speaker turned up.</span>
-            <span class="so-go">Watch on Instagram <span aria-hidden="true">&rarr;</span></span>
-          </a>
-        </li>
-        <li class="so-reel">
-          <a href="https://www.instagram.com/reel/Dd9bVo9tQgn/" target="_blank" rel="noopener noreferrer">
-            <time datetime="2026-10-01">Oct 1</time>
-            <span class="so-reel-t">Pickleball on wheels</span>
-            <span class="so-reel-l">What a rally looks like from a chair.</span>
-            <span class="so-go">Watch on Instagram <span aria-hidden="true">&rarr;</span></span>
-          </a>
-        </li>
-        <li class="so-reel">
-          <a href="https://www.instagram.com/reel/DdrZbYyN2Ix/" target="_blank" rel="noopener noreferrer">
-            <time datetime="2026-09-24">Sep 24</time>
-            <span class="so-reel-t">We'll play anywhere</span>
-            <span class="so-reel-l">We love pickleball so much we'll play anywhere.</span>
-            <span class="so-go">Watch on Instagram <span aria-hidden="true">&rarr;</span></span>
-          </a>
-        </li>
-        <li class="so-reel">
-          <a href="https://www.instagram.com/reel/DcHYnAYtogd/" target="_blank" rel="noopener noreferrer">
-            <time datetime="2026-08-16">Aug 16</time>
-            <span class="so-reel-t">Court time</span>
-            <span class="so-reel-l">Our founder, Alec, getting some court time in.</span>
-            <span class="so-go">Watch on Instagram <span aria-hidden="true">&rarr;</span></span>
-          </a>
-        </li>
+        <li class="so-reel"><a href="https://www.instagram.com/reel/De4NJ9TNJGR/" target="_blank" rel="noopener noreferrer" aria-label="Watch Monster Smash, Cincinnati on Instagram">
+          <span class="so-play"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="play"><g fill="currentColor"><path d="M128 32a96 96 0 1 0 96 96a96 96 0 0 0-96-96m-20 136V88l64 40Z" opacity=".2"/><path d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m0 192a88 88 0 1 1 88-88a88.1 88.1 0 0 1-88 88m48.24-94.78l-64-40A8 8 0 0 0 100 88v80a8 8 0 0 0 12.24 6.78l64-40a8 8 0 0 0 0-13.56M116 153.57v-51.14L156.91 128Z"/></g></svg></span>
+          <time datetime="2026-10-24">Oct 24</time>
+          <span class="so-reel-t">Monster Smash, Cincinnati</span>
+          <span class="so-reel-l">The crew made the trip to The Pickle Lodge.</span>
+        </a></li>
+        <li class="so-reel"><a href="https://www.instagram.com/reel/DehEwDutWJQ/" target="_blank" rel="noopener noreferrer" aria-label="Watch Meet the mascot on Instagram">
+          <span class="so-play"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="play"><g fill="currentColor"><path d="M128 32a96 96 0 1 0 96 96a96 96 0 0 0-96-96m-20 136V88l64 40Z" opacity=".2"/><path d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m0 192a88 88 0 1 1 88-88a88.1 88.1 0 0 1-88 88m48.24-94.78l-64-40A8 8 0 0 0 100 88v80a8 8 0 0 0 12.24 6.78l64-40a8 8 0 0 0 0-13.56M116 153.57v-51.14L156.91 128Z"/></g></svg></span>
+          <time datetime="2026-10-15">Oct 15</time>
+          <span class="so-reel-t">Meet the mascot</span>
+          <span class="so-reel-l">Adapt To Life has a mascot now. Say hello.</span>
+        </a></li>
+        <li class="so-reel"><a href="https://www.instagram.com/reel/DeQFw1fNPb_/" target="_blank" rel="noopener noreferrer" aria-label="Watch Bad Bunny on repeat on Instagram">
+          <span class="so-play"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="play"><g fill="currentColor"><path d="M128 32a96 96 0 1 0 96 96a96 96 0 0 0-96-96m-20 136V88l64 40Z" opacity=".2"/><path d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m0 192a88 88 0 1 1 88-88a88.1 88.1 0 0 1-88 88m48.24-94.78l-64-40A8 8 0 0 0 100 88v80a8 8 0 0 0 12.24 6.78l64-40a8 8 0 0 0 0-13.56M116 153.57v-51.14L156.91 128Z"/></g></svg></span>
+          <time datetime="2026-10-08">Oct 8</time>
+          <span class="so-reel-t">Bad Bunny on repeat</span>
+          <span class="so-reel-l">Another day of pickleball, speaker turned up.</span>
+        </a></li>
+        <li class="so-reel"><a href="https://www.instagram.com/reel/Dd9bVo9tQgn/" target="_blank" rel="noopener noreferrer" aria-label="Watch Pickleball on wheels on Instagram">
+          <span class="so-play"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="play"><g fill="currentColor"><path d="M128 32a96 96 0 1 0 96 96a96 96 0 0 0-96-96m-20 136V88l64 40Z" opacity=".2"/><path d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m0 192a88 88 0 1 1 88-88a88.1 88.1 0 0 1-88 88m48.24-94.78l-64-40A8 8 0 0 0 100 88v80a8 8 0 0 0 12.24 6.78l64-40a8 8 0 0 0 0-13.56M116 153.57v-51.14L156.91 128Z"/></g></svg></span>
+          <time datetime="2026-10-01">Oct 1</time>
+          <span class="so-reel-t">Pickleball on wheels</span>
+          <span class="so-reel-l">What a rally looks like from a chair.</span>
+        </a></li>
+        <li class="so-reel"><a href="https://www.instagram.com/reel/DdrZbYyN2Ix/" target="_blank" rel="noopener noreferrer" aria-label="Watch We'll play anywhere on Instagram">
+          <span class="so-play"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="play"><g fill="currentColor"><path d="M128 32a96 96 0 1 0 96 96a96 96 0 0 0-96-96m-20 136V88l64 40Z" opacity=".2"/><path d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m0 192a88 88 0 1 1 88-88a88.1 88.1 0 0 1-88 88m48.24-94.78l-64-40A8 8 0 0 0 100 88v80a8 8 0 0 0 12.24 6.78l64-40a8 8 0 0 0 0-13.56M116 153.57v-51.14L156.91 128Z"/></g></svg></span>
+          <time datetime="2026-09-24">Sep 24</time>
+          <span class="so-reel-t">We'll play anywhere</span>
+          <span class="so-reel-l">We love pickleball so much we'll play anywhere.</span>
+        </a></li>
+        <li class="so-reel"><a href="https://www.instagram.com/reel/DcHYnAYtogd/" target="_blank" rel="noopener noreferrer" aria-label="Watch Court time on Instagram">
+          <span class="so-play"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="play"><g fill="currentColor"><path d="M128 32a96 96 0 1 0 96 96a96 96 0 0 0-96-96m-20 136V88l64 40Z" opacity=".2"/><path d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m0 192a88 88 0 1 1 88-88a88.1 88.1 0 0 1-88 88m48.24-94.78l-64-40A8 8 0 0 0 100 88v80a8 8 0 0 0 12.24 6.78l64-40a8 8 0 0 0 0-13.56M116 153.57v-51.14L156.91 128Z"/></g></svg></span>
+          <time datetime="2026-08-16">Aug 16</time>
+          <span class="so-reel-t">Court time</span>
+          <span class="so-reel-l">Our founder, Alec, getting some court time in.</span>
+        </a></li>
       </ul>
     </div>
   </section>
 
   <section class="band tint" aria-labelledby="soOrgsTitle">
     <div class="wrap">
-      <h2 id="soOrgsTitle" class="serif h2">Who we play alongside</h2>
-      <p class="so-intro">Clubs, courts, and organizations from our Instagram: the ones we've tagged, played with, or heard from in the comments. Being listed here doesn't mean a formal partnership. Our partners are on <a class="textlink" href="/sponsorship">Partners</a>.</p>
-      <h3 class="so-group">Courts and hosts</h3>
-        <ul class="so-orgs">
-          <li class="so-org">
-            <span class="so-org-n">Brick House Pickleball</span>
-            <span class="so-org-p">Lake Forest, IL</span>
-            <span class="so-org-l">Our training home. Weekly crew sessions and the grand re-opening demo.</span>
-            <a class="so-handle" href="https://www.instagram.com/brickhousepb/" target="_blank" rel="noopener noreferrer">@brickhousepb</a>
-            <a class="so-more" href="/brickhouse">Read more</a>
-          </li>
-          <li class="so-org">
-            <span class="so-org-n">The Pickle Lodge</span>
-            <span class="so-org-p">Cincinnati, OH</span>
-            <span class="so-org-l">Host of Monster Smash, October 2026.</span>
-            <a class="so-handle" href="https://www.instagram.com/thepicklelodge/" target="_blank" rel="noopener noreferrer">@thepicklelodge</a>
-          </li>
-          <li class="so-org">
-            <span class="so-org-n">APC Des Plaines</span>
-            <span class="so-org-p">Des Plaines, IL</span>
-            <span class="so-org-l">A tournament where we had a table, August 2026.</span>
-            <a class="so-handle" href="https://www.instagram.com/apcdesplainesil/" target="_blank" rel="noopener noreferrer">@apcdesplainesil</a>
-          </li>
-        </ul>
-      <h3 class="so-group">Sport and community</h3>
-        <ul class="so-orgs">
-          <li class="so-org">
-            <span class="so-org-n">WASA</span>
-            <span class="so-org-p">Southeast Wisconsin</span>
-            <span class="so-org-l">Wisconsin Adaptive Sports Association, and their pickleball program.</span>
-            <a class="so-handle" href="https://www.instagram.com/wiadaptivesports/" target="_blank" rel="noopener noreferrer">@wiadaptivesports</a>
-          </li>
-          <li class="so-org">
-            <span class="so-org-n">APP Tour</span>
-            <span class="so-org-p">Chicago, IL</span>
-            <span class="so-org-l">The APP Vlasic Classic, wheelchair division.</span>
-            <a class="so-handle" href="https://www.instagram.com/officialapptour/" target="_blank" rel="noopener noreferrer">@officialapptour</a>
-          </li>
-          <li class="so-org">
-            <span class="so-org-n">A&amp;J Mobility</span>
-            <span class="so-org-p">Crystal Lake, IL</span>
-            <span class="so-org-l">Their grand opening and open house, September 2026.</span>
-            <a class="so-handle" href="https://www.instagram.com/aandjmobility/" target="_blank" rel="noopener noreferrer">@aandjmobility</a>
-          </li>
-          <li class="so-org">
-            <span class="so-org-n">ATC Mobility</span>
-            <span class="so-org-p">Crystal Lake, IL</span>
-            <span class="so-org-l">Mobility trucks on show at the A&amp;J open house.</span>
-            <a class="so-handle" href="https://www.instagram.com/atc.mobility/" target="_blank" rel="noopener noreferrer">@atc.mobility</a>
-          </li>
-          <li class="so-org">
-            <span class="so-org-n">Crystal Lake Chamber</span>
-            <span class="so-org-p">Crystal Lake, IL</span>
-            <span class="so-org-l">Out for the ribbon cutting at A&amp;J's grand opening.</span>
-            <a class="so-handle" href="https://www.instagram.com/crystallakechamber/" target="_blank" rel="noopener noreferrer">@crystallakechamber</a>
-          </li>
-          <li class="so-org">
-            <span class="so-org-n">Shriners Chicago</span>
-            <span class="so-org-p">Chicago, IL</span>
-            <span class="so-org-l">Pediatric orthopedics and rehab, and their work with kids.</span>
-            <a class="so-handle" href="https://www.instagram.com/shrinerschicago/" target="_blank" rel="noopener noreferrer">@shrinerschicago</a>
-          </li>
-          <li class="so-org">
-            <span class="so-org-n">Double Good</span>
-            <span class="so-org-p">Online</span>
-            <span class="so-org-l">Our first fundraiser, with 83 supporters.</span>
-            <a class="so-handle" href="https://www.instagram.com/doadoublegood/" target="_blank" rel="noopener noreferrer">@doadoublegood</a>
-            <a class="so-more" href="/popcorn">Read more</a>
-          </li>
-        </ul>
-      <h3 class="so-group">Cheering from the comments</h3>
-        <ul class="so-orgs">
-          <li class="so-org">
-            <span class="so-org-n">Ventra Sports</span>
-            <span class="so-org-p">Pickleball gear</span>
-            <span class="so-org-l">Paddles and gear, and regulars in our comments.</span>
-            <a class="so-handle" href="https://www.instagram.com/ventrasports/" target="_blank" rel="noopener noreferrer">@ventrasports</a>
-          </li>
-          <li class="so-org">
-            <span class="so-org-n">ReflectSport</span>
-            <span class="so-org-p">Pickleball bags</span>
-            <span class="so-org-l">Pickleball backpacks, and regulars in our comments.</span>
-            <a class="so-handle" href="https://www.instagram.com/reflectsportbags/" target="_blank" rel="noopener noreferrer">@reflectsportbags</a>
-          </li>
-          <li class="so-org">
-            <span class="so-org-n">Federação Pernambucana de Pickleball</span>
-            <span class="so-org-p">Pernambuco, Brazil</span>
-            <span class="so-org-l">A pickleball federation cheering from Brazil.</span>
-            <a class="so-handle" href="https://www.instagram.com/fpep.pickleball/" target="_blank" rel="noopener noreferrer">@fpep.pickleball</a>
-          </li>
-        </ul>
+      <h2 id="soOrgsTitle" class="serif h2">Who we play alongside.</h2>
+      <p class="so-note" style="margin-top:0.9rem;">Organizations from our Instagram: the ones we've tagged, played with, or heard from in the comments. Being listed here doesn't mean a formal partnership. Our partners are on <a class="textlink" href="/sponsorship">Partners</a>.</p>
+
+      <article class="so-lead">
+        <img src="/images/brickhouse/brick-house-logo-orange-black-reverse.svg" alt="Brick House Pickleball" width="160" height="70">
+        <div>
+          <span class="eyebrow">Our training home</span>
+          <h3 class="serif h3">Brick House Pickleball</h3>
+          <p>Lake Forest, IL. Weekly crew sessions, the grand re-opening demo, and more of our posts than anyone else.</p>
+        </div>
+        <div class="so-lead-links">
+          <a href="/brickhouse">The partnership</a>
+          <a href="https://www.instagram.com/brickhousepb/" target="_blank" rel="noopener noreferrer">@brickhousepb</a>
+        </div>
+      </article>
+
+    <div class="ix-group">
+      <header class="ix-head">
+        <span class="ix-tile"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="courts"><g fill="currentColor"><path d="M232 88v80h-16a40 40 0 0 1 0-80ZM40 88H24v80h16a40 40 0 0 0 0-80" opacity=".2"/><path d="M224 48H32a16 16 0 0 0-16 16v128a16 16 0 0 0 16 16h192a16 16 0 0 0 16-16V64a16 16 0 0 0-16-16m0 112h-8a32 32 0 0 1 0-64h8ZM32 96h8a32 32 0 0 1 0 64h-8Zm0 80h8a48 48 0 0 0 0-96h-8V64h88v128H32Zm192 16h-88V64h88v16h-8a48 48 0 0 0 0 96h8z"/></g></svg></span>
+        <div>
+          <span class="eyebrow orange">Courts and hosts <b>· 2</b></span>
+          <h3 class="serif h3">Where we've played and who has had us.</h3>
+        </div>
+        <span></span>
+      </header>
+      <ul class="ix-list">
+        <li class="ix-row">
+          <div>
+            <h3 class="ix-n"><a class="ix-link" href="https://www.instagram.com/thepicklelodge/" target="_blank" rel="noopener noreferrer">The Pickle Lodge</a></h3>
+            <p class="ix-d">Host of Monster Smash, October 2026.</p>
+            <p class="ix-meta"><span><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="place"><path fill="currentColor" d="M128 64a40 40 0 1 0 40 40a40 40 0 0 0-40-40m0 64a24 24 0 1 1 24-24a24 24 0 0 1-24 24m0-112a88.1 88.1 0 0 0-88 88c0 31.4 14.51 64.68 42 96.25a254.2 254.2 0 0 0 41.45 38.3a8 8 0 0 0 9.18 0a254.2 254.2 0 0 0 41.37-38.3c27.45-31.57 42-64.85 42-96.25a88.1 88.1 0 0 0-88-88m0 206c-16.53-13-72-60.75-72-118a72 72 0 0 1 144 0c0 57.23-55.47 105-72 118"/></svg>Cincinnati, OH</span><span style="text-transform:none;letter-spacing:0.02em;font-size:0.8rem;">@thepicklelodge</span></p>
+          </div>
+          <span class="ix-go"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external"><path fill="currentColor" d="M200 64v104a8 8 0 0 1-16 0V83.31L69.66 197.66a8 8 0 0 1-11.32-11.32L172.69 72H88a8 8 0 0 1 0-16h104a8 8 0 0 1 8 8"/></svg></span>
+        </li>
+        <li class="ix-row">
+          <div>
+            <h3 class="ix-n"><a class="ix-link" href="https://www.instagram.com/apcdesplainesil/" target="_blank" rel="noopener noreferrer">APC Des Plaines</a></h3>
+            <p class="ix-d">A tournament where we had a table, August 2026.</p>
+            <p class="ix-meta"><span><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="place"><path fill="currentColor" d="M128 64a40 40 0 1 0 40 40a40 40 0 0 0-40-40m0 64a24 24 0 1 1 24-24a24 24 0 0 1-24 24m0-112a88.1 88.1 0 0 0-88 88c0 31.4 14.51 64.68 42 96.25a254.2 254.2 0 0 0 41.45 38.3a8 8 0 0 0 9.18 0a254.2 254.2 0 0 0 41.37-38.3c27.45-31.57 42-64.85 42-96.25a88.1 88.1 0 0 0-88-88m0 206c-16.53-13-72-60.75-72-118a72 72 0 0 1 144 0c0 57.23-55.47 105-72 118"/></svg>Des Plaines, IL</span><span style="text-transform:none;letter-spacing:0.02em;font-size:0.8rem;">@apcdesplainesil</span></p>
+          </div>
+          <span class="ix-go"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external"><path fill="currentColor" d="M200 64v104a8 8 0 0 1-16 0V83.31L69.66 197.66a8 8 0 0 1-11.32-11.32L172.69 72H88a8 8 0 0 1 0-16h104a8 8 0 0 1 8 8"/></svg></span>
+        </li>
+      </ul>
+    </div>
+    <div class="ix-group">
+      <header class="ix-head">
+        <span class="ix-tile"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="community"><g fill="currentColor"><path d="M168 144a40 40 0 1 1-40-40a40 40 0 0 1 40 40M64 56a32 32 0 1 0 32 32a32 32 0 0 0-32-32m128 0a32 32 0 1 0 32 32a32 32 0 0 0-32-32" opacity=".2"/><path d="M244.8 150.4a8 8 0 0 1-11.2-1.6A51.6 51.6 0 0 0 192 128a8 8 0 0 1 0-16a24 24 0 1 0-23.24-30a8 8 0 1 1-15.5-4A40 40 0 1 1 219 117.51a67.94 67.94 0 0 1 27.43 21.68a8 8 0 0 1-1.63 11.21M190.92 212a8 8 0 1 1-13.85 8a57 57 0 0 0-98.15 0a8 8 0 1 1-13.84-8a72.06 72.06 0 0 1 33.74-29.92a48 48 0 1 1 58.36 0A72.06 72.06 0 0 1 190.92 212M128 176a32 32 0 1 0-32-32a32 32 0 0 0 32 32m-56-56a8 8 0 0 0-8-8a24 24 0 1 1 23.24-30a8 8 0 1 0 15.5-4A40 40 0 1 0 37 117.51a67.94 67.94 0 0 0-27.4 21.68a8 8 0 1 0 12.8 9.61A51.6 51.6 0 0 1 64 128a8 8 0 0 0 8-8"/></g></svg></span>
+        <div>
+          <span class="eyebrow orange">Sport and community <b>· 7</b></span>
+          <h3 class="serif h3">Organizations we've shared a court, a table, or a cause with.</h3>
+        </div>
+        <span></span>
+      </header>
+      <ul class="ix-list">
+        <li class="ix-row">
+          <div>
+            <h3 class="ix-n"><a class="ix-link" href="https://www.instagram.com/wiadaptivesports/" target="_blank" rel="noopener noreferrer">WASA</a></h3>
+            <p class="ix-d">Wisconsin Adaptive Sports Association, and their pickleball program.</p>
+            <p class="ix-meta"><span><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="place"><path fill="currentColor" d="M128 64a40 40 0 1 0 40 40a40 40 0 0 0-40-40m0 64a24 24 0 1 1 24-24a24 24 0 0 1-24 24m0-112a88.1 88.1 0 0 0-88 88c0 31.4 14.51 64.68 42 96.25a254.2 254.2 0 0 0 41.45 38.3a8 8 0 0 0 9.18 0a254.2 254.2 0 0 0 41.37-38.3c27.45-31.57 42-64.85 42-96.25a88.1 88.1 0 0 0-88-88m0 206c-16.53-13-72-60.75-72-118a72 72 0 0 1 144 0c0 57.23-55.47 105-72 118"/></svg>Southeast Wisconsin</span><span style="text-transform:none;letter-spacing:0.02em;font-size:0.8rem;">@wiadaptivesports</span></p>
+          </div>
+          <span class="ix-go"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external"><path fill="currentColor" d="M200 64v104a8 8 0 0 1-16 0V83.31L69.66 197.66a8 8 0 0 1-11.32-11.32L172.69 72H88a8 8 0 0 1 0-16h104a8 8 0 0 1 8 8"/></svg></span>
+        </li>
+        <li class="ix-row">
+          <div>
+            <h3 class="ix-n"><a class="ix-link" href="https://www.instagram.com/officialapptour/" target="_blank" rel="noopener noreferrer">APP Tour</a></h3>
+            <p class="ix-d">The APP Vlasic Classic, wheelchair division.</p>
+            <p class="ix-meta"><span><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="place"><path fill="currentColor" d="M128 64a40 40 0 1 0 40 40a40 40 0 0 0-40-40m0 64a24 24 0 1 1 24-24a24 24 0 0 1-24 24m0-112a88.1 88.1 0 0 0-88 88c0 31.4 14.51 64.68 42 96.25a254.2 254.2 0 0 0 41.45 38.3a8 8 0 0 0 9.18 0a254.2 254.2 0 0 0 41.37-38.3c27.45-31.57 42-64.85 42-96.25a88.1 88.1 0 0 0-88-88m0 206c-16.53-13-72-60.75-72-118a72 72 0 0 1 144 0c0 57.23-55.47 105-72 118"/></svg>Chicago, IL</span><span style="text-transform:none;letter-spacing:0.02em;font-size:0.8rem;">@officialapptour</span></p>
+          </div>
+          <span class="ix-go"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external"><path fill="currentColor" d="M200 64v104a8 8 0 0 1-16 0V83.31L69.66 197.66a8 8 0 0 1-11.32-11.32L172.69 72H88a8 8 0 0 1 0-16h104a8 8 0 0 1 8 8"/></svg></span>
+        </li>
+        <li class="ix-row">
+          <div>
+            <h3 class="ix-n"><a class="ix-link" href="https://www.instagram.com/aandjmobility/" target="_blank" rel="noopener noreferrer">A&amp;J Mobility</a></h3>
+            <p class="ix-d">Their grand opening and open house, September 2026.</p>
+            <p class="ix-meta"><span><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="place"><path fill="currentColor" d="M128 64a40 40 0 1 0 40 40a40 40 0 0 0-40-40m0 64a24 24 0 1 1 24-24a24 24 0 0 1-24 24m0-112a88.1 88.1 0 0 0-88 88c0 31.4 14.51 64.68 42 96.25a254.2 254.2 0 0 0 41.45 38.3a8 8 0 0 0 9.18 0a254.2 254.2 0 0 0 41.37-38.3c27.45-31.57 42-64.85 42-96.25a88.1 88.1 0 0 0-88-88m0 206c-16.53-13-72-60.75-72-118a72 72 0 0 1 144 0c0 57.23-55.47 105-72 118"/></svg>Crystal Lake, IL</span><span style="text-transform:none;letter-spacing:0.02em;font-size:0.8rem;">@aandjmobility</span></p>
+          </div>
+          <span class="ix-go"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external"><path fill="currentColor" d="M200 64v104a8 8 0 0 1-16 0V83.31L69.66 197.66a8 8 0 0 1-11.32-11.32L172.69 72H88a8 8 0 0 1 0-16h104a8 8 0 0 1 8 8"/></svg></span>
+        </li>
+        <li class="ix-row">
+          <div>
+            <h3 class="ix-n"><a class="ix-link" href="https://www.instagram.com/atc.mobility/" target="_blank" rel="noopener noreferrer">ATC Mobility</a></h3>
+            <p class="ix-d">Mobility trucks on show at the A&amp;J open house.</p>
+            <p class="ix-meta"><span><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="place"><path fill="currentColor" d="M128 64a40 40 0 1 0 40 40a40 40 0 0 0-40-40m0 64a24 24 0 1 1 24-24a24 24 0 0 1-24 24m0-112a88.1 88.1 0 0 0-88 88c0 31.4 14.51 64.68 42 96.25a254.2 254.2 0 0 0 41.45 38.3a8 8 0 0 0 9.18 0a254.2 254.2 0 0 0 41.37-38.3c27.45-31.57 42-64.85 42-96.25a88.1 88.1 0 0 0-88-88m0 206c-16.53-13-72-60.75-72-118a72 72 0 0 1 144 0c0 57.23-55.47 105-72 118"/></svg>Crystal Lake, IL</span><span style="text-transform:none;letter-spacing:0.02em;font-size:0.8rem;">@atc.mobility</span></p>
+          </div>
+          <span class="ix-go"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external"><path fill="currentColor" d="M200 64v104a8 8 0 0 1-16 0V83.31L69.66 197.66a8 8 0 0 1-11.32-11.32L172.69 72H88a8 8 0 0 1 0-16h104a8 8 0 0 1 8 8"/></svg></span>
+        </li>
+        <li class="ix-row">
+          <div>
+            <h3 class="ix-n"><a class="ix-link" href="https://www.instagram.com/crystallakechamber/" target="_blank" rel="noopener noreferrer">Crystal Lake Chamber</a></h3>
+            <p class="ix-d">Out for the ribbon cutting at A&amp;J's grand opening.</p>
+            <p class="ix-meta"><span><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="place"><path fill="currentColor" d="M128 64a40 40 0 1 0 40 40a40 40 0 0 0-40-40m0 64a24 24 0 1 1 24-24a24 24 0 0 1-24 24m0-112a88.1 88.1 0 0 0-88 88c0 31.4 14.51 64.68 42 96.25a254.2 254.2 0 0 0 41.45 38.3a8 8 0 0 0 9.18 0a254.2 254.2 0 0 0 41.37-38.3c27.45-31.57 42-64.85 42-96.25a88.1 88.1 0 0 0-88-88m0 206c-16.53-13-72-60.75-72-118a72 72 0 0 1 144 0c0 57.23-55.47 105-72 118"/></svg>Crystal Lake, IL</span><span style="text-transform:none;letter-spacing:0.02em;font-size:0.8rem;">@crystallakechamber</span></p>
+          </div>
+          <span class="ix-go"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external"><path fill="currentColor" d="M200 64v104a8 8 0 0 1-16 0V83.31L69.66 197.66a8 8 0 0 1-11.32-11.32L172.69 72H88a8 8 0 0 1 0-16h104a8 8 0 0 1 8 8"/></svg></span>
+        </li>
+        <li class="ix-row">
+          <div>
+            <h3 class="ix-n"><a class="ix-link" href="https://www.instagram.com/shrinerschicago/" target="_blank" rel="noopener noreferrer">Shriners Chicago</a></h3>
+            <p class="ix-d">Pediatric orthopedics and rehab, and their work with kids.</p>
+            <p class="ix-meta"><span><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="place"><path fill="currentColor" d="M128 64a40 40 0 1 0 40 40a40 40 0 0 0-40-40m0 64a24 24 0 1 1 24-24a24 24 0 0 1-24 24m0-112a88.1 88.1 0 0 0-88 88c0 31.4 14.51 64.68 42 96.25a254.2 254.2 0 0 0 41.45 38.3a8 8 0 0 0 9.18 0a254.2 254.2 0 0 0 41.37-38.3c27.45-31.57 42-64.85 42-96.25a88.1 88.1 0 0 0-88-88m0 206c-16.53-13-72-60.75-72-118a72 72 0 0 1 144 0c0 57.23-55.47 105-72 118"/></svg>Chicago, IL</span><span style="text-transform:none;letter-spacing:0.02em;font-size:0.8rem;">@shrinerschicago</span></p>
+          </div>
+          <span class="ix-go"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external"><path fill="currentColor" d="M200 64v104a8 8 0 0 1-16 0V83.31L69.66 197.66a8 8 0 0 1-11.32-11.32L172.69 72H88a8 8 0 0 1 0-16h104a8 8 0 0 1 8 8"/></svg></span>
+        </li>
+        <li class="ix-row">
+          <div>
+            <h3 class="ix-n"><a class="ix-link" href="https://www.instagram.com/doadoublegood/" target="_blank" rel="noopener noreferrer">Double Good</a></h3>
+            <p class="ix-d">Our first fundraiser, with 83 supporters.</p>
+            <p class="ix-meta"><span><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="place"><path fill="currentColor" d="M128 64a40 40 0 1 0 40 40a40 40 0 0 0-40-40m0 64a24 24 0 1 1 24-24a24 24 0 0 1-24 24m0-112a88.1 88.1 0 0 0-88 88c0 31.4 14.51 64.68 42 96.25a254.2 254.2 0 0 0 41.45 38.3a8 8 0 0 0 9.18 0a254.2 254.2 0 0 0 41.37-38.3c27.45-31.57 42-64.85 42-96.25a88.1 88.1 0 0 0-88-88m0 206c-16.53-13-72-60.75-72-118a72 72 0 0 1 144 0c0 57.23-55.47 105-72 118"/></svg>Online</span><span style="text-transform:none;letter-spacing:0.02em;font-size:0.8rem;">@doadoublegood</span></p>
+          </div>
+          <span class="ix-go"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external"><path fill="currentColor" d="M200 64v104a8 8 0 0 1-16 0V83.31L69.66 197.66a8 8 0 0 1-11.32-11.32L172.69 72H88a8 8 0 0 1 0-16h104a8 8 0 0 1 8 8"/></svg></span>
+        </li>
+      </ul>
+    </div>
+    <div class="ix-group">
+      <header class="ix-head">
+        <span class="ix-tile"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="cheering"><g fill="currentColor"><path d="M231.66 213.73a8 8 0 0 1-9.93 9.93L194 215.5a72.05 72.05 0 0 1-101.94-39.61c1.31.07 2.62.11 3.94.11a72 72 0 0 0 67.93-95.88A72 72 0 0 1 223.5 186Z" opacity=".2"/><path d="M232.07 186.76a80 80 0 0 0-62.5-114.17a80 80 0 1 0-145.64 66.17l-7.27 24.71a16 16 0 0 0 19.87 19.87l24.71-7.27a80.4 80.4 0 0 0 25.18 7.35a80 80 0 0 0 108.34 40.65l24.71 7.27a16 16 0 0 0 19.87-19.86ZM62 159.5a8.3 8.3 0 0 0-2.26.32L32 168l8.17-27.76a8 8 0 0 0-.63-6A64 64 0 1 1 65.8 160.5a8 8 0 0 0-3.8-1m153.79 28.73L224 216l-27.76-8.17a8 8 0 0 0-6 .63a64.05 64.05 0 0 1-85.87-24.88a79.93 79.93 0 0 0 70.33-93.87a64 64 0 0 1 41.75 92.48a8 8 0 0 0-.63 6.04Z"/></g></svg></span>
+        <div>
+          <span class="eyebrow orange">Cheering from the comments <b>· 3</b></span>
+          <h3 class="serif h3">Brands and groups who keep showing up under our posts.</h3>
+        </div>
+        <span></span>
+      </header>
+      <ul class="ix-list">
+        <li class="ix-row">
+          <div>
+            <h3 class="ix-n"><a class="ix-link" href="https://www.instagram.com/ventrasports/" target="_blank" rel="noopener noreferrer">Ventra Sports</a></h3>
+            <p class="ix-d">Pickleball paddles and gear.</p>
+            <p class="ix-meta"><span><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="place"><path fill="currentColor" d="M128 64a40 40 0 1 0 40 40a40 40 0 0 0-40-40m0 64a24 24 0 1 1 24-24a24 24 0 0 1-24 24m0-112a88.1 88.1 0 0 0-88 88c0 31.4 14.51 64.68 42 96.25a254.2 254.2 0 0 0 41.45 38.3a8 8 0 0 0 9.18 0a254.2 254.2 0 0 0 41.37-38.3c27.45-31.57 42-64.85 42-96.25a88.1 88.1 0 0 0-88-88m0 206c-16.53-13-72-60.75-72-118a72 72 0 0 1 144 0c0 57.23-55.47 105-72 118"/></svg>Pickleball gear</span><span style="text-transform:none;letter-spacing:0.02em;font-size:0.8rem;">@ventrasports</span></p>
+          </div>
+          <span class="ix-go"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external"><path fill="currentColor" d="M200 64v104a8 8 0 0 1-16 0V83.31L69.66 197.66a8 8 0 0 1-11.32-11.32L172.69 72H88a8 8 0 0 1 0-16h104a8 8 0 0 1 8 8"/></svg></span>
+        </li>
+        <li class="ix-row">
+          <div>
+            <h3 class="ix-n"><a class="ix-link" href="https://www.instagram.com/reflectsportbags/" target="_blank" rel="noopener noreferrer">ReflectSport</a></h3>
+            <p class="ix-d">Pickleball backpacks.</p>
+            <p class="ix-meta"><span><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="place"><path fill="currentColor" d="M128 64a40 40 0 1 0 40 40a40 40 0 0 0-40-40m0 64a24 24 0 1 1 24-24a24 24 0 0 1-24 24m0-112a88.1 88.1 0 0 0-88 88c0 31.4 14.51 64.68 42 96.25a254.2 254.2 0 0 0 41.45 38.3a8 8 0 0 0 9.18 0a254.2 254.2 0 0 0 41.37-38.3c27.45-31.57 42-64.85 42-96.25a88.1 88.1 0 0 0-88-88m0 206c-16.53-13-72-60.75-72-118a72 72 0 0 1 144 0c0 57.23-55.47 105-72 118"/></svg>Pickleball bags</span><span style="text-transform:none;letter-spacing:0.02em;font-size:0.8rem;">@reflectsportbags</span></p>
+          </div>
+          <span class="ix-go"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external"><path fill="currentColor" d="M200 64v104a8 8 0 0 1-16 0V83.31L69.66 197.66a8 8 0 0 1-11.32-11.32L172.69 72H88a8 8 0 0 1 0-16h104a8 8 0 0 1 8 8"/></svg></span>
+        </li>
+        <li class="ix-row">
+          <div>
+            <h3 class="ix-n"><a class="ix-link" href="https://www.instagram.com/fpep.pickleball/" target="_blank" rel="noopener noreferrer">Federação Pernambucana de Pickleball</a></h3>
+            <p class="ix-d">A pickleball federation cheering from Brazil.</p>
+            <p class="ix-meta"><span><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="place"><path fill="currentColor" d="M128 64a40 40 0 1 0 40 40a40 40 0 0 0-40-40m0 64a24 24 0 1 1 24-24a24 24 0 0 1-24 24m0-112a88.1 88.1 0 0 0-88 88c0 31.4 14.51 64.68 42 96.25a254.2 254.2 0 0 0 41.45 38.3a8 8 0 0 0 9.18 0a254.2 254.2 0 0 0 41.37-38.3c27.45-31.57 42-64.85 42-96.25a88.1 88.1 0 0 0-88-88m0 206c-16.53-13-72-60.75-72-118a72 72 0 0 1 144 0c0 57.23-55.47 105-72 118"/></svg>Pernambuco, Brazil</span><span style="text-transform:none;letter-spacing:0.02em;font-size:0.8rem;">@fpep.pickleball</span></p>
+          </div>
+          <span class="ix-go"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external"><path fill="currentColor" d="M200 64v104a8 8 0 0 1-16 0V83.31L69.66 197.66a8 8 0 0 1-11.32-11.32L172.69 72H88a8 8 0 0 1 0-16h104a8 8 0 0 1 8 8"/></svg></span>
+        </li>
+      </ul>
+    </div>
     </div>
   </section>
 

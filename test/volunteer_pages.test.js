@@ -14,7 +14,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
 import { execFileSync } from "node:child_process";
-import { LANES, ROLES, SHARED } from "../data/volunteer-roles.mjs";
+import { LANES, ROLES, SHARED, TOOLS, ROLE_TOOLS } from "../data/volunteer-roles.mjs";
 
 const root = new URL("../", import.meta.url);
 const read = (rel) => readFileSync(new URL(rel, root), "utf8");
@@ -37,11 +37,13 @@ test("every role has a page, and every page has a role", () => {
   }
 });
 
-test("the whole card is one link to its role page", () => {
+test("the whole row is one link to its role page", () => {
   // Alec, 2026-09-02: almost everyone applies for one role, so the shortest path
-  // wins. One tap on the card, then a two-field form on the role page.
+  // wins. One tap on the row, then a two-field form on the role page. Since
+  // 2026-10-29 the board is an index of rows (site.css): the role name is the
+  // link and .ix-link stretches it over the whole row.
   for (const r of ROLES) {
-    assert.match(BOARD, new RegExp(`<a class="role" href="/volunteer/${r.slug}">`),
+    assert.match(BOARD, new RegExp(`<a class="ix-link" href="/volunteer/${r.slug}">`),
       `the board does not link ${r.slug} as a whole card`);
   }
 });
@@ -54,10 +56,11 @@ test("the board carries no role picker", () => {
   assert.doesNotMatch(BOARD, /<label class="role["\s]/, "a card is wrapped in a label again");
 });
 
-test("a card contains no nested link or form control", () => {
-  // The card IS an anchor, so an <a> or an <input> inside it would be invalid
-  // and would fight the tap.
-  const cards = [...BOARD.matchAll(/<a class="role" href="[^"]*">([\s\S]*?)<\/a>/g)].map((m) => m[1]);
+test("a row's link contains no nested link or form control", () => {
+  // The role link is an anchor, so an <a> or an <input> inside it would be
+  // invalid and would fight the tap. The "Works in" tool links are siblings
+  // of it, layered above the stretched link, never inside it.
+  const cards = [...BOARD.matchAll(/<a class="ix-link" href="\/volunteer\/[^"]*">([\s\S]*?)<\/a>/g)].map((m) => m[1]);
   assert.equal(cards.length, ROLES.length);
   for (const c of cards) {
     assert.doesNotMatch(c, /<a\s|<input|<button|<label/, "a card contains a nested link or control");
@@ -208,8 +211,24 @@ test("no role page emits JobPosting structured data", () => {
 test("every role names its time cost on the board", () => {
   for (const r of ROLES) {
     assert.ok(r.time && r.time.length > 2, `${r.slug} has no time chip`);
-    assert.match(BOARD, new RegExp(`<span class="role-t">${r.time.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</span>`),
-      `${r.slug} card does not show its time`);
+    assert.match(BOARD, new RegExp(`<span class="ix-time"><svg[^>]*>.*?</svg>${r.time.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</span>`),
+      `${r.slug} row does not show its time`);
+  }
+});
+
+test("every role's tools are real entries, shown on the board and its page", () => {
+  // TOOLS holds only what this organization actually runs, our own sites,
+  // and official references; a key that is not in it is a typo or a guess.
+  for (const r of ROLES) {
+    const keys = ROLE_TOOLS[r.slug] || [];
+    for (const k of keys) assert.ok(TOOLS[k], `${r.slug} lists unknown tool ${k}`);
+    if (!keys.length) continue;
+    const page = readFileSync(new URL(`public/volunteer/${r.slug}.html`, root), "utf8");
+    for (const k of keys) {
+      const href = TOOLS[k].href.replace(/&/g, "&amp;");
+      assert.ok(page.includes(`href="${href}"`), `${r.slug} page does not link ${k}`);
+      assert.ok(BOARD.includes(`href="${href}"`), `the board does not link ${k}`);
+    }
   }
 });
 

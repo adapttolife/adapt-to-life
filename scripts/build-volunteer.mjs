@@ -19,7 +19,8 @@ import { PAGE_HEADER_SHEET, PAGE_HEADER_CLASS, bandVars,
          TIER_CLASS } from "./lib/page-header.mjs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { SHARED, LANES, ROLES } from "../data/volunteer-roles.mjs";
+import { SHARED, LANES, ROLES, TOOLS, ROLE_TOOLS } from "../data/volunteer-roles.mjs";
+import { icon, logo } from "./lib/icons.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const PUB = join(ROOT, "public");
@@ -89,30 +90,56 @@ const ul = (items, cls = "") =>
 // One consequence worth keeping in mind: the card cannot contain another link or
 // a form control, because it IS an anchor. A "read the role" link inside it would
 // be a nested anchor, which is invalid, and it would also be redundant.
+// What a role works in: real tools, our own sites, official references
+// (TOOLS in data/volunteer-roles.mjs). Outside links open in a new tab.
+function toolLinks(r) {
+  return (ROLE_TOOLS[r.slug] || []).map((k) => {
+    const t = TOOLS[k];
+    const out = /^https?:/.test(t.href) && !t.href.startsWith(SITE) ? ' target="_blank" rel="noopener"' : "";
+    return `<a href="${esc(t.href)}"${out}>${t.logo ? logo(t.logo) : ""}${esc(t.name)}</a>`;
+  }).join("");
+}
+
 function card(r) {
-  return `      <li><a class="role" href="/volunteer/${r.slug}">
-        <span class="role-n">${esc(r.name)}</span>
-        <span class="role-d">${esc(r.card)}</span>
-        <span class="role-foot"><span class="role-t">${esc(r.time)}</span><span class="role-go" aria-hidden="true">&rarr;</span></span>
-      </a></li>`;
+  const tools = toolLinks(r);
+  return `        <li class="ix-row">
+          <div>
+            <h3 class="ix-n"><a class="ix-link" href="/volunteer/${r.slug}">${esc(r.name)}</a></h3>
+            <p class="ix-d">${esc(r.card)}</p>
+            <p class="ix-meta"><span class="ix-time">${icon("time")}${esc(r.time)}</span><span>${esc(r.where)}</span></p>${tools ? `
+            <p class="ix-tools"><span class="ix-tools-l">Works in</span>${tools}</p>` : ""}
+          </div>
+          <span class="ix-go">${icon("arrow")}</span>
+        </li>`;
 }
 
 function boardPage() {
+  // Each lane is an index (site.css): its icon, name, heading and line in one
+  // compact row, then its roles as a two-column ruled list.
   const lanes = LANES.map((l, i) => {
     const roles = ROLES.filter((r) => r.lane === l.key);
-    return `  <section class="band${i % 2 ? " tint" : ""}">
+    return `  <section class="band${i % 2 ? " tint" : ""} lane-anchor" id="lane-${l.key}" aria-labelledby="lane-${l.key}-h">
     <div class="wrap">
-      <div class="reveal sec-head">
-        <span class="eyebrow orange">${l.name}</span>
-        <h2 class="serif h2" style="margin-top:0.8rem;">${l.head}</h2>
-        <p class="lane-blurb">${l.blurb}</p>
-      </div>
-      <ul class="roles">
+      <header class="ix-head reveal">
+        <span class="ix-tile">${icon(l.icon, "duotone")}</span>
+        <div>
+          <span class="eyebrow orange">${l.name} <b>· ${roles.length} roles</b></span>
+          <h2 class="serif h2" id="lane-${l.key}-h">${l.head}</h2>
+        </div>
+        <p class="ix-blurb">${l.blurb}</p>
+      </header>
+      <ul class="ix-list">
 ${roles.map(card).join("\n")}
       </ul>
     </div>
   </section>`;
   }).join("\n\n");
+
+  // The jump bar under "What you would be joining": every lane and how many
+  // roles it holds, so a reader goes straight to their part.
+  const jump = LANES.map((l) =>
+    `        <li><a href="#lane-${l.key}">${icon(l.icon)}${l.name} <b>${ROLES.filter((r) => r.lane === l.key).length}</b></a></li>`
+  ).join("\n");
 
   const terms = SHARED.terms
     .map(([t, d]) => `        <div class="term reveal">\n          <h3>${esc(t)}</h3>\n          <p>${esc(d)}</p>\n        </div>`)
@@ -174,6 +201,9 @@ ${roles.map(card).join("\n")}
       <div class="terms">
 ${terms}
       </div>
+      <ul class="jump" aria-label="Volunteer roles by area">
+${jump}
+      </ul>
     </div>
   </section>
 
@@ -374,7 +404,7 @@ ${sec("Not this", "          " + ul(r.isNot, "jd-no"))}
         <div class="jd-glance">
           <span class="gl-k">You would work with</span>
           <span class="gl-v">${esc(r.withWhom)}</span>
-          <a href="#apply" class="btn jd-side-btn">Apply for this role</a>
+          ${toolLinks(r) ? `<span class="gl-k" style="margin-top:1.1rem;">Works in</span>\n          <p class="ix-tools" style="margin-top:0.5rem;">${toolLinks(r)}</p>\n          ` : ""}<a href="#apply" class="btn jd-side-btn">Apply for this role</a>
           <p class="gl-foot">Start a conversation.</p>
         </div>
       </aside>

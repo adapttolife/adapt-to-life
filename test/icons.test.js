@@ -109,3 +109,18 @@ test("the page scripts and the stylesheet draw from the dictionary", () => {
     assert.doesNotMatch(sheet, /content:\s*"(\\2713|\\2212|\+)"/, `${f}: a stylesheet glyph check or plus is back; use the --icon- masks`);
   }
 });
+
+test("generators that rewrite pages draw icons through applyIcons", async () => {
+  // scripts/build-asnm.mjs rewrites a block of /adaptive-sports-near-me on
+  // every deploy build. Without applyIcons its template's typed arrow came
+  // back and the build stamped -dirty (2026-10-29). Checked without running it,
+  // so the tests never write a tracked file.
+  const { applyIcons } = await import("../scripts/lib/apply-icons.mjs");
+  for (const f of ["scripts/build-asnm.mjs", "scripts/build-volunteer.mjs"]) {
+    assert.match(readFileSync(new URL(f, root), "utf8"), /applyIcons\(/, `${f} writes pages without applyIcons`);
+  }
+  for (const f of pages()) {
+    const html = readFileSync(new URL(f, pub), "utf8");
+    assert.equal(applyIcons(html), html, `${f} changes under applyIcons; run npm run icons`);
+  }
+});

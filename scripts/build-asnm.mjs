@@ -24,6 +24,7 @@
 // data/asnm-stats.json, so an outage at deploy time reuses those numbers and
 // says so loudly rather than shipping a page with holes in it.
 import { readFileSync, writeFileSync } from "node:fs";
+import { applyIcons } from "./lib/apply-icons.mjs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
@@ -151,7 +152,10 @@ if (plates && plates["court-dusk-wide"] && plates["court-dusk-tall"]) {
 const RE = /<!-- asnm:stats -->[\s\S]*?<!-- \/asnm:stats -->/;
 if (RE.test(html)) html = html.replace(RE, block);
 else html = html.replace(/(\n  <!-- WHY \(light reading\) -->)/, `\n  ${block}\n${"$1"}`);
-writeFileSync(page, html);
+// The block above is a template with a typed arrow; draw the page's icons from
+// the symbol dictionary like every other page, or each build undoes them and
+// stamps -dirty (2026-10-29, the first release after the icons rollout).
+writeFileSync(page, applyIcons(html));
 
 // Homepage narrative intentionally does not duplicate live directory counts.
 // /adaptive-sports-near-me owns the generated statistics and browse links.

@@ -7,13 +7,16 @@ import staging from '../src/staging.js';
 const config = JSON.parse(readFileSync(new URL('../wrangler.jsonc', import.meta.url), 'utf8')
   .replace(/^\s*\/\/.*$/gm, '').replace(/,\s*([}\]])/g, '$1'));
 
-test('staging shares production service bindings and has no scheduled handler or cron', () => {
+test('staging shares production data bindings, sends no mail and has no scheduled handler or cron', () => {
   const preview = config.env.staging;
-  for (const key of ['d1_databases', 'send_email', 'ratelimits']) {
+  for (const key of ['d1_databases', 'ratelimits']) {
     assert.deepEqual(preview[key], config[key], key);
   }
+  // Staging sends no mail of its own: no binding and an unsupported transport.
+  assert.equal(preview.send_email, undefined);
+  assert.equal(preview.vars.MAIL_TRANSPORT, 'none');
   for (const [key, value] of Object.entries(config.vars)) {
-    if (key !== 'ENV_NAME') assert.equal(preview.vars[key], value, key);
+    if (key !== 'ENV_NAME' && key !== 'MAIL_TRANSPORT') assert.equal(preview.vars[key], value, key);
   }
   assert.deepEqual(preview.triggers.crons, []);
   assert.ok(config.triggers.crons.length > 0);
@@ -26,7 +29,7 @@ test('staging delegates writes, backend routes and HTML without modifying contro
   const body = '<form><input><button>Submit</button></form><givebutter-giving-form></givebutter-giving-form><iframe></iframe><script src="https://challenges.cloudflare.com/turnstile/v0/api.js"></script><a href="https://example.com">External</a>';
   const env = { STAGING: '1', INTAKE: {} };
   const ctx = { waitUntil() {} };
-  for (const [method, path] of [['GET', '/contact'], ['POST', '/api/contact'], ['POST', '/api/waiver'], ['GET', '/api/raised'], ['GET', '/admin/api/codes']]) {
+  for (const [method, path] of [['GET', '/contact'], ['POST', '/api/contact'], ['GET', '/api/waiver/doc'], ['GET', '/api/raised'], ['GET', '/admin/api/codes']]) {
     const request = new Request(`https://staging.example${path}`, { method });
     let called = false;
     application.fetch = async (received, bindings, context) => {

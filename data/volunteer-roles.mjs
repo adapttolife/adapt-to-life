@@ -44,11 +44,12 @@
 // Shared blocks, written once so the culture cannot drift between pages.
 export const SHARED = {
   // The board carries the terms of joining. Role pages do not repeat them.
+  // Each term is [title, meaning from data/icons.mjs, sentence].
   terms: [
-    ["Built around participation", "A recognized 501(c)(3) expanding access to adaptive sports so athletes can find their place."],
-    ["A scope, not a shift", "Every role has a defined job and a person to work with. If we cannot say what done looks like, we will not ask for your time."],
-    ["Flexible contributions", "Two hours on a Tuesday night is a real contribution. For events and coaching, we agree on a time together."],
-    ["You hear back either way", "A person reads every one. If there is no fit now, we say so."],
+    ["Built around participation", "participation", "A recognized 501(c)(3) expanding access to adaptive sports so athletes can find their place."],
+    ["A scope, not a shift", "scope", "Every role has a defined job and a person to work with. If we cannot say what done looks like, we will not ask for your time."],
+    ["Flexible contributions", "time", "Two hours on a Tuesday night is a real contribution. For events and coaching, we agree on a time together."],
+    ["You hear back either way", "reply", "A person reads every one. If there is no fit now, we say so."],
   ],
   // One short paragraph on a role page, not a two-paragraph essay.
   about:
@@ -59,17 +60,20 @@ export const SHARED = {
     "Unpaid volunteer role, and no employment relationship. Volunteer time is not a tax-deductible gift, though out-of-pocket expenses sometimes are. Adapt To Life is a recognized 501(c)(3), EIN 41-3213344.",
 };
 
+// Each lane's icon is a meaning from the symbol dictionary (data/icons.mjs).
+// Alec, 2026-10-29: photographs belong to the hooks; the pages in between use
+// symbols and spend the space on content.
 export const LANES = [
   { key: "fund", name: "Fundraising", head: "Money, and the people who move it.",
-    blurb: "Making the Hustle & Heart Fund bigger than one person's checkbook." },
+    blurb: "Making the Hustle & Heart Fund bigger than one person's checkbook.", icon: "giving" },
   { key: "clean", name: "Operations", head: "The unglamorous work that protects athletes.",
-    blurb: "The books. The insurance. The advice that keeps the work on solid ground." },
+    blurb: "The books. The insurance. The advice that keeps the work on solid ground.", icon: "operations" },
   { key: "tell", name: "Stories", head: "Reach, so the next athlete finds us.",
-    blurb: "Help people discover what is possible in adaptive sports and how they can take part." },
+    blurb: "Help people discover what is possible in adaptive sports and how they can take part.", icon: "stories" },
   { key: "court", name: "Participation", head: "The part that looks like sport.",
-    blurb: "Coaching a session, fixing a chair, making a first introduction." },
+    blurb: "Coaching a session, fixing a chair, making a first introduction.", icon: "participation" },
   { key: "notitle", name: "Connections", head: "You do not need a profession to change this.",
-    blurb: "Most people who want to help have a relationship, a room, or a reason to organize something." },
+    blurb: "Most people who want to help have a relationship, a room, or a reason to organize something.", icon: "connections" },
 ];
 
 export const ROLES = [
@@ -721,3 +725,67 @@ ROLES.push(
   payoff: "Thoughtful oversight helps the organization serve its community well.",
 },
 );
+
+// ---- tools ----------------------------------------------------------------
+// What a role works in, shown on the board and on each role page. Alec,
+// 2026-10-29: the volunteer list is "a great opportunity to link some of the
+// tools that we use", which also helps search. ONLY tools this organization
+// actually runs (each is wired somewhere in this repo: Givebutter checkout,
+// Beehiiv lists, Buffer and Instagram, Google Workspace mail
+// and ledgers, Double Good drives), our own sites, and official references.
+// Do not add a tool here because a role "might" use it. `logo` names an
+// official mark in LOGOS (data/icons.mjs); a tool without one shows its name.
+export const TOOLS = {
+  givebutter:  { name: "Givebutter", href: "https://givebutter.com" },
+  beehiiv:     { name: "Beehiiv", href: "https://www.beehiiv.com" },
+  buffer:      { name: "Buffer", href: "https://buffer.com", logo: "buffer" },
+  workspace:   { name: "Google Workspace", href: "https://workspace.google.com", logo: "google" },
+  doublegood:  { name: "Double Good", href: "https://www.doublegood.com" },
+  instagram:   { name: "Instagram", href: "https://www.instagram.com/adapt_to_life_org/", logo: "instagram" },
+  safesport:   { name: "U.S. Center for SafeSport", href: "https://uscenterforsafesport.org" },
+  irs990:      { name: "IRS Form 990", href: "https://www.irs.gov/forms-pubs/about-form-990" },
+  uspto:       { name: "USPTO trademarks", href: "https://www.uspto.gov/trademarks" },
+  wcag:        { name: "WCAG", href: "https://www.w3.org/WAI/standards-guidelines/wcag/" },
+  asnm:        { name: "Adaptive Sports Near Me", href: "https://adaptivesportsnearme.com" },
+  shop:        { name: "Adapt Body Shop", href: "https://adaptbodyshop.com" },
+  fund:        { name: "Hustle & Heart Fund", href: "/hustle-and-heart" },
+  apply:       { name: "Athlete applications", href: "/apply" },
+  popcorn:     { name: "Popcorn drives", href: "/popcorn" },
+  events:      { name: "Events", href: "/events" },
+  partners:    { name: "Partner levels", href: "/sponsorship" },
+  giving:      { name: "How Giving Works", href: "/promise" },
+  donate:      { name: "Donate", href: "/donate" },
+  social:      { name: "Our social", href: "/social" },
+  release:     { name: "Photo and media release", href: "https://sign.adapttolife.org/waiver?source=atl" },
+  ambassadors: { name: "Ambassadors", href: "/ambassadors" },
+  roadmap:     { name: "Roadmap", href: "/roadmap" },
+};
+
+export const ROLE_TOOLS = {
+  "grant-writer": ["workspace", "fund"],
+  "fundraising-lead": ["givebutter", "doublegood", "beehiiv"],
+  "sponsorship-and-partnership-lead": ["partners", "workspace"],
+  "corporate-matching-champion": ["donate"],
+  "planned-and-major-giving-advisor": ["giving", "donate"],
+  "cpa-or-tax-preparer": ["irs990", "workspace"],
+  "bookkeeper": ["workspace", "givebutter"],
+  "nonprofit-attorney": ["irs990"],
+  "trademark-counsel": ["uspto", "shop"],
+  "insurance-and-risk": ["safesport", "events"],
+  "grant-reviewer": ["fund", "apply"],
+  "social-media-manager": ["instagram", "buffer", "social"],
+  "writer-or-editor": ["beehiiv", "workspace"],
+  "photographer-or-videographer": ["release", "instagram"],
+  "graphic-designer": ["instagram", "shop"],
+  "press-and-media": ["social", "events"],
+  "accessibility-reviewer": ["wcag", "asnm"],
+  "adaptive-sports-coach": ["safesport", "asnm"],
+  "event-crew": ["events"],
+  "equipment-technician": ["fund"],
+  "athlete-mentor": ["ambassadors", "asnm"],
+  "program-scout": ["asnm"],
+  "clinical-referral-partner": ["asnm", "apply"],
+  "make-an-introduction": ["partners"],
+  "host-something": ["popcorn", "events"],
+  "board-and-advisory": ["roadmap", "giving"],
+};

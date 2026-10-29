@@ -37,11 +37,12 @@ test("every role has a page, and every page has a role", () => {
   }
 });
 
-test("the whole card is one link to its role page", () => {
+test("the whole row is one link to its role page", () => {
   // Alec, 2026-09-02: almost everyone applies for one role, so the shortest path
-  // wins. One tap on the card, then a two-field form on the role page.
+  // wins. One tap on the row, then a two-field form on the role page. Since
+  // 2026-10-29 the board is a ledger of rows (site.css) rather than a card grid.
   for (const r of ROLES) {
-    assert.match(BOARD, new RegExp(`<a class="role" href="/volunteer/${r.slug}">`),
+    assert.match(BOARD, new RegExp(`<a class="ledger-row" href="/volunteer/${r.slug}">`),
       `the board does not link ${r.slug} as a whole card`);
   }
 });
@@ -54,10 +55,10 @@ test("the board carries no role picker", () => {
   assert.doesNotMatch(BOARD, /<label class="role["\s]/, "a card is wrapped in a label again");
 });
 
-test("a card contains no nested link or form control", () => {
-  // The card IS an anchor, so an <a> or an <input> inside it would be invalid
+test("a row contains no nested link or form control", () => {
+  // The row IS an anchor, so an <a> or an <input> inside it would be invalid
   // and would fight the tap.
-  const cards = [...BOARD.matchAll(/<a class="role" href="[^"]*">([\s\S]*?)<\/a>/g)].map((m) => m[1]);
+  const cards = [...BOARD.matchAll(/<a class="ledger-row" href="\/volunteer\/[^"]*">([\s\S]*?)<\/a>/g)].map((m) => m[1]);
   assert.equal(cards.length, ROLES.length);
   for (const c of cards) {
     assert.doesNotMatch(c, /<a\s|<input|<button|<label/, "a card contains a nested link or control");
@@ -208,8 +209,8 @@ test("no role page emits JobPosting structured data", () => {
 test("every role names its time cost on the board", () => {
   for (const r of ROLES) {
     assert.ok(r.time && r.time.length > 2, `${r.slug} has no time chip`);
-    assert.match(BOARD, new RegExp(`<span class="role-t">${r.time.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</span>`),
-      `${r.slug} card does not show its time`);
+    assert.match(BOARD, new RegExp(`<span class="ledger-m"><span>${r.time.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</span>`),
+      `${r.slug} row does not show its time`);
   }
 });
 

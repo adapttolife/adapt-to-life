@@ -90,29 +90,38 @@ const ul = (items, cls = "") =>
 // a form control, because it IS an anchor. A "read the role" link inside it would
 // be a nested anchor, which is invalid, and it would also be redundant.
 function card(r) {
-  return `      <li><a class="role" href="/volunteer/${r.slug}">
-        <span class="role-n">${esc(r.name)}</span>
-        <span class="role-d">${esc(r.card)}</span>
-        <span class="role-foot"><span class="role-t">${esc(r.time)}</span><span class="role-go" aria-hidden="true">&rarr;</span></span>
-      </a></li>`;
+  return `          <li><a class="ledger-row" href="/volunteer/${r.slug}">
+            <span><span class="ledger-n">${esc(r.name)}</span><span class="ledger-d">${esc(r.card)}</span></span>
+            <span class="ledger-m"><span>${esc(r.time)}</span><span class="ledger-go" aria-hidden="true">&rarr;</span></span>
+          </a></li>`;
 }
 
 function boardPage() {
+  // Each lane is a ledger (site.css): its heading and photograph on one side,
+  // its roles as a ruled list on the other, alternating sides lane to lane.
   const lanes = LANES.map((l, i) => {
     const roles = ROLES.filter((r) => r.lane === l.key);
-    return `  <section class="band${i % 2 ? " tint" : ""}">
-    <div class="wrap">
-      <div class="reveal sec-head">
+    const ph = l.photo;
+    return `  <section class="band${i % 2 ? " tint" : ""} lane-anchor" id="lane-${l.key}" aria-labelledby="lane-${l.key}-h">
+    <div class="wrap ledger${i % 2 ? " flip" : ""}">
+      <div class="ledger-aside reveal">
         <span class="eyebrow orange">${l.name}</span>
-        <h2 class="serif h2" style="margin-top:0.8rem;">${l.head}</h2>
-        <p class="lane-blurb">${l.blurb}</p>
+        <h2 class="serif h2" id="lane-${l.key}-h">${l.head}</h2>
+        <p>${l.blurb}</p>
+        <figure class="ledger-photo"><img src="${ph.src}" alt="${esc(ph.alt)}" width="${ph.w}" height="${ph.h}" style="object-position:${ph.pos}" loading="lazy" decoding="async"></figure>
       </div>
-      <ul class="roles">
+      <ul class="ledger-list">
 ${roles.map(card).join("\n")}
       </ul>
     </div>
   </section>`;
   }).join("\n\n");
+
+  // The jump bar under "What you would be joining": every lane and how many
+  // roles it holds, so a reader goes straight to their part.
+  const jump = LANES.map((l) =>
+    `        <li><a href="#lane-${l.key}">${l.name} <b>${ROLES.filter((r) => r.lane === l.key).length}</b></a></li>`
+  ).join("\n");
 
   const terms = SHARED.terms
     .map(([t, d]) => `        <div class="term reveal">\n          <h3>${esc(t)}</h3>\n          <p>${esc(d)}</p>\n        </div>`)
@@ -174,6 +183,9 @@ ${roles.map(card).join("\n")}
       <div class="terms">
 ${terms}
       </div>
+      <ul class="jump" aria-label="Volunteer roles by area">
+${jump}
+      </ul>
     </div>
   </section>
 

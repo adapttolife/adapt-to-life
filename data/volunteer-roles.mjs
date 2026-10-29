@@ -59,17 +59,24 @@ export const SHARED = {
     "Unpaid volunteer role, and no employment relationship. Volunteer time is not a tax-deductible gift, though out-of-pocket expenses sometimes are. Adapt To Life is a recognized 501(c)(3), EIN 41-3213344.",
 };
 
+// Each lane carries one photograph for its side of the ledger on /volunteer.
+// Only frames the site already publishes, with the alt text they ship with.
 export const LANES = [
   { key: "fund", name: "Fundraising", head: "Money, and the people who move it.",
-    blurb: "Making the Hustle & Heart Fund bigger than one person's checkbook." },
+    blurb: "Making the Hustle & Heart Fund bigger than one person's checkbook.",
+    photo: { src: "/images/brickhouse/on-at-the-net.webp", alt: "Three players in sport wheelchairs talk at the net under the Brick House banner", w: 1200, h: 2133, pos: "50% 45%" } },
   { key: "clean", name: "Operations", head: "The unglamorous work that protects athletes.",
-    blurb: "The books. The insurance. The advice that keeps the work on solid ground." },
+    blurb: "The books. The insurance. The advice that keeps the work on solid ground.",
+    photo: { src: "/images/brickhouse/bh-space.webp", alt: "A new net stretches across the blue court toward the Brick House banner and a row of lockers on the block wall", w: 1200, h: 2133, pos: "50% 55%" } },
   { key: "tell", name: "Stories", head: "Reach, so the next athlete finds us.",
-    blurb: "Help people discover what is possible in adaptive sports and how they can take part." },
+    blurb: "Help people discover what is possible in adaptive sports and how they can take part.",
+    photo: { src: "/images/athletes/wheelie-133.webp", alt: "A grinning athlete takes a selfie on an outdoor court", w: 1127, h: 1500, pos: "50% 35%" } },
   { key: "court", name: "Participation", head: "The part that looks like sport.",
-    blurb: "Coaching a session, fixing a chair, making a first introduction." },
+    blurb: "Coaching a session, fixing a chair, making a first introduction.",
+    photo: { src: "/images/brickhouse/on-rally.webp", alt: "Two players trade shots, the ball in the air and a Brick House banner on the wall", w: 1200, h: 2133, pos: "50% 45%" } },
   { key: "notitle", name: "Connections", head: "You do not need a profession to change this.",
-    blurb: "Most people who want to help have a relationship, a room, or a reason to organize something." },
+    blurb: "Most people who want to help have a relationship, a room, or a reason to organize something.",
+    photo: { src: "/images/athletes/wheelie-51.webp", alt: "Three friends crowd together for a photo at a night event", w: 1500, h: 863, pos: "50% 40%" } },
 ];
 
 export const ROLES = [

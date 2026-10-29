@@ -70,6 +70,16 @@ Do not confuse less defensive copy with fewer safeguards. Preserve material dono
 
 `/ways-to-give` is a redirect to `/donate`, not a second giving page. Keep useful secondary text links, but do not give every section a competing primary action.
 
+## Layout for the pages in between
+
+The landing pages work because every band holds one idea, a photograph or a quote, and an off-center layout. Index pages that hold a lot (roles, organizations, reels) follow the same rule rather than falling back on a grid of equal cards.
+
+- Use the **ledger** (`.ledger` in `src/css/site.css`): the section's eyebrow, heading, one sentence and one photograph on one side, and the items as a ruled list on the other. Consecutive ledgers alternate sides with `.flip`.
+- Lead with one. When one item matters most (a home court, a featured reel), give it a photograph and room above the list, as `/social` does for Brick House.
+- A long index opens with a jump bar (`.jump`) naming each group and how many it holds.
+- One photograph per section, chosen from frames the site already publishes, with the alt text they already carry.
+- Avoid a centered heading over a grid of identical cards, repeated down the page. That is the pattern this replaces.
+
 ## Partner pages
 
 Each partner gets its own page at a short root URL (`/brickhouse`), modeled on `/brickhouse`: the co-branded lockup, their place, our athletes there, and their events. The page owns the partner's story; `/sponsorship` carries one card per partner that links to it, and the nav lists Partners, not individual partners. Every partner page has its own share card (`public/images/og/<slug>-v<N>-<tag>.jpg`, usually the page's hero photo), a link back to `/sponsorship`, and a sitemap entry. `test/partners.test.js` enforces all four. Never publish deal terms, a partner's level, or background shared in conversation.

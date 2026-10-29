@@ -847,24 +847,61 @@ a.win-band:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:4p
    ========================================================================== */
 
 /* ---- the board: every card is one link to its role page ---------------- */
-/* The first version made each card a <label> around a checkbox so a reader
-   could pick several roles at once. Alec, 2026-09-02: almost everyone applies
-   for one role, so the shortest path wins and the multi-select went. The card
-   being an anchor is why it can hold no inner link and no form control. */
 .lane-blurb{ max-width:62ch; margin-top:0.9rem; color:var(--ink-soft); }
-.roles{ display:grid; grid-template-columns:repeat(auto-fit,minmax(265px,1fr)); gap:clamp(0.9rem,1.8vw,1.2rem); margin-top:clamp(1.8rem,3.4vw,2.6rem); list-style:none; padding:0; }
-.role{ display:flex; flex-direction:column; height:100%; border:1.5px solid var(--hairline); border-radius:16px; padding:1.25rem 1.2rem 1.1rem; background:var(--paper); transition:border-color .16s ease, box-shadow .16s ease, transform .16s ease; }
-.role:hover{ border-color:var(--orange); transform:translateY(-2px); box-shadow:0 14px 34px rgba(255,92,57,0.13); }
-.role:focus-visible{ outline:2px solid var(--orange); outline-offset:3px; }
-.role-n{ font-family:var(--font-body); font-weight:700; font-size:1rem; color:var(--ink); line-height:1.3; }
-.role:hover .role-n{ color:var(--orange-ink); }
-.role-d{ font-family:var(--font-body); font-size:0.9rem; line-height:1.5; color:var(--ink-soft); margin-top:0.45rem; flex:1; }
-.role-foot{ display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:0.4rem 0.9rem; margin-top:1rem; padding-top:0.85rem; border-top:1px solid var(--hairline); }
-.role-t{ font-family:var(--font-label); font-size:0.68rem; letter-spacing:0.07em; text-transform:uppercase; color:var(--muted); }
-/* Just an arrow. The whole card is a link, so "read the role" on all
-   twenty-seven of them was noise competing with the time chip. */
-.role-go{ font-size:1rem; line-height:1; color:var(--orange); transition:transform .16s ease; }
-.role:hover .role-go{ transform:translateX(3px); }
+
+/* LEDGER: the pattern for the pages between the hooks. When a page has a lot
+   to show (roles, organizations, reels), it reads as one heading and one
+   photograph beside a ruled list, not as a grid of equal cards. Alec,
+   2026-10-29: the landing pages are great, the middle "ends up becoming a lot
+   of grid layout, lists, bullet points". Equal cards make every item the same
+   weight, so nothing leads and the eye has nowhere to start. A ruled list
+   scans top to bottom like a menu, the aside says what the list is for, and
+   on desktop the aside stays put while the list scrolls past it.
+   .flip puts the aside on the right, so consecutive ledgers alternate. */
+.ledger{ display:grid; grid-template-columns:minmax(0,5fr) minmax(0,7fr); gap:clamp(2rem,6vw,5.5rem); align-items:start; }
+.ledger.flip{ grid-template-columns:minmax(0,7fr) minmax(0,5fr); }
+.ledger.flip .ledger-aside{ order:2; }
+.ledger-aside{ position:sticky; top:96px; }
+.ledger-aside .h2{ margin-top:0.8rem; }
+.ledger-aside p{ margin-top:0.9rem; max-width:40ch; color:var(--ink-soft); }
+.ledger-photo{ margin:clamp(1.6rem,3vw,2.2rem) 0 0; border-radius:18px; overflow:hidden; aspect-ratio:4/5; max-height:440px; width:100%; }
+.ledger-photo img{ width:100%; height:100%; object-fit:cover; object-position:50% 40%; }
+.ledger-list{ list-style:none; padding:0; margin:0; border-top:1px solid var(--hairline); }
+.ledger-row{ display:grid; grid-template-columns:minmax(0,1fr) auto; column-gap:2rem; align-items:center; padding:1.2rem 0.2rem; border-bottom:1px solid var(--hairline); color:inherit; }
+a.ledger-row{ transition:background-color .16s ease; }
+a.ledger-row:hover{ background-color:rgba(255,92,57,0.05); }
+a.ledger-row:focus-visible{ outline:2px solid var(--orange); outline-offset:2px; border-radius:6px; }
+.ledger-n{ font-family:var(--font-display); font-weight:800; font-size:clamp(1.2rem,1.7vw,1.4rem); letter-spacing:-0.015em; line-height:1.15; color:var(--ink); }
+a.ledger-row:hover .ledger-n{ color:var(--orange-ink); }
+.ledger-d{ display:block; margin-top:0.35rem; max-width:54ch; color:var(--ink-soft); }
+.ledger-m{ display:flex; align-items:center; gap:1.1rem; font-family:var(--font-label); font-weight:800; font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); text-align:right; }
+/* A handle is a name, not a label: no capitals, no tracking. */
+.ledger-m .handle{ text-transform:none; letter-spacing:0.01em; font-size:0.88rem; font-weight:700; }
+.ledger-go{ font-size:1.25rem; letter-spacing:0; color:var(--orange-ink); transition:transform .16s ease; }
+a.ledger-row:hover .ledger-go{ transform:translateX(4px); }
+.dark .ledger-aside p, .dark .ledger-d{ color:var(--cream-mute); }
+.dark .ledger-list, .dark .ledger-row{ border-color:rgba(249,247,242,0.12); }
+.dark .ledger-n{ color:var(--cream); }
+.dark .ledger-m{ color:var(--cream-mute); }
+.dark .ledger-go, .dark a.ledger-row:hover .ledger-n{ color:var(--orange); }
+@media (max-width:860px){
+  .ledger, .ledger.flip{ grid-template-columns:1fr; gap:1.8rem; }
+  .ledger.flip .ledger-aside{ order:0; }
+  .ledger-aside{ position:static; }
+  .ledger-photo{ aspect-ratio:16/10; max-height:none; }
+  .ledger-row{ grid-template-columns:1fr; }
+  .ledger-m{ margin-top:0.7rem; justify-content:space-between; text-align:left; }
+}
+@media (prefers-reduced-motion:reduce){ a.ledger-row, .ledger-go{ transition:none; } }
+
+/* The jump bar: a long index says up front what is in it and how much, so a
+   reader can go straight to their part instead of scrolling to find it. */
+.jump{ display:flex; flex-wrap:wrap; gap:0.6rem; margin-top:clamp(1.6rem,3vw,2.2rem); list-style:none; padding:0; }
+.jump a{ display:inline-flex; align-items:center; gap:0.6rem; min-height:44px; padding:0 1.1rem; border-radius:999px; box-shadow:inset 0 0 0 1.5px var(--hairline); background:#fff; font-weight:700; color:var(--ink); transition:box-shadow .16s ease, color .16s ease; }
+.jump a:hover{ box-shadow:inset 0 0 0 1.5px var(--orange); color:var(--orange-ink); }
+.jump a:focus-visible{ outline:2px solid var(--orange); outline-offset:2px; }
+.jump b{ font-family:var(--font-label); font-weight:800; font-size:0.74rem; color:var(--orange-ink); }
+.lane-anchor{ scroll-margin-top:84px; }
 
 .terms{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:clamp(1.4rem,3vw,2.4rem); margin-top:clamp(2.2rem,4vw,3rem); }
 @media (min-width:1000px){ .terms{ grid-template-columns:repeat(4,minmax(0,1fr)); } }

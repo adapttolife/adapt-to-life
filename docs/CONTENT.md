@@ -72,12 +72,14 @@ Do not confuse less defensive copy with fewer safeguards. Preserve material dono
 
 ## Layout for the pages in between
 
-The landing pages work because every band holds one idea, a photograph or a quote, and an off-center layout. Index pages that hold a lot (roles, organizations, reels) follow the same rule rather than falling back on a grid of equal cards.
+Photographs belong to the hooks: the home page, landing pages, campaign and donate pages. The pages in between (indexes of roles, organizations, reels) carry meaning with symbols and spend their space on content. Alec, 2026-10-29: photographs there are "a little bit too much wasted space."
 
-- Use the **ledger** (`.ledger` in `src/css/site.css`): the section's eyebrow, heading, one sentence and one photograph on one side, and the items as a ruled list on the other. Consecutive ledgers alternate sides with `.flip`.
-- Lead with one. When one item matters most (a home court, a featured reel), give it a photograph and room above the list, as `/social` does for Brick House.
+- Use the **index** (`.ix-*` in `src/css/site.css`). Each group opens with a compact header: a line icon in a dark tile, the group name and count, the heading, and one line. The items follow as a ruled two-column list, not a grid of cards.
+- Icons come from `scripts/lib/icons.mjs` (Lucide, the set adaptivesportsnearme.com uses), inlined as SVG. Add an icon there rather than pasting a new SVG into a page.
+- A row's name is its one link, stretched over the row. Secondary links (the tools a role works in) sit beside it, never inside it.
+- Where a list item uses a tool, link the tool (`TOOLS` and `ROLE_TOOLS` in `data/volunteer-roles.mjs`). List only tools we actually run, our own sites, and official references. That helps the visitor and search.
+- Lead with one. When one item matters most, give it a mark, not a photograph, and room above the list, as `/social` does for Brick House.
 - A long index opens with a jump bar (`.jump`) naming each group and how many it holds.
-- One photograph per section, chosen from frames the site already publishes, with the alt text they already carry.
 - Avoid a centered heading over a grid of identical cards, repeated down the page. That is the pattern this replaces.
 
 ## Partner pages

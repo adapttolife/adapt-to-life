@@ -149,46 +149,55 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=12c55f49">
+<link rel="stylesheet" href="/css/site.css?v=7a96c0d3">
 <style>
-  /* Social: where Instagram meets the site. It is built on the ledger
-     (site.css), the pattern for pages between the hooks: a heading and a
-     photograph beside a ruled list, so a long list still has somewhere to
-     start. Reels link out rather than embed, because an embed is a
-     third-party script on every view and the credit for the video stays with
-     Instagram either way. Organizations are the ones the @adapt_to_life_org
-     feed tagged or heard from, named for how we crossed paths; individuals
-     stay off this page unless they have said yes. */
-  .so-hero{ position:relative; isolation:isolate; overflow:hidden; padding:clamp(4.5rem,10vh,6.5rem) 0 clamp(3.5rem,8vh,5rem); }
-  .so-hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:
-      radial-gradient(ellipse 50% 70% at 80% 40%, rgba(255,92,57,0.22) 0%, transparent 70%); }
-  .so-hero-grid{ display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,0.9fr); gap:clamp(2rem,5vw,4.5rem); align-items:center; }
+  /* Social: where Instagram meets the site. Built on the index pattern
+     (site.css): symbols, not photographs, and the room spent on content.
+     Reels are a strip of phone-shaped tiles, because that is the shape of the
+     thing they open. They link out rather than embed: an embed is a
+     third-party script on every view, and the credit for the video stays
+     with Instagram either way. Organizations are the ones the
+     @adapt_to_life_org feed tagged or heard from, named for how we crossed
+     paths; individuals stay off this page unless they have said yes. */
+  .so-hero{ position:relative; isolation:isolate; overflow:hidden; padding:clamp(4rem,9vh,5.5rem) 0 clamp(2.4rem,5vh,3.2rem); }
+  .so-hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 50% 80% at 85% 30%, rgba(255,92,57,0.22) 0%, transparent 70%); }
   .so-kicker{ display:flex; align-items:center; gap:0.9rem; font-family:var(--font-label); font-weight:800; font-size:0.85rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--orange); }
   .so-kicker::before{ content:""; width:2.2rem; height:2px; background:var(--orange); box-shadow:0 0 12px var(--orange-glow); }
-  .so-hero .display{ margin-top:1.3rem; max-width:12ch; font-size:clamp(2.9rem,6vw,5.4rem); line-height:0.96; }
-  .so-hero .sub{ margin-top:1.2rem; max-width:40ch; color:var(--cream-mute); }
-  .so-hero .actions{ margin-top:1.8rem; display:flex; align-items:center; gap:1.4rem; flex-wrap:wrap; }
-  .so-hero figure{ margin:0; border-radius:22px; overflow:hidden; aspect-ratio:4/5; max-height:560px; box-shadow:0 0 0 1px rgba(255,255,255,0.08), 0 40px 90px -40px rgba(0,0,0,0.9); }
-  .so-hero img{ width:100%; height:100%; object-fit:cover; object-position:50% 35%; }
-  @media (max-width:860px){ .so-hero-grid{ grid-template-columns:1fr; } .so-hero figure{ aspect-ratio:16/11; } }
+  .so-hero .display{ margin-top:1.2rem; max-width:14ch; font-size:clamp(2.7rem,5.4vw,4.8rem); line-height:0.96; }
+  .so-hero .sub{ margin-top:1.1rem; max-width:44ch; color:var(--cream-mute); }
+  .so-hero .actions{ margin-top:1.6rem; display:flex; align-items:center; gap:1.4rem; flex-wrap:wrap; }
 
-  .so-aside-cta{ margin-top:1.6rem; }
+  /* The reel strip. Each tile is 9:16, a play mark, a date, and two lines. */
+  .so-reels-band{ padding:clamp(1.2rem,3vw,2rem) 0 clamp(3.2rem,6vw,4.5rem); }
+  .so-reels{ list-style:none; padding:0; margin:clamp(1.4rem,2.6vw,2rem) 0 0; display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:clamp(0.7rem,1.4vw,1rem); }
+  .so-reel a{ position:relative; display:flex; flex-direction:column; aspect-ratio:9/16; padding:1rem; border-radius:18px; overflow:hidden; color:var(--cream);
+    background:linear-gradient(165deg, rgba(255,92,57,0.24) 0%, rgba(255,92,57,0.04) 45%, transparent 70%), var(--charcoal);
+    box-shadow:inset 0 0 0 1px rgba(249,247,242,0.1); transition:box-shadow .2s ease, transform .2s ease; }
+  .so-reel a:hover{ box-shadow:inset 0 0 0 1.5px var(--orange); transform:translateY(-3px); }
+  .so-reel a:focus-visible{ outline:2px solid var(--orange); outline-offset:3px; }
+  .so-play{ width:44px; height:44px; border-radius:50%; display:grid; place-items:center; background:var(--orange); color:#fff; box-shadow:0 10px 24px -8px rgba(255,92,57,0.7); }
+  .so-play .ix-svg{ width:18px; height:18px; fill:#fff; stroke:none; margin-left:2px; }
+  .so-reel time{ margin-top:auto; font-family:var(--font-label); font-weight:800; font-size:0.7rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--orange); }
+  .so-reel-t{ margin-top:0.4rem; font-family:var(--font-display); font-weight:800; font-size:1.05rem; line-height:1.15; letter-spacing:-0.01em; }
+  .so-reel-l{ margin-top:0.35rem; font-size:0.82rem; line-height:1.4; color:var(--cream-mute); }
+  .so-strip-head{ display:flex; align-items:end; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+  .so-strip-head .textlink{ color:var(--orange); }
+  @media (max-width:1000px){
+    .so-reels{ grid-auto-flow:column; grid-template-columns:none; grid-auto-columns:minmax(168px,44vw); overflow-x:auto; scroll-snap-type:x mandatory; scroll-padding-inline:var(--gutter, 20px); padding-bottom:0.6rem; margin-inline:calc(var(--gutter, 20px) * -1); padding-inline:var(--gutter, 20px); scrollbar-width:thin; }
+    .so-reel{ scroll-snap-align:start; }
+  }
+  @media (prefers-reduced-motion:reduce){ .so-reel a{ transition:none; } .so-reel a:hover{ transform:none; } }
 
-  /* The feature: the one relationship the feed shows most, given a photograph
-     and room, so the list below it has a lead. */
-  .so-feature{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); border-radius:22px; overflow:hidden; background:#0C0C0E; color:var(--cream); box-shadow:0 30px 70px -34px rgba(0,0,0,0.6); margin-bottom:clamp(3rem,6vw,4.5rem); }
-  .so-feature figure{ margin:0; min-height:clamp(300px,34vw,440px); }
-  .so-feature img{ width:100%; height:100%; object-fit:cover; object-position:50% 40%; }
-  .so-feature-body{ padding:clamp(1.8rem,4vw,3rem); display:flex; flex-direction:column; justify-content:center; align-items:flex-start; }
-  .so-feature-body .eyebrow{ color:var(--orange); }
-  .so-feature-body .h3{ margin-top:0.5rem; color:var(--cream); font-size:clamp(1.7rem,2.8vw,2.4rem); letter-spacing:-0.02em; line-height:1.05; }
-  .so-feature-body p{ margin-top:0.9rem; color:var(--cream-mute); max-width:40ch; }
-  .so-feature-links{ margin-top:1.5rem; display:flex; gap:1.4rem; flex-wrap:wrap; }
-  .so-feature-links a{ font-weight:700; color:var(--orange); border-bottom:2px solid currentColor; padding-bottom:2px; }
-  @media (max-width:760px){ .so-feature{ grid-template-columns:1fr; } .so-feature figure{ min-height:0; aspect-ratio:4/3; } }
-
-  .ledger-group{ padding:1.8rem 0.2rem 0.7rem; border-bottom:1px solid var(--hairline); font-family:var(--font-label); font-weight:800; font-size:0.76rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--orange-ink); }
-  .ledger-list > .ledger-group:first-child{ padding-top:0.9rem; }
+  /* Brick House leads: the mark, not a photograph. */
+  .so-lead{ display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:clamp(1.2rem,3vw,2.4rem); align-items:center; padding:clamp(1.4rem,3vw,2rem) clamp(1.4rem,3vw,2.2rem); border-radius:20px; background:var(--ink-warm); color:var(--cream); margin-bottom:clamp(2.6rem,5vw,3.6rem); box-shadow:0 30px 60px -36px rgba(0,0,0,0.6); }
+  .so-lead img{ height:clamp(52px,6vw,70px); width:auto; }
+  .so-lead .eyebrow{ color:var(--orange); }
+  .so-lead .h3{ margin-top:0.35rem; color:var(--cream); font-size:clamp(1.5rem,2.4vw,2rem); letter-spacing:-0.02em; line-height:1.05; }
+  .so-lead p{ margin-top:0.5rem; color:var(--cream-mute); max-width:52ch; }
+  .so-lead-links{ display:flex; flex-direction:column; gap:0.7rem; align-items:flex-start; }
+  .so-lead-links a{ font-weight:700; color:var(--orange); border-bottom:2px solid currentColor; padding-bottom:2px; white-space:nowrap; }
+  @media (max-width:760px){ .so-lead{ grid-template-columns:1fr; } .so-lead-links{ flex-direction:row; flex-wrap:wrap; gap:1.2rem; } }
+  .so-note{ margin:0 0 clamp(2rem,4vw,2.8rem); max-width:62ch; color:var(--ink-soft); }
 </style>
 </head>
 <body>
@@ -275,133 +284,214 @@ fill="currentColor" stroke="none">
 <main>
 
   <section class="so-hero dark">
-    <div class="wrap so-hero-grid">
-      <div>
-        <p class="so-kicker">Social</p>
-        <h1 class="serif display">Follow the <em class="italic" style="color:var(--orange)">court time.</em></h1>
-        <p class="lead sub">Practice, tournaments, and the people who show up for them. Most of it lands on Instagram first.</p>
-        <div class="actions">
-          <a href="https://www.instagram.com/adapt_to_life_org/" class="btn" target="_blank" rel="me noopener noreferrer">Follow @adapt_to_life_org</a>
-          <a href="https://www.facebook.com/profile.php?id=61592619668321" class="textlink" style="color:var(--cream);" target="_blank" rel="me noopener noreferrer">We're on Facebook too</a>
-        </div>
+    <div class="wrap">
+      <p class="so-kicker">Social</p>
+      <h1 class="serif display">Follow the <em class="italic" style="color:var(--orange)">court time.</em></h1>
+      <p class="lead sub">Practice, tournaments, and the people who show up for them. Most of it lands on Instagram first.</p>
+      <div class="actions">
+        <a href="https://www.instagram.com/adapt_to_life_org/" class="btn" target="_blank" rel="me noopener noreferrer">Follow @adapt_to_life_org</a>
+        <a href="https://www.facebook.com/profile.php?id=61592619668321" class="textlink" style="color:var(--cream);" target="_blank" rel="me noopener noreferrer">We're on Facebook too</a>
       </div>
-      <figure><img src="/images/brickhouse/on-smile.webp" alt="A player with long hair and a blue headband grins on his way across the court" width="1200" height="2133" fetchpriority="high" decoding="async"></figure>
     </div>
   </section>
 
-  <section class="band dark" aria-labelledby="soReelsTitle">
-    <div class="wrap ledger">
-      <div class="ledger-aside">
-        <span class="eyebrow orange">Recent reels</span>
-        <h2 id="soReelsTitle" class="serif h2">What the season looked like.</h2>
-        <p>A tournament in Cincinnati, a new mascot, and a lot of Tuesday nights on the court. Each one opens on Instagram.</p>
-        <a href="https://www.instagram.com/adapt_to_life_org/" class="btn so-aside-cta" target="_blank" rel="noopener noreferrer">See them all</a>
+  <section class="dark so-reels-band" aria-labelledby="soReelsTitle">
+    <div class="wrap">
+      <div class="so-strip-head">
+        <h2 id="soReelsTitle" class="eyebrow orange">Recent reels</h2>
+        <a class="textlink" href="https://www.instagram.com/adapt_to_life_org/" target="_blank" rel="noopener noreferrer">All of them on Instagram <span class="arrow">&rarr;</span></a>
       </div>
-      <ul class="ledger-list">
-          <li><a class="ledger-row" href="https://www.instagram.com/reel/De4NJ9TNJGR/" target="_blank" rel="noopener noreferrer">
-            <span><span class="ledger-n">Monster Smash, Cincinnati</span><span class="ledger-d">The crew made the trip to The Pickle Lodge.</span></span>
-            <span class="ledger-m"><time datetime="2026-10-24">Oct 24</time><span class="ledger-go" aria-hidden="true">&nearr;</span></span>
-          </a></li>
-          <li><a class="ledger-row" href="https://www.instagram.com/reel/DehEwDutWJQ/" target="_blank" rel="noopener noreferrer">
-            <span><span class="ledger-n">Meet the mascot</span><span class="ledger-d">Adapt To Life has a mascot now. Say hello.</span></span>
-            <span class="ledger-m"><time datetime="2026-10-15">Oct 15</time><span class="ledger-go" aria-hidden="true">&nearr;</span></span>
-          </a></li>
-          <li><a class="ledger-row" href="https://www.instagram.com/reel/DeQFw1fNPb_/" target="_blank" rel="noopener noreferrer">
-            <span><span class="ledger-n">Bad Bunny on repeat</span><span class="ledger-d">Another day of pickleball, speaker turned up.</span></span>
-            <span class="ledger-m"><time datetime="2026-10-08">Oct 8</time><span class="ledger-go" aria-hidden="true">&nearr;</span></span>
-          </a></li>
-          <li><a class="ledger-row" href="https://www.instagram.com/reel/Dd9bVo9tQgn/" target="_blank" rel="noopener noreferrer">
-            <span><span class="ledger-n">Pickleball on wheels</span><span class="ledger-d">What a rally looks like from a chair.</span></span>
-            <span class="ledger-m"><time datetime="2026-10-01">Oct 1</time><span class="ledger-go" aria-hidden="true">&nearr;</span></span>
-          </a></li>
-          <li><a class="ledger-row" href="https://www.instagram.com/reel/DdrZbYyN2Ix/" target="_blank" rel="noopener noreferrer">
-            <span><span class="ledger-n">We'll play anywhere</span><span class="ledger-d">We love pickleball so much we'll play anywhere.</span></span>
-            <span class="ledger-m"><time datetime="2026-09-24">Sep 24</time><span class="ledger-go" aria-hidden="true">&nearr;</span></span>
-          </a></li>
-          <li><a class="ledger-row" href="https://www.instagram.com/reel/DcHYnAYtogd/" target="_blank" rel="noopener noreferrer">
-            <span><span class="ledger-n">Court time</span><span class="ledger-d">Our founder, Alec, getting some court time in.</span></span>
-            <span class="ledger-m"><time datetime="2026-08-16">Aug 16</time><span class="ledger-go" aria-hidden="true">&nearr;</span></span>
-          </a></li>
+      <ul class="so-reels">
+        <li class="so-reel"><a href="https://www.instagram.com/reel/De4NJ9TNJGR/" target="_blank" rel="noopener noreferrer" aria-label="Watch Monster Smash, Cincinnati on Instagram">
+          <span class="so-play"><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/></svg></span>
+          <time datetime="2026-10-24">Oct 24</time>
+          <span class="so-reel-t">Monster Smash, Cincinnati</span>
+          <span class="so-reel-l">The crew made the trip to The Pickle Lodge.</span>
+        </a></li>
+        <li class="so-reel"><a href="https://www.instagram.com/reel/DehEwDutWJQ/" target="_blank" rel="noopener noreferrer" aria-label="Watch Meet the mascot on Instagram">
+          <span class="so-play"><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/></svg></span>
+          <time datetime="2026-10-15">Oct 15</time>
+          <span class="so-reel-t">Meet the mascot</span>
+          <span class="so-reel-l">Adapt To Life has a mascot now. Say hello.</span>
+        </a></li>
+        <li class="so-reel"><a href="https://www.instagram.com/reel/DeQFw1fNPb_/" target="_blank" rel="noopener noreferrer" aria-label="Watch Bad Bunny on repeat on Instagram">
+          <span class="so-play"><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/></svg></span>
+          <time datetime="2026-10-08">Oct 8</time>
+          <span class="so-reel-t">Bad Bunny on repeat</span>
+          <span class="so-reel-l">Another day of pickleball, speaker turned up.</span>
+        </a></li>
+        <li class="so-reel"><a href="https://www.instagram.com/reel/Dd9bVo9tQgn/" target="_blank" rel="noopener noreferrer" aria-label="Watch Pickleball on wheels on Instagram">
+          <span class="so-play"><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/></svg></span>
+          <time datetime="2026-10-01">Oct 1</time>
+          <span class="so-reel-t">Pickleball on wheels</span>
+          <span class="so-reel-l">What a rally looks like from a chair.</span>
+        </a></li>
+        <li class="so-reel"><a href="https://www.instagram.com/reel/DdrZbYyN2Ix/" target="_blank" rel="noopener noreferrer" aria-label="Watch We'll play anywhere on Instagram">
+          <span class="so-play"><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/></svg></span>
+          <time datetime="2026-09-24">Sep 24</time>
+          <span class="so-reel-t">We'll play anywhere</span>
+          <span class="so-reel-l">We love pickleball so much we'll play anywhere.</span>
+        </a></li>
+        <li class="so-reel"><a href="https://www.instagram.com/reel/DcHYnAYtogd/" target="_blank" rel="noopener noreferrer" aria-label="Watch Court time on Instagram">
+          <span class="so-play"><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/></svg></span>
+          <time datetime="2026-08-16">Aug 16</time>
+          <span class="so-reel-t">Court time</span>
+          <span class="so-reel-l">Our founder, Alec, getting some court time in.</span>
+        </a></li>
       </ul>
     </div>
   </section>
 
   <section class="band tint" aria-labelledby="soOrgsTitle">
     <div class="wrap">
-      <article class="so-feature">
-        <figure><img src="/images/brickhouse/bh-across.webp" alt="A player in a sport wheelchair waits at the baseline, the Brick House paddle mark on the wall beyond the net" width="1200" height="2133" loading="lazy" decoding="async"></figure>
-        <div class="so-feature-body">
+      <h2 id="soOrgsTitle" class="serif h2">Who we play alongside.</h2>
+      <p class="so-note" style="margin-top:0.9rem;">Organizations from our Instagram: the ones we've tagged, played with, or heard from in the comments. Being listed here doesn't mean a formal partnership. Our partners are on <a class="textlink" href="/sponsorship">Partners</a>.</p>
+
+      <article class="so-lead">
+        <img src="/images/brickhouse/brick-house-logo-orange-black-reverse.svg" alt="Brick House Pickleball" width="160" height="70">
+        <div>
           <span class="eyebrow">Our training home</span>
-          <h2 class="serif h3">Brick House Pickleball</h2>
+          <h3 class="serif h3">Brick House Pickleball</h3>
           <p>Lake Forest, IL. Weekly crew sessions, the grand re-opening demo, and more of our posts than anyone else.</p>
-          <div class="so-feature-links">
-            <a href="/brickhouse">The partnership</a>
-            <a href="https://www.instagram.com/brickhousepb/" target="_blank" rel="noopener noreferrer">@brickhousepb</a>
-          </div>
+        </div>
+        <div class="so-lead-links">
+          <a href="/brickhouse">The partnership</a>
+          <a href="https://www.instagram.com/brickhousepb/" target="_blank" rel="noopener noreferrer">@brickhousepb</a>
         </div>
       </article>
 
-      <div class="ledger flip">
-        <div class="ledger-aside">
-          <span class="eyebrow orange">Who we play alongside</span>
-          <h2 id="soOrgsTitle" class="serif h2">Courts, clubs, and the people cheering.</h2>
-          <p>Organizations from our Instagram: the ones we've tagged, played with, or heard from in the comments. Being listed here doesn't mean a formal partnership. Our partners are on <a class="textlink" href="/sponsorship">Partners</a>.</p>
-          <figure class="ledger-photo"><img src="/images/brickhouse/on-banner.webp" alt="A player in a headband and glasses rolls past the Brick House Pickleball banner, paddle in his lap" width="1080" height="1920" loading="lazy" decoding="async"></figure>
+    <div class="ix-group">
+      <header class="ix-head">
+        <span class="ix-tile"><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></span>
+        <div>
+          <span class="eyebrow orange">Courts and hosts <b>· 2</b></span>
+          <h3 class="serif h3">Where we've played and who has had us.</h3>
         </div>
-        <ul class="ledger-list">
-          <li class="ledger-group" aria-hidden="true">Courts and hosts</li>
-          <li><a class="ledger-row" href="https://www.instagram.com/thepicklelodge/" target="_blank" rel="noopener noreferrer">
-            <span><span class="ledger-n">The Pickle Lodge</span><span class="ledger-d">Cincinnati, OH. Host of Monster Smash, October 2026.</span></span>
-            <span class="ledger-m"><span class="handle">@thepicklelodge</span><span class="ledger-go" aria-hidden="true">&nearr;</span></span>
-          </a></li>
-          <li><a class="ledger-row" href="https://www.instagram.com/apcdesplainesil/" target="_blank" rel="noopener noreferrer">
-            <span><span class="ledger-n">APC Des Plaines</span><span class="ledger-d">Des Plaines, IL. A tournament where we had a table, August 2026.</span></span>
-            <span class="ledger-m"><span class="handle">@apcdesplainesil</span><span class="ledger-go" aria-hidden="true">&nearr;</span></span>
-          </a></li>
-          <li class="ledger-group" aria-hidden="true">Sport and community</li>
-          <li><a class="ledger-row" href="https://www.instagram.com/wiadaptivesports/" target="_blank" rel="noopener noreferrer">
-            <span><span class="ledger-n">WASA</span><span class="ledger-d">Wisconsin Adaptive Sports Association, and their pickleball program.</span></span>
-            <span class="ledger-m"><span class="handle">@wiadaptivesports</span><span class="ledger-go" aria-hidden="true">&nearr;</span></span>
-          </a></li>
-          <li><a class="ledger-row" href="https://www.instagram.com/officialapptour/" target="_blank" rel="noopener noreferrer">
-            <span><span class="ledger-n">APP Tour</span><span class="ledger-d">The APP Vlasic Classic in Chicago, wheelchair division.</span></span>
-            <span class="ledger-m"><span class="handle">@officialapptour</span><span class="ledger-go" aria-hidden="true">&nearr;</span></span>
-          </a></li>
-          <li><a class="ledger-row" href="https://www.instagram.com/aandjmobility/" target="_blank" rel="noopener noreferrer">
-            <span><span class="ledger-n">A&amp;J Mobility</span><span class="ledger-d">Crystal Lake, IL. Their grand opening and open house, September 2026.</span></span>
-            <span class="ledger-m"><span class="handle">@aandjmobility</span><span class="ledger-go" aria-hidden="true">&nearr;</span></span>
-          </a></li>
-          <li><a class="ledger-row" href="https://www.instagram.com/atc.mobility/" target="_blank" rel="noopener noreferrer">
-            <span><span class="ledger-n">ATC Mobility</span><span class="ledger-d">Mobility trucks on show at the A&amp;J open house.</span></span>
-            <span class="ledger-m"><span class="handle">@atc.mobility</span><span class="ledger-go" aria-hidden="true">&nearr;</span></span>
-          </a></li>
-          <li><a class="ledger-row" href="https://www.instagram.com/crystallakechamber/" target="_blank" rel="noopener noreferrer">
-            <span><span class="ledger-n">Crystal Lake Chamber</span><span class="ledger-d">Out for the ribbon cutting at A&amp;J's grand opening.</span></span>
-            <span class="ledger-m"><span class="handle">@crystallakechamber</span><span class="ledger-go" aria-hidden="true">&nearr;</span></span>
-          </a></li>
-          <li><a class="ledger-row" href="https://www.instagram.com/shrinerschicago/" target="_blank" rel="noopener noreferrer">
-            <span><span class="ledger-n">Shriners Chicago</span><span class="ledger-d">Pediatric orthopedics and rehab, and their work with kids.</span></span>
-            <span class="ledger-m"><span class="handle">@shrinerschicago</span><span class="ledger-go" aria-hidden="true">&nearr;</span></span>
-          </a></li>
-          <li><a class="ledger-row" href="https://www.instagram.com/doadoublegood/" target="_blank" rel="noopener noreferrer">
-            <span><span class="ledger-n">Double Good</span><span class="ledger-d">Our first fundraiser, with 83 supporters.</span></span>
-            <span class="ledger-m"><span class="handle">@doadoublegood</span><span class="ledger-go" aria-hidden="true">&nearr;</span></span>
-          </a></li>
-          <li class="ledger-group" aria-hidden="true">Cheering from the comments</li>
-          <li><a class="ledger-row" href="https://www.instagram.com/ventrasports/" target="_blank" rel="noopener noreferrer">
-            <span><span class="ledger-n">Ventra Sports</span><span class="ledger-d">Pickleball paddles and gear, and regulars in our comments.</span></span>
-            <span class="ledger-m"><span class="handle">@ventrasports</span><span class="ledger-go" aria-hidden="true">&nearr;</span></span>
-          </a></li>
-          <li><a class="ledger-row" href="https://www.instagram.com/reflectsportbags/" target="_blank" rel="noopener noreferrer">
-            <span><span class="ledger-n">ReflectSport</span><span class="ledger-d">Pickleball backpacks, and regulars in our comments.</span></span>
-            <span class="ledger-m"><span class="handle">@reflectsportbags</span><span class="ledger-go" aria-hidden="true">&nearr;</span></span>
-          </a></li>
-          <li><a class="ledger-row" href="https://www.instagram.com/fpep.pickleball/" target="_blank" rel="noopener noreferrer">
-            <span><span class="ledger-n">Federação Pernambucana de Pickleball</span><span class="ledger-d">A pickleball federation cheering from Pernambuco, Brazil.</span></span>
-            <span class="ledger-m"><span class="handle">@fpep.pickleball</span><span class="ledger-go" aria-hidden="true">&nearr;</span></span>
-          </a></li>
-        </ul>
-      </div>
+        <span></span>
+      </header>
+      <ul class="ix-list">
+        <li class="ix-row">
+          <div>
+            <h3 class="ix-n"><a class="ix-link" href="https://www.instagram.com/thepicklelodge/" target="_blank" rel="noopener noreferrer">The Pickle Lodge</a></h3>
+            <p class="ix-d">Host of Monster Smash, October 2026.</p>
+            <p class="ix-meta"><span><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>Cincinnati, OH</span><span style="text-transform:none;letter-spacing:0.02em;font-size:0.8rem;">@thepicklelodge</span></p>
+          </div>
+          <span class="ix-go"><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span>
+        </li>
+        <li class="ix-row">
+          <div>
+            <h3 class="ix-n"><a class="ix-link" href="https://www.instagram.com/apcdesplainesil/" target="_blank" rel="noopener noreferrer">APC Des Plaines</a></h3>
+            <p class="ix-d">A tournament where we had a table, August 2026.</p>
+            <p class="ix-meta"><span><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>Des Plaines, IL</span><span style="text-transform:none;letter-spacing:0.02em;font-size:0.8rem;">@apcdesplainesil</span></p>
+          </div>
+          <span class="ix-go"><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span>
+        </li>
+      </ul>
+    </div>
+    <div class="ix-group">
+      <header class="ix-head">
+        <span class="ix-tile"><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/></svg></span>
+        <div>
+          <span class="eyebrow orange">Sport and community <b>· 7</b></span>
+          <h3 class="serif h3">Organizations we've shared a court, a table, or a cause with.</h3>
+        </div>
+        <span></span>
+      </header>
+      <ul class="ix-list">
+        <li class="ix-row">
+          <div>
+            <h3 class="ix-n"><a class="ix-link" href="https://www.instagram.com/wiadaptivesports/" target="_blank" rel="noopener noreferrer">WASA</a></h3>
+            <p class="ix-d">Wisconsin Adaptive Sports Association, and their pickleball program.</p>
+            <p class="ix-meta"><span><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>Southeast Wisconsin</span><span style="text-transform:none;letter-spacing:0.02em;font-size:0.8rem;">@wiadaptivesports</span></p>
+          </div>
+          <span class="ix-go"><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span>
+        </li>
+        <li class="ix-row">
+          <div>
+            <h3 class="ix-n"><a class="ix-link" href="https://www.instagram.com/officialapptour/" target="_blank" rel="noopener noreferrer">APP Tour</a></h3>
+            <p class="ix-d">The APP Vlasic Classic, wheelchair division.</p>
+            <p class="ix-meta"><span><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>Chicago, IL</span><span style="text-transform:none;letter-spacing:0.02em;font-size:0.8rem;">@officialapptour</span></p>
+          </div>
+          <span class="ix-go"><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span>
+        </li>
+        <li class="ix-row">
+          <div>
+            <h3 class="ix-n"><a class="ix-link" href="https://www.instagram.com/aandjmobility/" target="_blank" rel="noopener noreferrer">A&amp;J Mobility</a></h3>
+            <p class="ix-d">Their grand opening and open house, September 2026.</p>
+            <p class="ix-meta"><span><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>Crystal Lake, IL</span><span style="text-transform:none;letter-spacing:0.02em;font-size:0.8rem;">@aandjmobility</span></p>
+          </div>
+          <span class="ix-go"><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span>
+        </li>
+        <li class="ix-row">
+          <div>
+            <h3 class="ix-n"><a class="ix-link" href="https://www.instagram.com/atc.mobility/" target="_blank" rel="noopener noreferrer">ATC Mobility</a></h3>
+            <p class="ix-d">Mobility trucks on show at the A&amp;J open house.</p>
+            <p class="ix-meta"><span><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>Crystal Lake, IL</span><span style="text-transform:none;letter-spacing:0.02em;font-size:0.8rem;">@atc.mobility</span></p>
+          </div>
+          <span class="ix-go"><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span>
+        </li>
+        <li class="ix-row">
+          <div>
+            <h3 class="ix-n"><a class="ix-link" href="https://www.instagram.com/crystallakechamber/" target="_blank" rel="noopener noreferrer">Crystal Lake Chamber</a></h3>
+            <p class="ix-d">Out for the ribbon cutting at A&amp;J's grand opening.</p>
+            <p class="ix-meta"><span><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>Crystal Lake, IL</span><span style="text-transform:none;letter-spacing:0.02em;font-size:0.8rem;">@crystallakechamber</span></p>
+          </div>
+          <span class="ix-go"><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span>
+        </li>
+        <li class="ix-row">
+          <div>
+            <h3 class="ix-n"><a class="ix-link" href="https://www.instagram.com/shrinerschicago/" target="_blank" rel="noopener noreferrer">Shriners Chicago</a></h3>
+            <p class="ix-d">Pediatric orthopedics and rehab, and their work with kids.</p>
+            <p class="ix-meta"><span><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>Chicago, IL</span><span style="text-transform:none;letter-spacing:0.02em;font-size:0.8rem;">@shrinerschicago</span></p>
+          </div>
+          <span class="ix-go"><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span>
+        </li>
+        <li class="ix-row">
+          <div>
+            <h3 class="ix-n"><a class="ix-link" href="https://www.instagram.com/doadoublegood/" target="_blank" rel="noopener noreferrer">Double Good</a></h3>
+            <p class="ix-d">Our first fundraiser, with 83 supporters.</p>
+            <p class="ix-meta"><span><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>Online</span><span style="text-transform:none;letter-spacing:0.02em;font-size:0.8rem;">@doadoublegood</span></p>
+          </div>
+          <span class="ix-go"><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span>
+        </li>
+      </ul>
+    </div>
+    <div class="ix-group">
+      <header class="ix-head">
+        <span class="ix-tile"><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/></svg></span>
+        <div>
+          <span class="eyebrow orange">Cheering from the comments <b>· 3</b></span>
+          <h3 class="serif h3">Brands and groups who keep showing up under our posts.</h3>
+        </div>
+        <span></span>
+      </header>
+      <ul class="ix-list">
+        <li class="ix-row">
+          <div>
+            <h3 class="ix-n"><a class="ix-link" href="https://www.instagram.com/ventrasports/" target="_blank" rel="noopener noreferrer">Ventra Sports</a></h3>
+            <p class="ix-d">Pickleball paddles and gear.</p>
+            <p class="ix-meta"><span><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>Pickleball gear</span><span style="text-transform:none;letter-spacing:0.02em;font-size:0.8rem;">@ventrasports</span></p>
+          </div>
+          <span class="ix-go"><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span>
+        </li>
+        <li class="ix-row">
+          <div>
+            <h3 class="ix-n"><a class="ix-link" href="https://www.instagram.com/reflectsportbags/" target="_blank" rel="noopener noreferrer">ReflectSport</a></h3>
+            <p class="ix-d">Pickleball backpacks.</p>
+            <p class="ix-meta"><span><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>Pickleball bags</span><span style="text-transform:none;letter-spacing:0.02em;font-size:0.8rem;">@reflectsportbags</span></p>
+          </div>
+          <span class="ix-go"><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span>
+        </li>
+        <li class="ix-row">
+          <div>
+            <h3 class="ix-n"><a class="ix-link" href="https://www.instagram.com/fpep.pickleball/" target="_blank" rel="noopener noreferrer">Federação Pernambucana de Pickleball</a></h3>
+            <p class="ix-d">A pickleball federation cheering from Brazil.</p>
+            <p class="ix-meta"><span><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>Pernambuco, Brazil</span><span style="text-transform:none;letter-spacing:0.02em;font-size:0.8rem;">@fpep.pickleball</span></p>
+          </div>
+          <span class="ix-go"><svg class="ix-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span>
+        </li>
+      </ul>
+    </div>
     </div>
   </section>
 

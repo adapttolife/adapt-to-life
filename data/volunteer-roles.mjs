@@ -59,24 +59,20 @@ export const SHARED = {
     "Unpaid volunteer role, and no employment relationship. Volunteer time is not a tax-deductible gift, though out-of-pocket expenses sometimes are. Adapt To Life is a recognized 501(c)(3), EIN 41-3213344.",
 };
 
-// Each lane carries one photograph for its side of the ledger on /volunteer.
-// Only frames the site already publishes, with the alt text they ship with.
+// Each lane carries one line icon (scripts/lib/icons.mjs) as its symbol on
+// /volunteer. Alec, 2026-10-29: photographs belong to the hooks; the pages in
+// between use symbols and spend the space on content.
 export const LANES = [
   { key: "fund", name: "Fundraising", head: "Money, and the people who move it.",
-    blurb: "Making the Hustle & Heart Fund bigger than one person's checkbook.",
-    photo: { src: "/images/brickhouse/on-at-the-net.webp", alt: "Three players in sport wheelchairs talk at the net under the Brick House banner", w: 1200, h: 2133, pos: "50% 45%" } },
+    blurb: "Making the Hustle & Heart Fund bigger than one person's checkbook.", icon: "HandCoins" },
   { key: "clean", name: "Operations", head: "The unglamorous work that protects athletes.",
-    blurb: "The books. The insurance. The advice that keeps the work on solid ground.",
-    photo: { src: "/images/brickhouse/bh-space.webp", alt: "A new net stretches across the blue court toward the Brick House banner and a row of lockers on the block wall", w: 1200, h: 2133, pos: "50% 55%" } },
+    blurb: "The books. The insurance. The advice that keeps the work on solid ground.", icon: "ShieldCheck" },
   { key: "tell", name: "Stories", head: "Reach, so the next athlete finds us.",
-    blurb: "Help people discover what is possible in adaptive sports and how they can take part.",
-    photo: { src: "/images/athletes/wheelie-133.webp", alt: "A grinning athlete takes a selfie on an outdoor court", w: 1127, h: 1500, pos: "50% 35%" } },
+    blurb: "Help people discover what is possible in adaptive sports and how they can take part.", icon: "Megaphone" },
   { key: "court", name: "Participation", head: "The part that looks like sport.",
-    blurb: "Coaching a session, fixing a chair, making a first introduction.",
-    photo: { src: "/images/brickhouse/on-rally.webp", alt: "Two players trade shots, the ball in the air and a Brick House banner on the wall", w: 1200, h: 2133, pos: "50% 45%" } },
+    blurb: "Coaching a session, fixing a chair, making a first introduction.", icon: "Trophy" },
   { key: "notitle", name: "Connections", head: "You do not need a profession to change this.",
-    blurb: "Most people who want to help have a relationship, a room, or a reason to organize something.",
-    photo: { src: "/images/athletes/wheelie-51.webp", alt: "Three friends crowd together for a photo at a night event", w: 1500, h: 863, pos: "50% 40%" } },
+    blurb: "Most people who want to help have a relationship, a room, or a reason to organize something.", icon: "Handshake" },
 ];
 
 export const ROLES = [
@@ -728,3 +724,66 @@ ROLES.push(
   payoff: "Thoughtful oversight helps the organization serve its community well.",
 },
 );
+
+// ---- tools ----------------------------------------------------------------
+// What a role works in, shown on the board and on each role page. Alec,
+// 2026-10-29: the volunteer list is "a great opportunity to link some of the
+// tools that we use", which also helps search. ONLY tools this organization
+// actually runs (each is wired somewhere in this repo: Givebutter checkout,
+// Beehiiv lists, Buffer and Instagram, Google Workspace mail
+// and ledgers, Double Good drives), our own sites, and official references.
+// Do not add a tool here because a role "might" use it.
+export const TOOLS = {
+  givebutter:  { name: "Givebutter", href: "https://givebutter.com" },
+  beehiiv:     { name: "Beehiiv", href: "https://www.beehiiv.com" },
+  buffer:      { name: "Buffer", href: "https://buffer.com" },
+  workspace:   { name: "Google Workspace", href: "https://workspace.google.com" },
+  doublegood:  { name: "Double Good", href: "https://www.doublegood.com" },
+  instagram:   { name: "Instagram", href: "https://www.instagram.com/adapt_to_life_org/" },
+  safesport:   { name: "U.S. Center for SafeSport", href: "https://uscenterforsafesport.org" },
+  irs990:      { name: "IRS Form 990", href: "https://www.irs.gov/forms-pubs/about-form-990" },
+  uspto:       { name: "USPTO trademarks", href: "https://www.uspto.gov/trademarks" },
+  wcag:        { name: "WCAG", href: "https://www.w3.org/WAI/standards-guidelines/wcag/" },
+  asnm:        { name: "Adaptive Sports Near Me", href: "https://adaptivesportsnearme.com" },
+  shop:        { name: "Adapt Body Shop", href: "https://adaptbodyshop.com" },
+  fund:        { name: "Hustle & Heart Fund", href: "/hustle-and-heart" },
+  apply:       { name: "Athlete applications", href: "/apply" },
+  popcorn:     { name: "Popcorn drives", href: "/popcorn" },
+  events:      { name: "Events", href: "/events" },
+  partners:    { name: "Partner levels", href: "/sponsorship" },
+  giving:      { name: "How Giving Works", href: "/promise" },
+  donate:      { name: "Donate", href: "/donate" },
+  social:      { name: "Our social", href: "/social" },
+  release:     { name: "Photo and media release", href: "https://sign.adapttolife.org/waiver?source=atl" },
+  ambassadors: { name: "Ambassadors", href: "/ambassadors" },
+  roadmap:     { name: "Roadmap", href: "/roadmap" },
+};
+
+export const ROLE_TOOLS = {
+  "grant-writer": ["workspace", "fund"],
+  "fundraising-lead": ["givebutter", "doublegood", "beehiiv"],
+  "sponsorship-and-partnership-lead": ["partners", "workspace"],
+  "corporate-matching-champion": ["donate"],
+  "planned-and-major-giving-advisor": ["giving", "donate"],
+  "cpa-or-tax-preparer": ["irs990", "workspace"],
+  "bookkeeper": ["workspace", "givebutter"],
+  "nonprofit-attorney": ["irs990"],
+  "trademark-counsel": ["uspto", "shop"],
+  "insurance-and-risk": ["safesport", "events"],
+  "grant-reviewer": ["fund", "apply"],
+  "social-media-manager": ["instagram", "buffer", "social"],
+  "writer-or-editor": ["beehiiv", "workspace"],
+  "photographer-or-videographer": ["release", "instagram"],
+  "graphic-designer": ["instagram", "shop"],
+  "press-and-media": ["social", "events"],
+  "accessibility-reviewer": ["wcag", "asnm"],
+  "adaptive-sports-coach": ["safesport", "asnm"],
+  "event-crew": ["events"],
+  "equipment-technician": ["fund"],
+  "athlete-mentor": ["ambassadors", "asnm"],
+  "program-scout": ["asnm"],
+  "clinical-referral-partner": ["asnm", "apply"],
+  "make-an-introduction": ["partners"],
+  "host-something": ["popcorn", "events"],
+  "board-and-advisory": ["roadmap", "giving"],
+};

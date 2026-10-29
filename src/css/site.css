@@ -849,50 +849,61 @@ a.win-band:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:4p
 /* ---- the board: every card is one link to its role page ---------------- */
 .lane-blurb{ max-width:62ch; margin-top:0.9rem; color:var(--ink-soft); }
 
-/* LEDGER: the pattern for the pages between the hooks. When a page has a lot
-   to show (roles, organizations, reels), it reads as one heading and one
-   photograph beside a ruled list, not as a grid of equal cards. Alec,
-   2026-10-29: the landing pages are great, the middle "ends up becoming a lot
-   of grid layout, lists, bullet points". Equal cards make every item the same
-   weight, so nothing leads and the eye has nowhere to start. A ruled list
-   scans top to bottom like a menu, the aside says what the list is for, and
-   on desktop the aside stays put while the list scrolls past it.
-   .flip puts the aside on the right, so consecutive ledgers alternate. */
-.ledger{ display:grid; grid-template-columns:minmax(0,5fr) minmax(0,7fr); gap:clamp(2rem,6vw,5.5rem); align-items:start; }
-.ledger.flip{ grid-template-columns:minmax(0,7fr) minmax(0,5fr); }
-.ledger.flip .ledger-aside{ order:2; }
-.ledger-aside{ position:sticky; top:96px; }
-.ledger-aside .h2{ margin-top:0.8rem; }
-.ledger-aside p{ margin-top:0.9rem; max-width:40ch; color:var(--ink-soft); }
-.ledger-photo{ margin:clamp(1.6rem,3vw,2.2rem) 0 0; border-radius:18px; overflow:hidden; aspect-ratio:4/5; max-height:440px; width:100%; }
-.ledger-photo img{ width:100%; height:100%; object-fit:cover; object-position:50% 40%; }
-.ledger-list{ list-style:none; padding:0; margin:0; border-top:1px solid var(--hairline); }
-.ledger-row{ display:grid; grid-template-columns:minmax(0,1fr) auto; column-gap:2rem; align-items:center; padding:1.2rem 0.2rem; border-bottom:1px solid var(--hairline); color:inherit; }
-a.ledger-row{ transition:background-color .16s ease; }
-a.ledger-row:hover{ background-color:rgba(255,92,57,0.05); }
-a.ledger-row:focus-visible{ outline:2px solid var(--orange); outline-offset:2px; border-radius:6px; }
-.ledger-n{ font-family:var(--font-display); font-weight:800; font-size:clamp(1.2rem,1.7vw,1.4rem); letter-spacing:-0.015em; line-height:1.15; color:var(--ink); }
-a.ledger-row:hover .ledger-n{ color:var(--orange-ink); }
-.ledger-d{ display:block; margin-top:0.35rem; max-width:54ch; color:var(--ink-soft); }
-.ledger-m{ display:flex; align-items:center; gap:1.1rem; font-family:var(--font-label); font-weight:800; font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); text-align:right; }
-/* A handle is a name, not a label: no capitals, no tracking. */
-.ledger-m .handle{ text-transform:none; letter-spacing:0.01em; font-size:0.88rem; font-weight:700; }
-.ledger-go{ font-size:1.25rem; letter-spacing:0; color:var(--orange-ink); transition:transform .16s ease; }
-a.ledger-row:hover .ledger-go{ transform:translateX(4px); }
-.dark .ledger-aside p, .dark .ledger-d{ color:var(--cream-mute); }
-.dark .ledger-list, .dark .ledger-row{ border-color:rgba(249,247,242,0.12); }
-.dark .ledger-n{ color:var(--cream); }
-.dark .ledger-m{ color:var(--cream-mute); }
-.dark .ledger-go, .dark a.ledger-row:hover .ledger-n{ color:var(--orange); }
-@media (max-width:860px){
-  .ledger, .ledger.flip{ grid-template-columns:1fr; gap:1.8rem; }
-  .ledger.flip .ledger-aside{ order:0; }
-  .ledger-aside{ position:static; }
-  .ledger-photo{ aspect-ratio:16/10; max-height:none; }
-  .ledger-row{ grid-template-columns:1fr; }
-  .ledger-m{ margin-top:0.7rem; justify-content:space-between; text-align:left; }
+/* INDEX: the pattern for the pages between the hooks. Alec, 2026-10-29: the
+   landing pages are great, but the middle "ends up becoming a lot of grid
+   layout, lists, bullet points", and photographs there are "a little bit too
+   much wasted space". So the middle carries meaning with symbols and spends
+   the room on content:
+   - .ix-head: one line icon in a dark tile (scripts/lib/icons.mjs), the group
+     name and count, the heading, and one line, all in one compact row.
+   - .ix-list: the items as a ruled list, two columns on desktop. A row is not
+     a card: no box, no shadow, a hairline above it. Its name is the one link
+     (.ix-link), stretched over the whole row, so the row is one tap.
+   - .ix-tools: what the item works in. These links sit above the stretched
+     one, so they stay their own targets without nesting an anchor. */
+.ix-head{ display:grid; grid-template-columns:auto minmax(0,1fr) minmax(0,0.8fr); gap:1.2rem clamp(1.4rem,3vw,2.6rem); align-items:end; padding-bottom:clamp(1.4rem,2.6vw,2rem); }
+.ix-tile{ width:56px; height:56px; border-radius:14px; display:grid; place-items:center; background:var(--ink-warm); color:var(--orange); box-shadow:0 12px 28px -14px rgba(0,0,0,0.55); align-self:start; }
+.ix-tile .ix-svg{ width:28px; height:28px; }
+.dark .ix-tile{ background:rgba(255,92,57,0.12); box-shadow:inset 0 0 0 1px rgba(255,92,57,0.35); }
+.ix-head .eyebrow b{ color:var(--muted); font-weight:800; }
+.dark .ix-head .eyebrow b{ color:var(--cream-mute); }
+.ix-head .h2{ margin-top:0.5rem; }
+.ix-blurb{ color:var(--ink-soft); max-width:42ch; }
+.dark .ix-blurb{ color:var(--cream-mute); }
+.ix-list{ list-style:none; padding:0; margin:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:clamp(2rem,4vw,3.5rem); }
+.ix-row{ position:relative; display:grid; grid-template-columns:minmax(0,1fr) auto; column-gap:1.2rem; padding:1.15rem 0.2rem 1.2rem; border-top:1px solid var(--hairline); }
+.dark .ix-row{ border-color:rgba(249,247,242,0.12); }
+.ix-n{ font-family:var(--font-display); font-weight:800; font-size:1.18rem; letter-spacing:-0.01em; line-height:1.2; color:var(--ink); margin:0; }
+.dark .ix-n{ color:var(--cream); }
+.ix-link{ color:inherit; }
+.ix-link::after{ content:""; position:absolute; inset:0; border-radius:8px; }
+.ix-link:focus-visible{ outline:none; }
+.ix-link:focus-visible::after{ outline:2px solid var(--orange); outline-offset:2px; }
+.ix-row:hover .ix-n{ color:var(--orange-ink); }
+.dark .ix-row:hover .ix-n{ color:var(--orange); }
+.ix-d{ margin-top:0.3rem; color:var(--ink-soft); font-size:0.96rem; line-height:1.5; max-width:50ch; }
+.dark .ix-d{ color:var(--cream-mute); }
+.ix-meta{ display:flex; flex-wrap:wrap; align-items:center; gap:0.35rem 1rem; margin-top:0.65rem; font-family:var(--font-label); font-weight:800; font-size:0.7rem; letter-spacing:0.13em; text-transform:uppercase; color:var(--muted); }
+.dark .ix-meta{ color:var(--cream-mute); }
+.ix-meta > span{ display:inline-flex; align-items:center; gap:0.4rem; }
+.ix-meta .ix-svg{ width:14px; height:14px; color:var(--orange-ink); }
+.dark .ix-meta .ix-svg{ color:var(--orange); }
+.ix-tools{ position:relative; z-index:1; display:flex; flex-wrap:wrap; align-items:center; gap:0.4rem; margin-top:0.7rem; }
+.ix-tools-l{ font-size:0.8rem; color:var(--muted); margin-right:0.2rem; }
+.ix-tools a{ display:inline-flex; align-items:center; min-height:32px; padding:0 0.7rem; border-radius:999px; font-size:0.84rem; font-weight:600; color:var(--ink); background:rgba(28,26,21,0.05); transition:background-color .16s ease, color .16s ease; }
+.ix-tools a:hover{ background:rgba(255,92,57,0.12); color:var(--orange-ink); }
+.ix-tools a:focus-visible{ outline:2px solid var(--orange); outline-offset:2px; }
+.ix-go{ align-self:start; margin-top:0.15rem; color:var(--orange-ink); transition:transform .16s ease; }
+.ix-go .ix-svg{ width:20px; height:20px; }
+.dark .ix-go{ color:var(--orange); }
+.ix-row:hover .ix-go{ transform:translateX(3px); }
+.ix-group + .ix-group{ margin-top:clamp(2.4rem,5vw,3.6rem); }
+@media (max-width:900px){
+  .ix-head{ grid-template-columns:auto minmax(0,1fr); }
+  .ix-blurb{ grid-column:1 / -1; }
+  .ix-list{ grid-template-columns:1fr; }
 }
-@media (prefers-reduced-motion:reduce){ a.ledger-row, .ledger-go{ transition:none; } }
+@media (prefers-reduced-motion:reduce){ .ix-go, .ix-tools a{ transition:none; } }
 
 /* The jump bar: a long index says up front what is in it and how much, so a
    reader can go straight to their part instead of scrolling to find it. */
@@ -900,6 +911,7 @@ a.ledger-row:hover .ledger-go{ transform:translateX(4px); }
 .jump a{ display:inline-flex; align-items:center; gap:0.6rem; min-height:44px; padding:0 1.1rem; border-radius:999px; box-shadow:inset 0 0 0 1.5px var(--hairline); background:#fff; font-weight:700; color:var(--ink); transition:box-shadow .16s ease, color .16s ease; }
 .jump a:hover{ box-shadow:inset 0 0 0 1.5px var(--orange); color:var(--orange-ink); }
 .jump a:focus-visible{ outline:2px solid var(--orange); outline-offset:2px; }
+.jump .ix-svg{ width:18px; height:18px; color:var(--orange-ink); }
 .jump b{ font-family:var(--font-label); font-weight:800; font-size:0.74rem; color:var(--orange-ink); }
 .lane-anchor{ scroll-margin-top:84px; }
 

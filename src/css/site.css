@@ -427,30 +427,32 @@ section{ position:relative; }
 /* SOCIAL — the only outbound links in the footer, so they sit in the bottom bar
    rather than inside the internal link columns, where they would read as more
    site navigation.
-   Quiet on purpose: 0.72 opacity in cream, lifting to the orange on hover, the
-   same behaviour as .footer .col a. The footer's job here is the subscribe
-   field; these are a way to keep following, not a third call to action.
+   Alec, 2026-10-29: "I want the Instagram and Facebook icons in the footer."
+   They were there, quiet on purpose at 0.72 opacity in the bottom corner, and
+   nobody saw them. Now they sit under the sign-up as "Follow us", in full
+   color on a visible chip, because following on Instagram is half of how
+   people stay with us.
 
    44x44 TAP TARGETS, WHICH IS THE AAA NUMBER AND DELIBERATE. WCAG 2.5.8 (AA,
    new in 2.2) asks only 24x24; 2.5.5 (AAA) asks 44x44. For an adaptive sports
    organisation whose visitors disproportionately include people with limited
-   hand function, the AA floor is the wrong one to design to — a 20px icon is
-   the smallest thing on the page and the hardest to hit. The box is invisible;
-   only the glyph is drawn. */
-.social{ display:flex; align-items:center; gap:0.15rem; margin:-0.6rem 0; }
+   hand function, the AA floor is the wrong one to design to. */
+.foot-follow{ margin:0 0 1.3rem; }
+.social{ display:flex; align-items:center; gap:0.6rem; }
 .social a{
   display:inline-flex; align-items:center; justify-content:center;
   width:44px; height:44px;
-  color:var(--cream); opacity:0.72;
-  border-radius:8px;
-  transition:opacity .15s ease, color .15s ease;
+  color:var(--cream);
+  border-radius:12px; background:rgba(249,247,242,0.08); box-shadow:inset 0 0 0 1px rgba(249,247,242,0.14);
+  transition:background-color .15s ease, color .15s ease, box-shadow .15s ease;
 }
-.social a:hover{ opacity:1; color:var(--orange); }
-.social a:focus-visible{ opacity:1; color:var(--orange); outline:2px solid var(--orange); outline-offset:2px; }
-.social svg{ width:20px; height:20px; display:block; fill:currentColor; }
+.social a:hover{ color:var(--cream); background:var(--orange); box-shadow:none; }
+.social a:focus-visible{ color:var(--cream); background:var(--orange); outline:2px solid var(--orange); outline-offset:3px; }
+.social svg{ width:22px; height:22px; display:block; fill:currentColor; }
+@media (prefers-reduced-motion:reduce){ .social a{ transition:none; } }
 
 /* footer inline subscribe */
-.foot-sub{ margin:0 0 1.3rem; max-width:32ch; }
+.foot-sub{ margin:0 0 1.4rem; max-width:32ch; }
 .foot-sub-label{ display:block; font-family:var(--font-label); font-size:0.7rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--cream-faint); font-weight:700; margin-bottom:0.6rem; }
 .foot-sub-row{ display:flex; gap:0.5rem; }
 .foot-sub-input{ flex:1; min-width:0; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.18); border-radius:8px; padding:0.6rem 0.75rem; color:var(--cream); font-size:0.95rem; }

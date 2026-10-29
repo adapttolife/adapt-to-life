@@ -854,8 +854,9 @@ a.win-band:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:4p
    layout, lists, bullet points", and photographs there are "a little bit too
    much wasted space". So the middle carries meaning with symbols and spends
    the room on content:
-   - .ix-head: one line icon in a dark tile (scripts/lib/icons.mjs), the group
-     name and count, the heading, and one line, all in one compact row.
+   - .ix-head: the group's symbol in a dark tile (a meaning from
+     data/icons.mjs, drawn in duotone), the group name and count, the heading,
+     and one line, all in one compact row.
    - .ix-list: the items as a ruled list, two columns on desktop. A row is not
      a card: no box, no shadow, a hairline above it. Its name is the one link
      (.ix-link), stretched over the whole row, so the row is one tap.
@@ -891,6 +892,7 @@ a.win-band:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:4p
 .ix-tools{ position:relative; z-index:1; display:flex; flex-wrap:wrap; align-items:center; gap:0.4rem; margin-top:0.7rem; }
 .ix-tools-l{ font-size:0.8rem; color:var(--muted); margin-right:0.2rem; }
 .ix-tools a{ display:inline-flex; align-items:center; min-height:32px; padding:0 0.7rem; border-radius:999px; font-size:0.84rem; font-weight:600; color:var(--ink); background:rgba(28,26,21,0.05); transition:background-color .16s ease, color .16s ease; }
+.ix-tools a .ix-svg{ width:14px; height:14px; margin-right:0.4rem; flex:none; }
 .ix-tools a:hover{ background:rgba(255,92,57,0.12); color:var(--orange-ink); }
 .ix-tools a:focus-visible{ outline:2px solid var(--orange); outline-offset:2px; }
 .ix-go{ align-self:start; margin-top:0.15rem; color:var(--orange-ink); transition:transform .16s ease; }

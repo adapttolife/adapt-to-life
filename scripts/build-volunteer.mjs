@@ -20,7 +20,7 @@ import { PAGE_HEADER_SHEET, PAGE_HEADER_CLASS, bandVars,
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { SHARED, LANES, ROLES, TOOLS, ROLE_TOOLS } from "../data/volunteer-roles.mjs";
-import { icon } from "./lib/icons.mjs";
+import { icon, logo } from "./lib/icons.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const PUB = join(ROOT, "public");
@@ -96,7 +96,7 @@ function toolLinks(r) {
   return (ROLE_TOOLS[r.slug] || []).map((k) => {
     const t = TOOLS[k];
     const out = /^https?:/.test(t.href) && !t.href.startsWith(SITE) ? ' target="_blank" rel="noopener"' : "";
-    return `<a href="${esc(t.href)}"${out}>${esc(t.name)}</a>`;
+    return `<a href="${esc(t.href)}"${out}>${t.logo ? logo(t.logo) : ""}${esc(t.name)}</a>`;
   }).join("");
 }
 
@@ -121,7 +121,7 @@ function boardPage() {
     return `  <section class="band${i % 2 ? " tint" : ""} lane-anchor" id="lane-${l.key}" aria-labelledby="lane-${l.key}-h">
     <div class="wrap">
       <header class="ix-head reveal">
-        <span class="ix-tile">${icon(l.icon)}</span>
+        <span class="ix-tile">${icon(l.icon, "duotone")}</span>
         <div>
           <span class="eyebrow orange">${l.name} <b>· ${roles.length} roles</b></span>
           <h2 class="serif h2" id="lane-${l.key}-h">${l.head}</h2>

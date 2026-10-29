@@ -59,12 +59,12 @@ export const SHARED = {
     "Unpaid volunteer role, and no employment relationship. Volunteer time is not a tax-deductible gift, though out-of-pocket expenses sometimes are. Adapt To Life is a recognized 501(c)(3), EIN 41-3213344.",
 };
 
-// Each lane carries one line icon (scripts/lib/icons.mjs) as its symbol on
-// /volunteer. Alec, 2026-10-29: photographs belong to the hooks; the pages in
-// between use symbols and spend the space on content.
+// Each lane's icon is a meaning from the symbol dictionary (data/icons.mjs).
+// Alec, 2026-10-29: photographs belong to the hooks; the pages in between use
+// symbols and spend the space on content.
 export const LANES = [
   { key: "fund", name: "Fundraising", head: "Money, and the people who move it.",
-    blurb: "Making the Hustle & Heart Fund bigger than one person's checkbook.", icon: "fund" },
+    blurb: "Making the Hustle & Heart Fund bigger than one person's checkbook.", icon: "giving" },
   { key: "clean", name: "Operations", head: "The unglamorous work that protects athletes.",
     blurb: "The books. The insurance. The advice that keeps the work on solid ground.", icon: "operations" },
   { key: "tell", name: "Stories", head: "Reach, so the next athlete finds us.",
@@ -732,14 +732,15 @@ ROLES.push(
 // actually runs (each is wired somewhere in this repo: Givebutter checkout,
 // Beehiiv lists, Buffer and Instagram, Google Workspace mail
 // and ledgers, Double Good drives), our own sites, and official references.
-// Do not add a tool here because a role "might" use it.
+// Do not add a tool here because a role "might" use it. `logo` names an
+// official mark in LOGOS (data/icons.mjs); a tool without one shows its name.
 export const TOOLS = {
   givebutter:  { name: "Givebutter", href: "https://givebutter.com" },
   beehiiv:     { name: "Beehiiv", href: "https://www.beehiiv.com" },
-  buffer:      { name: "Buffer", href: "https://buffer.com" },
-  workspace:   { name: "Google Workspace", href: "https://workspace.google.com" },
+  buffer:      { name: "Buffer", href: "https://buffer.com", logo: "buffer" },
+  workspace:   { name: "Google Workspace", href: "https://workspace.google.com", logo: "google" },
   doublegood:  { name: "Double Good", href: "https://www.doublegood.com" },
-  instagram:   { name: "Instagram", href: "https://www.instagram.com/adapt_to_life_org/" },
+  instagram:   { name: "Instagram", href: "https://www.instagram.com/adapt_to_life_org/", logo: "instagram" },
   safesport:   { name: "U.S. Center for SafeSport", href: "https://uscenterforsafesport.org" },
   irs990:      { name: "IRS Form 990", href: "https://www.irs.gov/forms-pubs/about-form-990" },
   uspto:       { name: "USPTO trademarks", href: "https://www.uspto.gov/trademarks" },

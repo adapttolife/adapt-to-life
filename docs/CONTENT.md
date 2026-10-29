@@ -75,9 +75,9 @@ Do not confuse less defensive copy with fewer safeguards. Preserve material dono
 Photographs belong to the hooks: the home page, landing pages, campaign and donate pages. The pages in between (indexes of roles, organizations, reels) carry meaning with symbols and spend their space on content. Alec, 2026-10-29: photographs there are "a little bit too much wasted space."
 
 - Use the **index** (`.ix-*` in `src/css/site.css`). Each group opens with a compact header: a line icon in a dark tile, the group name and count, the heading, and one line. The items follow as a ruled two-column list, not a grid of cards.
-- Icons come from `scripts/lib/icons.mjs` (Lucide, the set adaptivesportsnearme.com uses), inlined as SVG. Add an icon there rather than pasting a new SVG into a page.
+- Icons are meanings from the symbol dictionary, `data/icons.mjs`. A page asks for `giving` or `place`, never for a library or a file. `npm run icons` pulls the drawings into `scripts/lib/icons.mjs` and redraws `brand/icons/sheet.html`; look at the sheet before shipping a new meaning. The rules for which library does what, and which style means what, are in `brand/README.md` under "Icons and symbols".
 - A row's name is its one link, stretched over the row. Secondary links (the tools a role works in) sit beside it, never inside it.
-- Where a list item uses a tool, link the tool (`TOOLS` and `ROLE_TOOLS` in `data/volunteer-roles.mjs`). List only tools we actually run, our own sites, and official references. That helps the visitor and search.
+- Where a list item uses a tool, link the tool (`TOOLS` and `ROLE_TOOLS` in `data/volunteer-roles.mjs`), with its official logo where Simple Icons has one. List only tools we actually run, our own sites, and official references. That helps the visitor and search.
 - Lead with one. When one item matters most, give it a mark, not a photograph, and room above the list, as `/social` does for Brick House.
 - A long index opens with a jump bar (`.jump`) naming each group and how many it holds.
 - Avoid a centered heading over a grid of identical cards, repeated down the page. That is the pattern this replaces.

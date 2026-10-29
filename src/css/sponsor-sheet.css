@@ -130,7 +130,7 @@
    that lands beside the circle still closes the sheet. It paints nothing; it
    also reclaims the dead corner outside the sheet's border radius. */
 /* A symmetric SVG centers the visible mark, not a font baseline. */
-.sheet-close svg{ display:block; width:20px; height:20px; pointer-events:none; }
+.sheet-close svg{ display:block; width:20px; height:20px; pointer-events:none; fill:currentColor; }
 .sheet-close::before{ content:""; position:absolute; inset:-8px; border-radius:50%; }
 .sheet-close:hover{ background:rgba(28,26,21,0.11); color:var(--ink); }
 /* Touch has no hover, so the pressed state is the ONLY feedback a thumb gets.
@@ -203,8 +203,9 @@
   padding:0.2rem 0; margin-bottom:0.5rem;
 }
 .sheet-note > summary::-webkit-details-marker{ display:none; }
-.sheet-note > summary::after{ content:"+"; font-weight:700; }
-.sheet-note[open] > summary::after{ content:"\2212"; }
+/* "more" from the dictionary (--icon-more, in site.css); a close mark when open. */
+.sheet-note > summary::after{ content:""; width:0.85rem; height:0.85rem; background:currentColor; -webkit-mask:var(--icon-more) center/contain no-repeat; mask:var(--icon-more) center/contain no-repeat; transition:transform .2s ease; }
+.sheet-note[open] > summary::after{ transform:rotate(45deg); }
 
 .sheet-status{ margin:0.8rem 0 0; font-weight:600; font-size:0.9rem; min-height:1.2em; }
 .sheet-status.is-ok{ color:var(--ok); }

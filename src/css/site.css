@@ -223,6 +223,9 @@ p{ text-wrap:pretty; }
 }
 .textlink:hover{ color:var(--orange-hot); border-bottom-color:var(--orange-hot); }
 .arrow{ display:inline-block; transition:transform .18s ease; }
+.arrow svg{ display:inline-block; width:0.95em; height:0.95em; vertical-align:-0.12em; fill:currentColor; }
+.foot-sub-btn svg{ display:block; width:1.05rem; height:1.05rem; fill:currentColor; }
+.nav-toggle .caret{ fill:currentColor; }
 .textlink:hover .arrow, .prog:hover .arrow{ transform:translateX(4px); }
 
 /* ---- nav ----------------------------------------------------------------- */
@@ -325,8 +328,10 @@ section{ position:relative; }
 .elig-list li{ position:relative; padding-left:1.6rem; margin-bottom:0.55rem;
   color:var(--ink); font-size:0.98rem; line-height:1.45; }
 .elig-list li:last-child{ margin-bottom:0; }
-.elig-list li::before{ content:"\2713"; position:absolute; left:0; top:0;
-  font-family:var(--font-label); font-weight:700; color:var(--orange-ink); }
+/* The check is the dictionary's (data/icons.mjs, --icon-check), drawn as a mask
+   so it takes the text color. */
+.elig-list li::before{ content:""; position:absolute; left:0; top:0.2em; width:1em; height:1em;
+  background:var(--orange-ink); -webkit-mask:var(--icon-check) center/contain no-repeat; mask:var(--icon-check) center/contain no-repeat; }
 .elig-no{ margin:1rem 0 0; color:var(--muted); font-size:0.92rem; line-height:1.5; }
 
 /* ---- faq (native <details>, zero JS) ------------------------------------- */
@@ -339,12 +344,13 @@ section{ position:relative; }
   transition:color .15s ease;
 }
 .faq-item summary::-webkit-details-marker{ display:none; }
+/* "more" from the dictionary (--icon-more); it turns into a close mark when open. */
 .faq-item summary::after{
-  content:"+"; position:absolute; right:0.15rem; top:50%; transform:translateY(-50%);
-  font-family:var(--font-label); font-size:1.35rem; font-weight:400; color:var(--orange-ink);
-  transition:color .15s ease;
+  content:""; position:absolute; right:0.15rem; top:50%; width:1.05rem; height:1.05rem; transform:translateY(-50%);
+  background:var(--orange-ink); -webkit-mask:var(--icon-more) center/contain no-repeat; mask:var(--icon-more) center/contain no-repeat;
+  transition:transform .2s ease, background-color .15s ease;
 }
-.faq-item[open] summary::after{ content:"\2212"; } /* minus sign when open */
+.faq-item[open] summary::after{ transform:translateY(-50%) rotate(45deg); }
 .faq-item summary:hover{ color:var(--orange-ink); }
 .faq-item p{ color:var(--ink-soft); margin:0 0 1.25rem; max-width:60ch; }
 
@@ -641,7 +647,8 @@ a.info-v{ border-bottom:1.5px solid var(--orange); padding-bottom:1px; }
 @media (max-width:860px){ .contact-grid{ grid-template-columns:1fr; gap:2.4rem; } }
 @media (max-width:560px){ .field-row{ grid-template-columns:1fr; } }
 .apply-steps{ margin-top:0.6rem; }
-.apply-steps p{ margin-bottom:0.5rem; font-size:0.95rem; color:var(--ink-soft); line-height:1.5; }
+.apply-steps p{ margin-bottom:0.5rem; font-size:0.95rem; color:var(--ink-soft); line-height:1.5; display:flex; gap:0; align-items:baseline; }
+.apply-steps p .ico-in{ align-self:flex-start; margin-top:0.18em; margin-right:0.6em; }
 .apply-steps strong{ color:var(--ink); }
 
 /* ---- image treatments (About hero A/B + founder portrait) -------------- */
@@ -907,6 +914,17 @@ a.win-band:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:4p
 }
 @media (prefers-reduced-motion:reduce){ .ix-go, .ix-tools a{ transition:none; } }
 
+/* The same symbol tile on hand-written pages: .ix-tile.sm heads a card or a
+   column (44px), and .ico-in sits inline before a label, a step or a status.
+   Both take a meaning from data/icons.mjs; color comes from the context. */
+.ix-tile.sm{ width:44px; height:44px; border-radius:12px; }
+.ix-tile.sm .ix-svg{ width:24px; height:24px; }
+.dark .ix-tile.sm{ background:rgba(255,92,57,0.12); box-shadow:inset 0 0 0 1px rgba(255,92,57,0.35); }
+.prog .ix-tile{ margin-bottom:1rem; }
+.ix-tile + .impact-n{ margin-top:1rem; }
+.ico-in{ display:inline-block; width:1.15em; height:1.15em; vertical-align:-0.2em; margin-right:0.45em; fill:currentColor; color:var(--orange-ink); flex:none; }
+.dark .ico-in{ color:var(--orange); }
+
 /* The jump bar: a long index says up front what is in it and how much, so a
    reader can go straight to their part instead of scrolling to find it. */
 .jump{ display:flex; flex-wrap:wrap; gap:0.6rem; margin-top:clamp(1.6rem,3vw,2.2rem); list-style:none; padding:0; }
@@ -919,6 +937,7 @@ a.win-band:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:4p
 
 .terms{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:clamp(1.4rem,3vw,2.4rem); margin-top:clamp(2.2rem,4vw,3rem); }
 @media (min-width:1000px){ .terms{ grid-template-columns:repeat(4,minmax(0,1fr)); } }
+.term .ix-tile{ margin-bottom:0.9rem; }
 .term h3{ font-family:var(--font-display); font-size:1.22rem; font-weight:500; color:var(--ink); margin-bottom:0.5rem; }
 .term p{ font-family:var(--font-body); font-size:0.95rem; line-height:1.55; color:var(--ink-soft); }
 
@@ -984,7 +1003,8 @@ a.win-band:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:4p
    line of text, which measured 23px. */
 .jd-more summary{ cursor:pointer; font-family:var(--font-body); font-size:0.88rem; color:var(--cream-mute); list-style:none; display:inline-flex; align-items:center; gap:0.45rem; min-height:44px; padding-right:0.5rem; }
 .jd-more summary::-webkit-details-marker{ display:none; }
-.jd-more summary::before{ content:"+"; font-family:var(--font-label); color:var(--orange); font-size:1rem; line-height:1; }
+.jd-more summary::before{ content:""; width:0.95rem; height:0.95rem; flex:none; background:var(--orange); -webkit-mask:var(--icon-more) center/contain no-repeat; mask:var(--icon-more) center/contain no-repeat; transition:transform .2s ease; }
+.jd-more[open] summary::before{ transform:rotate(45deg); }
 .jd-more[open] summary::before{ content:"\2013"; }
 .jd-more summary:hover{ color:var(--cream); }
 .jd-form-note{ font-family:var(--font-body); font-size:0.82rem; line-height:1.5; color:var(--cream-faint); margin-top:0.9rem; }
@@ -1030,7 +1050,7 @@ a.win-band:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:4p
 .evc-fact a{ color:var(--ink); font-weight:600; border-bottom:1px solid rgba(198,63,34,0.45); transition:color .15s ease, border-color .15s ease; }
 .evc-fact a:hover{ color:var(--orange-ink); border-color:var(--orange-ink); }
 .evc-ico{ flex:none; display:inline-flex; }
-.evc-ico svg{ display:block; width:1.05rem; height:1.05rem; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+.evc-ico svg{ display:block; width:1.05rem; height:1.05rem; fill:currentColor; }
 .evc-fact .evc-ico{ margin-top:0.12rem; color:var(--orange-ink); }
 .evc-sum{ grid-area:sum; margin-top:0.7rem; font-size:0.95rem; line-height:1.5; color:var(--ink-soft); max-width:60ch; }
 /* The last row takes any spare height, so in a row of cards the buttons line up along the bottom. */
@@ -1082,3 +1102,9 @@ a.win-band:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:4p
     .evc-acts .atc > .evc-btn{ width:100%; }
   }
 }
+
+/* icons:start: mask variables written by scripts/build-icons.mjs from data/icons.mjs (meanings with css: true). */
+:root{
+  --icon-check: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22currentColor%22%20d%3D%22m232.49%2080.49l-128%20128a12%2012%200%200%201-17%200l-56-56a12%2012%200%201%201%2017-17L96%20183L215.51%2063.51a12%2012%200%200%201%2017%2017Z%22%2F%3E%3C%2Fsvg%3E");
+  --icon-more: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22currentColor%22%20d%3D%22M228%20128a12%2012%200%200%201-12%2012h-76v76a12%2012%200%200%201-24%200v-76H40a12%2012%200%200%201%200-24h76V40a12%2012%200%200%201%2024%200v76h76a12%2012%200%200%201%2012%2012%22%2F%3E%3C%2Fsvg%3E");
+}/* icons:end */

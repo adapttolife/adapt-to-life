@@ -21,6 +21,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { SHARED, LANES, ROLES, TOOLS, ROLE_TOOLS } from "../data/volunteer-roles.mjs";
 import { icon, logo } from "./lib/icons.mjs";
+import { applyIcons } from "./lib/apply-icons.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const PUB = join(ROOT, "public");
@@ -142,7 +143,7 @@ ${roles.map(card).join("\n")}
   ).join("\n");
 
   const terms = SHARED.terms
-    .map(([t, d]) => `        <div class="term reveal">\n          <h3>${esc(t)}</h3>\n          <p>${esc(d)}</p>\n        </div>`)
+    .map(([t, m, d]) => `        <div class="term reveal">\n          <span class="ix-tile sm" aria-hidden="true">${icon(m, "duotone")}</span>\n          <h3>${esc(t)}</h3>\n          <p>${esc(d)}</p>\n        </div>`)
     .join("\n");
 
   return head({
@@ -461,8 +462,8 @@ ${sec("Not this", "          " + ul(r.isNot, "jd-no"))}
 // Pages ask for the CSS and JS version they were built with (scripts/version-assets.mjs).
 const VERSIONS = assetVersions();
 const files = new Map();
-files.set(join(PUB, "volunteer.html"), versionHtml(boardPage(), VERSIONS));
-for (const r of ROLES) files.set(join(PUB, "volunteer", `${r.slug}.html`), versionHtml(rolePage(r), VERSIONS));
+files.set(join(PUB, "volunteer.html"), versionHtml(applyIcons(boardPage()), VERSIONS));
+for (const r of ROLES) files.set(join(PUB, "volunteer", `${r.slug}.html`), versionHtml(applyIcons(rolePage(r)), VERSIONS));
 
 mkdirSync(join(PUB, "volunteer"), { recursive: true });
 

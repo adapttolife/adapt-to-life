@@ -30,7 +30,8 @@ test("every meaning resolves, and no two meanings share a drawing", () => {
 });
 
 function pages() {
-  const out = readdirSync(pub).filter((f) => f.endsWith(".html"));
+  // The hero-* pages are the internal hero lab, left as they are.
+  const out = readdirSync(pub).filter((f) => f.endsWith(".html") && !f.startsWith("hero-"));
   return out.concat(readdirSync(new URL("volunteer/", pub)).filter((f) => f.endsWith(".html")).map((f) => "volunteer/" + f));
 }
 
@@ -61,5 +62,50 @@ test("no page carries a retired icon", () => {
     const html = readFileSync(new URL(f, pub), "utf8");
     assert.doesNotMatch(html, /<svg class="ix-svg"[^>]*stroke-width="2"/, `${f} still uses a retired custom icon`);
     assert.doesNotMatch(html, /class="so-cover"/, `${f} still uses a retired reel cover`);
+  }
+});
+
+// Brand marks and decorative art drawn for one page are not icons; everything
+// else on a public page is a dictionary icon or logo.
+const NOT_ICONS = /class="(brand-logo|bh-atl|bh-x|bh-bricks)"/;
+test("no public page draws its own icon", () => {
+  for (const f of pages()) {
+    const html = readFileSync(new URL(f, pub), "utf8");
+    for (const m of html.matchAll(/<svg\b[^>]*>/g)) {
+      const tag = m[0];
+      if (/data-(icon|logo)=/.test(tag) || NOT_ICONS.test(tag)) continue;
+      // An <svg> written inside a script string is the script's own business
+      // only if it comes from the generated icons:start block.
+      const before = html.slice(Math.max(0, m.index - 4000), m.index);
+      if (before.lastIndexOf("<script") > before.lastIndexOf("</script>")) continue;
+      assert.fail(`${f}: a hand-drawn <svg> (${tag.slice(0, 80)}); use icon() or logo() from data/icons.mjs`);
+    }
+  }
+});
+
+test("links use the dictionary arrow, not a typed one", () => {
+  // The AMP photo-print caption on /adaptive-sports-near-me is handwriting-style
+  // type on purpose; it keeps its typed arrow.
+  for (const f of pages()) {
+    const html = readFileSync(new URL(f, pub), "utf8").replace(/<span class="amp-note">[\s\S]*?<\/span>/g, "");
+    const body = html.replace(/<script[\s\S]*?<\/script>/g, "");
+    // Arrows in a sentence ("twelve → six") are text; only links and buttons are checked.
+    for (const m of body.matchAll(/<(a|button)\b[^>]*>([\s\S]*?)<\/\1>/g)) {
+      assert.doesNotMatch(m[2], /&rarr;|→|&larr;|←/, `${f} has a typed arrow in a link or button; npm run icons converts it`);
+    }
+  }
+});
+
+test("the page scripts and the stylesheet draw from the dictionary", () => {
+  for (const f of ["public/js/campaigns.js", "public/js/add-to-calendar.js"]) {
+    const js = readFileSync(new URL(f, root), "utf8");
+    const block = js.slice(js.indexOf("/* icons:start */"), js.indexOf("/* icons:end */"));
+    assert.match(block, /data-(icon|logo)=/, `${f} icon block is empty or hand-drawn`);
+  }
+  const css = readFileSync(new URL("src/css/site.css", root), "utf8");
+  assert.match(css, /--icon-check: url\("data:image\/svg\+xml,/);
+  for (const f of ["src/css/site.css", "src/css/sponsor-sheet.css"]) {
+    const sheet = readFileSync(new URL(f, root), "utf8");
+    assert.doesNotMatch(sheet, /content:\s*"(\\2713|\\2212|\+)"/, `${f}: a stylesheet glyph check or plus is back; use the --icon- masks`);
   }
 });

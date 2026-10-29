@@ -44,11 +44,12 @@
 // Shared blocks, written once so the culture cannot drift between pages.
 export const SHARED = {
   // The board carries the terms of joining. Role pages do not repeat them.
+  // Each term is [title, meaning from data/icons.mjs, sentence].
   terms: [
-    ["Built around participation", "A recognized 501(c)(3) expanding access to adaptive sports so athletes can find their place."],
-    ["A scope, not a shift", "Every role has a defined job and a person to work with. If we cannot say what done looks like, we will not ask for your time."],
-    ["Flexible contributions", "Two hours on a Tuesday night is a real contribution. For events and coaching, we agree on a time together."],
-    ["You hear back either way", "A person reads every one. If there is no fit now, we say so."],
+    ["Built around participation", "participation", "A recognized 501(c)(3) expanding access to adaptive sports so athletes can find their place."],
+    ["A scope, not a shift", "scope", "Every role has a defined job and a person to work with. If we cannot say what done looks like, we will not ask for your time."],
+    ["Flexible contributions", "time", "Two hours on a Tuesday night is a real contribution. For events and coaching, we agree on a time together."],
+    ["You hear back either way", "reply", "A person reads every one. If there is no fit now, we say so."],
   ],
   // One short paragraph on a role page, not a two-paragraph essay.
   about:

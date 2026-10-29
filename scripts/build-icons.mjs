@@ -5,6 +5,10 @@
 //   scripts/lib/icons.mjs     the drawings plus icon() and logo(), imported by
 //                             the page generators (committed, so the deploy
 //                             build never rewrites a tracked file)
+//   the pages and scripts     every dictionary icon on a public page redrawn
+//                             (scripts/lib/apply-icons.mjs), and the marked
+//                             icons:start/end blocks in public/js/campaigns.js,
+//                             public/js/add-to-calendar.js and src/css/site.css
 //   brand/icons/sheet.html    every meaning in every style at 18, 28 and 56px
 //                             on both page colors: open it before you ship a
 //                             new icon, the way the custom set should have been
@@ -15,7 +19,8 @@
 // The drawings come from the @iconify-json packages (one JSON file per
 // library, devDependencies pinned in package.json), so pages carry plain
 // inline SVG and load no icon script.
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, readdirSync } from "node:fs";
+import { pathToFileURL } from "node:url";
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -75,7 +80,8 @@ export function icon(meaning, style = "regular", cls = "ix-svg") {
   const m = ICONS[meaning];
   if (!m) throw new Error("no meaning " + meaning + " in data/icons.mjs");
   const d = m.styles[style] || m.styles.regular;
-  return \`<svg class="\${cls}" viewBox="\${d.vb}" fill="currentColor" aria-hidden="true" focusable="false" data-icon="\${meaning}">\${d.body}</svg>\`;
+  const st = m.styles[style] ? style : "regular";
+  return \`<svg class="\${cls}" viewBox="\${d.vb}" fill="currentColor" aria-hidden="true" focusable="false" data-icon="\${meaning}" data-style="\${st}">\${d.body}</svg>\`;
 }
 
 // A platform's own logo, for tool chips and social links only.
@@ -115,10 +121,48 @@ ${Object.entries(icons).map(([k, m]) => row(`${k} <span style="font-weight:400;c
 <div class="scroll"><table>${Object.entries(logos).map(([k, l]) => row(k, l.means, [l])).join("\n")}</table></div>
 `;
 
+const LIB = join(ROOT, "scripts/lib/icons.mjs");
 const out = [
-  [join(ROOT, "scripts/lib/icons.mjs"), lib],
+  [LIB, lib],
   [join(ROOT, "brand/icons/sheet.html"), sheet],
 ];
+
+// The registry must be current before the pages can be redrawn from it.
+if (!CHECK) { writeFileSync(LIB, lib); }
+const reg = await import(pathToFileURL(LIB).href + "?" + Date.now());
+const { applyIcons } = await import(pathToFileURL(join(ROOT, "scripts/lib/apply-icons.mjs")).href + "?" + Date.now());
+
+// Marked blocks in scripts and the stylesheet.
+const block = (text, body, path) => {
+  const re = /(\/\* icons:start[^*]*\*\/\n)[\s\S]*?(\s*\/\* icons:end \*\/)/;
+  if (!re.test(text)) throw new Error(`no icons:start/end block in ${path}`);
+  return text.replace(re, (_, a, b) => a + body + b);
+};
+const sized = (svg) => svg.replace("<svg ", '<svg width="16" height="16" ');
+const jsMap = (pairs) => "  var ICON = {\n" + pairs.map(([k, v]) => `    ${k}: ${JSON.stringify(v)}`).join(",\n") + "\n  };";
+const jsFiles = {
+  "public/js/campaigns.js": jsMap([["time", sized(reg.icon("time", "regular", "evc-svg"))], ["place", sized(reg.icon("place", "regular", "evc-svg"))],
+    ["group", sized(reg.icon("community", "regular", "evc-svg"))], ["cal", sized(reg.icon("event", "regular", "evc-svg"))],
+    ["arrow", reg.icon("arrow", "bold")], ["external", reg.icon("external", "bold")]]),
+  "public/js/add-to-calendar.js": jsMap([["apple", reg.logo("apple", "atc-svg")], ["google", reg.logo("googlecalendar", "atc-svg")], ["outlook", reg.logo("outlook", "atc-svg")]]),
+};
+for (const [rel, body] of Object.entries(jsFiles)) {
+  const path = join(ROOT, rel);
+  out.push([path, block(readFileSync(path, "utf8"), body, rel)]);
+}
+const masks = Object.entries(icons).filter(([k]) => MEANINGS[k].css).map(([k, m]) => {
+  const d = m.styles.bold || m.styles.regular;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${d.vb}">${d.body}</svg>`;
+  return `  --icon-${k}: url("data:image/svg+xml,${encodeURIComponent(svg).replace(/'/g, "%27")}");`;
+});
+const css = join(ROOT, "src/css/site.css");
+out.push([css, block(readFileSync(css, "utf8"), ":root{\n" + masks.join("\n") + "\n}", "src/css/site.css")]);
+
+// Every hand-written public page (the hero lab is internal, so it is left as is).
+const PUB = join(ROOT, "public");
+const pageFiles = readdirSync(PUB).filter((f) => f.endsWith(".html") && !f.startsWith("hero-")).map((f) => join(PUB, f))
+  .concat(readdirSync(join(PUB, "volunteer")).filter((f) => f.endsWith(".html")).map((f) => join(PUB, "volunteer", f)));
+for (const path of pageFiles) out.push([path, applyIcons(readFileSync(path, "utf8"))]);
 let stale = 0;
 for (const [path, text] of out) {
   if (CHECK) {
@@ -130,4 +174,4 @@ for (const [path, text] of out) {
   }
 }
 if (CHECK && stale) { console.error("build-icons --check FAILED. Run `npm run icons` and commit the result."); process.exit(1); }
-console.log(CHECK ? `build-icons --check ok (${Object.keys(icons).length} meanings, ${Object.keys(logos).length} logos)` : `wrote scripts/lib/icons.mjs and brand/icons/sheet.html (${Object.keys(icons).length} meanings, ${Object.keys(logos).length} logos)`);
+console.log(CHECK ? `build-icons --check ok (${Object.keys(icons).length} meanings, ${Object.keys(logos).length} logos, ${pageFiles.length} pages)` : `wrote the registry, sheet, scripts, stylesheet masks and ${pageFiles.length} pages (${Object.keys(icons).length} meanings, ${Object.keys(logos).length} logos)`);

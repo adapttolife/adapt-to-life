@@ -45,7 +45,7 @@
     "@resvg/resvg-wasm": "^2.6.2",
     "pdf-lib": "^1.17.1",
     "postal-mime": "^2.7.5",
-    "satori": "^0.28.0"
+    "satori": "^0.33.5"
   },
   "devDependencies": {
     "@iconify-json/hugeicons": "1.2.35",

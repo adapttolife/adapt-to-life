@@ -106,10 +106,10 @@ function card(r) {
           <div>
             <h3 class="ix-n"><a class="ix-link" href="/volunteer/${r.slug}">${esc(r.name)}</a></h3>
             <p class="ix-d">${esc(r.card)}</p>
-            <p class="ix-meta"><span class="ix-time">${icon("Clock")}${esc(r.time)}</span><span>${esc(r.where)}</span></p>${tools ? `
+            <p class="ix-meta"><span class="ix-time">${icon("time")}${esc(r.time)}</span><span>${esc(r.where)}</span></p>${tools ? `
             <p class="ix-tools"><span class="ix-tools-l">Works in</span>${tools}</p>` : ""}
           </div>
-          <span class="ix-go">${icon("ArrowRight")}</span>
+          <span class="ix-go">${icon("arrow")}</span>
         </li>`;
 }
 

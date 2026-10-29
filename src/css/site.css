@@ -908,7 +908,7 @@ a.win-band:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:4p
 /* The jump bar: a long index says up front what is in it and how much, so a
    reader can go straight to their part instead of scrolling to find it. */
 .jump{ display:flex; flex-wrap:wrap; gap:0.6rem; margin-top:clamp(1.6rem,3vw,2.2rem); list-style:none; padding:0; }
-.jump a{ display:inline-flex; align-items:center; gap:0.6rem; min-height:44px; padding:0 1.1rem; border-radius:999px; box-shadow:inset 0 0 0 1.5px var(--hairline); background:#fff; font-weight:700; color:var(--ink); transition:box-shadow .16s ease, color .16s ease; }
+.jump a{ display:inline-flex; align-items:center; gap:0.6rem; min-height:44px; padding:0 1.1rem; border-radius:999px; box-shadow:inset 0 0 0 1.5px var(--hairline); background:var(--paper); font-weight:700; color:var(--ink); transition:box-shadow .16s ease, color .16s ease; }
 .jump a:hover{ box-shadow:inset 0 0 0 1.5px var(--orange); color:var(--orange-ink); }
 .jump a:focus-visible{ outline:2px solid var(--orange); outline-offset:2px; }
 .jump .ix-svg{ width:18px; height:18px; color:var(--orange-ink); }

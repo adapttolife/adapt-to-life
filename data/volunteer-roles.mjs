@@ -64,15 +64,15 @@ export const SHARED = {
 // between use symbols and spend the space on content.
 export const LANES = [
   { key: "fund", name: "Fundraising", head: "Money, and the people who move it.",
-    blurb: "Making the Hustle & Heart Fund bigger than one person's checkbook.", icon: "HandCoins" },
+    blurb: "Making the Hustle & Heart Fund bigger than one person's checkbook.", icon: "fund" },
   { key: "clean", name: "Operations", head: "The unglamorous work that protects athletes.",
-    blurb: "The books. The insurance. The advice that keeps the work on solid ground.", icon: "ShieldCheck" },
+    blurb: "The books. The insurance. The advice that keeps the work on solid ground.", icon: "operations" },
   { key: "tell", name: "Stories", head: "Reach, so the next athlete finds us.",
-    blurb: "Help people discover what is possible in adaptive sports and how they can take part.", icon: "Megaphone" },
+    blurb: "Help people discover what is possible in adaptive sports and how they can take part.", icon: "stories" },
   { key: "court", name: "Participation", head: "The part that looks like sport.",
-    blurb: "Coaching a session, fixing a chair, making a first introduction.", icon: "Trophy" },
+    blurb: "Coaching a session, fixing a chair, making a first introduction.", icon: "participation" },
   { key: "notitle", name: "Connections", head: "You do not need a profession to change this.",
-    blurb: "Most people who want to help have a relationship, a room, or a reason to organize something.", icon: "Handshake" },
+    blurb: "Most people who want to help have a relationship, a room, or a reason to organize something.", icon: "connections" },
 ];
 
 export const ROLES = [

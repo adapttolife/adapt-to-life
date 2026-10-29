@@ -26,8 +26,22 @@ async function files(dir) {
 
 test("every brand file is named in brand/README.md", async () => {
   const readme = await readFile(join(BRAND, "README.md"), "utf8");
+  // The symbol collection is catalogued in its own generated README
+  // (scripts/build-icons.mjs), one row per file.
+  const icons = await readFile(join(BRAND, "icons", "README.md"), "utf8");
   for (const file of await files(BRAND)) {
     if (file === "README.md") continue;
+    if (file.startsWith("icons/svg/") || file.startsWith("icons/logos/")) {
+      assert.ok(icons.includes(file.slice("icons/".length)), `brand/${file} is not in brand/icons/README.md; run npm run icons`);
+      continue;
+    }
+    // A retired set's files are catalogued in that set's own README.
+    const set = file.match(/^(obsolete\/[^/]+)\/svg\//);
+    if (set) {
+      const own = await readFile(join(BRAND, set[1], "README.md"), "utf8");
+      assert.ok(own.includes(file.slice(set[1].length + 1)), `brand/${file} is not in brand/${set[1]}/README.md`);
+      continue;
+    }
     const base = file.replace(/\.(eps|pdf)$/, ".svg");
     // obsolete/atl-logo.{eps,pdf} are listed on the same row as the .svg.
     assert.ok(readme.includes(file) || (file.startsWith("obsolete/") && readme.includes(base)),

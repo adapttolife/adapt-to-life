@@ -52,6 +52,8 @@ Each library has one job, so they complement each other instead of clashing:
 | Tabler | Internal tools only, such as Mission Control; never public pages | MIT |
 | Lucide | Retired from public pages: it reads as the default look of AI-built sites | ISC |
 
+`npm run icons` also keeps the shared pieces in step: every icon on a public page, the header carets, the link arrows (the external arrow whenever a link leaves adapttolife.org), the footer logos, the photo-band controls, the event-card and add-to-calendar icons in `public/js/`, and the check and plus masks the stylesheet draws (`--icon-check`, `--icon-more`). `scripts/lib/apply-icons.mjs` is the one place that knows those patterns, and `test/icons.test.js` fails on a hand-drawn icon or a typed arrow in a link.
+
 The style is part of the message: **duotone** is a section's symbol (a lane tile), **regular** is chips and row details, **bold** is where you are, **fill** is selected. A **logo** only ever means a tool or platform, never a concept. A tool with no official logo shows its name alone. Motion is built-in CSS first and Anime.js only when CSS runs out, and it always respects the visitor's reduce-motion setting.
 
 The research behind these choices (packages, licenses, GitHub and X activity, 2026-10-29) is summarized in PR #206.

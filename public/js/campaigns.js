@@ -130,20 +130,33 @@
   function eventPlace(d) {
     return [d.venue, [d.city, d.state].filter(Boolean).join(", ")].filter(Boolean).join(", ");
   }
-  /* Static icon markup only. Event data never reaches innerHTML. */
+  /* Static icon markup only. Event data never reaches innerHTML. The block
+     below is written by scripts/build-icons.mjs from the symbol dictionary
+     (data/icons.mjs: time, place, community, event); edit the dictionary. */
+  /* icons:start */
   var ICON = {
-    time: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
-    place: '<path d="M12 21s-6.5-5.7-6.5-11a6.5 6.5 0 0 1 13 0c0 5.3-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>',
-    group: '<circle cx="9" cy="9" r="3"/><path d="M3.5 19.5c.7-3 2.9-4.6 5.5-4.6s4.8 1.6 5.5 4.6"/><circle cx="17" cy="8.2" r="2.3"/><path d="M15.9 13.4c2.2.2 3.9 1.6 4.6 4"/>',
-    cal: '<rect x="4" y="5.5" width="16" height="14.5" rx="2.5"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/>'
+    time: "<svg width=\"16\" height=\"16\" class=\"evc-svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\" aria-hidden=\"true\" focusable=\"false\" data-icon=\"time\" data-style=\"regular\"><path fill=\"currentColor\" d=\"M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m0 192a88 88 0 1 1 88-88a88.1 88.1 0 0 1-88 88m64-88a8 8 0 0 1-8 8h-56a8 8 0 0 1-8-8V72a8 8 0 0 1 16 0v48h48a8 8 0 0 1 8 8\"/></svg>",
+    place: "<svg width=\"16\" height=\"16\" class=\"evc-svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\" aria-hidden=\"true\" focusable=\"false\" data-icon=\"place\" data-style=\"regular\"><path fill=\"currentColor\" d=\"M128 64a40 40 0 1 0 40 40a40 40 0 0 0-40-40m0 64a24 24 0 1 1 24-24a24 24 0 0 1-24 24m0-112a88.1 88.1 0 0 0-88 88c0 31.4 14.51 64.68 42 96.25a254.2 254.2 0 0 0 41.45 38.3a8 8 0 0 0 9.18 0a254.2 254.2 0 0 0 41.37-38.3c27.45-31.57 42-64.85 42-96.25a88.1 88.1 0 0 0-88-88m0 206c-16.53-13-72-60.75-72-118a72 72 0 0 1 144 0c0 57.23-55.47 105-72 118\"/></svg>",
+    group: "<svg width=\"16\" height=\"16\" class=\"evc-svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\" aria-hidden=\"true\" focusable=\"false\" data-icon=\"community\" data-style=\"regular\"><path fill=\"currentColor\" d=\"M244.8 150.4a8 8 0 0 1-11.2-1.6A51.6 51.6 0 0 0 192 128a8 8 0 0 1-7.37-4.89a8 8 0 0 1 0-6.22A8 8 0 0 1 192 112a24 24 0 1 0-23.24-30a8 8 0 1 1-15.5-4A40 40 0 1 1 219 117.51a67.94 67.94 0 0 1 27.43 21.68a8 8 0 0 1-1.63 11.21M190.92 212a8 8 0 1 1-13.84 8a57 57 0 0 0-98.16 0a8 8 0 1 1-13.84-8a72.06 72.06 0 0 1 33.74-29.92a48 48 0 1 1 58.36 0A72.06 72.06 0 0 1 190.92 212M128 176a32 32 0 1 0-32-32a32 32 0 0 0 32 32m-56-56a8 8 0 0 0-8-8a24 24 0 1 1 23.24-30a8 8 0 1 0 15.5-4A40 40 0 1 0 37 117.51a67.94 67.94 0 0 0-27.4 21.68a8 8 0 1 0 12.8 9.61A51.6 51.6 0 0 1 64 128a8 8 0 0 0 8-8\"/></svg>",
+    cal: "<svg width=\"16\" height=\"16\" class=\"evc-svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\" aria-hidden=\"true\" focusable=\"false\" data-icon=\"event\" data-style=\"regular\"><path fill=\"currentColor\" d=\"M208 32h-24v-8a8 8 0 0 0-16 0v8H88v-8a8 8 0 0 0-16 0v8H48a16 16 0 0 0-16 16v160a16 16 0 0 0 16 16h160a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16M72 48v8a8 8 0 0 0 16 0v-8h80v8a8 8 0 0 0 16 0v-8h24v32H48V48Zm136 160H48V96h160zm-68-76a12 12 0 1 1-12-12a12 12 0 0 1 12 12m44 0a12 12 0 1 1-12-12a12 12 0 0 1 12 12m-88 40a12 12 0 1 1-12-12a12 12 0 0 1 12 12m44 0a12 12 0 1 1-12-12a12 12 0 0 1 12 12m44 0a12 12 0 1 1-12-12a12 12 0 0 1 12 12\"/></svg>",
+    arrow: "<svg class=\"ix-svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\" aria-hidden=\"true\" focusable=\"false\" data-icon=\"arrow\" data-style=\"bold\"><path fill=\"currentColor\" d=\"m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01\"/></svg>",
+    external: "<svg class=\"ix-svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\" aria-hidden=\"true\" focusable=\"false\" data-icon=\"external\" data-style=\"bold\"><path fill=\"currentColor\" d=\"M204 64v104a12 12 0 0 1-24 0V93L72.49 200.49a12 12 0 0 1-17-17L163 76H88a12 12 0 0 1 0-24h104a12 12 0 0 1 12 12\"/></svg>"
   };
+  /* icons:end */
   function icon(name) {
     var i = el("span", "evc-ico");
     i.setAttribute("aria-hidden", "true");
     /* width/height here, not only in CSS: a page that ever meets an older
        stylesheet still draws a 16px icon, never a full-width shape. */
-    i.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" focusable="false">' + ICON[name] + "</svg>";
+    i.innerHTML = ICON[name];
     return i;
+  }
+  /* The link arrow from the dictionary: external when the link leaves the site. */
+  function arrow(external) {
+    var a = el("span", "arrow");
+    a.setAttribute("aria-hidden", "true");
+    a.innerHTML = ICON[external ? "external" : "arrow"];
+    return a;
   }
   function fact(kind, text, href) {
     var li = el("li", "evc-fact is-" + kind);
@@ -489,6 +502,7 @@
     eventCard: eventCard,
     countdown: countdown,
     el: el,
+    arrow: arrow,
     wire: wire
   };
 })(window);

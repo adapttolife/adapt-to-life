@@ -113,7 +113,8 @@
     "OFFLINE_RAISED": "3004",
     "R2_ACCESS_KEY_ID": "d27b427aadef63a7ec1e05eaec108bc0",
     "MAIL_TRANSPORT": "gmail",
-    "GMAIL_FROM": "hello@adapttolife.org"
+    "GMAIL_FROM": "hello@adapttolife.org",
+    "RESEND_SEGMENT_ID": "a2640e82-34df-446d-b5f8-0ad6f31d352e"
   },
   // Signed-waiver storage: archived to Google Drive, with the signing record in D1.
   "d1_databases": [
@@ -168,7 +169,8 @@
         // staging sends no mail of its own (src/mail-transport.js).
         "MAIL_TRANSPORT": "none",
         "GMAIL_FROM": "hello@adapttolife.org",
-        "TURNSTILE_MODE": "off"
+        "TURNSTILE_MODE": "off",
+        "RESEND_SEGMENT_ID": "a2640e82-34df-446d-b5f8-0ad6f31d352e"
       },
       "routes": [],
       // Run the real application for every route, with staging cache/index headers.

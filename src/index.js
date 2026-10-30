@@ -567,7 +567,7 @@ export function normalizeRoles(raw) {
   return VOLUNTEER_ROLES.filter((r) => wanted.has(r.toLowerCase())).slice(0, MAX_ROLES);
 }
 
-// Newsletter / email capture -> beehiiv. API key + publication id are Worker secrets.
+// Newsletter / email capture -> Resend. API key and segment ID are Worker secrets.
 async function handleSubscribe(request, env, ctx) {
   let data;
   try {
@@ -584,8 +584,8 @@ async function handleSubscribe(request, env, ctx) {
   if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
     return json({ ok: false, error: "Please enter a valid email." }, 422);
   }
-  if (!env.BEEHIIV_API_KEY || !env.BEEHIIV_PUBLICATION_ID) {
-    console.error("beehiiv not configured (missing API key or publication id)");
+  if (!env.RESEND_API_KEY || !env.RESEND_SEGMENT_ID) {
+    console.error("resend not configured (missing API key or segment ID)");
     return json({ ok: false, error: "Sign-up is temporarily unavailable. Please email hello@adapttolife.org." }, 503);
   }
   const source = str(data.source).slice(0, 80) || "adapttolife.org";
@@ -596,7 +596,7 @@ async function handleSubscribe(request, env, ctx) {
     summary: `New newsletter signup: ${email}`, source,
     payload: { consent: "Explicit newsletter signup; not inferred from other forms" },
   }));
-  return json({ ok: true, ...(result.confirm ? { confirm: true } : {}), ...(result.existing ? { existing: true } : {}) });
+  return json({ ok: true, ...(result.existing ? { existing: true } : {}) });
 }
 
 // Public fundraising total for the site thermometer: Givebutter's live "raised" for the

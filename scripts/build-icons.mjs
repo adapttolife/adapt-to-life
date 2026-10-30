@@ -222,7 +222,7 @@ ${Object.entries(logos).map(([k, l]) => `| ${img(`logos/${k}.svg`, k)} | \`${k}\
 Kept, labeled and not used. See [\`brand/README.md\`](../README.md#retired-never-use).
 
 - [Custom icon set and reel covers, October 2026](../obsolete/icons-2026-10-custom/README.md)
-- 3D sport icons: \`design/retired/3d-sport-icons/\` in adapttolife/adaptivesportsnearme
+- 3D sport icons and unused badge PNGs: \`archive/icons/\` in adapttolife/adaptivesportsnearme (map: \`docs/ICONS-AND-LOGOS.md\`)
 `;
 out.push([join(ROOT, "brand/icons/README.md"), readme]);
 let extra = [];

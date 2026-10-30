@@ -15,3 +15,5 @@ __pycache__/
 # CSS is authored in src/css and built into public/css by
 # scripts/build-css.mjs. Editing public/css edits a build artefact.
 public/css/
+
+.vscode/

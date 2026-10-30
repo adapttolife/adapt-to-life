@@ -8,13 +8,20 @@
 // website does not belong in the critical path of shipping this one. Run it by
 // hand when the directory's design changes:  npm run asnm:shot
 //
+// BETA (2026-10-30). Since the beta gate went up (ASNM #132), a logged-out
+// browser sees only the sign-in card, so the shots are taken signed in with a
+// beta tester's saved session (Playwright storageState, 30 days). Without one
+// this script stops rather than photographing the gate. Override the path with
+// ASNM_BETA_SESSION. The UserWay button is hidden: it floats over the cards.
+//
 // Captured at 2x and downscaled, because the frame is rendered ~880px wide on a
 // laptop and a 1:1 capture is visibly soft on a retina screen.
 import { chromium } from "/home/agentos/pw/node_modules/playwright/index.mjs";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { statSync, writeFileSync } from "node:fs";
+import { existsSync, statSync, writeFileSync } from "node:fs";
+import { homedir } from "node:os";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const TMP = "/tmp/asnm-shot.png";
@@ -40,15 +47,32 @@ const SHOTS = [
   { key: "tall", w: 414,  h: 760, dpr: 3, ow: 828,  oh: 1520,
     out: join(ROOT, "public", "images", "asnm-directory-tall.webp") },
 ];
-const b = await chromium.launch();
+const SESSION = process.env.ASNM_BETA_SESSION || join(homedir(), ".config/agentos/asnm/prod-beta-session.json");
+if (!existsSync(SESSION)) {
+  console.error(`  asnm:shot needs a beta tester session at ${SESSION} (ASNM_BETA_SESSION); not photographing the sign-in gate`);
+  process.exit(1);
+}
+// CHROME overrides the browser when the playwright module and the installed
+// headless shell drift apart (the module wants a build that is not downloaded).
+const b = await chromium.launch(process.env.CHROME ? { executablePath: process.env.CHROME } : {});
 const dims = {};
 for (const s of SHOTS) {
-  const p = await b.newPage({ viewport: { width: s.w, height: s.h }, deviceScaleFactor: s.dpr, reducedMotion: "reduce" });
+  const ctx = await b.newContext({ storageState: SESSION, viewport: { width: s.w, height: s.h }, deviceScaleFactor: s.dpr, reducedMotion: "reduce" });
+  await ctx.addInitScript(() => {
+    const st = document.createElement("style");
+    st.textContent = ".uwy,.userway_buttons_wrapper,.uwif{display:none!important}";
+    document.addEventListener("DOMContentLoaded", () => document.head.appendChild(st));
+  });
+  const p = await ctx.newPage();
   await p.goto("https://adaptivesportsnearme.com/", { waitUntil: "load", timeout: 90000 });
+  if (await p.locator("#beta-login").count()) {
+    console.error("  asnm:shot: the beta session has expired (the page shows the sign-in gate); renew it, then run again");
+    process.exit(1);
+  }
   await p.evaluate(() => document.fonts.ready);
   await p.waitForTimeout(4000);
   await p.screenshot({ path: TMP, clip: { x: 0, y: 0, width: s.w, height: s.h } });
-  await p.close();
+  await ctx.close();
   execFileSync("/home/agentos/.venvs/vectorize/bin/python", ["-c", `
 from PIL import Image
 im = Image.open("${TMP}").convert("RGB")

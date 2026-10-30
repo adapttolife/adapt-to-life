@@ -1,12 +1,25 @@
 // scripts/build-asnm.mjs — put the real directory on the page.
 //
-// adaptivesportsnearme.com is still PRELAUNCH (its /api/config says
-// prelaunch:true): the door is a coming-soon gate that says "Opening soon".
-// This page must say the same thing. It pulls the live public count from the
-// directory's own /api/stats (the production D1 behind the domain) so the
-// number here is the number on the gate, and it must never claim the directory
-// is open or free to search until the gate comes down. 2026-10-09: this block
-// said "Free to search, no account" while live was locked, and CCO caught it.
+// adaptivesportsnearme.com is IN BETA (2026-10-30): approved beta testers sign
+// in with their email; everyone else sees a sign-in card (ASNM #132). This page
+// must say the same thing: in beta, never "open to everyone" and never "free to
+// search, no account" until the gate comes down. 2026-10-09: this block said
+// "Free to search, no account" while live was locked, and CCO caught it.
+//
+// The count comes from the directory's own /api/stats (the production D1
+// behind the domain). Since the beta gate went up that route answers 401 to a
+// stranger, so the build reads it signed in with a beta tester's saved session
+// (Playwright storageState; ASNM_BETA_SESSION overrides the path). Without a
+// session, or with an expired one, it says so and uses the committed copy.
+//
+// No deep links from here into the directory while it is in beta: the gate
+// drops the path and query, so a chip linking to ?state=FL lands a stranger on
+// the sign-in card. The one way in is the beta sign-in, named as such.
+//
+// No by-sport chips. The directory's own sport grid counts a sport for every
+// listing that offers it (Tennis 427), while /api/stats has one raw label per
+// listing (Adaptive tennis 171); side by side with the screenshot the two
+// contradict each other. The screenshot shows the sports. States agree.
 //
 // WHY GENERATED AND NOT TYPED. A hand-written "1,544 programs" is correct for a
 // week and wrong forever after, and this codebase has already been bitten by
@@ -23,7 +36,8 @@
 // NETWORK FAILURE IS NOT A BUILD FAILURE. The last good response is committed to
 // data/asnm-stats.json, so an outage at deploy time reuses those numbers and
 // says so loudly rather than shipping a page with holes in it.
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { homedir } from "node:os";
 import { applyIcons } from "./lib/apply-icons.mjs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -37,9 +51,17 @@ const SITE = "https://adaptivesportsnearme.com";
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
 const n = (x) => Number(x).toLocaleString("en-US");
 
+const SESSION = process.env.ASNM_BETA_SESSION || join(homedir(), ".config/agentos/asnm/prod-beta-session.json");
+const cookie = existsSync(SESSION)
+  ? (JSON.parse(readFileSync(SESSION, "utf8")).cookies || [])
+      .filter((c) => /adaptivesportsnearme\.com$/.test(c.domain)).map((c) => `${c.name}=${c.value}`).join("; ")
+  : "";
+
 let stats, live = false;
 try {
-  const r = await fetch(`${SITE}/api/stats`, { signal: AbortSignal.timeout(20000) });
+  if (!cookie) throw new Error(`no beta session at ${SESSION}`);
+  const r = await fetch(`${SITE}/api/stats`, { headers: { cookie }, signal: AbortSignal.timeout(20000) });
+  if (r.status === 401) throw new Error("HTTP 401: the beta session has expired; renew it");
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
   const d = await r.json();
   if (!d.ok || !d.programs) throw new Error("payload missing programs");
@@ -59,68 +81,31 @@ try {
   stats = JSON.parse(readFileSync(CACHE, "utf8"));
 }
 
-// Sports first by size. The ones carrying a `key` deep-link into the directory
-// already filtered; the rest are still worth naming because the breadth IS the
-// product, and a name with no link still tells you it is in there.
-//
-// The directory's labels are raw: three spellings of TOPSoccer, "Adaptive
-// tennis" beside "Wheelchair Tennis". Fold look-alikes into one family and add
-// their counts. A merged chip links only when every label in it shares one
-// directory key; otherwise the link would open a filter showing a fraction of
-// the number on the chip.
-const FAMILIES = [
-  [/power soccer/i, "Power Soccer"],
-  [/soccer/i, "Adaptive Soccer"],
-  [/tennis/i, "Adaptive Tennis"],
-  [/baseball/i, "Adaptive Baseball"],
-  [/equestrian|equine|horse|riding/i, "Equestrian"],
-  [/^multi-?sport$|^adaptive sports and recreation$/i, "Multisport"],
-];
-const family = (label) => (FAMILIES.find(([re]) => re.test(label)) || [null, label])[1];
-const merged = new Map();
-for (const s of stats.bySport) {
-  const label = family(s.label);
-  const m = merged.get(label) || { label, n: 0, keys: new Set() };
-  m.n += s.n;
-  m.keys.add(s.key || null);
-  merged.set(label, m);
-}
-const sports = [...merged.values()]
-  .map((m) => ({ label: m.label, n: m.n, key: m.keys.size === 1 ? [...m.keys][0] : null }))
-  .sort((a, b) => b.n - a.n).slice(0, 14);
 const states = [...stats.byState].sort((a, b) => b.n - a.n).slice(0, 12);
-const chip = (label, count, href) => href
-  ? `<li><a class="dir-chip" href="${esc(href)}" target="_blank" rel="noopener">${esc(label)}<b>${n(count)}</b></a></li>`
-  : `<li><span class="dir-chip is-plain">${esc(label)}<b>${n(count)}</b></span></li>`;
+const chip = (label, count) => `<li><span class="dir-chip is-plain">${esc(label)}<b>${n(count)}</b></span></li>`;
 
 const block = `<!-- asnm:stats -->
   <section class="band dark dir-stats">
     <div class="wrap">
-      <span class="eyebrow orange reveal">Going in right now</span>
-      <p class="dir-count reveal">Opening soon. <b>${n(stats.programs)}</b> adaptive sports programs are in, across <b>${n(stats.byState.filter(s => s.state !== "DC").length)}</b> states${stats.byState.some(s => s.state === "DC") ? " + D.C." : ""} from <b>${n(stats.sources)}</b> sources.</p>
+      <span class="eyebrow orange reveal">In the directory now</span>
+      <p class="dir-count reveal">In beta. <b>${n(stats.programs)}</b> adaptive sports programs are in, across <b>${n(stats.byState.filter(s => s.state !== "DC").length)}</b> states${stats.byState.some(s => s.state === "DC") ? " and D.C." : ""}, gathered from <b>${n(stats.sources)}</b> sources.</p>
 
-      <a class="dir-shot reveal" href="${SITE}" target="_blank" rel="noopener">
+      <a class="dir-shot reveal" href="${SITE}" target="_blank" rel="noopener" aria-label="Beta tester sign in at adaptivesportsnearme.com">
         <picture>
           <source media="(max-width: 900px)" srcset="/images/asnm-directory-tall.webp" width="${shot.tall.w}" height="${shot.tall.h}">
           <img src="/images/asnm-directory.webp" width="${shot.wide.w}" height="${shot.wide.h}" loading="lazy" decoding="async"
-               alt="The Adaptive Sports Near Me directory: a search box for a sport, zip or program, a row of sports to filter by, and cards for real programs across the country with their state and type.">
+               alt="The Adaptive Sports Near Me home page: Find your place in adaptive sports, a search box for a city, state or ZIP, and a Pick a sport grid of bright tiles for tennis, basketball, soccer, skiing, swimming, baseball, horseback riding and sled hockey, each with its number of programs.">
         </picture>
-        <span class="dir-shot-cap">adaptivesportsnearme.com <span class="arrow">&rarr;</span></span>
+        <span class="dir-shot-cap">adaptivesportsnearme.com &middot; beta tester sign in <span class="arrow">&rarr;</span></span>
       </a>
 
-      <h2 class="dir-h reveal">By sport</h2>
+      <h2 class="dir-h reveal">Programs by state</h2>
       <ul class="dir-chips reveal">
-${sports.map((s) => "        " + chip(s.label, s.n, s.key ? `${SITE}/?sport=${encodeURIComponent(s.key)}` : null)).join("\n")}
-      </ul>
-
-      <h2 class="dir-h reveal">By state</h2>
-      <ul class="dir-chips reveal">
-${states.map((s) => "        " + chip(s.name, s.n, `${SITE}/?state=${encodeURIComponent(s.state)}`)).join("\n")}
+${states.map((s) => "        " + chip(s.name, s.n)).join("\n")}
       </ul>
       <!-- No button pair here on purpose. The hero already carries one and the
            closing section carries another; a third set on the same page is
-           noise. The screenshot and every chip above are links into the
-           directory already. -->
+           noise. The screenshot is the beta sign in link. -->
     </div>
   </section>
   <!-- /asnm:stats -->`;

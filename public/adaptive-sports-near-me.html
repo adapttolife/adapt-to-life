@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light only">
 <title>Adaptive Sports Near Me | Adapt To Life</title>
-<meta name="description" content="Adaptive Sports Near Me is opening soon: a free directory of adaptive sports programs by location and sport. Get a first look and hear the day the doors open.">
+<meta name="description" content="Adaptive Sports Near Me is a free directory of adaptive sports programs by location and sport. It is in beta now, and we are looking for beta testers.">
 <link rel="canonical" href="https://adapttolife.org/adaptive-sports-near-me">
 <link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-v2-option2-32.png">
 <link rel="apple-touch-icon" href="/images/apple-touch-icon-v2-option2.png">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Adaptive Sports Near Me | Adapt To Life">
-<meta property="og:description" content="Adaptive Sports Near Me is opening soon: a free directory of adaptive sports programs by location and sport. Get a first look and hear the day the doors open.">
+<meta property="og:description" content="Adaptive Sports Near Me is a free directory of adaptive sports programs by location and sport. It is in beta now, and we are looking for beta testers.">
 <meta property="og:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -20,7 +20,7 @@
 <meta property="og:url" content="https://adapttolife.org/adaptive-sports-near-me">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Adaptive Sports Near Me | Adapt To Life">
-<meta name="twitter:description" content="Adaptive Sports Near Me is opening soon: a free directory of adaptive sports programs by location and sport. Get a first look and hear the day the doors open.">
+<meta name="twitter:description" content="Adaptive Sports Near Me is a free directory of adaptive sports programs by location and sport. It is in beta now, and we are looking for beta testers.">
 <meta name="twitter:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
 <meta name="twitter:image:alt" content="Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -71,9 +71,9 @@
     text-transform:uppercase; color:var(--cream-faint); font-weight:700;
     margin:clamp(2.2rem,4.5vw,3rem) 0 0.9rem; }
   .dir-chips{ list-style:none; padding:0; margin:0; display:flex; flex-wrap:wrap; gap:0.5rem; }
-  /* A chip is a real filtered link into the directory wherever the API gives a
-     key for it. The rest are named anyway: the breadth IS the product, and a
-     sport with no link still tells an athlete it is in there. */
+  /* Chips are plain counts while the directory is in beta: the beta gate drops
+     any deep link, so a chip that linked into the directory would land a
+     stranger on the sign in card. (Linked chip styles stay for after beta.) */
   /* SOLID BLACK, NEVER TRANSPARENT. Alec, 2026-09-09: "the buttons are to be
      pure black ... no matter how bright the background is, we can see the
      buttons very clearly because the buttons are going to be black, not
@@ -205,8 +205,6 @@
     text-transform:uppercase; font-weight:700; color:var(--cream); }
   .dir-shot:hover .dir-shot-cap{ color:var(--orange); }
 
-  .dir-chip.is-plain{ color:var(--cream-mute); border-color:rgba(255,255,255,0.09); }
-  .dir-chip.is-plain b{ color:rgba(255,255,255,0.38); }
   .dir-stats .actions{ margin-top:clamp(2.2rem,4.5vw,3rem); }
 </style>
 <!-- env:vars --><style>:root{--env-dusk-wide:url('/images/env/court-dusk-wide.ea61a585.webp');--env-dusk-tall:url('/images/env/court-dusk-tall.b218aada.webp');}</style><!-- /env:vars -->
@@ -247,7 +245,7 @@ fill="currentColor" stroke="none">
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navOurWork">Our Work<svg class="caret" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="caret" data-style="bold"><path fill="currentColor" d="m216.49 104.49l-80 80a12 12 0 0 1-17 0l-80-80a12 12 0 0 1 17-17L128 159l71.51-71.52a12 12 0 0 1 17 17Z"/></svg></button>
         <div class="nav-panel" id="navOurWork">
           <a href="/hustle-and-heart"><span class="np-t">Hustle &amp; Heart Fund</span><span class="np-d">Support for equipment, training, and travel</span></a>
-          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d">Find adaptive programs by sport and location</span></a>
+          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d">In beta · Find adaptive programs by sport and location</span></a>
           <a href="/adapt-body-shop"><span class="np-t">Adapt Body Shop</span><span class="np-d">Coming soon · Gear for the community</span></a>
         </div>
       </div>
@@ -277,7 +275,7 @@ fill="currentColor" stroke="none">
     <div class="wrap mwrap">
       <span class="m-group">Our Work</span>
       <a class="m-sub" href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
-      <a class="m-sub" href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
+      <a class="m-sub" href="/adaptive-sports-near-me">Adaptive Sports Near Me · In beta</a>
       <a class="m-sub" href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
       <span class="m-group">Get Involved</span>
       <a class="m-sub" href="/volunteer">Volunteer</a>
@@ -297,12 +295,12 @@ fill="currentColor" stroke="none">
   <!-- HERO (dark) -->
   <section class="hero dark pg-band pg-head--lg">
     <div class="wrap">
-      <span class="eyebrow orange reveal">Adaptive Sports Near Me &middot; Opening soon</span>
+      <span class="eyebrow orange reveal">Adaptive Sports Near Me &middot; In beta</span>
       <h1 class="serif display reveal">Find a program <em class="italic">near you.</em></h1>
-      <p class="lead sub reveal">A free directory of adaptive sports by location and sport, opening soon. Programs are going in now, and we are checking every one so what you find is real.</p>
+      <p class="lead sub reveal">A free directory of adaptive sports programs, grants and events, by location and sport. It is in beta now. Beta testers are using it and telling us what to fix before it opens to everyone.</p>
       <div class="actions reveal">
-        <a href="https://adaptivesportsnearme.com" target="_blank" rel="noopener" class="btn">Take a first look</a>
-        <a href="/contact?rsn=program" class="btn ghost">Suggest a program</a>
+        <a href="mailto:VetsGetGoing@gmail.com?subject=Adaptive%20Sports%20Near%20Me%20beta%20tester" class="btn">Become a beta tester</a>
+        <a href="https://adaptivesportsnearme.com" target="_blank" rel="noopener" class="btn ghost">Beta tester sign in</a>
       </div>
     </div>
   </section>
@@ -310,55 +308,36 @@ fill="currentColor" stroke="none">
   <!-- asnm:stats -->
   <section class="band dark dir-stats">
     <div class="wrap">
-      <span class="eyebrow orange reveal">Going in right now</span>
-      <p class="dir-count reveal">Opening soon. <b>3,453</b> adaptive sports programs are in, across <b>50</b> states + D.C. from <b>67</b> sources.</p>
+      <span class="eyebrow orange reveal">In the directory now</span>
+      <p class="dir-count reveal">In beta. <b>2,231</b> adaptive sports programs are in, across <b>50</b> states and D.C., gathered from <b>96</b> sources.</p>
 
-      <a class="dir-shot reveal" href="https://adaptivesportsnearme.com" target="_blank" rel="noopener">
+      <a class="dir-shot reveal" href="https://adaptivesportsnearme.com" target="_blank" rel="noopener" aria-label="Beta tester sign in at adaptivesportsnearme.com">
         <picture>
           <source media="(max-width: 900px)" srcset="/images/asnm-directory-tall.webp" width="828" height="1520">
           <img src="/images/asnm-directory.webp" width="1440" height="925" loading="lazy" decoding="async"
-               alt="The Adaptive Sports Near Me directory: a search box for a sport, zip or program, a row of sports to filter by, and cards for real programs across the country with their state and type.">
+               alt="The Adaptive Sports Near Me home page: Find your place in adaptive sports, a search box for a city, state or ZIP, and a Pick a sport grid of bright tiles for tennis, basketball, soccer, skiing, swimming, baseball, horseback riding and sled hockey, each with its number of programs.">
         </picture>
-        <span class="dir-shot-cap">adaptivesportsnearme.com <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external" data-style="bold"><path fill="currentColor" d="M204 64v104a12 12 0 0 1-24 0V93L72.49 200.49a12 12 0 0 1-17-17L163 76H88a12 12 0 0 1 0-24h104a12 12 0 0 1 12 12"/></svg></span></span>
+        <span class="dir-shot-cap">adaptivesportsnearme.com &middot; beta tester sign in <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external" data-style="bold"><path fill="currentColor" d="M204 64v104a12 12 0 0 1-24 0V93L72.49 200.49a12 12 0 0 1-17-17L163 76H88a12 12 0 0 1 0-24h104a12 12 0 0 1 12 12"/></svg></span></span>
       </a>
 
-      <h2 class="dir-h reveal">By sport</h2>
+      <h2 class="dir-h reveal">Programs by state</h2>
       <ul class="dir-chips reveal">
-        <li><span class="dir-chip is-plain">Multisport<b>1,213</b></span></li>
-        <li><a class="dir-chip" href="https://adaptivesportsnearme.com/?sport=veteran-meetup" target="_blank" rel="noopener">Veteran meetup<b>440</b></a></li>
-        <li><span class="dir-chip is-plain">Equestrian<b>389</b></span></li>
-        <li><span class="dir-chip is-plain">Adaptive Tennis<b>340</b></span></li>
-        <li><a class="dir-chip" href="https://adaptivesportsnearme.com/?sport=art-therapy" target="_blank" rel="noopener">Art therapy<b>268</b></a></li>
-        <li><a class="dir-chip" href="https://adaptivesportsnearme.com/?sport=basketball" target="_blank" rel="noopener">Wheelchair Basketball<b>249</b></a></li>
-        <li><span class="dir-chip is-plain">Adaptive Soccer<b>124</b></span></li>
-        <li><span class="dir-chip is-plain">Adaptive Baseball<b>92</b></span></li>
-        <li><a class="dir-chip" href="https://adaptivesportsnearme.com/?sport=sledhockey" target="_blank" rel="noopener">Sled Hockey<b>52</b></a></li>
-        <li><a class="dir-chip" href="https://adaptivesportsnearme.com/?sport=skiing" target="_blank" rel="noopener">Adaptive Skiing<b>31</b></a></li>
-        <li><span class="dir-chip is-plain">Adaptive Rowing<b>28</b></span></li>
-        <li><span class="dir-chip is-plain">Track &amp; Field<b>21</b></span></li>
-        <li><span class="dir-chip is-plain">Archery<b>18</b></span></li>
-        <li><span class="dir-chip is-plain">Adaptive Sailing<b>18</b></span></li>
-      </ul>
-
-      <h2 class="dir-h reveal">By state</h2>
-      <ul class="dir-chips reveal">
-        <li><a class="dir-chip" href="https://adaptivesportsnearme.com/?state=FL" target="_blank" rel="noopener">Florida<b>227</b></a></li>
-        <li><a class="dir-chip" href="https://adaptivesportsnearme.com/?state=VA" target="_blank" rel="noopener">Virginia<b>140</b></a></li>
-        <li><a class="dir-chip" href="https://adaptivesportsnearme.com/?state=GA" target="_blank" rel="noopener">Georgia<b>137</b></a></li>
-        <li><a class="dir-chip" href="https://adaptivesportsnearme.com/?state=CA" target="_blank" rel="noopener">California<b>115</b></a></li>
-        <li><a class="dir-chip" href="https://adaptivesportsnearme.com/?state=TX" target="_blank" rel="noopener">Texas<b>109</b></a></li>
-        <li><a class="dir-chip" href="https://adaptivesportsnearme.com/?state=NY" target="_blank" rel="noopener">New York<b>109</b></a></li>
-        <li><a class="dir-chip" href="https://adaptivesportsnearme.com/?state=NC" target="_blank" rel="noopener">North Carolina<b>109</b></a></li>
-        <li><a class="dir-chip" href="https://adaptivesportsnearme.com/?state=CO" target="_blank" rel="noopener">Colorado<b>96</b></a></li>
-        <li><a class="dir-chip" href="https://adaptivesportsnearme.com/?state=MD" target="_blank" rel="noopener">Maryland<b>95</b></a></li>
-        <li><a class="dir-chip" href="https://adaptivesportsnearme.com/?state=TN" target="_blank" rel="noopener">Tennessee<b>89</b></a></li>
-        <li><a class="dir-chip" href="https://adaptivesportsnearme.com/?state=SC" target="_blank" rel="noopener">South Carolina<b>88</b></a></li>
-        <li><a class="dir-chip" href="https://adaptivesportsnearme.com/?state=IL" target="_blank" rel="noopener">Illinois<b>87</b></a></li>
+        <li><span class="dir-chip is-plain">California<b>140</b></span></li>
+        <li><span class="dir-chip is-plain">Florida<b>92</b></span></li>
+        <li><span class="dir-chip is-plain">Texas<b>91</b></span></li>
+        <li><span class="dir-chip is-plain">Georgia<b>88</b></span></li>
+        <li><span class="dir-chip is-plain">New York<b>86</b></span></li>
+        <li><span class="dir-chip is-plain">Colorado<b>85</b></span></li>
+        <li><span class="dir-chip is-plain">Virginia<b>82</b></span></li>
+        <li><span class="dir-chip is-plain">Illinois<b>82</b></span></li>
+        <li><span class="dir-chip is-plain">North Carolina<b>68</b></span></li>
+        <li><span class="dir-chip is-plain">Pennsylvania<b>60</b></span></li>
+        <li><span class="dir-chip is-plain">South Carolina<b>57</b></span></li>
+        <li><span class="dir-chip is-plain">Alabama<b>57</b></span></li>
       </ul>
       <!-- No button pair here on purpose. The hero already carries one and the
            closing section carries another; a third set on the same page is
-           noise. The screenshot and every chip above are links into the
-           directory already. -->
+           noise. The screenshot is the beta sign in link. -->
     </div>
   </section>
   <!-- /asnm:stats -->
@@ -381,7 +360,7 @@ fill="currentColor" stroke="none">
         <span class="eyebrow reveal">A program in the directory</span>
         <h2 class="serif statement reveal" style="margin-top:1rem;">AMP Adaptive Sports</h2>
         <p class="eyebrow reveal" style="margin-top:0.9rem;">Elkhorn, Wisconsin</p>
-        <p class="prose reveal" style="margin-top:1.2rem;">AMP Adaptive Sports offers adaptive water skiing in Elkhorn, Wisconsin. It is one example of the local programs the directory helps people discover.</p>
+        <p class="prose reveal" style="margin-top:1.2rem;">AMP Adaptive Sports runs adaptive water skiing on Lauderdale Lakes and snow skiing at Alpine Valley, near Elkhorn, Wisconsin. Search Wisconsin in the directory and AMP is there.</p>
         <p class="prose reveal" style="margin-top:1rem;">We didn't just put AMP in the directory. We got in the water.</p>
         <div class="reveal" style="margin-top:1.4rem; display:flex; gap:0.6rem 1.6rem; flex-wrap:wrap;">
           <a href="https://adaptivemobilityproviders.org" target="_blank" rel="noopener" class="textlink" style="color:var(--cream); border-color:var(--orange);">Visit AMP Adaptive Sports <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external" data-style="bold"><path fill="currentColor" d="M204 64v104a12 12 0 0 1-24 0V93L72.49 200.49a12 12 0 0 1-17-17L163 76H88a12 12 0 0 1 0-24h104a12 12 0 0 1 12 12"/></svg></span></a>
@@ -418,9 +397,9 @@ fill="currentColor" stroke="none">
         </div>
         <div class="prog reveal">
           <span class="ix-tile sm" aria-hidden="true"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="open" data-style="duotone"><g fill="currentColor"><path d="M216 96v112a8 8 0 0 1-8 8H48a8 8 0 0 1-8-8V96a8 8 0 0 1 8-8h160a8 8 0 0 1 8 8" opacity=".2"/><path d="M208 80H96V56a32 32 0 0 1 32-32c15.37 0 29.2 11 32.16 25.59a8 8 0 0 0 15.68-3.18C171.32 24.15 151.2 8 128 8a48.05 48.05 0 0 0-48 48v24H48a16 16 0 0 0-16 16v112a16 16 0 0 0 16 16h160a16 16 0 0 0 16-16V96a16 16 0 0 0-16-16m0 128H48V96h160z"/></g></svg></span>
-          <span class="tag">Open</span>
-          <h3 class="serif h3">No account, no fee, no login</h3>
-          <p>Browse without creating an account or paying a fee. The next conversation is with the program, not with us.</p>
+          <span class="tag">Free</span>
+          <h3 class="serif h3">No fee to search, no fee to be listed</h3>
+          <p>While we are in beta, testers sign in with their email. The next conversation is with the program, not with us.</p>
         </div>
       </div>
     </div>
@@ -440,13 +419,14 @@ fill="currentColor" stroke="none">
 
   <section class="closing dark band-lg">
     <div class="wrap center">
-      <span class="eyebrow orange reveal">Opening soon</span>
-      <h2 class="serif display reveal">Be first through the door.</h2>
-      <p class="lead sub reveal">Know a program we are missing, or a listing that needs a correction? Send it our way for review.</p>
+      <span class="eyebrow orange reveal">In beta</span>
+      <h2 class="serif display reveal">Help us test it.</h2>
+      <p class="lead sub reveal">Beta testers search for real programs near them and tell us what is missing or wrong. To join, email Karen at <a class="textlink" href="mailto:VetsGetGoing@gmail.com?subject=Adaptive%20Sports%20Near%20Me%20beta%20tester" style="color:inherit;">VetsGetGoing@gmail.com</a>.</p>
       <div class="actions reveal">
-        <a href="https://adaptivesportsnearme.com" target="_blank" rel="noopener" class="btn">Take a first look</a>
+        <a href="mailto:VetsGetGoing@gmail.com?subject=Adaptive%20Sports%20Near%20Me%20beta%20tester" class="btn">Become a beta tester</a>
         <a href="/contact?rsn=program" class="btn ghost">Suggest a program</a>
       </div>
+      <p class="prose reveal" style="margin-top:1.2rem;">Already a tester? <a class="textlink" href="https://adaptivesportsnearme.com" target="_blank" rel="noopener" style="color:inherit;">Sign in at adaptivesportsnearme.com</a></p>
       <p class="prose reveal" style="margin-top:1.8rem; font-size:0.9rem;">Adaptive Sports Near Me is part of Adapt To Life's work to expand access to adaptive sports. The programs belong to the people who run them. We help you find them.</p>
     </div>
   </section>
@@ -510,7 +490,7 @@ fill="currentColor" stroke="none">
         <a href="/tim">Tim&#39;s Story</a>
         <a href="/karen">Karen&#39;s Story</a>
         <a href="/juan">Juan&#39;s Story</a>
-        <a href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
+        <a href="/adaptive-sports-near-me">Adaptive Sports Near Me · In beta</a>
         <a href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
                 <a href="/roadmap">Roadmap</a>
       </div>

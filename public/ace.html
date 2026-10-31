@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<title>ACE Pickleball Club | Adapt To Life</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="An unlisted wishlist for ACE Pickleball Club Des Plaines and Adapt To Life: the history we share, what we bring, the ideas we would love to explore, and what success looks like.">
+<link rel="canonical" href="https://adapttolife.org/ace">
+<link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-v2-option2-32.png">
+<link rel="apple-touch-icon" href="/images/apple-touch-icon-v2-option2.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="ACE Pickleball Club and Adapt To Life: our partnership wishlist">
+<meta property="og:description" content="An unlisted wishlist for ACE Pickleball Club Des Plaines and Adapt To Life: the history we share, what we bring, the ideas we would love to explore, and what success looks like.">
+<meta property="og:image" content="https://adapttolife.org/images/og/ace-v1-wishlist.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Adapt To Life and ACE Pickleball Club. Our partnership wishlist, over an ACE championship court.">
+<meta property="og:url" content="https://adapttolife.org/ace">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ACE Pickleball Club and Adapt To Life: our partnership wishlist">
+<meta name="twitter:description" content="An unlisted wishlist for ACE Pickleball Club Des Plaines and Adapt To Life: the history we share, what we bring, the ideas we would love to explore, and what success looks like.">
+<meta name="twitter:image" content="https://adapttolife.org/images/og/ace-v1-wishlist.jpg">
+<meta name="twitter:image:alt" content="Adapt To Life and ACE Pickleball Club. Our partnership wishlist, over an ACE championship court.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/site.css?v=e57c580e">
+<script src="/js/attribution.js?v=dad1936b" defer></script>
+<style>
+  /* ACE wishlist page. An unlisted page for CeCe and the ACE Des Plaines team:
+     the history we share, what we bring, the wishlist in six groups, and what
+     success looks like. Borrows the /brickhouse pieces (dark hero with the
+     orange bloom, tick + eyebrow, side by side seam, closing) without the brick. */
+  /* 1. Hero: one photograph, edge to edge. The athlete sits right, the words
+     sit left on the dark wall behind him; on phones the photo leads and the
+     words follow on black. */
+  .ace-hero{ position:relative; isolation:isolate; overflow:hidden; min-height:min(100svh, 980px); display:flex; align-items:center; padding:clamp(7rem,14vh,9rem) 0 clamp(4rem,9vh,6rem); background:#0C0C0E; }
+  .ace-hero-photo{ position:absolute; top:0; bottom:0; right:0; left:30%; z-index:-2; margin:0; -webkit-mask-image:linear-gradient(90deg, transparent 0%, #000 30%); mask-image:linear-gradient(90deg, transparent 0%, #000 30%); }
+  .ace-hero-photo img{ width:100%; height:100%; object-fit:cover; object-position:55% 35%; display:block; animation:ace-push 22s ease-in-out infinite alternate; transform-origin:70% 40%; }
+  @keyframes ace-push{ from{ transform:scale(1.02); } to{ transform:scale(1.08); } }
+  @media (prefers-reduced-motion: reduce){ .ace-hero-photo img{ animation:none; } }
+  .ace-hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:
+      radial-gradient(ellipse 50% 60% at 18% 60%, rgba(255,92,57,0.20) 0%, transparent 70%),
+      linear-gradient(90deg, rgba(12,12,14,0.6) 0%, rgba(12,12,14,0.3) 40%, transparent 60%),
+      linear-gradient(0deg, rgba(12,12,14,0.85) 0%, transparent 28%); }
+  .ace-hero-copy{ max-width:34rem; }
+  .ace-kicker{ display:flex; align-items:center; gap:0.9rem; font-family:var(--font-label); font-weight:800; font-size:0.9rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--orange); }
+  .ace-kicker::before{ content:""; width:2.2rem; height:2px; background:var(--orange); box-shadow:0 0 12px var(--orange-glow); }
+  .ace-duo{ display:flex; align-items:center; gap:clamp(1rem,2.2vw,1.6rem); margin-top:clamp(1.4rem,2.6vw,2rem); }
+  .bh-atl{ height:clamp(70px,7vw,92px); width:auto; color:var(--cream); filter:drop-shadow(0 6px 24px rgba(0,0,0,0.5)); }
+  .ace-logo{ height:clamp(40px,4vw,52px); width:auto; filter:drop-shadow(0 6px 24px rgba(0,0,0,0.5)); }
+  .ace-x{ position:relative; flex:none; width:clamp(28px,2.8vw,38px); height:clamp(28px,2.8vw,38px); }
+  .ace-x::before, .ace-x::after{ content:""; position:absolute; left:50%; top:50%; width:140%; height:5px; border-radius:4px; background:#DFF23D; box-shadow:0 0 14px rgba(223,242,61,0.35); }
+  .ace-x::before{ transform:translate(-50%,-50%) rotate(45deg); }
+  .ace-x::after{ transform:translate(-50%,-50%) rotate(-45deg); }
+  .ace-hero .display{ max-width:13ch; margin-top:clamp(1.6rem,3vw,2.4rem); font-size:clamp(2.8rem,5vw,4.8rem); line-height:0.95; text-shadow:0 4px 40px rgba(0,0,0,0.5); }
+  .ace-hero .sub{ max-width:40ch; margin-top:1.3rem; color:var(--cream-mute); }
+  .ace-hero .actions{ display:flex; flex-wrap:wrap; gap:0.9rem 1rem; margin-top:1.8rem; }
+  .ace-cue{ position:absolute; left:50%; bottom:1.6rem; transform:translateX(-50%); width:2px; height:44px; background:linear-gradient(180deg, transparent, var(--orange)); opacity:0.8; }
+  @media (max-width:900px){
+    .ace-hero{ display:block; min-height:0; padding:0 0 clamp(2.6rem,7vh,3.5rem); }
+    .ace-hero-photo{ position:relative; inset:auto; left:auto; height:min(72svh, 620px); -webkit-mask-image:none; mask-image:none; }
+    .ace-hero-photo img{ object-position:40% 30%; animation:none; }
+    .ace-hero-photo::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(12,12,14,0.55) 0%, transparent 22%, transparent 55%, #0C0C0E 100%); }
+    .ace-hero::after{ display:none; }
+    .ace-hero .wrap{ margin-top:-7rem; position:relative; }
+    .ace-cue{ display:none; }
+  }
+  @media (max-width:520px){
+    .ace-duo{ gap:0.7rem; }
+    .bh-atl{ height:52px; }
+    .ace-logo{ height:auto; width:min(54vw, 210px); }
+    .ace-x{ width:22px; height:22px; }
+  }
+
+  .ace-head{ max-width:44ch; }
+  .ace-head .tick{ margin:0 0 1rem; }
+  .ace-head .statement{ margin-top:0.7rem; }
+  .ace-head .prose{ margin-top:1rem; }
+
+  /* Where we start: four stops on one orange court line, the last one lit. */
+  .ace-story{ list-style:none; margin:clamp(2rem,4vw,3rem) 0 0; padding:0; display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(1rem,2.5vw,2rem); position:relative; }
+  .ace-story::before{ content:""; position:absolute; left:0; right:0; top:7px; height:2px; background:linear-gradient(90deg, rgba(255,92,57,0.3), var(--orange)); }
+  .ace-story li{ position:relative; padding-top:1.6rem; }
+  .ace-story li::before{ content:""; position:absolute; left:0; top:0; width:16px; height:16px; border-radius:50%; background:#F9F7F2; box-shadow:inset 0 0 0 2px rgba(255,92,57,0.7); }
+  .ace-story li.lit::before{ background:var(--orange); box-shadow:0 0 18px 2px var(--orange-glow); }
+  .ace-story b{ display:block; font-family:var(--font-display); font-weight:800; font-size:clamp(1.1rem,1.8vw,1.3rem); letter-spacing:-0.01em; }
+  .ace-story li.lit b{ color:var(--orange-ink); }
+  .ace-story span{ display:block; margin-top:0.4rem; max-width:26ch; }
+  @media (max-width:760px){
+    .ace-story{ grid-template-columns:1fr; gap:1.4rem; padding-left:1.8rem; }
+    .ace-story::before{ left:7px; right:auto; top:0; bottom:0; width:2px; height:auto; background:linear-gradient(180deg, rgba(255,92,57,0.3), var(--orange)); }
+    .ace-story li{ padding-top:0; }
+    .ace-story li::before{ left:-1.8rem; top:0.2rem; }
+  }
+
+  /* What we bring: four numbers, then the honest note. */
+  .ace-stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(1rem,2.5vw,2rem); margin:clamp(2rem,4vw,3rem) 0 0; }
+  .ace-stats > div{ border-top:3px solid var(--orange); padding-top:1rem; }
+  .ace-stats dt{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(1.6rem,3vw,2.4rem); line-height:1.02; letter-spacing:-0.03em; color:var(--orange-ink); }
+  .ace-stats dd{ margin:0.5rem 0 0; }
+  @media (max-width:860px){ .ace-stats{ grid-template-columns:1fr 1fr; } }
+  @media (max-width:480px){ .ace-stats{ grid-template-columns:1fr; } }
+  .ace-note{ margin-top:1.6rem; max-width:70ch; font-size:0.95rem; opacity:0.75; }
+  .ace-ours{ display:grid; grid-template-columns:1fr 1.4fr 1fr; gap:clamp(0.5rem,1vw,0.8rem); margin-top:clamp(2rem,4vw,3rem); }
+  .ace-ours img{ width:100%; height:clamp(240px,30vw,440px); object-fit:cover; border-radius:14px; display:block; }
+  @media (max-width:700px){ .ace-ours{ grid-template-columns:1fr 1fr; } .ace-ours img:nth-child(2){ grid-column:span 2; order:-1; } }
+
+  /* Side by side */
+  .ace-side{ position:relative; display:grid; grid-template-columns:1fr 1fr; min-height:clamp(360px,42vw,560px); background:var(--ink-warm); overflow:hidden; }
+  .ace-side img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .ace-side img:first-child{ object-position:35% 40%; }
+  .ace-side::after{ content:""; position:absolute; inset:0; background:radial-gradient(ellipse 60% 70% at 50% 55%, rgba(12,12,14,0.78) 0%, rgba(12,12,14,0.45) 55%, rgba(12,12,14,0.2) 100%); }
+  .ace-seam{ position:absolute; left:50%; top:0; bottom:0; width:3px; transform:translateX(-50%); background:var(--orange); box-shadow:0 0 22px 0 var(--orange-glow); z-index:1; }
+  .ace-together{ position:absolute; z-index:2; left:50%; top:50%; transform:translate(-50%,-50%); width:min(92%, 30ch); margin:0; text-align:center; color:var(--cream); font-family:var(--font-display); font-weight:800; font-size:clamp(1.5rem,3.4vw,2.6rem); line-height:1.12; letter-spacing:-0.025em; text-shadow:0 2px 24px rgba(0,0,0,0.7); }
+  @media (max-width:700px){
+    .ace-side{ grid-template-columns:1fr; grid-template-rows:1fr 1fr; min-height:clamp(480px,140vw,660px); }
+    .ace-seam{ left:0; right:0; top:50%; bottom:auto; width:auto; height:3px; transform:translateY(-50%); }
+    .ace-together{ width:min(90%, 26ch); padding:1rem 1.2rem; border-radius:14px; background:rgba(12,12,14,0.82); box-shadow:0 0 0 1px rgba(255,92,57,0.5); }
+  }
+
+  /* The wishlist: six groups on the dark band. */
+  .ace-wish{ position:relative; isolation:isolate; overflow:hidden; }
+  .ace-wish::before{ content:""; position:absolute; inset:0; z-index:-1; background:
+      radial-gradient(ellipse 55% 45% at 80% 20%, rgba(255,92,57,0.18) 0%, transparent 70%),
+      radial-gradient(ellipse 45% 40% at 8% 90%, rgba(255,92,57,0.10) 0%, transparent 70%); }
+  .ace-wish .statement{ color:var(--cream); }
+  .ace-wish .ace-head .prose{ color:var(--cream-mute); }
+  .ace-groups{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(1rem,2vw,1.4rem); margin-top:clamp(2.2rem,4.5vw,3.5rem); }
+  .ace-group{ padding:clamp(1.3rem,2.4vw,1.8rem); border-radius:18px; background:rgba(255,255,255,0.04); box-shadow:inset 0 0 0 1px rgba(255,255,255,0.09); }
+  .ace-num{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:1.1rem; color:var(--orange); letter-spacing:0.02em; }
+  .ace-group h3{ margin-top:0.4rem; font-family:var(--font-display); font-weight:800; font-size:clamp(1.3rem,2vw,1.6rem); letter-spacing:-0.02em; color:var(--cream); }
+  .ace-group ul{ list-style:none; margin:1rem 0 0; padding:0; }
+  .ace-group li{ padding:0.75rem 0; border-top:1px solid rgba(255,255,255,0.1); color:var(--cream-mute); line-height:1.45; }
+  .ace-group li b{ color:var(--cream); font-weight:700; }
+  @media (max-width:980px){ .ace-groups{ grid-template-columns:1fr 1fr; } }
+  @media (max-width:640px){ .ace-groups{ grid-template-columns:1fr; } }
+
+  /* What success looks like */
+  .ace-win{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(1rem,2.5vw,2rem); margin-top:clamp(2rem,4vw,3rem); }
+  .ace-win > div{ border-top:3px solid var(--orange); padding-top:1rem; }
+  .ace-win h3{ font-family:var(--font-display); font-weight:800; font-size:clamp(1.2rem,1.9vw,1.45rem); letter-spacing:-0.015em; }
+  .ace-win ul{ list-style:none; margin:0.8rem 0 0; padding:0; }
+  .ace-win li{ padding:0.6rem 0; border-bottom:1px solid rgba(12,12,14,0.1); }
+  @media (max-width:760px){ .ace-win{ grid-template-columns:1fr; } }
+  .ace-score{ margin-top:clamp(2rem,4vw,3rem); padding:clamp(1.2rem,2.4vw,1.8rem); border-left:4px solid var(--orange); background:rgba(255,92,57,0.06); border-radius:0 14px 14px 0; max-width:70ch; }
+  .ace-score .prose{ margin-top:0.5rem; }
+
+  /* Close: the last word over one more photograph, held low and dark. */
+  .ace-final{ position:relative; isolation:isolate; overflow:hidden; }
+  .ace-final::before{ content:""; position:absolute; inset:0; z-index:-2; background:url('/images/ace/chair-drive.webp') 60% 40%/cover no-repeat; filter:grayscale(1) brightness(0.45); }
+  .ace-final::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 60% 70% at 50% 50%, rgba(12,12,14,0.55) 0%, rgba(12,12,14,0.92) 100%); }
+  /* Close */
+  .ace-close{ text-align:center; }
+  .ace-close .tick{ margin:0 auto 1rem; }
+  .ace-close .display{ max-width:14ch; margin:0.9rem auto 0; }
+  .ace-close .prose{ max-width:46ch; margin:1.3rem auto 0; color:var(--cream-mute); }
+  .ace-actions{ display:flex; flex-wrap:wrap; gap:0.9rem 1rem; justify-content:center; margin-top:2.2rem; }
+  .ace-sign{ margin-top:clamp(2.5rem,5vw,3.5rem); font-family:var(--font-display); font-weight:800; font-style:italic; font-size:clamp(1.5rem,3vw,2.2rem); letter-spacing:-0.02em; color:var(--orange); }
+</style>
+</head>
+<body>
+
+
+<header class="nav over-dark" id="nav">
+  <div class="wrap nav-inner">
+    <a href="/" class="brand"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500.000000 457.000000" class="brand-logo" aria-hidden="true" focusable="false"><g transform="translate(0.000000,457.000000) scale(0.100000,-0.100000)"
+fill="currentColor" stroke="none">
+<path d="M2059 4548 c-14 -13 -99 -185 -198 -403 -96 -209 -238 -519 -316
+-690 -202 -440 -304 -662 -333 -725 -29 -65 -163 -358 -237 -520 -29 -63 -139
+-304 -245 -535 -291 -637 -404 -882 -445 -970 -20 -44 -56 -123 -80 -175 -53
+-118 -172 -375 -191 -414 -53 -108 -28 -116 371 -116 356 0 369 2 394 57 11
+23 190 440 524 1217 72 168 77 206 52 406 -69 554 79 859 585 1205 111 76 137
+101 165 155 20 40 233 517 330 742 23 53 45 90 56 93 20 7 59 -10 59 -26 0 -9
+208 -480 215 -488 3 -2 35 25 72 59 169 156 360 182 566 79 51 -27 51 -24 -54
+206 -134 293 -232 511 -306 675 -93 210 -35 190 -539 190 -421 0 -421 0 -445
+-22z"/>
+<path d="M3060 3404 c-127 -44 -200 -148 -200 -284 0 -358 507 -412 590 -62
+52 220 -174 420 -390 346z"/>
+<path d="M2334 2885 c-396 -102 -739 -406 -825 -732 -32 -119 -37 -419 -7
+-373 2 3 32 61 67 130 180 354 428 530 745 530 135 0 133 2 115 -107 -53 -333
+27 -498 243 -498 106 0 119 9 95 60 -36 75 -15 139 134 406 128 229 134 355
+26 476 -106 117 -372 166 -593 108z"/>
+<path fill="#FF5C39" d="M2242 2133 c-193 -421 -156 -742 101 -859 127 -58 282 -41 606 66
+403 134 502 93 711 -292 386 -708 698 -982 1176 -1030 158 -17 167 -8 53 50
+-349 178 -546 441 -794 1062 -293 734 -505 846 -1178 623 -249 -82 -337 -90
+-440 -40 -116 58 -187 202 -190 389 -2 116 -5 118 -45 31z"/>
+<path d="M1893 1869 c-616 -376 -623 -1289 -11 -1695 117 -78 206 -113 411
+-163 57 -13 236 -15 286 -2 20 6 68 17 106 26 399 93 694 425 771 869 45 256
+-59 389 -280 362 -87 -11 -104 -30 -80 -92 46 -119 16 -335 -66 -474 -199
+-338 -665 -446 -974 -226 -323 230 -382 720 -118 982 42 42 42 42 42 186 0 96
+5 163 15 201 25 97 17 99 -102 26z"/>
+</g></svg>Adapt To Life</a>
+    <nav class="nav-links">
+      <div class="nav-group">
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navOurWork">Our Work<svg class="caret" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="caret" data-style="bold"><path fill="currentColor" d="m216.49 104.49l-80 80a12 12 0 0 1-17 0l-80-80a12 12 0 0 1 17-17L128 159l71.51-71.52a12 12 0 0 1 17 17Z"/></svg></button>
+        <div class="nav-panel" id="navOurWork">
+          <a href="/hustle-and-heart"><span class="np-t">Hustle &amp; Heart Fund</span><span class="np-d">Support for equipment, training, and travel</span></a>
+          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d">In beta · Find adaptive programs by sport and location</span></a>
+          <a href="/adapt-body-shop"><span class="np-t">Adapt Body Shop</span><span class="np-d">Coming soon · Gear for the community</span></a>
+        </div>
+      </div>
+      <div class="nav-group">
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navJoin">Get Involved<svg class="caret" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="caret" data-style="bold"><path fill="currentColor" d="m216.49 104.49l-80 80a12 12 0 0 1-17 0l-80-80a12 12 0 0 1 17-17L128 159l71.51-71.52a12 12 0 0 1 17 17Z"/></svg></button>
+        <div class="nav-panel" id="navJoin">
+          <a href="/volunteer"><span class="np-t">Volunteer</span><span class="np-d">Roles to fill, and our ambassador program</span></a>
+          <a href="/sponsorship"><span class="np-t">Partners</span><span class="np-d">Our partners, and how to join them</span></a>
+          <a href="/events"><span class="np-t">Events</span><span class="np-d">Tournaments, fundraisers, and gatherings</span></a>
+        </div>
+      </div>
+      <div class="nav-group">
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navAbout">About<svg class="caret" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="caret" data-style="bold"><path fill="currentColor" d="m216.49 104.49l-80 80a12 12 0 0 1-17 0l-80-80a12 12 0 0 1 17-17L128 159l71.51-71.52a12 12 0 0 1 17 17Z"/></svg></button>
+        <div class="nav-panel" id="navAbout">
+          <a href="/promise"><span class="np-t">How Giving Works</span><span class="np-d">How gifts support athletes and the work around them</span></a>
+          <a href="/about"><span class="np-t">Our Story</span><span class="np-d">The people who built this, and why</span></a>
+        </div>
+      </div>
+      <a class="lk featured" href="/apply">Apply for support</a>
+      <a class="nav-cta" href="/donate">Donate</a>
+    </nav>
+    <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="mobile-menu">
+    <div class="wrap mwrap">
+      <span class="m-group">Our Work</span>
+      <a class="m-sub" href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
+      <a class="m-sub" href="/adaptive-sports-near-me">Adaptive Sports Near Me · In beta</a>
+      <a class="m-sub" href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
+      <span class="m-group">Get Involved</span>
+      <a class="m-sub" href="/volunteer">Volunteer</a>
+      <a class="m-sub" href="/sponsorship">Partners</a>
+      <a class="m-sub" href="/events">Events</a>
+      <span class="m-group">About</span>
+      <a class="m-sub" href="/promise">How Giving Works</a>
+      <a class="m-sub" href="/about">Our Story</a>
+      <a class="featured" href="/apply">Apply for support</a>
+      <a class="m-cta" href="/donate">Donate <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
+    </div>
+  </div>
+</header>
+
+
+<main>
+
+  <!-- 1. HERO: one photograph, edge to edge -->
+  <section class="ace-hero dark">
+    <figure class="ace-hero-photo">
+      <picture>
+        <source media="(max-width:900px)" srcset="/images/ace/hero-cap-tall.webp">
+        <img src="/images/ace/hero-cap.webp" alt="An athlete in a sport wheelchair and a white cap reaches across the net with his paddle, smiling" width="2400" height="1600" fetchpriority="high">
+      </picture>
+    </figure>
+    <div class="wrap">
+      <div class="ace-hero-copy">
+        <p class="ace-kicker">Our partnership wishlist</p>
+        <div class="ace-duo">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500.000000 457.000000" class="bh-atl" role="img" aria-label="Adapt To Life" focusable="false"><g transform="translate(0.000000,457.000000) scale(0.100000,-0.100000)"
+fill="currentColor" stroke="none">
+<path d="M2059 4548 c-14 -13 -99 -185 -198 -403 -96 -209 -238 -519 -316
+-690 -202 -440 -304 -662 -333 -725 -29 -65 -163 -358 -237 -520 -29 -63 -139
+-304 -245 -535 -291 -637 -404 -882 -445 -970 -20 -44 -56 -123 -80 -175 -53
+-118 -172 -375 -191 -414 -53 -108 -28 -116 371 -116 356 0 369 2 394 57 11
+23 190 440 524 1217 72 168 77 206 52 406 -69 554 79 859 585 1205 111 76 137
+101 165 155 20 40 233 517 330 742 23 53 45 90 56 93 20 7 59 -10 59 -26 0 -9
+208 -480 215 -488 3 -2 35 25 72 59 169 156 360 182 566 79 51 -27 51 -24 -54
+206 -134 293 -232 511 -306 675 -93 210 -35 190 -539 190 -421 0 -421 0 -445
+-22z"/>
+<path d="M3060 3404 c-127 -44 -200 -148 -200 -284 0 -358 507 -412 590 -62
+52 220 -174 420 -390 346z"/>
+<path d="M2334 2885 c-396 -102 -739 -406 -825 -732 -32 -119 -37 -419 -7
+-373 2 3 32 61 67 130 180 354 428 530 745 530 135 0 133 2 115 -107 -53 -333
+27 -498 243 -498 106 0 119 9 95 60 -36 75 -15 139 134 406 128 229 134 355
+26 476 -106 117 -372 166 -593 108z"/>
+<path fill="#FF5C39" d="M2242 2133 c-193 -421 -156 -742 101 -859 127 -58 282 -41 606 66
+403 134 502 93 711 -292 386 -708 698 -982 1176 -1030 158 -17 167 -8 53 50
+-349 178 -546 441 -794 1062 -293 734 -505 846 -1178 623 -249 -82 -337 -90
+-440 -40 -116 58 -187 202 -190 389 -2 116 -5 118 -45 31z"/>
+<path d="M1893 1869 c-616 -376 -623 -1289 -11 -1695 117 -78 206 -113 411
+-163 57 -13 236 -15 286 -2 20 6 68 17 106 26 399 93 694 425 771 869 45 256
+-59 389 -280 362 -87 -11 -104 -30 -80 -92 46 -119 16 -335 -66 -474 -199
+-338 -665 -446 -974 -226 -323 230 -382 720 -118 982 42 42 42 42 42 186 0 96
+5 163 15 201 25 97 17 99 -102 26z"/>
+</g></svg>
+          <span class="ace-x" aria-hidden="true"></span>
+          <img src="/images/ace/ace-logo-white.png" alt="ACE Pickleball Club" class="ace-logo" width="1446" height="200">
+        </div>
+        <h1 class="serif display">Your courts. Our athletes. <em class="italic" style="color:var(--orange)">Something Chicago hasn't seen.</em></h1>
+        <p class="lead sub">CeCe, thank you for saying yes. Here is everything we would love to build with ACE Des Plaines, all in one place, so we can choose together what comes first.</p>
+        <div class="actions">
+          <a href="#wishlist" class="btn">See the wishlist</a>
+          <a href="#success" class="btn ghost">What success looks like</a>
+        </div>
+      </div>
+    </div>
+    <span class="ace-cue" aria-hidden="true"></span>
+  </section>
+
+  <!-- 2. WHERE WE START: the history we already share -->
+  <section class="band tint">
+    <div class="wrap">
+      <div class="ace-head">
+        <hr class="tick orange">
+        <span class="eyebrow orange">Where we start</span>
+        <h2 class="serif statement">You were with us <em class="italic" style="color:var(--orange)">early.</em></h2>
+        <p class="prose">This partnership did not start with a pitch. It started with ACE making room for us.</p>
+      </div>
+      <ol class="ace-story">
+        <li><b>August 2026</b><span>ACE Des Plaines posted that it is proud to support adaptive pickleball.</span></li>
+        <li><b>August 22 and 23</b><span>You gave us an info table, and room for a sport chair, at your tournament.</span></li>
+        <li><b>The recap</b><span>Our video from your tournament drew about 3,000 views across Instagram and Facebook.</span></li>
+        <li class="lit"><b>Now</b><span>ACE is our weekly home on Thursdays. Everything below builds from here.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 3. WHAT WE BRING: honest numbers -->
+  <section class="band">
+    <div class="wrap">
+      <div class="ace-head">
+        <hr class="tick orange">
+        <span class="eyebrow orange">What we bring</span>
+        <h2 class="serif statement">A story people <em class="italic" style="color:var(--orange)">share.</em></h2>
+        <p class="prose">Adapt To Life raises money for the equipment, training, and travel that keep adaptive athletes in the game. Our athletes compete, and our videos travel far past the people who already know us.</p>
+      </div>
+      <dl class="ace-stats">
+        <div><dt>About 334,000</dt><dd>views across Instagram and Facebook in the last 90 days</dd></div>
+        <div><dt>92%</dt><dd>of our Instagram views come from people who don't follow us yet</dd></div>
+        <div><dt>98.8%</dt><dd>of our Instagram views come from video</dd></div>
+        <div><dt>Gold, silver, bronze</dt><dd>for our athletes in the wheelchair division at Monster Smash in Cincinnati, October 2026</dd></div>
+      </dl>
+      <p class="ace-note">Straight talk on the numbers: one reel passed 250,000 views on its own. A typical session post draws a few hundred to a few thousand. Instagram and Facebook totals are added together, so a person who saw both counts twice. We will report the real numbers to you every month.</p>
+      <div class="ace-ours">
+        <img src="/images/ace/paddle-portrait.webp" alt="A player with long hair and a headband holds his paddle at the net" loading="lazy" width="1600" height="1067">
+        <img src="/images/ace/pickleball-court.webp" alt="Four players, two in sport wheelchairs, smile together on an indoor court, paddles in hand" loading="lazy" width="1600" height="1200">
+        <img src="/images/ace/court-swing.webp" alt="A player in a sport wheelchair stretches wide for a backhand, eyes on the ball" loading="lazy" width="1800" height="1200">
+      </div>
+    </div>
+  </section>
+
+  <!-- SIDE BY SIDE -->
+  <section class="ace-side" aria-label="An ACE championship court beside Adapt To Life players meeting at the net">
+    <img src="/images/ace/club-court.webp" alt="" loading="lazy" width="1800" height="1200">
+    <img src="/images/athletes/wheelie-58.webp" alt="" loading="lazy" width="1500" height="1000">
+    <span class="ace-seam" aria-hidden="true"></span>
+    <p class="ace-together">Your courts. Our athletes. <em class="italic" style="color:var(--orange)">One program.</em></p>
+  </section>
+
+  <!-- 4. THE WISHLIST -->
+  <section class="band dark ace-wish" id="wishlist">
+    <div class="wrap">
+      <div class="ace-head">
+        <hr class="tick orange">
+        <span class="eyebrow orange">The wishlist</span>
+        <h2 class="serif statement">Everything we'd love <em class="italic" style="color:var(--orange)">to explore.</em></h2>
+        <p class="prose">Not a contract and not a to-do list. These are ideas to talk through. We pick what fits ACE, start small, and build on what works.</p>
+      </div>
+      <div class="ace-groups">
+        <article class="ace-group">
+          <p class="ace-num">01</p>
+          <h3>Play every week</h3>
+          <ul>
+            <li><b>Thursdays at ACE.</b> A set time and group size that works for your members.</li>
+            <li><b>Daytime sessions as we grow.</b> Midday is when courts open up, and your Mid-Day membership already fits it.</li>
+            <li><b>Highlights from your court cameras.</b> Clips from every session that we can both share.</li>
+          </ul>
+        </article>
+        <article class="ace-group">
+          <p class="ace-num">02</p>
+          <h3>Open the doors</h3>
+          <ul>
+            <li><b>Try Adaptive Pickleball Night.</b> ACE members play from sport chairs alongside our athletes.</li>
+            <li><b>An adaptive session in your Starter Series.</b> Our athletes help teach the game the way they play it.</li>
+            <li><b>Member hitting partners.</b> ACE members who become regular partners for our players.</li>
+            <li><b>Equipment demo day.</b> Mobility businesses we know bring sport chairs to try.</li>
+          </ul>
+        </article>
+        <article class="ace-group">
+          <p class="ace-num">03</p>
+          <h3>Tell the story</h3>
+          <ul>
+            <li><b>A collab post from every session,</b> so it lands on your feed and ours.</li>
+            <li><b>ACE on our website, at our events, and in our fundraisers.</b></li>
+            <li><b>Our story on your club screens.</b></li>
+            <li><b>Local press together.</b> A first for adaptive pickleball in Chicago is a story worth telling.</li>
+          </ul>
+        </article>
+        <article class="ace-group">
+          <p class="ace-num">04</p>
+          <h3>Compete together</h3>
+          <ul>
+            <li><b>An adaptive exhibition at the Championship Series.</b> The series has no adaptive division yet. ACE Des Plaines could be first.</li>
+            <li><b>Des Plaines vs Vernon Hills, adaptive edition.</b> Your club rivalry, with an adaptive match on the card.</li>
+            <li><b>Illinois' first sanctioned wheelchair tournament.</b> USA Pickleball runs wheelchair divisions at Nationals. We found none in Illinois yet.</li>
+          </ul>
+        </article>
+        <article class="ace-group">
+          <p class="ace-num">05</p>
+          <h3>Give together</h3>
+          <ul>
+            <li><b>Sponsor an athlete.</b> Members or local businesses cover an athlete's ACE membership.</li>
+            <li><b>A Glow Night fundraiser.</b> Proceeds help send six of our athletes to the US Open in spring 2027.</li>
+            <li><b>Our athletes at your events.</b> Volunteering at check-in, clinics, and tournaments.</li>
+          </ul>
+        </article>
+        <article class="ace-group">
+          <p class="ace-num">06</p>
+          <h3>Grow together</h3>
+          <ul>
+            <li><b>The biggest adaptive pickleball program in Chicago,</b> with ACE as home base.</li>
+            <li><b>A model for other ACE clubs.</b> When it works here, we share the playbook.</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. WHAT SUCCESS LOOKS LIKE -->
+  <section class="band tint" id="success">
+    <div class="wrap">
+      <div class="ace-head">
+        <hr class="tick orange">
+        <span class="eyebrow orange">What success looks like</span>
+        <h2 class="serif statement">A win for ACE. <em class="italic" style="color:var(--orange)">A win for our athletes.</em></h2>
+        <p class="prose">We want to agree on what a great year looks like before we start, then check in against it together.</p>
+      </div>
+      <div class="ace-win">
+        <div>
+          <h3>For our athletes</h3>
+          <ul>
+            <li>A reliable weekly home they can count on</li>
+            <li>More people trying adaptive pickleball for the first time</li>
+            <li>Athletes improving and competing at bigger tournaments</li>
+          </ul>
+        </div>
+        <div>
+          <h3>For ACE</h3>
+          <ul>
+            <li>New members and drop-ins who came through us</li>
+            <li>Members taking part, as hitting partners, at try-it nights, and as fans</li>
+            <li>A community story that sets ACE Des Plaines apart</li>
+          </ul>
+        </div>
+        <div>
+          <h3>For both of us</h3>
+          <ul>
+            <li>Events we host together</li>
+            <li>Dollars raised for athletes</li>
+            <li>A partnership other clubs want to copy</li>
+          </ul>
+        </div>
+      </div>
+      <div class="ace-score">
+        <p class="eyebrow orange">How we keep score</p>
+        <p class="prose">Every month we send you a one-page recap: attendance, new players, new ACE members and drop-ins, views on our ACE posts, events held, and dollars raised. We set the targets together, and we check in every quarter.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. CLOSE -->
+  <section class="closing dark band-lg ace-final">
+    <div class="wrap">
+      <div class="ace-close">
+        <hr class="tick orange">
+        <span class="eyebrow orange">Your turn</span>
+        <h2 class="serif display">What's on <em class="italic" style="color:var(--orange)">your wishlist?</em></h2>
+        <p class="prose">Tell us what would make this a clear win for ACE a year from now, and which ideas you would want to start with. We will build the plan around that.</p>
+        <div class="ace-actions">
+          <a href="mailto:hello@adapttolife.org?subject=ACE%20%C3%97%20Adapt%20To%20Life" class="btn">Email us</a>
+          <a href="/about" class="btn ghost">Meet Adapt To Life</a>
+        </div>
+        <p class="ace-sign">The more we grow, the more we give.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="brandcol">
+        <a href="/" class="brand"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500.000000 457.000000" class="brand-logo" aria-hidden="true" focusable="false"><g transform="translate(0.000000,457.000000) scale(0.100000,-0.100000)"
+fill="currentColor" stroke="none">
+<path d="M2059 4548 c-14 -13 -99 -185 -198 -403 -96 -209 -238 -519 -316
+-690 -202 -440 -304 -662 -333 -725 -29 -65 -163 -358 -237 -520 -29 -63 -139
+-304 -245 -535 -291 -637 -404 -882 -445 -970 -20 -44 -56 -123 -80 -175 -53
+-118 -172 -375 -191 -414 -53 -108 -28 -116 371 -116 356 0 369 2 394 57 11
+23 190 440 524 1217 72 168 77 206 52 406 -69 554 79 859 585 1205 111 76 137
+101 165 155 20 40 233 517 330 742 23 53 45 90 56 93 20 7 59 -10 59 -26 0 -9
+208 -480 215 -488 3 -2 35 25 72 59 169 156 360 182 566 79 51 -27 51 -24 -54
+206 -134 293 -232 511 -306 675 -93 210 -35 190 -539 190 -421 0 -421 0 -445
+-22z"/>
+<path d="M3060 3404 c-127 -44 -200 -148 -200 -284 0 -358 507 -412 590 -62
+52 220 -174 420 -390 346z"/>
+<path d="M2334 2885 c-396 -102 -739 -406 -825 -732 -32 -119 -37 -419 -7
+-373 2 3 32 61 67 130 180 354 428 530 745 530 135 0 133 2 115 -107 -53 -333
+27 -498 243 -498 106 0 119 9 95 60 -36 75 -15 139 134 406 128 229 134 355
+26 476 -106 117 -372 166 -593 108z"/>
+<path fill="#FF5C39" d="M2242 2133 c-193 -421 -156 -742 101 -859 127 -58 282 -41 606 66
+403 134 502 93 711 -292 386 -708 698 -982 1176 -1030 158 -17 167 -8 53 50
+-349 178 -546 441 -794 1062 -293 734 -505 846 -1178 623 -249 -82 -337 -90
+-440 -40 -116 58 -187 202 -190 389 -2 116 -5 118 -45 31z"/>
+<path d="M1893 1869 c-616 -376 -623 -1289 -11 -1695 117 -78 206 -113 411
+-163 57 -13 236 -15 286 -2 20 6 68 17 106 26 399 93 694 425 771 869 45 256
+-59 389 -280 362 -87 -11 -104 -30 -80 -92 46 -119 16 -335 -66 -474 -199
+-338 -665 -446 -974 -226 -323 230 -382 720 -118 982 42 42 42 42 42 186 0 96
+5 163 15 201 25 97 17 99 -102 26z"/>
+</g></svg>Adapt To Life</a>
+        <p class="tagline">Your place in adaptive sports.</p>
+        <form class="foot-sub js-subscribe" data-source="footer" novalidate>
+          <label class="foot-sub-label" for="footEm">Follow the work</label>
+          <div class="foot-sub-row">
+            <input class="foot-sub-input" id="footEm" name="em" type="email" autocomplete="email" placeholder="you@example.com" aria-label="Your email">
+            <button class="foot-sub-btn" type="submit" aria-label="Join the list"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></button>
+          </div>
+          <input type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only"></div>
+          <p class="foot-sub-msg" role="status" aria-live="polite"></p>
+        </form>
+        <div class="foot-follow">
+          <span class="foot-sub-label">Follow us</span>
+          <div class="social">
+        <a href="https://www.instagram.com/adapt_to_life_org/" aria-label="Adapt To Life on Instagram" target="_blank" rel="me noopener noreferrer"><svg class="ix-svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false" data-logo="instagram"><path fill="currentColor" d="M7.03.084c-1.277.06-2.149.264-2.91.563a5.9 5.9 0 0 0-2.124 1.388a5.9 5.9 0 0 0-1.38 2.127C.321 4.926.12 5.8.064 7.076s-.069 1.688-.063 4.947s.021 3.667.083 4.947c.061 1.277.264 2.149.563 2.911c.308.789.72 1.457 1.388 2.123a5.9 5.9 0 0 0 2.129 1.38c.763.295 1.636.496 2.913.552c1.278.056 1.689.069 4.947.063s3.668-.021 4.947-.082c1.28-.06 2.147-.265 2.91-.563a5.9 5.9 0 0 0 2.123-1.388a5.9 5.9 0 0 0 1.38-2.129c.295-.763.496-1.636.551-2.912c.056-1.28.07-1.69.063-4.948c-.006-3.258-.02-3.667-.081-4.947c-.06-1.28-.264-2.148-.564-2.911a5.9 5.9 0 0 0-1.387-2.123a5.9 5.9 0 0 0-2.128-1.38c-.764-.294-1.636-.496-2.914-.55C15.647.009 15.236-.006 11.977 0S8.31.021 7.03.084m.14 21.693c-1.17-.05-1.805-.245-2.228-.408a3.7 3.7 0 0 1-1.382-.895a3.7 3.7 0 0 1-.9-1.378c-.165-.423-.363-1.058-.417-2.228c-.06-1.264-.072-1.644-.08-4.848c-.006-3.204.006-3.583.061-4.848c.05-1.169.246-1.805.408-2.228c.216-.561.477-.96.895-1.382a3.7 3.7 0 0 1 1.379-.9c.423-.165 1.057-.361 2.227-.417c1.265-.06 1.644-.072 4.848-.08c3.203-.006 3.583.006 4.85.062c1.168.05 1.804.244 2.227.408c.56.216.96.475 1.382.895s.681.817.9 1.378c.165.422.362 1.056.417 2.227c.06 1.265.074 1.645.08 4.848c.005 3.203-.006 3.583-.061 4.848c-.051 1.17-.245 1.805-.408 2.23c-.216.56-.477.96-.896 1.38a3.7 3.7 0 0 1-1.378.9c-.422.165-1.058.362-2.226.418c-1.266.06-1.645.072-4.85.079s-3.582-.006-4.848-.06m9.783-16.192a1.44 1.44 0 1 0 1.437-1.442a1.44 1.44 0 0 0-1.437 1.442M5.839 12.012a6.161 6.161 0 1 0 12.323-.024a6.162 6.162 0 0 0-12.323.024M8 12.008A4 4 0 1 1 12.008 16A4 4 0 0 1 8 12.008"/></svg></a>
+        <a href="https://www.facebook.com/profile.php?id=61592619668321" aria-label="Adapt To Life on Facebook" target="_blank" rel="me noopener noreferrer"><svg class="ix-svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false" data-logo="facebook"><path fill="currentColor" d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978c.401 0 .955.042 1.468.103a9 9 0 0 1 1.141.195v3.325a9 9 0 0 0-.653-.036a27 27 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.7 1.7 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103l-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647"/></svg></a>
+      </div>
+        </div>
+        <p class="legal">Adapt To Life is a recognized 501(c)(3) nonprofit organization. Donations are tax deductible to the extent allowed by law. EIN 41-3213344.</p>
+      </div>
+      <div class="col">
+        <h4>Organization</h4>
+        <a href="/about">Our Story</a>
+        <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
+        <a href="/tim">Tim&#39;s Story</a>
+        <a href="/karen">Karen&#39;s Story</a>
+        <a href="/juan">Juan&#39;s Story</a>
+        <a href="/adaptive-sports-near-me">Adaptive Sports Near Me · In beta</a>
+        <a href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
+                <a href="/roadmap">Roadmap</a>
+      </div>
+      <div class="col">
+        <h4>Get involved</h4>
+        <a href="/donate">Donate</a>
+        <a href="/promise">How Giving Works</a>
+        <a href="/volunteer">Volunteer</a>
+        <a href="/ambassadors">Ambassadors</a>
+        <a href="/sponsorship">Become a partner</a>
+        <a href="/events">Events</a>
+        <a href="/social">Social</a>
+        <a href="/apply">Apply for support</a>
+        <a href="https://sign.adapttolife.org/waiver?source=atl">Photo and media release</a>
+        <a href="/subscribe">Join the list</a>
+        <a href="/contact">Contact</a>
+        <a href="mailto:hello@adapttolife.org">hello@adapttolife.org</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Adapt To Life</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var toggles = document.querySelectorAll('.nav-toggle');
+    function closeAll(except){
+      toggles.forEach(function(t){
+        if (t === except) return;
+        t.setAttribute('aria-expanded','false');
+        var pnl = document.getElementById(t.getAttribute('aria-controls'));
+        if (pnl) pnl.classList.remove('open');
+      });
+    }
+    toggles.forEach(function(t){
+      var panel = document.getElementById(t.getAttribute('aria-controls'));
+      t.addEventListener('click', function(e){
+        e.stopPropagation();
+        var open = t.getAttribute('aria-expanded') === 'true';
+        closeAll(t);
+        t.setAttribute('aria-expanded', open ? 'false' : 'true');
+        if (panel) panel.classList.toggle('open', !open);
+      });
+    });
+    document.addEventListener('click', function(){ closeAll(null); });
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape') closeAll(null);
+    });
+  })();
+  (function(){
+    var nav = document.getElementById('nav');
+    var menuBtn = document.getElementById('menuBtn');
+    menuBtn.addEventListener('click', function(){
+      var open = nav.classList.toggle('open');
+      menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    nav.querySelectorAll('.mobile-menu a').forEach(function(a){
+      a.addEventListener('click', function(){ nav.classList.remove('open'); menuBtn.setAttribute('aria-expanded','false'); });
+    });
+    var onScroll = function(){ if(window.scrollY > 8){ nav.classList.add('scrolled'); } else { nav.classList.remove('scrolled'); } };
+    window.addEventListener('scroll', onScroll, { passive:true });
+    onScroll();
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var reveals = document.querySelectorAll('.reveal');
+    if(reduce || !('IntersectionObserver' in window)){
+      reveals.forEach(function(el){ el.classList.add('in'); });
+    } else {
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+      }, { threshold:0.12, rootMargin:'0px 0px -8% 0px' });
+      reveals.forEach(function(el){ io.observe(el); });
+      window.addEventListener('load', function(){
+        document.querySelectorAll('.hero .reveal').forEach(function(el, i){
+          setTimeout(function(){ el.classList.add('in'); }, 60 + i*70);
+        });
+      });
+    }
+  })();
+</script>
+
+<script src="/js/subscribe.js?v=e8aeb3cc" defer></script>
+<script src="/js/turnstile-lazy.js?v=6b5d6c4a" defer></script>
+</body>
+</html>

@@ -154,6 +154,24 @@
   /* Scroll parallax on the hero photo (desktop), set by the script. */
   .ace-hero-photo{ will-change:transform; }
 
+
+  /* A taste: Monster Smash as the model, one big number and the medal row. */
+  .ace-taste{ position:relative; isolation:isolate; overflow:hidden; }
+  .ace-taste::before{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 50% 60% at 85% 40%, rgba(255,92,57,0.22) 0%, transparent 70%); }
+  .ace-taste .statement{ color:var(--cream); }
+  .ace-taste .ace-head .prose{ color:var(--cream-mute); }
+  .ace-taste-grid{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(2rem,5vw,4.5rem); align-items:center; }
+  .ace-big{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(4.2rem,10vw,8rem); line-height:0.9; letter-spacing:-0.05em; color:var(--orange); text-shadow:0 0 50px rgba(255,92,57,0.35); }
+  .ace-big-cap{ margin-top:0.8rem; max-width:34ch; color:var(--cream-mute); }
+  .ace-medals{ list-style:none; margin:1.8rem 0 0; padding:0; display:grid; grid-template-columns:repeat(3,1fr); gap:0.6rem; }
+  .ace-medals li{ padding:0.8rem 0.9rem; border-radius:12px; background:rgba(255,255,255,0.05); box-shadow:inset 0 0 0 1px rgba(255,255,255,0.1); }
+  .ace-medals b{ display:block; font-family:var(--font-display); font-weight:800; font-size:1.05rem; color:var(--cream); }
+  .ace-medals span{ display:block; margin-top:0.15rem; font-size:0.85rem; color:var(--cream-faint, rgba(249,247,242,0.6)); }
+  .ace-medals li.g{ box-shadow:inset 0 0 0 1px rgba(232,193,92,0.7); } .ace-medals li.g b{ color:#E8C15C; }
+  .ace-medals li.s{ box-shadow:inset 0 0 0 1px rgba(200,205,212,0.6); } .ace-medals li.s b{ color:#C8CDD4; }
+  .ace-medals li.b{ box-shadow:inset 0 0 0 1px rgba(205,127,50,0.7); } .ace-medals li.b b{ color:#D9904F; }
+  @media (max-width:860px){ .ace-taste-grid{ grid-template-columns:1fr; } }
+  @media (max-width:420px){ .ace-medals{ grid-template-columns:1fr 1fr; } }
   .ace-head{ max-width:44ch; }
   .ace-head .tick{ margin:0 0 1rem; }
   .ace-head .statement{ margin-top:0.7rem; }
@@ -417,8 +435,32 @@ fill="currentColor" stroke="none">
         <li><b>August 2026</b><span>ACE Des Plaines posted that it is proud to support adaptive pickleball.</span></li>
         <li><b>August 22 and 23</b><span>You gave us an info table, and room for a sport chair, at your tournament.</span></li>
         <li><b>The recap</b><span>Our video from your tournament drew about 3,000 views across Instagram and Facebook.</span></li>
-        <li class="lit"><b>Now</b><span>ACE is our weekly home on Thursdays. Everything below builds from here.</span></li>
+        <li class="lit"><b>Now</b><span>ACE is our weekly home on Thursdays, starting with 10 to 15 athletes. This is just the beginning.</span></li>
       </ol>
+    </div>
+  </section>
+
+  <!-- 2b. A TASTE: Monster Smash, the model for what we build at ACE -->
+  <section class="band dark ace-taste">
+    <div class="wrap ace-taste-grid">
+      <div class="ace-head" data-m="stagger">
+        <hr class="tick orange">
+        <span class="eyebrow orange">A taste of what we can build</span>
+        <h2 class="serif statement">Six athletes. <em class="italic" style="color:var(--orange)">Six spotlights.</em></h2>
+        <p class="prose">Last month at Monster Smash in Cincinnati, we made a spotlight for each of our athletes, co-branded with the host club. We'd love to do the same with ACE: your courts, our athletes, and both of our names on every post.</p>
+      </div>
+      <div class="ace-taste-side">
+        <p class="ace-big" data-m="up"><span data-count="38000">38,000</span>+</p>
+        <p class="ace-big-cap" data-m="up">views across Instagram and Facebook for our Monster Smash athlete spotlights, October 2026</p>
+        <ul class="ace-medals" data-m="stagger" aria-label="Our results at Monster Smash">
+          <li class="g"><b>Gold</b><span>Singles</span></li>
+          <li class="g"><b>Gold</b><span>Doubles</span></li>
+          <li class="s"><b>Silver</b><span>Doubles</span></li>
+          <li class="b"><b>Bronze</b><span>Singles</span></li>
+          <li class="b"><b>Bronze</b><span>Doubles</span></li>
+          <li><b>Competed</b><span>Singles and doubles</span></li>
+        </ul>
+      </div>
     </div>
   </section>
 
@@ -434,10 +476,10 @@ fill="currentColor" stroke="none">
       <dl class="ace-stats" data-m="seq">
         <div><dt>About <span data-count="334000">334,000</span></dt><dd>views across Instagram and Facebook in the last 90 days</dd></div>
         <div><dt><span data-count="92">92</span>%</dt><dd>of our Instagram views come from people who don't follow us yet</dd></div>
-        <div><dt><span data-count="98.8" data-dec="1">98.8</span>%</dt><dd>of our Instagram views come from video</dd></div>
-        <div><dt>Gold, silver, bronze</dt><dd>for our athletes in the wheelchair division at Monster Smash in Cincinnati, October 2026</dd></div>
+        <div><dt>A couple thousand</dt><dd>views on a typical post today, across both platforms, and we're just getting started</dd></div>
+        <div><dt>Every month</dt><dd>a one-page recap from us with attendance and views, so you can see what this does for ACE</dd></div>
       </dl>
-      <p class="ace-note" data-m="up">Straight talk on the numbers: one reel passed 250,000 views on its own. A typical session post draws a few hundred to a few thousand. Instagram and Facebook totals are added together, so a person who saw both counts twice. We will report the real numbers to you every month.</p>
+      <p class="ace-note" data-m="up">Straight talk on the numbers: Instagram and Facebook totals are added together, so a person who saw both counts twice. We would love to work with your marketing manager and lean into what we can do together.</p>
       <div class="ace-ours" data-m="seq">
         <img src="/images/ace/paddle-portrait.webp" alt="A player with long hair and a headband holds his paddle at the net" loading="lazy" width="1600" height="1067">
         <img src="/images/ace/court-roll.webp" alt="A player in a sport wheelchair looks back over his shoulder, ball in hand, on a dark indoor court" loading="lazy" width="2000" height="1333">
@@ -488,6 +530,7 @@ fill="currentColor" stroke="none">
           <h3>Tell the story</h3>
           <ul>
             <li><b>A collab post from every session,</b> so it lands on your feed and ours.</li>
+            <li><b>Spotlights like Monster Smash.</b> A co-branded post for every athlete, made with your marketing manager.</li>
             <li><b>ACE on our website, at our events, and in our fundraisers.</b></li>
             <li><b>Our story on your club screens.</b></li>
             <li><b>Local press together.</b> A first for adaptive pickleball in Chicago is a story worth telling.</li>
@@ -507,7 +550,7 @@ fill="currentColor" stroke="none">
           <h3>Give together</h3>
           <ul>
             <li><b>Sponsor an athlete.</b> Members or local businesses cover an athlete's ACE membership.</li>
-            <li><b>A Glow Night fundraiser.</b> Proceeds help send six of our athletes to the US Open in spring 2027.</li>
+            <li><b>A monthly fundraiser tournament with your members.</b> We start with one. Entry fees help send our athletes to the US Open in spring 2027.</li>
             <li><b>Our athletes at your events.</b> Volunteering at check-in, clinics, and tournaments.</li>
           </ul>
         </article>

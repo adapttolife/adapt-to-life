@@ -34,38 +34,46 @@
      the history we share, what we bring, the wishlist in six groups, and what
      success looks like. Borrows the /brickhouse pieces (dark hero with the
      orange bloom, tick + eyebrow, side by side seam, closing) without the brick. */
-  .ace-hero{ position:relative; isolation:isolate; overflow:hidden; padding:clamp(6rem,12vh,8rem) 0 clamp(3.5rem,8vh,6rem); }
-  .ace-hero::before{ content:""; position:absolute; inset:-12px; z-index:-2; background:url('/images/ace/club-court.webp') 50% 35%/cover no-repeat; filter:blur(2px) saturate(0.85) brightness(0.7); }
+  /* 1. Hero: one photograph, edge to edge. The athlete sits right, the words
+     sit left on the dark wall behind him; on phones the photo leads and the
+     words follow on black. */
+  .ace-hero{ position:relative; isolation:isolate; overflow:hidden; min-height:min(100svh, 980px); display:flex; align-items:center; padding:clamp(7rem,14vh,9rem) 0 clamp(4rem,9vh,6rem); background:#0C0C0E; }
+  .ace-hero-photo{ position:absolute; top:0; bottom:0; right:0; left:30%; z-index:-2; margin:0; -webkit-mask-image:linear-gradient(90deg, transparent 0%, #000 30%); mask-image:linear-gradient(90deg, transparent 0%, #000 30%); }
+  .ace-hero-photo img{ width:100%; height:100%; object-fit:cover; object-position:55% 35%; display:block; animation:ace-push 22s ease-in-out infinite alternate; transform-origin:70% 40%; }
+  @keyframes ace-push{ from{ transform:scale(1.02); } to{ transform:scale(1.08); } }
+  @media (prefers-reduced-motion: reduce){ .ace-hero-photo img{ animation:none; } }
   .ace-hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:
-      radial-gradient(ellipse 45% 60% at 74% 50%, rgba(255,92,57,0.24) 0%, transparent 70%),
-      linear-gradient(90deg, rgba(12,12,14,0.96) 0%, rgba(12,12,14,0.88) 50%, rgba(12,12,14,0.55) 100%); }
-  .ace-hero-grid{ display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,0.8fr); gap:clamp(2rem,5vw,4.5rem); align-items:center; }
+      radial-gradient(ellipse 50% 60% at 18% 60%, rgba(255,92,57,0.20) 0%, transparent 70%),
+      linear-gradient(90deg, rgba(12,12,14,0.6) 0%, rgba(12,12,14,0.3) 40%, transparent 60%),
+      linear-gradient(0deg, rgba(12,12,14,0.85) 0%, transparent 28%); }
+  .ace-hero-copy{ max-width:34rem; }
   .ace-kicker{ display:flex; align-items:center; gap:0.9rem; font-family:var(--font-label); font-weight:800; font-size:0.9rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--orange); }
   .ace-kicker::before{ content:""; width:2.2rem; height:2px; background:var(--orange); box-shadow:0 0 12px var(--orange-glow); }
-  .ace-duo{ display:flex; align-items:center; gap:clamp(1rem,2.2vw,1.6rem); margin-top:clamp(1.2rem,2.4vw,1.8rem); flex-wrap:wrap; }
-  .bh-atl{ height:clamp(70px,7.5vw,96px); width:auto; color:var(--cream); filter:drop-shadow(0 6px 24px rgba(0,0,0,0.5)); }
-  .ace-logo{ height:clamp(38px,4.2vw,54px); width:auto; filter:drop-shadow(0 6px 24px rgba(0,0,0,0.5)); }
-  .ace-x{ position:relative; flex:none; width:clamp(30px,3vw,40px); height:clamp(30px,3vw,40px); }
+  .ace-duo{ display:flex; align-items:center; gap:clamp(1rem,2.2vw,1.6rem); margin-top:clamp(1.4rem,2.6vw,2rem); }
+  .bh-atl{ height:clamp(70px,7vw,92px); width:auto; color:var(--cream); filter:drop-shadow(0 6px 24px rgba(0,0,0,0.5)); }
+  .ace-logo{ height:clamp(40px,4vw,52px); width:auto; filter:drop-shadow(0 6px 24px rgba(0,0,0,0.5)); }
+  .ace-x{ position:relative; flex:none; width:clamp(28px,2.8vw,38px); height:clamp(28px,2.8vw,38px); }
   .ace-x::before, .ace-x::after{ content:""; position:absolute; left:50%; top:50%; width:140%; height:5px; border-radius:4px; background:#DFF23D; box-shadow:0 0 14px rgba(223,242,61,0.35); }
   .ace-x::before{ transform:translate(-50%,-50%) rotate(45deg); }
   .ace-x::after{ transform:translate(-50%,-50%) rotate(-45deg); }
-  .ace-hero .display{ max-width:17ch; margin-top:clamp(1.4rem,3vw,2.2rem); font-size:clamp(2.6rem,5.2vw,4.8rem); line-height:0.98; }
-  .ace-hero .sub{ max-width:42ch; margin-top:1.2rem; color:var(--cream-mute); }
-  .ace-hero .actions{ display:flex; flex-wrap:wrap; gap:0.9rem 1rem; margin-top:1.4rem; }
-  .ace-film{ position:relative; margin:0; justify-self:center; width:min(100%, 420px); aspect-ratio:9/13; border-radius:22px; overflow:hidden; transform:rotate(1.5deg);
-    box-shadow:0 0 0 1px rgba(255,255,255,0.08), 0 40px 90px -24px rgba(0,0,0,0.85), 0 0 110px -10px rgba(255,92,57,0.45); background:#141414; }
-  .ace-film img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:42% 50%; animation:ace-push 16s ease-in-out infinite alternate; }
-  @keyframes ace-push{ from{ transform:scale(1); } to{ transform:scale(1.07); } }
-  @media (prefers-reduced-motion: reduce){ .ace-film img{ animation:none; } }
+  .ace-hero .display{ max-width:13ch; margin-top:clamp(1.6rem,3vw,2.4rem); font-size:clamp(2.8rem,5vw,4.8rem); line-height:0.95; text-shadow:0 4px 40px rgba(0,0,0,0.5); }
+  .ace-hero .sub{ max-width:40ch; margin-top:1.3rem; color:var(--cream-mute); }
+  .ace-hero .actions{ display:flex; flex-wrap:wrap; gap:0.9rem 1rem; margin-top:1.8rem; }
+  .ace-cue{ position:absolute; left:50%; bottom:1.6rem; transform:translateX(-50%); width:2px; height:44px; background:linear-gradient(180deg, transparent, var(--orange)); opacity:0.8; }
+  @media (max-width:900px){
+    .ace-hero{ display:block; min-height:0; padding:0 0 clamp(2.6rem,7vh,3.5rem); }
+    .ace-hero-photo{ position:relative; inset:auto; left:auto; height:min(72svh, 620px); -webkit-mask-image:none; mask-image:none; }
+    .ace-hero-photo img{ object-position:40% 30%; animation:none; }
+    .ace-hero-photo::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(12,12,14,0.55) 0%, transparent 22%, transparent 55%, #0C0C0E 100%); }
+    .ace-hero::after{ display:none; }
+    .ace-hero .wrap{ margin-top:-7rem; position:relative; }
+    .ace-cue{ display:none; }
+  }
   @media (max-width:520px){
-    .ace-duo{ flex-wrap:nowrap; gap:0.7rem; }
+    .ace-duo{ gap:0.7rem; }
     .bh-atl{ height:52px; }
     .ace-logo{ height:auto; width:min(54vw, 210px); }
     .ace-x{ width:22px; height:22px; }
-  }
-  @media (max-width:900px){
-    .ace-hero-grid{ grid-template-columns:1fr; }
-    .ace-film{ width:100%; aspect-ratio:4/3; transform:none; order:-1; }
   }
 
   .ace-head{ max-width:44ch; }
@@ -98,7 +106,7 @@
   @media (max-width:480px){ .ace-stats{ grid-template-columns:1fr; } }
   .ace-note{ margin-top:1.6rem; max-width:70ch; font-size:0.95rem; opacity:0.75; }
   .ace-ours{ display:grid; grid-template-columns:1fr 1.4fr 1fr; gap:clamp(0.5rem,1vw,0.8rem); margin-top:clamp(2rem,4vw,3rem); }
-  .ace-ours img{ width:100%; height:clamp(220px,28vw,380px); object-fit:cover; border-radius:14px; display:block; }
+  .ace-ours img{ width:100%; height:clamp(240px,30vw,440px); object-fit:cover; border-radius:14px; display:block; }
   @media (max-width:700px){ .ace-ours{ grid-template-columns:1fr 1fr; } .ace-ours img:nth-child(2){ grid-column:span 2; order:-1; } }
 
   /* Side by side */
@@ -141,6 +149,10 @@
   .ace-score{ margin-top:clamp(2rem,4vw,3rem); padding:clamp(1.2rem,2.4vw,1.8rem); border-left:4px solid var(--orange); background:rgba(255,92,57,0.06); border-radius:0 14px 14px 0; max-width:70ch; }
   .ace-score .prose{ margin-top:0.5rem; }
 
+  /* Close: the last word over one more photograph, held low and dark. */
+  .ace-final{ position:relative; isolation:isolate; overflow:hidden; }
+  .ace-final::before{ content:""; position:absolute; inset:0; z-index:-2; background:url('/images/ace/chair-drive.webp') 60% 40%/cover no-repeat; filter:grayscale(1) brightness(0.45); }
+  .ace-final::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 60% 70% at 50% 50%, rgba(12,12,14,0.55) 0%, rgba(12,12,14,0.92) 100%); }
   /* Close */
   .ace-close{ text-align:center; }
   .ace-close .tick{ margin:0 auto 1rem; }
@@ -235,9 +247,15 @@ fill="currentColor" stroke="none">
 
 <main>
 
-  <!-- 1. HERO: the two marks, the promise, one of our athletes on court -->
+  <!-- 1. HERO: one photograph, edge to edge -->
   <section class="ace-hero dark">
-    <div class="wrap ace-hero-grid">
+    <figure class="ace-hero-photo">
+      <picture>
+        <source media="(max-width:900px)" srcset="/images/ace/hero-cap-tall.webp">
+        <img src="/images/ace/hero-cap.webp" alt="An athlete in a sport wheelchair and a white cap reaches across the net with his paddle, smiling" width="2400" height="1600" fetchpriority="high">
+      </picture>
+    </figure>
+    <div class="wrap">
       <div class="ace-hero-copy">
         <p class="ace-kicker">Our partnership wishlist</p>
         <div class="ace-duo">
@@ -278,10 +296,8 @@ fill="currentColor" stroke="none">
           <a href="#success" class="btn ghost">What success looks like</a>
         </div>
       </div>
-      <figure class="ace-film">
-        <img src="/images/athletes/pickleball1-4.webp" alt="A player in a sport wheelchair drives a forehand, the ball just off his paddle" width="1500" height="999" fetchpriority="high">
-      </figure>
     </div>
+    <span class="ace-cue" aria-hidden="true"></span>
   </section>
 
   <!-- 2. WHERE WE START: the history we already share -->
@@ -319,9 +335,9 @@ fill="currentColor" stroke="none">
       </dl>
       <p class="ace-note">Straight talk on the numbers: one reel passed 250,000 views on its own. A typical session post draws a few hundred to a few thousand. Instagram and Facebook totals are added together, so a person who saw both counts twice. We will report the real numbers to you every month.</p>
       <div class="ace-ours">
-        <img src="/images/athletes/wheelie-10.webp" alt="A young athlete rolls onto the court with friends close behind" loading="lazy" width="1129" height="1500">
-        <img src="/images/athletes/pickleball1-5.webp" alt="A player in a sport wheelchair lines up a shot" loading="lazy" width="1500" height="1000">
-        <img src="/images/athletes/wheelie-133.webp" alt="A grinning athlete takes a selfie on an outdoor court" loading="lazy" width="1127" height="1500">
+        <img src="/images/ace/paddle-portrait.webp" alt="A player with long hair and a headband holds his paddle at the net" loading="lazy" width="1600" height="1067">
+        <img src="/images/ace/pickleball-court.webp" alt="Four players, two in sport wheelchairs, smile together on an indoor court, paddles in hand" loading="lazy" width="1600" height="1200">
+        <img src="/images/ace/court-swing.webp" alt="A player in a sport wheelchair stretches wide for a backhand, eyes on the ball" loading="lazy" width="1800" height="1200">
       </div>
     </div>
   </section>
@@ -446,7 +462,7 @@ fill="currentColor" stroke="none">
   </section>
 
   <!-- 6. CLOSE -->
-  <section class="closing dark band-lg">
+  <section class="closing dark band-lg ace-final">
     <div class="wrap">
       <div class="ace-close">
         <hr class="tick orange">

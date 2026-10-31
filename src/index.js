@@ -1,3 +1,4 @@
+import { serveVideo } from "./video_range.js";
 import { safeNewsletterSubscribe } from "./newsletter.js";
 import { acceptForm, sweepForms } from "./forms.js";
 // Adapt To Life — Worker entry.
@@ -73,6 +74,11 @@ const MAX_ROLES = 12;
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+
+    // Site video needs byte ranges for iPhone Safari; see src/video_range.js.
+    if (url.pathname.startsWith("/images/") && url.pathname.endsWith(".mp4") && (request.method === "GET" || request.method === "HEAD")) {
+      return serveVideo(request, env);
+    }
 
     // Signing hub: sign.adapttolife.org is the one place to sign the universal release.
     // Both site footers link here (?source=atl|asnm). Bare visits land on the release.

@@ -195,14 +195,6 @@
   .ace-sig{ font-family:var(--font-display); font-weight:800; font-style:italic; font-size:clamp(2rem,3.6vw,2.8rem); letter-spacing:-0.03em; color:var(--orange-ink); line-height:1; }
   .ace-sig-role{ font-size:0.92rem; opacity:0.7; }
   @media (max-width:760px){ .ace-letter{ grid-template-columns:1fr; } .ace-letter img{ max-width:320px; } }
-
-  /* What we bring: the words beside a silent loop of our athletes on court,
-     framed like a phone and tilted like the /brickhouse film. */
-  .ace-bring{ display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,0.8fr); gap:clamp(2rem,5vw,4.5rem); align-items:center; }
-  .ace-reel{ margin:0; justify-self:center; width:min(100%, 320px); transform:rotate(-1.8deg); }
-  .ace-reel video{ display:block; width:100%; aspect-ratio:9/16; object-fit:cover; border-radius:26px; background:#141414; box-shadow:0 0 0 6px #0C0C0E, 0 0 0 7px rgba(255,255,255,0.08), 0 40px 80px -30px rgba(12,12,14,0.6), 0 0 90px -20px rgba(255,92,57,0.45); }
-  .ace-reel figcaption{ margin-top:1rem; text-align:center; font-family:var(--font-label); font-weight:800; font-size:0.72rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--orange-ink); }
-  @media (max-width:860px){ .ace-bring{ grid-template-columns:1fr; } .ace-reel{ width:min(78%, 300px); } }
   .ace-head{ max-width:44ch; }
   .ace-head .tick{ margin:0 0 1rem; }
   .ace-head .statement{ margin-top:0.7rem; }
@@ -498,19 +490,11 @@ fill="currentColor" stroke="none">
   <!-- 3. WHAT WE BRING: honest numbers -->
   <section class="band">
     <div class="wrap">
-      <div class="ace-bring">
-        <div class="ace-head" data-m="stagger">
+      <div class="ace-head" data-m="stagger">
         <hr class="tick orange">
         <span class="eyebrow orange">What we bring</span>
         <h2 class="serif statement">A story people <em class="italic" style="color:var(--orange)">share.</em></h2>
         <p class="prose">Adapt To Life raises money for the equipment, training, and travel that keep adaptive athletes in the game. Our athletes compete, and our videos travel far past the people who already know us.</p>
-      </div>
-        <figure class="ace-reel" data-m="up">
-          <video class="js-ace-reel" muted loop playsinline preload="none" poster="/images/ace/on-court-poster.webp" width="540" height="960" aria-label="Silent clip: our athletes in sport wheelchairs rallying on an indoor court">
-            <source src="/images/ace/on-court.mp4" type="video/mp4">
-          </video>
-          <figcaption>On court with our athletes</figcaption>
-        </figure>
       </div>
       <dl class="ace-stats" data-m="seq">
         <div><dt>About <span data-count="334000">334,000</span></dt><dd>views across Instagram and Facebook in the last 90 days</dd></div>
@@ -872,15 +856,6 @@ fill="currentColor" stroke="none">
         requestAnimationFrame(function(){ var y=Math.min(window.scrollY, hero.offsetHeight); photo.style.transform='translate3d(0,'+(y*0.22)+'px,0)'; ticking=false; });
       },{ passive:true });
     }
-  })();
-</script>
-<script>
-  /* The on-court loop: plays only while on screen, never when motion is reduced. */
-  (function(){
-    var v=document.querySelector('.js-ace-reel'); if(!v) return;
-    if(matchMedia('(prefers-reduced-motion: reduce)').matches){ v.setAttribute('controls',''); return; }
-    if(!('IntersectionObserver' in window)){ v.setAttribute('controls',''); return; }
-    new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ v.preload='auto'; var p=v.play(); if(p&&p.catch) p.catch(function(){ v.setAttribute('controls',''); }); } else { v.pause(); } }); },{ threshold:0.35 }).observe(v);
   })();
 </script>
 <script src="/js/subscribe.js?v=e8aeb3cc" defer></script>

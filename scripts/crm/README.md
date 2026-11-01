@@ -25,9 +25,11 @@ Environment: `GOG` (default `gogbox`), `GOG_ACCOUNT` (default `alec@alecability.
 `ATL_CRM_SHEET_ID` (default is the live CRM; point it at a copy to test).
 
 A run holds an exclusive lock for the whole read, plan, and apply, so a manual run and
-a cron run on this machine cannot hand out the same IDs or rows. The lock file is
+the scheduled run on this machine cannot hand out the same IDs or rows. The lock file is
 `KAREN_SYNC_LOCK` (default `<temp dir>/adapt-to-life-karen-sync.lock`, which is
-`/tmp/adapt-to-life-karen-sync.lock` when `TMPDIR` is unset). The second run waits
+`/tmp/adapt-to-life-karen-sync.lock` when `TMPDIR` is unset). The agentos timer sets
+`KAREN_SYNC_LOCK=/srv/hetzner-jobs/workspace/locks/karen-sync.lock`. A manual or local
+dry run that shares that timer sets the same path (see Schedule). The second run waits
 until the first process exits. The lock releases on exit, including a crash. Do not
 delete the lock file. To verify: `test_run_lock_excludes_a_second_acquire` takes the
 lock and checks that another non-blocking acquire fails until the first one releases.
@@ -101,20 +103,30 @@ rerunning (see rollback).
 It never writes marketing consent (Resend owns newsletter consent), never sorts, renumbers or
 deletes, and never touches the feed tabs or the refresh owned tabs.
 
-## Schedule hourly (draft, not installed)
+## Schedule hourly
 
-Hourly stays off until the CRO rechecks this follow-up (gap-safe rows, the `@` email
-rule, the stale Contact ID check, and the run lock). Do not install the line below and
-do not schedule it. Suggested shape, once that recheck passes, on the Grok box, offset
-from the :17 source refresh:
+The hourly job is the Hetzner systemd timer on agentos. `hetzner-karen-sync.timer`
+fires `OnCalendar=*-*-* *:47:00 UTC`, offset from the :17 source refresh.
+`hetzner-karen-sync.service` runs as user `agentos` from the checkout
+`/srv/hetzner-jobs/workspace/repos/adapt-to-life-karen`, with the fixed lock:
 
-```cron
-# m h dom mon dow  command
-47 * * * *  cd /home/box/adapt-to-life && GOG=gog /usr/bin/python3 scripts/crm/karen_sync.py --apply >> /home/box/logs/karen_sync.log 2>&1
+```sh
+KAREN_SYNC_LOCK=/srv/hetzner-jobs/workspace/locks/karen-sync.lock \
+  /usr/bin/python3 scripts/crm/karen_sync.py --apply
 ```
 
-Or as a Hermes no-agent job next to `atl-relationship-crm` refresh (`cron: "47 * * * *"`,
-command as above). Until that recheck, run it on demand.
+`GOG` stays the default `gogbox`. The Grok box crontab does not run this job.
+`/home/box/adapt-to-life` is not the checkout. The lock file sits outside the
+checkout so a manual run on agentos waits on the same file as the timer.
+
+A dry run on that checkout, sharing the timer's lock:
+
+```sh
+KAREN_SYNC_LOCK=/srv/hetzner-jobs/workspace/locks/karen-sync.lock \
+  python3 scripts/crm/karen_sync.py
+```
+
+The dry run prints the plan and writes nothing. Do not delete the lock file.
 
 ## Rollback
 

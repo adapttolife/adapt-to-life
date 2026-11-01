@@ -494,6 +494,10 @@ export function Directory({ onFail }: { onFail: () => void }) {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [current, setCurrent] = useState(detailRoute);
+  const [operations, setOperations] = useState<"queue" | "beta" | null>(null);
+  const [queueItems, setQueueItems] = useState<Item[]>([]);
+  const [selectedQueueItem, setSelectedQueueItem] = useState<Item | null>(null);
+  const [betaTesters, setBetaTesters] = useState<Item[]>([]);
 
   const go = (path: string) => {
     history.pushState(null, "", path);
@@ -542,6 +546,29 @@ export function Directory({ onFail }: { onFail: () => void }) {
       .then((entries) => setCounts(Object.fromEntries(entries) as Record<Kind, number>))
       .catch((error) => handleError(error, "Could not load directory totals."));
   }, [current]);
+
+  useEffect(() => {
+    if (!operations) return;
+    const path = operations === "queue" ? "/admin-data/queue" : "/admin-data/beta-testers";
+    request(path)
+      .then((body) => {
+        if (operations === "queue") setQueueItems(body.items || []);
+        else setBetaTesters(body.items || []);
+      })
+      .catch((error) => handleError(error, "Could not load this section."));
+  }, [operations]);
+
+  useEffect(() => {
+    Promise.all([
+      request("/admin-data/queue"),
+      request("/admin-data/beta-testers"),
+    ])
+      .then(([queue, beta]) => {
+        setQueueItems(queue.items || []);
+        setBetaTesters(beta.items || []);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (!current) {
@@ -700,6 +727,58 @@ export function Directory({ onFail }: { onFail: () => void }) {
       handleError(error, "Could not delete that note.");
     }
   };
+
+  const saveBetaTester = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const email = String(new FormData(form).get("email") || "");
+    try {
+      await request("/admin-data/beta-testers", {
+        method: "POST",
+        body: JSON.stringify({ email, enabled: true }),
+      });
+      form.reset();
+      const body = await request("/admin-data/beta-testers");
+      setBetaTesters(body.items || []);
+      setMessage("Beta tester saved.");
+    } catch (error) {
+      handleError(error, "Could not save that beta tester.");
+    }
+  };
+
+  const toggleBetaTester = async (tester: Item) => {
+    try {
+      await request("/admin-data/beta-testers", {
+        method: "POST",
+        body: JSON.stringify({ email: tester.email, enabled: !Number(tester.enabled) }),
+      });
+      const body = await request("/admin-data/beta-testers");
+      setBetaTesters(body.items || []);
+    } catch (error) {
+      handleError(error, "Could not update that beta tester.");
+    }
+  };
+
+  const acceptQueueItem = async () => {
+    if (!selectedQueueItem) return;
+    try {
+      await request(`/admin-data/queue/${selectedQueueItem.id}`, { method: "POST" });
+      setQueueItems((items) => items.filter((entry) => entry.id !== selectedQueueItem.id));
+      setSelectedQueueItem(null);
+      setMessage("Submission accepted and published.");
+    } catch (error) {
+      handleError(error, "Could not accept this submission.");
+    }
+  };
+
+  if (operations === "queue") {
+    if (selectedQueueItem) return <section className="directory-page"><button className="back-link" onClick={() => setSelectedQueueItem(null)}>← Submission queue</button><h2>{String(selectedQueueItem.title || "Submission")}</h2><p className="sub">Review the submitted details before accepting and publishing.</p><section className="queue-editor"><dl>{Object.entries((selectedQueueItem.payload || {}) as Record<string, unknown>).map(([key, value]) => <><dt key={`${key}-term`}>{fieldLabel(key)}</dt><dd key={`${key}-value`}>{String(value)}</dd></>)}</dl><p className="directory-message" role="status">{message}</p><button className="btn" onClick={acceptQueueItem} type="button">Accept and publish</button></section></section>;
+    return <section className="directory-page"><button className="back-link" onClick={() => setOperations(null)}>← ASNM directory</button><h2>Submission Queue</h2><p className="sub">New organization, program, event, and listing submissions awaiting review.</p><div className="directory-list queue-grid">{queueItems.length ? queueItems.map((entry) => <button className="directory-item" key={String(entry.id)} onClick={() => setSelectedQueueItem(entry)}><span><b>{String(entry.title || "Submission")}</b><small>{titleCase(entry.kind)} · {String(entry.contact_email || "No contact email")}</small></span><span aria-hidden="true">→</span></button>) : <p>No submissions need review.</p>}</div></section>;
+  }
+
+  if (operations === "beta") {
+    return <section className="directory-page"><button className="back-link" onClick={() => setOperations(null)}>← ASNM directory</button><h2>Beta Testers</h2><p className="sub">Approved emails can unlock the production beta while prelaunch mode is enabled.</p><form className="beta-tester-form" onSubmit={saveBetaTester}><label className="form-field"><span>Email Address</span><input name="email" type="email" placeholder="name@example.com" required /></label><button className="btn" type="submit">Add beta tester</button></form><div className="directory-list">{betaTesters.map((tester) => <div className="beta-tester" key={String(tester.email)}><span><b>{String(tester.email)}</b><small>{Number(tester.enabled) ? "Enabled" : "Disabled"}</small></span><button className="btn btn--line" onClick={() => toggleBetaTester(tester)} type="button">{Number(tester.enabled) ? "Disable" : "Enable"}</button></div>)}</div><p className="directory-message" role="status">{message}</p></section>;
+  }
 
   if (current) {
     const detail = DETAILS[current.kind];
@@ -882,6 +961,8 @@ export function Directory({ onFail }: { onFail: () => void }) {
   return (
     <section className="directory-page">
       <div className="directory-seg">
+        <button className={operations === "queue" ? "on" : ""} onClick={() => setOperations("queue")}>Submission Queue ({queueItems.length})</button>
+        <button className={operations === "beta" ? "on" : ""} onClick={() => setOperations("beta")}>Beta Testers ({betaTesters.length})</button>
         {KINDS.map((entry) => <button key={entry} className={entry === kind ? "on" : ""} onClick={() => chooseKind(entry)}>{DETAILS[entry].label} ({counts[entry].toLocaleString()})</button>)}
       </div>
       <h2>{DETAILS[kind].label}</h2>

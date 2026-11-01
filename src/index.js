@@ -323,6 +323,111 @@ async function localAsnmAdminCollection(request, env, url) {
   }
 }
 
+async function localAsnmAdminOperations(request, env, url) {
+  if (url.pathname === "/admin/api/asnm/admin-data/beta-testers") {
+    try {
+      if (request.method === "GET") {
+        const rows = await env.ASNM_DB.prepare(
+          "SELECT email, enabled, created_at, updated_at FROM beta_testers ORDER BY email COLLATE NOCASE",
+        ).all();
+        return json({ ok: true, items: rows.results || [] }, 200, ADMIN_CACHE);
+      }
+      if (request.method === "POST") {
+        const body = await request.json().catch(() => null);
+        const email = String(body?.email || "").trim().toLowerCase();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          return json({ ok: false, error: "Enter a valid email address." }, 422, ADMIN_CACHE);
+        }
+        const enabled = body?.enabled === false || body?.enabled === 0 || body?.enabled === "0" ? 0 : 1;
+        const timestamp = new Date().toISOString();
+        await env.ASNM_DB.prepare(
+          `INSERT INTO beta_testers (email, enabled, created_at, updated_at) VALUES (?, ?, ?, ?)
+           ON CONFLICT(email) DO UPDATE SET enabled = excluded.enabled, updated_at = excluded.updated_at`,
+        ).bind(email, enabled, timestamp, timestamp).run();
+        return json({ ok: true }, 200, ADMIN_CACHE);
+      }
+    } catch (error) {
+      console.error("ASNM beta tester request failed", error);
+      return json({ ok: false, error: "Beta testers are temporarily unavailable." }, 503, ADMIN_CACHE);
+    }
+  }
+
+  const queueMatch = url.pathname.match(/^\/admin\/api\/asnm\/admin-data\/queue(?:\/(\d+))?$/);
+  if (queueMatch && request.method === "POST") {
+    const submissionId = Number(queueMatch[1]);
+    if (!Number.isInteger(submissionId) || submissionId < 1) return json({ ok: false, error: "Not found." }, 404, ADMIN_CACHE);
+    try {
+      const submission = await env.ASNM_DB.prepare(
+        "SELECT submission_id, kind, payload FROM submissions WHERE submission_id = ? AND status = 'new'",
+      ).bind(submissionId).first();
+      if (!submission) return json({ ok: false, error: "This submission is no longer awaiting review." }, 404, ADMIN_CACHE);
+      let payload = {};
+      try { payload = JSON.parse(String(submission.payload || "{}")); } catch { payload = {}; }
+      const timestamp = new Date().toISOString();
+      let recordId = null;
+      if (["new_organization", "new_program"].includes(String(submission.kind))) {
+        const entity = submission.kind === "new_organization" ? "organization" : "program";
+        const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`draft-${entity}\n${String(payload.intake_id || "")}`));
+        const hex = Array.from(new Uint8Array(digest), (value) => value.toString(16).padStart(2, "0")).join("");
+        recordId = `${hex.slice(0, 8)}-${hex.slice(8, 12)}-5${hex.slice(13, 16)}-${((parseInt(hex[16], 16) & 3) | 8).toString(16)}${hex.slice(17, 20)}-${hex.slice(20, 32)}`;
+        const table = entity === "organization" ? "organizations" : "programs";
+        const result = await env.ASNM_DB.prepare(
+          `UPDATE ${table} SET is_public = 1, verification_status = 'verified', verification_method = 'admin-accepted', updated_at = ? WHERE id = ? AND is_public = 0`,
+        ).bind(timestamp, recordId).run();
+        if (!Number(result.meta?.changes || 0)) return json({ ok: false, error: "The submitted draft could not be found." }, 422, ADMIN_CACHE);
+      } else if (submission.kind === "new_event") {
+        const date = String(payload.date || "");
+        const time = String(payload.time || "00:00");
+        const startsAt = new Date(`${date}T${time}`).toISOString();
+        if (Number.isNaN(new Date(startsAt).getTime())) return json({ ok: false, error: "The event date is invalid." }, 422, ADMIN_CACHE);
+        recordId = crypto.randomUUID();
+        await env.ASNM_DB.prepare(
+          `INSERT INTO events (id, title, description, sport_key, venue, city, state, url, starts_at, all_day, status, is_public, source, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 'scheduled', 1, 'submission', ?, ?)`,
+        ).bind(recordId, String(payload.event || "Untitled event"), String(payload.notes || ""), payload.sport || null, payload.org || null, payload.city || null, payload.state || null, payload.url || null, startsAt, timestamp, timestamp).run();
+      }
+      await env.ASNM_DB.prepare("UPDATE submissions SET status = 'accepted' WHERE submission_id = ?").bind(submissionId).run();
+      return json({ ok: true, record_id: recordId }, 200, ADMIN_CACHE);
+    } catch (error) {
+      console.error("ASNM submission acceptance failed", error);
+      return json({ ok: false, error: "Could not accept this submission." }, 503, ADMIN_CACHE);
+    }
+  }
+
+  if (queueMatch && !queueMatch[1] && request.method === "GET") {
+    try {
+      const rows = await env.ASNM_DB.prepare(
+        `SELECT submission_id, kind, payload, contact_email, created_at
+         FROM submissions
+         WHERE status = 'new' AND kind IN ('new_organization', 'new_program', 'new_event', 'listing_update')
+         ORDER BY created_at ASC`,
+      ).all();
+      const items = (rows.results || []).map((row) => {
+        let payload = {};
+        try {
+          payload = JSON.parse(String(row.payload || "{}"));
+        } catch {
+          payload = {};
+        }
+        return {
+          id: row.submission_id,
+          kind: row.kind,
+          contact_email: row.contact_email,
+          created_at: row.created_at,
+          payload,
+          title: payload.organization || payload.program || payload.event || "Submission",
+        };
+      });
+      return json({ ok: true, items }, 200, ADMIN_CACHE);
+    } catch (error) {
+      console.error("ASNM submission queue request failed", error);
+      return json({ ok: false, error: "The submission queue is temporarily unavailable." }, 503, ADMIN_CACHE);
+    }
+  }
+
+  return null;
+}
+
 async function localAsnmAdminActivity(request, env, url, session) {
   const match = url.pathname.match(
     /^\/admin\/api\/asnm\/admin-data\/organizations\/([0-9a-f-]{36})\/activity(?:\/([0-9a-f-]{36}))?$/i,
@@ -617,6 +722,8 @@ export default {
       if (url.pathname.startsWith("/admin/api/")) {
         if (!session) return json({ ok: false, error: "Sign in required." }, 401);
         if (url.pathname.startsWith("/admin/api/asnm")) {
+          const localOperations = await localAsnmAdminOperations(request, env, url);
+          if (localOperations) return localOperations;
           const localActivity = await localAsnmAdminActivity(request, env, url, session);
           if (localActivity) return localActivity;
           const localCollection = await localAsnmAdminCollection(request, env, url);

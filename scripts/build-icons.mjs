@@ -137,7 +137,7 @@ const { applyIcons } = await import(pathToFileURL(join(ROOT, "scripts/lib/apply-
 
 // Marked blocks in scripts and the stylesheet.
 const block = (text, body, path) => {
-  const re = /(\/\* icons:start[^*]*\*\/\n)[\s\S]*?(\s*\/\* icons:end \*\/)/;
+  const re = /(\/\* icons:start[^*]*\*\/\r?\n)[\s\S]*?(\s*\/\* icons:end \*\/)/;
   if (!re.test(text)) throw new Error(`no icons:start/end block in ${path}`);
   return text.replace(re, (_, a, b) => a + body + b);
 };

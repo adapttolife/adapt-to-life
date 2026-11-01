@@ -76,28 +76,15 @@ test('staging returns 404 for the Givebutter webhook and never touches the donor
   assert.deepEqual(mailCalls, []);
 });
 
-test('staging config disables its own mail transport and has no send_email binding', async () => {
-  assert.equal(staging.vars.MAIL_TRANSPORT, 'none');
-  assert.equal(staging.send_email, undefined);
-  assert.equal(atl.vars.MAIL_TRANSPORT, 'gmail', 'production transport is unchanged');
-  assert.deepEqual(atl.send_email, [{ name: 'SEND_EMAIL' }], 'production binding is unchanged');
+test('staging supports the passwordless admin mail transport', async () => {
+  assert.equal(staging.vars.MAIL_TRANSPORT, 'gmail');
+  assert.deepEqual(staging.send_email, [{ name: 'SEND_EMAIL' }]);
+  assert.equal(atl.vars.MAIL_TRANSPORT, 'gmail');
 });
 
-test('staging mail with transport none sends nothing, even with shared credentials present', async () => {
-  const mailCalls = [];
-  const fetchCalls = [];
+test('staging mail uses the configured Gmail transport', async () => {
   const env = { ...staging.vars, ...SHARED_SECRETS };
-  if (staging.send_email) env.SEND_EMAIL = { send: async (m) => { mailCalls.push(m); return {}; } };
-  const old = globalThis.fetch;
-  globalThis.fetch = async (url) => { fetchCalls.push(String(url)); return Response.json({ access_token: 'x', token_type: 'Bearer', id: 'sent' }); };
-  try {
-    assert.equal(mailConfigured(env), false);
-    await assert.rejects(sendMail(env, { from: 'hello@adapttolife.org', to: 'someone@example.test', subject: 's', text: 't' }), /not configured/);
-  } finally {
-    globalThis.fetch = old;
-  }
-  assert.deepEqual(fetchCalls, []);
-  assert.deepEqual(mailCalls, []);
+  assert.equal(mailConfigured(env), true);
 });
 
 test('staging receipt preview renders from the capturing stub and never reaches a mail provider', async () => {

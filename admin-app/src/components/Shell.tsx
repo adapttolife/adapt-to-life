@@ -11,6 +11,7 @@ export interface NavItem { id: string; label: string; hint?: string; ready: bool
 export const NAV: NavItem[] = [
   { id: "activity", label: "Activity", hint: "what happened", ready: true },
   { id: "qr", label: "QR codes", hint: "printed matter", ready: true },
+  { id: "directory", label: "ASNM directory", hint: "organizations, programs, events, grants and posts", ready: true },
   { id: "money", label: "Money", hint: "gifts and funds", ready: false },
   { id: "applications", label: "Applications", hint: "Hustle & Heart", ready: false },
   { id: "waivers", label: "Waivers", ready: false },

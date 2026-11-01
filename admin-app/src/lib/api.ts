@@ -41,6 +41,7 @@ export interface HistoryEvent {
 }
 
 export const api = {
+  session: () => get<{ email: string }>("/../auth/session"),
   codes: () => get<{ you: string; codes: Code[] }>("/codes"),
   analytics: (days: number) => get<Analytics>(`/analytics?days=${days}`),
   history: () => get<{ events: HistoryEvent[] }>("/history"),

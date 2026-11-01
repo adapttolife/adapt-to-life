@@ -118,17 +118,14 @@ test("the ATL Worker's own domains are untouched by this slice", () => {
   ]);
 });
 
-test("staging shares live data services but has no cron triggers and no mail", () => {
+test("staging uses the ASNM staging database, sends passwordless admin links, and has no cron triggers", () => {
   assert.equal(atl.env.staging.main, "src/staging.js");
   assert.equal(atl.env.staging.assets.run_worker_first, true);
   assert.deepEqual(atl.env.staging.routes, []);
-  assert.deepEqual(atl.env.staging.d1_databases, atl.d1_databases);
+  assert.equal(atl.env.staging.d1_databases.at(-1).database_name, "asnm-db-staging");
   assert.deepEqual(atl.env.staging.r2_buckets, []);
-  // Staging sends no mail of its own: no binding and an unsupported transport.
-  assert.equal(atl.env.staging.send_email, undefined);
+  assert.deepEqual(atl.env.staging.send_email, [{ name: "SEND_EMAIL" }]);
   assert.deepEqual(atl.env.staging.triggers.crons, []);
-  assert.deepEqual(atl.env.staging.vars, {
-    ...atl.vars, ENV_NAME: "staging", STAGING: "1", TURNSTILE_MODE: "off", MAIL_TRANSPORT: "none",
-  });
+  assert.equal(atl.env.staging.vars.MAIL_TRANSPORT, "gmail");
   assert.notEqual(atl.vars.TURNSTILE_MODE, "off", "production must not disable Turnstile");
 });

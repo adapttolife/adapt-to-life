@@ -149,14 +149,14 @@ test("nothing in the sheet declares a display that would defeat the hidden attri
 
 test("the close control meets the 44px touch-target floor", () => {
   const css = readFileSync(new URL("../src/css/sponsor-sheet.css", import.meta.url), "utf8");
-  const rule = css.match(/\.sheet-close\{([\s\S]*?)\}/);
+  const rule = css.match(/\.sheet-close\s*\{([\s\S]*?)\}/);
   assert.ok(rule, ".sheet-close is styled");
   const w = Number((rule[1].match(/width:\s*(\d+)px/) || [])[1]);
   const h = Number((rule[1].match(/height:\s*(\d+)px/) || [])[1]);
   // Apple HIG and WCAG 2.5.8 both put the floor at 44. Alec reported the old
   // 38x38 as hard to hit on a phone, which is exactly what that gap predicts.
   assert.ok(w >= 44 && h >= 44, `close target is ${w}x${h}, under the 44x44 floor`);
-  assert.ok(/\.sheet-close::before\{[^}]*inset:\s*-\d+px/.test(css),
+  assert.ok(/\.sheet-close::before\s*\{[^}]*inset:\s*-\d+px/.test(css),
     "the hit area is extended past the visible box, so a near miss still closes");
   assert.ok(/touch-action:\s*manipulation/.test(rule[1]),
     "no tap delay or double-tap zoom on a control this close to the screen edge");
@@ -167,7 +167,7 @@ test("the close control meets the 44px touch-target floor", () => {
   // invisible 56px target gets aimed at like a 14px one. It needs a surface.
   assert.ok(/background:\s*rgba\([^)]+\)/.test(rule[1]) && !/background:\s*transparent/.test(rule[1]),
     "the close control paints a visible chip, so the target looks as big as it is");
-  assert.ok(/\.sheet-close:active\{[^}]*transform:\s*scale/.test(css),
+  assert.ok(/\.sheet-close:active\s*\{[^}]*transform:\s*scale/.test(css),
     "touch has no hover, so the pressed state must be unmistakable");
 });
 

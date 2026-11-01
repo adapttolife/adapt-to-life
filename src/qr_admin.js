@@ -156,8 +156,8 @@ async function overview(env) {
   }));
 }
 
-export async function handleAdmin(request, env, url) {
-  const email = await verifyAccess(request);
+export async function handleAdmin(request, env, url, authenticatedEmail = null) {
+  const email = authenticatedEmail || await verifyAccess(request);
   if (!email) {
     return json({ ok: false, error: "not authorised — reach this page through Cloudflare Access" }, 403);
   }

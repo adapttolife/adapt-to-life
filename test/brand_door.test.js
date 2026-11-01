@@ -29,7 +29,8 @@ test("every brand file is named in brand/README.md", async () => {
   // The symbol collection is catalogued in its own generated README
   // (scripts/build-icons.mjs), one row per file.
   const icons = await readFile(join(BRAND, "icons", "README.md"), "utf8");
-  for (const file of await files(BRAND)) {
+  for (const rawFile of await files(BRAND)) {
+    const file = rawFile.replace(/\\/g, "/");
     if (file === "README.md") continue;
     if (file.startsWith("icons/svg/") || file.startsWith("icons/logos/")) {
       assert.ok(icons.includes(file.slice("icons/".length)), `brand/${file} is not in brand/icons/README.md; run npm run icons`);
@@ -50,7 +51,8 @@ test("every brand file is named in brand/README.md", async () => {
 });
 
 test("the retired swoosh lives only in brand/obsolete/", async () => {
-  for (const file of await files(BRAND)) {
+  for (const rawFile of await files(BRAND)) {
+    const file = rawFile.replace(/\\/g, "/");
     if (!file.endsWith(".svg") || file.startsWith("obsolete/")) continue;
     const svg = await readFile(join(BRAND, file), "utf8");
     assert.ok(!svg.includes(RETIRED_VIEWBOX), `brand/${file} is the retired swoosh; move it to brand/obsolete/`);

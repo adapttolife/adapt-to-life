@@ -22,8 +22,8 @@ async function filesUnder(dir, extensions = new Set([".html", ".css", ".js", ".m
 
 test("Option 2 is the canonical public brand palette", async () => {
   const css = await readFile(join(PUBLIC, "css/site.css"), "utf8");
-  assert.match(css, /--orange:#FF5C39\b/, "primary accent must match the vector PDF exactly");
-  assert.match(css, /--ink:#1A1A1A\b/, "primary ink must match the vector PDF exactly");
+  assert.match(css, /--orange:\s*#FF5C39\b/, "primary accent must match the vector PDF exactly");
+  assert.match(css, /--ink:\s*#1A1A1A\b/, "primary ink must match the vector PDF exactly");
 
   for (const path of await filesUnder(ROOT)) {
     const relative = path.slice(ROOT.length).replaceAll("\\", "/");

@@ -295,13 +295,13 @@ test("on production /admin/qr falls through to the page itself", async () => {
   assert.equal(await res.text(), ASSET_MARKER, "Access lets you in and there must be a page there");
 });
 
-test("on staging /admin is 404 — Access cannot protect a workers.dev host", async () => {
+test("on staging /admin serves the passwordless dashboard shell", async () => {
   for (const path of ["/admin/qr", "/admin/api/codes", "/admin"]) {
     const res = await worker.fetch(
       new Request(`https://adapt-to-life-staging.workers.dev${path}`),
       siteEnv({ STAGING: "1" }), { waitUntil() {} }
     );
-    assert.equal(res.status, 403, `${path} requires authentication on staging`);
+    assert.equal(res.status, path.startsWith('/admin/api/') ? 401 : 200, `${path} has the expected passwordless admin boundary`);
   }
 });
 
@@ -423,10 +423,10 @@ test("built assets are NOT swallowed by the shell fallback", async () => {
   assert.equal(asked, "/admin/app/assets/index-abc.js", "asset requests must pass straight through");
 });
 
-test("Mission Control requires authentication on staging", async () => {
+test("Mission Control is available for passwordless sign-in on staging", async () => {
   const res = await worker.fetch(
     new Request("https://staging.workers.dev/admin/app/qr"),
     siteEnv({ STAGING: "1" }), { waitUntil() {} }
   );
-  assert.equal(res.status, 403);
+  assert.equal(res.status, 200);
 });

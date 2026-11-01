@@ -12,7 +12,8 @@ import { verifyTurnstile, overFormLimit, RATE_LIMITED } from "./turnstile.js";
 import { handleEmail, handleAgentMailApi } from "./agent_mail.js";
 import { handleShopContact, runShopCrmBacklog, runShopNewsletterBacklog } from "./shop_contact.js";
 import { handleQr } from "./qr.js";
-import { handleAdmin, verifyAccess } from "./qr_admin.js";
+import { handleAdmin } from "./qr_admin.js";
+import { adminEmail, consumeLogin, readAdminSession, requestLogin, sendAdminLink } from "./asnm_admin_auth.js";
 import { syncGifts } from "./qr_gifts.js";
 import { fundPosition } from "./fund.js";
 import { handleGivebutterWebhook } from "./givebutter_webhook.js";
@@ -69,6 +70,309 @@ const VOLUNTEER_ROLES = [
 // Ticking every box is legitimate but a 27-item title and field is not useful,
 // and an attacker padding the array is not either.
 const MAX_ROLES = 12;
+
+const ADMIN_CACHE = "private, no-store";
+
+function adminSecret(env) {
+  return env.ADMIN_AUTH_SIGNING_KEY;
+}
+
+function approvedAdminOrigin(value) {
+  try {
+    const origin = new URL(value).origin;
+    const parsed = new URL(origin);
+    const local = ["127.0.0.1", "localhost", "[::1]"].includes(parsed.hostname);
+    const hosted =
+      parsed.hostname === "adapttolife.org" ||
+      parsed.hostname.endsWith(".adapttolife.org") ||
+      parsed.hostname.endsWith(".adapt-to-life.workers.dev");
+
+    if ((local && ["http:", "https:"].includes(parsed.protocol)) || (hosted && parsed.protocol === "https:")) {
+      return origin;
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
+export function adminLoginOrigin(request, url, requestedOrigin = "") {
+  const explicitOrigin = approvedAdminOrigin(requestedOrigin);
+  if (explicitOrigin) {
+    return explicitOrigin;
+  }
+
+  const forwardedHost = String(request.headers.get("X-Forwarded-Host") || "").split(",")[0].trim();
+  const host = forwardedHost || String(request.headers.get("Host") || "").trim();
+
+  if (!host) {
+    return url.origin;
+  }
+
+  try {
+    const origin = new URL(`${url.protocol}//${host}`).origin;
+    return new URL(origin).host === host.toLowerCase()
+      ? approvedAdminOrigin(origin) || url.origin
+      : url.origin;
+  } catch {
+    return url.origin;
+  }
+}
+
+export function useAsnmService(env) {
+  return env.ENV_NAME !== "staging" && Boolean(env.ASNM);
+}
+
+const ASNM_ADMIN_COLLECTIONS = {
+  organizations: {
+    table: "organizations",
+    name: "name",
+    fields: ["name", "org_type", "sport", "sport_key", "sports_json", "website_url", "email", "claim_email", "phone", "city", "state", "state_name", "zip", "address", "country", "lat", "lng", "geo_precision", "description", "cost_note", "equipment_provided", "ages", "data_quality_rating", "primary_data_source", "verification_status", "verification_method", "status", "is_public", "publicity_consent", "address_publicity_consent", "last_ok_at"],
+    booleans: ["equipment_provided", "is_public", "publicity_consent", "address_publicity_consent"],
+    numbers: ["lat", "lng"],
+  },
+  programs: {
+    table: "programs",
+    name: "name",
+    fields: ["organization_id", "name", "sport", "sport_key", "sports_json", "website_url", "email", "phone", "city", "state", "state_name", "zip", "address", "country", "lat", "lng", "geo_precision", "description", "cost_note", "equipment_provided", "ages", "verification_status", "verification_method", "status", "is_public", "publicity_consent", "address_publicity_consent", "last_ok_at", "kind", "listing", "seasons_json", "usual_month", "first_year", "slug"],
+    booleans: ["equipment_provided", "is_public", "publicity_consent", "address_publicity_consent"],
+    numbers: ["lat", "lng", "usual_month", "first_year"],
+  },
+  events: {
+    table: "events",
+    name: "title",
+    fields: ["title", "description", "org_id", "program_id", "sport_key", "venue", "city", "state", "url", "recap_url", "starts_at", "ends_at", "all_day", "status", "is_public", "source"],
+    booleans: ["all_day", "is_public"],
+    numbers: [],
+  },
+  grants: {
+    table: "grants",
+    name: "name",
+    fields: ["name", "source", "type", "audience", "amount_min_cents", "amount_max_cents", "amount_display", "deadline_display", "deadline_next", "description", "eligibility_criteria", "how_to_apply", "application_url", "source_url", "email", "phone", "sports_json", "is_open", "is_renewable", "is_public", "status"],
+    booleans: ["is_open", "is_renewable", "is_public"],
+    numbers: ["amount_min_cents", "amount_max_cents"],
+  },
+  blog: {
+    table: "blog_posts",
+    name: "title",
+    fields: ["title", "slug", "subtitle", "publish_at", "thumbnail_data_url", "content_markdown", "status", "is_public"],
+    booleans: ["is_public"],
+    numbers: [],
+  },
+};
+
+export function asnmAdminCollection(pathname) {
+  const match = pathname.match(/^\/admin\/api\/asnm\/admin-data\/(organizations|programs|events|grants|blog)(?:\/([0-9a-f-]{36}))?$/i);
+  return match ? ASNM_ADMIN_COLLECTIONS[match[1]] : null;
+}
+
+async function localAsnmAdminCollection(request, env, url) {
+  const match = url.pathname.match(/^\/admin\/api\/asnm\/admin-data\/(organizations|programs|events|grants|blog)(?:\/([0-9a-f-]{36}))?$/i);
+  const collection = asnmAdminCollection(url.pathname);
+  const id = match?.[2];
+  if (!collection || !["GET", "PATCH"].includes(request.method)) {
+    return null;
+  }
+
+  const query = String(url.searchParams.get("q") || "").trim().slice(0, 120);
+  const where = query ? ` WHERE ${collection.name} LIKE ? COLLATE NOCASE` : "";
+  const binds = query ? [`%${query}%`] : [];
+
+  try {
+    if (id && request.method === "GET") {
+      const item = await env.ASNM_DB.prepare(
+        `SELECT id, ${collection.fields.join(", ")}, created_at, updated_at FROM ${collection.table} WHERE id = ?`,
+      ).bind(id).first();
+      return item
+        ? json({ ok: true, item }, 200, ADMIN_CACHE)
+        : json({ ok: false, error: "Not found." }, 404, ADMIN_CACHE);
+    }
+
+    if (id && request.method === "PATCH") {
+      const input = await request.json().catch(() => null);
+      if (!input || typeof input !== "object" || Array.isArray(input)) {
+        return json({ ok: false, error: "Could not read your changes." }, 400, ADMIN_CACHE);
+      }
+      if (collection.table === "programs" && Object.hasOwn(input, "first_year") && input.first_year !== "") {
+        const firstYear = Number(input.first_year);
+        const currentYear = new Date().getUTCFullYear();
+        if (!Number.isInteger(firstYear) || firstYear < 1950 || firstYear > currentYear) {
+          return json({ ok: false, error: `First year must be between 1950 and ${currentYear}.` }, 422, ADMIN_CACHE);
+        }
+      }
+      const values = collection.fields
+        .filter((field) => Object.hasOwn(input, field))
+        .map((field) => {
+          const raw = input[field];
+          if (collection.booleans.includes(field)) return [field, [true, 1, "1", "true", "on"].includes(raw) ? 1 : 0];
+          if (collection.numbers.includes(field)) return [field, raw === "" || raw == null ? null : Number(raw)];
+          return [field, raw == null || raw === "" ? null : String(raw).trim()];
+        });
+      if (!values.length) return json({ ok: false, error: "No changes were provided." }, 400, ADMIN_CACHE);
+      const assignments = values.map(([field]) => `${field} = ?`).join(", ");
+      const result = await env.ASNM_DB.prepare(
+        `UPDATE ${collection.table} SET ${assignments}, updated_at = datetime('now') WHERE id = ?`,
+      ).bind(...values.map(([, value]) => value), id).run();
+      if (!Number(result.meta?.changes || 0)) return json({ ok: false, error: "Not found." }, 404, ADMIN_CACHE);
+      const item = await env.ASNM_DB.prepare(
+        `SELECT id, ${collection.fields.join(", ")}, created_at, updated_at FROM ${collection.table} WHERE id = ?`,
+      ).bind(id).first();
+      return json({ ok: true, item }, 200, ADMIN_CACHE);
+    }
+
+    if (id) return null;
+    const [count, rows] = await Promise.all([
+      env.ASNM_DB.prepare(`SELECT count(*) AS total FROM ${collection.table}${where}`)
+        .bind(...binds)
+        .first(),
+      env.ASNM_DB.prepare(
+        `SELECT id, ${collection.name} AS name, is_public, status, updated_at FROM ${collection.table}${where} ORDER BY ${collection.name} COLLATE NOCASE LIMIT 5000`,
+      )
+        .bind(...binds)
+        .all(),
+    ]);
+
+    return json(
+      {
+        ok: true,
+        total: Number(count?.total || 0),
+        items: rows.results || [],
+      },
+      200,
+      ADMIN_CACHE,
+    );
+  } catch (error) {
+    console.error("ASNM admin collection request failed", error);
+    return json(
+      { ok: false, error: "Could not load the Adaptive Sports Near Me directory." },
+      503,
+      ADMIN_CACHE,
+    );
+  }
+}
+
+async function localAsnmAdminActivity(request, env, url, session) {
+  const match = url.pathname.match(
+    /^\/admin\/api\/asnm\/admin-data\/organizations\/([0-9a-f-]{36})\/activity$/i,
+  );
+  if (!match || !["GET", "POST"].includes(request.method)) return null;
+
+  const organizationId = match[1];
+  try {
+    if (request.method === "GET") {
+      const rows = await env.ASNM_DB.prepare(
+        `SELECT id, kind, summary, actor, ref, created_at
+         FROM organization_activity
+         WHERE organization_id = ?
+         ORDER BY created_at DESC, rowid DESC
+         LIMIT 100`,
+      ).bind(organizationId).all();
+      return json({ ok: true, items: rows.results || [] }, 200, ADMIN_CACHE);
+    }
+
+    const body = await request.json().catch(() => null);
+    const note = String(body?.note || "").trim().slice(0, 500);
+    if (!note) return json({ ok: false, error: "Write the note first." }, 422, ADMIN_CACHE);
+
+    const organization = await env.ASNM_DB.prepare(
+      "SELECT id FROM organizations WHERE id = ?",
+    ).bind(organizationId).first();
+    if (!organization) return json({ ok: false, error: "Not found." }, 404, ADMIN_CACHE);
+
+    await env.ASNM_DB.prepare(
+      `INSERT INTO organization_activity
+       (id, organization_id, kind, summary, actor, ref, created_at)
+       VALUES (?, ?, 'note', ?, ?, NULL, ?)`,
+    ).bind(
+      crypto.randomUUID(),
+      organizationId,
+      note,
+      session.email,
+      new Date().toISOString(),
+    ).run();
+
+    const rows = await env.ASNM_DB.prepare(
+      `SELECT id, kind, summary, actor, ref, created_at
+       FROM organization_activity
+       WHERE organization_id = ?
+       ORDER BY created_at DESC, rowid DESC
+       LIMIT 100`,
+    ).bind(organizationId).all();
+    return json({ ok: true, items: rows.results || [] }, 201, ADMIN_CACHE);
+  } catch (error) {
+    console.error("ASNM organization activity request failed", error);
+    return json(
+      { ok: false, error: "Could not load this organization's activity right now." },
+      503,
+      ADMIN_CACHE,
+    );
+  }
+}
+
+async function adminSession(request, env) {
+  if (!env.ASNM_DB || !adminSecret(env)) return null;
+  return readAdminSession(request, env.ASNM_DB, adminSecret(env));
+}
+
+async function adminRequestLink(request, env, url) {
+  if (!env.ASNM_DB || !adminSecret(env)) return json({ ok: false, error: "Admin sign-in is not configured." }, 503, ADMIN_CACHE);
+  const body = await request.json().catch(() => null);
+  const email = adminEmail(body?.email);
+  if (!email) return json({ ok: false, error: "Use an @adapttolife.org, @adaptivesportsnearme.com, or @faisaln.com email address." }, 403, ADMIN_CACHE);
+  try {
+    const token = await requestLogin(env.ASNM_DB, email);
+    const origin = adminLoginOrigin(request, url, body?.origin);
+    const link = new URL("/admin/auth/verify", origin);
+    link.searchParams.set("token", token);
+    link.searchParams.set("origin", origin);
+    await sendAdminLink(env, email, link.toString());
+    return json({ ok: true }, 200, ADMIN_CACHE);
+  } catch (error) {
+    console.error("admin login link failed", error);
+    return json({ ok: false, error: "We could not send a sign-in link. Please try again." }, 503, ADMIN_CACHE);
+  }
+}
+
+async function adminVerifyLink(request, env, url) {
+  if (!env.ASNM_DB || !adminSecret(env)) return json({ ok: false, error: "Admin sign-in is not configured." }, 503, ADMIN_CACHE);
+  const origin = adminLoginOrigin(request, url, url.searchParams.get("origin") || "");
+  const session = await consumeLogin(
+    env.ASNM_DB,
+    url.searchParams.get("token") || "",
+    adminSecret(env),
+    { secure: origin.startsWith("https:") },
+  );
+  if (!session) return json({ ok: false, error: "This sign-in link has expired or was already used." }, 401, ADMIN_CACHE);
+  return new Response(null, {
+    status: 303,
+    headers: {
+      Location: new URL("/admin", origin).toString(),
+      "Set-Cookie": session.cookie,
+      "Cache-Control": "no-store",
+    },
+  });
+}
+
+async function proxyAsnmAdmin(request, env, url, session) {
+  const path = url.pathname.slice("/admin/api/asnm".length) || "/";
+  const origin = env.ASNM_ADMIN_ORIGIN || "https://adaptivesportsnearme.com";
+  const target = new URL(`/api${path}${url.search}`, origin);
+  const headers = new Headers(request.headers);
+  headers.set("Cookie", session.cookie);
+  headers.delete("host");
+  const forwarded = new Request(target, {
+    method: request.method,
+    headers,
+    body: ["GET", "HEAD"].includes(request.method)
+      ? undefined
+      : request.body,
+  });
+
+  return useAsnmService(env)
+    ? env.ASNM.fetch(forwarded)
+    : fetch(forwarded);
+}
 
 export default {
   async fetch(request, env, ctx) {
@@ -222,36 +526,28 @@ export default {
       return handleQr(request, env, url, ctx);
     }
 
-    // Spec 116 P2: the QR admin, behind the "ATL QR Admin" Cloudflare Access
-    // application on adapttolife.org/admin.
-    //
-    // Staging supports the admin surface too. Because Access is hostname-bound,
-    // verify authentication on staging pages as well as the existing API checks.
     if (url.pathname.startsWith("/admin")) {
-      // Preview hosts do not necessarily have an edge Access application.
-      // Allow authenticated staging access instead of disabling the route.
-      if (env.STAGING === "1" && !url.pathname.startsWith("/admin/api/") && !await verifyAccess(request)) {
-        return new Response("Forbidden", { status: 403 });
-      }
-      // Access gates the edge; src/qr_admin.js verifies the JWT again here, so
-      // the API cannot be reached by deleting or re-scoping the Access app.
+      if (url.pathname === "/admin/auth/request-link" && request.method === "POST") return adminRequestLink(request, env, url);
+      if (url.pathname === "/admin/auth/verify") return adminVerifyLink(request, env, url);
+      const session = await adminSession(request, env);
+      if (url.pathname === "/admin/auth/session") return json({ ok: !!session, email: session?.email || null }, session ? 200 : 401);
       if (url.pathname.startsWith("/admin/api/")) {
-        return handleAdmin(request, env, url);
+        if (!session) return json({ ok: false, error: "Sign in required." }, 401);
+        if (url.pathname.startsWith("/admin/api/asnm")) {
+          const localActivity = await localAsnmAdminActivity(request, env, url, session);
+          if (localActivity) return localActivity;
+          const localCollection = await localAsnmAdminCollection(request, env, url);
+          return localCollection || proxyAsnmAdmin(request, env, url, session);
+        }
+        return handleAdmin(request, env, url, session.email);
       }
-      // Mission Control (Spec 127) is a single-page app: its client routes are
-      // real URLs a person can bookmark or reload, but only /admin/app/ exists
-      // on disk. Anything under it that is not a built asset serves the app
-      // shell so the router can take over. Without this, reloading on
-      // /admin/app/qr 404s — the classic SPA deep-link failure.
-      if (url.pathname.startsWith("/admin/app") && !url.pathname.includes("/assets/")) {
+      if (!url.pathname.includes("/assets/")) {
         const shell = await env.ASSETS.fetch(new Request(`${url.origin}/admin/app/index.html`));
         return new Response(shell.body, {
           status: shell.status,
           headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" },
         });
       }
-      // /admin/qr — the original single-file page — is a static asset served
-      // below, and keeps working untouched for the whole migration (AC1).
     }
 
     // Reports have moved to their own Worker on reports.amelioration.is, behind

@@ -7,14 +7,12 @@ import staging from '../src/staging.js';
 const config = JSON.parse(readFileSync(new URL('../wrangler.jsonc', import.meta.url), 'utf8')
   .replace(/^\s*\/\/.*$/gm, '').replace(/,\s*([}\]])/g, '$1'));
 
-test('staging shares production data bindings, sends no mail and has no scheduled handler or cron', () => {
+test('staging uses its ASNM staging binding, supports passwordless admin mail, and has no cron', () => {
   const preview = config.env.staging;
-  for (const key of ['d1_databases', 'ratelimits']) {
-    assert.deepEqual(preview[key], config[key], key);
-  }
-  // Staging sends no mail of its own: no binding and an unsupported transport.
-  assert.equal(preview.send_email, undefined);
-  assert.equal(preview.vars.MAIL_TRANSPORT, 'none');
+  assert.deepEqual(preview.ratelimits, config.ratelimits);
+  assert.equal(preview.d1_databases.at(-1).database_name, 'asnm-db-staging');
+  assert.deepEqual(preview.send_email, [{ name: 'SEND_EMAIL' }]);
+  assert.equal(preview.vars.MAIL_TRANSPORT, 'gmail');
   for (const [key, value] of Object.entries(config.vars)) {
     if (key !== 'ENV_NAME' && key !== 'MAIL_TRANSPORT') assert.equal(preview.vars[key], value, key);
   }
@@ -49,11 +47,11 @@ test('staging delegates writes, backend routes and HTML without modifying contro
 });
 
 test('real application routes remain available with normal validation and authentication', async () => {
-  const env = { STAGING: '1', REPORT_LINK_BASE: 'https://reports.amelioration.is' };
+  const env = { STAGING: '1', REPORT_LINK_BASE: 'https://reports.amelioration.is', ASSETS: { fetch: async () => new Response('admin') } };
   const contact = await staging.fetch(new Request('https://staging.example/api/contact'), env, {});
   assert.equal(contact.status, 405); // Normal application method validation, not staging's blanket 403/404.
   const admin = await staging.fetch(new Request('https://staging.example/admin/app'), env, {});
-  assert.equal(admin.status, 403); // Authentication is still required.
+  assert.equal(admin.status, 200); // The passwordless login page is available on staging.
   const report = await staging.fetch(new Request('https://staging.example/r/example'), env, {});
   assert.equal(report.status, 302);
   assert.equal(report.headers.get('Location'), 'https://reports.amelioration.is/r/example');

@@ -121,7 +121,11 @@
     { "binding": "WAIVERS_DB", "database_name": "atl-waivers", "database_id": "a1050703-c625-4028-962b-49cc3fa317fd" },
     // Spec 32 agent email: threads/messages/inboxes (source of truth).
     { "binding": "AGENT_MAIL_DB", "database_name": "agent-mail", "database_id": "a280a0e4-96db-4b39-a1fb-99f57b8d27be" },
-    { "binding": "INTAKE", "database_name": "atl-intake", "database_id": "5f9c4771-25ba-4e83-aadf-00bc698329bf" }
+    { "binding": "INTAKE", "database_name": "atl-intake", "database_id": "5f9c4771-25ba-4e83-aadf-00bc698329bf" },
+    { "binding": "ASNM_DB", "database_name": "asnm-db", "database_id": "055916fd-3e58-4599-b11e-ffaedabe0f0b" }
+  ],
+  "services": [
+    { "binding": "ASNM", "service": "adaptivesportsnearme" }
   ],
   // Outbound email via Cloudflare Email Sending (native binding, no API key). Used by
   // src/email.js cfSend for agent replies + waiver receipts. Sender domains
@@ -167,9 +171,10 @@
         "R2_ACCESS_KEY_ID": "d27b427aadef63a7ec1e05eaec108bc0",
         // "none" is not a supported transport, so mailConfigured() is false and
         // staging sends no mail of its own (src/mail-transport.js).
-        "MAIL_TRANSPORT": "none",
+        "MAIL_TRANSPORT": "gmail",
         "GMAIL_FROM": "hello@adapttolife.org",
         "TURNSTILE_MODE": "off",
+        "ASNM_ADMIN_ORIGIN": "https://staging-adaptivesportsnearme.adapt-to-life.workers.dev",
         "RESEND_SEGMENT_ID": "a2640e82-34df-446d-b5f8-0ad6f31d352e"
       },
       "routes": [],
@@ -178,10 +183,11 @@
       "d1_databases": [
         { "binding": "WAIVERS_DB", "database_name": "atl-waivers", "database_id": "a1050703-c625-4028-962b-49cc3fa317fd" },
         { "binding": "AGENT_MAIL_DB", "database_name": "agent-mail", "database_id": "a280a0e4-96db-4b39-a1fb-99f57b8d27be" },
-        { "binding": "INTAKE", "database_name": "atl-intake", "database_id": "5f9c4771-25ba-4e83-aadf-00bc698329bf" }
+        { "binding": "INTAKE", "database_name": "atl-intake", "database_id": "5f9c4771-25ba-4e83-aadf-00bc698329bf" },
+        { "binding": "ASNM_DB", "database_name": "asnm-db-staging", "database_id": "d3f67da7-60a3-44b6-9215-28665492d3f9" }
       ],
       "r2_buckets": [],
-      // No send_email binding: staging must not send mail (see MAIL_TRANSPORT).
+      "send_email": [{ "name": "SEND_EMAIL" }],
       "ratelimits": [{ "name": "FORM_LIMITER", "namespace_id": "1001", "simple": { "limit": 6, "period": 60 } }],
       "triggers": { "crons": [] }
     }

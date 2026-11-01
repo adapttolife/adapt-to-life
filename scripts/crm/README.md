@@ -24,6 +24,14 @@ python3 scripts/crm/karen_sync.py --apply --retry-review
 Environment: `GOG` (default `gogbox`), `GOG_ACCOUNT` (default `alec@alecability.com`),
 `ATL_CRM_SHEET_ID` (default is the live CRM; point it at a copy to test).
 
+A run holds an exclusive lock for the whole read, plan, and apply, so a manual run and
+a cron run on this machine cannot hand out the same IDs or rows. The lock file is
+`KAREN_SYNC_LOCK` (default `<temp dir>/adapt-to-life-karen-sync.lock`, which is
+`/tmp/adapt-to-life-karen-sync.lock` when `TMPDIR` is unset). The second run waits
+until the first process exits. The lock releases on exit, including a crash. Do not
+delete the lock file. To verify: `test_run_lock_excludes_a_second_acquire` takes the
+lock and checks that another non-blocking acquire fails until the first one releases.
+
 Tests (no network): `python3 -m unittest scripts/crm/test_karen_sync.py`
 
 ## What it reads
@@ -49,14 +57,23 @@ Per Karen row (A or B present = person, only D present = organization):
 
 1. **Already filed** (L set): add any missing Type and Brands tokens to that People row, and
    for beta rows mirror the invite into People Status (`ASNM beta: Invited`) when Status is
-   blank or already an `ASNM beta:` value. Karen's E stays the source of truth; Karen is
-   never written for a filed row. Rows with only M set are left alone.
-2. **Email matches one People row** (trimmed, case-insensitive): link it (write L), add Type
-   and Brands tokens, mirror the beta invite. No other People field is touched.
-3. **Email on several People rows**, **same email twice on the Karen tab**, or **no email and
-   the exact name already exists in People**: write a `Needs review` note in N and create
+   blank or already an `ASNM beta:` value. Karen's E stays the source of truth. Before
+   trusting L, the Karen email must still match the People email on that Contact ID (both
+   blank also matches; a real address on either side must be the same address). On a
+   mismatch the house note becomes `Needs review: Contact ID email does not match` and
+   People is left unchanged. When the addresses match again, that note is cleared. Rows
+   with only M set are left alone.
+2. **Email matches one People row** (trimmed, case-insensitive, and the cell contains `@`):
+   link it (write L), add Type and Brands tokens, mirror the beta invite. No other People
+   field is touched. A People cell with no `@` is not a link.
+3. **Email on several People rows**, **same email twice on the Karen tab**, **no email and
+   the exact name already exists in People**, or **a Karen email cell with no `@`**
+   (a placeholder such as `n/a`): write a `Needs review` note in N and create
    nothing. Those rows are skipped on later runs unless `--retry-review`.
-4. **Otherwise** append a People row at the first empty row after the last Contact ID:
+4. **Otherwise** append a People row at the next empty row after the last Contact ID.
+   Emptiness is checked again for every allocated row (People, Organizations, and
+   Timeline). A filled row below a gap is skipped, not overwritten. If the next empty
+   row would sit past the grid, the run exits 2 and writes nothing. The new People row gets
    Name (Full name, or the email when no name was given so the duplicate checks still have
    something to compare), mapped Type, Email, Phone, Organization, Consent
    (`Not recorded; relationship only, not marketing consent`, or for beta rows
@@ -86,7 +103,10 @@ deletes, and never touches the feed tabs or the refresh owned tabs.
 
 ## Schedule hourly (draft, not installed)
 
-Open decision for Alec. Suggested on the Grok box, offset from the :17 source refresh:
+Hourly stays off until the CRO rechecks this follow-up (gap-safe rows, the `@` email
+rule, the stale Contact ID check, and the run lock). Do not install the line below and
+do not schedule it. Suggested shape, once that recheck passes, on the Grok box, offset
+from the :17 source refresh:
 
 ```cron
 # m h dom mon dow  command
@@ -94,7 +114,7 @@ Open decision for Alec. Suggested on the Grok box, offset from the :17 source re
 ```
 
 Or as a Hermes no-agent job next to `atl-relationship-crm` refresh (`cron: "47 * * * *"`,
-command as above). Until then Julia or the CRO runs it on demand.
+command as above). Until that recheck, run it on demand.
 
 ## Rollback
 

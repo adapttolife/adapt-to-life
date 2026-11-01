@@ -52,6 +52,10 @@ PEOPLE_HEADERS = ["Name", "Type", "Donor Type", "Volunteer Season", "Email", "Ph
                   "Quality flags"]
 ORG_HEADERS_REQUIRED = ["Organization", "Notes", "Organization ID", "Relationship owner", "Stage",
                         "Source", "Verified on", "Context"]
+# Columns written on a new Organizations row. Emptiness uses this whole list, same as
+# People and Timeline check every column they treat as data. A notes-only row is occupied.
+ORG_WRITE_HEADERS = ["Organization", "Notes", "Organization ID", "Relationship owner", "Stage",
+                     "Source", "Context"]
 TIMELINE_HEADERS = ["Interaction ID", "Date", "Contact ID", "Contact", "Organization ID", "Channel",
                     "Direction", "Summary", "Exact words / detailed notes",
                     "Commitment or next step", "Evidence", "Recorded by", "Event ID"]
@@ -346,7 +350,7 @@ def plan_sync(karen_rows: list[list], people: Table, orgs: Table, timeline: Tabl
     new_iid = next_id([s(timeline.cell(i, "Interaction ID")) for i in range(len(timeline.rows))], "ATL-I-")
 
     people_data = [h for h in PEOPLE_HEADERS if h != "Quality flags"]
-    org_data = ORG_HEADERS_REQUIRED[:1] + ["Organization ID"]
+    org_data = ORG_WRITE_HEADERS
     tl_data = TIMELINE_HEADERS
     # Eager check: a full grid fails the run even when this plan appends nothing.
     # Later allocations call take_free_row again so a filled row under a gap is skipped.

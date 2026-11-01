@@ -301,6 +301,31 @@ class PlanTests(unittest.TestCase):
         self.assertEqual(plan.people_new[0]["row"], 7)
         self.assertEqual(plan.timeline_new[0]["row"], 3)
 
+    def test_org_row_with_only_non_id_fields_is_not_overwritten(self):
+        # Last Organization ID is on row 2. Row 3 has only a column the filer also writes
+        # (Notes, Relationship owner, Stage, Source, or Context) and no Organization or ID.
+        # The old check looked only at Organization and Organization ID, so it would
+        # have planned row 3 and overwritten that cell.
+        for header, value in (
+            ("Notes", "hand typed note"),
+            ("Relationship owner", "Alex"),
+            ("Stage", "Talking"),
+            ("Source", "manual"),
+            ("Context", "met at the rink"),
+        ):
+            with self.subTest(header=header):
+                people, orgs, timeline = tables()
+                occupied = [""] * len(ORG_HEADER)
+                occupied[ORG_HEADER.index(header)] = value
+                orgs.rows = [org("Lakeshore Foundation", "ATL-O-000001"), occupied]
+                plan = ks.plan_sync(
+                    [karen(org_="One Org", kind="Business")],
+                    people, orgs, timeline, TODAY)
+                self.assertEqual([o["row"] for o in plan.orgs_new], [4])
+                self.assertNotIn(3, [o["row"] for o in plan.orgs_new])
+                self.assertEqual(orgs.rows[1][ORG_HEADER.index(header)], value)
+                self.assertEqual(set(plan.orgs_new[0]["values"]), set(ks.ORG_WRITE_HEADERS))
+
     def test_org_gap_is_not_overwritten(self):
         people, orgs, timeline = tables()
         blank = [""] * len(ORG_HEADER)

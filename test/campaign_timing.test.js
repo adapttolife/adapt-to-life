@@ -13,7 +13,9 @@ async function text(path) {
 
 test("Spring 2027 is part of the canonical Send 6 campaign name", async () => {
   const campaigns = JSON.parse(await text("public/data/campaigns.json"));
-  const send6 = campaigns.campaigns.find((campaign) => campaign.slug === "send-6-us-open");
+  const send6 = campaigns.campaigns.find(
+    (campaign) => campaign.slug === "send-6-us-open",
+  );
   assert.equal(send6?.name, CAMPAIGN);
   assert.equal(send6?.when, "Spring 2027, Naples, Florida");
 });
@@ -26,11 +28,17 @@ test("campaign page and supporting cards name Spring 2027", async () => {
   ]);
 
   assert.ok(page.includes(`<title>${CAMPAIGN} | Adapt To Life</title>`));
-  assert.ok(page.includes(`<meta property="og:title" content="${CAMPAIGN} | Adapt To Life">`));
-  assert.ok(page.includes(`<meta name="twitter:title" content="${CAMPAIGN} | Adapt To Life">`));
+  assert.ok(
+    page.includes(`<meta property="og:title" content="${CAMPAIGN} | Adapt To Life">`),
+  );
+  assert.ok(
+    page.includes(`<meta name="twitter:title" content="${CAMPAIGN} | Adapt To Life">`),
+  );
   assert.ok(page.includes(`<h1 class="serif display reveal">${CAMPAIGN}.</h1>`));
   assert.ok(fund.includes(`>${CAMPAIGN}</p>`));
-  assert.ok(fund.includes('href="/send-6" class="thermo-link">View the Send 6 campaign'));
+  assert.ok(
+    fund.includes('href="/send-6" class="thermo-link">View the Send 6 campaign'),
+  );
   assert.ok(popcorn.includes(`>${CAMPAIGN}</a>`));
 });
 
@@ -46,6 +54,6 @@ test("social metadata and generated card source carry Spring 2027", async () => 
   // whole point of alt. The invariant this test exists for is untouched: the
   // campaign name AND its date still have to reach the share metadata, so the
   // closing quote is dropped and nothing else.
-  assert.ok(wire.includes(`"send-6": "${CAMPAIGN}. Adapt To Life.`));
+  assert.match(wire, new RegExp(`"send-6":\\s*"${CAMPAIGN}\\. Adapt To Life\\.`));
   assert.ok(generator.includes(`Send 6 to the <em>US Open</em> Spring 2027.`));
 });

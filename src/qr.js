@@ -27,9 +27,9 @@
 // is unreachable, and the seed the migration copied into qr_codes. Keep it in
 // sync with the table only for codes that are physically in the world.
 const SEED = {
-  chair:   { to: "/send-6",  label: "Chair sticker", surface: "chair-sticker" },
-  sign:    { to: "/send-6",  label: "Event signage", surface: "signage" },
-  card:    { to: "/send-6",  label: "Hand card",     surface: "hand-card" },
+  chair: { to: "/send-6", label: "Chair sticker", surface: "chair-sticker" },
+  sign: { to: "/send-6", label: "Event signage", surface: "signage" },
+  card: { to: "/send-6", label: "Hand card", surface: "hand-card" },
   popcorn: { to: "/popcorn", label: "Popcorn drive", surface: "print" },
 };
 
@@ -62,7 +62,7 @@ async function loadCodes(env) {
   try {
     if (!env.WAIVERS_DB) return null;
     const { results } = await env.WAIVERS_DB.prepare(
-      `SELECT slug, dest, rule, label, surface, active FROM qr_codes`
+      `SELECT slug, dest, rule, label, surface, active FROM qr_codes`,
     ).all();
     const map = new Map();
     for (const r of results || []) map.set(r.slug, r);
@@ -104,7 +104,9 @@ export function chicagoToday(nowMs) {
   // campaigns.json without parsing either side into a Date.
   return new Intl.DateTimeFormat("en-CA", {
     timeZone: "America/Chicago",
-    year: "numeric", month: "2-digit", day: "2-digit",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
   }).format(new Date(nowMs));
 }
 
@@ -185,7 +187,11 @@ export function deviceOf(ua) {
 // into a search box, and we have no use for it.
 export function referrerHost(ref) {
   if (!ref) return null;
-  try { return new URL(ref).host || null; } catch { return null; }
+  try {
+    return new URL(ref).host || null;
+  } catch {
+    return null;
+  }
 }
 
 // Attribution params. utm_* and gba_source are the ones Givebutter's embedded
@@ -206,14 +212,21 @@ export function attributionParams(slug, surface, known) {
 
 // Kept deliberately small: a redirect that has to think is a redirect that breaks.
 export async function handleQr(request, env, url, ctx) {
-  const slug = url.pathname.replace(/^\/q\//, "").replace(/\/+$/, "").toLowerCase();
+  const slug = url.pathname
+    .replace(/^\/q\//, "")
+    .replace(/\/+$/, "")
+    .toLowerCase();
 
   const map = await loadCodes(env);
   const row = map ? map.get(slug) : null;
   const seed = SEED[slug];
   // A row that exists but is retired still redirects (D4) — it just stops being
   // minted. Only a slug we have never heard of falls through to /donate.
-  const entry = row || (seed ? { dest: seed.to, label: seed.label, surface: seed.surface, active: 1 } : null);
+  const entry =
+    row ||
+    (seed
+      ? { dest: seed.to, label: seed.label, surface: seed.surface, active: 1 }
+      : null);
   const known = Boolean(entry);
 
   // Read the clock only AFTER the D1 read above. Before any I/O, a Workers
@@ -222,9 +235,8 @@ export async function handleQr(request, env, url, ctx) {
 
   let dest = "/donate";
   if (entry) {
-    const drives = entry.rule === "campaign-follow"
-      ? await loadCampaigns(env, url.origin)
-      : null;
+    const drives =
+      entry.rule === "campaign-follow" ? await loadCampaigns(env, url.origin) : null;
     dest = resolveDest(entry, drives, chicagoToday(now));
   }
 
@@ -239,7 +251,7 @@ export async function handleQr(request, env, url, ctx) {
   }
 
   if (ctx && typeof ctx.waitUntil === "function") {
-    const kind = !known ? "unknown" : (row && row.active === 0 ? "retired" : "known");
+    const kind = !known ? "unknown" : row && row.active === 0 ? "retired" : "known";
     ctx.waitUntil(countScan(env, request, slug, kind));
   }
 
@@ -267,7 +279,7 @@ async function countScan(env, request, slug, kind) {
     await env.WAIVERS_DB.prepare(
       `INSERT INTO qr_scans (slug, kind, scanned_at, country, region, city, device, referrer,
                              latitude, longitude, postal_code, continent, timezone, network, colo, os, browser)
-       VALUES (?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now'), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+       VALUES (?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now'), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
       .bind(
         slug,
@@ -285,7 +297,7 @@ async function countScan(env, request, slug, kind) {
         cf.asOrganization || null,
         cf.colo || null,
         osOf(ua),
-        browserOf(ua)
+        browserOf(ua),
       )
       .run();
   } catch (err) {

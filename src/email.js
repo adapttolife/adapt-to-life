@@ -1,4 +1,4 @@
-import { sendMail } from './mail-transport.js';
+import { sendMail } from "./mail-transport.js";
 // Transactional mail through the explicitly selected transport. Gmail is opt-in
 // and fails closed; the cfSend name is retained for caller compatibility.
 export async function cfSend(env, message) {
@@ -22,8 +22,9 @@ export const HOUSE_FROM = "Adapt To Life <hello@adapttolife.org>";
 export const HOUSE_INBOX = "hello@adapttolife.org";
 
 export const esc = (s) =>
-  String(s ?? "").replace(/[&<>"']/g, (c) =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])
+  String(s ?? "").replace(
+    /[&<>"']/g,
+    (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c],
   );
 
 const SIGNOFF_TEXT = "Adapt To Life\n501(c)(3) nonprofit, EIN 41-3213344";
@@ -84,14 +85,15 @@ export function houseLabel(text) {
 export async function recordTransactionalFailure(env, route, toAddr, err) {
   try {
     if (!env.AGENT_MAIL_DB) return;
-    await env.AGENT_MAIL_DB
-      .prepare(`INSERT INTO send_failures (id, ts, route, to_addr, error) VALUES (?, ?, ?, ?, ?)`)
+    await env.AGENT_MAIL_DB.prepare(
+      `INSERT INTO send_failures (id, ts, route, to_addr, error) VALUES (?, ?, ?, ?, ?)`,
+    )
       .bind(
         crypto.randomUUID(),
         Math.floor(Date.now() / 1000),
         route,
         String(toAddr || ""),
-        String((err && err.message) || err).slice(0, 2000)
+        String((err && err.message) || err).slice(0, 2000),
       )
       .run();
   } catch (e) {

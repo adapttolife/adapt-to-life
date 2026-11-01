@@ -18,19 +18,31 @@
 // Every file is decode-verified before it is written. An archive of artwork
 // that does not scan is worse than no archive, because it looks like insurance.
 
-import fs from 'fs';
-import path from 'path';
-import { execFileSync } from 'child_process';
-import { chromium } from 'playwright';
-import { PNG } from 'pngjs';
-import jsQR from 'jsqr';
-import { renderCode, BASE } from './lib/qr-art.mjs';
+import fs from "fs";
+import path from "path";
+import { execFileSync } from "child_process";
+import { chromium } from "playwright";
+import { PNG } from "pngjs";
+import jsQR from "jsqr";
+import { renderCode, BASE } from "./lib/qr-art.mjs";
 
 const args = process.argv.slice(2);
-const flag = (n, d) => { const h = args.find(a => a.startsWith(`--${n}=`)); return h ? h.split('=').slice(1).join('=') : d; };
-const SLUGS = flag('slugs', 'chair,sign,card,popcorn').split(',').map(s => s.trim()).filter(Boolean);
-const STAMP = flag('stamp', new Date().toISOString().slice(0, 10));
-const OUT = flag('out', path.join(process.env.ATL_QR_OUT || path.join(process.cwd(), 'public/qr'), `archive-${STAMP}`));
+const flag = (n, d) => {
+  const h = args.find((a) => a.startsWith(`--${n}=`));
+  return h ? h.split("=").slice(1).join("=") : d;
+};
+const SLUGS = flag("slugs", "chair,sign,card,popcorn")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
+const STAMP = flag("stamp", new Date().toISOString().slice(0, 10));
+const OUT = flag(
+  "out",
+  path.join(
+    process.env.ATL_QR_OUT || path.join(process.cwd(), "public/qr"),
+    `archive-${STAMP}`,
+  ),
+);
 
 // One PNG size, chosen so it is big enough for anything: 2048px across a code
 // that is at most a couple of inches on paper is far past what any printer
@@ -39,9 +51,24 @@ const OUT = flag('out', path.join(process.env.ATL_QR_OUT || path.join(process.cw
 const PNG_TARGET = 2048;
 
 const VARIANTS = [
-  { style: 'frame', ink: 'mono',  label: 'frame-bw',    note: 'The default. Cream-free, one ink, SCAN TO GIVE caption.' },
-  { style: 'plain', ink: 'mono',  label: 'plain-bw',    note: 'Code only, no caption or tile. For tight spaces.' },
-  { style: 'frame', ink: 'brand', label: 'frame-brand', note: 'Cream tile and orange hub. Full-colour printing only.' },
+  {
+    style: "frame",
+    ink: "mono",
+    label: "frame-bw",
+    note: "The default. Cream-free, one ink, SCAN TO GIVE caption.",
+  },
+  {
+    style: "plain",
+    ink: "mono",
+    label: "plain-bw",
+    note: "Code only, no caption or tile. For tight spaces.",
+  },
+  {
+    style: "frame",
+    ink: "brand",
+    label: "frame-brand",
+    note: "Cream tile and orange hub. Full-colour printing only.",
+  },
 ];
 
 fs.mkdirSync(OUT, { recursive: true });
@@ -62,31 +89,40 @@ for (const slug of SLUGS) {
     const grid = art.modules + 8;
     const W = Math.round(PNG_TARGET / grid) * grid;
     await page.setContent(
-      `<html><head><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@700&display=swap"></head>`
-      + `<body style="margin:0;background:#fff"><div id="w" style="width:${W}px">`
-      + art.svg.replace(/ width="[\d.]+" height="[\d.]+"/, ` width="${W}"`) + `</div></body></html>`);
+      `<html><head><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@700&display=swap"></head>` +
+        `<body style="margin:0;background:#fff"><div id="w" style="width:${W}px">` +
+        art.svg.replace(/ width="[\d.]+" height="[\d.]+"/, ` width="${W}"`) +
+        `</div></body></html>`,
+    );
     await page.waitForTimeout(700);
     const pngPath = path.join(OUT, `${stem}.png`);
-    await (await page.$('#w')).screenshot({ path: pngPath });
+    await (await page.$("#w")).screenshot({ path: pngPath });
 
     const img = PNG.sync.read(fs.readFileSync(pngPath));
     const got = jsQR(new Uint8ClampedArray(img.data), img.width, img.height);
     const ok = got && got.data === url;
-    if (!ok) { failed++; console.error(`  DECODE FAILED  ${stem}`); }
+    if (!ok) {
+      failed++;
+      console.error(`  DECODE FAILED  ${stem}`);
+    }
     made.push({ slug, ...v, stem, ok });
   }
 }
 await browser.close();
 
 if (failed) {
-  console.error(`\n  ${failed} file(s) failed to decode. Archive NOT written — insurance that does not scan is worse than none.\n`);
+  console.error(
+    `\n  ${failed} file(s) failed to decode. Archive NOT written — insurance that does not scan is worse than none.\n`,
+  );
   fs.rmSync(OUT, { recursive: true, force: true });
   process.exit(1);
 }
 
 // A README that assumes the reader has none of our tooling and possibly none
 // of our context.
-fs.writeFileSync(path.join(OUT, 'README.txt'), `ADAPT TO LIFE — QR CODE ARTWORK
+fs.writeFileSync(
+  path.join(OUT, "README.txt"),
+  `ADAPT TO LIFE — QR CODE ARTWORK
 Generated ${STAMP}
 
 WHAT THESE ARE
@@ -112,7 +148,10 @@ WHICH FILE TO USE
   *-frame-brand  Cream and orange version. Full-colour printing only.
 
 THE CODES
-${made.filter(m => m.style === 'frame' && m.ink === 'mono').map(m => `  ${m.slug.padEnd(9)} ${BASE}${m.slug}`).join('\n')}
+${made
+  .filter((m) => m.style === "frame" && m.ink === "mono")
+  .map((m) => `  ${m.slug.padEnd(9)} ${BASE}${m.slug}`)
+  .join("\n")}
 
 RULES THAT MATTER WHEN PRINTING
 1. Never print smaller than 30mm (1.2in) wide for the framed version. Below
@@ -130,12 +169,17 @@ RULES THAT MATTER WHEN PRINTING
 IF YOU NEED A SIZE OR A CODE THAT IS NOT HERE
 In the adapt-to-life repo:  node scripts/make-qr-sheet.mjs <slug> --size=45mm
 Full guidance:              docs/qr-print.md
-`);
+`,
+);
 
-const manifest = made.map(m => `${m.stem}.svg / .png   ${m.slug}   ${m.note}`).join('\n');
-fs.writeFileSync(path.join(OUT, 'MANIFEST.txt'), `${manifest}\n`);
+const manifest = made
+  .map((m) => `${m.stem}.svg / .png   ${m.slug}   ${m.note}`)
+  .join("\n");
+fs.writeFileSync(path.join(OUT, "MANIFEST.txt"), `${manifest}\n`);
 
 console.log(`\n  ${made.length} files, all decode-verified`);
 console.log(`  → ${OUT}\n`);
-console.log(`  Codes: ${SLUGS.join(', ')}`);
-console.log(`  Variants: ${VARIANTS.map(v => v.label).join(', ')} (svg + png each)\n`);
+console.log(`  Codes: ${SLUGS.join(", ")}`);
+console.log(
+  `  Variants: ${VARIANTS.map((v) => v.label).join(", ")} (svg + png each)\n`,
+);

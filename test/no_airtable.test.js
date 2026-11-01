@@ -16,7 +16,11 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 function sourceFiles(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
-    e.isDirectory() ? sourceFiles(join(dir, e.name)) : e.name.endsWith(".js") ? [join(dir, e.name)] : []
+    e.isDirectory()
+      ? sourceFiles(join(dir, e.name))
+      : e.name.endsWith(".js")
+        ? [join(dir, e.name)]
+        : [],
   );
 }
 
@@ -35,6 +39,10 @@ test("no Worker config carries Airtable variables", () => {
   const configs = readdirSync(root).filter((f) => /^wrangler.*\.jsonc$/.test(f));
   assert.ok(configs.length >= 3, "expected the site, reports and agent-mail configs");
   for (const c of configs) {
-    assert.doesNotMatch(readFileSync(join(root, c), "utf8"), /AIRTABLE/, `${c} still carries Airtable config`);
+    assert.doesNotMatch(
+      readFileSync(join(root, c), "utf8"),
+      /AIRTABLE/,
+      `${c} still carries Airtable config`,
+    );
   }
 });

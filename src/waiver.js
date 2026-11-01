@@ -1,4 +1,4 @@
-import { mailConfigured } from './mail-transport.js';
+import { mailConfigured } from "./mail-transport.js";
 // Waiver / release e-signature — Cloudflare-native.
 // Same shape as the other /api handlers: honeypot -> Turnstile -> validate -> act.
 // "Act" = render a clean, branded signed PDF (document + signature certificate) with
@@ -36,35 +36,62 @@ const DOC = {
   intro:
     "By signing below, you give Adapt To Life NFP permission to take and use photos, video, and recordings of you (or your child) from our programs and activities. Please read it. It explains how the materials may be used, your consent to sign electronically, and how to withdraw permission.",
   sections: [
-    { h: "Who this is with", p: [
-      "Adapt To Life NFP is an Illinois not-for-profit corporation, tax-exempt under Section 501(c)(3) of the Internal Revenue Code (EIN 41-3213344). This release covers Adapt To Life NFP and all of its programs, projects, and initiatives, including Adaptive Sports Near Me (adaptivesportsnearme.com), now and in the future, along with its successors, assigns, and anyone it authorizes such as staff, volunteers, contractors, partners, and sponsors.",
-      "In this release, \"Materials\" means photographs, video, film, and audio recordings of the participant, together with the participant's name, image, likeness, and voice.",
-    ]},
-    { h: "Permission to record and use", p: [
-      "In consideration of the opportunity to take part in Adapt To Life NFP's programs and to support its charitable mission, I irrevocably grant Adapt To Life NFP and those it authorizes the right to photograph, film, and record the participant, and to use, edit, reproduce, publish, distribute, and display the Materials for any lawful purpose connected to its mission. This includes its websites, social media, print, email, fundraising, and promotional and educational materials, in any media now known or later developed, worldwide, and for as long as Adapt To Life NFP finds them useful.",
-      "This is my written consent under any applicable right of publicity and privacy laws. Adapt To Life NFP is not required to use the Materials.",
-    ]},
-    { h: "Ownership and no payment", p: [
-      "All Materials are owned by Adapt To Life NFP. I have no right to inspect or approve how they are used, and I will not be paid for this release or for any use of the Materials.",
-    ]},
-    { h: "Images from adaptive sports programs", p: [
-      "I understand the Materials may identify the participant as a person with a disability or as someone who takes part in adaptive sports programs, and I consent to their use on that basis.",
-    ]},
-    { h: "Release of claims", p: [
-      "I release Adapt To Life NFP and its directors, officers, employees, volunteers, and those it authorizes from any claim arising out of the authorized recording, use, or publication of the Materials. This includes any claim for invasion of privacy, right of publicity, defamation, false light, or emotional distress, and any claim based on how the Materials are edited or used.",
-    ]},
-    { h: "If I am signing for a minor", p: [
-      "If the participant is under 18, I confirm that I am the participant's parent or legal guardian, that I have authority to grant these rights on the participant's behalf, and that I am signing for the participant. I understand a minor cannot grant these rights alone. This release binds the participant, me, and our heirs.",
-    ]},
-    { h: "Electronic signature and records", p: [
-      "I agree to do business electronically and to sign this release electronically. My electronic signature has the same legal effect as a handwritten one. Adapt To Life NFP will keep an electronic record of this signed release, and I may request a paper copy by emailing hello@adapttolife.org.",
-    ]},
-    { h: "Withdrawing permission", p: [
-      "Although this grant is irrevocable, I may ask Adapt To Life NFP to stop future use by writing to hello@adapttolife.org. It will make reasonable efforts to stop using the participant's image in new Materials, but Materials already shared or published may continue to circulate.",
-    ]},
-    { h: "General", p: [
-      "This release is binding on me, the participant, and our heirs, and benefits Adapt To Life NFP and its successors and assigns. It is governed by the laws of the State of Illinois, except where the law of the participant's home state must apply, in which case it will be enforced to the fullest extent that law allows. If any part is unenforceable, the rest stays in effect. This is the entire agreement on this subject.",
-    ]},
+    {
+      h: "Who this is with",
+      p: [
+        "Adapt To Life NFP is an Illinois not-for-profit corporation, tax-exempt under Section 501(c)(3) of the Internal Revenue Code (EIN 41-3213344). This release covers Adapt To Life NFP and all of its programs, projects, and initiatives, including Adaptive Sports Near Me (adaptivesportsnearme.com), now and in the future, along with its successors, assigns, and anyone it authorizes such as staff, volunteers, contractors, partners, and sponsors.",
+        'In this release, "Materials" means photographs, video, film, and audio recordings of the participant, together with the participant\'s name, image, likeness, and voice.',
+      ],
+    },
+    {
+      h: "Permission to record and use",
+      p: [
+        "In consideration of the opportunity to take part in Adapt To Life NFP's programs and to support its charitable mission, I irrevocably grant Adapt To Life NFP and those it authorizes the right to photograph, film, and record the participant, and to use, edit, reproduce, publish, distribute, and display the Materials for any lawful purpose connected to its mission. This includes its websites, social media, print, email, fundraising, and promotional and educational materials, in any media now known or later developed, worldwide, and for as long as Adapt To Life NFP finds them useful.",
+        "This is my written consent under any applicable right of publicity and privacy laws. Adapt To Life NFP is not required to use the Materials.",
+      ],
+    },
+    {
+      h: "Ownership and no payment",
+      p: [
+        "All Materials are owned by Adapt To Life NFP. I have no right to inspect or approve how they are used, and I will not be paid for this release or for any use of the Materials.",
+      ],
+    },
+    {
+      h: "Images from adaptive sports programs",
+      p: [
+        "I understand the Materials may identify the participant as a person with a disability or as someone who takes part in adaptive sports programs, and I consent to their use on that basis.",
+      ],
+    },
+    {
+      h: "Release of claims",
+      p: [
+        "I release Adapt To Life NFP and its directors, officers, employees, volunteers, and those it authorizes from any claim arising out of the authorized recording, use, or publication of the Materials. This includes any claim for invasion of privacy, right of publicity, defamation, false light, or emotional distress, and any claim based on how the Materials are edited or used.",
+      ],
+    },
+    {
+      h: "If I am signing for a minor",
+      p: [
+        "If the participant is under 18, I confirm that I am the participant's parent or legal guardian, that I have authority to grant these rights on the participant's behalf, and that I am signing for the participant. I understand a minor cannot grant these rights alone. This release binds the participant, me, and our heirs.",
+      ],
+    },
+    {
+      h: "Electronic signature and records",
+      p: [
+        "I agree to do business electronically and to sign this release electronically. My electronic signature has the same legal effect as a handwritten one. Adapt To Life NFP will keep an electronic record of this signed release, and I may request a paper copy by emailing hello@adapttolife.org.",
+      ],
+    },
+    {
+      h: "Withdrawing permission",
+      p: [
+        "Although this grant is irrevocable, I may ask Adapt To Life NFP to stop future use by writing to hello@adapttolife.org. It will make reasonable efforts to stop using the participant's image in new Materials, but Materials already shared or published may continue to circulate.",
+      ],
+    },
+    {
+      h: "General",
+      p: [
+        "This release is binding on me, the participant, and our heirs, and benefits Adapt To Life NFP and its successors and assigns. It is governed by the laws of the State of Illinois, except where the law of the participant's home state must apply, in which case it will be enforced to the fullest extent that law allows. If any part is unenforceable, the rest stays in effect. This is the entire agreement on this subject.",
+      ],
+    },
   ],
 };
 // One universal document; `org` only records which site the signer came from.
@@ -74,8 +101,8 @@ function canonicalText(doc) {
   let s = `${doc.org}\n${doc.title}\nversion:${doc.version}\n\n${doc.intro}\n`;
   for (const sec of doc.sections) {
     s += `\n## ${sec.h}\n`;
-    for (const p of (sec.p || [])) s += p + "\n";
-    for (const li of (sec.ul || [])) s += "- " + li + "\n";
+    for (const p of sec.p || []) s += p + "\n";
+    for (const li of sec.ul || []) s += "- " + li + "\n";
   }
   return s;
 }
@@ -85,57 +112,129 @@ function canonicalText(doc) {
 export function handleWaiverDoc(request, env) {
   const org = new URL(request.url).searchParams.get("org") === "asnm" ? "asnm" : "atl";
   const doc = DOCS[org];
-  return json({ ok: true, org, doc: { org: doc.org, domains: doc.domains, title: doc.title, version: doc.version, intro: doc.intro, sections: doc.sections } });
+  return json({
+    ok: true,
+    org,
+    doc: {
+      org: doc.org,
+      domains: doc.domains,
+      title: doc.title,
+      version: doc.version,
+      intro: doc.intro,
+      sections: doc.sections,
+    },
+  });
 }
 
 export async function handleWaiver(request, env) {
   let data;
   try {
     const ct = request.headers.get("content-type") || "";
-    data = ct.includes("application/json") ? await request.json() : Object.fromEntries(await request.formData());
+    data = ct.includes("application/json")
+      ? await request.json()
+      : Object.fromEntries(await request.formData());
   } catch {
     return json({ ok: false, error: "Could not read your submission." }, 400);
   }
 
   if (str(data.company)) return json({ ok: true }); // honeypot
 
-  if (!(await verifyTurnstile(env, str(data.cf_token), request.headers.get("CF-Connecting-IP")))) {
-    return json({ ok: false, error: "Verification failed. Please reload the page and try again." }, 403);
+  if (
+    !(await verifyTurnstile(
+      env,
+      str(data.cf_token),
+      request.headers.get("CF-Connecting-IP"),
+    ))
+  ) {
+    return json(
+      {
+        ok: false,
+        error: "Verification failed. Please reload the page and try again.",
+      },
+      403,
+    );
   }
 
   const org = str(data.org) === "asnm" ? "asnm" : "atl";
   const doc = DOCS[org];
   const isMinor = str(data.signer_kind) === "guardian";
-  const name = str(data.name);              // adult participant, or guardian's name
+  const name = str(data.name); // adult participant, or guardian's name
   const email = str(data.em);
   const minorName = str(data.minor_name);
   const relationship = str(data.relationship);
   const program = str(data.program, 200);
   const signatureDataUrl = str(data.signature, 2_000_000);
   const signatureType = str(data.signature_type) === "typed" ? "typed" : "drawn";
-  const agreed = data.agree === true || str(data.agree) === "on" || str(data.agree) === "true";
+  const agreed =
+    data.agree === true || str(data.agree) === "on" || str(data.agree) === "true";
 
-  if (!name) return json({ ok: false, error: isMinor ? "Please enter the parent or guardian's full name." : "Please type your full name." }, 422);
-  if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json({ ok: false, error: "A valid email is required." }, 422);
-  if (isMinor && !minorName) return json({ ok: false, error: "Please enter the minor participant's name." }, 422);
-  if (isMinor && !relationship) return json({ ok: false, error: "Please enter your relationship to the minor." }, 422);
-  if (!agreed) return json({ ok: false, error: "Please check the box to agree to the release." }, 422);
-  if (!signatureDataUrl.startsWith("data:image/png;base64,")) return json({ ok: false, error: "Please add your signature." }, 422);
+  if (!name)
+    return json(
+      {
+        ok: false,
+        error: isMinor
+          ? "Please enter the parent or guardian's full name."
+          : "Please type your full name.",
+      },
+      422,
+    );
+  if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))
+    return json({ ok: false, error: "A valid email is required." }, 422);
+  if (isMinor && !minorName)
+    return json(
+      { ok: false, error: "Please enter the minor participant's name." },
+      422,
+    );
+  if (isMinor && !relationship)
+    return json(
+      { ok: false, error: "Please enter your relationship to the minor." },
+      422,
+    );
+  if (!agreed)
+    return json(
+      { ok: false, error: "Please check the box to agree to the release." },
+      422,
+    );
+  if (!signatureDataUrl.startsWith("data:image/png;base64,"))
+    return json({ ok: false, error: "Please add your signature." }, 422);
 
   const id = crypto.randomUUID();
   const signedAt = new Date().toISOString();
   const ip = request.headers.get("CF-Connecting-IP") || "";
   const ua = (request.headers.get("User-Agent") || "").slice(0, 300);
   const cf = request.cf || {};
-  const geo = { country: cf.country || "", region: cf.region || "", city: cf.city || "" };
+  const geo = {
+    country: cf.country || "",
+    region: cf.region || "",
+    city: cf.city || "",
+  };
   const docSha = await sha256Hex(new TextEncoder().encode(canonicalText(doc)));
 
   let pdfBytes;
   try {
-    pdfBytes = await buildPdf({ doc, isMinor, name, email, minorName, relationship, program, signedAt, id, ip, ua, geo, signatureDataUrl, signatureType, docSha });
+    pdfBytes = await buildPdf({
+      doc,
+      isMinor,
+      name,
+      email,
+      minorName,
+      relationship,
+      program,
+      signedAt,
+      id,
+      ip,
+      ua,
+      geo,
+      signatureDataUrl,
+      signatureType,
+      docSha,
+    });
   } catch (err) {
     console.error("waiver pdf build failed:", err);
-    return json({ ok: false, error: "Could not generate your document. Please try again." }, 500);
+    return json(
+      { ok: false, error: "Could not generate your document. Please try again." },
+      500,
+    );
   }
 
   const pdfSha = await sha256Hex(pdfBytes);
@@ -143,7 +242,14 @@ export async function handleWaiver(request, env) {
     // D1 caps a row at 2 MB. Refusing here is honest; accepting a release we
     // cannot keep is not. A canvas signature is tens of kilobytes, so only a
     // pathological signature image reaches this.
-    return json({ ok: false, error: "Your signature image is too large. Please clear it, sign again, and resubmit." }, 413);
+    return json(
+      {
+        ok: false,
+        error:
+          "Your signature image is too large. Please clear it, sign again, and resubmit.",
+      },
+      413,
+    );
   }
 
   // Capture first. The audit row and the signed PDF bytes commit together in
@@ -157,20 +263,58 @@ export async function handleWaiver(request, env) {
       env.WAIVERS_DB.prepare(
         `INSERT INTO waivers
          (id, org, waiver_version, signer_name, signer_email, signed_at, signature_type, signer_kind, minor_name, relationship, program, consent, ip, user_agent, country, region, city, doc_sha256, pdf_sha256, drive_file_id, drive_link, drive_status, drive_attempts, drive_last_attempt_at)
-         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'uploading',1,?)`
-      ).bind(id, org, doc.version, name, email, signedAt, signatureType, isMinor ? "guardian" : "adult", minorName, relationship, program, 1, ip, ua, geo.country, geo.region, geo.city, docSha, pdfSha, "", "", signedAt),
+         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'uploading',1,?)`,
+      ).bind(
+        id,
+        org,
+        doc.version,
+        name,
+        email,
+        signedAt,
+        signatureType,
+        isMinor ? "guardian" : "adult",
+        minorName,
+        relationship,
+        program,
+        1,
+        ip,
+        ua,
+        geo.country,
+        geo.region,
+        geo.city,
+        docSha,
+        pdfSha,
+        "",
+        "",
+        signedAt,
+      ),
       env.WAIVERS_DB.prepare(
-        "INSERT INTO waiver_documents (waiver_id, pdf, pdf_sha256, byte_length, created_at) VALUES (?,?,?,?,?)"
+        "INSERT INTO waiver_documents (waiver_id, pdf, pdf_sha256, byte_length, created_at) VALUES (?,?,?,?,?)",
       ).bind(id, toArrayBuffer(pdfBytes), pdfSha, pdfBytes.byteLength, signedAt),
     ]);
   } catch (err) {
     console.error("waiver D1 capture failed:", err);
-    return json({ ok: false, error: "We could not save your signed release, so nothing was recorded. Please try again in a moment." }, 503);
+    return json(
+      {
+        ok: false,
+        error:
+          "We could not save your signed release, so nothing was recorded. Please try again in a moment.",
+      },
+      503,
+    );
   }
 
   // Drive is the archive, not the capture. A failure here leaves the row
   // 'pending' with the bytes in waiver_documents; runDriveBacklog retries it.
-  await attemptDriveArchive(env, { id, pdfBytes, org, email, docVersion: doc.version, attempts: 1, lookupFirst: false });
+  await attemptDriveArchive(env, {
+    id,
+    pdfBytes,
+    org,
+    email,
+    docVersion: doc.version,
+    attempts: 1,
+    lookupFirst: false,
+  });
 
   // The compliance record is D1 (audit row + signed bytes, above) + the Google
   // Shared Drive archive. There is deliberately no fourth mirror: a signed release is a record to retrieve,
@@ -193,62 +337,108 @@ export async function handleWaiver(request, env) {
   // record and lives in D1 and the Shared Drive, not in a CRM tab.
   try {
     await recordIntake(env, {
-      site: "adapttolife.org", kind: "waiver", name, email,
+      site: "adapttolife.org",
+      kind: "waiver",
+      name,
+      email,
       summary: `Signed release: ${name || email}`,
       source: `${org} ${doc?.title || "release"}`.trim(),
-      payload: { Organisation: org, Document: doc?.title || "", Verify: `/api/waiver/${id}/verify` },
+      payload: {
+        Organisation: org,
+        Document: doc?.title || "",
+        Verify: `/api/waiver/${id}/verify`,
+      },
       alreadyNotified: true,
     });
   } catch (err) {
     console.error("waiver intake record failed (release itself already stored):", err);
   }
 
-  return json({ ok: true, id, download: `/api/waiver/${id}`, verify: `/api/waiver/${id}/verify` });
+  return json({
+    ok: true,
+    id,
+    download: `/api/waiver/${id}`,
+    verify: `/api/waiver/${id}/verify`,
+  });
 }
 
 export async function handleWaiverDownload(request, env, id) {
   if (!isUuid(id)) return new Response("Not found", { status: 404 });
   let row;
-  try { row = await env.WAIVERS_DB.prepare("SELECT drive_link, drive_file_id FROM waivers WHERE id = ?").bind(id).first(); }
-  catch (err) { console.error("waiver lookup failed:", err); return new Response("Error", { status: 500 }); }
+  try {
+    row = await env.WAIVERS_DB.prepare(
+      "SELECT drive_link, drive_file_id FROM waivers WHERE id = ?",
+    )
+      .bind(id)
+      .first();
+  } catch (err) {
+    console.error("waiver lookup failed:", err);
+    return new Response("Error", { status: 500 });
+  }
   if (!row) return new Response("Not found", { status: 404 });
   if (row.drive_link || row.drive_file_id) {
-    const target = row.drive_link || `https://drive.google.com/file/d/${row.drive_file_id}/view`;
+    const target =
+      row.drive_link || `https://drive.google.com/file/d/${row.drive_file_id}/view`;
     return Response.redirect(target, 302);
   }
   // Not archived to Drive yet: serve the captured copy, so the signer's
   // download link works the moment they are told the release is signed.
   const bytes = await storedPdf(env, id);
   if (!bytes) return new Response("Not found", { status: 404 });
-  return new Response(bytes, { headers: { "Content-Type": "application/pdf", "Content-Disposition": `inline; filename="release-${id.slice(0, 8)}.pdf"`, "Cache-Control": "private, no-store" } });
+  return new Response(bytes, {
+    headers: {
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `inline; filename="release-${id.slice(0, 8)}.pdf"`,
+      "Cache-Control": "private, no-store",
+    },
+  });
 }
 
 export async function handleWaiverVerify(request, env, id) {
   if (!isUuid(id)) return json({ ok: false, error: "Not found" }, 404);
   let row;
   try {
-    row = await env.WAIVERS_DB.prepare("SELECT signer_name, signer_email, signed_at, waiver_version, pdf_sha256, doc_sha256, drive_file_id, country, region, city FROM waivers WHERE id = ?").bind(id).first();
-  } catch { return json({ ok: false, error: "Lookup failed" }, 500); }
+    row = await env.WAIVERS_DB.prepare(
+      "SELECT signer_name, signer_email, signed_at, waiver_version, pdf_sha256, doc_sha256, drive_file_id, country, region, city FROM waivers WHERE id = ?",
+    )
+      .bind(id)
+      .first();
+  } catch {
+    return json({ ok: false, error: "Lookup failed" }, 500);
+  }
   if (!row) return json({ ok: false, error: "No such document" }, 404);
   let bytes = null;
   if (row.drive_file_id) {
-    try { bytes = await fetchDrivePdf(env, row.drive_file_id); }
-    catch (err) { console.error("waiver drive fetch failed:", err); }
+    try {
+      bytes = await fetchDrivePdf(env, row.drive_file_id);
+    } catch (err) {
+      console.error("waiver drive fetch failed:", err);
+    }
   }
   if (!bytes) bytes = await storedPdf(env, id);
   if (!bytes) return json({ ok: false, error: "Document file missing" }, 404);
   const current = await sha256Hex(bytes);
   return json({
-    ok: true, document_id: id, intact: current === row.pdf_sha256,
-    signer: { name: row.signer_name, email: row.signer_email }, signed_at: row.signed_at,
-    waiver_version: row.waiver_version, location: [row.city, row.region, row.country].filter(Boolean).join(", "),
-    recorded_sha256: row.pdf_sha256, current_sha256: current, document_text_sha256: row.doc_sha256,
+    ok: true,
+    document_id: id,
+    intact: current === row.pdf_sha256,
+    signer: { name: row.signer_name, email: row.signer_email },
+    signed_at: row.signed_at,
+    waiver_version: row.waiver_version,
+    location: [row.city, row.region, row.country].filter(Boolean).join(", "),
+    recorded_sha256: row.pdf_sha256,
+    current_sha256: current,
+    document_text_sha256: row.doc_sha256,
   });
 }
 
 async function storedPdf(env, id) {
   try {
-    const doc = await env.WAIVERS_DB.prepare("SELECT pdf FROM waiver_documents WHERE waiver_id = ?").bind(id).first();
+    const doc = await env.WAIVERS_DB.prepare(
+      "SELECT pdf FROM waiver_documents WHERE waiver_id = ?",
+    )
+      .bind(id)
+      .first();
     return doc && doc.pdf ? blobBytes(doc.pdf) : null;
   } catch (err) {
     console.error("waiver stored copy lookup failed:", err);
@@ -268,31 +458,61 @@ async function buildPdf(d) {
   const ink = rgb(0.05, 0.05, 0.06);
   const orange = rgb(0.909, 0.341, 0.164);
   const grey = rgb(0.42, 0.42, 0.45);
-  const M = 56, W = 612 - M * 2;
+  const M = 56,
+    W = 612 - M * 2;
 
   const cur = { page: pdf.addPage([612, 792]), y: 0 };
-  const top = () => { cur.y = 792 - M; };
-  const np = () => { cur.page = pdf.addPage([612, 792]); top(); };
+  const top = () => {
+    cur.y = 792 - M;
+  };
+  const np = () => {
+    cur.page = pdf.addPage([612, 792]);
+    top();
+  };
   top();
-  const need = (h) => { if (cur.y - h < M + 36) np(); };
-  const para = (s, { size = 10, f = font, color = ink, gap = 7, x = M, lead = 4 } = {}) => {
-    for (const l of wrap(s, f, size, W - (x - M))) { need(size + lead); cur.page.drawText(l, { x, y: cur.y, size, font: f, color }); cur.y -= size + lead; }
+  const need = (h) => {
+    if (cur.y - h < M + 36) np();
+  };
+  const para = (
+    s,
+    { size = 10, f = font, color = ink, gap = 7, x = M, lead = 4 } = {},
+  ) => {
+    for (const l of wrap(s, f, size, W - (x - M))) {
+      need(size + lead);
+      cur.page.drawText(l, { x, y: cur.y, size, font: f, color });
+      cur.y -= size + lead;
+    }
     cur.y -= gap;
   };
 
   // Header
-  cur.page.drawText(d.doc.org.toUpperCase(), { x: M, y: cur.y, size: 15, font: bold, color: orange }); cur.y -= 15;
-  cur.page.drawText(d.doc.domains, { x: M, y: cur.y, size: 8.5, font, color: grey }); cur.y -= 22;
-  cur.page.drawText(d.doc.title, { x: M, y: cur.y, size: 19, font: bold, color: ink }); cur.y -= 12;
-  cur.page.drawLine({ start: { x: M, y: cur.y }, end: { x: 612 - M, y: cur.y }, thickness: 1.5, color: orange }); cur.y -= 18;
+  cur.page.drawText(d.doc.org.toUpperCase(), {
+    x: M,
+    y: cur.y,
+    size: 15,
+    font: bold,
+    color: orange,
+  });
+  cur.y -= 15;
+  cur.page.drawText(d.doc.domains, { x: M, y: cur.y, size: 8.5, font, color: grey });
+  cur.y -= 22;
+  cur.page.drawText(d.doc.title, { x: M, y: cur.y, size: 19, font: bold, color: ink });
+  cur.y -= 12;
+  cur.page.drawLine({
+    start: { x: M, y: cur.y },
+    end: { x: 612 - M, y: cur.y },
+    thickness: 1.5,
+    color: orange,
+  });
+  cur.y -= 18;
 
   para(d.doc.intro, { size: 10, color: rgb(0.25, 0.25, 0.28), gap: 12 });
 
   for (const sec of d.doc.sections) {
     need(26);
     para(sec.h, { size: 12, f: bold, gap: 5 });
-    for (const p of (sec.p || [])) para(p, { size: 10, gap: 6 });
-    for (const li of (sec.ul || [])) {
+    for (const p of sec.p || []) para(p, { size: 10, gap: 6 });
+    for (const li of sec.ul || []) {
       need(14);
       cur.page.drawText("•", { x: M + 4, y: cur.y, size: 10, font, color: orange });
       const before = cur.y;
@@ -305,19 +525,41 @@ async function buildPdf(d) {
   // Signature block (kept together)
   need(170);
   cur.y -= 6;
-  cur.page.drawLine({ start: { x: M, y: cur.y }, end: { x: 612 - M, y: cur.y }, thickness: 1.5, color: orange }); cur.y -= 18;
+  cur.page.drawLine({
+    start: { x: M, y: cur.y },
+    end: { x: 612 - M, y: cur.y },
+    thickness: 1.5,
+    color: orange,
+  });
+  cur.y -= 18;
   para("Signature", { size: 12, f: bold, gap: 8 });
   try {
     const png = await pdf.embedPng(dataUrlToBytes(d.signatureDataUrl));
-    const sw = 230, raw = (png.height / png.width) * sw, sh = Math.min(raw, 70);
-    cur.page.drawImage(png, { x: M, y: cur.y - sh, width: sw * (sh / raw), height: sh });
+    const sw = 230,
+      raw = (png.height / png.width) * sw,
+      sh = Math.min(raw, 70);
+    cur.page.drawImage(png, {
+      x: M,
+      y: cur.y - sh,
+      width: sw * (sh / raw),
+      height: sh,
+    });
     cur.y -= sh + 6;
   } catch {}
-  cur.page.drawLine({ start: { x: M, y: cur.y }, end: { x: M + 260, y: cur.y }, thickness: 0.5, color: grey }); cur.y -= 14;
+  cur.page.drawLine({
+    start: { x: M, y: cur.y },
+    end: { x: M + 260, y: cur.y },
+    thickness: 0.5,
+    color: grey,
+  });
+  cur.y -= 14;
 
   if (d.isMinor) {
     para(`Participant (minor): ${d.minorName}`, { size: 10.5, gap: 2 });
-    para(`Signed by parent / legal guardian: ${d.name} (${d.relationship})`, { size: 10.5, gap: 2 });
+    para(`Signed by parent / legal guardian: ${d.name} (${d.relationship})`, {
+      size: 10.5,
+      gap: 2,
+    });
   } else {
     para(`Participant: ${d.name}`, { size: 10.5, gap: 2 });
     para(`Signed by: ${d.name}`, { size: 10.5, gap: 2 });
@@ -334,32 +576,61 @@ async function buildPdf(d) {
     need(16);
     const y0 = cur.y;
     cur.page.drawText(label, { x: M, y: y0, size: 9, font: bold, color: grey });
-    for (const l of wrap(value, font, 10, W - 150)) { cur.page.drawText(l, { x: M + 150, y: cur.y, size: 10, font, color: ink }); cur.y -= 14; }
+    for (const l of wrap(value, font, 10, W - 150)) {
+      cur.page.drawText(l, { x: M + 150, y: cur.y, size: 10, font, color: ink });
+      cur.y -= 14;
+    }
     cur.y -= 4;
   };
   row("Document ID", d.id);
   row("Release version", d.doc.version);
   row("Signer", `${d.name} <${d.email}>`);
-  if (d.isMinor) { row("On behalf of (minor)", d.minorName); row("Relationship", d.relationship); }
+  if (d.isMinor) {
+    row("On behalf of (minor)", d.minorName);
+    row("Relationship", d.relationship);
+  }
   if (d.program) row("Program or event", d.program);
   row("Signature method", d.signatureType === "typed" ? "Typed" : "Hand-drawn");
   row("Signed at (UTC)", d.signedAt);
   row("Consent", "Affirmatively agreed; consented to electronic records and signature");
   row("Bot check", "Cloudflare Turnstile passed");
   row("IP address", d.ip || "n/a");
-  row("Location", [d.geo.city, d.geo.region, d.geo.country].filter(Boolean).join(", ") || "n/a");
+  row(
+    "Location",
+    [d.geo.city, d.geo.region, d.geo.country].filter(Boolean).join(", ") || "n/a",
+  );
   row("Device", d.ua || "n/a");
   row("Document fingerprint", `SHA-256 ${d.docSha}`);
   cur.y -= 8;
-  para("This certificate records the electronic signing of the document above. The release text presented at signing is identified by the fingerprint shown. The stored PDF can be verified as unaltered against its recorded hash.", { size: 8.5, color: grey, gap: 4 });
+  para(
+    "This certificate records the electronic signing of the document above. The release text presented at signing is identified by the fingerprint shown. The stored PDF can be verified as unaltered against its recorded hash.",
+    { size: 8.5, color: grey, gap: 4 },
+  );
 
   // Footer + page numbers on every page
   const pages = pdf.getPages();
   pages.forEach((p, i) => {
-    p.drawLine({ start: { x: M, y: 44 }, end: { x: 612 - M, y: 44 }, thickness: 0.5, color: rgb(0.85, 0.85, 0.87) });
-    p.drawText("Adapt To Life NFP  ·  501(c)(3) nonprofit  ·  EIN 41-3213344", { x: M, y: 32, size: 8, font, color: grey });
+    p.drawLine({
+      start: { x: M, y: 44 },
+      end: { x: 612 - M, y: 44 },
+      thickness: 0.5,
+      color: rgb(0.85, 0.85, 0.87),
+    });
+    p.drawText("Adapt To Life NFP  ·  501(c)(3) nonprofit  ·  EIN 41-3213344", {
+      x: M,
+      y: 32,
+      size: 8,
+      font,
+      color: grey,
+    });
     const pn = `Page ${i + 1} of ${pages.length}`;
-    p.drawText(pn, { x: 612 - M - font.widthOfTextAtSize(pn, 8), y: 32, size: 8, font, color: grey });
+    p.drawText(pn, {
+      x: 612 - M - font.widthOfTextAtSize(pn, 8),
+      y: 32,
+      size: 8,
+      font,
+      color: grey,
+    });
   });
 
   return await pdf.save();
@@ -370,7 +641,10 @@ async function buildPdf(d) {
 // Service via SPF/DKIM TXT records only — no MX change — so Google Workspace mail on the
 // root domain is unaffected. Best-effort: a send failure never blocks signing.
 async function sendReceiptEmail(env, { to, pdfBytes, name, doc, isMinor, minorName }) {
-  if (!mailConfigured(env)) { console.error("SEND_EMAIL binding not configured; skipping receipt email"); return; }
+  if (!mailConfigured(env)) {
+    console.error("SEND_EMAIL binding not configured; skipping receipt email");
+    return;
+  }
   const who = isMinor ? `${minorName} (signed by ${name})` : name;
   const subject = `Your signed ${doc.org} release`;
   const text =
@@ -384,9 +658,9 @@ async function sendReceiptEmail(env, { to, pdfBytes, name, doc, isMinor, minorNa
   // two different typefaces with two different sign-offs.
   const html = houseShell(
     `<p>Hi ${esc(name)},</p>` +
-    `<p>Thank you. Your <strong>${esc(doc.title)}</strong> with ${esc(doc.org)} is attached as a signed PDF for your records.</p>` +
-    `<p style="color:#3f3d38"><strong>Participant:</strong> ${esc(who)}</p>` +
-    `<p>If you ever want to withdraw permission for future use, just reply to this email or write to <a href="mailto:hello@adapttolife.org" style="color:#c2410c">hello@adapttolife.org</a>.</p>`
+      `<p>Thank you. Your <strong>${esc(doc.title)}</strong> with ${esc(doc.org)} is attached as a signed PDF for your records.</p>` +
+      `<p style="color:#3f3d38"><strong>Participant:</strong> ${esc(who)}</p>` +
+      `<p>If you ever want to withdraw permission for future use, just reply to this email or write to <a href="mailto:hello@adapttolife.org" style="color:#c2410c">hello@adapttolife.org</a>.</p>`,
   );
   try {
     await cfSend(env, {
@@ -394,9 +668,16 @@ async function sendReceiptEmail(env, { to, pdfBytes, name, doc, isMinor, minorNa
       to,
       bcc: "hello@adapttolife.org",
       replyTo: "hello@adapttolife.org",
-      subject, text, html,
+      subject,
+      text,
+      html,
       attachments: [
-        { filename: "adapt-to-life-release.pdf", content: bytesToB64(pdfBytes), type: "application/pdf", disposition: "attachment" },
+        {
+          filename: "adapt-to-life-release.pdf",
+          content: bytesToB64(pdfBytes),
+          type: "application/pdf",
+          disposition: "attachment",
+        },
       ],
     });
   } catch (err) {
@@ -407,10 +688,17 @@ async function sendReceiptEmail(env, { to, pdfBytes, name, doc, isMinor, minorNa
   }
 }
 
-function esc(s) { return String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+function esc(s) {
+  return String(s).replace(
+    /[&<>"]/g,
+    (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+  );
+}
 function bytesToB64(bytes) {
-  let s = ""; const chunk = 0x8000;
-  for (let i = 0; i < bytes.length; i += chunk) s += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+  let s = "";
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk)
+    s += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
   return btoa(s);
 }
 
@@ -439,13 +727,22 @@ const RETRYABLE = `(drive_status = 'pending' OR (drive_status = 'uploading' AND 
 
 export async function runDriveBacklog(env) {
   if (!env.WAIVERS_DB) return { retried: 0 };
-  if (!env.GOOGLE_SA_JSON || !env.WAIVERS_DRIVE_ID) { console.error("Drive backlog not configured"); return { retried: 0 }; }
+  if (!env.GOOGLE_SA_JSON || !env.WAIVERS_DRIVE_ID) {
+    console.error("Drive backlog not configured");
+    return { retried: 0 };
+  }
   let rows;
   try {
-    rows = (await env.WAIVERS_DB.prepare(
-      `SELECT id, org, signer_email, waiver_version, pdf_sha256, drive_attempts FROM waivers WHERE ${RETRYABLE} ORDER BY signed_at ASC LIMIT 10`
-    ).all()).results || [];
-  } catch (err) { console.error("Drive backlog D1 query failed:", err); return { retried: 0 }; }
+    rows =
+      (
+        await env.WAIVERS_DB.prepare(
+          `SELECT id, org, signer_email, waiver_version, pdf_sha256, drive_attempts FROM waivers WHERE ${RETRYABLE} ORDER BY signed_at ASC LIMIT 10`,
+        ).all()
+      ).results || [];
+  } catch (err) {
+    console.error("Drive backlog D1 query failed:", err);
+    return { retried: 0 };
+  }
 
   let retried = 0;
   for (const row of rows) {
@@ -453,9 +750,14 @@ export async function runDriveBacklog(env) {
     let claim;
     try {
       claim = await env.WAIVERS_DB.prepare(
-        `UPDATE waivers SET drive_status = 'uploading', drive_attempts = COALESCE(drive_attempts, 0) + 1, drive_last_attempt_at = ? WHERE id = ? AND ${RETRYABLE}`
-      ).bind(now, row.id).run();
-    } catch (err) { console.error("Drive backlog claim failed for", row.id, err); continue; }
+        `UPDATE waivers SET drive_status = 'uploading', drive_attempts = COALESCE(drive_attempts, 0) + 1, drive_last_attempt_at = ? WHERE id = ? AND ${RETRYABLE}`,
+      )
+        .bind(now, row.id)
+        .run();
+    } catch (err) {
+      console.error("Drive backlog claim failed for", row.id, err);
+      continue;
+    }
     if (!claim || !claim.meta || claim.meta.changes !== 1) continue; // another run has it
     const attempts = (Number(row.drive_attempts) || 0) + 1;
     const pdfBytes = await storedPdf(env, row.id);
@@ -464,23 +766,37 @@ export async function runDriveBacklog(env) {
       continue;
     }
     retried++;
-    await attemptDriveArchive(env, { id: row.id, pdfBytes, org: row.org, email: row.signer_email, docVersion: row.waiver_version, attempts, lookupFirst: true });
+    await attemptDriveArchive(env, {
+      id: row.id,
+      pdfBytes,
+      org: row.org,
+      email: row.signer_email,
+      docVersion: row.waiver_version,
+      attempts,
+      lookupFirst: true,
+    });
   }
 
   try {
     await env.WAIVERS_DB.prepare(
-      `DELETE FROM waiver_documents WHERE waiver_id IN (SELECT id FROM waivers WHERE drive_status = 'done' AND drive_file_id <> '' AND julianday(drive_done_at) < julianday('now', '-${DOC_RETENTION_DAYS} days'))`
+      `DELETE FROM waiver_documents WHERE waiver_id IN (SELECT id FROM waivers WHERE drive_status = 'done' AND drive_file_id <> '' AND julianday(drive_done_at) < julianday('now', '-${DOC_RETENTION_DAYS} days'))`,
     ).run();
-  } catch (err) { console.error("Drive backlog retention sweep failed:", err); }
+  } catch (err) {
+    console.error("Drive backlog retention sweep failed:", err);
+  }
   return { retried };
 }
 
 // One archive attempt for a row this caller has claimed. Never throws: the
 // outcome is written to the row, which is what the backlog and meter read.
-async function attemptDriveArchive(env, { id, pdfBytes, org, email, docVersion, attempts, lookupFirst }) {
+async function attemptDriveArchive(
+  env,
+  { id, pdfBytes, org, email, docVersion, attempts, lookupFirst },
+) {
   let file;
   try {
-    if (!env.GOOGLE_SA_JSON || !env.WAIVERS_DRIVE_ID) throw new Error("Drive archive not configured");
+    if (!env.GOOGLE_SA_JSON || !env.WAIVERS_DRIVE_ID)
+      throw new Error("Drive archive not configured");
     const token = await getGoogleAccessToken(env);
     const name = `release-${id}.pdf`;
     if (lookupFirst) file = await driveFind(token, env.WAIVERS_DRIVE_ID, name);
@@ -488,14 +804,21 @@ async function attemptDriveArchive(env, { id, pdfBytes, org, email, docVersion, 
     if (!file || !file.id) throw new Error("drive upload returned no file id");
   } catch (err) {
     console.error("waiver Drive archive failed:", id, err);
-    await markDrive(env, id, attempts >= MAX_DRIVE_ATTEMPTS ? "failed" : "pending", String((err && err.message) || err).slice(0, 500));
+    await markDrive(
+      env,
+      id,
+      attempts >= MAX_DRIVE_ATTEMPTS ? "failed" : "pending",
+      String((err && err.message) || err).slice(0, 500),
+    );
     return false;
   }
   const link = file.webViewLink || `https://drive.google.com/file/d/${file.id}/view`;
   try {
     await env.WAIVERS_DB.prepare(
-      "UPDATE waivers SET drive_file_id = ?, drive_link = ?, drive_status = 'done', drive_done_at = ?, drive_error = NULL WHERE id = ?"
-    ).bind(file.id, link, new Date().toISOString(), id).run();
+      "UPDATE waivers SET drive_file_id = ?, drive_link = ?, drive_status = 'done', drive_done_at = ?, drive_error = NULL WHERE id = ?",
+    )
+      .bind(file.id, link, new Date().toISOString(), id)
+      .run();
   } catch (err) {
     // The file is in Drive but unstamped. The row stays 'uploading'; once the
     // claim goes stale the backlog finds the file by name and stamps it.
@@ -507,7 +830,11 @@ async function attemptDriveArchive(env, { id, pdfBytes, org, email, docVersion, 
 
 async function markDrive(env, id, status, error) {
   try {
-    await env.WAIVERS_DB.prepare("UPDATE waivers SET drive_status = ?, drive_error = ? WHERE id = ?").bind(status, error, id).run();
+    await env.WAIVERS_DB.prepare(
+      "UPDATE waivers SET drive_status = ?, drive_error = ? WHERE id = ?",
+    )
+      .bind(status, error, id)
+      .run();
   } catch (err) {
     console.error("waiver Drive status write failed:", id, err);
   }
@@ -515,23 +842,42 @@ async function markDrive(env, id, status, error) {
 
 async function driveFind(token, folderId, filename) {
   const q = `name = '${filename.replace(/['\\]/g, "")}' and '${folderId.replace(/['\\]/g, "")}' in parents and trashed = false`;
-  const url = "https://www.googleapis.com/drive/v3/files?" + new URLSearchParams({
-    q, fields: "files(id,webViewLink)", supportsAllDrives: "true", includeItemsFromAllDrives: "true", corpora: "allDrives", pageSize: "10",
-  });
+  const url =
+    "https://www.googleapis.com/drive/v3/files?" +
+    new URLSearchParams({
+      q,
+      fields: "files(id,webViewLink)",
+      supportsAllDrives: "true",
+      includeItemsFromAllDrives: "true",
+      corpora: "allDrives",
+      pageSize: "10",
+    });
   const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
-  if (!res.ok) throw new Error(`drive lookup ${res.status}: ${await res.text().catch(() => "")}`);
+  if (!res.ok)
+    throw new Error(`drive lookup ${res.status}: ${await res.text().catch(() => "")}`);
   const files = (await res.json()).files || [];
-  if (files.length > 1) console.error("waiver Drive lookup: duplicate files for", filename, files.map((f) => f.id));
+  if (files.length > 1)
+    console.error(
+      "waiver Drive lookup: duplicate files for",
+      filename,
+      files.map((f) => f.id),
+    );
   return files[0] || null;
 }
 
 async function fetchDrivePdf(env, fileId) {
   if (!fileId) throw new Error("missing drive file id");
   const token = await getGoogleAccessToken(env);
-  const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!res.ok) throw new Error(`drive media fetch ${res.status}: ${await res.text().catch(() => "")}`);
+  const res = await fetch(
+    `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    },
+  );
+  if (!res.ok)
+    throw new Error(
+      `drive media fetch ${res.status}: ${await res.text().catch(() => "")}`,
+    );
   return new Uint8Array(await res.arrayBuffer());
 }
 
@@ -540,37 +886,70 @@ async function driveUpload(token, driveId, filename, bytes) {
   const meta = JSON.stringify({ name: filename, parents: [driveId] });
   const head = `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${meta}\r\n--${boundary}\r\nContent-Type: application/pdf\r\n\r\n`;
   const tail = `\r\n--${boundary}--`;
-  const body = new Uint8Array([...new TextEncoder().encode(head), ...bytes, ...new TextEncoder().encode(tail)]);
-  const res = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true&fields=id,webViewLink", {
-    method: "POST", headers: { Authorization: `Bearer ${token}`, "Content-Type": `multipart/related; boundary=${boundary}` }, body,
-  });
-  if (!res.ok) throw new Error("drive upload " + res.status + " " + await res.text().catch(() => ""));
+  const body = new Uint8Array([
+    ...new TextEncoder().encode(head),
+    ...bytes,
+    ...new TextEncoder().encode(tail),
+  ]);
+  const res = await fetch(
+    "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true&fields=id,webViewLink",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": `multipart/related; boundary=${boundary}`,
+      },
+      body,
+    },
+  );
+  if (!res.ok)
+    throw new Error(
+      "drive upload " + res.status + " " + (await res.text().catch(() => "")),
+    );
   return await res.json();
 }
 
 // --- helpers ---
 function wrap(text, font, size, maxWidth) {
-  const words = String(text).split(/\s+/); const lines = []; let line = "";
+  const words = String(text).split(/\s+/);
+  const lines = [];
+  let line = "";
   for (const w of words) {
     const test = line ? line + " " + w : w;
-    if (font.widthOfTextAtSize(test, size) > maxWidth && line) { lines.push(line); line = w; } else line = test;
+    if (font.widthOfTextAtSize(test, size) > maxWidth && line) {
+      lines.push(line);
+      line = w;
+    } else line = test;
   }
   if (line) lines.push(line);
   return lines.length ? lines : [""];
 }
 // D1 binds a BLOB from an ArrayBuffer and returns it as an array of numbers.
-function toArrayBuffer(bytes) { return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength); }
-function blobBytes(v) { return v instanceof Uint8Array ? v : new Uint8Array(v); }
+function toArrayBuffer(bytes) {
+  return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
+}
+function blobBytes(v) {
+  return v instanceof Uint8Array ? v : new Uint8Array(v);
+}
 function dataUrlToBytes(dataUrl) {
-  const bin = atob(dataUrl.split(",")[1] || ""); const bytes = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i); return bytes;
+  const bin = atob(dataUrl.split(",")[1] || "");
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
 }
 async function sha256Hex(bytes) {
   const buf = await crypto.subtle.digest("SHA-256", bytes);
   return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
-function isUuid(s) { return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s); }
-function str(v, max = 5000) { return (typeof v === "string" ? v : "").trim().slice(0, max); }
+function isUuid(s) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
+}
+function str(v, max = 5000) {
+  return (typeof v === "string" ? v : "").trim().slice(0, max);
+}
 function json(obj, status = 200) {
-  return new Response(JSON.stringify(obj), { status, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } });
+  return new Response(JSON.stringify(obj), {
+    status,
+    headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
+  });
 }

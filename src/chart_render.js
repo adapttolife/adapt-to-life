@@ -43,8 +43,19 @@ const TINT_NEUTRAL = "#f4f3ef";
 // hue, ~213-217°) so the ramp is still a valid sequential encoding, just with
 // more headroom at the dark end.
 export const BLUE_RAMP = [
-  "#cde2fb", "#b7d3f6", "#9ec5f4", "#86b6ef", "#6da7ec", "#5598e7", "#3987e5",
-  "#2a78d6", "#256abf", "#164e98", "#0f3c7b", "#0a2b5c", "#061b3c",
+  "#cde2fb",
+  "#b7d3f6",
+  "#9ec5f4",
+  "#86b6ef",
+  "#6da7ec",
+  "#5598e7",
+  "#3987e5",
+  "#2a78d6",
+  "#256abf",
+  "#164e98",
+  "#0f3c7b",
+  "#0a2b5c",
+  "#061b3c",
 ];
 
 // Categorical series palette (premium editorial set, validated 2026-07-19):
@@ -57,7 +68,14 @@ export const BLUE_RAMP = [
 // DELTA_POS/DELTA_NEG, and the four verdict-accent colors in md_render.js's
 // VERDICT_COLORS are ALSO reserved — none of the six may ever collide with
 // either reserved set (tested in chart_render.test.js).
-export const SERIES_COLORS = [BLUE, "#1e7a46", "#b95784", "#c98500", "#0f8a6d", "#c2542a"];
+export const SERIES_COLORS = [
+  BLUE,
+  "#1e7a46",
+  "#b95784",
+  "#c98500",
+  "#0f8a6d",
+  "#c2542a",
+];
 
 // Chrome colors chart_png.js reuses so the PNG matches the P1 HTML charts.
 export const CHART_INK = INK;
@@ -69,29 +87,54 @@ export const CHART_HAIRLINE = HAIRLINE;
 // deps by design) so the degrade path stays visually identical to a normal
 // markdown table (Spec 100: horizontal hairline rules, no border grid).
 const TABLE_STYLE = "border-collapse:collapse;width:100%;margin:12px 0;font-size:14px";
-const CELL_STYLE = "border-bottom:1px solid " + HAIRLINE + ";padding:8px 12px 8px 0;text-align:left;vertical-align:top";
+const CELL_STYLE =
+  "border-bottom:1px solid " +
+  HAIRLINE +
+  ";padding:8px 12px 8px 0;text-align:left;vertical-align:top";
 
-const BAR_LABEL_STYLE = "font-weight:600;color:" + INK + ";font-size:13px;padding:3px 8px 3px 0;white-space:nowrap";
-const BAR_VALUE_STYLE = "text-align:right;color:" + SECONDARY + ";font-size:13px;padding-left:8px;white-space:nowrap";
+const BAR_LABEL_STYLE =
+  "font-weight:600;color:" +
+  INK +
+  ";font-size:13px;padding:3px 8px 3px 0;white-space:nowrap";
+const BAR_VALUE_STYLE =
+  "text-align:right;color:" +
+  SECONDARY +
+  ";font-size:13px;padding-left:8px;white-space:nowrap";
 // Stacked-bar total: INK, not SECONDARY — the total is the one number the
 // bar carries (label-visibility obligation for the sub-3:1 palette slots).
-const STACK_TOTAL_STYLE = "text-align:right;color:" + INK + ";font-weight:600;font-size:13px;padding-left:8px;white-space:nowrap";
+const STACK_TOTAL_STYLE =
+  "text-align:right;color:" +
+  INK +
+  ";font-weight:600;font-size:13px;padding-left:8px;white-space:nowrap";
 // Grouped-bar value: INK for the same label-visibility obligation — each bar
 // wears a sub-3:1 palette slot and its value label is the one number it
 // carries (no total exists in a comparison).
-const GROUP_VALUE_STYLE = "text-align:right;color:" + INK + ";font-size:13px;padding-left:8px;white-space:nowrap";
+const GROUP_VALUE_STYLE =
+  "text-align:right;color:" +
+  INK +
+  ";font-size:13px;padding-left:8px;white-space:nowrap";
 const STAT_TILE_STYLE =
   "display:inline-block;vertical-align:top;box-sizing:border-box;max-width:100%;" +
-  "padding:14px 18px 14px 16px;border:1px solid " + HAIRLINE + ";border-radius:10px;" +
+  "padding:14px 18px 14px 16px;border:1px solid " +
+  HAIRLINE +
+  ";border-radius:10px;" +
   "margin:0 10px 10px 0";
 // Stat tile figure contract (Spec 100, dataviz hero spec): uppercase muted
 // micro-label, display-weight value, delta as a tinted chip below.
-const STAT_LABEL_STYLE = "font-size:11px;font-weight:600;color:" + MUTED + ";text-transform:uppercase;letter-spacing:0.06em";
-const STAT_VALUE_STYLE = "font-size:28px;font-weight:700;letter-spacing:-0.02em;color:" + INK + ";padding-top:4px";
+const STAT_LABEL_STYLE =
+  "font-size:11px;font-weight:600;color:" +
+  MUTED +
+  ";text-transform:uppercase;letter-spacing:0.06em";
+const STAT_VALUE_STYLE =
+  "font-size:28px;font-weight:700;letter-spacing:-0.02em;color:" +
+  INK +
+  ";padding-top:4px";
 // Heat cells separate with a 2px surface gap (dataviz spacer), not a border
 // grid; header/row labels lose their boxes entirely.
 const HEAT_HEADER_STYLE =
-  "font-size:11px;font-weight:600;color:" + MUTED + ";text-transform:uppercase;letter-spacing:0.05em;padding:0 12px 6px 0";
+  "font-size:11px;font-weight:600;color:" +
+  MUTED +
+  ";text-transform:uppercase;letter-spacing:0.05em;padding:0 12px 6px 0";
 const HEAT_ROWLABEL_STYLE = "font-weight:600;color:" + INK + ";padding:7px 12px 7px 0";
 const HEAT_VALUE_BASE = "border:2px solid #ffffff;padding:7px 12px;text-align:right";
 const DELTA_CELL_STYLE = "border-bottom:1px solid " + HAIRLINE + ";padding:8px 0";
@@ -115,7 +158,8 @@ function sourceLine(source) {
 // OpenRouter "+701.8%" treatment): direction rides both the arrow prefix and
 // the reserved pos/neg colors; unsigned text gets the neutral warm tint.
 function deltaChip(text, color, prefix) {
-  const bg = color === DELTA_POS ? TINT_POS : color === DELTA_NEG ? TINT_NEG : TINT_NEUTRAL;
+  const bg =
+    color === DELTA_POS ? TINT_POS : color === DELTA_NEG ? TINT_NEG : TINT_NEUTRAL;
   return (
     `<span style="display:inline-block;font-size:12px;font-weight:600;color:${color};` +
     `background-color:${bg};border-radius:999px;padding:2px 9px;white-space:nowrap">${prefix}${text}</span>`
@@ -138,7 +182,8 @@ function parseNumber(s) {
 // text unchanged (the sign stays in the visible string).
 function signDecoration(text, defaultColor) {
   if (text.startsWith("+")) return { color: DELTA_POS, prefix: UP };
-  if (text.startsWith("-") || text.startsWith("−")) return { color: DELTA_NEG, prefix: DOWN };
+  if (text.startsWith("-") || text.startsWith("−"))
+    return { color: DELTA_NEG, prefix: DOWN };
   return { color: defaultColor, prefix: "" };
 }
 
@@ -208,30 +253,45 @@ export const BAR_GROUPED_MAX_SERIES = 4;
 
 export function parseBarChart(headers, dataLines) {
   const rows = dataLines.map(splitRow);
-  if (rows.some((cells) => cells.length < 2)) return { ok: false, reason: "bar row malformed" };
+  if (rows.some((cells) => cells.length < 2))
+    return { ok: false, reason: "bar row malformed" };
 
   let names = null;
   if (headers && headers.series !== undefined) {
-    names = String(headers.series).split("|").map((s) => s.trim());
-    if (names.some((s) => s === "")) return { ok: false, reason: "series names do not match data columns" };
+    names = String(headers.series)
+      .split("|")
+      .map((s) => s.trim());
+    if (names.some((s) => s === ""))
+      return { ok: false, reason: "series names do not match data columns" };
   }
 
   const width = rows[0].length;
   const uniform = rows.every((cells) => cells.length === width);
-  const allNumeric = () => rows.every((cells) => cells.slice(1).every((c) => parseNumber(c) !== null));
+  const allNumeric = () =>
+    rows.every((cells) => cells.slice(1).every((c) => parseNumber(c) !== null));
 
   // "mode: grouped" is explicit and wins; everything below this block is the
   // pre-mode grammar, untouched so mode-less blocks stay byte-identical.
-  const mode = headers && headers.mode !== undefined ? String(headers.mode).trim().toLowerCase() : null;
-  if (mode !== null && mode !== "grouped") return { ok: false, reason: "unknown bar mode" };
+  const mode =
+    headers && headers.mode !== undefined
+      ? String(headers.mode).trim().toLowerCase()
+      : null;
+  if (mode !== null && mode !== "grouped")
+    return { ok: false, reason: "unknown bar mode" };
   if (mode === "grouped") {
-    if (headers.shade !== undefined) return { ok: false, reason: "shade requires a single-series bar" };
-    if (!names || names.length < 2) return { ok: false, reason: "grouped requires a series header" };
+    if (headers.shade !== undefined)
+      return { ok: false, reason: "shade requires a single-series bar" };
+    if (!names || names.length < 2)
+      return { ok: false, reason: "grouped requires a series header" };
     if (names.length > BAR_GROUPED_MAX_SERIES) {
-      return { ok: false, reason: `grouped bar exceeds ${BAR_GROUPED_MAX_SERIES} series` };
+      return {
+        ok: false,
+        reason: `grouped bar exceeds ${BAR_GROUPED_MAX_SERIES} series`,
+      };
     }
     if (!uniform) return { ok: false, reason: "bar ragged rows (cell count mismatch)" };
-    if (names.length !== width - 1) return { ok: false, reason: "series names do not match data columns" };
+    if (names.length !== width - 1)
+      return { ok: false, reason: "series names do not match data columns" };
     const unit = headers.unit !== undefined ? String(headers.unit).trim() : null;
     const out = [];
     for (const cells of rows) {
@@ -247,7 +307,8 @@ export function parseBarChart(headers, dataLines) {
   let stacked;
   if (names && names.length >= 2) {
     if (!uniform) return { ok: false, reason: "bar ragged rows (cell count mismatch)" };
-    if (names.length !== width - 1) return { ok: false, reason: "series names do not match data columns" };
+    if (names.length !== width - 1)
+      return { ok: false, reason: "series names do not match data columns" };
     stacked = true;
   } else {
     if (names && uniform && names.length !== width - 1) {
@@ -256,12 +317,17 @@ export function parseBarChart(headers, dataLines) {
     stacked = uniform && width >= 4 && allNumeric();
   }
 
-  const shade = headers && headers.shade !== undefined ? String(headers.shade).trim().toLowerCase() : null;
-  if (shade !== null && shade !== "value") return { ok: false, reason: "unknown shade mode" };
+  const shade =
+    headers && headers.shade !== undefined
+      ? String(headers.shade).trim().toLowerCase()
+      : null;
+  if (shade !== null && shade !== "value")
+    return { ok: false, reason: "unknown shade mode" };
 
   if (stacked) {
     if (shade) return { ok: false, reason: "shade requires a single-series bar" };
-    if (width - 1 > BAR_MAX_SERIES) return { ok: false, reason: `bar exceeds ${BAR_MAX_SERIES} series` };
+    if (width - 1 > BAR_MAX_SERIES)
+      return { ok: false, reason: `bar exceeds ${BAR_MAX_SERIES} series` };
     if (!names) names = Array.from({ length: width - 1 }, (_v, i) => `Series ${i + 1}`);
     const out = [];
     for (const cells of rows) {
@@ -275,7 +341,8 @@ export function parseBarChart(headers, dataLines) {
     return { ok: true, bar: { stacked: true, names, rows: out } };
   }
 
-  if (rows.some((cells) => cells.length > 3)) return { ok: false, reason: "bar row malformed" };
+  if (rows.some((cells) => cells.length > 3))
+    return { ok: false, reason: "bar row malformed" };
   const values = rows.map((cells) => parseNumber(cells[1]));
   if (values.some((v) => v === null || v < 0)) {
     return { ok: false, reason: "bar value not numeric or negative" };
@@ -284,7 +351,9 @@ export function parseBarChart(headers, dataLines) {
   if (shade) {
     const min = Math.min(...values);
     const max = Math.max(...values);
-    shadeColors = values.map((v) => BLUE_RAMP[max === min ? 6 : Math.round(((v - min) / (max - min)) * 12)]);
+    shadeColors = values.map(
+      (v) => BLUE_RAMP[max === min ? 6 : Math.round(((v - min) / (max - min)) * 12)],
+    );
   }
   const out = rows.map((cells, i) => ({
     label: cells[0],
@@ -302,7 +371,7 @@ function legendRowHtml(names) {
     .map(
       (name, s) =>
         `<td width="10" style="background-color:${SERIES_COLORS[s]};font-size:2px;line-height:10px">&nbsp;</td>` +
-        `<td style="font-size:11px;font-weight:600;color:${SECONDARY};padding:0 14px 0 5px">${name}</td>`
+        `<td style="font-size:11px;font-weight:600;color:${SECONDARY};padding:0 14px 0 5px">${name}</td>`,
     )
     .join("");
   return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin:2px 0 6px"><tr>${cells}</tr></table>`;
@@ -327,7 +396,8 @@ function renderBar(dataLines, headers) {
         // mark to read as one group.
         const trs = row.values
           .map((v, s) => {
-            const pct = max === 0 || v === 0 ? 0 : Math.max(2, Math.round((v / max) * 92));
+            const pct =
+              max === 0 || v === 0 ? 0 : Math.max(2, Math.round((v / max) * 92));
             const barCells =
               pct === 0
                 ? "<td>&nbsp;</td>"
@@ -377,12 +447,14 @@ function renderBar(dataLines, headers) {
         const segs = row.values.map((v, s) => ({ v, s })).filter((seg) => seg.v > 0);
         let cells = "";
         segs.forEach((seg, k) => {
-          if (k > 0) cells += `<td width="2" style="font-size:2px;line-height:14px">&nbsp;</td>`;
+          if (k > 0)
+            cells += `<td width="2" style="font-size:2px;line-height:14px">&nbsp;</td>`;
           const pct = Math.max(1, Math.round((seg.v / maxTotal) * 92));
           const radius = k === segs.length - 1 ? ";border-radius:0 4px 4px 0" : "";
           cells += `<td width="${pct}%" style="background-color:${SERIES_COLORS[seg.s]};font-size:2px;line-height:14px${radius}">&nbsp;</td>`;
         });
-        const barCells = segs.length === 0 ? "<td>&nbsp;</td>" : cells + "<td>&nbsp;</td>";
+        const barCells =
+          segs.length === 0 ? "<td>&nbsp;</td>" : cells + "<td>&nbsp;</td>";
         return (
           "<tr>" +
           `<td style="${BAR_LABEL_STYLE}">${row.label}</td>` +
@@ -411,7 +483,10 @@ function renderBar(dataLines, headers) {
   const max = Math.max(...bar.rows.map((r) => r.value));
   const rowsHtml = bar.rows
     .map((row, idx) => {
-      const pct = max === 0 || row.value === 0 ? 0 : Math.max(2, Math.round((row.value / max) * 92));
+      const pct =
+        max === 0 || row.value === 0
+          ? 0
+          : Math.max(2, Math.round((row.value / max) * 92));
       const fill = bar.shadeColors ? bar.shadeColors[idx] : BLUE;
       // Email-kit idiom, deliberately: &nbsp; in every cell (empty <td>s
       // collapse to zero height in Outlook and some Gmail modes; font-size:2px
@@ -492,7 +567,10 @@ function renderDelta(dataLines) {
       );
     })
     .join("");
-  return { ok: true, html: `<table style="border-collapse:collapse;width:100%;font-size:13px">${rowsHtml}</table>` };
+  return {
+    ok: true,
+    html: `<table style="border-collapse:collapse;width:100%;font-size:13px">${rowsHtml}</table>`,
+  };
 }
 
 function renderHeat(dataLines) {
@@ -505,7 +583,8 @@ function renderHeat(dataLines) {
   const width = headerRow.length;
   const values = [];
   for (const cells of bodyRows) {
-    if (cells.length !== width) return { ok: false, reason: "heat ragged rows (cell count mismatch)" };
+    if (cells.length !== width)
+      return { ok: false, reason: "heat ragged rows (cell count mismatch)" };
     for (let i = 1; i < cells.length; i += 1) {
       const v = parseNumber(cells[i]);
       if (v === null) return { ok: false, reason: "heat value not numeric" };
@@ -515,7 +594,10 @@ function renderHeat(dataLines) {
   const min = Math.min(...values);
   const max = Math.max(...values);
   const headerHtml = headerRow
-    .map((c, i) => `<td style="${HEAT_HEADER_STYLE}${i > 0 ? ";text-align:right" : ""}">${c}</td>`)
+    .map(
+      (c, i) =>
+        `<td style="${HEAT_HEADER_STYLE}${i > 0 ? ";text-align:right" : ""}">${c}</td>`,
+    )
     .join("");
   const bodyHtml = bodyRows
     .map((cells) => {
@@ -532,7 +614,10 @@ function renderHeat(dataLines) {
       return `<tr>${rowLabel}${valueCells}</tr>`;
     })
     .join("");
-  return { ok: true, html: `<table style="border-collapse:collapse;font-size:13px"><tr>${headerHtml}</tr>${bodyHtml}</table>` };
+  return {
+    ok: true,
+    html: `<table style="border-collapse:collapse;font-size:13px"><tr>${headerHtml}</tr>${bodyHtml}</table>`,
+  };
 }
 
 // ── waterfall grammar (cashflow bridge) ──────────────────────────────────
@@ -561,7 +646,8 @@ function waterfallDefaultDisplay(kind, value) {
 }
 
 export function parseWaterfallChart(headers, dataLines) {
-  if (dataLines.length < 2) return { ok: false, reason: "waterfall needs at least 2 rows" };
+  if (dataLines.length < 2)
+    return { ok: false, reason: "waterfall needs at least 2 rows" };
   const rows = [];
   let baseline = 0;
   let lo = 0;
@@ -587,7 +673,8 @@ export function parseWaterfallChart(headers, dataLines) {
       top = baseline + value;
       baseline = top;
     }
-    const display = cells[2] !== undefined ? cells[2] : waterfallDefaultDisplay(kind, value);
+    const display =
+      cells[2] !== undefined ? cells[2] : waterfallDefaultDisplay(kind, value);
     rows.push({ label, value, display, kind, base, top });
     lo = Math.min(lo, base, top);
     hi = Math.max(hi, base, top);
@@ -614,7 +701,9 @@ function renderWaterfall(dataLines, headers) {
       const barPct = Math.max(1, Math.round(((barHigh - barLow) / range) * 92));
       const fill = row.kind === "total" ? BLUE : row.value >= 0 ? DELTA_POS : DELTA_NEG;
       const spacerCell =
-        spacerPct === 0 ? "" : `<td width="${spacerPct}%" style="font-size:2px;line-height:14px">&nbsp;</td>`;
+        spacerPct === 0
+          ? ""
+          : `<td width="${spacerPct}%" style="font-size:2px;line-height:14px">&nbsp;</td>`;
       const barCells =
         spacerCell +
         `<td width="${barPct}%" style="background-color:${fill};font-size:2px;line-height:14px;border-radius:4px">&nbsp;</td>` +
@@ -636,7 +725,13 @@ function renderWaterfall(dataLines, headers) {
   };
 }
 
-const TYPE_RENDERERS = { bar: renderBar, stat: renderStat, delta: renderDelta, heat: renderHeat, waterfall: renderWaterfall };
+const TYPE_RENDERERS = {
+  bar: renderBar,
+  stat: renderStat,
+  delta: renderDelta,
+  heat: renderHeat,
+  waterfall: renderWaterfall,
+};
 
 // ── P2: line/scatter (PNG-rendered) grammar ─────────────────────────────
 //
@@ -656,15 +751,20 @@ const PNG_MAX_ROWS = 200;
 // through untouched either way). Returns {ok:true, chart} or {ok:false, reason}.
 export function parsePngChart(headers, dataLines) {
   const type = String(headers.type || "").toLowerCase();
-  if (!PNG_CHART_TYPES.includes(type)) return { ok: false, reason: "unknown chart type" };
-  if (dataLines.length < 2) return { ok: false, reason: `${type} needs at least 2 data rows` };
-  if (dataLines.length > PNG_MAX_ROWS) return { ok: false, reason: `${type} exceeds ${PNG_MAX_ROWS} rows` };
+  if (!PNG_CHART_TYPES.includes(type))
+    return { ok: false, reason: "unknown chart type" };
+  if (dataLines.length < 2)
+    return { ok: false, reason: `${type} needs at least 2 data rows` };
+  if (dataLines.length > PNG_MAX_ROWS)
+    return { ok: false, reason: `${type} exceeds ${PNG_MAX_ROWS} rows` };
   const rows = dataLines.map(splitRow);
   const width = rows[0].length;
   if (width < 2) return { ok: false, reason: `${type} rows need x | value` };
-  if (rows.some((r) => r.length !== width)) return { ok: false, reason: `${type} ragged rows (cell count mismatch)` };
+  if (rows.some((r) => r.length !== width))
+    return { ok: false, reason: `${type} ragged rows (cell count mismatch)` };
   const seriesCount = width - 1;
-  if (seriesCount > PNG_MAX_SERIES) return { ok: false, reason: `${type} exceeds ${PNG_MAX_SERIES} series` };
+  if (seriesCount > PNG_MAX_SERIES)
+    return { ok: false, reason: `${type} exceeds ${PNG_MAX_SERIES} series` };
 
   let seriesNames;
   if (headers.series) {
@@ -680,12 +780,14 @@ export function parsePngChart(headers, dataLines) {
   let xValues = null;
   if (type === "scatter") {
     xValues = xLabels.map(parseNumber);
-    if (xValues.some((v) => v === null)) return { ok: false, reason: "scatter x not numeric" };
+    if (xValues.some((v) => v === null))
+      return { ok: false, reason: "scatter x not numeric" };
   }
   const series = [];
   for (let s = 0; s < seriesCount; s += 1) {
     const values = rows.map((r) => parseNumber(r[s + 1]));
-    if (values.some((v) => v === null)) return { ok: false, reason: `${type} value not numeric` };
+    if (values.some((v) => v === null))
+      return { ok: false, reason: `${type} value not numeric` };
     series.push(values);
   }
   return { ok: true, chart: { type, xLabels, xValues, series, seriesNames } };
@@ -736,13 +838,15 @@ function renderChartUnsafe(escapedLines, image) {
   if (PNG_CHART_TYPES.includes(type)) {
     const parsed = parsePngChart(headers, dataLines);
     if (!parsed.ok) return degrade(headers, dataLines, parsed.reason);
-    if (!image || !image.cid) return degrade(headers, dataLines, "chart image not rendered");
+    if (!image || !image.cid)
+      return degrade(headers, dataLines, "chart image not rendered");
     const parts = [];
     if (headers.title) parts.push(titleLine(headers.title));
     // Mobile-first (Spec 100): the legend is HTML beside the image, not
     // pixels inside it — real text stays legible at any width while the
     // downscaled PNG carries shape (ticks live full-size on the /r/ twin).
-    if (parsed.chart.series.length > 1) parts.push(legendRowHtml(parsed.chart.seriesNames));
+    if (parsed.chart.series.length > 1)
+      parts.push(legendRowHtml(parsed.chart.seriesNames));
     parts.push(renderPngImage(headers, image));
     parts.push(sourceLine(headers.source));
     return parts.join("");

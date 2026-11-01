@@ -9,15 +9,38 @@ const MAX_PAGES_PER_PASS = 100;
 // explicit activation boundary must exist in donor_gifts, regardless of webhook
 // delivery. The transaction id is the idempotency key shared by both paths.
 export async function reconcileGivebutterTransactions(env, opts = {}) {
-  const out = { ok: false, passes: 0, pages: 0, scanned: 0, eligible: 0, written: 0, error: null };
-  if (!env.WAIVERS_DB) { out.error = "no D1 binding"; return out; }
-  if (!env.GIVEBUTTER_API_KEY) { out.error = "no GIVEBUTTER_API_KEY"; return out; }
-  if (!env.GIVEBUTTER_DONOR_CUTOFF) { out.error = "no GIVEBUTTER_DONOR_CUTOFF"; return out; }
+  const out = {
+    ok: false,
+    passes: 0,
+    pages: 0,
+    scanned: 0,
+    eligible: 0,
+    written: 0,
+    error: null,
+  };
+  if (!env.WAIVERS_DB) {
+    out.error = "no D1 binding";
+    return out;
+  }
+  if (!env.GIVEBUTTER_API_KEY) {
+    out.error = "no GIVEBUTTER_API_KEY";
+    return out;
+  }
+  if (!env.GIVEBUTTER_DONOR_CUTOFF) {
+    out.error = "no GIVEBUTTER_DONOR_CUTOFF";
+    return out;
+  }
 
   const cutoff = new Date(env.GIVEBUTTER_DONOR_CUTOFF);
   const before = new Date(opts.before || Date.now());
-  if (!Number.isFinite(cutoff.getTime())) { out.error = "invalid GIVEBUTTER_DONOR_CUTOFF"; return out; }
-  if (!Number.isFinite(before.getTime())) { out.error = "invalid reconciliation upper bound"; return out; }
+  if (!Number.isFinite(cutoff.getTime())) {
+    out.error = "invalid GIVEBUTTER_DONOR_CUTOFF";
+    return out;
+  }
+  if (!Number.isFinite(before.getTime())) {
+    out.error = "invalid reconciliation upper bound";
+    return out;
+  }
 
   const fetcher = opts.fetch || fetch;
   const providerAfter = new Date(cutoff.getTime() - 1).toISOString();
@@ -29,7 +52,14 @@ export async function reconcileGivebutterTransactions(env, opts = {}) {
     for (let pass = 1; pass <= MAX_STABILIZATION_PASSES; pass++) {
       out.passes = pass;
       const ids = await scanStableRange({
-        env, fetcher, cutoff, before, providerAfter, providerBefore, ensured, out,
+        env,
+        fetcher,
+        cutoff,
+        before,
+        providerAfter,
+        providerBefore,
+        ensured,
+        out,
       });
       const signature = [...ids].sort().join("\n");
       if (signature === priorSignature) {
@@ -46,7 +76,16 @@ export async function reconcileGivebutterTransactions(env, opts = {}) {
   }
 }
 
-async function scanStableRange({ env, fetcher, cutoff, before, providerAfter, providerBefore, ensured, out }) {
+async function scanStableRange({
+  env,
+  fetcher,
+  cutoff,
+  before,
+  providerAfter,
+  providerBefore,
+  ensured,
+  out,
+}) {
   const ids = new Set();
   for (let page = 1; ; page++) {
     const url = new URL(TRANSACTIONS_API);
@@ -63,11 +102,13 @@ async function scanStableRange({ env, fetcher, cutoff, before, providerAfter, pr
     });
     if (!response.ok) throw new Error(`givebutter ${response.status}`);
     const body = await response.json();
-    if (!Array.isArray(body.data)
-      || !Number.isInteger(body.meta?.current_page)
-      || !Number.isInteger(body.meta?.last_page)
-      || body.meta.current_page !== page
-      || body.meta.last_page < page) {
+    if (
+      !Array.isArray(body.data) ||
+      !Number.isInteger(body.meta?.current_page) ||
+      !Number.isInteger(body.meta?.last_page) ||
+      body.meta.current_page !== page ||
+      body.meta.last_page < page
+    ) {
       throw new Error("invalid givebutter pagination");
     }
     if (body.meta.last_page > MAX_PAGES_PER_PASS) {
@@ -79,7 +120,8 @@ async function scanStableRange({ env, fetcher, cutoff, before, providerAfter, pr
       out.scanned++;
       if (transaction?.status !== "succeeded") continue;
       const transactedAt = new Date(transaction.transacted_at);
-      if (!Number.isFinite(transactedAt.getTime())) throw new Error("invalid transaction timestamp");
+      if (!Number.isFinite(transactedAt.getTime()))
+        throw new Error("invalid transaction timestamp");
       if (transactedAt < cutoff || transactedAt >= before) continue;
       const id = String(transaction.id ?? "").trim();
       if (!id) throw new Error("missing transaction id");
@@ -121,8 +163,14 @@ export async function persistDonorJourneyReceipt(env, receipt) {
   await env.WAIVERS_DB.prepare(
     `INSERT INTO qr_sync_state (key, value, updated_at) VALUES (?, ?, ?)
      ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at
-     WHERE qr_sync_state.updated_at IS NULL OR excluded.updated_at >= qr_sync_state.updated_at`
-  ).bind("givebutter_donor_journey_last_receipt", JSON.stringify(receipt), receipt.completedAt).run();
+     WHERE qr_sync_state.updated_at IS NULL OR excluded.updated_at >= qr_sync_state.updated_at`,
+  )
+    .bind(
+      "givebutter_donor_journey_last_receipt",
+      JSON.stringify(receipt),
+      receipt.completedAt,
+    )
+    .run();
   return { ok: true, completedAt: receipt.completedAt };
 }
 
@@ -131,13 +179,23 @@ function receiptPayload(result) {
     version: 2,
     ok: result.ok,
     completedAt: result.completedAt,
-    reconciliation: pick(result.reconciliation, ["ok", "passes", "pages", "scanned", "eligible", "written", "error"]),
+    reconciliation: pick(result.reconciliation, [
+      "ok",
+      "passes",
+      "pages",
+      "scanned",
+      "eligible",
+      "written",
+      "error",
+    ]),
     email: pick(result.email, ["ok", "scanned", "sent", "queued", "failed", "error"]),
   };
 }
 
 function pick(source, keys) {
-  return Object.fromEntries(keys.filter((key) => source?.[key] !== undefined).map((key) => [key, source[key]]));
+  return Object.fromEntries(
+    keys.filter((key) => source?.[key] !== undefined).map((key) => [key, source[key]]),
+  );
 }
 
 async function outcome(fn) {

@@ -49,11 +49,18 @@
   // 1. Load as the widget approaches the viewport. On a long page the footer
   //    form is far below the fold, so most visits never pay for Turnstile.
   if ("IntersectionObserver" in window) {
-    var io = new IntersectionObserver(function (entries) {
-      for (var i = 0; i < entries.length; i++) {
-        if (entries[i].isIntersecting) { load(); io.disconnect(); return; }
-      }
-    }, { rootMargin: "800px 0px" });
+    var io = new IntersectionObserver(
+      function (entries) {
+        for (var i = 0; i < entries.length; i++) {
+          if (entries[i].isIntersecting) {
+            load();
+            io.disconnect();
+            return;
+          }
+        }
+      },
+      { rootMargin: "800px 0px" },
+    );
     for (var i = 0; i < widgets.length; i++) io.observe(widgets[i]);
   } else {
     load();
@@ -70,39 +77,46 @@
   // 3. The guarantee. Capture on `document` so this runs BEFORE the listeners
   //    each page registers on the form itself, then re-submit once the token is
   //    in the DOM so those listeners read a populated field.
-  document.addEventListener("submit", function (e) {
-    var f = e.target;
-    if (!guarded(f)) return;
-    if (tokenOf(f)) return;      // token already there: nothing to do
-    if (f.__tsPending) {         // a wait is already running for this form
-      e.preventDefault();
-      e.stopPropagation();
-      return;
-    }
-    if (f.__tsReleased) {        // our own re-submit: let it through
-      f.__tsReleased = false;
-      return;
-    }
-
-    e.preventDefault();
-    e.stopPropagation();
-    load();
-    f.__tsPending = true;
-    var started = Date.now();
-
-    (function poll() {
-      // Release on a token, or give up after WAIT_MS and submit anyway so the
-      // server decides. A rejected submit shows the form's own error; a submit
-      // silently swallowed here would not.
-      if (tokenOf(f) || Date.now() - started > WAIT_MS) {
-        f.__tsPending = false;
-        f.__tsReleased = true;
-        if (f.requestSubmit) f.requestSubmit();
-        else f.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+  document.addEventListener(
+    "submit",
+    function (e) {
+      var f = e.target;
+      if (!guarded(f)) return;
+      if (tokenOf(f)) return; // token already there: nothing to do
+      if (f.__tsPending) {
+        // a wait is already running for this form
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+      if (f.__tsReleased) {
+        // our own re-submit: let it through
         f.__tsReleased = false;
         return;
       }
-      setTimeout(poll, 120);
-    })();
-  }, true);
+
+      e.preventDefault();
+      e.stopPropagation();
+      load();
+      f.__tsPending = true;
+      var started = Date.now();
+
+      (function poll() {
+        // Release on a token, or give up after WAIT_MS and submit anyway so the
+        // server decides. A rejected submit shows the form's own error; a submit
+        // silently swallowed here would not.
+        if (tokenOf(f) || Date.now() - started > WAIT_MS) {
+          f.__tsPending = false;
+          f.__tsReleased = true;
+          if (f.requestSubmit) f.requestSubmit();
+          else
+            f.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+          f.__tsReleased = false;
+          return;
+        }
+        setTimeout(poll, 120);
+      })();
+    },
+    true,
+  );
 })();

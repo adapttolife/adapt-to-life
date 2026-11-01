@@ -62,8 +62,14 @@ for (const [width, height, tag] of VIEWPORTS) {
       .filter((el) => getComputedStyle(el).display !== "none")
       .map((el, i) => {
         const r = el.getBoundingClientRect();
-        const ox = Math.max(0, Math.min(r.right, slab.right) - Math.max(r.left, slab.left));
-        const oy = Math.max(0, Math.min(r.bottom, slab.bottom) - Math.max(r.top, slab.top));
+        const ox = Math.max(
+          0,
+          Math.min(r.right, slab.right) - Math.max(r.left, slab.left),
+        );
+        const oy = Math.max(
+          0,
+          Math.min(r.bottom, slab.bottom) - Math.max(r.top, slab.top),
+        );
         return {
           name: el.className.match(/p-([a-z0-9-]+)/)[1],
           order: Number(getComputedStyle(el).order) || i,
@@ -115,7 +121,9 @@ import { MOSAIC_GRID } from "./lib/heroes.mjs";
 // Reporting is unchanged at all three widths — desktop numbers are still
 // printed, and still worth reading. Only the ASSERTION is scoped.
 const GRID_MAX = 900;
-const GRID_WIDTHS = new Set(VIEWPORTS.filter(([w]) => w <= GRID_MAX).map(([, , tag]) => tag));
+const GRID_WIDTHS = new Set(
+  VIEWPORTS.filter(([w]) => w <= GRID_MAX).map(([, , tag]) => tag),
+);
 let bad = 0;
 for (const [tag, cells] of Object.entries(report)) {
   if (!GRID_WIDTHS.has(tag)) continue;
@@ -123,11 +131,16 @@ for (const [tag, cells] of Object.entries(report)) {
     if (!MOSAIC_GRID.includes(c.name)) continue;
     const hidden = Math.min(100, c.slab + c.fold);
     if (hidden >= OCCLUDED_AT) {
-      console.log(`\nFAIL  ${c.name} is ${hidden}% covered @${tag} — every grid cell must be whole.`);
+      console.log(
+        `\nFAIL  ${c.name} is ${hidden}% covered @${tag} — every grid cell must be whole.`,
+      );
       bad++;
     }
   }
 }
-console.log(bad ? `\n${bad} cell(s) covered.`
-                : `\nEvery cell in the grid is whole (asserted at ${[...GRID_WIDTHS].join(", ")}).`);
+console.log(
+  bad
+    ? `\n${bad} cell(s) covered.`
+    : `\nEvery cell in the grid is whole (asserted at ${[...GRID_WIDTHS].join(", ")}).`,
+);
 process.exit(bad ? 1 : 0);

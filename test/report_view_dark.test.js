@@ -59,7 +59,8 @@ function viewerDb(row) {
           return {
             async first() {
               if (/FROM messages WHERE id = \?/.test(sql)) return row;
-              if (/FROM threads WHERE id = \?/.test(sql)) return { assigned_agent: "charlie" };
+              if (/FROM threads WHERE id = \?/.test(sql))
+                return { assigned_agent: "charlie" };
               return null;
             },
           };
@@ -149,7 +150,10 @@ test("dark: the inline runtime reads mode via matchMedia and redraws on change (
   // light values) rather than from document.documentElement.
   assert.match(html, /function refreshTheme\(host\)/);
   assert.match(html, /getComputedStyle\(el\)/);
-  assert.ok(!html.includes("getComputedStyle(document.documentElement)"), "no longer reads theme from the page root");
+  assert.ok(
+    !html.includes("getComputedStyle(document.documentElement)"),
+    "no longer reads theme from the page root",
+  );
   assert.match(html, /refreshTheme\(host\)/, "drawAll refreshes theme per chart host");
   assert.match(html, /function drawAll\(/);
 });
@@ -193,8 +197,15 @@ test("dark: .report-body pins background/ink light OUTSIDE the dark media query,
   const light = rules[0];
   // The always-on rule must NOT be nested inside `@media (prefers-color-scheme: dark)`.
   const lightRuleIndex = html.indexOf(".report-body");
-  assert.ok(!isNestedInDarkMedia(html, lightRuleIndex), "the always-light .report-body rule is declared outside any dark media block");
-  assert.match(light, /background:\s*#fcfcfb/, "paper card background pinned to the warm-white surface");
+  assert.ok(
+    !isNestedInDarkMedia(html, lightRuleIndex),
+    "the always-light .report-body rule is declared outside any dark media block",
+  );
+  assert.match(
+    light,
+    /background:\s*#fcfcfb/,
+    "paper card background pinned to the warm-white surface",
+  );
   assert.match(light, /color:\s*#0b0b0b/);
   assert.match(light, /--ink:\s*#0b0b0b/);
   assert.match(light, /--secondary:\s*#52514e/);
@@ -203,7 +214,9 @@ test("dark: .report-body pins background/ink light OUTSIDE the dark media query,
   assert.match(light, /--surface:\s*#fcfcfb/);
   assert.match(light, /--tooltip-bg:\s*#0b0b0b/);
   assert.match(light, /--tooltip-text:\s*#ffffff/);
-  SERIES_COLORS.forEach((hex, i) => assert.match(light, new RegExp(`--series-${i}:\\s*${hex}\\b`)));
+  SERIES_COLORS.forEach((hex, i) =>
+    assert.match(light, new RegExp(`--series-${i}:\\s*${hex}\\b`)),
+  );
 });
 
 test("dark: .report-body only gains padding/border-radius INSIDE the dark media query (light layout never shifts)", async () => {
@@ -211,18 +224,31 @@ test("dark: .report-body only gains padding/border-radius INSIDE the dark media 
   const rules = reportBodyRules(html);
   const light = rules[0];
   assert.ok(!/padding/.test(light), "no padding baked into the always-on light rule");
-  assert.ok(!/border-radius/.test(light), "no border-radius baked into the always-on light rule");
+  assert.ok(
+    !/border-radius/.test(light),
+    "no border-radius baked into the always-on light rule",
+  );
   // A second .report-body rule, carrying padding + radius, must exist and
   // must be nested inside a dark media block.
   const dark = rules.find((r) => /padding/.test(r) && /border-radius/.test(r));
   assert.ok(dark, "a dark-only .report-body rule with padding + border-radius exists");
-  const secondReportBodyIndex = html.indexOf(".report-body", html.indexOf(".report-body") + 1);
-  assert.ok(isNestedInDarkMedia(html, secondReportBodyIndex), "the padding/radius rule sits directly inside a dark media block");
+  const secondReportBodyIndex = html.indexOf(
+    ".report-body",
+    html.indexOf(".report-body") + 1,
+  );
+  assert.ok(
+    isNestedInDarkMedia(html, secondReportBodyIndex),
+    "the padding/radius rule sits directly inside a dark media block",
+  );
 });
 
 test("dark: the rendered email body on /r/ is wrapped in the .report-body paper card", async () => {
   const html = await viewReport();
-  assert.match(html, /<div class="report-body">[\s\S]*class="ichart"[\s\S]*<\/div>/, "the ichart payload lives inside the report-body wrapper");
+  assert.match(
+    html,
+    /<div class="report-body">[\s\S]*class="ichart"[\s\S]*<\/div>/,
+    "the ichart payload lives inside the report-body wrapper",
+  );
 });
 
 // ---- /lib/ and the ask-box confirmation page get the same treatment --------
@@ -231,14 +257,26 @@ test("dark: /lib/ library page carries the same dark media block", async () => {
   const token = await makeLibraryToken(SECRET, "nick@example.com");
   const env = {
     REPORT_LINK_SECRET: SECRET,
-    AGENT_MAIL_DB: { prepare: () => ({ bind: () => ({ async all() { return { results: [] }; } }) }) },
+    AGENT_MAIL_DB: {
+      prepare: () => ({
+        bind: () => ({
+          async all() {
+            return { results: [] };
+          },
+        }),
+      }),
+    },
   };
-  const request = new Request(`https://adapttolife.org/lib/${token}`, { method: "GET" });
+  const request = new Request(`https://adapttolife.org/lib/${token}`, {
+    method: "GET",
+  });
   const res = await handleLibraryView(request, env, new URL(request.url));
   const html = await res.text();
   const dark = darkBlock(html);
   assert.match(dark, /--surface: #1a1a19/);
-  DARK_SERIES.forEach((hex, i) => assert.match(dark, new RegExp(`--series-${i}: ${hex}\\b`)));
+  DARK_SERIES.forEach((hex, i) =>
+    assert.match(dark, new RegExp(`--series-${i}: ${hex}\\b`)),
+  );
 });
 
 test("dark: POST to the retired /ask sub-route 404s — no confirmation page left to carry the dark block", async () => {
@@ -255,12 +293,27 @@ test("dark: POST to the retired /ask sub-route 404s — no confirmation page lef
 // ---- email untouched pin ----------------------------------------------------
 
 test("dark: chart_render.js and chart_png.js source carry NO prefers-color-scheme or dark custom properties (email renderer untouched)", () => {
-  const chartRenderSrc = readFileSync(fileURLToPath(new URL("../src/chart_render.js", import.meta.url)), "utf8");
-  const chartPngSrc = readFileSync(fileURLToPath(new URL("../src/chart_png.js", import.meta.url)), "utf8");
+  const chartRenderSrc = readFileSync(
+    fileURLToPath(new URL("../src/chart_render.js", import.meta.url)),
+    "utf8",
+  );
+  const chartPngSrc = readFileSync(
+    fileURLToPath(new URL("../src/chart_png.js", import.meta.url)),
+    "utf8",
+  );
   for (const src of [chartRenderSrc, chartPngSrc]) {
-    assert.ok(!src.includes("prefers-color-scheme"), "no dark media query in the email renderer");
-    assert.ok(!src.includes("--ink"), "no CSS custom properties introduced into the email renderer");
-    assert.ok(!src.includes("--series-"), "no dark series tokens introduced into the email renderer");
+    assert.ok(
+      !src.includes("prefers-color-scheme"),
+      "no dark media query in the email renderer",
+    );
+    assert.ok(
+      !src.includes("--ink"),
+      "no CSS custom properties introduced into the email renderer",
+    );
+    assert.ok(
+      !src.includes("--series-"),
+      "no dark series tokens introduced into the email renderer",
+    );
   }
 });
 
@@ -284,8 +337,10 @@ test("dark: a real composed /send email body carries no prefers-color-scheme blo
           return {
             async first() {
               if (/SELECT 1 AS ok FROM inboxes/.test(sql)) return { ok: 1 };
-              if (/SELECT default_agent FROM inboxes/.test(sql)) return { default_agent: "charlie" };
-              if (/datetime\('now', '-1 hour'\)/.test(sql)) return { thread_n: 0, inbox_n: 0 };
+              if (/SELECT default_agent FROM inboxes/.test(sql))
+                return { default_agent: "charlie" };
+              if (/datetime\('now', '-1 hour'\)/.test(sql))
+                return { thread_n: 0, inbox_n: 0 };
               if (/start of day/.test(sql)) return { n: 0 };
               return null;
             },
@@ -305,11 +360,19 @@ test("dark: a real composed /send email body carries no prefers-color-scheme blo
     AGENT_MAIL_TOKEN: OPERATOR_TOKEN,
     AGENT_MAIL_DB: db,
     REPORT_LINK_SECRET: SECRET,
-    SEND_EMAIL: { async send(msg) { sentMsgs.push(msg); return { id: "cf-msg-dark" }; } },
+    SEND_EMAIL: {
+      async send(msg) {
+        sentMsgs.push(msg);
+        return { id: "cf-msg-dark" };
+      },
+    },
   };
   const request = new Request("https://adapttolife.org/api/agent-mail/send", {
     method: "POST",
-    headers: { Authorization: `Bearer ${OPERATOR_TOKEN}`, "Content-Type": "application/json" },
+    headers: {
+      Authorization: `Bearer ${OPERATOR_TOKEN}`,
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({
       from: "charlie@agents.adapttolife.org",
       to: "nick@example.com",

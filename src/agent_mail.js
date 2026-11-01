@@ -9,38 +9,49 @@
 // API and the reports viewer. Outbound via Cloudflare Email Sending (src/email.js cfSend).
 
 const AGENT_MAIL_BUCKET = "agent-mail";
-const AGENT_MAIL_R2_ENDPOINT = "https://af37fa2a6ec0470579368cff4bd5bee7.r2.cloudflarestorage.com";
+const AGENT_MAIL_R2_ENDPOINT =
+  "https://af37fa2a6ec0470579368cff4bd5bee7.r2.cloudflarestorage.com";
 
 function agentMailS3(env) {
-  return env.AGENT_MAIL_S3_CLIENT || new S3Client({
-    region: "auto",
-    endpoint: AGENT_MAIL_R2_ENDPOINT,
-    credentials: {
-      accessKeyId: env.R2_ACCESS_KEY_ID,
-      secretAccessKey: env.R2_SECRET_ACCESS_KEY,
-    },
-  });
+  return (
+    env.AGENT_MAIL_S3_CLIENT ||
+    new S3Client({
+      region: "auto",
+      endpoint: AGENT_MAIL_R2_ENDPOINT,
+      credentials: {
+        accessKeyId: env.R2_ACCESS_KEY_ID,
+        secretAccessKey: env.R2_SECRET_ACCESS_KEY,
+      },
+    })
+  );
 }
 
 async function putRawMessage(env, key, body, metadata) {
-  await agentMailS3(env).send(new PutObjectCommand({
-    Bucket: AGENT_MAIL_BUCKET,
-    Key: key,
-    Body: body,
-    ContentType: "message/rfc822",
-    Metadata: metadata,
-  }));
+  await agentMailS3(env).send(
+    new PutObjectCommand({
+      Bucket: AGENT_MAIL_BUCKET,
+      Key: key,
+      Body: body,
+      ContentType: "message/rfc822",
+      Metadata: metadata,
+    }),
+  );
 }
 
 async function getRawMessage(env, key) {
   try {
-    const response = await agentMailS3(env).send(new GetObjectCommand({
-      Bucket: AGENT_MAIL_BUCKET,
-      Key: key,
-    }));
-    return response.Body ? new Uint8Array(await response.Body.transformToByteArray()) : null;
+    const response = await agentMailS3(env).send(
+      new GetObjectCommand({
+        Bucket: AGENT_MAIL_BUCKET,
+        Key: key,
+      }),
+    );
+    return response.Body
+      ? new Uint8Array(await response.Body.transformToByteArray())
+      : null;
   } catch (error) {
-    if (error?.$metadata?.httpStatusCode === 404 || error?.name === "NoSuchKey") return null;
+    if (error?.$metadata?.httpStatusCode === 404 || error?.name === "NoSuchKey")
+      return null;
     throw error;
   }
 }
@@ -52,7 +63,14 @@ import { resolveMarkdownBody } from "./md_render.js";
 import { renderMarkdownChartPngs } from "./chart_png.js";
 import { reportFooterHtml, reportLink } from "./report_view.js";
 
-const STATUSES = ["new", "agent_working", "needs_review", "human", "replied", "resolved"];
+const STATUSES = [
+  "new",
+  "agent_working",
+  "needs_review",
+  "human",
+  "replied",
+  "resolved",
+];
 
 // Spec 33 outbound caps. Applied to every caller (operator included): a runaway
 // loop through the admin lane is still a loop.
@@ -60,7 +78,11 @@ const STATUSES = ["new", "agent_working", "needs_review", "human", "replied", "r
 // bell-allowlisted both ways, so two agents replying forever is a slow-motion
 // loop the hourly cap only paces. Past repliesPerThreadPerDay the thread flips
 // needs_review — a human ends the conversation, not a faster retry.
-const SEND_LIMITS = { perThreadPerHour: 5, perInboxPerHour: 20, repliesPerThreadPerDay: 6 };
+const SEND_LIMITS = {
+  perThreadPerHour: 5,
+  perInboxPerHour: 20,
+  repliesPerThreadPerDay: 6,
+};
 
 // Outbound attachments. API callers pass base64; the Email Sending binding wants
 // raw bytes. Executable types are refused: agents send reports and data files,
@@ -81,11 +103,11 @@ const SEND_LIMITS = { perThreadPerHour: 5, perInboxPerHour: 20, repliesPerThread
 // nothing had yet sent an attachment that large to an unverified recipient.
 const OUT_ATTACHMENT_LIMITS = {
   count: 4,
-  totalBytes: 3.5 * 1024 * 1024,          // 5 MiB cap  -> ~4.8 MiB on the wire
+  totalBytes: 3.5 * 1024 * 1024, // 5 MiB cap  -> ~4.8 MiB on the wire
 };
 const OUT_ATTACHMENT_LIMITS_VERIFIED = {
   count: 10,
-  totalBytes: 17 * 1024 * 1024,           // 25 MiB cap -> ~23.3 MiB on the wire
+  totalBytes: 17 * 1024 * 1024, // 25 MiB cap -> ~23.3 MiB on the wire
 };
 
 // Verified Email Routing destinations. Regenerate with:
@@ -116,7 +138,8 @@ export function attachmentLimitsFor(recipients) {
     ? OUT_ATTACHMENT_LIMITS_VERIFIED
     : OUT_ATTACHMENT_LIMITS;
 }
-const OUT_ATTACHMENT_BLOCKED = /\.(exe|dll|bat|cmd|com|scr|jar|msi|ps1|sh|vbs|js|apk|html?)$/i;
+const OUT_ATTACHMENT_BLOCKED =
+  /\.(exe|dll|bat|cmd|com|scr|jar|msi|ps1|sh|vbs|js|apk|html?)$/i;
 
 // Validate + decode API attachments ([{filename, content_b64, type?}]) into the
 // cfSend shape. Returns { list, note } on success ({ list: undefined } when the
@@ -126,7 +149,9 @@ const OUT_ATTACHMENT_BLOCKED = /\.(exe|dll|bat|cmd|com|scr|jar|msi|ps1|sh|vbs|js
 function decodeOutAttachments(raw, recipients) {
   if (raw === undefined || raw === null) return { list: undefined, note: "" };
   if (!Array.isArray(raw) || raw.length === 0) {
-    return { error: "attachments must be a non-empty array of {filename, content_b64, type?}" };
+    return {
+      error: "attachments must be a non-empty array of {filename, content_b64, type?}",
+    };
   }
   const limits = attachmentLimitsFor(recipients);
   if (raw.length > limits.count) {
@@ -136,9 +161,14 @@ function decodeOutAttachments(raw, recipients) {
   const names = [];
   let total = 0;
   for (const a of raw) {
-    const filename = String((a && a.filename) || "").trim().replace(/[/\\]/g, "_").slice(0, 120);
-    if (!filename || !(a && a.content_b64)) return { error: "each attachment needs filename and content_b64" };
-    if (OUT_ATTACHMENT_BLOCKED.test(filename)) return { error: `attachment type not allowed: ${filename}` };
+    const filename = String((a && a.filename) || "")
+      .trim()
+      .replace(/[/\\]/g, "_")
+      .slice(0, 120);
+    if (!filename || !(a && a.content_b64))
+      return { error: "each attachment needs filename and content_b64" };
+    if (OUT_ATTACHMENT_BLOCKED.test(filename))
+      return { error: `attachment type not allowed: ${filename}` };
     let bytes;
     try {
       const bin = atob(String(a.content_b64).replace(/\s+/g, ""));
@@ -150,10 +180,13 @@ function decodeOutAttachments(raw, recipients) {
     total += bytes.byteLength;
     if (total > limits.totalBytes) {
       const mib = (limits.totalBytes / 1048576).toFixed(1);
-      const hint = limits === OUT_ATTACHMENT_LIMITS
-        ? " (recipient is not a verified Email Routing destination, so the platform caps this message at 5 MiB; verified destinations get 25 MiB)"
-        : "";
-      return { error: `attachments exceed ${limits.totalBytes} decoded bytes total (${mib} MiB)${hint}` };
+      const hint =
+        limits === OUT_ATTACHMENT_LIMITS
+          ? " (recipient is not a verified Email Routing destination, so the platform caps this message at 5 MiB; verified destinations get 25 MiB)"
+          : "";
+      return {
+        error: `attachments exceed ${limits.totalBytes} decoded bytes total (${mib} MiB)${hint}`,
+      };
     }
     list.push({
       filename,
@@ -174,7 +207,8 @@ function decodeOutAttachments(raw, recipients) {
 // to chart_render.js's table degrade inside resolveMarkdownBody.
 async function chartPngsFor(body) {
   const b = body || {};
-  if (b.body_markdown == null || b.body_html != null) return { images: undefined, attachments: [] };
+  if (b.body_markdown == null || b.body_html != null)
+    return { images: undefined, attachments: [] };
   return await renderMarkdownChartPngs(b.body_markdown);
 }
 
@@ -198,22 +232,33 @@ function mergeAttachments(list, chartAttachments) {
 // Returns a short reason string, or null for human mail.
 export function classifyMachine(parsed, fromAddr) {
   const headers = {};
-  for (const h of parsed.headers || []) headers[String(h.key).toLowerCase()] = String(h.value || "");
+  for (const h of parsed.headers || [])
+    headers[String(h.key).toLowerCase()] = String(h.value || "");
 
   const autoSubmitted = headers["auto-submitted"];
-  if (autoSubmitted && autoSubmitted.trim().toLowerCase() !== "no") return "auto-submitted";
+  if (autoSubmitted && autoSubmitted.trim().toLowerCase() !== "no")
+    return "auto-submitted";
   const precedence = (headers["precedence"] || "").trim().toLowerCase();
-  if (["bulk", "junk", "auto_reply", "list"].includes(precedence)) return `precedence:${precedence}`;
+  if (["bulk", "junk", "auto_reply", "list"].includes(precedence))
+    return `precedence:${precedence}`;
   if ("x-auto-response-suppress" in headers) return "x-auto-response-suppress";
   if ("x-autoreply" in headers || "x-autorespond" in headers) return "x-autoreply";
 
-  const local = String(fromAddr || "").toLowerCase().split("@")[0];
-  if (/^(mailer-daemon|postmaster|bounce|bounces)$/.test(local) || /(^|[-._])(no-?reply|do-?not-?reply)([-._]|$)/.test(local)) {
+  const local = String(fromAddr || "")
+    .toLowerCase()
+    .split("@")[0];
+  if (
+    /^(mailer-daemon|postmaster|bounce|bounces)$/.test(local) ||
+    /(^|[-._])(no-?reply|do-?not-?reply)([-._]|$)/.test(local)
+  ) {
     return "sender:" + local;
   }
 
   const subject = String(parsed.subject || "");
-  if (/^(auto:|automatic reply|out of office|autoreply)/i.test(subject) || /delivery status notification|undeliverable|mail delivery failed/i.test(subject)) {
+  if (
+    /^(auto:|automatic reply|out of office|autoreply)/i.test(subject) ||
+    /delivery status notification|undeliverable|mail delivery failed/i.test(subject)
+  ) {
     return "subject:auto";
   }
   return null;
@@ -231,7 +276,9 @@ const STINGEL_HUMAN_MIRROR = "alec@alecability.com";
 // resolves, and a failure must retry/fail loud rather than silently capture a
 // message Alec never receives.
 export async function forwardHumanMirror(message) {
-  const inbox = String(message.to || "").toLowerCase().trim();
+  const inbox = String(message.to || "")
+    .toLowerCase()
+    .trim();
   if (inbox !== STINGEL_INBOX) return false;
 
   const headers = new Headers();
@@ -245,15 +292,26 @@ export async function handleEmail(message, env, ctx) {
   const rawBuf = await new Response(message.raw).arrayBuffer();
   const parsed = await PostalMime.parse(rawBuf);
 
-  const inbox = String(message.to || "").toLowerCase().trim();
-  const fromAddr = (parsed.from && parsed.from.address) || String(message.from || "").toLowerCase();
+  const inbox = String(message.to || "")
+    .toLowerCase()
+    .trim();
+  const fromAddr =
+    (parsed.from && parsed.from.address) || String(message.from || "").toLowerCase();
   const subject = parsed.subject || "(no subject)";
   const messageId = parsed.messageId || null;
-  const inReplyTo = parsed.inReplyTo || (Array.isArray(parsed.references) ? parsed.references[parsed.references.length - 1] : null);
+  const inReplyTo =
+    parsed.inReplyTo ||
+    (Array.isArray(parsed.references)
+      ? parsed.references[parsed.references.length - 1]
+      : null);
 
   // Archive the raw message + attachments in R2; D1 stores the pointer.
   const r2Key = `raw/${inbox}/${isoDay()}/${crypto.randomUUID()}.eml`;
-  await putRawMessage(env, r2Key, rawBuf, { inbox, from: fromAddr, message_id: messageId || "" });
+  await putRawMessage(env, r2Key, rawBuf, {
+    inbox,
+    from: fromAddr,
+    message_id: messageId || "",
+  });
 
   const db = env.AGENT_MAIL_DB;
   const thread = await findOrCreateThread(db, { inbox, fromAddr, subject, inReplyTo });
@@ -263,9 +321,20 @@ export async function handleEmail(message, env, ctx) {
   await db
     .prepare(
       `INSERT INTO messages (id, thread_id, direction, from_addr, to_addr, subject, body_text, r2_key, message_id, in_reply_to, is_machine)
-       VALUES (?, ?, 'in', ?, ?, ?, ?, ?, ?, ?, ?)`
+       VALUES (?, ?, 'in', ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
-    .bind(msgId, thread.id, fromAddr, inbox, subject, parsed.text || "", r2Key, messageId, inReplyTo, machine ? 1 : 0)
+    .bind(
+      msgId,
+      thread.id,
+      fromAddr,
+      inbox,
+      subject,
+      parsed.text || "",
+      r2Key,
+      messageId,
+      inReplyTo,
+      machine ? 1 : 0,
+    )
     .run();
 
   await db
@@ -280,7 +349,10 @@ export async function handleEmail(message, env, ctx) {
   // where inbound drives actions): spam and strangers can't enter the loop.
   const lockedOut = await lockedOutSender(db, inbox, fromAddr);
   if (lockedOut) {
-    await db.prepare(`UPDATE threads SET status = 'resolved' WHERE id = ?`).bind(thread.id).run();
+    await db
+      .prepare(`UPDATE threads SET status = 'resolved' WHERE id = ?`)
+      .bind(thread.id)
+      .run();
     console.log(`agent-mail: locked inbox ${inbox} — quarantined sender ${fromAddr}`);
   }
 
@@ -301,17 +373,32 @@ export async function handleEmail(message, env, ctx) {
     // envelope-address compare shipped first and missed exactly this (wire
     // check 3; Charlie's second turn flagged it). A message FROM the thread's
     // own address is never a wake-worthy event on that thread.
-    if (String(fromAddr || "").toLowerCase().trim() === String(thread.inbox || "").toLowerCase()) {
-      console.log(`agent-mail: bell suppressed — self-echo: ${fromAddr} on thread ${thread.id} (${thread.inbox})`);
+    if (
+      String(fromAddr || "")
+        .toLowerCase()
+        .trim() === String(thread.inbox || "").toLowerCase()
+    ) {
+      console.log(
+        `agent-mail: bell suppressed — self-echo: ${fromAddr} on thread ${thread.id} (${thread.inbox})`,
+      );
     } else if (await senderAllowed(db, fromAddr)) {
       const bellAgent = thread.assigned_agent;
-      ctx.waitUntil(ringBell(env, bellAgent, { inbox, thread_id: thread.id, from: fromAddr, subject, message_uuid: msgId })
-        .catch(async (e) => {
+      ctx.waitUntil(
+        ringBell(env, bellAgent, {
+          inbox,
+          thread_id: thread.id,
+          from: fromAddr,
+          subject,
+          message_uuid: msgId,
+        }).catch(async (e) => {
           console.error("agent-mail bell failed:", e);
           await recordSendFailure(env, "bell", bellAgent, e);
-        }));
+        }),
+      );
     } else {
-      console.log(`agent-mail: bell suppressed — sender not allowlisted: ${fromAddr} → ${inbox}`);
+      console.log(
+        `agent-mail: bell suppressed — sender not allowlisted: ${fromAddr} → ${inbox}`,
+      );
     }
   }
 
@@ -334,9 +421,14 @@ export async function handleEmail(message, env, ctx) {
 // mail is already captured; never admit a sender into a locked loop on doubt).
 async function lockedOutSender(db, inbox, fromAddr) {
   try {
-    const { results } = await db.prepare(`SELECT pattern FROM inbox_locks WHERE inbox = ?`).bind(inbox).all();
+    const { results } = await db
+      .prepare(`SELECT pattern FROM inbox_locks WHERE inbox = ?`)
+      .bind(inbox)
+      .all();
     if (!results || !results.length) return false;
-    const addr = String(fromAddr || "").toLowerCase().trim();
+    const addr = String(fromAddr || "")
+      .toLowerCase()
+      .trim();
     const at = addr.indexOf("@");
     const domain = at >= 0 ? addr.slice(at) : "";
     return !results.some((r) => r.pattern === addr || (domain && r.pattern === domain));
@@ -352,7 +444,9 @@ async function lockedOutSender(db, inbox, fromAddr) {
 // ring" — the mail is already archived by the time this runs.
 async function senderAllowed(db, fromAddr) {
   try {
-    const addr = String(fromAddr || "").toLowerCase().trim();
+    const addr = String(fromAddr || "")
+      .toLowerCase()
+      .trim();
     const at = addr.indexOf("@");
     if (at < 0) return false;
     const row = await db
@@ -369,20 +463,50 @@ async function senderAllowed(db, fromAddr) {
 // POST a signed "you've got mail" event to bell-<agent>.alectranel.com. Best
 // effort by design (Spec 47 decision 7): a missed bell means the mail waits for
 // the next touch — ingestion and the D1 record are never at risk.
-export async function ringBell(env, agent, { inbox, thread_id, from, subject, message_uuid }) {
+export async function ringBell(
+  env,
+  agent,
+  { inbox, thread_id, from, subject, message_uuid },
+) {
   let secrets = {};
-  try { secrets = JSON.parse(env.MAIL_BELL_SECRETS || "{}"); } catch { /* unset or malformed = no bells */ }
+  try {
+    secrets = JSON.parse(env.MAIL_BELL_SECRETS || "{}");
+  } catch {
+    /* unset or malformed = no bells */
+  }
   const secret = secrets[agent];
   if (!secret) return; // agent has no bell (e.g. julio, pull-only)
 
-  const body = JSON.stringify({ event: "mail.received", agent, inbox, thread_id, from, subject });
-  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-  const sig = [...new Uint8Array(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(body)))]
-    .map((b) => b.toString(16).padStart(2, "0")).join("");
+  const body = JSON.stringify({
+    event: "mail.received",
+    agent,
+    inbox,
+    thread_id,
+    from,
+    subject,
+  });
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const sig = [
+    ...new Uint8Array(
+      await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(body)),
+    ),
+  ]
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 
   const res = await fetch(`https://bell-${agent}.alectranel.com/webhooks/agent-mail`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "X-Webhook-Signature": sig, "X-Request-ID": message_uuid },
+    headers: {
+      "Content-Type": "application/json",
+      "X-Webhook-Signature": sig,
+      "X-Request-ID": message_uuid,
+    },
     body,
   });
   if (!res.ok) {
@@ -397,16 +521,23 @@ export async function ringBell(env, agent, { inbox, thread_id, from, subject, me
 // such failure path lands one row here, and the fleet watchdog polls
 // GET /send-failures to page per row. Fail-open by contract: a failed insert
 // console.errors and never breaks the send flow it rides on.
-export async function recordSendFailure(env, route, toAddr, err, id = crypto.randomUUID()) {
+export async function recordSendFailure(
+  env,
+  route,
+  toAddr,
+  err,
+  id = crypto.randomUUID(),
+) {
   try {
-    await env.AGENT_MAIL_DB
-      .prepare(`INSERT INTO send_failures (id, ts, route, to_addr, error) VALUES (?, ?, ?, ?, ?)`)
+    await env.AGENT_MAIL_DB.prepare(
+      `INSERT INTO send_failures (id, ts, route, to_addr, error) VALUES (?, ?, ?, ?, ?)`,
+    )
       .bind(
         id,
         Math.floor(Date.now() / 1000),
         route,
         String(toAddr || ""),
-        String((err && err.message) || err).slice(0, 2000)
+        String((err && err.message) || err).slice(0, 2000),
       )
       .run();
   } catch (e) {
@@ -423,7 +554,7 @@ export async function findOrCreateThread(db, { inbox, fromAddr, subject, inReply
     const prior = await db
       .prepare(
         `SELECT t.* FROM messages m JOIN threads t ON t.id = m.thread_id
-         WHERE m.message_id = ? AND t.inbox = ? LIMIT 1`
+         WHERE m.message_id = ? AND t.inbox = ? LIMIT 1`,
       )
       .bind(inReplyTo, inbox)
       .first();
@@ -439,7 +570,7 @@ export async function findOrCreateThread(db, { inbox, fromAddr, subject, inReply
     const { results } = await db
       .prepare(
         `SELECT * FROM threads WHERE inbox = ? AND from_addr = ? AND last_at > datetime('now', '-30 days')
-         ORDER BY last_at DESC LIMIT 25`
+         ORDER BY last_at DESC LIMIT 25`,
       )
       .bind(inbox, fromAddr)
       .all();
@@ -451,11 +582,14 @@ export async function findOrCreateThread(db, { inbox, fromAddr, subject, inReply
   const id = crypto.randomUUID();
   // New thread: owner defaults to the inbox's default_agent (per-agent inbox = that agent;
   // shared inbox = the router default). Unknown inboxes still capture mail, unrouted.
-  const ib = await db.prepare(`SELECT default_agent FROM inboxes WHERE address = ?`).bind(inbox).first();
+  const ib = await db
+    .prepare(`SELECT default_agent FROM inboxes WHERE address = ?`)
+    .bind(inbox)
+    .first();
   const assigned = ib ? ib.default_agent : null;
   await db
     .prepare(
-      `INSERT INTO threads (id, inbox, assigned_agent, status, subject, from_addr) VALUES (?, ?, ?, 'new', ?, ?)`
+      `INSERT INTO threads (id, inbox, assigned_agent, status, subject, from_addr) VALUES (?, ?, ?, 'new', ?, ?)`,
     )
     .bind(id, inbox, assigned, subject, fromAddr)
     .run();
@@ -474,9 +608,11 @@ async function resolveCaller(request, env) {
   if (!auth.startsWith("Bearer ")) return null;
   const token = auth.slice("Bearer ".length).trim();
   if (!token) return null;
-  if (env.AGENT_MAIL_TOKEN && token === env.AGENT_MAIL_TOKEN) return { operator: true, agent: null };
-  const row = await env.AGENT_MAIL_DB
-    .prepare(`SELECT agent FROM agent_tokens WHERE token_hash = ?`)
+  if (env.AGENT_MAIL_TOKEN && token === env.AGENT_MAIL_TOKEN)
+    return { operator: true, agent: null };
+  const row = await env.AGENT_MAIL_DB.prepare(
+    `SELECT agent FROM agent_tokens WHERE token_hash = ?`,
+  )
     .bind(await sha256Hex(token))
     .first();
   return row ? { operator: false, agent: row.agent } : null;
@@ -487,14 +623,16 @@ async function resolveCaller(request, env) {
 async function callerOwnsThread(env, caller, thread) {
   if (caller.operator) return true;
   if (thread.assigned_agent === caller.agent) return true;
-  const ib = await env.AGENT_MAIL_DB
-    .prepare(`SELECT 1 AS ok FROM inboxes WHERE address = ? AND default_agent = ?`)
+  const ib = await env.AGENT_MAIL_DB.prepare(
+    `SELECT 1 AS ok FROM inboxes WHERE address = ? AND default_agent = ?`,
+  )
     .bind(thread.inbox, caller.agent)
     .first();
   return !!ib;
 }
 
-const forbidden = () => jsonResp({ outcome: "error", error: "forbidden: outside your inbox scope" }, 403);
+const forbidden = () =>
+  jsonResp({ outcome: "error", error: "forbidden: outside your inbox scope" }, 403);
 
 export async function handleAgentMailApi(request, env, url) {
   const caller = await resolveCaller(request, env);
@@ -535,7 +673,10 @@ export async function handleAgentMailApi(request, env, url) {
     return jsonResp({ outcome: "error", error: "not found" }, 404);
   } catch (err) {
     console.error("agent-mail api error:", err);
-    return jsonResp({ outcome: "error", error: String(err && err.message || err) }, 500);
+    return jsonResp(
+      { outcome: "error", error: String((err && err.message) || err) },
+      500,
+    );
   }
 }
 
@@ -548,25 +689,35 @@ async function apiList(env, url, caller) {
   const binds = [];
   if (!caller.operator) {
     if (inbox) {
-      const owned = await env.AGENT_MAIL_DB
-        .prepare(`SELECT 1 AS ok FROM inboxes WHERE address = ? AND default_agent = ?`)
+      const owned = await env.AGENT_MAIL_DB.prepare(
+        `SELECT 1 AS ok FROM inboxes WHERE address = ? AND default_agent = ?`,
+      )
         .bind(inbox.toLowerCase(), caller.agent)
         .first();
       if (!owned) return forbidden();
     } else {
-      where.push("(inbox IN (SELECT address FROM inboxes WHERE default_agent = ?) OR assigned_agent = ?)");
+      where.push(
+        "(inbox IN (SELECT address FROM inboxes WHERE default_agent = ?) OR assigned_agent = ?)",
+      );
       binds.push(caller.agent, caller.agent);
     }
   }
-  if (inbox) { where.push("inbox = ?"); binds.push(inbox.toLowerCase()); }
-  if (status) { where.push("status = ?"); binds.push(status); }
-  const sql =
-    `SELECT id AS thread_id, inbox, from_addr AS "from", subject, status, assigned_agent, last_at
+  if (inbox) {
+    where.push("inbox = ?");
+    binds.push(inbox.toLowerCase());
+  }
+  if (status) {
+    where.push("status = ?");
+    binds.push(status);
+  }
+  const sql = `SELECT id AS thread_id, inbox, from_addr AS "from", subject, status, assigned_agent, last_at
      FROM threads ${where.length ? "WHERE " + where.join(" AND ") : ""}
      ORDER BY last_at DESC LIMIT ?`;
   binds.push(limit);
 
-  const { results } = await env.AGENT_MAIL_DB.prepare(sql).bind(...binds).all();
+  const { results } = await env.AGENT_MAIL_DB.prepare(sql)
+    .bind(...binds)
+    .all();
   return jsonResp({ outcome: "ok", data: results || [] });
 }
 
@@ -576,8 +727,9 @@ async function apiList(env, url, caller) {
 async function apiSendFailures(env, url, caller) {
   if (!caller.operator) return forbidden();
   const since = parseInt(url.searchParams.get("since") || "0", 10) || 0;
-  const { results } = await env.AGENT_MAIL_DB
-    .prepare(`SELECT id, ts, route, to_addr, error FROM send_failures WHERE ts > ? ORDER BY ts ASC LIMIT 200`)
+  const { results } = await env.AGENT_MAIL_DB.prepare(
+    `SELECT id, ts, route, to_addr, error FROM send_failures WHERE ts > ? ORDER BY ts ASC LIMIT 200`,
+  )
     .bind(since)
     .all();
   return jsonResp({ outcome: "ok", data: results || [] });
@@ -594,13 +746,15 @@ async function apiSendFailures(env, url, caller) {
 // owns it (first live probe surfaced exactly this class, 2026-07-13).
 async function apiStaleThreads(env, url, caller) {
   if (!caller.operator) return forbidden();
-  const hours = Math.min(Math.max(parseInt(url.searchParams.get("hours") || "4", 10) || 4, 1), 168);
-  const { results } = await env.AGENT_MAIL_DB
-    .prepare(
-      `SELECT id AS thread_id, inbox, assigned_agent, status, subject, from_addr, last_at
+  const hours = Math.min(
+    Math.max(parseInt(url.searchParams.get("hours") || "4", 10) || 4, 1),
+    168,
+  );
+  const { results } = await env.AGENT_MAIL_DB.prepare(
+    `SELECT id AS thread_id, inbox, assigned_agent, status, subject, from_addr, last_at
        FROM threads WHERE status IN ('new', 'agent_working') AND assigned_agent IS NOT NULL AND last_at < datetime('now', ?)
-       ORDER BY last_at ASC LIMIT 100`
-    )
+       ORDER BY last_at ASC LIMIT 100`,
+  )
     .bind(`-${hours} hours`)
     .all();
   return jsonResp({ outcome: "ok", data: results || [] });
@@ -640,7 +794,7 @@ async function apiReports(env, url, caller) {
   const binds = [];
   if (!caller.operator) {
     where.push(
-      "(threads.inbox IN (SELECT address FROM inboxes WHERE default_agent = ?) OR threads.assigned_agent = ?)"
+      "(threads.inbox IN (SELECT address FROM inboxes WHERE default_agent = ?) OR threads.assigned_agent = ?)",
     );
     binds.push(caller.agent, caller.agent);
   }
@@ -665,14 +819,15 @@ async function apiReports(env, url, caller) {
     ? `messages.id AS id, messages.thread_id AS thread_id, messages.to_addr AS "to", messages.subject AS subject, messages.created_at AS created_at, messages.body_markdown AS body_markdown`
     : `messages.id AS id, messages.thread_id AS thread_id, messages.to_addr AS "to", messages.subject AS subject, messages.created_at AS created_at`;
 
-  const sql =
-    `SELECT ${cols}
+  const sql = `SELECT ${cols}
      FROM messages JOIN threads ON messages.thread_id = threads.id
      WHERE ${where.join(" AND ")}
      ORDER BY messages.created_at DESC LIMIT ?`;
   binds.push(limit);
 
-  const { results } = await env.AGENT_MAIL_DB.prepare(sql).bind(...binds).all();
+  const { results } = await env.AGENT_MAIL_DB.prepare(sql)
+    .bind(...binds)
+    .all();
   const reports = await Promise.all(
     (results || []).map(async (r) => ({
       id: r.id,
@@ -682,20 +837,23 @@ async function apiReports(env, url, caller) {
       created_at: r.created_at,
       report_url: await reportLink(env, r.id),
       ...(includeBody ? { body_markdown: r.body_markdown } : {}),
-    }))
+    })),
   );
   return jsonResp({ outcome: "ok", reports });
 }
 
 async function apiRead(env, threadId, caller) {
   const db = env.AGENT_MAIL_DB;
-  const thread = await db.prepare(`SELECT * FROM threads WHERE id = ?`).bind(threadId).first();
+  const thread = await db
+    .prepare(`SELECT * FROM threads WHERE id = ?`)
+    .bind(threadId)
+    .first();
   if (!thread) return jsonResp({ outcome: "error", error: "thread not found" }, 404);
   if (!(await callerOwnsThread(env, caller, thread))) return forbidden();
   const { results } = await db
     .prepare(
       `SELECT id, direction, from_addr AS "from", to_addr AS "to", subject, body_text, body_markdown, body_html, r2_key, created_at
-       FROM messages WHERE thread_id = ? ORDER BY created_at ASC`
+       FROM messages WHERE thread_id = ? ORDER BY created_at ASC`,
     )
     .bind(threadId)
     .all();
@@ -709,23 +867,48 @@ const MAX_ATTACHMENTS_BYTES = 8 * 1024 * 1024;
 
 async function apiAttachments(env, messageId, caller) {
   const db = env.AGENT_MAIL_DB;
-  const msg = await db.prepare(`SELECT r2_key, thread_id FROM messages WHERE id = ?`).bind(messageId).first();
+  const msg = await db
+    .prepare(`SELECT r2_key, thread_id FROM messages WHERE id = ?`)
+    .bind(messageId)
+    .first();
   if (!msg) return jsonResp({ outcome: "error", error: "message not found" }, 404);
-  const thread = await db.prepare(`SELECT * FROM threads WHERE id = ?`).bind(msg.thread_id).first();
+  const thread = await db
+    .prepare(`SELECT * FROM threads WHERE id = ?`)
+    .bind(msg.thread_id)
+    .first();
   if (thread && !(await callerOwnsThread(env, caller, thread))) return forbidden();
-  if (!msg.r2_key) return jsonResp({ outcome: "error", error: "message has no archived raw copy (outbound message?)" }, 404);
+  if (!msg.r2_key)
+    return jsonResp(
+      {
+        outcome: "error",
+        error: "message has no archived raw copy (outbound message?)",
+      },
+      404,
+    );
 
   const rawMessage = await getRawMessage(env, msg.r2_key);
-  if (!rawMessage) return jsonResp({ outcome: "error", error: "raw message missing from R2 archive" }, 404);
+  if (!rawMessage)
+    return jsonResp(
+      { outcome: "error", error: "raw message missing from R2 archive" },
+      404,
+    );
   const parsed = await PostalMime.parse(rawMessage);
 
   let total = 0;
   const attachments = [];
   for (const att of parsed.attachments || []) {
-    const bytes = new Uint8Array(att.content instanceof ArrayBuffer ? att.content : att.content || []);
+    const bytes = new Uint8Array(
+      att.content instanceof ArrayBuffer ? att.content : att.content || [],
+    );
     total += bytes.byteLength;
     if (total > MAX_ATTACHMENTS_BYTES) {
-      return jsonResp({ outcome: "error", error: `attachments exceed ${MAX_ATTACHMENTS_BYTES} bytes total` }, 413);
+      return jsonResp(
+        {
+          outcome: "error",
+          error: `attachments exceed ${MAX_ATTACHMENTS_BYTES} bytes total`,
+        },
+        413,
+      );
     }
     attachments.push({
       filename: att.filename || "attachment.bin",
@@ -734,21 +917,39 @@ async function apiAttachments(env, messageId, caller) {
       content_b64: bytesToB64(bytes),
     });
   }
-  return jsonResp({ outcome: "ok", data: { message_id: messageId, count: attachments.length, attachments } });
+  return jsonResp({
+    outcome: "ok",
+    data: { message_id: messageId, count: attachments.length, attachments },
+  });
 }
 
 async function apiReply(env, body, caller) {
   const { thread_id, body_markdown, attachments } = body || {};
   const chartPngs = await chartPngsFor(body);
-  const { body_text, body_html } = resolveMarkdownBody(body || {}, { chartImages: chartPngs.images });
-  if (!thread_id || !body_text) return jsonResp({ outcome: "error", error: "thread_id and body_text (or body_markdown) required" }, 422);
+  const { body_text, body_html } = resolveMarkdownBody(body || {}, {
+    chartImages: chartPngs.images,
+  });
+  if (!thread_id || !body_text)
+    return jsonResp(
+      {
+        outcome: "error",
+        error: "thread_id and body_text (or body_markdown) required",
+      },
+      422,
+    );
 
   const db = env.AGENT_MAIL_DB;
-  const thread = await db.prepare(`SELECT * FROM threads WHERE id = ?`).bind(thread_id).first();
+  const thread = await db
+    .prepare(`SELECT * FROM threads WHERE id = ?`)
+    .bind(thread_id)
+    .first();
   if (!thread) return jsonResp({ outcome: "error", error: "thread not found" }, 404);
   if (!(await callerOwnsThread(env, caller, thread))) return forbidden();
   if (thread.status === "human") {
-    return jsonResp({ outcome: "error", error: "thread is owned by a human; agent reply refused" }, 409);
+    return jsonResp(
+      { outcome: "error", error: "thread is owned by a human; agent reply refused" },
+      409,
+    );
   }
 
   // Attachment budget depends on the recipient, so this waits for the thread.
@@ -757,11 +958,20 @@ async function apiReply(env, body, caller) {
 
   // Reply to the most recent inbound sender, in the original thread.
   const last = await db
-    .prepare(`SELECT * FROM messages WHERE thread_id = ? AND direction = 'in' ORDER BY created_at DESC LIMIT 1`)
+    .prepare(
+      `SELECT * FROM messages WHERE thread_id = ? AND direction = 'in' ORDER BY created_at DESC LIMIT 1`,
+    )
     .bind(thread_id)
     .first();
   if (last && last.is_machine) {
-    return jsonResp({ outcome: "error", error: "last inbound is machine-generated (bounce/auto-reply); reply refused to prevent a mail loop" }, 409);
+    return jsonResp(
+      {
+        outcome: "error",
+        error:
+          "last inbound is machine-generated (bounce/auto-reply); reply refused to prevent a mail loop",
+      },
+      409,
+    );
   }
 
   const sentLastHour = await db
@@ -770,14 +980,20 @@ async function apiReply(env, body, caller) {
          SUM(CASE WHEN m.thread_id = ? THEN 1 ELSE 0 END) AS thread_n,
          COUNT(*) AS inbox_n
        FROM messages m JOIN threads t ON t.id = m.thread_id
-       WHERE t.inbox = ? AND m.direction = 'out' AND m.created_at > datetime('now', '-1 hour')`
+       WHERE t.inbox = ? AND m.direction = 'out' AND m.created_at > datetime('now', '-1 hour')`,
     )
     .bind(thread_id, thread.inbox)
     .first();
-  if ((sentLastHour?.thread_n || 0) >= SEND_LIMITS.perThreadPerHour || (sentLastHour?.inbox_n || 0) >= SEND_LIMITS.perInboxPerHour) {
+  if (
+    (sentLastHour?.thread_n || 0) >= SEND_LIMITS.perThreadPerHour ||
+    (sentLastHour?.inbox_n || 0) >= SEND_LIMITS.perInboxPerHour
+  ) {
     return jsonResp(
-      { outcome: "error", error: `outbound rate limit: ${SEND_LIMITS.perThreadPerHour}/thread/hour, ${SEND_LIMITS.perInboxPerHour}/inbox/hour; try later or flag needs_review` },
-      429
+      {
+        outcome: "error",
+        error: `outbound rate limit: ${SEND_LIMITS.perThreadPerHour}/thread/hour, ${SEND_LIMITS.perInboxPerHour}/inbox/hour; try later or flag needs_review`,
+      },
+      429,
     );
   }
 
@@ -786,19 +1002,29 @@ async function apiReply(env, body, caller) {
   // retry-later. status flips BEFORE the refusal so a caller that ignores the
   // 429 finds the thread already out of its hands.
   const sentToday = await db
-    .prepare(`SELECT COUNT(*) AS n FROM messages WHERE thread_id = ? AND direction = 'out' AND created_at > datetime('now', 'start of day')`)
+    .prepare(
+      `SELECT COUNT(*) AS n FROM messages WHERE thread_id = ? AND direction = 'out' AND created_at > datetime('now', 'start of day')`,
+    )
     .bind(thread_id)
     .first();
   if ((sentToday?.n || 0) >= SEND_LIMITS.repliesPerThreadPerDay) {
-    await db.prepare(`UPDATE threads SET status = 'needs_review' WHERE id = ?`).bind(thread_id).run();
+    await db
+      .prepare(`UPDATE threads SET status = 'needs_review' WHERE id = ?`)
+      .bind(thread_id)
+      .run();
     return jsonResp(
-      { outcome: "error", error: `ping-pong halt (Spec 80): ${SEND_LIMITS.repliesPerThreadPerDay} agent replies on this thread today — thread flipped to needs_review; a human continues it` },
-      429
+      {
+        outcome: "error",
+        error: `ping-pong halt (Spec 80): ${SEND_LIMITS.repliesPerThreadPerDay} agent replies on this thread today — thread flipped to needs_review; a human continues it`,
+      },
+      429,
     );
   }
 
   const to = last ? last.from_addr : thread.from_addr;
-  const subject = /^re:/i.test(thread.subject || "") ? thread.subject : `Re: ${thread.subject || ""}`.trim();
+  const subject = /^re:/i.test(thread.subject || "")
+    ? thread.subject
+    : `Re: ${thread.subject || ""}`.trim();
   const inReplyTo = last ? last.message_id : null;
 
   // Send natively as the agent's own inbox on agents.adapttolife.org (the subdomain is
@@ -821,7 +1047,9 @@ async function apiReply(env, body, caller) {
       subject,
       text: body_text,
       html: htmlOut,
-      headers: inReplyTo ? { "In-Reply-To": inReplyTo, References: inReplyTo } : undefined,
+      headers: inReplyTo
+        ? { "In-Reply-To": inReplyTo, References: inReplyTo }
+        : undefined,
       attachments: mergeAttachments(att.list, chartPngs.attachments),
     });
   } catch (e) {
@@ -834,17 +1062,37 @@ async function apiReply(env, body, caller) {
   await db
     .prepare(
       `INSERT INTO messages (id, thread_id, direction, from_addr, to_addr, subject, body_text, body_markdown, body_html, message_id, in_reply_to)
-       VALUES (?, ?, 'out', ?, ?, ?, ?, ?, ?, ?, ?)`
+       VALUES (?, ?, 'out', ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
-    .bind(msgId, thread_id, fromAddr, to, subject, body_text + att.note, body_markdown || null, htmlOut || null, cloudflareMessageId, inReplyTo)
+    .bind(
+      msgId,
+      thread_id,
+      fromAddr,
+      to,
+      subject,
+      body_text + att.note,
+      body_markdown || null,
+      htmlOut || null,
+      cloudflareMessageId,
+      inReplyTo,
+    )
     .run();
-  await db.prepare(`UPDATE messages SET delivery_status = 'pending' WHERE id = ?`).bind(msgId).run();
-  await db.prepare(
-    `UPDATE threads SET status = 'agent_working', last_at = datetime('now')
-      WHERE id = ? AND status NOT IN ('human', 'resolved', 'needs_review')`
-  ).bind(thread_id).run();
+  await db
+    .prepare(`UPDATE messages SET delivery_status = 'pending' WHERE id = ?`)
+    .bind(msgId)
+    .run();
+  await db
+    .prepare(
+      `UPDATE threads SET status = 'agent_working', last_at = datetime('now')
+      WHERE id = ? AND status NOT IN ('human', 'resolved', 'needs_review')`,
+    )
+    .bind(thread_id)
+    .run();
 
-  return jsonResp({ outcome: "ok", data: { message_id: cloudflareMessageId, delivery_status: "pending" } });
+  return jsonResp({
+    outcome: "ok",
+    data: { message_id: cloudflareMessageId, delivery_status: "pending" },
+  });
 }
 
 // Agent-initiated outbound (Spec 33): a new thread that STARTS with an outgoing
@@ -854,25 +1102,60 @@ async function apiReply(env, body, caller) {
 async function apiSend(env, body, caller) {
   const { from, to, subject, body_markdown, attachments } = body || {};
   const chartPngs = await chartPngsFor(body);
-  const { body_text, body_html } = resolveMarkdownBody(body || {}, { chartImages: chartPngs.images });
-  if (!to || !subject || !body_text) return jsonResp({ outcome: "error", error: "to, subject, and body_text (or body_markdown) required" }, 422);
+  const { body_text, body_html } = resolveMarkdownBody(body || {}, {
+    chartImages: chartPngs.images,
+  });
+  if (!to || !subject || !body_text)
+    return jsonResp(
+      {
+        outcome: "error",
+        error: "to, subject, and body_text (or body_markdown) required",
+      },
+      422,
+    );
   const att = decodeOutAttachments(attachments, to);
   if (att.error) return jsonResp({ outcome: "error", error: att.error }, 422);
   const toAddr = String(to).toLowerCase().trim();
-  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(toAddr)) return jsonResp({ outcome: "error", error: "to must be a single email address" }, 422);
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(toAddr))
+    return jsonResp(
+      { outcome: "error", error: "to must be a single email address" },
+      422,
+    );
 
   const db = env.AGENT_MAIL_DB;
-  let fromAddr = String(from || "").toLowerCase().trim();
+  let fromAddr = String(from || "")
+    .toLowerCase()
+    .trim();
   if (caller.operator) {
-    if (!fromAddr) return jsonResp({ outcome: "error", error: "operator sends must name a from inbox" }, 422);
-    const ib = await db.prepare(`SELECT 1 AS ok FROM inboxes WHERE address = ?`).bind(fromAddr).first();
-    if (!ib) return jsonResp({ outcome: "error", error: "from is not a registered inbox" }, 422);
+    if (!fromAddr)
+      return jsonResp(
+        { outcome: "error", error: "operator sends must name a from inbox" },
+        422,
+      );
+    const ib = await db
+      .prepare(`SELECT 1 AS ok FROM inboxes WHERE address = ?`)
+      .bind(fromAddr)
+      .first();
+    if (!ib)
+      return jsonResp(
+        { outcome: "error", error: "from is not a registered inbox" },
+        422,
+      );
   } else {
-    const { results } = await db.prepare(`SELECT address FROM inboxes WHERE default_agent = ?`).bind(caller.agent).all();
+    const { results } = await db
+      .prepare(`SELECT address FROM inboxes WHERE default_agent = ?`)
+      .bind(caller.agent)
+      .all();
     const owned = (results || []).map((r) => r.address);
     if (!fromAddr) {
       if (owned.length !== 1) {
-        return jsonResp({ outcome: "error", error: `you own ${owned.length} inboxes; pass from as one of: ${owned.join(", ")}` }, 422);
+        return jsonResp(
+          {
+            outcome: "error",
+            error: `you own ${owned.length} inboxes; pass from as one of: ${owned.join(", ")}`,
+          },
+          422,
+        );
       }
       fromAddr = owned[0];
     } else if (!owned.includes(fromAddr)) {
@@ -883,14 +1166,17 @@ async function apiSend(env, body, caller) {
   const sentLastHour = await db
     .prepare(
       `SELECT COUNT(*) AS inbox_n FROM messages m JOIN threads t ON t.id = m.thread_id
-       WHERE t.inbox = ? AND m.direction = 'out' AND m.created_at > datetime('now', '-1 hour')`
+       WHERE t.inbox = ? AND m.direction = 'out' AND m.created_at > datetime('now', '-1 hour')`,
     )
     .bind(fromAddr)
     .first();
   if ((sentLastHour?.inbox_n || 0) >= SEND_LIMITS.perInboxPerHour) {
     return jsonResp(
-      { outcome: "error", error: `outbound rate limit: ${SEND_LIMITS.perInboxPerHour}/inbox/hour; try later or flag needs_review` },
-      429
+      {
+        outcome: "error",
+        error: `outbound rate limit: ${SEND_LIMITS.perInboxPerHour}/inbox/hour; try later or flag needs_review`,
+      },
+      429,
     );
   }
 
@@ -919,61 +1205,112 @@ async function apiSend(env, body, caller) {
     throw e;
   }
 
-  const assigned = caller.agent
-    || (await db.prepare(`SELECT default_agent FROM inboxes WHERE address = ?`).bind(fromAddr).first())?.default_agent
-    || null;
+  const assigned =
+    caller.agent ||
+    (
+      await db
+        .prepare(`SELECT default_agent FROM inboxes WHERE address = ?`)
+        .bind(fromAddr)
+        .first()
+    )?.default_agent ||
+    null;
   const threadId = crypto.randomUUID();
   await db
-    .prepare(`INSERT INTO threads (id, inbox, assigned_agent, status, subject, from_addr) VALUES (?, ?, ?, 'agent_working', ?, ?)`)
+    .prepare(
+      `INSERT INTO threads (id, inbox, assigned_agent, status, subject, from_addr) VALUES (?, ?, ?, 'agent_working', ?, ?)`,
+    )
     .bind(threadId, fromAddr, assigned, subject, toAddr)
     .run();
   await db
     .prepare(
       `INSERT INTO messages (id, thread_id, direction, from_addr, to_addr, subject, body_text, body_markdown, body_html, message_id, delivery_status)
-       VALUES (?, ?, 'out', ?, ?, ?, ?, ?, ?, ?, 'pending')`
+       VALUES (?, ?, 'out', ?, ?, ?, ?, ?, ?, ?, 'pending')`,
     )
-    .bind(msgId, threadId, fromAddr, toAddr, subject, body_text + att.note, body_markdown || null, htmlOut || null, sent.messageId || sent.id || null)
+    .bind(
+      msgId,
+      threadId,
+      fromAddr,
+      toAddr,
+      subject,
+      body_text + att.note,
+      body_markdown || null,
+      htmlOut || null,
+      sent.messageId || sent.id || null,
+    )
     .run();
 
-  return jsonResp({ outcome: "ok", data: { thread_id: threadId, message_id: sent.messageId || sent.id || null, delivery_status: "pending" } });
+  return jsonResp({
+    outcome: "ok",
+    data: {
+      thread_id: threadId,
+      message_id: sent.messageId || sent.id || null,
+      delivery_status: "pending",
+    },
+  });
 }
 
 async function apiSetStatus(env, body, caller) {
   const { thread_id, status, assigned_agent } = body || {};
   if (!thread_id || !STATUSES.includes(status)) {
-    return jsonResp({ outcome: "error", error: `status must be one of ${STATUSES.join("|")}` }, 422);
+    return jsonResp(
+      { outcome: "error", error: `status must be one of ${STATUSES.join("|")}` },
+      422,
+    );
   }
   if (status === "replied") {
-    return jsonResp({ outcome: "error", error: "replied is managed by terminal Email Sending delivery events" }, 422);
+    return jsonResp(
+      {
+        outcome: "error",
+        error: "replied is managed by terminal Email Sending delivery events",
+      },
+      422,
+    );
   }
   const db = env.AGENT_MAIL_DB;
-  const thread = await db.prepare(`SELECT * FROM threads WHERE id = ?`).bind(thread_id).first();
+  const thread = await db
+    .prepare(`SELECT * FROM threads WHERE id = ?`)
+    .bind(thread_id)
+    .first();
   if (!thread) return jsonResp({ outcome: "error", error: "thread not found" }, 404);
   if (!(await callerOwnsThread(env, caller, thread))) return forbidden();
 
   if (assigned_agent !== undefined && assigned_agent !== null) {
-    await db.prepare(`UPDATE threads SET status = ?, assigned_agent = ?, last_at = datetime('now') WHERE id = ?`)
-      .bind(status, assigned_agent, thread_id).run();
+    await db
+      .prepare(
+        `UPDATE threads SET status = ?, assigned_agent = ?, last_at = datetime('now') WHERE id = ?`,
+      )
+      .bind(status, assigned_agent, thread_id)
+      .run();
   } else {
-    await db.prepare(`UPDATE threads SET status = ?, last_at = datetime('now') WHERE id = ?`)
-      .bind(status, thread_id).run();
+    await db
+      .prepare(`UPDATE threads SET status = ?, last_at = datetime('now') WHERE id = ?`)
+      .bind(status, thread_id)
+      .run();
   }
 
-  const updated = await db.prepare(`SELECT id AS thread_id, status, assigned_agent FROM threads WHERE id = ?`).bind(thread_id).first();
+  const updated = await db
+    .prepare(`SELECT id AS thread_id, status, assigned_agent FROM threads WHERE id = ?`)
+    .bind(thread_id)
+    .first();
   return jsonResp({ outcome: "ok", data: updated });
 }
 
 // ───────────────────────── helpers ─────────────────────────
 
 function bareSubject(s) {
-  return String(s || "").replace(/^\s*((re|fwd?)\s*:\s*)+/i, "").trim().toLowerCase();
+  return String(s || "")
+    .replace(/^\s*((re|fwd?)\s*:\s*)+/i, "")
+    .trim()
+    .toLowerCase();
 }
 function isoDay() {
   return new Date().toISOString().slice(0, 10);
 }
 async function sha256Hex(s) {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
-  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
+  return [...new Uint8Array(digest)]
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 }
 function bytesToB64(bytes) {
   let bin = "";
@@ -990,5 +1327,9 @@ function jsonResp(obj, status = 200) {
   });
 }
 async function safeText(res) {
-  try { return await res.text(); } catch { return "(no body)"; }
+  try {
+    return await res.text();
+  } catch {
+    return "(no body)";
+  }
 }

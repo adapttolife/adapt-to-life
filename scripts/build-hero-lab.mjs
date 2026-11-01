@@ -14,7 +14,15 @@
 //   node scripts/build-hero-lab.mjs && npm run stamp
 import { readFileSync, writeFileSync } from "node:fs";
 import { versionHtml, unversionHtml } from "./version-assets.mjs";
-import { VARIANTS, LABEL, STAGE_JS, ROOT, HERO_START, HERO_END, sheetFor } from "./lib/heroes.mjs";
+import {
+  VARIANTS,
+  LABEL,
+  STAGE_JS,
+  ROOT,
+  HERO_START,
+  HERO_END,
+  sheetFor,
+} from "./lib/heroes.mjs";
 
 const src = unversionHtml(readFileSync(new URL("index.html", ROOT), "utf8"));
 const a = src.indexOf(HERO_START);
@@ -50,12 +58,11 @@ for (const [key, hero] of Object.entries(VARIANTS)) {
     .replace(
       '<link rel="stylesheet" href="/css/site.css">',
       '<link rel="stylesheet" href="/css/site.css">\n<link rel="stylesheet" href="/css/hero-mosaic.css">' +
-        ("3456789".includes(key) ? '\n<link rel="stylesheet" href="/css/hero-spectrum.css">' : ""),
+        ("3456789".includes(key)
+          ? '\n<link rel="stylesheet" href="/css/hero-spectrum.css">'
+          : ""),
     )
-    .replace(
-      "</head>",
-      '<meta name="robots" content="noindex,nofollow">\n</head>',
-    )
+    .replace("</head>", '<meta name="robots" content="noindex,nofollow">\n</head>')
     .replace(
       /<title>[^<]*<\/title>/,
       `<title>Header ${LABEL[key]} | Adapt To Life</title>`,

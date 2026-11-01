@@ -10,13 +10,22 @@
 import { chromium } from "/home/agentos/pw/node_modules/playwright/index.mjs";
 
 const BASE = process.argv[2] || "http://127.0.0.1:8788";
-const SIZES = [[1920, 1080, "1920"], [1440, 900, "1440"], [1024, 768, "1024"],
-               [768, 1024, "768"], [390, 844, "390"], [320, 720, "320"]];
+const SIZES = [
+  [1920, 1080, "1920"],
+  [1440, 900, "1440"],
+  [1024, 768, "1024"],
+  [768, 1024, "768"],
+  [390, 844, "390"],
+  [320, 720, "320"],
+];
 const VARIANTS = ["1", "2", "3", "4", "5", "6", "7", "9"];
 
 const browser = await chromium.launch();
 let failed = 0;
-const note = (ok, msg) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "FAIL  "}${msg}`); };
+const note = (ok, msg) => {
+  if (!ok) failed++;
+  console.log(`${ok ? "  ok  " : "FAIL  "}${msg}`);
+};
 
 for (const v of VARIANTS) {
   console.log(`\n── hero-${v} ─────────────────────────────────────────`);
@@ -30,7 +39,8 @@ for (const v of VARIANTS) {
     // the response instead. /api/raised is a Worker route and is expected to
     // 404 on a static server.
     page.on("response", (res) => {
-      if (res.status() >= 400 && !/\/api\//.test(res.url())) misses.push(`${res.status()} ${new URL(res.url()).pathname}`);
+      if (res.status() >= 400 && !/\/api\//.test(res.url()))
+        misses.push(`${res.status()} ${new URL(res.url()).pathname}`);
     });
     // /api/raised is a Worker route. On the local static server and on the
     // front-end-only staging Worker it has no handler, and campaigns.js already
@@ -38,7 +48,12 @@ for (const v of VARIANTS) {
     // which is the designed behaviour, not a defect in the header.
     page.on("console", (m) => {
       const t = m.text();
-      if (m.type() === "error" && !/Failed to load resource/.test(t) && !/api\/raised unavailable/.test(t)) errors.push(t);
+      if (
+        m.type() === "error" &&
+        !/Failed to load resource/.test(t) &&
+        !/api\/raised unavailable/.test(t)
+      )
+        errors.push(t);
     });
     await page.goto(`${BASE}/hero-${v}.html`, { waitUntil: "networkidle" });
     await page.waitForTimeout(1400);
@@ -76,28 +91,46 @@ for (const v of VARIANTS) {
         if (b.bottom > window.innerHeight) out.offscreen.push(sel);
       });
       // 3. what the picture costs
-      out.weight = performance.getEntriesByType("resource")
+      out.weight = performance
+        .getEntriesByType("resource")
         .filter((e) => /\/images\/hero\/(?!review\/)/.test(e.name))
         .reduce((n, e) => n + (e.encodedBodySize || 0), 0);
       return out;
     });
 
-    note(r.scrollw <= w + 1 && r.over.length === 0,
-      `${tag}px  no sideways scroll: doc ${r.scrollw}px${r.over.length ? " · unclipped: " + r.over.slice(0, 3).join(", ") : ""}`);
-    note(r.offscreen.length === 0, `${tag}px  headline + ask above the fold: ${r.offscreen.length ? "MISSING " + r.offscreen.join(",") : "yes"} (hero ${r.hero}px)`);
-    note(errors.length === 0 && misses.length === 0,
-      `${tag}px  no errors, no missing files: ${errors[0] || misses[0] || "clean"}`);
-    if (tag === "1440") note(r.weight < 620 * 1024, `1440px hero images: ${(r.weight / 1024).toFixed(0)} KB (budget 620)`);
+    note(
+      r.scrollw <= w + 1 && r.over.length === 0,
+      `${tag}px  no sideways scroll: doc ${r.scrollw}px${r.over.length ? " · unclipped: " + r.over.slice(0, 3).join(", ") : ""}`,
+    );
+    note(
+      r.offscreen.length === 0,
+      `${tag}px  headline + ask above the fold: ${r.offscreen.length ? "MISSING " + r.offscreen.join(",") : "yes"} (hero ${r.hero}px)`,
+    );
+    note(
+      errors.length === 0 && misses.length === 0,
+      `${tag}px  no errors, no missing files: ${errors[0] || misses[0] || "clean"}`,
+    );
+    if (tag === "1440")
+      note(
+        r.weight < 620 * 1024,
+        `1440px hero images: ${(r.weight / 1024).toFixed(0)} KB (budget 620)`,
+      );
     await page.close();
   }
 }
 
 // reduced motion must land on the finished frame, not on the pre-entrance one
-const rm = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: "reduce" });
+const rm = await browser.newPage({
+  viewport: { width: 1440, height: 900 },
+  reducedMotion: "reduce",
+});
 await rm.goto(`${BASE}/hero-3.html`, { waitUntil: "networkidle" });
 await rm.waitForTimeout(300);
 const vis = await rm.evaluate(() =>
-  [...document.querySelectorAll(".mw-p, .mw-rise, .sp-rise, .ct-fig")].every((el) => +getComputedStyle(el).opacity === 1));
+  [...document.querySelectorAll(".mw-p, .mw-rise, .sp-rise, .ct-fig")].every(
+    (el) => +getComputedStyle(el).opacity === 1,
+  ),
+);
 note(vis, "prefers-reduced-motion: every figure and line is visible with no animation");
 await rm.close();
 

@@ -20,7 +20,13 @@
 // file and build.txt stays clean. test/asset_versions.test.js fails when a
 // reference is stale. After editing CSS or JS, run `npm run css` (it calls
 // this) or `npm run assets`.
-import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from "node:fs";
+import {
+  readFileSync,
+  writeFileSync,
+  readdirSync,
+  statSync,
+  existsSync,
+} from "node:fs";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { dirname, join, relative } from "node:path";
@@ -33,10 +39,12 @@ const hash = (buf) => createHash("sha256").update(buf).digest("hex").slice(0, 8)
 export function assetVersions() {
   const v = new Map();
   for (const f of readdirSync(join(ROOT, "src/css"))) {
-    if (f.endsWith(".css")) v.set(`/css/${f}`, hash(readFileSync(join(ROOT, "src/css", f))));
+    if (f.endsWith(".css"))
+      v.set(`/css/${f}`, hash(readFileSync(join(ROOT, "src/css", f))));
   }
   for (const f of readdirSync(join(ROOT, "public/js"))) {
-    if (f.endsWith(".js")) v.set(`/js/${f}`, hash(readFileSync(join(ROOT, "public/js", f))));
+    if (f.endsWith(".js"))
+      v.set(`/js/${f}`, hash(readFileSync(join(ROOT, "public/js", f))));
   }
   return v;
 }
@@ -45,7 +53,9 @@ const REF = /(href|src)="(\/(?:css|js)\/[\w.-]+\.(?:css|js))(?:\?v=[0-9a-f]*)?"/
 
 // Rewrite every known /css and /js reference to carry its current version.
 export function versionHtml(html, versions = assetVersions()) {
-  return html.replace(REF, (m, attr, path) => (versions.has(path) ? `${attr}="${path}?v=${versions.get(path)}"` : m));
+  return html.replace(REF, (m, attr, path) =>
+    versions.has(path) ? `${attr}="${path}?v=${versions.get(path)}"` : m,
+  );
 }
 
 // Strip versions, for tools that match the bare link text (apply-hero,
@@ -74,11 +84,21 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   for (const p of htmlFiles()) {
     const before = readFileSync(p, "utf8");
     const after = versionHtml(before, versions);
-    if (after !== before) { writeFileSync(p, after); changed++; }
+    if (after !== before) {
+      writeFileSync(p, after);
+      changed++;
+    }
   }
   const unknown = new Set();
   for (const p of htmlFiles()) {
-    for (const [, , path] of readFileSync(p, "utf8").matchAll(REF)) if (!versions.has(path) && existsSync(join(ROOT, "public", path))) unknown.add(path);
+    for (const [, , path] of readFileSync(p, "utf8").matchAll(REF))
+      if (!versions.has(path) && existsSync(join(ROOT, "public", path)))
+        unknown.add(path);
   }
-  console.log(`versioned assets in ${changed} page(s)` + (unknown.size ? `; unversioned (no source found): ${[...unknown].join(", ")}` : ""));
+  console.log(
+    `versioned assets in ${changed} page(s)` +
+      (unknown.size
+        ? `; unversioned (no source found): ${[...unknown].join(", ")}`
+        : ""),
+  );
 }

@@ -31,7 +31,11 @@ async function shot(file, out, scheme, width, probe) {
           bad.push(`${el.tagName}.${el.className || ""} right=${Math.round(r.right)}`);
         }
       });
-      return { scrollW: document.documentElement.scrollWidth, innerW: window.innerWidth, bad: bad.slice(0, 8) };
+      return {
+        scrollW: document.documentElement.scrollWidth,
+        innerW: window.innerWidth,
+        bad: bad.slice(0, 8),
+      };
     });
     const ok = over.scrollW <= over.innerW && over.bad.length === 0;
     if (!ok) failed = true;

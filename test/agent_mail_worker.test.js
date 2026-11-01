@@ -13,8 +13,12 @@ function authDb(agent = null) {
   return {
     prepare() {
       return {
-        bind() { return this; },
-        async first() { return agent ? { agent } : null; },
+        bind() {
+          return this;
+        },
+        async first() {
+          return agent ? { agent } : null;
+        },
       };
     },
   };
@@ -22,7 +26,10 @@ function authDb(agent = null) {
 
 test("machine API namespace reaches the shared handler and keeps app-layer auth", async () => {
   const env = { AGENT_MAIL_DB: authDb(), AGENT_MAIL_TOKEN: "operator-secret" };
-  const res = await worker.fetch(new Request("https://api.amelioration.is/api/agent-mail/list"), env);
+  const res = await worker.fetch(
+    new Request("https://api.amelioration.is/api/agent-mail/list"),
+    env,
+  );
   assert.equal(res.status, 401);
   assert.deepEqual(await res.json(), { outcome: "error", error: "unauthorized" });
 });
@@ -37,7 +44,10 @@ test("every off-surface HTTP path returns the same no-store 404", async () => {
     ["GET", "/q/test"],
     ["GET", "/api/agent-mail"],
   ]) {
-    const res = await worker.fetch(new Request(`https://api.amelioration.is${path}`, { method }), {});
+    const res = await worker.fetch(
+      new Request(`https://api.amelioration.is${path}`, { method }),
+      {},
+    );
     assert.equal(res.status, 404, `${method} ${path}`);
     assert.equal(res.headers.get("Cache-Control"), "no-store");
     assert.equal(await res.text(), "Not found");
@@ -46,10 +56,13 @@ test("every off-surface HTTP path returns the same no-store 404", async () => {
 
 test("unsupported methods inside the API namespace are handled by the API, not assets", async () => {
   const env = { AGENT_MAIL_DB: authDb(), AGENT_MAIL_TOKEN: "operator-secret" };
-  const res = await worker.fetch(new Request("https://api.amelioration.is/api/agent-mail/list", {
-    method: "PUT",
-    headers: { Authorization: "Bearer operator-secret" },
-  }), env);
+  const res = await worker.fetch(
+    new Request("https://api.amelioration.is/api/agent-mail/list", {
+      method: "PUT",
+      headers: { Authorization: "Bearer operator-secret" },
+    }),
+    env,
+  );
   assert.equal(res.status, 404);
   assert.deepEqual(await res.json(), { outcome: "error", error: "not found" });
 });
@@ -73,14 +86,19 @@ test("Stingel inbound mail is mirrored to Alec with provenance", async () => {
 
   assert.equal(calls.length, 1);
   assert.equal(calls[0].destination, "alec@alecability.com");
-  assert.equal(calls[0].headers.get("X-Agent-Mail-Original-Recipient"), "stingel@alectranel.com");
+  assert.equal(
+    calls[0].headers.get("X-Agent-Mail-Original-Recipient"),
+    "stingel@alectranel.com",
+  );
 });
 
 test("other agent inboxes are not mirrored to Alec", async () => {
   let forwarded = false;
   await forwardHumanMirror({
     to: "julia@alectranel.com",
-    async forward() { forwarded = true; },
+    async forward() {
+      forwarded = true;
+    },
   });
   assert.equal(forwarded, false);
 });
@@ -93,10 +111,7 @@ test("Stingel mirror failures remain loud for platform retry", async () => {
     },
   };
 
-  await assert.rejects(
-    forwardHumanMirror(message),
-    /simulated destination failure/,
-  );
+  await assert.rejects(forwardHumanMirror(message), /simulated destination failure/);
 });
 
 test("handleEmail archives and records before forwarding Stingel mail", async () => {
@@ -109,7 +124,9 @@ test("handleEmail archives and records before forwarding Stingel mail", async ()
   const db = {
     prepare(sql) {
       return {
-        bind() { return this; },
+        bind() {
+          return this;
+        },
         async all() {
           if (sql.includes("FROM inbox_locks")) return { results: [] };
           if (sql.includes("FROM threads WHERE inbox")) return { results: [] };
@@ -140,7 +157,9 @@ test("handleEmail archives and records before forwarding Stingel mail", async ()
     from: "billing@vendor.example",
     to: "stingel@alectranel.com",
     raw: new Response(raw).body,
-    async forward() { events.push("forward"); },
+    async forward() {
+      events.push("forward");
+    },
   };
   const env = {
     AGENT_MAIL_DB: db,

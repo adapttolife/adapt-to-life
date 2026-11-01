@@ -12,16 +12,40 @@ const html = read("social.html");
 const main = html.slice(html.indexOf("<main>"), html.indexOf("</main>"));
 
 test("/social names no individual athlete or commenter", () => {
-  for (const name of ["Robby", "Wolf", "Ben Lang", "Jason", "Sandor", "Swany", "Swanson", "Juan", "Amanda", "Kasey",
-    "Ken ", "Brian", "Pete", "Autumn", "robbywolf32", "ben662845", "jaysay313", "bobbyswany", "pcklballpete", "autumnskye613"]) {
+  for (const name of [
+    "Robby",
+    "Wolf",
+    "Ben Lang",
+    "Jason",
+    "Sandor",
+    "Swany",
+    "Swanson",
+    "Juan",
+    "Amanda",
+    "Kasey",
+    "Ken ",
+    "Brian",
+    "Pete",
+    "Autumn",
+    "robbywolf32",
+    "ben662845",
+    "jaysay313",
+    "bobbyswany",
+    "pcklballpete",
+    "autumnskye613",
+  ]) {
     assert.ok(!main.includes(name), `/social mentions ${name.trim()}`);
   }
 });
 
 test("/social links out to Instagram rather than embedding it", () => {
   assert.ok(html.includes('href="https://www.instagram.com/adapt_to_life_org/"'));
-  assert.ok(!/instagram\.com\/embed|<iframe/.test(html), "no Instagram embeds or iframes");
-  const reels = html.match(/href="https:\/\/www\.instagram\.com\/reel\/[\w-]+\/"/g) || [];
+  assert.ok(
+    !/instagram\.com\/embed|<iframe/.test(html),
+    "no Instagram embeds or iframes",
+  );
+  const reels =
+    html.match(/href="https:\/\/www\.instagram\.com\/reel\/[\w-]+\/"/g) || [];
   assert.ok(reels.length >= 3, "at least three reels");
 });
 

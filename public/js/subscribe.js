@@ -17,7 +17,10 @@
       e.preventDefault();
       if (hp && hp.value) return; // honeypot
       var em = emEl ? emEl.value.trim() : "";
-      if (!em) { setStatus("Please enter your email.", false); return; }
+      if (!em) {
+        setStatus("Please enter your email.", false);
+        return;
+      }
       var tokenEl = f.querySelector('[name="cf-turnstile-response"]');
       var token = tokenEl ? tokenEl.value : "";
       if (btn) btn.disabled = true;
@@ -27,18 +30,35 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ em: em, source: source, cf_token: token }),
       })
-        .then(function (r) { return r.json().catch(function () { return { ok: r.ok }; }); })
+        .then(function (r) {
+          return r.json().catch(function () {
+            return { ok: r.ok };
+          });
+        })
         .then(function (d) {
           if (d && d.ok) {
             f.reset();
-            setStatus(d.confirm ? "Almost done. Check your inbox and tap the button in our email to confirm."
-              : d.existing ? "You're already on the list. Thanks for being here."
-              : "You're in. Watch your inbox.", true);
+            setStatus(
+              d.confirm
+                ? "Almost done. Check your inbox and tap the button in our email to confirm."
+                : d.existing
+                  ? "You're already on the list. Thanks for being here."
+                  : "You're in. Watch your inbox.",
+              true,
+            );
+          } else {
+            setStatus(
+              (d && d.error) || "Something went wrong. Email hello@adapttolife.org.",
+              false,
+            );
           }
-          else { setStatus((d && d.error) || "Something went wrong. Email hello@adapttolife.org.", false); }
         })
-        .catch(function () { setStatus("Network error. Email hello@adapttolife.org.", false); })
-        .then(function () { if (btn) btn.disabled = false; });
+        .catch(function () {
+          setStatus("Network error. Email hello@adapttolife.org.", false);
+        })
+        .then(function () {
+          if (btn) btn.disabled = false;
+        });
     });
   }
   document.querySelectorAll("form.js-subscribe").forEach(init);

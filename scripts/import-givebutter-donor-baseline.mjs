@@ -7,7 +7,9 @@ const API = "https://api.givebutter.com/v1";
 const WEBHOOK_URL = "https://adapttolife.org/api/givebutter-webhook";
 
 export function transactionDonorKey(tx) {
-  const email = String(tx.email || "").trim().toLowerCase();
+  const email = String(tx.email || "")
+    .trim()
+    .toLowerCase();
   if (email) return email;
   const contactId = tx.contact_id ?? tx.contact?.id;
   if (contactId !== null && contactId !== undefined && String(contactId).trim()) {
@@ -20,18 +22,30 @@ export function buildBaseline(transactions, cutoff) {
   const byDonor = new Map();
   for (const tx of transactions) {
     const donorKey = transactionDonorKey(tx);
-    if (!donorKey || tx.status !== "succeeded" || String(tx.transacted_at || "") >= cutoff) continue;
+    if (
+      !donorKey ||
+      tx.status !== "succeeded" ||
+      String(tx.transacted_at || "") >= cutoff
+    )
+      continue;
     const row = byDonor.get(donorKey) || { donorKey, gifts: [], recurring: false };
     row.gifts.push(tx);
     row.recurring ||= Boolean(tx.is_recurring || tx.plan_id);
     byDonor.set(donorKey, row);
   }
   return [...byDonor.values()].map((row) => {
-    row.gifts.sort((a, b) => String(a.transacted_at).localeCompare(String(b.transacted_at)) || String(a.id).localeCompare(String(b.id)));
+    row.gifts.sort(
+      (a, b) =>
+        String(a.transacted_at).localeCompare(String(b.transacted_at)) ||
+        String(a.id).localeCompare(String(b.id)),
+    );
     const latest = row.gifts.at(-1);
     return {
       donorKey: row.donorKey,
-      name: `${latest.first_name || ""} ${latest.last_name || ""}`.trim() || latest.email || "Anonymous donor",
+      name:
+        `${latest.first_name || ""} ${latest.last_name || ""}`.trim() ||
+        latest.email ||
+        "Anonymous donor",
       email: String(latest.email || "").trim() || null,
       giftCount: row.gifts.length,
       total: row.gifts.reduce((sum, tx) => sum + Number(tx.amount || 0), 0),
@@ -46,12 +60,21 @@ export function buildBaseline(transactions, cutoff) {
 
 export function buildHistoricalGifts(transactions, cutoff) {
   return transactions
-    .filter((tx) => tx.id !== null && tx.id !== undefined && transactionDonorKey(tx) && tx.status === "succeeded"
-      && String(tx.transacted_at || "") < cutoff)
+    .filter(
+      (tx) =>
+        tx.id !== null &&
+        tx.id !== undefined &&
+        transactionDonorKey(tx) &&
+        tx.status === "succeeded" &&
+        String(tx.transacted_at || "") < cutoff,
+    )
     .map((tx) => ({
       transactionId: String(tx.id),
       donorKey: transactionDonorKey(tx),
-      name: `${tx.first_name || ""} ${tx.last_name || ""}`.trim() || tx.email || "Anonymous donor",
+      name:
+        `${tx.first_name || ""} ${tx.last_name || ""}`.trim() ||
+        tx.email ||
+        "Anonymous donor",
       email: String(tx.email || "").trim() || null,
       amount: Number(tx.amount || 0),
       campaignId: tx.campaign_id ?? tx.campaign?.id ?? null,
@@ -69,11 +92,16 @@ function sqlString(value) {
 
 export function renderSql(rows, now = new Date().toISOString(), gifts = []) {
   if (!rows.length && !gifts.length) return "SELECT 1;\n";
-  const values = rows.map((row) => `(${sqlString(row.donorKey)}, ${sqlString(row.name)}, ${sqlString(row.email)},
+  const values = rows.map(
+    (
+      row,
+    ) => `(${sqlString(row.donorKey)}, ${sqlString(row.name)}, ${sqlString(row.email)},
         ${Number(row.giftCount)}, ${Number(row.total)}, ${sqlString(row.firstGiftAt)},
         ${sqlString(row.latestGiftAt)}, ${sqlString(row.cutoff)}, ${Number(row.recurring)},
-        ${Number(row.optIn)}, NULL, NULL, ${sqlString(now)}, ${sqlString(now)})`);
-  const donorSql = rows.length ? `INSERT INTO donor_clickup_projection
+        ${Number(row.optIn)}, NULL, NULL, ${sqlString(now)}, ${sqlString(now)})`,
+  );
+  const donorSql = rows.length
+    ? `INSERT INTO donor_clickup_projection
   (donor_key, baseline_name, baseline_email, baseline_gift_count, baseline_total,
    baseline_first_gift_at, baseline_latest_gift_at, baseline_cutoff_at,
    baseline_recurring, baseline_opt_in, last_synced_at, sync_error, created_at, updated_at)
@@ -90,12 +118,16 @@ ON CONFLICT(donor_key) DO UPDATE SET
   baseline_opt_in = excluded.baseline_opt_in,
   last_synced_at = NULL,
   sync_error = NULL,
-  updated_at = excluded.updated_at;` : "";
-  const giftValues = gifts.map((gift) => `(${sqlString(gift.transactionId)}, ${sqlString(gift.donorKey)}, 1,
+  updated_at = excluded.updated_at;`
+    : "";
+  const giftValues = gifts.map(
+    (gift) => `(${sqlString(gift.transactionId)}, ${sqlString(gift.donorKey)}, 1,
         ${sqlString(gift.name)}, ${sqlString(gift.email)}, ${Number(gift.amount)},
         ${sqlString(gift.campaignId)}, ${sqlString(gift.campaignTitle)}, ${sqlString(gift.transactedAt)},
-        ${Number(gift.recurring)}, ${Number(gift.optIn)}, NULL, NULL, ${sqlString(now)}, ${sqlString(now)})`);
-  const giftSql = gifts.length ? `INSERT INTO donor_gift_clickup_projection
+        ${Number(gift.recurring)}, ${Number(gift.optIn)}, NULL, NULL, ${sqlString(now)}, ${sqlString(now)})`,
+  );
+  const giftSql = gifts.length
+    ? `INSERT INTO donor_gift_clickup_projection
   (transaction_id, donor_key, historical, baseline_name, baseline_email, baseline_amount,
    baseline_campaign_id, baseline_campaign_title, baseline_transacted_at,
    baseline_recurring, baseline_opt_in, last_synced_at, sync_error, created_at, updated_at)
@@ -113,7 +145,8 @@ ON CONFLICT(transaction_id) DO UPDATE SET
   baseline_opt_in = excluded.baseline_opt_in,
   last_synced_at = NULL,
   sync_error = NULL,
-  updated_at = excluded.updated_at;` : "";
+  updated_at = excluded.updated_at;`
+    : "";
   return `${donorSql}${donorSql && giftSql ? "\n" : ""}${giftSql}\n`;
 }
 
@@ -148,7 +181,8 @@ async function fetchAll(path, token) {
     const response = await fetch(`${API}/${path}${separator}page=${page}`, {
       headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
     });
-    if (!response.ok) throw new Error(`Givebutter ${response.status} while reading ${path}`);
+    if (!response.ok)
+      throw new Error(`Givebutter ${response.status} while reading ${path}`);
     const body = await response.json();
     rows.push(...(body.data || []));
     if (page >= Number(body.meta?.last_page || page)) break;
@@ -161,7 +195,10 @@ async function main() {
   const outputIndex = process.argv.indexOf("--output");
   const output = outputIndex === -1 ? null : process.argv[outputIndex + 1];
   if (!token) throw new Error("GIVEBUTTER_API_TOKEN is required");
-  if (!output) throw new Error("--output <path> is required; output contains donor PII and must be deleted after D1 import");
+  if (!output)
+    throw new Error(
+      "--output <path> is required; output contains donor PII and must be deleted after D1 import",
+    );
   const safeOutput = await safeOutputPath(output);
 
   const [webhooks, transactions] = await Promise.all([
@@ -169,7 +206,10 @@ async function main() {
     fetchAll("transactions?per_page=100", token),
   ]);
   const active = webhooks.filter((hook) => hook.enabled && hook.url === WEBHOOK_URL);
-  if (active.length !== 1) throw new Error(`Expected exactly one enabled production webhook, found ${active.length}`);
+  if (active.length !== 1)
+    throw new Error(
+      `Expected exactly one enabled production webhook, found ${active.length}`,
+    );
   const cutoff = active[0].created_at;
   if (!cutoff) throw new Error("Production webhook has no creation timestamp");
 
@@ -181,9 +221,19 @@ async function main() {
   } finally {
     await file.close();
   }
-  console.log(JSON.stringify({ donors: rows.length, transactions: gifts.length, cutoff, output: safeOutput }));
+  console.log(
+    JSON.stringify({
+      donors: rows.length,
+      transactions: gifts.length,
+      cutoff,
+      output: safeOutput,
+    }),
+  );
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  main().catch((err) => { console.error(err.message); process.exitCode = 1; });
+  main().catch((err) => {
+    console.error(err.message);
+    process.exitCode = 1;
+  });
 }

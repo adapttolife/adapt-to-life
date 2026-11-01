@@ -36,7 +36,9 @@ function stubDb({ insertThrows = false } = {}) {
   return {
     inserts,
     updates,
-    setRows(rows) { selectRows = rows; },
+    setRows(rows) {
+      selectRows = rows;
+    },
     binding: {
       prepare(sql) {
         return {
@@ -51,11 +53,17 @@ function stubDb({ insertThrows = false } = {}) {
                 }
                 return {};
               },
-              async all() { return { results: selectRows }; },
-              async first() { return selectRows[0] || null; },
+              async all() {
+                return { results: selectRows };
+              },
+              async first() {
+                return selectRows[0] || null;
+              },
             };
           },
-          async all() { return { results: selectRows }; },
+          async all() {
+            return { results: selectRows };
+          },
         };
       },
     },
@@ -107,7 +115,11 @@ const GOOD = {
 // real Worker deliberately does after the response has gone out.
 function ctxCollector() {
   const jobs = [];
-  return { jobs, ctx: { waitUntil: (p) => jobs.push(p) }, settle: () => Promise.all(jobs) };
+  return {
+    jobs,
+    ctx: { waitUntil: (p) => jobs.push(p) },
+    settle: () => Promise.all(jobs),
+  };
 }
 
 // --- 1. the gate ------------------------------------------------------------
@@ -155,7 +167,9 @@ test("a bad email is rejected before anything is stored", async () => {
 test("order-number topics demand an order number even on a direct POST", async () => {
   const { env, db } = stubEnv();
   const res = await handleShopContact(
-    post({ ...GOOD, topic: "Where is my order", order_number: "" }), env, null
+    post({ ...GOOD, topic: "Where is my order", order_number: "" }),
+    env,
+    null,
   );
   assert.equal(res.status, 422);
   assert.match((await res.json()).error, /order number/i);
@@ -166,7 +180,9 @@ test("an unknown topic is kept, not dropped", async () => {
   const { env, db } = stubEnv();
   const { ctx, settle } = ctxCollector();
   const res = await handleShopContact(
-    post({ ...GOOD, topic: "Something we never listed" }), env, ctx
+    post({ ...GOOD, topic: "Something we never listed" }),
+    env,
+    ctx,
   );
   assert.equal(res.status, 200);
   await settle();
@@ -216,7 +232,11 @@ test("the email is normalised and the response names the promise", async () => {
 test("the customer copy carries the promise and the shop copy replies to them", async () => {
   const { env, sent } = stubEnv();
   const { ctx, settle } = ctxCollector();
-  await handleShopContact(post({ ...GOOD, topic: "Where is my order", order_number: "#1042" }), env, ctx);
+  await handleShopContact(
+    post({ ...GOOD, topic: "Where is my order", order_number: "#1042" }),
+    env,
+    ctx,
+  );
   await settle();
 
   assert.equal(sent.length, 2);
@@ -240,7 +260,9 @@ test("customer text is escaped into the HTML body", async () => {
   const { env, sent } = stubEnv();
   const { ctx, settle } = ctxCollector();
   await handleShopContact(
-    post({ ...GOOD, name: "<script>x</script>", message: "5 > 3 & \"quoted\"" }), env, ctx
+    post({ ...GOOD, name: "<script>x</script>", message: '5 > 3 & "quoted"' }),
+    env,
+    ctx,
   );
   await settle();
   for (const msg of sent) {
@@ -263,7 +285,11 @@ test("the topic list and the order-required subset stay in agreement", () => {
   // A topic that demands an order number but is not offered on the form would
   // be unreachable; one offered but missing from the list would be recorded as
   // "Something else". Both are silent, so they are pinned here.
-  for (const topic of ["Where is my order", "Return or exchange", "Wrong or damaged item"]) {
+  for (const topic of [
+    "Where is my order",
+    "Return or exchange",
+    "Wrong or damaged item",
+  ]) {
     assert.ok(SHOP_TOPICS.includes(topic), `${topic} must be an offered topic`);
   }
 });
@@ -297,25 +323,40 @@ function crmEnv(rows) {
 }
 
 const ROW = {
-  id: "abc", created_at: "2026-09-04T06:00:00.000Z", name: "Dana", email: "dana@example.com",
-  topic: "Sizing help", order_number: "", message: "hi", source: "/contact", ref: "",
+  id: "abc",
+  created_at: "2026-09-04T06:00:00.000Z",
+  name: "Dana",
+  email: "dana@example.com",
+  topic: "Sizing help",
+  order_number: "",
+  message: "hi",
+  source: "/contact",
+  ref: "",
 };
 
 test("CRM sync marks rows only after Sheets confirms the append", async (t) => {
   const { env, db } = crmEnv([ROW]);
   const calls = [];
   const realFetch = globalThis.fetch;
-  t.after(() => { globalThis.fetch = realFetch; });
+  t.after(() => {
+    globalThis.fetch = realFetch;
+  });
   globalThis.fetch = async (url, init) => {
     calls.push(String(url));
     if (String(url).includes("/token")) {
       return new Response(JSON.stringify({ access_token: "tok" }), { status: 200 });
     }
     if (String(url).includes("?fields=sheets.properties.title")) {
-      return new Response(JSON.stringify({ sheets: [{ properties: { title: "Shop Messages" } }] }), { status: 200 });
+      return new Response(
+        JSON.stringify({ sheets: [{ properties: { title: "Shop Messages" } }] }),
+        { status: 200 },
+      );
     }
     if (String(url).includes(":append")) {
-      return new Response(JSON.stringify({ updates: { updatedRange: "'Shop Messages'!A2:I2" } }), { status: 200 });
+      return new Response(
+        JSON.stringify({ updates: { updatedRange: "'Shop Messages'!A2:I2" } }),
+        { status: 200 },
+      );
     }
     return new Response("unexpected", { status: 500 });
   };
@@ -331,13 +372,18 @@ test("CRM sync marks rows only after Sheets confirms the append", async (t) => {
 test("a Sheets failure leaves rows unmarked so the next tick retries", async (t) => {
   const { env, db } = crmEnv([ROW]);
   const realFetch = globalThis.fetch;
-  t.after(() => { globalThis.fetch = realFetch; });
+  t.after(() => {
+    globalThis.fetch = realFetch;
+  });
   globalThis.fetch = async (url) => {
     if (String(url).includes("/token")) {
       return new Response(JSON.stringify({ access_token: "tok" }), { status: 200 });
     }
     if (String(url).includes("?fields=sheets.properties.title")) {
-      return new Response(JSON.stringify({ sheets: [{ properties: { title: "Shop Messages" } }] }), { status: 200 });
+      return new Response(
+        JSON.stringify({ sheets: [{ properties: { title: "Shop Messages" } }] }),
+        { status: 200 },
+      );
     }
     return new Response("nope", { status: 503 });
   };
@@ -349,9 +395,14 @@ test("a Sheets failure leaves rows unmarked so the next tick retries", async (t)
 test("CRM sync with nothing pending does no work at all", async (t) => {
   const { env } = crmEnv([]);
   const realFetch = globalThis.fetch;
-  t.after(() => { globalThis.fetch = realFetch; });
+  t.after(() => {
+    globalThis.fetch = realFetch;
+  });
   let called = false;
-  globalThis.fetch = async () => { called = true; return new Response("{}", { status: 200 }); };
+  globalThis.fetch = async () => {
+    called = true;
+    return new Response("{}", { status: 200 });
+  };
   await runShopCrmBacklog(env);
   assert.equal(called, false);
 });

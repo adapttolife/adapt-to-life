@@ -34,7 +34,9 @@ function env(extra = {}) {
     // Any D1 read on this path is a bug — the legacy host should redirect
     // before it ever looks a token up.
     AGENT_MAIL_DB: {
-      prepare() { throw new Error("legacy host read D1 instead of redirecting"); },
+      prepare() {
+        throw new Error("legacy host read D1 instead of redirecting");
+      },
     },
     ...extra,
   };
@@ -49,7 +51,11 @@ function fetchUrl(url, init = {}, e = env()) {
 test("adapttolife.org/r/<token> temporarily redirects to the report origin", async () => {
   const token = await makeReportToken(SECRET, MSG_ID);
   const res = await fetchUrl(`https://adapttolife.org/r/${token}`);
-  assert.equal(res.status, 302, "temporary — the old URL is not being retired, just moved");
+  assert.equal(
+    res.status,
+    302,
+    "temporary — the old URL is not being retired, just moved",
+  );
   assert.equal(res.headers.get("Location"), `${REPORTS}/r/${token}`);
   assert.equal(res.headers.get("Cache-Control"), "private, no-store");
   assert.equal(res.headers.get("Referrer-Policy"), "no-referrer");
@@ -69,8 +75,13 @@ test("www redirects the same way as the apex", async () => {
 });
 
 test("the query string survives the move", async () => {
-  const res = await fetchUrl("https://adapttolife.org/r/abc123?utm_source=email&print=1");
-  assert.equal(res.headers.get("Location"), `${REPORTS}/r/abc123?utm_source=email&print=1`);
+  const res = await fetchUrl(
+    "https://adapttolife.org/r/abc123?utm_source=email&print=1",
+  );
+  assert.equal(
+    res.headers.get("Location"),
+    `${REPORTS}/r/abc123?utm_source=email&print=1`,
+  );
   const lib = await fetchUrl("https://adapttolife.org/lib/tok?q=liberty%20one#frag");
   assert.equal(lib.headers.get("Location"), `${REPORTS}/lib/tok?q=liberty%20one`);
 });
@@ -129,10 +140,22 @@ test("staging and workers.dev hosts do not redirect", async () => {
 });
 
 test("only the exact legacy namespaces move; neighbouring paths still serve the site", async () => {
-  for (const p of ["/reports", "/r", "/rx/tok", "/library/tok", "/lib", "/libs/tok", "/"]) {
+  for (const p of [
+    "/reports",
+    "/r",
+    "/rx/tok",
+    "/library/tok",
+    "/lib",
+    "/libs/tok",
+    "/",
+  ]) {
     const res = await fetchUrl(`https://adapttolife.org${p}`);
     assert.equal(res.headers.get("Location"), null, `${p} redirected`);
-    assert.equal(await res.text(), ASSET_MARKER, `${p} did not fall through to the site`);
+    assert.equal(
+      await res.text(),
+      ASSET_MARKER,
+      `${p} did not fall through to the site`,
+    );
   }
 });
 
@@ -147,7 +170,11 @@ test("non-GET/HEAD requests to a legacy report path are not redirected", async (
 test("with no report origin configured, the retired route fails closed instead of rendering locally", async () => {
   const e = env();
   delete e.REPORT_LINK_BASE;
-  e.AGENT_MAIL_DB = { prepare: () => ({ bind: () => ({ first: async () => null, all: async () => ({ results: [] }) }) }) };
+  e.AGENT_MAIL_DB = {
+    prepare: () => ({
+      bind: () => ({ first: async () => null, all: async () => ({ results: [] }) }),
+    }),
+  };
   const res = await fetchUrl("https://adapttolife.org/r/garbage", {}, e);
   assert.equal(res.status, 404);
   assert.equal(res.headers.get("Location"), null);
@@ -155,7 +182,11 @@ test("with no report origin configured, the retired route fails closed instead o
 
 test("a report origin pointing back at this host does not loop", async () => {
   const e = env({ REPORT_LINK_BASE: "https://adapttolife.org/" });
-  e.AGENT_MAIL_DB = { prepare: () => ({ bind: () => ({ first: async () => null, all: async () => ({ results: [] }) }) }) };
+  e.AGENT_MAIL_DB = {
+    prepare: () => ({
+      bind: () => ({ first: async () => null, all: async () => ({ results: [] }) }),
+    }),
+  };
   const res = await fetchUrl("https://adapttolife.org/r/garbage", {}, e);
   assert.equal(res.status, 404);
   assert.equal(res.headers.get("Location"), null);
@@ -219,7 +250,11 @@ test("a VALID report token on the unprotected hosts 404s and never reaches D1", 
     const queries = [];
     const res = await fetchUrl(`https://${host}/r/${token}`, {}, servingEnv(queries));
     assert.equal(res.status, 404, `${host} served a report to a valid token`);
-    assert.equal(res.headers.get("Location"), null, `${host} redirected instead of 404ing`);
+    assert.equal(
+      res.headers.get("Location"),
+      null,
+      `${host} redirected instead of 404ing`,
+    );
     assert.deepEqual(queries, [], `${host} read D1 for a report`);
     const body = await res.text();
     assert.ok(!body.includes(CONFIDENTIAL), `${host} leaked report content`);
@@ -232,10 +267,17 @@ test("a VALID library token on the unprotected hosts 404s and never reaches D1",
     const queries = [];
     const res = await fetchUrl(`https://${host}/lib/${token}`, {}, servingEnv(queries));
     assert.equal(res.status, 404, `${host} served a library to a valid token`);
-    assert.equal(res.headers.get("Location"), null, `${host} redirected instead of 404ing`);
+    assert.equal(
+      res.headers.get("Location"),
+      null,
+      `${host} redirected instead of 404ing`,
+    );
     assert.deepEqual(queries, [], `${host} read D1 for a library`);
     const body = await res.text();
-    assert.ok(!body.includes("reader@example.org"), `${host} leaked the recipient address`);
+    assert.ok(
+      !body.includes("reader@example.org"),
+      `${host} leaked the recipient address`,
+    );
   }
 });
 
@@ -257,8 +299,16 @@ test("a valid token on a host that no longer runs the viewer is indistinguishabl
   // Same status, same body, same headers — a prober cannot use these hosts to
   // learn which tokens are real and then replay them somewhere that answers.
   const token = await makeReportToken(SECRET, MSG_ID);
-  const good = await fetchUrl(`https://sign.adapttolife.org/r/${token}`, {}, servingEnv([]));
-  const bad = await fetchUrl("https://sign.adapttolife.org/r/garbage", {}, servingEnv([]));
+  const good = await fetchUrl(
+    `https://sign.adapttolife.org/r/${token}`,
+    {},
+    servingEnv([]),
+  );
+  const bad = await fetchUrl(
+    "https://sign.adapttolife.org/r/garbage",
+    {},
+    servingEnv([]),
+  );
   assert.equal(good.status, bad.status);
   assert.equal(await good.text(), await bad.text());
   assert.deepEqual([...good.headers].sort(), [...bad.headers].sort());
@@ -268,7 +318,11 @@ test("non-GET requests to a report path on an unprotected host also fail closed"
   const token = await makeReportToken(SECRET, MSG_ID);
   for (const method of ["POST", "PUT", "DELETE"]) {
     const queries = [];
-    const res = await fetchUrl(`https://sign.adapttolife.org/r/${token}`, { method }, servingEnv(queries));
+    const res = await fetchUrl(
+      `https://sign.adapttolife.org/r/${token}`,
+      { method },
+      servingEnv(queries),
+    );
     assert.equal(res.status, 404, `${method} was answered`);
     assert.deepEqual(queries, [], `${method} read D1`);
   }
@@ -280,7 +334,10 @@ test("the apex and www still forward a VALID token, unchanged, without reading D
   const cases = [
     [`https://adapttolife.org/r/${rToken}?print=1`, `${REPORTS}/r/${rToken}?print=1`],
     [`https://www.adapttolife.org/r/${rToken}`, `${REPORTS}/r/${rToken}`],
-    [`https://adapttolife.org/lib/${libToken}?utm_source=email`, `${REPORTS}/lib/${libToken}?utm_source=email`],
+    [
+      `https://adapttolife.org/lib/${libToken}?utm_source=email`,
+      `${REPORTS}/lib/${libToken}?utm_source=email`,
+    ],
     [`https://www.adapttolife.org/lib/${libToken}`, `${REPORTS}/lib/${libToken}`],
   ];
   for (const [from, to] of cases) {
@@ -294,10 +351,22 @@ test("the apex and www still forward a VALID token, unchanged, without reading D
 
 test("neighbouring paths on the unprotected hosts still serve the site, exactly as before", async () => {
   for (const host of UNPROTECTED_HOSTS) {
-    for (const p of ["/reports", "/r", "/rx/tok", "/library/tok", "/lib", "/libs/tok", "/about"]) {
+    for (const p of [
+      "/reports",
+      "/r",
+      "/rx/tok",
+      "/library/tok",
+      "/lib",
+      "/libs/tok",
+      "/about",
+    ]) {
       const res = await fetchUrl(`https://${host}${p}`, {}, servingEnv([]));
       assert.equal(res.status, 200, `${host}${p} stopped serving`);
-      assert.equal(await res.text(), ASSET_MARKER, `${host}${p} did not fall through to the site`);
+      assert.equal(
+        await res.text(),
+        ASSET_MARKER,
+        `${host}${p} did not fall through to the site`,
+      );
     }
   }
 });
@@ -307,7 +376,11 @@ test("the signing hub and the QR namespace are untouched", async () => {
   assert.equal(hub.status, 302);
   assert.equal(hub.headers.get("Location"), "https://sign.adapttolife.org/waiver");
 
-  const waiver = await fetchUrl("https://sign.adapttolife.org/waiver", {}, servingEnv([]));
+  const waiver = await fetchUrl(
+    "https://sign.adapttolife.org/waiver",
+    {},
+    servingEnv([]),
+  );
   assert.equal(waiver.status, 200);
   assert.equal(await waiver.text(), ASSET_MARKER);
 });
@@ -320,17 +393,29 @@ test("the public Worker no longer imports or calls the report viewers", () => {
   // `if (pathname.startsWith("/r/"))` reintroduces the bypass — and it would
   // also drag the report renderer, its charts and its fonts back into the
   // public bundle. Pin it in the source, not just in the behaviour.
-  const src = readFileSync(fileURLToPath(new URL("../src/index.js", import.meta.url)), "utf8");
-  assert.ok(!/handleReportView/.test(src), "src/index.js still references handleReportView");
-  assert.ok(!/handleLibraryView/.test(src), "src/index.js still references handleLibraryView");
+  const src = readFileSync(
+    fileURLToPath(new URL("../src/index.js", import.meta.url)),
+    "utf8",
+  );
+  assert.ok(
+    !/handleReportView/.test(src),
+    "src/index.js still references handleReportView",
+  );
+  assert.ok(
+    !/handleLibraryView/.test(src),
+    "src/index.js still references handleLibraryView",
+  );
   assert.ok(
     !/^\s*import[^;]*from\s+["']\.\/report_view\.js["']/m.test(src),
-    "src/index.js still imports from ./report_view.js"
+    "src/index.js still imports from ./report_view.js",
   );
 });
 
 test("the dedicated reports Worker keeps the viewers — this move retires one copy, not the feature", () => {
-  const src = readFileSync(fileURLToPath(new URL("../src/reports_worker.js", import.meta.url)), "utf8");
+  const src = readFileSync(
+    fileURLToPath(new URL("../src/reports_worker.js", import.meta.url)),
+    "utf8",
+  );
   assert.match(src, /handleReportView/);
   assert.match(src, /handleLibraryView/);
 });

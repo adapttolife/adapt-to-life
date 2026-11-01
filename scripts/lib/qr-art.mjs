@@ -31,16 +31,16 @@
 // corners softened enough to still read as ours. Brand where it is free,
 // never where a scanner has to forgive it.
 
-import QR from 'qrcode';
+import QR from "qrcode";
 
-export const INK    = '#0C0C0E';
-export const ORANGE = '#FF5C39';
-export const CREAM  = '#F7F4EE';
-export const BASE   = 'https://adapttolife.org/q/';
+export const INK = "#0C0C0E";
+export const ORANGE = "#FF5C39";
+export const CREAM = "#F7F4EE";
+export const BASE = "https://adapttolife.org/q/";
 
 // Error correction H. Not spent on a logo any more, so it is pure insurance —
 // a scuffed, curved or partly peeled sticker still reads.
-export const EC = 'H';
+export const EC = "H";
 
 // Quiet zone in modules. ISO minimum is 4 and we never go below it: on a
 // sticker sheet the neighbouring artwork is the thing most likely to eat it.
@@ -71,7 +71,7 @@ export const QUIET_MODULES = 4;
 // This does NOT invalidate anything already printed. The encoded URL is
 // untouched; a reprint simply carries slightly fuller dots.
 const MODULE_FILL = 0.94;
-const MODULE_RADIUS = 0.30;   // of a module, so the dot keeps its shape
+const MODULE_RADIUS = 0.3; // of a module, so the dot keeps its shape
 
 const isEye = (r, c, n) =>
   (r < 7 && c < 7) || (r < 7 && c >= n - 7) || (r >= n - 7 && c < 7);
@@ -88,9 +88,9 @@ const isEye = (r, c, n) =>
 //
 // The brand palette is one flag away (`--ink=brand`) and still generates.
 const eye = (x, y, m, p) =>
-  `<rect x="${x}" y="${y}" width="${7*m}" height="${7*m}" rx="${m*0.8}" fill="${p.ink}"/>`
-  + `<rect x="${x+m}" y="${y+m}" width="${5*m}" height="${5*m}" rx="${m*0.6}" fill="${p.field}"/>`
-  + `<rect x="${x+2*m}" y="${y+2*m}" width="${3*m}" height="${3*m}" rx="${m*0.5}" fill="${p.hub}"/>`;
+  `<rect x="${x}" y="${y}" width="${7 * m}" height="${7 * m}" rx="${m * 0.8}" fill="${p.ink}"/>` +
+  `<rect x="${x + m}" y="${y + m}" width="${5 * m}" height="${5 * m}" rx="${m * 0.6}" fill="${p.field}"/>` +
+  `<rect x="${x + 2 * m}" y="${y + 2 * m}" width="${3 * m}" height="${3 * m}" rx="${m * 0.5}" fill="${p.hub}"/>`;
 
 // A palette is the ONLY thing that varies between the two looks. Geometry is
 // shared, so a decode result measured on one carries to the other.
@@ -121,9 +121,9 @@ const eye = (x, y, m, p) =>
 // This is why `mono` stays the default and `dark` ships as a deliberate,
 // informed choice rather than a colourway anyone can pick by accident.
 export const PALETTES = {
-  mono:  { ink: INK, field: '#FFFFFF', hub: INK,    tile: '#FFFFFF', rule: INK },
-  brand: { ink: INK, field: '#FFFFFF', hub: ORANGE, tile: CREAM,     rule: ORANGE },
-  dark:  { ink: '#FFFFFF', field: INK, hub: '#FFFFFF', tile: INK,    rule: '#FFFFFF' },
+  mono: { ink: INK, field: "#FFFFFF", hub: INK, tile: "#FFFFFF", rule: INK },
+  brand: { ink: INK, field: "#FFFFFF", hub: ORANGE, tile: CREAM, rule: ORANGE },
+  dark: { ink: "#FFFFFF", field: INK, hub: "#FFFFFF", tile: INK, rule: "#FFFFFF" },
 };
 
 // Every palette above is the SAME geometry — only the five colours change.
@@ -131,7 +131,7 @@ export const PALETTES = {
 // shape-for-shape rather than eyeballed, which is what "make sure the QR code
 // is the same" actually requires.
 export const geometryOf = (svg) =>
-  svg.replace(/\s(?:fill|stroke|stroke-opacity)="[^"]*"/g, '');
+  svg.replace(/\s(?:fill|stroke|stroke-opacity)="[^"]*"/g, "");
 
 /**
  * Build the artwork for one code.
@@ -182,59 +182,88 @@ export const geometryOf = (svg) =>
 // The pad is the light field and the logo is drawn in ink, so on a black shirt
 // it stays one white screen: pad printed, logo left as bare fabric.
 function centreLogo(logoSvg, dim, m, modules, p) {
-  const box = (logoSvg.match(/viewBox="([^"]+)"/) || [])[1] || '0 0 1024 1024';
-  const inner = logoSvg.replace(/^[\s\S]*?<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '')
-                       .replace(/#FFFFFF/gi, p.ink)
-                       .replace(/currentColor/g, p.ink)
-                       .replace(/fill="#000000"/gi, `fill="${p.ink}"`);
-  const pad = modules * m;                   // white pad, in module units
-  const x = (dim - pad) / 2, y = (dim - pad) / 2;
-  const inset = pad * 0.05;   // fill the pad. Pad SIZE is what costs error
-                             // correction; the mark inside it is free.
-  return `<rect x="${x}" y="${y}" width="${pad}" height="${pad}" rx="${m*0.3}" fill="${p.field}"/>`
-    + `<svg x="${x+inset}" y="${y+inset}" width="${pad-2*inset}" height="${pad-2*inset}"`
-    + ` viewBox="${box}" preserveAspectRatio="xMidYMid meet">${inner}</svg>`;
+  const box = (logoSvg.match(/viewBox="([^"]+)"/) || [])[1] || "0 0 1024 1024";
+  const inner = logoSvg
+    .replace(/^[\s\S]*?<svg[^>]*>/, "")
+    .replace(/<\/svg>\s*$/, "")
+    .replace(/#FFFFFF/gi, p.ink)
+    .replace(/currentColor/g, p.ink)
+    .replace(/fill="#000000"/gi, `fill="${p.ink}"`);
+  const pad = modules * m; // white pad, in module units
+  const x = (dim - pad) / 2,
+    y = (dim - pad) / 2;
+  const inset = pad * 0.05; // fill the pad. Pad SIZE is what costs error
+  // correction; the mark inside it is free.
+  return (
+    `<rect x="${x}" y="${y}" width="${pad}" height="${pad}" rx="${m * 0.3}" fill="${p.field}"/>` +
+    `<svg x="${x + inset}" y="${y + inset}" width="${pad - 2 * inset}" height="${pad - 2 * inset}"` +
+    ` viewBox="${box}" preserveAspectRatio="xMidYMid meet">${inner}</svg>`
+  );
 }
 
-export function renderCode(text, { style = 'frame', ink = 'mono', apparel = false, logoSvg = null, logoModules = 9 } = {}) {
+export function renderCode(
+  text,
+  {
+    style = "frame",
+    ink = "mono",
+    apparel = false,
+    logoSvg = null,
+    logoModules = 9,
+  } = {},
+) {
   const p = PALETTES[ink] || PALETTES.mono;
   const fill = apparel ? 1 : MODULE_FILL;
   const radius = apparel ? 0 : MODULE_RADIUS;
   const qr = QR.create(text, { errorCorrectionLevel: EC });
-  const n = qr.modules.size, d = qr.modules.data;
-  const m = 10, quiet = QUIET_MODULES * m;
+  const n = qr.modules.size,
+    d = qr.modules.data;
+  const m = 10,
+    quiet = QUIET_MODULES * m;
   const dim = n * m + quiet * 2;
 
-  let body = '';
-  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
-    if (!d[r*n+c] || isEye(r, c, n)) continue;
-    const x = quiet + c*m, y = quiet + r*m;
-    const inset = m * (1 - fill) / 2;
-    body += `<rect x="${x+inset}" y="${y+inset}" width="${m*fill}" height="${m*fill}" rx="${m*radius}" fill="${p.ink}"/>`;
-  }
-  const eyes = eye(quiet, quiet, m, p) + eye(quiet+(n-7)*m, quiet, m, p) + eye(quiet, quiet+(n-7)*m, m, p);
-  const badge = logoSvg ? centreLogo(logoSvg, dim, m, logoModules, p) : '';
+  let body = "";
+  for (let r = 0; r < n; r++)
+    for (let c = 0; c < n; c++) {
+      if (!d[r * n + c] || isEye(r, c, n)) continue;
+      const x = quiet + c * m,
+        y = quiet + r * m;
+      const inset = (m * (1 - fill)) / 2;
+      body += `<rect x="${x + inset}" y="${y + inset}" width="${m * fill}" height="${m * fill}" rx="${m * radius}" fill="${p.ink}"/>`;
+    }
+  const eyes =
+    eye(quiet, quiet, m, p) +
+    eye(quiet + (n - 7) * m, quiet, m, p) +
+    eye(quiet, quiet + (n - 7) * m, m, p);
+  const badge = logoSvg ? centreLogo(logoSvg, dim, m, logoModules, p) : "";
 
   const geom = { modules: n, moduleUnits: m, quietUnits: quiet, codeUnits: dim };
 
-  if (style === 'plain') {
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${dim} ${dim}" width="${dim}" height="${dim}">`
-      + `<rect width="${dim}" height="${dim}" fill="${p.field}"/>${body}${eyes}${badge}</svg>`;
+  if (style === "plain") {
+    const svg =
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${dim} ${dim}" width="${dim}" height="${dim}">` +
+      `<rect width="${dim}" height="${dim}" fill="${p.field}"/>${body}${eyes}${badge}</svg>`;
     return { svg, ...geom, widthUnits: dim, heightUnits: dim };
   }
 
   // Frame (D2): cream tile + "SCAN TO GIVE". The tile is also what lets a code
   // sit inside a dark layout without ever inverting (principle 4).
-  const band = dim * 0.20, H = dim + band, inset = dim * 0.035;
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${dim} ${H}" width="${dim}" height="${H}">`
-    + `<rect width="${dim}" height="${H}" rx="${dim*0.045}" fill="${p.tile}"/>`
-    + (ink === 'mono' && !apparel ? `<rect x="0.6" y="0.6" width="${dim-1.2}" height="${H-1.2}" rx="${dim*0.045}" fill="none" stroke="${p.ink}" stroke-width="1.2" stroke-opacity="0.28"/>` : '')
-    + `<rect x="${inset}" y="${inset}" width="${dim-inset*2}" height="${dim-inset*2}" rx="${dim*0.02}" fill="${p.field}"/>`
-    + body + eyes + badge
-    + `<rect x="${dim*0.34}" y="${dim+band*0.10}" width="${dim*0.32}" height="${dim*0.007}" rx="${dim*0.004}" fill="${p.rule}"/>`
-    + `<text x="${dim/2}" y="${dim+band*0.68}" text-anchor="middle" font-family="'Space Mono',ui-monospace,monospace"`
-    + ` font-weight="700" font-size="${band*0.34}" letter-spacing="${band*0.08}" fill="${p.ink}">SCAN TO GIVE</text>`
-    + `</svg>`;
+  const band = dim * 0.2,
+    H = dim + band,
+    inset = dim * 0.035;
+  const svg =
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${dim} ${H}" width="${dim}" height="${H}">` +
+    `<rect width="${dim}" height="${H}" rx="${dim * 0.045}" fill="${p.tile}"/>` +
+    (ink === "mono" && !apparel
+      ? `<rect x="0.6" y="0.6" width="${dim - 1.2}" height="${H - 1.2}" rx="${dim * 0.045}" fill="none" stroke="${p.ink}" stroke-width="1.2" stroke-opacity="0.28"/>`
+      : "") +
+    `<rect x="${inset}" y="${inset}" width="${dim - inset * 2}" height="${dim - inset * 2}" rx="${dim * 0.02}" fill="${p.field}"/>` +
+    body +
+    eyes +
+    badge +
+    `<rect x="${dim * 0.34}" y="${dim + band * 0.1}" width="${dim * 0.32}" height="${dim * 0.007}" rx="${dim * 0.004}" fill="${p.rule}"/>` +
+    `<text x="${dim / 2}" y="${dim + band * 0.68}" text-anchor="middle" font-family="'Space Mono',ui-monospace,monospace"` +
+    ` font-weight="700" font-size="${band * 0.34}" letter-spacing="${band * 0.08}" fill="${p.ink}">SCAN TO GIVE</text>` +
+    `</svg>`;
   return { svg, ...geom, widthUnits: dim, heightUnits: H };
 }
 

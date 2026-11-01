@@ -21,7 +21,10 @@ export async function fundPosition(env) {
   try {
     if (env.GIVEBUTTER_API_KEY) {
       const r = await fetch(`https://api.givebutter.com/v1/campaigns/${campaignId}`, {
-        headers: { Authorization: `Bearer ${env.GIVEBUTTER_API_KEY}`, Accept: "application/json" },
+        headers: {
+          Authorization: `Bearer ${env.GIVEBUTTER_API_KEY}`,
+          Accept: "application/json",
+        },
         cf: { cacheTtl: 60, cacheEverything: true },
       });
       if (r.ok) {

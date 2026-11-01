@@ -34,7 +34,10 @@ function stubEnv({ throws = false } = {}) {
 test("contact receipt sends to the person and bccs the house address", async () => {
   const { env, sent } = stubEnv();
   const ok = await sendContactReceipt(env, {
-    name: "Alec Tranel", email: "someone@example.com", message: "Hello", type: "Giving or sponsoring",
+    name: "Alec Tranel",
+    email: "someone@example.com",
+    message: "Hello",
+    type: "Giving or sponsoring",
   });
   assert.equal(ok, true);
   assert.equal(sent.length, 1);
@@ -51,7 +54,10 @@ test("contact receipt sends to the person and bccs the house address", async () 
 test("apply receipt names the next step and bccs the house address", async () => {
   const { env, sent } = stubEnv();
   const ok = await sendApplyReceipt(env, {
-    name: "Jordan Rivers", email: "jordan@example.com", sport: "Wheelchair basketball", need: "Sport chair",
+    name: "Jordan Rivers",
+    email: "jordan@example.com",
+    sport: "Wheelchair basketball",
+    need: "Sport chair",
   });
   assert.equal(ok, true);
   const m = sent[0];
@@ -74,15 +80,23 @@ test("apply receipt states the stage and refuses to promise a grant", async () =
   await sendApplyReceipt(env, { name: "Jordan", email: "j@example.com" });
   const m = sent[0];
   assert.match(m.text, /not a promise of a grant/i, "must not imply funding is coming");
-  assert.match(m.text, /money in it is small/i, "must name what is actually short: the money");
+  assert.match(
+    m.text,
+    /money in it is small/i,
+    "must name what is actually short: the money",
+  );
   // The scarcity is the FUND's, never the organisation's. ATL is a recognised
   // 501(c)(3) with an EIN and a public determination letter, and copy that blurs
   // "our fund is small" into "we are not established yet" gives away standing
   // the org has already earned. Alec misread the first draft exactly that way.
-  assert.match(m.text, /Hustle & Heart Fund is new/i, "scarcity is scoped to the fund by name");
+  assert.match(
+    m.text,
+    /Hustle & Heart Fund is new/i,
+    "scarcity is scoped to the fund by name",
+  );
   assert.ok(
     !/Adapt To Life is (a )?(young|new)/i.test(m.text),
-    "must never describe the organisation itself as young or unfinished"
+    "must never describe the organisation itself as young or unfinished",
   );
   assert.match(m.html, /not a promise of a grant/i);
 });
@@ -103,7 +117,7 @@ test("apply receipt quotes no fund figure when Givebutter is unreadable", async 
   await sendApplyReceipt(env, { name: "Jordan", email: "j@example.com" });
   assert.ok(
     !/\$\d/.test(sent[0].text.replace(/EIN [\d-]+/g, "")),
-    "a guessed dollar figure in writing to an applicant is worse than none"
+    "a guessed dollar figure in writing to an applicant is worse than none",
   );
 });
 
@@ -114,20 +128,31 @@ test("GRANTS_INBOX routes the application copy away from the shared inbox", asyn
   assert.equal(sent[0].bcc, "grants@adapttolife.org");
   assert.equal(sent[0].replyTo, "grants@adapttolife.org");
   // The contact form is ordinary correspondence and stays on hello@.
-  await sendContactReceipt(env, { name: "Jordan", email: "j@example.com", message: "hi" });
+  await sendContactReceipt(env, {
+    name: "Jordan",
+    email: "j@example.com",
+    message: "hi",
+  });
   assert.equal(sent[1].bcc, "hello@adapttolife.org");
 });
 
 test("a send failure never throws — the submission is already saved", async () => {
   const { env } = stubEnv({ throws: true });
-  const a = await sendContactReceipt(env, { name: "A", email: "a@example.com", message: "x" });
+  const a = await sendContactReceipt(env, {
+    name: "A",
+    email: "a@example.com",
+    message: "x",
+  });
   const b = await sendApplyReceipt(env, { name: "B", email: "b@example.com" });
   assert.equal(a, false);
   assert.equal(b, false);
 });
 
 test("a missing SEND_EMAIL binding is quiet, not fatal — staging has none", async () => {
-  const a = await sendContactReceipt({}, { name: "A", email: "a@example.com", message: "x" });
+  const a = await sendContactReceipt(
+    {},
+    { name: "A", email: "a@example.com", message: "x" },
+  );
   const b = await sendApplyReceipt({}, { name: "B", email: "b@example.com" });
   assert.equal(a, false);
   assert.equal(b, false);
@@ -136,7 +161,9 @@ test("a missing SEND_EMAIL binding is quiet, not fatal — staging has none", as
 test("user text is escaped into the html body", async () => {
   const { env, sent } = stubEnv();
   await sendContactReceipt(env, {
-    name: "X", email: "x@example.com", message: '<img src=x onerror="alert(1)">',
+    name: "X",
+    email: "x@example.com",
+    message: '<img src=x onerror="alert(1)">',
   });
   const html = sent[0].html;
   assert.ok(!html.includes("<img src=x"), "raw tag must not survive");

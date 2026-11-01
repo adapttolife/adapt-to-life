@@ -24,7 +24,6 @@
    here, not testimony.
    ========================================================================== */
 
-
 /* ==========================================================================
    THE HEADER TIER SCALE
    --------------------------------------------------------------------------
@@ -54,7 +53,7 @@
    because it is 0% black too. What he was reading as "too tall" was "too
    empty". So the band now FILLS its header at every tier — a tall header is
    more photograph, not more black. That is the both-worlds he asked for. */
-:root{
+:root {
   /* The header heights live in site.css — see "HEADER HEIGHTS" there. They
      moved because five pages (/hustle-and-heart, /karen, /tim, /popcorn,
      /send-6) never load THIS file, so var(--pg-h-*) resolved to nothing and
@@ -92,11 +91,21 @@
    720px window is the whole screen, and on those a little variance is the
    better trade. Gated on width too: phones keep the values above. */
 
-.hero.pg-band{ min-height:var(--pg-h, var(--pg-h-md)); }
-.pg-head--lg{ --pg-h:var(--pg-h-lg); }
-.pg-head--md{ --pg-h:var(--pg-h-md); }
-.pg-head--sm{ --pg-h:var(--pg-h-sm); }
-.pg-head--give{ --pg-h:var(--pg-h-give); }
+.hero.pg-band {
+  min-height: var(--pg-h, var(--pg-h-md));
+}
+.pg-head--lg {
+  --pg-h: var(--pg-h-lg);
+}
+.pg-head--md {
+  --pg-h: var(--pg-h-md);
+}
+.pg-head--sm {
+  --pg-h: var(--pg-h-sm);
+}
+.pg-head--give {
+  --pg-h: var(--pg-h-give);
+}
 
 /* Type is part of the tier, not a per-page decision. Three different headline
    sizes were doing one job — .statement at 56px on /about, .display at 80px on
@@ -105,25 +114,31 @@
    470px of headline, which WAS its 1072px header. A tier sets its own size so
    the same words cost the same height wherever they land. */
 .hero.pg-band .display,
-.hero.pg-band .statement{ font-size:clamp(2.6rem, 5.6vw, 4.5rem); }
+.hero.pg-band .statement {
+  font-size: clamp(2.6rem, 5.6vw, 4.5rem);
+}
 .hero.pg-band.pg-head--lg .display,
-.hero.pg-band.pg-head--lg .statement{ font-size:clamp(2.9rem, 6.6vw, 5.25rem); }
+.hero.pg-band.pg-head--lg .statement {
+  font-size: clamp(2.9rem, 6.6vw, 5.25rem);
+}
 .hero.pg-band.pg-head--sm .display,
-.hero.pg-band.pg-head--sm .statement{ font-size:clamp(2.2rem, 4.4vw, 3.4rem); }
+.hero.pg-band.pg-head--sm .statement {
+  font-size: clamp(2.2rem, 4.4vw, 3.4rem);
+}
 
-.hero.pg-band{
-  position:relative;
-  isolation:isolate;
-  overflow:hidden;
-  background:#000;
+.hero.pg-band {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: #000;
   /* Was 13vh; the difference was dead black between nav and eyebrow. */
-  padding-top:clamp(4.5rem, 10vh, 6.5rem);
+  padding-top: clamp(4.5rem, 10vh, 6.5rem);
   /* Was clamp(12rem, 30vh, 19rem) = 270px at 900. That padding existed to hold
      the band clear of the copy. The band comes up to meet the copy now, so
      most of what the padding was reserving was the black Alec kept seeing. */
   /* The band fills the header now, so this no longer reserves space for it —
      it is just the breathing room under the copy. */
-  padding-bottom:clamp(3.5rem, 8vh, 5.5rem);
+  padding-bottom: clamp(3.5rem, 8vh, 5.5rem);
 }
 
 /* ONE pre-composed strip, not eight <img> columns.
@@ -133,8 +148,13 @@
    the frame is mostly black and compresses to a fraction of the parts, in one
    request. The skyline and the depth falloff bake into the asset, which is why
    there is no markup here beyond a class. */
-.hero.pg-band::before{
-  content:""; position:absolute; left:0; right:0; bottom:0; z-index:0;
+.hero.pg-band::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
   /* A FIXED-ASPECT STRIP anchored to the bottom, not a background stretched
      over the hero. Interior heroes run from 1.50:1 on /donate to 2.75:1 on
      /contact at 1920, and a single image under `cover` cannot serve that range
@@ -149,8 +169,8 @@
      tier owns the height and the band simply fills it, bottom-anchored so a
      crop only ever takes ceiling and never an athlete. Zero black, every tier,
      every width. */
-  top:0;
-  background:var(--pg-band-wide) center bottom/cover no-repeat;
+  top: 0;
+  background: var(--pg-band-wide) center bottom/cover no-repeat;
 }
 
 /* The veil is now only what the PAGE needs, not what the type needs.
@@ -160,11 +180,25 @@
    faces with them. What is left: a top band so the nav stays legible over a
    bright column, a bottom grounding so the band sits on the black the next
    section starts from, and grain. */
-.hero.pg-band::after{
-  content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+.hero.pg-band::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(0,0,0,0.80) 0%, rgba(0,0,0,0.30) 12%, rgba(0,0,0,0) 26%),
-    linear-gradient(0deg,   rgba(0,0,0,0.86) 0%, rgba(0,0,0,0.30) 11%, rgba(0,0,0,0) 26%),
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.8) 0%,
+      rgba(0, 0, 0, 0.3) 12%,
+      rgba(0, 0, 0, 0) 26%
+    ),
+    linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.86) 0%,
+      rgba(0, 0, 0, 0.3) 11%,
+      rgba(0, 0, 0, 0) 26%
+    ),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.16'/%3E%3C/svg%3E");
 }
 
@@ -186,14 +220,24 @@
    which matters here more than anywhere: /donate carries a payment form and
    nineteen third-party hosts, and has the tightest byte budget we have.
    ========================================================================== */
-.hero.pg-band.pg-head--give::before{
-  background-image:var(--pg-give-wide);
-  background-position:center top;
+.hero.pg-band.pg-head--give::before {
+  background-image: var(--pg-give-wide);
+  background-position: center top;
 }
-.hero.pg-band.pg-head--give::after{
+.hero.pg-band.pg-head--give::after {
   background:
-    linear-gradient(180deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.22) 14%, rgba(0,0,0,0) 30%),
-    linear-gradient(0deg,   rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.24) 13%, rgba(0,0,0,0) 28%),
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.72) 0%,
+      rgba(0, 0, 0, 0.22) 14%,
+      rgba(0, 0, 0, 0) 30%
+    ),
+    linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.78) 0%,
+      rgba(0, 0, 0, 0.24) 13%,
+      rgba(0, 0, 0, 0) 28%
+    ),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.14'/%3E%3C/svg%3E");
 }
 /* NOT tried again: pinning this header's height on desktop. Givebutter's form
@@ -209,10 +253,17 @@
    top of it took the left half to flat black and threw away the photographs
    this page was given. The contrast probe still governs — every line has to
    clear its floor on background alone, and it does. */
-.hero.pg-band.pg-head--give > .wrap::before{ right:52%; background:rgba(0,0,0,0.62); }
-@media (max-width:900px){
-  .hero.pg-band.pg-head--give::before{ background-image:var(--pg-give-tall); }
-  .hero.pg-band.pg-head--give > .wrap::before{ right:-14%; }
+.hero.pg-band.pg-head--give > .wrap::before {
+  right: 52%;
+  background: rgba(0, 0, 0, 0.62);
+}
+@media (max-width: 900px) {
+  .hero.pg-band.pg-head--give::before {
+    background-image: var(--pg-give-tall);
+  }
+  .hero.pg-band.pg-head--give > .wrap::before {
+    right: -14%;
+  }
 }
 
 /* ==========================================================================
@@ -227,8 +278,9 @@
    glance and keeps the trace of blue in the shirts. The copy field above does
    the work of making the type legible; nothing else changes.
    ========================================================================== */
-.hero.pg-band.pg-photo::before{
-  aspect-ratio:auto; top:0;
+.hero.pg-band.pg-photo::before {
+  aspect-ratio: auto;
+  top: 0;
   /* The moment is the clasped hands at about 27% down and the two faces above
      them. A 2.44:1 header over a 3:2 photograph shows 61% of its height, so the
      window has to sit near the top or it lands on wheels and a kit bag — which
@@ -255,7 +307,7 @@
      was always in this frame — it sat bottom-RIGHT before the flip and read
      correctly — so the flip's only real cost is that its lettering is now
      mirrored: small, dim, cornered, and partly under the copy field. */
-  background:var(--pg-photo) center 8%/cover no-repeat;
+  background: var(--pg-photo) center 8% / cover no-repeat;
   /* MIRRORED. Alec, 2026-09-09: "Can we flip this picture? I want the guys face
      to not be hidden behind the text."
      He is right and the reason is structural, not taste: this header's type is
@@ -265,7 +317,7 @@
      half of the photograph that loses nothing by being covered.
      Cheaper and more honest than re-cropping: no second asset, no new bytes,
      and the composition is unchanged apart from its handedness. */
-  transform:scaleX(-1);
+  transform: scaleX(-1);
   /* 0.78 -> 0.40, and 0.82 -> 0.92. Alec, 2026-09-09: "This picture feels sad
      with the grey, lets let it have some of its original color."
 
@@ -287,19 +339,30 @@
      page using pg-photo, so nothing else moves.
 
      Contrast re-measured after the change, since the headline sits on this. */
-  filter:grayscale(0) contrast(1.02) brightness(1);
+  filter: grayscale(0) contrast(1.02) brightness(1);
 }
-.hero.pg-band.pg-photo::after{
+.hero.pg-band.pg-photo::after {
   background:
-    linear-gradient(180deg, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.34) 14%, rgba(0,0,0,0.06) 30%, rgba(0,0,0,0) 44%),
-    linear-gradient(0deg,   rgba(0,0,0,0.80) 0%, rgba(0,0,0,0.28) 14%, rgba(0,0,0,0) 32%),
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.82) 0%,
+      rgba(0, 0, 0, 0.34) 14%,
+      rgba(0, 0, 0, 0.06) 30%,
+      rgba(0, 0, 0, 0) 44%
+    ),
+    linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.8) 0%,
+      rgba(0, 0, 0, 0.28) 14%,
+      rgba(0, 0, 0, 0) 32%
+    ),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.14'/%3E%3C/svg%3E");
 }
 /* No bottom-padding override any more. This existed to hold the header open
    below the copy so the photograph had somewhere to be; the photograph fills
    the header now and the tier sets the height, so all this added was 306px of
    black — and it was what pushed /apply 147px past its tier ceiling. */
-@media (max-width:900px){
+@media (max-width: 900px) {
   /* A portrait box over a 3:2 photograph crops HORIZONTALLY, not vertically —
      the vertical anchor that works on desktop does nothing here, and the centre
      lands on the net and a wheel. The clasped hands are at about 52% across and
@@ -314,22 +377,30 @@
      coordinates on purpose: background-position resolves before scaleX(-1)
      mirrors the element, so the value targets where he is in the FILE, and the
      mirror is what carries him to the right of the screen. */
-  .hero.pg-band.pg-photo::before{ background-position:40% center; }
+  .hero.pg-band.pg-photo::before {
+    background-position: 40% center;
+  }
   /* Shorter than the band's, on purpose. A tall box over a landscape frame
      shows a narrow vertical slice and fills the rest with net and spokes;
      bringing the height down widens the slice back onto the two players. */
-
 }
 
-.hero.pg-band > .wrap{ position:relative; z-index:3; }
+.hero.pg-band > .wrap {
+  position: relative;
+  z-index: 3;
+}
 /* The copy keeps to the left so the columns on the right are never negotiated
    with. Scoped to TEXT, not to every child: /donate's hero is a two-column
    grid whose second column is the Givebutter panel, and a blanket
    `.wrap > * { max-width:50% }` squeezed the donation form into a gutter. A
    layout rule aimed at prose has to name prose. */
 .hero.pg-band > .wrap > :is(.eyebrow, h1, h2, p, ul, ol),
-.hero.pg-band .give-intro > :is(.eyebrow, h1, p, ul){ max-width:min(44ch, 100%); }
-.hero.pg-band > .wrap > :is(.eyebrow, h1, h2, p, ul, ol){ max-width:min(44ch, 50%); }
+.hero.pg-band .give-intro > :is(.eyebrow, h1, p, ul) {
+  max-width: min(44ch, 100%);
+}
+.hero.pg-band > .wrap > :is(.eyebrow, h1, h2, p, ul, ol) {
+  max-width: min(44ch, 50%);
+}
 
 /* SHADING BEHIND THE TEXT, not a panel over the picture.
    Alec: "add a little bit of shading/shadow behind the text so the text is
@@ -348,29 +419,36 @@
    WCAG gives it no credit and neither does the contrast probe, so the field is
    sized so every line clears 4.5:1 on background alone — the shadow is the
    finish on top of a number that already passes. */
-.hero.pg-band > .wrap::before{
-  content:""; position:absolute; z-index:-1;
-  left:-6%; right:44%; top:-9%; bottom:-11%;
-  background:rgba(0,0,0,0.86);
-  filter:blur(42px);
-  pointer-events:none;
+.hero.pg-band > .wrap::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: -6%;
+  right: 44%;
+  top: -9%;
+  bottom: -11%;
+  background: rgba(0, 0, 0, 0.86);
+  filter: blur(42px);
+  pointer-events: none;
 }
-.hero.pg-band > .wrap :is(.eyebrow, h1, h2, p, a, li){
-  text-shadow:0 1px 2px rgba(0,0,0,0.55), 0 2px 14px rgba(0,0,0,0.45);
+.hero.pg-band > .wrap :is(.eyebrow, h1, h2, p, a, li) {
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.55),
+    0 2px 14px rgba(0, 0, 0, 0.45);
 }
 
-@media (max-width:900px){
+@media (max-width: 900px) {
   /* Narrow: the words take the top, the columns take everything under them —
      the same shape the homepage uses at this width. The veil turns vertical to
      match, and the hero grows so there is real room for the band rather than a
      sliver behind a paragraph. */
-  .hero.pg-band{
+  .hero.pg-band {
     /* Less black. Alec: "I want the vertical layout to be taller, I don't like
        all the black space." The strip is 760/680 of the viewport width now —
        349px at 390 rather than 257 — and the padding above the type comes down
        so the dead band between the nav and the eyebrow goes with it. */
-    padding-top:clamp(4rem, 10vh, 5.5rem);
-    padding-bottom:clamp(3rem, 7vh, 4.5rem);
+    padding-top: clamp(4rem, 10vh, 5.5rem);
+    padding-bottom: clamp(3rem, 7vh, 4.5rem);
   }
   /* THE SELECTOR LIST HAS TO BE REPEATED — `*` DOES NOT WIN.
      This line used to read `.hero.pg-band > .wrap > *{ max-width:none; }` and it
@@ -390,7 +468,9 @@
      Alec, 2026-09-09: "Text is more important... reading and understanding the
      words." On a phone the column IS the page; there is no second column to
      hold a photograph beside. */
-  .hero.pg-band > .wrap > :is(.eyebrow, h1, h2, p, ul, ol){ max-width:none; }
+  .hero.pg-band > .wrap > :is(.eyebrow, h1, h2, p, ul, ol) {
+    max-width: none;
+  }
   /* 0.88 -> 0.93. The comment above says this field is "sized so every line
      clears 4.5:1 on background alone", and that was true for every line the
      contrast probe knew about — but the probe only measured h1/.eyebrow/.lead/p
@@ -401,13 +481,20 @@
      orange's 0.292, and the floor needs 0.064 — about 16% darker. 0.93 buys
      that with room. It is the field hugging the words that darkens, not the
      photograph: the band either side of the copy is untouched. */
-  .hero.pg-band > .wrap::before{ left:-14%; right:-14%; top:-7%; bottom:-9%;
-    background:rgba(0,0,0,0.88); }
+  .hero.pg-band > .wrap::before {
+    left: -14%;
+    right: -14%;
+    top: -7%;
+    bottom: -9%;
+    background: rgba(0, 0, 0, 0.88);
+  }
   /* Narrow: same rule, the taller asset. The strip fills the header here too —
      at 390 the tall band is 900x805 against a ~430px box, so it downscales at
      every tier and nothing is upscaled on a phone. */
-  .hero.pg-band::before{ background-image:var(--pg-band-tall); }
-  .hero.pg-band::after{
+  .hero.pg-band::before {
+    background-image: var(--pg-band-tall);
+  }
+  .hero.pg-band::after {
     /* The top veil reaches FURTHER DOWN than it used to. The band fills the
        header now instead of sitting on its floor, so the eyebrow — the
        smallest, lowest-contrast text on the page, orange on dark — sits over
@@ -416,12 +503,25 @@
        the eyebrow actually is, around 17-22% down, rather than fading out
        just above it. */
     background:
-      linear-gradient(180deg, rgba(0,0,0,0.90) 0%, rgba(0,0,0,0.60) 15%, rgba(0,0,0,0.20) 30%, rgba(0,0,0,0) 42%),
-      linear-gradient(0deg,   rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.30) 12%, rgba(0,0,0,0) 26%),
+      linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.9) 0%,
+        rgba(0, 0, 0, 0.6) 15%,
+        rgba(0, 0, 0, 0.2) 30%,
+        rgba(0, 0, 0, 0) 42%
+      ),
+      linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.88) 0%,
+        rgba(0, 0, 0, 0.3) 12%,
+        rgba(0, 0, 0, 0) 26%
+      ),
       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.16'/%3E%3C/svg%3E");
   }
 }
 
-@media (max-width:640px){
-  .hero.pg-band{ padding-bottom:clamp(2.5rem, 6vh, 4rem); }
+@media (max-width: 640px) {
+  .hero.pg-band {
+    padding-bottom: clamp(2.5rem, 6vh, 4rem);
+  }
 }

@@ -21,20 +21,25 @@
 // inversion, which modern phones do and older ZXing-based scanners do not.
 // scripts/qr-polarity-test.py measures exactly that, on simulated shirt capture.
 
-import fs from 'fs';
-import path from 'path';
-import { execFileSync } from 'child_process';
-import { chromium } from 'playwright';
-import { PNG } from 'pngjs';
-import jsQR from 'jsqr';
-import { renderCode, geometryOf, BASE } from './lib/qr-art.mjs';
+import fs from "fs";
+import path from "path";
+import { execFileSync } from "child_process";
+import { chromium } from "playwright";
+import { PNG } from "pngjs";
+import jsQR from "jsqr";
+import { renderCode, geometryOf, BASE } from "./lib/qr-art.mjs";
 
 const argv = process.argv.slice(2);
-const [OUT, LOGO] = argv.filter((a) => !a.startsWith('--'));
-const SIZE_MM = parseFloat((argv.find((a) => a.startsWith('--size=')) || '--size=254').replace(/[^\d.]/g, '')) || 254;
-const BG = (argv.find((a) => a.startsWith('--bg=')) || '--bg=both').split('=')[1];
-if (!OUT || !LOGO || !['light', 'dark', 'both'].includes(BG)) {
-  console.error('usage: make-shirt-artwork.mjs <out-dir> <logo.svg> [--size=254mm] [--bg=light|dark|both]');
+const [OUT, LOGO] = argv.filter((a) => !a.startsWith("--"));
+const SIZE_MM =
+  parseFloat(
+    (argv.find((a) => a.startsWith("--size=")) || "--size=254").replace(/[^\d.]/g, ""),
+  ) || 254;
+const BG = (argv.find((a) => a.startsWith("--bg=")) || "--bg=both").split("=")[1];
+if (!OUT || !LOGO || !["light", "dark", "both"].includes(BG)) {
+  console.error(
+    "usage: make-shirt-artwork.mjs <out-dir> <logo.svg> [--size=254mm] [--bg=light|dark|both]",
+  );
   process.exit(1);
 }
 
@@ -53,20 +58,24 @@ if (!OUT || !LOGO || !['light', 'dark', 'both'].includes(BG)) {
 // none of which this simulates.
 const LOGO_MODULES = 11;
 
-const url = BASE + 'shirt';
-const logoSvg = fs.readFileSync(LOGO, 'utf8');
+const url = BASE + "shirt";
+const logoSvg = fs.readFileSync(LOGO, "utf8");
 
 const VARIANTS = {
   // key      ink palette   file stem                proof backdrop
-  light: { ink: 'mono', stem: 'shirt-front-white-bg', backdrop: '#8A8A8A' },
-  dark:  { ink: 'dark', stem: 'shirt-front-black-bg', backdrop: '#8A8A8A' },
+  light: { ink: "mono", stem: "shirt-front-white-bg", backdrop: "#8A8A8A" },
+  dark: { ink: "dark", stem: "shirt-front-black-bg", backdrop: "#8A8A8A" },
 };
-const wanted = BG === 'both' ? ['light', 'dark'] : [BG];
+const wanted = BG === "both" ? ["light", "dark"] : [BG];
 
 const art = {};
 for (const key of wanted) {
   art[key] = renderCode(url, {
-    style: 'plain', ink: VARIANTS[key].ink, apparel: true, logoSvg, logoModules: LOGO_MODULES,
+    style: "plain",
+    ink: VARIANTS[key].ink,
+    apparel: true,
+    logoSvg,
+    logoModules: LOGO_MODULES,
   });
 }
 
@@ -76,8 +85,15 @@ for (const key of wanted) {
 // dark version a different symbol, this stops it here rather than at a print run.
 if (wanted.length === 2) {
   const [a, b] = wanted.map((k) => geometryOf(art[k].svg));
-  if (a !== b) { console.error('  FAIL — the two backgrounds are not the same code. Nothing written.'); process.exit(1); }
-  console.log(`  ok   identical geometry: ${a.length} bytes of shape, colour is the only difference`);
+  if (a !== b) {
+    console.error(
+      "  FAIL — the two backgrounds are not the same code. Nothing written.",
+    );
+    process.exit(1);
+  }
+  console.log(
+    `  ok   identical geometry: ${a.length} bytes of shape, colour is the only difference`,
+  );
 }
 
 fs.mkdirSync(OUT, { recursive: true });
@@ -87,61 +103,84 @@ const page = await browser.newPage({ viewport: { width: 2600, height: 2600 } });
 let bad = 0;
 
 for (const key of wanted) {
-  const v = VARIANTS[key], a = art[key];
+  const v = VARIANTS[key],
+    a = art[key];
   fs.writeFileSync(path.join(OUT, `${v.stem}.svg`), a.svg);
 
   // Proof PNG at an integer number of pixels per module.
   const grid = a.modules + 8;
   const W = Math.round(2400 / grid) * grid;
-  await page.setContent(`<body style="margin:0;background:${v.backdrop}"><div id="w" style="width:${W}px">`
-    + a.svg.replace(/ width="[\d.]+" height="[\d.]+"/, ` width="${W}"`) + `</div></body>`);
+  await page.setContent(
+    `<body style="margin:0;background:${v.backdrop}"><div id="w" style="width:${W}px">` +
+      a.svg.replace(/ width="[\d.]+" height="[\d.]+"/, ` width="${W}"`) +
+      `</div></body>`,
+  );
   await page.waitForTimeout(600);
   const pngPath = path.join(OUT, `${v.stem}.png`);
-  await (await page.$('#w')).screenshot({ path: pngPath });
+  await (await page.$("#w")).screenshot({ path: pngPath });
 
   // Press PDF at exact physical size.
   const pdfPath = path.join(OUT, `${v.stem}-${Math.round(SIZE_MM)}mm-PRINT.pdf`);
-  await page.setContent(`<html><head><style>
+  await page.setContent(
+    `<html><head><style>
     @page { size: ${SIZE_MM}mm ${SIZE_MM}mm; margin: 0; }
     html,body { margin:0; width:${SIZE_MM}mm; height:${SIZE_MM}mm; }
-  </style></head><body><div style="width:${SIZE_MM}mm;height:${SIZE_MM}mm">`
-    + a.svg.replace(/ width="[\d.]+" height="[\d.]+"/, ' width="100%" height="100%"') + `</div></body></html>`);
+  </style></head><body><div style="width:${SIZE_MM}mm;height:${SIZE_MM}mm">` +
+      a.svg.replace(/ width="[\d.]+" height="[\d.]+"/, ' width="100%" height="100%"') +
+      `</div></body></html>`,
+  );
   await page.waitForTimeout(500);
-  await page.pdf({ path: pdfPath, width: `${SIZE_MM}mm`, height: `${SIZE_MM}mm`, printBackground: true, pageRanges: '1' });
+  await page.pdf({
+    path: pdfPath,
+    width: `${SIZE_MM}mm`,
+    height: `${SIZE_MM}mm`,
+    printBackground: true,
+    pageRanges: "1",
+  });
 
   // Gate BOTH artifacts. The PDF is what goes to the press, so the PDF is what
   // gets tested — rasterised at whole pixels per module.
   const moduleMm = SIZE_MM / (a.modules + 8);
-  const perModule = Math.max(8, Math.round(moduleMm * 400 / 25.4));
-  const dpi = Math.round(perModule * 25.4 / moduleMm);
+  const perModule = Math.max(8, Math.round((moduleMm * 400) / 25.4));
+  const dpi = Math.round((perModule * 25.4) / moduleMm);
   const raster = path.join(OUT, `.gate-${key}`);
-  execFileSync('pdftoppm', ['-r', String(dpi), '-png', '-singlefile', pdfPath, raster]);
+  execFileSync("pdftoppm", ["-r", String(dpi), "-png", "-singlefile", pdfPath, raster]);
 
-  for (const [label, file] of [['proof PNG', pngPath], ['press PDF', `${raster}.png`]]) {
+  for (const [label, file] of [
+    ["proof PNG", pngPath],
+    ["press PDF", `${raster}.png`],
+  ]) {
     const img = PNG.sync.read(fs.readFileSync(file));
     const px = new Uint8ClampedArray(img.data);
     // Two reads, deliberately. `dontInvert` is the strict, ISO-orientation
     // decoder — the light version must pass it, and the dark version cannot by
     // definition. `attemptBoth` is what a modern phone camera does.
-    const strict = jsQR(px, img.width, img.height, { inversionAttempts: 'dontInvert' });
-    const phone  = jsQR(px, img.width, img.height, { inversionAttempts: 'attemptBoth' });
-    const need = key === 'light' ? strict : phone;
+    const strict = jsQR(px, img.width, img.height, { inversionAttempts: "dontInvert" });
+    const phone = jsQR(px, img.width, img.height, { inversionAttempts: "attemptBoth" });
+    const need = key === "light" ? strict : phone;
     const ok = need && need.data === url;
     if (!ok) bad++;
-    const note = key === 'dark'
-      ? (strict?.data === url ? '  (also read WITHOUT inversion)' : '  (needs a decoder that inverts)')
-      : '';
-    console.log(`  ${ok ? 'ok  ' : 'FAIL'} ${key.padEnd(5)} ${label}${note}`);
+    const note =
+      key === "dark"
+        ? strict?.data === url
+          ? "  (also read WITHOUT inversion)"
+          : "  (needs a decoder that inverts)"
+        : "";
+    console.log(`  ${ok ? "ok  " : "FAIL"} ${key.padEnd(5)} ${label}${note}`);
   }
   fs.unlinkSync(`${raster}.png`);
 }
 
 await browser.close();
-if (bad) { fs.rmSync(OUT, { recursive: true, force: true }); console.error('\n  artwork deleted — it does not scan.\n'); process.exit(1); }
+if (bad) {
+  fs.rmSync(OUT, { recursive: true, force: true });
+  console.error("\n  artwork deleted — it does not scan.\n");
+  process.exit(1);
+}
 
 const SIZE = Math.round(SIZE_MM);
 const moduleMm = SIZE_MM / (art[wanted[0]].modules + 8);
-const feet = ((moduleMm * art[wanted[0]].modules) * 10 / 304.8).toFixed(1);
+const feet = ((moduleMm * art[wanted[0]].modules * 10) / 304.8).toFixed(1);
 
 const COMMON = `SIZE
   Target ${SIZE} mm (${(SIZE_MM / 25.4).toFixed(1)} in) wide — about ${moduleMm.toFixed(2)} mm per module,
@@ -230,7 +269,13 @@ FILES
 ${COMMON}`,
 };
 
-for (const key of wanted) fs.writeFileSync(path.join(OUT, `PRINT-SPEC-${key === 'light' ? 'white' : 'black'}-bg.txt`), SPEC[key]);
+for (const key of wanted)
+  fs.writeFileSync(
+    path.join(OUT, `PRINT-SPEC-${key === "light" ? "white" : "black"}-bg.txt`),
+    SPEC[key],
+  );
 
-console.log(`\n  ${SIZE_MM}mm · module ${moduleMm.toFixed(2)}mm · logo ${LOGO_MODULES} modules (~11% of area)`);
+console.log(
+  `\n  ${SIZE_MM}mm · module ${moduleMm.toFixed(2)}mm · logo ${LOGO_MODULES} modules (~11% of area)`,
+);
 console.log(`  → ${OUT}\n`);

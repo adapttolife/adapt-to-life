@@ -26,29 +26,45 @@ const DIR = "public/admin/app/assets";
 const INITIAL_KB = 70;
 const TOTAL_KB = 130;
 
-let initial = 0, deferred = 0;
+let initial = 0,
+  deferred = 0;
 for (const f of readdirSync(DIR)) {
-  if (f.endsWith(".map")) continue;                 // never shipped to a browser
+  if (f.endsWith(".map")) continue; // never shipped to a browser
   const gz = gzipSync(readFileSync(path.join(DIR, f))).length;
   // Vite names the entry "index-*"; everything else is a split chunk that
   // loads on demand.
   if (/^index-/.test(f)) initial += gz;
   else deferred += gz;
 }
-const iKB = initial / 1024, dKB = deferred / 1024, tKB = iKB + dKB;
+const iKB = initial / 1024,
+  dKB = deferred / 1024,
+  tKB = iKB + dKB;
 
-console.log(`  initial : ${iKB.toFixed(1)}KB gzipped  (${Math.round((iKB / INITIAL_KB) * 100)}% of ${INITIAL_KB}KB)`);
-console.log(`  deferred: ${dKB.toFixed(1)}KB gzipped  (loads after the page is usable)`);
-console.log(`  total   : ${tKB.toFixed(1)}KB gzipped  (${Math.round((tKB / TOTAL_KB) * 100)}% of ${TOTAL_KB}KB)`);
+console.log(
+  `  initial : ${iKB.toFixed(1)}KB gzipped  (${Math.round((iKB / INITIAL_KB) * 100)}% of ${INITIAL_KB}KB)`,
+);
+console.log(
+  `  deferred: ${dKB.toFixed(1)}KB gzipped  (loads after the page is usable)`,
+);
+console.log(
+  `  total   : ${tKB.toFixed(1)}KB gzipped  (${Math.round((tKB / TOTAL_KB) * 100)}% of ${TOTAL_KB}KB)`,
+);
 
 let bad = false;
 if (iKB > INITIAL_KB) {
-  console.error(`\n  INITIAL OVER BUDGET by ${(iKB - INITIAL_KB).toFixed(1)}KB — this is what a person waits for.`);
-  console.error(`  Split it, or take something out. Raising this number is a decision, not a fix.`);
+  console.error(
+    `\n  INITIAL OVER BUDGET by ${(iKB - INITIAL_KB).toFixed(1)}KB — this is what a person waits for.`,
+  );
+  console.error(
+    `  Split it, or take something out. Raising this number is a decision, not a fix.`,
+  );
   bad = true;
 }
 if (tKB > TOTAL_KB) {
   console.error(`\n  TOTAL OVER BUDGET by ${(tKB - TOTAL_KB).toFixed(1)}KB.`);
   bad = true;
 }
-if (bad) { console.error(""); process.exit(1); }
+if (bad) {
+  console.error("");
+  process.exit(1);
+}

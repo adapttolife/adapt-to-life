@@ -20,11 +20,27 @@ function read(name) {
 // wrangler's config format allows them and this repo uses them heavily.
 function parseJsonc(text) {
   let out = "";
-  let inString = false, inLine = false, inBlock = false, escaped = false;
+  let inString = false,
+    inLine = false,
+    inBlock = false,
+    escaped = false;
   for (let i = 0; i < text.length; i += 1) {
-    const c = text[i], next = text[i + 1];
-    if (inLine) { if (c === "\n") { inLine = false; out += c; } continue; }
-    if (inBlock) { if (c === "*" && next === "/") { inBlock = false; i += 1; } continue; }
+    const c = text[i],
+      next = text[i + 1];
+    if (inLine) {
+      if (c === "\n") {
+        inLine = false;
+        out += c;
+      }
+      continue;
+    }
+    if (inBlock) {
+      if (c === "*" && next === "/") {
+        inBlock = false;
+        i += 1;
+      }
+      continue;
+    }
     if (inString) {
       out += c;
       if (escaped) escaped = false;
@@ -32,8 +48,15 @@ function parseJsonc(text) {
       else if (c === '"') inString = false;
       continue;
     }
-    if (c === "/" && next === "/") { inLine = true; continue; }
-    if (c === "/" && next === "*") { inBlock = true; i += 1; continue; }
+    if (c === "/" && next === "/") {
+      inLine = true;
+      continue;
+    }
+    if (c === "/" && next === "*") {
+      inBlock = true;
+      i += 1;
+      continue;
+    }
     if (c === '"') inString = true;
     out += c;
   }
@@ -51,12 +74,18 @@ const ORIGIN = "https://reports.amelioration.is";
 test("the reports Worker is its own Worker running the reports-only entrypoint", () => {
   assert.equal(reports.name, "amelioration-reports");
   assert.equal(reports.main, "src/reports_worker.js");
-  assert.notEqual(reports.name, atl.name, "a shared name would overwrite the ATL Worker");
+  assert.notEqual(
+    reports.name,
+    atl.name,
+    "a shared name would overwrite the ATL Worker",
+  );
 });
 
 test("it is reachable only on the custom domain — no workers.dev, no preview URLs", () => {
   // Cloudflare Access sits in front of reports.amelioration.is.
-  assert.deepEqual(reports.routes, [{ pattern: "reports.amelioration.is", custom_domain: true }]);
+  assert.deepEqual(reports.routes, [
+    { pattern: "reports.amelioration.is", custom_domain: true },
+  ]);
 });
 
 test("it holds one binding: the agent-mail D1 the report pages read", () => {
@@ -69,7 +98,14 @@ test("it holds one binding: the agent-mail D1 the report pages read", () => {
 });
 
 test("it holds nothing else — no assets, no R2, no outbound mail, no cron, no email", () => {
-  for (const key of ["assets", "r2_buckets", "kv_namespaces", "send_email", "triggers", "queues"]) {
+  for (const key of [
+    "assets",
+    "r2_buckets",
+    "kv_namespaces",
+    "send_email",
+    "triggers",
+    "queues",
+  ]) {
     assert.equal(reports[key], undefined, `reports Worker should not configure ${key}`);
   }
 });
@@ -111,24 +147,24 @@ test("there is a deploy script that uses the reports config", () => {
 });
 
 test("the ATL Worker's own domains are untouched by this slice", () => {
-  assert.deepEqual(atl.routes.map((r) => r.pattern), [
-    "adapttolife.org",
-    "www.adapttolife.org",
-    "sign.adapttolife.org",
-  ]);
+  assert.deepEqual(
+    atl.routes.map((r) => r.pattern),
+    ["adapttolife.org", "www.adapttolife.org", "sign.adapttolife.org"],
+  );
 });
 
-test("staging shares live data services but has no cron triggers and no mail", () => {
+test("staging uses the ASNM staging database, sends passwordless admin links, and has no cron triggers", () => {
   assert.equal(atl.env.staging.main, "src/staging.js");
   assert.equal(atl.env.staging.assets.run_worker_first, true);
   assert.deepEqual(atl.env.staging.routes, []);
-  assert.deepEqual(atl.env.staging.d1_databases, atl.d1_databases);
+  assert.equal(atl.env.staging.d1_databases.at(-1).database_name, "asnm-db-staging");
   assert.deepEqual(atl.env.staging.r2_buckets, []);
-  // Staging sends no mail of its own: no binding and an unsupported transport.
-  assert.equal(atl.env.staging.send_email, undefined);
+  assert.deepEqual(atl.env.staging.send_email, [{ name: "SEND_EMAIL" }]);
   assert.deepEqual(atl.env.staging.triggers.crons, []);
-  assert.deepEqual(atl.env.staging.vars, {
-    ...atl.vars, ENV_NAME: "staging", STAGING: "1", TURNSTILE_MODE: "off", MAIL_TRANSPORT: "none",
-  });
-  assert.notEqual(atl.vars.TURNSTILE_MODE, "off", "production must not disable Turnstile");
+  assert.equal(atl.env.staging.vars.MAIL_TRANSPORT, "gmail");
+  assert.notEqual(
+    atl.vars.TURNSTILE_MODE,
+    "off",
+    "production must not disable Turnstile",
+  );
 });

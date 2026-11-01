@@ -197,6 +197,11 @@
   @media (max-width:760px){ .ace-letter{ grid-template-columns:1fr; } .ace-letter img{ max-width:320px; } }
   /* Thursday Ten additions */
   .tt-price{ margin-top:0.5rem; font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(1.6rem,2.6vw,2.1rem); letter-spacing:-0.03em; color:var(--orange); }
+  .tt-pkg{ margin-top:clamp(2.4rem,5vw,3.4rem); }
+  .tt-pkg-note{ margin-top:0.6rem; max-width:60ch; color:var(--cream-mute); }
+  .tt-one{ grid-template-columns:minmax(0,1fr); max-width:420px; margin-top:1.2rem; }
+  .tt-two{ grid-template-columns:repeat(2,1fr); max-width:860px; margin-top:1.2rem; }
+  @media (max-width:900px){ .tt-two{ grid-template-columns:1fr; } }
   .ace-stats-dark{ grid-template-columns:1fr; gap:1.2rem; margin-top:1.8rem; max-width:34ch; }
   .ace-stats-dark dt{ color:var(--orange); }
   .ace-stats-dark dd{ color:var(--cream-mute); }
@@ -406,7 +411,7 @@ fill="currentColor" stroke="none">
         <li><b>Free to play</b><span>Adapt To Life covers court fees, so cost never keeps an athlete home.</span></li>
         <li><b>A real home court</b><span>A reserved court every Thursday at ACE, with 13 courts and open play beside it.</span></li>
         <li><b>Part of the club</b><span>Our athletes mix in with ACE members, so the program grows a hybrid community, not a side room.</span></li>
-        <li class="lit"><b>Room to grow</b><span>Memberships for athletes who want to play more than Thursdays, and sport chairs for new players.</span></li>
+        <li class="lit"><b>Room to grow</b><span>Unlimited memberships for athletes who want to play more than Thursdays.</span></li>
       </ol>
     </div>
   </section>
@@ -440,24 +445,30 @@ fill="currentColor" stroke="none">
         <h2 class="serif statement">Pick your place <em class="italic" style="color:var(--orange)">on the court.</em></h2>
         <p class="prose">Every gift goes to Adapt To Life, a 501(c)(3), and is tax deductible to the extent allowed by law.</p>
       </div>
-      <div class="ace-start" data-m="stagger">
-        <article class="ace-pick">
-          <p class="ace-pick-tag">Presenting sponsor</p>
-          <h3>The Thursday Ten, presented by you</h3>
-          <p class="tt-price">$9,600 a year</p>
-          <p>Funds the whole program for a year: every Thursday's court fees, memberships for athletes who want to play more, and sport chairs for new players. Your name on the program, every weekly post, and every athlete spotlight.</p>
-        </article>
-        <article class="ace-pick">
-          <p class="ace-pick-tag">Seat sponsor</p>
-          <h3>Sponsor a seat</h3>
-          <p class="tt-price">$960 a year</p>
-          <p>One athlete's year of play, on Thursdays and beyond. Your name on that athlete's spotlights, and a note from them at the end of the season.</p>
-        </article>
+      <p class="ace-later eyebrow orange tt-pkg">Package 1 · Thursday nights</p>
+      <p class="prose tt-pkg-note">Our weekly session at ACE. Athletes drop in at $5 each, and Adapt To Life covers it so every athlete plays free.</p>
+      <div class="ace-start tt-one" data-m="stagger">
         <article class="ace-pick">
           <p class="ace-pick-tag">Night sponsor</p>
           <h3>Sponsor a Thursday</h3>
           <p class="tt-price">$75 a night</p>
           <p>Covers court fees for every athlete that night. Your business named on that night's posts. A perfect fit for a local shop, practice, or restaurant.</p>
+        </article>
+      </div>
+      <p class="ace-later eyebrow orange tt-pkg">Package 2 · Unlimited memberships</p>
+      <p class="prose tt-pkg-note">For athletes who want to play more than Thursdays: an unlimited ACE membership at our $80 a month founding rate, $50 off the regular price. Sponsors cover the membership, so athletes still play free.</p>
+      <div class="ace-start tt-two" data-m="stagger">
+        <article class="ace-pick">
+          <p class="ace-pick-tag">Presenting sponsor</p>
+          <h3>The Thursday Ten, presented by you</h3>
+          <p class="tt-price">$9,600 a year</p>
+          <p>Ten athletes on unlimited memberships for a year. Your name on the program, every weekly post, and every athlete spotlight.</p>
+        </article>
+        <article class="ace-pick">
+          <p class="ace-pick-tag">Seat sponsor</p>
+          <h3>Sponsor a seat</h3>
+          <p class="tt-price">$960 a year</p>
+          <p>One athlete's unlimited membership for a year. Your name on that athlete's spotlights, and a note from them at the end of the season.</p>
         </article>
       </div>
       <p class="ace-later eyebrow orange">Bigger moments</p>

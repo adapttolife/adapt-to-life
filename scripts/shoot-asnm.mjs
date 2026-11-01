@@ -29,7 +29,8 @@ const TMP = "/tmp/asnm-shot.png";
 // broken image rather than as "there is more below". 925 lands just under the
 // "Recently verified" subtitle: a clean seam, and the cropped first row still
 // implies the page continues.
-const W = 1440, H = 925;
+const W = 1440,
+  H = 925;
 
 // TWO CAPTURES, art-directed, the same wide/tall split this site already uses
 // for its band imagery. A 1440px desktop screenshot rendered 350px wide on a
@@ -42,46 +43,84 @@ const SHOTS = [
   // 1440 gives it about 1.4x for a retina screen; shipping the full 2x capture
   // was 203KB for detail nobody resolves. The tall shot renders ~350 CSS px on
   // a phone, so 828 is a genuine 2.4x.
-  { key: "wide", w: 1440, h: 925, dpr: 2, ow: 1440, oh: 925,
-    out: join(ROOT, "public", "images", "asnm-directory.webp") },
-  { key: "tall", w: 414,  h: 760, dpr: 3, ow: 828,  oh: 1520,
-    out: join(ROOT, "public", "images", "asnm-directory-tall.webp") },
+  {
+    key: "wide",
+    w: 1440,
+    h: 925,
+    dpr: 2,
+    ow: 1440,
+    oh: 925,
+    out: join(ROOT, "public", "images", "asnm-directory.webp"),
+  },
+  {
+    key: "tall",
+    w: 414,
+    h: 760,
+    dpr: 3,
+    ow: 828,
+    oh: 1520,
+    out: join(ROOT, "public", "images", "asnm-directory-tall.webp"),
+  },
 ];
-const SESSION = process.env.ASNM_BETA_SESSION || join(homedir(), ".config/agentos/asnm/prod-beta-session.json");
+const SESSION =
+  process.env.ASNM_BETA_SESSION ||
+  join(homedir(), ".config/agentos/asnm/prod-beta-session.json");
 if (!existsSync(SESSION)) {
-  console.error(`  asnm:shot needs a beta tester session at ${SESSION} (ASNM_BETA_SESSION); not photographing the sign-in gate`);
+  console.error(
+    `  asnm:shot needs a beta tester session at ${SESSION} (ASNM_BETA_SESSION); not photographing the sign-in gate`,
+  );
   process.exit(1);
 }
 // CHROME overrides the browser when the playwright module and the installed
 // headless shell drift apart (the module wants a build that is not downloaded).
-const b = await chromium.launch(process.env.CHROME ? { executablePath: process.env.CHROME } : {});
+const b = await chromium.launch(
+  process.env.CHROME ? { executablePath: process.env.CHROME } : {},
+);
 const dims = {};
 for (const s of SHOTS) {
-  const ctx = await b.newContext({ storageState: SESSION, viewport: { width: s.w, height: s.h }, deviceScaleFactor: s.dpr, reducedMotion: "reduce" });
+  const ctx = await b.newContext({
+    storageState: SESSION,
+    viewport: { width: s.w, height: s.h },
+    deviceScaleFactor: s.dpr,
+    reducedMotion: "reduce",
+  });
   await ctx.addInitScript(() => {
     const st = document.createElement("style");
     st.textContent = ".uwy,.userway_buttons_wrapper,.uwif{display:none!important}";
     document.addEventListener("DOMContentLoaded", () => document.head.appendChild(st));
   });
   const p = await ctx.newPage();
-  await p.goto("https://adaptivesportsnearme.com/", { waitUntil: "load", timeout: 90000 });
+  await p.goto("https://adaptivesportsnearme.com/", {
+    waitUntil: "load",
+    timeout: 90000,
+  });
   if (await p.locator("#beta-login").count()) {
-    console.error("  asnm:shot: the beta session has expired (the page shows the sign-in gate); renew it, then run again");
+    console.error(
+      "  asnm:shot: the beta session has expired (the page shows the sign-in gate); renew it, then run again",
+    );
     process.exit(1);
   }
   await p.evaluate(() => document.fonts.ready);
   await p.waitForTimeout(4000);
   await p.screenshot({ path: TMP, clip: { x: 0, y: 0, width: s.w, height: s.h } });
   await ctx.close();
-  execFileSync("/home/agentos/.venvs/vectorize/bin/python", ["-c", `
+  execFileSync("/home/agentos/.venvs/vectorize/bin/python", [
+    "-c",
+    `
 from PIL import Image
 im = Image.open("${TMP}").convert("RGB")
 im = im.resize((${s.ow}, ${s.oh}), Image.LANCZOS)
 im.save("${s.out}", "WEBP", quality=${s.key === "tall" ? 74 : 78}, method=6)
-`]);
+`,
+  ]);
   dims[s.key] = { w: s.ow, h: s.oh };
-  console.log(`  asnm ${s.key} ${s.w}x${s.h} @${s.dpr}x -> ${(statSync(s.out).size / 1024).toFixed(1)} KB`);
+  console.log(
+    `  asnm ${s.key} ${s.w}x${s.h} @${s.dpr}x -> ${(statSync(s.out).size / 1024).toFixed(1)} KB`,
+  );
 }
 await b.close();
-writeFileSync(join(ROOT, "data", "asnm-shot.json"), JSON.stringify(dims, null, 1) + "\n");
+writeFileSync(
+  join(ROOT, "data", "asnm-shot.json"),
+  JSON.stringify(dims, null, 1) + "\n",
+);
 console.log("  (dimensions recorded in data/asnm-shot.json for build-asnm.mjs)");

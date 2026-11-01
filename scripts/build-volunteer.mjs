@@ -13,10 +13,21 @@
 // shipped page rather than duplicated here. When the nav changes, these pages
 // change with it and nobody has to remember they exist. `--check` is wired into
 // the test suite so a nav edit that skips the generator fails the build.
-import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync, rmSync } from "node:fs";
+import {
+  readFileSync,
+  writeFileSync,
+  mkdirSync,
+  readdirSync,
+  existsSync,
+  rmSync,
+} from "node:fs";
 import { assetVersions, versionHtml } from "./version-assets.mjs";
-import { PAGE_HEADER_SHEET, PAGE_HEADER_CLASS, bandVars,
-         TIER_CLASS } from "./lib/page-header.mjs";
+import {
+  PAGE_HEADER_SHEET,
+  PAGE_HEADER_CLASS,
+  bandVars,
+  TIER_CLASS,
+} from "./lib/page-header.mjs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { SHARED, LANES, ROLES, TOOLS, ROLE_TOOLS } from "../data/volunteer-roles.mjs";
@@ -30,13 +41,27 @@ const SITE = "https://adapttolife.org";
 
 // ---- chrome, lifted from a shipped page ---------------------------------
 const donor = readFileSync(join(PUB, "index.html"), "utf8");
-const HEADER = donor.slice(donor.indexOf('<header class="nav'), donor.indexOf("</header>") + 9);
-const FOOTER = donor.slice(donor.indexOf('<footer class="footer">'), donor.indexOf("</footer>") + 9);
+const HEADER = donor.slice(
+  donor.indexOf('<header class="nav'),
+  donor.indexOf("</header>") + 9,
+);
+const FOOTER = donor.slice(
+  donor.indexOf('<footer class="footer">'),
+  donor.indexOf("</footer>") + 9,
+);
 const afterFooter = donor.slice(donor.indexOf("</footer>") + 9);
-const NAVJS = afterFooter.slice(afterFooter.indexOf("<script>"), afterFooter.indexOf("</script>") + 9);
+const NAVJS = afterFooter.slice(
+  afterFooter.indexOf("<script>"),
+  afterFooter.indexOf("</script>") + 9,
+);
 
-const esc = (s) => String(s).replace(/&(?!(amp|lt|gt|quot|#39|rarr|mdash|nbsp);)/g, "&amp;");
-const strip = (s) => String(s).replace(/<[^>]*>/g, "").replace(/&amp;/g, "&").trim();
+const esc = (s) =>
+  String(s).replace(/&(?!(amp|lt|gt|quot|#39|rarr|mdash|nbsp);)/g, "&amp;");
+const strip = (s) =>
+  String(s)
+    .replace(/<[^>]*>/g, "")
+    .replace(/&amp;/g, "&")
+    .trim();
 
 function head({ title, desc, canonical, card, cardAlt, page }) {
   return `<!DOCTYPE html>
@@ -75,11 +100,13 @@ ${PAGE_HEADER_SHEET}\n${bandVars(page)}
 `;
 }
 
-const TICK = '<span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>';
+const TICK =
+  '<span class="role-tick" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 6.4 4.4 9.2 10.4 2.8"/></svg></span>';
 
 const ul = (items, cls = "") =>
   `<ul class="jd-list${cls ? " " + cls : ""}">` +
-  items.map((i) => `<li>${esc(i)}</li>`).join("") + `</ul>`;
+  items.map((i) => `<li>${esc(i)}</li>`).join("") +
+  `</ul>`;
 
 // ---- the board ----------------------------------------------------------
 // The whole card is one link to the role page. Alec, 2026-09-02: almost everyone
@@ -94,11 +121,16 @@ const ul = (items, cls = "") =>
 // What a role works in: real tools, our own sites, official references
 // (TOOLS in data/volunteer-roles.mjs). Outside links open in a new tab.
 function toolLinks(r) {
-  return (ROLE_TOOLS[r.slug] || []).map((k) => {
-    const t = TOOLS[k];
-    const out = /^https?:/.test(t.href) && !t.href.startsWith(SITE) ? ' target="_blank" rel="noopener"' : "";
-    return `<a href="${esc(t.href)}"${out}>${t.logo ? logo(t.logo) : ""}${esc(t.name)}</a>`;
-  }).join("");
+  return (ROLE_TOOLS[r.slug] || [])
+    .map((k) => {
+      const t = TOOLS[k];
+      const out =
+        /^https?:/.test(t.href) && !t.href.startsWith(SITE)
+          ? ' target="_blank" rel="noopener"'
+          : "";
+      return `<a href="${esc(t.href)}"${out}>${t.logo ? logo(t.logo) : ""}${esc(t.name)}</a>`;
+    })
+    .join("");
 }
 
 function card(r) {
@@ -107,8 +139,12 @@ function card(r) {
           <div>
             <h3 class="ix-n"><a class="ix-link" href="/volunteer/${r.slug}">${esc(r.name)}</a></h3>
             <p class="ix-d">${esc(r.card)}</p>
-            <p class="ix-meta"><span class="ix-time">${icon("time")}${esc(r.time)}</span><span>${esc(r.where)}</span></p>${tools ? `
-            <p class="ix-tools"><span class="ix-tools-l">Works in</span>${tools}</p>` : ""}
+            <p class="ix-meta"><span class="ix-time">${icon("time")}${esc(r.time)}</span><span>${esc(r.where)}</span></p>${
+              tools
+                ? `
+            <p class="ix-tools"><span class="ix-tools-l">Works in</span>${tools}</p>`
+                : ""
+            }
           </div>
           <span class="ix-go">${icon("arrow")}</span>
         </li>`;
@@ -138,22 +174,30 @@ ${roles.map(card).join("\n")}
 
   // The jump bar under "What you would be joining": every lane and how many
   // roles it holds, so a reader goes straight to their part.
-  const jump = LANES.map((l) =>
-    `        <li><a href="#lane-${l.key}">${icon(l.icon)}${l.name} <b>${ROLES.filter((r) => r.lane === l.key).length}</b></a></li>`
+  const jump = LANES.map(
+    (l) =>
+      `        <li><a href="#lane-${l.key}">${icon(l.icon)}${l.name} <b>${ROLES.filter((r) => r.lane === l.key).length}</b></a></li>`,
   ).join("\n");
 
   const terms = SHARED.terms
-    .map(([t, m, d]) => `        <div class="term reveal">\n          <span class="ix-tile sm" aria-hidden="true">${icon(m, "duotone")}</span>\n          <h3>${esc(t)}</h3>\n          <p>${esc(d)}</p>\n        </div>`)
+    .map(
+      ([t, m, d]) =>
+        `        <div class="term reveal">\n          <span class="ix-tile sm" aria-hidden="true">${icon(m, "duotone")}</span>\n          <h3>${esc(t)}</h3>\n          <p>${esc(d)}</p>\n        </div>`,
+    )
     .join("\n");
 
-  return head({
-    title: "Volunteer | Adapt To Life",
-    desc: "Help more people take part in adaptive sports. Explore volunteer roles, time commitments, and ways to contribute your skills.",
-    canonical: `${SITE}/volunteer`,
-    page: "volunteer.html",
-    card: "/images/og/volunteer-v3-athlete.jpg",
-    cardAlt: "Your place on this team. Adapt To Life. A wheelchair pickleball player in a cap reaches for a shot.",
-  }) + HEADER + `
+  return (
+    head({
+      title: "Volunteer | Adapt To Life",
+      desc: "Help more people take part in adaptive sports. Explore volunteer roles, time commitments, and ways to contribute your skills.",
+      canonical: `${SITE}/volunteer`,
+      page: "volunteer.html",
+      card: "/images/og/volunteer-v3-athlete.jpg",
+      cardAlt:
+        "Your place on this team. Adapt To Life. A wheelchair pickleball player in a cap reaches for a shot.",
+    }) +
+    HEADER +
+    `
 
 <main>
 
@@ -268,14 +312,21 @@ ${lanes}
 
 </main>
 
-` + FOOTER + "\n\n" + NAVJS + "\n" + FORM_JS + `
+` +
+    FOOTER +
+    "\n\n" +
+    NAVJS +
+    "\n" +
+    FORM_JS +
+    `
 
 <script src="/js/subscribe.js" defer></script>
 <script src="/js/form-submission.js" defer></script>
 <script src="/js/turnstile-lazy.js" defer></script>
 </body>
 </html>
-`;
+`
+  );
 }
 
 // One submit handler, used by the role-page form and the board's
@@ -357,19 +408,22 @@ function rolePage(r) {
   const sec = (h, body) =>
     `        <section class="jd-sec reveal">\n          <h2 class="jd-h">${h}</h2>\n${body}\n        </section>`;
 
-  return head({
-    title,
-    desc: strip(r.card).slice(0, 200),
-    canonical: `${SITE}/volunteer/${r.slug}`,
-    page: `volunteer/${r.slug}.html`,
-    card: `/images/og/role-${r.slug}-v3-athlete.jpg`,
-    // The role cards became photographs on 2026-09-09 like everything else, so
-    // the alt says what is in the picture as well as which role it is.
-    cardAlt: `${strip(r.name)}, a volunteer role at Adapt To Life. A wheelchair pickleball player in a cap reaches for a shot.`,
-    // No JobPosting structured data, ever: Google's job markup is for paid
-    // employment and expects a salary signal, so it would list unpaid volunteer
-    // roles as jobs.
-  }) + HEADER + `
+  return (
+    head({
+      title,
+      desc: strip(r.card).slice(0, 200),
+      canonical: `${SITE}/volunteer/${r.slug}`,
+      page: `volunteer/${r.slug}.html`,
+      card: `/images/og/role-${r.slug}-v3-athlete.jpg`,
+      // The role cards became photographs on 2026-09-09 like everything else, so
+      // the alt says what is in the picture as well as which role it is.
+      cardAlt: `${strip(r.name)}, a volunteer role at Adapt To Life. A wheelchair pickleball player in a cap reaches for a shot.`,
+      // No JobPosting structured data, ever: Google's job markup is for paid
+      // employment and expects a salary signal, so it would list unpaid volunteer
+      // roles as jobs.
+    }) +
+    HEADER +
+    `
 
 <main>
 
@@ -448,14 +502,21 @@ ${sec("Not this", "          " + ul(r.isNot, "jd-no"))}
 
 </main>
 
-` + FOOTER + "\n\n" + NAVJS + "\n" + FORM_JS + `
+` +
+    FOOTER +
+    "\n\n" +
+    NAVJS +
+    "\n" +
+    FORM_JS +
+    `
 
 <script src="/js/subscribe.js" defer></script>
 <script src="/js/form-submission.js" defer></script>
 <script src="/js/turnstile-lazy.js" defer></script>
 </body>
 </html>
-`;
+`
+  );
 }
 
 // ---- write / check ------------------------------------------------------
@@ -463,7 +524,11 @@ ${sec("Not this", "          " + ul(r.isNot, "jd-no"))}
 const VERSIONS = assetVersions();
 const files = new Map();
 files.set(join(PUB, "volunteer.html"), versionHtml(applyIcons(boardPage()), VERSIONS));
-for (const r of ROLES) files.set(join(PUB, "volunteer", `${r.slug}.html`), versionHtml(applyIcons(rolePage(r)), VERSIONS));
+for (const r of ROLES)
+  files.set(
+    join(PUB, "volunteer", `${r.slug}.html`),
+    versionHtml(applyIcons(rolePage(r)), VERSIONS),
+  );
 
 mkdirSync(join(PUB, "volunteer"), { recursive: true });
 
@@ -471,7 +536,9 @@ mkdirSync(join(PUB, "volunteer"), { recursive: true });
 // would keep serving. Removed here so the directory can never outlive the data.
 const want = new Set(ROLES.map((r) => `${r.slug}.html`));
 const stale = existsSync(join(PUB, "volunteer"))
-  ? readdirSync(join(PUB, "volunteer")).filter((f) => f.endsWith(".html") && !want.has(f))
+  ? readdirSync(join(PUB, "volunteer")).filter(
+      (f) => f.endsWith(".html") && !want.has(f),
+    )
   : [];
 
 let drift = [];
@@ -481,17 +548,28 @@ for (const [path, body] of files) {
 }
 
 if (CHECK) {
-  const problems = [...drift, ...stale.map((f) => `public/volunteer/${f} (stale, not in the data)`)];
+  const problems = [
+    ...drift,
+    ...stale.map((f) => `public/volunteer/${f} (stale, not in the data)`),
+  ];
   if (problems.length) {
-    console.error("build-volunteer --check FAILED. Run `npm run volunteer` and commit the result.\n" +
-      problems.map((p) => "  " + p).join("\n"));
+    console.error(
+      "build-volunteer --check FAILED. Run `npm run volunteer` and commit the result.\n" +
+        problems.map((p) => "  " + p).join("\n"),
+    );
     process.exit(1);
   }
-  console.log(`build-volunteer --check ok (${files.size} files, ${ROLES.length} roles)`);
+  console.log(
+    `build-volunteer --check ok (${files.size} files, ${ROLES.length} roles)`,
+  );
 } else {
-  for (const f of stale) { rmSync(join(PUB, "volunteer", f)); console.log(`removed stale ${f}`); }
+  for (const f of stale) {
+    rmSync(join(PUB, "volunteer", f));
+    console.log(`removed stale ${f}`);
+  }
   for (const [path, body] of files) writeFileSync(path, body);
-  console.log(`wrote ${files.size} files: public/volunteer.html + ${ROLES.length} role pages` +
-    (drift.length ? `\nchanged: ${drift.length}` : "\nno changes"));
+  console.log(
+    `wrote ${files.size} files: public/volunteer.html + ${ROLES.length} role pages` +
+      (drift.length ? `\nchanged: ${drift.length}` : "\nno changes"),
+  );
 }
-

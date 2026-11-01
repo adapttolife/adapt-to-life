@@ -22,7 +22,8 @@
   var els = document.querySelectorAll("givebutter-giving-form");
   if (!els.length) return;
 
-  var ACCT = document.documentElement.getAttribute("data-gb-acct") || "7FsgcjXFnW6fabQn";
+  var ACCT =
+    document.documentElement.getAttribute("data-gb-acct") || "7FsgcjXFnW6fabQn";
   var SRC = "https://widgets.givebutter.com/latest.umd.cjs?acct=" + ACCT;
   var loading = false;
 
@@ -37,8 +38,12 @@
     document.head.appendChild(l);
   }
 
-  ["https://widgets.givebutter.com", "https://givebuttercdn.com",
-   "https://givebutter.com", "https://js.stripe.com"].forEach(preconnect);
+  [
+    "https://widgets.givebutter.com",
+    "https://givebuttercdn.com",
+    "https://givebutter.com",
+    "https://js.stripe.com",
+  ].forEach(preconnect);
 
   function load() {
     if (loading) return;
@@ -62,15 +67,24 @@
   // first frame and the form is already fetching when the donor looks at it.
   // Other pages keep the observer (widened) so the 8.5MB bundle does not
   // contend with first paint. Never a click-wall.
-  var eager = document.querySelector(".give-hero givebutter-giving-form, givebutter-giving-form[data-gb-eager]");
+  var eager = document.querySelector(
+    ".give-hero givebutter-giving-form, givebutter-giving-form[data-gb-eager]",
+  );
   if (eager) {
     afterFirstPaint(load);
   } else if ("IntersectionObserver" in window) {
-    var io = new IntersectionObserver(function (entries) {
-      for (var i = 0; i < entries.length; i++) {
-        if (entries[i].isIntersecting) { load(); io.disconnect(); return; }
-      }
-    }, { rootMargin: "1200px 0px" });
+    var io = new IntersectionObserver(
+      function (entries) {
+        for (var i = 0; i < entries.length; i++) {
+          if (entries[i].isIntersecting) {
+            load();
+            io.disconnect();
+            return;
+          }
+        }
+      },
+      { rootMargin: "1200px 0px" },
+    );
     for (var i = 0; i < els.length; i++) io.observe(els[i]);
   } else {
     load();
@@ -80,7 +94,12 @@
   // the giving panel loads immediately.
   function onIntent(e) {
     var t = e.target;
-    if (t && t.closest && t.closest("givebutter-giving-form, .give-panel, .give-split-form")) load();
+    if (
+      t &&
+      t.closest &&
+      t.closest("givebutter-giving-form, .give-panel, .give-split-form")
+    )
+      load();
   }
   document.addEventListener("pointerdown", onIntent, true);
   document.addEventListener("focusin", onIntent, true);

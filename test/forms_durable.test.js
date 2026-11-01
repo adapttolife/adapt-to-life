@@ -1,31 +1,258 @@
-import {test,beforeEach,afterEach} from 'node:test';
+import { test, beforeEach, afterEach } from "node:test";
 let originalFetch;
-beforeEach(()=>{originalFetch=globalThis.fetch;globalThis.fetch=async()=>{throw Error('Offline test forbids live network')}});
-afterEach(()=>{globalThis.fetch=originalFetch});
-import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
-import vm from 'node:vm';
-import {acceptForm,processForm,sweepForms,intakeProjection} from '../src/forms.js';
-import worker from '../src/index.js';
-import {formBindings} from './helpers/form-db.js';
-const sub={name:'Offline Julia',email:'offline@example.com',message:'Offline scenario',type:'Giving or sponsoring',source:'Sponsorship page: Teammate ($500)',tier:'Teammate',amount:500};
-function env(){return {...formBindings(),TURNSTILE_MODE:'off'};}
-function count(e,table){return e.WAIVERS_DB.sql.prepare(`SELECT count(*) n FROM ${table}`).get().n;}
-function states(e){return e.WAIVERS_DB.sql.prepare('SELECT channel,state FROM form_deliveries ORDER BY channel').all().map(r=>[r.channel,r.state]);}
-async function withFetch(fn,body){const old=globalThis.fetch;globalThis.fetch=fn;try{return await body()}finally{globalThis.fetch=old}}
+beforeEach(() => {
+  originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => {
+    throw Error("Offline test forbids live network");
+  };
+});
+afterEach(() => {
+  globalThis.fetch = originalFetch;
+});
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import vm from "node:vm";
+import { acceptForm, processForm, sweepForms, intakeProjection } from "../src/forms.js";
+import worker from "../src/index.js";
+import { formBindings } from "./helpers/form-db.js";
+const sub = {
+  name: "Offline Julia",
+  email: "offline@example.com",
+  message: "Offline scenario",
+  type: "Giving or sponsoring",
+  source: "Sponsorship page: Teammate ($500)",
+  tier: "Teammate",
+  amount: 500,
+};
+function env() {
+  return { ...formBindings(), TURNSTILE_MODE: "off" };
+}
+function count(e, table) {
+  return e.WAIVERS_DB.sql.prepare(`SELECT count(*) n FROM ${table}`).get().n;
+}
+function states(e) {
+  return e.WAIVERS_DB.sql
+    .prepare("SELECT channel,state FROM form_deliveries ORDER BY channel")
+    .all()
+    .map((r) => [r.channel, r.state]);
+}
+async function withFetch(fn, body) {
+  const old = globalThis.fetch;
+  globalThis.fetch = fn;
+  try {
+    return await body();
+  } finally {
+    globalThis.fetch = old;
+  }
+}
 
-test('durable row and all delivery work exist before acknowledgement even without ctx',async()=>{const e=env(),a=await acceptForm(e,'contact',sub);assert(a.ok);assert.equal(count(e,'form_submissions'),1);assert.equal(count(e,'form_deliveries'),2);assert(states(e).every(r=>r[1]==='pending'));});
-test('D1 write failure is not success and creates no downstream effects',async()=>{const e=env();e.WAIVERS_DB.batch=async()=>{throw Error('offline fail')};assert.equal((await acceptForm(e,'contact',sub)).status,503);assert.equal(count(e,'form_submissions'),0);});
-test('D1 batch transaction rolls back if outbox insertion fails',async()=>{const e=env();e.WAIVERS_DB.sql.exec('DROP TABLE form_deliveries');assert.equal((await acceptForm(e,'contact',sub)).status,503);assert.equal(count(e,'form_submissions'),0);});
-test('overlapping identical submissions have one source and one set of work',async()=>{const e=env(),id=crypto.randomUUID();const a=await Promise.all([acceptForm(e,'contact',sub,id),acceptForm(e,'contact',sub,id)]);assert(a.every(r=>r.ok));assert.equal(count(e,'form_submissions'),1);assert.equal(count(e,'form_deliveries'),2);});
-test('same ID with changed content cannot overwrite or disclose the original',async()=>{const e=env(),id=crypto.randomUUID();await acceptForm(e,'contact',sub,id);const a=await acceptForm(e,'contact',{...sub,message:'changed'},id);assert.equal(a.status,409);assert.equal(JSON.parse(e.WAIVERS_DB.sql.prepare('SELECT payload FROM form_submissions').get().payload).message,sub.message);});
-test('grant/volunteer sensitive story is absent from shared projection',()=>{for(const kind of ['apply','volunteer'])assert(!JSON.stringify(intakeProjection({kind},{...sub,about:'SECRET',need:'SECRET',bring:'SECRET'})).includes('SECRET'));});
-test('all independent channels complete once and double dispatch cannot double-send',async()=>{const e=env(),sent=[];e.SEND_EMAIL={send:async m=>{sent.push(m);return {messageId:'offline-mail-'+sent.length}}};const a=await acceptForm(e,'contact',sub);await Promise.all([processForm(e,a.id),processForm(e,a.id)]);await sweepForms(e);assert(states(e).every(r=>r[1]==='done'));assert.equal(sent.length,2);assert.equal(sent[0].bcc,'hello@adapttolife.org');assert.equal(e.INTAKE.sql.prepare('SELECT count(*) n FROM intake').get().n,1)});
-test('no form creates or attempts ClickUp work; every step completes with the network forbidden',async()=>{for(const kind of ['contact','apply','volunteer']){const e=env(),sent=[];e.SEND_EMAIL={send:async m=>{sent.push(m);return {messageId:'offline-mail-'+sent.length}}};const a=await acceptForm(e,kind,{...sub,roles:['Event crew']});assert(a.ok,kind);await processForm(e,a.id);assert.deepEqual(states(e).map(r=>r[0]),['intake','receipt'],kind);assert(states(e).every(r=>r[1]==='done'),kind);}});
-test('a ClickUp step queued before the retirement is closed with its reason, never owed forever',async()=>{const e=env();e.SEND_EMAIL={send:async()=>({messageId:'offline-mail'})};const a=await acceptForm(e,'contact',sub);e.WAIVERS_DB.sql.prepare("INSERT INTO form_deliveries (submission_id,channel) VALUES (?,'clickup')").run(a.id);await sweepForms(e);const row=e.WAIVERS_DB.sql.prepare("SELECT state,error FROM form_deliveries WHERE channel='clickup'").get();assert.equal(row.state,'done');assert.match(row.error,/ClickUp retired 2026-10-02/);});
-test('mail uncertainty remains visible and is never automatically resent',async()=>{const e=env();let sent=0;e.SEND_EMAIL={send:async()=>{sent++;throw Error('unknown delivery')}};const a=await acceptForm(e,'contact',sub);await processForm(e,a.id);await sweepForms(e);assert.equal(sent,2);assert(states(e).some(r=>r[0]==='receipt'&&r[1]==='review'));});
-test('crash after cross-DB mirror before stamp cannot duplicate CRM source',async()=>{const e=env();const a=await acceptForm(e,'contact',sub);await processForm(e,a.id);e.WAIVERS_DB.sql.prepare("UPDATE form_deliveries SET state='running',started_at='2000-01-01' WHERE channel='intake'").run();await sweepForms(e);assert.equal(e.INTAKE.sql.prepare('SELECT count(*) n FROM intake').get().n,1);});
-test('crash during non-idempotent write is review, never blindly re-issued',async()=>{const e=env();await acceptForm(e,'contact',sub);e.WAIVERS_DB.sql.prepare("UPDATE form_deliveries SET state='running',started_at='2000-01-01' WHERE channel='receipt'").run();await sweepForms(e);assert.deepEqual(states(e),[['intake','done'],['receipt','review']]);});
-test('public sponsor request is validated and durable with tier/note, never marketing',async()=>{const e=env();const res=await worker.fetch(new Request('https://adapttolife.org/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fn:'Offline',em:'offline@example.com',rsn:'Giving or sponsoring',msg:'Keep this note',source:'Sponsorship page: Teammate ($500)',sponsor_tier:'Teammate',sponsor_amount:'500'})}),e);assert.equal(res.status,200);const row=e.WAIVERS_DB.sql.prepare('SELECT * FROM form_submissions').get();const data=JSON.parse(row.payload);assert.equal(data.message,'Keep this note');assert.equal(data.tier,'Teammate');assert.equal(data.amount,500);assert.equal(count(e,'form_deliveries'),2);});
-test('real challenge remains mandatory when not explicitly disabled in isolated test',async()=>{const e=env();delete e.TURNSTILE_MODE;const res=await worker.fetch(new Request('https://adapttolife.org/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fn:'Offline',em:'offline@example.com',msg:'test'})}),e);assert.notEqual(res.status,200);assert.equal(count(e,'form_submissions'),0);});
-test('browser retry key survives refreshed token, changes on edits and resets on success',()=>{const form={addEventListener:(name,fn)=>form[name]=fn};const c={window:{},crypto};vm.runInNewContext(readFileSync(new URL('../public/js/form-submission.js',import.meta.url),'utf8'),c);const make=c.window.ATLFormSubmission;const a=make(form,{em:'offline@example.com',cf_token:'first'}).submission_id;assert.equal(make(form,{em:'offline@example.com',cf_token:'second'}).submission_id,a);assert.notEqual(make(form,{em:'other@example.com'}).submission_id,a);form.reset();assert.notEqual(make(form,{em:'offline@example.com'}).submission_id,a);});
+test("durable row and all delivery work exist before acknowledgement even without ctx", async () => {
+  const e = env(),
+    a = await acceptForm(e, "contact", sub);
+  assert(a.ok);
+  assert.equal(count(e, "form_submissions"), 1);
+  assert.equal(count(e, "form_deliveries"), 2);
+  assert(states(e).every((r) => r[1] === "pending"));
+});
+test("D1 write failure is not success and creates no downstream effects", async () => {
+  const e = env();
+  e.WAIVERS_DB.batch = async () => {
+    throw Error("offline fail");
+  };
+  assert.equal((await acceptForm(e, "contact", sub)).status, 503);
+  assert.equal(count(e, "form_submissions"), 0);
+});
+test("D1 batch transaction rolls back if outbox insertion fails", async () => {
+  const e = env();
+  e.WAIVERS_DB.sql.exec("DROP TABLE form_deliveries");
+  assert.equal((await acceptForm(e, "contact", sub)).status, 503);
+  assert.equal(count(e, "form_submissions"), 0);
+});
+test("overlapping identical submissions have one source and one set of work", async () => {
+  const e = env(),
+    id = crypto.randomUUID();
+  const a = await Promise.all([
+    acceptForm(e, "contact", sub, id),
+    acceptForm(e, "contact", sub, id),
+  ]);
+  assert(a.every((r) => r.ok));
+  assert.equal(count(e, "form_submissions"), 1);
+  assert.equal(count(e, "form_deliveries"), 2);
+});
+test("same ID with changed content cannot overwrite or disclose the original", async () => {
+  const e = env(),
+    id = crypto.randomUUID();
+  await acceptForm(e, "contact", sub, id);
+  const a = await acceptForm(e, "contact", { ...sub, message: "changed" }, id);
+  assert.equal(a.status, 409);
+  assert.equal(
+    JSON.parse(
+      e.WAIVERS_DB.sql.prepare("SELECT payload FROM form_submissions").get().payload,
+    ).message,
+    sub.message,
+  );
+});
+test("grant/volunteer sensitive story is absent from shared projection", () => {
+  for (const kind of ["apply", "volunteer"])
+    assert(
+      !JSON.stringify(
+        intakeProjection(
+          { kind },
+          { ...sub, about: "SECRET", need: "SECRET", bring: "SECRET" },
+        ),
+      ).includes("SECRET"),
+    );
+});
+test("all independent channels complete once and double dispatch cannot double-send", async () => {
+  const e = env(),
+    sent = [];
+  e.SEND_EMAIL = {
+    send: async (m) => {
+      sent.push(m);
+      return { messageId: "offline-mail-" + sent.length };
+    },
+  };
+  const a = await acceptForm(e, "contact", sub);
+  await Promise.all([processForm(e, a.id), processForm(e, a.id)]);
+  await sweepForms(e);
+  assert(states(e).every((r) => r[1] === "done"));
+  assert.equal(sent.length, 2);
+  assert.equal(sent[0].bcc, "hello@adapttolife.org");
+  assert.equal(e.INTAKE.sql.prepare("SELECT count(*) n FROM intake").get().n, 1);
+});
+test("no form creates or attempts ClickUp work; every step completes with the network forbidden", async () => {
+  for (const kind of ["contact", "apply", "volunteer"]) {
+    const e = env(),
+      sent = [];
+    e.SEND_EMAIL = {
+      send: async (m) => {
+        sent.push(m);
+        return { messageId: "offline-mail-" + sent.length };
+      },
+    };
+    const a = await acceptForm(e, kind, { ...sub, roles: ["Event crew"] });
+    assert(a.ok, kind);
+    await processForm(e, a.id);
+    assert.deepEqual(
+      states(e).map((r) => r[0]),
+      ["intake", "receipt"],
+      kind,
+    );
+    assert(
+      states(e).every((r) => r[1] === "done"),
+      kind,
+    );
+  }
+});
+test("a ClickUp step queued before the retirement is closed with its reason, never owed forever", async () => {
+  const e = env();
+  e.SEND_EMAIL = { send: async () => ({ messageId: "offline-mail" }) };
+  const a = await acceptForm(e, "contact", sub);
+  e.WAIVERS_DB.sql
+    .prepare("INSERT INTO form_deliveries (submission_id,channel) VALUES (?,'clickup')")
+    .run(a.id);
+  await sweepForms(e);
+  const row = e.WAIVERS_DB.sql
+    .prepare("SELECT state,error FROM form_deliveries WHERE channel='clickup'")
+    .get();
+  assert.equal(row.state, "done");
+  assert.match(row.error, /ClickUp retired 2026-10-02/);
+});
+test("mail uncertainty remains visible and is never automatically resent", async () => {
+  const e = env();
+  let sent = 0;
+  e.SEND_EMAIL = {
+    send: async () => {
+      sent++;
+      throw Error("unknown delivery");
+    },
+  };
+  const a = await acceptForm(e, "contact", sub);
+  await processForm(e, a.id);
+  await sweepForms(e);
+  assert.equal(sent, 2);
+  assert(states(e).some((r) => r[0] === "receipt" && r[1] === "review"));
+});
+test("crash after cross-DB mirror before stamp cannot duplicate CRM source", async () => {
+  const e = env();
+  const a = await acceptForm(e, "contact", sub);
+  await processForm(e, a.id);
+  e.WAIVERS_DB.sql
+    .prepare(
+      "UPDATE form_deliveries SET state='running',started_at='2000-01-01' WHERE channel='intake'",
+    )
+    .run();
+  await sweepForms(e);
+  assert.equal(e.INTAKE.sql.prepare("SELECT count(*) n FROM intake").get().n, 1);
+});
+test("crash during non-idempotent write is review, never blindly re-issued", async () => {
+  const e = env();
+  await acceptForm(e, "contact", sub);
+  e.WAIVERS_DB.sql
+    .prepare(
+      "UPDATE form_deliveries SET state='running',started_at='2000-01-01' WHERE channel='receipt'",
+    )
+    .run();
+  await sweepForms(e);
+  assert.deepEqual(states(e), [
+    ["intake", "done"],
+    ["receipt", "review"],
+  ]);
+});
+test("public sponsor request is validated and durable with tier/note, never marketing", async () => {
+  const e = env();
+  const res = await worker.fetch(
+    new Request("https://adapttolife.org/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fn: "Offline",
+        em: "offline@example.com",
+        rsn: "Giving or sponsoring",
+        msg: "Keep this note",
+        source: "Sponsorship page: Teammate ($500)",
+        sponsor_tier: "Teammate",
+        sponsor_amount: "500",
+      }),
+    }),
+    e,
+  );
+  assert.equal(res.status, 200);
+  const row = e.WAIVERS_DB.sql.prepare("SELECT * FROM form_submissions").get();
+  const data = JSON.parse(row.payload);
+  assert.equal(data.message, "Keep this note");
+  assert.equal(data.tier, "Teammate");
+  assert.equal(data.amount, 500);
+  assert.equal(count(e, "form_deliveries"), 2);
+});
+test("real challenge remains mandatory when not explicitly disabled in isolated test", async () => {
+  const e = env();
+  delete e.TURNSTILE_MODE;
+  const res = await worker.fetch(
+    new Request("https://adapttolife.org/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fn: "Offline", em: "offline@example.com", msg: "test" }),
+    }),
+    e,
+  );
+  assert.notEqual(res.status, 200);
+  assert.equal(count(e, "form_submissions"), 0);
+});
+test("browser retry key survives refreshed token, changes on edits and resets on success", () => {
+  const form = { addEventListener: (name, fn) => (form[name] = fn) };
+  const c = { window: {}, crypto };
+  vm.runInNewContext(
+    readFileSync(new URL("../public/js/form-submission.js", import.meta.url), "utf8"),
+    c,
+  );
+  const make = c.window.ATLFormSubmission;
+  const a = make(form, { em: "offline@example.com", cf_token: "first" }).submission_id;
+  assert.equal(
+    make(form, { em: "offline@example.com", cf_token: "second" }).submission_id,
+    a,
+  );
+  assert.notEqual(make(form, { em: "other@example.com" }).submission_id, a);
+  form.reset();
+  assert.notEqual(make(form, { em: "offline@example.com" }).submission_id, a);
+});

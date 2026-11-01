@@ -16,7 +16,20 @@
   "use strict";
 
   var SRC = "/data/campaigns.json";
-  var MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  var MON = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
 
   /* ---- dates: read YYYY-MM-DD as a LOCAL date, never UTC (off-by-one) ---- */
   function localDate(s) {
@@ -36,7 +49,9 @@
     if (!b) return fmtDate(a) + ", " + a.getFullYear();
     var tail = ", " + b.getFullYear();
     return a.getMonth() === b.getMonth()
-      ? (a.getDate() === b.getDate() ? fmtDate(a) : MON[a.getMonth()] + " " + a.getDate() + " to " + b.getDate()) + tail
+      ? (a.getDate() === b.getDate()
+          ? fmtDate(a)
+          : MON[a.getMonth()] + " " + a.getDate() + " to " + b.getDate()) + tail
       : fmtDate(a) + " to " + fmtDate(b) + tail;
   }
   function money(n) {
@@ -44,11 +59,17 @@
   }
 
   /* ---- drive shape ------------------------------------------------------- */
-  function driveOpens(d) { return localDate(d.opens || d.starts_at); }
-  function driveCloses(d) { return localDate(d.closes || d.ends_at); }
+  function driveOpens(d) {
+    return localDate(d.opens || d.starts_at);
+  }
+  function driveCloses(d) {
+    return localDate(d.closes || d.ends_at);
+  }
 
   function driveStatus(d) {
-    var t = today(), o = driveOpens(d), x = driveCloses(d);
+    var t = today(),
+      o = driveOpens(d),
+      x = driveCloses(d);
     if (o && t < o) return "soon";
     if (x && t > x) return "past";
     if (o || x) return "open";
@@ -89,13 +110,25 @@
     // The drive's own page is where the store link lives, so this is still one
     // tap from buying and there is still no click that does nothing.
     if (live && d.page) {
-      return { href: d.page, label: d.cta_label || "Buy popcorn", external: false };
+      return {
+        href: d.page,
+        label: d.cta_label || "Buy popcorn",
+        external: false,
+      };
     }
     if (live && d.store_url) {
-      return { href: d.store_url, label: d.cta_label || "Buy popcorn", external: true };
+      return {
+        href: d.store_url,
+        label: d.cta_label || "Buy popcorn",
+        external: true,
+      };
     }
     if (live && d.cta_url && !closed) {
-      return { href: d.cta_url, label: d.cta_label || "Take part", external: /^https?:/.test(d.cta_url) };
+      return {
+        href: d.cta_url,
+        label: d.cta_label || "Take part",
+        external: /^https?:/.test(d.cta_url),
+      };
     }
     if (d.page) {
       return { href: d.page, label: "See the drive", external: false };
@@ -107,7 +140,15 @@
      Home and /events render the same card from the same entry, so a monthly
      fundraiser or a tournament is one object in campaigns.json and nothing
      else. The calendar file lives at /cal/<slug>.ics (scripts/build-calendar.mjs). */
-  var DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  var DAYS = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
   function eventTag(d) {
     if (d.type === "tournament") return "Tournament";
     if (d.type === "fundraiser") return "Fundraiser";
@@ -117,7 +158,9 @@
   }
   /* Urgency, read from the visitor's own calendar day. */
   function countdown(d) {
-    var t = today(), o = driveOpens(d), x = driveCloses(d) || o;
+    var t = today(),
+      o = driveOpens(d),
+      x = driveCloses(d) || o;
     if (!o) return "";
     if (t >= o && t <= x) return +o === +x ? "Today" : "Happening now";
     var n = Math.round((o - t) / 864e5);
@@ -128,19 +171,25 @@
   /* Where, as one plain line: "Brick House Pickleball, Lake Forest, IL".
      Commas, not separators, so it can wrap anywhere without a stray dot. */
   function eventPlace(d) {
-    return [d.venue, [d.city, d.state].filter(Boolean).join(", ")].filter(Boolean).join(", ");
+    return [d.venue, [d.city, d.state].filter(Boolean).join(", ")]
+      .filter(Boolean)
+      .join(", ");
   }
   /* Static icon markup only. Event data never reaches innerHTML. The block
      below is written by scripts/build-icons.mjs from the symbol dictionary
      (data/icons.mjs: time, place, community, event); edit the dictionary. */
   /* icons:start */
   var ICON = {
-    time: "<svg width=\"16\" height=\"16\" class=\"evc-svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\" aria-hidden=\"true\" focusable=\"false\" data-icon=\"time\" data-style=\"regular\"><path fill=\"currentColor\" d=\"M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m0 192a88 88 0 1 1 88-88a88.1 88.1 0 0 1-88 88m64-88a8 8 0 0 1-8 8h-56a8 8 0 0 1-8-8V72a8 8 0 0 1 16 0v48h48a8 8 0 0 1 8 8\"/></svg>",
-    place: "<svg width=\"16\" height=\"16\" class=\"evc-svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\" aria-hidden=\"true\" focusable=\"false\" data-icon=\"place\" data-style=\"regular\"><path fill=\"currentColor\" d=\"M128 64a40 40 0 1 0 40 40a40 40 0 0 0-40-40m0 64a24 24 0 1 1 24-24a24 24 0 0 1-24 24m0-112a88.1 88.1 0 0 0-88 88c0 31.4 14.51 64.68 42 96.25a254.2 254.2 0 0 0 41.45 38.3a8 8 0 0 0 9.18 0a254.2 254.2 0 0 0 41.37-38.3c27.45-31.57 42-64.85 42-96.25a88.1 88.1 0 0 0-88-88m0 206c-16.53-13-72-60.75-72-118a72 72 0 0 1 144 0c0 57.23-55.47 105-72 118\"/></svg>",
-    group: "<svg width=\"16\" height=\"16\" class=\"evc-svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\" aria-hidden=\"true\" focusable=\"false\" data-icon=\"community\" data-style=\"regular\"><path fill=\"currentColor\" d=\"M244.8 150.4a8 8 0 0 1-11.2-1.6A51.6 51.6 0 0 0 192 128a8 8 0 0 1-7.37-4.89a8 8 0 0 1 0-6.22A8 8 0 0 1 192 112a24 24 0 1 0-23.24-30a8 8 0 1 1-15.5-4A40 40 0 1 1 219 117.51a67.94 67.94 0 0 1 27.43 21.68a8 8 0 0 1-1.63 11.21M190.92 212a8 8 0 1 1-13.84 8a57 57 0 0 0-98.16 0a8 8 0 1 1-13.84-8a72.06 72.06 0 0 1 33.74-29.92a48 48 0 1 1 58.36 0A72.06 72.06 0 0 1 190.92 212M128 176a32 32 0 1 0-32-32a32 32 0 0 0 32 32m-56-56a8 8 0 0 0-8-8a24 24 0 1 1 23.24-30a8 8 0 1 0 15.5-4A40 40 0 1 0 37 117.51a67.94 67.94 0 0 0-27.4 21.68a8 8 0 1 0 12.8 9.61A51.6 51.6 0 0 1 64 128a8 8 0 0 0 8-8\"/></svg>",
-    cal: "<svg width=\"16\" height=\"16\" class=\"evc-svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\" aria-hidden=\"true\" focusable=\"false\" data-icon=\"event\" data-style=\"regular\"><path fill=\"currentColor\" d=\"M208 32h-24v-8a8 8 0 0 0-16 0v8H88v-8a8 8 0 0 0-16 0v8H48a16 16 0 0 0-16 16v160a16 16 0 0 0 16 16h160a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16M72 48v8a8 8 0 0 0 16 0v-8h80v8a8 8 0 0 0 16 0v-8h24v32H48V48Zm136 160H48V96h160zm-68-76a12 12 0 1 1-12-12a12 12 0 0 1 12 12m44 0a12 12 0 1 1-12-12a12 12 0 0 1 12 12m-88 40a12 12 0 1 1-12-12a12 12 0 0 1 12 12m44 0a12 12 0 1 1-12-12a12 12 0 0 1 12 12m44 0a12 12 0 1 1-12-12a12 12 0 0 1 12 12\"/></svg>",
-    arrow: "<svg class=\"ix-svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\" aria-hidden=\"true\" focusable=\"false\" data-icon=\"arrow\" data-style=\"bold\"><path fill=\"currentColor\" d=\"m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01\"/></svg>",
-    external: "<svg class=\"ix-svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\" aria-hidden=\"true\" focusable=\"false\" data-icon=\"external\" data-style=\"bold\"><path fill=\"currentColor\" d=\"M204 64v104a12 12 0 0 1-24 0V93L72.49 200.49a12 12 0 0 1-17-17L163 76H88a12 12 0 0 1 0-24h104a12 12 0 0 1 12 12\"/></svg>"
+    time: '<svg width="16" height="16" class="evc-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="time" data-style="regular"><path fill="currentColor" d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m0 192a88 88 0 1 1 88-88a88.1 88.1 0 0 1-88 88m64-88a8 8 0 0 1-8 8h-56a8 8 0 0 1-8-8V72a8 8 0 0 1 16 0v48h48a8 8 0 0 1 8 8"/></svg>',
+    place:
+      '<svg width="16" height="16" class="evc-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="place" data-style="regular"><path fill="currentColor" d="M128 64a40 40 0 1 0 40 40a40 40 0 0 0-40-40m0 64a24 24 0 1 1 24-24a24 24 0 0 1-24 24m0-112a88.1 88.1 0 0 0-88 88c0 31.4 14.51 64.68 42 96.25a254.2 254.2 0 0 0 41.45 38.3a8 8 0 0 0 9.18 0a254.2 254.2 0 0 0 41.37-38.3c27.45-31.57 42-64.85 42-96.25a88.1 88.1 0 0 0-88-88m0 206c-16.53-13-72-60.75-72-118a72 72 0 0 1 144 0c0 57.23-55.47 105-72 118"/></svg>',
+    group:
+      '<svg width="16" height="16" class="evc-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="community" data-style="regular"><path fill="currentColor" d="M244.8 150.4a8 8 0 0 1-11.2-1.6A51.6 51.6 0 0 0 192 128a8 8 0 0 1-7.37-4.89a8 8 0 0 1 0-6.22A8 8 0 0 1 192 112a24 24 0 1 0-23.24-30a8 8 0 1 1-15.5-4A40 40 0 1 1 219 117.51a67.94 67.94 0 0 1 27.43 21.68a8 8 0 0 1-1.63 11.21M190.92 212a8 8 0 1 1-13.84 8a57 57 0 0 0-98.16 0a8 8 0 1 1-13.84-8a72.06 72.06 0 0 1 33.74-29.92a48 48 0 1 1 58.36 0A72.06 72.06 0 0 1 190.92 212M128 176a32 32 0 1 0-32-32a32 32 0 0 0 32 32m-56-56a8 8 0 0 0-8-8a24 24 0 1 1 23.24-30a8 8 0 1 0 15.5-4A40 40 0 1 0 37 117.51a67.94 67.94 0 0 0-27.4 21.68a8 8 0 1 0 12.8 9.61A51.6 51.6 0 0 1 64 128a8 8 0 0 0 8-8"/></svg>',
+    cal: '<svg width="16" height="16" class="evc-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="event" data-style="regular"><path fill="currentColor" d="M208 32h-24v-8a8 8 0 0 0-16 0v8H88v-8a8 8 0 0 0-16 0v8H48a16 16 0 0 0-16 16v160a16 16 0 0 0 16 16h160a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16M72 48v8a8 8 0 0 0 16 0v-8h80v8a8 8 0 0 0 16 0v-8h24v32H48V48Zm136 160H48V96h160zm-68-76a12 12 0 1 1-12-12a12 12 0 0 1 12 12m44 0a12 12 0 1 1-12-12a12 12 0 0 1 12 12m-88 40a12 12 0 1 1-12-12a12 12 0 0 1 12 12m44 0a12 12 0 1 1-12-12a12 12 0 0 1 12 12m44 0a12 12 0 1 1-12-12a12 12 0 0 1 12 12"/></svg>',
+    arrow:
+      '<svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg>',
+    external:
+      '<svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external" data-style="bold"><path fill="currentColor" d="M204 64v104a12 12 0 0 1-24 0V93L72.49 200.49a12 12 0 0 1-17-17L163 76H88a12 12 0 0 1 0-24h104a12 12 0 0 1 12 12"/></svg>',
   };
   /* icons:end */
   function icon(name) {
@@ -161,8 +210,11 @@
   function fact(kind, text, href) {
     var li = el("li", "evc-fact is-" + kind);
     li.appendChild(icon(kind));
-    if (href) { var a = el("a"); wire(a, href, text); li.appendChild(a); }
-    else li.appendChild(el("span", null, text));
+    if (href) {
+      var a = el("a");
+      wire(a, href, text);
+      li.appendChild(a);
+    } else li.appendChild(el("span", null, text));
     return li;
   }
   /* Every child is a direct child of the card, placed by named grid areas
@@ -175,16 +227,31 @@
     card.appendChild(box);
     if (media) {
       var fig = el("a", "evc-media");
-      fig.href = driveCta(d).href; fig.setAttribute("tabindex", "-1"); fig.setAttribute("aria-hidden", "true");
-      var img = el("img"); img.src = d.image; img.alt = ""; img.decoding = "async";
-      fig.appendChild(img); box.appendChild(fig);
+      fig.href = driveCta(d).href;
+      fig.setAttribute("tabindex", "-1");
+      fig.setAttribute("aria-hidden", "true");
+      var img = el("img");
+      img.src = d.image;
+      img.alt = "";
+      img.decoding = "async";
+      fig.appendChild(img);
+      box.appendChild(fig);
     }
-    var o = driveOpens(d), x = driveCloses(d) || o;
+    var o = driveOpens(d),
+      x = driveCloses(d) || o;
     var date = el("div", "evc-date");
     if (o) {
       date.appendChild(el("span", "evc-mon", MON[o.getMonth()]));
       date.appendChild(el("span", "evc-day", String(o.getDate())));
-      date.appendChild(el("span", "evc-sub", +o === +x ? DAYS[o.getDay()] : "to " + (x.getMonth() === o.getMonth() ? x.getDate() : fmtDate(x))));
+      date.appendChild(
+        el(
+          "span",
+          "evc-sub",
+          +o === +x
+            ? DAYS[o.getDay()]
+            : "to " + (x.getMonth() === o.getMonth() ? x.getDate() : fmtDate(x)),
+        ),
+      );
     }
     box.appendChild(date);
     var meta = el("p", "evc-meta");
@@ -194,13 +261,18 @@
     box.appendChild(meta);
     box.appendChild(el(opts.heading || "h3", "evc-name", d.name));
     var facts = el("ul", "evc-facts");
-    if (d.time_note) facts.appendChild(fact("time", d.time_note.charAt(0).toUpperCase() + d.time_note.slice(1)));
+    if (d.time_note)
+      facts.appendChild(
+        fact("time", d.time_note.charAt(0).toUpperCase() + d.time_note.slice(1)),
+      );
     if (eventPlace(d)) facts.appendChild(fact("place", eventPlace(d)));
-    if (d.group_url) facts.appendChild(fact("group", d.group_label || "Group", d.group_url));
+    if (d.group_url)
+      facts.appendChild(fact("group", d.group_label || "Group", d.group_url));
     if (facts.children.length) box.appendChild(facts);
     if (d.summary) box.appendChild(el("p", "evc-sum", d.summary));
     var acts = el("div", "evc-acts");
-    var cta = driveCta(d), go = el("a", "evc-btn is-primary");
+    var cta = driveCta(d),
+      go = el("a", "evc-btn is-primary");
     wire(go, cta.href, cta.label);
     go.appendChild(el("span", "arrow", " →"));
     acts.appendChild(go);
@@ -210,15 +282,22 @@
       atc.dataset.title = d.calendar_title || d.name;
       atc.dataset.start = start;
       atc.dataset.end = d.ends_at || d.closes || start;
-      if (d.time_start && d.time_end) { atc.dataset.timeStart = d.time_start; atc.dataset.timeEnd = d.time_end; }
+      if (d.time_start && d.time_end) {
+        atc.dataset.timeStart = d.time_start;
+        atc.dataset.timeEnd = d.time_end;
+      }
       if (d.tz) atc.dataset.tz = d.tz;
       atc.dataset.location = [d.venue, d.address].filter(Boolean).join(", ");
-      atc.dataset.details = [d.summary, d.page ? "adapttolife.org" + d.page : d.cta_url].filter(Boolean).join(" ");
+      atc.dataset.details = [d.summary, d.page ? "adapttolife.org" + d.page : d.cta_url]
+        .filter(Boolean)
+        .join(" ");
       atc.dataset.ics = d.ics || "/cal/" + d.slug + ".ics";
-      var cal = el("a", "evc-btn is-alt"); cal.href = atc.dataset.ics;
+      var cal = el("a", "evc-btn is-alt");
+      cal.href = atc.dataset.ics;
       cal.appendChild(icon("cal"));
       cal.appendChild(document.createTextNode("Add to calendar"));
-      atc.appendChild(cal); acts.appendChild(atc);
+      atc.appendChild(cal);
+      acts.appendChild(atc);
       global.ATLCalendar.mount(atc);
     }
     box.appendChild(acts);
@@ -256,10 +335,16 @@
   }
 
   function shape(raw) {
-    var campaigns = (Array.isArray(raw && raw.campaigns) ? raw.campaigns : [])
-      .filter(function (c) { return usable("campaign", c); });
-    var drives = (Array.isArray(raw && raw.drives) ? raw.drives : [])
-      .filter(function (d) { return usable("drive", d); });
+    var campaigns = (Array.isArray(raw && raw.campaigns) ? raw.campaigns : []).filter(
+      function (c) {
+        return usable("campaign", c);
+      },
+    );
+    var drives = (Array.isArray(raw && raw.drives) ? raw.drives : []).filter(
+      function (d) {
+        return usable("drive", d);
+      },
+    );
 
     return {
       campaigns: campaigns,
@@ -268,21 +353,29 @@
       drivesFor: function (slug) {
         var rank = { open: 0, soon: 1, past: 2 };
         return drives
-          .filter(function (d) { return !slug || d.campaign === slug; })
+          .filter(function (d) {
+            return !slug || d.campaign === slug;
+          })
           .sort(function (a, b) {
             var r = rank[driveStatus(a)] - rank[driveStatus(b)];
             return r || (driveOpens(a) || 0) - (driveOpens(b) || 0);
           });
       },
       current: function (slug) {
-        return this.drivesFor(slug).filter(function (d) { return driveStatus(d) !== "past"; });
+        return this.drivesFor(slug).filter(function (d) {
+          return driveStatus(d) !== "past";
+        });
       },
       /* The campaign a drive feeds, or null. A drive we only compete in feeds
          nothing and must resolve to null rather than to the nearest campaign. */
       campaignFor: function (drive) {
         if (!drive || !drive.campaign) return null;
-        return campaigns.filter(function (c) { return c.slug === drive.campaign; })[0] || null;
-      }
+        return (
+          campaigns.filter(function (c) {
+            return c.slug === drive.campaign;
+          })[0] || null
+        );
+      },
     };
   }
 
@@ -307,7 +400,11 @@
     function finish(v) {
       if (settled) return;
       settled = true;
-      try { cb(v); } catch (err) { console.error("campaign render failed:", err); }
+      try {
+        cb(v);
+      } catch (err) {
+        console.error("campaign render failed:", err);
+      }
     }
     if (typeof fetch !== "function") return finish(null);
     if (!pending) {
@@ -316,7 +413,9 @@
           if (!r.ok) throw new Error("HTTP " + r.status);
           return r.json();
         })
-        .then(function (raw) { return shape(raw); })
+        .then(function (raw) {
+          return shape(raw);
+        })
         .catch(function (err) {
           console.error("campaigns.json unavailable:", err);
           return null;
@@ -330,7 +429,9 @@
   function raised(cb) {
     if (typeof fetch !== "function") return cb(null);
     fetch("/api/raised")
-      .then(function (r) { return r.json(); })
+      .then(function (r) {
+        return r.json();
+      })
       .then(function (d) {
         cb({ raised: Number(d.raised) || 0, goal: Number(d.goal) || 0 });
       })
@@ -352,14 +453,17 @@
 
     load(function (store) {
       // Release the reserved height only ONCE THE CONTENT IS IN, not on
-       // arrival of the data. Removing it first collapsed the box to nothing
-       // for the frame between the class going and the markup landing, so the
-       // page shifted DOWN and then back UP — measured on /donate as a section
-       // going 67px -> 0 -> 67 at about 1.5s, and CLS 0.247 on the page where
-       // somebody is entering a card. The reservation exists precisely to
-       // cover this gap; releasing it early gave the jump back.
+      // arrival of the data. Removing it first collapsed the box to nothing
+      // for the frame between the class going and the markup landing, so the
+      // page shifted DOWN and then back UP — measured on /donate as a section
+      // going 67px -> 0 -> 67 at about 1.5s, and CLS 0.247 on the page where
+      // somebody is entering a card. The reservation exists precisely to
+      // cover this gap; releasing it early gave the jump back.
       var c = store && store.campaigns[0];
-      if (!c) { host.classList.remove("camp-pending"); return; }
+      if (!c) {
+        host.classList.remove("camp-pending");
+        return;
+      }
 
       var a = el("a", "camp-band" + (lifted ? " lifted" : ""));
       a.href = c.page || "/send-6";
@@ -397,7 +501,9 @@
         label.textContent = money(d.raised) + " of " + money(goal) + " raised";
         var pct = Math.max(0, Math.min(100, (d.raised / goal) * 100));
         requestAnimationFrame(function () {
-          setTimeout(function () { fill.style.width = pct.toFixed(1) + "%"; }, 140);
+          setTimeout(function () {
+            fill.style.width = pct.toFixed(1) + "%";
+          }, 140);
         });
       });
     });
@@ -433,13 +539,20 @@
     load(function (store) {
       // Same ordering rule as above: the reservation comes off after the band
       // is populated (or the section is hidden), never before.
-      if (!store) { host.classList.remove("camp-pending"); return hideSection(); }
+      if (!store) {
+        host.classList.remove("camp-pending");
+        return hideSection();
+      }
 
       var done = store.drives
         .filter(function (d) {
-          return driveStatus(d) === "past" && typeof d.raised === "number" && d.raised > 0;
+          return (
+            driveStatus(d) === "past" && typeof d.raised === "number" && d.raised > 0
+          );
         })
-        .sort(function (a, b) { return (driveCloses(b) || 0) - (driveCloses(a) || 0); });
+        .sort(function (a, b) {
+          return (driveCloses(b) || 0) - (driveCloses(a) || 0);
+        });
 
       var d = done[0];
       if (!d) return hideSection();
@@ -457,8 +570,9 @@
       left.appendChild(eyebrow);
       left.appendChild(el("span", "win-name", d.name));
       if (camp) {
-        left.appendChild(el("span", "win-sub",
-          "This drive supports " + camp.name + "."));
+        left.appendChild(
+          el("span", "win-sub", "This drive supports " + camp.name + "."),
+        );
       } else if (d.summary) {
         left.appendChild(el("span", "win-sub", d.summary));
       }
@@ -468,8 +582,9 @@
       /* Percent of goal, not "of goal" — the story is that it went well past
          it. Only claimed when a goal exists and was actually beaten. */
       if (d.goal && d.raised >= d.goal) {
-        fig.appendChild(el("span", "win-of",
-          Math.round((d.raised / d.goal) * 100) + "% of goal"));
+        fig.appendChild(
+          el("span", "win-of", Math.round((d.raised / d.goal) * 100) + "% of goal"),
+        );
       } else if (d.goal) {
         fig.appendChild(el("span", "win-of", "of a " + money(d.goal) + " goal"));
       }
@@ -503,6 +618,6 @@
     countdown: countdown,
     el: el,
     arrow: arrow,
-    wire: wire
+    wire: wire,
   };
 })(window);

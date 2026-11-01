@@ -2,84 +2,292 @@ import { useEffect, useRef, useState } from "react";
 
 const KINDS = ["organizations", "programs", "events", "grants", "blog"] as const;
 
-type Kind = typeof KINDS[number];
+type Kind = (typeof KINDS)[number];
 type Item = Record<string, unknown> & { id: string; name?: string; title?: string };
-type Detail = { label: string; fields: string[]; booleans: string[]; numbers: string[] };
-type Activity = { id: string; kind: string; summary: string; actor?: string; created_at: string };
+type Detail = {
+  label: string;
+  fields: string[];
+  booleans: string[];
+  numbers: string[];
+};
+type Activity = {
+  id: string;
+  kind: string;
+  summary: string;
+  actor?: string;
+  created_at: string;
+};
 type SelectOption = { value: string; label: string };
 
 const STATES = [
   ["", "Select a state"],
-  ["AL", "Alabama"], ["AK", "Alaska"], ["AZ", "Arizona"], ["AR", "Arkansas"],
-  ["CA", "California"], ["CO", "Colorado"], ["CT", "Connecticut"], ["DE", "Delaware"],
-  ["FL", "Florida"], ["GA", "Georgia"], ["HI", "Hawaii"], ["ID", "Idaho"],
-  ["IL", "Illinois"], ["IN", "Indiana"], ["IA", "Iowa"], ["KS", "Kansas"],
-  ["KY", "Kentucky"], ["LA", "Louisiana"], ["ME", "Maine"], ["MD", "Maryland"],
-  ["MA", "Massachusetts"], ["MI", "Michigan"], ["MN", "Minnesota"], ["MS", "Mississippi"],
-  ["MO", "Missouri"], ["MT", "Montana"], ["NE", "Nebraska"], ["NV", "Nevada"],
-  ["NH", "New Hampshire"], ["NJ", "New Jersey"], ["NM", "New Mexico"], ["NY", "New York"],
-  ["NC", "North Carolina"], ["ND", "North Dakota"], ["OH", "Ohio"], ["OK", "Oklahoma"],
-  ["OR", "Oregon"], ["PA", "Pennsylvania"], ["RI", "Rhode Island"], ["SC", "South Carolina"],
-  ["SD", "South Dakota"], ["TN", "Tennessee"], ["TX", "Texas"], ["UT", "Utah"],
-  ["VT", "Vermont"], ["VA", "Virginia"], ["WA", "Washington"], ["WV", "West Virginia"],
-  ["WI", "Wisconsin"], ["WY", "Wyoming"], ["DC", "District of Columbia"],
+  ["AL", "Alabama"],
+  ["AK", "Alaska"],
+  ["AZ", "Arizona"],
+  ["AR", "Arkansas"],
+  ["CA", "California"],
+  ["CO", "Colorado"],
+  ["CT", "Connecticut"],
+  ["DE", "Delaware"],
+  ["FL", "Florida"],
+  ["GA", "Georgia"],
+  ["HI", "Hawaii"],
+  ["ID", "Idaho"],
+  ["IL", "Illinois"],
+  ["IN", "Indiana"],
+  ["IA", "Iowa"],
+  ["KS", "Kansas"],
+  ["KY", "Kentucky"],
+  ["LA", "Louisiana"],
+  ["ME", "Maine"],
+  ["MD", "Maryland"],
+  ["MA", "Massachusetts"],
+  ["MI", "Michigan"],
+  ["MN", "Minnesota"],
+  ["MS", "Mississippi"],
+  ["MO", "Missouri"],
+  ["MT", "Montana"],
+  ["NE", "Nebraska"],
+  ["NV", "Nevada"],
+  ["NH", "New Hampshire"],
+  ["NJ", "New Jersey"],
+  ["NM", "New Mexico"],
+  ["NY", "New York"],
+  ["NC", "North Carolina"],
+  ["ND", "North Dakota"],
+  ["OH", "Ohio"],
+  ["OK", "Oklahoma"],
+  ["OR", "Oregon"],
+  ["PA", "Pennsylvania"],
+  ["RI", "Rhode Island"],
+  ["SC", "South Carolina"],
+  ["SD", "South Dakota"],
+  ["TN", "Tennessee"],
+  ["TX", "Texas"],
+  ["UT", "Utah"],
+  ["VT", "Vermont"],
+  ["VA", "Virginia"],
+  ["WA", "Washington"],
+  ["WV", "West Virginia"],
+  ["WI", "Wisconsin"],
+  ["WY", "Wyoming"],
+  ["DC", "District of Columbia"],
 ];
 
 const SPORTS = [
-  ["tennis", "Tennis"], ["soccer", "Soccer"], ["baseball", "Baseball"],
-  ["equestrian", "Horseback riding"], ["basketball", "Basketball"],
-  ["rowing", "Rowing and paddling"], ["sledhockey", "Sled hockey"], ["skiing", "Skiing"],
-  ["swimming", "Swimming"], ["golf", "Golf"], ["cycling", "Cycling"], ["archery", "Archery"],
-  ["sailing", "Sailing"], ["trackfield", "Track and field"], ["fencing", "Fencing"],
-  ["climbing", "Climbing"], ["rugby", "Rugby"], ["triathlon", "Triathlon"],
-  ["martialarts", "Martial arts"], ["running", "Running"], ["pickleball", "Pickleball"],
-  ["amputeesports", "Amputee sports"], ["waterskiing", "Water skiing"],
-  ["goalball", "Goalball"], ["volleyball", "Volleyball"], ["football", "Football"],
-  ["curling", "Curling"], ["beepbaseball", "Beep baseball"], ["boccia", "Boccia"],
-  ["nordicskiing", "Nordic skiing"], ["shooting", "Shooting sports"],
-  ["veteran-meetup", "Veteran meetups"], ["art-therapy", "Art therapy"],
-  ["softball", "Softball"], ["lacrosse", "Lacrosse"], ["handball", "Handball"],
-  ["powerlifting", "Powerlifting"], ["dance", "Wheelchair dance"],
+  ["tennis", "Tennis"],
+  ["soccer", "Soccer"],
+  ["baseball", "Baseball"],
+  ["equestrian", "Horseback riding"],
+  ["basketball", "Basketball"],
+  ["rowing", "Rowing and paddling"],
+  ["sledhockey", "Sled hockey"],
+  ["skiing", "Skiing"],
+  ["swimming", "Swimming"],
+  ["golf", "Golf"],
+  ["cycling", "Cycling"],
+  ["archery", "Archery"],
+  ["sailing", "Sailing"],
+  ["trackfield", "Track and field"],
+  ["fencing", "Fencing"],
+  ["climbing", "Climbing"],
+  ["rugby", "Rugby"],
+  ["triathlon", "Triathlon"],
+  ["martialarts", "Martial arts"],
+  ["running", "Running"],
+  ["pickleball", "Pickleball"],
+  ["amputeesports", "Amputee sports"],
+  ["waterskiing", "Water skiing"],
+  ["goalball", "Goalball"],
+  ["volleyball", "Volleyball"],
+  ["football", "Football"],
+  ["curling", "Curling"],
+  ["beepbaseball", "Beep baseball"],
+  ["boccia", "Boccia"],
+  ["nordicskiing", "Nordic skiing"],
+  ["shooting", "Shooting sports"],
+  ["veteran-meetup", "Veteran meetups"],
+  ["art-therapy", "Art therapy"],
+  ["softball", "Softball"],
+  ["lacrosse", "Lacrosse"],
+  ["handball", "Handball"],
+  ["powerlifting", "Powerlifting"],
+  ["dance", "Wheelchair dance"],
 ];
 
 const DETAILS: Record<Kind, Detail> = {
   organizations: {
     label: "Organizations",
-    fields: ["name", "org_type", "website_url", "email", "claim_email", "phone", "city", "state", "zip", "address", "country", "lat", "lng", "geo_precision", "description", "cost_note", "sports_json", "equipment_provided", "ages", "data_quality_rating", "primary_data_source", "verification_status", "status", "is_public", "publicity_consent", "address_publicity_consent", "last_ok_at"],
-    booleans: ["equipment_provided", "is_public", "publicity_consent", "address_publicity_consent"],
+    fields: [
+      "name",
+      "org_type",
+      "website_url",
+      "email",
+      "claim_email",
+      "phone",
+      "city",
+      "state",
+      "zip",
+      "address",
+      "country",
+      "lat",
+      "lng",
+      "geo_precision",
+      "description",
+      "cost_note",
+      "sports_json",
+      "equipment_provided",
+      "ages",
+      "data_quality_rating",
+      "primary_data_source",
+      "verification_status",
+      "status",
+      "is_public",
+      "publicity_consent",
+      "address_publicity_consent",
+      "last_ok_at",
+    ],
+    booleans: [
+      "equipment_provided",
+      "is_public",
+      "publicity_consent",
+      "address_publicity_consent",
+    ],
     numbers: ["lat", "lng"],
   },
   programs: {
     label: "Programs",
-    fields: ["organization_id", "name", "sports_json", "website_url", "email", "phone", "city", "state", "zip", "address", "country", "lat", "lng", "geo_precision", "description", "cost_note", "equipment_provided", "ages", "verification_status", "verification_method", "status", "is_public", "publicity_consent", "address_publicity_consent", "last_ok_at", "listing", "seasons_json", "usual_month", "first_year", "slug"],
-    booleans: ["equipment_provided", "is_public", "publicity_consent", "address_publicity_consent"],
+    fields: [
+      "organization_id",
+      "name",
+      "sports_json",
+      "website_url",
+      "email",
+      "phone",
+      "city",
+      "state",
+      "zip",
+      "address",
+      "country",
+      "lat",
+      "lng",
+      "geo_precision",
+      "description",
+      "cost_note",
+      "equipment_provided",
+      "ages",
+      "verification_status",
+      "verification_method",
+      "status",
+      "is_public",
+      "publicity_consent",
+      "address_publicity_consent",
+      "last_ok_at",
+      "listing",
+      "seasons_json",
+      "usual_month",
+      "first_year",
+      "slug",
+    ],
+    booleans: [
+      "equipment_provided",
+      "is_public",
+      "publicity_consent",
+      "address_publicity_consent",
+    ],
     numbers: ["lat", "lng", "usual_month", "first_year"],
   },
   events: {
     label: "Events",
-    fields: ["title", "description", "org_id", "program_id", "sport_key", "venue", "city", "state", "url", "recap_url", "starts_at", "ends_at", "all_day", "status", "is_public", "source"],
+    fields: [
+      "title",
+      "description",
+      "org_id",
+      "program_id",
+      "sport_key",
+      "venue",
+      "city",
+      "state",
+      "url",
+      "recap_url",
+      "starts_at",
+      "ends_at",
+      "all_day",
+      "status",
+      "is_public",
+      "source",
+    ],
     booleans: ["all_day", "is_public"],
     numbers: [],
   },
   grants: {
     label: "Grants",
-    fields: ["name", "source", "type", "audience", "amount_min_cents", "amount_max_cents", "amount_display", "deadline_display", "deadline_next", "description", "eligibility_criteria", "how_to_apply", "application_url", "source_url", "email", "phone", "sports_json", "is_open", "is_renewable", "is_public", "status"],
+    fields: [
+      "name",
+      "source",
+      "type",
+      "audience",
+      "amount_min_cents",
+      "amount_max_cents",
+      "amount_display",
+      "deadline_display",
+      "deadline_next",
+      "description",
+      "eligibility_criteria",
+      "how_to_apply",
+      "application_url",
+      "source_url",
+      "email",
+      "phone",
+      "sports_json",
+      "is_open",
+      "is_renewable",
+      "is_public",
+      "status",
+    ],
     booleans: ["is_open", "is_renewable", "is_public"],
     numbers: ["amount_min_cents", "amount_max_cents"],
   },
   blog: {
     label: "Blog posts",
-    fields: ["title", "slug", "subtitle", "publish_at", "thumbnail_data_url", "content_markdown", "status", "is_public"],
+    fields: [
+      "title",
+      "slug",
+      "subtitle",
+      "publish_at",
+      "thumbnail_data_url",
+      "content_markdown",
+      "status",
+      "is_public",
+    ],
     booleans: ["is_public"],
     numbers: [],
   },
 };
 
-const AREAS = new Set(["description", "cost_note", "eligibility_criteria", "how_to_apply", "subtitle", "content_markdown", "seasons_json"]);
+const AREAS = new Set([
+  "description",
+  "cost_note",
+  "eligibility_criteria",
+  "how_to_apply",
+  "subtitle",
+  "content_markdown",
+  "seasons_json",
+]);
 const DATE_TIMES = new Set(["starts_at", "ends_at", "last_ok_at", "publish_at"]);
 const MONTHS = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -108,8 +316,12 @@ function SearchSelect({
   placeholder?: string;
 }) {
   const initial = multiple
-    ? Array.isArray(value) ? value : []
-    : Array.isArray(value) ? value[0] || "" : value;
+    ? Array.isArray(value)
+      ? value
+      : []
+    : Array.isArray(value)
+      ? value[0] || ""
+      : value;
   const [selected, setSelected] = useState<string | string[]>(initial);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -155,12 +367,48 @@ function SearchSelect({
 
   return (
     <div className="search-select" ref={root}>
-      {selectedValues.filter(Boolean).map((entry) => <input key={entry} name={name} type="hidden" value={entry} />)}
-      <button className="search-select-trigger" type="button" aria-expanded={open} onClick={() => setOpen((current) => !current)}>
+      {selectedValues.filter(Boolean).map((entry) => (
+        <input key={entry} name={name} type="hidden" value={entry} />
+      ))}
+      <button
+        className="search-select-trigger"
+        type="button"
+        aria-expanded={open}
+        onClick={() => setOpen((current) => !current)}
+      >
         <span>{selectedLabels.length ? selectedLabels.join(", ") : placeholder}</span>
         <span aria-hidden="true">⌄</span>
       </button>
-      {open && <div className="search-select-menu"><input className="search-select-input" autoFocus value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search options" />{visible.length ? <div className="search-select-options">{visible.map((option) => <button className={selectedValues.includes(option.value) ? "is-selected" : ""} key={option.value} type="button" onClick={() => choose(option.value)}><span>{option.label}</span>{selectedValues.includes(option.value) && <span aria-hidden="true">✓</span>}</button>)}</div> : <p>No matching options.</p>}</div>}
+      {open && (
+        <div className="search-select-menu">
+          <input
+            className="search-select-input"
+            autoFocus
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search options"
+          />
+          {visible.length ? (
+            <div className="search-select-options">
+              {visible.map((option) => (
+                <button
+                  className={selectedValues.includes(option.value) ? "is-selected" : ""}
+                  key={option.value}
+                  type="button"
+                  onClick={() => choose(option.value)}
+                >
+                  <span>{option.label}</span>
+                  {selectedValues.includes(option.value) && (
+                    <span aria-hidden="true">✓</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <p>No matching options.</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -205,11 +453,7 @@ function numericValue(value: string, decimal = false) {
 
 function fuzzyMatches(value: string, query: string) {
   const name = value.toLocaleLowerCase();
-  const terms = query
-    .toLocaleLowerCase()
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
+  const terms = query.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
 
   return terms.every((term) => {
     if (name.includes(term)) return true;
@@ -246,7 +490,8 @@ function itemValue(item: Item, field: string) {
 function selectedSports(item: Item) {
   try {
     const values = JSON.parse(String(item.sports_json || ""));
-    if (Array.isArray(values)) return values.filter((value) => typeof value === "string");
+    if (Array.isArray(values))
+      return values.filter((value) => typeof value === "string");
   } catch {
     // The legacy single-sport columns below cover malformed or missing JSON.
   }
@@ -258,7 +503,9 @@ function selectedSeasons(item: Item) {
   try {
     const values = JSON.parse(String(item.seasons_json || ""));
     return Array.isArray(values)
-      ? values.filter((value) => ["spring", "summer", "fall", "winter"].includes(String(value)))
+      ? values.filter((value) =>
+          ["spring", "summer", "fall", "winter"].includes(String(value)),
+        )
       : [];
   } catch {
     return [];
@@ -270,17 +517,42 @@ function selectedStateName(value: string) {
 }
 
 function selectOptions(field: string, current: string, kind: Kind) {
-  const options = field === "state"
-    ? STATES
-    : field === "geo_precision"
-      ? [["", "Not set"], ["address", "Address"], ["zip", "ZIP"], ["city", "City"], ["state", "State"]]
-      : field === "data_quality_rating"
-        ? [["", "Not set"], ["high", "High"], ["medium", "Medium"], ["low", "Low"]]
-        : field === "verification_status"
-          ? [["", "Not set"], ["verified", "Verified"], ["pending", "Pending"], ["unverified", "Unverified"]]
-          : kind === "events"
-            ? [["scheduled", "Scheduled"], ["cancelled", "Cancelled"]]
-            : [["", "Not set"], ["active", "Active"], ["inactive", "Inactive"], ["archived", "Archived"]];
+  const options =
+    field === "state"
+      ? STATES
+      : field === "geo_precision"
+        ? [
+            ["", "Not set"],
+            ["address", "Address"],
+            ["zip", "ZIP"],
+            ["city", "City"],
+            ["state", "State"],
+          ]
+        : field === "data_quality_rating"
+          ? [
+              ["", "Not set"],
+              ["high", "High"],
+              ["medium", "Medium"],
+              ["low", "Low"],
+            ]
+          : field === "verification_status"
+            ? [
+                ["", "Not set"],
+                ["verified", "Verified"],
+                ["pending", "Pending"],
+                ["unverified", "Unverified"],
+              ]
+            : kind === "events"
+              ? [
+                  ["scheduled", "Scheduled"],
+                  ["cancelled", "Cancelled"],
+                ]
+              : [
+                  ["", "Not set"],
+                  ["active", "Active"],
+                  ["inactive", "Inactive"],
+                  ["archived", "Archived"],
+                ];
 
   if (current && !options.some(([value]) => value === current)) {
     options.unshift([current, current]);
@@ -290,7 +562,9 @@ function selectOptions(field: string, current: string, kind: Kind) {
 }
 
 function detailRoute() {
-  const match = location.pathname.match(/^\/admin\/directory\/(organizations|programs|events|grants|blog)\/(new|[0-9a-f-]{36})$/i);
+  const match = location.pathname.match(
+    /^\/admin\/directory\/(organizations|programs|events|grants|blog)\/(new|[0-9a-f-]{36})$/i,
+  );
   return match ? { kind: match[1].toLowerCase() as Kind, id: match[2] } : null;
 }
 
@@ -340,20 +614,26 @@ function fieldPlaceholder(field: string) {
 }
 
 function markdownPreview(value: string) {
-  const inline = (text: string) => text
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-    .replace(/\*(.+?)\*/g, "<em>$1</em>")
-    .replace(/`(.+?)`/g, "<code>$1</code>")
-    .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" rel="noreferrer" target="_blank">$1</a>');
+  const inline = (text: string) =>
+    text
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/\*(.+?)\*/g, "<em>$1</em>")
+      .replace(/`(.+?)`/g, "<code>$1</code>")
+      .replace(
+        /\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,
+        '<a href="$2" rel="noreferrer" target="_blank">$1</a>',
+      );
   const blocks: string[] = [];
   let list: "ul" | "ol" | "" = "";
   let listItems: string[] = [];
   const flushList = () => {
     if (!list) return;
-    blocks.push(`<${list}>${listItems.map((item) => `<li>${inline(item)}</li>`).join("")}</${list}>`);
+    blocks.push(
+      `<${list}>${listItems.map((item) => `<li>${inline(item)}</li>`).join("")}</${list}>`,
+    );
     list = "";
     listItems = [];
   };
@@ -404,21 +684,57 @@ function MarkdownEditor({ value }: { value: string }) {
     setContent(next);
     requestAnimationFrame(() => {
       textarea.focus();
-      textarea.setSelectionRange(start + prefix.length, start + prefix.length + selected.length);
+      textarea.setSelectionRange(
+        start + prefix.length,
+        start + prefix.length + selected.length,
+      );
     });
   };
 
   return (
     <div className={`markdown-editor${preview ? " has-preview" : ""}`}>
       <div className="markdown-tools">
-        {[['**', '**', 'Bold'], ['*', '*', 'Italic'], ['# ', '', 'Heading'], ['- ', '', 'Unordered list'], ['1. ', '', 'Ordered list'], ['> ', '', 'Quote']].map(([prefix, suffix, label]) => (
-          <button className="btn btn--line" key={label} onClick={() => addMarkdown(prefix, suffix)} type="button">{label}</button>
+        {[
+          ["**", "**", "Bold"],
+          ["*", "*", "Italic"],
+          ["# ", "", "Heading"],
+          ["- ", "", "Unordered list"],
+          ["1. ", "", "Ordered list"],
+          ["> ", "", "Quote"],
+        ].map(([prefix, suffix, label]) => (
+          <button
+            className="btn btn--line"
+            key={label}
+            onClick={() => addMarkdown(prefix, suffix)}
+            type="button"
+          >
+            {label}
+          </button>
         ))}
-        <button className="btn btn--line" onClick={() => setPreview((shown) => !shown)} type="button">{preview ? "Hide preview" : "Show preview"}</button>
+        <button
+          className="btn btn--line"
+          onClick={() => setPreview((shown) => !shown)}
+          type="button"
+        >
+          {preview ? "Hide preview" : "Show preview"}
+        </button>
       </div>
       <div className="markdown-panes">
-        <textarea ref={input} name="content_markdown" rows={18} value={content} onChange={(event) => setContent(event.target.value)} placeholder="Write the post in Markdown" />
-        {preview && <article className="markdown-preview" aria-label="Live Markdown preview" dangerouslySetInnerHTML={{ __html: markdownPreview(content) }} />}
+        <textarea
+          ref={input}
+          name="content_markdown"
+          rows={18}
+          value={content}
+          onChange={(event) => setContent(event.target.value)}
+          placeholder="Write the post in Markdown"
+        />
+        {preview && (
+          <article
+            className="markdown-preview"
+            aria-label="Live Markdown preview"
+            dangerouslySetInnerHTML={{ __html: markdownPreview(content) }}
+          />
+        )}
       </div>
     </div>
   );
@@ -451,13 +767,31 @@ function ThumbnailUploader({ value }: { value: string }) {
     <div className="thumbnail-uploader">
       <input name="thumbnail_data_url" type="hidden" value={thumbnail} />
       <label className="btn btn--line thumbnail-upload-button">
-        <input accept="image/avif,image/gif,image/jpeg,image/png,image/webp" onChange={chooseImage} type="file" />
+        <input
+          accept="image/avif,image/gif,image/jpeg,image/png,image/webp"
+          onChange={chooseImage}
+          type="file"
+        />
         <span>{thumbnail ? "Replace image" : "Choose image"}</span>
       </label>
-      {thumbnail && <button className="btn btn--line" onClick={() => setThumbnail("")} type="button">Remove image</button>}
+      {thumbnail && (
+        <button
+          className="btn btn--line"
+          onClick={() => setThumbnail("")}
+          type="button"
+        >
+          Remove image
+        </button>
+      )}
       <small>PNG, JPG, GIF, WebP, or AVIF.</small>
-      {error && <p className="thumbnail-error" role="alert">{error}</p>}
-      {thumbnail && <img alt="Thumbnail preview" className="thumbnail-preview" src={thumbnail} />}
+      {error && (
+        <p className="thumbnail-error" role="alert">
+          {error}
+        </p>
+      )}
+      {thumbnail && (
+        <img alt="Thumbnail preview" className="thumbnail-preview" src={thumbnail} />
+      )}
     </div>
   );
 }
@@ -531,7 +865,10 @@ export function Directory({ onFail }: { onFail: () => void }) {
     request(`/admin-data/${kind}`)
       .then((body) => {
         setItems(body.items || []);
-        setCounts((currentCounts) => ({ ...currentCounts, [kind]: Number(body.total || 0) }));
+        setCounts((currentCounts) => ({
+          ...currentCounts,
+          [kind]: Number(body.total || 0),
+        }));
       })
       .catch((error) => handleError(error, "Could not load the directory."))
       .finally(() => setLoading(false));
@@ -539,17 +876,20 @@ export function Directory({ onFail }: { onFail: () => void }) {
 
   useEffect(() => {
     if (current) return;
-    Promise.all(KINDS.map(async (entry) => {
-      const body = await request(`/admin-data/${entry}?counts=1`);
-      return [entry, Number(body.total || 0)] as const;
-    }))
+    Promise.all(
+      KINDS.map(async (entry) => {
+        const body = await request(`/admin-data/${entry}?counts=1`);
+        return [entry, Number(body.total || 0)] as const;
+      }),
+    )
       .then((entries) => setCounts(Object.fromEntries(entries) as Record<Kind, number>))
       .catch((error) => handleError(error, "Could not load directory totals."));
   }, [current]);
 
   useEffect(() => {
     if (!operations) return;
-    const path = operations === "queue" ? "/admin-data/queue" : "/admin-data/beta-testers";
+    const path =
+      operations === "queue" ? "/admin-data/queue" : "/admin-data/beta-testers";
     request(path)
       .then((body) => {
         if (operations === "queue") setQueueItems(body.items || []);
@@ -559,10 +899,7 @@ export function Directory({ onFail }: { onFail: () => void }) {
   }, [operations]);
 
   useEffect(() => {
-    Promise.all([
-      request("/admin-data/queue"),
-      request("/admin-data/beta-testers"),
-    ])
+    Promise.all([request("/admin-data/queue"), request("/admin-data/beta-testers")])
       .then(([queue, beta]) => {
         setQueueItems(queue.items || []);
         setBetaTesters(beta.items || []);
@@ -598,7 +935,9 @@ export function Directory({ onFail }: { onFail: () => void }) {
     if (current.kind === "organizations" && current.id !== "new") {
       request(`/admin-data/organizations/${current.id}/activity`)
         .then((body) => setActivity(body.items || []))
-        .catch((error) => handleError(error, "Could not load this organization's activity."));
+        .catch((error) =>
+          handleError(error, "Could not load this organization's activity."),
+        );
     } else {
       setActivity([]);
     }
@@ -614,7 +953,6 @@ export function Directory({ onFail }: { onFail: () => void }) {
         .then((body) => setProgramOptions(body.items || []))
         .catch((error) => handleError(error, "Could not load programs."));
     }
-
   }, [current]);
 
   const save = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -626,7 +964,10 @@ export function Directory({ onFail }: { onFail: () => void }) {
 
     if (["organizations", "programs"].includes(current.kind)) {
       const sports = form.getAll("sports_json").map(String).filter(Boolean);
-      const primary = sports.length === 1 ? SPORTS.find(([key]) => key === sports[0]) : ["multi", "Multi-sport"];
+      const primary =
+        sports.length === 1
+          ? SPORTS.find(([key]) => key === sports[0])
+          : ["multi", "Multi-sport"];
       data.sports_json = JSON.stringify(sports);
       data.sport_key = primary?.[0] || "";
       data.sport = primary?.[1] || "";
@@ -674,10 +1015,13 @@ export function Directory({ onFail }: { onFail: () => void }) {
 
     try {
       const creating = current.id === "new";
-      const body = await request(`/admin-data/${current.kind}${creating ? "" : `/${current.id}`}`, {
-        method: creating ? "POST" : "PATCH",
-        body: JSON.stringify(data),
-      });
+      const body = await request(
+        `/admin-data/${current.kind}${creating ? "" : `/${current.id}`}`,
+        {
+          method: creating ? "POST" : "PATCH",
+          body: JSON.stringify(data),
+        },
+      );
       setItem(body.item);
       if (creating) {
         go(`/admin/directory/${current.kind}/${body.item.id}`);
@@ -763,7 +1107,9 @@ export function Directory({ onFail }: { onFail: () => void }) {
     if (!selectedQueueItem) return;
     try {
       await request(`/admin-data/queue/${selectedQueueItem.id}`, { method: "POST" });
-      setQueueItems((items) => items.filter((entry) => entry.id !== selectedQueueItem.id));
+      setQueueItems((items) =>
+        items.filter((entry) => entry.id !== selectedQueueItem.id),
+      );
       setSelectedQueueItem(null);
       setMessage("Submission accepted and published.");
     } catch (error) {
@@ -772,12 +1118,113 @@ export function Directory({ onFail }: { onFail: () => void }) {
   };
 
   if (operations === "queue") {
-    if (selectedQueueItem) return <section className="directory-page"><button className="back-link" onClick={() => setSelectedQueueItem(null)}>← Submission queue</button><h2>{String(selectedQueueItem.title || "Submission")}</h2><p className="sub">Review the submitted details before accepting and publishing.</p><section className="queue-editor"><dl>{Object.entries((selectedQueueItem.payload || {}) as Record<string, unknown>).map(([key, value]) => <><dt key={`${key}-term`}>{fieldLabel(key)}</dt><dd key={`${key}-value`}>{String(value)}</dd></>)}</dl><p className="directory-message" role="status">{message}</p><button className="btn" onClick={acceptQueueItem} type="button">Accept and publish</button></section></section>;
-    return <section className="directory-page"><button className="back-link" onClick={() => setOperations(null)}>← ASNM directory</button><h2>Submission Queue</h2><p className="sub">New organization, program, event, and listing submissions awaiting review.</p><div className="directory-list queue-grid">{queueItems.length ? queueItems.map((entry) => <button className="directory-item" key={String(entry.id)} onClick={() => setSelectedQueueItem(entry)}><span><b>{String(entry.title || "Submission")}</b><small>{titleCase(entry.kind)} · {String(entry.contact_email || "No contact email")}</small></span><span aria-hidden="true">→</span></button>) : <p>No submissions need review.</p>}</div></section>;
+    if (selectedQueueItem)
+      return (
+        <section className="directory-page">
+          <button className="back-link" onClick={() => setSelectedQueueItem(null)}>
+            ← Submission queue
+          </button>
+          <h2>{String(selectedQueueItem.title || "Submission")}</h2>
+          <p className="sub">
+            Review the submitted details before accepting and publishing.
+          </p>
+          <section className="queue-editor">
+            <dl>
+              {Object.entries(
+                (selectedQueueItem.payload || {}) as Record<string, unknown>,
+              ).map(([key, value]) => (
+                <>
+                  <dt key={`${key}-term`}>{fieldLabel(key)}</dt>
+                  <dd key={`${key}-value`}>{String(value)}</dd>
+                </>
+              ))}
+            </dl>
+            <p className="directory-message" role="status">
+              {message}
+            </p>
+            <button className="btn" onClick={acceptQueueItem} type="button">
+              Accept and publish
+            </button>
+          </section>
+        </section>
+      );
+    return (
+      <section className="directory-page">
+        <button className="back-link" onClick={() => setOperations(null)}>
+          ← ASNM directory
+        </button>
+        <h2>Submission Queue</h2>
+        <p className="sub">
+          New organization, program, event, and listing submissions awaiting review.
+        </p>
+        <div className="directory-list queue-grid">
+          {queueItems.length ? (
+            queueItems.map((entry) => (
+              <button
+                className="directory-item"
+                key={String(entry.id)}
+                onClick={() => setSelectedQueueItem(entry)}
+              >
+                <span>
+                  <b>{String(entry.title || "Submission")}</b>
+                  <small>
+                    {titleCase(entry.kind)} ·{" "}
+                    {String(entry.contact_email || "No contact email")}
+                  </small>
+                </span>
+                <span aria-hidden="true">→</span>
+              </button>
+            ))
+          ) : (
+            <p>No submissions need review.</p>
+          )}
+        </div>
+      </section>
+    );
   }
 
   if (operations === "beta") {
-    return <section className="directory-page"><button className="back-link" onClick={() => setOperations(null)}>← ASNM directory</button><h2>Beta Testers</h2><p className="sub">Approved emails can unlock the production beta while prelaunch mode is enabled.</p><form className="beta-tester-form" onSubmit={saveBetaTester}><label className="form-field"><span>Email Address</span><input name="email" type="email" placeholder="name@example.com" required /></label><button className="btn" type="submit">Add beta tester</button></form><div className="directory-list">{betaTesters.map((tester) => <div className="beta-tester" key={String(tester.email)}><span><b>{String(tester.email)}</b><small>{Number(tester.enabled) ? "Enabled" : "Disabled"}</small></span><button className="btn btn--line" onClick={() => toggleBetaTester(tester)} type="button">{Number(tester.enabled) ? "Disable" : "Enable"}</button></div>)}</div><p className="directory-message" role="status">{message}</p></section>;
+    return (
+      <section className="directory-page">
+        <button className="back-link" onClick={() => setOperations(null)}>
+          ← ASNM directory
+        </button>
+        <h2>Beta Testers</h2>
+        <p className="sub">
+          Approved emails can unlock the production beta while prelaunch mode is
+          enabled.
+        </p>
+        <form className="beta-tester-form" onSubmit={saveBetaTester}>
+          <label className="form-field">
+            <span>Email Address</span>
+            <input name="email" type="email" placeholder="name@example.com" required />
+          </label>
+          <button className="btn" type="submit">
+            Add beta tester
+          </button>
+        </form>
+        <div className="directory-list">
+          {betaTesters.map((tester) => (
+            <div className="beta-tester" key={String(tester.email)}>
+              <span>
+                <b>{String(tester.email)}</b>
+                <small>{Number(tester.enabled) ? "Enabled" : "Disabled"}</small>
+              </span>
+              <button
+                className="btn btn--line"
+                onClick={() => toggleBetaTester(tester)}
+                type="button"
+              >
+                {Number(tester.enabled) ? "Disable" : "Enable"}
+              </button>
+            </div>
+          ))}
+        </div>
+        <p className="directory-message" role="status">
+          {message}
+        </p>
+      </section>
+    );
   }
 
   if (current) {
@@ -788,145 +1235,608 @@ export function Directory({ onFail }: { onFail: () => void }) {
         <button className="back-link" onClick={() => go("/admin/directory")}>
           ← {detail.label}
         </button>
-        <h2>{creating ? `Add ${detail.label.slice(0, -1)}` : item ? String(item.name || item.title || "Edit item") : "Edit item"}</h2>
+        <h2>
+          {creating
+            ? `Add ${detail.label.slice(0, -1)}`
+            : item
+              ? String(item.name || item.title || "Edit item")
+              : "Edit item"}
+        </h2>
         {item && (
           <form className="directory-form" onSubmit={save}>
             {detail.fields.map((field) => {
               if (detail.booleans.includes(field)) {
-                return <label className="switch-field" key={field}><span>{fieldLabel(field)}</span><input name={field} type="checkbox" defaultChecked={Boolean(Number(item[field]))} /><i aria-hidden="true" /></label>;
+                return (
+                  <label className="switch-field" key={field}>
+                    <span>{fieldLabel(field)}</span>
+                    <input
+                      name={field}
+                      type="checkbox"
+                      defaultChecked={Boolean(Number(item[field]))}
+                    />
+                    <i aria-hidden="true" />
+                  </label>
+                );
               }
               if (current.kind === "programs" && field === "seasons_json") {
-                return <div className="form-field" key={field}><span>Seasons</span><SearchSelect name={field} multiple value={selectedSeasons(item)} options={["spring", "summer", "fall", "winter"].map((season) => ({ value: season, label: titleCase(season) }))} placeholder="Choose seasons" /><small>Choose every season this program is available.</small></div>;
+                return (
+                  <div className="form-field" key={field}>
+                    <span>Seasons</span>
+                    <SearchSelect
+                      name={field}
+                      multiple
+                      value={selectedSeasons(item)}
+                      options={["spring", "summer", "fall", "winter"].map((season) => ({
+                        value: season,
+                        label: titleCase(season),
+                      }))}
+                      placeholder="Choose seasons"
+                    />
+                    <small>Choose every season this program is available.</small>
+                  </div>
+                );
               }
               if (current.kind === "blog" && field === "content_markdown") {
-                return <div className="form-field wide" key={field}><span>Content (Markdown)</span><MarkdownEditor value={itemValue(item, field)} /></div>;
+                return (
+                  <div className="form-field wide" key={field}>
+                    <span>Content (Markdown)</span>
+                    <MarkdownEditor value={itemValue(item, field)} />
+                  </div>
+                );
               }
 
               if (current.kind === "blog" && field === "thumbnail_data_url") {
-                return <div className="form-field wide" key={field}><span>Thumbnail Image</span><ThumbnailUploader value={itemValue(item, field)} /></div>;
+                return (
+                  <div className="form-field wide" key={field}>
+                    <span>Thumbnail Image</span>
+                    <ThumbnailUploader value={itemValue(item, field)} />
+                  </div>
+                );
               }
 
               if (AREAS.has(field)) {
-                return <label className="form-field wide" key={field}><span>{fieldLabel(field)}</span><textarea name={field} rows={field === "content_markdown" ? 16 : 5} defaultValue={itemValue(item, field)} placeholder={fieldPlaceholder(field)} /></label>;
+                return (
+                  <label className="form-field wide" key={field}>
+                    <span>{fieldLabel(field)}</span>
+                    <textarea
+                      name={field}
+                      rows={field === "content_markdown" ? 16 : 5}
+                      defaultValue={itemValue(item, field)}
+                      placeholder={fieldPlaceholder(field)}
+                    />
+                  </label>
+                );
               }
 
               if (current.kind === "blog" && field === "status") {
-                return <div className="form-field" key={field}><span>Status</span><SearchSelect name={field} value={itemValue(item, field)} options={[{ value: "draft", label: "Draft" }, { value: "published", label: "Published" }]} /></div>;
+                return (
+                  <div className="form-field" key={field}>
+                    <span>Status</span>
+                    <SearchSelect
+                      name={field}
+                      value={itemValue(item, field)}
+                      options={[
+                        { value: "draft", label: "Draft" },
+                        { value: "published", label: "Published" },
+                      ]}
+                    />
+                  </div>
+                );
               }
 
               if (current.kind === "grants" && field === "type") {
-                return <div className="form-field" key={field}><span>Grant Type</span><SearchSelect name={field} value={itemValue(item, field)} options={["general", "equipment", "quality_of_life", "training", "program"].map((value) => ({ value, label: titleCase(value) }))} placeholder="Choose a grant type" /></div>;
+                return (
+                  <div className="form-field" key={field}>
+                    <span>Grant Type</span>
+                    <SearchSelect
+                      name={field}
+                      value={itemValue(item, field)}
+                      options={[
+                        "general",
+                        "equipment",
+                        "quality_of_life",
+                        "training",
+                        "program",
+                      ].map((value) => ({ value, label: titleCase(value) }))}
+                      placeholder="Choose a grant type"
+                    />
+                  </div>
+                );
               }
 
               if (current.kind === "grants" && field === "audience") {
-                return <div className="form-field" key={field}><span>Grant Audience</span><SearchSelect name={field} value={itemValue(item, field)} options={["athlete", "program"].map((value) => ({ value, label: titleCase(value) }))} placeholder="Choose a grant audience" /></div>;
+                return (
+                  <div className="form-field" key={field}>
+                    <span>Grant Audience</span>
+                    <SearchSelect
+                      name={field}
+                      value={itemValue(item, field)}
+                      options={["athlete", "program"].map((value) => ({
+                        value,
+                        label: titleCase(value),
+                      }))}
+                      placeholder="Choose a grant audience"
+                    />
+                  </div>
+                );
               }
 
               if (current.kind === "grants" && field === "status") {
-                return <div className="form-field" key={field}><span>Grant Status</span><SearchSelect name={field} value={itemValue(item, field)} options={["active", "inactive", "archived"].map((value) => ({ value, label: titleCase(value) }))} placeholder="Choose a grant status" /></div>;
+                return (
+                  <div className="form-field" key={field}>
+                    <span>Grant Status</span>
+                    <SearchSelect
+                      name={field}
+                      value={itemValue(item, field)}
+                      options={["active", "inactive", "archived"].map((value) => ({
+                        value,
+                        label: titleCase(value),
+                      }))}
+                      placeholder="Choose a grant status"
+                    />
+                  </div>
+                );
               }
 
               if (current.kind === "grants" && field === "sports_json") {
-                return <div className="form-field wide" key={field}><span>Sports</span><SearchSelect name={field} multiple value={selectedSports(item)} options={SPORTS.map(([value, label]) => ({ value, label }))} placeholder="Choose sports" /><small>Leave blank when the grant is open to every sport.</small></div>;
+                return (
+                  <div className="form-field wide" key={field}>
+                    <span>Sports</span>
+                    <SearchSelect
+                      name={field}
+                      multiple
+                      value={selectedSports(item)}
+                      options={SPORTS.map(([value, label]) => ({ value, label }))}
+                      placeholder="Choose sports"
+                    />
+                    <small>Leave blank when the grant is open to every sport.</small>
+                  </div>
+                );
               }
 
               if (current.kind === "grants" && field === "amount_min_cents") {
-                return <label className="form-field" key={field}><span>Amount Min Cents</span><input name={field} type="number" min="0" step="1" defaultValue={itemValue(item, field)} placeholder="Enter minimum cents" onInput={(event) => { const minimum = event.currentTarget.value || "0"; const maximum = event.currentTarget.form?.elements.namedItem("amount_max_cents") as HTMLInputElement | null; if (!maximum) return; maximum.min = minimum; if (maximum.value && Number(maximum.value) < Number(minimum)) maximum.value = minimum; }} /></label>;
+                return (
+                  <label className="form-field" key={field}>
+                    <span>Amount Min Cents</span>
+                    <input
+                      name={field}
+                      type="number"
+                      min="0"
+                      step="1"
+                      defaultValue={itemValue(item, field)}
+                      placeholder="Enter minimum cents"
+                      onInput={(event) => {
+                        const minimum = event.currentTarget.value || "0";
+                        const maximum = event.currentTarget.form?.elements.namedItem(
+                          "amount_max_cents",
+                        ) as HTMLInputElement | null;
+                        if (!maximum) return;
+                        maximum.min = minimum;
+                        if (maximum.value && Number(maximum.value) < Number(minimum))
+                          maximum.value = minimum;
+                      }}
+                    />
+                  </label>
+                );
               }
 
               if (current.kind === "grants" && field === "amount_max_cents") {
-                return <label className="form-field" key={field}><span>Amount Max Cents</span><input name={field} type="number" min={itemValue(item, "amount_min_cents") || "0"} step="1" defaultValue={itemValue(item, field)} placeholder="Enter maximum cents" /></label>;
+                return (
+                  <label className="form-field" key={field}>
+                    <span>Amount Max Cents</span>
+                    <input
+                      name={field}
+                      type="number"
+                      min={itemValue(item, "amount_min_cents") || "0"}
+                      step="1"
+                      defaultValue={itemValue(item, field)}
+                      placeholder="Enter maximum cents"
+                    />
+                  </label>
+                );
               }
 
-              if (["organizations", "programs"].includes(current.kind) && field === "sports_json") {
-                return <div className="form-field wide" key={field}><span>Sports Offered</span><SearchSelect name={field} multiple value={selectedSports(item)} options={SPORTS.map(([value, label]) => ({ value, label }))} placeholder="Choose sports" /><small>Choose every sport this {current.kind === "organizations" ? "organization" : "program"} offers.</small></div>;
+              if (
+                ["organizations", "programs"].includes(current.kind) &&
+                field === "sports_json"
+              ) {
+                return (
+                  <div className="form-field wide" key={field}>
+                    <span>Sports Offered</span>
+                    <SearchSelect
+                      name={field}
+                      multiple
+                      value={selectedSports(item)}
+                      options={SPORTS.map(([value, label]) => ({ value, label }))}
+                      placeholder="Choose sports"
+                    />
+                    <small>
+                      Choose every sport this{" "}
+                      {current.kind === "organizations" ? "organization" : "program"}{" "}
+                      offers.
+                    </small>
+                  </div>
+                );
               }
 
               if (current.kind === "programs" && field === "organization_id") {
                 const currentOrganization = itemValue(item, field);
-                const options = organizations.map((organization) => ({ value: organization.id, label: String(organization.name || "Untitled organization") }));
-                if (currentOrganization && !options.some((option) => option.value === currentOrganization)) options.unshift({ value: currentOrganization, label: currentOrganization });
-                return <div className="form-field wide" key={field}><span>Organization</span><SearchSelect name={field} value={currentOrganization} options={options} placeholder="Choose an organization" /></div>;
+                const options = organizations.map((organization) => ({
+                  value: organization.id,
+                  label: String(organization.name || "Untitled organization"),
+                }));
+                if (
+                  currentOrganization &&
+                  !options.some((option) => option.value === currentOrganization)
+                )
+                  options.unshift({
+                    value: currentOrganization,
+                    label: currentOrganization,
+                  });
+                return (
+                  <div className="form-field wide" key={field}>
+                    <span>Organization</span>
+                    <SearchSelect
+                      name={field}
+                      value={currentOrganization}
+                      options={options}
+                      placeholder="Choose an organization"
+                    />
+                  </div>
+                );
               }
 
               if (current.kind === "programs" && field === "organization_id") {
                 const currentOrganization = itemValue(item, field);
-                return <label className="form-field" key={field}><span>Organization</span><select name={field} defaultValue={currentOrganization}><option value="">Choose an organization</option>{currentOrganization && !organizations.some((organization) => organization.id === currentOrganization) && <option value={currentOrganization}>{currentOrganization}</option>}{organizations.map((organization) => <option key={organization.id} value={organization.id}>{String(organization.name || "Untitled organization")}{organization.city ? ` · ${organization.city}${organization.state ? `, ${organization.state}` : ""}` : ""}</option>)}</select></label>;
+                return (
+                  <label className="form-field" key={field}>
+                    <span>Organization</span>
+                    <select name={field} defaultValue={currentOrganization}>
+                      <option value="">Choose an organization</option>
+                      {currentOrganization &&
+                        !organizations.some(
+                          (organization) => organization.id === currentOrganization,
+                        ) && (
+                          <option value={currentOrganization}>
+                            {currentOrganization}
+                          </option>
+                        )}
+                      {organizations.map((organization) => (
+                        <option key={organization.id} value={organization.id}>
+                          {String(organization.name || "Untitled organization")}
+                          {organization.city
+                            ? ` · ${organization.city}${organization.state ? `, ${organization.state}` : ""}`
+                            : ""}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                );
               }
 
               if (current.kind === "programs" && field === "listing") {
-                return <div className="form-field" key={field}><span>Listing</span><SearchSelect name={field} value={itemValue(item, field)} options={[{ value: "own", label: "Own" }, { value: "with_org", label: "With organization" }]} /></div>;
+                return (
+                  <div className="form-field" key={field}>
+                    <span>Listing</span>
+                    <SearchSelect
+                      name={field}
+                      value={itemValue(item, field)}
+                      options={[
+                        { value: "own", label: "Own" },
+                        { value: "with_org", label: "With organization" },
+                      ]}
+                    />
+                  </div>
+                );
               }
 
               if (current.kind === "programs" && field === "listing") {
-                return <label className="form-field" key={field}><span>Listing</span><select name={field} defaultValue={itemValue(item, field)}><option value="own">Own</option><option value="with_org">With organization</option></select></label>;
+                return (
+                  <label className="form-field" key={field}>
+                    <span>Listing</span>
+                    <select name={field} defaultValue={itemValue(item, field)}>
+                      <option value="own">Own</option>
+                      <option value="with_org">With organization</option>
+                    </select>
+                  </label>
+                );
               }
 
               if (current.kind === "programs" && field === "usual_month") {
-                return <div className="form-field" key={field}><span>Usual Month</span><SearchSelect name={field} value={itemValue(item, field)} options={[{ value: "", label: "Not set" }, ...MONTHS.map((label, index) => ({ value: String(index + 1), label }))]} /></div>;
+                return (
+                  <div className="form-field" key={field}>
+                    <span>Usual Month</span>
+                    <SearchSelect
+                      name={field}
+                      value={itemValue(item, field)}
+                      options={[
+                        { value: "", label: "Not set" },
+                        ...MONTHS.map((label, index) => ({
+                          value: String(index + 1),
+                          label,
+                        })),
+                      ]}
+                    />
+                  </div>
+                );
               }
 
               if (current.kind === "programs" && field === "usual_month") {
-                return <label className="form-field" key={field}><span>Usual Month</span><select name={field} defaultValue={itemValue(item, field)}><option value="">Not set</option>{MONTHS.map((month, index) => <option key={month} value={index + 1}>{month}</option>)}</select></label>;
+                return (
+                  <label className="form-field" key={field}>
+                    <span>Usual Month</span>
+                    <select name={field} defaultValue={itemValue(item, field)}>
+                      <option value="">Not set</option>
+                      {MONTHS.map((month, index) => (
+                        <option key={month} value={index + 1}>
+                          {month}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                );
               }
 
               if (current.kind === "programs" && field === "first_year") {
-                return <label className="form-field" key={field}><span>First Year</span><input name={field} type="text" inputMode="numeric" pattern="[0-9]*" min="1950" max={CURRENT_YEAR} defaultValue={itemValue(item, field)} placeholder="Enter first year" onInput={(event) => { event.currentTarget.value = numericValue(event.currentTarget.value); }} /></label>;
+                return (
+                  <label className="form-field" key={field}>
+                    <span>First Year</span>
+                    <input
+                      name={field}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      min="1950"
+                      max={CURRENT_YEAR}
+                      defaultValue={itemValue(item, field)}
+                      placeholder="Enter first year"
+                      onInput={(event) => {
+                        event.currentTarget.value = numericValue(
+                          event.currentTarget.value,
+                        );
+                      }}
+                    />
+                  </label>
+                );
               }
 
               if (current.kind === "events" && field === "org_id") {
                 const currentOrganization = itemValue(item, field);
-                const options = organizations.map((organization) => ({ value: organization.id, label: String(organization.name || "Untitled organization") }));
-                if (currentOrganization && !options.some((option) => option.value === currentOrganization)) options.unshift({ value: currentOrganization, label: currentOrganization });
-                return <div className="form-field wide" key={field}><span>Organization</span><SearchSelect name={field} value={currentOrganization} options={options} placeholder="Choose an organization" /></div>;
+                const options = organizations.map((organization) => ({
+                  value: organization.id,
+                  label: String(organization.name || "Untitled organization"),
+                }));
+                if (
+                  currentOrganization &&
+                  !options.some((option) => option.value === currentOrganization)
+                )
+                  options.unshift({
+                    value: currentOrganization,
+                    label: currentOrganization,
+                  });
+                return (
+                  <div className="form-field wide" key={field}>
+                    <span>Organization</span>
+                    <SearchSelect
+                      name={field}
+                      value={currentOrganization}
+                      options={options}
+                      placeholder="Choose an organization"
+                    />
+                  </div>
+                );
               }
 
               if (current.kind === "events" && field === "org_id") {
                 const currentOrganization = itemValue(item, field);
-                return <label className="form-field" key={field}><span>Organization</span><select name={field} defaultValue={currentOrganization}><option value="">Choose an organization</option>{currentOrganization && !organizations.some((organization) => organization.id === currentOrganization) && <option value={currentOrganization}>{currentOrganization}</option>}{organizations.map((organization) => <option key={organization.id} value={organization.id}>{String(organization.name || "Untitled organization")}</option>)}</select></label>;
+                return (
+                  <label className="form-field" key={field}>
+                    <span>Organization</span>
+                    <select name={field} defaultValue={currentOrganization}>
+                      <option value="">Choose an organization</option>
+                      {currentOrganization &&
+                        !organizations.some(
+                          (organization) => organization.id === currentOrganization,
+                        ) && (
+                          <option value={currentOrganization}>
+                            {currentOrganization}
+                          </option>
+                        )}
+                      {organizations.map((organization) => (
+                        <option key={organization.id} value={organization.id}>
+                          {String(organization.name || "Untitled organization")}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                );
               }
 
               if (current.kind === "events" && field === "program_id") {
                 const currentProgram = itemValue(item, field);
-                const options = [{ value: "", label: "No linked program" }, ...programOptions.map((program) => ({ value: program.id, label: String(program.name || "Untitled program") }))];
-                if (currentProgram && !options.some((option) => option.value === currentProgram)) options.push({ value: currentProgram, label: currentProgram });
-                return <div className="form-field wide" key={field}><span>Program</span><SearchSelect name={field} value={currentProgram} options={options} placeholder="No linked program" /></div>;
+                const options = [
+                  { value: "", label: "No linked program" },
+                  ...programOptions.map((program) => ({
+                    value: program.id,
+                    label: String(program.name || "Untitled program"),
+                  })),
+                ];
+                if (
+                  currentProgram &&
+                  !options.some((option) => option.value === currentProgram)
+                )
+                  options.push({ value: currentProgram, label: currentProgram });
+                return (
+                  <div className="form-field wide" key={field}>
+                    <span>Program</span>
+                    <SearchSelect
+                      name={field}
+                      value={currentProgram}
+                      options={options}
+                      placeholder="No linked program"
+                    />
+                  </div>
+                );
               }
 
               if (current.kind === "events" && field === "program_id") {
                 const currentProgram = itemValue(item, field);
-                return <label className="form-field" key={field}><span>Program</span><select name={field} defaultValue={currentProgram}><option value="">No linked program</option>{currentProgram && !programOptions.some((program) => program.id === currentProgram) && <option value={currentProgram}>{currentProgram}</option>}{programOptions.map((program) => <option key={program.id} value={program.id}>{String(program.name || "Untitled program")}</option>)}</select></label>;
+                return (
+                  <label className="form-field" key={field}>
+                    <span>Program</span>
+                    <select name={field} defaultValue={currentProgram}>
+                      <option value="">No linked program</option>
+                      {currentProgram &&
+                        !programOptions.some(
+                          (program) => program.id === currentProgram,
+                        ) && <option value={currentProgram}>{currentProgram}</option>}
+                      {programOptions.map((program) => (
+                        <option key={program.id} value={program.id}>
+                          {String(program.name || "Untitled program")}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                );
               }
 
               if (current.kind === "events" && field === "sport_key") {
-                return <div className="form-field" key={field}><span>Sport</span><SearchSelect name={field} value={itemValue(item, field)} options={[{ value: "", label: "Not set" }, ...SPORTS.map(([value, label]) => ({ value, label }))]} /></div>;
+                return (
+                  <div className="form-field" key={field}>
+                    <span>Sport</span>
+                    <SearchSelect
+                      name={field}
+                      value={itemValue(item, field)}
+                      options={[
+                        { value: "", label: "Not set" },
+                        ...SPORTS.map(([value, label]) => ({ value, label })),
+                      ]}
+                    />
+                  </div>
+                );
               }
 
               if (current.kind === "events" && field === "sport_key") {
-                return <label className="form-field" key={field}><span>Sport</span><select name={field} defaultValue={itemValue(item, field)}><option value="">Not set</option>{SPORTS.map(([key, name]) => <option key={key} value={key}>{name}</option>)}</select></label>;
+                return (
+                  <label className="form-field" key={field}>
+                    <span>Sport</span>
+                    <select name={field} defaultValue={itemValue(item, field)}>
+                      <option value="">Not set</option>
+                      {SPORTS.map(([key, name]) => (
+                        <option key={key} value={key}>
+                          {name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                );
               }
 
-              if (["organizations", "programs", "events"].includes(current.kind) && ["state", "geo_precision", "data_quality_rating", "verification_status", "status"].includes(field)) {
-                return <div className="form-field" key={field}><span>{fieldLabel(field)}</span><SearchSelect name={field} value={itemValue(item, field)} options={selectOptions(field, itemValue(item, field), current.kind).map(([value, label]) => ({ value, label }))} /></div>;
+              if (
+                ["organizations", "programs", "events"].includes(current.kind) &&
+                [
+                  "state",
+                  "geo_precision",
+                  "data_quality_rating",
+                  "verification_status",
+                  "status",
+                ].includes(field)
+              ) {
+                return (
+                  <div className="form-field" key={field}>
+                    <span>{fieldLabel(field)}</span>
+                    <SearchSelect
+                      name={field}
+                      value={itemValue(item, field)}
+                      options={selectOptions(
+                        field,
+                        itemValue(item, field),
+                        current.kind,
+                      ).map(([value, label]) => ({ value, label }))}
+                    />
+                  </div>
+                );
               }
 
-              if (["organizations", "programs", "events"].includes(current.kind) && ["state", "geo_precision", "data_quality_rating", "verification_status", "status"].includes(field)) {
-                return <label className="form-field" key={field}><span>{fieldLabel(field)}</span><select name={field} defaultValue={itemValue(item, field)}>{selectOptions(field, itemValue(item, field), current.kind).map(([optionValue, optionLabel]) => <option key={optionValue} value={optionValue}>{optionLabel}</option>)}</select></label>;
+              if (
+                ["organizations", "programs", "events"].includes(current.kind) &&
+                [
+                  "state",
+                  "geo_precision",
+                  "data_quality_rating",
+                  "verification_status",
+                  "status",
+                ].includes(field)
+              ) {
+                return (
+                  <label className="form-field" key={field}>
+                    <span>{fieldLabel(field)}</span>
+                    <select name={field} defaultValue={itemValue(item, field)}>
+                      {selectOptions(field, itemValue(item, field), current.kind).map(
+                        ([optionValue, optionLabel]) => (
+                          <option key={optionValue} value={optionValue}>
+                            {optionLabel}
+                          </option>
+                        ),
+                      )}
+                    </select>
+                  </label>
+                );
               }
               const numeric = detail.numbers.includes(field);
               const decimal = field === "lat" || field === "lng";
-              const titleSource = (current.kind === "programs" && field === "name") || (current.kind === "blog" && field === "title");
+              const titleSource =
+                (current.kind === "programs" && field === "name") ||
+                (current.kind === "blog" && field === "title");
               const initialValue = DATE_TIMES.has(field)
                 ? dateTimeLocalValue(itemValue(item, field))
                 : field === "deadline_next"
                   ? itemValue(item, field).slice(0, 10)
                   : itemValue(item, field);
-              return <label className="form-field" key={field}><span>{fieldLabel(field)}</span><input name={field} type={numeric ? "text" : inputType(detail, field)} inputMode={numeric ? (decimal ? "decimal" : "numeric") : undefined} pattern={numeric ? (decimal ? "-?[0-9]*[.]?[0-9]*" : "[0-9]*") : undefined} step={DATE_TIMES.has(field) ? "1" : undefined} defaultValue={initialValue} placeholder={fieldPlaceholder(field)} onInput={(event) => { if (numeric) event.currentTarget.value = numericValue(event.currentTarget.value, decimal); if (titleSource) { const slug = event.currentTarget.form?.elements.namedItem("slug") as HTMLInputElement | null; if (slug) slug.value = event.currentTarget.value.toLocaleLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""); } }} /></label>;
+              return (
+                <label className="form-field" key={field}>
+                  <span>{fieldLabel(field)}</span>
+                  <input
+                    name={field}
+                    type={numeric ? "text" : inputType(detail, field)}
+                    inputMode={numeric ? (decimal ? "decimal" : "numeric") : undefined}
+                    pattern={
+                      numeric ? (decimal ? "-?[0-9]*[.]?[0-9]*" : "[0-9]*") : undefined
+                    }
+                    step={DATE_TIMES.has(field) ? "1" : undefined}
+                    defaultValue={initialValue}
+                    placeholder={fieldPlaceholder(field)}
+                    onInput={(event) => {
+                      if (numeric)
+                        event.currentTarget.value = numericValue(
+                          event.currentTarget.value,
+                          decimal,
+                        );
+                      if (titleSource) {
+                        const slug = event.currentTarget.form?.elements.namedItem(
+                          "slug",
+                        ) as HTMLInputElement | null;
+                        if (slug)
+                          slug.value = event.currentTarget.value
+                            .toLocaleLowerCase()
+                            .replace(/[^a-z0-9]+/g, "-")
+                            .replace(/^-+|-+$/g, "");
+                      }
+                    }}
+                  />
+                </label>
+              );
             })}
-            <div className="directory-actions"><button className="btn" type="submit">{creating ? `Create ${detail.label.slice(0, -1)}` : "Save changes"}</button></div>
+            <div className="directory-actions">
+              <button className="btn" type="submit">
+                {creating ? `Create ${detail.label.slice(0, -1)}` : "Save changes"}
+              </button>
+            </div>
           </form>
         )}
-        <p className="directory-message" role="status">{message}</p>
+        <p className="directory-message" role="status">
+          {message}
+        </p>
         {current.kind === "organizations" && !creating && (
           <section className="activity-panel" aria-labelledby="activity-heading">
             <h3 id="activity-heading">Activity</h3>
@@ -934,23 +1844,45 @@ export function Directory({ onFail }: { onFail: () => void }) {
             <form className="activity-note-form" onSubmit={addActivityNote}>
               <label className="form-field">
                 <span>Add a note</span>
-                <textarea name="note" rows={2} maxLength={500} placeholder="Emailed Oct 26" />
+                <textarea
+                  name="note"
+                  rows={2}
+                  maxLength={500}
+                  placeholder="Emailed Oct 26"
+                />
               </label>
-              <button className="btn" type="submit">Add note</button>
+              <button className="btn" type="submit">
+                Add note
+              </button>
             </form>
             {activity.length ? (
               <ol className="activity-list">
                 {activity.map((entry) => (
                   <li key={entry.id}>
-                    <p><time dateTime={entry.created_at}>{activityTime(entry.created_at)}</time><b>{activityLabel(entry.kind)}</b></p>
+                    <p>
+                      <time dateTime={entry.created_at}>
+                        {activityTime(entry.created_at)}
+                      </time>
+                      <b>{activityLabel(entry.kind)}</b>
+                    </p>
                     <p>{entry.summary}</p>
                     {entry.actor && <small>{entry.actor}</small>}
-                    {entry.kind === "note" && <button className="btn btn--line" onClick={() => deleteActivityNote(entry.id)} type="button">Delete note</button>}
+                    {entry.kind === "note" && (
+                      <button
+                        className="btn btn--line"
+                        onClick={() => deleteActivityNote(entry.id)}
+                        type="button"
+                      >
+                        Delete note
+                      </button>
+                    )}
                   </li>
                 ))}
               </ol>
             ) : (
-              <p className="activity-empty">Nothing yet. Confirmations, fixes, edits, and your notes show here.</p>
+              <p className="activity-empty">
+                Nothing yet. Confirmations, fixes, edits, and your notes show here.
+              </p>
             )}
           </section>
         )}
@@ -961,18 +1893,78 @@ export function Directory({ onFail }: { onFail: () => void }) {
   return (
     <section className="directory-page">
       <div className="directory-seg">
-        <button className={operations === "queue" ? "on" : ""} onClick={() => setOperations("queue")}>Submission Queue ({queueItems.length})</button>
-        <button className={operations === "beta" ? "on" : ""} onClick={() => setOperations("beta")}>Beta Testers ({betaTesters.length})</button>
-        {KINDS.map((entry) => <button key={entry} className={entry === kind ? "on" : ""} onClick={() => chooseKind(entry)}>{DETAILS[entry].label} ({counts[entry].toLocaleString()})</button>)}
+        <button
+          className={operations === "queue" ? "on" : ""}
+          onClick={() => setOperations("queue")}
+        >
+          Submission Queue ({queueItems.length})
+        </button>
+        <button
+          className={operations === "beta" ? "on" : ""}
+          onClick={() => setOperations("beta")}
+        >
+          Beta Testers ({betaTesters.length})
+        </button>
+        {KINDS.map((entry) => (
+          <button
+            key={entry}
+            className={entry === kind ? "on" : ""}
+            onClick={() => chooseKind(entry)}
+          >
+            {DETAILS[entry].label} ({counts[entry].toLocaleString()})
+          </button>
+        ))}
       </div>
       <h2>{DETAILS[kind].label}</h2>
-      <p className="sub">Manage all Adaptive Sports Near Me {kind} from Adapt To Life.</p>
-      <div className="directory-actions"><button className="btn" type="button" onClick={() => go(`/admin/directory/${kind}/new`)}>Add {DETAILS[kind].label.slice(0, -1)}</button></div>
-      <label className="directory-search"><span>Search {DETAILS[kind].label.toLowerCase()}</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Type a name" /></label>
-      <p className="directory-message" role="status">{message}</p>
-      {loading ? <div className="directory-loading" role="status"><i aria-hidden="true" />Loading {DETAILS[kind].label.toLowerCase()}…</div> : <div className="directory-list">
-        {items.filter((entry) => fuzzyMatches(String(entry.name || entry.title || ""), query)).map((entry) => <button className="directory-item" key={entry.id} onClick={() => go(`/admin/directory/${kind}/${entry.id}`)}><span><b>{String(entry.name || entry.title || "Untitled")}</b><small>{itemSummary(entry)}</small></span><span aria-hidden="true">→</span></button>)}
-      </div>}
+      <p className="sub">
+        Manage all Adaptive Sports Near Me {kind} from Adapt To Life.
+      </p>
+      <div className="directory-actions">
+        <button
+          className="btn"
+          type="button"
+          onClick={() => go(`/admin/directory/${kind}/new`)}
+        >
+          Add {DETAILS[kind].label.slice(0, -1)}
+        </button>
+      </div>
+      <label className="directory-search">
+        <span>Search {DETAILS[kind].label.toLowerCase()}</span>
+        <input
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="Type a name"
+        />
+      </label>
+      <p className="directory-message" role="status">
+        {message}
+      </p>
+      {loading ? (
+        <div className="directory-loading" role="status">
+          <i aria-hidden="true" />
+          Loading {DETAILS[kind].label.toLowerCase()}…
+        </div>
+      ) : (
+        <div className="directory-list">
+          {items
+            .filter((entry) =>
+              fuzzyMatches(String(entry.name || entry.title || ""), query),
+            )
+            .map((entry) => (
+              <button
+                className="directory-item"
+                key={entry.id}
+                onClick={() => go(`/admin/directory/${kind}/${entry.id}`)}
+              >
+                <span>
+                  <b>{String(entry.name || entry.title || "Untitled")}</b>
+                  <small>{itemSummary(entry)}</small>
+                </span>
+                <span aria-hidden="true">→</span>
+              </button>
+            ))}
+        </div>
+      )}
     </section>
   );
 }

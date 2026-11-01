@@ -24,15 +24,27 @@ function stubDb() {
     prepare(sql) {
       return {
         bind(...vals) {
-          return { async run() { rows.push({ sql, vals }); } };
+          return {
+            async run() {
+              rows.push({ sql, vals });
+            },
+          };
         },
       };
     },
   };
 }
 
-const failingSend = { async send() { throw new Error("destination address is not a verified address"); } };
-const okSend = { async send() { return {}; } };
+const failingSend = {
+  async send() {
+    throw new Error("destination address is not a verified address");
+  },
+};
+const okSend = {
+  async send() {
+    return {};
+  },
+};
 
 const row = (db) => {
   const [, , route, to, error] = db.rows[0].vals;
@@ -44,7 +56,12 @@ test("a failed contact receipt is swallowed AND recorded", async () => {
   // Must not throw: the contact record is already saved by the time this runs.
   await sendContactReceipt(
     { SEND_EMAIL: failingSend, AGENT_MAIL_DB: db },
-    { name: "Sam Okafor", email: "sam@example.org", message: "hello", type: "Volunteering" }
+    {
+      name: "Sam Okafor",
+      email: "sam@example.org",
+      message: "hello",
+      type: "Volunteering",
+    },
   );
   assert.equal(db.rows.length, 1, "exactly one send_failures row");
   const r = row(db);
@@ -58,7 +75,12 @@ test("a failed application receipt is swallowed AND recorded", async () => {
   const db = stubDb();
   await sendApplyReceipt(
     { SEND_EMAIL: failingSend, AGENT_MAIL_DB: db },
-    { name: "Dana Reyes", email: "dana@example.org", sport: "Sled hockey", need: "a sled" }
+    {
+      name: "Dana Reyes",
+      email: "dana@example.org",
+      sport: "Sled hockey",
+      need: "a sled",
+    },
   );
   assert.equal(db.rows.length, 1);
   assert.equal(row(db).to, "dana@example.org");
@@ -68,7 +90,7 @@ test("a successful send records nothing", async () => {
   const db = stubDb();
   await sendContactReceipt(
     { SEND_EMAIL: okSend, AGENT_MAIL_DB: db },
-    { name: "Sam", email: "sam@example.org", message: "hi", type: "Volunteering" }
+    { name: "Sam", email: "sam@example.org", message: "hi", type: "Volunteering" },
   );
   assert.deepEqual(db.rows, []);
 });
@@ -80,7 +102,7 @@ test("the waiver receipt records too — its catch never rethrows", async () => 
   const { handleWaiver } = await import("../src/waiver.js");
   assert.equal(typeof handleWaiver, "function");
   const src = await import("node:fs").then((fs) =>
-    fs.readFileSync(new URL("../src/waiver.js", import.meta.url), "utf8")
+    fs.readFileSync(new URL("../src/waiver.js", import.meta.url), "utf8"),
   );
   // The record call must sit inside sendReceiptEmail, after its own console.error,
   // not in the caller's catch block.
@@ -88,7 +110,7 @@ test("the waiver receipt records too — its catch never rethrows", async () => 
   assert.match(
     fn.slice(0, fn.indexOf("\n}\n")),
     /recordTransactionalFailure\(env, "receipt:waiver"/,
-    "waiver failures must be recorded inside sendReceiptEmail, where the error is actually caught"
+    "waiver failures must be recorded inside sendReceiptEmail, where the error is actually caught",
   );
 });
 
@@ -98,7 +120,7 @@ test("staging (no SEND_EMAIL binding) is not reported as a failure", async () =>
   const db = stubDb();
   await sendContactReceipt(
     { AGENT_MAIL_DB: db },
-    { name: "Sam", email: "sam@example.org", message: "hi", type: "Volunteering" }
+    { name: "Sam", email: "sam@example.org", message: "hi", type: "Volunteering" },
   );
   assert.deepEqual(db.rows, []);
 });
@@ -107,11 +129,15 @@ test("a missing D1 binding can never turn a swallowed failure into a thrown one"
   // The ledger must fail open twice over, or it resurrects the bug it reports.
   await sendContactReceipt(
     { SEND_EMAIL: failingSend },
-    { name: "Sam", email: "sam@example.org", message: "hi", type: "Volunteering" }
+    { name: "Sam", email: "sam@example.org", message: "hi", type: "Volunteering" },
   );
-  const exploding = { prepare() { throw new Error("D1 is down"); } };
+  const exploding = {
+    prepare() {
+      throw new Error("D1 is down");
+    },
+  };
   await sendContactReceipt(
     { SEND_EMAIL: failingSend, AGENT_MAIL_DB: exploding },
-    { name: "Sam", email: "sam@example.org", message: "hi", type: "Volunteering" }
+    { name: "Sam", email: "sam@example.org", message: "hi", type: "Volunteering" },
   );
 });

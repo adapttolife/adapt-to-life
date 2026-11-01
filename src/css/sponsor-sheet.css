@@ -27,43 +27,43 @@
  */
 
 .sheet {
-	/* Reset the UA's centred-box defaults; the media queries below place it. */
-	padding: 0;
-	border: none;
-	max-width: min(34rem, 100%);
-	width: 100%;
-	background: var(--paper);
-	color: var(--ink);
-	box-shadow: 0 -8px 60px -12px rgba(20, 16, 9, 0.34);
+  /* Reset the UA's centred-box defaults; the media queries below place it. */
+  padding: 0;
+  border: none;
+  max-width: min(34rem, 100%);
+  width: 100%;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 -8px 60px -12px rgba(20, 16, 9, 0.34);
 }
 .sheet::backdrop {
-	background: rgba(20, 16, 9, 0.52);
-	backdrop-filter: blur(2px);
+  background: rgba(20, 16, 9, 0.52);
+  backdrop-filter: blur(2px);
 }
 
 /* Phone: a bottom sheet. Pinned to the bottom edge, square-cut where it meets
    it, and capped so a long tier still leaves the page visible above it. */
 @media (max-width: 640px) {
-	.sheet {
-		margin: auto auto 0;
-		max-width: none;
-		border-radius: 20px 20px 0 0;
-		max-height: 92svh;
-	}
+  .sheet {
+    margin: auto auto 0;
+    max-width: none;
+    border-radius: 20px 20px 0 0;
+    max-height: 92svh;
+  }
 }
 @media (min-width: 641px) {
-	.sheet {
-		margin: auto;
-		border-radius: 18px;
-		max-height: 88svh;
-	}
+  .sheet {
+    margin: auto;
+    border-radius: 18px;
+    max-height: 88svh;
+  }
 }
 
 .sheet-inner {
-	padding: clamp(1.4rem, 4vw, 2rem);
-	overflow-y: auto;
-	max-height: inherit;
-	-webkit-overflow-scrolling: touch;
+  padding: clamp(1.4rem, 4vw, 2rem);
+  overflow-y: auto;
+  max-height: inherit;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* The grab handle is decoration on desktop and affordance on a phone: it is the
@@ -73,48 +73,48 @@
    sits inside a 44px-tall touch strip so the promise is reachable, while the bar
    itself stays the same slim mark it always was. */
 .sheet-grip {
-	display: none;
+  display: none;
 }
 @media (max-width: 640px) {
-	.sheet-grab {
-		display: block;
-		height: 30px;
-		position: relative;
-		touch-action: none;
-		cursor: grab;
-	}
-	.sheet-grab:active {
-		cursor: grabbing;
-	}
-	.sheet-grip {
-		display: block;
-		width: 44px;
-		height: 5px;
-		border-radius: 99px;
-		background: rgba(28, 26, 21, 0.22);
-		margin: 0.7rem auto 0;
-		transition: background-color 0.15s ease;
-	}
-	.sheet-grab:active .sheet-grip {
-		background: rgba(28, 26, 21, 0.38);
-	}
+  .sheet-grab {
+    display: block;
+    height: 30px;
+    position: relative;
+    touch-action: none;
+    cursor: grab;
+  }
+  .sheet-grab:active {
+    cursor: grabbing;
+  }
+  .sheet-grip {
+    display: block;
+    width: 44px;
+    height: 5px;
+    border-radius: 99px;
+    background: rgba(28, 26, 21, 0.22);
+    margin: 0.7rem auto 0;
+    transition: background-color 0.15s ease;
+  }
+  .sheet-grab:active .sheet-grip {
+    background: rgba(28, 26, 21, 0.38);
+  }
 }
 @media (min-width: 641px) {
-	.sheet-grab {
-		display: none;
-	}
+  .sheet-grab {
+    display: none;
+  }
 }
 
 /* While a finger is dragging the sheet, it follows exactly — no easing between
    the finger and the surface, or it feels like lag rather than direct handling.
    The release animates; the drag does not. */
 .sheet.is-dragging {
-	transition: none;
+  transition: none;
 }
 @media (prefers-reduced-motion: no-preference) {
-	.sheet.is-settling {
-		transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
-	}
+  .sheet.is-settling {
+    transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+  }
 }
 
 /* The close control. Alec, 2026-09-12: "it's a little bit tough to click on...
@@ -135,68 +135,68 @@
  * 56x56, without painting anything. That overhang also reclaims the dead zone
  * over the sheet's rounded corner, where a tap previously did nothing at all. */
 .sheet-close {
-	position: absolute;
-	top: 0.5rem;
-	right: 0.5rem;
-	z-index: 3;
-	width: 44px;
-	height: 44px;
-	padding: 0;
-	display: grid;
-	place-items: center;
-	border: none;
-	border-radius: 50%;
-	cursor: pointer;
-	/* GIVE IT A SURFACE. Alec reported it still hard to hit after the box went to
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 3;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  /* GIVE IT A SURFACE. Alec reported it still hard to hit after the box went to
      44x44 with a 56px hit area — and a coordinate probe showed every tap inside
      that area DID register. So the problem was never the hit box: it was a thin
      grey glyph floating on cream with no button under it. People aim at what
      they can see, so an invisible 56px target gets aimed at like a 14px one, and
      a near miss reads as "it did not work" rather than "I missed".
      The chip is what the hand was looking for. */
-	background: rgba(28, 26, 21, 0.06);
-	color: var(--ink-soft);
-	font-size: 1.45rem;
-	line-height: 1;
-	/* No 300ms tap delay and no double-tap zoom on a control this close to the
+  background: rgba(28, 26, 21, 0.06);
+  color: var(--ink-soft);
+  font-size: 1.45rem;
+  line-height: 1;
+  /* No 300ms tap delay and no double-tap zoom on a control this close to the
      edge; both read as "the button did not work". */
-	touch-action: manipulation;
-	-webkit-tap-highlight-color: transparent;
-	transition:
-		background-color 0.12s ease,
-		transform 0.12s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 0.12s ease,
+    transform 0.12s ease;
 }
 /* The hit area runs 8px past the chip in every direction — 60x60 — so a thumb
    that lands beside the circle still closes the sheet. It paints nothing; it
    also reclaims the dead corner outside the sheet's border radius. */
 /* A symmetric SVG centers the visible mark, not a font baseline. */
 .sheet-close svg {
-	display: block;
-	width: 20px;
-	height: 20px;
-	pointer-events: none;
-	fill: currentColor;
+  display: block;
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+  fill: currentColor;
 }
 .sheet-close::before {
-	content: "";
-	position: absolute;
-	inset: -8px;
-	border-radius: 50%;
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
 }
 .sheet-close:hover {
-	background: rgba(28, 26, 21, 0.11);
-	color: var(--ink);
+  background: rgba(28, 26, 21, 0.11);
+  color: var(--ink);
 }
 /* Touch has no hover, so the pressed state is the ONLY feedback a thumb gets.
    Unmistakable on purpose: darker, and it moves. */
 .sheet-close:active {
-	background: rgba(28, 26, 21, 0.2);
-	color: var(--ink);
-	transform: scale(0.92);
+  background: rgba(28, 26, 21, 0.2);
+  color: var(--ink);
+  transform: scale(0.92);
 }
 .sheet-close:focus-visible {
-	outline: 2px solid var(--orange);
-	outline-offset: 2px;
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
 }
 
 /* --- head: the tier, restated ------------------------------------------- */
@@ -204,45 +204,45 @@
    the top of the sheet, so the form is visibly about that and not about the
    generic business of contacting a charity. */
 .sheet-eyebrow {
-	font-family: var(--font-label);
-	font-size: 0.68rem;
-	font-weight: 700;
-	letter-spacing: 0.12em;
-	text-transform: uppercase;
-	color: var(--orange);
+  font-family: var(--font-label);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--orange);
 }
 .sheet-title {
-	font-family: var(--font-display);
-	font-weight: 800;
-	letter-spacing: -0.02em;
-	font-size: clamp(1.5rem, 5vw, 1.9rem);
-	line-height: 1.05;
-	margin: 0.35rem 0 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-size: clamp(1.5rem, 5vw, 1.9rem);
+  line-height: 1.05;
+  margin: 0.35rem 0 0;
 }
 .sheet-title .sheet-amount {
-	color: var(--muted);
-	font-weight: 700;
+  color: var(--muted);
+  font-weight: 700;
 }
 .sheet-line {
-	font-size: 0.93rem;
-	color: var(--ink-soft);
-	margin: 0.5rem 0 0;
-	line-height: 1.45;
+  font-size: 0.93rem;
+  color: var(--ink-soft);
+  margin: 0.5rem 0 0;
+  line-height: 1.45;
 }
 
 /* --- give now ------------------------------------------------------------ */
 .sheet-give {
-	margin-top: 1.15rem;
+  margin-top: 1.15rem;
 }
 .sheet-give .btn {
-	width: 100%;
-	justify-content: center;
+  width: 100%;
+  justify-content: center;
 }
 .sheet-give-note {
-	font-size: 0.78rem;
-	color: var(--muted);
-	text-align: center;
-	margin: 0.5rem 0 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-align: center;
+  margin: 0.5rem 0 0;
 }
 
 /* SHIPPED BUG, 2026-09-12, caught by Alec on a live phone: the "or" divider was
@@ -264,169 +264,169 @@
  * which just reflects the attribute the code had already set — it could not have
  * failed. test/sponsor_sheet.test.js now reads computed display instead. */
 .sheet [hidden] {
-	display: none;
+  display: none;
 }
 
 /* A rule with a word in it, rather than a heading, because the two paths are
    equals — "or" is the whole relationship between them. */
 .sheet-or {
-	display: flex;
-	align-items: center;
-	gap: 0.8rem;
-	margin: 1.25rem 0 0.2rem;
-	font-family: var(--font-label);
-	font-size: 0.7rem;
-	font-weight: 700;
-	letter-spacing: 0.12em;
-	text-transform: uppercase;
-	color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin: 1.25rem 0 0.2rem;
+  font-family: var(--font-label);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 .sheet-or::before,
 .sheet-or::after {
-	content: "";
-	flex: 1;
-	height: 1px;
-	background: var(--hairline);
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--hairline);
 }
 
 /* --- form ---------------------------------------------------------------- */
 .sheet-form {
-	margin-top: 1rem;
+  margin-top: 1rem;
 }
 .sheet-form .field {
-	margin-bottom: 0.9rem;
+  margin-bottom: 0.9rem;
 }
 .sheet-form .btn {
-	width: 100%;
-	justify-content: center;
+  width: 100%;
+  justify-content: center;
 }
 
 /* The note is optional and collapsed, because on the tiers people actually
    start at there is nothing they need to say that the tier has not said. It is
    a <details>, so it needs no JavaScript and it is keyboard-operable for free. */
 .sheet-note > summary {
-	display: inline-flex;
-	align-items: center;
-	gap: 0.35rem;
-	cursor: pointer;
-	list-style: none;
-	font-size: 0.85rem;
-	font-weight: 600;
-	color: var(--orange-ink);
-	padding: 0.2rem 0;
-	margin-bottom: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  list-style: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--orange-ink);
+  padding: 0.2rem 0;
+  margin-bottom: 0.5rem;
 }
 .sheet-note > summary::-webkit-details-marker {
-	display: none;
+  display: none;
 }
 /* "more" from the dictionary (--icon-more, in site.css); a close mark when open. */
 .sheet-note > summary::after {
-	content: "";
-	width: 0.85rem;
-	height: 0.85rem;
-	background: currentColor;
-	-webkit-mask: var(--icon-more) center/contain no-repeat;
-	mask: var(--icon-more) center/contain no-repeat;
-	transition: transform 0.2s ease;
+  content: "";
+  width: 0.85rem;
+  height: 0.85rem;
+  background: currentColor;
+  -webkit-mask: var(--icon-more) center/contain no-repeat;
+  mask: var(--icon-more) center/contain no-repeat;
+  transition: transform 0.2s ease;
 }
 .sheet-note[open] > summary::after {
-	transform: rotate(45deg);
+  transform: rotate(45deg);
 }
 
 .sheet-status {
-	margin: 0.8rem 0 0;
-	font-weight: 600;
-	font-size: 0.9rem;
-	min-height: 1.2em;
+  margin: 0.8rem 0 0;
+  font-weight: 600;
+  font-size: 0.9rem;
+  min-height: 1.2em;
 }
 .sheet-status.is-ok {
-	color: var(--ok);
+  color: var(--ok);
 }
 .sheet-status.is-err {
-	color: var(--err);
+  color: var(--err);
 }
 .sheet-fine {
-	font-size: 0.78rem;
-	color: var(--muted);
-	margin: 0.8rem 0 0;
-	text-align: center;
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin: 0.8rem 0 0;
+  text-align: center;
 }
 
 /* --- sent ---------------------------------------------------------------- */
 .sheet-sent {
-	text-align: center;
-	padding: 0.6rem 0 0.2rem;
+  text-align: center;
+  padding: 0.6rem 0 0.2rem;
 }
 .sheet-sent-mark {
-	width: 52px;
-	height: 52px;
-	margin: 0 auto 0.9rem;
-	border-radius: 50%;
-	display: grid;
-	place-items: center;
-	background: rgba(46, 125, 50, 0.1);
-	color: var(--ok);
-	font-size: 1.5rem;
-	font-weight: 700;
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 0.9rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(46, 125, 50, 0.1);
+  color: var(--ok);
+  font-size: 1.5rem;
+  font-weight: 700;
 }
 .sheet-sent h3 {
-	font-family: var(--font-display);
-	font-weight: 800;
-	letter-spacing: -0.02em;
-	font-size: 1.4rem;
-	margin: 0 0 0.5rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-size: 1.4rem;
+  margin: 0 0 0.5rem;
 }
 .sheet-sent p {
-	color: var(--ink-soft);
-	font-size: 0.95rem;
-	line-height: 1.5;
-	margin: 0 auto;
-	max-width: 36ch;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0 auto;
+  max-width: 36ch;
 }
 .sheet-sent .btn {
-	margin-top: 1.2rem;
-	width: 100%;
-	justify-content: center;
+  margin-top: 1.2rem;
+  width: 100%;
+  justify-content: center;
 }
 
 /* Motion. The sheet rises on a phone and settles on a desktop; both are short
    enough not to be in the way of someone who taps twice quickly. Honoured
    against prefers-reduced-motion, which this site respects everywhere else. */
 @media (prefers-reduced-motion: no-preference) {
-	.sheet[open] {
-		animation: sheet-in 0.26s cubic-bezier(0.22, 1, 0.36, 1);
-	}
-	.sheet[open]::backdrop {
-		animation: sheet-fade 0.26s ease;
-	}
-	@keyframes sheet-in {
-		from {
-			transform: translateY(14px);
-			opacity: 0;
-		}
-		to {
-			transform: none;
-			opacity: 1;
-		}
-	}
-	@keyframes sheet-fade {
-		from {
-			opacity: 0;
-		}
-		to {
-			opacity: 1;
-		}
-	}
+  .sheet[open] {
+    animation: sheet-in 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .sheet[open]::backdrop {
+    animation: sheet-fade 0.26s ease;
+  }
+  @keyframes sheet-in {
+    from {
+      transform: translateY(14px);
+      opacity: 0;
+    }
+    to {
+      transform: none;
+      opacity: 1;
+    }
+  }
+  @keyframes sheet-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 }
 @media (prefers-reduced-motion: no-preference) and (max-width: 640px) {
-	@keyframes sheet-in {
-		from {
-			transform: translateY(100%);
-		}
-		to {
-			transform: none;
-		}
-	}
+  @keyframes sheet-in {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: none;
+    }
+  }
 }
 
 /* The page behind must not scroll under an open sheet. showModal() makes the
@@ -434,20 +434,20 @@
    staying put while the page slides around behind it. */
 html.sheet-open,
 html.sheet-open body {
-	overflow: hidden;
+  overflow: hidden;
 }
 
 /* The note's label is redundant next to the "Add a note" summary that revealed
    it, but a textarea with no label is a textarea a screen reader announces as
    nothing at all. Hidden from sight, not from the accessibility tree. */
 .sheet .sr-only {
-	position: absolute;
-	width: 1px;
-	height: 1px;
-	padding: 0;
-	margin: -1px;
-	overflow: hidden;
-	clip: rect(0 0 0 0);
-	white-space: nowrap;
-	border: 0;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }

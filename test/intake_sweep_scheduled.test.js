@@ -14,32 +14,59 @@ import worker from "../src/index.js";
 let realFetch;
 beforeEach(() => {
   realFetch = globalThis.fetch;
-  globalThis.fetch = async () => { throw new Error("offline test forbids live network"); };
+  globalThis.fetch = async () => {
+    throw new Error("offline test forbids live network");
+  };
 });
-afterEach(() => { globalThis.fetch = realFetch; });
+afterEach(() => {
+  globalThis.fetch = realFetch;
+});
 
 function setup() {
   const mail = [];
   const env = {
     ...formBindings(),
     INTAKE_INBOX: "hello@adapttolife.org",
-    SEND_EMAIL: { send: async (m) => { mail.push(m); return { messageId: "offline-" + mail.length }; } },
+    SEND_EMAIL: {
+      send: async (m) => {
+        mail.push(m);
+        return { messageId: "offline-" + mail.length };
+      },
+    },
   };
-  env.INTAKE.sql.prepare(
-    "INSERT INTO intake (id,received_at,site,kind,name,email,summary,payload,source,is_canary) VALUES (?,?,?,?,?,?,?,?,?,0)"
-  ).run("stranded-1", "2026-09-30T17:25:33.181Z", "adapttolife.org", "apply", "Offline Applicant",
-    "applicant@example.org", "New apply: Offline Applicant", "{}", "adapttolife.org/apply");
-  env.INTAKE.sql.prepare("INSERT INTO intake_delivery_claims (intake_id,state) VALUES ('stranded-1','pending')").run();
+  env.INTAKE.sql
+    .prepare(
+      "INSERT INTO intake (id,received_at,site,kind,name,email,summary,payload,source,is_canary) VALUES (?,?,?,?,?,?,?,?,?,0)",
+    )
+    .run(
+      "stranded-1",
+      "2026-09-30T17:25:33.181Z",
+      "adapttolife.org",
+      "apply",
+      "Offline Applicant",
+      "applicant@example.org",
+      "New apply: Offline Applicant",
+      "{}",
+      "adapttolife.org/apply",
+    );
+  env.INTAKE.sql
+    .prepare(
+      "INSERT INTO intake_delivery_claims (intake_id,state) VALUES ('stranded-1','pending')",
+    )
+    .run();
   return { env, mail };
 }
 
 async function tick(env) {
   const work = [];
-  await worker.scheduled({ cron: "*/10 * * * *", scheduledTime: Date.now() }, env, { waitUntil: (p) => work.push(p) });
+  await worker.scheduled({ cron: "*/10 * * * *", scheduledTime: Date.now() }, env, {
+    waitUntil: (p) => work.push(p),
+  });
   await Promise.allSettled(work);
 }
 
-const toHouse = (mail) => mail.filter((m) => [].concat(m.to).includes("hello@adapttolife.org"));
+const toHouse = (mail) =>
+  mail.filter((m) => [].concat(m.to).includes("hello@adapttolife.org"));
 
 test("the production schedule notifies hello@ about a stranded intake record, exactly once", async () => {
   const { env, mail } = setup();
@@ -49,14 +76,30 @@ test("the production schedule notifies hello@ about a stranded intake record, ex
   const sent = toHouse(mail);
   assert.equal(sent.length, 1, "one notification, never a second on the next tick");
   assert.equal(sent[0].subject, "New apply: Offline Applicant");
-  assert.equal(sent[0].replyTo, "applicant@example.org", "a reply goes to the applicant");
-  assert.equal(env.INTAKE.sql.prepare("SELECT state FROM intake_delivery_claims WHERE intake_id='stranded-1'").get().state, "done");
-  assert.ok(env.INTAKE.sql.prepare("SELECT notified_at FROM intake WHERE id='stranded-1'").get().notified_at);
+  assert.equal(
+    sent[0].replyTo,
+    "applicant@example.org",
+    "a reply goes to the applicant",
+  );
+  assert.equal(
+    env.INTAKE.sql
+      .prepare("SELECT state FROM intake_delivery_claims WHERE intake_id='stranded-1'")
+      .get().state,
+    "done",
+  );
+  assert.ok(
+    env.INTAKE.sql.prepare("SELECT notified_at FROM intake WHERE id='stranded-1'").get()
+      .notified_at,
+  );
 });
 
 test("a record closed without sending is never mailed by the schedule", async () => {
   const { env, mail } = setup();
-  env.INTAKE.sql.prepare("UPDATE intake_delivery_claims SET state='done',error='test submission; no notification needed' WHERE intake_id='stranded-1'").run();
+  env.INTAKE.sql
+    .prepare(
+      "UPDATE intake_delivery_claims SET state='done',error='test submission; no notification needed' WHERE intake_id='stranded-1'",
+    )
+    .run();
   await tick(env);
   assert.equal(toHouse(mail).length, 0);
 });

@@ -1,7 +1,15 @@
 import { type ReactNode } from "react";
 
-export function Panel({ title, caption, right, children }: {
-  title?: string; caption?: string; right?: ReactNode; children: ReactNode;
+export function Panel({
+  title,
+  caption,
+  right,
+  children,
+}: {
+  title?: string;
+  caption?: string;
+  right?: ReactNode;
+  children: ReactNode;
 }) {
   return (
     <section className="panel">
@@ -19,8 +27,16 @@ export function Panel({ title, caption, right, children }: {
   );
 }
 
-export function Stat({ value, label, sub, tone }: {
-  value: ReactNode; label: string; sub?: string; tone?: "money";
+export function Stat({
+  value,
+  label,
+  sub,
+  tone,
+}: {
+  value: ReactNode;
+  label: string;
+  sub?: string;
+  tone?: "money";
 }) {
   return (
     <div className="stat">

@@ -9,7 +9,13 @@ export const RANGES = [
   { days: 365, label: "1y" },
 ];
 
-export function TimeRange({ days, onChange }: { days: number; onChange: (d: number) => void }) {
+export function TimeRange({
+  days,
+  onChange,
+}: {
+  days: number;
+  onChange: (d: number) => void;
+}) {
   return (
     <div className="segmented" role="group" aria-label="Time range">
       {RANGES.map((r) => (

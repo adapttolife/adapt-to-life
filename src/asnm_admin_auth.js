@@ -9,8 +9,11 @@ const now = () => new Date().toISOString();
 const future = (seconds) => new Date(Date.now() + seconds * 1000).toISOString();
 
 export function adminEmail(value) {
-  const email = String(value || "").trim().toLowerCase();
-  return EMAIL_RE.test(email) && /@(adapttolife\.org|adaptivesportsnearme\.com|faisaln\.com)$/i.test(email)
+  const email = String(value || "")
+    .trim()
+    .toLowerCase();
+  return EMAIL_RE.test(email) &&
+    /@(adapttolife\.org|adaptivesportsnearme\.com|faisaln\.com)$/i.test(email)
     ? email
     : "";
 }
@@ -23,7 +26,9 @@ function token() {
 
 async function hash(value) {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
-  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+  return Array.from(new Uint8Array(digest), (byte) =>
+    byte.toString(16).padStart(2, "0"),
+  ).join("");
 }
 
 async function signature(id, secret) {
@@ -41,35 +46,66 @@ async function signature(id, secret) {
 }
 
 function cookieValue(request) {
-  const entry = String(request.headers.get("Cookie") || "").split(";").find((part) => part.trim().startsWith(`${COOKIE}=`));
+  const entry = String(request.headers.get("Cookie") || "")
+    .split(";")
+    .find((part) => part.trim().startsWith(`${COOKIE}=`));
   return entry ? entry.trim().slice(COOKIE.length + 1) : "";
 }
 
 export async function readAdminSession(request, db, secret) {
   const [id, supplied] = cookieValue(request).split(".");
-  if (!id || !supplied || supplied !== await signature(id, secret)) return null;
-  const row = await db.prepare("SELECT email FROM admin_sessions WHERE id = ? AND revoked_at IS NULL AND expires_at > ?").bind(id, now()).first();
+  if (!id || !supplied || supplied !== (await signature(id, secret))) return null;
+  const row = await db
+    .prepare(
+      "SELECT email FROM admin_sessions WHERE id = ? AND revoked_at IS NULL AND expires_at > ?",
+    )
+    .bind(id, now())
+    .first();
   const email = adminEmail(row?.email);
   return email ? { id, email, cookie: `${COOKIE}=${id}.${supplied}` } : null;
 }
 
 export async function requestLogin(db, email) {
   const raw = token();
-  await db.prepare("INSERT INTO admin_login_tokens (id, token_hash, email, expires_at, created_at) VALUES (?, ?, ?, ?, ?)")
-    .bind(crypto.randomUUID(), await hash(raw), email, future(TOKEN_MINUTES * 60), now()).run();
+  await db
+    .prepare(
+      "INSERT INTO admin_login_tokens (id, token_hash, email, expires_at, created_at) VALUES (?, ?, ?, ?, ?)",
+    )
+    .bind(
+      crypto.randomUUID(),
+      await hash(raw),
+      email,
+      future(TOKEN_MINUTES * 60),
+      now(),
+    )
+    .run();
   return raw;
 }
 
 export async function consumeLogin(db, raw, secret, { secure = true } = {}) {
   if (!raw || raw.length > 500) return null;
-  const row = await db.prepare("SELECT id, email FROM admin_login_tokens WHERE token_hash = ? AND used_at IS NULL AND expires_at > ?").bind(await hash(raw), now()).first();
+  const row = await db
+    .prepare(
+      "SELECT id, email FROM admin_login_tokens WHERE token_hash = ? AND used_at IS NULL AND expires_at > ?",
+    )
+    .bind(await hash(raw), now())
+    .first();
   const email = adminEmail(row?.email);
   if (!row || !email) return null;
-  const result = await db.prepare("UPDATE admin_login_tokens SET used_at = ? WHERE id = ? AND used_at IS NULL").bind(now(), row.id).run();
+  const result = await db
+    .prepare(
+      "UPDATE admin_login_tokens SET used_at = ? WHERE id = ? AND used_at IS NULL",
+    )
+    .bind(now(), row.id)
+    .run();
   if (!Number(result.meta?.changes || 0)) return null;
   const id = crypto.randomUUID();
-  await db.prepare("INSERT INTO admin_sessions (id, email, expires_at, created_at) VALUES (?, ?, ?, ?)")
-    .bind(id, email, future(SESSION_SECONDS), now()).run();
+  await db
+    .prepare(
+      "INSERT INTO admin_sessions (id, email, expires_at, created_at) VALUES (?, ?, ?, ?)",
+    )
+    .bind(id, email, future(SESSION_SECONDS), now())
+    .run();
   const secureAttribute = secure ? "; Secure" : "";
   return {
     email,

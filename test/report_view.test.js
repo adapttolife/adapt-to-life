@@ -31,7 +31,8 @@ test("token round-trips: mint then verify returns the message id", async () => {
 test("tampered token is rejected", async () => {
   const token = await makeReportToken(SECRET, MSG_ID);
   // Flip one character anywhere in the token: signature no longer matches.
-  const flipped = token.slice(0, 10) + (token[10] === "A" ? "B" : "A") + token.slice(11);
+  const flipped =
+    token.slice(0, 10) + (token[10] === "A" ? "B" : "A") + token.slice(11);
   assert.equal(await verifyReportToken(SECRET, flipped), null);
 });
 
@@ -57,7 +58,10 @@ test("timingSafeEqualHex: equality, mismatch, and length mismatch", () => {
 });
 
 test("verify path uses the constant-time compare (source pin)", () => {
-  const src = readFileSync(fileURLToPath(new URL("../src/report_view.js", import.meta.url)), "utf8");
+  const src = readFileSync(
+    fileURLToPath(new URL("../src/report_view.js", import.meta.url)),
+    "utf8",
+  );
   // The signature check must go through timingSafeEqualHex — a refactor to
   // === would reintroduce the timing side channel this test exists to block.
   assert.match(src, /if \(!timingSafeEqualHex\(expected, sig\)\) return null/);
@@ -66,7 +70,10 @@ test("verify path uses the constant-time compare (source pin)", () => {
 // ---- hasChartBlock ----------------------------------------------------------
 
 test("hasChartBlock: chart fence yes; other fences and plain text no", () => {
-  assert.equal(hasChartBlock("# Hi\n```chart\ntype: bar\nsource: x\nA | 1\n```\n"), true);
+  assert.equal(
+    hasChartBlock("# Hi\n```chart\ntype: bar\nsource: x\nA | 1\n```\n"),
+    true,
+  );
   assert.equal(hasChartBlock("```js\nconst chart = 1;\n```"), false);
   assert.equal(hasChartBlock("no fences at all"), false);
   assert.equal(hasChartBlock(null), false);
@@ -156,7 +163,10 @@ test("viewer: valid token, unknown message id → the same 404", async () => {
 
 test("viewer: message without body_markdown → 404 (inbound/plain messages have no twin)", async () => {
   const token = await makeReportToken(SECRET, MSG_ID);
-  const env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: viewerDb({ ...ROW, body_markdown: null }) };
+  const env = {
+    REPORT_LINK_SECRET: SECRET,
+    AGENT_MAIL_DB: viewerDb({ ...ROW, body_markdown: null }),
+  };
   const res = await view(env, token);
   assert.equal(res.status, 404);
 });
@@ -183,17 +193,28 @@ test("viewer: happy path — page, charts, tooltip runtime, security headers", a
 
   const html = await res.text();
   // Subject as escaped H1; sent/from meta line; leaf page (no nav links).
-  assert.match(html, /<h1 class="report-subject">Daily brief &lt;Liberty One&gt;<\/h1>/);
+  assert.match(
+    html,
+    /<h1 class="report-subject">Daily brief &lt;Liberty One&gt;<\/h1>/,
+  );
   assert.match(html, /From charlie@agents\.adapttolife\.org/);
   assert.match(html, /2026-07-18 12:00:00/);
 
   // bar + line become interactive payloads with the exact data...
   assert.match(html, /"type":"bar"/);
-  assert.match(html, /"Alpha & Co",42/, "bar labels embed unescaped for textContent tooltips");
+  assert.match(
+    html,
+    /"Alpha & Co",42/,
+    "bar labels embed unescaped for textContent tooltips",
+  );
   assert.match(html, /"type":"line"/);
   assert.match(html, /"labels":\["Jan","Feb","Mar"\]/);
   assert.match(html, /"series":\[\[1\.2,2\.4,3\.1\]\]/);
-  assert.equal((html.match(/class="ichart"/g) || []).length, 2, "exactly the bar + line blocks are interactive");
+  assert.equal(
+    (html.match(/class="ichart"/g) || []).length,
+    2,
+    "exactly the bar + line blocks are interactive",
+  );
 
   // ...the stat block keeps its P1 HTML (tile with the 22px value)...
   assert.match(html, /font-size:28px[^>]*>\$59M</);
@@ -218,7 +239,10 @@ test("viewer: stacked bar becomes an interactive payload with per-segment toolti
     "```",
   ].join("\n");
   const token = await makeReportToken(SECRET, MSG_ID);
-  const env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: viewerDb({ ...ROW, body_markdown: md }) };
+  const env = {
+    REPORT_LINK_SECRET: SECRET,
+    AGENT_MAIL_DB: viewerDb({ ...ROW, body_markdown: md }),
+  };
   const html = await (await view(env, token)).text();
 
   // The embedded payload: stacked flag, raw names for textContent tooltips,
@@ -232,11 +256,17 @@ test("viewer: stacked bar becomes an interactive payload with per-segment toolti
   assert.match(html, /hover\(seg, d\.names\[s\] \+ ": " \+ fmt\(v\)\)/);
   assert.match(html, /function legendRow\(/);
   assert.match(html, /legendRow\(host, d\.names\)/);
-  assert.match(html, /"font-weight": 600, fill: INK \}, svg\);\n\s*val\.textContent = fmt\(r\[2\]\)/);
+  assert.match(
+    html,
+    /"font-weight": 600, fill: INK \}, svg\);\n\s*val\.textContent = fmt\(r\[2\]\)/,
+  );
 
   // The page palette is the fixed 6-slot categorical set, in slot order.
   // GOLDEN CHANGED DELIBERATELY (Spec 70 P4): deepened editorial palette.
-  assert.match(html, /var COLORS = \["#2a78d6","#1e7a46","#b95784","#c98500","#0f8a6d","#c2542a"\]/);
+  assert.match(
+    html,
+    /var COLORS = \["#2a78d6","#1e7a46","#b95784","#c98500","#0f8a6d","#c2542a"\]/,
+  );
 });
 
 test("viewer: grouped bar becomes an interactive payload with per-bar tooltips and unit-suffixed labels", async () => {
@@ -253,19 +283,32 @@ test("viewer: grouped bar becomes an interactive payload with per-bar tooltips a
     "```",
   ].join("\n");
   const token = await makeReportToken(SECRET, MSG_ID);
-  const env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: viewerDb({ ...ROW, body_markdown: md }) };
+  const env = {
+    REPORT_LINK_SECRET: SECRET,
+    AGENT_MAIL_DB: viewerDb({ ...ROW, body_markdown: md }),
+  };
   const html = await (await view(env, token)).text();
 
   // The embedded payload: grouped flag, raw names, unit, rows as [label, [values...]].
   assert.match(html, /"type":"bar","grouped":true,"names":\["Implied","Hurdle"\]/);
-  assert.match(html, /"rows":\[\["NVDA",\[14\.2,11\.8\]\],\["KO",\[3\.1,4\]\]\],"unit":"%"/);
-  assert.match(html, /class="ichart"/, "an interactive host is emitted for the grouped block");
+  assert.match(
+    html,
+    /"rows":\[\["NVDA",\[14\.2,11\.8\]\],\["KO",\[3\.1,4\]\]\],"unit":"%"/,
+  );
+  assert.match(
+    html,
+    /class="ichart"/,
+    "an interactive host is emitted for the grouped block",
+  );
 
   // The runtime draws side-by-side bars via drawGrouped: fixed-slot legend,
   // per-bar tooltip "label — series: value+unit", INK value labels.
   assert.match(html, /function drawGrouped\(host, d\)/);
   assert.match(html, /if \(d\.grouped\) return drawGrouped\(host, d\);/);
-  assert.match(html, /hover\(hot, r\[0\] \+ " \\u2014 " \+ d\.names\[s\] \+ ": " \+ fmt\(v\) \+ unit\)/);
+  assert.match(
+    html,
+    /hover\(hot, r\[0\] \+ " \\u2014 " \+ d\.names\[s\] \+ ": " \+ fmt\(v\) \+ unit\)/,
+  );
   assert.match(html, /val\.textContent = fmt\(v\) \+ unit/);
   assert.match(html, /legendRow\(host, d\.names\)/);
 });
@@ -273,10 +316,16 @@ test("viewer: grouped bar becomes an interactive payload with per-bar tooltips a
 test("viewer: grouped bar without a series header degrades on the page too (shared grammar, no drift)", async () => {
   const badMd = "```chart\ntype: bar\nmode: grouped\nsource: s\nQ1 | 1 | 2\n```";
   const token = await makeReportToken(SECRET, MSG_ID);
-  const env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: viewerDb({ ...ROW, body_markdown: badMd }) };
+  const env = {
+    REPORT_LINK_SECRET: SECRET,
+    AGENT_MAIL_DB: viewerDb({ ...ROW, body_markdown: badMd }),
+  };
   const html = await (await view(env, token)).text();
   assert.match(html, /Chart degraded \(grouped requires a series header\)/);
-  assert.ok(!html.includes('class="ichart"'), "no interactive payload for the invalid block");
+  assert.ok(
+    !html.includes('class="ichart"'),
+    "no interactive payload for the invalid block",
+  );
 });
 
 // GOLDEN CHANGED DELIBERATELY (Spec 70 P4, contrast pass): BLUE_RAMP's max
@@ -284,16 +333,34 @@ test("viewer: grouped bar without a series header degrades on the page too (shar
 test("viewer: shade bar payload embeds the per-row ramp colors; invalid shade+multi-series degrades on the page", async () => {
   const shadeMd = "```chart\ntype: bar\nsource: s\nshade: value\nA | 1\nB | 12\n```";
   const token = await makeReportToken(SECRET, MSG_ID);
-  let env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: viewerDb({ ...ROW, body_markdown: shadeMd }) };
+  let env = {
+    REPORT_LINK_SECRET: SECRET,
+    AGENT_MAIL_DB: viewerDb({ ...ROW, body_markdown: shadeMd }),
+  };
   let html = await (await view(env, token)).text();
-  assert.match(html, /"shades":\["#cde2fb","#061b3c"\]/, "min→lightest, max→darkest ramp stops embedded");
-  assert.match(html, /d\.shades && d\.shades\[i\]/, "runtime paints bars from the embedded shades");
+  assert.match(
+    html,
+    /"shades":\["#cde2fb","#061b3c"\]/,
+    "min→lightest, max→darkest ramp stops embedded",
+  );
+  assert.match(
+    html,
+    /d\.shades && d\.shades\[i\]/,
+    "runtime paints bars from the embedded shades",
+  );
 
-  const badMd = "```chart\ntype: bar\nsource: s\nshade: value\nseries: A | B\nQ1 | 1 | 2\nQ2 | 3 | 4\n```";
-  env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: viewerDb({ ...ROW, body_markdown: badMd }) };
+  const badMd =
+    "```chart\ntype: bar\nsource: s\nshade: value\nseries: A | B\nQ1 | 1 | 2\nQ2 | 3 | 4\n```";
+  env = {
+    REPORT_LINK_SECRET: SECRET,
+    AGENT_MAIL_DB: viewerDb({ ...ROW, body_markdown: badMd }),
+  };
   html = await (await view(env, token)).text();
   assert.match(html, /Chart degraded \(shade requires a single-series bar\)/);
-  assert.ok(!html.includes('class="ichart"'), "no interactive payload for the invalid block");
+  assert.ok(
+    !html.includes('class="ichart"'),
+    "no interactive payload for the invalid block",
+  );
 });
 
 test("viewer: waterfall becomes an interactive payload — rows, kind, and the [lo,hi] range", async () => {
@@ -308,16 +375,23 @@ test("viewer: waterfall becomes an interactive payload — rows, kind, and the [
     "```",
   ].join("\n");
   const token = await makeReportToken(SECRET, MSG_ID);
-  const env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: viewerDb({ ...ROW, body_markdown: md }) };
+  const env = {
+    REPORT_LINK_SECRET: SECRET,
+    AGENT_MAIL_DB: viewerDb({ ...ROW, body_markdown: md }),
+  };
   const html = await (await view(env, token)).text();
 
   // The embedded payload: rows as [label, value, display, kind], plus the
   // global lo/hi range (always includes 0 — nothing here dips negative).
   assert.match(
     html,
-    /"type":"waterfall","rows":\[\["Gross Rent",2400,"\$2,400","delta"\],\["Vacancy Loss",-120,"-120","delta"\],\["EGI",2280,"\$2,280","total"\]\],"lo":0,"hi":2400/
+    /"type":"waterfall","rows":\[\["Gross Rent",2400,"\$2,400","delta"\],\["Vacancy Loss",-120,"-120","delta"\],\["EGI",2280,"\$2,280","total"\]\],"lo":0,"hi":2400/,
   );
-  assert.match(html, /class="ichart"/, "an interactive host is emitted for the waterfall block");
+  assert.match(
+    html,
+    /class="ichart"/,
+    "an interactive host is emitted for the waterfall block",
+  );
 
   // The runtime draws it via drawWaterfall, resolving polarity from the
   // theme-aware series slots (COLORS[1] green / COLORS[5] sienna) — the
@@ -325,32 +399,51 @@ test("viewer: waterfall becomes an interactive payload — rows, kind, and the [
   // surface, so the interactive runtime falls back to the already
   // dark-validated palette instead of inventing new tokens.
   assert.match(html, /function drawWaterfall\(host, d\)/);
-  assert.match(html, /else if \(data\.type === "waterfall"\) drawWaterfall\(host, data\);/);
-  assert.match(html, /var fill = r\.kind === "total" \? COLORS\[0\] : \(r\.value >= 0 \? COLORS\[1\] : COLORS\[5\]\)/);
+  assert.match(
+    html,
+    /else if \(data\.type === "waterfall"\) drawWaterfall\(host, data\);/,
+  );
+  assert.match(
+    html,
+    /var fill = r\.kind === "total" \? COLORS\[0\] : \(r\.value >= 0 \? COLORS\[1\] : COLORS\[5\]\)/,
+  );
 });
 
 test("viewer: waterfall degrade reasons surface on the page too (shared grammar, no drift)", async () => {
   const badMd = "```chart\ntype: waterfall\nsource: s\nA | not-numeric\nB | 2\n```";
   const token = await makeReportToken(SECRET, MSG_ID);
-  const env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: viewerDb({ ...ROW, body_markdown: badMd }) };
+  const env = {
+    REPORT_LINK_SECRET: SECRET,
+    AGENT_MAIL_DB: viewerDb({ ...ROW, body_markdown: badMd }),
+  };
   const html = await (await view(env, token)).text();
   assert.match(html, /Chart degraded \(waterfall value not numeric\)/);
-  assert.ok(!html.includes('class="ichart"'), "no interactive payload for the invalid block");
+  assert.ok(
+    !html.includes('class="ichart"'),
+    "no interactive payload for the invalid block",
+  );
 });
 
 test("viewer: chart without source degrades on the page too (P1 contract)", async () => {
   const md = "```chart\ntype: bar\nA | 1\nB | 2\n```";
   const token = await makeReportToken(SECRET, MSG_ID);
-  const env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: viewerDb({ ...ROW, body_markdown: md }) };
+  const env = {
+    REPORT_LINK_SECRET: SECRET,
+    AGENT_MAIL_DB: viewerDb({ ...ROW, body_markdown: md }),
+  };
   const html = await (await view(env, token)).text();
   assert.match(html, /Chart degraded \(missing source\)/);
-  assert.ok(!html.includes('class="ichart"'), "no interactive payload for an invalid block");
+  assert.ok(
+    !html.includes('class="ichart"'),
+    "no interactive payload for an invalid block",
+  );
 });
 
 // ---- email footer integration (via the real /send and /reply routes) --------
 
 const OPERATOR_TOKEN = "op-secret-for-tests";
-const CHART_MD = "# Daily\n\n```chart\ntype: bar\nsource: FMP\nAlpha | 42\nBeta | 17\n```\n";
+const CHART_MD =
+  "# Daily\n\n```chart\ntype: bar\nsource: FMP\nAlpha | 42\nBeta | 17\n```\n";
 
 // D1 stub for the send/reply flows: registered inbox, no rate-limit hits,
 // records every bind so tests can recover the inserted message id.
@@ -365,10 +458,13 @@ function sendDb({ thread = null, lastInbound = null } = {}) {
           return {
             async first() {
               if (/SELECT 1 AS ok FROM inboxes/.test(sql)) return { ok: 1 };
-              if (/SELECT default_agent FROM inboxes/.test(sql)) return { default_agent: "charlie" };
+              if (/SELECT default_agent FROM inboxes/.test(sql))
+                return { default_agent: "charlie" };
               if (/SELECT \* FROM threads WHERE id = \?/.test(sql)) return thread;
-              if (/FROM messages WHERE thread_id = \? AND direction = 'in'/.test(sql)) return lastInbound;
-              if (/datetime\('now', '-1 hour'\)/.test(sql)) return { thread_n: 0, inbox_n: 0 };
+              if (/FROM messages WHERE thread_id = \? AND direction = 'in'/.test(sql))
+                return lastInbound;
+              if (/datetime\('now', '-1 hour'\)/.test(sql))
+                return { thread_n: 0, inbox_n: 0 };
               if (/start of day/.test(sql)) return { n: 0 };
               return null;
             },
@@ -390,7 +486,12 @@ function makeEnv(db, { secret } = {}) {
   const env = {
     AGENT_MAIL_TOKEN: OPERATOR_TOKEN,
     AGENT_MAIL_DB: db,
-    SEND_EMAIL: { async send(msg) { sentMsgs.push(msg); return { id: "cf-msg-1" }; } },
+    SEND_EMAIL: {
+      async send(msg) {
+        sentMsgs.push(msg);
+        return { id: "cf-msg-1" };
+      },
+    },
   };
   if (secret) env.REPORT_LINK_SECRET = secret;
   return { env, sentMsgs };
@@ -399,8 +500,16 @@ function makeEnv(db, { secret } = {}) {
 async function postSend(env, body) {
   const request = new Request("https://adapttolife.org/api/agent-mail/send", {
     method: "POST",
-    headers: { Authorization: `Bearer ${OPERATOR_TOKEN}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from: "charlie@agents.adapttolife.org", to: "nick@example.com", subject: "Daily", ...body }),
+    headers: {
+      Authorization: `Bearer ${OPERATOR_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: "charlie@agents.adapttolife.org",
+      to: "nick@example.com",
+      subject: "Daily",
+      ...body,
+    }),
   });
   return handleAgentMailApi(request, env, new URL(request.url));
 }
@@ -422,7 +531,11 @@ test("footer: /send with chart + secret → link in the html, token verifies to 
   const m = html.match(/https:\/\/adapttolife\.org\/r\/([A-Za-z0-9_-]+)/);
   assert.ok(m, "absolute /r/ link present");
   const msgId = insertedMessageId(db);
-  assert.equal(await verifyReportToken(SECRET, m[1]), msgId, "link token resolves to the D1 message id");
+  assert.equal(
+    await verifyReportToken(SECRET, m[1]),
+    msgId,
+    "link token resolves to the D1 message id",
+  );
   // The archived body_html matches the wire (footer included). Bind order:
   // id, thread_id, from, to, subject, body_text, body_markdown, body_html
   // (direction is a SQL literal).
@@ -457,13 +570,27 @@ test("footer: explicit body_html register stays untouched even with charts + sec
 });
 
 test("footer: /reply with chart + secret → link rides the reply, id matches the archive", async () => {
-  const thread = { id: "t9", inbox: "charlie@agents.adapttolife.org", assigned_agent: "charlie", status: "replied", subject: "Re: memo", from_addr: "nick@example.com" };
-  const lastInbound = { from_addr: "nick@example.com", is_machine: 0, message_id: "<m1@x>" };
+  const thread = {
+    id: "t9",
+    inbox: "charlie@agents.adapttolife.org",
+    assigned_agent: "charlie",
+    status: "replied",
+    subject: "Re: memo",
+    from_addr: "nick@example.com",
+  };
+  const lastInbound = {
+    from_addr: "nick@example.com",
+    is_machine: 0,
+    message_id: "<m1@x>",
+  };
   const db = sendDb({ thread, lastInbound });
   const { env, sentMsgs } = makeEnv(db, { secret: SECRET });
   const request = new Request("https://adapttolife.org/api/agent-mail/reply", {
     method: "POST",
-    headers: { Authorization: `Bearer ${OPERATOR_TOKEN}`, "Content-Type": "application/json" },
+    headers: {
+      Authorization: `Bearer ${OPERATOR_TOKEN}`,
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({ thread_id: "t9", body_markdown: CHART_MD }),
   });
   const res = await handleAgentMailApi(request, env, new URL(request.url));
@@ -474,12 +601,28 @@ test("footer: /reply with chart + secret → link rides the reply, id matches th
 });
 
 test("footer: /reply without charts → no link", async () => {
-  const thread = { id: "t9", inbox: "charlie@agents.adapttolife.org", assigned_agent: "charlie", status: "replied", subject: "Re: memo", from_addr: "nick@example.com" };
-  const lastInbound = { from_addr: "nick@example.com", is_machine: 0, message_id: "<m1@x>" };
-  const { env, sentMsgs } = makeEnv(sendDb({ thread, lastInbound }), { secret: SECRET });
+  const thread = {
+    id: "t9",
+    inbox: "charlie@agents.adapttolife.org",
+    assigned_agent: "charlie",
+    status: "replied",
+    subject: "Re: memo",
+    from_addr: "nick@example.com",
+  };
+  const lastInbound = {
+    from_addr: "nick@example.com",
+    is_machine: 0,
+    message_id: "<m1@x>",
+  };
+  const { env, sentMsgs } = makeEnv(sendDb({ thread, lastInbound }), {
+    secret: SECRET,
+  });
   const request = new Request("https://adapttolife.org/api/agent-mail/reply", {
     method: "POST",
-    headers: { Authorization: `Bearer ${OPERATOR_TOKEN}`, "Content-Type": "application/json" },
+    headers: {
+      Authorization: `Bearer ${OPERATOR_TOKEN}`,
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({ thread_id: "t9", body_markdown: "plain answer" }),
   });
   const res = await handleAgentMailApi(request, env, new URL(request.url));

@@ -50,8 +50,10 @@
   function donateHref(tier, amount) {
     var slug = tier.toLowerCase().replace(/[^a-z0-9]+/g, "-");
     return (
-      "/donate?amount=" + encodeURIComponent(amount) +
-      "&utm_source=sponsorship&utm_medium=site&utm_campaign=sponsor-" + slug
+      "/donate?amount=" +
+      encodeURIComponent(amount) +
+      "&utm_source=sponsorship&utm_medium=site&utm_campaign=sponsor-" +
+      slug
     );
   }
 
@@ -77,7 +79,7 @@
   function primeTurnstile() {
     var box = sheet.querySelector(".cf-turnstile");
     if (!box) return;
-    if (!window.turnstile) return;          // not loaded yet: turnstile-lazy.js will render it
+    if (!window.turnstile) return; // not loaded yet: turnstile-lazy.js will render it
     try {
       if (box.dataset.wid) {
         window.turnstile.remove(box.dataset.wid);
@@ -87,7 +89,11 @@
     } catch (e) {
       // render() throws if the API auto-rendered this box before we tracked an
       // id. Reset is the recovery: same widget, fresh challenge, now visible.
-      try { window.turnstile.reset(box); } catch (e2) { /* the submit hold covers us */ }
+      try {
+        window.turnstile.reset(box);
+      } catch (e2) {
+        /* the submit hold covers us */
+      }
     }
   }
 
@@ -95,7 +101,8 @@
     var tier = trigger.getAttribute("data-sponsor-tier");
     var amount = trigger.getAttribute("data-sponsor-amount");
     var line = trigger.getAttribute("data-sponsor-line") || "";
-    var price = trigger.getAttribute("data-sponsor-price") || (amount ? money(amount) : "");
+    var price =
+      trigger.getAttribute("data-sponsor-price") || (amount ? money(amount) : "");
     current = { tier: tier, amount: amount, price: price };
 
     els.title.textContent = tier;
@@ -118,7 +125,11 @@
     // The filterable half. `source` is a ClickUp field on the Contacts list, so
     // "how many people asked about Captain this quarter" becomes a view instead
     // of a read-every-message exercise.
-    els.source.value = ("Sponsorship page: " + tier + (price ? " (" + price + ")" : "")).slice(0, 80);
+    els.source.value = (
+      "Sponsorship page: " +
+      tier +
+      (price ? " (" + price + ")" : "")
+    ).slice(0, 80);
 
     els.body.hidden = false;
     els.sent.hidden = true;
@@ -130,7 +141,8 @@
 
   function setStatus(text, ok) {
     els.status.textContent = text;
-    els.status.className = "sheet-status" + (ok === true ? " is-ok" : ok === false ? " is-err" : "");
+    els.status.className =
+      "sheet-status" + (ok === true ? " is-ok" : ok === false ? " is-err" : "");
   }
 
   function close() {
@@ -159,7 +171,9 @@
   // the dialog and used to dismiss the sheet mid-sentence — selecting text in
   // the note field was enough. Measured on the deployed page 2026-09-12.
   var pressedOnBackdrop = false;
-  sheet.addEventListener("pointerdown", function (e) { pressedOnBackdrop = e.target === sheet; });
+  sheet.addEventListener("pointerdown", function (e) {
+    pressedOnBackdrop = e.target === sheet;
+  });
   sheet.addEventListener("click", function (e) {
     if (e.target === sheet && pressedOnBackdrop) close();
     pressedOnBackdrop = false;
@@ -180,19 +194,28 @@
   // cursor, and there is nothing to flick.
   var grab = sheet.querySelector("[data-sheet-grab]");
   if (grab && window.PointerEvent) {
-    var startY = 0, dy = 0, dragging = false, pid = null;
-    var CLOSE_AT = 90;      // px pulled down that commits to a dismiss
-    var FLICK = 0.55;       // or a fast flick, however short
+    var startY = 0,
+      dy = 0,
+      dragging = false,
+      pid = null;
+    var CLOSE_AT = 90; // px pulled down that commits to a dismiss
+    var FLICK = 0.55; // or a fast flick, however short
     var startedAt = 0;
 
-    function moveTo(y) { sheet.style.transform = y ? "translateY(" + y + "px)" : ""; }
+    function moveTo(y) {
+      sheet.style.transform = y ? "translateY(" + y + "px)" : "";
+    }
 
     function endDrag(commit) {
       if (!dragging) return;
       dragging = false;
       sheet.classList.remove("is-dragging");
       if (pid !== null && grab.releasePointerCapture) {
-        try { grab.releasePointerCapture(pid); } catch (err) { /* already gone */ }
+        try {
+          grab.releasePointerCapture(pid);
+        } catch (err) {
+          /* already gone */
+        }
       }
       pid = null;
       if (commit) {
@@ -206,15 +229,27 @@
       // lands so the next drag is direct.
       sheet.classList.add("is-settling");
       moveTo(0);
-      window.setTimeout(function () { sheet.classList.remove("is-settling"); }, 240);
+      window.setTimeout(function () {
+        sheet.classList.remove("is-settling");
+      }, 240);
     }
 
     grab.addEventListener("pointerdown", function (e) {
       if (!window.matchMedia("(max-width: 640px)").matches) return;
-      dragging = true; startY = e.clientY; dy = 0; startedAt = Date.now(); pid = e.pointerId;
+      dragging = true;
+      startY = e.clientY;
+      dy = 0;
+      startedAt = Date.now();
+      pid = e.pointerId;
       sheet.classList.add("is-dragging");
       sheet.classList.remove("is-settling");
-      if (grab.setPointerCapture) { try { grab.setPointerCapture(e.pointerId); } catch (err) { /* no capture */ } }
+      if (grab.setPointerCapture) {
+        try {
+          grab.setPointerCapture(e.pointerId);
+        } catch (err) {
+          /* no capture */
+        }
+      }
     });
 
     grab.addEventListener("pointermove", function (e) {
@@ -230,7 +265,9 @@
       var speed = dy / Math.max(Date.now() - startedAt, 1);
       endDrag(dy > CLOSE_AT || (dy > 24 && speed > FLICK));
     });
-    grab.addEventListener("pointercancel", function () { endDrag(false); });
+    grab.addEventListener("pointercancel", function () {
+      endDrag(false);
+    });
   }
   sheet.querySelectorAll("[data-sheet-close]").forEach(function (b) {
     b.addEventListener("click", close);
@@ -295,7 +332,11 @@
           els.form.reset();
           delete els.form._atlSubmission;
         } else {
-          setStatus((d && d.error) || "Something went wrong. Please email hello@adapttolife.org.", false);
+          setStatus(
+            (d && d.error) ||
+              "Something went wrong. Please email hello@adapttolife.org.",
+            false,
+          );
         }
       })
       .catch(function () {

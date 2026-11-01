@@ -47,7 +47,7 @@ async function hmacSha256Hex(secret, message) {
     new TextEncoder().encode(secret),
     { name: "HMAC", hash: "SHA-256" },
     false,
-    ["sign"]
+    ["sign"],
   );
   const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(message));
   return [...new Uint8Array(sig)].map((b) => b.toString(16).padStart(2, "0")).join("");
@@ -114,7 +114,9 @@ export async function verifyReportToken(secret, token) {
 // uses (not the same verifier, so a report token can never be replayed as a
 // library token or vice versa: the payload prefix is part of what's signed).
 export async function makeLibraryToken(secret, email) {
-  const addr = String(email || "").toLowerCase().trim();
+  const addr = String(email || "")
+    .toLowerCase()
+    .trim();
   const payload = `lib:${addr}`;
   const sig = await hmacSha256Hex(secret, payload);
   return b64urlEncode(`${payload}.${sig}`);
@@ -143,7 +145,10 @@ export async function verifyLibraryToken(secret, token) {
 // The absolute /lib/ permalink for a recipient's report library.
 export async function libraryLink(env, email) {
   const token = await makeLibraryToken(env.REPORT_LINK_SECRET, email);
-  const base = String(env.REPORT_LINK_BASE || "https://adapttolife.org").replace(/\/+$/, "");
+  const base = String(env.REPORT_LINK_BASE || "https://adapttolife.org").replace(
+    /\/+$/,
+    "",
+  );
   return `${base}/lib/${token}`;
 }
 
@@ -160,7 +165,10 @@ export function hasChartBlock(markdown) {
 // domain this Worker serves; env.REPORT_LINK_BASE overrides (staging).
 export async function reportLink(env, messageId) {
   const token = await makeReportToken(env.REPORT_LINK_SECRET, messageId);
-  const base = String(env.REPORT_LINK_BASE || "https://adapttolife.org").replace(/\/+$/, "");
+  const base = String(env.REPORT_LINK_BASE || "https://adapttolife.org").replace(
+    /\/+$/,
+    "",
+  );
   return `${base}/r/${token}`;
 }
 
@@ -180,11 +188,12 @@ export async function reportFooterHtml(env, body, messageId, recipient) {
     if (!hasChartBlock(b.body_markdown)) return "";
     const href = await reportLink(env, messageId);
     let libHtml = "";
-    const addr = String(recipient || "").toLowerCase().trim();
+    const addr = String(recipient || "")
+      .toLowerCase()
+      .trim();
     if (addr) {
       const libHref = await libraryLink(env, addr);
-      libHtml =
-        ` &middot; Report library &#8594; <a href="${libHref}" style="color:#0b57d0">${libHref}</a>`;
+      libHtml = ` &middot; Report library &#8594; <a href="${libHref}" style="color:#0b57d0">${libHref}</a>`;
     }
     return (
       `<div style="font-size:12px;color:${CHART_MUTED};margin:14px 0 0">` +
@@ -232,14 +241,27 @@ function barPayload(headers, dataLines) {
   if (!parsed.ok) return null;
   const bar = parsed.bar;
   if (bar.grouped) {
-    const payload = { type: "bar", grouped: true, names: bar.names, rows: bar.rows.map((r) => [r.label, r.values]) };
+    const payload = {
+      type: "bar",
+      grouped: true,
+      names: bar.names,
+      rows: bar.rows.map((r) => [r.label, r.values]),
+    };
     if (bar.unit) payload.unit = bar.unit;
     return payload;
   }
   if (bar.stacked) {
-    return { type: "bar", stacked: true, names: bar.names, rows: bar.rows.map((r) => [r.label, r.values, r.total]) };
+    return {
+      type: "bar",
+      stacked: true,
+      names: bar.names,
+      rows: bar.rows.map((r) => [r.label, r.values, r.total]),
+    };
   }
-  const payload = { type: "bar", rows: bar.rows.map((r) => [r.label, r.value, r.display]) };
+  const payload = {
+    type: "bar",
+    rows: bar.rows.map((r) => [r.label, r.value, r.display]),
+  };
   if (bar.shadeColors) payload.shades = bar.shadeColors;
   return payload;
 }
@@ -286,7 +308,12 @@ function pageChartRenderer(escapedLines) {
         payload =
           c.type === "scatter"
             ? { type: "scatter", x: c.xValues, series: c.series, names: c.seriesNames }
-            : { type: "line", labels: c.xLabels, series: c.series, names: c.seriesNames };
+            : {
+                type: "line",
+                labels: c.xLabels,
+                series: c.series,
+                names: c.seriesNames,
+              };
       }
     }
     if (!payload) return renderChart(escapedLines);
@@ -304,10 +331,16 @@ function pageChartRenderer(escapedLines) {
       // Contrast pass (Spec 70 P4): same 600-weight step as chart_render.js's
       // titleLine — the two title idioms (email HTML vs. page-owned chrome)
       // stay visually matched.
-      parts.push(`<div style="font-size:14px;font-weight:600;color:var(--ink);margin:16px 0 6px">${esc.title}</div>`);
+      parts.push(
+        `<div style="font-size:14px;font-weight:600;color:var(--ink);margin:16px 0 6px">${esc.title}</div>`,
+      );
     }
-    parts.push(`<div class="ichart"><script type="application/json">${json}</script></div>`);
-    parts.push(`<div style="font-size:12px;color:var(--muted);margin:4px 0 12px">Source: ${esc.source}</div>`);
+    parts.push(
+      `<div class="ichart"><script type="application/json">${json}</script></div>`,
+    );
+    parts.push(
+      `<div style="font-size:12px;color:var(--muted);margin:4px 0 12px">Source: ${esc.source}</div>`,
+    );
     return parts.join("");
   } catch {
     return renderChart(escapedLines);
@@ -827,7 +860,14 @@ const RUNTIME_SCRIPT = `
 // the house anchor blue); slots 1-5 lift lightness/saturation off the new
 // light editorial hues just enough to clear the dark-surface contrast floor
 // without leaving the same hue family.
-const DARK_SERIES_COLORS = ["#3987e5", "#208f50", "#c36490", "#c08410", "#0fa17f", "#d65c2d"];
+const DARK_SERIES_COLORS = [
+  "#3987e5",
+  "#208f50",
+  "#c36490",
+  "#c08410",
+  "#0fa17f",
+  "#d65c2d",
+];
 
 const ROOT_VARS_CSS = `
   :root {
@@ -992,8 +1032,12 @@ function renderReportPage(msg, agentName) {
   const meta = [
     msg.from_addr ? `From ${escapeHtml(msg.from_addr)}` : null,
     msg.created_at ? `Sent ${escapeHtml(msg.created_at)} UTC` : null,
-  ].filter(Boolean).join(" &middot; ");
-  const bodyHtml = renderMarkdown(msg.body_markdown, { chartRenderer: pageChartRenderer });
+  ]
+    .filter(Boolean)
+    .join(" &middot; ");
+  const bodyHtml = renderMarkdown(msg.body_markdown, {
+    chartRenderer: pageChartRenderer,
+  });
   return (
     "<!doctype html>\n" +
     '<html lang="en"><head><meta charset="utf-8">' +
@@ -1047,8 +1091,9 @@ export async function handleReportView(request, env, url) {
 
   let msg;
   try {
-    msg = await env.AGENT_MAIL_DB
-      .prepare(`SELECT id, thread_id, subject, from_addr, created_at, body_markdown FROM messages WHERE id = ?`)
+    msg = await env.AGENT_MAIL_DB.prepare(
+      `SELECT id, thread_id, subject, from_addr, created_at, body_markdown FROM messages WHERE id = ?`,
+    )
       .bind(messageId)
       .first();
   } catch (err) {
@@ -1063,13 +1108,17 @@ export async function handleReportView(request, env, url) {
   let agentName = "";
   if (msg.thread_id) {
     try {
-      const thread = await env.AGENT_MAIL_DB
-        .prepare(`SELECT assigned_agent FROM threads WHERE id = ?`)
+      const thread = await env.AGENT_MAIL_DB.prepare(
+        `SELECT assigned_agent FROM threads WHERE id = ?`,
+      )
         .bind(msg.thread_id)
         .first();
       agentName = (thread && thread.assigned_agent) || "";
     } catch (err) {
-      console.error("report view thread lookup failed (reply line degrades):", err && err.message);
+      console.error(
+        "report view thread lookup failed (reply line degrades):",
+        err && err.message,
+      );
     }
   }
 
@@ -1086,7 +1135,8 @@ export async function handleReportView(request, env, url) {
       // requests" a browser-enforced invariant, not a code-review hope.
       // No form on the page anymore — default-src 'none' with no
       // form-action addition needed.
-      "Content-Security-Policy": "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'",
+      "Content-Security-Policy":
+        "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'",
     },
   });
 }
@@ -1155,12 +1205,11 @@ export async function handleLibraryView(request, env, url) {
 
   let rows;
   try {
-    const { results } = await env.AGENT_MAIL_DB
-      .prepare(
-        `SELECT id, subject, from_addr, created_at FROM messages
+    const { results } = await env.AGENT_MAIL_DB.prepare(
+      `SELECT id, subject, from_addr, created_at FROM messages
          WHERE lower(to_addr) = ? AND body_markdown IS NOT NULL
-         ORDER BY created_at DESC LIMIT 200`
-      )
+         ORDER BY created_at DESC LIMIT 200`,
+    )
       .bind(email)
       .all();
     rows = results || [];
@@ -1169,7 +1218,9 @@ export async function handleLibraryView(request, env, url) {
     return notFound();
   }
 
-  const links = await Promise.all(rows.map(async (r) => ({ ...r, href: await reportLink(env, r.id) })));
+  const links = await Promise.all(
+    rows.map(async (r) => ({ ...r, href: await reportLink(env, r.id) })),
+  );
 
   return new Response(renderLibraryPage(email, links), {
     headers: {
@@ -1178,7 +1229,8 @@ export async function handleLibraryView(request, env, url) {
       "Referrer-Policy": "no-referrer",
       "Cache-Control": "private, no-store",
       "X-Content-Type-Options": "nosniff",
-      "Content-Security-Policy": "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'",
+      "Content-Security-Policy":
+        "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'",
     },
   });
 }

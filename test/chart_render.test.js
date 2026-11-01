@@ -33,7 +33,7 @@ test("bar: title + source render, max value gets width=92% (kit idiom: attribute
       "NVDA | 12 | 12 tickets",
       "TSM | 8",
       "AVGO | 5",
-    ])
+    ]),
   );
   assert.match(html, /Escalations by ticker/);
   assert.match(html, /Source: escalation log, 2026-07-11/);
@@ -58,7 +58,14 @@ test("bar: negative value degrades to a plain table with a reason", () => {
 // surface #ffffff, ALL CHECKS PASS (pasted in the branch report). Slot 0
 // (house anchor blue) is unchanged.
 test("palette: SERIES_COLORS is the exact 6-slot categorical set, in order, and never touches the reserved status colors", () => {
-  assert.deepEqual(SERIES_COLORS, ["#2a78d6", "#1e7a46", "#b95784", "#c98500", "#0f8a6d", "#c2542a"]);
+  assert.deepEqual(SERIES_COLORS, [
+    "#2a78d6",
+    "#1e7a46",
+    "#b95784",
+    "#c98500",
+    "#0f8a6d",
+    "#c2542a",
+  ]);
   // DELTA_POS/DELTA_NEG are reserved for status; the categorical set must
   // never absorb them.
   assert.ok(!SERIES_COLORS.includes("#006300"));
@@ -76,7 +83,10 @@ test("palette: SERIES_COLORS never collides with the reserved verdict-accent col
     reserved.add(bg);
   }
   for (const c of SERIES_COLORS) {
-    assert.ok(!reserved.has(c), `series color ${c} collides with a reserved verdict color`);
+    assert.ok(
+      !reserved.has(c),
+      `series color ${c} collides with a reserved verdict color`,
+    );
   }
 });
 
@@ -94,20 +104,32 @@ test("stacked bar: fixed-slot segment colors, legend chips match marks, 2px gap 
   const html = renderChart(STACKED);
   assert.equal(html.includes("Chart degraded"), false);
   // Fixed slot assignment: series i wears SERIES_COLORS[i], in document order.
-  const segColors = [...html.matchAll(/<td width="\d+%" style="background-color:(#[0-9a-f]{6});font-size:2px/g)].map((m) => m[1]);
+  const segColors = [
+    ...html.matchAll(
+      /<td width="\d+%" style="background-color:(#[0-9a-f]{6});font-size:2px/g,
+    ),
+  ].map((m) => m[1]);
   assert.deepEqual(segColors, [
-    SERIES_COLORS[0], SERIES_COLORS[1], SERIES_COLORS[2],
-    SERIES_COLORS[0], SERIES_COLORS[1], SERIES_COLORS[2],
+    SERIES_COLORS[0],
+    SERIES_COLORS[1],
+    SERIES_COLORS[2],
+    SERIES_COLORS[0],
+    SERIES_COLORS[1],
+    SERIES_COLORS[2],
   ]);
   // Legend chips carry the same slots (chip = 10px attribute-width cell).
-  const chipColors = [...html.matchAll(/<td width="10" style="background-color:(#[0-9a-f]{6})/g)].map((m) => m[1]);
+  const chipColors = [
+    ...html.matchAll(/<td width="10" style="background-color:(#[0-9a-f]{6})/g),
+  ].map((m) => m[1]);
   assert.deepEqual(chipColors, [SERIES_COLORS[0], SERIES_COLORS[1], SERIES_COLORS[2]]);
   assert.match(html, />New<\/td>/);
   assert.match(html, />Renewal<\/td>/);
   assert.match(html, />Upsell<\/td>/);
   // Outlook gap idiom: a 2px attribute-width spacer cell BETWEEN segments —
   // (segments - 1) per bar, so 2 per row here, 4 total.
-  const gaps = html.match(/<td width="2" style="font-size:2px;line-height:14px">&nbsp;<\/td>/g) || [];
+  const gaps =
+    html.match(/<td width="2" style="font-size:2px;line-height:14px">&nbsp;<\/td>/g) ||
+    [];
   assert.equal(gaps.length, 4);
 });
 
@@ -137,7 +159,12 @@ test("stacked bar: token-scale totals render with digit grouping (no display-ove
 });
 
 test("stacked bar: 3+ numeric value columns stack WITHOUT a series header, with default names", () => {
-  const html = renderChart(["type: bar", "source: s", "Q1 | 4 | 2 | 1", "Q2 | 3 | 3 | 2"]);
+  const html = renderChart([
+    "type: bar",
+    "source: s",
+    "Q1 | 4 | 2 | 1",
+    "Q2 | 3 | 3 | 2",
+  ]);
   assert.equal(html.includes("Chart degraded"), false);
   assert.match(html, />Series 1<\/td>/);
   assert.match(html, />Series 3<\/td>/);
@@ -146,7 +173,13 @@ test("stacked bar: 3+ numeric value columns stack WITHOUT a series header, with 
 
 test("stacked bar: 2 value columns stack only when the series header says so; bare 2-numeric-column rows keep the legacy display-override read", () => {
   // WITH the header: two segments, legend, total.
-  const stacked = renderChart(["type: bar", "source: s", "series: A | B", "Q1 | 3 | 4", "Q2 | 1 | 2"]);
+  const stacked = renderChart([
+    "type: bar",
+    "source: s",
+    "series: A | B",
+    "Q1 | 3 | 4",
+    "Q2 | 1 | 2",
+  ]);
   assert.match(stacked, new RegExp(`background-color:${SERIES_COLORS[1]}`));
   assert.match(stacked, /color:#0b0b0b;font-weight:600;[^"]*">7<\/td>/);
   // WITHOUT the header: golden single-series behavior — value 3, display "4".
@@ -157,7 +190,13 @@ test("stacked bar: 2 value columns stack only when the series header says so; ba
 });
 
 test("stacked bar: zero-value segments are skipped (no mark, no gap), zero-total bar renders empty", () => {
-  const html = renderChart(["type: bar", "source: s", "series: A | B", "Q1 | 5 | 0", "Q2 | 0 | 0"]);
+  const html = renderChart([
+    "type: bar",
+    "source: s",
+    "series: A | B",
+    "Q1 | 5 | 0",
+    "Q2 | 0 | 0",
+  ]);
   assert.equal(html.includes("Chart degraded"), false);
   const gaps = html.match(/<td width="2" style="font-size:2px/g) || [];
   assert.equal(gaps.length, 0); // one visible segment in Q1, none in Q2
@@ -165,37 +204,73 @@ test("stacked bar: zero-value segments are skipped (no mark, no gap), zero-total
 });
 
 test("stacked bar: six series render on the six fixed slots; seven degrade with a named reason", () => {
-  const six = renderChart(["type: bar", "source: s", "series: A | B | C | D | E | F", "Q1 | 1 | 2 | 3 | 4 | 5 | 6", "Q2 | 6 | 5 | 4 | 3 | 2 | 1"]);
+  const six = renderChart([
+    "type: bar",
+    "source: s",
+    "series: A | B | C | D | E | F",
+    "Q1 | 1 | 2 | 3 | 4 | 5 | 6",
+    "Q2 | 6 | 5 | 4 | 3 | 2 | 1",
+  ]);
   assert.equal(six.includes("Chart degraded"), false);
-  for (const c of SERIES_COLORS) assert.ok(six.includes(`background-color:${c}`), `slot ${c} used`);
-  const seven = renderChart(["type: bar", "source: s", "series: A | B | C | D | E | F | G", "Q1 | 1 | 2 | 3 | 4 | 5 | 6 | 7"]);
+  for (const c of SERIES_COLORS)
+    assert.ok(six.includes(`background-color:${c}`), `slot ${c} used`);
+  const seven = renderChart([
+    "type: bar",
+    "source: s",
+    "series: A | B | C | D | E | F | G",
+    "Q1 | 1 | 2 | 3 | 4 | 5 | 6 | 7",
+  ]);
   assert.match(seven, /Chart degraded \(bar exceeds 6 series\)/);
 });
 
 test("stacked bar: ragged rows, series-count mismatch, and negative segments degrade with named reasons", () => {
   assert.match(
     renderChart(["type: bar", "source: s", "series: A | B", "Q1 | 1 | 2", "Q2 | 3"]),
-    /Chart degraded \(bar ragged rows \(cell count mismatch\)\)/
+    /Chart degraded \(bar ragged rows \(cell count mismatch\)\)/,
   );
   assert.match(
-    renderChart(["type: bar", "source: s", "series: A | B | C", "Q1 | 1 | 2", "Q2 | 3 | 4"]),
-    /Chart degraded \(series names do not match data columns\)/
+    renderChart([
+      "type: bar",
+      "source: s",
+      "series: A | B | C",
+      "Q1 | 1 | 2",
+      "Q2 | 3 | 4",
+    ]),
+    /Chart degraded \(series names do not match data columns\)/,
   );
   assert.match(
-    renderChart(["type: bar", "source: s", "series: A | B", "Q1 | 1 | -2", "Q2 | 3 | 4"]),
-    /Chart degraded \(bar value not numeric or negative\)/
+    renderChart([
+      "type: bar",
+      "source: s",
+      "series: A | B",
+      "Q1 | 1 | -2",
+      "Q2 | 3 | 4",
+    ]),
+    /Chart degraded \(bar value not numeric or negative\)/,
   );
 });
 
 // ── shade encoding (opt-in, single-series bar only) ────────────────────────
 
 test("shade: value — bar fills walk BLUE_RAMP monotonically with value; min lightest, max darkest; labels stay text", () => {
-  const html = renderChart(["type: bar", "source: s", "shade: value", "B | 5", "A | 1", "C | 12"]);
+  const html = renderChart([
+    "type: bar",
+    "source: s",
+    "shade: value",
+    "B | 5",
+    "A | 1",
+    "C | 12",
+  ]);
   assert.equal(html.includes("Chart degraded"), false);
-  const fills = [...html.matchAll(/background-color:(#[0-9a-f]{6});font-size:2px/g)].map((m) => m[1]);
+  const fills = [
+    ...html.matchAll(/background-color:(#[0-9a-f]{6});font-size:2px/g),
+  ].map((m) => m[1]);
   assert.equal(fills.length, 3);
   const idx = fills.map((c) => BLUE_RAMP.indexOf(c));
-  assert.ok(idx.every((i) => i >= 0), "every fill comes from BLUE_RAMP");
+  assert.ok(
+    idx.every((i) => i >= 0),
+    "every fill comes from BLUE_RAMP",
+  );
   // Row order is B(5), A(1), C(12): shade must be monotone by VALUE.
   assert.equal(idx[1], 0, "min value gets the lightest stop");
   assert.equal(idx[2], BLUE_RAMP.length - 1, "max value gets the darkest stop");
@@ -205,19 +280,40 @@ test("shade: value — bar fills walk BLUE_RAMP monotonically with value; min li
 });
 
 test("shade: equal values collapse to the ramp midpoint (still a valid, single-stop render)", () => {
-  const html = renderChart(["type: bar", "source: s", "shade: value", "A | 3", "B | 3"]);
-  const fills = [...html.matchAll(/background-color:(#[0-9a-f]{6});font-size:2px/g)].map((m) => m[1]);
+  const html = renderChart([
+    "type: bar",
+    "source: s",
+    "shade: value",
+    "A | 3",
+    "B | 3",
+  ]);
+  const fills = [
+    ...html.matchAll(/background-color:(#[0-9a-f]{6});font-size:2px/g),
+  ].map((m) => m[1]);
   assert.deepEqual(fills, [BLUE_RAMP[6], BLUE_RAMP[6]]);
 });
 
 test("shade on a multi-series/stacked block is a grammar violation → degrade with the named reason", () => {
-  const html = renderChart(["type: bar", "source: s", "shade: value", "series: A | B", "Q1 | 1 | 2", "Q2 | 3 | 4"]);
+  const html = renderChart([
+    "type: bar",
+    "source: s",
+    "shade: value",
+    "series: A | B",
+    "Q1 | 1 | 2",
+    "Q2 | 3 | 4",
+  ]);
   assert.match(html, /Chart degraded \(shade requires a single-series bar\)/);
   assert.match(html, /<table/);
 });
 
 test("shade: any mode other than 'value' degrades with a named reason", () => {
-  const html = renderChart(["type: bar", "source: s", "shade: rainbow", "A | 1", "B | 2"]);
+  const html = renderChart([
+    "type: bar",
+    "source: s",
+    "shade: rainbow",
+    "A | 1",
+    "B | 2",
+  ]);
   assert.match(html, /Chart degraded \(unknown shade mode\)/);
 });
 
@@ -237,31 +333,56 @@ test("grouped bar: legend, one <tr> per series, fixed-slot fills at line-height:
   const html = renderChart(GROUPED);
   assert.equal(html.includes("Chart degraded"), false);
   // Legend chips carry the fixed slots (chip = 10px attribute-width cell).
-  const chipColors = [...html.matchAll(/<td width="10" style="background-color:(#[0-9a-f]{6})/g)].map((m) => m[1]);
+  const chipColors = [
+    ...html.matchAll(/<td width="10" style="background-color:(#[0-9a-f]{6})/g),
+  ].map((m) => m[1]);
   assert.deepEqual(chipColors, [SERIES_COLORS[0], SERIES_COLORS[1]]);
   assert.match(html, />Implied<\/td>/);
   assert.match(html, />Hurdle<\/td>/);
   // One bar per series, thinner mark than the single bar (line-height:11px),
   // fixed slot order twice (two categories).
-  const fills = [...html.matchAll(/<td width="\d+%" style="background-color:(#[0-9a-f]{6});font-size:2px;line-height:11px/g)].map((m) => m[1]);
-  assert.deepEqual(fills, [SERIES_COLORS[0], SERIES_COLORS[1], SERIES_COLORS[0], SERIES_COLORS[1]]);
+  const fills = [
+    ...html.matchAll(
+      /<td width="\d+%" style="background-color:(#[0-9a-f]{6});font-size:2px;line-height:11px/g,
+    ),
+  ].map((m) => m[1]);
+  assert.deepEqual(fills, [
+    SERIES_COLORS[0],
+    SERIES_COLORS[1],
+    SERIES_COLORS[0],
+    SERIES_COLORS[1],
+  ]);
   // GLOBAL max scaling: 14.2 is the max across ALL values → width=92%.
-  assert.match(html, /<td width="92%" style="background-color:#2a78d6;font-size:2px;line-height:11px/);
+  assert.match(
+    html,
+    /<td width="92%" style="background-color:#2a78d6;font-size:2px;line-height:11px/,
+  );
   // Exactly ONE spacer row between the two categories, none after the last.
-  const spacers = html.match(/<tr><td colspan="3" style="font-size:2px;line-height:6px">&nbsp;<\/td><\/tr>/g) || [];
+  const spacers =
+    html.match(
+      /<tr><td colspan="3" style="font-size:2px;line-height:6px">&nbsp;<\/td><\/tr>/g,
+    ) || [];
   assert.equal(spacers.length, 1);
 });
 
 test("grouped bar: unit-suffixed digit-grouped value labels in INK; first series row carries the category label, later rows an empty label cell", () => {
   const html = renderChart(GROUPED);
   // Values are INK (label-visibility obligation), digit-grouped, unit-suffixed.
-  assert.match(html, /text-align:right;color:#0b0b0b;font-size:13px[^"]*">14\.2%<\/td>/);
-  assert.match(html, /text-align:right;color:#0b0b0b;font-size:13px[^"]*">11\.8%<\/td>/);
+  assert.match(
+    html,
+    /text-align:right;color:#0b0b0b;font-size:13px[^"]*">14\.2%<\/td>/,
+  );
+  assert.match(
+    html,
+    /text-align:right;color:#0b0b0b;font-size:13px[^"]*">11\.8%<\/td>/,
+  );
   assert.match(html, /text-align:right;color:#0b0b0b;font-size:13px[^"]*">4%<\/td>/);
   // Category label appears exactly once per group; the second series row
   // carries an invisible &nbsp; label cell (Outlook collapse idiom).
   assert.equal((html.match(/>NVDA<\/td>/g) || []).length, 1);
-  const emptyLabels = html.match(/font-weight:600;color:#0b0b0b;font-size:13px[^"]*">&nbsp;<\/td>/g) || [];
+  const emptyLabels =
+    html.match(/font-weight:600;color:#0b0b0b;font-size:13px[^"]*">&nbsp;<\/td>/g) ||
+    [];
   assert.equal(emptyLabels.length, 2); // one per category's second series row
 });
 
@@ -289,7 +410,10 @@ test("grouped bar: four series render on the four fixed slots", () => {
   ]);
   assert.equal(html.includes("Chart degraded"), false);
   for (const c of SERIES_COLORS.slice(0, 4)) {
-    assert.ok(html.includes(`background-color:${c};font-size:2px;line-height:11px`), `slot ${c} used`);
+    assert.ok(
+      html.includes(`background-color:${c};font-size:2px;line-height:11px`),
+      `slot ${c} used`,
+    );
   }
 });
 
@@ -307,37 +431,69 @@ test("grouped bar: five series degrade with the named reason", () => {
 test("grouped bar: mode without a series header (or with only one name) degrades with the named reason", () => {
   assert.match(
     renderChart(["type: bar", "mode: grouped", "source: s", "Q1 | 1 | 2"]),
-    /Chart degraded \(grouped requires a series header\)/
+    /Chart degraded \(grouped requires a series header\)/,
   );
   assert.match(
     renderChart(["type: bar", "mode: grouped", "source: s", "series: Solo", "Q1 | 1"]),
-    /Chart degraded \(grouped requires a series header\)/
+    /Chart degraded \(grouped requires a series header\)/,
   );
 });
 
 test("grouped bar: unknown mode value degrades with the named reason", () => {
-  const html = renderChart(["type: bar", "mode: sideways", "source: s", "series: A | B", "Q1 | 1 | 2"]);
+  const html = renderChart([
+    "type: bar",
+    "mode: sideways",
+    "source: s",
+    "series: A | B",
+    "Q1 | 1 | 2",
+  ]);
   assert.match(html, /Chart degraded \(unknown bar mode\)/);
 });
 
 test("grouped bar: negative value and ragged rows degrade with the shared bar reasons", () => {
   assert.match(
-    renderChart(["type: bar", "mode: grouped", "source: s", "series: A | B", "Q1 | 1 | -2"]),
-    /Chart degraded \(bar value not numeric or negative\)/
+    renderChart([
+      "type: bar",
+      "mode: grouped",
+      "source: s",
+      "series: A | B",
+      "Q1 | 1 | -2",
+    ]),
+    /Chart degraded \(bar value not numeric or negative\)/,
   );
   assert.match(
-    renderChart(["type: bar", "mode: grouped", "source: s", "series: A | B", "Q1 | 1 | 2", "Q2 | 3"]),
-    /Chart degraded \(bar ragged rows \(cell count mismatch\)\)/
+    renderChart([
+      "type: bar",
+      "mode: grouped",
+      "source: s",
+      "series: A | B",
+      "Q1 | 1 | 2",
+      "Q2 | 3",
+    ]),
+    /Chart degraded \(bar ragged rows \(cell count mismatch\)\)/,
   );
 });
 
 test("grouped bar: shade + grouped degrades with the shared single-series reason", () => {
-  const html = renderChart(["type: bar", "mode: grouped", "source: s", "shade: value", "series: A | B", "Q1 | 1 | 2"]);
+  const html = renderChart([
+    "type: bar",
+    "mode: grouped",
+    "source: s",
+    "shade: value",
+    "series: A | B",
+    "Q1 | 1 | 2",
+  ]);
   assert.match(html, /Chart degraded \(shade requires a single-series bar\)/);
 });
 
 test("grouped bar: series-count/data-column mismatch degrades with the shared reason", () => {
-  const html = renderChart(["type: bar", "mode: grouped", "source: s", "series: A | B | C", "Q1 | 1 | 2"]);
+  const html = renderChart([
+    "type: bar",
+    "mode: grouped",
+    "source: s",
+    "series: A | B | C",
+    "Q1 | 1 | 2",
+  ]);
   assert.match(html, /Chart degraded \(series names do not match data columns\)/);
 });
 
@@ -446,20 +602,30 @@ test("waterfall: floating delta bars (spacer + colored bar), subtotal from zero,
   ]);
   assert.equal(html.includes("Chart degraded"), false);
   // Gross Rent: delta, positive, no baseline yet — bar starts at 0, no spacer.
-  assert.match(html, /<td width="92%" style="background-color:#006300;font-size:2px;line-height:14px;border-radius:4px">&nbsp;<\/td>/);
+  assert.match(
+    html,
+    /<td width="92%" style="background-color:#006300;font-size:2px;line-height:14px;border-radius:4px">&nbsp;<\/td>/,
+  );
   assert.match(html, />\$2,400<\/td>/, "display override honored");
   // Vacancy Loss: delta, negative — floats between 2280 and 2400 (spacer to
   // 2280, then the bar itself), DELTA_NEG fill.
   assert.match(
     html,
-    /<td width="87%" style="font-size:2px;line-height:14px">&nbsp;<\/td><td width="5%" style="background-color:#a02d2d;font-size:2px;line-height:14px;border-radius:4px">&nbsp;<\/td>/
+    /<td width="87%" style="font-size:2px;line-height:14px">&nbsp;<\/td><td width="5%" style="background-color:#a02d2d;font-size:2px;line-height:14px;border-radius:4px">&nbsp;<\/td>/,
   );
   assert.match(html, />-120<\/td>/, "default signed display when no override given");
   // Effective Gross Income: subtotal, drawn from zero — "= " prefix stripped
   // from the label, BLUE fill, no spacer (spacerPct 0).
   assert.match(html, />Effective Gross Income<\/td>/);
-  assert.equal(html.includes("= Effective Gross Income"), false, "'= ' prefix stripped for display");
-  assert.match(html, /<td width="87%" style="background-color:#2a78d6;font-size:2px;line-height:14px;border-radius:4px">&nbsp;<\/td>/);
+  assert.equal(
+    html.includes("= Effective Gross Income"),
+    false,
+    "'= ' prefix stripped for display",
+  );
+  assert.match(
+    html,
+    /<td width="87%" style="background-color:#2a78d6;font-size:2px;line-height:14px;border-radius:4px">&nbsp;<\/td>/,
+  );
   assert.match(html, />\$2,280<\/td>/);
 });
 
@@ -474,7 +640,12 @@ test("waterfall: fewer than 2 rows degrades with the exact reason", () => {
 });
 
 test("waterfall: subtotal may be negative; default display is plain digit-grouped (no forced sign)", () => {
-  const html = renderChart(["type: waterfall", "source: s", "Loss | -50", "= Net | -50"]);
+  const html = renderChart([
+    "type: waterfall",
+    "source: s",
+    "Loss | -50",
+    "= Net | -50",
+  ]);
   assert.match(html, />-50<\/td>/); // delta default
   // subtotal default is grouped-but-unsigned formatting (toLocaleString keeps the minus)
   const rows = html.match(/>-?[\d,]+<\/td>/g);
@@ -492,56 +663,93 @@ test("line: valid data WITHOUT a rendered image degrades to the table with the n
 
 test("line: valid data WITH an image renders title + cid img (width/height attributes, alt = title) + source", () => {
   const html = renderChart(
-    ["type: line", "title: Weekly escalations", "source: log, 2026-07-18", "Mon | 3", "Tue | 5"],
-    { cid: "chart-0-abc@agents.adapttolife.org", width: 640, height: 360 }
+    [
+      "type: line",
+      "title: Weekly escalations",
+      "source: log, 2026-07-18",
+      "Mon | 3",
+      "Tue | 5",
+    ],
+    { cid: "chart-0-abc@agents.adapttolife.org", width: 640, height: 360 },
   );
   assert.match(html, /Weekly escalations<\/div>/);
-  assert.match(html, /<img src="cid:chart-0-abc@agents\.adapttolife\.org" width="640" height="360" alt="Weekly escalations"/);
+  assert.match(
+    html,
+    /<img src="cid:chart-0-abc@agents\.adapttolife\.org" width="640" height="360" alt="Weekly escalations"/,
+  );
   assert.match(html, /Source: log, 2026-07-18/);
   assert.equal(html.includes("Chart degraded"), false);
 });
 
 test("line: alt falls back to the chart type when there is no title", () => {
-  const html = renderChart(["type: line", "source: s", "A | 1", "B | 2"], { cid: "x", width: 640, height: 360 });
+  const html = renderChart(["type: line", "source: s", "A | 1", "B | 2"], {
+    cid: "x",
+    width: 640,
+    height: 360,
+  });
   assert.match(html, /alt="line chart"/);
 });
 
 test("line: single data row degrades (a line needs 2 points)", () => {
-  const html = renderChart(["type: line", "source: s", "Mon | 3"], { cid: "x", width: 640, height: 360 });
+  const html = renderChart(["type: line", "source: s", "Mon | 3"], {
+    cid: "x",
+    width: 640,
+    height: 360,
+  });
   assert.match(html, /Chart degraded \(line needs at least 2 data rows\)/);
 });
 
 test("line: non-numeric series value degrades even when an image is offered", () => {
-  const html = renderChart(["type: line", "source: s", "Mon | 3", "Tue | n/a"], { cid: "x", width: 640, height: 360 });
+  const html = renderChart(["type: line", "source: s", "Mon | 3", "Tue | n/a"], {
+    cid: "x",
+    width: 640,
+    height: 360,
+  });
   assert.match(html, /Chart degraded \(line value not numeric\)/);
   assert.equal(html.includes("<img"), false);
 });
 
 test("line: ragged rows degrade", () => {
-  const html = renderChart(["type: line", "source: s", "Mon | 3 | 4", "Tue | 5"], { cid: "x", width: 640, height: 360 });
+  const html = renderChart(["type: line", "source: s", "Mon | 3 | 4", "Tue | 5"], {
+    cid: "x",
+    width: 640,
+    height: 360,
+  });
   assert.match(html, /Chart degraded \(line ragged rows/);
 });
 
 test("line: series header count mismatch degrades", () => {
   const html = renderChart(
     ["type: line", "source: s", "series: A | B | C", "Mon | 3 | 4", "Tue | 5 | 6"],
-    { cid: "x", width: 640, height: 360 }
+    { cid: "x", width: 640, height: 360 },
   );
   assert.match(html, /Chart degraded \(series names do not match data columns\)/);
 });
 
 test("scatter: non-numeric x degrades (scatter x is a position, not a label)", () => {
-  const html = renderChart(["type: scatter", "source: s", "Mon | 3", "Tue | 5"], { cid: "x", width: 640, height: 360 });
+  const html = renderChart(["type: scatter", "source: s", "Mon | 3", "Tue | 5"], {
+    cid: "x",
+    width: 640,
+    height: 360,
+  });
   assert.match(html, /Chart degraded \(scatter x not numeric\)/);
 });
 
 test("scatter: valid numeric pairs with an image render the cid img", () => {
-  const html = renderChart(["type: scatter", "source: s", "1.5 | 3", "2 | 5"], { cid: "c1", width: 640, height: 360 });
+  const html = renderChart(["type: scatter", "source: s", "1.5 | 3", "2 | 5"], {
+    cid: "c1",
+    width: 640,
+    height: 360,
+  });
   assert.match(html, /<img src="cid:c1"/);
 });
 
 test("P1 types ignore the image argument — bar stays CSS-native even when an image is passed", () => {
-  const html = renderChart(["type: bar", "source: s", "A | 5", "B | 3"], { cid: "x", width: 640, height: 360 });
+  const html = renderChart(["type: bar", "source: s", "A | 5", "B | 3"], {
+    cid: "x",
+    width: 640,
+    height: 360,
+  });
   assert.equal(html.includes("<img"), false);
   assert.match(html, /<table role="presentation"/);
 });
@@ -561,7 +769,9 @@ test("chartImages map keys by chart-fence ordinal: bar (0) stays HTML, line (1) 
     "Tue | 2",
     "```",
   ].join("\n");
-  const html = renderMarkdown(md, { chartImages: { 1: { cid: "c-line", width: 640, height: 360 } } });
+  const html = renderMarkdown(md, {
+    chartImages: { 1: { cid: "c-line", width: 640, height: 360 } },
+  });
   assert.match(html, /<img src="cid:c-line"/);
   assert.equal((html.match(/<img/g) || []).length, 1);
   assert.match(html, /<table role="presentation"/); // the bar chart
@@ -589,8 +799,17 @@ test("renderChart never throws on adversarial input", () => {
   assert.doesNotThrow(() => renderChart([]));
   assert.doesNotThrow(() => renderChart(["garbage", "more | garbage | |||"]));
   assert.doesNotThrow(() => renderChart(["type: heat", "source: s", "", "a|b"]));
-  assert.doesNotThrow(() => renderChart(["type: waterfall", "source: s", "garbage", "= only-label"]));
-  assert.doesNotThrow(() => renderChart(["type: waterfall", "source: s", "= totally | not-numeric", "another || row"]));
+  assert.doesNotThrow(() =>
+    renderChart(["type: waterfall", "source: s", "garbage", "= only-label"]),
+  );
+  assert.doesNotThrow(() =>
+    renderChart([
+      "type: waterfall",
+      "source: s",
+      "= totally | not-numeric",
+      "another || row",
+    ]),
+  );
   assert.doesNotThrow(() => renderChart(["type: waterfall", "source: s"]));
 });
 

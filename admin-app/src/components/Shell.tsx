@@ -6,12 +6,22 @@ import { Logo } from "./Logo";
 // report. You should always be able to answer "where am I" and "what is the
 // verb here" without reading anything.
 
-export interface NavItem { id: string; label: string; hint?: string; ready: boolean }
+export interface NavItem {
+  id: string;
+  label: string;
+  hint?: string;
+  ready: boolean;
+}
 
 export const NAV: NavItem[] = [
   { id: "activity", label: "Activity", hint: "what happened", ready: true },
   { id: "qr", label: "QR codes", hint: "printed matter", ready: true },
-  { id: "directory", label: "ASNM directory", hint: "organizations, programs, events, grants and posts", ready: true },
+  {
+    id: "directory",
+    label: "ASNM directory",
+    hint: "organizations, programs, events, grants and posts",
+    ready: true,
+  },
   { id: "money", label: "Money", hint: "gifts and funds", ready: false },
   { id: "applications", label: "Applications", hint: "Hustle & Heart", ready: false },
   { id: "waivers", label: "Waivers", ready: false },
@@ -20,10 +30,21 @@ export const NAV: NavItem[] = [
 ];
 
 export function Shell({
-  route, onRoute, you, title, subtitle, actions, children,
+  route,
+  onRoute,
+  you,
+  title,
+  subtitle,
+  actions,
+  children,
 }: {
-  route: string; onRoute: (id: string) => void; you: string | null;
-  title: string; subtitle?: string; actions?: ReactNode; children: ReactNode;
+  route: string;
+  onRoute: (id: string) => void;
+  you: string | null;
+  title: string;
+  subtitle?: string;
+  actions?: ReactNode;
+  children: ReactNode;
 }) {
   return (
     <div className="shell">
@@ -36,7 +57,9 @@ export function Shell({
           {NAV.map((n) => (
             <button
               key={n.id}
-              className={"nav-item" + (route === n.id ? " on" : "") + (n.ready ? "" : " soon")}
+              className={
+                "nav-item" + (route === n.id ? " on" : "") + (n.ready ? "" : " soon")
+              }
               onClick={() => n.ready && onRoute(n.id)}
               disabled={!n.ready}
               /* Sections that do not exist yet are shown, dimmed, rather than
@@ -51,7 +74,9 @@ export function Shell({
         </div>
         <div className="nav-foot">
           <div className="mono who">{you ?? "…"}</div>
-          <a href="/" className="nav-link">adapttolife.org ↗</a>
+          <a href="/" className="nav-link">
+            adapttolife.org ↗
+          </a>
         </div>
       </nav>
 

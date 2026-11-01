@@ -24,17 +24,34 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SITE = "https://adapttolife.org";
 const DEFAULT_TZ = "America/Chicago";
 
-function pad(n) { return String(n).padStart(2, "0"); }
+function pad(n) {
+  return String(n).padStart(2, "0");
+}
 
 // Offset of `tz` at a UTC instant, in minutes (Chicago in October: -300).
 function offsetMinutes(utcMs, tz) {
   const parts = Object.fromEntries(
     new Intl.DateTimeFormat("en-US", {
-      timeZone: tz, hourCycle: "h23", year: "numeric", month: "2-digit",
-      day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit",
-    }).formatToParts(new Date(utcMs)).map((p) => [p.type, p.value])
+      timeZone: tz,
+      hourCycle: "h23",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    })
+      .formatToParts(new Date(utcMs))
+      .map((p) => [p.type, p.value]),
   );
-  const asUtc = Date.UTC(+parts.year, +parts.month - 1, +parts.day, +parts.hour, +parts.minute, +parts.second);
+  const asUtc = Date.UTC(
+    +parts.year,
+    +parts.month - 1,
+    +parts.day,
+    +parts.hour,
+    +parts.minute,
+    +parts.second,
+  );
   return Math.round((asUtc - utcMs) / 60000);
 }
 
@@ -55,18 +72,25 @@ function nextDay(date) {
 }
 
 // RFC 5545 text escaping, then folding at 75 octets.
-const esc = (s) => String(s).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
+const esc = (s) =>
+  String(s)
+    .replace(/\\/g, "\\\\")
+    .replace(/;/g, "\\;")
+    .replace(/,/g, "\\,")
+    .replace(/\r?\n/g, "\\n");
 function fold(line) {
   const bytes = Buffer.from(line, "utf8");
   if (bytes.length <= 75) return line;
   const out = [];
-  let start = 0, limit = 75;
+  let start = 0,
+    limit = 75;
   while (start < bytes.length) {
     let end = Math.min(start + limit, bytes.length);
     while (end < bytes.length && (bytes[end] & 0xc0) === 0x80) end--; // never split a character
     while (end < bytes.length && end - 1 > start && bytes[end - 1] === 0x5c) end--; // never split an escape like \,
     out.push(bytes.slice(start, end).toString("utf8"));
-    start = end; limit = 74; // continuation lines start with one space
+    start = end;
+    limit = 74; // continuation lines start with one space
   }
   return out.join("\r\n ");
 }
@@ -76,12 +100,24 @@ export function icsFor(d) {
   const end = d.ends_at || d.closes || start;
   const tz = d.tz || DEFAULT_TZ;
   const url = d.page ? SITE + d.page : d.cta_url || SITE + "/events";
-  const description = [d.time_note ? d.time_note.replace(/^./, (c) => c.toUpperCase()) + "." : "", d.summary || "", url]
-    .filter(Boolean).join(" ");
+  const description = [
+    d.time_note ? d.time_note.replace(/^./, (c) => c.toUpperCase()) + "." : "",
+    d.summary || "",
+    url,
+  ]
+    .filter(Boolean)
+    .join(" ");
   const stamp = (d.updated || start).replace(/-/g, "") + "T120000Z";
-  const when = d.time_start && d.time_end
-    ? [`DTSTART:${toUtc(start, d.time_start, tz)}`, `DTEND:${toUtc(end, d.time_end, tz)}`]
-    : [`DTSTART;VALUE=DATE:${start.replace(/-/g, "")}`, `DTEND;VALUE=DATE:${nextDay(end).replace(/-/g, "")}`];
+  const when =
+    d.time_start && d.time_end
+      ? [
+          `DTSTART:${toUtc(start, d.time_start, tz)}`,
+          `DTEND:${toUtc(end, d.time_end, tz)}`,
+        ]
+      : [
+          `DTSTART;VALUE=DATE:${start.replace(/-/g, "")}`,
+          `DTEND;VALUE=DATE:${nextDay(end).replace(/-/g, "")}`,
+        ];
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
@@ -114,9 +150,13 @@ export function calendarFiles(data) {
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const data = JSON.parse(readFileSync(join(ROOT, "public/data/campaigns.json"), "utf8"));
+  const data = JSON.parse(
+    readFileSync(join(ROOT, "public/data/campaigns.json"), "utf8"),
+  );
   mkdirSync(join(ROOT, "public/cal"), { recursive: true });
   const files = calendarFiles(data);
   for (const [rel, body] of files) writeFileSync(join(ROOT, rel), body);
-  console.log(`wrote ${files.size} calendar files: ${[...files.keys()].map((f) => f.split("/").pop()).join(", ")}`);
+  console.log(
+    `wrote ${files.size} calendar files: ${[...files.keys()].map((f) => f.split("/").pop()).join(", ")}`,
+  );
 }

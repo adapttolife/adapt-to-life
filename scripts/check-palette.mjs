@@ -25,13 +25,13 @@ const BRAND = {
   // round. Off-white is only 6.9% darker than pure white, so at full-page
   // scale it reads as white — Alec called that twice. The beige is 18.8%
   // darker, three and a half times the separation.
-  "--canvas": "#EFE8DC",  // beige — the page
-  "--paper":  "#F9F7F2",  // off-white — cards and lifted bands
-  "--cream":  "#F9F7F2",  // off-white, for text on dark
-  "--sand":   "#EFE8DC",  // beige
-  "--ink":    "#1A1A1A",  // STAND-IN, see below
+  "--canvas": "#EFE8DC", // beige — the page
+  "--paper": "#F9F7F2", // off-white — cards and lifted bands
+  "--cream": "#F9F7F2", // off-white, for text on dark
+  "--sand": "#EFE8DC", // beige
+  "--ink": "#1A1A1A", // STAND-IN, see below
   "--yellow": "#F6BE00",
-  "--teal":   "#00B7BD",
+  "--teal": "#00B7BD",
   "--purple": "#483698",
 };
 
@@ -47,7 +47,10 @@ const BLACK_IS_A_STAND_IN = true;
 // Vite admin bundle below.
 const css = readFileSync(new URL("../src/css/site.css", import.meta.url), "utf8");
 let bad = 0;
-const fail = (m) => { console.log(`  FAIL ${m}`); bad++; };
+const fail = (m) => {
+  console.log(`  FAIL ${m}`);
+  bad++;
+};
 
 for (const [token, want] of Object.entries(BRAND)) {
   const m = css.match(new RegExp(`${token}\\s*:\\s*(#[0-9A-Fa-f]{6})`));
@@ -59,7 +62,8 @@ for (const [token, want] of Object.entries(BRAND)) {
 // dark photographic bands are pitch black on purpose ("the black and white
 // pictures with pitch black looks way better" — Alec, 2026-09-08).
 const ROOT = new URL("../public/", import.meta.url);
-const WHITE = /\b(color|background|background-color|border-color|fill|stroke)\s*:\s*#(fff|ffffff)\b/gi;
+const WHITE =
+  /\b(color|background|background-color|border-color|fill|stroke)\s*:\s*#(fff|ffffff)\b/gi;
 const walk = (dir) => {
   for (const e of readdirSync(dir, { withFileTypes: true })) {
     if (e.name.startsWith("hero-")) continue;
@@ -72,16 +76,24 @@ const walk = (dir) => {
     // below so a pure-white hex is reported at the file you would fix.
     if (e.name === "css") continue;
     const url = new URL(e.name + (e.isDirectory() ? "/" : ""), dir);
-    if (e.isDirectory()) { walk(url); continue; }
+    if (e.isDirectory()) {
+      walk(url);
+      continue;
+    }
     if (!/\.(html|css)$/.test(e.name)) continue;
     const hits = readFileSync(url, "utf8").match(WHITE);
-    if (hits) fail(`${e.name}: ${hits.length} pure-white declaration(s) — the brand has no pure white`);
+    if (hits)
+      fail(
+        `${e.name}: ${hits.length} pure-white declaration(s) — the brand has no pure white`,
+      );
   }
 };
 walk(ROOT);
 walk(new URL("../src/css/", import.meta.url));
 
 if (BLACK_IS_A_STAND_IN)
-  console.log("  note  --ink #1A1A1A is a STAND-IN; Laura's brand black (#3B3V46) is not valid hex and is still owed.");
+  console.log(
+    "  note  --ink #1A1A1A is a STAND-IN; Laura's brand black (#3B3V46) is not valid hex and is still owed.",
+  );
 console.log(bad ? `\n${bad} palette problem(s).` : "\non Laura's palette.");
 process.exit(bad ? 1 : 0);

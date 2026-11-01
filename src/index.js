@@ -6,19 +6,45 @@ import { acceptForm, sweepForms } from "./forms.js";
 // receipt to the submitter and one shared intake record, which notifies hello@ and
 // feeds the Google Sheet CRM. ClickUp was retired 2026-10-02.
 
-import { handleWaiver, handleWaiverDownload, handleWaiverVerify, handleWaiverDoc, runDriveBacklog } from "./waiver.js";
-import { sendContactReceipt, sendApplyReceipt, sendVolunteerReceipt } from "./receipts.js";
+import {
+  handleWaiver,
+  handleWaiverDownload,
+  handleWaiverVerify,
+  handleWaiverDoc,
+  runDriveBacklog,
+} from "./waiver.js";
+import {
+  sendContactReceipt,
+  sendApplyReceipt,
+  sendVolunteerReceipt,
+} from "./receipts.js";
 import { verifyTurnstile, overFormLimit, RATE_LIMITED } from "./turnstile.js";
 import { handleEmail, handleAgentMailApi } from "./agent_mail.js";
-import { handleShopContact, runShopCrmBacklog, runShopNewsletterBacklog } from "./shop_contact.js";
+import {
+  handleShopContact,
+  runShopCrmBacklog,
+  runShopNewsletterBacklog,
+} from "./shop_contact.js";
 import { handleQr } from "./qr.js";
 import { handleAdmin } from "./qr_admin.js";
-import { adminEmail, consumeLogin, readAdminSession, requestLogin, sendAdminLink } from "./asnm_admin_auth.js";
+import {
+  adminEmail,
+  consumeLogin,
+  readAdminSession,
+  requestLogin,
+  sendAdminLink,
+} from "./asnm_admin_auth.js";
 import { syncGifts } from "./qr_gifts.js";
 import { fundPosition } from "./fund.js";
 import { handleGivebutterWebhook } from "./givebutter_webhook.js";
 import { reconcileDonorJourney } from "./givebutter_reconcile.js";
-import { recordIntake, notifyIntake, sweepIntake, runIntakeCanary, canaryIsFresh } from "./intake.js";
+import {
+  recordIntake,
+  notifyIntake,
+  sweepIntake,
+  runIntakeCanary,
+  canaryIsFresh,
+} from "./intake.js";
 
 const LEAD_TYPES = [
   "Funding for an athlete",
@@ -87,7 +113,10 @@ function approvedAdminOrigin(value) {
       parsed.hostname.endsWith(".adapttolife.org") ||
       parsed.hostname.endsWith(".adapt-to-life.workers.dev");
 
-    if ((local && ["http:", "https:"].includes(parsed.protocol)) || (hosted && parsed.protocol === "https:")) {
+    if (
+      (local && ["http:", "https:"].includes(parsed.protocol)) ||
+      (hosted && parsed.protocol === "https:")
+    ) {
       return origin;
     }
   } catch {
@@ -103,7 +132,9 @@ export function adminLoginOrigin(request, url, requestedOrigin = "") {
     return explicitOrigin;
   }
 
-  const forwardedHost = String(request.headers.get("X-Forwarded-Host") || "").split(",")[0].trim();
+  const forwardedHost = String(request.headers.get("X-Forwarded-Host") || "")
+    .split(",")[0]
+    .trim();
   const host = forwardedHost || String(request.headers.get("Host") || "").trim();
 
   if (!host) {
@@ -128,54 +159,185 @@ const ASNM_ADMIN_COLLECTIONS = {
   organizations: {
     table: "organizations",
     name: "name",
-    fields: ["name", "org_type", "sport", "sport_key", "sports_json", "website_url", "email", "claim_email", "phone", "city", "state", "state_name", "zip", "address", "country", "lat", "lng", "geo_precision", "description", "cost_note", "equipment_provided", "ages", "data_quality_rating", "primary_data_source", "verification_status", "verification_method", "status", "is_public", "publicity_consent", "address_publicity_consent", "last_ok_at"],
-    booleans: ["equipment_provided", "is_public", "publicity_consent", "address_publicity_consent"],
+    fields: [
+      "name",
+      "org_type",
+      "sport",
+      "sport_key",
+      "sports_json",
+      "website_url",
+      "email",
+      "claim_email",
+      "phone",
+      "city",
+      "state",
+      "state_name",
+      "zip",
+      "address",
+      "country",
+      "lat",
+      "lng",
+      "geo_precision",
+      "description",
+      "cost_note",
+      "equipment_provided",
+      "ages",
+      "data_quality_rating",
+      "primary_data_source",
+      "verification_status",
+      "verification_method",
+      "status",
+      "is_public",
+      "publicity_consent",
+      "address_publicity_consent",
+      "last_ok_at",
+    ],
+    booleans: [
+      "equipment_provided",
+      "is_public",
+      "publicity_consent",
+      "address_publicity_consent",
+    ],
     numbers: ["lat", "lng"],
   },
   programs: {
     table: "programs",
     name: "name",
-    fields: ["organization_id", "name", "sport", "sport_key", "sports_json", "website_url", "email", "phone", "city", "state", "state_name", "zip", "address", "country", "lat", "lng", "geo_precision", "description", "cost_note", "equipment_provided", "ages", "verification_status", "verification_method", "status", "is_public", "publicity_consent", "address_publicity_consent", "last_ok_at", "kind", "listing", "seasons_json", "usual_month", "first_year", "slug"],
-    booleans: ["equipment_provided", "is_public", "publicity_consent", "address_publicity_consent"],
+    fields: [
+      "organization_id",
+      "name",
+      "sport",
+      "sport_key",
+      "sports_json",
+      "website_url",
+      "email",
+      "phone",
+      "city",
+      "state",
+      "state_name",
+      "zip",
+      "address",
+      "country",
+      "lat",
+      "lng",
+      "geo_precision",
+      "description",
+      "cost_note",
+      "equipment_provided",
+      "ages",
+      "verification_status",
+      "verification_method",
+      "status",
+      "is_public",
+      "publicity_consent",
+      "address_publicity_consent",
+      "last_ok_at",
+      "kind",
+      "listing",
+      "seasons_json",
+      "usual_month",
+      "first_year",
+      "slug",
+    ],
+    booleans: [
+      "equipment_provided",
+      "is_public",
+      "publicity_consent",
+      "address_publicity_consent",
+    ],
     numbers: ["lat", "lng", "usual_month", "first_year"],
   },
   events: {
     table: "events",
     name: "title",
-    fields: ["title", "description", "org_id", "program_id", "sport_key", "venue", "city", "state", "url", "recap_url", "starts_at", "ends_at", "all_day", "status", "is_public", "source"],
+    fields: [
+      "title",
+      "description",
+      "org_id",
+      "program_id",
+      "sport_key",
+      "venue",
+      "city",
+      "state",
+      "url",
+      "recap_url",
+      "starts_at",
+      "ends_at",
+      "all_day",
+      "status",
+      "is_public",
+      "source",
+    ],
     booleans: ["all_day", "is_public"],
     numbers: [],
   },
   grants: {
     table: "grants",
     name: "name",
-    fields: ["name", "source", "type", "audience", "amount_min_cents", "amount_max_cents", "amount_display", "deadline_display", "deadline_next", "description", "eligibility_criteria", "how_to_apply", "application_url", "source_url", "email", "phone", "sports_json", "is_open", "is_renewable", "is_public", "status"],
+    fields: [
+      "name",
+      "source",
+      "type",
+      "audience",
+      "amount_min_cents",
+      "amount_max_cents",
+      "amount_display",
+      "deadline_display",
+      "deadline_next",
+      "description",
+      "eligibility_criteria",
+      "how_to_apply",
+      "application_url",
+      "source_url",
+      "email",
+      "phone",
+      "sports_json",
+      "is_open",
+      "is_renewable",
+      "is_public",
+      "status",
+    ],
     booleans: ["is_open", "is_renewable", "is_public"],
     numbers: ["amount_min_cents", "amount_max_cents"],
   },
   blog: {
     table: "blog_posts",
     name: "title",
-    fields: ["title", "slug", "subtitle", "publish_at", "thumbnail_data_url", "content_markdown", "status", "is_public"],
+    fields: [
+      "title",
+      "slug",
+      "subtitle",
+      "publish_at",
+      "thumbnail_data_url",
+      "content_markdown",
+      "status",
+      "is_public",
+    ],
     booleans: ["is_public"],
     numbers: [],
   },
 };
 
 export function asnmAdminCollection(pathname) {
-  const match = pathname.match(/^\/admin\/api\/asnm\/admin-data\/(organizations|programs|events|grants|blog)(?:\/([0-9a-f-]{36}))?$/i);
+  const match = pathname.match(
+    /^\/admin\/api\/asnm\/admin-data\/(organizations|programs|events|grants|blog)(?:\/([0-9a-f-]{36}))?$/i,
+  );
   return match ? ASNM_ADMIN_COLLECTIONS[match[1]] : null;
 }
 
 async function localAsnmAdminCollection(request, env, url) {
-  const match = url.pathname.match(/^\/admin\/api\/asnm\/admin-data\/(organizations|programs|events|grants|blog)(?:\/([0-9a-f-]{36}))?$/i);
+  const match = url.pathname.match(
+    /^\/admin\/api\/asnm\/admin-data\/(organizations|programs|events|grants|blog)(?:\/([0-9a-f-]{36}))?$/i,
+  );
   const collection = asnmAdminCollection(url.pathname);
   const id = match?.[2];
   if (!collection || !["GET", "POST", "PATCH"].includes(request.method)) {
     return null;
   }
 
-  const query = String(url.searchParams.get("q") || "").trim().slice(0, 120);
+  const query = String(url.searchParams.get("q") || "")
+    .trim()
+    .slice(0, 120);
   const where = query ? ` WHERE ${collection.name} LIKE ? COLLATE NOCASE` : "";
   const binds = query ? [`%${query}%`] : [];
 
@@ -183,7 +345,11 @@ async function localAsnmAdminCollection(request, env, url) {
     if (!id && request.method === "POST") {
       const input = await request.json().catch(() => null);
       if (!input || typeof input !== "object" || Array.isArray(input)) {
-        return json({ ok: false, error: "Could not read the new item." }, 400, ADMIN_CACHE);
+        return json(
+          { ok: false, error: "Could not read the new item." },
+          400,
+          ADMIN_CACHE,
+        );
       }
 
       const values = collection.fields.map((field) => {
@@ -197,13 +363,21 @@ async function localAsnmAdminCollection(request, env, url) {
         return [field, raw == null || raw === "" ? null : String(raw).trim()];
       });
       const record = Object.fromEntries(values);
-      const required = collection.table === "events"
-        ? ["title", "starts_at"]
-        : collection.table === "programs"
-          ? ["name", "organization_id"]
-          : [collection.name];
+      const required =
+        collection.table === "events"
+          ? ["title", "starts_at"]
+          : collection.table === "programs"
+            ? ["name", "organization_id"]
+            : [collection.name];
       if (required.some((field) => !record[field])) {
-        return json({ ok: false, error: "Complete the required fields before creating this item." }, 422, ADMIN_CACHE);
+        return json(
+          {
+            ok: false,
+            error: "Complete the required fields before creating this item.",
+          },
+          422,
+          ADMIN_CACHE,
+        );
       }
       if (collection.table === "blog_posts") {
         record.subtitle ??= "";
@@ -214,7 +388,11 @@ async function localAsnmAdminCollection(request, env, url) {
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/^-+|-+$/g, "");
         if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(record.slug)) {
-          return json({ ok: false, error: "Enter a valid blog post title or slug." }, 422, ADMIN_CACHE);
+          return json(
+            { ok: false, error: "Enter a valid blog post title or slug." },
+            422,
+            ADMIN_CACHE,
+          );
         }
       }
       if (collection.table === "events") {
@@ -238,17 +416,28 @@ async function localAsnmAdminCollection(request, env, url) {
       const itemId = crypto.randomUUID();
       await env.ASNM_DB.prepare(
         `INSERT INTO ${collection.table} (id, ${collection.fields.join(", ")}, created_at, updated_at) VALUES (?, ${collection.fields.map(() => "?").join(", ")}, ?, ?)`,
-      ).bind(itemId, ...collection.fields.map((field) => record[field]), timestamp, timestamp).run();
+      )
+        .bind(
+          itemId,
+          ...collection.fields.map((field) => record[field]),
+          timestamp,
+          timestamp,
+        )
+        .run();
       const item = await env.ASNM_DB.prepare(
         `SELECT id, ${collection.fields.join(", ")}, created_at, updated_at FROM ${collection.table} WHERE id = ?`,
-      ).bind(itemId).first();
+      )
+        .bind(itemId)
+        .first();
       return json({ ok: true, item }, 201, ADMIN_CACHE);
     }
 
     if (id && request.method === "GET") {
       const item = await env.ASNM_DB.prepare(
         `SELECT id, ${collection.fields.join(", ")}, created_at, updated_at FROM ${collection.table} WHERE id = ?`,
-      ).bind(id).first();
+      )
+        .bind(id)
+        .first();
       return item
         ? json({ ok: true, item }, 200, ADMIN_CACHE)
         : json({ ok: false, error: "Not found." }, 404, ADMIN_CACHE);
@@ -257,32 +446,60 @@ async function localAsnmAdminCollection(request, env, url) {
     if (id && request.method === "PATCH") {
       const input = await request.json().catch(() => null);
       if (!input || typeof input !== "object" || Array.isArray(input)) {
-        return json({ ok: false, error: "Could not read your changes." }, 400, ADMIN_CACHE);
+        return json(
+          { ok: false, error: "Could not read your changes." },
+          400,
+          ADMIN_CACHE,
+        );
       }
-      if (collection.table === "programs" && Object.hasOwn(input, "first_year") && input.first_year !== "") {
+      if (
+        collection.table === "programs" &&
+        Object.hasOwn(input, "first_year") &&
+        input.first_year !== ""
+      ) {
         const firstYear = Number(input.first_year);
         const currentYear = new Date().getUTCFullYear();
-        if (!Number.isInteger(firstYear) || firstYear < 1950 || firstYear > currentYear) {
-          return json({ ok: false, error: `First year must be between 1950 and ${currentYear}.` }, 422, ADMIN_CACHE);
+        if (
+          !Number.isInteger(firstYear) ||
+          firstYear < 1950 ||
+          firstYear > currentYear
+        ) {
+          return json(
+            { ok: false, error: `First year must be between 1950 and ${currentYear}.` },
+            422,
+            ADMIN_CACHE,
+          );
         }
       }
       const values = collection.fields
         .filter((field) => Object.hasOwn(input, field))
         .map((field) => {
           const raw = input[field];
-          if (collection.booleans.includes(field)) return [field, [true, 1, "1", "true", "on"].includes(raw) ? 1 : 0];
-          if (collection.numbers.includes(field)) return [field, raw === "" || raw == null ? null : Number(raw)];
+          if (collection.booleans.includes(field))
+            return [field, [true, 1, "1", "true", "on"].includes(raw) ? 1 : 0];
+          if (collection.numbers.includes(field))
+            return [field, raw === "" || raw == null ? null : Number(raw)];
           return [field, raw == null || raw === "" ? null : String(raw).trim()];
         });
-      if (!values.length) return json({ ok: false, error: "No changes were provided." }, 400, ADMIN_CACHE);
+      if (!values.length)
+        return json(
+          { ok: false, error: "No changes were provided." },
+          400,
+          ADMIN_CACHE,
+        );
       const assignments = values.map(([field]) => `${field} = ?`).join(", ");
       const result = await env.ASNM_DB.prepare(
         `UPDATE ${collection.table} SET ${assignments}, updated_at = datetime('now') WHERE id = ?`,
-      ).bind(...values.map(([, value]) => value), id).run();
-      if (!Number(result.meta?.changes || 0)) return json({ ok: false, error: "Not found." }, 404, ADMIN_CACHE);
+      )
+        .bind(...values.map(([, value]) => value), id)
+        .run();
+      if (!Number(result.meta?.changes || 0))
+        return json({ ok: false, error: "Not found." }, 404, ADMIN_CACHE);
       const item = await env.ASNM_DB.prepare(
         `SELECT id, ${collection.fields.join(", ")}, created_at, updated_at FROM ${collection.table} WHERE id = ?`,
-      ).bind(id).first();
+      )
+        .bind(id)
+        .first();
       return json({ ok: true, item }, 200, ADMIN_CACHE);
     }
 
@@ -291,7 +508,11 @@ async function localAsnmAdminCollection(request, env, url) {
       const count = await env.ASNM_DB.prepare(
         `SELECT count(*) AS total FROM ${collection.table}`,
       ).first();
-      return json({ ok: true, total: Number(count?.total || 0), items: [] }, 200, ADMIN_CACHE);
+      return json(
+        { ok: true, total: Number(count?.total || 0), items: [] },
+        200,
+        ADMIN_CACHE,
+      );
     }
     const [count, rows] = await Promise.all([
       env.ASNM_DB.prepare(`SELECT count(*) AS total FROM ${collection.table}${where}`)
@@ -334,63 +555,134 @@ async function localAsnmAdminOperations(request, env, url) {
       }
       if (request.method === "POST") {
         const body = await request.json().catch(() => null);
-        const email = String(body?.email || "").trim().toLowerCase();
+        const email = String(body?.email || "")
+          .trim()
+          .toLowerCase();
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-          return json({ ok: false, error: "Enter a valid email address." }, 422, ADMIN_CACHE);
+          return json(
+            { ok: false, error: "Enter a valid email address." },
+            422,
+            ADMIN_CACHE,
+          );
         }
-        const enabled = body?.enabled === false || body?.enabled === 0 || body?.enabled === "0" ? 0 : 1;
+        const enabled =
+          body?.enabled === false || body?.enabled === 0 || body?.enabled === "0"
+            ? 0
+            : 1;
         const timestamp = new Date().toISOString();
         await env.ASNM_DB.prepare(
           `INSERT INTO beta_testers (email, enabled, created_at, updated_at) VALUES (?, ?, ?, ?)
            ON CONFLICT(email) DO UPDATE SET enabled = excluded.enabled, updated_at = excluded.updated_at`,
-        ).bind(email, enabled, timestamp, timestamp).run();
+        )
+          .bind(email, enabled, timestamp, timestamp)
+          .run();
         return json({ ok: true }, 200, ADMIN_CACHE);
       }
     } catch (error) {
       console.error("ASNM beta tester request failed", error);
-      return json({ ok: false, error: "Beta testers are temporarily unavailable." }, 503, ADMIN_CACHE);
+      return json(
+        { ok: false, error: "Beta testers are temporarily unavailable." },
+        503,
+        ADMIN_CACHE,
+      );
     }
   }
 
-  const queueMatch = url.pathname.match(/^\/admin\/api\/asnm\/admin-data\/queue(?:\/(\d+))?$/);
+  const queueMatch = url.pathname.match(
+    /^\/admin\/api\/asnm\/admin-data\/queue(?:\/(\d+))?$/,
+  );
   if (queueMatch && request.method === "POST") {
     const submissionId = Number(queueMatch[1]);
-    if (!Number.isInteger(submissionId) || submissionId < 1) return json({ ok: false, error: "Not found." }, 404, ADMIN_CACHE);
+    if (!Number.isInteger(submissionId) || submissionId < 1)
+      return json({ ok: false, error: "Not found." }, 404, ADMIN_CACHE);
     try {
       const submission = await env.ASNM_DB.prepare(
         "SELECT submission_id, kind, payload FROM submissions WHERE submission_id = ? AND status = 'new'",
-      ).bind(submissionId).first();
-      if (!submission) return json({ ok: false, error: "This submission is no longer awaiting review." }, 404, ADMIN_CACHE);
+      )
+        .bind(submissionId)
+        .first();
+      if (!submission)
+        return json(
+          { ok: false, error: "This submission is no longer awaiting review." },
+          404,
+          ADMIN_CACHE,
+        );
       let payload = {};
-      try { payload = JSON.parse(String(submission.payload || "{}")); } catch { payload = {}; }
+      try {
+        payload = JSON.parse(String(submission.payload || "{}"));
+      } catch {
+        payload = {};
+      }
       const timestamp = new Date().toISOString();
       let recordId = null;
       if (["new_organization", "new_program"].includes(String(submission.kind))) {
-        const entity = submission.kind === "new_organization" ? "organization" : "program";
-        const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`draft-${entity}\n${String(payload.intake_id || "")}`));
-        const hex = Array.from(new Uint8Array(digest), (value) => value.toString(16).padStart(2, "0")).join("");
+        const entity =
+          submission.kind === "new_organization" ? "organization" : "program";
+        const digest = await crypto.subtle.digest(
+          "SHA-256",
+          new TextEncoder().encode(
+            `draft-${entity}\n${String(payload.intake_id || "")}`,
+          ),
+        );
+        const hex = Array.from(new Uint8Array(digest), (value) =>
+          value.toString(16).padStart(2, "0"),
+        ).join("");
         recordId = `${hex.slice(0, 8)}-${hex.slice(8, 12)}-5${hex.slice(13, 16)}-${((parseInt(hex[16], 16) & 3) | 8).toString(16)}${hex.slice(17, 20)}-${hex.slice(20, 32)}`;
         const table = entity === "organization" ? "organizations" : "programs";
         const result = await env.ASNM_DB.prepare(
           `UPDATE ${table} SET is_public = 1, verification_status = 'verified', verification_method = 'admin-accepted', updated_at = ? WHERE id = ? AND is_public = 0`,
-        ).bind(timestamp, recordId).run();
-        if (!Number(result.meta?.changes || 0)) return json({ ok: false, error: "The submitted draft could not be found." }, 422, ADMIN_CACHE);
+        )
+          .bind(timestamp, recordId)
+          .run();
+        if (!Number(result.meta?.changes || 0))
+          return json(
+            { ok: false, error: "The submitted draft could not be found." },
+            422,
+            ADMIN_CACHE,
+          );
       } else if (submission.kind === "new_event") {
         const date = String(payload.date || "");
         const time = String(payload.time || "00:00");
         const startsAt = new Date(`${date}T${time}`).toISOString();
-        if (Number.isNaN(new Date(startsAt).getTime())) return json({ ok: false, error: "The event date is invalid." }, 422, ADMIN_CACHE);
+        if (Number.isNaN(new Date(startsAt).getTime()))
+          return json(
+            { ok: false, error: "The event date is invalid." },
+            422,
+            ADMIN_CACHE,
+          );
         recordId = crypto.randomUUID();
         await env.ASNM_DB.prepare(
           `INSERT INTO events (id, title, description, sport_key, venue, city, state, url, starts_at, all_day, status, is_public, source, created_at, updated_at)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 'scheduled', 1, 'submission', ?, ?)`,
-        ).bind(recordId, String(payload.event || "Untitled event"), String(payload.notes || ""), payload.sport || null, payload.org || null, payload.city || null, payload.state || null, payload.url || null, startsAt, timestamp, timestamp).run();
+        )
+          .bind(
+            recordId,
+            String(payload.event || "Untitled event"),
+            String(payload.notes || ""),
+            payload.sport || null,
+            payload.org || null,
+            payload.city || null,
+            payload.state || null,
+            payload.url || null,
+            startsAt,
+            timestamp,
+            timestamp,
+          )
+          .run();
       }
-      await env.ASNM_DB.prepare("UPDATE submissions SET status = 'accepted' WHERE submission_id = ?").bind(submissionId).run();
+      await env.ASNM_DB.prepare(
+        "UPDATE submissions SET status = 'accepted' WHERE submission_id = ?",
+      )
+        .bind(submissionId)
+        .run();
       return json({ ok: true, record_id: recordId }, 200, ADMIN_CACHE);
     } catch (error) {
       console.error("ASNM submission acceptance failed", error);
-      return json({ ok: false, error: "Could not accept this submission." }, 503, ADMIN_CACHE);
+      return json(
+        { ok: false, error: "Could not accept this submission." },
+        503,
+        ADMIN_CACHE,
+      );
     }
   }
 
@@ -415,13 +707,18 @@ async function localAsnmAdminOperations(request, env, url) {
           contact_email: row.contact_email,
           created_at: row.created_at,
           payload,
-          title: payload.organization || payload.program || payload.event || "Submission",
+          title:
+            payload.organization || payload.program || payload.event || "Submission",
         };
       });
       return json({ ok: true, items }, 200, ADMIN_CACHE);
     } catch (error) {
       console.error("ASNM submission queue request failed", error);
-      return json({ ok: false, error: "The submission queue is temporarily unavailable." }, 503, ADMIN_CACHE);
+      return json(
+        { ok: false, error: "The submission queue is temporarily unavailable." },
+        503,
+        ADMIN_CACHE,
+      );
     }
   }
 
@@ -438,12 +735,19 @@ async function localAsnmAdminActivity(request, env, url, session) {
   const activityId = match[2];
   try {
     if (request.method === "DELETE") {
-      if (!activityId) return json({ ok: false, error: "Not found." }, 404, ADMIN_CACHE);
+      if (!activityId)
+        return json({ ok: false, error: "Not found." }, 404, ADMIN_CACHE);
       const result = await env.ASNM_DB.prepare(
         "DELETE FROM organization_activity WHERE id = ? AND organization_id = ? AND kind = 'note'",
-      ).bind(activityId, organizationId).run();
+      )
+        .bind(activityId, organizationId)
+        .run();
       if (!Number(result.meta?.changes || 0)) {
-        return json({ ok: false, error: "Only team notes can be deleted." }, 404, ADMIN_CACHE);
+        return json(
+          { ok: false, error: "Only team notes can be deleted." },
+          404,
+          ADMIN_CACHE,
+        );
       }
       return json({ ok: true }, 200, ADMIN_CACHE);
     }
@@ -455,30 +759,40 @@ async function localAsnmAdminActivity(request, env, url, session) {
          WHERE organization_id = ?
          ORDER BY created_at DESC, rowid DESC
          LIMIT 100`,
-      ).bind(organizationId).all();
+      )
+        .bind(organizationId)
+        .all();
       return json({ ok: true, items: rows.results || [] }, 200, ADMIN_CACHE);
     }
 
     const body = await request.json().catch(() => null);
-    const note = String(body?.note || "").trim().slice(0, 500);
-    if (!note) return json({ ok: false, error: "Write the note first." }, 422, ADMIN_CACHE);
+    const note = String(body?.note || "")
+      .trim()
+      .slice(0, 500);
+    if (!note)
+      return json({ ok: false, error: "Write the note first." }, 422, ADMIN_CACHE);
 
     const organization = await env.ASNM_DB.prepare(
       "SELECT id FROM organizations WHERE id = ?",
-    ).bind(organizationId).first();
-    if (!organization) return json({ ok: false, error: "Not found." }, 404, ADMIN_CACHE);
+    )
+      .bind(organizationId)
+      .first();
+    if (!organization)
+      return json({ ok: false, error: "Not found." }, 404, ADMIN_CACHE);
 
     await env.ASNM_DB.prepare(
       `INSERT INTO organization_activity
        (id, organization_id, kind, summary, actor, ref, created_at)
        VALUES (?, ?, 'note', ?, ?, NULL, ?)`,
-    ).bind(
-      crypto.randomUUID(),
-      organizationId,
-      note,
-      session.email,
-      new Date().toISOString(),
-    ).run();
+    )
+      .bind(
+        crypto.randomUUID(),
+        organizationId,
+        note,
+        session.email,
+        new Date().toISOString(),
+      )
+      .run();
 
     const rows = await env.ASNM_DB.prepare(
       `SELECT id, kind, summary, actor, ref, created_at
@@ -486,7 +800,9 @@ async function localAsnmAdminActivity(request, env, url, session) {
        WHERE organization_id = ?
        ORDER BY created_at DESC, rowid DESC
        LIMIT 100`,
-    ).bind(organizationId).all();
+    )
+      .bind(organizationId)
+      .all();
     return json({ ok: true, items: rows.results || [] }, 201, ADMIN_CACHE);
   } catch (error) {
     console.error("ASNM organization activity request failed", error);
@@ -504,10 +820,24 @@ async function adminSession(request, env) {
 }
 
 async function adminRequestLink(request, env, url) {
-  if (!env.ASNM_DB || !adminSecret(env)) return json({ ok: false, error: "Admin sign-in is not configured." }, 503, ADMIN_CACHE);
+  if (!env.ASNM_DB || !adminSecret(env))
+    return json(
+      { ok: false, error: "Admin sign-in is not configured." },
+      503,
+      ADMIN_CACHE,
+    );
   const body = await request.json().catch(() => null);
   const email = adminEmail(body?.email);
-  if (!email) return json({ ok: false, error: "Use an @adapttolife.org, @adaptivesportsnearme.com, or @faisaln.com email address." }, 403, ADMIN_CACHE);
+  if (!email)
+    return json(
+      {
+        ok: false,
+        error:
+          "Use an @adapttolife.org, @adaptivesportsnearme.com, or @faisaln.com email address.",
+      },
+      403,
+      ADMIN_CACHE,
+    );
   try {
     const token = await requestLogin(env.ASNM_DB, email);
     const origin = adminLoginOrigin(request, url, body?.origin);
@@ -518,12 +848,21 @@ async function adminRequestLink(request, env, url) {
     return json({ ok: true }, 200, ADMIN_CACHE);
   } catch (error) {
     console.error("admin login link failed", error);
-    return json({ ok: false, error: "We could not send a sign-in link. Please try again." }, 503, ADMIN_CACHE);
+    return json(
+      { ok: false, error: "We could not send a sign-in link. Please try again." },
+      503,
+      ADMIN_CACHE,
+    );
   }
 }
 
 async function adminVerifyLink(request, env, url) {
-  if (!env.ASNM_DB || !adminSecret(env)) return json({ ok: false, error: "Admin sign-in is not configured." }, 503, ADMIN_CACHE);
+  if (!env.ASNM_DB || !adminSecret(env))
+    return json(
+      { ok: false, error: "Admin sign-in is not configured." },
+      503,
+      ADMIN_CACHE,
+    );
   const origin = adminLoginOrigin(request, url, url.searchParams.get("origin") || "");
   const session = await consumeLogin(
     env.ASNM_DB,
@@ -531,7 +870,12 @@ async function adminVerifyLink(request, env, url) {
     adminSecret(env),
     { secure: origin.startsWith("https:") },
   );
-  if (!session) return json({ ok: false, error: "This sign-in link has expired or was already used." }, 401, ADMIN_CACHE);
+  if (!session)
+    return json(
+      { ok: false, error: "This sign-in link has expired or was already used." },
+      401,
+      ADMIN_CACHE,
+    );
   return new Response(null, {
     status: 303,
     headers: {
@@ -552,14 +896,10 @@ async function proxyAsnmAdmin(request, env, url, session) {
   const forwarded = new Request(target, {
     method: request.method,
     headers,
-    body: ["GET", "HEAD"].includes(request.method)
-      ? undefined
-      : request.body,
+    body: ["GET", "HEAD"].includes(request.method) ? undefined : request.body,
   });
 
-  return useAsnmService(env)
-    ? env.ASNM.fetch(forwarded)
-    : fetch(forwarded);
+  return useAsnmService(env) ? env.ASNM.fetch(forwarded) : fetch(forwarded);
 }
 
 export default {
@@ -578,7 +918,10 @@ export default {
     // that redirects, because the two slowly drift apart.
     const MERGED = { "/ways-to-give": "/donate", "/ways-to-give.html": "/donate" };
     if (MERGED[url.pathname]) {
-      return Response.redirect(`${url.origin}${MERGED[url.pathname]}${url.search}`, 301);
+      return Response.redirect(
+        `${url.origin}${MERGED[url.pathname]}${url.search}`,
+        301,
+      );
     }
 
     // Staging-only review tour: /review walks the latest iteration. Production redirects home.
@@ -593,8 +936,17 @@ export default {
     // Listed without .html; the gate strips the extension so both forms are
     // covered by one entry rather than by two that can drift apart.
     const STAGING_ONLY = new Set([
-      "/review", "/photo-picks",
-      "/hero-review", "/hero-1", "/hero-2", "/hero-3", "/hero-4", "/hero-5", "/hero-6", "/hero-7", "/hero-9",
+      "/review",
+      "/photo-picks",
+      "/hero-review",
+      "/hero-1",
+      "/hero-2",
+      "/hero-3",
+      "/hero-4",
+      "/hero-5",
+      "/hero-6",
+      "/hero-7",
+      "/hero-9",
     ]);
     if (STAGING_ONLY.has(url.pathname.replace(/\.html$/, "")) && env.STAGING !== "1") {
       return Response.redirect(`${url.origin}/`, 302);
@@ -620,7 +972,10 @@ export default {
     // when a mismatch would show") and the answer is that the REVIEW surface
     // cannot be the one that gambles. Production keeps the cache policy and
     // never runs this branch, because /css/* is not in its run_worker_first.
-    if (env.STAGING === "1" && (url.pathname.startsWith("/css/") || url.pathname.startsWith("/js/"))) {
+    if (
+      env.STAGING === "1" &&
+      (url.pathname.startsWith("/css/") || url.pathname.startsWith("/js/"))
+    ) {
       const res = await env.ASSETS.fetch(request);
       const headers = new Headers(res.headers);
       headers.set("Cache-Control", "no-store");
@@ -652,13 +1007,15 @@ export default {
     // no mail binding. Its /contact action posts here, server-to-server, gated
     // by a shared secret AND Turnstile. See src/shop_contact.js.
     if (url.pathname === "/api/shop-contact") {
-      if (request.method !== "POST") return json({ ok: false, error: "Method not allowed" }, 405);
+      if (request.method !== "POST")
+        return json({ ok: false, error: "Method not allowed" }, 405);
       if (await overFormLimit(env, request)) return json(RATE_LIMITED, 429);
       return handleShopContact(request, env, ctx);
     }
 
     if (url.pathname === "/api/volunteer") {
-      if (request.method !== "POST") return json({ ok: false, error: "Method not allowed." }, 405);
+      if (request.method !== "POST")
+        return json({ ok: false, error: "Method not allowed." }, 405);
       if (await overFormLimit(env, request)) return json(RATE_LIMITED, 429);
       return handleVolunteer(request, env, ctx);
     }
@@ -715,16 +1072,27 @@ export default {
     }
 
     if (url.pathname.startsWith("/admin")) {
-      if (url.pathname === "/admin/auth/request-link" && request.method === "POST") return adminRequestLink(request, env, url);
-      if (url.pathname === "/admin/auth/verify") return adminVerifyLink(request, env, url);
+      if (url.pathname === "/admin/auth/request-link" && request.method === "POST")
+        return adminRequestLink(request, env, url);
+      if (url.pathname === "/admin/auth/verify")
+        return adminVerifyLink(request, env, url);
       const session = await adminSession(request, env);
-      if (url.pathname === "/admin/auth/session") return json({ ok: !!session, email: session?.email || null }, session ? 200 : 401);
+      if (url.pathname === "/admin/auth/session")
+        return json(
+          { ok: !!session, email: session?.email || null },
+          session ? 200 : 401,
+        );
       if (url.pathname.startsWith("/admin/api/")) {
         if (!session) return json({ ok: false, error: "Sign in required." }, 401);
         if (url.pathname.startsWith("/admin/api/asnm")) {
           const localOperations = await localAsnmAdminOperations(request, env, url);
           if (localOperations) return localOperations;
-          const localActivity = await localAsnmAdminActivity(request, env, url, session);
+          const localActivity = await localAsnmAdminActivity(
+            request,
+            env,
+            url,
+            session,
+          );
           if (localActivity) return localActivity;
           const localCollection = await localAsnmAdminCollection(request, env, url);
           return localCollection || proxyAsnmAdmin(request, env, url, session);
@@ -732,10 +1100,15 @@ export default {
         return handleAdmin(request, env, url, session.email);
       }
       if (!url.pathname.includes("/assets/")) {
-        const shell = await env.ASSETS.fetch(new Request(`${url.origin}/admin/app/index.html`));
+        const shell = await env.ASSETS.fetch(
+          new Request(`${url.origin}/admin/app/index.html`),
+        );
         return new Response(shell.body, {
           status: shell.status,
-          headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" },
+          headers: {
+            "Content-Type": "text/html; charset=utf-8",
+            "Cache-Control": "no-store",
+          },
         });
       }
     }
@@ -765,37 +1138,54 @@ export default {
   // on Givebutter's own transaction id, so a repeated or overlapping run can
   // never double-count a donation.
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(sweepForms(env).catch((err) => console.error("form outbox failed:", err)));
+    ctx.waitUntil(
+      sweepForms(env).catch((err) => console.error("form outbox failed:", err)),
+    );
     // Tell hello@ about every intake record still waiting for its notification.
     // This Worker owns the sweep: the separate intake Worker never moved to the
     // live Cloudflare account, so form notifications sat pending from 2026-09-14
     // until this ran. Each row is claimed before sending, so a row is never
     // mailed twice.
-    ctx.waitUntil(sweepIntake(env).catch((err) => console.error("intake notification sweep failed:", err)));
+    ctx.waitUntil(
+      sweepIntake(env).catch((err) =>
+        console.error("intake notification sweep failed:", err),
+      ),
+    );
 
     ctx.waitUntil(runDriveBacklog(env));
-    ctx.waitUntil(runShopCrmBacklog(env).catch((err) => console.error("shop CRM sync crashed:", err)));
-    ctx.waitUntil(runShopNewsletterBacklog(env).catch((err) => console.error("shop newsletter CRM sync crashed:", err)));
+    ctx.waitUntil(
+      runShopCrmBacklog(env).catch((err) =>
+        console.error("shop CRM sync crashed:", err),
+      ),
+    );
+    ctx.waitUntil(
+      runShopNewsletterBacklog(env).catch((err) =>
+        console.error("shop newsletter CRM sync crashed:", err),
+      ),
+    );
     ctx.waitUntil(
       syncGifts(env).then((r) => {
         if (!r.ok) console.error("qr gift sync failed:", r.error);
-        else if (r.written) console.log(`qr gift sync: ${r.written} attributed gift(s) recorded`);
-      })
+        else if (r.written)
+          console.log(`qr gift sync: ${r.written} attributed gift(s) recorded`);
+      }),
     );
     // The webhook is only the fast path. This single scheduled owner polls every
     // successful post-activation Givebutter transaction into D1 first, then closes
     // thank-you work. A provider failure remains visible as a red receipt but
     // cannot block recovery of work already durable in D1.
     ctx.waitUntil(
-      reconcileDonorJourney(env).then((r) => {
-        if (!r.ok) {
-          console.error("donor journey reconciliation failed:", JSON.stringify(r));
-          return;
-        }
-        if (r.reconciliation.written || r.email.sent) {
-          console.log("donor journey reconciled:", JSON.stringify(r));
-        }
-      }).catch((err) => console.error("donor journey reconciliation crashed:", err))
+      reconcileDonorJourney(env)
+        .then((r) => {
+          if (!r.ok) {
+            console.error("donor journey reconciliation failed:", JSON.stringify(r));
+            return;
+          }
+          if (r.reconciliation.written || r.email.sent) {
+            console.log("donor journey reconciled:", JSON.stringify(r));
+          }
+        })
+        .catch((err) => console.error("donor journey reconciliation crashed:", err)),
     );
   },
 
@@ -924,8 +1314,20 @@ async function handleContact(request, env, ctx) {
   // Honeypot — bots fill the hidden "company" field. Accept silently, store nothing.
   if (str(data.company)) return json({ ok: true });
 
-  if (!(await verifyTurnstile(env, str(data.cf_token), request.headers.get("CF-Connecting-IP")))) {
-    return json({ ok: false, error: "Verification failed. Please reload the page and try again." }, 403);
+  if (
+    !(await verifyTurnstile(
+      env,
+      str(data.cf_token),
+      request.headers.get("CF-Connecting-IP"),
+    ))
+  ) {
+    return json(
+      {
+        ok: false,
+        error: "Verification failed. Please reload the page and try again.",
+      },
+      403,
+    );
   }
 
   const firstName = str(data.fn);
@@ -946,13 +1348,23 @@ async function handleContact(request, env, ctx) {
 
   // Contacts land in the durable form outbox (src/forms.js): a receipt, the
   // shared intake record, and the original message to hello@.
-  const sub = {name:name||"(no name given)",email,phone:"",type:LEAD_TYPES.includes(type)?type:"",message,source:source||"Submitted through the contact form on adapttolife.org."};
+  const sub = {
+    name: name || "(no name given)",
+    email,
+    phone: "",
+    type: LEAD_TYPES.includes(type) ? type : "",
+    message,
+    source: source || "Submitted through the contact form on adapttolife.org.",
+  };
   if (data.sponsor_tier) {
-    sub.tier = str(data.sponsor_tier).slice(0,80);
+    sub.tier = str(data.sponsor_tier).slice(0, 80);
     sub.amount = Number(data.sponsor_amount) || 0;
   }
   const result = await acceptForm(env, "contact", sub, data.submission_id, ctx);
-  return json(result.ok ? {ok:true, receipt:result.id} : {ok:false,error:result.error}, result.status);
+  return json(
+    result.ok ? { ok: true, receipt: result.id } : { ok: false, error: result.error },
+    result.status,
+  );
 }
 
 async function handleApply(request, env, ctx) {
@@ -969,8 +1381,20 @@ async function handleApply(request, env, ctx) {
   // Honeypot — bots fill the hidden "company" field. Accept silently, store nothing.
   if (str(data.company)) return json({ ok: true });
 
-  if (!(await verifyTurnstile(env, str(data.cf_token), request.headers.get("CF-Connecting-IP")))) {
-    return json({ ok: false, error: "Verification failed. Please reload the page and try again." }, 403);
+  if (
+    !(await verifyTurnstile(
+      env,
+      str(data.cf_token),
+      request.headers.get("CF-Connecting-IP"),
+    ))
+  ) {
+    return json(
+      {
+        ok: false,
+        error: "Verification failed. Please reload the page and try again.",
+      },
+      403,
+    );
   }
 
   const name = `${str(data.fn)} ${str(data.ln)}`.trim();
@@ -986,9 +1410,21 @@ async function handleApply(request, env, ctx) {
   // Applications land in the durable form outbox (src/forms.js): the applicant's
   // receipt and the shared intake record. The full answers stay in the restricted
   // D1 record, never in shared intake.
-  const sub = {name,email,phone:str(data.phone),sport:str(data.sport),location:str(data.location),need:str(data.need),cost:str(data.cost),about:str(data.about)};
+  const sub = {
+    name,
+    email,
+    phone: str(data.phone),
+    sport: str(data.sport),
+    location: str(data.location),
+    need: str(data.need),
+    cost: str(data.cost),
+    about: str(data.about),
+  };
   const result = await acceptForm(env, "apply", sub, data.submission_id, ctx);
-  return json(result.ok ? {ok:true, receipt:result.id} : {ok:false,error:result.error}, result.status);
+  return json(
+    result.ok ? { ok: true, receipt: result.id } : { ok: false, error: result.error },
+    result.status,
+  );
 }
 
 // Volunteer board -> the durable form outbox (src/forms.js).
@@ -1012,8 +1448,20 @@ async function handleVolunteer(request, env, ctx) {
   // Honeypot — bots fill the hidden "company" field. Accept silently, store nothing.
   if (str(data.company)) return json({ ok: true });
 
-  if (!(await verifyTurnstile(env, str(data.cf_token), request.headers.get("CF-Connecting-IP")))) {
-    return json({ ok: false, error: "Verification failed. Please reload the page and try again." }, 403);
+  if (
+    !(await verifyTurnstile(
+      env,
+      str(data.cf_token),
+      request.headers.get("CF-Connecting-IP"),
+    ))
+  ) {
+    return json(
+      {
+        ok: false,
+        error: "Verification failed. Please reload the page and try again.",
+      },
+      403,
+    );
   }
 
   // Two shapes reach here. A role page posts { name, em, role } and nothing
@@ -1035,12 +1483,30 @@ async function handleVolunteer(request, env, ctx) {
   // promises we will come back with a real scope, and we cannot do that from a
   // name and an email alone.
   if (!roles.length && !bring) {
-    return json({ ok: false, error: "Add a role, or tell us what you would want to do." }, 422);
+    return json(
+      { ok: false, error: "Add a role, or tell us what you would want to do." },
+      422,
+    );
   }
 
-  const sub = {name,email,phone:str(data.phone),based:str(data.based),time:str(data.time),links:str(data.links),bring,roles,source:str(data.source).slice(0,80)||"Submitted through the volunteer form on adapttolife.org."};
+  const sub = {
+    name,
+    email,
+    phone: str(data.phone),
+    based: str(data.based),
+    time: str(data.time),
+    links: str(data.links),
+    bring,
+    roles,
+    source:
+      str(data.source).slice(0, 80) ||
+      "Submitted through the volunteer form on adapttolife.org.",
+  };
   const result = await acceptForm(env, "volunteer", sub, data.submission_id, ctx);
-  return json(result.ok ? {ok:true, receipt:result.id} : {ok:false,error:result.error}, result.status);
+  return json(
+    result.ok ? { ok: true, receipt: result.id } : { ok: false, error: result.error },
+    result.status,
+  );
 }
 
 // Roles arrive as an array from the page and as a comma string from a plain form
@@ -1049,7 +1515,15 @@ async function handleVolunteer(request, env, ctx) {
 // way in a list view.
 export function normalizeRoles(raw) {
   const list = Array.isArray(raw) ? raw : String(raw || "").split(",");
-  const wanted = new Set(list.map((r) => String(r || "").trim().toLowerCase()).filter(Boolean));
+  const wanted = new Set(
+    list
+      .map((r) =>
+        String(r || "")
+          .trim()
+          .toLowerCase(),
+      )
+      .filter(Boolean),
+  );
   return VOLUNTEER_ROLES.filter((r) => wanted.has(r.toLowerCase())).slice(0, MAX_ROLES);
 }
 
@@ -1058,13 +1532,27 @@ async function handleSubscribe(request, env, ctx) {
   let data;
   try {
     const ct = request.headers.get("content-type") || "";
-    data = ct.includes("application/json") ? await request.json() : Object.fromEntries(await request.formData());
+    data = ct.includes("application/json")
+      ? await request.json()
+      : Object.fromEntries(await request.formData());
   } catch {
     return json({ ok: false, error: "Could not read your submission." }, 400);
   }
   if (str(data.company)) return json({ ok: true });
-  if (!await verifyTurnstile(env, str(data.cf_token), request.headers.get("CF-Connecting-IP"))) {
-    return json({ ok: false, error: "Verification failed. Please reload the page and try again." }, 403);
+  if (
+    !(await verifyTurnstile(
+      env,
+      str(data.cf_token),
+      request.headers.get("CF-Connecting-IP"),
+    ))
+  ) {
+    return json(
+      {
+        ok: false,
+        error: "Verification failed. Please reload the page and try again.",
+      },
+      403,
+    );
   }
   const email = str(data.em);
   if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
@@ -1072,16 +1560,29 @@ async function handleSubscribe(request, env, ctx) {
   }
   if (!env.RESEND_API_KEY || !env.RESEND_SEGMENT_ID) {
     console.error("resend not configured (missing API key or segment ID)");
-    return json({ ok: false, error: "Sign-up is temporarily unavailable. Please email hello@adapttolife.org." }, 503);
+    return json(
+      {
+        ok: false,
+        error:
+          "Sign-up is temporarily unavailable. Please email hello@adapttolife.org.",
+      },
+      503,
+    );
   }
   const source = str(data.source).slice(0, 80) || "adapttolife.org";
   const result = await safeNewsletterSubscribe(env, email, source);
-  if (!result.ok) return json({ok:false,error:result.error},result.status);
-  after(ctx, tellAlec(env, {
-    site: INTAKE_SITE, kind: "newsletter", email,
-    summary: `New newsletter signup: ${email}`, source,
-    payload: { consent: "Explicit newsletter signup; not inferred from other forms" },
-  }));
+  if (!result.ok) return json({ ok: false, error: result.error }, result.status);
+  after(
+    ctx,
+    tellAlec(env, {
+      site: INTAKE_SITE,
+      kind: "newsletter",
+      email,
+      summary: `New newsletter signup: ${email}`,
+      source,
+      payload: { consent: "Explicit newsletter signup; not inferred from other forms" },
+    }),
+  );
   return json({ ok: true, ...(result.existing ? { existing: true } : {}) });
 }
 
@@ -1094,10 +1595,12 @@ async function handleRaised(request, env) {
   const { raised, online, offline, goal } = await fundPosition(env);
   const body = JSON.stringify({ raised, online, offline, goal });
   return new Response(body, {
-    headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=60" },
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "public, max-age=60",
+    },
   });
 }
-
 
 function str(v) {
   return (typeof v === "string" ? v : "").trim().slice(0, 5000);
@@ -1111,7 +1614,11 @@ function json(obj, status = 200) {
 }
 
 async function safeText(res) {
-  try { return await res.text(); } catch { return "(no body)"; }
+  try {
+    return await res.text();
+  } catch {
+    return "(no body)";
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -1126,20 +1633,26 @@ async function previewReceipt(env, url) {
   // Force the capturing binding as the transport. Staging's own transport is
   // "none" and the Worker shares production mail credentials, so inheriting
   // env.MAIL_TRANSPORT would either capture nothing or send for real.
-  const stub = { ...env, MAIL_TRANSPORT: "cloudflare", SEND_EMAIL: { send: (msg) => (captured.push(msg), {}) } };
+  const stub = {
+    ...env,
+    MAIL_TRANSPORT: "cloudflare",
+    SEND_EMAIL: { send: (msg) => (captured.push(msg), {}) },
+  };
 
   if (kind === "volunteer") {
     await sendVolunteerReceipt(stub, {
       name: "Jordan Rivers",
       email: "jordan@example.com",
       roles: ["CPA or tax preparer", "Grant writer", "Make an introduction"],
-      bring: "Twenty years preparing returns for small charities, and a board contact at a family foundation that funds adaptive sport.",
+      bring:
+        "Twenty years preparing returns for small charities, and a board contact at a family foundation that funds adaptive sport.",
     });
   } else if (kind === "contact") {
     await sendContactReceipt(stub, {
       name: "Jordan Rivers",
       email: "jordan@example.com",
-      message: "Is there a program near Rockford for a 12 year old who wants to try basketball?",
+      message:
+        "Is there a program near Rockford for a 12 year old who wants to try basketball?",
       type: "Funding for an athlete",
     });
   } else {
@@ -1171,12 +1684,18 @@ async function previewReceipt(env, url) {
       `<div style="padding:0 16px 40px"><pre style="white-space:pre-wrap;font:13px/1.6 ui-monospace,` +
       `monospace;color:#3f3d38;background:#fff;border:1px solid #e3e0d9;border-radius:10px;padding:16px">` +
       `${escapeHtml(msg.text)}</pre></div></body>`,
-    { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } }
+    {
+      headers: {
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": "no-store",
+      },
+    },
   );
 }
 
 function escapeHtml(s) {
-  return String(s ?? "").replace(/[&<>"']/g, (c) =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])
+  return String(s ?? "").replace(
+    /[&<>"']/g,
+    (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c],
   );
 }

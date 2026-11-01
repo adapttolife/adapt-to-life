@@ -11,13 +11,14 @@
 import { handleAgentMailApi, handleEmail } from "./agent_mail.js";
 import { handleEmailSendingBatch } from "./email_delivery.js";
 
-const notFound = () => new Response("Not found", {
-  status: 404,
-  headers: {
-    "Content-Type": "text/plain; charset=utf-8",
-    "Cache-Control": "no-store",
-  },
-});
+const notFound = () =>
+  new Response("Not found", {
+    status: 404,
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "no-store",
+    },
+  });
 
 export default {
   async fetch(request, env) {

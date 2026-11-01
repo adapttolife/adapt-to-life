@@ -40,27 +40,35 @@ const die = (why, fix) => {
 if (process.env.ATL_ALLOW_UNSAFE_DEPLOY) {
   // Deliberately noisy and deliberately present: a guard with no way past it
   // gets deleted the first time it blocks a real emergency.
-  console.warn(`\n  !! guard bypassed: ATL_ALLOW_UNSAFE_DEPLOY=${process.env.ATL_ALLOW_UNSAFE_DEPLOY}\n`);
+  console.warn(
+    `\n  !! guard bypassed: ATL_ALLOW_UNSAFE_DEPLOY=${process.env.ATL_ALLOW_UNSAFE_DEPLOY}\n`,
+  );
   process.exit(0);
 }
 
 const branch = git("rev-parse", "--abbrev-ref", "HEAD");
 if (branch !== "main") {
-  die(`on branch '${branch}', not main.`,
-      "For staging use `npm run deploy:staging`. For production, merge to main and deploy from there (or ATL_ALLOW_UNSAFE_DEPLOY=<reason>).");
+  die(
+    `on branch '${branch}', not main.`,
+    "For staging use `npm run deploy:staging`. For production, merge to main and deploy from there (or ATL_ALLOW_UNSAFE_DEPLOY=<reason>).",
+  );
 }
 
 if (git("status", "--porcelain")) {
-  die("the working tree has uncommitted changes.",
-      "Production must be a commit anyone can check out. Commit or stash first.");
+  die(
+    "the working tree has uncommitted changes.",
+    "Production must be a commit anyone can check out. Commit or stash first.",
+  );
 }
 
 git("fetch", "origin", "main", "--quiet");
 const [local, remote] = [git("rev-parse", "main"), git("rev-parse", "origin/main")];
 if (local !== remote) {
   const ahead = git("rev-list", "--count", `origin/main..main`);
-  die(`local main and origin/main differ (${ahead} commit(s) unpushed).`,
-      "Push main first — what is live has to be readable from GitHub.");
+  die(
+    `local main and origin/main differ (${ahead} commit(s) unpushed).`,
+    "Push main first — what is live has to be readable from GitHub.",
+  );
 }
 
 console.log(`guard: production from main @ ${local.slice(0, 7)} — clean and pushed`);

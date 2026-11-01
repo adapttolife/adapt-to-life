@@ -15,14 +15,26 @@ const pages = htmlFiles();
 
 test("every stylesheet and script reference carries a version", () => {
   for (const p of pages) {
-    const bare = [...readFileSync(p, "utf8").matchAll(/(?:href|src)="(\/(?:css|js)\/[^"?]+)"/g)].map((m) => m[1]).filter((u) => versions.has(u));
-    assert.deepEqual(bare, [], `${relative(root, p)} requests ${bare.join(", ")} without a version; run npm run assets`);
+    const bare = [
+      ...readFileSync(p, "utf8").matchAll(/(?:href|src)="(\/(?:css|js)\/[^"?]+)"/g),
+    ]
+      .map((m) => m[1])
+      .filter((u) => versions.has(u));
+    assert.deepEqual(
+      bare,
+      [],
+      `${relative(root, p)} requests ${bare.join(", ")} without a version; run npm run assets`,
+    );
   }
 });
 
 test("every version matches the file it names", () => {
   for (const p of pages) {
     const html = readFileSync(p, "utf8");
-    assert.equal(versionHtml(html, versions), html, `${relative(root, p)} names an out of date CSS or JS version; run npm run assets`);
+    assert.equal(
+      versionHtml(html, versions),
+      html,
+      `${relative(root, p)} names an out of date CSS or JS version; run npm run assets`,
+    );
   }
 });

@@ -27,9 +27,11 @@ import { renderChart } from "./chart_render.js";
 const CODE_BLOCK_STYLE =
   "font-family:ui-monospace,Menlo,monospace;font-size:13px;line-height:1.45;" +
   "background:#f6f6f3;padding:12px 14px;border-radius:8px;overflow-x:auto";
-const INLINE_CODE_STYLE = "background:#f6f6f3;padding:1px 5px;border-radius:4px;font-size:13px";
+const INLINE_CODE_STYLE =
+  "background:#f6f6f3;padding:1px 5px;border-radius:4px;font-size:13px";
 const HR_STYLE = "border:none;border-top:1px solid #e8e7e0;margin:24px 0";
-const H1_STYLE = "font-size:26px;font-weight:700;letter-spacing:-0.02em;margin:24px 0 8px";
+const H1_STYLE =
+  "font-size:26px;font-weight:700;letter-spacing:-0.02em;margin:24px 0 8px";
 const H2_STYLE =
   "font-size:18px;font-weight:700;letter-spacing:-0.01em;border-bottom:1px solid #e8e7e0;" +
   "padding-bottom:6px;margin:28px 0 10px";
@@ -38,13 +40,15 @@ const H3_STYLE = "font-size:15px;font-weight:700;margin:24px 0 8px";
 // "default HTML" tell) — hairline row rules, a slightly firmer rule under an
 // uppercase micro-label header row, no fills, no vertical ink.
 const TABLE_STYLE = "border-collapse:collapse;width:100%;margin:12px 0;font-size:14px";
-const CELL_STYLE = "border-bottom:1px solid #e8e7e0;padding:8px 12px 8px 0;text-align:left;vertical-align:top";
+const CELL_STYLE =
+  "border-bottom:1px solid #e8e7e0;padding:8px 12px 8px 0;text-align:left;vertical-align:top";
 const TH_STYLE =
   "border-bottom:1px solid #d6d4cb;padding:0 12px 6px 0;text-align:left;vertical-align:bottom;" +
   "font-size:11px;font-weight:600;color:#898781;text-transform:uppercase;letter-spacing:0.06em";
 const LIST_STYLE = "margin:8px 0 8px 22px";
 const LI_STYLE = "margin:4px 0";
-const BLOCKQUOTE_STYLE = "border-left:3px solid #d6d4cb;margin:12px 0;padding:4px 14px;color:#52514e";
+const BLOCKQUOTE_STYLE =
+  "border-left:3px solid #d6d4cb;margin:12px 0;padding:4px 14px;color:#52514e";
 const PARAGRAPH_STYLE = "margin:10px 0;line-height:1.55";
 const LINK_STYLE = "color:#256abf";
 
@@ -141,7 +145,9 @@ function renderTable(tableLines) {
     const cells = splitTableRow(line);
     const tag = idx === 0 ? "th" : "td";
     const style = idx === 0 ? TH_STYLE : CELL_STYLE;
-    const cellsHtml = cells.map((c) => `<${tag} style="${style}">${inline(c)}</${tag}>`).join("");
+    const cellsHtml = cells
+      .map((c) => `<${tag} style="${style}">${inline(c)}</${tag}>`)
+      .join("");
     rowsHtml.push(`<tr>${cellsHtml}</tr>`);
   });
   return `<table style="${TABLE_STYLE}">${rowsHtml.join("")}</table>`;
@@ -179,7 +185,8 @@ function renderBody(mdText, opts) {
         if (custom) {
           out.push(custom(codeBuf, chartIndex));
         } else {
-          const image = opts && opts.chartImages ? opts.chartImages[chartIndex] : undefined;
+          const image =
+            opts && opts.chartImages ? opts.chartImages[chartIndex] : undefined;
           out.push(renderChart(codeBuf, image));
         }
         chartIndex += 1;
@@ -238,7 +245,9 @@ function renderBody(mdText, opts) {
         items.push(mark + inline(body));
         i += 1;
       }
-      out.push(`<ul style="${LIST_STYLE}">${items.map((it) => `<li style="${LI_STYLE}">${it}</li>`).join("")}</ul>`);
+      out.push(
+        `<ul style="${LIST_STYLE}">${items.map((it) => `<li style="${LI_STYLE}">${it}</li>`).join("")}</ul>`,
+      );
       continue;
     }
 
@@ -249,7 +258,9 @@ function renderBody(mdText, opts) {
         items.push(inline(content));
         i += 1;
       }
-      out.push(`<ol style="${LIST_STYLE}">${items.map((it) => `<li style="${LI_STYLE}">${it}</li>`).join("")}</ol>`);
+      out.push(
+        `<ol style="${LIST_STYLE}">${items.map((it) => `<li style="${LI_STYLE}">${it}</li>`).join("")}</ol>`,
+      );
       continue;
     }
 
@@ -259,7 +270,9 @@ function renderBody(mdText, opts) {
         quoteLines.push(inline(escLines[i].trim().slice(5)));
         i += 1;
       }
-      out.push(`<blockquote style="${BLOCKQUOTE_STYLE}">${quoteLines.join("<br>")}</blockquote>`);
+      out.push(
+        `<blockquote style="${BLOCKQUOTE_STYLE}">${quoteLines.join("<br>")}</blockquote>`,
+      );
       continue;
     }
 
@@ -278,7 +291,7 @@ export function renderMarkdown(md, opts) {
   return (
     // Explicit background (2026-07-05): dark-mode clients auto-invert emails that
     // declare none — keeps the reading-view card white deterministically.
-    '<div style="font-family:-apple-system,\'Segoe UI\',Helvetica,Arial,sans-serif;' +
+    "<div style=\"font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;" +
     'font-size:15px;color:#0b0b0b;background:#ffffff;max-width:720px;padding:4px 2px">' +
     rendered +
     "</div>"
@@ -298,7 +311,13 @@ export function deriveText(md) {
 // Explicit body_html (the report register) always wins, unchanged.
 export function resolveMarkdownBody({ body_text, body_html, body_markdown }, opts) {
   const source = body_markdown != null ? body_markdown : body_text;
-  const html = body_html != null ? body_html : (source ? renderMarkdown(source, opts) : undefined);
-  const text = body_text != null ? body_text : (body_markdown ? deriveText(body_markdown) : undefined);
+  const html =
+    body_html != null ? body_html : source ? renderMarkdown(source, opts) : undefined;
+  const text =
+    body_text != null
+      ? body_text
+      : body_markdown
+        ? deriveText(body_markdown)
+        : undefined;
   return { body_text: text, body_html: html };
 }

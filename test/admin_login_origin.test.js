@@ -1,32 +1,36 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import {
-  adminLoginOrigin,
-  asnmAdminCollection,
-  useAsnmService,
-} from "../src/index.js";
+import { adminLoginOrigin, asnmAdminCollection, useAsnmService } from "../src/index.js";
 
 test("admin login links use the host that requested the link", () => {
-  const request = new Request("https://adapt-to-life.adapt-to-life.workers.dev/admin/auth/request-link", {
-    headers: { Host: "127.0.0.1:8787" },
-  });
+  const request = new Request(
+    "https://adapt-to-life.adapt-to-life.workers.dev/admin/auth/request-link",
+    {
+      headers: { Host: "127.0.0.1:8787" },
+    },
+  );
   const url = new URL(request.url);
 
   assert.equal(adminLoginOrigin(request, url), "https://127.0.0.1:8787");
 });
 
 test("admin login links honor a proxy's original host", () => {
-  const request = new Request("https://adapt-to-life.adapt-to-life.workers.dev/admin/auth/request-link", {
-    headers: { "X-Forwarded-Host": "staging.adapttolife.org" },
-  });
+  const request = new Request(
+    "https://adapt-to-life.adapt-to-life.workers.dev/admin/auth/request-link",
+    {
+      headers: { "X-Forwarded-Host": "staging.adapttolife.org" },
+    },
+  );
   const url = new URL(request.url);
 
   assert.equal(adminLoginOrigin(request, url), "https://staging.adapttolife.org");
 });
 
 test("admin login links preserve the browser's local development origin", () => {
-  const request = new Request("https://adapt-to-life.adapt-to-life.workers.dev/admin/auth/request-link");
+  const request = new Request(
+    "https://adapt-to-life.adapt-to-life.workers.dev/admin/auth/request-link",
+  );
   const url = new URL(request.url);
 
   assert.equal(
@@ -36,7 +40,9 @@ test("admin login links preserve the browser's local development origin", () => 
 });
 
 test("admin login links reject unapproved explicit origins", () => {
-  const request = new Request("https://adapt-to-life.adapt-to-life.workers.dev/admin/auth/request-link");
+  const request = new Request(
+    "https://adapt-to-life.adapt-to-life.workers.dev/admin/auth/request-link",
+  );
   const url = new URL(request.url);
 
   assert.equal(
@@ -46,12 +52,18 @@ test("admin login links reject unapproved explicit origins", () => {
 });
 
 test("admin login links fall back to the request URL when the host is invalid", () => {
-  const request = new Request("https://adapt-to-life.adapt-to-life.workers.dev/admin/auth/request-link", {
-    headers: { Host: "example.com/path" },
-  });
+  const request = new Request(
+    "https://adapt-to-life.adapt-to-life.workers.dev/admin/auth/request-link",
+    {
+      headers: { Host: "example.com/path" },
+    },
+  );
   const url = new URL(request.url);
 
-  assert.equal(adminLoginOrigin(request, url), "https://adapt-to-life.adapt-to-life.workers.dev");
+  assert.equal(
+    adminLoginOrigin(request, url),
+    "https://adapt-to-life.adapt-to-life.workers.dev",
+  );
 });
 
 test("staging always reaches the configured ASNM staging origin", () => {

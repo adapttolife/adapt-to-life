@@ -21,8 +21,12 @@ export const PAGE_HEADER_CLASS = "pg-band";
 // review rounds: the band was overwritten in place under a 30-day cache and
 // Alec's phone kept serving the first version of it.
 import { readFileSync } from "node:fs";
-const HASH = JSON.parse(readFileSync(
-  new URL("../../public/images/hero/panels/hashes.json", import.meta.url), "utf8"));
+const HASH = JSON.parse(
+  readFileSync(
+    new URL("../../public/images/hero/panels/hashes.json", import.meta.url),
+    "utf8",
+  ),
+);
 const url = (f) => `/images/hero/panels/${HASH[f] || f}`;
 // FOUR bands, not one. Alec, 2026-09-10: "four pages that all have the exact
 // same pictures ... we have really good pictures, let's leverage them." The
@@ -37,16 +41,16 @@ const url = (f) => `/images/hero/panels/${HASH[f] || f}`;
 //   1  the room and the people in it        2  competition
 //   3  faces                                4  the story
 const BAND_OF = {
-  "volunteer.html":               "1", // your place on this team
+  "volunteer.html": "1", // your place on this team
   "adaptive-sports-near-me.html": "1", // the question is where do I go, so show the place
-  "subscribe.html":               "1",
-  "confirmed.html":               "1", // where a confirmed subscriber lands; continues /subscribe
-  "sponsorship.html":             "2", // sponsor an adaptive athlete
-  "roadmap.html":                 "2",
-  "promise.html":                 "3", // 100% to the community
-  "contact.html":                 "3",
-  "about.html":                   "4", // built by the community it serves
-  "waiver.html":                  "4",
+  "subscribe.html": "1",
+  "confirmed.html": "1", // where a confirmed subscriber lands; continues /subscribe
+  "sponsorship.html": "2", // sponsor an adaptive athlete
+  "roadmap.html": "2",
+  "promise.html": "3", // 100% to the community
+  "contact.html": "3",
+  "about.html": "4", // built by the community it serves
+  "waiver.html": "4",
 };
 // A page not in the list gets 3. Every page that actually paints a band is
 // named above — a hero without pg-band (the role pages, /apply's single
@@ -99,26 +103,26 @@ export const photoVars = (file) =>
 //         to make sure that Givebutter has the proper spacing to make sure
 //         that it looks good on desktop."
 export const PAGE_TIERS = {
-  "hustle-and-heart.html":        "lg",
+  "hustle-and-heart.html": "lg",
   "adaptive-sports-near-me.html": "lg",
-  "volunteer.html":               "lg",
-  "sponsorship.html":             "lg",
-  "promise.html":                 "md",
+  "volunteer.html": "lg",
+  "sponsorship.html": "lg",
+  "promise.html": "md",
   // /apply sits in lg deliberately: it is a top-level nav item and the page an
   // athlete converts on, so it is a door into the site rather than a page you
   // arrive at from one. It also carries a single photograph instead of the
   // band, which wants the room.
-  "about.html":                   "md",
-  "adapt-body-shop.html":         "md",
-  "apply.html":                   "lg",
-  "roadmap.html":                 "md",
-  "karen.html":                   "md",
-  "popcorn.html":                 "md",
-  "send-6.html":                  "md",
-  "contact.html":                 "sm",
-  "waiver.html":                  "sm",
-  "subscribe.html":               "sm",
-  "confirmed.html":               "sm",
-  "donate.html":                  "give",
+  "about.html": "md",
+  "adapt-body-shop.html": "md",
+  "apply.html": "lg",
+  "roadmap.html": "md",
+  "karen.html": "md",
+  "popcorn.html": "md",
+  "send-6.html": "md",
+  "contact.html": "sm",
+  "waiver.html": "sm",
+  "subscribe.html": "sm",
+  "confirmed.html": "sm",
+  "donate.html": "give",
 };
 export const TIER_CLASS = (file) => `pg-head--${PAGE_TIERS[file] || "md"}`;

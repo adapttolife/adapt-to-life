@@ -33,36 +33,55 @@ const MAX_BLACK = 4; // percent; the band fills, so anything above this is a bug
 const browser = await chromium.launch();
 let bad = 0;
 
-for (const [w, h, label] of [[1440, 900, "desktop"], [390, 844, "phone"]]) {
+for (const [w, h, label] of [
+  [1440, 900, "desktop"],
+  [390, 844, "phone"],
+]) {
   console.log(`\n@${label}  ${w}x${h}`);
   for (const [file, tier] of Object.entries(PAGE_TIERS)) {
     const path = "/" + file.replace(/\.html$/, "");
     const page = await browser.newPage({ viewport: { width: w, height: h } });
-    const res = await page.goto(`${BASE}${path}?cb=${Date.now()}`, { waitUntil: "load" });
-    if (!res || res.status() >= 400) { await page.close(); continue; }
+    const res = await page.goto(`${BASE}${path}?cb=${Date.now()}`, {
+      waitUntil: "load",
+    });
+    if (!res || res.status() >= 400) {
+      await page.close();
+      continue;
+    }
     await page.evaluate(() => document.fonts.ready);
     await page.waitForTimeout(900);
     const g = await page.evaluate(() => {
       const hero = document.querySelector(".hero.pg-band");
       if (!hero) return null;
-      return { hero: hero.getBoundingClientRect().height,
-               band: parseFloat(getComputedStyle(hero, "::before").height) || 0 };
+      return {
+        hero: hero.getBoundingClientRect().height,
+        band: parseFloat(getComputedStyle(hero, "::before").height) || 0,
+      };
     });
     await page.close();
-    if (!g) { console.log(`  ${path.padEnd(26)} ${tier.padEnd(4)} — not banded`); continue; }
+    if (!g) {
+      console.log(`  ${path.padEnd(26)} ${tier.padEnd(4)} — not banded`);
+      continue;
+    }
     const black = Math.max(0, Math.round(((g.hero - g.band) / g.hero) * 100));
     // The ceiling is a desktop number; on a phone the clamp resolves lower, so
     // only the black check is meaningful there.
     const over = label === "desktop" && g.hero > CEIL[tier] + 1;
     const dark = black > MAX_BLACK;
     if (over || dark) bad++;
-    console.log(`  ${path.padEnd(26)} ${tier.padEnd(4)} ` +
-      `${String(Math.round(g.hero)).padStart(4)}px  ${String(Math.round(g.hero / h * 100)).padStart(3)}vh  ` +
-      `black ${String(black).padStart(2)}%` +
-      (over ? `  OVER TIER (ceiling ${CEIL[tier]}px — shorten the copy)` : "") +
-      (dark ? "  NOT FILLED" : ""));
+    console.log(
+      `  ${path.padEnd(26)} ${tier.padEnd(4)} ` +
+        `${String(Math.round(g.hero)).padStart(4)}px  ${String(Math.round((g.hero / h) * 100)).padStart(3)}vh  ` +
+        `black ${String(black).padStart(2)}%` +
+        (over ? `  OVER TIER (ceiling ${CEIL[tier]}px — shorten the copy)` : "") +
+        (dark ? "  NOT FILLED" : ""),
+    );
   }
 }
 await browser.close();
-console.log(bad ? `\n${bad} header(s) off-spec.` : "\nevery header matches its tier and is filled.");
+console.log(
+  bad
+    ? `\n${bad} header(s) off-spec.`
+    : "\nevery header matches its tier and is filled.",
+);
 process.exit(bad ? 1 : 0);

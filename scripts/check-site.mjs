@@ -39,9 +39,26 @@ const IS_STAGING = BASE.includes("staging");
 // not only template samples, so long role-specific wording cannot slip through.
 const ROLE_PAGES = ROLES.map((r) => `/volunteer/${r.slug}`);
 const PAGES = [
-  "/", "/about", "/adaptive-sports-near-me", "/apply", "/contact", "/donate",
-  "/adapt-body-shop", "/hustle-and-heart", "/karen", "/popcorn", "/promise", "/roadmap", "/send-6",
-  "/juan", "/sponsorship", "/subscribe", "/confirmed", "/tim", "/volunteer", "/waiver",
+  "/",
+  "/about",
+  "/adaptive-sports-near-me",
+  "/apply",
+  "/contact",
+  "/donate",
+  "/adapt-body-shop",
+  "/hustle-and-heart",
+  "/karen",
+  "/popcorn",
+  "/promise",
+  "/roadmap",
+  "/send-6",
+  "/juan",
+  "/sponsorship",
+  "/subscribe",
+  "/confirmed",
+  "/tim",
+  "/volunteer",
+  "/waiver",
   ...ROLE_PAGES,
 ];
 
@@ -60,16 +77,23 @@ const PAGES = [
 const CLIENT_SIDE_NET = /net::ERR_NETWORK_CHANGED|net::ERR_INTERNET_DISCONNECTED/;
 // Turnstile logs a %c%d line as console.error on every page; not ours.
 const isRealConsoleError = (c) =>
-  c.type() === "error" && !c.text().includes("font-size:0") && !CLIENT_SIDE_NET.test(c.text());
+  c.type() === "error" &&
+  !c.text().includes("font-size:0") &&
+  !CLIENT_SIDE_NET.test(c.text());
 
 const IGNORE_OVERFLOW = `
   if (el.closest('[aria-hidden="true"]') || el.getAttribute('aria-hidden') === 'true') return;
   if (el.matches('input[aria-hidden="true"]')) return;
 `;
 
-const browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined });
+const browser = await chromium.launch({
+  executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined,
+});
 let failed = false;
-const fail = (msg) => { failed = true; console.log("FAIL " + msg); };
+const fail = (msg) => {
+  failed = true;
+  console.log("FAIL " + msg);
+};
 
 // NAVIGATE, AND BE PATIENT WITH 429. Cloudflare rate-limits this checker: it
 // walks 19 pages at two viewports and then measures budgets, several hundred
@@ -90,9 +114,14 @@ const NAV_BACKOFF = [3000, 9000, 20000];
 async function gotoPage(pg, path) {
   let res = null;
   for (let attempt = 0; ; attempt++) {
-    res = await pg.goto(`${BASE}${path}?cb=${Date.now()}`, { waitUntil: "domcontentloaded" });
-    if (!res || !NAV_RETRY_STATUS.has(res.status()) || attempt >= NAV_BACKOFF.length) return res;
-    console.log(`  ${path} returned ${res.status()}; waiting ${NAV_BACKOFF[attempt] / 1000}s`);
+    res = await pg.goto(`${BASE}${path}?cb=${Date.now()}`, {
+      waitUntil: "domcontentloaded",
+    });
+    if (!res || !NAV_RETRY_STATUS.has(res.status()) || attempt >= NAV_BACKOFF.length)
+      return res;
+    console.log(
+      `  ${path} returned ${res.status()}; waiting ${NAV_BACKOFF[attempt] / 1000}s`,
+    );
     await new Promise((r) => setTimeout(r, NAV_BACKOFF[attempt]));
   }
 }
@@ -101,15 +130,22 @@ let reference = null;
 
 for (const path of PAGES) {
   // ---- mobile: one tap must open the menu -------------------------------
-  const m = await browser.newPage({ viewport: { width: 390, height: 800 }, reducedMotion: "reduce" });
+  const m = await browser.newPage({
+    viewport: { width: 390, height: 800 },
+    reducedMotion: "reduce",
+  });
   const mErrs = [];
   m.on("pageerror", (e) => mErrs.push(String(e).slice(0, 90)));
-  m.on("console", (c) => { if (isRealConsoleError(c)) mErrs.push(c.text().slice(0, 90)); });
+  m.on("console", (c) => {
+    if (isRealConsoleError(c)) mErrs.push(c.text().slice(0, 90));
+  });
   const mRes = await gotoPage(m, path);
   await m.waitForTimeout(1500);
   if (!mRes || mRes.status() !== 200) {
     // Stop here rather than clicking into a page that is not the page.
-    fail(`${path} returned ${mRes ? mRes.status() : "no response"} after ${NAV_BACKOFF.length + 1} attempts`);
+    fail(
+      `${path} returned ${mRes ? mRes.status() : "no response"} after ${NAV_BACKOFF.length + 1} attempts`,
+    );
     await m.close();
     continue;
   }
@@ -126,18 +162,27 @@ for (const path of PAGES) {
   }))()`);
   await m.close();
 
-  if (!mob.open || mob.height < 100) fail(`${path} mobile menu did not open (open=${mob.open}, height=${mob.height})`);
-  if (mob.overflow.length) fail(`${path} @390 horizontal overflow: ${JSON.stringify(mob.overflow)}`);
+  if (!mob.open || mob.height < 100)
+    fail(`${path} mobile menu did not open (open=${mob.open}, height=${mob.height})`);
+  if (mob.overflow.length)
+    fail(`${path} @390 horizontal overflow: ${JSON.stringify(mob.overflow)}`);
   if (mErrs.length) fail(`${path} @390 console: ${JSON.stringify(mErrs)}`);
 
   // ---- desktop: the dropdown must open, and match mobile ----------------
-  const d = await browser.newPage({ viewport: { width: 1440, height: 1000 }, reducedMotion: "reduce" });
+  const d = await browser.newPage({
+    viewport: { width: 1440, height: 1000 },
+    reducedMotion: "reduce",
+  });
   const dErrs = [];
   d.on("pageerror", (e) => dErrs.push(String(e).slice(0, 90)));
-  d.on("console", (c) => { if (isRealConsoleError(c)) dErrs.push(c.text().slice(0, 90)); });
+  d.on("console", (c) => {
+    if (isRealConsoleError(c)) dErrs.push(c.text().slice(0, 90));
+  });
   const dRes = await gotoPage(d, path);
   if (!dRes || dRes.status() !== 200) {
-    fail(`${path} @1440 returned ${dRes ? dRes.status() : "no response"} after ${NAV_BACKOFF.length + 1} attempts`);
+    fail(
+      `${path} @1440 returned ${dRes ? dRes.status() : "no response"} after ${NAV_BACKOFF.length + 1} attempts`,
+    );
     await d.close();
     continue;
   }
@@ -159,25 +204,36 @@ for (const path of PAGES) {
   }))()`);
   await d.close();
 
-  if (!desk.panelOpen || desk.visibility !== "visible") fail(`${path} desktop dropdown did not open (open=${desk.panelOpen}, ${desk.visibility})`);
-  if (desk.overflow.length) fail(`${path} @1440 horizontal overflow: ${JSON.stringify(desk.overflow)}`);
+  if (!desk.panelOpen || desk.visibility !== "visible")
+    fail(
+      `${path} desktop dropdown did not open (open=${desk.panelOpen}, ${desk.visibility})`,
+    );
+  if (desk.overflow.length)
+    fail(`${path} @1440 horizontal overflow: ${JSON.stringify(desk.overflow)}`);
   if (dErrs.length) fail(`${path} @1440 console: ${JSON.stringify(dErrs)}`);
 
   const dead = desk.links.filter((h) => !h || h === "#" || h === "javascript:void(0)");
   if (dead.length) fail(`${path} has ${dead.length} reachable dead link(s)`);
-  desk.links.forEach((h) => { if (/^\//.test(h)) targets.add(h.split("#")[0]); });
+  desk.links.forEach((h) => {
+    if (/^\//.test(h)) targets.add(h.split("#")[0]);
+  });
 
   if (!reference) reference = { mob: mob.items, desk: desk.items };
   else {
-    if (mob.items !== reference.mob) fail(`${path} mobile nav differs from the rest of the site`);
-    if (desk.items !== reference.desk) fail(`${path} desktop nav differs from the rest of the site`);
+    if (mob.items !== reference.mob)
+      fail(`${path} mobile nav differs from the rest of the site`);
+    if (desk.items !== reference.desk)
+      fail(`${path} desktop nav differs from the rest of the site`);
   }
 
   process.stdout.write(".");
 }
 
 console.log("");
-if (reference.mob !== reference.desk) fail(`mobile and desktop navs differ:\n  mobile:  ${reference.mob}\n  desktop: ${reference.desk}`);
+if (reference.mob !== reference.desk)
+  fail(
+    `mobile and desktop navs differ:\n  mobile:  ${reference.mob}\n  desktop: ${reference.desk}`,
+  );
 
 for (const t of [...targets].sort()) {
   const r = await fetch(`${BASE}${t}${t.includes("?") ? "" : `?cb=${Date.now()}`}`);
@@ -185,7 +241,8 @@ for (const t of [...targets].sort()) {
 }
 
 const missing = await fetch(`${BASE}/definitely-not-a-real-page?cb=${Date.now()}`);
-if (missing.status !== 404) fail(`unknown path returned ${missing.status}, expected 404`);
+if (missing.status !== 404)
+  fail(`unknown path returned ${missing.status}, expected 404`);
 
 // ---- is the deployed build MY build? --------------------------------------
 // Everything below tests a URL. If someone else's branch has landed on that URL
@@ -194,19 +251,25 @@ if (missing.status !== 404) fail(`unknown path returned ${missing.status}, expec
 // eleven staging deploys in ninety minutes, three of them mine, and the review
 // link served the June card. Compare first, so the rest means something.
 {
-  const local = execSync("node scripts/stamp-build.mjs >/dev/null && cat public/build.txt",
-    { encoding: "utf8" }).trim();
+  const local = execSync(
+    "node scripts/stamp-build.mjs >/dev/null && cat public/build.txt",
+    { encoding: "utf8" },
+  ).trim();
   const r = await fetch(`${BASE}/build.txt?cb=${Date.now()}`);
   if (!r.ok) {
-    fail(`${BASE} serves no /build.txt (${r.status}). Either it was deployed without ` +
-         `scripts/stamp-build.mjs, or something else deployed over you.`);
+    fail(
+      `${BASE} serves no /build.txt (${r.status}). Either it was deployed without ` +
+        `scripts/stamp-build.mjs, or something else deployed over you.`,
+    );
   } else {
     const live = (await r.text()).trim();
     if (live !== local) {
-      fail(`the deployed build is NOT the one being checked.\n` +
-           `  deployed: ${live}\n  local:    ${local}\n` +
-           `  Someone else deployed to this URL, or you have not deployed since your last edit. ` +
-           `Every check below is testing a build you did not make.`);
+      fail(
+        `the deployed build is NOT the one being checked.\n` +
+          `  deployed: ${live}\n  local:    ${local}\n` +
+          `  Someone else deployed to this URL, or you have not deployed since your last edit. ` +
+          `Every check below is testing a build you did not make.`,
+      );
     } else {
       console.log(`build: ${live} (deployed build matches local)`);
     }
@@ -273,7 +336,9 @@ if (missing.status !== 404) fail(`unknown path returned ${missing.status}, expec
     if (!src) {
       const ct = res.headers.get("content-type") || "?";
       const head = html.replace(/\s+/g, " ").trim().slice(0, 160);
-      fail(`${path} has no og:image — HTTP ${res.status}, ${ct}, ${html.length}b: ${head}`);
+      fail(
+        `${path} has no og:image — HTTP ${res.status}, ${ct}, ${html.length}b: ${head}`,
+      );
       continue;
     }
     if (!/<meta property="og:image:alt" content="[^"]+"/.test(html))
@@ -282,15 +347,24 @@ if (missing.status !== 404) fail(`unknown path returned ${missing.status}, expec
     // pages may legitimately share the default card; fetch each card once
     if (!seen.has(src)) {
       // og:image must be absolute: crawlers do not resolve relative paths
-      if (!/^https:\/\//.test(src)) { fail(`${path} og:image is not absolute: ${src}`); continue; }
+      if (!/^https:\/\//.test(src)) {
+        fail(`${path} og:image is not absolute: ${src}`);
+        continue;
+      }
       const asset = new URL(src).pathname;
       // Fetch exactly what a share crawler receives. Rebasing onto BASE hid
       // staging tags that pointed to new cards absent from production.
       const r = await get(src);
-      if (!r.ok) { fail(`og:image ${asset} returned ${r.status}`); seen.set(src, false); continue; }
+      if (!r.ok) {
+        fail(`og:image ${asset} returned ${r.status}`);
+        seen.set(src, false);
+        continue;
+      }
       const bytes = (await r.arrayBuffer()).byteLength;
       if (bytes > OG_BUDGET)
-        fail(`og:image ${asset} is ${Math.round(bytes / 1024)}KB, over the ${OG_BUDGET / 1024}KB preview budget`);
+        fail(
+          `og:image ${asset} is ${Math.round(bytes / 1024)}KB, over the ${OG_BUDGET / 1024}KB preview budget`,
+        );
       if (!/^image\//.test(r.headers.get("content-type") || ""))
         fail(`og:image ${asset} served as ${r.headers.get("content-type")}`);
       seen.set(src, true);
@@ -299,10 +373,12 @@ if (missing.status !== 404) fail(`unknown path returned ${missing.status}, expec
     // the declared size has to match the file, or the card lays out wrong
     const w = html.match(/<meta property="og:image:width" content="(\d+)"/)?.[1];
     const h = html.match(/<meta property="og:image:height" content="(\d+)"/)?.[1];
-    if (w !== "1200" || h !== "630") fail(`${path} declares og:image ${w}x${h}, expected 1200x630`);
+    if (w !== "1200" || h !== "630")
+      fail(`${path} declares og:image ${w}x${h}, expected 1200x630`);
 
     const tw = html.match(/<meta name="twitter:image" content="([^"]+)"/)?.[1];
-    if (tw && tw !== src) fail(`${path} twitter:image (${tw}) differs from og:image (${src})`);
+    if (tw && tw !== src)
+      fail(`${path} twitter:image (${tw}) differs from og:image (${src})`);
   }
   console.log(`share cards: ${seen.size} distinct, all fetched`);
 }
@@ -310,18 +386,19 @@ if (missing.status !== 404) fail(`unknown path returned ${missing.status}, expec
 // Production retains its tour gate; staging serves the review page normally.
 if (IS_STAGING) {
   const rv = await fetch(`${BASE}/review`, { redirect: "manual" });
-  if (rv.status !== 200)
-    fail("staging /review must be available");
+  if (rv.status !== 200) fail("staging /review must be available");
 } else {
   const tour = readFileSync(new URL("../public/review.html", import.meta.url), "utf8");
   const stamped = tour.match(/updated (\d{4}-\d{2}-\d{2})/)?.[1];
   const lastTouched = execSync(
     "git log -1 --format=%cs -- public ':(exclude)public/review.html'",
-    { encoding: "utf8" }
+    { encoding: "utf8" },
   ).trim();
   if (!stamped) fail("review.html has no `updated YYYY-MM-DD` stamp");
   else if (lastTouched && stamped < lastTouched)
-    fail(`review.html is stale: stamped ${stamped}, but public/ last changed ${lastTouched}. The tour is the deliverable, so refresh it in the same commit.`);
+    fail(
+      `review.html is stale: stamped ${stamped}, but public/ last changed ${lastTouched}. The tour is the deliverable, so refresh it in the same commit.`,
+    );
 
   // A 429 is this script's own fault, not the site's.
   //
@@ -337,7 +414,9 @@ if (IS_STAGING) {
     for (const backoff of [8000, 20000, null]) {
       const r = await fetch(url, init);
       if (r.status !== 429 || backoff === null) return r;
-      console.log(`  rate limited on ${new URL(url).pathname}, waiting ${backoff / 1000}s`);
+      console.log(
+        `  rate limited on ${new URL(url).pathname}, waiting ${backoff / 1000}s`,
+      );
       await new Promise((resolve) => setTimeout(resolve, backoff));
     }
   };
@@ -347,18 +426,25 @@ if (IS_STAGING) {
   // It used to run last, immediately behind a burst of cache-busted fetches for
   // every stop on the tour, and that is exactly where the 429 landed. Asking
   // first costs nothing and asks while the edge is still calm.
-  const rv = await patientFetch(`${BASE}/review?cb=${Date.now()}`, { redirect: "manual" });
+  const rv = await patientFetch(`${BASE}/review?cb=${Date.now()}`, {
+    redirect: "manual",
+  });
 
   // Every stop must be a real page, and the tour stays off production.
-  for (const href of [...tour.matchAll(/class="rv-steps"[\s\S]*?<\/ol>/g)][0]?.[0]
-    .matchAll(/href="(\/[^"]*)"/g) ?? []) {
+  for (const href of [
+    ...tour.matchAll(/class="rv-steps"[\s\S]*?<\/ol>/g),
+  ][0]?.[0].matchAll(/href="(\/[^"]*)"/g) ?? []) {
     const r = await patientFetch(`${BASE}${href[1]}?cb=${Date.now()}`);
     if (!r.ok) fail(`review.html links to ${href[1]}, which returned ${r.status}`);
   }
   if (rv.status === 429)
-    fail(`/review still rate limited after three tries. This is Cloudflare throttling this script, not a broken route: check it by hand with curl before believing it.`);
-  else if (IS_STAGING && rv.status !== 200) fail(`/review returned ${rv.status} on staging, expected 200`);
-  else if (!IS_STAGING && rv.status !== 302) fail(`/review returned ${rv.status} on production, expected a 302 home`);
+    fail(
+      `/review still rate limited after three tries. This is Cloudflare throttling this script, not a broken route: check it by hand with curl before believing it.`,
+    );
+  else if (IS_STAGING && rv.status !== 200)
+    fail(`/review returned ${rv.status} on staging, expected 200`);
+  else if (!IS_STAGING && rv.status !== 302)
+    fail(`/review returned ${rv.status} on production, expected a 302 home`);
 }
 
 // ---- the money path: the giving form must reach a real amount -----------
@@ -400,53 +486,66 @@ if (IS_STAGING) {
 for (const path of ["/donate", "/hustle-and-heart"]) {
   let lastError = null;
   for (let attempt = 1; attempt <= 2; attempt++) {
-  const g = await browser.newPage({ viewport: { width: 1440, height: 1000 }, reducedMotion: "reduce" });
-  try {
-    await g.goto(`${BASE}${path}?cb=${Date.now()}`, { waitUntil: "domcontentloaded" });
-    const form = g.locator("givebutter-giving-form");
-    // 20s, and RAISING IT WAS TRIED AND REVERTED on 2026-09-09. Going to 45s
-    // did not stop the retry below from firing; it just made the whole run
-    // exceed 300s, which means the element genuinely does not attach for a long
-    // time while this script is busy — not that it was a few seconds short.
-    // The retry is the right tool for that and it already works.
-    await form.waitFor({ state: "attached", timeout: 20000 });
+    const g = await browser.newPage({
+      viewport: { width: 1440, height: 1000 },
+      reducedMotion: "reduce",
+    });
+    try {
+      await g.goto(`${BASE}${path}?cb=${Date.now()}`, {
+        waitUntil: "domcontentloaded",
+      });
+      const form = g.locator("givebutter-giving-form");
+      // 20s, and RAISING IT WAS TRIED AND REVERTED on 2026-09-09. Going to 45s
+      // did not stop the retry below from firing; it just made the whole run
+      // exceed 300s, which means the element genuinely does not attach for a long
+      // time while this script is busy — not that it was a few seconds short.
+      // The retry is the right tool for that and it already works.
+      await form.waitFor({ state: "attached", timeout: 20000 });
 
-    // Scroll the panel into view before asserting. The embed is deferred until
-    // it nears the viewport, so a check that never scrolls cannot tell a broken
-    // form from a correctly-deferred one — on /hustle-and-heart the panel sits
-    // far enough down that this is the difference between red and green. A
-    // donor scrolls to the form before using it, so this models the real thing
-    // rather than weakening the assertion.
-    await form.scrollIntoViewIfNeeded();
+      // Scroll the panel into view before asserting. The embed is deferred until
+      // it nears the viewport, so a check that never scrolls cannot tell a broken
+      // form from a correctly-deferred one — on /hustle-and-heart the panel sits
+      // far enough down that this is the difference between red and green. A
+      // donor scrolls to the form before using it, so this models the real thing
+      // rather than weakening the assertion.
+      await form.scrollIntoViewIfNeeded();
 
-    // The embed lives in an iframe inside the element's shadow root. Wait on the
-    // amount step being VISIBLE, not on an element being attached: the iframe is
-    // attached long before it renders, and most of its ~30 inputs are hidden, so
-    // both "attached" and `input.first()` resolve on something a donor cannot
-    // see. Waiting on the text a donor reads is the only honest signal.
-    const inner = g.frameLocator("givebutter-giving-form iframe");
-    await inner.getByText(/choose amount/i).first().waitFor({ state: "visible", timeout: 45000 });
+      // The embed lives in an iframe inside the element's shadow root. Wait on the
+      // amount step being VISIBLE, not on an element being attached: the iframe is
+      // attached long before it renders, and most of its ~30 inputs are hidden, so
+      // both "attached" and `input.first()` resolve on something a donor cannot
+      // see. Waiting on the text a donor reads is the only honest signal.
+      const inner = g.frameLocator("givebutter-giving-form iframe");
+      await inner
+        .getByText(/choose amount/i)
+        .first()
+        .waitFor({ state: "visible", timeout: 45000 });
 
-    const text = (await inner.locator("body").innerText()).replace(/\s+/g, " ");
-    if (!/continue|donate|give/i.test(text)) fail(`${path} giving form has no way to proceed (text: ${text.slice(0, 80)})`);
+      const text = (await inner.locator("body").innerText()).replace(/\s+/g, " ");
+      if (!/continue|donate|give/i.test(text))
+        fail(`${path} giving form has no way to proceed (text: ${text.slice(0, 80)})`);
 
-    const amounts = await inner.locator("input:visible").count();
-    if (amounts < 1) fail(`${path} giving form rendered no amount a donor can pick`);
+      const amounts = await inner.locator("input:visible").count();
+      if (amounts < 1) fail(`${path} giving form rendered no amount a donor can pick`);
 
-    // Deliberately no height assertion. The panel is 188px when the amount step
-    // first paints and ~508px once it settles, so any pixel threshold is a race.
-    // "The donor can see the amounts and a way to continue" is the real contract.
-    lastError = null;
-  } catch (e) {
-    lastError = e;
-  }
-  await g.close();
-  if (!lastError) break;
-  if (attempt === 1) {
-    console.log(`  retrying ${path} giving form: ${String(lastError).split("\n")[0].slice(0, 80)}`);
-  } else {
-    fail(`${path} giving form did not become usable twice: ${String(lastError).split("\n")[0].slice(0, 120)}`);
-  }
+      // Deliberately no height assertion. The panel is 188px when the amount step
+      // first paints and ~508px once it settles, so any pixel threshold is a race.
+      // "The donor can see the amounts and a way to continue" is the real contract.
+      lastError = null;
+    } catch (e) {
+      lastError = e;
+    }
+    await g.close();
+    if (!lastError) break;
+    if (attempt === 1) {
+      console.log(
+        `  retrying ${path} giving form: ${String(lastError).split("\n")[0].slice(0, 80)}`,
+      );
+    } else {
+      fail(
+        `${path} giving form did not become usable twice: ${String(lastError).split("\n")[0].slice(0, 120)}`,
+      );
+    }
   }
 }
 
@@ -627,7 +726,7 @@ const BUDGET = {
   // the rest the page. 520 is that plus ~60KB of deliberate headroom: enough
   // for two more panels or a page of comments without anyone having to think
   // about it, and still far below the point where a real accident hides.
-  "/": { own: 520, total: 900, reqs: 40, hosts: 4, cls: 0.10 },
+  "/": { own: 520, total: 900, reqs: 40, hosts: 4, cls: 0.1 },
   // cls:null, still — but for a smaller and better-understood reason than
   // before. The Givebutter cause IS fixed: reserving the panel's height took
   // MOBILE from 0.12-0.76 down to a flat 0 across five runs in every condition
@@ -715,8 +814,13 @@ const BUDGET = {
 // It returns {ok:false} for an interstitial rather than failing, because
 // "this is not our page" is a reason to try again, not a verdict on the site.
 async function measureBudget(path) {
-  const b = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: "reduce" });
-  let own = 0, total = 0, reqs = 0;
+  const b = await browser.newPage({
+    viewport: { width: 1440, height: 900 },
+    reducedMotion: "reduce",
+  });
+  let own = 0,
+    total = 0,
+    reqs = 0;
   const hosts = new Set();
   // EVERY HANDLER MUST BE AWAITED BEFORE THE COUNTERS ARE READ. page.on() is
   // fire-and-forget: nothing waits for these. Each one awaits r.body() before
@@ -740,19 +844,29 @@ async function measureBudget(path) {
   // swapping the metric would silently re-baseline every budget in this file.
   const inflight = [];
   b.on("response", (r) => {
-    inflight.push((async () => {
-      let n = 0;
-      try { n = (await r.body()).length; } catch { /* opaque/aborted */ }
-      const h = new URL(r.url()).host;
-      if (h) hosts.add(h);
-      total += n; reqs++;
-      if (/adapt-to-life|adapttolife/.test(h)) own += n;
-    })());
+    inflight.push(
+      (async () => {
+        let n = 0;
+        try {
+          n = (await r.body()).length;
+        } catch {
+          /* opaque/aborted */
+        }
+        const h = new URL(r.url()).host;
+        if (h) hosts.add(h);
+        total += n;
+        reqs++;
+        if (/adapt-to-life|adapttolife/.test(h)) own += n;
+      })(),
+    );
   });
   await b.addInitScript(`window.__cls = 0;
     new PerformanceObserver((l) => { for (const e of l.getEntries()) if (!e.hadRecentInput) window.__cls += e.value; })
       .observe({ type: 'layout-shift', buffered: true });`);
-  await b.goto(`${BASE}${path}?cb=${Date.now()}`, { waitUntil: "load", timeout: 90000 });
+  await b.goto(`${BASE}${path}?cb=${Date.now()}`, {
+    waitUntil: "load",
+    timeout: 90000,
+  });
   // Third-party embeds keep loading well past `load` — Givebutter's tail runs to
   // ~14s on a throttled phone. Settle long enough to bill them for it.
   await b.waitForTimeout(9000);
@@ -779,7 +893,8 @@ async function measureBudget(path) {
   await b.close();
   if (!isOurs) return { ok: false, title };
   return {
-    ok: true, cls,
+    ok: true,
+    cls,
     ownKB: Math.round(own / 1024),
     totalKB: Math.round(total / 1024),
     reqs,
@@ -810,23 +925,36 @@ for (const [path, cap] of Object.entries(BUDGET)) {
   for (let attempt = 0; ; attempt++) {
     m = await measureBudget(path);
     if (m.ok || attempt >= BACKOFF.length) break;
-    console.log(`  ${path} answered with an interstitial (${m.title.slice(0, 40)}); waiting ${BACKOFF[attempt] / 1000}s`);
+    console.log(
+      `  ${path} answered with an interstitial (${m.title.slice(0, 40)}); waiting ${BACKOFF[attempt] / 1000}s`,
+    );
     await new Promise((r) => setTimeout(r, BACKOFF[attempt]));
   }
   if (!m.ok) {
-    fail(`${path} budget measured something that is not the page after ${BACKOFF.length + 1} attempts — no site footer found (title: ${m.title.slice(0, 60)}). A Cloudflare block that is no longer transient; consider a WAF exemption for this checker.`);
-    continue;   // never assert a budget against numbers we know are not the page
+    fail(
+      `${path} budget measured something that is not the page after ${BACKOFF.length + 1} attempts — no site footer found (title: ${m.title.slice(0, 60)}). A Cloudflare block that is no longer transient; consider a WAF exemption for this checker.`,
+    );
+    continue; // never assert a budget against numbers we know are not the page
   }
   const { ownKB, totalKB, reqs, third, cls } = m;
   if (ownKB > cap.own) fail(`${path} own bytes ${ownKB}KB over budget ${cap.own}KB`);
-  if (totalKB > cap.total) fail(`${path} total bytes ${totalKB}KB over budget ${cap.total}KB`);
+  if (totalKB > cap.total)
+    fail(`${path} total bytes ${totalKB}KB over budget ${cap.total}KB`);
   if (reqs > cap.reqs) fail(`${path} ${reqs} requests over budget ${cap.reqs}`);
-  if (third.length > cap.hosts) fail(`${path} ${third.length} third-party hosts over budget ${cap.hosts}: ${JSON.stringify(third.sort())}`);
-  if (cap.cls !== null && cls > cap.cls) fail(`${path} CLS ${cls} over budget ${cap.cls}`);
-  console.log(`  budget ${path.padEnd(9)} own ${String(ownKB).padStart(4)}KB · total ${String(totalKB).padStart(5)}KB · ${String(reqs).padStart(3)} req · ${String(third.length).padStart(2)} 3p hosts · CLS ${cls}${cap.cls === null ? " (not asserted — see BUDGET)" : ""}`);
+  if (third.length > cap.hosts)
+    fail(
+      `${path} ${third.length} third-party hosts over budget ${cap.hosts}: ${JSON.stringify(third.sort())}`,
+    );
+  if (cap.cls !== null && cls > cap.cls)
+    fail(`${path} CLS ${cls} over budget ${cap.cls}`);
+  console.log(
+    `  budget ${path.padEnd(9)} own ${String(ownKB).padStart(4)}KB · total ${String(totalKB).padStart(5)}KB · ${String(reqs).padStart(3)} req · ${String(third.length).padStart(2)} 3p hosts · CLS ${cls}${cap.cls === null ? " (not asserted — see BUDGET)" : ""}`,
+  );
 }
 
 await browser.close();
-console.log(`\n${PAGES.length} pages · ${targets.size} internal targets · nav ${reference.desk}`);
+console.log(
+  `\n${PAGES.length} pages · ${targets.size} internal targets · nav ${reference.desk}`,
+);
 console.log(failed ? "\nFAILED" : "\nSITE CHECK PASSED");
 process.exit(failed ? 1 : 0);

@@ -42,8 +42,13 @@ export function markerFrom(transaction) {
       if (m) found.push(m[1].toLowerCase());
       return;
     }
-    if (Array.isArray(v)) { for (const x of v) walk(x); return; }
-    if (typeof v === "object") { for (const x of Object.values(v)) walk(x); }
+    if (Array.isArray(v)) {
+      for (const x of v) walk(x);
+      return;
+    }
+    if (typeof v === "object") {
+      for (const x of Object.values(v)) walk(x);
+    }
   };
   walk(transaction.utm_parameters);
   walk(transaction.attribution_data);
@@ -58,30 +63,49 @@ async function knownSlugs(env) {
 async function readWatermark(env) {
   try {
     const row = await env.WAIVERS_DB.prepare(
-      `SELECT value FROM qr_sync_state WHERE key = ?`
-    ).bind(WATERMARK).first();
+      `SELECT value FROM qr_sync_state WHERE key = ?`,
+    )
+      .bind(WATERMARK)
+      .first();
     return row && row.value ? row.value : null;
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
 
 async function writeWatermark(env, iso) {
   await env.WAIVERS_DB.prepare(
     `INSERT INTO qr_sync_state (key, value, updated_at) VALUES (?, ?, ?)
-     ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at`
-  ).bind(WATERMARK, iso, new Date().toISOString()).run();
+     ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at`,
+  )
+    .bind(WATERMARK, iso, new Date().toISOString())
+    .run();
 }
 
 // Returns a summary rather than throwing, so the caller (a cron that also does
 // other work) can log it and carry on. Silence is the failure mode that costs
 // most here: nobody notices missing attribution the way they notice a 500.
 export async function syncGifts(env, opts = {}) {
-  const out = { ok: false, scanned: 0, attributed: 0, written: 0, pages: 0, error: null };
-  if (!env.WAIVERS_DB) { out.error = "no D1 binding"; return out; }
-  if (!env.GIVEBUTTER_API_KEY) { out.error = "no GIVEBUTTER_API_KEY"; return out; }
+  const out = {
+    ok: false,
+    scanned: 0,
+    attributed: 0,
+    written: 0,
+    pages: 0,
+    error: null,
+  };
+  if (!env.WAIVERS_DB) {
+    out.error = "no D1 binding";
+    return out;
+  }
+  if (!env.GIVEBUTTER_API_KEY) {
+    out.error = "no GIVEBUTTER_API_KEY";
+    return out;
+  }
 
   try {
     const slugs = await knownSlugs(env);
-    const mark = opts.since || await readWatermark(env);
+    const mark = opts.since || (await readWatermark(env));
     const floor = mark ? new Date(new Date(mark).getTime() - LOOKBACK_MS) : null;
     let newest = mark ? new Date(mark) : null;
 
@@ -92,7 +116,10 @@ export async function syncGifts(env, opts = {}) {
           Accept: "application/json",
         },
       });
-      if (!res.ok) { out.error = `givebutter ${res.status}`; break; }
+      if (!res.ok) {
+        out.error = `givebutter ${res.status}`;
+        break;
+      }
       const body = await res.json();
       const rows = body.data || [];
       out.pages = page;
@@ -103,7 +130,10 @@ export async function syncGifts(env, opts = {}) {
         out.scanned++;
         const at = new Date(t.transacted_at);
         if (newest === null || at > newest) newest = at;
-        if (floor && at < floor) { reachedFloor = true; continue; }
+        if (floor && at < floor) {
+          reachedFloor = true;
+          continue;
+        }
 
         const slug = markerFrom(t);
         if (!slug || !slugs.has(slug)) continue;
@@ -114,17 +144,22 @@ export async function syncGifts(env, opts = {}) {
            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
            ON CONFLICT(transaction_id) DO UPDATE SET
              slug = excluded.slug, amount = excluded.amount, donated = excluded.donated,
-             status = excluded.status, attribution = excluded.attribution, synced_at = excluded.synced_at`
-        ).bind(
-          String(t.id),
-          slug,
-          Number(t.amount) || 0,
-          Number(t.donated) || 0,
-          t.status || "unknown",
-          t.transacted_at,
-          JSON.stringify({ utm: t.utm_parameters ?? null, attribution: t.attribution_data ?? null }),
-          new Date().toISOString()
-        ).run();
+             status = excluded.status, attribution = excluded.attribution, synced_at = excluded.synced_at`,
+        )
+          .bind(
+            String(t.id),
+            slug,
+            Number(t.amount) || 0,
+            Number(t.donated) || 0,
+            t.status || "unknown",
+            t.transacted_at,
+            JSON.stringify({
+              utm: t.utm_parameters ?? null,
+              attribution: t.attribution_data ?? null,
+            }),
+            new Date().toISOString(),
+          )
+          .run();
         out.written++;
       }
 
@@ -153,7 +188,7 @@ export async function giftsBySlug(env) {
             COALESCE(SUM(CASE WHEN status = 'succeeded' THEN donated END), 0) AS dollars,
             MAX(transacted_at)                                        AS last_gift
        FROM qr_gifts
-      GROUP BY slug`
+      GROUP BY slug`,
   ).all();
   return results || [];
 }

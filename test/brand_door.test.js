@@ -11,14 +11,25 @@ import { join, relative } from "node:path";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const BRAND = join(ROOT, "brand");
-const LOCKED = new Set(["#3b3b46", "#ff5c39", "#f6be00", "#00b7bd", "#483698", "#f9f7f2", "#efe8dc", "#ffffff", "#fff"]);
-const RETIRED_VIEWBOX = 'viewBox="217.61900000000003 211.68400000000003 1485.031 1351.756"';
+const LOCKED = new Set([
+  "#3b3b46",
+  "#ff5c39",
+  "#f6be00",
+  "#00b7bd",
+  "#483698",
+  "#f9f7f2",
+  "#efe8dc",
+  "#ffffff",
+  "#fff",
+]);
+const RETIRED_VIEWBOX =
+  'viewBox="217.61900000000003 211.68400000000003 1485.031 1351.756"';
 
 async function files(dir) {
   const out = [];
   for (const entry of await readdir(dir, { withFileTypes: true })) {
     const path = join(dir, entry.name);
-    if (entry.isDirectory()) out.push(...await files(path));
+    if (entry.isDirectory()) out.push(...(await files(path)));
     else out.push(relative(BRAND, path));
   }
   return out;
@@ -33,20 +44,28 @@ test("every brand file is named in brand/README.md", async () => {
     const file = rawFile.replace(/\\/g, "/");
     if (file === "README.md") continue;
     if (file.startsWith("icons/svg/") || file.startsWith("icons/logos/")) {
-      assert.ok(icons.includes(file.slice("icons/".length)), `brand/${file} is not in brand/icons/README.md; run npm run icons`);
+      assert.ok(
+        icons.includes(file.slice("icons/".length)),
+        `brand/${file} is not in brand/icons/README.md; run npm run icons`,
+      );
       continue;
     }
     // A retired set's files are catalogued in that set's own README.
     const set = file.match(/^(obsolete\/[^/]+)\/svg\//);
     if (set) {
       const own = await readFile(join(BRAND, set[1], "README.md"), "utf8");
-      assert.ok(own.includes(file.slice(set[1].length + 1)), `brand/${file} is not in brand/${set[1]}/README.md`);
+      assert.ok(
+        own.includes(file.slice(set[1].length + 1)),
+        `brand/${file} is not in brand/${set[1]}/README.md`,
+      );
       continue;
     }
     const base = file.replace(/\.(eps|pdf)$/, ".svg");
     // obsolete/atl-logo.{eps,pdf} are listed on the same row as the .svg.
-    assert.ok(readme.includes(file) || (file.startsWith("obsolete/") && readme.includes(base)),
-      `brand/${file} is not listed in brand/README.md. Say what it is for, or move it to brand/obsolete/.`);
+    assert.ok(
+      readme.includes(file) || (file.startsWith("obsolete/") && readme.includes(base)),
+      `brand/${file} is not listed in brand/README.md. Say what it is for, or move it to brand/obsolete/.`,
+    );
   }
 });
 
@@ -55,7 +74,10 @@ test("the retired swoosh lives only in brand/obsolete/", async () => {
     const file = rawFile.replace(/\\/g, "/");
     if (!file.endsWith(".svg") || file.startsWith("obsolete/")) continue;
     const svg = await readFile(join(BRAND, file), "utf8");
-    assert.ok(!svg.includes(RETIRED_VIEWBOX), `brand/${file} is the retired swoosh; move it to brand/obsolete/`);
+    assert.ok(
+      !svg.includes(RETIRED_VIEWBOX),
+      `brand/${file} is the retired swoosh; move it to brand/obsolete/`,
+    );
   }
 });
 
@@ -66,9 +88,16 @@ test("print masters use only the locked palette", async () => {
     const colors = svg.match(/#[0-9a-f]{6}\b|#[0-9a-f]{3}\b/g) ?? [];
     assert.ok(colors.length > 0, `brand/${file} declares no colors`);
     for (const color of colors) {
-      assert.ok(LOCKED.has(color), `brand/${file} uses ${color}, which is not in the locked palette`);
+      assert.ok(
+        LOCKED.has(color),
+        `brand/${file} uses ${color}, which is not in the locked palette`,
+      );
     }
   }
   const primary = await readFile(join(BRAND, "identity", "atl-primary.svg"), "utf8");
-  assert.match(primary.toLowerCase(), /#3b3b46/, "the primary lockup must carry the locked black");
+  assert.match(
+    primary.toLowerCase(),
+    /#3b3b46/,
+    "the primary lockup must carry the locked black",
+  );
 });

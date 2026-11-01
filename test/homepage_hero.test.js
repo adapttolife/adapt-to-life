@@ -16,16 +16,25 @@ import { readFileSync, existsSync } from "node:fs";
 const html = readFileSync(new URL("../public/index.html", import.meta.url), "utf8");
 
 test("the homepage hero is the mosaic", () => {
-  assert.match(html, /<section class="hero-wall-photo[^"]*" id="heroStage" data-variant="1">/,
-    'index.html is not carrying variant 1. Run: node scripts/apply-hero.mjs 1');
+  assert.match(
+    html,
+    /<section class="hero-wall-photo[^"]*" id="heroStage" data-variant="1">/,
+    "index.html is not carrying variant 1. Run: node scripts/apply-hero.mjs 1",
+  );
 });
 
 test("the hero stylesheet is linked exactly once", () => {
   // Stylesheet links carry ?v=<hash> (scripts/version-assets.mjs); the check is
   // about WHICH sheet and HOW MANY, so the version is allowed but not required.
-  const links = html.match(/<link rel="stylesheet" href="\/css\/hero-[a-z]+\.css(?:\?v=[0-9a-f]+)?">/g) || [];
+  const links =
+    html.match(
+      /<link rel="stylesheet" href="\/css\/hero-[a-z]+\.css(?:\?v=[0-9a-f]+)?">/g,
+    ) || [];
   assert.equal(links.length, 1, `expected one hero stylesheet, found ${links.length}`);
-  assert.match(links[0], /^<link rel="stylesheet" href="\/css\/hero-mosaic\.css(?:\?v=[0-9a-f]+)?">$/);
+  assert.match(
+    links[0],
+    /^<link rel="stylesheet" href="\/css\/hero-mosaic\.css(?:\?v=[0-9a-f]+)?">$/,
+  );
 });
 
 test("the hero script block is present and not duplicated", () => {
@@ -39,14 +48,25 @@ test("every panel the hero references exists, and is fingerprinted", () => {
   // the interior band in place under that policy cost four review rounds: every
   // fix shipped, and Alec's browser kept serving the first version. A URL
   // without a content hash in it is that bug waiting to happen again.
-  const used = [...html.matchAll(/\/images\/hero\/panels\/([a-z0-9-]+\.[0-9a-f]{8}\.webp)/g)]
-    .map((m) => m[1]);
-  assert.ok(used.length >= 10, `hero references only ${used.length} fingerprinted panels`);
-  const plain = [...html.matchAll(/\/images\/hero\/panels\/([a-z0-9-]+)\.webp/g)].map((m) => m[1]);
-  assert.equal(plain.length, 0,
-    `hero references un-fingerprinted panels: ${plain.join(", ")}`);
+  const used = [
+    ...html.matchAll(/\/images\/hero\/panels\/([a-z0-9-]+\.[0-9a-f]{8}\.webp)/g),
+  ].map((m) => m[1]);
+  assert.ok(
+    used.length >= 10,
+    `hero references only ${used.length} fingerprinted panels`,
+  );
+  const plain = [...html.matchAll(/\/images\/hero\/panels\/([a-z0-9-]+)\.webp/g)].map(
+    (m) => m[1],
+  );
+  assert.equal(
+    plain.length,
+    0,
+    `hero references un-fingerprinted panels: ${plain.join(", ")}`,
+  );
   for (const file of new Set(used)) {
-    assert.ok(existsSync(new URL(`../public/images/hero/panels/${file}`, import.meta.url)),
-      `hero references "${file}" which is not on disk`);
+    assert.ok(
+      existsSync(new URL(`../public/images/hero/panels/${file}`, import.meta.url)),
+      `hero references "${file}" which is not on disk`,
+    );
   }
 });

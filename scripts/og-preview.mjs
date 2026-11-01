@@ -15,8 +15,9 @@ const dir = process.argv[2] || "/tmp/og-cand";
 const out = process.argv[3] || join(dir, "_review.png");
 const TITLE = process.env.OG_TITLE || "Adapt To Life | Your Place in Adaptive Sports";
 
-const files = readdirSync(dir).filter((f) => /\.(jpg|png)$/.test(f) && !f.startsWith("_")
-  && !/canvas|wide/.test(f)).sort();
+const files = readdirSync(dir)
+  .filter((f) => /\.(jpg|png)$/.test(f) && !f.startsWith("_") && !/canvas|wide/.test(f))
+  .sort();
 
 const cards = files.map((f) => ({
   name: basename(f).replace(/\.\w+$/, ""),
@@ -39,16 +40,23 @@ const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
       display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
   .d{ font-size:13px; color:#8e8e93; margin-top:2px; }
 </style></head><body>
-${cards.map((c) => `<figure>
+${cards
+  .map(
+    (c) => `<figure>
   <figcaption>${c.name}</figcaption>
   <div class="bubble"><img src="${c.uri}">
     <div class="meta"><div class="t">${TITLE}</div><div class="d">adapttolife.org</div></div>
   </div>
-</figure>`).join("\n")}
+</figure>`,
+  )
+  .join("\n")}
 </body></html>`;
 
 const browser = await chromium.launch();
-const page = await browser.newPage({ viewport: { width: 1180, height: 600 }, deviceScaleFactor: 2 });
+const page = await browser.newPage({
+  viewport: { width: 1180, height: 600 },
+  deviceScaleFactor: 2,
+});
 await page.setContent(html, { waitUntil: "load" });
 await page.waitForTimeout(200);
 await page.screenshot({ path: out, fullPage: true });

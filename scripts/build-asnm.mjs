@@ -46,26 +46,39 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const CACHE = join(ROOT, "data", "asnm-stats.json");
 // Written by scripts/shoot-asnm.mjs. Falls back only if someone deletes it.
 let shot = { wide: { w: 1440, h: 925 }, tall: { w: 828, h: 1520 } };
-try { shot = JSON.parse(readFileSync(join(ROOT, "data", "asnm-shot.json"), "utf8")); } catch {}
+try {
+  shot = JSON.parse(readFileSync(join(ROOT, "data", "asnm-shot.json"), "utf8"));
+} catch {}
 const SITE = "https://adaptivesportsnearme.com";
-const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+const esc = (s) =>
+  String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
 const n = (x) => Number(x).toLocaleString("en-US");
 
-const SESSION = process.env.ASNM_BETA_SESSION || join(homedir(), ".config/agentos/asnm/prod-beta-session.json");
+const SESSION =
+  process.env.ASNM_BETA_SESSION ||
+  join(homedir(), ".config/agentos/asnm/prod-beta-session.json");
 const cookie = existsSync(SESSION)
   ? (JSON.parse(readFileSync(SESSION, "utf8")).cookies || [])
-      .filter((c) => /adaptivesportsnearme\.com$/.test(c.domain)).map((c) => `${c.name}=${c.value}`).join("; ")
+      .filter((c) => /adaptivesportsnearme\.com$/.test(c.domain))
+      .map((c) => `${c.name}=${c.value}`)
+      .join("; ")
   : "";
 
-let stats, live = false;
+let stats,
+  live = false;
 try {
   if (!cookie) throw new Error(`no beta session at ${SESSION}`);
-  const r = await fetch(`${SITE}/api/stats`, { headers: { cookie }, signal: AbortSignal.timeout(20000) });
-  if (r.status === 401) throw new Error("HTTP 401: the beta session has expired; renew it");
+  const r = await fetch(`${SITE}/api/stats`, {
+    headers: { cookie },
+    signal: AbortSignal.timeout(20000),
+  });
+  if (r.status === 401)
+    throw new Error("HTTP 401: the beta session has expired; renew it");
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
   const d = await r.json();
   if (!d.ok || !d.programs) throw new Error("payload missing programs");
-  stats = d; live = true;
+  stats = d;
+  live = true;
   // PERSIST ONLY WHAT THE PAGE USES. The payload also carries lastPipelineRun,
   // a clock from the directory's own pipeline that moves every few minutes and
   // that nothing here reads. Caching it meant every build rewrote this file,
@@ -74,21 +87,30 @@ try {
   // build came from uncommitted work. A signal that always fires is not a
   // signal. Now the cache changes only when a number a visitor sees changes,
   // which is a diff worth committing.
-  const keep = { ok: d.ok, programs: d.programs, sources: d.sources, bySport: d.bySport, byState: d.byState };
+  const keep = {
+    ok: d.ok,
+    programs: d.programs,
+    sources: d.sources,
+    bySport: d.bySport,
+    byState: d.byState,
+  };
   writeFileSync(CACHE, JSON.stringify(keep, null, 1) + "\n");
 } catch (e) {
-  console.log(`  WARN  live stats unavailable (${e.message}); using the last committed copy`);
+  console.log(
+    `  WARN  live stats unavailable (${e.message}); using the last committed copy`,
+  );
   stats = JSON.parse(readFileSync(CACHE, "utf8"));
 }
 
 const states = [...stats.byState].sort((a, b) => b.n - a.n).slice(0, 12);
-const chip = (label, count) => `<li><span class="dir-chip is-plain">${esc(label)}<b>${n(count)}</b></span></li>`;
+const chip = (label, count) =>
+  `<li><span class="dir-chip is-plain">${esc(label)}<b>${n(count)}</b></span></li>`;
 
 const block = `<!-- asnm:stats -->
   <section class="band dark dir-stats">
     <div class="wrap">
       <span class="eyebrow orange reveal">In the directory now</span>
-      <p class="dir-count reveal">In beta. <b>${n(stats.programs)}</b> adaptive sports programs are in, across <b>${n(stats.byState.filter(s => s.state !== "DC").length)}</b> states${stats.byState.some(s => s.state === "DC") ? " and D.C." : ""}, gathered from <b>${n(stats.sources)}</b> sources.</p>
+      <p class="dir-count reveal">In beta. <b>${n(stats.programs)}</b> adaptive sports programs are in, across <b>${n(stats.byState.filter((s) => s.state !== "DC").length)}</b> states${stats.byState.some((s) => s.state === "DC") ? " and D.C." : ""}, gathered from <b>${n(stats.sources)}</b> sources.</p>
 
       <a class="dir-shot reveal" href="${SITE}" target="_blank" rel="noopener" aria-label="Beta tester sign in at adaptivesportsnearme.com">
         <picture>
@@ -125,18 +147,23 @@ let html = readFileSync(page, "utf8");
 // Custom properties on :root resolve wherever they are declared, so the later
 // position costs nothing.
 let plates = null;
-try { plates = JSON.parse(readFileSync(join(ROOT, "data", "env-plates.json"), "utf8")); } catch {}
+try {
+  plates = JSON.parse(readFileSync(join(ROOT, "data", "env-plates.json"), "utf8"));
+} catch {}
 if (plates && plates["court-dusk-wide"] && plates["court-dusk-tall"]) {
-  const vars = `:root{--env-dusk-wide:url('${plates["court-dusk-wide"].file}');` +
-               `--env-dusk-tall:url('${plates["court-dusk-tall"].file}');}`;
+  const vars =
+    `:root{--env-dusk-wide:url('${plates["court-dusk-wide"].file}');` +
+    `--env-dusk-tall:url('${plates["court-dusk-tall"].file}');}`;
   const block = `<!-- env:vars --><style>${vars}</style><!-- /env:vars -->`;
   const ERE = /<!-- env:vars -->[\s\S]*?<!-- \/env:vars -->/;
-  html = ERE.test(html) ? html.replace(ERE, block)
-                        : html.replace(/(\n<\/head>)/, `\n${block}$1`);
+  html = ERE.test(html)
+    ? html.replace(ERE, block)
+    : html.replace(/(\n<\/head>)/, `\n${block}$1`);
 }
 const RE = /<!-- asnm:stats -->[\s\S]*?<!-- \/asnm:stats -->/;
 if (RE.test(html)) html = html.replace(RE, block);
-else html = html.replace(/(\n  <!-- WHY \(light reading\) -->)/, `\n  ${block}\n${"$1"}`);
+else
+  html = html.replace(/(\n  <!-- WHY \(light reading\) -->)/, `\n  ${block}\n${"$1"}`);
 // The block above is a template with a typed arrow; draw the page's icons from
 // the symbol dictionary like every other page, or each build undoes them and
 // stamps -dirty (2026-10-29, the first release after the icons rollout).
@@ -145,4 +172,6 @@ writeFileSync(page, applyIcons(html));
 // Homepage narrative intentionally does not duplicate live directory counts.
 // /adaptive-sports-near-me owns the generated statistics and browse links.
 
-console.log(`  asnm stats ${live ? "LIVE" : "from cache"}: ${n(stats.programs)} programs, ${stats.byState.length} states, ${stats.sources} sources, ${stats.bySport.length} sports`);
+console.log(
+  `  asnm stats ${live ? "LIVE" : "from cache"}: ${n(stats.programs)} programs, ${stats.byState.length} states, ${stats.sources} sources, ${stats.bySport.length} sports`,
+);

@@ -17,8 +17,16 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 
 import {
-  handleQr, resolveDest, liveDrive, deviceOf, referrerHost,
-  attributionParams, chicagoToday, _resetCaches, osOf, browserOf,
+  handleQr,
+  resolveDest,
+  liveDrive,
+  deviceOf,
+  referrerHost,
+  attributionParams,
+  chicagoToday,
+  _resetCaches,
+  osOf,
+  browserOf,
 } from "../src/qr.js";
 import { validateDest, validateSlug, verifyAccess } from "../src/qr_admin.js";
 import { markerFrom } from "../src/qr_gifts.js";
@@ -34,16 +42,30 @@ function db(rows, { failReads = false } = {}) {
     prepare(sql) {
       if (failReads && /SELECT/.test(sql)) throw new Error("D1 is down");
       return {
-        bind(...args) { return this._b(args); },
+        bind(...args) {
+          return this._b(args);
+        },
         _b(args) {
           return {
-            async all() { return { results: rows }; },
-            async run() { writes.push({ sql, args }); return { success: true }; },
-            async first() { return rows[0] || null; },
+            async all() {
+              return { results: rows };
+            },
+            async run() {
+              writes.push({ sql, args });
+              return { success: true };
+            },
+            async first() {
+              return rows[0] || null;
+            },
           };
         },
-        async all() { return { results: rows }; },
-        async run() { writes.push({ sql, args: [] }); return { success: true }; },
+        async all() {
+          return { results: rows };
+        },
+        async run() {
+          writes.push({ sql, args: [] });
+          return { success: true };
+        },
       };
     },
   };
@@ -51,17 +73,47 @@ function db(rows, { failReads = false } = {}) {
 
 const CAMPAIGNS = {
   drives: [
-    { slug: "popcorn-2026-08", type: "fundraiser", published: true, page: "/popcorn", opens: "2026-08-06", closes: "2026-08-13" },
-    { slug: "old-drive", type: "fundraiser", published: true, page: "/old", opens: "2026-01-01", closes: "2026-01-08" },
-    { slug: "grand-opening", type: "event", published: true, page: "/brickhouse", starts_at: "2026-10-25", ends_at: "2026-10-25" },
-    { slug: "tournament", type: "tournament", published: true, cta_url: "https://example.org/t", starts_at: "2026-08-10", ends_at: "2026-08-10" },
+    {
+      slug: "popcorn-2026-08",
+      type: "fundraiser",
+      published: true,
+      page: "/popcorn",
+      opens: "2026-08-06",
+      closes: "2026-08-13",
+    },
+    {
+      slug: "old-drive",
+      type: "fundraiser",
+      published: true,
+      page: "/old",
+      opens: "2026-01-01",
+      closes: "2026-01-08",
+    },
+    {
+      slug: "grand-opening",
+      type: "event",
+      published: true,
+      page: "/brickhouse",
+      starts_at: "2026-10-25",
+      ends_at: "2026-10-25",
+    },
+    {
+      slug: "tournament",
+      type: "tournament",
+      published: true,
+      cta_url: "https://example.org/t",
+      starts_at: "2026-08-10",
+      ends_at: "2026-08-10",
+    },
   ],
 };
 
 function env(rows, opts) {
   return {
     WAIVERS_DB: db(rows, opts),
-    ASSETS: { fetch: async () => new Response(JSON.stringify(CAMPAIGNS), { status: 200 }) },
+    ASSETS: {
+      fetch: async () => new Response(JSON.stringify(CAMPAIGNS), { status: 200 }),
+    },
   };
 }
 
@@ -72,11 +124,23 @@ function req(path, headers = {}) {
 async function go(path, rows, opts, headers) {
   _resetCaches();
   const e = env(rows, opts);
-  const r = await handleQr(req(path, headers), e, new URL(`https://adapttolife.org${path}`), { waitUntil: (p) => p });
+  const r = await handleQr(
+    req(path, headers),
+    e,
+    new URL(`https://adapttolife.org${path}`),
+    { waitUntil: (p) => p },
+  );
   return { res: r, env: e, loc: new URL(r.headers.get("Location")) };
 }
 
-const CHAIR = { slug: "chair", dest: "/send-6", rule: null, label: "Chair sticker", surface: "chair-sticker", active: 1 };
+const CHAIR = {
+  slug: "chair",
+  dest: "/send-6",
+  rule: null,
+  label: "Chair sticker",
+  surface: "chair-sticker",
+  active: 1,
+};
 
 // --- the promise the whole platform exists to keep -------------------------
 
@@ -99,9 +163,17 @@ test("a slug nobody ever minted still lands on /donate, never a 404", async () =
 test("a RETIRED code keeps redirecting — the sticker is still on the chair", async () => {
   const { res, loc, env: e } = await go("/q/chair", [{ ...CHAIR, active: 0 }]);
   assert.equal(res.status, 302);
-  assert.equal(loc.pathname, "/send-6", "retiring must not break codes already printed");
+  assert.equal(
+    loc.pathname,
+    "/send-6",
+    "retiring must not break codes already printed",
+  );
   const scan = e.WAIVERS_DB.writes.find((w) => /qr_scans/.test(w.sql));
-  assert.equal(scan.args[1], "retired", "but it is logged as a retired scan, not a healthy one");
+  assert.equal(
+    scan.args[1],
+    "retired",
+    "but it is logged as a retired scan, not a healthy one",
+  );
 });
 
 test("D1 being down falls back to the seed map instead of failing the scan", async () => {
@@ -129,7 +201,14 @@ test("a same-site destination carries every attribution marker", async () => {
 
 test("a vendor destination gets standard utm only, never our Givebutter marker", async () => {
   const { loc } = await go("/q/popcorn", [
-    { slug: "popcorn", dest: "https://popup.doublegood.com/s/89fjuv65", rule: null, label: "Popcorn", surface: "print", active: 1 },
+    {
+      slug: "popcorn",
+      dest: "https://popup.doublegood.com/s/89fjuv65",
+      rule: null,
+      label: "Popcorn",
+      surface: "print",
+      active: 1,
+    },
   ]);
   assert.equal(loc.host, "popup.doublegood.com");
   assert.equal(loc.searchParams.get("utm_source"), "qr");
@@ -138,7 +217,16 @@ test("a vendor destination gets standard utm only, never our Givebutter marker",
 });
 
 test("an existing query string on the destination survives", async () => {
-  const { loc } = await go("/q/x", [{ slug: "x", dest: "/donate?amount=25", rule: null, label: "x", surface: "print", active: 1 }]);
+  const { loc } = await go("/q/x", [
+    {
+      slug: "x",
+      dest: "/donate?amount=25",
+      rule: null,
+      label: "x",
+      surface: "print",
+      active: 1,
+    },
+  ]);
   assert.equal(loc.searchParams.get("amount"), "25");
   assert.equal(loc.searchParams.get("gba_source"), "qr-x");
 });
@@ -147,19 +235,47 @@ test("an existing query string on the destination survives", async () => {
 
 test("campaign-follow never follows an event or a tournament, only a fundraiser", () => {
   // Oct 25: only the grand opening is live. The code keeps its own destination.
-  assert.equal(resolveDest({ dest: "/send-6", rule: "campaign-follow" }, CAMPAIGNS, "2026-10-25"), "/send-6");
+  assert.equal(
+    resolveDest({ dest: "/send-6", rule: "campaign-follow" }, CAMPAIGNS, "2026-10-25"),
+    "/send-6",
+  );
   // Aug 10: a tournament and the popcorn drive are both live. Popcorn wins.
-  assert.equal(resolveDest({ dest: "/send-6", rule: "campaign-follow" }, CAMPAIGNS, "2026-08-10"), "/popcorn");
+  assert.equal(
+    resolveDest({ dest: "/send-6", rule: "campaign-follow" }, CAMPAIGNS, "2026-08-10"),
+    "/popcorn",
+  );
   // An untyped entry is not assumed to be a fundraiser.
-  assert.equal(liveDrive({ drives: [{ slug: "x", published: true, page: "/x", opens: "2026-01-01", closes: "2026-12-31" }] }, "2026-06-01"), null);
+  assert.equal(
+    liveDrive(
+      {
+        drives: [
+          {
+            slug: "x",
+            published: true,
+            page: "/x",
+            opens: "2026-01-01",
+            closes: "2026-12-31",
+          },
+        ],
+      },
+      "2026-06-01",
+    ),
+    null,
+  );
 });
 
 test("campaign-follow routes to the drive that is open today", () => {
-  assert.equal(resolveDest({ dest: "/donate", rule: "campaign-follow" }, CAMPAIGNS, "2026-08-10"), "/popcorn");
+  assert.equal(
+    resolveDest({ dest: "/donate", rule: "campaign-follow" }, CAMPAIGNS, "2026-08-10"),
+    "/popcorn",
+  );
 });
 
 test("campaign-follow falls back to its own destination when no drive is open", () => {
-  assert.equal(resolveDest({ dest: "/send-6", rule: "campaign-follow" }, CAMPAIGNS, "2026-09-01"), "/send-6");
+  assert.equal(
+    resolveDest({ dest: "/send-6", rule: "campaign-follow" }, CAMPAIGNS, "2026-09-01"),
+    "/send-6",
+  );
 });
 
 test("a drive is open on its first and last day, and not a day either side", () => {
@@ -170,7 +286,17 @@ test("a drive is open on its first and last day, and not a day either side", () 
 });
 
 test("an unpublished drive is never followed", () => {
-  const c = { drives: [{ slug: "d", published: false, page: "/d", opens: "2026-08-01", closes: "2026-08-31" }] };
+  const c = {
+    drives: [
+      {
+        slug: "d",
+        published: false,
+        page: "/d",
+        opens: "2026-08-01",
+        closes: "2026-08-31",
+      },
+    ],
+  };
   assert.equal(liveDrive(c, "2026-08-10"), null);
 });
 
@@ -183,14 +309,20 @@ test("drive dates are read in Chicago, not UTC", () => {
 // --- P5 scan detail ---------------------------------------------------------
 
 test("device is recorded coarsely and nothing finer", () => {
-  assert.equal(deviceOf("Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)"), "ios");
+  assert.equal(
+    deviceOf("Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)"),
+    "ios",
+  );
   assert.equal(deviceOf("Mozilla/5.0 (Linux; Android 13; Pixel 7)"), "android");
   assert.equal(deviceOf("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"), "desktop");
   assert.equal(deviceOf(null), "unknown");
 });
 
 test("only the referrer host is stored, never the query someone typed", () => {
-  assert.equal(referrerHost("https://www.google.com/search?q=private+thing"), "www.google.com");
+  assert.equal(
+    referrerHost("https://www.google.com/search?q=private+thing"),
+    "www.google.com",
+  );
   assert.equal(referrerHost("garbage"), null);
   assert.equal(referrerHost(null), null);
 });
@@ -233,7 +365,7 @@ test("a repoint is visible on the very next request, with no cache reset", async
     return new URL(r.headers.get("Location")).pathname;
   };
   assert.equal(await hit(), "/send-6");
-  rows[0].dest = "/ways-to-give";          // the only thing that changed
+  rows[0].dest = "/ways-to-give"; // the only thing that changed
   assert.equal(await hit(), "/ways-to-give", "a stale isolate cache would fail here");
 });
 
@@ -289,19 +421,30 @@ const siteEnv = (extra = {}) => ({
 
 test("on production /admin/qr falls through to the page itself", async () => {
   const res = await worker.fetch(
-    new Request("https://adapttolife.org/admin/qr"), siteEnv(), { waitUntil() {} }
+    new Request("https://adapttolife.org/admin/qr"),
+    siteEnv(),
+    { waitUntil() {} },
   );
   assert.equal(res.status, 200);
-  assert.equal(await res.text(), ASSET_MARKER, "Access lets you in and there must be a page there");
+  assert.equal(
+    await res.text(),
+    ASSET_MARKER,
+    "Access lets you in and there must be a page there",
+  );
 });
 
 test("on staging /admin serves the passwordless dashboard shell", async () => {
   for (const path of ["/admin/qr", "/admin/api/codes", "/admin"]) {
     const res = await worker.fetch(
       new Request(`https://adapt-to-life-staging.workers.dev${path}`),
-      siteEnv({ STAGING: "1" }), { waitUntil() {} }
+      siteEnv({ STAGING: "1" }),
+      { waitUntil() {} },
     );
-    assert.equal(res.status, path.startsWith('/admin/api/') ? 401 : 200, `${path} has the expected passwordless admin boundary`);
+    assert.equal(
+      res.status,
+      path.startsWith("/admin/api/") ? 401 : 200,
+      `${path} has the expected passwordless admin boundary`,
+    );
   }
 });
 
@@ -310,7 +453,11 @@ test("no Access token is not an identity", async () => {
 });
 
 test("a token minted for a DIFFERENT app on our team is refused", async () => {
-  const t = fakeJwt({ aud: ["some-other-application-audience-tag"], email: "alec@alecability.com", exp: 9999999999 });
+  const t = fakeJwt({
+    aud: ["some-other-application-audience-tag"],
+    email: "alec@alecability.com",
+    exp: 9999999999,
+  });
   assert.equal(await verifyAccess(withToken(t)), null);
 });
 
@@ -327,7 +474,10 @@ test("garbage in the header is refused, not thrown on", async () => {
 test("slugs are constrained to what is safe to print and type", () => {
   assert.equal(validateSlug("chair"), null);
   assert.equal(validateSlug("athlete-01"), null);
-  assert.ok(validateSlug("Chair"), "uppercase would not survive the lowercasing in handleQr");
+  assert.ok(
+    validateSlug("Chair"),
+    "uppercase would not survive the lowercasing in handleQr",
+  );
   assert.ok(validateSlug("has space"));
   assert.ok(validateSlug("-leading"));
   assert.ok(validateSlug("x".repeat(33)));
@@ -347,15 +497,30 @@ test("attribution markers are stable — they end up printed in reports", () => 
 // --- P6: reading the marker back off a real Givebutter transaction ----------
 
 test("the QR marker is found in either shape Givebutter returns", () => {
-  assert.equal(markerFrom({ utm_parameters: { utm_campaign: "qr-chair" }, attribution_data: [] }), "chair");
-  assert.equal(markerFrom({ utm_parameters: {}, attribution_data: [{ key: "source", value: "qr-sign" }] }), "sign");
-  assert.equal(markerFrom({ utm_parameters: {}, attribution_data: { source: "qr-card" } }), "card");
+  assert.equal(
+    markerFrom({ utm_parameters: { utm_campaign: "qr-chair" }, attribution_data: [] }),
+    "chair",
+  );
+  assert.equal(
+    markerFrom({
+      utm_parameters: {},
+      attribution_data: [{ key: "source", value: "qr-sign" }],
+    }),
+    "sign",
+  );
+  assert.equal(
+    markerFrom({ utm_parameters: {}, attribution_data: { source: "qr-card" } }),
+    "card",
+  );
   assert.equal(markerFrom({ utm_parameters: {}, attribution_data: [] }), null);
   assert.equal(markerFrom({}), null);
 });
 
 test("an unattributed gift is not guessed at", () => {
-  assert.equal(markerFrom({ utm_parameters: { utm_source: "facebook", utm_campaign: "spring" } }), null);
+  assert.equal(
+    markerFrom({ utm_parameters: { utm_source: "facebook", utm_campaign: "spring" } }),
+    null,
+  );
 });
 
 // --- what a scan tells us about the world -----------------------------------
@@ -365,7 +530,10 @@ test("in-app browsers are identified, because they change what a scan MEANS", ()
   // phone, not a person standing in front of a chair. Same row otherwise.
   assert.equal(browserOf("Mozilla/5.0 (iPhone) Instagram 300.0.0.0"), "instagram-app");
   assert.equal(browserOf("Mozilla/5.0 (iPhone) FBAN/FBIOS;FBAV/400"), "facebook-app");
-  assert.equal(browserOf("Mozilla/5.0 (iPhone) AppleWebKit Version/17.0 Safari/604.1"), "safari");
+  assert.equal(
+    browserOf("Mozilla/5.0 (iPhone) AppleWebKit Version/17.0 Safari/604.1"),
+    "safari",
+  );
   assert.equal(browserOf(null), "unknown");
 });
 
@@ -383,11 +551,22 @@ test("a scan records place and network without ever touching an IP or a cookie",
     headers: { "user-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)" },
   });
   Object.defineProperty(r, "cf", {
-    value: { country: "US", region: "Illinois", city: "Antioch", latitude: "42.47",
-             longitude: "-88.09", postalCode: "60002", continent: "NA",
-             timezone: "America/Chicago", asOrganization: "T-Mobile USA", colo: "ORD" },
+    value: {
+      country: "US",
+      region: "Illinois",
+      city: "Antioch",
+      latitude: "42.47",
+      longitude: "-88.09",
+      postalCode: "60002",
+      continent: "NA",
+      timezone: "America/Chicago",
+      asOrganization: "T-Mobile USA",
+      colo: "ORD",
+    },
   });
-  await handleQr(r, e, new URL("https://adapttolife.org/q/chair"), { waitUntil: (p) => p });
+  await handleQr(r, e, new URL("https://adapttolife.org/q/chair"), {
+    waitUntil: (p) => p,
+  });
   const scan = e.WAIVERS_DB.writes.find((w) => /qr_scans/.test(w.sql));
   const sql = scan.sql;
   assert.match(sql, /latitude/);
@@ -396,7 +575,10 @@ test("a scan records place and network without ever touching an IP or a cookie",
   assert.ok(scan.args.includes("T-Mobile USA"), "carrier vs venue wifi is captured");
   assert.ok(scan.args.includes("60002"), "postal code is captured");
   // The whole point: none of these are identifiers.
-  assert.ok(!/\bip\b|cookie|fingerprint/i.test(sql), "no IP, cookie or fingerprint column");
+  assert.ok(
+    !/\bip\b|cookie|fingerprint/i.test(sql),
+    "no IP, cookie or fingerprint column",
+  );
 });
 
 // --- Mission Control shell routing (Spec 127) -------------------------------
@@ -407,26 +589,48 @@ test("a scan records place and network without ever touching an IP or a cookie",
 
 test("a Mission Control deep link serves the app shell, not a 404", async () => {
   const res = await worker.fetch(
-    new Request("https://adapttolife.org/admin/app/qr"), siteEnv(), { waitUntil() {} }
+    new Request("https://adapttolife.org/admin/app/qr"),
+    siteEnv(),
+    { waitUntil() {} },
   );
   assert.equal(res.status, 200);
   assert.match(res.headers.get("Content-Type") || "", /text\/html/);
-  assert.equal(await res.text(), ASSET_MARKER, "reloading a client route must serve the shell");
+  assert.equal(
+    await res.text(),
+    ASSET_MARKER,
+    "reloading a client route must serve the shell",
+  );
 });
 
 test("built assets are NOT swallowed by the shell fallback", async () => {
   // If /admin/app/assets/* also returned index.html, the app would serve HTML
   // where it expected JavaScript and fail with a MIME error nobody can read.
   let asked = null;
-  const e = { ASSETS: { fetch: async (r) => { asked = new URL(r.url).pathname; return new Response("JS", { status: 200 }); } } };
-  await worker.fetch(new Request("https://adapttolife.org/admin/app/assets/index-abc.js"), e, { waitUntil() {} });
-  assert.equal(asked, "/admin/app/assets/index-abc.js", "asset requests must pass straight through");
+  const e = {
+    ASSETS: {
+      fetch: async (r) => {
+        asked = new URL(r.url).pathname;
+        return new Response("JS", { status: 200 });
+      },
+    },
+  };
+  await worker.fetch(
+    new Request("https://adapttolife.org/admin/app/assets/index-abc.js"),
+    e,
+    { waitUntil() {} },
+  );
+  assert.equal(
+    asked,
+    "/admin/app/assets/index-abc.js",
+    "asset requests must pass straight through",
+  );
 });
 
 test("Mission Control is available for passwordless sign-in on staging", async () => {
   const res = await worker.fetch(
     new Request("https://staging.workers.dev/admin/app/qr"),
-    siteEnv({ STAGING: "1" }), { waitUntil() {} }
+    siteEnv({ STAGING: "1" }),
+    { waitUntil() {} },
   );
   assert.equal(res.status, 200);
 });

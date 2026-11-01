@@ -171,7 +171,7 @@ async function localAsnmAdminCollection(request, env, url) {
   const match = url.pathname.match(/^\/admin\/api\/asnm\/admin-data\/(organizations|programs|events|grants|blog)(?:\/([0-9a-f-]{36}))?$/i);
   const collection = asnmAdminCollection(url.pathname);
   const id = match?.[2];
-  if (!collection || !["GET", "PATCH"].includes(request.method)) {
+  if (!collection || !["GET", "POST", "PATCH"].includes(request.method)) {
     return null;
   }
 
@@ -180,6 +180,71 @@ async function localAsnmAdminCollection(request, env, url) {
   const binds = query ? [`%${query}%`] : [];
 
   try {
+    if (!id && request.method === "POST") {
+      const input = await request.json().catch(() => null);
+      if (!input || typeof input !== "object" || Array.isArray(input)) {
+        return json({ ok: false, error: "Could not read the new item." }, 400, ADMIN_CACHE);
+      }
+
+      const values = collection.fields.map((field) => {
+        const raw = input[field];
+        if (collection.booleans.includes(field)) {
+          return [field, [true, 1, "1", "true", "on"].includes(raw) ? 1 : 0];
+        }
+        if (collection.numbers.includes(field)) {
+          return [field, raw === "" || raw == null ? null : Number(raw)];
+        }
+        return [field, raw == null || raw === "" ? null : String(raw).trim()];
+      });
+      const record = Object.fromEntries(values);
+      const required = collection.table === "events"
+        ? ["title", "starts_at"]
+        : collection.table === "programs"
+          ? ["name", "organization_id"]
+          : [collection.name];
+      if (required.some((field) => !record[field])) {
+        return json({ ok: false, error: "Complete the required fields before creating this item." }, 422, ADMIN_CACHE);
+      }
+      if (collection.table === "blog_posts") {
+        record.subtitle ??= "";
+        record.content_markdown ??= "";
+        record.status ||= "draft";
+        record.slug ||= String(record.title)
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "");
+        if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(record.slug)) {
+          return json({ ok: false, error: "Enter a valid blog post title or slug." }, 422, ADMIN_CACHE);
+        }
+      }
+      if (collection.table === "events") {
+        record.description ??= "";
+        record.status ||= "scheduled";
+        record.source ||= "admin";
+      }
+      if (collection.table === "grants") {
+        record.audience ||= "athlete";
+        record.status ||= "active";
+      }
+      if (["organizations", "programs"].includes(collection.table)) {
+        record.status ||= "active";
+        record.verification_status ||= "unverified";
+      }
+      if (collection.table === "programs") {
+        record.kind ||= "program";
+        record.listing ||= "own";
+      }
+      const timestamp = new Date().toISOString();
+      const itemId = crypto.randomUUID();
+      await env.ASNM_DB.prepare(
+        `INSERT INTO ${collection.table} (id, ${collection.fields.join(", ")}, created_at, updated_at) VALUES (?, ${collection.fields.map(() => "?").join(", ")}, ?, ?)`,
+      ).bind(itemId, ...collection.fields.map((field) => record[field]), timestamp, timestamp).run();
+      const item = await env.ASNM_DB.prepare(
+        `SELECT id, ${collection.fields.join(", ")}, created_at, updated_at FROM ${collection.table} WHERE id = ?`,
+      ).bind(itemId).first();
+      return json({ ok: true, item }, 201, ADMIN_CACHE);
+    }
+
     if (id && request.method === "GET") {
       const item = await env.ASNM_DB.prepare(
         `SELECT id, ${collection.fields.join(", ")}, created_at, updated_at FROM ${collection.table} WHERE id = ?`,
@@ -222,6 +287,12 @@ async function localAsnmAdminCollection(request, env, url) {
     }
 
     if (id) return null;
+    if (url.searchParams.get("counts") === "1") {
+      const count = await env.ASNM_DB.prepare(
+        `SELECT count(*) AS total FROM ${collection.table}`,
+      ).first();
+      return json({ ok: true, total: Number(count?.total || 0), items: [] }, 200, ADMIN_CACHE);
+    }
     const [count, rows] = await Promise.all([
       env.ASNM_DB.prepare(`SELECT count(*) AS total FROM ${collection.table}${where}`)
         .bind(...binds)
@@ -254,12 +325,24 @@ async function localAsnmAdminCollection(request, env, url) {
 
 async function localAsnmAdminActivity(request, env, url, session) {
   const match = url.pathname.match(
-    /^\/admin\/api\/asnm\/admin-data\/organizations\/([0-9a-f-]{36})\/activity$/i,
+    /^\/admin\/api\/asnm\/admin-data\/organizations\/([0-9a-f-]{36})\/activity(?:\/([0-9a-f-]{36}))?$/i,
   );
-  if (!match || !["GET", "POST"].includes(request.method)) return null;
+  if (!match || !["GET", "POST", "DELETE"].includes(request.method)) return null;
 
   const organizationId = match[1];
+  const activityId = match[2];
   try {
+    if (request.method === "DELETE") {
+      if (!activityId) return json({ ok: false, error: "Not found." }, 404, ADMIN_CACHE);
+      const result = await env.ASNM_DB.prepare(
+        "DELETE FROM organization_activity WHERE id = ? AND organization_id = ? AND kind = 'note'",
+      ).bind(activityId, organizationId).run();
+      if (!Number(result.meta?.changes || 0)) {
+        return json({ ok: false, error: "Only team notes can be deleted." }, 404, ADMIN_CACHE);
+      }
+      return json({ ok: true }, 200, ADMIN_CACHE);
+    }
+
     if (request.method === "GET") {
       const rows = await env.ASNM_DB.prepare(
         `SELECT id, kind, summary, actor, ref, created_at

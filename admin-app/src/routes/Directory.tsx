@@ -290,8 +290,39 @@ function selectOptions(field: string, current: string, kind: Kind) {
 }
 
 function detailRoute() {
-  const match = location.pathname.match(/^\/admin\/directory\/(organizations|programs|events|grants|blog)\/([0-9a-f-]{36})$/i);
+  const match = location.pathname.match(/^\/admin\/directory\/(organizations|programs|events|grants|blog)\/(new|[0-9a-f-]{36})$/i);
   return match ? { kind: match[1].toLowerCase() as Kind, id: match[2] } : null;
+}
+
+function newItem(kind: Kind): Item {
+  const detail = DETAILS[kind];
+  const item = Object.fromEntries(detail.fields.map((field) => [field, ""])) as Item;
+
+  for (const field of detail.booleans) {
+    item[field] = 0;
+  }
+
+  if (kind === "organizations" || kind === "programs") {
+    item.status = "active";
+    item.verification_status = "unverified";
+    item.is_public = 1;
+  }
+  if (kind === "events") {
+    item.status = "scheduled";
+    item.source = "admin";
+    item.is_public = 1;
+  }
+  if (kind === "grants") {
+    item.audience = "athlete";
+    item.status = "active";
+    item.is_open = 1;
+    item.is_public = 1;
+  }
+  if (kind === "blog") {
+    item.status = "draft";
+  }
+
+  return item;
 }
 
 function inputType(detail: Detail, field: string) {
@@ -301,6 +332,134 @@ function inputType(detail: Detail, field: string) {
   if (field.includes("email")) return "email";
   if (field.endsWith("url")) return "url";
   return "text";
+}
+
+function fieldPlaceholder(field: string) {
+  const label = fieldLabel(field).toLocaleLowerCase();
+  return field === "slug" ? "Generated from the title" : `Enter ${label}`;
+}
+
+function markdownPreview(value: string) {
+  const inline = (text: string) => text
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>")
+    .replace(/`(.+?)`/g, "<code>$1</code>")
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" rel="noreferrer" target="_blank">$1</a>');
+  const blocks: string[] = [];
+  let list: "ul" | "ol" | "" = "";
+  let listItems: string[] = [];
+  const flushList = () => {
+    if (!list) return;
+    blocks.push(`<${list}>${listItems.map((item) => `<li>${inline(item)}</li>`).join("")}</${list}>`);
+    list = "";
+    listItems = [];
+  };
+
+  for (const line of value.split("\n")) {
+    const unordered = line.match(/^-\s+(.+)/);
+    const ordered = line.match(/^\d+\.\s+(.+)/);
+    if (unordered || ordered) {
+      const nextType = unordered ? "ul" : "ol";
+      if (list && list !== nextType) flushList();
+      list = nextType;
+      listItems.push((unordered || ordered)?.[1] || "");
+      continue;
+    }
+    flushList();
+    if (!line.trim()) {
+      blocks.push("<br />");
+    } else if (line.startsWith("### ")) {
+      blocks.push(`<h4>${inline(line.slice(4))}</h4>`);
+    } else if (line.startsWith("## ")) {
+      blocks.push(`<h3>${inline(line.slice(3))}</h3>`);
+    } else if (line.startsWith("# ")) {
+      blocks.push(`<h2>${inline(line.slice(2))}</h2>`);
+    } else if (line.startsWith("> ")) {
+      blocks.push(`<blockquote>${inline(line.slice(2))}</blockquote>`);
+    } else {
+      blocks.push(`<p>${inline(line)}</p>`);
+    }
+  }
+  flushList();
+  return blocks.join("");
+}
+
+function MarkdownEditor({ value }: { value: string }) {
+  const [content, setContent] = useState(value);
+  const [preview, setPreview] = useState(true);
+  const input = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => setContent(value), [value]);
+
+  const addMarkdown = (prefix: string, suffix = "") => {
+    const textarea = input.current;
+    if (!textarea) return;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selected = content.slice(start, end) || "";
+    const next = `${content.slice(0, start)}${prefix}${selected}${suffix}${content.slice(end)}`;
+    setContent(next);
+    requestAnimationFrame(() => {
+      textarea.focus();
+      textarea.setSelectionRange(start + prefix.length, start + prefix.length + selected.length);
+    });
+  };
+
+  return (
+    <div className={`markdown-editor${preview ? " has-preview" : ""}`}>
+      <div className="markdown-tools">
+        {[['**', '**', 'Bold'], ['*', '*', 'Italic'], ['# ', '', 'Heading'], ['- ', '', 'Unordered list'], ['1. ', '', 'Ordered list'], ['> ', '', 'Quote']].map(([prefix, suffix, label]) => (
+          <button className="btn btn--line" key={label} onClick={() => addMarkdown(prefix, suffix)} type="button">{label}</button>
+        ))}
+        <button className="btn btn--line" onClick={() => setPreview((shown) => !shown)} type="button">{preview ? "Hide preview" : "Show preview"}</button>
+      </div>
+      <div className="markdown-panes">
+        <textarea ref={input} name="content_markdown" rows={18} value={content} onChange={(event) => setContent(event.target.value)} placeholder="Write the post in Markdown" />
+        {preview && <article className="markdown-preview" aria-label="Live Markdown preview" dangerouslySetInnerHTML={{ __html: markdownPreview(content) }} />}
+      </div>
+    </div>
+  );
+}
+
+function ThumbnailUploader({ value }: { value: string }) {
+  const [thumbnail, setThumbnail] = useState(value);
+  const [error, setError] = useState("");
+
+  useEffect(() => setThumbnail(value), [value]);
+
+  const chooseImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const image = event.target.files?.[0];
+    if (!image) return;
+    if (!image.type.startsWith("image/")) {
+      setError("Choose an image file.");
+      event.target.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setThumbnail(String(reader.result || ""));
+      setError("");
+    };
+    reader.readAsDataURL(image);
+  };
+
+  return (
+    <div className="thumbnail-uploader">
+      <input name="thumbnail_data_url" type="hidden" value={thumbnail} />
+      <label className="btn btn--line thumbnail-upload-button">
+        <input accept="image/avif,image/gif,image/jpeg,image/png,image/webp" onChange={chooseImage} type="file" />
+        <span>{thumbnail ? "Replace image" : "Choose image"}</span>
+      </label>
+      {thumbnail && <button className="btn btn--line" onClick={() => setThumbnail("")} type="button">Remove image</button>}
+      <small>PNG, JPG, GIF, WebP, or AVIF.</small>
+      {error && <p className="thumbnail-error" role="alert">{error}</p>}
+      {thumbnail && <img alt="Thumbnail preview" className="thumbnail-preview" src={thumbnail} />}
+    </div>
+  );
 }
 
 async function request(path: string, options?: RequestInit) {
@@ -324,6 +483,13 @@ export function Directory({ onFail }: { onFail: () => void }) {
   const [programOptions, setProgramOptions] = useState<Item[]>([]);
   const [item, setItem] = useState<Item | null>(null);
   const [activity, setActivity] = useState<Activity[]>([]);
+  const [counts, setCounts] = useState<Record<Kind, number>>({
+    organizations: 0,
+    programs: 0,
+    events: 0,
+    grants: 0,
+    blog: 0,
+  });
   const [message, setMessage] = useState("");
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
@@ -359,10 +525,23 @@ export function Directory({ onFail }: { onFail: () => void }) {
     if (current) return;
     setLoading(true);
     request(`/admin-data/${kind}`)
-      .then((body) => setItems(body.items || []))
+      .then((body) => {
+        setItems(body.items || []);
+        setCounts((currentCounts) => ({ ...currentCounts, [kind]: Number(body.total || 0) }));
+      })
       .catch((error) => handleError(error, "Could not load the directory."))
       .finally(() => setLoading(false));
   }, [current, kind]);
+
+  useEffect(() => {
+    if (current) return;
+    Promise.all(KINDS.map(async (entry) => {
+      const body = await request(`/admin-data/${entry}?counts=1`);
+      return [entry, Number(body.total || 0)] as const;
+    }))
+      .then((entries) => setCounts(Object.fromEntries(entries) as Record<Kind, number>))
+      .catch((error) => handleError(error, "Could not load directory totals."));
+  }, [current]);
 
   useEffect(() => {
     if (!current) {
@@ -371,21 +550,25 @@ export function Directory({ onFail }: { onFail: () => void }) {
     }
     setKind(current.kind);
     setMessage("");
-    request(`/admin-data/${current.kind}/${current.id}`)
-      .then((body) => {
-        const item = body.item;
-        for (const field of ["last_ok_at", "starts_at", "ends_at"]) {
-          if (!item?.[field]) continue;
-          const timestamp = new Date(String(item[field]));
-          if (!Number.isNaN(timestamp.getTime())) {
-            item[field] = timestamp.toISOString();
+    if (current.id === "new") {
+      setItem(newItem(current.kind));
+    } else {
+      request(`/admin-data/${current.kind}/${current.id}`)
+        .then((body) => {
+          const item = body.item;
+          for (const field of ["last_ok_at", "starts_at", "ends_at", "publish_at"]) {
+            if (!item?.[field]) continue;
+            const timestamp = new Date(String(item[field]));
+            if (!Number.isNaN(timestamp.getTime())) {
+              item[field] = timestamp.toISOString();
+            }
           }
-        }
-        setItem(item);
-      })
-      .catch((error) => handleError(error, "Could not load this item."));
+          setItem(item);
+        })
+        .catch((error) => handleError(error, "Could not load this item."));
+    }
 
-    if (current.kind === "organizations") {
+    if (current.kind === "organizations" && current.id !== "new") {
       request(`/admin-data/organizations/${current.id}/activity`)
         .then((body) => setActivity(body.items || []))
         .catch((error) => handleError(error, "Could not load this organization's activity."));
@@ -430,7 +613,26 @@ export function Directory({ onFail }: { onFail: () => void }) {
       );
     }
 
-    for (const field of ["last_ok_at", "starts_at", "ends_at"]) {
+    if (current.kind === "grants") {
+      data.sports_json = JSON.stringify(
+        form.getAll("sports_json").map(String).filter(Boolean),
+      );
+      const minimum = Number(data.amount_min_cents || 0);
+      const maximum = Number(data.amount_max_cents || 0);
+      if (data.amount_max_cents && maximum < minimum) {
+        setMessage("Maximum grant amount cannot be below the minimum amount.");
+        return;
+      }
+    }
+
+    if (current.kind === "blog" && !String(data.slug || "").trim()) {
+      data.slug = String(data.title || "")
+        .toLocaleLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+    }
+
+    for (const field of ["last_ok_at", "starts_at", "ends_at", "publish_at"]) {
       if (data[field]) {
         const timestamp = new Date(String(data[field]));
         if (!Number.isNaN(timestamp.getTime())) {
@@ -444,12 +646,18 @@ export function Directory({ onFail }: { onFail: () => void }) {
     }
 
     try {
-      const body = await request(`/admin-data/${current.kind}/${current.id}`, {
-        method: "PATCH",
+      const creating = current.id === "new";
+      const body = await request(`/admin-data/${current.kind}${creating ? "" : `/${current.id}`}`, {
+        method: creating ? "POST" : "PATCH",
         body: JSON.stringify(data),
       });
       setItem(body.item);
-      setMessage("Changes saved.");
+      if (creating) {
+        go(`/admin/directory/${current.kind}/${body.item.id}`);
+        setMessage("Item created.");
+      } else {
+        setMessage("Changes saved.");
+      }
     } catch (error) {
       handleError(error, "Could not save changes.");
     }
@@ -479,14 +687,29 @@ export function Directory({ onFail }: { onFail: () => void }) {
     }
   };
 
+  const deleteActivityNote = async (activityId: string) => {
+    if (!current || current.kind !== "organizations") return;
+
+    try {
+      await request(`/admin-data/organizations/${current.id}/activity/${activityId}`, {
+        method: "DELETE",
+      });
+      setActivity((entries) => entries.filter((entry) => entry.id !== activityId));
+      setMessage("Note deleted.");
+    } catch (error) {
+      handleError(error, "Could not delete that note.");
+    }
+  };
+
   if (current) {
     const detail = DETAILS[current.kind];
+    const creating = current.id === "new";
     return (
       <section className="directory-page">
         <button className="back-link" onClick={() => go("/admin/directory")}>
           ← {detail.label}
         </button>
-        <h2>{item ? String(item.name || item.title || "Edit item") : "Edit item"}</h2>
+        <h2>{creating ? `Add ${detail.label.slice(0, -1)}` : item ? String(item.name || item.title || "Edit item") : "Edit item"}</h2>
         {item && (
           <form className="directory-form" onSubmit={save}>
             {detail.fields.map((field) => {
@@ -496,8 +719,44 @@ export function Directory({ onFail }: { onFail: () => void }) {
               if (current.kind === "programs" && field === "seasons_json") {
                 return <div className="form-field" key={field}><span>Seasons</span><SearchSelect name={field} multiple value={selectedSeasons(item)} options={["spring", "summer", "fall", "winter"].map((season) => ({ value: season, label: titleCase(season) }))} placeholder="Choose seasons" /><small>Choose every season this program is available.</small></div>;
               }
+              if (current.kind === "blog" && field === "content_markdown") {
+                return <div className="form-field wide" key={field}><span>Content (Markdown)</span><MarkdownEditor value={itemValue(item, field)} /></div>;
+              }
+
+              if (current.kind === "blog" && field === "thumbnail_data_url") {
+                return <div className="form-field wide" key={field}><span>Thumbnail Image</span><ThumbnailUploader value={itemValue(item, field)} /></div>;
+              }
+
               if (AREAS.has(field)) {
-                return <label className="form-field wide" key={field}><span>{fieldLabel(field)}</span><textarea name={field} rows={field === "content_markdown" ? 16 : 5} defaultValue={itemValue(item, field)} /></label>;
+                return <label className="form-field wide" key={field}><span>{fieldLabel(field)}</span><textarea name={field} rows={field === "content_markdown" ? 16 : 5} defaultValue={itemValue(item, field)} placeholder={fieldPlaceholder(field)} /></label>;
+              }
+
+              if (current.kind === "blog" && field === "status") {
+                return <div className="form-field" key={field}><span>Status</span><SearchSelect name={field} value={itemValue(item, field)} options={[{ value: "draft", label: "Draft" }, { value: "published", label: "Published" }]} /></div>;
+              }
+
+              if (current.kind === "grants" && field === "type") {
+                return <div className="form-field" key={field}><span>Grant Type</span><SearchSelect name={field} value={itemValue(item, field)} options={["general", "equipment", "quality_of_life", "training", "program"].map((value) => ({ value, label: titleCase(value) }))} placeholder="Choose a grant type" /></div>;
+              }
+
+              if (current.kind === "grants" && field === "audience") {
+                return <div className="form-field" key={field}><span>Grant Audience</span><SearchSelect name={field} value={itemValue(item, field)} options={["athlete", "program"].map((value) => ({ value, label: titleCase(value) }))} placeholder="Choose a grant audience" /></div>;
+              }
+
+              if (current.kind === "grants" && field === "status") {
+                return <div className="form-field" key={field}><span>Grant Status</span><SearchSelect name={field} value={itemValue(item, field)} options={["active", "inactive", "archived"].map((value) => ({ value, label: titleCase(value) }))} placeholder="Choose a grant status" /></div>;
+              }
+
+              if (current.kind === "grants" && field === "sports_json") {
+                return <div className="form-field wide" key={field}><span>Sports</span><SearchSelect name={field} multiple value={selectedSports(item)} options={SPORTS.map(([value, label]) => ({ value, label }))} placeholder="Choose sports" /><small>Leave blank when the grant is open to every sport.</small></div>;
+              }
+
+              if (current.kind === "grants" && field === "amount_min_cents") {
+                return <label className="form-field" key={field}><span>Amount Min Cents</span><input name={field} type="number" min="0" step="1" defaultValue={itemValue(item, field)} placeholder="Enter minimum cents" onInput={(event) => { const minimum = event.currentTarget.value || "0"; const maximum = event.currentTarget.form?.elements.namedItem("amount_max_cents") as HTMLInputElement | null; if (!maximum) return; maximum.min = minimum; if (maximum.value && Number(maximum.value) < Number(minimum)) maximum.value = minimum; }} /></label>;
+              }
+
+              if (current.kind === "grants" && field === "amount_max_cents") {
+                return <label className="form-field" key={field}><span>Amount Max Cents</span><input name={field} type="number" min={itemValue(item, "amount_min_cents") || "0"} step="1" defaultValue={itemValue(item, field)} placeholder="Enter maximum cents" /></label>;
               }
 
               if (["organizations", "programs"].includes(current.kind) && field === "sports_json") {
@@ -533,7 +792,7 @@ export function Directory({ onFail }: { onFail: () => void }) {
               }
 
               if (current.kind === "programs" && field === "first_year") {
-                return <label className="form-field" key={field}><span>First Year</span><input name={field} type="text" inputMode="numeric" pattern="[0-9]*" min="1950" max={CURRENT_YEAR} defaultValue={itemValue(item, field)} onInput={(event) => { event.currentTarget.value = numericValue(event.currentTarget.value); }} /></label>;
+                return <label className="form-field" key={field}><span>First Year</span><input name={field} type="text" inputMode="numeric" pattern="[0-9]*" min="1950" max={CURRENT_YEAR} defaultValue={itemValue(item, field)} placeholder="Enter first year" onInput={(event) => { event.currentTarget.value = numericValue(event.currentTarget.value); }} /></label>;
               }
 
               if (current.kind === "events" && field === "org_id") {
@@ -577,13 +836,19 @@ export function Directory({ onFail }: { onFail: () => void }) {
               }
               const numeric = detail.numbers.includes(field);
               const decimal = field === "lat" || field === "lng";
-              return <label className="form-field" key={field}><span>{fieldLabel(field)}</span><input name={field} type={numeric ? "text" : inputType(detail, field)} inputMode={numeric ? (decimal ? "decimal" : "numeric") : undefined} pattern={numeric ? (decimal ? "-?[0-9]*[.]?[0-9]*" : "[0-9]*") : undefined} step={DATE_TIMES.has(field) ? "1" : undefined} defaultValue={DATE_TIMES.has(field) ? dateTimeLocalValue(itemValue(item, field)) : itemValue(item, field)} onInput={numeric ? (event) => { event.currentTarget.value = numericValue(event.currentTarget.value, decimal); } : undefined} /></label>;
+              const titleSource = (current.kind === "programs" && field === "name") || (current.kind === "blog" && field === "title");
+              const initialValue = DATE_TIMES.has(field)
+                ? dateTimeLocalValue(itemValue(item, field))
+                : field === "deadline_next"
+                  ? itemValue(item, field).slice(0, 10)
+                  : itemValue(item, field);
+              return <label className="form-field" key={field}><span>{fieldLabel(field)}</span><input name={field} type={numeric ? "text" : inputType(detail, field)} inputMode={numeric ? (decimal ? "decimal" : "numeric") : undefined} pattern={numeric ? (decimal ? "-?[0-9]*[.]?[0-9]*" : "[0-9]*") : undefined} step={DATE_TIMES.has(field) ? "1" : undefined} defaultValue={initialValue} placeholder={fieldPlaceholder(field)} onInput={(event) => { if (numeric) event.currentTarget.value = numericValue(event.currentTarget.value, decimal); if (titleSource) { const slug = event.currentTarget.form?.elements.namedItem("slug") as HTMLInputElement | null; if (slug) slug.value = event.currentTarget.value.toLocaleLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""); } }} /></label>;
             })}
-            <div className="directory-actions"><button className="btn" type="submit">Save changes</button></div>
+            <div className="directory-actions"><button className="btn" type="submit">{creating ? `Create ${detail.label.slice(0, -1)}` : "Save changes"}</button></div>
           </form>
         )}
         <p className="directory-message" role="status">{message}</p>
-        {current.kind === "organizations" && (
+        {current.kind === "organizations" && !creating && (
           <section className="activity-panel" aria-labelledby="activity-heading">
             <h3 id="activity-heading">Activity</h3>
             <p className="sub">Team only, never shown on the site.</p>
@@ -601,6 +866,7 @@ export function Directory({ onFail }: { onFail: () => void }) {
                     <p><time dateTime={entry.created_at}>{activityTime(entry.created_at)}</time><b>{activityLabel(entry.kind)}</b></p>
                     <p>{entry.summary}</p>
                     {entry.actor && <small>{entry.actor}</small>}
+                    {entry.kind === "note" && <button className="btn btn--line" onClick={() => deleteActivityNote(entry.id)} type="button">Delete note</button>}
                   </li>
                 ))}
               </ol>
@@ -616,10 +882,11 @@ export function Directory({ onFail }: { onFail: () => void }) {
   return (
     <section className="directory-page">
       <div className="directory-seg">
-        {KINDS.map((entry) => <button key={entry} className={entry === kind ? "on" : ""} onClick={() => chooseKind(entry)}>{DETAILS[entry].label}</button>)}
+        {KINDS.map((entry) => <button key={entry} className={entry === kind ? "on" : ""} onClick={() => chooseKind(entry)}>{DETAILS[entry].label} ({counts[entry].toLocaleString()})</button>)}
       </div>
       <h2>{DETAILS[kind].label}</h2>
       <p className="sub">Manage all Adaptive Sports Near Me {kind} from Adapt To Life.</p>
+      <div className="directory-actions"><button className="btn" type="button" onClick={() => go(`/admin/directory/${kind}/new`)}>Add {DETAILS[kind].label.slice(0, -1)}</button></div>
       <label className="directory-search"><span>Search {DETAILS[kind].label.toLowerCase()}</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Type a name" /></label>
       <p className="directory-message" role="status">{message}</p>
       {loading ? <div className="directory-loading" role="status"><i aria-hidden="true" />Loading {DETAILS[kind].label.toLowerCase()}…</div> : <div className="directory-list">

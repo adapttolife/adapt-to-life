@@ -254,8 +254,168 @@ class PlanTests(unittest.TestCase):
                     continue
                 self.assertFalse(bad.search(str(v)), (h, v))
         for msg in (ks.REVIEW_MULTI_EMAIL, ks.REVIEW_SAME_NAME, ks.REVIEW_KAREN_TWICE,
+                    ks.REVIEW_NOT_EMAIL, ks.REVIEW_STALE_CONTACT,
                     ks.CONSENT_BETA, ks.CONSENT_RELATIONSHIP):
             self.assertFalse(bad.search(msg), msg)
+
+    def test_two_new_people_use_consecutive_empty_rows(self):
+        plan, _ = self.plan([karen("one@example.org", "One New"),
+                             karen("two@example.org", "Two New")])
+        self.assertEqual([p["row"] for p in plan.people_new], [7, 8])
+
+    def test_filled_row_below_gap_is_not_allocated(self):
+        # Last Contact ID is on row 6, row 7 is empty, row 8 has human data and no ID.
+        # Blind +1 would plan [7, 8] and overwrite row 8.
+        people, orgs, timeline = tables()
+        name_i = ks.PEOPLE_HEADERS.index("Name")
+        email_i = ks.PEOPLE_HEADERS.index("Email")
+        people.rows[6][name_i] = "Hand typed neighbor"
+        people.rows[6][email_i] = "hand@example.org"
+        plan = ks.plan_sync(
+            [karen("one@example.org", "One New", "Athlete"),
+             karen("two@example.org", "Two New", "Donor")],
+            people, orgs, timeline, TODAY)
+        self.assertEqual([p["row"] for p in plan.people_new], [7, 9])
+        self.assertNotIn(8, [p["row"] for p in plan.people_new])
+        self.assertEqual(people.rows[6][name_i], "Hand typed neighbor")
+        self.assertEqual(people.rows[6][email_i], "hand@example.org")
+        self.assertNotIn("hand@example.org", [p["values"]["Email"] for p in plan.people_new])
+
+    def test_grid_full_after_gap_aborts(self):
+        people, orgs, timeline = tables()
+        people.grid_rows = 8
+        people.rows[6][ks.PEOPLE_HEADERS.index("Name")] = "Hand typed neighbor"
+        with self.assertRaises(ks.ReadError) as cm:
+            ks.plan_sync(
+                [karen("one@example.org", "One New"), karen("two@example.org", "Two New")],
+                people, orgs, timeline, TODAY)
+        self.assertIn("People", str(cm.exception))
+        self.assertIn("grid is full", str(cm.exception))
+        self.assertEqual(people.rows[6][ks.PEOPLE_HEADERS.index("Name")], "Hand typed neighbor")
+
+    def test_last_grid_row_can_still_be_allocated(self):
+        people, orgs, timeline = tables()
+        people.grid_rows = 7
+        plan = ks.plan_sync([karen("one@example.org", "One New", how="event")],
+                            people, orgs, timeline, TODAY)
+        self.assertEqual(plan.people_new[0]["row"], 7)
+        self.assertEqual(plan.timeline_new[0]["row"], 3)
+
+    def test_org_gap_is_not_overwritten(self):
+        people, orgs, timeline = tables()
+        blank = [""] * len(ORG_HEADER)
+        named = [""] * len(ORG_HEADER)
+        named[0] = "Hand typed org"
+        orgs.rows = [org("Lakeshore Foundation", "ATL-O-000001"), blank, named]
+        plan = ks.plan_sync(
+            [karen(org_="One Org", kind="Business"), karen(org_="Two Org", kind="Sponsor")],
+            people, orgs, timeline, TODAY)
+        self.assertEqual([o["row"] for o in plan.orgs_new], [3, 5])
+        self.assertNotIn(4, [o["row"] for o in plan.orgs_new])
+
+    def test_timeline_gap_is_not_overwritten(self):
+        people, orgs, timeline = tables()
+        filled = [""] * len(ks.TIMELINE_HEADERS)
+        filled[ks.TIMELINE_HEADERS.index("Summary")] = "hand typed note"
+        timeline.rows = [timeline.rows[0], [""] * len(ks.TIMELINE_HEADERS), filled]
+        plan = ks.plan_sync(
+            [karen("a@example.org", "A Person", how="one"),
+             karen("b@example.org", "B Person", how="two")],
+            people, orgs, timeline, TODAY)
+        self.assertEqual([t["row"] for t in plan.timeline_new], [3, 5])
+        self.assertEqual(timeline.rows[2][ks.TIMELINE_HEADERS.index("Summary")], "hand typed note")
+
+    def test_placeholder_email_is_not_a_link(self):
+        people, orgs, timeline = tables()
+        people.rows.append(person("Alex Placeholder", "n/a", "ATL-P-000006"))
+        plan = ks.plan_sync([karen("n/a", "Sam Other", "Donor"),
+                             karen(" N/A ", "Alex Placeholder", "Athlete"),
+                             karen("none", "Pat None", "Volunteer")],
+                            people, orgs, timeline, TODAY)
+        self.assertEqual(plan.people_new, [])
+        self.assertEqual(plan.people_updates, [])
+        self.assertEqual(plan.timeline_new, [])
+        self.assertEqual([w["L"] for w in plan.karen_writes], ["", "", ""])
+        self.assertEqual([w["N"] for w in plan.karen_writes], [ks.REVIEW_NOT_EMAIL] * 3)
+        self.assertNotIn("ATL-P-000006", [w["L"] for w in plan.karen_writes])
+
+    def test_placeholder_does_not_merge_across_runs(self):
+        people, orgs, timeline = tables()
+        people.rows.append(person("Alex Placeholder", "n/a", "ATL-P-000006"))
+        first = ks.plan_sync([karen("n/a", "Sam Other", "Donor")], people, orgs, timeline, TODAY)
+        self.assertEqual(first.people_new, [])
+        self.assertEqual(first.karen_writes[0]["N"], ks.REVIEW_NOT_EMAIL)
+        # The note lands; a later run still must not attach Sam to Alex.
+        row = karen("n/a", "Sam Other", "Donor", N=first.karen_writes[0]["N"])
+        second = ks.plan_sync([row], people, orgs, timeline, TODAY)
+        self.assertTrue(second.empty(), second)
+        self.assertNotIn("ATL-P-000006", [w.get("L", "") for w in second.karen_writes])
+
+    def test_people_placeholder_is_not_an_email_key(self):
+        self.assertEqual(ks.norm_email("n/a"), "")
+        self.assertEqual(ks.norm_email(" N/A "), "")
+        self.assertEqual(ks.norm_email("none"), "")
+        self.assertEqual(ks.norm_email("Jordan@Example.org"), "jordan@example.org")
+        self.assertFalse(ks.is_email("n/a"))
+        self.assertTrue(ks.is_email("a@b.c"))
+        people, orgs, timeline = tables()
+        people.rows[0][ks.PEOPLE_HEADERS.index("Email")] = "n/a"
+        plan = ks.plan_sync([karen("n/a", "Brand New", "Athlete")], people, orgs, timeline, TODAY)
+        self.assertEqual(plan.people_new, [])
+        self.assertNotEqual(plan.karen_writes[0]["L"], "ATL-P-000001")
+        self.assertEqual(plan.karen_writes[0]["N"], ks.REVIEW_NOT_EMAIL)
+
+    def test_stale_contact_id_does_not_update_people(self):
+        plan, _ = self.plan([karen("stranger@example.org", "Jordan", "Donor; Beta tester",
+                                   invite="Accepted", L="ATL-P-000004")])
+        self.assertEqual(plan.people_updates, [])
+        self.assertEqual(plan.people_new, [])
+        self.assertEqual(plan.timeline_new, [])
+        self.assertEqual(plan.karen_writes, [{
+            "row": 3, "L": "ATL-P-000004", "M": "", "N": ks.REVIEW_STALE_CONTACT,
+        }])
+
+    def test_stale_contact_id_note_is_not_rewritten(self):
+        plan, _ = self.plan([karen("stranger@example.org", "Jordan", "Donor",
+                                   L="ATL-P-000004", N=ks.REVIEW_STALE_CONTACT)])
+        self.assertEqual(plan.karen_writes, [])
+        self.assertEqual(plan.people_updates, [])
+        self.assertTrue(plan.skipped)
+
+    def test_matching_contact_id_clears_stale_note(self):
+        plan, _ = self.plan([karen("jordan@example.org", "Jordan", "Donor",
+                                   L="ATL-P-000004", N=ks.REVIEW_STALE_CONTACT)])
+        self.assertEqual(plan.karen_writes, [{"row": 3, "L": "ATL-P-000004", "M": "", "N": ""}])
+        ups = {(u["row"], u["header"]): u["new"] for u in plan.people_updates}
+        self.assertEqual(ups[(5, "Type")], "Athlete; Donor")
+
+    def test_filed_blank_emails_still_update(self):
+        people, orgs, timeline = tables()
+        people.rows[5] = person("Nia New", "", "ATL-P-000006", "Athlete")
+        plan = ks.plan_sync([karen("", "Nia New", "Athlete; Donor", L="ATL-P-000006")],
+                            people, orgs, timeline, TODAY)
+        self.assertEqual(plan.karen_writes, [])
+        ups = {(u["row"], u["header"]): u["new"] for u in plan.people_updates}
+        self.assertEqual(ups[(7, "Type")], "Athlete; Donor")
+        self.assertTrue(ks.contact_emails_agree("", ""))
+        self.assertTrue(ks.contact_emails_agree("n/a", "none"))
+        self.assertFalse(ks.contact_emails_agree("a@b.c", "n/a"))
+        self.assertFalse(ks.contact_emails_agree("", "a@b.c"))
+        self.assertTrue(ks.contact_emails_agree("A@B.C", "a@b.c"))
+
+    def test_run_lock_excludes_a_second_acquire(self):
+        import tempfile
+        self.assertTrue(os.path.isabs(ks.DEFAULT_LOCK_PATH))
+        self.assertTrue(ks.DEFAULT_LOCK_PATH.endswith("adapt-to-life-karen-sync.lock"))
+        with tempfile.TemporaryDirectory() as d:
+            path = os.path.join(d, "karen.lock")
+            with ks.run_lock(path) as held:
+                self.assertEqual(held, path)
+                with self.assertRaises(ks.LockError):
+                    with ks.run_lock(path, blocking=False):
+                        self.fail("second acquire took the lock")
+            with ks.run_lock(path, blocking=False) as held_again:
+                self.assertEqual(held_again, path)
 
 
 if __name__ == "__main__":

@@ -8,10 +8,13 @@ This script is the background feed. It is safe to run hourly:
   * idempotent: a filed row gets its Contact ID (L) or Organization ID (M) written back,
     and filed rows are never filed again
   * never merges silently: an email that is on several People rows, or a name with no
-    email that already exists in People, becomes a "Needs review" house note (N)
+    email that already exists in People, becomes a "Needs review" house note (N).
+    A cell with no @ is not an email, so placeholders such as n/a do not link people
+  * a filed Contact ID is kept only while Karen's email still matches that People row
   * never renumbers, sorts or deletes rows; only appends new rows and adds missing
     Type / Brands tokens to a linked People row (plus the ASNM beta invite mirror)
   * never writes marketing consent; Resend owns newsletter consent
+  * one run at a time: an exclusive lock covers read, plan, and apply
 
 Stdlib only. Shells out to gog. Default binary is `gogbox` (AgentOS); on the Grok box
 set GOG=gog. Account comes from GOG_ACCOUNT (default alec@alecability.com).
@@ -20,11 +23,14 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import fcntl
 import json
 import os
 import re
 import subprocess
 import sys
+import tempfile
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from zoneinfo import ZoneInfo
 
@@ -77,14 +83,23 @@ INVITE_VALUES = {"not invited": "Not invited", "invited": "Invited", "accepted":
 REVIEW_MULTI_EMAIL = "Needs review: email is on several People rows"
 REVIEW_SAME_NAME = "Needs review: same name already in People"
 REVIEW_KAREN_TWICE = "Needs review: same email is on the Karen tab twice"
+REVIEW_NOT_EMAIL = "Needs review: email is missing @"
+REVIEW_STALE_CONTACT = "Needs review: Contact ID email does not match"
 CONSENT_RELATIONSHIP = "Not recorded; relationship only, not marketing consent"
 CONSENT_BETA = "Not recorded; ASNM beta access only, not newsletter consent"
+
+# Shared by a manual run and cron on this machine. Override with KAREN_SYNC_LOCK.
+DEFAULT_LOCK_PATH = os.path.join(tempfile.gettempdir(), "adapt-to-life-karen-sync.lock")
 
 SHEETS_EPOCH = dt.date(1899, 12, 30)
 
 
 class ReadError(Exception):
     """The live sheet does not look the way this script expects. Nothing is written."""
+
+
+class LockError(Exception):
+    """Another karen_sync process already holds the run lock. Nothing is written."""
 
 
 # ---------------------------------------------------------------- small helpers
@@ -97,8 +112,30 @@ def s(v) -> str:
     return str(v).strip()
 
 
+def is_email(v) -> bool:
+    """True when the cell contains @. Placeholders such as n/a are not emails."""
+    return "@" in s(v)
+
+
 def norm_email(v) -> str:
-    return s(v).casefold()
+    """Identity key for a real email. Empty when the cell has no @."""
+    text = s(v)
+    if "@" not in text:
+        return ""
+    return text.casefold()
+
+
+def contact_emails_agree(karen_email, people_email) -> bool:
+    """True when an already-filed Contact ID still matches on email.
+
+    A real email (has @) on either side must be the same address. If neither side
+    has a real email, nothing has diverged and the Contact ID may still be trusted.
+    """
+    k = norm_email(karen_email)
+    p = norm_email(people_email)
+    if not k and not p:
+        return True
+    return bool(k) and k == p
 
 
 def norm_name(v) -> str:
@@ -236,16 +273,44 @@ def check_unique_ids(t: Table, id_header: str, pattern: str, strict: bool = True
         seen[v] = t.sheet_row(i)
 
 
+def row_is_empty(t: Table, sheet_row: int, data_headers: list[str]) -> bool:
+    """True when every data column on this sheet row is blank.
+
+    Rows past the loaded values are unused grid rows and count as empty.
+    Quality flags are omitted from People `data_headers`, so a formula-only row is empty.
+    """
+    i = sheet_row - 2
+    if i < 0:
+        return False
+    if i >= len(t.rows):
+        return True
+    return not any(s(t.cell(i, h)) for h in data_headers)
+
+
+def take_free_row(t: Table, start: int, data_headers: list[str]) -> int:
+    """First empty sheet row at or after `start`.
+
+    Every candidate is checked, so a filled row below a gap is skipped rather than
+    overwritten. Raises ReadError when the next empty row would sit past the grid,
+    including when the last grid row itself is full.
+    """
+    row = start
+    while row <= t.grid_rows and not row_is_empty(t, row, data_headers):
+        row += 1
+    if row > t.grid_rows:
+        raise ReadError(
+            f"{t.name} grid is full (next free row {row} > {t.grid_rows}); add rows first"
+        )
+    return row
+
+
 def first_free_row(t: Table, id_header: str, data_headers: list[str]) -> int:
-    """First sheet row after the last ID that is empty in every data column."""
+    """First empty sheet row after the last ID. Filled rows under a gap are not free."""
     last = -1
     for i in range(len(t.rows)):
         if s(t.cell(i, id_header)):
             last = i
-    i = last + 1
-    while i < len(t.rows) and any(s(t.cell(i, h)) for h in data_headers):
-        i += 1
-    return t.sheet_row(i)
+    return take_free_row(t, t.sheet_row(last + 1), data_headers)
 
 
 # ---------------------------------------------------------------- plan
@@ -280,12 +345,14 @@ def plan_sync(karen_rows: list[list], people: Table, orgs: Table, timeline: Tabl
     new_oid = next_id([s(orgs.cell(i, "Organization ID")) for i in range(len(orgs.rows))], "ATL-O-")
     new_iid = next_id([s(timeline.cell(i, "Interaction ID")) for i in range(len(timeline.rows))], "ATL-I-")
 
-    people_row = first_free_row(people, "Contact ID", [h for h in PEOPLE_HEADERS if h != "Quality flags"])
-    org_row = first_free_row(orgs, "Organization ID", ORG_HEADERS_REQUIRED[:1] + ["Organization ID"])
-    tl_row = first_free_row(timeline, "Interaction ID", TIMELINE_HEADERS)
-    for t, r in ((people, people_row), (orgs, org_row), (timeline, tl_row)):
-        if r > t.grid_rows:
-            raise ReadError(f"{t.name} grid is full (next free row {r} > {t.grid_rows}); add rows first")
+    people_data = [h for h in PEOPLE_HEADERS if h != "Quality flags"]
+    org_data = ORG_HEADERS_REQUIRED[:1] + ["Organization ID"]
+    tl_data = TIMELINE_HEADERS
+    # Eager check: a full grid fails the run even when this plan appends nothing.
+    # Later allocations call take_free_row again so a filled row under a gap is skipped.
+    people_row = first_free_row(people, "Contact ID", people_data)
+    org_row = first_free_row(orgs, "Organization ID", org_data)
+    tl_row = first_free_row(timeline, "Interaction ID", tl_data)
 
     by_email: dict[str, list[int]] = {}
     by_name: dict[str, list[int]] = {}
@@ -304,6 +371,8 @@ def plan_sync(karen_rows: list[list], people: Table, orgs: Table, timeline: Tabl
     for i in range(len(orgs.rows)):
         n = norm_name(orgs.cell(i, "Organization"))
         oid = s(orgs.cell(i, "Organization ID"))
+        # TODO(H5): duplicate Organization names keep the first ID. They should become
+        # Needs review instead of a silent first match. Left as a comment on purpose.
         if n and oid and n not in org_by_name:
             org_by_name[n] = oid
 
@@ -351,14 +420,25 @@ def plan_sync(karen_rows: list[list], people: Table, orgs: Table, timeline: Tabl
         invite = invite_value(invite_raw)
 
         # Already filed: keep tags and the beta invite mirror in step, nothing else.
+        # Do not trust L forever: the People email behind that ID must still match.
         if L:
             i = by_pid.get(L)
             if i is None:
                 plan.skipped.append(f"Karen row {krow}: Contact ID {L} not found in People; left alone")
                 continue
+            if not contact_emails_agree(email, people.cell(i, "Email")):
+                if N != REVIEW_STALE_CONTACT:
+                    plan.log.append(f"Karen row {krow}: {REVIEW_STALE_CONTACT}")
+                    plan.karen_writes.append({"row": krow, "L": L, "M": M, "N": REVIEW_STALE_CONTACT})
+                else:
+                    plan.skipped.append(f"Karen row {krow}: {N}")
+                continue
             add_tokens(i, types)
             if beta:
                 mirror_invite(i, invite)
+            if N == REVIEW_STALE_CONTACT:
+                plan.log.append(f"Karen row {krow}: Contact ID {L} email matches again")
+                plan.karen_writes.append({"row": krow, "L": L, "M": M, "N": ""})
             continue
         if M:
             continue
@@ -371,11 +451,14 @@ def plan_sync(karen_rows: list[list], people: Table, orgs: Table, timeline: Tabl
         out = {"row": krow, "L": "", "M": "", "N": ""}
 
         # 1. Decide the person outcome first, so a review row never creates anything.
+        # A non-empty cell with no @ is not an email: Needs review, and it is not a link key.
         link_i = None
-        if is_person:
+        if s(email) and not is_email(email):
+            out["N"] = REVIEW_NOT_EMAIL
+        elif is_person:
             key = norm_email(email)
-            hits = by_email.get(key, []) if email else []
-            if email and key in new_emails:
+            hits = by_email.get(key, []) if key else []
+            if key and key in new_emails:
                 out["N"] = REVIEW_KAREN_TWICE
             elif len(hits) > 1:
                 out["N"] = REVIEW_MULTI_EMAIL
@@ -383,7 +466,7 @@ def plan_sync(karen_rows: list[list], people: Table, orgs: Table, timeline: Tabl
                 link_i = hits[0]
                 if not s(people.cell(link_i, "Contact ID")):
                     out["N"] = "Needs review: matching People row has no Contact ID"
-            elif not email and name and (by_name.get(norm_name(name)) or norm_name(name) in new_names):
+            elif not key and name and (by_name.get(norm_name(name)) or norm_name(name) in new_names):
                 out["N"] = REVIEW_SAME_NAME
         if out["N"]:
             plan.log.append(f"Karen row {krow}: {out['N']}")
@@ -396,9 +479,11 @@ def plan_sync(karen_rows: list[list], people: Table, orgs: Table, timeline: Tabl
             oid = org_by_name.get(norm_name(org), "")
             wants_org = (not is_person) or bool(set(types) & ORG_KINDS)
             if not oid and wants_org:
+                orow = take_free_row(orgs, org_row, org_data)
+                org_row = orow + 1
                 oid = new_oid()
                 org_by_name[norm_name(org)] = oid
-                plan.orgs_new.append({"row": org_row, "values": {
+                plan.orgs_new.append({"row": orow, "values": {
                     "Organization": org,
                     "Notes": notes,
                     "Organization ID": oid,
@@ -408,7 +493,6 @@ def plan_sync(karen_rows: list[list], people: Table, orgs: Table, timeline: Tabl
                     "Context": f"Added on the Karen tab by {added_by}; how we know them: {how}" if how
                                else f"Added on the Karen tab by {added_by}",
                 }})
-                org_row += 1
         out["M"] = oid
 
         # 3. Person link or create.
@@ -420,10 +504,10 @@ def plan_sync(karen_rows: list[list], people: Table, orgs: Table, timeline: Tabl
                 mirror_invite(link_i, invite)
             plan.log.append(f"Karen row {krow}: linked to existing {pid} by email")
         elif is_person:
+            prow = take_free_row(people, people_row, people_data)
+            people_row = prow + 1
             pid = new_pid()
             out["L"] = pid
-            prow = people_row
-            people_row += 1
             note_bits = [f"How we know them: {how}." if how else "", notes]
             values = {
                 "Name": name or email,
@@ -444,8 +528,9 @@ def plan_sync(karen_rows: list[list], people: Table, orgs: Table, timeline: Tabl
             }
             plan.people_new.append({"row": prow, "values": values, "quality_formula":
                                     shift_formula(qf_template, prow) if qf_template else ""})
-            if email:
-                new_emails.add(norm_email(email))
+            added_email = norm_email(email)
+            if added_email:
+                new_emails.add(added_email)
             new_names.add(norm_name(values["Name"]))
             plan.log.append(f"Karen row {krow}: new People row {prow} {pid}")
         else:
@@ -453,7 +538,9 @@ def plan_sync(karen_rows: list[list], people: Table, orgs: Table, timeline: Tabl
 
         if (how or notes) and (out["L"] or out["M"]):
             summary = f"Added on the Karen tab as {kind or 'Supporter'}" + (f", {how}" if how else "")
-            plan.timeline_new.append({"row": tl_row, "values": {
+            trow = take_free_row(timeline, tl_row, tl_data)
+            tl_row = trow + 1
+            plan.timeline_new.append({"row": trow, "values": {
                 "Interaction ID": new_iid(),
                 "Date": serial,
                 "Contact ID": out["L"],
@@ -464,9 +551,8 @@ def plan_sync(karen_rows: list[list], people: Table, orgs: Table, timeline: Tabl
                 "Summary": summary,
                 "Exact words / detailed notes": notes,
                 "Recorded by": f"Karen tab filer (added by {added_by})",
-            }, "contact_formula": (f'=IFERROR(INDEX(People!A:A,MATCH(C{tl_row},People!R:R,0)),"CONTACT ID NOT FOUND")'
+            }, "contact_formula": (f'=IFERROR(INDEX(People!A:A,MATCH(C{trow},People!R:R,0)),"CONTACT ID NOT FOUND")'
                                    if out["L"] else "")})
-            tl_row += 1
         plan.karen_writes.append(out)
     return plan
 
@@ -545,6 +631,38 @@ def apply_plan(plan: Plan, people: Table, orgs: Table, timeline: Table):
     batch(kw, "RAW")
 
 
+@contextmanager
+def run_lock(path: str | None = None, blocking: bool = True):
+    """Exclusive lock around one karen_sync run (manual or cron).
+
+    The success path is `with run_lock():` in main, which holds the lock from the
+    sheet read through apply. A second process waits (or, with blocking=False,
+    raises LockError). The lock is released when this block exits, including on
+    error or crash, because the kernel drops it with the open file. Do not unlink
+    the lock file; a new inode would not share the lock.
+
+    Path: argument, else KAREN_SYNC_LOCK, else DEFAULT_LOCK_PATH.
+    """
+    path = path or os.environ.get("KAREN_SYNC_LOCK") or DEFAULT_LOCK_PATH
+    parent = os.path.dirname(path)
+    if parent:
+        os.makedirs(parent, exist_ok=True)
+    fh = open(path, "a+")
+    flags = fcntl.LOCK_EX
+    if not blocking:
+        flags |= fcntl.LOCK_NB
+    try:
+        fcntl.flock(fh.fileno(), flags)
+    except BlockingIOError as e:
+        fh.close()
+        raise LockError(f"another karen_sync holds {path}") from e
+    try:
+        yield path
+    finally:
+        fcntl.flock(fh.fileno(), fcntl.LOCK_UN)
+        fh.close()
+
+
 def print_plan(plan: Plan, mode: str):
     print(f"Karen tab filer ({mode})")
     print(f"  new People rows:       {len(plan.people_new)}")
@@ -577,29 +695,36 @@ def main(argv=None) -> int:
     ap.add_argument("--retry-review", action="store_true", help="re-plan rows whose house note starts with Needs review")
     args = ap.parse_args(argv)
     try:
-        karen_head = read_range(f"Karen!A2:N2")
-        got = [s(h) for h in (karen_head[0] if karen_head else [])]
-        if got != KAREN_HEADERS:
-            raise ReadError(f"Karen header mismatch: expected {KAREN_HEADERS}, got {got}")
-        karen_rows = read_range(f"Karen!A{KAREN_FIRST_ROW}:N{KAREN_LAST_ROW}")
-        people = load_table("People", "AD")
-        # Quality flags are formulas; keep the formula text, not the computed flag.
-        qcol = people.col("Quality flags")
-        qf = read_formula(f"People!{col_letter(qcol)}2:{col_letter(qcol)}")
-        for i, row in enumerate(people.rows):
-            row[qcol] = qf[i][0] if i < len(qf) and qf[i] else ""
-        orgs = load_table("Organizations", "Z")
-        timeline = load_table("Timeline", "M")
-        today = dt.datetime.now(ZoneInfo("America/Chicago")).date()
-        plan = plan_sync(karen_rows, people, orgs, timeline, today, args.retry_review)
-    except ReadError as e:
-        print(f"READ CHECK FAILED, nothing written: {e}", file=sys.stderr)
-        return 2
-    print_plan(plan, "apply" if args.apply else "dry run")
-    if args.apply and not plan.empty():
-        apply_plan(plan, people, orgs, timeline)
-        print("  applied")
-    return 0
+        # One holder at a time. The second manual or cron run waits, then reads
+        # the sheet the first run already updated, so IDs and rows are not shared.
+        with run_lock():
+            try:
+                karen_head = read_range(f"Karen!A2:N2")
+                got = [s(h) for h in (karen_head[0] if karen_head else [])]
+                if got != KAREN_HEADERS:
+                    raise ReadError(f"Karen header mismatch: expected {KAREN_HEADERS}, got {got}")
+                karen_rows = read_range(f"Karen!A{KAREN_FIRST_ROW}:N{KAREN_LAST_ROW}")
+                people = load_table("People", "AD")
+                # Quality flags are formulas; keep the formula text, not the computed flag.
+                qcol = people.col("Quality flags")
+                qf = read_formula(f"People!{col_letter(qcol)}2:{col_letter(qcol)}")
+                for i, row in enumerate(people.rows):
+                    row[qcol] = qf[i][0] if i < len(qf) and qf[i] else ""
+                orgs = load_table("Organizations", "Z")
+                timeline = load_table("Timeline", "M")
+                today = dt.datetime.now(ZoneInfo("America/Chicago")).date()
+                plan = plan_sync(karen_rows, people, orgs, timeline, today, args.retry_review)
+            except ReadError as e:
+                print(f"READ CHECK FAILED, nothing written: {e}", file=sys.stderr)
+                return 2
+            print_plan(plan, "apply" if args.apply else "dry run")
+            if args.apply and not plan.empty():
+                apply_plan(plan, people, orgs, timeline)
+                print("  applied")
+            return 0
+    except LockError as e:
+        print(f"LOCKED, nothing written: {e}", file=sys.stderr)
+        return 3
 
 
 if __name__ == "__main__":

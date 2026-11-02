@@ -16,7 +16,8 @@ This script is the background feed. It is safe to run hourly:
   * never writes marketing consent; Resend owns newsletter consent
   * one run at a time: an exclusive lock covers read, plan, and apply
 
-Stdlib only. Shells out to gog. Default binary is `gogbox` (AgentOS); on the Grok box
+Stdlib only. Shells out to gog. Default binary is `gogrun` (AgentOS: a Google token minted
+on the host from 1Password; `gogbox` needs the Grok box awake and it sleeps); on the Grok box
 set GOG=gog. Account comes from GOG_ACCOUNT (default alec@alecability.com).
 """
 from __future__ import annotations
@@ -35,7 +36,7 @@ from dataclasses import dataclass, field
 from zoneinfo import ZoneInfo
 
 SHEET_ID = os.environ.get("ATL_CRM_SHEET_ID", "1ahXuu11mV3bJVtyqXrhVz4lFCSSWpl7jX52SqlcJFLE")
-GOG = os.environ.get("GOG", "gogbox")
+GOG = os.environ.get("GOG", "gogrun")
 ACCOUNT = os.environ.get("GOG_ACCOUNT", "alec@alecability.com")
 
 KAREN_FIRST_ROW = 3
@@ -667,6 +668,61 @@ def run_lock(path: str | None = None, blocking: bool = True):
         fh.close()
 
 
+def partial_marker(lock_path: str) -> str:
+    """Marker beside the lock: present only while an apply is between its first and last write."""
+    return lock_path + ".partial"
+
+
+def partial_apply_left(lock_path: str) -> str | None:
+    """Text of a marker left by an apply that did not finish, or None."""
+    try:
+        with open(partial_marker(lock_path)) as fh:
+            return fh.read().strip() or "(empty marker)"
+    except FileNotFoundError:
+        return None
+
+
+def karen_old_lmn(karen_rows: list[list] | None, krow: int) -> list[str]:
+    """Karen L, M, N as read before this run (blank when the row was not read or is short)."""
+    i = krow - KAREN_FIRST_ROW
+    row = karen_rows[i] if karen_rows is not None and 0 <= i < len(karen_rows) else []
+    return [s(row[c]) if c < len(row) else "" for c in (11, 12, 13)]
+
+
+def guarded_apply(lock_path: str, plan: Plan, people: Table, orgs: Table, timeline: Table,
+                  karen_rows: list[list] | None = None):
+    """apply_plan with a marker, so a run after a half-written apply refuses instead of filing twice.
+
+    Writes go out in several requests (People/Organizations/Timeline, then formulas, then the
+    Karen write-back). If one commits and a later one fails, the Karen row is still unfiled and
+    the next run would plan it again, adding a second People or Timeline row. The marker stays
+    on any failure; the next --apply refuses (exit 4, which pages). The marker lists every row the
+    run was going to touch. Recovery is to undo the run (README Rollback), so the sheet is as it
+    was before, then delete the marker; the next run files the rows once. Removing only
+    "duplicates" is wrong: after a half-written run there are none yet.
+    """
+    marker = partial_marker(lock_path)
+    record = {
+        "started": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "undo": ("README Rollback: clear the new rows, restore each update's old value, set each Karen "
+                 "row's L:N back to karen_old_LMN, then delete this file"),
+        "people_new_rows": [p["row"] for p in plan.people_new],
+        "people_updates": [{"row": u["row"], "header": u["header"], "old": u["old"]} for u in plan.people_updates],
+        "organizations_new_rows": [o["row"] for o in plan.orgs_new],
+        "timeline_new_rows": [x["row"] for x in plan.timeline_new],
+        "karen_rows": [w["row"] for w in plan.karen_writes],
+        # Old L:N per Karen row: a row that already had a Contact ID (e.g. an N-only note fix) must
+        # get it back, not be cleared, or the next run files that person again.
+        "karen_old_LMN": [{"row": w["row"], "old": karen_old_lmn(karen_rows, w["row"])}
+                          for w in plan.karen_writes],
+    }
+    with open(marker, "w") as fh:
+        json.dump(record, fh, default=str)
+        fh.write("\n")
+    apply_plan(plan, people, orgs, timeline)
+    os.remove(marker)
+
+
 def print_plan(plan: Plan, mode: str):
     print(f"Karen tab filer ({mode})")
     print(f"  new People rows:       {len(plan.people_new)}")
@@ -701,7 +757,16 @@ def main(argv=None) -> int:
     try:
         # One holder at a time. The second manual or cron run waits, then reads
         # the sheet the first run already updated, so IDs and rows are not shared.
-        with run_lock():
+        with run_lock() as lock_path:
+            left = partial_apply_left(lock_path)
+            if left and args.apply:
+                print(f"PARTIAL APPLY LEFT, nothing written: an earlier --apply stopped between writes. "
+                      f"Undo that run (README Rollback) using the rows in {partial_marker(lock_path)}: "
+                      f"{left} -- then delete that file. Do not just delete the file: the next run would "
+                      f"file those Karen rows a second time.", file=sys.stderr)
+                return 4
+            if left:
+                print(f"warning: partial apply marker present ({left})", file=sys.stderr)
             try:
                 karen_head = read_range(f"Karen!A2:N2")
                 got = [s(h) for h in (karen_head[0] if karen_head else [])]
@@ -723,7 +788,7 @@ def main(argv=None) -> int:
                 return 2
             print_plan(plan, "apply" if args.apply else "dry run")
             if args.apply and not plan.empty():
-                apply_plan(plan, people, orgs, timeline)
+                guarded_apply(lock_path, plan, people, orgs, timeline, karen_rows)
                 print("  applied")
             return 0
     except LockError as e:

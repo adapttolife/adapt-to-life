@@ -428,6 +428,27 @@ class PlanTests(unittest.TestCase):
         self.assertFalse(ks.contact_emails_agree("", "a@b.c"))
         self.assertTrue(ks.contact_emails_agree("A@B.C", "a@b.c"))
 
+    def test_partial_apply_marker_blocks_the_next_apply(self):
+        # Codex review (2026-11-02): a write that commits before a later write fails left the Karen
+        # row unfiled, so the next hourly run filed it again (ATL-I-000008 then ATL-I-000009).
+        import tempfile
+        from unittest import mock
+        plan = ks.Plan()
+        with tempfile.TemporaryDirectory() as d:
+            lock = os.path.join(d, "karen.lock")
+            self.assertIsNone(ks.partial_apply_left(lock))
+            with mock.patch.object(ks, "apply_plan"):
+                ks.guarded_apply(lock, plan, None, None, None)
+            self.assertIsNone(ks.partial_apply_left(lock), "a finished apply leaves no marker")
+            with mock.patch.object(ks, "apply_plan", side_effect=RuntimeError("Timeline write failed")):
+                with self.assertRaises(RuntimeError):
+                    ks.guarded_apply(lock, plan, None, None, None)
+            self.assertIn("started", ks.partial_apply_left(lock))
+            env = dict(os.environ, KAREN_SYNC_LOCK=lock)
+            with mock.patch.dict(os.environ, env), mock.patch.object(ks, "read_range") as rr:
+                self.assertEqual(ks.main(["--apply"]), 4)
+                rr.assert_not_called()
+
     def test_run_lock_excludes_a_second_acquire(self):
         import tempfile
         self.assertTrue(os.path.isabs(ks.DEFAULT_LOCK_PATH))

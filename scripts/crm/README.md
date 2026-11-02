@@ -97,8 +97,11 @@ Other / blank / unknown to Supporter. Several kinds split on `;` or `,`.
 Brands: any beta kind adds Adaptive Sports Near Me; any non beta kind adds Adapt To Life.
 
 Order of writes: People, Organizations and Timeline first, Karen L to N last. A failure in the
-middle leaves Karen rows unfiled so the next run plans them again; check the new rows before
-rerunning (see rollback).
+middle leaves Karen rows unfiled, so a plain rerun would plan them again and could add a second
+People or Timeline row. To stop that, `--apply` writes a marker (`$KAREN_SYNC_LOCK.partial`)
+before the first write and deletes it after the last. If the marker is there, the next `--apply`
+writes nothing and exits 4 (the unit emails). Check the rows named in the marker, remove any
+duplicates (see rollback), then delete the marker. A dry run still works and prints a warning.
 
 It never writes marketing consent (Resend owns newsletter consent), never sorts, renumbers or
 deletes, and never touches the feed tabs or the refresh owned tabs.
@@ -117,7 +120,8 @@ KAREN_SYNC_LOCK=/srv/hetzner-jobs/workspace/locks/karen-sync.lock \
 
 The unit sets `GOG=/home/agentos/.local/bin/gogrun`. It used `gogbox` until 2026-11-02, when runs
 failed because the Grok box sleeps when no bot is working; an hourly job must not need it awake.
-On failure the unit retries twice, then emails. The Grok box crontab does not run this job.
+The unit has no systemd `Restart=`: every failure emails, and the next hourly run is the retry.
+The Grok box crontab does not run this job.
 `/home/box/adapt-to-life` is not the checkout. The lock file sits outside the
 checkout so a manual run on agentos waits on the same file as the timer.
 

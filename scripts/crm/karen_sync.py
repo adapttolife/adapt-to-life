@@ -668,6 +668,39 @@ def run_lock(path: str | None = None, blocking: bool = True):
         fh.close()
 
 
+def partial_marker(lock_path: str) -> str:
+    """Marker beside the lock: present only while an apply is between its first and last write."""
+    return lock_path + ".partial"
+
+
+def partial_apply_left(lock_path: str) -> str | None:
+    """Text of a marker left by an apply that did not finish, or None."""
+    try:
+        with open(partial_marker(lock_path)) as fh:
+            return fh.read().strip() or "(empty marker)"
+    except FileNotFoundError:
+        return None
+
+
+def guarded_apply(lock_path: str, plan: Plan, people: Table, orgs: Table, timeline: Table):
+    """apply_plan with a marker, so a run after a half-written apply refuses instead of filing twice.
+
+    Writes go out in several requests (People/Organizations/Timeline, then formulas, then the
+    Karen write-back). If one commits and a later one fails, the Karen row is still unfiled and
+    the next run would plan it again, adding a second People or Timeline row. The marker stays
+    on any failure; the next --apply refuses (exit 4, which pages) until a person checks the
+    sheet and deletes the marker.
+    """
+    marker = partial_marker(lock_path)
+    stamp = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    with open(marker, "w") as fh:
+        fh.write(f"started {stamp}: {len(plan.people_new)} People, {len(plan.orgs_new)} Organizations, "
+                 f"{len(plan.timeline_new)} Timeline, Karen rows "
+                 f"{', '.join(str(w['row']) for w in plan.karen_writes) or 'none'}\n")
+    apply_plan(plan, people, orgs, timeline)
+    os.remove(marker)
+
+
 def print_plan(plan: Plan, mode: str):
     print(f"Karen tab filer ({mode})")
     print(f"  new People rows:       {len(plan.people_new)}")
@@ -702,7 +735,15 @@ def main(argv=None) -> int:
     try:
         # One holder at a time. The second manual or cron run waits, then reads
         # the sheet the first run already updated, so IDs and rows are not shared.
-        with run_lock():
+        with run_lock() as lock_path:
+            left = partial_apply_left(lock_path)
+            if left and args.apply:
+                print(f"PARTIAL APPLY LEFT, nothing written: an earlier --apply stopped between writes "
+                      f"({left}). Check People, Organizations and Timeline for those Karen rows, remove "
+                      f"any duplicates, then delete {partial_marker(lock_path)}", file=sys.stderr)
+                return 4
+            if left:
+                print(f"warning: partial apply marker present ({left})", file=sys.stderr)
             try:
                 karen_head = read_range(f"Karen!A2:N2")
                 got = [s(h) for h in (karen_head[0] if karen_head else [])]
@@ -724,7 +765,7 @@ def main(argv=None) -> int:
                 return 2
             print_plan(plan, "apply" if args.apply else "dry run")
             if args.apply and not plan.empty():
-                apply_plan(plan, people, orgs, timeline)
+                guarded_apply(lock_path, plan, people, orgs, timeline)
                 print("  applied")
             return 0
     except LockError as e:

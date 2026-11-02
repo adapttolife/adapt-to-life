@@ -434,6 +434,9 @@ class PlanTests(unittest.TestCase):
         import tempfile
         from unittest import mock
         plan = ks.Plan()
+        plan.people_updates.append({"row": 7, "header": "Type", "old": "Volunteer", "new": "Volunteer; Athlete"})
+        plan.timeline_new.append({"row": 9, "values": {}, "contact_formula": ""})
+        plan.karen_writes.append({"row": 5, "L": "ATL-C-1", "M": "", "N": ""})
         with tempfile.TemporaryDirectory() as d:
             lock = os.path.join(d, "karen.lock")
             self.assertIsNone(ks.partial_apply_left(lock))
@@ -443,11 +446,22 @@ class PlanTests(unittest.TestCase):
             with mock.patch.object(ks, "apply_plan", side_effect=RuntimeError("Timeline write failed")):
                 with self.assertRaises(RuntimeError):
                     ks.guarded_apply(lock, plan, None, None, None)
-            self.assertIn("started", ks.partial_apply_left(lock))
+            import json as _json
+            rec = _json.loads(ks.partial_apply_left(lock))
+            for k in ("started", "people_new_rows", "people_updates", "organizations_new_rows",
+                      "timeline_new_rows", "karen_rows"):
+                self.assertIn(k, rec)
             env = dict(os.environ, KAREN_SYNC_LOCK=lock)
-            with mock.patch.dict(os.environ, env), mock.patch.object(ks, "read_range") as rr:
+            self.assertEqual((rec["people_updates"][0]["old"], rec["timeline_new_rows"], rec["karen_rows"]),
+                             ("Volunteer", [9], [5]))
+            import io, contextlib
+            err = io.StringIO()
+            with mock.patch.dict(os.environ, env), mock.patch.object(ks, "read_range") as rr, \
+                    contextlib.redirect_stderr(err):
                 self.assertEqual(ks.main(["--apply"]), 4)
                 rr.assert_not_called()
+            self.assertIn("Undo that run", err.getvalue())
+            self.assertNotIn("remove any duplicates", err.getvalue())
 
     def test_run_lock_excludes_a_second_acquire(self):
         import tempfile

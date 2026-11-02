@@ -688,15 +688,24 @@ def guarded_apply(lock_path: str, plan: Plan, people: Table, orgs: Table, timeli
     Writes go out in several requests (People/Organizations/Timeline, then formulas, then the
     Karen write-back). If one commits and a later one fails, the Karen row is still unfiled and
     the next run would plan it again, adding a second People or Timeline row. The marker stays
-    on any failure; the next --apply refuses (exit 4, which pages) until a person checks the
-    sheet and deletes the marker.
+    on any failure; the next --apply refuses (exit 4, which pages). The marker lists every row the
+    run was going to touch. Recovery is to undo the run (README Rollback), so the sheet is as it
+    was before, then delete the marker; the next run files the rows once. Removing only
+    "duplicates" is wrong: after a half-written run there are none yet.
     """
     marker = partial_marker(lock_path)
-    stamp = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    record = {
+        "started": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "undo": "README Rollback: clear these rows, restore each update's old value, then delete this file",
+        "people_new_rows": [p["row"] for p in plan.people_new],
+        "people_updates": [{"row": u["row"], "header": u["header"], "old": u["old"]} for u in plan.people_updates],
+        "organizations_new_rows": [o["row"] for o in plan.orgs_new],
+        "timeline_new_rows": [x["row"] for x in plan.timeline_new],
+        "karen_rows": [w["row"] for w in plan.karen_writes],
+    }
     with open(marker, "w") as fh:
-        fh.write(f"started {stamp}: {len(plan.people_new)} People, {len(plan.orgs_new)} Organizations, "
-                 f"{len(plan.timeline_new)} Timeline, Karen rows "
-                 f"{', '.join(str(w['row']) for w in plan.karen_writes) or 'none'}\n")
+        json.dump(record, fh, default=str)
+        fh.write("\n")
     apply_plan(plan, people, orgs, timeline)
     os.remove(marker)
 
@@ -738,9 +747,10 @@ def main(argv=None) -> int:
         with run_lock() as lock_path:
             left = partial_apply_left(lock_path)
             if left and args.apply:
-                print(f"PARTIAL APPLY LEFT, nothing written: an earlier --apply stopped between writes "
-                      f"({left}). Check People, Organizations and Timeline for those Karen rows, remove "
-                      f"any duplicates, then delete {partial_marker(lock_path)}", file=sys.stderr)
+                print(f"PARTIAL APPLY LEFT, nothing written: an earlier --apply stopped between writes. "
+                      f"Undo that run (README Rollback) using the rows in {partial_marker(lock_path)}: "
+                      f"{left} -- then delete that file. Do not just delete the file: the next run would "
+                      f"file those Karen rows a second time.", file=sys.stderr)
                 return 4
             if left:
                 print(f"warning: partial apply marker present ({left})", file=sys.stderr)

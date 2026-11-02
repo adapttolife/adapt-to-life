@@ -100,8 +100,11 @@ Order of writes: People, Organizations and Timeline first, Karen L to N last. A 
 middle leaves Karen rows unfiled, so a plain rerun would plan them again and could add a second
 People or Timeline row. To stop that, `--apply` writes a marker (`$KAREN_SYNC_LOCK.partial`)
 before the first write and deletes it after the last. If the marker is there, the next `--apply`
-writes nothing and exits 4 (the unit emails). Check the rows named in the marker, remove any
-duplicates (see rollback), then delete the marker. A dry run still works and prints a warning.
+writes nothing and exits 4 (the unit emails every hour until fixed). The marker is JSON listing
+every row that run was going to touch and the old value of each updated cell. Undo that run
+with Rollback below so the sheet is as it was before, then delete the marker; the next run files
+the rows once. Do not just delete the marker or remove "duplicates": after a half-written run
+there are none yet, and the next run would add them. A dry run still works and prints a warning.
 
 It never writes marketing consent (Resend owns newsletter consent), never sorts, renumbers or
 deletes, and never touches the feed tabs or the refresh owned tabs.
@@ -136,7 +139,8 @@ The dry run prints the plan and writes nothing. Do not delete the lock file.
 
 ## Rollback
 
-Every run prints exactly what it wrote (row numbers and IDs). To undo one run:
+Every run prints exactly what it wrote (row numbers and IDs). A run that stopped partway also
+left the same rows in `$KAREN_SYNC_LOCK.partial`. To undo one run:
 
 1. People: clear A:AC on the new rows (leave the AD formula); for updated cells, restore the
    `old` value printed in the plan.

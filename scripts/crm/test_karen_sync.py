@@ -443,13 +443,17 @@ class PlanTests(unittest.TestCase):
             with mock.patch.object(ks, "apply_plan"):
                 ks.guarded_apply(lock, plan, None, None, None)
             self.assertIsNone(ks.partial_apply_left(lock), "a finished apply leaves no marker")
+            # Karen row 5 was already filed (L set); this run only fixes its note (N).
+            karen_rows = [[""] * 14, [""] * 14, [""] * 11 + ["ATL-C-1", "", "old note"]]
             with mock.patch.object(ks, "apply_plan", side_effect=RuntimeError("Timeline write failed")):
                 with self.assertRaises(RuntimeError):
-                    ks.guarded_apply(lock, plan, None, None, None)
+                    ks.guarded_apply(lock, plan, None, None, None, karen_rows)
             import json as _json
             rec = _json.loads(ks.partial_apply_left(lock))
+            self.assertEqual(rec["karen_old_LMN"], [{"row": 5, "old": ["ATL-C-1", "", "old note"]}],
+                             "rollback must restore an existing Contact ID, not clear it")
             for k in ("started", "people_new_rows", "people_updates", "organizations_new_rows",
-                      "timeline_new_rows", "karen_rows"):
+                      "timeline_new_rows", "karen_rows", "karen_old_LMN"):
                 self.assertIn(k, rec)
             env = dict(os.environ, KAREN_SYNC_LOCK=lock)
             self.assertEqual((rec["people_updates"][0]["old"], rec["timeline_new_rows"], rec["karen_rows"]),

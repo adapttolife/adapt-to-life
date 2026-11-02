@@ -682,7 +682,15 @@ def partial_apply_left(lock_path: str) -> str | None:
         return None
 
 
-def guarded_apply(lock_path: str, plan: Plan, people: Table, orgs: Table, timeline: Table):
+def karen_old_lmn(karen_rows: list[list] | None, krow: int) -> list[str]:
+    """Karen L, M, N as read before this run (blank when the row was not read or is short)."""
+    i = krow - KAREN_FIRST_ROW
+    row = karen_rows[i] if karen_rows is not None and 0 <= i < len(karen_rows) else []
+    return [s(row[c]) if c < len(row) else "" for c in (11, 12, 13)]
+
+
+def guarded_apply(lock_path: str, plan: Plan, people: Table, orgs: Table, timeline: Table,
+                  karen_rows: list[list] | None = None):
     """apply_plan with a marker, so a run after a half-written apply refuses instead of filing twice.
 
     Writes go out in several requests (People/Organizations/Timeline, then formulas, then the
@@ -696,12 +704,17 @@ def guarded_apply(lock_path: str, plan: Plan, people: Table, orgs: Table, timeli
     marker = partial_marker(lock_path)
     record = {
         "started": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "undo": "README Rollback: clear these rows, restore each update's old value, then delete this file",
+        "undo": ("README Rollback: clear the new rows, restore each update's old value, set each Karen "
+                 "row's L:N back to karen_old_LMN, then delete this file"),
         "people_new_rows": [p["row"] for p in plan.people_new],
         "people_updates": [{"row": u["row"], "header": u["header"], "old": u["old"]} for u in plan.people_updates],
         "organizations_new_rows": [o["row"] for o in plan.orgs_new],
         "timeline_new_rows": [x["row"] for x in plan.timeline_new],
         "karen_rows": [w["row"] for w in plan.karen_writes],
+        # Old L:N per Karen row: a row that already had a Contact ID (e.g. an N-only note fix) must
+        # get it back, not be cleared, or the next run files that person again.
+        "karen_old_LMN": [{"row": w["row"], "old": karen_old_lmn(karen_rows, w["row"])}
+                          for w in plan.karen_writes],
     }
     with open(marker, "w") as fh:
         json.dump(record, fh, default=str)
@@ -775,7 +788,7 @@ def main(argv=None) -> int:
                 return 2
             print_plan(plan, "apply" if args.apply else "dry run")
             if args.apply and not plan.empty():
-                guarded_apply(lock_path, plan, people, orgs, timeline)
+                guarded_apply(lock_path, plan, people, orgs, timeline, karen_rows)
                 print("  applied")
             return 0
     except LockError as e:

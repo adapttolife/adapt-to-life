@@ -145,6 +145,9 @@ left the same rows in `$KAREN_SYNC_LOCK.partial`. To undo one run:
 1. People: clear A:AC on the new rows (leave the AD formula); for updated cells, restore the
    `old` value printed in the plan.
 2. Organizations: clear the new rows. Timeline: clear the new rows.
-3. Karen: clear L:N on those rows. They read `New, house will file` again.
+3. Karen: set L:N on those rows back to what they were before the run. After a partial run, use
+   `karen_old_LMN` in the marker; usually that is blank (the row reads `New, house will file`
+   again), but a row that already had a Contact ID or Organization ID must get it back, or the
+   next run files that person a second time.
 
 Do not delete rows or renumber IDs. Cleared rows after the last remaining ID are reused on the next run.

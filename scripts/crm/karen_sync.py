@@ -16,7 +16,8 @@ This script is the background feed. It is safe to run hourly:
   * never writes marketing consent; Resend owns newsletter consent
   * one run at a time: an exclusive lock covers read, plan, and apply
 
-Stdlib only. Shells out to gog. Default binary is `gogbox` (AgentOS); on the Grok box
+Stdlib only. Shells out to gog. Default binary is `gogrun` (AgentOS: a Google token minted
+on the host from 1Password; `gogbox` needs the Grok box awake and it sleeps); on the Grok box
 set GOG=gog. Account comes from GOG_ACCOUNT (default alec@alecability.com).
 """
 from __future__ import annotations
@@ -35,7 +36,7 @@ from dataclasses import dataclass, field
 from zoneinfo import ZoneInfo
 
 SHEET_ID = os.environ.get("ATL_CRM_SHEET_ID", "1ahXuu11mV3bJVtyqXrhVz4lFCSSWpl7jX52SqlcJFLE")
-GOG = os.environ.get("GOG", "gogbox")
+GOG = os.environ.get("GOG", "gogrun")
 ACCOUNT = os.environ.get("GOG_ACCOUNT", "alec@alecability.com")
 
 KAREN_FIRST_ROW = 3

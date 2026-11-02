@@ -10,7 +10,7 @@ Stdlib Python 3.9+. It shells out to `gog`.
 ## Run it
 
 ```sh
-# AgentOS (gog runs on the Grok box through gogbox)
+# AgentOS (gog runs on agentos through gogrun, a token minted from 1Password)
 python3 scripts/crm/karen_sync.py            # dry run: prints the plan, writes nothing
 python3 scripts/crm/karen_sync.py --apply    # writes the plan
 
@@ -21,7 +21,7 @@ GOG=gog python3 scripts/crm/karen_sync.py --apply
 python3 scripts/crm/karen_sync.py --apply --retry-review
 ```
 
-Environment: `GOG` (default `gogbox`), `GOG_ACCOUNT` (default `alec@alecability.com`),
+Environment: `GOG` (default `gogrun`), `GOG_ACCOUNT` (default `alec@alecability.com`),
 `ATL_CRM_SHEET_ID` (default is the live CRM; point it at a copy to test).
 
 A run holds an exclusive lock for the whole read, plan, and apply, so a manual run and
@@ -115,7 +115,9 @@ KAREN_SYNC_LOCK=/srv/hetzner-jobs/workspace/locks/karen-sync.lock \
   /usr/bin/python3 scripts/crm/karen_sync.py --apply
 ```
 
-`GOG` stays the default `gogbox`. The Grok box crontab does not run this job.
+The unit sets `GOG=/home/agentos/.local/bin/gogrun`. It used `gogbox` until 2026-11-02, when runs
+failed because the Grok box sleeps when no bot is working; an hourly job must not need it awake.
+On failure the unit retries twice, then emails. The Grok box crontab does not run this job.
 `/home/box/adapt-to-life` is not the checkout. The lock file sits outside the
 checkout so a manual run on agentos waits on the same file as the timer.
 

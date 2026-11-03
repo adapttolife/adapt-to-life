@@ -1,5 +1,6 @@
 import { safeNewsletterSubscribe } from "./newsletter.js";
 import { acceptForm, sweepForms } from "./forms.js";
+import { sendMail } from "./mail-transport.js";
 // Adapt To Life — Worker entry.
 // Serves the static site (env.ASSETS) and handles form submissions at /api/contact,
 // /api/apply and /api/volunteer through the durable form outbox (src/forms.js): a
@@ -544,14 +545,38 @@ async function localAsnmAdminCollection(request, env, url) {
   }
 }
 
-async function localAsnmAdminOperations(request, env, url) {
+export async function localAsnmAdminOperations(request, env, url) {
   if (url.pathname === "/admin/api/asnm/admin-data/beta-testers") {
     try {
       if (request.method === "GET") {
         const rows = await env.ASNM_DB.prepare(
-          "SELECT email, enabled, created_at, updated_at FROM beta_testers ORDER BY email COLLATE NOCASE",
+          `SELECT email, name, organization, phone, enabled, created_at, updated_at
+           FROM beta_testers
+           ORDER BY email COLLATE NOCASE`,
         ).all();
         return json({ ok: true, items: rows.results || [] }, 200, ADMIN_CACHE);
+      }
+      if (request.method === "DELETE") {
+        const body = await request.json().catch(() => null);
+        const email = String(body?.email || "")
+          .trim()
+          .toLowerCase();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          return json(
+            { ok: false, error: "Enter a valid email address." },
+            422,
+            ADMIN_CACHE,
+          );
+        }
+        const result = await env.ASNM_DB.prepare(
+          "DELETE FROM beta_testers WHERE email = ? COLLATE NOCASE",
+        )
+          .bind(email)
+          .run();
+        if (!Number(result.meta?.changes || 0)) {
+          return json({ ok: false, error: "Beta tester not found." }, 404, ADMIN_CACHE);
+        }
+        return json({ ok: true }, 200, ADMIN_CACHE);
       }
       if (request.method === "POST") {
         const body = await request.json().catch(() => null);
@@ -570,12 +595,64 @@ async function localAsnmAdminOperations(request, env, url) {
             ? 0
             : 1;
         const timestamp = new Date().toISOString();
-        await env.ASNM_DB.prepare(
-          `INSERT INTO beta_testers (email, enabled, created_at, updated_at) VALUES (?, ?, ?, ?)
-           ON CONFLICT(email) DO UPDATE SET enabled = excluded.enabled, updated_at = excluded.updated_at`,
-        )
-          .bind(email, enabled, timestamp, timestamp)
-          .run();
+        const addingTester = Object.hasOwn(body || {}, "name");
+        if (addingTester) {
+          const name = String(body?.name || "").trim();
+          const organization = String(body?.organization || "").trim();
+          const phone = String(body?.phone || "").trim();
+          if (!name) {
+            return json(
+              { ok: false, error: "Enter the beta tester's name." },
+              422,
+              ADMIN_CACHE,
+            );
+          }
+          if (name.length > 160 || organization.length > 240 || phone.length > 60) {
+            return json(
+              { ok: false, error: "One or more beta tester details are too long." },
+              422,
+              ADMIN_CACHE,
+            );
+          }
+          await env.ASNM_DB.prepare(
+            `INSERT INTO beta_testers (email, name, organization, phone, enabled, created_at, updated_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?)
+             ON CONFLICT(email) DO UPDATE SET
+               name = excluded.name,
+               organization = excluded.organization,
+               phone = excluded.phone,
+               enabled = excluded.enabled,
+               updated_at = excluded.updated_at`,
+          )
+            .bind(
+              email,
+              name,
+              organization || null,
+              phone || null,
+              enabled,
+              timestamp,
+              timestamp,
+            )
+            .run();
+          if (enabled && body?.sendInvitation === true) {
+            const siteUrl = new URL(
+              "/",
+              env.ASNM_ADMIN_ORIGIN || "https://adaptivesportsnearme.com",
+            ).toString();
+            await sendBetaTesterInvitation(env, {
+              email,
+              name,
+              siteUrl,
+            });
+          }
+        } else {
+          await env.ASNM_DB.prepare(
+            `INSERT INTO beta_testers (email, enabled, created_at, updated_at) VALUES (?, ?, ?, ?)
+             ON CONFLICT(email) DO UPDATE SET enabled = excluded.enabled, updated_at = excluded.updated_at`,
+          )
+            .bind(email, enabled, timestamp, timestamp)
+            .run();
+        }
         return json({ ok: true }, 200, ADMIN_CACHE);
       }
     } catch (error) {
@@ -723,6 +800,35 @@ async function localAsnmAdminOperations(request, env, url) {
   }
 
   return null;
+}
+
+export async function sendBetaTesterInvitation(env, { email, name, siteUrl }) {
+  const greeting = `Hi ${name},`;
+  const text =
+    `${greeting}\n\n` +
+    "You have been added to the Adaptive Sports Near Me beta. " +
+    `Visit the website to get started:\n\n${siteUrl}\n\n` +
+    "When the beta sign-in form asks for your email address, use:\n" +
+    `${email}\n\nWe will send a one-time sign-in link to that address.`;
+  const html =
+    `<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;` +
+    `font-size:16px;line-height:1.6;color:#1c1a15;max-width:560px">` +
+    `<p>${escapeHtml(greeting)}</p>` +
+    `<p>You have been added to the Adaptive Sports Near Me beta.</p>` +
+    `<p><a href="${escapeHtml(siteUrl)}">Visit Adaptive Sports Near Me</a></p>` +
+    `<p>When the beta sign-in form asks for your email address, use:</p>` +
+    `<p><strong>${escapeHtml(email)}</strong></p>` +
+    `<p>We will send a one-time sign-in link to that address.</p>` +
+    `<p style="margin-top:28px;color:#6b6b70;font-size:14px">` +
+    `Adapt To Life<br>501(c)(3) nonprofit &middot; EIN 41-3213344</p></div>`;
+  return sendMail(env, {
+    from: `Adapt To Life <${env.GMAIL_FROM || "hello@adapttolife.org"}>`,
+    to: email,
+    replyTo: env.GMAIL_FROM || "hello@adapttolife.org",
+    subject: "You are invited to the Adaptive Sports Near Me beta",
+    text,
+    html,
+  });
 }
 
 async function localAsnmAdminActivity(request, env, url, session) {

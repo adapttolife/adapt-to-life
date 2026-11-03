@@ -832,6 +832,7 @@ export function Directory({ onFail }: { onFail: () => void }) {
   const [queueItems, setQueueItems] = useState<Item[]>([]);
   const [selectedQueueItem, setSelectedQueueItem] = useState<Item | null>(null);
   const [betaTesters, setBetaTesters] = useState<Item[]>([]);
+  const [selectedBetaTester, setSelectedBetaTester] = useState<Item | null>(null);
 
   const go = (path: string) => {
     history.pushState(null, "", path);
@@ -1075,18 +1076,54 @@ export function Directory({ onFail }: { onFail: () => void }) {
   const saveBetaTester = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
-    const email = String(new FormData(form).get("email") || "");
+    const data = new FormData(form);
     try {
       await request("/admin-data/beta-testers", {
         method: "POST",
-        body: JSON.stringify({ email, enabled: true }),
+        body: JSON.stringify({
+          email: String(data.get("email") || ""),
+          name: String(data.get("name") || ""),
+          organization: String(data.get("organization") || ""),
+          phone: String(data.get("phone") || ""),
+          enabled: true,
+          sendInvitation: true,
+        }),
       });
       form.reset();
       const body = await request("/admin-data/beta-testers");
       setBetaTesters(body.items || []);
-      setMessage("Beta tester saved.");
+      setMessage("Beta tester saved and invited by email.");
     } catch (error) {
       handleError(error, "Could not save that beta tester.");
+    }
+  };
+
+  const updateBetaTester = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!selectedBetaTester) return;
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    try {
+      await request("/admin-data/beta-testers", {
+        method: "POST",
+        body: JSON.stringify({
+          email: String(selectedBetaTester.email || ""),
+          name: String(data.get("name") || ""),
+          organization: String(data.get("organization") || ""),
+          phone: String(data.get("phone") || ""),
+          enabled: data.get("enabled") === "on",
+          sendInvitation: false,
+        }),
+      });
+      const body = await request("/admin-data/beta-testers");
+      const updated = (body.items || []).find(
+        (tester: Item) => String(tester.email) === String(selectedBetaTester.email),
+      );
+      setBetaTesters(body.items || []);
+      setSelectedBetaTester(updated || null);
+      setMessage("Beta tester updated.");
+    } catch (error) {
+      handleError(error, "Could not update that beta tester.");
     }
   };
 
@@ -1094,12 +1131,35 @@ export function Directory({ onFail }: { onFail: () => void }) {
     try {
       await request("/admin-data/beta-testers", {
         method: "POST",
-        body: JSON.stringify({ email: tester.email, enabled: !Number(tester.enabled) }),
+        body: JSON.stringify({
+          email: String(tester.email || ""),
+          enabled: !Number(tester.enabled),
+        }),
       });
       const body = await request("/admin-data/beta-testers");
       setBetaTesters(body.items || []);
+      setMessage(
+        Number(tester.enabled) ? "Beta tester disabled." : "Beta tester enabled.",
+      );
     } catch (error) {
       handleError(error, "Could not update that beta tester.");
+    }
+  };
+
+  const removeBetaTester = async (tester: Item) => {
+    const email = String(tester.email || "");
+    if (!confirm(`Remove beta access for ${email}?`)) return;
+    try {
+      await request("/admin-data/beta-testers", {
+        method: "DELETE",
+        body: JSON.stringify({ email }),
+      });
+      setBetaTesters((testers) =>
+        testers.filter((entry) => String(entry.email) !== email),
+      );
+      setMessage("Beta tester removed.");
+    } catch (error) {
+      handleError(error, "Could not remove that beta tester.");
     }
   };
 
@@ -1184,6 +1244,67 @@ export function Directory({ onFail }: { onFail: () => void }) {
   }
 
   if (operations === "beta") {
+    if (selectedBetaTester) {
+      return (
+        <section className="directory-page">
+          <button className="back-link" onClick={() => setSelectedBetaTester(null)}>
+            ← Beta testers
+          </button>
+          <h2>{String(selectedBetaTester.name || selectedBetaTester.email)}</h2>
+          <p className="sub">Update this beta tester's access and contact details.</p>
+          <form className="beta-tester-form" onSubmit={updateBetaTester}>
+            <label className="form-field wide">
+              <span>Email Address</span>
+              <input
+                readOnly
+                type="email"
+                value={String(selectedBetaTester.email || "")}
+              />
+            </label>
+            <label className="form-field">
+              <span>Name</span>
+              <input
+                defaultValue={String(selectedBetaTester.name || "")}
+                name="name"
+                placeholder="Full name"
+                required
+              />
+            </label>
+            <label className="form-field">
+              <span>Organization</span>
+              <input
+                defaultValue={String(selectedBetaTester.organization || "")}
+                name="organization"
+                placeholder="Optional"
+              />
+            </label>
+            <label className="form-field">
+              <span>Phone Number</span>
+              <input
+                defaultValue={String(selectedBetaTester.phone || "")}
+                name="phone"
+                placeholder="Optional"
+                type="tel"
+              />
+            </label>
+            <label className="switch-field beta-access-switch">
+              <span>Beta Access</span>
+              <input
+                defaultChecked={Boolean(Number(selectedBetaTester.enabled))}
+                name="enabled"
+                type="checkbox"
+              />
+            </label>
+            <button className="btn" type="submit">
+              Save changes
+            </button>
+          </form>
+          <p className="directory-message" role="status">
+            {message}
+          </p>
+        </section>
+      );
+    }
     return (
       <section className="directory-page">
         <button className="back-link" onClick={() => setOperations(null)}>
@@ -1196,27 +1317,60 @@ export function Directory({ onFail }: { onFail: () => void }) {
         </p>
         <form className="beta-tester-form" onSubmit={saveBetaTester}>
           <label className="form-field">
+            <span>Name</span>
+            <input name="name" placeholder="Full name" required />
+          </label>
+          <label className="form-field">
             <span>Email Address</span>
             <input name="email" type="email" placeholder="name@example.com" required />
           </label>
+          <label className="form-field">
+            <span>Organization</span>
+            <input name="organization" placeholder="Optional" />
+          </label>
+          <label className="form-field">
+            <span>Phone Number</span>
+            <input name="phone" type="tel" placeholder="Optional" />
+          </label>
           <button className="btn" type="submit">
-            Add beta tester
+            Add and invite beta tester
           </button>
         </form>
         <div className="directory-list">
           {betaTesters.map((tester) => (
             <div className="beta-tester" key={String(tester.email)}>
               <span>
-                <b>{String(tester.email)}</b>
-                <small>{Number(tester.enabled) ? "Enabled" : "Disabled"}</small>
+                <b>{String(tester.name || tester.email)}</b>
+                <small>
+                  {String(tester.email)}
+                  {tester.organization ? `; ${String(tester.organization)}` : ""}
+                  {tester.phone ? `; ${String(tester.phone)}` : ""}
+                  {`; ${Number(tester.enabled) ? "Enabled" : "Disabled"}`}
+                </small>
               </span>
-              <button
-                className="btn btn--line"
-                onClick={() => toggleBetaTester(tester)}
-                type="button"
-              >
-                {Number(tester.enabled) ? "Disable" : "Enable"}
-              </button>
+              <div className="beta-tester-actions">
+                <button
+                  className="btn btn--line"
+                  onClick={() => setSelectedBetaTester(tester)}
+                  type="button"
+                >
+                  Edit
+                </button>
+                <button
+                  className="btn btn--line"
+                  onClick={() => toggleBetaTester(tester)}
+                  type="button"
+                >
+                  {Number(tester.enabled) ? "Disable" : "Enable"}
+                </button>
+                <button
+                  className="btn btn--line"
+                  onClick={() => removeBetaTester(tester)}
+                  type="button"
+                >
+                  Remove
+                </button>
+              </div>
             </div>
           ))}
         </div>

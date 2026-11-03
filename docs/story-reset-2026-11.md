@@ -15,14 +15,14 @@ Sources: production pages on origin/main (Nov 3, 2026), `/api/raised` on adaptto
 **What the site says today.** The US Open is the spine of the site. It appears on ten pages, including the home page, the fund, the giving page, the partner page and the Brick House page. The weekly program, the Wheelie Big Dills, ACE, the clubs, Monster Smash and the Chicago Classic are almost invisible. The crew's name appears once, deep inside Juan's page. The events page says "Nothing on the calendar right now" even though the crew plays every Thursday. The partner page sells logo placement instead of the value we actually create.
 
 **The new story in one paragraph.**
-Adapt To Life expands access to adaptive sports so athletes can find their place. We do it by investing in athletes and in the people building the sport around them. In Chicago, that starts with wheelchair pickleball: the Wheelie Big Dills play every week, free for every athlete, at clubs across the area. Our first ambassador, Juan Ortiz, is building the sport on the ground. We travel to tournaments, we are starting our own, and we raise money all year so athletes can train, travel and get equipped. Sending six athletes to the US Open is one of the goals we are raising for.
+Adapt To Life expands access to adaptive sports so athletes can find their place. We do it by investing in athletes and in the people building the sport around them. In Chicago, that starts with wheelchair pickleball: the Chicago Wheelie Big Dills play every week, free for every athlete, at clubs across the area. Our first ambassador, Juan Ortiz, is building the sport on the ground. We travel to tournaments, we are starting our own, and we raise money all year so athletes can train, travel and get equipped. Sending six athletes to the US Open is one of the goals we are raising for.
 
 **The moves that matter most.**
 1. Give the program a home: a new page for the Wheelie Big Dills and wheelchair pickleball in Chicago, and put it on the home page.
 2. Move the US Open from the spine to a campaign: one goal among several, on top of year round support.
 3. Explain the model in plain words: the Hustle and Heart Fund invests two ways, grants to athletes and backing for the people who build a sport. Juan is the first.
 4. Rebuild Partners as a two way street: what partners get (audience, content, participation, events, tools, reporting) and honest packages built on real costs.
-5. Put six athletes at the center: Juan, Robby, Bob, Ken, Amanda and a sixth (RJ, to identify), each with a page in their own words that their posts point back to.
+5. Put six athletes at the center: Juan, Brian, Bob, Robby, Ken and Amanda (Brian holds the sixth spot until RJ is ready), each with a page in their own words that their posts point back to.
 6. Make social and the website one system: every post points to one page, every link is tagged, every athlete page shows their posts.
 7. Fill the calendar and start keeping score: weekly sessions, past events and a simple impact tracker, so "participation" is something we can prove.
 
@@ -43,7 +43,7 @@ Adapt To Life expands access to adaptive sports so athletes can find their place
 | Partners `/sponsorship` | Brick House; "Right now, the road to Naples"; tiers $500 to $50,000 with thin benefits (supporters wall, logo on donate page) | Sells placement, not value. One partner listed. Tiers are not tied to anything a partner can picture | Rebuild around the two way value and concrete packages (section 5) |
 | Brick House `/brickhouse` | "Our home court", trains every week all four seasons, road to the US Open | Still accurate in spirit: Brick House's own posts say the crew joins weekly, and Wednesday sessions run there with GLASA (VERIFY day and host with Alec). US Open framing throughout | Keep the partnership. Name the weekly session. Replace the US Open road with the broader goals |
 | Events `/events` | "Nothing on the calendar right now"; past events empty | The single biggest credibility gap. We play every week and have a full season behind us | Add the recurring Thursday session, upcoming Try Adaptive Night and Chicago Classic (when dated), and the 2026 record |
-| Social `/social` | Reels, and orgs "we play alongside": Brick House as training home, APC Des Plaines as "a tournament where we had a table" | ACE is now our weekly host. Clubs like Palatine Picklers, The Picklr and LWRS are missing (VERIFY) | Update ACE. Add clubs once verified |
+| Social `/social` | Reels, and orgs "we play alongside": Brick House as training home, APC Des Plaines as "a tournament where we had a table" | ACE is now our weekly host. Clubs like Palatine Picklers and The Picklr, and LWSRA, are missing (VERIFY) | Update ACE. Add clubs once verified |
 | Roadmap `/roadmap` | Live: team, fund, site, 501(c)(3), directory, grants. Building: store, information, sponsorship | Program, ambassadors and the tournament are absent | Add them under Live and Building |
 | Tim `/tim`, Karen `/karen` | Memorial and profile | Fine. Karen's title should match About | Align titles |
 | Popcorn `/popcorn` | Double Good, 50% back, Send 6 | Fine. Future drives can feed the year round fund or the Chicago Classic | No change now |
@@ -65,7 +65,7 @@ We expand access to adaptive sports so athletes can find their place.
 ### 3.2 Who we are now
 Use this as the source paragraph. Shorter versions come from it.
 
-> Adapt To Life invests in adaptive athletes and in the people who build the sport around them. In Chicago, that starts with wheelchair pickleball. Our crew, the Wheelie Big Dills, plays every week at clubs across the area, free for every athlete. They travel to tournaments, they bring home medals, and next year we host our own. Year round, we raise money so athletes can train, travel and get the equipment they need.
+> Adapt To Life invests in adaptive athletes and in the people who build the sport around them. In Chicago, that starts with wheelchair pickleball. Our crew, the Chicago Wheelie Big Dills, plays every week at clubs across the area, free for every athlete. They travel to tournaments, they bring home medals, and next year we host our own. Year round, we raise money so athletes can train, travel and get the equipment they need.
 
 One line version for bios and introductions:
 > Adapt To Life invests in adaptive athletes and the people building the sport around them, starting with wheelchair pickleball in Chicago.
@@ -83,7 +83,30 @@ Campaigns sit on top of both lanes. Send 6 to the US Open is a campaign. The Chi
 
 Keep the guardrail that is already on the Ambassadors page: being an ambassador never depends on receiving support from the fund, and support never depends on being an ambassador. It protects athletes and keeps the fund clean for a 501(c)(3).
 
-### 3.4 The flagship: the Wheelie Big Dills
+### 3.4 Names: the program, the crew, the event
+Alec wants Chicago in the crew's name, to own it ahead of the Chicago Classic. Research on Nov 3:
+- No one owns "Chicago wheelchair pickleball". There is no dedicated Chicago team; the closest is GLASA's members only Wednesday program in Lake Forest.
+- Domains are open: chicagowheeliebigdills.com, wheeliebigdills.com, chicagowheelchairpickleball.com and .org, chicagoclassicpickleball.com and .org, thechicagoclassic.org.
+- "Big Dill Pickleball" is a registered trademark of a Utah paddle and gear company (balls, paddles, grips). A community team name is a different use, but anything we sell under "Big Dills" (shirts, paddles) should be cleared with trademark counsel first.
+- A "Chicago Pickleball Classic" already exists (a summer amateur event), and so do the "NP Windy City Classic" and the APP "Vlasic Classic Chicago". Our event needs "wheelchair" in its full name to stand apart.
+
+Recommended system, one name per job:
+
+| Job | Name | Why |
+|---|---|---|
+| The organization | Adapt To Life | The 501(c)(3), the fund, the trust |
+| The program (search and clarity) | Chicago Wheelchair Pickleball | Plain words people search for. Page title of `/pickleball`; chicagowheelchairpickleball.org can point there |
+| The crew (identity and culture) | Chicago Wheelie Big Dills | Keeps the name the crew already uses (Juan's page, the YouTube playlist) and adds Chicago. Short forms: the Big Dills, the Chicago crew |
+| The event | The Chicago Classic | Full name: the Chicago Classic, Wheelchair Pickleball Tournament. Hosted by Adapt To Life and the Chicago Wheelie Big Dills |
+
+How it reads together:
+> The Chicago Wheelie Big Dills are Adapt To Life's wheelchair pickleball crew. Every week they play at clubs across the Chicago area, and next year they host the Chicago Classic, Wheelchair Pickleball Tournament.
+
+Handles (Rose, Nov 3): @chicagowheeliebigdills, @wheeliebigdills, @chicagobigdills, @chicagowheelchairpickleball and @chicagoclassicpickleball show no account, but confirm in the app before claiming. @thechicagoclassic is taken by an unrelated ballroom dance event with 1,857 followers, another reason the event's full name should always carry "Wheelchair Pickleball". Juan already calls the crew "our Chicagoland wheelchair pickleball team" in a Bread and Butter review. The YouTube playlist did not show up in public search; it may be unlisted, so confirm whose channel it is before embedding.
+
+Before using the name everywhere: claim @chicagowheeliebigdills, register two or three domains (a small cost, needs Alec's OK), and design a simple mark.
+
+### 3.5 The flagship: the Chicago Wheelie Big Dills
 Name check: the only verified public use is "the Wheelie Big Dills" on Juan's page, and the YouTube playlist "Wheelchair Pickleball: The Wheelie Big Dills" (Juan's mic'd up POV matches). Captions say "the crew". There is no handle or logo yet. "Chicago Wheelie Big Dills" is new; if it becomes the brand, create the handle and mark first.
 
 What we can say today with a source:
@@ -96,23 +119,23 @@ What we can say today with a source:
 - Our athlete spotlights from Monster Smash drew more than 38,000 views across Instagram and Facebook. (Rose.)
 - What is next: Try Adaptive Night at ACE, the Chicago Classic, Wheelchair Pickleball Tournament, and a monthly fundraiser with ACE members. (CeCe said yes to all three.)
 
-### 3.5 Ambassadors
+### 3.6 Ambassadors
 > Our ambassadors are athletes, coaches and connectors who grow a sport where they live. We back their work, and they bring the community with them.
 
 Juan as the worked example, in his own role:
 > Juan Ortiz is our pickleball ambassador. He got the APP Tour its first wheelchair division, gets the crew on court every week, and is working with clubs and the Park District toward a Chicago program and tournament. His goal this season is his first US Open.
 
-### 3.6 Our network
+### 3.7 Our network
 Label each relationship honestly. "Partner" only when there is a real agreement.
 
 | Organization | Role today | Status |
 |---|---|---|
 | Brick House Pickleball, Lake Forest | First partner; weekly sessions (Wednesdays with GLASA); authored four posts about us | Partner |
-| GLASA, Great Lakes Adaptive Sports Association | Wednesday session partner at Brick House | Peer organization (VERIFY how to name it) |
+| GLASA, Great Lakes Adaptive Sports Association | Runs the Wednesday evening pickleball program in Lake Forest (Jan to Dec 2026, GLASA members); our Wednesday partner at Brick House | Peer organization |
 | ACE Pickleball Club, Des Plaines | Weekly Thursday host, Try Adaptive Night, Chicago Classic, fundraising | Host, partnership forming (public partner page after CeCe's OK) |
 | The Picklr | Not in any caption or post. Alec said cost was the barrier | Ask Alec before naming |
 | Palatine Picklers | Not in any caption or post | Ask Alec before naming |
-| LWRS | Not in any caption or post; meaning unknown | Ask Alec what it stands for |
+| LWSRA, Lincolnway Special Recreation Association (New Lenox, serving eight south suburban park districts) | Wheelchair basketball, softball, football and boccia, and hosts of the national wheelchair softball World Series. No pickleball yet. Mak Nong is Athletics Supervisor, Adapted Programs (physical and visual impairments); formerly GLASA program manager, Illini wheelchair basketball captain. He is in Alec's contacts | Relationship to grow: a south suburbs session or try it day would extend the Chicago crew |
 | WASA, Wisconsin Adaptive Sports Association | Try it events, pickleball program | Peer organization |
 | APP Tour | Vlasic Classic wheelchair division | Event |
 | The Pickle Lodge, Cincinnati | Monster Smash host | Event host |
@@ -122,12 +145,12 @@ Label each relationship honestly. "Partner" only when there is a real agreement.
 Public line:
 > We work alongside clubs and organizations across the Chicago area and beyond. They host us, play with us and help us grow the sport.
 
-### 3.7 Year round fundraising; campaigns
+### 3.8 Year round fundraising; campaigns
 > Athletes need support all year, not only before a big trip. Your gift keeps them training every week, traveling to compete and playing in equipment that fits. Some of what we raise goes toward a named goal, like sending six athletes to the US Open.
 
 Ways we raise, in plain terms: monthly giving, the popcorn drives, monthly fundraisers with club members, sponsors, and the Chicago Classic.
 
-### 3.8 Proof points
+### 3.9 Proof points
 Verified, safe to use now:
 - About 334,000 views across Instagram and Facebook in the last 90 days, mostly from people who do not follow us yet. (Rose, Oct 30. Sum across platforms, not unique people.)
 - 92% of Instagram views from non followers; 98.8% from video. (Rose, Oct 30.)
@@ -144,7 +167,7 @@ Not yet provable, start tracking now (Rose found no weekly headcount in any post
 
 "Our participation rate is strong" becomes true in public the day we can show the record. Section 9 lists the tracker.
 
-### 3.9 Words to use and words to drop
+### 3.10 Words to use and words to drop
 Use: invest, back, crew, every week, free for athletes, clubs across the Chicago area, ambassador, year round, one of the goals we are raising for.
 Drop or limit: "Send 6" as the headline of the organization; "home court" unless it is still true; "deployment"; "life changing", "inspiring", "journey"; repeating "The more we grow, the more we give." on every page.
 
@@ -192,7 +215,7 @@ Note: tests protect the current home page order (`docs/story-first-ux.md`). The 
 
 3. **Right now in Chicago (new)**
    Eyebrow: Wheelchair pickleball in Chicago
-   Heading: The Wheelie Big Dills play every week.
+   Heading: The Chicago Wheelie Big Dills play every week.
    Body: Our wheelchair pickleball crew plays Wednesdays at Brick House in Lake Forest and Thursdays at ACE in Des Plaines, free for every athlete. They travel to tournaments and bring home medals. Next, we host our own tournament: the Chicago Classic.
    Below it: the six athlete cards (section 5), each linking to the athlete's page.
    Link: Meet the crew → `/pickleball`
@@ -225,7 +248,7 @@ Note: tests protect the current home page order (`docs/story-first-ux.md`). The 
     Alec's brochure quote, one Donate button, volunteer line.
 
 ### 4.4 `/pickleball`, outline and draft copy
-- **Hero.** Heading: Wheelchair pickleball in Chicago. Body: The Wheelie Big Dills play every week, free for every athlete. New players welcome.
+- **Hero.** Heading: Chicago Wheelchair Pickleball. Body: The Chicago Wheelie Big Dills play every week, free for every athlete. New players welcome.
 - **Every week.** Wednesdays at Brick House, Thursdays at ACE. Where, when, what to bring, that court fees are covered. (VERIFY whether sport chairs are available to borrow before saying so.)
 - **Meet the six.** Six athlete cards, each linking to a page.
 - **Watch.** The Wheelie Big Dills POV playlist, embedded.
@@ -247,15 +270,15 @@ This page is also the strongest search page we could build: "wheelchair pickleba
 
 ## 5. The six athletes
 
-Alec's list: Juan, RJ, Bobbo, Robby, Ken, Amanda. These six carry the story on the site. Each one gets a card on `/pickleball` and the home page, and a page of their own. Juan's page is the model; the other five pages can be lighter.
+The six: Juan, Brian, Bob, Robby, Ken and Amanda. Brian holds the sixth spot until RJ is ready, then RJ takes it. These six carry the story on the site. Each one gets a card on `/pickleball` and the home page, and a page of their own. Juan's page is the model; the other five pages can be lighter.
 
 ### 5.1 What we know and what we have
 
 | Athlete | Public name in captions | Handle | Best post so far | Results | Photos in Drive |
 |---|---|---|---|---|---|
 | Juan Ortiz | Juan Ortiz | not in captions | Monster Smash singles gold: 4,802 IG views; 3,792 FB | Singles gold, 5 and 0; got the APP its first wheelchair division | Approved cutout, pro shoot (JLA), Monster Smash cards, chair and paddle shots |
-| RJ | Not found anywhere | none found | none | none | none |
-| Bob Swanson ("Bobbo") | Bob Swanson, "Bobby", tag @bobbyswany. "Bobbo" appears nowhere | @bobbyswany (unverified) | Doubles gold: 9,380 IG views, 7,665 FB. The top medal reel | Doubles gold with Kenneth Holman; 5th in singles | Approved cutout (from a Brick House 4K clip), Monster Smash cards |
+| Brian Liss (holds the sixth spot until RJ is ready) | Brian Liss | not in captions | Training reel: 1,444 IG views; Oct 29 shoutout | Competed at Monster Smash (8th in singles, 6th in doubles with Alec) | Approved cutout (from Traced Athletes) |
+| Bob Swanson | On the site: Bob. Captions have used Bob Swanson, "Bobby" and the tag @bobbyswany | @bobbyswany (unverified) | Doubles gold: 9,380 IG views, 7,665 FB. The top medal reel | Doubles gold with Kenneth Holman; 5th in singles | Approved cutout (from a Brick House 4K clip), Monster Smash cards |
 | Robby Wolf | Robby Wolf | @robbywolf32, 899 followers | Monster Smash training reel: 2,996 IG views | Singles bronze, doubles silver with Ken; played the 2025 US Open in Naples | Approved cutout (the white cap pro shot, which is also the ACE page hero), Monster Smash cards |
 | Ken Carwell | Ken Carwell | not in captions | Doubles silver: 1,680 IG views | Doubles silver with Robby | Approved cutout (Cubs shirt), Monster Smash cards |
 | Amanda Tworek | Amanda Tworek | not in captions | Doubles bronze: 6,706 IG views | Doubles bronze with Kasey Stelter; 6th in singles | Approved cutout (pro shoot, mid swing), Monster Smash cards |
@@ -263,8 +286,9 @@ Alec's list: Juan, RJ, Bobbo, Robby, Ken, Amanda. These six carry the story on t
 Assets: Drive "ATL Athlete Photo Bank" (one folder per athlete, approved cutouts, rules for choosing photos), "RESULTS Monster Smash" (feed and story cards, with and without the host logo), the professional shoot (JLA files), Brick House 4K clips, and the "Wheelie Big Dills POV Videos" folder.
 
 Gaps to close first:
-- **RJ:** full name, a photo or clip, and consent. Nothing exists yet. If RJ is not ready, Brian Liss already has an approved cutout and posts.
-- **Bob's public name:** Bob, Bobby or Bobbo. Use his choice everywhere.
+- **RJ:** full name, a photo or clip, and consent, for when he swaps in.
+- **Bob:** "Bob" on the site.
+- Brian's quote is already on the Hustle and Heart page ("The chair didn't fix me. It gave me options I didn't have before."), a strong start for his page.
 - **Their own words:** only Juan has written answers so far.
 
 ### 5.2 Each athlete page
@@ -308,7 +332,7 @@ Robby, as athlete liaison, can collect answers. The athlete reviews and approves
    - one athlete feature, rotating through the six so each appears about every two weeks
    - one short, funny crew clip
    - a daily burst during tournaments, like Monster Smash
-7. **A series per athlete** (Rose's proposals): Juan "First of many", Robby training diary, Ken and Robby doubles, Amanda "Bronze and beyond", Bob "Bobby doing Bobby things". RJ's comes once RJ is identified. Confirm any paddle or brand mention with the athlete first.
+7. **A series per athlete** (Rose's proposals, adjusted): Juan "First of many", Robby training diary, Ken and Robby doubles, Amanda "Bronze and beyond", Bob's fun training clips, Brian's progress (his own words on the fund page are the hook). RJ's comes when he joins. Confirm any paddle or brand mention with the athlete first.
 8. **Collabs with partners,** in this order: Brick House (already posting about us), The Pickle Lodge, APP Tour, ACE (after the first session), WASA, A&J and ATC Mobility.
 9. **YouTube.** The Wheelie Big Dills POV playlist goes on `/pickleball`, and short cuts of it feed Instagram.
 10. **Restart now.** Five quiet days after the biggest month we have had. A Monster Smash look back, then the first ACE Thursday.
@@ -457,15 +481,14 @@ This feeds the partner recap, the events page record and future grant applicatio
 ---
 
 ## 10. Decisions for Alec
-1. **Crew name:** "Wheelie Big Dills" (verified) or "Chicago Wheelie Big Dills" (new; needs a handle and mark), and the page address (`/pickleball` recommended).
-2. **RJ:** full name and a photo, or start with five athletes and add RJ when ready (Brian Liss is ready if you want a sixth now).
-3. **Bob's public name:** Bob, Bobby or Bobbo.
-4. **Wednesdays:** confirm the Brick House session with GLASA and Pete, and how to name GLASA.
-5. **Clubs:** which of The Picklr, Palatine Picklers and LWRS can be named publicly, and as what.
-6. **The model in public:** keep "Hustle and Heart Fund" and describe two lanes (recommended), or introduce a new name.
-7. **Team accuracy:** Karen's title; adding Tom Daily, Robby Wolf and Juan to About.
-8. **ACE:** CeCe's OK for a public partner page and logo use.
-9. **Adapt Body Shop:** footer until launch?
-10. **"The more we grow, the more we give.":** Home and About only?
-11. **Chicago Classic:** when to announce, and with what date.
-12. **Phase 1:** go to build on staging.
+1. **Names:** approve the system in 3.4 (Chicago Wheelchair Pickleball, the Chicago Wheelie Big Dills, the Chicago Classic), and OK to register two or three domains.
+2. **Wednesdays:** confirm the Brick House session with GLASA and Pete, and how to name GLASA on the site.
+3. **LWSRA:** reach out to Mak Nong about a south suburbs session or try it day?
+4. **Clubs:** can we name The Picklr and Palatine Picklers publicly, and as what?
+5. **The model in public:** keep "Hustle and Heart Fund" and describe two lanes (recommended), or introduce a new name.
+6. **Team accuracy:** Karen's title; adding Tom Daily, Robby Wolf and Juan to About.
+7. **ACE:** CeCe's OK for a public partner page and logo use.
+8. **Adapt Body Shop:** footer until launch?
+9. **"The more we grow, the more we give.":** Home and About only?
+10. **Chicago Classic:** when to announce, and with what date.
+11. **Phase 1:** go to build on staging.

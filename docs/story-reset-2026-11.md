@@ -87,10 +87,10 @@ Keep the guardrail that is already on the Ambassadors page: being an ambassador 
 Alec wants Chicago in the crew's name, to own it ahead of the Chicago Classic. Research on Nov 3:
 - No one owns "Chicago wheelchair pickleball". There is no dedicated Chicago team; the closest is GLASA's members only Wednesday program in Lake Forest.
 - Domains are open: chicagowheeliebigdills.com, wheeliebigdills.com, chicagowheelchairpickleball.com and .org, chicagoclassicpickleball.com and .org, thechicagoclassic.org.
-- "Big Dill Pickleball" is a registered trademark of a Utah paddle and gear company (balls, paddles, grips). A community team name is a different use, but anything we sell under "Big Dills" (shirts, paddles) should be cleared with trademark counsel first.
+- It is a team name, the same as any crew at a club, and it fits what Juan already does: his podcast (name to confirm, possibly "Chicago Grit") and the way he already calls the crew "our Chicagoland wheelchair pickleball team".
 - A "Chicago Pickleball Classic" already exists (a summer amateur event), and so do the "NP Windy City Classic" and the APP "Vlasic Classic Chicago". Our event needs "wheelchair" in its full name to stand apart.
 
-Recommended system, one name per job:
+Approved by Alec (Nov 3): Chicago Wheelie Big Dills. Good search words and fun. One name per job:
 
 | Job | Name | Why |
 |---|---|---|
@@ -104,7 +104,7 @@ How it reads together:
 
 Handles (Rose, Nov 3): @chicagowheeliebigdills, @wheeliebigdills, @chicagobigdills, @chicagowheelchairpickleball and @chicagoclassicpickleball show no account, but confirm in the app before claiming. @thechicagoclassic is taken by an unrelated ballroom dance event with 1,857 followers, another reason the event's full name should always carry "Wheelchair Pickleball". Juan already calls the crew "our Chicagoland wheelchair pickleball team" in a Bread and Butter review. The YouTube playlist did not show up in public search; it may be unlisted, so confirm whose channel it is before embedding.
 
-Before using the name everywhere: claim @chicagowheeliebigdills, register two or three domains (a small cost, needs Alec's OK), and design a simple mark.
+Next: claim @chicagowheeliebigdills, and optionally register chicagowheelchairpickleball.org (a small cost, Alec's OK) to point at the program page.
 
 ### 3.5 The flagship: the Chicago Wheelie Big Dills
 Name check: the only verified public use is "the Wheelie Big Dills" on Juan's page, and the YouTube playlist "Wheelchair Pickleball: The Wheelie Big Dills" (Juan's mic'd up POV matches). Captions say "the crew". There is no handle or logo yet. "Chicago Wheelie Big Dills" is new; if it becomes the brand, create the handle and mark first.
@@ -481,7 +481,7 @@ This feeds the partner recap, the events page record and future grant applicatio
 ---
 
 ## 10. Decisions for Alec
-1. **Names:** approve the system in 3.4 (Chicago Wheelchair Pickleball, the Chicago Wheelie Big Dills, the Chicago Classic), and OK to register two or three domains.
+1. **Names:** approved (Chicago Wheelie Big Dills). Open: claim the handle; register chicagowheelchairpickleball.org?
 2. **Wednesdays:** confirm the Brick House session with GLASA and Pete, and how to name GLASA on the site.
 3. **LWSRA:** reach out to Mak Nong about a south suburbs session or try it day?
 4. **Clubs:** can we name The Picklr and Palatine Picklers publicly, and as what?

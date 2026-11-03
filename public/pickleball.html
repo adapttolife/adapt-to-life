@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light only">
 <title>Chicago Wheelchair Pickleball | The Chicago Wheelie Big Dills | Adapt To Life</title>
-<meta name="description" content="The Chicago Wheelie Big Dills are Adapt To Life's wheelchair pickleball crew. We play every week at clubs across the Chicago area, free for every athlete. New players welcome.">
+<meta name="description" content="The Chicago Wheelie Big Dills are Adapt To Life's wheelchair pickleball crew, building a pickleball community across the Chicago area. Drop in at a session, no membership needed.">
 <link rel="canonical" href="https://adapttolife.org/pickleball">
 <link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-v2-option2-32.png">
 <link rel="apple-touch-icon" href="/images/apple-touch-icon-v2-option2.png">
 <meta property="og:type" content="website">
 <meta property="og:title" content="The Chicago Wheelie Big Dills | Chicago Wheelchair Pickleball">
-<meta property="og:description" content="The Chicago Wheelie Big Dills are Adapt To Life's wheelchair pickleball crew. We play every week at clubs across the Chicago area, free for every athlete. New players welcome.">
+<meta property="og:description" content="The Chicago Wheelie Big Dills are Adapt To Life's wheelchair pickleball crew, building a pickleball community across the Chicago area. Drop in at a session, no membership needed.">
 <meta property="og:image" content="https://adapttolife.org/images/og/pickleball-v2-juan.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -20,7 +20,7 @@
 <meta property="og:url" content="https://adapttolife.org/pickleball">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="The Chicago Wheelie Big Dills | Chicago Wheelchair Pickleball">
-<meta name="twitter:description" content="The Chicago Wheelie Big Dills are Adapt To Life's wheelchair pickleball crew. We play every week at clubs across the Chicago area, free for every athlete. New players welcome.">
+<meta name="twitter:description" content="The Chicago Wheelie Big Dills are Adapt To Life's wheelchair pickleball crew, building a pickleball community across the Chicago area. Drop in at a session, no membership needed.">
 <meta name="twitter:image" content="https://adapttolife.org/images/og/pickleball-v2-juan.jpg">
 <meta name="twitter:image:alt" content="The Chicago Wheelie Big Dills. Chicago Wheelchair Pickleball, by Adapt To Life.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,7 +29,7 @@
 <link rel="stylesheet" href="/css/site.css?v=2fd6f6ca">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches&&"IntersectionObserver" in window)document.documentElement.classList.add("ace-motion");</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"SportsTeam","name":"Chicago Wheelie Big Dills","sport":"Wheelchair pickleball","url":"https://adapttolife.org/pickleball","description":"Adapt To Life's wheelchair pickleball crew, playing every week at clubs across the Chicago area.","areaServed":{"@type":"City","name":"Chicago"},"parentOrganization":{"@type":"NGO","name":"Adapt To Life","url":"https://adapttolife.org"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SportsTeam","name":"Chicago Wheelie Big Dills","sport":"Wheelchair pickleball","url":"https://adapttolife.org/pickleball","description":"Adapt To Life's wheelchair pickleball crew, building a pickleball community across the Chicago area.","areaServed":{"@type":"City","name":"Chicago"},"parentOrganization":{"@type":"NGO","name":"Adapt To Life","url":"https://adapttolife.org"}}</script>
 <style>
   /* ACE wishlist page. An unlisted page for CeCe and the ACE Des Plaines team:
      the history we share, what we bring, the wishlist in six groups, and what
@@ -205,6 +205,23 @@
   .pb-night p:not(.pb-day):not(.pb-where){ margin-top:0.8rem; line-height:1.55; }
   .pb-link{ display:inline-block; margin-top:1rem; font-weight:700; color:var(--orange-ink); border-bottom:2px solid currentColor; padding-bottom:2px; }
   .pb-link-light{ color:var(--orange); }
+  .pb-sessions{ grid-template-columns:repeat(3,1fr); max-width:none; }
+  .pb-next{ background:rgba(255,92,57,0.05); box-shadow:none; border:2px dashed rgba(255,92,57,0.6); }
+  @media (max-width:900px){ .pb-sessions{ grid-template-columns:1fr; max-width:560px; } }
+  .pb-anytime-grid{ display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,0.85fr); gap:clamp(2rem,5vw,4.5rem); align-items:center; }
+  .pb-anytime .ace-head .prose + .prose{ margin-top:0.8rem; }
+  .pb-ladder{ list-style:none; margin:0; padding:0 0 0 2.2rem; position:relative; }
+  .pb-ladder::before{ content:""; position:absolute; left:0.65rem; top:1.4rem; bottom:1.4rem; width:2px; background:linear-gradient(180deg, rgba(255,92,57,0.3), var(--orange)); }
+  .pb-ladder li{ position:relative; padding:0.85rem 0; }
+  .pb-ladder li::before{ content:""; position:absolute; left:-1.95rem; top:1.2rem; width:14px; height:14px; border-radius:50%; background:#fff; box-shadow:inset 0 0 0 2px rgba(255,92,57,0.7); }
+  .pb-ladder li.lit::before{ background:var(--orange); box-shadow:0 0 16px 2px var(--orange-glow); }
+  .pb-ladder b{ display:block; font-family:var(--font-display); font-weight:800; font-size:clamp(1.15rem,1.8vw,1.35rem); letter-spacing:-0.01em; }
+  .pb-ladder li.lit b{ color:var(--orange-ink); }
+  .pb-ladder span{ display:block; margin-top:0.2rem; opacity:0.8; }
+  @media (max-width:860px){ .pb-anytime-grid{ grid-template-columns:1fr; } }
+  .pb-build{ grid-template-columns:repeat(2,1fr); }
+  .pb-build .ace-pick h3 + p{ margin-top:0.7rem; color:var(--cream-mute); line-height:1.5; }
+  @media (max-width:700px){ .pb-build{ grid-template-columns:1fr; } }
   .pb-note{ margin-top:1.6rem; max-width:70ch; }
   .pb-beyond{ margin-top:clamp(1.6rem,3vw,2.2rem); max-width:62ch; padding:clamp(1.1rem,2.2vw,1.5rem); border-left:4px solid var(--orange); background:rgba(255,92,57,0.06); border-radius:0 14px 14px 0; }
   .pb-beyond p:last-child{ margin-top:0.4rem; line-height:1.55; }
@@ -421,9 +438,9 @@ fill="currentColor" stroke="none">
       <div class="ace-hero-copy">
         <p class="ace-kicker">Chicago Wheelchair Pickleball</p>
         <h1 class="serif display">The Chicago Wheelie <em class="italic" style="color:var(--orange)">Big Dills.</em></h1>
-        <p class="lead sub">Adapt To Life's wheelchair pickleball crew. We play every week at clubs across the Chicago area, free for every athlete, and new players are always welcome.</p>
+        <p class="lead sub">Adapt To Life's wheelchair pickleball crew. We're building a pickleball community across the Chicago area, one club at a time, and anyone can drop in.</p>
         <div class="actions">
-          <a href="#join" class="btn">Play with us</a>
+          <a href="#sessions" class="btn">Find a session</a>
           <a href="#support" class="btn ghost">Back the crew</a>
         </div>
       </div>
@@ -431,35 +448,61 @@ fill="currentColor" stroke="none">
     <span class="ace-cue" aria-hidden="true"></span>
   </section>
 
-  <!-- 2. EVERY WEEK -->
-  <section class="band tint">
+  <!-- 2. SESSIONS: a growing network of clubs -->
+  <section class="band tint" id="sessions">
     <div class="wrap">
       <div class="ace-head" data-m="stagger">
         <hr class="tick orange">
-        <span class="eyebrow orange">Every week</span>
-        <h2 class="serif statement">Two nights <em class="italic" style="color:var(--orange)">on court.</em></h2>
-        <p class="prose">On Thursdays the crew has its own court at ACE. On Wednesdays, our athletes and coaches join a weekly night at Brick House.</p>
+        <span class="eyebrow orange">Where we play</span>
+        <h2 class="serif statement">Drop in. <em class="italic" style="color:var(--orange)">Try the sport.</em></h2>
+        <p class="prose">No membership, nothing to lock in. Find a session, drop in, have fun and try the sport. Each session has its own vibe. Some have a sport chair to try or a coach on hand, and some are just open play. We're growing each one little by little.</p>
       </div>
-      <div class="pb-nights" data-m="stagger">
+      <div class="pb-nights pb-sessions" data-m="stagger">
         <article class="pb-night">
           <p class="pb-day">Wednesdays</p>
           <h3>Brick House Pickleball</h3>
           <p class="pb-where">Lake Forest</p>
-          <p>A weekly wheelchair pickleball night at our first partner club. Pete Petersen, from our leadership team, volunteers as a coach and helps run it, and many of our athletes play.</p>
-          <a class="pb-link" href="#join">Ask how to join</a>
+          <p>A weekly wheelchair pickleball night at our first partner club. Pete Petersen, from our leadership team, volunteers as a coach and helps run it.</p>
         </article>
         <article class="pb-night">
           <p class="pb-day">Thursdays</p>
           <h3>ACE Pickleball Club</h3>
           <p class="pb-where">Des Plaines</p>
-          <p>The crew's own night: a reserved court, open play beside it, and club members to mix in with. Adapt To Life covers court fees, so it is free for every athlete.</p>
+          <p>A reserved court, open play beside it and club members to mix in with. Adapt To Life covers court fees, so it's free for every athlete.</p>
+        </article>
+        <article class="pb-night pb-next">
+          <p class="pb-day">What's next</p>
+          <h3>Your club?</h3>
+          <p class="pb-where">Across the Chicago area</p>
+          <p>We're adding sessions as more clubs and organizations join in. If you have courts, let's talk about hosting one.</p>
+          <a class="pb-link" href="mailto:hello@adapttolife.org?subject=Host%20a%20session">Host a session</a>
         </article>
       </div>
-      <p class="pb-note">Volunteers make every night work: coaches like Pete, members from our partner clubs, and the crew itself. New to the sport? <a href="#join">Tell us you're coming</a> and we'll meet you there.</p>
+      <p class="pb-note">Volunteers make every session work: coaches like Pete, members from our partner clubs and the crew itself. New to the sport? <a href="#join">Tell us you're coming</a> and we'll meet you there.</p>
       <div class="pb-beyond" data-m="up">
-        <p class="pb-day">Beyond our nights</p>
+        <p class="pb-day">Beyond our sessions</p>
         <p>We also support adaptive programs across the region: coaching that helped WASA start pickleball in Wisconsin, and work with LWSRA on clinics in the south suburbs. Those relationships keep growing.</p>
       </div>
+    </div>
+  </section>
+
+  <!-- 2b. PLAY ANYTIME: from drop in to membership -->
+  <section class="band pb-anytime">
+    <div class="wrap pb-anytime-grid">
+      <div class="ace-head" data-m="stagger">
+        <hr class="tick orange">
+        <span class="eyebrow orange">Play anytime</span>
+        <h2 class="serif statement">From drop in <em class="italic" style="color:var(--orange)">to play anytime.</em></h2>
+        <p class="prose">Dropping in is how most people start. Players who want more court time shouldn't have to hop from session to session. A membership lets them play whenever they want.</p>
+        <p class="prose">We're looking for sponsors and partners to cover memberships at ACE, so cost is never what keeps someone off the court.</p>
+        <a class="pb-link" href="mailto:hello@adapttolife.org?subject=Sponsor%20memberships">Sponsor a membership</a>
+      </div>
+      <ol class="pb-ladder" data-m="stagger" aria-label="How players grow with the crew">
+        <li><b>Try it</b><span>Drop in at a session. No membership needed.</span></li>
+        <li><b>Play every week</b><span>Sessions at clubs across the Chicago area.</span></li>
+        <li class="lit"><b>Play anytime</b><span>A membership for players who want more.</span></li>
+        <li><b>Compete</b><span>Monthly tournaments, the Chicago Classic and the road beyond.</span></li>
+      </ol>
     </div>
   </section>
 
@@ -532,19 +575,25 @@ fill="currentColor" stroke="none">
     <p class="ace-together">"The first sport I've ever found where the wheelchair vanishes." <em class="italic" style="color:var(--orange)">Juan Ortiz</em></p>
   </section>
 
-  <!-- 5. WHAT'S NEXT -->
+  <!-- 5. WHAT WE'RE BUILDING -->
   <section class="band dark ace-wish">
     <div class="wrap">
       <div class="ace-head" data-m="stagger">
         <hr class="tick orange">
-        <span class="eyebrow orange">What's next</span>
-        <h2 class="serif statement">Bigger <em class="italic" style="color:var(--orange)">in Chicago.</em></h2>
+        <span class="eyebrow orange">What we're building</span>
+        <h2 class="serif statement">More than <em class="italic" style="color:var(--orange)">one trip.</em></h2>
+        <p class="prose">Going to the US Open is one goal. The bigger one is a pickleball community in the Chicago area that keeps growing, built with clubs and organizations across the region.</p>
       </div>
-      <div class="ace-start" data-m="stagger">
+      <div class="ace-start pb-build" data-m="stagger">
         <article class="ace-pick">
-          <p class="ace-pick-tag">Coming up</p>
+          <p class="ace-pick-tag">Our tournament</p>
           <h3>The Chicago Classic</h3>
-          <p>Our first Chicago Classic, Wheelchair Pickleball Tournament, hosted at ACE.</p>
+          <p>Our own Chicago Classic, Wheelchair Pickleball Tournament, hosted at ACE.</p>
+        </article>
+        <article class="ace-pick">
+          <p class="ace-pick-tag">Fundraising</p>
+          <h3>Monthly tournaments</h3>
+          <p>Tournaments with club members, where entry fees help fund the crew.</p>
         </article>
         <article class="ace-pick">
           <p class="ace-pick-tag">Coming up</p>
@@ -552,9 +601,9 @@ fill="currentColor" stroke="none">
           <p>Club members play from sport chairs alongside the crew.</p>
         </article>
         <article class="ace-pick">
-          <p class="ace-pick-tag">The goal</p>
+          <p class="ace-pick-tag">One of our goals</p>
           <h3>The US Open, spring 2027</h3>
-          <p>One of the goals we are raising for: sending six athletes to Naples.</p>
+          <p>Sending six athletes to Naples.</p>
           <a class="pb-link pb-link-light" href="/send-6">About Send 6</a>
         </article>
       </div>
@@ -567,13 +616,13 @@ fill="currentColor" stroke="none">
       <div class="ace-head" data-m="stagger">
         <hr class="tick orange">
         <span class="eyebrow orange">Back the crew</span>
-        <h2 class="serif statement">Keep them <em class="italic" style="color:var(--orange)">on court.</em></h2>
-        <p class="prose">Court fees, equipment and travel add up all year. Gifts go to the Hustle &amp; Heart Fund, which keeps athletes playing.</p>
+        <h2 class="serif statement">Help us <em class="italic" style="color:var(--orange)">fund it.</em></h2>
+        <p class="prose">Sessions, memberships, equipment, travel and tournaments all take funding. Gifts go to the Hustle &amp; Heart Fund, which keeps athletes playing.</p>
       </div>
       <div class="ace-win" data-m="stagger">
-        <div><h3>$75 a Thursday</h3><ul><li>Covers court fees for the whole crew for a night.</li></ul><a class="btn pb-btn" href="/donate">Donate</a></div>
-        <div><h3>Sponsor the crew</h3><ul><li>Nights, seats and events, for businesses and clubs.</li></ul><a class="btn ghost pb-btn" href="/sponsorship">See partnerships</a></div>
-        <div><h3>Send six to Naples</h3><ul><li>Equipment, training and travel for the US Open.</li></ul><a class="btn ghost pb-btn" href="/send-6">See the campaign</a></div>
+        <div><h3>Give</h3><ul><li>Any amount helps. $75 covers court fees for the whole crew for a night at ACE.</li></ul><a class="btn pb-btn" href="/donate">Donate</a></div>
+        <div><h3>Sponsor</h3><ul><li>Memberships, sessions and tournaments, for businesses that want to be part of it.</li></ul><a class="btn ghost pb-btn" href="/sponsorship">See partnerships</a></div>
+        <div><h3>Host</h3><ul><li>Have courts? Host a session at your club, and we bring the players and the volunteers.</li></ul><a class="btn ghost pb-btn" href="mailto:hello@adapttolife.org?subject=Host%20a%20session">Host a session</a></div>
       </div>
     </div>
   </section>
@@ -585,7 +634,7 @@ fill="currentColor" stroke="none">
         <hr class="tick orange">
         <span class="eyebrow orange">Play with us</span>
         <h2 class="serif display">New players <em class="italic" style="color:var(--orange)">welcome.</em></h2>
-        <p class="prose">Athletes, families, and anyone making a referral: tell us a little about yourself, and we'll help you find your first night on court.</p>
+        <p class="prose">Athletes, families, and anyone making a referral: tell us a little about yourself, and we'll help you find your first session.</p>
         <div class="ace-actions">
           <a href="mailto:hello@adapttolife.org?subject=Play%20with%20the%20Chicago%20Wheelie%20Big%20Dills" class="btn">Email us</a>
           <a href="/adaptive-sports-near-me" class="btn ghost">Find more adaptive sports</a>

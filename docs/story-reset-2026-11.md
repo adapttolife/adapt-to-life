@@ -145,12 +145,62 @@ Label each relationship honestly. "Partner" only when there is a real agreement.
 Public line:
 > We work alongside clubs and organizations across the Chicago area and beyond. They host us, play with us and help us grow the sport.
 
-### 3.8 Year round fundraising; campaigns
+### 3.8 How we talk about relationships: support is not partnership
+The principle: Adapt To Life is part of a community, not the owner of it. We support adaptive sports wherever our athletes play, and we only call an organization a partner when both sides have said yes. Said right, this explains every relationship with one idea. Said loosely, it reads as if we are claiming other people's programs.
+
+**The words, and when each one is allowed**
+
+| Word on the site | Means | Who today |
+|---|---|---|
+| Partner | A two way agreement. Both sides said yes to being listed. Logos only with permission | Brick House. ACE after CeCe's OK. WASA and LWSRA once each says yes |
+| Host | A club where we play or hold events | Brick House, ACE, The Pickle Lodge |
+| Our night | A session we run and pay for | Thursdays at ACE |
+| A night we join | A program someone else runs, which our athletes play in and our coaches help with. Described by what our people do. The organizer is not named | Wednesdays at Brick House |
+| Where we have played | Tournaments and events | APP Vlasic Classic Chicago, Monster Smash |
+| Programs people can find | Listings in Adaptive Sports Near Me. Neutral, free, no endorsement | Every program in the directory |
+
+**Three ways we support programs without a partnership**
+1. Our people. Our coaches, athletes and volunteers show up. "Pete Petersen coaches every Wednesday at Brick House" is true, specific and claims nothing about who runs the night.
+2. The fund. When an athlete needs help with a program fee or equipment, the Hustle and Heart Fund can pay that program or vendor directly. That support goes through the athlete, so it needs no partnership.
+3. The directory. Adaptive Sports Near Me helps people find programs run by many organizations, at no cost.
+
+**The two nights, told honestly**
+- Thursdays at ACE: the crew's own night. We reserve the court and cover court fees, so it is free for every athlete.
+- Wednesdays at Brick House: a weekly night our athletes and coaches join. Pete coaches. New players ask us, and we point them to the right place to sign up.
+That difference is the whole fix. Nobody reading the site can mistake Wednesday for something we own, and nobody can mistake Thursday for something we don't.
+
+**Pete is the bridge.** He is on our leadership team and he coaches on Wednesdays. The site can say both, plainly. It never says he represents another organization.
+
+**Guardrails**
+- No GLASA anywhere on the website: pages, alt text, captions, structured data, partner lists, the social page.
+- Money copy only describes what we actually pay for. If we do not pay for Wednesdays, no donation or partner copy implies it does.
+- Never "on behalf of", "in partnership with" or "official" unless there is an agreement.
+- On social, thank hosts plainly when they host. Partner language follows the same rule as the site.
+
+**Lines on the live site to change** (the right version depends on fact A below)
+
+| Page | Today | Proposed |
+|---|---|---|
+| How Giving Works | "We fund a wheelchair pickleball program, including the court they train on." | If we pay nothing on Wednesdays: "We cover court fees for our wheelchair pickleball crew on Thursdays at ACE, and help athletes with the equipment, training and travel that keep them playing." If we do pay Brick House court time: "We cover court time for wheelchair pickleball at Brick House and ACE, and help athletes with equipment, training and travel." |
+| Send 6, Training | "Our athletes train every week at Brick House Pickleball, our home court and first partner." | "The work starts long before Naples: weekly court time, clinics and coaching through the season." |
+| Partners, what partnership makes possible | "Train every week: at Brick House, all four seasons." | "Train every week: court time and coaching through every season." Plus one line under the partner list: "Partners listed here have agreed to be listed. We also support programs across the community through our coaches, our athletes and the fund." |
+| About, Pete | "helped build the wheelchair pickleball program from the ground up." | "helped build wheelchair pickleball on the North Shore from the ground up, and still coaches every Wednesday at Brick House. In 2025 he played hybrid doubles at the US Open in Naples." |
+| Brick House page | "Our home court", "our athletes have trained at Brick House for years" | Keep. True as stated, and it names no program. |
+
+**Facts to confirm before the live changes**
+- A. Does Adapt To Life pay for anything on Wednesdays at Brick House (court time, equipment), or is it all run and paid by the organizer?
+- B. Is "Pete coaches every Wednesday at Brick House" accurate as written?
+- C. Have WASA and LWSRA each said yes to being listed as partners? If not, a one line ask first, the same as ACE's logo.
+
+**The same story, out loud** (for conversations with clubs, sponsors or other organizations)
+> Adapt To Life supports adaptive sports wherever our athletes play. On Thursdays our crew has its own night at ACE, and we cover it. On Wednesdays our athletes join a weekly night at Brick House, where Pete coaches. When an athlete needs help with fees or equipment, our fund steps in. We partner formally with clubs like Brick House, and we support the wider community without speaking for anyone else.
+
+### 3.9 Year round fundraising; campaigns
 > Athletes need support all year, not only before a big trip. Your gift keeps them training every week, traveling to compete and playing in equipment that fits. Some of what we raise goes toward a named goal, like sending six athletes to the US Open.
 
 Ways we raise, in plain terms: monthly giving, the popcorn drives, monthly fundraisers with club members, sponsors, and the Chicago Classic.
 
-### 3.9 Proof points
+### 3.10 Proof points
 Verified, safe to use now:
 - About 334,000 views across Instagram and Facebook in the last 90 days, mostly from people who do not follow us yet. (Rose, Oct 30. Sum across platforms, not unique people.)
 - 92% of Instagram views from non followers; 98.8% from video. (Rose, Oct 30.)
@@ -167,7 +217,7 @@ Not yet provable, start tracking now (Rose found no weekly headcount in any post
 
 "Our participation rate is strong" becomes true in public the day we can show the record. Section 9 lists the tracker.
 
-### 3.10 Words to use and words to drop
+### 3.11 Words to use and words to drop
 Use: invest, back, crew, every week, free for athletes, clubs across the Chicago area, ambassador, year round, one of the goals we are raising for.
 Drop or limit: "Send 6" as the headline of the organization; "home court" unless it is still true; "deployment"; "life changing", "inspiring", "journey"; repeating "The more we grow, the more we give." on every page.
 
@@ -481,7 +531,7 @@ This feeds the partner recap, the events page record and future grant applicatio
 
 ## 10. Decisions for Alec
 1. **Names:** approved (Chicago Wheelie Big Dills). Open: claim the handle; register chicagowheelchairpickleball.org?
-2. **Wednesdays:** confirm the Brick House session time. (GLASA stays off the website.)
+2. **Relationships (3.8):** facts A, B and C, then the live line changes. GLASA stays off the website.
 3. **LWSRA:** reach out to Mak Nong about a south suburbs session or try it day?
 4. **Clubs:** can we name The Picklr and Palatine Picklers publicly, and as what?
 5. **The model in public:** keep "Hustle and Heart Fund" and describe two lanes (recommended), or introduce a new name.

@@ -10,7 +10,7 @@ Sources: production pages on origin/main (Nov 3, 2026), `/api/raised` on adaptto
 
 **What changed.** Adapt To Life started as a fund and a directory, and the first campaign was Send 6 to the US Open. In a few months it became something bigger: a wheelchair pickleball crew that plays every week, a network of clubs and organizations, results at real tournaments, a first ambassador who is building the sport in Chicago, our own tournament on the way, and fundraising that never stops. The US Open is now one campaign inside that work, not the reason for it.
 
-**What the numbers say.** Two weekly sessions (Wednesdays at Brick House with GLASA, and Thursdays at ACE starting now). About three posts a week from August to October, nothing since Oct 29. Instagram reached about 334,000 views in 90 days, but only 47 people tapped through to the website in that time. Social finds people; the website is not catching them.
+**What the numbers say.** Two weekly sessions (Wednesdays at Brick House and Thursdays at ACE starting now). About three posts a week from August to October, nothing since Oct 29. Instagram reached about 334,000 views in 90 days, but only 47 people tapped through to the website in that time. Social finds people; the website is not catching them.
 
 **What the site says today.** The US Open is the spine of the site. It appears on ten pages, including the home page, the fund, the giving page, the partner page and the Brick House page. The weekly program, the Wheelie Big Dills, ACE, the clubs, Monster Smash and the Chicago Classic are almost invisible. The crew's name appears once, deep inside Juan's page. The events page says "Nothing on the calendar right now" even though the crew plays every Thursday. The partner page sells logo placement instead of the value we actually create.
 
@@ -41,7 +41,7 @@ Adapt To Life expands access to adaptive sports so athletes can find their place
 | Juan `/juan` | Rich story, quotes, the APP's first wheelchair division, the Wheelie Big Dills, PER4MAX and Bread and Butter, "Send Juan to Naples" | Best page on the site, but the hero and the calls to action make him a fundraiser for one trip. His real role, ambassador and builder of the sport, sits halfway down | Reframe the hero around building the sport in Chicago. Keep Naples as his personal goal and a secondary call to action |
 | Ambassadors `/ambassadors` | Roles (athlete, coach, connector), what you get, what we ask, guardrail on fund support | Good bones. Does not explain why ambassadors are how we invest, or what one ambassador makes possible (clubs, sponsors, events, players) | Reframe as the model page, with Juan as the worked example |
 | Partners `/sponsorship` | Brick House; "Right now, the road to Naples"; tiers $500 to $50,000 with thin benefits (supporters wall, logo on donate page) | Sells placement, not value. One partner listed. Tiers are not tied to anything a partner can picture | Rebuild around the two way value and concrete packages (section 5) |
-| Brick House `/brickhouse` | "Our home court", trains every week all four seasons, road to the US Open | Still accurate in spirit: Brick House's own posts say the crew joins weekly, and Wednesday sessions run there with GLASA (VERIFY day and host with Alec). US Open framing throughout | Keep the partnership. Name the weekly session. Replace the US Open road with the broader goals |
+| Brick House `/brickhouse` | "Our home court", trains every week all four seasons, road to the US Open | Still accurate in spirit: Brick House's own posts say the crew joins weekly, on Wednesdays. US Open framing throughout | Keep the partnership. Name the weekly session. Replace the US Open road with the broader goals |
 | Events `/events` | "Nothing on the calendar right now"; past events empty | The single biggest credibility gap. We play every week and have a full season behind us | Add the recurring Thursday session, upcoming Try Adaptive Night and Chicago Classic (when dated), and the 2026 record |
 | Social `/social` | Reels, and orgs "we play alongside": Brick House as training home, APC Des Plaines as "a tournament where we had a table" | ACE is now our weekly host. Clubs like Palatine Picklers and The Picklr, and LWSRA, are missing (VERIFY) | Update ACE. Add clubs once verified |
 | Roadmap `/roadmap` | Live: team, fund, site, 501(c)(3), directory, grants. Building: store, information, sponsorship | Program, ambassadors and the tournament are absent | Add them under Live and Building |
@@ -85,7 +85,7 @@ Keep the guardrail that is already on the Ambassadors page: being an ambassador 
 
 ### 3.4 Names: the program, the crew, the event
 Alec wants Chicago in the crew's name, to own it ahead of the Chicago Classic. Research on Nov 3:
-- No one owns "Chicago wheelchair pickleball". There is no dedicated Chicago team; the closest is GLASA's members only Wednesday program in Lake Forest.
+- No one owns "Chicago wheelchair pickleball". There is no dedicated Chicago team.
 - Domains are open: chicagowheeliebigdills.com, wheeliebigdills.com, chicagowheelchairpickleball.com and .org, chicagoclassicpickleball.com and .org, thechicagoclassic.org.
 - It is a team name, the same as any crew at a club, and it fits what Juan already does: his podcast (name to confirm, possibly "Chicago Grit") and the way he already calls the crew "our Chicagoland wheelchair pickleball team".
 - A "Chicago Pickleball Classic" already exists (a summer amateur event), and so do the "NP Windy City Classic" and the APP "Vlasic Classic Chicago". Our event needs "wheelchair" in its full name to stand apart.
@@ -110,7 +110,7 @@ Next: claim @chicagowheeliebigdills, and optionally register chicagowheelchairpi
 Name check: the only verified public use is "the Wheelie Big Dills" on Juan's page, and the YouTube playlist "Wheelchair Pickleball: The Wheelie Big Dills" (Juan's mic'd up POV matches). Captions say "the crew". There is no handle or logo yet. "Chicago Wheelie Big Dills" is new; if it becomes the brand, create the handle and mark first.
 
 What we can say today with a source:
-- Wednesdays at Brick House in Lake Forest, with GLASA (Great Lakes Adaptive Sports Association), hosted with Pete Petersen. (Rose, from Brick House's posts and prior context. VERIFY.)
+- Wednesdays at Brick House in Lake Forest. (Rose, from Brick House's posts. Do not name GLASA on the website, per Alec.)
 - Thursdays at ACE Pickleball Club in Des Plaines on a reserved court, with open play beside it, and Adapt To Life covers court fees so athletes play free. (CeCe's Oct 31 text; ACE adaptive drop in is $5. No session has been posted yet, so describe it as starting, not established, until the first recap.)
 - About 10 to 15 athletes come on a Thursday. (Alec. Start counting each week so this becomes a record.)
 - At Monster Smash in Cincinnati (October 2026) our athletes won two golds, two silvers and two bronzes in the wheelchair division. (Rose, verified results.)
@@ -130,12 +130,12 @@ Label each relationship honestly. "Partner" only when there is a real agreement.
 
 | Organization | Role today | Status |
 |---|---|---|
-| Brick House Pickleball, Lake Forest | First partner; weekly sessions (Wednesdays with GLASA); authored four posts about us | Partner |
-| GLASA, Great Lakes Adaptive Sports Association | Runs the Wednesday evening pickleball program in Lake Forest (Jan to Dec 2026, GLASA members); our Wednesday partner at Brick House | Peer organization |
+| Brick House Pickleball, Lake Forest | First partner; weekly Wednesday sessions; authored four posts about us | Partner |
+| GLASA | Internal context only | Never name GLASA on the website (Alec, Nov 3) |
 | ACE Pickleball Club, Des Plaines | Weekly Thursday host, Try Adaptive Night, Chicago Classic, fundraising | Host, partnership forming (public partner page after CeCe's OK) |
 | The Picklr | Not in any caption or post. Alec said cost was the barrier | Ask Alec before naming |
 | Palatine Picklers | Not in any caption or post | Ask Alec before naming |
-| LWSRA, Lincolnway Special Recreation Association (New Lenox, serving eight south suburban park districts) | Wheelchair basketball, softball, football and boccia, and hosts of the national wheelchair softball World Series. No pickleball yet. Mak Nong is Athletics Supervisor, Adapted Programs (physical and visual impairments); formerly GLASA program manager, Illini wheelchair basketball captain. He is in Alec's contacts | Relationship to grow: a south suburbs session or try it day would extend the Chicago crew |
+| LWSRA, Lincolnway Special Recreation Association (New Lenox, serving eight south suburban park districts) | Wheelchair basketball, softball, football and boccia, and hosts of the national wheelchair softball World Series. No pickleball yet. Mak Nong is Athletics Supervisor, Adapted Programs (physical and visual impairments); a former Illini wheelchair basketball captain. He is in Alec's contacts | Relationship to grow: a south suburbs session or try it day would extend the Chicago crew |
 | WASA, Wisconsin Adaptive Sports Association | Try it events, pickleball program | Peer organization |
 | APP Tour | Vlasic Classic wheelchair division | Event |
 | The Pickle Lodge, Cincinnati | Monster Smash host | Event host |
@@ -338,7 +338,7 @@ Robby, as athlete liaison, can collect answers. The athlete reviews and approves
 10. **Restart now.** Five quiet days after the biggest month we have had. A Monster Smash look back, then the first ACE Thursday.
 
 ### 6.3 Turning engagement into relationships
-Rose ranked who engages with us, internal only:
+Rose ranked who engages with us, internal only (GLASA omitted per Alec):
 1. Brick House (authored four posts about us)
 2. The Pickle Lodge (tagged four times)
 3. APP Tour
@@ -349,11 +349,10 @@ Rose ranked who engages with us, internal only:
 8. Shriners Chicago (through Alec's personal account)
 9. Double Good
 10. Crystal Lake Chamber
-11. GLASA
-12. Pete Petersen
-13. Ben, the crew's on court personality
-14. Kasey Stelter and Kenneth Holman, doubles partners
-15. Antigua Mexican Grill (Brick House reopening vendor)
+11. Pete Petersen
+12. Ben, the crew's on court personality
+13. Kasey Stelter and Kenneth Holman, doubles partners
+14. Antigua Mexican Grill (Brick House reopening vendor)
 
 How to use it:
 - Organizations go into the prospect sheet with the matching script from section 8.
@@ -482,7 +481,7 @@ This feeds the partner recap, the events page record and future grant applicatio
 
 ## 10. Decisions for Alec
 1. **Names:** approved (Chicago Wheelie Big Dills). Open: claim the handle; register chicagowheelchairpickleball.org?
-2. **Wednesdays:** confirm the Brick House session with GLASA and Pete, and how to name GLASA on the site.
+2. **Wednesdays:** confirm the Brick House session time. (GLASA stays off the website.)
 3. **LWSRA:** reach out to Mak Nong about a south suburbs session or try it day?
 4. **Clubs:** can we name The Picklr and Palatine Picklers publicly, and as what?
 5. **The model in public:** keep "Hustle and Heart Fund" and describe two lanes (recommended), or introduce a new name.

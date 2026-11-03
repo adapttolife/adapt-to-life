@@ -15,7 +15,7 @@ Sources: production pages on origin/main (Nov 3, 2026), `/api/raised` on adaptto
 **What the site says today.** The US Open is the spine of the site. It appears on ten pages, including the home page, the fund, the giving page, the partner page and the Brick House page. The weekly program, the Wheelie Big Dills, ACE, the clubs, Monster Smash and the Chicago Classic are almost invisible. The crew's name appears once, deep inside Juan's page. The events page says "Nothing on the calendar right now" even though the crew plays every Thursday. The partner page sells logo placement instead of the value we actually create.
 
 **The new story in one paragraph.**
-Adapt To Life expands access to adaptive sports so athletes can find their place. In Chicago, that starts with pickleball. Our crew, the Chicago Wheelie Big Dills, is building a pickleball community across the area that anyone can drop into, one club at a time: drop in sessions with no membership, memberships for players who want to play anytime, and a growing network of clubs and organizations. We fund it all year, through monthly fundraiser tournaments, sponsors and gifts, and we are starting our own tournament, the Chicago Classic. Sending six athletes to the US Open is one of the goals we are raising for.
+Adapt To Life expands access to adaptive sports so athletes can find their place. In Chicago, that starts with pickleball: we are building an ecosystem for the adaptive sports community to play. Three levels. Play anytime: we build relationships with clubs, organizations and groups so there is a day to play, through open play and drop ins with no membership. Train to compete: memberships, for athletes who train regularly to travel to tournaments, because one session a week is not enough. Compete: monthly fundraiser tournaments, our own Chicago Classic, and tournaments on the road. The Chicago Wheelie Big Dills are the crew at the heart of it. We fund it all year, and sending six athletes to the US Open is one of the goals we are raising for.
 
 **The moves that matter most.**
 1. Give the program a home: a new page for the Wheelie Big Dills and wheelchair pickleball in Chicago, and put it on the home page.
@@ -65,10 +65,10 @@ We expand access to adaptive sports so athletes can find their place.
 ### 3.2 Who we are now
 Use this as the source paragraph. Shorter versions come from it.
 
-> Adapt To Life is building a pickleball community across the Chicago area that anyone can drop into. Our crew, the Chicago Wheelie Big Dills, plays at clubs around the area, one session at a time. No membership, nothing to lock in: drop in, have fun and try the sport. For players who want more, we are finding sponsors to cover memberships so they can play anytime. We fund it all year, and next we host our own tournament, the Chicago Classic.
+> Adapt To Life is building an ecosystem for the adaptive sports community to play pickleball across the Chicago area. We build relationships with clubs, organizations and groups so you can find a day to play: open play and drop ins, no membership, nothing to lock in. For athletes who want to train regularly and travel to tournaments, we offer memberships, covered by sponsors. And we compete, in monthly fundraiser tournaments and next in our own tournament, the Chicago Classic. Our crew, the Chicago Wheelie Big Dills, is at the heart of it.
 
 One line version for bios and introductions:
-> Adapt To Life is building a pickleball community in Chicago that anyone can drop into, and investing in the athletes and people who make it grow.
+> Adapt To Life is building an ecosystem for adaptive pickleball in Chicago: a day to play for anyone, memberships for athletes training to compete, and tournaments to compete in.
 
 ### 3.3 How we invest (the athlete deployment fund, in public words)
 Internally, the Hustle and Heart Fund is the athlete deployment fund. Publicly, avoid "deployment". Say what the money does.
@@ -119,24 +119,27 @@ What we can say today with a source:
 - Our athlete spotlights from Monster Smash drew more than 38,000 views across Instagram and Facebook. (Rose.)
 - What is next: Try Adaptive Night at ACE, the Chicago Classic, Wheelchair Pickleball Tournament, and monthly fundraiser tournaments with club members. (CeCe said yes to all three; Alec describes the monthly tournaments as part of how we fund the crew.)
 
-**The bigger story (Alec, Nov 3).** Not two nights on court and not a training plan for the US Open. A pickleball community across the Chicago area: open, affordable and easy to try. Sessions at clubs around the area, each with its own vibe, growing little by little. Sometimes a session has a sport chair to try, sometimes a coach, sometimes it is just open play. We lean into what we can create with every club and organization that joins in, and we fund it.
+**The bigger story (Alec, Nov 3, refined twice).** Not two nights on court, not a US Open training plan, and not "play anytime" as a membership. An ecosystem for the adaptive sports community to play pickleball in the Chicago area, built with clubs, organizations and groups, in three levels:
 
-**The sessions** (a list that grows; name a club only once it is confirmed):
+1. **Play anytime (the infrastructure).** We build relationships with clubs, organizations and groups so people can find a day to play, with a different club, organization or group of people. Open play and drop ins: no membership, nothing to lock in. Each session has its own vibe: sometimes a sport chair to try, sometimes a coach, sometimes just open play. We grow each one little by little and lean into what we can create.
+2. **Train to compete (the next level).** Memberships, for athletes who want to train regularly so they can travel to tournaments, because it takes more than one practice a week or one session. The membership sponsor at ACE funds this level.
+3. **Compete.** Monthly fundraiser tournaments with club members, our own Chicago Classic, Wheelchair Pickleball Tournament, tournaments on the road, and the US Open as one goal.
+
+**The sessions** (Play anytime; a list that grows; name a club only once it is confirmed):
 - Wednesdays, Brick House, Lake Forest. A weekly night; Pete volunteers as a coach and helps run it.
 - Thursdays, ACE, Des Plaines. Our reserved court; we cover court fees.
-- Saturdays, club to confirm.
-- Next: any club that wants to host. "Host a session" is a standing invitation and a partnership offer.
+- Saturdays, The Picklr, Mount Prospect. (Juan asked for regular weekend court time on Oct 5; their events lead, Carlos, offered noon to 4pm any day, and the owner is Ron Weiland. Alec confirmed The Picklr; confirm the location is Mount Prospect.)
+- Next: any club, organization or group that wants to host. "Host a session" is a standing invitation and a partnership offer.
 
-**How people grow with the crew, and how each step is funded.** This is the spine that connects the story to every sponsor package.
+**How each level is funded.** This is the spine that connects the story to every sponsor package.
 
-| Step | What it means for a player | What pays for it |
+| Level | What it means for an athlete | What pays for it |
 |---|---|---|
-| Try it | Drop in at a session. No membership, nothing to lock in | Night sponsors, Try Adaptive Night team events, equipment partners (chairs to try) |
-| Play every week | Sessions at clubs across the area | Night sponsors, host clubs (courts in kind), volunteers |
-| Play anytime | A membership, so a player can play whenever they want instead of hopping between sessions | Play Anytime presenting sponsor, seat sponsors |
-| Compete | Monthly fundraiser tournaments, the Chicago Classic, travel to tournaments, the US Open | Tournament sponsors, entry fees, Send 6 donors, the Hustle and Heart Fund |
+| Play anytime | Find a day to play. Open play and drop ins, no membership | Night sponsors ($75 a night at ACE), host clubs and groups (courts in kind), equipment partners (chairs to try), Try Adaptive Night team events, volunteers |
+| Train to compete | A membership, to train regularly for tournaments | Train to Compete presenting sponsor ($9,600 for ten), athlete sponsors ($960 each) |
+| Compete | Monthly tournaments, the Chicago Classic, the road, the US Open | Tournament sponsors, entry fees, Send 6 donors, the Hustle and Heart Fund |
 
-On the site the four steps appear plainly on `/pickleball` (Try it, Play every week, Play anytime, Compete). In a sponsor conversation, they answer "where does my money go" before it is asked.
+On the site: `/pickleball` opens with the three levels under "More than one trip", then a section for each (a week view for Play anytime, a membership section with Juan's 16 hours a week for Train to compete, results and what's ahead for Compete). The sponsor page sells the same three levels in the same order.
 
 ### 3.6 Ambassadors
 > Our ambassadors are athletes, coaches and connectors who grow a sport where they live. We back their work, and they bring the community with them.
@@ -152,7 +155,7 @@ Label each relationship honestly. "Partner" only when there is a real agreement.
 | Brick House Pickleball, Lake Forest | First partner; weekly Wednesday sessions; authored four posts about us | Partner |
 | GLASA | Internal context only | Never name GLASA on the website (Alec, Nov 3) |
 | ACE Pickleball Club, Des Plaines | Weekly Thursday host, Try Adaptive Night, Chicago Classic, fundraising | Host, partnership forming (public partner page after CeCe's OK) |
-| The Picklr | Not in any caption or post. Alec said cost was the barrier | Ask Alec before naming |
+| The Picklr, Mount Prospect | Saturday open play with the crew (Alec, Nov 3). Juan opened the relationship in October; Carlos (events) and Ron Weiland (owner) | Host (confirm location) |
 | Palatine Picklers | Not in any caption or post | Ask Alec before naming |
 | LWSRA, Lincolnway Special Recreation Association (New Lenox, serving eight south suburban park districts) | Wheelchair basketball, softball, football and boccia, and hosts of the national wheelchair softball World Series. No pickleball yet. Mak Nong is Athletics Supervisor, Adapted Programs (physical and visual impairments); a former Illini wheelchair basketball captain. He is in Alec's contacts | Relationship to grow: a south suburbs session or try it day would extend the Chicago crew |
 | WASA, Wisconsin Adaptive Sports Association | Try it events, pickleball program | Peer organization |
@@ -315,16 +318,16 @@ Note: tests protect the current home page order (`docs/story-first-ux.md`). The 
     Alec's brochure quote, one Donate button, volunteer line.
 
 ### 4.4 `/pickleball`, outline (built on the review link)
-- **Hero.** Chicago Wheelchair Pickleball. The Chicago Wheelie Big Dills: building a pickleball community across the Chicago area, one club at a time, and anyone can drop in.
-- **Where we play.** "Drop in. Try the sport." No membership; each session has its own vibe. Session cards for Brick House (Wednesdays) and ACE (Thursdays), plus "Your club? Host a session". A volunteers line. "Beyond our sessions": WASA and LWSRA, kept broad.
-- **Play anytime.** From drop in to membership; the sponsor ask for ACE memberships (no price on the public page); the four steps: Try it, Play every week, Play anytime, Compete.
-- **Meet the crew.** Six athlete cards.
-- **On the road.** US Open 2025, the APP's first wheelchair division, Monster Smash medals, our own tournament next.
+- **Hero.** Juan's serve. Chicago Wheelchair Pickleball, the Chicago Wheelie Big Dills: places for the adaptive sports community to play pickleball across the Chicago area, any day of the week. "Find a day to play".
+- **More than one trip.** The US Open is one goal; the bigger one is an ecosystem. Three linked cards: Play anytime, Train to compete, Compete.
+- **Play anytime, "Find a day to play".** We build relationships with clubs, organizations and groups. A week strip filling in (Wed Brick House, Thu ACE, Sat The Picklr); session cards plus "Your club? Host a session"; volunteers; Try Adaptive Night; "Across the region" (WASA, LWSRA, kept broad).
+- **Six of the Big Dills.** Athlete cards.
+- **Train to compete, "It takes more than one session".** Memberships for athletes ready to train and travel; the membership sponsor ask (no price on the public page); Juan's 16 hours a week on court.
+- **Compete.** Where the crew has played; then what's ahead: the Chicago Classic, monthly tournaments, the US Open as one goal.
 - **Quote.** Juan.
-- **More than one trip.** The Chicago Classic, monthly tournaments, Try Adaptive Night, the US Open as one goal.
 - **Help us fund it.** Give, sponsor, host.
-- **New players welcome.** Email for players, families and referral partners.
-- Later: the YouTube POV playlist, the Saturday session once its club is confirmed, and session times.
+- **New players welcome.**
+- Later: session times, the YouTube POV playlist.
 
 This page is also the strongest search page we could build: "wheelchair pickleball Chicago" has no clear home today.
 
@@ -461,17 +464,17 @@ Courts and hosting, money, gear and services, expertise, their audience, and int
 | Peer nonprofits (WASA, PVA, Park District) | Reach and shared programs | Co-hosted clinics, referrals | Collaboration, not money |
 
 ### 7.4 Packages
-Built from real costs, and grouped by the four steps in 3.5 so every package answers "where does my money go". A night at ACE costs $50 to $75 (10 to 15 athletes at the $5 adaptive drop in). The working sponsor page is the unlisted `/sponsor-the-crew` (formerly `/thursday-ten`).
+Built from real costs, and grouped by the three levels in 3.5 so every package answers "where does my money go". A night at ACE costs $50 to $75 (10 to 15 athletes at the $5 adaptive drop in). The working sponsor page is the unlisted `/sponsor-the-crew` (formerly `/thursday-ten`).
 
 | Package | Price | What it pays for | What the partner gets |
 |---|---|---|---|
-| Host a session (Try it, Play every week) | In kind | Courts and a regular session at a club | Partner listing, weekly content, new players, events at their place |
-| Night sponsor (Try it, Play every week) | $75 a night | Court fees for everyone at a night at ACE | Named on that night's posts |
-| Seat sponsor (Play anytime) | $960 a year | One player's unlimited membership (at the $80 founding rate, VERIFY with ACE) | Named on that athlete's spotlights |
-| Play Anytime, presenting (Play anytime) | $9,600 a year | Ten players' memberships | Name on the program, weekly posts and every spotlight, monthly recap |
+| Host a session (Play anytime) | In kind | Courts and a regular session at a club | Partner listing, weekly content, new players, events at their place |
+| Night sponsor (Play anytime) | $75 a night | Court fees for everyone at a night at ACE | Named on that night's posts |
+| Athlete sponsor (Train to compete) | $960 a year | One athlete's unlimited membership (at the $80 founding rate, VERIFY with ACE) | Named on that athlete's spotlights |
+| Train to Compete, presenting (Train to compete) | $9,600 a year | Ten athletes' memberships | Name on the program, weekly posts and every spotlight, monthly recap |
 | Monthly tournament sponsor (Compete) | Set per tournament | A monthly fundraiser tournament with club members | Named on the tournament, posts and recap |
 | Chicago Classic (Compete) | Set once the budget exists | Presenting and court sponsorship | Event naming, signage, content, recap |
-| Team experience (Try it) | Set per event | A company team at Try Adaptive Night | Team event, photos, recap |
+| Team experience (Play anytime) | Set per event | A company team at Try Adaptive Night | Team event, photos, recap |
 | Annual partner tiers | $500 to $50,000 | Hustle and Heart Fund and programs | Rebuild the benefits around real deliverables: partner page, content, events, recap |
 
 Guardrails:
@@ -494,7 +497,7 @@ Guardrails:
 ### 8.2 First message (text, email or DM)
 
 **Club**
-> Hi [name], I'm Alec with Adapt To Life. We're building a pickleball community across the Chicago area, with drop in sessions at clubs like Brick House and ACE. We'd love to host a session at [club]. We bring the players, the volunteers and video for your feed, and our players often become regulars. What would make it a win for you? Could we grab 20 minutes this week?
+> Hi [name], I'm Alec with Adapt To Life. We're building an ecosystem for adaptive pickleball across the Chicago area, with sessions at clubs like Brick House, ACE and The Picklr, so athletes can find a day to play. We'd love to add a session at [club]. We bring the players, the volunteers and video for your feed, and athletes who train with us often become members. What would make it a win for you? Could we grab 20 minutes this week?
 
 **Mobility or medical business**
 > Hi [name], I'm Alec with Adapt To Life. Every week we have athletes in sport wheelchairs on the court in Lake Forest and Des Plaines, 10 to 15 on a Thursday, and our videos reached about 334,000 views in the last 90 days. That's the community you serve. I'd love to talk about sponsoring a night or an athlete, and bringing your team to our next event. Could we grab 20 minutes?

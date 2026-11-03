@@ -139,7 +139,7 @@ What we can say today with a source:
 | Train to compete | A membership, to train regularly for tournaments | Train to Compete presenting sponsor ($9,600 for ten), athlete sponsors ($960 each) |
 | Compete | Monthly tournaments, the Chicago Classic, the road, the US Open | Tournament sponsors, entry fees, Send 6 donors, the Hustle and Heart Fund |
 
-On the site: `/pickleball` opens with the three levels under "More than one trip", then a section for each (a week view for Play anytime, a membership section with Juan's 16 hours a week for Train to compete, results and what's ahead for Compete). The sponsor page sells the same three levels in the same order.
+On the site: `/pickleball` opens with the three levels under "More than one trip", then a section for each (the network of clubs for Play anytime, no schedule, a membership section with Juan's 16 hours a week for Train to compete, results and what's ahead for Compete). The sponsor page sells the same three levels in the same order.
 
 ### 3.6 Ambassadors
 > Our ambassadors are athletes, coaches and connectors who grow a sport where they live. We back their work, and they bring the community with them.
@@ -245,6 +245,8 @@ Drop or limit: "Send 6" as the headline of the organization; "home court" unless
 
 ## 4. Site plan
 
+**Audience (Alec, Nov 3).** adapttolife.org speaks to sponsors, partners and donors. Athletes looking for a place to play go to Adaptive Sports Near Me (adaptivesportsnearme.com), with one line in the close of a page. No session schedules or days of the week on adapttolife.org: clubs appear as a network of relationships (our first partner club, our reserved court, open play), and the calls to action are Back the crew, Partner with us, Donate and Host a session.
+
 ### 4.1 Navigation
 Today: Our Work (Hustle and Heart Fund, Adaptive Sports Near Me, Adapt Body Shop) · Get Involved (Volunteer, Partners, Events) · About (How Giving Works, Our Story).
 
@@ -318,16 +320,16 @@ Note: tests protect the current home page order (`docs/story-first-ux.md`). The 
     Alec's brochure quote, one Donate button, volunteer line.
 
 ### 4.4 `/pickleball`, outline (built on the review link)
-- **Hero.** Juan's serve. Chicago Wheelchair Pickleball, the Chicago Wheelie Big Dills: places for the adaptive sports community to play pickleball across the Chicago area, any day of the week. "Find a day to play".
+- **Hero.** Juan's serve. Chicago Wheelchair Pickleball, the Chicago Wheelie Big Dills: places for the adaptive sports community to play pickleball across the Chicago area. Buttons: Back the crew, See what we're building.
 - **More than one trip.** The US Open is one goal; the bigger one is an ecosystem. Three linked cards: Play anytime, Train to compete, Compete.
-- **Play anytime, "Find a day to play".** We build relationships with clubs, organizations and groups. A week strip filling in (Wed Brick House, Thu ACE, Sat The Picklr); session cards plus "Your club? Host a session"; volunteers; Try Adaptive Night; "Across the region" (WASA, LWSRA, kept broad).
+- **Play anytime, "Places to play, built together".** We build relationships with clubs, organizations and groups. Club cards with no days: Brick House (our first partner club; Pete volunteers as a coach and helps run a weekly night), ACE (our reserved court; we cover fees), The Picklr (open play), plus "Your club? Host a session". Volunteers, Try Adaptive Night, "Across the region" (WASA, LWSRA).
 - **Six of the Big Dills.** Athlete cards.
 - **Train to compete, "It takes more than one session".** Memberships for athletes ready to train and travel; the membership sponsor ask (no price on the public page); Juan's 16 hours a week on court.
 - **Compete.** Where the crew has played; then what's ahead: the Chicago Classic, monthly tournaments, the US Open as one goal.
 - **Quote.** Juan.
 - **Help us fund it.** Give, sponsor, host.
-- **New players welcome.**
-- Later: session times, the YouTube POV playlist.
+- **Close: "Put your name on the court".** Partner with us, Donate; one line sends athletes to Adaptive Sports Near Me.
+- Later: the YouTube POV playlist. Session times belong on Adaptive Sports Near Me, not here.
 
 This page is also the strongest search page we could build: "wheelchair pickleball Chicago" has no clear home today.
 

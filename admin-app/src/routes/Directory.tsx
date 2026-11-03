@@ -854,11 +854,26 @@ export function Directory({ onFail }: { onFail: () => void }) {
     setMessage(error instanceof Error ? error.message : fallback);
   };
 
+  const toast = message ? (
+    <div className="directory-toast" role="status">
+      <span>{message}</span>
+      <button aria-label="Dismiss message" onClick={() => setMessage("")} type="button">
+        Close
+      </button>
+    </div>
+  ) : null;
+
   useEffect(() => {
     const onPopState = () => setCurrent(detailRoute());
     addEventListener("popstate", onPopState);
     return () => removeEventListener("popstate", onPopState);
   }, []);
+
+  useEffect(() => {
+    if (!message) return;
+    const timeout = setTimeout(() => setMessage(""), 4500);
+    return () => clearTimeout(timeout);
+  }, [message]);
 
   useEffect(() => {
     if (current) return;
@@ -1199,13 +1214,11 @@ export function Directory({ onFail }: { onFail: () => void }) {
                 </>
               ))}
             </dl>
-            <p className="directory-message" role="status">
-              {message}
-            </p>
             <button className="btn" onClick={acceptQueueItem} type="button">
               Accept and publish
             </button>
           </section>
+          {toast}
         </section>
       );
     return (
@@ -1239,6 +1252,7 @@ export function Directory({ onFail }: { onFail: () => void }) {
             <p>No submissions need review.</p>
           )}
         </div>
+        {toast}
       </section>
     );
   }
@@ -1299,9 +1313,7 @@ export function Directory({ onFail }: { onFail: () => void }) {
               Save changes
             </button>
           </form>
-          <p className="directory-message" role="status">
-            {message}
-          </p>
+          {toast}
         </section>
       );
     }
@@ -1374,9 +1386,7 @@ export function Directory({ onFail }: { onFail: () => void }) {
             </div>
           ))}
         </div>
-        <p className="directory-message" role="status">
-          {message}
-        </p>
+        {toast}
       </section>
     );
   }
@@ -1988,9 +1998,7 @@ export function Directory({ onFail }: { onFail: () => void }) {
             </div>
           </form>
         )}
-        <p className="directory-message" role="status">
-          {message}
-        </p>
+        {toast}
         {current.kind === "organizations" && !creating && (
           <section className="activity-panel" aria-labelledby="activity-heading">
             <h3 id="activity-heading">Activity</h3>
@@ -2090,9 +2098,7 @@ export function Directory({ onFail }: { onFail: () => void }) {
           placeholder="Type a name"
         />
       </label>
-      <p className="directory-message" role="status">
-        {message}
-      </p>
+      {toast}
       {loading ? (
         <div className="directory-loading" role="status">
           <i aria-hidden="true" />

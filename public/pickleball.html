@@ -205,7 +205,9 @@
   .pb-night p:not(.pb-day):not(.pb-where){ margin-top:0.8rem; line-height:1.55; }
   .pb-link{ display:inline-block; margin-top:1rem; font-weight:700; color:var(--orange-ink); border-bottom:2px solid currentColor; padding-bottom:2px; }
   .pb-link-light{ color:var(--orange); }
-  .pb-note{ margin-top:1.6rem; }
+  .pb-note{ margin-top:1.6rem; max-width:70ch; }
+  .pb-beyond{ margin-top:clamp(1.6rem,3vw,2.2rem); max-width:62ch; padding:clamp(1.1rem,2.2vw,1.5rem); border-left:4px solid var(--orange); background:rgba(255,92,57,0.06); border-radius:0 14px 14px 0; }
+  .pb-beyond p:last-child{ margin-top:0.4rem; line-height:1.55; }
   .pb-note a{ color:var(--orange-ink); font-weight:700; border-bottom:2px solid currentColor; }
   @media (max-width:700px){ .pb-nights{ grid-template-columns:1fr; } }
   .pb-crew{ position:relative; isolation:isolate; overflow:hidden; }
@@ -443,7 +445,7 @@ fill="currentColor" stroke="none">
           <p class="pb-day">Wednesdays</p>
           <h3>Brick House Pickleball</h3>
           <p class="pb-where">Lake Forest</p>
-          <p>A weekly wheelchair pickleball night at our first partner club. Pete Petersen, from our leadership team, coaches, and many of our athletes play.</p>
+          <p>A weekly wheelchair pickleball night at our first partner club. Pete Petersen, from our leadership team, volunteers as a coach and helps run it, and many of our athletes play.</p>
           <a class="pb-link" href="#join">Ask how to join</a>
         </article>
         <article class="pb-night">
@@ -453,7 +455,11 @@ fill="currentColor" stroke="none">
           <p>The crew's own night: a reserved court, open play beside it, and club members to mix in with. Adapt To Life covers court fees, so it is free for every athlete.</p>
         </article>
       </div>
-      <p class="pb-note">New to the sport? <a href="#join">Tell us you're coming</a> and we'll meet you there.</p>
+      <p class="pb-note">Volunteers make every night work: coaches like Pete, members from our partner clubs, and the crew itself. New to the sport? <a href="#join">Tell us you're coming</a> and we'll meet you there.</p>
+      <div class="pb-beyond" data-m="up">
+        <p class="pb-day">Beyond our nights</p>
+        <p>We also support adaptive programs across the region, with coaching for WASA in Wisconsin and clinics with LWSRA in the south suburbs. Those relationships keep growing.</p>
+      </div>
     </div>
   </section>
 

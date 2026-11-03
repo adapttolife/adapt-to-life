@@ -15,7 +15,7 @@ Sources: production pages on origin/main (Nov 3, 2026), `/api/raised` on adaptto
 **What the site says today.** The US Open is the spine of the site. It appears on ten pages, including the home page, the fund, the giving page, the partner page and the Brick House page. The weekly program, the Wheelie Big Dills, ACE, the clubs, Monster Smash and the Chicago Classic are almost invisible. The crew's name appears once, deep inside Juan's page. The events page says "Nothing on the calendar right now" even though the crew plays every Thursday. The partner page sells logo placement instead of the value we actually create.
 
 **The new story in one paragraph.**
-Adapt To Life expands access to adaptive sports so athletes can find their place. We do it by investing in athletes and in the people building the sport around them. In Chicago, that starts with wheelchair pickleball: the Chicago Wheelie Big Dills play every week, free for every athlete, at clubs across the area. Our first ambassador, Juan Ortiz, is building the sport on the ground. We travel to tournaments, we are starting our own, and we raise money all year so athletes can train, travel and get equipped. Sending six athletes to the US Open is one of the goals we are raising for.
+Adapt To Life expands access to adaptive sports so athletes can find their place. In Chicago, that starts with pickleball. Our crew, the Chicago Wheelie Big Dills, is building a pickleball community across the area that anyone can drop into, one club at a time: drop in sessions with no membership, memberships for players who want to play anytime, and a growing network of clubs and organizations. We fund it all year, through monthly fundraiser tournaments, sponsors and gifts, and we are starting our own tournament, the Chicago Classic. Sending six athletes to the US Open is one of the goals we are raising for.
 
 **The moves that matter most.**
 1. Give the program a home: a new page for the Wheelie Big Dills and wheelchair pickleball in Chicago, and put it on the home page.
@@ -36,7 +36,7 @@ Adapt To Life expands access to adaptive sports so athletes can find their place
 | About `/about` | Team (Karen, Mike, Pete), Alec's story, Our Work (directory, fund, store) | Team is incomplete and possibly mislabeled: Karen is shown as Board Member here but Leadership Team on her own page; the confirmed board is Mike Carrico and Tom Daily, and Tom is missing. Robby Wolf and Juan are missing. Our Work leaves out the program | Update team (VERIFY roles). Add the program and ambassadors to Our Work |
 | Hustle and Heart `/hustle-and-heart` | Grants for equipment, training, travel; Tim; Send 6 thermometer | Describes only one lane (grants by application). Static fallback reads "$0 raised" until the script loads; live is $4,979 | Rewrite as "how the fund invests": grants plus ambassador led programs. Fix the fallback |
 | How Giving Works `/promise` | Direct payments, safety is not overhead, Alec covers overhead, "Chicago, year round", campaign terms | Strong and honest. "Right now" still centers the US Open | Light update: weekly program, year round support, campaigns as one way we raise |
-| Donate `/donate` | Impact ladder: $3,500 Send 6 seat, $500 training, $200 equipment; monthly giving; partners strip (Brick House) | Ladder misses the cheapest, clearest unit we have: a Thursday night. Monthly giving pitch is generic | Add "$75 covers a Thursday night for the whole crew". Tie monthly giving to the weekly rhythm. Add ACE to partners once approved |
+| Donate `/donate` | Impact ladder: $3,500 Send 6 seat, $500 training, $200 equipment; monthly giving; partners strip (Brick House) | Ladder misses the cheapest, clearest unit we have: a Thursday night. Monthly giving pitch is generic | Add "$75 covers a night at ACE for the whole crew". Tie monthly giving to the weekly rhythm. Add ACE to partners once approved |
 | Send 6 `/send-6` | $21,000 for six athletes, $3,500 a seat, Juan holds the first seat, training at Brick House | Fine as a campaign page. Training line is out of date. Reads as the whole mission because everything else points here | Keep as a campaign. Update where they train. Add a line placing it inside year round support |
 | Juan `/juan` | Rich story, quotes, the APP's first wheelchair division, the Wheelie Big Dills, PER4MAX and Bread and Butter, "Send Juan to Naples" | Best page on the site, but the hero and the calls to action make him a fundraiser for one trip. His real role, ambassador and builder of the sport, sits halfway down | Reframe the hero around building the sport in Chicago. Keep Naples as his personal goal and a secondary call to action |
 | Ambassadors `/ambassadors` | Roles (athlete, coach, connector), what you get, what we ask, guardrail on fund support | Good bones. Does not explain why ambassadors are how we invest, or what one ambassador makes possible (clubs, sponsors, events, players) | Reframe as the model page, with Juan as the worked example |
@@ -65,10 +65,10 @@ We expand access to adaptive sports so athletes can find their place.
 ### 3.2 Who we are now
 Use this as the source paragraph. Shorter versions come from it.
 
-> Adapt To Life invests in adaptive athletes and in the people who build the sport around them. In Chicago, that starts with wheelchair pickleball. Our crew, the Chicago Wheelie Big Dills, plays every week at clubs across the area, free for every athlete. They travel to tournaments, they bring home medals, and next year we host our own. Year round, we raise money so athletes can train, travel and get the equipment they need.
+> Adapt To Life is building a pickleball community across the Chicago area that anyone can drop into. Our crew, the Chicago Wheelie Big Dills, plays at clubs around the area, one session at a time. No membership, nothing to lock in: drop in, have fun and try the sport. For players who want more, we are finding sponsors to cover memberships so they can play anytime. We fund it all year, and next we host our own tournament, the Chicago Classic.
 
 One line version for bios and introductions:
-> Adapt To Life invests in adaptive athletes and the people building the sport around them, starting with wheelchair pickleball in Chicago.
+> Adapt To Life is building a pickleball community in Chicago that anyone can drop into, and investing in the athletes and people who make it grow.
 
 ### 3.3 How we invest (the athlete deployment fund, in public words)
 Internally, the Hustle and Heart Fund is the athlete deployment fund. Publicly, avoid "deployment". Say what the money does.
@@ -117,7 +117,26 @@ What we can say today with a source:
 - Juan asked the APP Tour's Vlasic Classic for a wheelchair division in August and got the APP's first, with five full teams. (Juan's page.)
 - Robby Wolf competed at the US Open Pickleball Championships in Naples in 2025, and Pete Petersen played hybrid doubles there. The crew already knows the road. (Robby's own Instagram, May 2025; About page.)
 - Our athlete spotlights from Monster Smash drew more than 38,000 views across Instagram and Facebook. (Rose.)
-- What is next: Try Adaptive Night at ACE, the Chicago Classic, Wheelchair Pickleball Tournament, and a monthly fundraiser with ACE members. (CeCe said yes to all three.)
+- What is next: Try Adaptive Night at ACE, the Chicago Classic, Wheelchair Pickleball Tournament, and monthly fundraiser tournaments with club members. (CeCe said yes to all three; Alec describes the monthly tournaments as part of how we fund the crew.)
+
+**The bigger story (Alec, Nov 3).** Not two nights on court and not a training plan for the US Open. A pickleball community across the Chicago area: open, affordable and easy to try. Sessions at clubs around the area, each with its own vibe, growing little by little. Sometimes a session has a sport chair to try, sometimes a coach, sometimes it is just open play. We lean into what we can create with every club and organization that joins in, and we fund it.
+
+**The sessions** (a list that grows; name a club only once it is confirmed):
+- Wednesdays, Brick House, Lake Forest. A weekly night; Pete volunteers as a coach and helps run it.
+- Thursdays, ACE, Des Plaines. Our reserved court; we cover court fees.
+- Saturdays, club to confirm.
+- Next: any club that wants to host. "Host a session" is a standing invitation and a partnership offer.
+
+**How people grow with the crew, and how each step is funded.** This is the spine that connects the story to every sponsor package.
+
+| Step | What it means for a player | What pays for it |
+|---|---|---|
+| Try it | Drop in at a session. No membership, nothing to lock in | Night sponsors, Try Adaptive Night team events, equipment partners (chairs to try) |
+| Play every week | Sessions at clubs across the area | Night sponsors, host clubs (courts in kind), volunteers |
+| Play anytime | A membership, so a player can play whenever they want instead of hopping between sessions | Play Anytime presenting sponsor, seat sponsors |
+| Compete | Monthly fundraiser tournaments, the Chicago Classic, travel to tournaments, the US Open | Tournament sponsors, entry fees, Send 6 donors, the Hustle and Heart Fund |
+
+On the site the four steps appear plainly on `/pickleball` (Try it, Play every week, Play anytime, Compete). In a sponsor conversation, they answer "where does my money go" before it is asked.
 
 ### 3.6 Ambassadors
 > Our ambassadors are athletes, coaches and connectors who grow a sport where they live. We back their work, and they bring the community with them.
@@ -165,10 +184,10 @@ The principle: Adapt To Life is part of a community, not the owner of it. We sup
 2. The fund. When an athlete needs help with a program fee or equipment, the Hustle and Heart Fund can pay that program or vendor directly. That support goes through the athlete, so it needs no partnership.
 3. The directory. Adaptive Sports Near Me helps people find programs run by many organizations, at no cost.
 
-**The two nights, told honestly**
+**Each session, told honestly** (the sessions are a growing network; the honesty rule applies to every one)
 - Thursdays at ACE: the crew's own night. We reserve the court and cover court fees, so it is free for every athlete.
 - Wednesdays at Brick House: a weekly night our athletes and coaches join. Adapt To Life pays for nothing there; we bring volunteers (Alec and Pete), marketing and social. Pete volunteers as a coach and is vital to running it (Alec helped him build it). New players ask us, and we point them to the right place to sign up.
-That difference is the whole fix. Nobody reading the site can mistake Wednesday for something we own, and nobody can mistake Thursday for something we don't.
+That difference is the whole fix: every session is described by what we actually do there. Nobody reading the site can mistake Wednesday for something we own, and nobody can mistake Thursday for something we don't. New sessions follow the same rule as they are added.
 
 **Pete is the bridge.** He is on our leadership team, and he volunteers as a coach and helps run the Wednesday night. The site can say both, plainly. It never says he represents another organization, and it never says "every Wednesday".
 
@@ -262,9 +281,9 @@ Note: tests protect the current home page order (`docs/story-first-ux.md`). The 
    A chance to play should not come down to luck. (Existing brochure story, unchanged.)
 
 3. **Right now in Chicago (new)**
-   Eyebrow: Wheelchair pickleball in Chicago
-   Heading: The Chicago Wheelie Big Dills play every week.
-   Body: Our wheelchair pickleball crew plays Wednesdays at Brick House in Lake Forest and Thursdays at ACE in Des Plaines, free for every athlete. They travel to tournaments and bring home medals. Next, we host our own tournament: the Chicago Classic.
+   Eyebrow: Chicago Wheelchair Pickleball
+   Heading: A pickleball community anyone can drop into.
+   Body: Our crew, the Chicago Wheelie Big Dills, plays at clubs across the Chicago area. No membership, nothing to lock in: drop in, have fun and try the sport. We travel to tournaments, we bring home medals, and next we host our own, the Chicago Classic.
    Below it: the six athlete cards (section 5), each linking to the athlete's page.
    Link: Meet the crew → `/pickleball`
 
@@ -295,17 +314,17 @@ Note: tests protect the current home page order (`docs/story-first-ux.md`). The 
 10. **Closing (keep)**
     Alec's brochure quote, one Donate button, volunteer line.
 
-### 4.4 `/pickleball`, outline and draft copy
-- **Hero.** Heading: Chicago Wheelchair Pickleball. Body: The Chicago Wheelie Big Dills play every week, free for every athlete. New players welcome.
-- **Every week.** Wednesdays at Brick House, Thursdays at ACE. Where, when, what to bring, that court fees are covered. (VERIFY whether sport chairs are available to borrow before saying so.)
-- **Meet the six.** Six athlete cards, each linking to a page.
-- **Watch.** The Wheelie Big Dills POV playlist, embedded.
-- **Where we play.** ACE (Thursdays), Brick House, and other clubs (verified list).
-- **Results.** APP Vlasic Classic wheelchair division (the APP's first). Monster Smash medals. Spotlight cards.
-- **What is next.** Try Adaptive Night. The Chicago Classic. A monthly fundraiser with ACE members. Maybe a junior program.
-- **Led by Juan.** Short ambassador block.
-- **Support the crew.** $75 covers a Thursday night. Sponsor packages. Send 6 as one goal.
-- **Join.** A short form or email for new players, families and referral partners.
+### 4.4 `/pickleball`, outline (built on the review link)
+- **Hero.** Chicago Wheelchair Pickleball. The Chicago Wheelie Big Dills: building a pickleball community across the Chicago area, one club at a time, and anyone can drop in.
+- **Where we play.** "Drop in. Try the sport." No membership; each session has its own vibe. Session cards for Brick House (Wednesdays) and ACE (Thursdays), plus "Your club? Host a session". A volunteers line. "Beyond our sessions": WASA and LWSRA, kept broad.
+- **Play anytime.** From drop in to membership; the sponsor ask for ACE memberships (no price on the public page); the four steps: Try it, Play every week, Play anytime, Compete.
+- **Meet the crew.** Six athlete cards.
+- **On the road.** US Open 2025, the APP's first wheelchair division, Monster Smash medals, our own tournament next.
+- **Quote.** Juan.
+- **More than one trip.** The Chicago Classic, monthly tournaments, Try Adaptive Night, the US Open as one goal.
+- **Help us fund it.** Give, sponsor, host.
+- **New players welcome.** Email for players, families and referral partners.
+- Later: the YouTube POV playlist, the Saturday session once its club is confirmed, and session times.
 
 This page is also the strongest search page we could build: "wheelchair pickleball Chicago" has no clear home today.
 
@@ -442,16 +461,17 @@ Courts and hosting, money, gear and services, expertise, their audience, and int
 | Peer nonprofits (WASA, PVA, Park District) | Reach and shared programs | Co-hosted clinics, referrals | Collaboration, not money |
 
 ### 7.4 Packages
-Built from real costs. A Thursday costs $50 to $75 (10 to 15 athletes at the $5 adaptive drop in).
+Built from real costs, and grouped by the four steps in 3.5 so every package answers "where does my money go". A night at ACE costs $50 to $75 (10 to 15 athletes at the $5 adaptive drop in). The working sponsor page is the unlisted `/sponsor-the-crew` (formerly `/thursday-ten`).
 
 | Package | Price | What it pays for | What the partner gets |
 |---|---|---|---|
-| Community partner | In kind | Courts, space, gear, services | Partner listing, content, events at their place |
-| Night sponsor | $75 a night | Court fees for everyone that night | Named on that night's posts |
-| Seat sponsor | $960 a year | One athlete's unlimited membership (at the $80 founding rate, VERIFY with ACE) | Named on that athlete's spotlights |
-| The Thursday Ten, presenting | $9,600 a year | Ten athletes' memberships | Name on the program, weekly posts and every spotlight, monthly recap |
-| Chicago Classic | Set once the budget exists | Presenting and court sponsorship | Event naming, signage, content, recap |
-| Team experience | Set per event | A company team at Try Adaptive Night | Team event, photos, recap |
+| Host a session (Try it, Play every week) | In kind | Courts and a regular session at a club | Partner listing, weekly content, new players, events at their place |
+| Night sponsor (Try it, Play every week) | $75 a night | Court fees for everyone at a night at ACE | Named on that night's posts |
+| Seat sponsor (Play anytime) | $960 a year | One player's unlimited membership (at the $80 founding rate, VERIFY with ACE) | Named on that athlete's spotlights |
+| Play Anytime, presenting (Play anytime) | $9,600 a year | Ten players' memberships | Name on the program, weekly posts and every spotlight, monthly recap |
+| Monthly tournament sponsor (Compete) | Set per tournament | A monthly fundraiser tournament with club members | Named on the tournament, posts and recap |
+| Chicago Classic (Compete) | Set once the budget exists | Presenting and court sponsorship | Event naming, signage, content, recap |
+| Team experience (Try it) | Set per event | A company team at Try Adaptive Night | Team event, photos, recap |
 | Annual partner tiers | $500 to $50,000 | Hustle and Heart Fund and programs | Rebuild the benefits around real deliverables: partner page, content, events, recap |
 
 Guardrails:
@@ -474,7 +494,7 @@ Guardrails:
 ### 8.2 First message (text, email or DM)
 
 **Club**
-> Hi [name], I'm Alec with Adapt To Life. Our wheelchair pickleball crew plays every week, and we're growing fast across the Chicago area. We bring players who become regulars, video for your feed every week, and events your members can join. I'd love to explore playing at [club] and what would make it a win for you. Could we grab 20 minutes this week?
+> Hi [name], I'm Alec with Adapt To Life. We're building a pickleball community across the Chicago area, with drop in sessions at clubs like Brick House and ACE. We'd love to host a session at [club]. We bring the players, the volunteers and video for your feed, and our players often become regulars. What would make it a win for you? Could we grab 20 minutes this week?
 
 **Mobility or medical business**
 > Hi [name], I'm Alec with Adapt To Life. Every week we have athletes in sport wheelchairs on the court in Lake Forest and Des Plaines, 10 to 15 on a Thursday, and our videos reached about 334,000 views in the last 90 days. That's the community you serve. I'd love to talk about sponsoring a night or an athlete, and bringing your team to our next event. Could we grab 20 minutes?

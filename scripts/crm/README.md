@@ -10,7 +10,7 @@ Stdlib Python 3.9+. It shells out to `gog`.
 ## Run it
 
 ```sh
-# AgentOS (gog runs on the Grok box through gogbox)
+# AgentOS (gog runs on agentos through gogrun, a token minted from 1Password)
 python3 scripts/crm/karen_sync.py            # dry run: prints the plan, writes nothing
 python3 scripts/crm/karen_sync.py --apply    # writes the plan
 
@@ -21,7 +21,7 @@ GOG=gog python3 scripts/crm/karen_sync.py --apply
 python3 scripts/crm/karen_sync.py --apply --retry-review
 ```
 
-Environment: `GOG` (default `gogbox`), `GOG_ACCOUNT` (default `alec@alecability.com`),
+Environment: `GOG` (default `gogrun`), `GOG_ACCOUNT` (default `alec@alecability.com`),
 `ATL_CRM_SHEET_ID` (default is the live CRM; point it at a copy to test).
 
 A run holds an exclusive lock for the whole read, plan, and apply, so a manual run and
@@ -97,8 +97,14 @@ Other / blank / unknown to Supporter. Several kinds split on `;` or `,`.
 Brands: any beta kind adds Adaptive Sports Near Me; any non beta kind adds Adapt To Life.
 
 Order of writes: People, Organizations and Timeline first, Karen L to N last. A failure in the
-middle leaves Karen rows unfiled so the next run plans them again; check the new rows before
-rerunning (see rollback).
+middle leaves Karen rows unfiled, so a plain rerun would plan them again and could add a second
+People or Timeline row. To stop that, `--apply` writes a marker (`$KAREN_SYNC_LOCK.partial`)
+before the first write and deletes it after the last. If the marker is there, the next `--apply`
+writes nothing and exits 4 (the unit emails every hour until fixed). The marker is JSON listing
+every row that run was going to touch and the old value of each updated cell. Undo that run
+with Rollback below so the sheet is as it was before, then delete the marker; the next run files
+the rows once. Do not just delete the marker or remove "duplicates": after a half-written run
+there are none yet, and the next run would add them. A dry run still works and prints a warning.
 
 It never writes marketing consent (Resend owns newsletter consent), never sorts, renumbers or
 deletes, and never touches the feed tabs or the refresh owned tabs.
@@ -115,7 +121,10 @@ KAREN_SYNC_LOCK=/srv/hetzner-jobs/workspace/locks/karen-sync.lock \
   /usr/bin/python3 scripts/crm/karen_sync.py --apply
 ```
 
-`GOG` stays the default `gogbox`. The Grok box crontab does not run this job.
+The unit sets `GOG=/home/agentos/.local/bin/gogrun`. It used `gogbox` until 2026-11-02, when runs
+failed because the Grok box sleeps when no bot is working; an hourly job must not need it awake.
+The unit has no systemd `Restart=`: every failure emails, and the next hourly run is the retry.
+The Grok box crontab does not run this job.
 `/home/box/adapt-to-life` is not the checkout. The lock file sits outside the
 checkout so a manual run on agentos waits on the same file as the timer.
 
@@ -130,11 +139,15 @@ The dry run prints the plan and writes nothing. Do not delete the lock file.
 
 ## Rollback
 
-Every run prints exactly what it wrote (row numbers and IDs). To undo one run:
+Every run prints exactly what it wrote (row numbers and IDs). A run that stopped partway also
+left the same rows in `$KAREN_SYNC_LOCK.partial`. To undo one run:
 
 1. People: clear A:AC on the new rows (leave the AD formula); for updated cells, restore the
    `old` value printed in the plan.
 2. Organizations: clear the new rows. Timeline: clear the new rows.
-3. Karen: clear L:N on those rows. They read `New, house will file` again.
+3. Karen: set L:N on those rows back to what they were before the run. After a partial run, use
+   `karen_old_LMN` in the marker; usually that is blank (the row reads `New, house will file`
+   again), but a row that already had a Contact ID or Organization ID must get it back, or the
+   next run files that person a second time.
 
 Do not delete rows or renumber IDs. Cleared rows after the last remaining ID are reused on the next run.

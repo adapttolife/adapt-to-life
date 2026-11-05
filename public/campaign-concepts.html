@@ -5,28 +5,113 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light only">
 <meta name="robots" content="noindex,nofollow">
-<title>Campaign concepts: three ways to show the goal | Adapt To Life</title>
+<title>Campaign concepts: Scoreboard, refined | Adapt To Life</title>
 <link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css?v=5e6e33e6">
 <style>
-  /* Review surface (staging only). Three treatments of one campaign module,
-     all reading the live /api/raised?c=wbd. Alec, Nov 5: "let go of some of
-     our design rules... a very powerful visual that helps articulate the
-     progress of where we're going and... show we've done a lot." */
+  /* Review surface (staging only). Round 2, Alec Nov 5: "I like option A the
+     best, but I don't love it... Color scheme, color contrast, layout."
+     Every variant: the wins first, then the money; one accent for the money
+     and the button; two meters, with the empty one framed as where a new gift
+     goes; a full-width Donate. All read the live /api/raised?c=wbd. */
   body{ background:#f3efe7; }
   .cc-intro{ max-width:1100px; margin:0 auto; padding:clamp(2rem,6vw,3.4rem) var(--gutter) 1.4rem; }
   .cc-tag{ display:inline-block; margin:0; padding:0.35rem 0.85rem; border-radius:999px; background:var(--orange-ink); color:#fff; font-family:var(--font-label); font-weight:800; font-size:0.7rem; letter-spacing:0.14em; text-transform:uppercase; }
   .cc-intro h1{ margin:1rem 0 0.6rem; font-weight:900; font-size:clamp(2rem,6vw,3rem); line-height:1.02; letter-spacing:-0.03em; }
-  .cc-intro p.cc-lede{ margin:0; max-width:56ch; color:var(--ink-soft); font-size:1.05rem; line-height:1.55; }
+  .cc-lede{ margin:0; max-width:58ch; color:var(--ink-soft); font-size:1.05rem; line-height:1.55; }
+  .cc-changes{ margin:1rem 0 0; padding-left:1.1rem; max-width:62ch; color:var(--ink-soft); line-height:1.5; }
+  .cc-changes li{ margin:0.25rem 0; }
   .cc-jump{ display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:1.2rem; }
   .cc-jump a{ padding:0.5rem 0.9rem; border-radius:999px; background:#fff; box-shadow:inset 0 0 0 1px rgba(28,26,21,0.14); font-weight:700; font-size:0.9rem; color:var(--ink); text-decoration:none; }
-  .cc-label{ max-width:1100px; margin:0 auto; padding:clamp(2.4rem,6vw,3.6rem) var(--gutter) 0.9rem; display:flex; align-items:baseline; gap:0.8rem; flex-wrap:wrap; }
+  .cc-label{ max-width:1100px; margin:0 auto; padding:clamp(2.4rem,6vw,3.6rem) var(--gutter) 0.9rem; display:flex; align-items:baseline; gap:0.4rem 0.8rem; flex-wrap:wrap; }
   .cc-label b{ font-weight:900; font-size:clamp(1.3rem,3.6vw,1.7rem); letter-spacing:-0.02em; }
   .cc-label span{ color:var(--muted); font-size:0.95rem; }
 
+  /* The refined module ---------------------------------------------------- */
+  .av{ position:relative; overflow:hidden; padding:clamp(2.4rem,7vw,4.4rem) 0; }
+  .av-wrap{ position:relative; max-width:1100px; margin:0 auto; padding:0 var(--gutter); display:grid; gap:clamp(1.5rem,4vw,2rem); }
+  @media (min-width:1000px){ .av-wrap{ grid-template-columns:1.05fr 1fr; column-gap:3.6rem; align-items:center; } .av-head{ grid-column:1; } .w6{ grid-column:1; } .av-money{ grid-column:2; grid-row:1 / span 2; } }
+  .av-kicker{ display:flex; align-items:center; gap:0.55rem; margin:0; font-family:var(--font-label); font-weight:800; font-size:0.7rem; letter-spacing:0.17em; text-transform:uppercase; }
+  .av-kicker .dot{ flex:none; width:9px; height:9px; border-radius:50%; animation:ccPulse 1.8s ease-in-out infinite; }
+  .av-h{ margin:0.9rem 0 0; font-weight:900; font-size:clamp(2.5rem,8.6vw,4.3rem); line-height:0.94; letter-spacing:-0.045em; }
+  .av-h em{ display:block; font-style:italic; }
+  .w6{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0.5rem; }
+  .w6 li{ display:flex; flex-direction:column; gap:0.32rem; padding:0.85rem 0.75rem 0.9rem; border-radius:14px; }
+  .w6 b{ font-weight:900; font-style:italic; font-size:clamp(1.5rem,5.8vw,2.2rem); line-height:1; letter-spacing:-0.035em; white-space:nowrap; }
+  .w6 span{ font-size:0.8rem; font-weight:700; line-height:1.25; }
+  .av-money{ border-radius:26px; padding:clamp(1.35rem,4.2vw,2.1rem); }
+  .av-hero{ margin:0; display:flex; flex-wrap:wrap; align-items:baseline; gap:0.15rem 0.7rem; }
+  .av-hero b{ font-weight:900; font-style:italic; font-size:clamp(3.7rem,16vw,6.2rem); line-height:0.86; letter-spacing:-0.055em; }
+  .av-hero span{ font-size:1.02rem; font-weight:600; }
+  .m2{ margin-top:1.4rem; display:grid; gap:1.15rem; }
+  .m2-head{ display:flex; justify-content:space-between; align-items:baseline; gap:0.2rem 0.8rem; flex-wrap:wrap; }
+  .m2-head b{ font-weight:800; font-size:1rem; }
+  .m2-head span{ font-weight:800; font-size:0.95rem; }
+  @media (max-width:560px){ .m2-head{ flex-direction:column; align-items:flex-start; gap:0.12rem; } }
+  .m2-track{ position:relative; margin-top:0.5rem; height:14px; border-radius:999px; }
+  .m2-fill{ display:block; height:100%; width:0; border-radius:999px; transition:width 1.5s cubic-bezier(.2,.8,.2,1); }
+  .m2-start{ display:none; position:absolute; left:0; top:50%; width:14px; height:14px; margin-top:-7px; border-radius:50%; animation:ccPulse 1.8s ease-in-out infinite; }
+  .m2-row.is-empty .m2-start{ display:block; }
+  .m2-note{ margin:0.45rem 0 0; font-size:0.85rem; line-height:1.35; }
+  .av-cta{ display:flex; align-items:center; justify-content:center; width:100%; margin-top:1.5rem; padding:1.05rem 1.5rem; border-radius:999px; font-weight:800; font-size:1.1rem; text-decoration:none; }
+  .av-after{ margin:0.95rem 0 0; font-size:0.88rem; line-height:1.45; text-align:center; }
+
+  /* A2 · Bright: an orange section, a black card for the money */
+  .av--bright{ background:#ff5c39; color:#141414; }
+  .av--bright::before{ content:""; position:absolute; inset:0; pointer-events:none; background:repeating-linear-gradient(135deg, rgba(20,20,20,0.045) 0 16px, transparent 16px 32px); }
+  .av--bright .dot{ background:#141414; }
+  .av--bright .av-h{ color:#141414; }
+  .av--bright .av-h em{ color:#fff; }
+  .av--bright .w6 li{ background:rgba(20,20,20,0.1); }
+  .av--bright .w6 b{ color:#141414; }
+  .av--bright .w6 span{ color:#2b1610; }
+  .av--bright .av-money{ background:#141414; color:var(--cream); box-shadow:0 30px 60px -30px rgba(20,20,20,0.55); }
+  .av--bright .av-hero b{ color:#ff5c39; }
+  .av--bright .av-hero span, .av--bright .m2-note, .av--bright .av-after{ color:var(--cream-mute); }
+  .av--bright .m2-track{ background:rgba(255,255,255,0.14); }
+  .av--bright .m2-fill{ background:linear-gradient(90deg,#ff5c39,#ff8a6f); }
+  .av--bright .m2-start{ background:#ff5c39; }
+  .av--bright .av-cta{ background:#ff5c39; color:#141414; }
+
+  /* A3 · Spotlight: dark section, a cream card for the money */
+  .av--spot{ background:#0c0c0e; color:var(--cream); border-top:5px solid var(--orange); }
+  .av--spot .av-kicker{ color:var(--orange); }
+  .av--spot .dot{ background:var(--orange); }
+  .av--spot .av-h{ color:var(--cream); }
+  .av--spot .av-h em{ color:var(--orange); }
+  .av--spot .w6 li{ background:#19191c; box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08); }
+  .av--spot .w6 b{ color:var(--cream); }
+  .av--spot .w6 span{ color:var(--cream-mute); }
+  .av--spot .av-money{ background:var(--cream); color:#141414; box-shadow:0 30px 70px -34px rgba(255,92,57,0.55); }
+  .av--spot .av-hero b{ color:var(--orange-ink); }
+  .av--spot .av-hero span, .av--spot .m2-note, .av--spot .av-after{ color:var(--ink-soft); }
+  .av--spot .m2-track{ background:rgba(20,20,20,0.1); }
+  .av--spot .m2-fill{ background:linear-gradient(90deg,var(--orange-ink),var(--orange)); }
+  .av--spot .m2-start{ background:var(--orange-ink); }
+  .av--spot .av-cta{ background:var(--orange-ink); color:#fff; }
+
+  /* A4 · Night game: dark, one accent, the destination as a watermark */
+  .av--night{ background:#0c0c0e; color:var(--cream); }
+  .av--night::before{ content:"NAPLES"; position:absolute; right:-0.06em; top:0.02em; font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(6.5rem,31vw,17rem); line-height:0.8; letter-spacing:-0.06em; color:transparent; -webkit-text-stroke:1.5px rgba(255,255,255,0.08); pointer-events:none; }
+  .av--night .av-kicker{ color:var(--cream-mute); }
+  .av--night .dot{ background:var(--orange); }
+  .av--night .av-h{ color:var(--cream); }
+  .av--night .av-h em{ color:var(--orange); }
+  .av--night .w6 li{ background:transparent; border-radius:0; padding:0.2rem 0 0.2rem 0.7rem; border-left:3px solid var(--orange); }
+  .av--night .w6 b{ color:var(--cream); }
+  .av--night .w6 span{ color:var(--cream-mute); }
+  .av--night .av-money{ background:#17171a; box-shadow:inset 0 0 0 1px rgba(255,255,255,0.1); }
+  .av--night .av-hero b{ color:var(--orange); }
+  .av--night .av-hero span, .av--night .m2-note, .av--night .av-after{ color:var(--cream-mute); }
+  .av--night .m2-track{ background:rgba(255,255,255,0.12); }
+  .av--night .m2-fill{ background:linear-gradient(90deg,var(--orange-ink),var(--orange)); }
+  .av--night .m2-start{ background:var(--orange); }
+  .av--night .av-cta{ background:var(--orange-ink); color:#fff; }
+
+  /* Before: the first A, for comparison */
   /* Shared pieces --------------------------------------------------------- */
   .mtr{ display:flex; gap:4px; }
   .mtr-seg{ flex-basis:0; overflow:hidden; }
@@ -74,68 +159,9 @@
   .sb-cta{ display:flex; flex-wrap:wrap; align-items:center; gap:1rem 1.5rem; }
   .sb-cta p{ margin:0; max-width:40ch; color:var(--cream-mute); font-size:0.95rem; line-height:1.5; }
 
-  /* B · The Road ---------------------------------------------------------- */
-  .rd{ background:var(--paper); padding:clamp(2.4rem,7vw,4.6rem) 0; }
-  .rd-wrap{ max-width:1100px; margin:0 auto; padding:0 var(--gutter); display:grid; gap:clamp(1.6rem,4vw,2.4rem); }
-  @media (min-width:1000px){ .rd-wrap{ grid-template-columns:0.85fr 1.15fr; column-gap:3.6rem; align-items:start; } .rd-head{ position:sticky; top:2rem; } }
-  .rd-kicker{ margin:0; font-family:var(--font-label); font-weight:800; font-size:0.72rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--orange-ink); }
-  .rd-h{ margin:0.8rem 0 0; font-weight:900; font-size:clamp(2.4rem,8vw,4.2rem); line-height:0.95; letter-spacing:-0.04em; }
-  .rd-h em{ display:block; font-style:italic; color:var(--orange-ink); }
-  .rd-sub{ margin:1rem 0 0; max-width:34ch; font-size:1.12rem; line-height:1.5; color:var(--ink-soft); }
-  .rd-line{ list-style:none; margin:0; padding:0; }
-  .rd-line > li{ position:relative; padding:0 0 1.55rem 2.6rem; }
-  .rd-line > li::before{ content:""; position:absolute; z-index:1; left:0; top:0.15rem; width:18px; height:18px; border-radius:50%; box-sizing:border-box; }
-  .rd-line > li::after{ content:""; position:absolute; left:8px; top:1.2rem; bottom:-0.2rem; width:3px; border-radius:2px; }
-  .rd-line > li:last-child::after{ display:none; }
-  .rd-line > li.done::before{ background:var(--orange-ink); box-shadow:0 0 0 4px var(--paper); }
-  .rd-line > li.done::after{ background:var(--orange-ink); }
-  .rd-line > li.now::before{ left:-4px; top:0; width:26px; height:26px; background:var(--orange); box-shadow:0 0 0 4px var(--paper); animation:ccPulse 1.8s ease-in-out infinite; }
-  .rd-line > li.now::after, .rd-line > li.next::after{ background:repeating-linear-gradient(180deg, rgba(28,26,21,0.28) 0 6px, transparent 6px 12px); }
-  .rd-line > li.next::before{ background:var(--paper); border:3px solid rgba(28,26,21,0.3); }
-  .rd-when{ margin:0; font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--orange-ink); }
-  .rd-line > li.next .rd-when{ color:var(--muted); }
-  .rd-what{ margin:0.25rem 0 0; font-weight:700; font-size:1.06rem; line-height:1.35; max-width:40ch; }
-  .rd-what small{ display:block; margin-top:0.15rem; font-weight:400; font-size:0.92rem; color:var(--ink-soft); }
-  .rd-line > li.next .rd-what{ color:var(--ink-soft); }
-  .rd-card{ margin-top:0.6rem; padding:clamp(1.1rem,3.4vw,1.6rem); border-radius:22px; background:#fff; box-shadow:0 0 0 1px rgba(28,26,21,0.08), 0 30px 60px -38px rgba(198,63,34,0.55); }
-  .rd-hero{ margin:0; display:flex; flex-wrap:wrap; align-items:baseline; gap:0.1rem 0.7rem; }
-  .rd-hero b{ font-weight:900; font-style:italic; font-size:clamp(3rem,12vw,4.8rem); line-height:0.9; letter-spacing:-0.05em; color:var(--orange-ink); }
-  .rd-hero span{ color:var(--ink-soft); }
-  .rd .mtr{ height:16px; margin-top:1.1rem; }
-  .rd .mtr-seg{ border-radius:999px; background:rgba(28,26,21,0.09); }
-  .rd .mtr-fill{ border-radius:999px; }
-  .rd .lgd{ margin-top:0.7rem; }
-  .rd .lgd i{ color:var(--muted); }
-  .rd-card .cc-btn{ margin-top:1.3rem; width:100%; }
-
-  /* C · Game face ---------------------------------------------------------- */
-  .gf{ position:relative; background:#0c0c0e; color:var(--cream); display:grid; }
-  @media (min-width:1000px){ .gf{ grid-template-columns:1.3fr 1fr; min-height:600px; } }
-  .gf-photo{ position:relative; margin:0; aspect-ratio:4 / 3; }
-  @media (min-width:1000px){ .gf-photo{ aspect-ratio:auto; } }
-  .gf-photo img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:40% 45%; }
-  .gf-photo::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(12,12,14,0) 62%, rgba(12,12,14,0.75) 90%, #0c0c0e); }
-  @media (min-width:1000px){ .gf-photo img{ object-position:50% 45%; } .gf-photo::after{ background:linear-gradient(90deg, rgba(12,12,14,0) 84%, rgba(12,12,14,0.6) 95%, #0c0c0e); } }
-  .gf-panel{ position:relative; padding:0 var(--gutter) clamp(2.4rem,7vw,3.6rem); display:flex; flex-direction:column; gap:1.3rem; }
-  @media (min-width:1000px){ .gf-panel{ padding:3.6rem 3.4rem 3.6rem 1rem; justify-content:center; } }
-  .gf-kicker{ margin:0; font-family:var(--font-label); font-weight:800; font-size:0.72rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--orange); }
-  .gf-h{ margin:0; color:var(--cream); font-weight:900; font-size:clamp(2.3rem,8vw,3.9rem); line-height:0.95; letter-spacing:-0.04em; }
-  .gf-h em{ display:block; font-style:italic; color:var(--orange); }
-  .gf-hero{ margin:0.4rem 0 0; display:flex; flex-wrap:wrap; align-items:baseline; gap:0.1rem 0.8rem; }
-  .gf-hero b{ font-weight:900; font-style:italic; font-size:clamp(3.4rem,14vw,5.6rem); line-height:0.88; letter-spacing:-0.05em; }
-  .gf-hero span{ color:var(--cream-mute); }
-  .gf .mtr{ height:14px; }
-  .gf .mtr-seg{ border-radius:999px; background:rgba(255,255,255,0.13); }
-  .gf .mtr-fill{ border-radius:999px; }
-  .gf .lgd span{ color:var(--cream); }
-  .gf .lgd i{ color:var(--cream-faint); }
-  .gf-wins{ list-style:none; margin:0.4rem 0 0; padding:0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0.6rem; }
-  .gf-wins li{ padding:0.85rem 0.8rem 0.9rem; border-radius:14px; background:rgba(255,255,255,0.05); box-shadow:inset 0 0 0 1px rgba(255,255,255,0.1); font-size:0.84rem; line-height:1.3; color:var(--cream-mute); }
-  .gf-wins b{ display:block; margin-bottom:0.25rem; font-weight:900; font-style:italic; font-size:clamp(1.6rem,5.4vw,2.2rem); line-height:1; letter-spacing:-0.03em; color:var(--orange); }
-  .gf-panel .cc-btn{ align-self:flex-start; }
 
   @keyframes ccPulse{ 0%,100%{ box-shadow:0 0 0 4px rgba(255,92,57,0.28); } 50%{ box-shadow:0 0 0 10px rgba(255,92,57,0.06); } }
-  @media (prefers-reduced-motion:reduce){ .sb-dot, .rd-line > li.now::before{ animation:none; } }
+  @media (prefers-reduced-motion:reduce){ .av-kicker .dot, .m2-start, .sb-dot{ animation:none; } .m2-fill{ transition:none; } }
 </style>
 </head>
 <body>
@@ -143,13 +169,123 @@
 
 <section class="cc-intro">
   <p class="cc-tag">Review only, not on the live site</p>
-  <h1>Three ways to show the campaign.</h1>
-  <p class="cc-lede">Each one reads the live numbers and leads with what the crew has already done. Pick one, or tell me what to take from each.</p>
-  <nav class="cc-jump" aria-label="Concepts"><a href="#a">A · Scoreboard</a><a href="#b">B · The Road</a><a href="#c">C · Game face</a></nav>
+  <h1>Scoreboard, three ways better.</h1>
+  <p class="cc-lede">Same story and the same live numbers. What changed in every version:</p>
+  <ul class="cc-changes">
+    <li>The wins come first, then the money, then one big Donate.</li>
+    <li>One accent: the money number and the button. Everything else steps back.</li>
+    <li>Two bars instead of one split bar. The empty one now says where a new gift goes.</li>
+    <li>Real contrast between the section, the card and the tiles. No muddy glow.</li>
+  </ul>
+  <nav class="cc-jump" aria-label="Versions"><a href="#a2">A2 · Bright</a><a href="#a3">A3 · Spotlight</a><a href="#a4">A4 · Night game</a><a href="#before">Before</a></nav>
 </section>
 
-<!-- ============================ A · SCOREBOARD ============================ -->
-<div class="cc-label" id="a"><b>A · Scoreboard</b><span>Game-day energy: the number, the bar, and the wins already on the board.</span></div>
+<div class="cc-label" id="a2"><b>A2 · Bright</b><span>An orange section with a black card for the money. Game-day loud.</span></div>
+<section class="av av--bright" aria-label="Version A2, Bright">
+  <div class="av-wrap">
+    <div class="av-head">
+      <p class="av-kicker"><span class="dot" aria-hidden="true"></span>Raising now · The Chicago Wheelie Big Dills</p>
+      <h2 class="av-h">Every week on court. <em>Next stop, Naples.</em></h2>
+    </div>
+    <ul class="w6" aria-label="Already on the board">
+      <li><b>3</b><span>straight US Opens</span></li>
+      <li><b>6</b><span>Monster Smash medals</span></li>
+      <li><b>1st</b><span>APP Tour wheelchair division</span></li>
+      <li><b>$3,004</b><span>popcorn drive, 3x its goal</span></li>
+      <li><b>334K</b><span>views in 90 days</span></li>
+      <li><b>Weekly</b><span>on court, all year</span></li>
+    </ul>
+    <div class="av-money">
+      <p class="av-hero"><b data-wbd="total">$34,500</b><span data-wbd="sub">our goal for the year ahead</span></p>
+      <div class="m2">
+        <div class="m2-row" data-part-row="year">
+          <div class="m2-head"><b>Every week</b><span data-part-fig="year">$13,500 a year</span></div>
+          <div class="m2-track"><span class="m2-fill" data-part-fill="year"></span><span class="m2-start" aria-hidden="true"></span></div>
+          <p class="m2-note">First priority. Every new gift starts here.</p>
+        </div>
+        <div class="m2-row" data-part-row="send-6">
+          <div class="m2-head"><b>The Road to the US Open</b><span data-part-fig="send-6">$21,000</span></div>
+          <div class="m2-track"><span class="m2-fill" data-part-fill="send-6"></span><span class="m2-start" aria-hidden="true"></span></div>
+          <p class="m2-note">Six athletes, about $3,500 each</p>
+        </div>
+      </div>
+      <a class="av-cta btn" href="/donate">Donate</a>
+      <p class="av-after">Then the Chicago Classic: our goal is free registration, transportation and hotels for every athlete.</p>
+    </div>
+  </div>
+</section>
+
+<div class="cc-label" id="a3"><b>A3 · Spotlight</b><span>A dark section with a cream card, so the money is the brightest thing on the screen.</span></div>
+<section class="av av--spot" aria-label="Version A3, Spotlight">
+  <div class="av-wrap">
+    <div class="av-head">
+      <p class="av-kicker"><span class="dot" aria-hidden="true"></span>Raising now · The Chicago Wheelie Big Dills</p>
+      <h2 class="av-h">Every week on court. <em>Next stop, Naples.</em></h2>
+    </div>
+    <ul class="w6" aria-label="Already on the board">
+      <li><b>3</b><span>straight US Opens</span></li>
+      <li><b>6</b><span>Monster Smash medals</span></li>
+      <li><b>1st</b><span>APP Tour wheelchair division</span></li>
+      <li><b>$3,004</b><span>popcorn drive, 3x its goal</span></li>
+      <li><b>334K</b><span>views in 90 days</span></li>
+      <li><b>Weekly</b><span>on court, all year</span></li>
+    </ul>
+    <div class="av-money">
+      <p class="av-hero"><b data-wbd="total">$34,500</b><span data-wbd="sub">our goal for the year ahead</span></p>
+      <div class="m2">
+        <div class="m2-row" data-part-row="year">
+          <div class="m2-head"><b>Every week</b><span data-part-fig="year">$13,500 a year</span></div>
+          <div class="m2-track"><span class="m2-fill" data-part-fill="year"></span><span class="m2-start" aria-hidden="true"></span></div>
+          <p class="m2-note">First priority. Every new gift starts here.</p>
+        </div>
+        <div class="m2-row" data-part-row="send-6">
+          <div class="m2-head"><b>The Road to the US Open</b><span data-part-fig="send-6">$21,000</span></div>
+          <div class="m2-track"><span class="m2-fill" data-part-fill="send-6"></span><span class="m2-start" aria-hidden="true"></span></div>
+          <p class="m2-note">Six athletes, about $3,500 each</p>
+        </div>
+      </div>
+      <a class="av-cta btn" href="/donate">Donate</a>
+      <p class="av-after">Then the Chicago Classic: our goal is free registration, transportation and hotels for every athlete.</p>
+    </div>
+  </div>
+</section>
+
+<div class="cc-label" id="a4"><b>A4 · Night game</b><span>Closest to the first A: dark, one accent, and Naples as the backdrop.</span></div>
+<section class="av av--night" aria-label="Version A4, Night game">
+  <div class="av-wrap">
+    <div class="av-head">
+      <p class="av-kicker"><span class="dot" aria-hidden="true"></span>Raising now · The Chicago Wheelie Big Dills</p>
+      <h2 class="av-h">Every week on court. <em>Next stop, Naples.</em></h2>
+    </div>
+    <ul class="w6" aria-label="Already on the board">
+      <li><b>3</b><span>straight US Opens</span></li>
+      <li><b>6</b><span>Monster Smash medals</span></li>
+      <li><b>1st</b><span>APP Tour wheelchair division</span></li>
+      <li><b>$3,004</b><span>popcorn drive, 3x its goal</span></li>
+      <li><b>334K</b><span>views in 90 days</span></li>
+      <li><b>Weekly</b><span>on court, all year</span></li>
+    </ul>
+    <div class="av-money">
+      <p class="av-hero"><b data-wbd="total">$34,500</b><span data-wbd="sub">our goal for the year ahead</span></p>
+      <div class="m2">
+        <div class="m2-row" data-part-row="year">
+          <div class="m2-head"><b>Every week</b><span data-part-fig="year">$13,500 a year</span></div>
+          <div class="m2-track"><span class="m2-fill" data-part-fill="year"></span><span class="m2-start" aria-hidden="true"></span></div>
+          <p class="m2-note">First priority. Every new gift starts here.</p>
+        </div>
+        <div class="m2-row" data-part-row="send-6">
+          <div class="m2-head"><b>The Road to the US Open</b><span data-part-fig="send-6">$21,000</span></div>
+          <div class="m2-track"><span class="m2-fill" data-part-fill="send-6"></span><span class="m2-start" aria-hidden="true"></span></div>
+          <p class="m2-note">Six athletes, about $3,500 each</p>
+        </div>
+      </div>
+      <a class="av-cta btn" href="/donate">Donate</a>
+      <p class="av-after">Then the Chicago Classic: our goal is free registration, transportation and hotels for every athlete.</p>
+    </div>
+  </div>
+</section>
+
+<div class="cc-label" id="before"><b>Before</b><span>The first Scoreboard, for comparison.</span></div>
 <section class="sb" aria-label="Concept A, Scoreboard">
   <div class="sb-wrap">
     <div>
@@ -188,77 +324,13 @@
   </div>
 </section>
 
-<!-- ============================ B · THE ROAD ============================ -->
-<div class="cc-label" id="b"><b>B · The Road</b><span>A journey: the miles already behind the crew, where we are now, and what&rsquo;s next.</span></div>
-<section class="rd" aria-label="Concept B, The Road">
-  <div class="rd-wrap">
-    <div class="rd-head">
-      <p class="rd-kicker">The Chicago Wheelie Big Dills</p>
-      <h2 class="rd-h">We&rsquo;re already <em>on the road.</em></h2>
-      <p class="rd-sub">Two years of wins behind us, and one goal ahead: every week first, then Naples.</p>
-    </div>
-    <ol class="rd-line">
-      <li class="done"><p class="rd-when">Est. 2024</p><p class="rd-what">The crew starts</p></li>
-      <li class="done"><p class="rd-when">2024 to 2026</p><p class="rd-what">Robby and Brian play three straight US Opens</p></li>
-      <li class="done"><p class="rd-when">Every week</p><p class="rd-what">On court all year<small>At clubs across the Chicago area</small></p></li>
-      <li class="done"><p class="rd-when">August 2026</p><p class="rd-what">Juan gets the APP Tour its first wheelchair division<small>Five full teams played it</small></p></li>
-      <li class="done"><p class="rd-when">August 2026</p><p class="rd-what">The popcorn drive raises $3,004<small>Three times its goal</small></p></li>
-      <li class="done"><p class="rd-when">October 2026</p><p class="rd-what">Six medals at Monster Smash<small>Two gold, two silver, two bronze</small></p></li>
-      <li class="now">
-        <p class="rd-when">Now</p>
-        <div class="rd-card">
-          <p class="rd-hero"><b data-wbd="total">$34,500</b><span data-wbd="sub">our goal for the year ahead</span></p>
-          <div class="mtr" role="img" data-wbd-meter aria-label="Progress toward the goal">
-            <span class="mtr-seg" style="flex-grow:13500"><span class="mtr-fill" data-part-fill="year"></span></span>
-            <span class="mtr-seg" style="flex-grow:21000"><span class="mtr-fill" data-part-fill="send-6"></span></span>
-          </div>
-          <div class="lgd">
-            <p style="flex-grow:13500"><b>Every week</b><span data-part-fig="year">$13,500 a year</span><i>First priority</i></p>
-            <p style="flex-grow:21000"><b>The Road to the US Open</b><span data-part-fig="send-6">$21,000</span><i>Six athletes</i></p>
-          </div>
-          <a class="cc-btn" href="/donate">Donate</a>
-        </div>
-      </li>
-      <li class="next"><p class="rd-when">Spring 2027</p><p class="rd-what">The US Open in Naples<small>Six athletes, if their names come up in the lottery</small></p></li>
-      <li class="next"><p class="rd-when">Next</p><p class="rd-what">The Chicago Classic<small>Our goal: free registration, transportation and hotels for every athlete</small></p></li>
-    </ol>
-  </div>
-</section>
-
-<!-- ============================ C · GAME FACE ============================ -->
-<div class="cc-label" id="c"><b>C · Game face</b><span>The athletes first, then the number. A photo breaks our old no-photos rule on purpose.</span></div>
-<section class="gf" aria-label="Concept C, Game face">
-  <figure class="gf-photo">
-    <img src="/images/athletes/wheelie-107.webp" alt="Four athletes in sport wheelchairs at the net at ACE Pickleball Club, paddles up and smiling" width="1500" height="1000" loading="lazy">
-  </figure>
-  <div class="gf-panel">
-    <div>
-      <p class="gf-kicker">Raising now · The Chicago Wheelie Big Dills</p>
-      <h2 class="gf-h" style="margin-top:0.7rem;">They show up every week. <em>Help them get to Naples.</em></h2>
-    </div>
-    <p class="gf-hero"><b data-wbd="total">$34,500</b><span data-wbd="sub">our goal for the year ahead</span></p>
-    <div class="mtr" role="img" data-wbd-meter aria-label="Progress toward the goal">
-      <span class="mtr-seg" style="flex-grow:13500"><span class="mtr-fill" data-part-fill="year"></span></span>
-      <span class="mtr-seg" style="flex-grow:21000"><span class="mtr-fill" data-part-fill="send-6"></span></span>
-    </div>
-    <div class="lgd">
-      <p style="flex-grow:13500"><b>Every week</b><span data-part-fig="year">$13,500 a year</span><i>First priority</i></p>
-      <p style="flex-grow:21000"><b>The Road to the US Open</b><span data-part-fig="send-6">$21,000</span><i>Six athletes</i></p>
-    </div>
-    <ul class="gf-wins">
-      <li><b>3</b>straight US Opens</li>
-      <li><b>6</b>medals at Monster Smash</li>
-      <li><b>1st</b>APP Tour wheelchair division</li>
-    </ul>
-    <a class="cc-btn" href="/donate">Donate</a>
-  </div>
-</section>
 
 </main>
 
 <script>
-  /* One read of the live goal fills every concept. The total counts up when it
-     comes into view; each part of the bar fills on its own. */
+  /* One read of the live goal fills every version. The total counts up when it
+     comes into view; each bar fills on its own; an empty bar shows a pulse
+     where the next gift lands. */
   (function () {
     var usd = function (n) { return '$' + Math.round(n).toLocaleString('en-US'); };
     var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -279,28 +351,21 @@
         if (p < 1) requestAnimationFrame(step);
       })(performance.now());
     }
+    var each = function (sel, fn) { [].forEach.call(document.querySelectorAll(sel), fn); };
     fetch('/api/raised?c=wbd').then(function (r) { return r.json(); }).then(function (d) {
       if (!d || !d.goal || !d.raised) return;
       var parts = d.parts || {};
-      [].forEach.call(document.querySelectorAll('[data-wbd="sub"]'), function (el) {
-        el.textContent = 'raised toward our ' + usd(d.goal) + ' goal';
-      });
-      [].forEach.call(document.querySelectorAll('[data-wbd="total"]'), function (el) {
-        el.textContent = '$0';
-        whenSeen(el, function () { countUp(el, d.raised); });
-      });
+      each('[data-wbd="sub"]', function (el) { el.textContent = 'raised toward our ' + usd(d.goal) + ' goal'; });
+      each('[data-wbd="total"]', function (el) { el.textContent = '$0'; whenSeen(el, function () { countUp(el, d.raised); }); });
       Object.keys(parts).forEach(function (k) {
         var p = parts[k];
-        [].forEach.call(document.querySelectorAll('[data-part-fig="' + k + '"]'), function (el) {
+        each('[data-part-fig="' + k + '"]', function (el) {
           el.textContent = p.raised ? usd(p.raised) + ' of ' + usd(p.goal) : usd(p.goal) + (k === 'year' ? ' a year' : '');
         });
-        [].forEach.call(document.querySelectorAll('[data-part-fill="' + k + '"]'), function (el) {
+        each('[data-part-row="' + k + '"]', function (el) { el.classList.toggle('is-empty', !p.raised); });
+        each('[data-part-fill="' + k + '"]', function (el) {
           whenSeen(el, function () { el.style.width = Math.max(0, Math.min(100, p.raised / p.goal * 100)).toFixed(1) + '%'; });
         });
-      });
-      var y = parts.year || { raised: 0, goal: 0 }, r = parts['send-6'] || { raised: 0, goal: 0 };
-      [].forEach.call(document.querySelectorAll('[data-wbd-meter]'), function (el) {
-        el.setAttribute('aria-label', usd(d.raised) + ' raised of ' + usd(d.goal) + '. Every week: ' + usd(y.raised) + ' of ' + usd(y.goal) + '. The Road to the US Open: ' + usd(r.raised) + ' of ' + usd(r.goal) + '.');
       });
     }).catch(function () {});
   })();

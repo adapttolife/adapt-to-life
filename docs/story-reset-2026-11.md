@@ -45,11 +45,13 @@ Language:
 - "More than money" is the difference. Always name what else: coaching know-how, club relationships, volunteers, content.
 - Funder, not operator still holds. The fund backs people and programs, and the programs belong to the people who run them.
 
-Open:
+Settled later that evening (Alec):
 
-- The fund page hero photo of Tim shows a GLASA jersey. It has been live for months. Swap or crop it?
-- Donate: should it say gifts are deployed through ambassadors? Today it says "Gifts support the Hustle & Heart Fund."
-- Partners: does sponsorship money flow through the fund or separately? The copy depends on the answer.
+- **Only ambassadors get their own page** ("a dedicated page just for really big deals"). The other athletes get a section on the crew page, and each one is linkable (`/pickleball#brian`, `#bob`, `#robby`, `#ken`, `#amanda`), so posts, QR codes and bios can point straight to them. Juan's card there is marked Ambassador and links to his page.
+- **Adaptive Sports Near Me and Adapt Body Shop stay as they are.** They are the other two doors in Our Work: the free directory where athletes find a place to play, and the store. Neither changes with this.
+- **Tim's photo stays** on the fund page hero.
+- **The money:** gifts and sponsorships go into the Hustle & Heart Fund. Ambassadors show us where it will do the most, and we pay programs and vendors directly, so ambassadors steer the money but never hold it. Today Alec covers overhead, so this works cleanly. If sponsorships ever need to cover operating costs (insurance, staff), that belongs in the sponsor agreement and changes one line on the site.
+- **The next ambassador has a seat:** a "Who's next?" slot beside Juan on Ambassadors, and "Next: wherever our next ambassador is building" on the fund page.
 
 ## 0.1 Reset, November 5 (earlier that day)
 
@@ -81,7 +83,7 @@ Adapt To Life expands access to adaptive sports so athletes can find their place
 2. Move the US Open from the spine to a campaign: one goal among several, on top of year round support.
 3. Explain the model in plain words: the Hustle and Heart Fund invests two ways, grants to athletes and backing for the people who build a sport. Juan is the first.
 4. Rebuild Partners as a two way street: what partners get (audience, content, participation, events, tools, reporting) and honest packages built on real costs.
-5. Put six athletes at the center: Juan, Brian, Bob, Robby, Ken and Amanda (Brian holds the sixth spot until RJ is ready), each with a page in their own words that their posts point back to.
+5. Put six athletes at the center: Juan, Brian, Bob, Robby, Ken and Amanda (Brian holds the sixth spot until RJ is ready), each with a section on the crew page in their own words that their posts point back to. Only ambassadors get their own page (Alec, Nov 5).
 6. Make social and the website one system: every post points to one page, every link is tagged, every athlete page shows their posts.
 7. Fill the calendar and start keeping score: weekly sessions, past events and a simple impact tracker, so "participation" is something we can prove.
 
@@ -415,7 +417,7 @@ This page is also the strongest search page we could build: "wheelchair pickleba
 
 ### 4.5 Phasing
 1. **Phase 1 (one release):** `/pickleball`, home sections 3 to 6, Juan hero, events filled, $0 fallback fixed, nav update.
-2. **Phase 2:** athlete pages for the six (as answers and consent come in), the bio links page and tagged links, Partners rebuild with packages, Ambassadors and Hustle and Heart rewrites, About team, Donate ladder.
+2. **Phase 2:** athlete sections on the crew page (as answers and consent come in), the bio links page and tagged links, Partners rebuild with packages, Ambassadors and Hustle and Heart rewrites, About team, Donate ladder.
 3. **Phase 3:** Public ACE partner page, Brick House update, Social and Roadmap, Chicago Classic page once dated.
 
 ---
@@ -443,7 +445,7 @@ Gaps to close first:
 - Brian's quote is already on the Hustle and Heart page ("The chair didn't fix me. It gave me options I didn't have before."), a strong start for his page.
 - **Their own words:** only Juan has written answers so far.
 
-### 5.2 Each athlete page
+### 5.2 Each athlete's section on the crew page (only ambassadors get a page)
 1. Cutout hero, name, and one line in their own words.
 2. Their story, from five questions (below).
 3. Results and what they are working toward this season.
@@ -460,7 +462,7 @@ Adapted from the five questions Juan answered on Sept 22:
 4. What are you working toward this season? (The US Open is one option, not the only one.)
 5. What do you play with, and who has helped you get here?
 
-Robby, as athlete liaison, can collect answers. The athlete reviews and approves their page before it goes live, and signs the photo and media release at sign.adapttolife.org if they have not already. Nothing about health or injury goes up unless they wrote it.
+Robby, as athlete liaison, can collect answers. The athlete reviews and approves their section before it goes live, and signs the photo and media release at sign.adapttolife.org if they have not already. Nothing about health or injury goes up unless they wrote it.
 
 ---
 
@@ -476,8 +478,8 @@ Robby, as athlete liaison, can collect answers. The athlete reviews and approves
 ### 6.2 The plan
 1. **One page per post.** Every post that asks for anything names one page in plain words: adapttolife.org/juan, adapttolife.org/pickleball, adapttolife.org/donate.
 2. **A tagged link in the bio.** Point the bio to a short page on our own site, for example adapttolife.org/links, listing Meet the six, Play with us, Donate and Partners. Every link carries a tag (`utm_source=instagram`, `utm_content=bio`) so the existing attribution system, built for the QR codes, can follow a tap to a gift.
-3. **A QR for every athlete.** Juan has one on his chair. Give all six a code that opens their page, through the existing `/q/` system that already counts scans and the gifts that follow. Put them on chairs, shirts and the event table.
-4. **Athlete pages show their posts, and posts point back.** The page embeds their latest reels; the caption says "more on Robby's page".
+3. **A QR for every athlete.** Juan has one on his chair. Give all six a code that opens their spot on the crew page (`/pickleball#robby`), or Juan's page for Juan, through the existing `/q/` system that already counts scans and the gifts that follow. Put them on chairs, shirts and the event table.
+4. **Each athlete's section shows their posts, and posts point back.** The section can embed their latest reel; the caption says "more on Robby at adapttolife.org/pickleball".
 5. **Post as a collab with the athlete.** An Instagram collab puts the post on both feeds. Robby's 899 followers see it too. Only with the athlete's OK.
 6. **A steady rhythm, about three posts a week:**
    - one weekly session post (Wednesday at Brick House or Thursday at ACE, once the first session happens)

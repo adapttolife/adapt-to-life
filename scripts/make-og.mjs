@@ -198,9 +198,9 @@ const CARDS = {
     photo: "paddle-portrait",
     size: 70,
     measure: "14ch",
-    out: "public/images/og/hustle-and-heart-v4-content.jpg",
+    out: "public/images/og/hustle-and-heart-v5-check.jpg",
     page: "hustle-and-heart.html",
-    headline: "Keep your game <em>going</em>.",
+    headline: "More than <em>a check</em>.",
   },
   // An athlete profile card is the page's h1 and nothing else (GATE 0), and for
   // a profile that is exactly right: the card is a poster with his name on it,
@@ -222,9 +222,9 @@ const CARDS = {
     photo: "brickhouse-hero",
     size: 66,
     measure: "11ch",
-    out: "public/images/og/brickhouse-v2-homecourt.jpg",
+    out: "public/images/og/brickhouse-v3-crewhome.jpg",
     page: "brickhouse.html",
-    headline: "Our home court <em>is Brick House</em>.",
+    headline: "The crew's home court <em>is Brick House</em>.",
   },
   volunteer: {
     ...ATHLETE,

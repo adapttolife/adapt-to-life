@@ -25,6 +25,7 @@ const PER_PAGE = {
   "volunteer.html": "volunteer",
   "juan.html": "juan",
   "brickhouse.html": "brickhouse",
+  "pickleball.html": "pickleball",
 };
 
 // ALT DESCRIBES THE PHOTOGRAPH AGAIN, because from 2026-09-09 the cards ARE
@@ -43,13 +44,15 @@ const ALT = {
   popcorn:
     "Popcorn that helps athletes play. Adapt To Life. A wheelchair pickleball player drives across an indoor court.",
   "hustle-and-heart":
-    "Keep your game going. The Hustle and Heart Fund, Adapt To Life. A wheelchair pickleball player in a headband holds his paddle.",
+    "More than a check. The Hustle and Heart Fund, Adapt To Life. A wheelchair pickleball player in a headband holds his paddle.",
   volunteer:
     "Your place on this team. Adapt To Life. A wheelchair pickleball player in a cap reaches for a shot.",
   // An athlete profile card is his name over his own face, so the alt is the
   // name and then the man, in that order.
   brickhouse:
-    "Our home court is Brick House. Adapt To Life. An athlete in a sport wheelchair and a Brick House Pickleball shirt rolls across the Brick House courts.",
+    "The crew's home court is Brick House. Adapt To Life. An athlete in a sport wheelchair and a Brick House Pickleball shirt rolls across the Brick House courts.",
+  pickleball:
+    "Chicago Wheelchair Pickleball. The Chicago Wheelie Big Dills. An ecosystem for adaptive pickleball. The crew's badge, and Juan Ortiz in his sport wheelchair.",
   juan: "Juan Ortiz. Adapt To Life. Juan, a wheelchair pickleball player in glasses, tosses the ball to serve from his sport wheelchair.",
 };
 
@@ -65,9 +68,10 @@ const ALT = {
 const FILE = {
   _default: "home-v4-color.jpg",
   juan: "juan-v2-serve.jpg",
-  brickhouse: "brickhouse-v2-homecourt.jpg",
+  brickhouse: "brickhouse-v3-crewhome.jpg",
+  pickleball: "pickleball-v4-badge.jpg",
   popcorn: "popcorn-v4-content.jpg",
-  "hustle-and-heart": "hustle-and-heart-v4-content.jpg",
+  "hustle-and-heart": "hustle-and-heart-v5-check.jpg",
 };
 const fileFor = (card) =>
   FILE[card] ?? `${card === "_default" ? "home" : card}-v3-athlete.jpg`;

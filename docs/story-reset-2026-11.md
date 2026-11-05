@@ -132,7 +132,7 @@ What we can say today with a source:
 - About 10 to 15 athletes come on a Thursday. (Alec. Start counting each week so this becomes a record.)
 - At Monster Smash in Cincinnati (October 2026) our athletes won two golds, two silvers and two bronzes in the wheelchair division. (Rose, verified results.)
 - Juan asked the APP Tour's Vlasic Classic for a wheelchair division in August and got the APP's first, with five full teams. (Juan's page.)
-- Robby Wolf has played the US Open Pickleball Championships in Naples each of the last three years (Alec, Nov 5; Rose saw the 2025 post on his Instagram), and Pete Petersen played hybrid doubles there in 2025. The crew already knows the road.
+- Robby Wolf and Brian Liss have each played the US Open Pickleball Championships in Naples the last three years (Alec, Nov 5; Rose saw Robby's 2025 post), and Pete Petersen played hybrid doubles there in 2025. The crew already knows the road. On the site: "3 straight US Opens".
 - Our athlete spotlights from Monster Smash drew more than 38,000 views across Instagram and Facebook. (Rose.)
 - What is next: Try Adaptive Night at ACE, the Chicago Classic, Wheelchair Pickleball Tournament, and monthly fundraiser tournaments with club members. (CeCe said yes to all three; Alec describes the monthly tournaments as part of how we fund the crew.)
 
@@ -247,6 +247,8 @@ Verified, safe to use now:
 - Monster Smash: two golds, two silvers, two bronzes. (Rose.)
 - First fundraiser: $3,004 from 83 supporters. Send 6 so far: $4,979 of $21,000. (Site and `/api/raised`, Nov 3.)
 - Thursdays at ACE are free for athletes; Adapt To Life covers the $5 drop in. (CeCe, Oct 31.)
+
+Strongest single proof point for sponsors and donors (Alec, Nov 5): two of the six (Robby and Brian) have each played the US Open the last three years. Used on /pickleball (cards, timeline, a "3 straight US Opens" stat in Train to compete, What's ahead), /send-6 (under the seats goal, without claiming seats), /juan ("Now it's Juan's turn"), Partners and Brick House (the US Open stop), ACE (what we bring) and the sponsor page (Train to compete, travel). Not added to How Giving Works, Donate or Popcorn, which stay about money and terms.
 
 Not yet provable, start tracking now (Rose found no weekly headcount in any post or caption):
 - Weekly attendance and first time players.
@@ -368,7 +370,7 @@ The six: Juan, Brian, Bob, Robby, Ken and Amanda. Brian holds the sixth spot unt
 | Athlete | Public name in captions | Handle | Best post so far | Results | Photos in Drive |
 |---|---|---|---|---|---|
 | Juan Ortiz | Juan Ortiz | not in captions | Monster Smash singles gold: 4,802 IG views; 3,792 FB | Singles gold, 5 and 0; got the APP its first wheelchair division | Approved cutout, pro shoot (JLA), Monster Smash cards, chair and paddle shots |
-| Brian Liss (holds the sixth spot until RJ is ready) | Brian Liss | not in captions | Training reel: 1,444 IG views; Oct 29 shoutout | Competed at Monster Smash (8th in singles, 6th in doubles with Alec) | Approved cutout (from Traced Athletes) |
+| Brian Liss (holds the sixth spot until RJ is ready) | Brian Liss | not in captions | Training reel: 1,444 IG views; Oct 29 shoutout | Has played the US Open in Naples each of the last three years; competed at Monster Smash (8th in singles, 6th in doubles with Alec) | Approved cutout (from Traced Athletes) |
 | Bob Swanson | On the site: Bob. Captions have used Bob Swanson, "Bobby" and the tag @bobbyswany | @bobbyswany (unverified) | Doubles gold: 9,380 IG views, 7,665 FB. The top medal reel | Doubles gold with Kenneth Holman; 5th in singles | Approved cutout (from a Brick House 4K clip), Monster Smash cards |
 | Robby Wolf | Robby Wolf | @robbywolf32, 899 followers | Monster Smash training reel: 2,996 IG views | Singles bronze, doubles silver with Ken; has played the US Open in Naples each of the last three years | Approved cutout (the white cap pro shot, which is also the ACE page hero), Monster Smash cards |
 | Ken Carwell | Ken Carwell | not in captions | Doubles silver: 1,680 IG views | Doubles silver with Robby | Approved cutout (Cubs shirt), Monster Smash cards |

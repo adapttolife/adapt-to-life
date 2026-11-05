@@ -67,6 +67,8 @@ Use this as the source paragraph. Shorter versions come from it.
 
 > Adapt To Life helps fund an ecosystem for the adaptive sports community to play pickleball across the Chicago area. We build relationships with clubs, organizations and groups, and help fund places to play: open play and drop ins, no membership, nothing to lock in. For athletes who want to train regularly and travel to tournaments, we fund memberships, with sponsors' help. The crew competes in monthly fundraiser tournaments, and next in the Chicago Classic, which Adapt To Life presents. The Chicago Wheelie Big Dills, the crew we fund and support, are at the heart of it.
 
+**The how (Alec, Nov 5).** We help clubs, organizations and coaches build and manage adaptive sports programs, and we fund the athletes who play in them. The programs belong to the clubs, organizations and coaches; we bring funding, coaching know-how, players and volunteers, content and a place in the directory.
+
 One line version for bios and introductions:
 > Adapt To Life is building an ecosystem for adaptive pickleball in Chicago: a day to play for anyone, memberships for athletes training to compete, and tournaments to compete in.
 
@@ -105,6 +107,21 @@ How it reads together:
 Handles (Rose, Nov 3): @chicagowheeliebigdills, @wheeliebigdills, @chicagobigdills, @chicagowheelchairpickleball and @chicagoclassicpickleball show no account, but confirm in the app before claiming. @thechicagoclassic is taken by an unrelated ballroom dance event with 1,857 followers, another reason the event's full name should always carry "Wheelchair Pickleball". Juan already calls the crew "our Chicagoland wheelchair pickleball team" in a Bread and Butter review. The YouTube playlist did not show up in public search; it may be unlisted, so confirm whose channel it is before embedding.
 
 Next: claim @chicagowheeliebigdills, and optionally register chicagowheelchairpickleball.org (a small cost, Alec's OK) to point at the program page.
+
+### 3.4b Program support: what we bring to a club, organization or coach
+The offer, in plain words: **we help clubs, organizations and coaches build and manage adaptive sports programs.** It is how every relationship in this plan works, and it keeps Adapt To Life on the right side of funder, not operator.
+
+| We bring | What it looks like |
+|---|---|
+| Funding | Court time, memberships and equipment |
+| Coaching know-how | Clinics, and coaches who have built adaptive programs (Alec helped WASA start pickleball; Pete coaches at Brick House) |
+| Players and volunteers | The crew we support, and volunteers on court |
+| Content | Weekly video and athlete spotlights that help a program grow |
+| A place in the directory | A listing on Adaptive Sports Near Me, so athletes and families can find the program |
+
+What stays with the club, organization or coach: the program itself, its schedule, its staff and its coverage. On the site that is one line, "The program stays yours. We help you build and manage it." In a written agreement, say it plainly: the host runs the program and carries its insurance; Adapt To Life provides funding, support and promotion. (Confirm the agreement language with the insurance reviewer or broker.)
+
+Where it shows on the site: the home page (the how under the mission), About (Program support in Our Work), `/pickleball` (What we bring), Partners (one line for clubs, organizations and coaches) and the sponsor page (Build a program).
 
 ### 3.5 The flagship: the Chicago Wheelie Big Dills
 Name check: the only verified public use is "the Wheelie Big Dills" on Juan's page, and the YouTube playlist "Wheelchair Pickleball: The Wheelie Big Dills" (Juan's mic'd up POV matches). Captions say "the crew". There is no handle or logo yet. "Chicago Wheelie Big Dills" is new; if it becomes the brand, create the handle and mark first.
@@ -411,6 +428,22 @@ Robby, as athlete liaison, can collect answers. The athlete reviews and approves
 9. **YouTube.** The Wheelie Big Dills POV playlist goes on `/pickleball`, and short cuts of it feed Instagram.
 10. **Restart now.** Five quiet days after the biggest month we have had. A Monster Smash look back, then the first ACE Thursday.
 
+### 6.2b Drafts for the new positioning (not posted; Alec posts)
+Instagram bio, under 150 characters:
+> Your place in adaptive sports. We help clubs, organizations and coaches build adaptive programs.
+
+Caption, for a clip from a club session:
+> We help clubs, organizations and coaches build and manage adaptive sports programs.
+>
+> In Chicago, that means wheelchair pickleball. Thank you @brickhousepb and @apcdesplainesil for opening your courts.
+
+Caption, for coaches:
+> Coaches, have a player in a wheelchair who wants in?
+>
+> We can help you build an adaptive program at your club, from equipment to a first clinic. Send us a message.
+
+Before posting: confirm the handles, and add The Picklr's handle only once it is verified.
+
 ### 6.3 Turning engagement into relationships
 Rose ranked who engages with us, internal only (GLASA omitted per Alec):
 1. Brick House (authored four posts about us)
@@ -502,6 +535,12 @@ Guardrails:
 
 **Club**
 > Hi [name], I'm Alec with Adapt To Life. We're building an ecosystem for adaptive pickleball across the Chicago area, with sessions at clubs like Brick House, ACE and The Picklr, so athletes can find a day to play. We'd love to add a session at [club]. We bring the players, the volunteers and video for your feed, and athletes who train with us often become members. What would make it a win for you? Could we grab 20 minutes this week?
+
+**Coach or program**
+> Hi [name], I'm Alec with Adapt To Life. We help clubs, organizations and coaches build and manage adaptive sports programs. If you have athletes in wheelchairs who want to play, or players who want to try, we can help with equipment, a clinic, players to get things going and content to grow it. The program stays yours. Could we grab 20 minutes?
+
+**Special recreation association or park district**
+> Hi [name], I'm Alec with Adapt To Life. A lot of programs want to add wheelchair pickleball but need the resources to start. We help organizations build and manage adaptive sports programs: a first clinic, equipment, coaching know-how and players from our crew to play with. We'd love to help you add pickleball. Could we find 20 minutes?
 
 **Mobility or medical business**
 > Hi [name], I'm Alec with Adapt To Life. Every week we have athletes in sport wheelchairs on the court in Lake Forest and Des Plaines, 10 to 15 on a Thursday, and our videos reached about 334,000 views in the last 90 days. That's the community you serve. I'd love to talk about sponsoring a night or an athlete, and bringing your team to our next event. Could we grab 20 minutes?

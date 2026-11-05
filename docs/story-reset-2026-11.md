@@ -32,11 +32,27 @@ Alec's rulings, in the order he gave them:
   The line on /pickleball and /send-6: "It takes skill and a little luck to get to the US Open. It shouldn't take money." On the fund page: "Who gets to compete should come down to skill, not money."
 - **Built on the review link:** 78eafcd (one fund) and 711fc40 (one call to action and the cost story) on pickleball-hub, PR #237.
 
+Later the same night, Alec settled the money model:
+
+- **One goal, one bar.** "One campaign bar... puts together all of the initiatives into one big number... Then it shows how much of this pays for the year and how much of this pays for the U.S. Open." Every gift goes to one program, the Chicago Wheelie Big Dills, and no donor picks a fund.
+- **Priority, and three core things.** "Our first priority is to raise money for the weekly training, then the U.S. Open. After that, Chicago Classic." The goal for the year ahead is $34,500, made of:
+  - every week, $13,500: a year of nights at ACE ($3,900) plus ten athletes training ($9,600);
+  - The Road to the US Open, $21,000.
+
+  New gifts fill every week first, then the road. Money raised under Send 6 stays on the road. The Classic joins the goal once it has a date and a budget, and tournament travel is part of the road.
+- **Equipment is outside the goal.** A sport chair runs $4,000 to $6,000, and insurance doesn't cover it (Alec). Most athletes have one, a couple are looking, and equipment will be raised one athlete at a time.
+- **$3,500 per athlete** is about what the US Open has cost the last couple of years (Alec).
+- **Givebutter:**
+  - The closed Send 6 and Classic campaigns are deleted.
+  - The fund selector is hidden on both campaigns.
+  - Two funds created for a short-lived two-bar version are unused.
+- **Built:** 33c114b on pickleball-hub (PR #237). 11795f8 keeps the two-bar version.
+
 Still open:
 
-- How the Road's bar moves. It is a manual set-aside today: $4,979, which is popcorn's $3,004 plus $1,975 given online. The other option is Givebutter fund designation, defaulting to "where it's needed most". I recommend designation.
-- Whether to delete the two closed Givebutter campaigns (782832, 782833). That needs Alec's OK.
-- Real numbers from Alec: what his and Juan's chairs cost, a typical tournament trip, and US Open fees, which are not published.
+- Confirm the $13,500 for every week (built from $75 a night and $960 an athlete).
+- Delete the two unused Givebutter funds (73138, 73139)?
+- A typical tournament trip cost, if the road grows past the US Open.
 
 ---
 

@@ -187,9 +187,9 @@ const CARDS = {
     photo: "chair-drive",
     size: 66,
     measure: "15ch",
-    out: "public/images/og/send-6-v3-athlete.jpg",
+    out: "public/images/og/send-6-v4-road.jpg",
     page: "send-6.html",
-    headline: "Send 6 to the <em>US Open</em> Spring 2027.",
+    headline: "The Road to the <em>US Open</em>.",
   },
   popcorn: {
     ...ATHLETE,
@@ -242,16 +242,6 @@ const CARDS = {
     out: "public/images/og/chicago-classic-v1-date.jpg",
     page: "chicago-classic.html",
     headline: "The Chicago <em>Classic</em>.",
-  },
-  // The Road: year-round giving, no ceiling.
-  road: {
-    variant: "split",
-    photo: "court-swing",
-    size: 96,
-    measure: "6ch",
-    out: "public/images/og/road-v1-yearround.jpg",
-    page: "road.html",
-    headline: "The <em>Road</em>.",
   },
   // Partner pages: the same split treatment.
   picklr: {

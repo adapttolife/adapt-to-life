@@ -12,41 +12,27 @@
 // hard-coded goal because a slow widget is harmless. A receipt must never print
 // a number we did not actually read, so it checks `live` and stays silent about
 // the fund's position rather than guessing.
-// Three campaigns since Nov 5 2026 (Alec: "it should be separate"). Each key is
-// what the site asks for with /api/raised?c=<key>:
-//   road    The Road: the Hustle & Heart Fund's year-round giving. No goal,
-//           because it has no ceiling.
-//   send-6  Send 6 to the US Open Spring 2027. Its offline figure carries what
-//           was raised under Send 6 before the split (popcorn and the online
-//           gifts shown as Send 6 progress then).
-//   classic The Chicago Classic: free registration, transportation and hotels.
-const CAMPAIGNS = {
-  road: (env) => ({
-    id: env.GIVEBUTTER_CAMPAIGN_ID || "683765",
-    offline: Number(env.ROAD_OFFLINE_RAISED) || 0,
-    fallbackGoal: 0,
-  }),
-  "send-6": (env) => ({
-    id: env.GIVEBUTTER_SEND6_CAMPAIGN_ID || "782832",
-    offline: Number(env.SEND6_OFFLINE_RAISED) || 0,
-    fallbackGoal: 21000,
-  }),
-  classic: (env) => ({
-    id: env.GIVEBUTTER_CLASSIC_CAMPAIGN_ID || "782833",
-    offline: Number(env.CLASSIC_OFFLINE_RAISED) || 0,
-    fallbackGoal: 0,
-  }),
-};
-export const CAMPAIGN_KEYS = Object.keys(CAMPAIGNS);
+// One fund, several stories (Alec, Nov 5 2026: "we tell the story with
+// different campaigns, but at the end of the day, it all goes to one fund").
+// Every gift goes to one Givebutter campaign, the Hustle & Heart Fund. The fund
+// pays for week-to-week training first, then travel on the road to the US Open.
+// Keys the site asks for with /api/raised?c=<key>:
+//   fund    The whole fund: Givebutter's online total plus FUND_OFFLINE_RAISED.
+//           No goal, because week-to-week has no ceiling.
+//   send-6  The Road to the US Open: money set aside for travel and the six
+//           seats. SEND6_SET_ASIDE starts with what was raised under Send 6
+//           ($3,004 popcorn + $1,975 online) and is raised as the fund sets
+//           more aside. Goal $21,000.
+//   classic The Chicago Classic: a goal we talk about, not yet a fund.
+export const CAMPAIGN_KEYS = ["fund", "send-6", "classic"];
 
-export async function campaignPosition(env, key = "send-6") {
-  const c = (CAMPAIGNS[key] || CAMPAIGNS["send-6"])(env);
+async function givebutter(env, id) {
   let online = 0;
   let goal = 0;
   let live = false;
   try {
     if (env.GIVEBUTTER_API_KEY) {
-      const r = await fetch(`https://api.givebutter.com/v1/campaigns/${c.id}`, {
+      const r = await fetch(`https://api.givebutter.com/v1/campaigns/${id}`, {
         headers: {
           Authorization: `Bearer ${env.GIVEBUTTER_API_KEY}`,
           Accept: "application/json",
@@ -63,19 +49,24 @@ export async function campaignPosition(env, key = "send-6") {
   } catch (err) {
     console.error("givebutter raised fetch failed:", err);
   }
-  return {
-    raised: online + c.offline,
-    online,
-    offline: c.offline,
-    // Fallback only. The live goal is Givebutter's; campaigns.json says the same.
-    goal: goal || c.fallbackGoal,
-    live,
-  };
+  return { online, goal, live };
 }
 
-// The fund's own position: The Road. The grant receipt reads this.
+export async function campaignPosition(env, key = "send-6") {
+  if (key === "fund") {
+    const g = await givebutter(env, env.GIVEBUTTER_CAMPAIGN_ID || "683765");
+    const offline = Number(env.FUND_OFFLINE_RAISED) || 0;
+    return { raised: g.online + offline, online: g.online, offline, goal: 0, live: g.live };
+  }
+  if (key === "classic") return { raised: 0, online: 0, offline: 0, goal: 0, live: true };
+  const setAside = Number(env.SEND6_SET_ASIDE) || 0;
+  return { raised: setAside, online: 0, offline: setAside, goal: 21000, live: true };
+}
+
+// The fund's own position. The grant receipt reads this; with no goal it
+// quotes no figure, which is the honest answer for an open-ended fund.
 export async function fundPosition(env) {
-  return campaignPosition(env, "road");
+  return campaignPosition(env, "fund");
 }
 
 // Whole dollars, with separators. Grant amounts and campaign goals are always

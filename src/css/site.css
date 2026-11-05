@@ -2156,8 +2156,8 @@ a.info-v {
    including when there is no campaign — an empty band is a real state and must
    never leave a reserved hole behind it. */
 .camp-pending {
-  min-height: 455px;
-} /* measured Nov 2026 with the "also raising" line: 455 on a phone, 251 at 1440 */
+  min-height: 375px;
+} /* measured Nov 2026 with the "also raising" line: 372 at 390, 251 at 1440 */
 @media (min-width: 821px) {
   .camp-pending {
     min-height: 251px;

@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=5a6f0c11">
+<link rel="stylesheet" href="/css/site.css?v=1e7f1f72">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches&&"IntersectionObserver" in window)document.documentElement.classList.add("ace-motion");</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SportsTeam","name":"Chicago Wheelie Big Dills","sport":"Wheelchair pickleball","url":"https://adapttolife.org/pickleball","description":"A crew of wheelchair pickleball players growing the sport across the Chicago area, funded and supported by Adapt To Life.","areaServed":{"@type":"City","name":"Chicago"},"logo":"https://adapttolife.org/images/pickleball/wheelie-big-dills-badge.webp","sponsor":{"@type":"NGO","name":"Adapt To Life","url":"https://adapttolife.org"}}</script>
@@ -254,6 +254,11 @@
   .pb-card h3{ margin-top:1rem; font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(1.6rem,2.6vw,2.1rem); letter-spacing:-0.03em; color:var(--cream); }
   .pb-card p{ margin-top:0.5rem; color:var(--cream-mute); line-height:1.5; }
   .pb-card .pb-link{ color:var(--orange); }
+  .pb-prio{ list-style:none; counter-reset:prio; margin:1.4rem 0 0; padding:0; display:grid; gap:0.9rem; max-width:62ch; }
+  .pb-prio li{ counter-increment:prio; display:grid; grid-template-columns:2.2rem 1fr; gap:0.2rem 0.6rem; }
+  .pb-prio li::before{ content:counter(prio, decimal-leading-zero); grid-row:span 2; font-family:var(--font-label); font-weight:800; font-size:0.8rem; letter-spacing:0.14em; color:var(--orange-ink); padding-top:0.25rem; }
+  .pb-prio b{ font-family:var(--font-display); font-weight:800; font-size:1.1rem; }
+  .pb-prio span{ line-height:1.5; }
   .pb-card{ scroll-margin-top:96px; }
   .pb-card .pb-tag{ position:absolute; top:1rem; left:1rem; z-index:1; margin:0; padding:0.32rem 0.75rem; border-radius:999px; background:var(--orange); color:#fff; font-family:var(--font-label); font-weight:800; font-size:0.7rem; letter-spacing:0.16em; text-transform:uppercase; line-height:1; }
   @media (prefers-reduced-motion: no-preference){
@@ -658,7 +663,12 @@ fill="currentColor" stroke="none">
         <hr class="tick orange">
         <span class="eyebrow orange">Back the crew</span>
         <h2 class="serif statement">Help us <em class="italic" style="color:var(--orange)">fund it.</em></h2>
-        <p class="prose">Open play, memberships, equipment, travel and tournaments all take funding. Gifts go to the <a class="textlink" href="/hustle-and-heart" style="font:inherit;letter-spacing:inherit;">Hustle &amp; Heart Fund</a>, which keeps athletes playing.</p>
+        <p class="prose">Every gift goes to one fund, the <a class="textlink" href="/hustle-and-heart" style="font:inherit;letter-spacing:inherit;">Hustle &amp; Heart Fund</a>. For the Chicago Wheelie Big Dills, it pays for three things, in this order:</p>
+        <ol class="pb-prio">
+          <li><b>Every week</b><span>Court time, memberships and drop-ins, so the crew plays all year.</span></li>
+          <li><b>The Road to the US Open</b><span>Travel to tournaments to build rankings, and six seats in spring 2027. <a class="textlink" href="/send-6" style="font:inherit;letter-spacing:inherit;">See the road</a></span></li>
+          <li><b>The Chicago Classic</b><span>Our goal: a tournament with free registration, transportation and hotels for every athlete. <a class="textlink" href="/chicago-classic" style="font:inherit;letter-spacing:inherit;">See the goal</a></span></li>
+        </ol>
       </div>
       <div class="ace-win" data-m="stagger">
         <div><h3>Give</h3><ul><li>Any amount helps. $5 puts one athlete on court for a night, and $75 covers up to 15 at ACE.</li></ul><a class="btn pb-btn" href="/donate">Donate</a></div>

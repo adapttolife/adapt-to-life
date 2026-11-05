@@ -6,7 +6,52 @@ Sources: production pages on origin/main (Nov 3, 2026), `/api/raised` on adaptto
 
 ---
 
-## 0. Reset, November 5 (what changed after the first build)
+## 0. The fund is the hub (November 5, evening)
+
+Alec: "Hustle and heart is the athlete deployment fund that supports one of our initiatives which is pickleball but we created an ambassador model and that's how we not only fund but also build with ppl in the community. We offer more than just money. Athlete deployment fund through ambassadors like Juan."
+
+What that settles:
+
+- **The menu stays as it is live.** Our Work: Hustle & Heart Fund, Adaptive Sports Near Me, Adapt Body Shop. Wheelchair pickleball is not a menu item. It lives under the fund.
+- **The model in one line.** The Hustle & Heart Fund is our athlete deployment fund. It works through ambassadors like Juan, who build with clubs, organizations and coaches where they live, and it brings more than money: funding, coaching know-how, club relationships, volunteers and content. Chicago wheelchair pickleball is where it is deployed now. Any athlete can still apply for a grant, ambassador or not.
+- **This replaces "two lanes"** (move 3 in section 1, and "Athletes, and the programs they play in" from the reset below). Same substance, one spine.
+
+How the site hangs together:
+
+| Page | Its job |
+|---|---|
+| Home | The mission, the crew right now, the current campaign, one next step |
+| /hustle-and-heart | The hub: what the fund is, how it works through ambassadors, where it is deployed, what playing costs, the campaign, give |
+| /pickleball | Where the fund is deployed now: the crew, the record, the three levels, the clubs |
+| /ambassadors | How the fund builds with the community. Juan is the first |
+| /juan | The first ambassador, in his own words |
+| /send-6 | One campaign: six athletes to the US Open |
+| /apply | Grants, open to any athlete |
+| /sponsorship | Partners: what partnership gives back, and the packages |
+| /about, /promise | Who we are, and how giving works |
+
+On the review link (PR #237 plus the sponsor page):
+
+- **Fund page.** Hero "More than a check.", with "our athlete deployment fund" explained in the same sentence. New "How the fund works" (ambassadors build, the fund backs them, athletes play and compete) and "Where the fund is deployed now: Chicago wheelchair pickleball" ($75 covers a night at ACE, 3 clubs, 334K views). Equipment, training and travel, Brian's quote, Tim, the thermometer and the give section stay.
+- **/pickleball.** The hero says the crew is supported through the fund (linked). The clubs section opens "Through ambassadors like Juan Ortiz". The help block is labeled "More than money".
+- **Ambassadors.** "Ambassadors are how the Hustle & Heart Fund builds with the community." What you get now starts with funding behind what you build. The promise reads: "Any athlete can apply to the Hustle & Heart Fund, ambassador or not. And being an ambassador never depends on receiving a grant."
+- **About.** One Hustle & Heart item, with program support folded in, in menu order.
+- **Home.** The crew paragraph names the fund and Juan.
+- **Roadmap.** Ambassadors under live, the Chicago Classic under building. Also fixed roadmap items an earlier edit had listed twice.
+
+Language:
+
+- "Athlete deployment fund" is Alec's term. Use it once per page and explain it in the same sentence.
+- "More than money" is the difference. Always name what else: coaching know-how, club relationships, volunteers, content.
+- Funder, not operator still holds. The fund backs people and programs, and the programs belong to the people who run them.
+
+Open:
+
+- The fund page hero photo of Tim shows a GLASA jersey. It has been live for months. Swap or crop it?
+- Donate: should it say gifts are deployed through ambassadors? Today it says "Gifts support the Hustle & Heart Fund."
+- Partners: does sponsorship money flow through the fund or separately? The copy depends on the answer.
+
+## 0.1 Reset, November 5 (earlier that day)
 
 Alec: "I like it but I don't love it." The first build grew by accretion: the US Open record was repeated six times on `/pickleball`, and the page had ten sections. The reset, now on the review link:
 

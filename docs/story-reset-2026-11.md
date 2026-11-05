@@ -53,17 +53,27 @@ Settled later that evening (Alec):
 - **The money:** gifts and sponsorships go into the Hustle & Heart Fund. Ambassadors show us where it will do the most, and we pay programs and vendors directly, so ambassadors steer the money but never hold it. Today Alec covers overhead, so this works cleanly. If sponsorships ever need to cover operating costs (insurance, staff), that belongs in the sponsor agreement and changes one line on the site.
 - **The next ambassador has a seat:** a "Who's next?" slot beside Juan on Ambassadors, and "Next: wherever our next ambassador is building" on the fund page.
 
+### Settled late on November 5
+
+- **Team:** Tom Daily stays off the website completely. Karen Atkinson is a Board Member, on About and on her own page. The rest of the team stays as it is.
+- **ACE:** /ace is ACE's public partner page, listed on Partners next to Brick House, with what is happening at ACE and each event's place on the price list. More to come.
+- **One sponsor price list** (Partners, and /sponsor-the-crew matches):
+  - Per athlete: $75 a night, $960 an athlete a year, $9,600 Train to Compete for ten a year.
+  - Levels: Teammate $500 (a fundraiser tournament), Coach $2,500 (meals or rides at the Classic), Captain $10,000 (the Classic), Champion $25,000 (Train to Compete and the Classic), Founding Partner $50,000 and up.
+- **The Chicago Classic:** /chicago-classic, with the date to come. We raise now to make it free to play, with rides and meals, the standard The Pickle Lodge set at Monster Smash. Gifts go to the Hustle & Heart Fund.
+- **Media release:** v4 is eight short plain-language sections. "Less is more, keep it simple."
+
 ### Home order and site audit (November 5, night)
 
 - **Home:** hero, Alec's why, Juan (our first ambassador, a face first), the crew he plays with, then the Send 6 band. The crew paragraph no longer re-introduces Juan, and the two dark sections read as one chapter.
 - **Audit:** three independent passes over every page against this model. Every finding was checked before it was fixed. Findings that went against Alec's own choices ("our very own Pete Petersen coaches", "build and manage", "ecosystem") were kept as he chose them.
 - **Waiting on Alec:**
   1. The Send 6 bar counts every gift to the fund, because one Givebutter campaign feeds `/api/raised`. Say so plainly, or split them?
-  2. Karen's title: About says Board Member, while her page and our records say Leadership Team. Add Tom Daily, Juan (Ambassador) and Robby (title to confirm) to About.
-  3. ACE: turn /ace into a public partner page and list ACE on Partners, once CeCe says yes.
-  4. Media release (`src/waiver.js`) says "our programs and activities". Counsel should review it for funder, not operator.
+  2. Resolved: Karen is a Board Member, Tom stays off the site, and the team stays as is.
+  3. Resolved: /ace is a public partner page, listed on Partners.
+  4. Resolved: the media release is v4, in plain language.
   5. Sponsor promises: "Proof every month" stays only if monthly recaps will happen. Posting has paused since Oct 29.
-  6. One sponsor price list: Partners tiers ($500, $2,500, $10,000) and the crew packages ($75, $960, $9,600) should map onto each other.
+  6. Resolved: one sponsor price list.
   7. A "Give in Tim's memory" button on /tim.
 
 ## 0.1 Reset, November 5 (earlier that day)

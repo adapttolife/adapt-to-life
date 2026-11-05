@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light only">
 <title>The Hustle &amp; Heart Fund | Adapt To Life</title>
-<meta name="description" content="The Hustle &amp; Heart Fund helps adaptive athletes with equipment, training, and travel. Learn how the fund works, apply for support, or give.">
+<meta name="description" content="The Hustle & Heart Fund is Adapt To Life's athlete deployment fund. Through ambassadors like Juan Ortiz, it funds and builds with people in the community, so athletes can train, travel and compete.">
 <link rel="canonical" href="https://adapttolife.org/hustle-and-heart">
 <link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-v2-option2-32.png">
 <link rel="apple-touch-icon" href="/images/apple-touch-icon-v2-option2.png">
 <meta property="og:type" content="website">
 <meta property="og:title" content="The Hustle &amp; Heart Fund | Adapt To Life">
-<meta property="og:description" content="The Hustle &amp; Heart Fund helps adaptive athletes with equipment, training, and travel. Learn how the fund works, apply for support, or give.">
+<meta property="og:description" content="The Hustle & Heart Fund is Adapt To Life's athlete deployment fund. Through ambassadors like Juan Ortiz, it funds and builds with people in the community, so athletes can train, travel and compete.">
 <meta property="og:image" content="https://adapttolife.org/images/og/hustle-and-heart-v4-content.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -20,7 +20,7 @@
 <meta property="og:url" content="https://adapttolife.org/hustle-and-heart">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="The Hustle &amp; Heart Fund | Adapt To Life">
-<meta name="twitter:description" content="The Hustle &amp; Heart Fund helps adaptive athletes with equipment, training, and travel. Learn how the fund works, apply for support, or give.">
+<meta name="twitter:description" content="The Hustle & Heart Fund is Adapt To Life's athlete deployment fund. Through ambassadors like Juan Ortiz, it funds and builds with people in the community, so athletes can train, travel and compete.">
 <meta name="twitter:image" content="https://adapttolife.org/images/og/hustle-and-heart-v4-content.jpg">
 <meta name="twitter:image:alt" content="Keep your game going. The Hustle and Heart Fund, Adapt To Life. A wheelchair pickleball player in a headband holds his paddle.">
 <link rel="preconnect" href="https://widgets.givebutter.com" crossorigin>
@@ -53,14 +53,27 @@
   .give-split-form givebutter-giving-form{ display:block; width:100%; }
   .thermo{ max-width:540px; margin:1.8rem auto 0; }
   .thermo-row{ display:flex; align-items:baseline; gap:0.5rem; justify-content:center; flex-wrap:wrap; }
-  .hh-lanes-grid{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(1rem,2.6vw,1.8rem); margin-top:clamp(1.8rem,3.6vw,2.6rem); }
-  .hh-lane{ padding:clamp(1.4rem,2.6vw,2rem); border-radius:18px; background:#fff; border-top:4px solid var(--orange); box-shadow:0 0 0 1px rgba(12,12,14,0.08), 0 24px 50px -36px rgba(12,12,14,0.35); }
-  .hh-lane-tag{ font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--orange-ink); }
-  .hh-lane h3{ margin-top:0.5rem; }
-  .hh-lane .prose{ margin-top:0.7rem; }
-  .hh-lane .textlink{ display:inline-block; margin-top:1rem; }
-  .hh-lanes-note{ margin-top:1.6rem; max-width:62ch; }
-  @media (max-width:760px){ .hh-lanes-grid{ grid-template-columns:1fr; } }
+  .hh-model-lead{ margin-top:1rem; max-width:62ch; }
+  .hh-steps{ list-style:none; margin:clamp(1.8rem,3.6vw,2.6rem) 0 0; padding:0; display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(1rem,2.4vw,1.6rem); }
+  .hh-steps li{ padding:clamp(1.3rem,2.4vw,1.8rem); border-radius:18px; background:#fff; border-top:4px solid var(--orange); box-shadow:0 0 0 1px rgba(12,12,14,0.08), 0 24px 50px -36px rgba(12,12,14,0.35); }
+  .hh-step-n{ font-family:var(--font-label); font-weight:800; font-size:0.78rem; letter-spacing:0.2em; color:var(--orange-ink); }
+  .hh-steps b{ display:block; margin-top:0.4rem; font-family:var(--font-display); font-weight:800; font-size:clamp(1.2rem,1.9vw,1.45rem); letter-spacing:-0.015em; }
+  .hh-steps span{ display:block; margin-top:0.55rem; line-height:1.5; }
+  .hh-model-note{ margin-top:1.6rem; max-width:66ch; }
+  @media (max-width:820px){ .hh-steps{ grid-template-columns:1fr; } }
+  .hh-now{ position:relative; isolation:isolate; overflow:hidden; }
+  .hh-now::before{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 50% 70% at 85% 40%, rgba(255,92,57,0.18) 0%, transparent 70%); }
+  .hh-now-grid{ display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,0.85fr); gap:clamp(2rem,5vw,4.5rem); align-items:center; }
+  @media (max-width:820px){ .hh-now-grid{ grid-template-columns:1fr; } }
+  .hh-now-badge{ display:block; width:clamp(104px,10vw,140px); height:auto; margin-bottom:1.2rem; filter:drop-shadow(0 12px 32px rgba(0,0,0,0.6)); }
+  .hh-now h2{ margin-top:0.8rem; color:var(--cream); }
+  .hh-now .prose{ margin-top:1rem; color:var(--cream-mute); max-width:46ch; }
+  .hh-now-links{ margin-top:1.4rem; display:flex; flex-wrap:wrap; gap:0.6rem 1.6rem; }
+  .hh-now-links .textlink{ color:var(--orange); }
+  .hh-now-proof{ list-style:none; margin:0; padding:0; display:grid; gap:1.1rem; }
+  .hh-now-proof li{ display:grid; grid-template-columns:7.4rem 1fr; align-items:baseline; gap:1rem; padding-bottom:1.1rem; border-bottom:1px solid rgba(255,255,255,0.12); }
+  .hh-now-proof b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(2.4rem,4.6vw,3.2rem); line-height:0.9; letter-spacing:-0.04em; color:var(--orange); }
+  .hh-now-proof span{ color:var(--cream); font-weight:600; line-height:1.4; }
   .thermo-raised:empty{ display:none; }
   .thermo-raised{ font-family:"Newsreader",serif; font-size:clamp(2.4rem,6vw,3.4rem); line-height:1; color:var(--cream); }
   .thermo-goal{ font-family:"Hanken Grotesk",sans-serif; color:rgba(255,255,255,0.6); font-size:0.95rem; }
@@ -112,9 +125,9 @@ fill="currentColor" stroke="none">
       <div class="nav-group">
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navOurWork">Our Work<svg class="caret" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="caret" data-style="bold"><path fill="currentColor" d="m216.49 104.49l-80 80a12 12 0 0 1-17 0l-80-80a12 12 0 0 1 17-17L128 159l71.51-71.52a12 12 0 0 1 17 17Z"/></svg></button>
         <div class="nav-panel" id="navOurWork">
-          <a href="/pickleball"><span class="np-t">Wheelchair Pickleball</span><span class="np-d">The crew we fund and support</span></a>
           <a href="/hustle-and-heart"><span class="np-t">Hustle &amp; Heart Fund</span><span class="np-d">Support for equipment, training, and travel</span></a>
           <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d">In beta · Find adaptive programs by sport and location</span></a>
+          <a href="/adapt-body-shop"><span class="np-t">Adapt Body Shop</span><span class="np-d">Coming soon · Gear for the community</span></a>
         </div>
       </div>
       <div class="nav-group">
@@ -142,10 +155,9 @@ fill="currentColor" stroke="none">
   <div class="mobile-menu">
     <div class="wrap mwrap">
       <span class="m-group">Our Work</span>
-      <a class="m-sub" href="/pickleball">Wheelchair Pickleball</a>
       <a class="m-sub" href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
       <a class="m-sub" href="/adaptive-sports-near-me">Adaptive Sports Near Me · In beta</a>
-      
+      <a class="m-sub" href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
       <span class="m-group">Get Involved</span>
       <a class="m-sub" href="/volunteer">Volunteer</a>
       <a class="m-sub" href="/sponsorship">Partners</a>
@@ -167,8 +179,8 @@ fill="currentColor" stroke="none">
       <div class="h2col">
         <div class="h2col-text">
           <span class="eyebrow reveal">The Hustle &amp; Heart Fund</span>
-          <h1 class="serif display reveal">Keep your game <em class="italic">going.</em></h1>
-          <p class="lead sub reveal">The Hustle &amp; Heart Fund helps adaptive athletes with equipment, training, and travel. Named for <a href="/tim" class="textlink">Tim Gruensfelder</a>: all hustle, all heart.</p>
+          <h1 class="serif display reveal">More than <em class="italic">a check.</em></h1>
+          <p class="lead sub reveal">The Hustle &amp; Heart Fund is our athlete deployment fund. Through ambassadors like <a href="/juan" class="textlink" style="font:inherit;letter-spacing:inherit;">Juan Ortiz</a>, it funds and builds with people in the community, so athletes can train, travel and compete. Named for <a href="/tim" class="textlink" style="font:inherit;letter-spacing:inherit;">Tim Gruensfelder</a>: all hustle, all heart.</p>
           <div class="actions reveal">
             <a href="/donate" class="btn">Donate</a>
             <a href="/apply" class="btn ghost">Apply for a grant</a>
@@ -184,6 +196,40 @@ fill="currentColor" stroke="none">
 
 
   <!-- 2 · THE COST (merged — the hook + what your dollar covers) -->
+  <!-- HOW THE FUND WORKS: the ambassador model -->
+  <section class="band hh-model" aria-labelledby="hhModelTitle">
+    <div class="wrap">
+      <hr class="tick orange reveal">
+      <span class="eyebrow orange reveal">How the fund works</span>
+      <h2 id="hhModelTitle" class="serif h2 reveal" style="margin-top:0.8rem;">We fund it, <em class="italic" style="color:var(--orange-ink)">and we build it together.</em></h2>
+      <p class="prose reveal hh-model-lead">The Hustle &amp; Heart Fund works through ambassadors: athletes and coaches who grow a sport where they live. We back them with funding and everything else it takes, and they build with the clubs, organizations and coaches around them.</p>
+      <ol class="hh-steps">
+        <li class="reveal"><p class="hh-step-n">01</p><b>Ambassadors build</b><span>Athletes and coaches like Juan grow a sport where they live, with clubs, organizations and coaches.</span></li>
+        <li class="reveal"><p class="hh-step-n">02</p><b>The fund backs them</b><span>Funding, plus coaching know-how, club relationships, volunteers and content that helps a program grow.</span></li>
+        <li class="reveal"><p class="hh-step-n">03</p><b>Athletes play and compete</b><span>Court time, memberships, equipment and travel for the athletes in those programs.</span></li>
+      </ol>
+      <p class="hh-model-note reveal">Any athlete can apply for support, ambassador or not. We pay a vendor or program directly, or reimburse an approved expense. <a class="textlink" href="/ambassadors" style="font:inherit;letter-spacing:inherit;">How ambassadors work</a>, or <a class="textlink" href="/apply" style="font:inherit;letter-spacing:inherit;">apply for a grant</a>.</p>
+    </div>
+  </section>
+
+  <!-- WHERE IT IS DEPLOYED NOW -->
+  <section class="band dark hh-now" aria-labelledby="hhNowTitle">
+    <div class="wrap hh-now-grid">
+      <div class="reveal">
+        <img class="hh-now-badge" src="/images/pickleball/wheelie-big-dills-badge.webp" alt="The Wheelie Big Dills badge: a pickle in a wheelchair swinging a Chicago flag paddle, Wheelchair Pickleball, Chicago, IL, est. 2024" width="640" height="638" loading="lazy" decoding="async">
+        <span class="eyebrow orange">Where the fund is deployed now</span>
+        <h2 id="hhNowTitle" class="serif h2">Chicago wheelchair pickleball.</h2>
+        <p class="prose">Our first ambassador, Juan Ortiz, is growing wheelchair pickleball across the Chicago area. The fund backs him, the Chicago Wheelie Big Dills he plays with, and the clubs that make room for them.</p>
+        <p class="hh-now-links"><a href="/pickleball" class="textlink">Meet the crew <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a> <a href="/juan" class="textlink">Read Juan&rsquo;s story <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a></p>
+      </div>
+      <ul class="hh-now-proof reveal" aria-label="What the fund brings in Chicago">
+        <li><b>$75</b><span>covers court time for the whole crew for a night at ACE</span></li>
+        <li><b>3</b><span>clubs where the crew plays across the Chicago area</span></li>
+        <li><b>334K</b><span>views in 90 days across Instagram and Facebook, mostly from people who don&rsquo;t follow us yet</span></li>
+      </ul>
+    </div>
+  </section>
+
   <section class="band-lg tint">
     <div class="wrap">
       <div class="reveal sec-head">
@@ -235,28 +281,7 @@ fill="currentColor" stroke="none">
   </section>
 
   <!-- 3 · THE PROMISE (one line; the full statement lives on /promise) -->
-  <section class="band hh-lanes" aria-labelledby="hhLanesTitle">
-    <div class="wrap">
-      <hr class="tick orange reveal">
-      <span class="eyebrow orange reveal">How the fund invests</span>
-      <h2 id="hhLanesTitle" class="serif h2 reveal" style="margin-top:0.8rem;">Athletes, <em class="italic" style="color:var(--orange-ink)">and the programs they play in.</em></h2>
-      <div class="hh-lanes-grid">
-        <div class="hh-lane reveal">
-          <p class="hh-lane-tag">Athletes</p>
-          <h3 class="serif h3">Support for your next step.</h3>
-          <p class="prose">A first sport, a regular game, or a competition you have been working toward. An athlete applies, and we pay a vendor or program directly, or reimburse an approved expense.</p>
-          <a class="textlink" href="/apply">Apply for support <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
-        </div>
-        <div class="hh-lane reveal">
-          <p class="hh-lane-tag">Programs</p>
-          <h3 class="serif h3">Places to play, and people to play with.</h3>
-          <p class="prose">We help clubs, organizations and coaches build and manage adaptive sports programs, with court time, clinics and coaching know-how. Right now that includes the Chicago Wheelie Big Dills, the wheelchair pickleball crew we fund and support.</p>
-          <a class="textlink" href="/pickleball">Meet the crew <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
-        </div>
-      </div>
-      <p class="hh-lanes-note reveal">Ambassadors like <a class="textlink" href="/juan" style="font:inherit;letter-spacing:inherit;">Juan Ortiz</a> help us see where support will go furthest. <a class="textlink" href="/promise" style="font:inherit;letter-spacing:inherit;">How Giving Works</a></p>
-    </div>
-  </section>
+
 
 
   <!-- 4 · WHY IT CARRIES HIS NAME.

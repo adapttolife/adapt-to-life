@@ -70,6 +70,11 @@
   .hh-now .prose{ margin-top:1rem; color:var(--cream-mute); max-width:46ch; }
   .hh-now-links{ margin-top:1.4rem; display:flex; flex-wrap:wrap; gap:0.6rem 1.6rem; }
   .hh-now-links .textlink{ color:var(--orange); }
+  .hh-now-partners{ list-style:none; margin:1.6rem 0 0; padding:1.2rem 0 0; border-top:1px solid rgba(255,255,255,0.12); display:flex; flex-wrap:wrap; align-items:center; gap:1.1rem 1.8rem; }
+  .hh-now-partners img{ height:36px; width:auto; opacity:0.92; transition:opacity .2s ease; }
+  .hh-now-partners img.is-word{ height:22px; }
+  .hh-now-partners img.is-bh{ height:48px; }
+  .hh-now-partners a:hover img{ opacity:1; }
   .hh-now-next{ margin-top:1.4rem; color:var(--cream-mute); font-size:0.95rem; }
   .hh-now-next a{ color:var(--cream); text-decoration:underline; text-decoration-color:var(--orange); text-underline-offset:3px; }
   .hh-now-proof{ list-style:none; margin:0; padding:0; display:grid; gap:1.1rem; }
@@ -223,6 +228,12 @@ fill="currentColor" stroke="none">
         <h2 id="hhNowTitle" class="serif h2">Chicago wheelchair pickleball.</h2>
         <p class="prose">Our first ambassador, Juan Ortiz, is growing wheelchair pickleball across the Chicago area. The fund backs him, the Chicago Wheelie Big Dills he plays with, and the clubs that make room for them.</p>
         <p class="hh-now-links"><a href="/pickleball" class="textlink">Meet the crew <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a> <a href="/juan" class="textlink">Read Juan&rsquo;s story <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a></p>
+        <ul class="hh-now-partners" aria-label="Our partners">
+          <li><a href="/brickhouse"><img class="is-bh" src="/images/brickhouse/brick-house-logo-orange-black-reverse.svg" alt="Brick House Pickleball" width="372" height="265" loading="lazy"></a></li>
+          <li><a href="/ace"><img src="/images/ace/ace-logo-white.png" alt="ACE Pickleball Club" width="1446" height="200" loading="lazy" class="is-word"></a></li>
+          <li><a href="/picklr"><img src="/images/partners/picklr-wordmark-white.png" alt="The Picklr" width="900" height="209" loading="lazy" class="is-word"></a></li>
+          <li><a href="/chicago-adaptive-sports"><img src="/images/partners/cas-mark.png" alt="Chicago Adaptive Sports" width="447" height="360" loading="lazy"></a></li>
+        </ul>
         <p class="hh-now-next">Next: wherever our next ambassador is building. <a href="/ambassadors#join">Know who it should be?</a></p>
       </div>
       <ul class="hh-now-proof reveal" aria-label="What the fund brings in Chicago">

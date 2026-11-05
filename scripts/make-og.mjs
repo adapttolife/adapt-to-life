@@ -243,6 +243,25 @@ const CARDS = {
     page: "chicago-classic.html",
     headline: "The Chicago <em>Classic</em>.",
   },
+  // Partner pages: the same split treatment.
+  picklr: {
+    variant: "split",
+    photo: "court-swing",
+    size: 72,
+    measure: "9ch",
+    out: "public/images/og/picklr-v1-partner.jpg",
+    page: "picklr.html",
+    headline: "Open play, <em>open doors</em>.",
+  },
+  "chicago-adaptive-sports": {
+    variant: "split",
+    photo: "juan-portrait",
+    size: 76,
+    measure: "8ch",
+    out: "public/images/og/chicago-adaptive-sports-v1-partner.jpg",
+    page: "chicago-adaptive-sports.html",
+    headline: "Push. Play. <em>Persist</em>.",
+  },
   // Partner club card, same split treatment as Brick House.
   ace: {
     variant: "split",

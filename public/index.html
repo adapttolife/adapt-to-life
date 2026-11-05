@@ -354,6 +354,30 @@ fill="currentColor" stroke="none">
     </div>
   </section>
 
+  <!-- PARTNERS: shown, not claimed. Each logo opens that partner's page. -->
+  <section class="hm-partners" aria-labelledby="hmPartnersTitle">
+    <style>
+      .hm-partners{ padding:clamp(2.2rem,5vw,3.4rem) 0; background:var(--paper); border-bottom:1px solid var(--hairline); }
+      .hm-partners .wrap{ text-align:center; }
+      .hm-partners ul{ list-style:none; margin:1.2rem 0 0; padding:0; display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:clamp(1.4rem,4vw,3.4rem); }
+      .hm-partners a{ display:flex; align-items:center; gap:0.6rem; opacity:0.9; transition:opacity .2s ease, transform .2s ease; color:var(--ink); text-decoration:none; }
+      .hm-partners a:hover{ opacity:1; transform:translateY(-2px); }
+      .hm-partners img{ height:clamp(34px,4vw,48px); width:auto; }
+      .hm-partners img.is-word{ height:clamp(22px,2.6vw,30px); }
+      .hm-partners img.is-bh{ height:clamp(48px,5.4vw,64px); }
+      .hm-partners .hm-p-name{ font-family:var(--font-display); font-weight:800; font-size:0.95rem; line-height:1.05; text-align:left; }
+    </style>
+    <div class="wrap reveal">
+      <span class="eyebrow orange" id="hmPartnersTitle">Our partners</span>
+      <ul>
+        <li><a href="/brickhouse"><img class="is-bh" src="/images/brickhouse/brick-house-logo-orange-black.svg" alt="Brick House Pickleball" width="372" height="265" loading="lazy"></a></li>
+        <li><a href="/ace"><img src="/images/ace/ace-logo.png" alt="ACE Pickleball Club" width="636" height="300" loading="lazy"></a></li>
+        <li><a href="/picklr"><img class="is-word" src="/images/partners/picklr-wordmark-black.png" alt="The Picklr" width="900" height="209" loading="lazy"></a></li>
+        <li><a href="/chicago-adaptive-sports"><img src="/images/partners/cas-mark.png" alt="" width="447" height="360" loading="lazy"><span class="hm-p-name">Chicago<br>Adaptive Sports</span></a></li>
+      </ul>
+    </div>
+  </section>
+
   <!-- Current work follows the reason for giving. Shared campaign data owns
        the target and progress. Completed drives remain on the campaign page. -->
   <section class="home-campaign" aria-label="Current fundraising campaign">

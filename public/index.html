@@ -338,6 +338,14 @@ fill="currentColor" stroke="none">
       .hm-crew-proof b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(2.4rem,4.6vw,3.2rem); line-height:0.9; letter-spacing:-0.04em; color:var(--orange); }
       .hm-crew-proof span{ color:var(--cream); font-weight:600; line-height:1.4; }
     </style>
+    <style>
+      /* What a gift can do, smallest first, right before the ask. */
+      .gift-ladder{ list-style:none; margin:clamp(1.6rem,3.4vw,2.4rem) auto 0; padding:0; max-width:980px; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:clamp(0.8rem,2vw,1.4rem); text-align:left; }
+      .gift-ladder li{ padding:1.1rem 1.1rem 1.2rem; border-radius:16px; background:rgba(255,255,255,0.05); box-shadow:inset 0 0 0 1px rgba(255,255,255,0.12); }
+      .gift-ladder b{ display:block; font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(1.9rem,3.4vw,2.5rem); line-height:1; letter-spacing:-0.03em; color:var(--orange); }
+      .gift-ladder span{ display:block; margin-top:0.5rem; color:var(--cream); line-height:1.4; font-weight:600; }
+      @media (max-width:760px){ .gift-ladder{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    </style>
     <div class="wrap hm-crew-grid">
       <div class="reveal">
         <img class="hm-crew-badge" src="/images/pickleball/wheelie-big-dills-badge.webp" alt="The Wheelie Big Dills badge: a pickle in a wheelchair swinging a Chicago flag paddle, Wheelchair Pickleball, Chicago, IL, est. 2024" width="640" height="638" loading="lazy" decoding="async">
@@ -497,6 +505,12 @@ fill="currentColor" stroke="none">
         <span class="qrole">Founder &amp; Executive Director</span>
       </div>
       <p class="home-closing-invite reveal">Your gift helps more athletes find their place and keep playing.</p>
+      <ul class="gift-ladder reveal" aria-label="What your gift can do">
+        <li><b>$5</b><span>puts one athlete on court for a night</span></li>
+        <li><b>$75</b><span>covers up to 15 athletes for a night at ACE</span></li>
+        <li><b>$960</b><span>can keep one athlete training all year</span></li>
+        <li><b>$3,500</b><span>can send one athlete to the US Open</span></li>
+      </ul>
       <div class="actions reveal">
         <a href="/donate" class="btn">Donate</a>
       </div>

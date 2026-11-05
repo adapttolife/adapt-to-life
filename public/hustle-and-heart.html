@@ -49,6 +49,10 @@
   .fund-terms a{ display:inline-flex; align-items:center; min-height:44px; color:var(--cream); font-size:0.95rem; text-decoration:underline; text-underline-offset:4px; }
   @media (max-width:880px){ .give-split{ grid-template-columns:1fr; gap:2.2rem; } }
   .give-split .thermo{ max-width:none; margin:1.4rem 0 0; }
+  .gift-ladder{ list-style:none; margin:1.4rem 0 0; padding:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.7rem; }
+  .gift-ladder li{ padding:0.9rem 1rem 1rem; border-radius:14px; background:rgba(255,255,255,0.05); box-shadow:inset 0 0 0 1px rgba(255,255,255,0.12); }
+  .gift-ladder b{ display:block; font-family:var(--font-display); font-weight:900; font-style:italic; font-size:1.8rem; line-height:1; letter-spacing:-0.03em; color:var(--orange); }
+  .gift-ladder span{ display:block; margin-top:0.4rem; color:var(--cream); line-height:1.4; font-weight:600; font-size:0.95rem; }
   .give-split .thermo-row{ justify-content:flex-start; }
   .give-split-form givebutter-giving-form{ display:block; width:100%; }
   .thermo{ max-width:540px; margin:1.8rem auto 0; }
@@ -237,7 +241,7 @@ fill="currentColor" stroke="none">
         <p class="hh-now-next">Next: wherever our next ambassador is building. <a href="/ambassadors#join">Know who it should be?</a></p>
       </div>
       <ul class="hh-now-proof reveal" aria-label="What the fund brings in Chicago">
-        <li><b>$75</b><span>covers court fees for the whole crew for a night at ACE</span></li>
+        <li><b>$75</b><span>covers court time for up to 15 athletes for a night at ACE</span></li>
         <li><b>3</b><span>clubs where the crew plays across the Chicago area</span></li>
         <li><b>334K</b><span>views in 90 days across Instagram and Facebook</span></li>
       </ul>
@@ -343,6 +347,12 @@ fill="currentColor" stroke="none">
           <span class="eyebrow orange">Your turn</span>
           <h2 class="serif statement" style="margin-top:0.7rem;">Put an athlete on the court.</h2>
           <p class="lead sub" style="margin-top:1rem;">Help cover the cost of taking part. Every gift adds to what the fund can make possible.</p>
+          <ul class="gift-ladder" aria-label="What your gift can do">
+            <li><b>$5</b><span>puts one athlete on court for a night</span></li>
+            <li><b>$75</b><span>covers up to 15 athletes for a night at ACE</span></li>
+            <li><b>$960</b><span>can keep one athlete training all year</span></li>
+            <li><b>$3,500</b><span>can send one athlete to the US Open</span></li>
+          </ul>
           <div class="thermo" data-thermo>
             <p style="margin:0 0 0.9rem; font-size:0.95rem; font-weight:600;">Send 6 to the US Open Spring 2027</p>
             <div class="thermo-row">

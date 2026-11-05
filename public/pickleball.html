@@ -201,16 +201,25 @@
   .pb-day{ font-family:var(--font-label); font-weight:800; font-size:0.78rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--orange-ink); }
   .pb-link{ display:inline-block; margin-top:1rem; font-weight:700; color:var(--orange-ink); border-bottom:2px solid currentColor; padding-bottom:2px; }
   .pb-link-light{ color:var(--orange); }
-  /* The three levels */
-  .pb-layers{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(1rem,2.2vw,1.4rem); margin-top:clamp(2rem,4vw,3rem); }
-  .pb-layer{ display:block; padding:clamp(1.4rem,2.6vw,2rem); border-radius:18px; background:#fff; color:inherit; text-decoration:none; box-shadow:0 0 0 1px rgba(12,12,14,0.08), 0 24px 50px -36px rgba(12,12,14,0.35); border-top:4px solid var(--orange); }
-  .pb-layer h3{ margin-top:0.5rem; font-family:var(--font-display); font-weight:800; font-size:clamp(1.35rem,2.2vw,1.7rem); letter-spacing:-0.02em; }
-  .pb-layer p:last-child{ margin-top:0.7rem; line-height:1.55; }
-  @media (prefers-reduced-motion: no-preference){
-    .pb-layer{ transition:transform .3s cubic-bezier(.2,.7,.2,1), box-shadow .3s ease; }
-    .pb-layer:hover{ transform:translateY(-4px); box-shadow:0 0 0 1px rgba(255,92,57,0.45), 0 30px 60px -34px rgba(255,92,57,0.5); }
-  }
-  @media (max-width:860px){ .pb-layers{ grid-template-columns:1fr; } }
+  /* The record, said once */
+  .pb-proof{ position:relative; isolation:isolate; overflow:hidden; padding:clamp(2.6rem,5vw,3.6rem) 0; }
+  .pb-proof::before{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 60% 120% at 50% 0%, rgba(255,92,57,0.16) 0%, transparent 70%); }
+  .pb-proof-list{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(1.2rem,2.6vw,2rem); }
+  .pb-proof-list li{ border-top:3px solid var(--orange); padding-top:1rem; }
+  .pb-proof-num{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(2.6rem,5vw,3.8rem); line-height:0.95; letter-spacing:-0.04em; color:var(--orange); }
+  .pb-proof-label{ margin-top:0.35rem; font-family:var(--font-display); font-weight:800; font-size:clamp(1.05rem,1.6vw,1.2rem); color:var(--cream); letter-spacing:-0.01em; }
+  .pb-proof-cap{ margin-top:0.45rem; color:var(--cream-mute); line-height:1.5; font-size:0.95rem; }
+  @media (max-width:900px){ .pb-proof-list{ grid-template-columns:1fr 1fr; } }
+  @media (max-width:520px){ .pb-proof-list{ grid-template-columns:1fr; } }
+  /* What we're building: three levels */
+  .pb-levels{ list-style:none; margin:clamp(2rem,4vw,3rem) 0 0; padding:0; display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(1rem,2.2vw,1.4rem); }
+  .pb-level{ display:flex; flex-direction:column; padding:clamp(1.4rem,2.6vw,2rem); border-radius:18px; background:#fff; box-shadow:0 0 0 1px rgba(12,12,14,0.08), 0 24px 50px -36px rgba(12,12,14,0.35); border-top:4px solid var(--orange); }
+  .pb-level h3{ margin-top:0.5rem; font-family:var(--font-display); font-weight:800; font-size:clamp(1.35rem,2.2vw,1.7rem); letter-spacing:-0.02em; }
+  .pb-level > p:not(.pb-day):not(.pb-fund){ margin-top:0.7rem; line-height:1.55; }
+  .pb-fund{ margin-top:auto; padding-top:1rem; font-size:0.95rem; line-height:1.45; }
+  .pb-fund b{ display:block; font-family:var(--font-label); font-weight:800; font-size:0.72rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--orange-ink); margin-bottom:0.25rem; }
+  .pb-level .pb-link{ align-self:flex-start; }
+  @media (max-width:900px){ .pb-levels{ grid-template-columns:1fr; } }
   /* Sessions */
   .pb-nights{ display:grid; gap:clamp(1rem,2.2vw,1.4rem); margin-top:clamp(1.8rem,3.5vw,2.6rem); }
   .pb-sessions{ grid-template-columns:repeat(4,1fr); }
@@ -234,19 +243,6 @@
   .pb-note a{ color:var(--orange-ink); font-weight:700; border-bottom:2px solid currentColor; }
   .pb-beyond{ margin-top:clamp(1.6rem,3vw,2.2rem); max-width:62ch; padding:clamp(1.1rem,2.2vw,1.5rem); border-left:4px solid var(--orange); background:rgba(255,92,57,0.06); border-radius:0 14px 14px 0; }
   .pb-beyond p:last-child{ margin-top:0.4rem; line-height:1.55; }
-  /* Train to compete */
-  .pb-train-grid{ display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,0.8fr); gap:clamp(2rem,5vw,4.5rem); align-items:center; }
-  .pb-train .ace-head .prose + .prose{ margin-top:0.8rem; }
-  .pb-stat{ padding:clamp(1.6rem,3vw,2.4rem); border-radius:22px; background:#0C0C0E; color:var(--cream); box-shadow:0 30px 70px -36px rgba(12,12,14,0.6), 0 0 90px -30px rgba(255,92,57,0.5); }
-  .pb-stat-num{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(4.5rem,10vw,7.5rem); line-height:0.9; letter-spacing:-0.05em; color:var(--orange); text-shadow:0 0 40px rgba(255,92,57,0.35); }
-  .pb-stat-unit{ margin-top:0.3rem; font-family:var(--font-display); font-weight:800; font-size:clamp(1.2rem,2vw,1.5rem); }
-  .pb-stat-cap{ margin-top:0.8rem; color:var(--cream-mute); line-height:1.5; max-width:30ch; }
-  .pb-stat .pb-link{ color:var(--orange); }
-  .pb-stats{ display:grid; gap:clamp(0.9rem,1.8vw,1.2rem); }
-  .pb-stats .pb-stat{ padding:clamp(1.3rem,2.4vw,1.9rem); }
-  .pb-stats .pb-stat-num{ font-size:clamp(3.4rem,7vw,5.4rem); }
-  @media (max-width:860px){ .pb-train-grid{ grid-template-columns:1fr; } }
-  .pb-ahead .ace-pick h3 + p{ margin-top:0.7rem; color:var(--cream-mute); line-height:1.5; }
   /* The crew */
   .pb-crew{ position:relative; isolation:isolate; overflow:hidden; }
   .pb-crew::before{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 55% 45% at 80% 15%, rgba(255,92,57,0.18) 0%, transparent 70%); }
@@ -473,39 +469,117 @@ fill="currentColor" stroke="none">
         <p class="lead sub">A crew of wheelchair pickleball players growing the sport across the Chicago area. We're proud to fund and support them.</p>
         <div class="actions">
           <a href="#support" class="btn">Back the crew</a>
-          <a href="#levels" class="btn ghost">See what we're building</a>
+          <a href="#building" class="btn ghost">See what we're building</a>
         </div>
       </div>
     </div>
     <span class="ace-cue" aria-hidden="true"></span>
   </section>
 
-  <!-- 2. THE ECOSYSTEM: more than one trip -->
-  <section class="band tint" id="levels">
+  <!-- 2. PROOF: the record, said once -->
+  <section class="band dark pb-proof" aria-label="The crew's record">
+    <div class="wrap">
+      <ul class="pb-proof-list" data-m="stagger">
+        <li>
+          <p class="pb-proof-num"><span data-count="3">3</span></p>
+          <p class="pb-proof-label">straight US Opens</p>
+          <p class="pb-proof-cap">Robby and Brian have each played the US Open in Naples the last three years.</p>
+        </li>
+        <li>
+          <p class="pb-proof-num"><span data-count="6">6</span></p>
+          <p class="pb-proof-label">medals at Monster Smash</p>
+          <p class="pb-proof-cap">Two golds, two silvers and two bronzes in the wheelchair division, October 2026.</p>
+        </li>
+        <li>
+          <p class="pb-proof-num">1st</p>
+          <p class="pb-proof-label">wheelchair division on the APP Tour</p>
+          <p class="pb-proof-cap">Juan asked the APP Vlasic Classic for one, and five full teams played it.</p>
+        </li>
+        <li>
+          <p class="pb-proof-num">334K</p>
+          <p class="pb-proof-label">views in 90 days</p>
+          <p class="pb-proof-cap">About 334,000 across Instagram and Facebook, mostly from people who don't follow us yet.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 3. MEET THE SIX -->
+  <section class="band dark pb-crew">
+    <div class="wrap">
+      <div class="ace-head" data-m="stagger">
+        <hr class="tick orange">
+        <span class="eyebrow orange">Meet the crew</span>
+        <h2 class="serif statement">Six of the <em class="italic" style="color:var(--orange)">Big Dills.</em></h2>
+        <p class="prose">Six of the athletes we're proud to support, and more join every season.</p>
+      </div>
+      <ul class="pb-six" data-m="stagger">
+        <li class="pb-card">
+          <img src="/images/pickleball/juan.webp" alt="Juan in his sport wheelchair, paddle back for a forehand" width="616" height="900" loading="lazy">
+          <h3>Juan</h3>
+          <p>Our first ambassador. Singles gold at Monster Smash. He asked the APP Tour for its first wheelchair division, and got it.</p>
+          <a class="pb-link" href="/juan">Read Juan's story</a>
+        </li>
+        <li class="pb-card">
+          <img src="/images/pickleball/brian.webp" alt="Brian reaching out to hit a forehand, the ball in front of him" width="952" height="900" loading="lazy">
+          <h3>Brian</h3>
+          <p>Three straight US Opens. "The chair didn't fix me. It gave me options I didn't have before."</p>
+        </li>
+        <li class="pb-card">
+          <img src="/images/pickleball/bob.webp" alt="Bob holding his paddle high with the ball on it" width="552" height="900" loading="lazy">
+          <h3>Bob</h3>
+          <p>Doubles gold at Monster Smash.</p>
+        </li>
+        <li class="pb-card">
+          <img src="/images/pickleball/robby.webp" alt="Robby smiling with his paddle out in front" width="649" height="900" loading="lazy">
+          <h3>Robby</h3>
+          <p>Three straight US Opens, plus singles bronze and doubles silver at Monster Smash.</p>
+        </li>
+        <li class="pb-card">
+          <img src="/images/pickleball/ken.webp" alt="Ken in a Cubs shirt, turned toward the net in his sport wheelchair" width="659" height="900" loading="lazy">
+          <h3>Ken</h3>
+          <p>Doubles silver at Monster Smash, with Robby.</p>
+        </li>
+        <li class="pb-card">
+          <img src="/images/pickleball/amanda.webp" alt="Amanda mid swing, reaching for the ball" width="919" height="900" loading="lazy">
+          <h3>Amanda</h3>
+          <p>Doubles bronze at Monster Smash.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 4. WHAT WE'RE BUILDING: three levels, and what keeps each one going -->
+  <section class="band tint" id="building">
     <div class="wrap">
       <div class="ace-head" data-m="stagger">
         <hr class="tick orange">
         <span class="eyebrow orange">What we're building</span>
         <h2 class="serif statement">More than <em class="italic" style="color:var(--orange)">one trip.</em></h2>
-        <p class="prose">Going to the US Open is one goal. The bigger one is an ecosystem for the adaptive sports community to play pickleball in the Chicago area. We help fund it, alongside clubs, organizations and groups across the region.</p>
+        <p class="prose">Going to the US Open is one goal. The bigger one is an ecosystem for the adaptive sports community to play pickleball in the Chicago area, built with clubs, organizations and coaches. Here is how it fits together, and what keeps each part going.</p>
       </div>
-      <div class="pb-layers" data-m="stagger">
-        <a class="pb-layer" href="#play">
+      <ol class="pb-levels" data-m="stagger">
+        <li class="pb-level">
           <p class="pb-day">01</p>
           <h3>Play anytime</h3>
-          <p>Open play and drop ins with clubs, organizations and groups across the area. No membership, nothing to lock in.</p>
-        </a>
-        <a class="pb-layer" href="#train">
+          <p>Open play and drop ins at clubs across the area, with no membership and nothing to lock in. Each place has its own vibe.</p>
+          <p class="pb-fund"><b>Kept going by</b> night sponsors, host clubs and volunteers</p>
+        </li>
+        <li class="pb-level">
           <p class="pb-day">02</p>
           <h3>Train to compete</h3>
-          <p>Memberships for athletes who want to train regularly and travel to tournaments.</p>
-        </a>
-        <a class="pb-layer" href="#compete">
+          <p>Memberships for athletes who train regularly so they can travel to tournaments. One session a week isn't enough: Juan trains 16 hours a week.</p>
+          <p class="pb-fund"><b>Kept going by</b> membership sponsors</p>
+          <a class="pb-link" href="mailto:hello@adapttolife.org?subject=Sponsor%20an%20athlete%27s%20membership">Sponsor a membership</a>
+        </li>
+        <li class="pb-level">
           <p class="pb-day">03</p>
           <h3>Compete</h3>
-          <p>Monthly tournaments, the Chicago Classic and the road to the US Open, where two of the crew have played each of the last three years.</p>
-        </a>
-      </div>
+          <p>Monthly fundraiser tournaments with club members, the Chicago Classic, presented by Adapt To Life and hosted at ACE, and the road to the US Open in spring 2027.</p>
+          <p class="pb-fund"><b>Kept going by</b> tournament sponsors, entry fees and Send 6 donors</p>
+          <a class="pb-link" href="/send-6">About Send 6</a>
+        </li>
+      </ol>
     </div>
   </section>
 
@@ -514,9 +588,9 @@ fill="currentColor" stroke="none">
     <div class="wrap">
       <div class="ace-head" data-m="stagger">
         <hr class="tick orange">
-        <span class="eyebrow orange">Play anytime</span>
+        <span class="eyebrow orange">With clubs, organizations and coaches</span>
         <h2 class="serif statement">Places to play, <em class="italic" style="color:var(--orange)">built together.</em></h2>
-        <p class="prose">We help clubs, organizations and coaches build and manage adaptive sports programs, so the adaptive sports community has places to play pickleball across the area. Open play and drop ins, with no membership and nothing to lock in. Each place has its own vibe. Some sessions have a sport chair to try or a coach on hand, and some are just open play. We grow each one little by little.</p>
+        <p class="prose">We help clubs, organizations and coaches build and manage adaptive sports programs, so the adaptive sports community has places to play across the area. Some sessions have a sport chair to try or a coach on hand, and some are just open play. We grow each one little by little.</p>
       </div>
       <div class="pb-nights pb-sessions" data-m="stagger">
         <article class="pb-night">
@@ -556,101 +630,11 @@ fill="currentColor" stroke="none">
         </ul>
         <p class="pb-help-note">Your program. <em class="italic">Our support.</em></p>
       </div>
-      <p class="pb-note">Volunteers make it work: coaches like Pete, members from our partner clubs and the crew itself. Coming up: Try Adaptive Night at ACE, where club members play from sport chairs alongside the crew.</p>
+      <p class="pb-note">Volunteers make it work, from coaches like Pete to members of our partner clubs. Coming up: Try Adaptive Night at ACE, where club members play from sport chairs alongside the crew.</p>
       <div class="pb-beyond" data-m="up">
         <p class="pb-day">Across the region</p>
         <p>We also support adaptive programs across the region: coaching that helped WASA start pickleball in Wisconsin, and work with LWSRA on clinics in the south suburbs. Those relationships keep growing.</p>
       </div>
-    </div>
-  </section>
-
-  <!-- 3. MEET THE SIX -->
-  <section class="band dark pb-crew">
-    <div class="wrap">
-      <div class="ace-head" data-m="stagger">
-        <hr class="tick orange">
-        <span class="eyebrow orange">Meet the crew</span>
-        <h2 class="serif statement">Six of the <em class="italic" style="color:var(--orange)">Big Dills.</em></h2>
-        <p class="prose">Six of the athletes we're proud to support.</p>
-      </div>
-      <ul class="pb-six" data-m="stagger">
-        <li class="pb-card">
-          <img src="/images/pickleball/juan.webp" alt="Juan in his sport wheelchair, paddle back for a forehand" width="616" height="900" loading="lazy">
-          <h3>Juan</h3>
-          <p>Our first ambassador. Singles gold at Monster Smash. He asked the APP Tour for its first wheelchair division, and got it.</p>
-          <a class="pb-link" href="/juan">Read Juan's story</a>
-        </li>
-        <li class="pb-card">
-          <img src="/images/pickleball/brian.webp" alt="Brian reaching out to hit a forehand, the ball in front of him" width="952" height="900" loading="lazy">
-          <h3>Brian</h3>
-          <p>Singles and doubles at Monster Smash. He has played the US Open in Naples each of the last three years. "The chair didn't fix me. It gave me options I didn't have before."</p>
-        </li>
-        <li class="pb-card">
-          <img src="/images/pickleball/bob.webp" alt="Bob holding his paddle high with the ball on it" width="552" height="900" loading="lazy">
-          <h3>Bob</h3>
-          <p>Doubles gold at Monster Smash.</p>
-        </li>
-        <li class="pb-card">
-          <img src="/images/pickleball/robby.webp" alt="Robby smiling with his paddle out in front" width="649" height="900" loading="lazy">
-          <h3>Robby</h3>
-          <p>Singles bronze and doubles silver at Monster Smash. He has played the US Open in Naples each of the last three years.</p>
-        </li>
-        <li class="pb-card">
-          <img src="/images/pickleball/ken.webp" alt="Ken in a Cubs shirt, turned toward the net in his sport wheelchair" width="659" height="900" loading="lazy">
-          <h3>Ken</h3>
-          <p>Doubles silver at Monster Smash, with Robby.</p>
-        </li>
-        <li class="pb-card">
-          <img src="/images/pickleball/amanda.webp" alt="Amanda mid swing, reaching for the ball" width="919" height="900" loading="lazy">
-          <h3>Amanda</h3>
-          <p>Doubles bronze at Monster Smash.</p>
-        </li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- 4. TRAIN TO COMPETE: memberships -->
-  <section class="band tint pb-train" id="train">
-    <div class="wrap pb-train-grid">
-      <div class="ace-head" data-m="stagger">
-        <hr class="tick orange">
-        <span class="eyebrow orange">Train to compete</span>
-        <h2 class="serif statement">It takes more than <em class="italic" style="color:var(--orange)">one session.</em></h2>
-        <p class="prose">Athletes who want to travel to tournaments need to train regularly, and one session a week isn't enough. So we work with clubs to fund memberships for athletes ready for that next level.</p>
-        <p class="prose">We're looking for sponsors and partners to cover memberships at ACE, so cost is never what keeps an athlete from training.</p>
-        <a class="pb-link" href="mailto:hello@adapttolife.org?subject=Sponsor%20an%20athlete%27s%20membership">Sponsor an athlete's membership</a>
-      </div>
-      <div class="pb-stats" data-m="stagger">
-        <div class="pb-stat">
-          <p class="pb-stat-num"><span data-count="3">3</span></p>
-          <p class="pb-stat-unit">straight US Opens</p>
-          <p class="pb-stat-cap">Robby and Brian have each played the US Open in Naples the last three years.</p>
-          <a class="pb-link" href="/send-6">Help send six</a>
-        </div>
-        <div class="pb-stat">
-          <p class="pb-stat-num"><span data-count="16">16</span></p>
-          <p class="pb-stat-unit">hours a week</p>
-          <p class="pb-stat-cap">Juan's time on court each week as he trains for his first.</p>
-          <a class="pb-link" href="/juan">Read Juan's story</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 5. COMPETE: where the crew has played -->
-  <section class="band" id="compete">
-    <div class="wrap">
-      <div class="ace-head" data-m="stagger">
-        <hr class="tick orange">
-        <span class="eyebrow orange">Compete</span>
-        <h2 class="serif statement">Where the crew <em class="italic" style="color:var(--orange)">has played.</em></h2>
-      </div>
-      <ol class="ace-story" data-m="seq">
-        <li><b>US Open, Naples</b><span>Robby and Brian have each played the US Open Pickleball Championships the last three years. Pete Petersen played hybrid doubles there in 2025.</span></li>
-        <li><b>APP Vlasic Classic Chicago, August 2026</b><span>The APP Tour's first wheelchair division. Five full teams played it.</span></li>
-        <li><b>Monster Smash, Cincinnati, October 2026</b><span>Two golds, two silvers and two bronzes in the wheelchair division.</span></li>
-        <li class="lit"><b>Next</b><span>The Chicago Classic, here in Chicago.</span></li>
-      </ol>
     </div>
   </section>
 
@@ -659,35 +643,6 @@ fill="currentColor" stroke="none">
     <img src="/images/athletes/wheelie-58.webp" alt="" loading="lazy" width="1500" height="1000">
     <span class="ace-seam" aria-hidden="true"></span>
     <p class="ace-together">"The first sport I've ever found where the wheelchair vanishes." <em class="italic" style="color:var(--orange)">Juan Ortiz</em></p>
-  </section>
-
-  <!-- 6. WHAT'S AHEAD -->
-  <section class="band dark ace-wish">
-    <div class="wrap">
-      <div class="ace-head" data-m="stagger">
-        <hr class="tick orange">
-        <span class="eyebrow orange">What's ahead</span>
-        <h2 class="serif statement">A Chicago tournament, <em class="italic" style="color:var(--orange)">and more.</em></h2>
-      </div>
-      <div class="ace-start pb-ahead" data-m="stagger">
-        <article class="ace-pick">
-          <p class="ace-pick-tag">Presented by Adapt To Life</p>
-          <h3>The Chicago Classic</h3>
-          <p>A wheelchair pickleball tournament, hosted at ACE.</p>
-        </article>
-        <article class="ace-pick">
-          <p class="ace-pick-tag">Fundraising</p>
-          <h3>Monthly tournaments</h3>
-          <p>Fundraiser tournaments with club members, where entry fees help fund the crew.</p>
-        </article>
-        <article class="ace-pick">
-          <p class="ace-pick-tag">One of our goals</p>
-          <h3>The US Open, spring 2027</h3>
-          <p>Sending six athletes to Naples. Robby and Brian have each played it the last three years.</p>
-          <a class="pb-link pb-link-light" href="/send-6">About Send 6</a>
-        </article>
-      </div>
-    </div>
   </section>
 
   <!-- 6. SUPPORT -->
@@ -701,8 +656,8 @@ fill="currentColor" stroke="none">
       </div>
       <div class="ace-win" data-m="stagger">
         <div><h3>Give</h3><ul><li>Any amount helps. $75 covers court fees for the whole crew for a night at ACE.</li></ul><a class="btn pb-btn" href="/donate">Donate</a></div>
-        <div><h3>Sponsor</h3><ul><li>Open play nights, athlete memberships and tournaments, for businesses that want to be part of it.</li></ul><a class="btn ghost pb-btn" href="/sponsorship">See partnerships</a></div>
-        <div><h3>Host</h3><ul><li>Have courts? We help clubs, organizations and coaches build and manage adaptive programs.</li></ul><a class="btn ghost pb-btn" href="mailto:hello@adapttolife.org?subject=Host%20a%20session">Host a session</a></div>
+        <div><h3>Sponsor</h3><ul><li>Nights, athlete memberships and tournaments, for businesses that want to be part of it.</li></ul><a class="btn ghost pb-btn" href="/sponsorship">See partnerships</a></div>
+        <div><h3>Build a program</h3><ul><li>Run a club, an organization or a coaching program? We'll help you build an adaptive one. Your program, our support.</li></ul><a class="btn ghost pb-btn" href="mailto:hello@adapttolife.org?subject=Build%20an%20adaptive%20program">Start a conversation</a></div>
       </div>
     </div>
   </section>

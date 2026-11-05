@@ -99,6 +99,13 @@ const PHOTOS = {
     pos: "18% 40%",
     zoom: "auto 165%",
   },
+  // Same frame for a split card: the photo panel is only the right half, so the
+  // face has to sit in it rather than at the far edge.
+  "cap-profile-split": {
+    file: "assets/photos/cap-profile.jpg",
+    pos: "62% 36%",
+    zoom: "auto 118%",
+  },
   // The one frame that stays in colour (see .card.athlete.color in card.html).
   // Chosen by Alec off the live card, 2026-09-10. He sits well right of centre
   // and side-on, so the type side stays empty wall at every zoom that keeps him
@@ -225,6 +232,26 @@ const CARDS = {
     out: "public/images/og/brickhouse-v3-crewhome.jpg",
     page: "brickhouse.html",
     headline: "The crew's home court <em>is Brick House</em>.",
+  },
+  // The Chicago Classic: same split treatment, Juan with his paddle up.
+  "chicago-classic": {
+    variant: "split",
+    photo: "paddle-raise",
+    size: 72,
+    measure: "9ch",
+    out: "public/images/og/chicago-classic-v1-date.jpg",
+    page: "chicago-classic.html",
+    headline: "The Chicago <em>Classic</em>.",
+  },
+  // Partner club card, same split treatment as Brick House.
+  ace: {
+    variant: "split",
+    photo: "cap-profile-split",
+    size: 66,
+    measure: "11ch",
+    out: "public/images/og/ace-v3-partner.jpg",
+    page: "ace.html",
+    headline: "Something Chicago <em>hasn't seen</em>.",
   },
   volunteer: {
     ...ATHLETE,

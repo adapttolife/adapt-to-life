@@ -149,6 +149,17 @@
   .partner-note{ margin-top:clamp(1.4rem,3vw,2rem); max-width:62ch; opacity:0.78; font-size:0.98rem; line-height:1.55; }
   .partner-more{ margin-top:1.5rem; font-weight:700; color:var(--orange); border-bottom:2px solid currentColor; padding-bottom:2px; }
   @media (max-width:700px){ .partner{ grid-template-columns:1fr; } .partner-photo{ min-height:0; aspect-ratio:4/3.6; } .partner-when{ flex-wrap:nowrap; gap:0.6rem; font-size:0.72rem; letter-spacing:0.1em; } .partner-when span{ gap:0.6rem; white-space:nowrap; } }
+  /* One price list: the per-athlete options sit above the levels, same sheet, same fund. */
+  .sp-units-label{ margin-top:clamp(2rem,4vw,2.8rem); font-family:var(--font-label); font-weight:800; font-size:0.8rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--orange); }
+  .sp-units{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(0.9rem,2vw,1.4rem); margin-top:1rem; }
+  .sp-unit{ display:flex; flex-direction:column; align-items:flex-start; padding:clamp(1.3rem,2.4vw,1.8rem); border-radius:18px; background:rgba(255,255,255,0.04); box-shadow:inset 0 0 0 1px rgba(255,255,255,0.12); }
+  .sp-unit-name{ font-family:var(--font-display); font-weight:800; font-size:clamp(1.15rem,1.8vw,1.35rem); letter-spacing:-0.01em; color:var(--cream); }
+  .sp-unit-price{ margin-top:0.4rem; font-family:var(--font-display); font-weight:900; font-size:clamp(2rem,3.4vw,2.6rem); letter-spacing:-0.03em; color:var(--orange); line-height:1; }
+  .sp-unit-price small{ font-size:0.45em; font-weight:700; letter-spacing:0; color:var(--cream-mute); }
+  .sp-unit-line{ margin-top:0.7rem; color:var(--cream-mute); line-height:1.5; flex:1; }
+  .sp-unit .btn{ margin-top:1.1rem; }
+  .sp-units + .sp-units-label + .tier-grid{ margin-top:1rem; }
+  @media (max-width:860px){ .sp-units{ grid-template-columns:1fr; } }
 </style>
 </head>
 <body>
@@ -275,6 +286,19 @@ fill="currentColor" stroke="none">
             <a class="partner-more" href="/brickhouse">See the partnership <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
           </div>
         </article>
+        <article class="partner reveal">
+          <a class="partner-photo" href="/ace" tabindex="-1" aria-hidden="true">
+            <img src="/images/ace/hero-cap-tall.webp" alt="" width="1000" height="1130" loading="lazy" decoding="async">
+          </a>
+          <div class="partner-body">
+            <img class="partner-logo" src="/images/ace/ace-logo.png" alt="ACE Pickleball Club" width="636" height="300">
+            <p class="partner-kicker">Our partner club</p>
+            <h3 class="serif h3">ACE Pickleball Club</h3>
+            <p class="partner-line">Court time we fund in Des Plaines, free for every athlete. The Chicago Classic will be hosted here.</p>
+            <p class="partner-when"><span>Partner club</span> Des Plaines, IL</p>
+            <a class="partner-more" href="/ace">See the partnership <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
+          </div>
+        </article>
       </div>
       <p class="partner-note">Partners listed here have agreed to be listed. We also support programs across the community, like WASA in Wisconsin and LWSRA in the south suburbs, with coaching, clinics and volunteers. If you run a club, an organization or a coaching program, we can help you build and manage an adaptive program too.</p>
     </div>
@@ -323,59 +347,81 @@ fill="currentColor" stroke="none">
   <section class="band dark sp-levels" id="tiers">
     <div class="wrap">
       <div class="reveal sec-head">
-        <span class="eyebrow orange">Partnership levels</span>
+        <span class="eyebrow orange">Ways to sponsor</span>
         <h2 class="serif h2" style="margin-top:0.8rem;">Find your place <em class="italic" style="color:var(--orange)">on the team.</em></h2>
-        <p class="prose">Each level includes everything before it, and every partnership is shaped together.</p>
+        <p class="prose">Every sponsorship goes to the Hustle &amp; Heart Fund. Start with the athletes, or pick a level. Each level includes everything before it, and every partnership is shaped together.</p>
       </div>
 
+      <p class="sp-units-label reveal">Start with the athletes</p>
+      <div class="sp-units">
+        <div class="sp-unit reveal">
+          <div class="sp-unit-name">Sponsor a night</div>
+          <div class="sp-unit-price">$75</div>
+          <p class="sp-unit-line">Court fees for the whole crew for a night at ACE.</p>
+          <a href="/contact?rsn=sponsor&amp;tier=Night%20sponsor" data-sponsor-tier="Night sponsor" data-sponsor-price="$75" data-sponsor-line="Court fees for the whole crew for a night at ACE." data-sponsor-amount="75" class="btn ghost">Sponsor a night</a>
+        </div>
+        <div class="sp-unit reveal">
+          <div class="sp-unit-name">Sponsor an athlete</div>
+          <div class="sp-unit-price">$960<small>&nbsp;a year</small></div>
+          <p class="sp-unit-line">One athlete&rsquo;s unlimited membership, so they can train to compete.</p>
+          <a href="/contact?rsn=sponsor&amp;tier=Athlete%20sponsor" data-sponsor-tier="Athlete sponsor" data-sponsor-price="$960 a year" data-sponsor-line="One athlete's unlimited membership, so they can train to compete." data-sponsor-amount="960" class="btn ghost">Sponsor an athlete</a>
+        </div>
+        <div class="sp-unit reveal">
+          <div class="sp-unit-name">Train to Compete, presented by you</div>
+          <div class="sp-unit-price">$9,600<small>&nbsp;a year</small></div>
+          <p class="sp-unit-line">Ten athletes on unlimited memberships for a year, with your name on the program.</p>
+          <a href="/contact?rsn=sponsor&amp;tier=Train%20to%20Compete" data-sponsor-tier="Train to Compete" data-sponsor-price="$9,600 a year" data-sponsor-line="Ten athletes on unlimited memberships for a year, with your name on the program." class="btn ghost">Talk to us</a>
+        </div>
+      </div>
+      <p class="sp-units-label reveal">Partnership levels</p>
       <div class="tier-grid">
         <div class="tier reveal">
           <span class="tier-flag">&nbsp;</span>
           <div class="tier-name">Teammate</div>
           <div class="tier-price">$500</div>
-          <p class="tier-line">Where every partner starts.</p>
+          <p class="tier-line">Put your name on a tournament.</p>
           <ul class="tier-benefits">
+            <li>Your name on a fundraiser tournament with ACE members</li>
             <li>Your name or logo on our supporters wall</li>
             <li>A thank you across our social channels</li>
-            <li>Help cover equipment and repairs</li>
           </ul>
-          <a href="/contact?rsn=sponsor&amp;tier=Teammate" data-sponsor-tier="Teammate" data-sponsor-price="$500" data-sponsor-line="Where every partner starts." data-sponsor-amount="500" class="btn ghost">Become a Teammate</a>
+          <a href="/contact?rsn=sponsor&amp;tier=Teammate" data-sponsor-tier="Teammate" data-sponsor-price="$500" data-sponsor-line="Put your name on a tournament." data-sponsor-amount="500" class="btn ghost">Become a Teammate</a>
         </div>
         <div class="tier reveal">
           <span class="tier-flag">&nbsp;</span>
           <div class="tier-name">Coach</div>
           <div class="tier-price">$2,500</div>
-          <p class="tier-line">Get your brand in the picture.</p>
+          <p class="tier-line">Feed the players, or get them there.</p>
           <ul class="tier-benefits">
             <li>Everything in Teammate</li>
+            <li>Meals or rides for athletes at the Chicago Classic</li>
             <li>Logo on our donate page</li>
-            <li>Help support regular training</li>
           </ul>
-          <a href="/contact?rsn=sponsor&amp;tier=Coach" data-sponsor-tier="Coach" data-sponsor-price="$2,500" data-sponsor-line="Get your brand in the picture." data-sponsor-amount="2500" class="btn ghost">Become a Coach</a>
+          <a href="/contact?rsn=sponsor&amp;tier=Coach" data-sponsor-tier="Coach" data-sponsor-price="$2,500" data-sponsor-line="Feed the players, or get them there." data-sponsor-amount="2500" class="btn ghost">Become a Coach</a>
         </div>
         <div class="tier reveal is-popular">
           <span class="tier-flag">Our flagship</span>
           <div class="tier-name">Captain</div>
           <div class="tier-price">$10,000</div>
-          <p class="tier-line">Lead from the front.</p>
+          <p class="tier-line">Put your name on the Chicago Classic.</p>
           <ul class="tier-benefits">
             <li>Everything in Coach</li>
-            <li>Talk with us about event recognition</li>
-            <li>Support equipment, training, and travel</li>
+            <li>Your name on the Chicago Classic, on court and in every post about it</li>
+            <li>Help make the tournament free for every athlete</li>
           </ul>
-          <a href="/contact?rsn=sponsor&amp;tier=Captain" data-sponsor-tier="Captain" data-sponsor-price="$10,000" data-sponsor-line="Lead from the front." class="btn">Become a Captain</a>
+          <a href="/contact?rsn=sponsor&amp;tier=Captain" data-sponsor-tier="Captain" data-sponsor-price="$10,000" data-sponsor-line="Put your name on the Chicago Classic." class="btn">Become a Captain</a>
         </div>
         <div class="tier reveal">
           <span class="tier-flag">&nbsp;</span>
           <div class="tier-name">Champion</div>
           <div class="tier-price">$25,000</div>
-          <p class="tier-line">Put your name on the mission.</p>
+          <p class="tier-line">Back the whole year.</p>
           <ul class="tier-benefits">
             <li>Everything in Captain</li>
+            <li>Train to Compete and the Chicago Classic, with your name on both</li>
             <li>Plan a partnership around a program or event</li>
-            <li>Help more athletes take part</li>
           </ul>
-          <a href="/contact?rsn=sponsor&amp;tier=Champion" data-sponsor-tier="Champion" data-sponsor-price="$25,000" data-sponsor-line="Put your name on the mission." class="btn ghost">Become a Champion</a>
+          <a href="/contact?rsn=sponsor&amp;tier=Champion" data-sponsor-tier="Champion" data-sponsor-price="$25,000" data-sponsor-line="Back the whole year." class="btn ghost">Become a Champion</a>
         </div>
       </div>
 

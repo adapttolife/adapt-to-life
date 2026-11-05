@@ -26,6 +26,8 @@ const PER_PAGE = {
   "juan.html": "juan",
   "brickhouse.html": "brickhouse",
   "pickleball.html": "pickleball",
+  "ace.html": "ace",
+  "chicago-classic.html": "chicago-classic",
 };
 
 // ALT DESCRIBES THE PHOTOGRAPH AGAIN, because from 2026-09-09 the cards ARE
@@ -51,6 +53,8 @@ const ALT = {
   // name and then the man, in that order.
   brickhouse:
     "The crew's home court is Brick House. Adapt To Life. An athlete in a sport wheelchair and a Brick House Pickleball shirt rolls across the Brick House courts.",
+  "chicago-classic": "The Chicago Classic. Adapt To Life. Juan Ortiz in his sport wheelchair, paddle up, on a dark indoor court.",
+  ace: "Something Chicago hasn't seen. Adapt To Life. A wheelchair pickleball player in a white cap leans on the rail with his paddle.",
   pickleball:
     "Chicago Wheelchair Pickleball. The Chicago Wheelie Big Dills. An ecosystem for adaptive pickleball. The crew's badge, and Juan Ortiz in his sport wheelchair.",
   juan: "Juan Ortiz. Adapt To Life. Juan, a wheelchair pickleball player in glasses, tosses the ball to serve from his sport wheelchair.",
@@ -70,6 +74,8 @@ const FILE = {
   juan: "juan-v2-serve.jpg",
   brickhouse: "brickhouse-v3-crewhome.jpg",
   pickleball: "pickleball-v4-badge.jpg",
+  ace: "ace-v3-partner.jpg",
+  "chicago-classic": "chicago-classic-v1-date.jpg",
   popcorn: "popcorn-v4-content.jpg",
   "hustle-and-heart": "hustle-and-heart-v5-check.jpg",
 };

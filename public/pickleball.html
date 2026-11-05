@@ -254,6 +254,8 @@
   .pb-card h3{ margin-top:1rem; font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(1.6rem,2.6vw,2.1rem); letter-spacing:-0.03em; color:var(--cream); }
   .pb-card p{ margin-top:0.5rem; color:var(--cream-mute); line-height:1.5; }
   .pb-card .pb-link{ color:var(--orange); }
+  .pb-card{ scroll-margin-top:96px; }
+  .pb-card .pb-tag{ position:absolute; top:1rem; left:1rem; z-index:1; margin:0; padding:0.32rem 0.75rem; border-radius:999px; background:var(--orange); color:#fff; font-family:var(--font-label); font-weight:800; font-size:0.7rem; letter-spacing:0.16em; text-transform:uppercase; line-height:1; }
   @media (prefers-reduced-motion: no-preference){
     .pb-card{ transition:transform .35s cubic-bezier(.2,.7,.2,1), box-shadow .35s ease; }
     .pb-card:hover{ transform:translateY(-6px); box-shadow:inset 0 0 0 1px rgba(255,92,57,0.55), 0 30px 60px -30px rgba(255,92,57,0.45); }
@@ -514,33 +516,34 @@ fill="currentColor" stroke="none">
         <p class="prose">Six of the athletes we're proud to support, and more join every season.</p>
       </div>
       <ul class="pb-six" data-m="stagger">
-        <li class="pb-card">
+        <li class="pb-card" id="juan">
           <img src="/images/pickleball/juan.webp" alt="Juan in his sport wheelchair, paddle back for a forehand" width="616" height="900" loading="lazy">
+          <p class="pb-tag">Ambassador</p>
           <h3>Juan</h3>
           <p>Our first ambassador. Singles gold at Monster Smash. He asked the APP Tour for its first wheelchair division, and got it.</p>
           <a class="pb-link" href="/juan">Read Juan's story</a>
         </li>
-        <li class="pb-card">
+        <li class="pb-card" id="brian">
           <img src="/images/pickleball/brian.webp" alt="Brian reaching out to hit a forehand, the ball in front of him" width="952" height="900" loading="lazy">
           <h3>Brian</h3>
           <p>Three straight US Opens. "The chair didn't fix me. It gave me options I didn't have before."</p>
         </li>
-        <li class="pb-card">
+        <li class="pb-card" id="bob">
           <img src="/images/pickleball/bob.webp" alt="Bob holding his paddle high with the ball on it" width="552" height="900" loading="lazy">
           <h3>Bob</h3>
           <p>Doubles gold at Monster Smash.</p>
         </li>
-        <li class="pb-card">
+        <li class="pb-card" id="robby">
           <img src="/images/pickleball/robby.webp" alt="Robby smiling with his paddle out in front" width="649" height="900" loading="lazy">
           <h3>Robby</h3>
           <p>Three straight US Opens, plus singles bronze and doubles silver at Monster Smash.</p>
         </li>
-        <li class="pb-card">
+        <li class="pb-card" id="ken">
           <img src="/images/pickleball/ken.webp" alt="Ken in a Cubs shirt, turned toward the net in his sport wheelchair" width="659" height="900" loading="lazy">
           <h3>Ken</h3>
           <p>Doubles silver at Monster Smash, with Robby.</p>
         </li>
-        <li class="pb-card">
+        <li class="pb-card" id="amanda">
           <img src="/images/pickleball/amanda.webp" alt="Amanda mid swing, reaching for the ball" width="919" height="900" loading="lazy">
           <h3>Amanda</h3>
           <p>Doubles bronze at Monster Smash.</p>

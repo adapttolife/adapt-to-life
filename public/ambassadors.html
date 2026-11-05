@@ -59,6 +59,11 @@
   .am-card .h3{ margin-top:0.4rem; color:var(--cream); font-size:clamp(1.8rem,3vw,2.6rem); letter-spacing:-0.02em; line-height:1.02; }
   .am-card .line{ margin-top:0.8rem; color:var(--cream-mute); max-width:38ch; }
   .am-card .q{ margin-top:1rem; padding-left:1rem; border-left:3px solid var(--orange); color:var(--cream); font-weight:600; max-width:36ch; }
+  .am-next{ grid-column:1/-1; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1rem 2rem; padding:clamp(1.4rem,3vw,2rem) clamp(1.6rem,3.5vw,2.8rem); border-radius:22px; border:2px dashed rgba(12,12,14,0.22); }
+  .am-next .tag{ font-family:var(--font-label); font-weight:800; font-size:0.78rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--orange-ink); }
+  .am-next .h3{ margin-top:0.3rem; font-size:clamp(1.5rem,2.4vw,2rem); letter-spacing:-0.02em; line-height:1.05; }
+  .am-next .line{ margin-top:0.5rem; max-width:56ch; color:var(--ink-soft); }
+  .am-next .am-more{ margin-top:0; color:var(--orange-ink); white-space:nowrap; }
   .am-more{ margin-top:1.5rem; font-weight:700; color:var(--orange); border-bottom:2px solid currentColor; padding-bottom:2px; }
   @media (max-width:700px){ .am-card{ grid-template-columns:1fr; } .am-card-photo{ min-height:0; aspect-ratio:4/3.6; } }
   .am-ways{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(1rem,2vw,1.4rem); margin-top:clamp(2rem,4vw,2.8rem); }
@@ -195,6 +200,14 @@ fill="currentColor" stroke="none">
             <p class="q">&ldquo;If an adaptive athlete wants to try a sport, that sport has to exist first.&rdquo;</p>
             <a class="am-more" href="/juan">Read Juan&rsquo;s story <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
           </div>
+        </article>
+        <article class="am-next reveal">
+          <div>
+            <p class="tag">Our next ambassador</p>
+            <h3 class="serif h3">Who&rsquo;s next?</h3>
+            <p class="line">An athlete or coach growing a sport where they live, in any sport. If you know who it should be, tell us.</p>
+          </div>
+          <a class="am-more" href="#join">Tell us <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
         </article>
       </div>
     </div>

@@ -53,6 +53,17 @@ Settled later that evening (Alec):
 - **The money:** gifts and sponsorships go into the Hustle & Heart Fund. Ambassadors show us where it will do the most, and we pay programs and vendors directly, so ambassadors steer the money but never hold it. Today Alec covers overhead, so this works cleanly. If sponsorships ever need to cover operating costs (insurance, staff), that belongs in the sponsor agreement and changes one line on the site.
 - **The next ambassador has a seat:** a "Who's next?" slot beside Juan on Ambassadors, and "Next: wherever our next ambassador is building" on the fund page.
 
+### Partners and an open-ended Classic (November 5, latest)
+
+- **The Chicago Classic has no named host.** It reads "presented by Adapt To Life, date and court to come", and the page has a playful "What we know / Still to come" list.
+- **Partners, in order:**
+  - Brick House
+  - ACE
+  - The Picklr: Mount Prospect, open play. It started at the Oct 4 open house; after Juan's Oct 5 email, the club said yes the same day to clinics, tournaments and fundraisers.
+  - Chicago Adaptive Sports: a Chicagoland nonprofit where Juan serves on the board, with an adaptive facility as its main goal and the Chicago Grit Podcast.
+- **Show, don't tell.** Partner logos sit on home right before the ask, on the fund page and on Donate, each opening that partner's page. Each partner page tells the story with dates and facts, not adjectives.
+- **Still to collect:** photos from The Picklr. A confirmation that The Picklr and Chicago Adaptive Sports are happy to be listed with their logos before release.
+
 ### Settled late on November 5
 
 - **Team:** Tom Daily stays off the website completely. Karen Atkinson is a Board Member, on About and on her own page. The rest of the team stays as it is.

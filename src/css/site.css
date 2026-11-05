@@ -1581,6 +1581,22 @@ a.camp-band:focus-visible {
   background: linear-gradient(90deg, var(--orange-ink), var(--orange-hot));
   transition: width 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
+/* One goal split into its parts: each part as wide as its share of the goal,
+   filled on its own. */
+.cb-segs {
+  display: flex;
+  gap: 4px;
+  height: 8px;
+}
+.cb-seg {
+  flex-basis: 0;
+  border-radius: 999px;
+  background: rgba(28, 26, 21, 0.1);
+  overflow: hidden;
+}
+.cb-seg .cb-fill {
+  min-width: 0;
+}
 .cb-label {
   display: block;
   margin-top: -0.35rem;
@@ -1623,8 +1639,21 @@ a.camp-band:hover .cb-cta {
   font-size: 0.95rem;
   line-height: 1.9;
 }
-.cb-also-link + .cb-also-link {
-  margin-left: 1.4rem;
+.cb-also-link,
+.cb-also-item {
+  display: inline-block;
+  margin-right: 1.4rem;
+}
+/* On a phone the band keeps to the goal's two parts; the Classic is on the
+   pages it links to. */
+@media (max-width: 560px) {
+  .cb-also-next {
+    display: none;
+  }
+}
+.cb-also-item {
+  color: var(--ink);
+  font-weight: 600;
 }
 .cb-also-k {
   margin-right: 1.1rem;
@@ -1648,25 +1677,6 @@ a.camp-band:hover .cb-cta {
   color: var(--muted);
   text-decoration: none;
   display: inline-block;
-}
-.cb-also-bar {
-  display: inline-block;
-  vertical-align: middle;
-  width: 72px;
-  height: 6px;
-  margin-left: 0.6rem;
-  border-radius: 999px;
-  background: rgba(28, 26, 21, 0.1);
-  overflow: hidden;
-}
-.cb-also-fill {
-  display: block;
-  height: 100%;
-  width: 0;
-  min-width: 3px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--orange-ink), var(--orange-hot));
-  transition: width 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 /* ---- contact ------------------------------------------------------------- */
@@ -2179,11 +2189,11 @@ a.info-v {
    never leave a reserved hole behind it. */
 .camp-pending {
   min-height: 369px;
-} /* measured Nov 5 2026 with two bars (year-round in the card, the Road on the
-   line under it): 369 at 390 and 370 at 430, 229 at 1440 */
+} /* measured Nov 5 2026 with one goal in two parts and the parts listed
+   under the card: 369 at 390 and 370 at 430, 255 at 1440 */
 @media (min-width: 821px) {
   .camp-pending {
-    min-height: 229px;
+    min-height: 255px;
   }
 }
 

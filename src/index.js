@@ -1592,12 +1592,13 @@ async function handleSubscribe(request, env, ctx) {
 // receipt also reads, so the number on the page and the number we put in
 // writing to an applicant come from one place and cannot drift apart.
 async function handleRaised(request, env) {
-  // ?c=year|send-6|fund|classic. With no key it answers for the Road (send-6),
-  // which is what every bar asked for before the split, so cached pages stay right.
+  // ?c=wbd|year|send-6|fund|classic. wbd is the one goal and carries both
+  // parts. With no key it answers for the Road (send-6), which is what every
+  // bar asked for before the split, so cached pages stay right.
   const asked = new URL(request.url).searchParams.get("c") || "send-6";
   const key = CAMPAIGN_KEYS.includes(asked) ? asked : "send-6";
-  const { raised, online, offline, goal } = await campaignPosition(env, key);
-  const body = JSON.stringify({ key, raised, online, offline, goal });
+  const { raised, online, offline, goal, parts } = await campaignPosition(env, key);
+  const body = JSON.stringify({ key, raised, online, offline, goal, parts });
   return new Response(body, {
     headers: {
       "Content-Type": "application/json",

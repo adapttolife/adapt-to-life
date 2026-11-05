@@ -428,13 +428,18 @@
      raised figure rather than publishing a $0 that is not true. */
   function raised(cb, key) {
     if (typeof fetch !== "function") return cb(null);
-    // One total per campaign: road, send-6 or classic. No key means Send 6.
+    // One total per key: wbd (the one goal, with its parts), year, send-6 or
+    // classic. No key means the Road (send-6).
     fetch("/api/raised" + (key ? "?c=" + encodeURIComponent(key) : ""))
       .then(function (r) {
         return r.json();
       })
       .then(function (d) {
-        cb({ raised: Number(d.raised) || 0, goal: Number(d.goal) || 0 });
+        cb({
+          raised: Number(d.raised) || 0,
+          goal: Number(d.goal) || 0,
+          parts: d.parts || null,
+        });
       })
       .catch(function (err) {
         console.error("/api/raised unavailable:", err);
@@ -468,8 +473,7 @@
       }
 
       // The featured campaign is the first one: the Chicago Wheelie Big Dills,
-      // the umbrella every gift funds. The others follow as a line under the
-      // card, each with its own total. Every money button on the site says
+      // the one program every gift funds. Every money button on the site says
       // "Donate" and goes to /donate (Alec, Nov 5: one call to action), so the
       // card follows cta_url. A page that IS the donate page passes its own
       // href and label, because a Donate button there asks somebody to do the
@@ -489,10 +493,30 @@
       left.appendChild(el("span", "cb-name", c.name));
       if (c.blurb) left.appendChild(el("span", "cb-blurb", c.blurb));
 
+      // One goal, one bar (Alec, Nov 5): a campaign with parts draws one bar
+      // split into them, each part as wide as its share of the goal and
+      // filled on its own, so the bar never claims money for a part that
+      // has none. The parts are listed under the card in priority order.
+      var parts = Array.isArray(c.parts) && c.parts.length ? c.parts : null;
       var side = el("div", "cb-side");
-      var bar = el("span", "cb-bar");
-      var fill = el("span", "cb-fill");
-      bar.appendChild(fill);
+      var bar;
+      var fill = null;
+      var segFills = {};
+      if (parts) {
+        bar = el("span", "cb-segs");
+        parts.forEach(function (p) {
+          var seg = el("span", "cb-seg");
+          seg.style.flexGrow = String(p.goal || 1);
+          var f = el("span", "cb-fill");
+          seg.appendChild(f);
+          segFills[p.key] = f;
+          bar.appendChild(seg);
+        });
+      } else {
+        bar = el("span", "cb-bar");
+        fill = el("span", "cb-fill");
+        bar.appendChild(fill);
+      }
       var label = el(
         "span",
         "cb-label",
@@ -508,47 +532,50 @@
       a.appendChild(card);
       host.appendChild(a);
 
-      var others = store.campaigns.slice(1);
-      if (others.length) {
+      // Under the card: the parts of the goal, then any other campaign. A
+      // campaign that is a part of this one (The Road) is drawn in the bar,
+      // not listed again as a second ask.
+      var figs = {};
+      var others = store.campaigns.slice(1).filter(function (o) {
+        return o.part_of !== c.slug;
+      });
+      if (parts || others.length) {
         var also = el("p", "cb-also");
-        // A campaign that sits under the featured one (The Road sits under the
-        // Wheelie Big Dills) reads as part of it, not as a second ask.
-        var inside = others.every(function (o) {
-          return o.part_of === c.slug;
-        });
-        also.appendChild(
-          el("span", "cb-also-k", inside ? "Including" : "Also raising"),
-        );
+        if (parts) {
+          parts.forEach(function (p) {
+            var item = el(
+              p.page ? "a" : "span",
+              p.page ? "cb-also-link" : "cb-also-item",
+              p.label,
+            );
+            if (p.page) item.href = p.page;
+            var fig = el("span", "cb-also-fig", money(p.goal));
+            item.appendChild(fig);
+            figs[p.key] = fig;
+            also.appendChild(item);
+          });
+          if (c.next && c.next.label) {
+            var nx = el("a", "cb-also-link cb-also-next", "Then " + c.next.label);
+            nx.href = c.next.page || "/";
+            also.appendChild(nx);
+          }
+        } else {
+          also.appendChild(el("span", "cb-also-k", "Also raising"));
+        }
         others.forEach(function (o) {
           var link = el("a", "cb-also-link", o.name);
           link.href = o.page || "/";
-          // Two bars, not one bar and a footnote (Alec, Nov 5): a campaign with
-          // a goal gets its own small bar on this line.
-          var mini = null;
-          var miniFill = null;
-          if (o.goal) {
-            mini = el("span", "cb-also-bar");
-            miniFill = el("span", "cb-also-fill");
-            mini.appendChild(miniFill);
-            link.appendChild(mini);
-          }
-          var fig = el(
+          var ofig = el(
             "span",
             "cb-also-fig",
             o.goal ? money(o.goal) + " goal" : o.when || "",
           );
-          link.appendChild(fig);
+          link.appendChild(ofig);
           also.appendChild(link);
           if (o.goal && o.raised_key)
             raised(function (d) {
-              if (!d || !d.raised) return;
-              fig.textContent = money(d.raised) + " of " + money(o.goal);
-              var pct = Math.max(0, Math.min(100, (d.raised / o.goal) * 100));
-              requestAnimationFrame(function () {
-                setTimeout(function () {
-                  miniFill.style.width = pct.toFixed(1) + "%";
-                }, 140);
-              });
+              if (d && d.raised)
+                ofig.textContent = money(d.raised) + " of " + money(o.goal);
             }, o.raised_key);
         });
         host.appendChild(also);
@@ -560,15 +587,29 @@
       if (!c.goal) return; // no ceiling, so no bar
       raised(function (d) {
         // The campaign's own goal leads, so the band always matches the page
-        // that explains it. Givebutter's goal mirrors it and is kept in step.
+        // that explains it.
         var goal = c.goal || (d && d.goal);
-        // A new goal reads "$13,500 goal" until the first gift lands, not "$0".
+        // A new goal reads "$34,500 goal" until the first gift lands, not "$0".
         if (!d || !goal || !d.raised) return;
         label.textContent = money(d.raised) + " of " + money(goal) + " raised";
-        var pct = Math.max(0, Math.min(100, (d.raised / goal) * 100));
+        var widths = [];
+        if (parts && d.parts) {
+          parts.forEach(function (p) {
+            var pr = d.parts[p.key];
+            if (!pr) return;
+            var pg = p.goal || pr.goal;
+            if (pr.raised && figs[p.key])
+              figs[p.key].textContent = money(pr.raised) + " of " + money(pg);
+            widths.push([segFills[p.key], pg ? (pr.raised / pg) * 100 : 0]);
+          });
+        } else if (fill) {
+          widths.push([fill, (d.raised / goal) * 100]);
+        }
         requestAnimationFrame(function () {
           setTimeout(function () {
-            fill.style.width = pct.toFixed(1) + "%";
+            widths.forEach(function (w) {
+              w[0].style.width = Math.max(0, Math.min(100, w[1])).toFixed(1) + "%";
+            });
           }, 140);
         });
       }, c.raised_key);

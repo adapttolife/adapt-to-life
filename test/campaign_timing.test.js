@@ -42,7 +42,7 @@ test("campaign page and supporting cards name the road", async () => {
     page.includes("lottery"),
     "the US Open is a lottery; the page never promises a spot",
   );
-  assert.ok(fund.includes(`>${CAMPAIGN}</p>`));
+  assert.ok(fund.includes(`>${CAMPAIGN}<`));
   assert.ok(fund.includes('href="/send-6" class="thermo-link">See the road'));
   assert.ok(
     popcorn.includes(`>${HISTORY}</a>`),
@@ -62,13 +62,12 @@ test("social metadata and generated card source carry the road", async () => {
 // Nov 5 2026 (Alec): "we tell the story with different campaigns, but at the
 // end of the day, it all goes to one fund." One Givebutter campaign behind
 // every form; the Chicago Classic is a goal with no form yet. Later that day:
-// "it should be two bars", year-round and the Road, as two designated funds
-// inside that one campaign.
+// one bar for one program, every week first, then the road.
 test("one fund: every giving form is the Hustle & Heart Fund, and the Classic has none", async () => {
   const campaigns = JSON.parse(await text("public/data/campaigns.json")).campaigns;
-  assert.equal(campaigns[0].slug, "wheelie-big-dills", "the year-round ask leads");
-  assert.equal(campaigns[0].goal, 13500, "year-round has its own bar");
-  assert.equal(campaigns[0].raised_key, "year");
+  assert.equal(campaigns[0].slug, "wheelie-big-dills", "the one goal leads");
+  assert.equal(campaigns[0].goal, 34500, "every week plus the road, in one bar");
+  assert.equal(campaigns[0].raised_key, "wbd");
   for (const f of [
     "public/donate.html",
     "public/hustle-and-heart.html",

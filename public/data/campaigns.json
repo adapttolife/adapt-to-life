@@ -8,14 +8,19 @@
       "published": true,
       "beneficiary": "The crew, all year",
       "when": "Year-round",
-      "blurb": "Court time every week and memberships to train all year.",
-      "goal": 13500,
+      "blurb": "One goal for the year ahead: every week first, then the road to the US Open.",
+      "goal": 34500,
       "raised": null,
       "raised_source": "api",
-      "raised_key": "year",
+      "raised_key": "wbd",
+      "parts": [
+        { "key": "year", "label": "Every week", "goal": 13500 },
+        { "key": "send-6", "label": "The Road to the US Open", "goal": 21000, "page": "/send-6" }
+      ],
+      "next": { "label": "the Chicago Classic", "page": "/chicago-classic" },
       "cta_label": "Donate",
       "cta_url": "/donate",
-      "_note": "Year-round bar (Alec, Nov 5: two bars). Goal: a year of nights at ACE ($3,900) plus ten athletes training ($9,600). Givebutter fund 73138."
+      "_note": "One goal, one bar (Alec, Nov 5). Every week ($13,500: a year of nights at ACE, $3,900, plus ten athletes training, $9,600) fills first, then the Road ($21,000). The Classic joins the goal when it has a date and a budget."
     },
     {
       "slug": "send-6-us-open",
@@ -31,7 +36,8 @@
       "cta_label": "See the road",
       "cta_url": "/send-6",
       "raised_key": "send-6",
-      "_note": "Road bar. Set-aside from Send 6 plus Givebutter fund 73139."
+      "part_of": "wheelie-big-dills",
+      "_note": "The second part of the one goal. Starts with the Send 6 set-aside, then fills once every week is funded."
     },
     {
       "slug": "chicago-classic",

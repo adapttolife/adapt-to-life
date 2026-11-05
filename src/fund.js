@@ -12,28 +12,35 @@
 // hard-coded goal because a slow widget is harmless. A receipt must never print
 // a number we did not actually read, so it checks `live` and stays silent about
 // the fund's position rather than guessing.
-// One fund, two bars (Alec, Nov 5 2026). Every gift goes to one Givebutter
-// campaign, the Hustle & Heart Fund. Donors designate it to one of two
-// Givebutter funds, and each fund is a bar on the site: "One campaign bar for
-// sending people to the U.S. Open. A campaign bar designated for the
-// week-to-week, month-to-month, year-round support". Equipment is raised per
-// athlete when one needs it, so it has no bar.
+// One goal, one bar (Alec, Nov 5 2026): "one campaign bar... puts together
+// all of the initiatives into one big number... Then it shows how much of
+// this pays for the year and how much of this pays for the U.S. Open." And
+// "When you donate, it goes to just one program": the Chicago Wheelie Big
+// Dills, through the one Givebutter campaign (the Hustle & Heart Fund). No
+// donor picks a fund. "Our first priority is to raise money for the weekly
+// training, then the U.S. Open. After that, Chicago Classic."
+//
+// So new gifts fill the parts in that order: every week first, up to its
+// goal, then the road. Money raised under Send 6 before the one-goal model
+// (SEND6_SET_ASIDE: $3,004 popcorn + $1,975 online) keeps its terms and sits
+// on the road from the start. SEND6_ONLINE_COUNTED is the part of
+// Givebutter's online total already inside that set-aside, so it is never
+// counted twice. Equipment is raised per athlete and is not in the goal; the
+// Chicago Classic joins the goal once it has a date and a budget.
+//
 // Keys the site asks for with /api/raised?c=<key>:
-//   year    Year-round support for the Chicago Wheelie Big Dills: court time
-//           every week and memberships to train all year. The Givebutter fund
-//           GIVEBUTTER_FUND_YEAR plus YEAR_OFFLINE_RAISED. Goal $13,500: a year
-//           of nights at ACE ($3,900, 52 x $75) and ten athletes training
-//           ($9,600, 10 x $960).
-//   send-6  The Road to the US Open: SEND6_SET_ASIDE (what was raised under
-//           Send 6: $3,004 popcorn + $1,975 online, all undesignated) plus the
-//           Givebutter fund GIVEBUTTER_FUND_ROAD. Goal $21,000: six athletes at
-//           about $3,500, roughly what the US Open has cost the last couple of
-//           years.
-//   fund    The whole campaign, designated or not. Grant receipts read this.
-//   classic The Chicago Classic: a goal we talk about, not yet raising.
-export const CAMPAIGN_KEYS = ["fund", "year", "send-6", "classic"];
+//   wbd     The one goal: every week + the road, with both parts.
+//   year    Every week: court time every week and memberships to train all
+//           year. $13,500: a year of nights at ACE ($3,900, 52 x $75) and ten
+//           athletes training ($9,600, 10 x $960).
+//   send-6  The Road to the US Open. $21,000: six athletes at about $3,500,
+//           roughly what the US Open has cost the last couple of years.
+//   fund    The whole campaign. Grant receipts read this.
+//   classic The Chicago Classic: a goal we talk about, not yet in the total.
+export const CAMPAIGN_KEYS = ["fund", "wbd", "year", "send-6", "classic"];
 export const YEAR_GOAL = 13500;
 export const ROAD_GOAL = 21000;
+export const WBD_GOAL = YEAR_GOAL + ROAD_GOAL;
 
 async function givebutter(env, id) {
   let online = 0;
@@ -61,30 +68,26 @@ async function givebutter(env, id) {
   return { online, goal, live };
 }
 
-// A Givebutter fund's designated total. Funds are labels inside the one
-// campaign, so this never double counts: a gift sits in exactly one fund.
-async function givebutterFund(env, id) {
-  let raised = 0;
-  let live = false;
-  try {
-    if (env.GIVEBUTTER_API_KEY && id) {
-      const r = await fetch(`https://api.givebutter.com/v1/funds/${id}`, {
-        headers: {
-          Authorization: `Bearer ${env.GIVEBUTTER_API_KEY}`,
-          Accept: "application/json",
-        },
-        cf: { cacheTtl: 60, cacheEverything: true },
-      });
-      if (r.ok) {
-        const d = await r.json();
-        raised = Number((d && d.data ? d.data : d).raised) || 0;
-        live = true;
-      }
-    }
-  } catch (err) {
-    console.error("givebutter fund fetch failed:", err);
-  }
-  return { raised, live };
+// The one goal and its parts, filled in priority order.
+async function wbd(env) {
+  const g = await givebutter(env, env.GIVEBUTTER_CAMPAIGN_ID || "683765");
+  const setAside = Number(env.SEND6_SET_ASIDE) || 0;
+  const counted = Number(env.SEND6_ONLINE_COUNTED) || 0;
+  const offline = Number(env.FUND_OFFLINE_RAISED) || 0;
+  const fresh = Math.max(0, g.online - counted) + offline;
+  const year = Math.min(fresh, YEAR_GOAL);
+  const road = Math.min(setAside + Math.max(0, fresh - YEAR_GOAL), ROAD_GOAL);
+  return {
+    raised: setAside + fresh,
+    online: g.online,
+    offline: setAside - counted + offline,
+    goal: WBD_GOAL,
+    live: g.live,
+    parts: {
+      year: { raised: year, goal: YEAR_GOAL },
+      "send-6": { raised: road, goal: ROAD_GOAL },
+    },
+  };
 }
 
 export async function campaignPosition(env, key = "send-6") {
@@ -101,26 +104,10 @@ export async function campaignPosition(env, key = "send-6") {
   }
   if (key === "classic")
     return { raised: 0, online: 0, offline: 0, goal: 0, live: true };
-  if (key === "year") {
-    const f = await givebutterFund(env, env.GIVEBUTTER_FUND_YEAR);
-    const offline = Number(env.YEAR_OFFLINE_RAISED) || 0;
-    return {
-      raised: f.raised + offline,
-      online: f.raised,
-      offline,
-      goal: YEAR_GOAL,
-      live: f.live,
-    };
-  }
-  const setAside = Number(env.SEND6_SET_ASIDE) || 0;
-  const road = await givebutterFund(env, env.GIVEBUTTER_FUND_ROAD);
-  return {
-    raised: setAside + road.raised,
-    online: road.raised,
-    offline: setAside,
-    goal: ROAD_GOAL,
-    live: true,
-  };
+  const w = await wbd(env);
+  if (key === "wbd") return w;
+  const part = w.parts[key === "year" ? "year" : "send-6"];
+  return { raised: part.raised, online: 0, offline: 0, goal: part.goal, live: w.live };
 }
 
 // The fund's own position. The grant receipt reads this; with no goal it

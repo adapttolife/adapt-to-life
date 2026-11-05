@@ -30,11 +30,11 @@
 <link rel="dns-prefetch" href="https://widgets.givebutter.com">
 <link rel="dns-prefetch" href="https://givebuttercdn.com">
 <link rel="dns-prefetch" href="https://js.stripe.com">
-<link rel="preload" href="/css/site.css?v=dba9abf7" as="style">
+<link rel="preload" href="/css/site.css?v=5e6e33e6" as="style">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=dba9abf7">
+<link rel="stylesheet" href="/css/site.css?v=5e6e33e6">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <script src="/js/givebutter-lazy.js?v=29b7ce7b" defer></script>
 <style>
@@ -49,7 +49,11 @@
   .fund-terms a{ display:inline-flex; align-items:center; min-height:44px; color:var(--cream); font-size:0.95rem; text-decoration:underline; text-underline-offset:4px; }
   @media (max-width:880px){ .give-split{ grid-template-columns:1fr; gap:2.2rem; } }
   .give-split .thermo{ max-width:none; margin:1.4rem 0 0; }
-  .give-split .thermo + .thermo{ margin-top:1.6rem; padding-top:1.4rem; border-top:1px solid rgba(255,255,255,0.12); }
+  .thermo-segs{ display:flex; gap:4px; height:14px; margin-top:1rem; }
+  .thermo-seg{ flex-basis:0; border-radius:999px; background:rgba(255,255,255,0.14); overflow:hidden; }
+  .thermo-keys{ display:flex; gap:4px; margin-top:0.6rem; }
+  .thermo-keys p{ flex-basis:0; margin:0; padding-right:0.6rem; font-size:0.86rem; font-weight:600; line-height:1.35; color:var(--cream); }
+  .thermo-keys span{ display:block; font-weight:400; color:var(--cream-mute); }
   .prog .prog-n{ margin:0 0 0.9rem; font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(1.9rem,3.4vw,2.4rem); line-height:1; letter-spacing:-0.03em; color:var(--orange-ink); }
   .prog .prog-n span{ display:block; margin-top:0.45rem; font-family:var(--font-label); font-style:normal; font-weight:800; font-size:0.7rem; line-height:1.4; letter-spacing:0.16em; text-transform:uppercase; color:var(--ink-soft); }
   .hh-skill{ margin:clamp(2.2rem,4vw,3rem) auto 0; max-width:40ch; text-align:center; font-family:var(--font-display); font-weight:800; font-size:clamp(1.35rem,2.6vw,1.85rem); line-height:1.2; letter-spacing:-0.02em; }
@@ -360,31 +364,28 @@ fill="currentColor" stroke="none">
           <hr class="tick orange" style="margin:0 0 1rem;">
           <span class="eyebrow orange">Your turn</span>
           <h2 class="serif statement" style="margin-top:0.7rem;">Put an athlete on the court.</h2>
-          <p class="lead sub" style="margin-top:1rem;">Every gift goes to one fund, with two goals right now: year-round training for the Chicago Wheelie Big Dills, and the road to the US Open.</p>
+          <p class="lead sub" style="margin-top:1rem;">Every gift goes to one fund. Right now it funds the Chicago Wheelie Big Dills: every week first, then the road to the US Open.</p>
           <ul class="gift-ladder" aria-label="What your gift can do">
             <li><b>$5</b><span>puts one athlete on court for a night</span></li>
             <li><b>$75</b><span>covers up to 15 athletes for a night at ACE</span></li>
             <li><b>$960</b><span>can keep one athlete training all year</span></li>
           </ul>
-          <div class="thermo" data-thermo data-goal="13500" data-key="year">
-            <p class="thermo-also">Year-round</p>
+          <div class="thermo" data-thermo data-goal="34500" data-key="wbd">
+            <p class="thermo-also">One goal for the year ahead</p>
             <p style="margin:0 0 0.9rem; font-size:0.95rem; font-weight:600;">The Chicago Wheelie Big Dills</p>
             <div class="thermo-row">
               <span class="thermo-raised" data-thermo-raised></span>
-              <span class="thermo-goal">Our goal is $13,500</span>
+              <span class="thermo-goal">Our goal is $34,500</span>
             </div>
-            <div class="thermo-track"><span class="thermo-fill" data-thermo-fill></span></div>
-            <p class="thermo-classic">Court time every week and memberships to train all year.</p>
-          </div>
-          <div class="thermo" data-thermo data-goal="21000" data-key="send-6">
-            <p class="thermo-also">Also raising</p>
-            <p style="margin:0 0 0.9rem; font-size:0.95rem; font-weight:600;">The Road to the US Open</p>
-            <div class="thermo-row">
-              <span class="thermo-raised" data-thermo-raised></span>
-              <span class="thermo-goal">Our goal is $21,000</span>
+            <div class="thermo-segs" aria-hidden="true">
+              <span class="thermo-seg" style="flex-grow:13500"><span class="thermo-fill" data-seg-fill="year"></span></span>
+              <span class="thermo-seg" style="flex-grow:21000"><span class="thermo-fill" data-seg-fill="send-6"></span></span>
             </div>
-            <div class="thermo-track"><span class="thermo-fill" data-thermo-fill></span></div>
-            <p class="thermo-classic">Six athletes, about $3,500 each. Next comes <a href="/chicago-classic">the Chicago Classic</a>, where our goal is free registration, transportation and hotels for every athlete.</p>
+            <div class="thermo-keys">
+              <p style="flex-grow:13500">Every week first<span data-seg-fig="year">$13,500</span></p>
+              <p style="flex-grow:21000">The Road to the US Open<span data-seg-fig="send-6">$21,000</span></p>
+            </div>
+            <p class="thermo-classic">Then <a href="/chicago-classic">the Chicago Classic</a>, where our goal is free registration, transportation and hotels for every athlete.</p>
             <a href="/send-6" class="thermo-link">See the road <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
           </div>
           <div class="fund-actions" aria-label="Support the fund">
@@ -549,11 +550,18 @@ fill="currentColor" stroke="none">
     var goalEl = box.querySelector('.thermo-goal');
     fetch('/api/raised?c=' + (box.getAttribute('data-key') || 'send-6')).then(function(r){ return r.json(); }).then(function(d){
       var raised = Number(d.raised) || 0, goal = Number(box.getAttribute('data-goal')) || Number(d.goal) || 21000;
-      if (!raised) return; // a new goal keeps "Our goal is $13,500" rather than printing $0
+      if (!raised) return; // a new goal keeps "Our goal is $34,500" rather than printing $0
       var pct = goal > 0 ? Math.max(0, Math.min(100, raised / goal * 100)) : 0;
       amt.textContent = '$' + raised.toLocaleString('en-US');
       if (goalEl) { goalEl.textContent = 'raised of our $' + goal.toLocaleString('en-US') + ' goal'; }
-      requestAnimationFrame(function(){ setTimeout(function(){ fill.style.width = pct.toFixed(1) + '%'; }, 120); });
+      if (fill) requestAnimationFrame(function(){ setTimeout(function(){ fill.style.width = pct.toFixed(1) + '%'; }, 120); });
+      // One goal, two parts (Alec, Nov 5): each part fills on its own.
+      var parts = d.parts || {};
+      Object.keys(parts).forEach(function(k){
+        var pt = parts[k], f = box.querySelector('[data-seg-fill="' + k + '"]'), fig = box.querySelector('[data-seg-fig="' + k + '"]');
+        if (fig && pt.raised) fig.textContent = '$' + pt.raised.toLocaleString('en-US') + ' of $' + pt.goal.toLocaleString('en-US');
+        if (f && pt.goal) { var pp = Math.max(0, Math.min(100, pt.raised / pt.goal * 100)); requestAnimationFrame(function(){ setTimeout(function(){ f.style.width = pp.toFixed(1) + '%'; }, 120); }); }
+      });
     }).catch(function(){});
   });
 </script>

@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=dba9abf7">
+<link rel="stylesheet" href="/css/site.css?v=5e6e33e6">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <style>
   /* ==========================================================================
@@ -115,30 +115,6 @@
   .s6-give-note{ margin-top:0.8rem; font-size:0.9rem; color:var(--cream-mute); }
 </style>
 <link rel="preconnect" href="https://widgets.givebutter.com" crossorigin>
-<script>
-  /* Gifts on this page go to the Road. One Givebutter campaign holds two funds
-     (two bars, Alec, Nov 5); the form preselects the Road fund (dashboard id
-     73139) when the page URL carries ?fund=73139. The widget reads the page
-     URL, not an attribute (tested Nov 5), so add it for the widget and put the
-     clean URL back as soon as the form's frame exists. */
-  (function () {
-    if (/[?&]fund=/.test(location.search)) return;
-    var clean = location.pathname + location.search + location.hash;
-    history.replaceState(history.state, '', location.pathname + (location.search ? location.search + '&' : '?') + 'fund=73139' + location.hash);
-    function frame(root) {
-      var f = root.querySelector('iframe[src*="givebutter.com/embed"]'); if (f) return f;
-      var all = root.querySelectorAll('*');
-      for (var i = 0; i < all.length; i++) if (all[i].shadowRoot) { var g = frame(all[i].shadowRoot); if (g) return g; }
-      return null;
-    }
-    var tries = 0;
-    (function wait() {
-      if (document.body && frame(document)) { history.replaceState(history.state, '', clean); return; }
-      if (++tries < 240) setTimeout(wait, tries < 40 ? 250 : 1000);
-      else history.replaceState(history.state, '', clean);
-    })();
-  })();
-</script>
 <script async src="https://widgets.givebutter.com/latest.umd.cjs?acct=7FsgcjXFnW6fabQn"></script>
 </head>
 <body>
@@ -239,7 +215,7 @@ fill="currentColor" stroke="none">
       <span class="s6-meter-track"><span class="s6-meter-fill" id="s6Fill"></span></span>
     </div>
 
-    <p class="prose reveal" id="campaign-terms" style="margin-top:1rem; color:var(--cream-mute);">Every gift goes to the Hustle &amp; Heart Fund. Give here and it goes to the road to the US Open. Money already raised for Send 6, including the popcorn drive, stays on the road. <a href="/promise#campaign-gifts" style="color:inherit;">How Giving Works</a>.</p>
+    <p class="prose reveal" id="campaign-terms" style="margin-top:1rem; color:var(--cream-mute);">Every gift goes to the Hustle &amp; Heart Fund for the Chicago Wheelie Big Dills: every week first, then the road to the US Open. Money already raised for Send 6, including the popcorn drive, stays on the road. <a href="/promise#campaign-gifts" style="color:inherit;">How Giving Works</a>.</p>
     <div class="actions reveal">
       <a class="btn" href="#give">Donate</a>
       <a class="btn ghost" href="#cost">Where the money goes</a>
@@ -257,7 +233,7 @@ fill="currentColor" stroke="none">
     </div>
     <ul class="s6-seats" id="s6Seats"></ul>
     <p class="s6-seats-note reveal"><a class="textlink" href="/juan" style="font:inherit;letter-spacing:inherit;">Juan Ortiz</a> holds the first seat and is leading the campaign. The other athletes are selected through the fund&rsquo;s grant process, and we will name them here once they are confirmed.</p>
-    <p class="s6-bigger reveal">Training has its own goal: year-round support for <a class="textlink" href="/pickleball#support" style="font:inherit;letter-spacing:inherit;">the Chicago Wheelie Big Dills</a>. Equipment is raised one athlete at a time. After the road, our goal is <a class="textlink" href="/chicago-classic" style="font:inherit;letter-spacing:inherit;">the Chicago Classic</a>.</p>
+    <p class="s6-bigger reveal">The road is part of one goal: $34,500 for <a class="textlink" href="/pickleball#support" style="font:inherit;letter-spacing:inherit;">the Chicago Wheelie Big Dills</a> in the year ahead, every week first. Equipment is raised one athlete at a time. After the road, our goal is <a class="textlink" href="/chicago-classic" style="font:inherit;letter-spacing:inherit;">the Chicago Classic</a>.</p>
   </div>
 </section>
 
@@ -294,7 +270,7 @@ fill="currentColor" stroke="none">
     </ul>
 
     <div class="s6-math reveal">
-      We're raising $21,000 for six athletes, based on what the US Open has cost the last couple of years. The target is $3,500 per athlete; individual needs and costs will vary. Training and equipment aren't part of this campaign: training has its own year-round goal, and equipment is raised one athlete at a time.
+      We're raising $21,000 for six athletes, based on what the US Open has cost the last couple of years. The target is $3,500 per athlete; individual needs and costs will vary. It's the second part of one goal: every week comes first, and equipment is raised one athlete at a time.
 
       <div class="actions" style="margin-top:1.6rem; justify-content:center;">
         <a class="btn ghost" href="/hustle-and-heart">About the fund</a>
@@ -333,7 +309,7 @@ fill="currentColor" stroke="none">
     <h2 class="serif display reveal">Help them get there.</h2>
     <p class="lead sub reveal">Choose an amount that works for you. Help the next athlete prepare and take part.</p>
     <div class="s6-give reveal"><givebutter-giving-form campaign="IXM5DR"></givebutter-giving-form></div>
-    <p class="s6-give-note">Gifts here go to the road to the US Open, inside the Hustle &amp; Heart Fund. Secure checkout by Givebutter.</p>
+    <p class="s6-give-note">Every gift goes to the Chicago Wheelie Big Dills: every week first, then the road to the US Open. Secure checkout by Givebutter.</p>
   </div>
 </section>
 
@@ -480,7 +456,7 @@ fill="currentColor" stroke="none">
   })();
 </script>
 
-<script src="/js/campaigns.js?v=ba1a084f"></script>
+<script src="/js/campaigns.js?v=5bb030e9"></script>
 <script>
 (function(){
   var C = window.ATLCampaigns;

@@ -221,6 +221,14 @@
   .pb-where{ margin-top:0.15rem; opacity:0.7; }
   .pb-night p:not(.pb-day):not(.pb-where){ margin-top:0.8rem; line-height:1.55; }
   .pb-next{ background:rgba(255,92,57,0.05); box-shadow:none; border:2px dashed rgba(255,92,57,0.6); }
+  .pb-help{ margin-top:clamp(2rem,4vw,2.8rem); padding:clamp(1.4rem,2.6vw,2rem); border-radius:18px; background:#fff; box-shadow:0 0 0 1px rgba(12,12,14,0.08), 0 24px 50px -36px rgba(12,12,14,0.35); }
+  .pb-help ul{ list-style:none; margin:1rem 0 0; padding:0; display:grid; grid-template-columns:repeat(5,1fr); gap:clamp(0.8rem,1.8vw,1.4rem); }
+  .pb-help li{ border-top:3px solid var(--orange); padding-top:0.8rem; }
+  .pb-help li b{ display:block; font-family:var(--font-display); font-weight:800; font-size:1.05rem; letter-spacing:-0.01em; }
+  .pb-help li span{ display:block; margin-top:0.35rem; line-height:1.45; opacity:0.8; font-size:0.95rem; }
+  .pb-help-note{ margin-top:1.2rem; font-weight:700; color:var(--orange-ink); }
+  @media (max-width:1000px){ .pb-help ul{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:560px){ .pb-help ul{ grid-template-columns:1fr; } }
   .pb-note{ margin-top:1.6rem; max-width:72ch; }
   .pb-note a{ color:var(--orange-ink); font-weight:700; border-bottom:2px solid currentColor; }
   .pb-beyond{ margin-top:clamp(1.6rem,3vw,2.2rem); max-width:62ch; padding:clamp(1.1rem,2.2vw,1.5rem); border-left:4px solid var(--orange); background:rgba(255,92,57,0.06); border-radius:0 14px 14px 0; }
@@ -496,7 +504,7 @@ fill="currentColor" stroke="none">
         <hr class="tick orange">
         <span class="eyebrow orange">Play anytime</span>
         <h2 class="serif statement">Places to play, <em class="italic" style="color:var(--orange)">built together.</em></h2>
-        <p class="prose">We build relationships with clubs, organizations and groups, and help fund places for the adaptive sports community to play pickleball across the area. Open play and drop ins, with no membership and nothing to lock in. Each place has its own vibe. Some sessions have a sport chair to try or a coach on hand, and some are just open play. We grow each one little by little.</p>
+        <p class="prose">We help clubs, organizations and coaches build and manage adaptive sports programs, so the adaptive sports community has places to play pickleball across the area. Open play and drop ins, with no membership and nothing to lock in. Each place has its own vibe. Some sessions have a sport chair to try or a coach on hand, and some are just open play. We grow each one little by little.</p>
       </div>
       <div class="pb-nights pb-sessions" data-m="stagger">
         <article class="pb-night">
@@ -521,9 +529,20 @@ fill="currentColor" stroke="none">
           <p class="pb-day">What's next</p>
           <h3>Your club?</h3>
           <p class="pb-where">Across the Chicago area</p>
-          <p>Clubs, organizations and groups can host. The crew brings the players, and we help with funding and content.</p>
-          <a class="pb-link" href="mailto:hello@adapttolife.org?subject=Host%20a%20session">Host a session</a>
+          <p>Clubs, organizations and coaches: we'll help you build and manage an adaptive program of your own.</p>
+          <a class="pb-link" href="mailto:hello@adapttolife.org?subject=Build%20an%20adaptive%20program">Start a conversation</a>
         </article>
+      </div>
+      <div class="pb-help" data-m="up">
+        <p class="pb-day">What we bring to a club, organization or coach</p>
+        <ul>
+          <li><b>Funding</b><span>Court time, memberships and equipment.</span></li>
+          <li><b>Coaching know-how</b><span>Clinics, and coaches who have built adaptive programs before.</span></li>
+          <li><b>Players and volunteers</b><span>The crew we support, and volunteers on court.</span></li>
+          <li><b>Content</b><span>Weekly video and athlete spotlights that help a program grow.</span></li>
+          <li><b>A place in the directory</b><span>A listing on Adaptive Sports Near Me, so athletes can find the program.</span></li>
+        </ul>
+        <p class="pb-help-note">The program stays yours. We help you build and manage it.</p>
       </div>
       <p class="pb-note">Volunteers make it work: coaches like Pete, members from our partner clubs and the crew itself. Coming up: Try Adaptive Night at ACE, where club members play from sport chairs alongside the crew.</p>
       <div class="pb-beyond" data-m="up">
@@ -663,7 +682,7 @@ fill="currentColor" stroke="none">
       <div class="ace-win" data-m="stagger">
         <div><h3>Give</h3><ul><li>Any amount helps. $75 covers court fees for the whole crew for a night at ACE.</li></ul><a class="btn pb-btn" href="/donate">Donate</a></div>
         <div><h3>Sponsor</h3><ul><li>Open play nights, athlete memberships and tournaments, for businesses that want to be part of it.</li></ul><a class="btn ghost pb-btn" href="/sponsorship">See partnerships</a></div>
-        <div><h3>Host</h3><ul><li>Have courts? Host a session at your club. The crew brings the players, and we help fund it.</li></ul><a class="btn ghost pb-btn" href="mailto:hello@adapttolife.org?subject=Host%20a%20session">Host a session</a></div>
+        <div><h3>Host</h3><ul><li>Have courts? We help clubs, organizations and coaches build and manage adaptive programs.</li></ul><a class="btn ghost pb-btn" href="mailto:hello@adapttolife.org?subject=Host%20a%20session">Host a session</a></div>
       </div>
     </div>
   </section>

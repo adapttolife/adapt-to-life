@@ -119,9 +119,9 @@ The offer, in plain words: **we help clubs, organizations and coaches build and 
 | Content | Weekly video and athlete spotlights that help a program grow |
 | A place in the directory | A listing on Adaptive Sports Near Me, so athletes and families can find the program |
 
-What stays with the club, organization or coach: the program itself, its schedule, its staff and its coverage. On the site that is one line, "The program stays yours. We help you build and manage it." In a written agreement, say it plainly: the host runs the program and carries its insurance; Adapt To Life provides funding, support and promotion. (Confirm the agreement language with the insurance reviewer or broker.)
+What stays with the club, organization or coach: the program itself, its schedule, its staff and its coverage. On the site that is one line, "Your program. Our support." (About says it in third person: "The programs belong to the people who run them, and we're the support behind them.") In a written agreement, say it plainly: the host runs the program and carries its insurance; Adapt To Life provides funding, support and promotion. (Confirm the agreement language with the insurance reviewer or broker.)
 
-Where it shows on the site: the home page (the how under the mission), About (Program support in Our Work), `/pickleball` (What we bring), Partners (one line for clubs, organizations and coaches) and the sponsor page (Build a program).
+Where it shows on the site: the home page (the how under the mission), About (Program support in Our Work), `/pickleball` (What we bring, closing on "Your program. Our support."), Partners (one line for clubs, organizations and coaches) and the sponsor page (Build a program).
 
 ### 3.5 The flagship: the Chicago Wheelie Big Dills
 Name check: the only verified public use is "the Wheelie Big Dills" on Juan's page, and the YouTube playlist "Wheelchair Pickleball: The Wheelie Big Dills" (Juan's mic'd up POV matches). Captions say "the crew". There is no handle or logo yet. "Chicago Wheelie Big Dills" is new; if it becomes the brand, create the handle and mark first.
@@ -537,7 +537,7 @@ Guardrails:
 > Hi [name], I'm Alec with Adapt To Life. We're building an ecosystem for adaptive pickleball across the Chicago area, with sessions at clubs like Brick House, ACE and The Picklr, so athletes can find a day to play. We'd love to add a session at [club]. We bring the players, the volunteers and video for your feed, and athletes who train with us often become members. What would make it a win for you? Could we grab 20 minutes this week?
 
 **Coach or program**
-> Hi [name], I'm Alec with Adapt To Life. We help clubs, organizations and coaches build and manage adaptive sports programs. If you have athletes in wheelchairs who want to play, or players who want to try, we can help with equipment, a clinic, players to get things going and content to grow it. The program stays yours. Could we grab 20 minutes?
+> Hi [name], I'm Alec with Adapt To Life. We help clubs, organizations and coaches build and manage adaptive sports programs. If you have athletes in wheelchairs who want to play, or players who want to try, we can help with equipment, a clinic, players to get things going and content to grow it. Your program, our support. Could we grab 20 minutes?
 
 **Special recreation association or park district**
 > Hi [name], I'm Alec with Adapt To Life. A lot of programs want to add wheelchair pickleball but need the resources to start. We help organizations build and manage adaptive sports programs: a first clinic, equipment, coaching know-how and players from our crew to play with. We'd love to help you add pickleball. Could we find 20 minutes?

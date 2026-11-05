@@ -6,6 +6,20 @@ Sources: production pages on origin/main (Nov 3, 2026), `/api/raised` on adaptto
 
 ---
 
+## 0. Reset, November 5 (what changed after the first build)
+
+Alec: "I like it but I don't love it." The first build grew by accretion: the US Open record was repeated six times on `/pickleball`, and the page had ten sections. The reset, now on the review link:
+
+- **Say the record once.** A proof strip under the `/pickleball` hero (3 straight US Opens, 6 Monster Smash medals, the APP Tour's first wheelchair division, 334K views in 90 days). Elsewhere it appears only where it helps a decision: the athlete cards, Send 6, Juan's page, Partners ("What partnership gives back"), the home crew section and the sponsor page.
+- **One clear arc on `/pickleball`** (8 sections): hero, the record, six athletes, "More than one trip" (the three levels, each with what keeps it going), "Places to play, built together" (clubs, "Your program. Our support.", the region), Juan's quote, Help us fund it (give, sponsor, build a program), and the close.
+- **The rest of the site matches.**
+  - Home gets "Right now in Chicago" (badge, crew, record) between the founder story and the Send 6 band, and Juan's card calls him a builder.
+  - Hustle and Heart explains the fund's two lanes ("Athletes, and the programs they play in").
+  - Partners swaps "the road to Naples" for the three levels and adds what partners get back.
+  - Ambassadors, How Giving Works, Roadmap and Social each get a small update.
+- **Brian's quote** is trimmed to his own words without "A year ago", attributed "Three straight US Opens", so it no longer reads as conflicting.
+- **The thermometer** shows "Our goal is $21,000" until the live number loads, never "$0".
+
 ## 1. The short version
 
 **What changed.** Adapt To Life started as a fund and a directory, and the first campaign was Send 6 to the US Open. In a few months it became something bigger: a wheelchair pickleball crew we fund and support, a network of clubs and organizations, results at real tournaments, a first ambassador who is building the sport in Chicago, a tournament we will present, and fundraising that never stops. The US Open is now one campaign inside that work, not the reason for it.

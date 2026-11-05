@@ -452,6 +452,7 @@
   font-weight: 500;
   display: inline-block;
   border: none;
+  cursor: pointer;
 }
 
 .btn:hover {
@@ -968,6 +969,43 @@
 
 .beta-tester-actions .btn {
   margin: 0;
+}
+
+.beta-groups {
+  display: grid;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.beta-groups h3,
+.beta-group h4 {
+  margin: 0;
+}
+
+.beta-group-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
+}
+
+.beta-group {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--paper);
+}
+
+.beta-group p,
+.beta-group ul {
+  margin: 0;
+}
+
+.beta-group ul {
+  display: grid;
+  gap: 5px;
+  padding-left: 20px;
 }
 
 .queue-item {

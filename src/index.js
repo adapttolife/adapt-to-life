@@ -1,4 +1,9 @@
 import { safeNewsletterSubscribe } from "./newsletter.js";
+import {
+  betaTesterTopicGroups,
+  ResendTopicsError,
+  setContactTopics,
+} from "./resend_topics.js";
 import { acceptForm, sweepForms } from "./forms.js";
 import { sendMail } from "./mail-transport.js";
 // Adapt To Life — Worker entry.
@@ -554,7 +559,43 @@ export async function localAsnmAdminOperations(request, env, url) {
            FROM beta_testers
            ORDER BY email COLLATE NOCASE`,
         ).all();
-        return json({ ok: true, items: rows.results || [] }, 200, ADMIN_CACHE);
+        const items = rows.results || [];
+        if (!env.RESEND_API_KEY) {
+          return json(
+            {
+              ok: true,
+              items,
+              groups: [],
+              groupError: "Resend Topics are not configured.",
+            },
+            200,
+            ADMIN_CACHE,
+          );
+        }
+        try {
+          const topicData = await betaTesterTopicGroups(env, items);
+          const itemsWithTopics = items.map((tester) => ({
+            ...tester,
+            topic_ids: topicData.idsByEmail[String(tester.email).toLowerCase()] || [],
+          }));
+          return json(
+            { ok: true, items: itemsWithTopics, groups: topicData.groups },
+            200,
+            ADMIN_CACHE,
+          );
+        } catch (error) {
+          console.error("ASNM beta tester groups request failed", error);
+          return json(
+            {
+              ok: true,
+              items,
+              groups: [],
+              groupError: "Beta tester groups are temporarily unavailable.",
+            },
+            200,
+            ADMIN_CACHE,
+          );
+        }
       }
       if (request.method === "DELETE") {
         const body = await request.json().catch(() => null);
@@ -597,6 +638,17 @@ export async function localAsnmAdminOperations(request, env, url) {
         const timestamp = new Date().toISOString();
         const addingTester = Object.hasOwn(body || {}, "name");
         if (addingTester) {
+          if (
+            Array.isArray(body?.topicIds) &&
+            body.topicIds.length &&
+            !env.RESEND_API_KEY
+          ) {
+            return json(
+              { ok: false, error: "Resend Topics are not configured." },
+              503,
+              ADMIN_CACHE,
+            );
+          }
           const name = String(body?.name || "").trim();
           const organization = String(body?.organization || "").trim();
           const phone = String(body?.phone || "").trim();
@@ -634,6 +686,9 @@ export async function localAsnmAdminOperations(request, env, url) {
               timestamp,
             )
             .run();
+          if (Array.isArray(body?.topicIds) && env.RESEND_API_KEY) {
+            await setContactTopics(env, email, body.topicIds);
+          }
           if (enabled && body?.sendInvitation === true) {
             const siteUrl = new URL(
               "/",
@@ -657,6 +712,13 @@ export async function localAsnmAdminOperations(request, env, url) {
       }
     } catch (error) {
       console.error("ASNM beta tester request failed", error);
+      if (error instanceof ResendTopicsError) {
+        return json(
+          { ok: false, error: error.message },
+          error.status === 422 ? 422 : 503,
+          ADMIN_CACHE,
+        );
+      }
       return json(
         { ok: false, error: "Beta testers are temporarily unavailable." },
         503,

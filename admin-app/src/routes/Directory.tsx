@@ -833,10 +833,20 @@ export function Directory({ onFail }: { onFail: () => void }) {
   const [selectedQueueItem, setSelectedQueueItem] = useState<Item | null>(null);
   const [betaTesters, setBetaTesters] = useState<Item[]>([]);
   const [selectedBetaTester, setSelectedBetaTester] = useState<Item | null>(null);
+  const [betaGroups, setBetaGroups] = useState<Item[]>([]);
+  const [betaGroupError, setBetaGroupError] = useState("");
 
   const go = (path: string) => {
     history.pushState(null, "", path);
     setCurrent(detailRoute());
+  };
+
+  const loadBetaTesters = async () => {
+    const body = await request("/admin-data/beta-testers");
+    setBetaTesters(body.items || []);
+    setBetaGroups(body.groups || []);
+    setBetaGroupError(String(body.groupError || ""));
+    return body;
   };
 
   const chooseKind = (nextKind: Kind) => {
@@ -904,21 +914,19 @@ export function Directory({ onFail }: { onFail: () => void }) {
 
   useEffect(() => {
     if (!operations) return;
-    const path =
-      operations === "queue" ? "/admin-data/queue" : "/admin-data/beta-testers";
-    request(path)
+    const requestForOperation =
+      operations === "queue" ? request("/admin-data/queue") : loadBetaTesters();
+    requestForOperation
       .then((body) => {
         if (operations === "queue") setQueueItems(body.items || []);
-        else setBetaTesters(body.items || []);
       })
       .catch((error) => handleError(error, "Could not load this section."));
   }, [operations]);
 
   useEffect(() => {
-    Promise.all([request("/admin-data/queue"), request("/admin-data/beta-testers")])
+    Promise.all([request("/admin-data/queue"), loadBetaTesters()])
       .then(([queue, beta]) => {
         setQueueItems(queue.items || []);
-        setBetaTesters(beta.items || []);
       })
       .catch(() => {});
   }, []);
@@ -1102,11 +1110,11 @@ export function Directory({ onFail }: { onFail: () => void }) {
           phone: String(data.get("phone") || ""),
           enabled: true,
           sendInvitation: true,
+          topicIds: data.getAll("topic_ids").map(String),
         }),
       });
       form.reset();
-      const body = await request("/admin-data/beta-testers");
-      setBetaTesters(body.items || []);
+      await loadBetaTesters();
       setMessage("Beta tester saved and invited by email.");
     } catch (error) {
       handleError(error, "Could not save that beta tester.");
@@ -1118,6 +1126,7 @@ export function Directory({ onFail }: { onFail: () => void }) {
     if (!selectedBetaTester) return;
     const form = event.currentTarget;
     const data = new FormData(form);
+    const topicIds = data.getAll("topic_ids").map(String);
     try {
       await request("/admin-data/beta-testers", {
         method: "POST",
@@ -1128,14 +1137,25 @@ export function Directory({ onFail }: { onFail: () => void }) {
           phone: String(data.get("phone") || ""),
           enabled: data.get("enabled") === "on",
           sendInvitation: false,
+          topicIds,
         }),
       });
-      const body = await request("/admin-data/beta-testers");
+      const body = await loadBetaTesters();
       const updated = (body.items || []).find(
         (tester: Item) => String(tester.email) === String(selectedBetaTester.email),
       );
-      setBetaTesters(body.items || []);
-      setSelectedBetaTester(updated || null);
+      const savedTester = {
+        ...(updated || selectedBetaTester),
+        topic_ids: topicIds,
+      };
+      setBetaTesters((testers) =>
+        testers.map((tester) =>
+          String(tester.email) === String(selectedBetaTester.email)
+            ? savedTester
+            : tester,
+        ),
+      );
+      setSelectedBetaTester(savedTester);
       setMessage("Beta tester updated.");
     } catch (error) {
       handleError(error, "Could not update that beta tester.");
@@ -1151,8 +1171,7 @@ export function Directory({ onFail }: { onFail: () => void }) {
           enabled: !Number(tester.enabled),
         }),
       });
-      const body = await request("/admin-data/beta-testers");
-      setBetaTesters(body.items || []);
+      await loadBetaTesters();
       setMessage(
         Number(tester.enabled) ? "Beta tester disabled." : "Beta tester enabled.",
       );
@@ -1267,7 +1286,7 @@ export function Directory({ onFail }: { onFail: () => void }) {
           <h2>{String(selectedBetaTester.name || selectedBetaTester.email)}</h2>
           <p className="sub">Update this beta tester's access and contact details.</p>
           <form className="beta-tester-form" onSubmit={updateBetaTester}>
-            <label className="form-field wide">
+            <label className="form-field">
               <span>Email Address</span>
               <input
                 readOnly
@@ -1301,6 +1320,23 @@ export function Directory({ onFail }: { onFail: () => void }) {
                 type="tel"
               />
             </label>
+            <div className="form-field wide">
+              <span>Beta Tester Groups</span>
+              <SearchSelect
+                name="topic_ids"
+                multiple
+                value={
+                  Array.isArray(selectedBetaTester.topic_ids)
+                    ? selectedBetaTester.topic_ids.map(String)
+                    : []
+                }
+                options={betaGroups.map((group) => ({
+                  value: String(group.id),
+                  label: String(group.name),
+                }))}
+                placeholder="No beta tester groups"
+              />
+            </div>
             <label className="switch-field beta-access-switch">
               <span>Beta Access</span>
               <input
@@ -1308,6 +1344,7 @@ export function Directory({ onFail }: { onFail: () => void }) {
                 name="enabled"
                 type="checkbox"
               />
+              <i aria-hidden="true" />
             </label>
             <button className="btn" type="submit">
               Save changes
@@ -1344,10 +1381,68 @@ export function Directory({ onFail }: { onFail: () => void }) {
             <span>Phone Number</span>
             <input name="phone" type="tel" placeholder="Optional" />
           </label>
+          <div className="form-field wide">
+            <span>Beta Tester Groups</span>
+            <SearchSelect
+              name="topic_ids"
+              multiple
+              value={[]}
+              options={betaGroups.map((group) => ({
+                value: String(group.id),
+                label: String(group.name),
+              }))}
+              placeholder="No beta tester groups"
+            />
+          </div>
           <button className="btn" type="submit">
             Add and invite beta tester
           </button>
         </form>
+        <section className="beta-groups" aria-labelledby="beta-groups-title">
+          <h3 id="beta-groups-title">Beta Tester Groups</h3>
+          {betaGroupError ? <p className="sub">{betaGroupError}</p> : null}
+          <div className="beta-group-grid">
+            {betaGroups.map((group) => {
+              const emails = Array.isArray(group.emails)
+                ? group.emails.map(String)
+                : [];
+              return (
+                <article className="beta-group" key={String(group.id)}>
+                  <h4>{String(group.name)}</h4>
+                  {emails.length ? (
+                    <ul>
+                      {emails.map((email) => (
+                        <li key={email}>{email}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>No beta testers are assigned.</p>
+                  )}
+                </article>
+              );
+            })}
+            <article className="beta-group beta-group--unassigned">
+              <h4>Unassigned</h4>
+              {betaTesters.filter(
+                (tester) =>
+                  !Array.isArray(tester.topic_ids) || !tester.topic_ids.length,
+              ).length ? (
+                <ul>
+                  {betaTesters
+                    .filter(
+                      (tester) =>
+                        !Array.isArray(tester.topic_ids) || !tester.topic_ids.length,
+                    )
+                    .map((tester) => (
+                      <li key={String(tester.email)}>{String(tester.email)}</li>
+                    ))}
+                </ul>
+              ) : (
+                <p>Every beta tester belongs to a group.</p>
+              )}
+            </article>
+          </div>
+        </section>
         <div className="directory-list">
           {betaTesters.map((tester) => (
             <div className="beta-tester" key={String(tester.email)}>

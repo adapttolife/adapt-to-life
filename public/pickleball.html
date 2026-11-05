@@ -242,6 +242,9 @@
   .pb-stat-unit{ margin-top:0.3rem; font-family:var(--font-display); font-weight:800; font-size:clamp(1.2rem,2vw,1.5rem); }
   .pb-stat-cap{ margin-top:0.8rem; color:var(--cream-mute); line-height:1.5; max-width:30ch; }
   .pb-stat .pb-link{ color:var(--orange); }
+  .pb-stats{ display:grid; gap:clamp(0.9rem,1.8vw,1.2rem); }
+  .pb-stats .pb-stat{ padding:clamp(1.3rem,2.4vw,1.9rem); }
+  .pb-stats .pb-stat-num{ font-size:clamp(3.4rem,7vw,5.4rem); }
   @media (max-width:860px){ .pb-train-grid{ grid-template-columns:1fr; } }
   .pb-ahead .ace-pick h3 + p{ margin-top:0.7rem; color:var(--cream-mute); line-height:1.5; }
   /* The crew */
@@ -500,7 +503,7 @@ fill="currentColor" stroke="none">
         <a class="pb-layer" href="#compete">
           <p class="pb-day">03</p>
           <h3>Compete</h3>
-          <p>Monthly tournaments, the Chicago Classic and the road beyond, including the US Open.</p>
+          <p>Monthly tournaments, the Chicago Classic and the road to the US Open, where two of the crew have played each of the last three years.</p>
         </a>
       </div>
     </div>
@@ -580,7 +583,7 @@ fill="currentColor" stroke="none">
         <li class="pb-card">
           <img src="/images/pickleball/brian.webp" alt="Brian reaching out to hit a forehand, the ball in front of him" width="952" height="900" loading="lazy">
           <h3>Brian</h3>
-          <p>Singles and doubles at Monster Smash. "The chair didn't fix me. It gave me options I didn't have before."</p>
+          <p>Singles and doubles at Monster Smash. He has played the US Open in Naples each of the last three years. "The chair didn't fix me. It gave me options I didn't have before."</p>
         </li>
         <li class="pb-card">
           <img src="/images/pickleball/bob.webp" alt="Bob holding his paddle high with the ball on it" width="552" height="900" loading="lazy">
@@ -617,11 +620,19 @@ fill="currentColor" stroke="none">
         <p class="prose">We're looking for sponsors and partners to cover memberships at ACE, so cost is never what keeps an athlete from training.</p>
         <a class="pb-link" href="mailto:hello@adapttolife.org?subject=Sponsor%20an%20athlete%27s%20membership">Sponsor an athlete's membership</a>
       </div>
-      <div class="pb-stat" data-m="up">
-        <p class="pb-stat-num"><span data-count="16">16</span></p>
-        <p class="pb-stat-unit">hours a week</p>
-        <p class="pb-stat-cap">Juan's time on court each week as he trains for tournaments.</p>
-        <a class="pb-link" href="/juan">Read Juan's story</a>
+      <div class="pb-stats" data-m="stagger">
+        <div class="pb-stat">
+          <p class="pb-stat-num"><span data-count="3">3</span></p>
+          <p class="pb-stat-unit">straight US Opens</p>
+          <p class="pb-stat-cap">Robby and Brian have each played the US Open in Naples the last three years.</p>
+          <a class="pb-link" href="/send-6">Help send six</a>
+        </div>
+        <div class="pb-stat">
+          <p class="pb-stat-num"><span data-count="16">16</span></p>
+          <p class="pb-stat-unit">hours a week</p>
+          <p class="pb-stat-cap">Juan's time on court each week as he trains for his first.</p>
+          <a class="pb-link" href="/juan">Read Juan's story</a>
+        </div>
       </div>
     </div>
   </section>
@@ -635,7 +646,7 @@ fill="currentColor" stroke="none">
         <h2 class="serif statement">Where the crew <em class="italic" style="color:var(--orange)">has played.</em></h2>
       </div>
       <ol class="ace-story" data-m="seq">
-        <li><b>US Open, Naples</b><span>Robby has played the US Open Pickleball Championships each of the last three years. Pete Petersen played hybrid doubles there in 2025.</span></li>
+        <li><b>US Open, Naples</b><span>Robby and Brian have each played the US Open Pickleball Championships the last three years. Pete Petersen played hybrid doubles there in 2025.</span></li>
         <li><b>APP Vlasic Classic Chicago, August 2026</b><span>The APP Tour's first wheelchair division. Five full teams played it.</span></li>
         <li><b>Monster Smash, Cincinnati, October 2026</b><span>Two golds, two silvers and two bronzes in the wheelchair division.</span></li>
         <li class="lit"><b>Next</b><span>The Chicago Classic, here in Chicago.</span></li>
@@ -672,7 +683,7 @@ fill="currentColor" stroke="none">
         <article class="ace-pick">
           <p class="ace-pick-tag">One of our goals</p>
           <h3>The US Open, spring 2027</h3>
-          <p>Sending six athletes to Naples.</p>
+          <p>Sending six athletes to Naples. Robby and Brian have each played it the last three years.</p>
           <a class="pb-link pb-link-light" href="/send-6">About Send 6</a>
         </article>
       </div>

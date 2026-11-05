@@ -13,7 +13,7 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="The Chicago Wheelie Big Dills | Chicago Wheelchair Pickleball">
 <meta property="og:description" content="The Chicago Wheelie Big Dills are a crew of wheelchair pickleball players growing the sport across the Chicago area. Adapt To Life is proud to fund and support them. Partner with us on open play, athlete memberships and tournaments.">
-<meta property="og:image" content="https://adapttolife.org/images/og/pickleball-v3-ecosystem.jpg">
+<meta property="og:image" content="https://adapttolife.org/images/og/pickleball-v4-badge.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="The Chicago Wheelie Big Dills. An ecosystem for adaptive pickleball, by Adapt To Life.">
@@ -21,7 +21,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="The Chicago Wheelie Big Dills | Chicago Wheelchair Pickleball">
 <meta name="twitter:description" content="The Chicago Wheelie Big Dills are a crew of wheelchair pickleball players growing the sport across the Chicago area. Adapt To Life is proud to fund and support them. Partner with us on open play, athlete memberships and tournaments.">
-<meta name="twitter:image" content="https://adapttolife.org/images/og/pickleball-v3-ecosystem.jpg">
+<meta name="twitter:image" content="https://adapttolife.org/images/og/pickleball-v4-badge.jpg">
 <meta name="twitter:image:alt" content="The Chicago Wheelie Big Dills. An ecosystem for adaptive pickleball, by Adapt To Life.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,7 +29,7 @@
 <link rel="stylesheet" href="/css/site.css?v=2fd6f6ca">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches&&"IntersectionObserver" in window)document.documentElement.classList.add("ace-motion");</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"SportsTeam","name":"Chicago Wheelie Big Dills","sport":"Wheelchair pickleball","url":"https://adapttolife.org/pickleball","description":"A crew of wheelchair pickleball players growing the sport across the Chicago area, funded and supported by Adapt To Life.","areaServed":{"@type":"City","name":"Chicago"},"sponsor":{"@type":"NGO","name":"Adapt To Life","url":"https://adapttolife.org"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SportsTeam","name":"Chicago Wheelie Big Dills","sport":"Wheelchair pickleball","url":"https://adapttolife.org/pickleball","description":"A crew of wheelchair pickleball players growing the sport across the Chicago area, funded and supported by Adapt To Life.","areaServed":{"@type":"City","name":"Chicago"},"logo":"https://adapttolife.org/images/pickleball/wheelie-big-dills-badge.webp","sponsor":{"@type":"NGO","name":"Adapt To Life","url":"https://adapttolife.org"}}</script>
 <style>
   /* ACE wishlist page. An unlisted page for CeCe and the ACE Des Plaines team:
      the history we share, what we bring, the wishlist in six groups, and what
@@ -261,6 +261,13 @@
   }
   @media (max-width:900px){ .pb-six{ grid-template-columns:1fr 1fr; } }
   @media (max-width:520px){ .pb-six{ grid-template-columns:1fr; } .pb-card img{ height:260px; } }
+  /* The crew's badge, above the kicker. */
+  .pb-badge{ display:block; width:clamp(112px,10.5vw,150px); height:auto; margin-bottom:clamp(1rem,2vw,1.5rem); filter:drop-shadow(0 12px 32px rgba(0,0,0,0.6)); }
+  @media (prefers-reduced-motion: no-preference){
+    .pb-badge{ animation:pb-badge-in .8s cubic-bezier(.2,.7,.2,1) .05s both; }
+    @keyframes pb-badge-in{ from{ opacity:0; transform:translateY(14px) rotate(-8deg) scale(0.92); } to{ opacity:1; transform:none; } }
+  }
+  @media (max-width:900px){ .pb-badge{ width:104px; margin-bottom:0.9rem; } }
   /* Hero and quote */
   .pb-hero-juan .ace-hero-photo img{ object-position:62% 40%; }
   @media (max-width:900px){ .pb-hero-juan .ace-hero-photo img{ object-position:50% 30%; } }
@@ -457,6 +464,7 @@ fill="currentColor" stroke="none">
     </figure>
     <div class="wrap">
       <div class="ace-hero-copy">
+        <img class="pb-badge" src="/images/pickleball/wheelie-big-dills-badge.webp" alt="The Wheelie Big Dills badge: a pickle in a wheelchair swinging a Chicago flag paddle, Wheelchair Pickleball, Chicago, IL, est. 2024" width="640" height="638" fetchpriority="high">
         <p class="ace-kicker">Chicago Wheelchair Pickleball</p>
         <h1 class="serif display">The Chicago Wheelie <em class="italic" style="color:var(--orange)">Big Dills.</em></h1>
         <p class="lead sub">A crew of wheelchair pickleball players growing the sport across the Chicago area. We're proud to fund and support them.</p>

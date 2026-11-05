@@ -6,6 +6,40 @@ Sources: production pages on origin/main (Nov 3, 2026), `/api/raised` on adaptto
 
 ---
 
+## Latest: one fund, one call to action, the real cost (November 5, night)
+
+Alec's rulings, in the order he gave them:
+
+- **One fund.** "We tell the story with different campaigns, but at the end of the day, it all goes to one fund." Every form gives to one Givebutter campaign (683765, code IXM5DR). The order: week-to-week training first, then travel on the road to the US Open, then the Chicago Classic.
+- **The lane is the Chicago Wheelie Big Dills.** It is the umbrella, with these initiatives under it:
+  - every week: court time, memberships and equipment;
+  - training;
+  - travel to tournaments;
+  - The Road to the US Open. Send 6 is its goal: six athletes, $21,000, spring 2027, Naples. The US Open is a lottery, so no seat is promised.
+  - the Chicago Classic, which is a goal for now. It gets no form, and no claim of free registration, rides, hotels or meals yet.
+
+  Future ambassadors get lanes of their own.
+- **One call to action.** "We should be consistent with a call to action, or it gets too confusing." Every money button says Donate. Names are nouns, never slogans, so "Back the crew" is gone. The donate page keeps "Choose an amount".
+- **The real cost.** "It doesn't have to be a bad thing that things are expensive... It's one thing to try it, and it's another to be able to do it every week and monthly, compete, and be able to go to the U.S. Open." The site now says it in numbers:
+
+| Step | Number | Source |
+|---|---|---|
+| Play anytime | $5 a night per athlete; $75 covers up to 15 at ACE | The ACE drop-in we cover (Alec confirmed) |
+| Train to compete | $960 a year per athlete, under $3 a day | The $80 a month founding rate (still waiting on ACE) |
+| Compete | $3,500 a season per athlete, including the trip to Naples | The Send 6 target per athlete |
+| A chair built for the court | about $3,500 to $5,300 new | Top End's pickleball chairs at Amplife, read Nov 5 |
+
+  The line on /pickleball and /send-6: "It takes skill and a little luck to get to the US Open. It shouldn't take money." On the fund page: "Who gets to compete should come down to skill, not money."
+- **Built on the review link:** 78eafcd (one fund) and 711fc40 (one call to action and the cost story) on pickleball-hub, PR #237.
+
+Still open:
+
+- How the Road's bar moves. It is a manual set-aside today: $4,979, which is popcorn's $3,004 plus $1,975 given online. The other option is Givebutter fund designation, defaulting to "where it's needed most". I recommend designation.
+- Whether to delete the two closed Givebutter campaigns (782832, 782833). That needs Alec's OK.
+- Real numbers from Alec: what his and Juan's chairs cost, a typical tournament trip, and US Open fees, which are not published.
+
+---
+
 ## 0. The fund is the hub (November 5, evening)
 
 Alec: "Hustle and heart is the athlete deployment fund that supports one of our initiatives which is pickleball but we created an ambassador model and that's how we not only fund but also build with ppl in the community. We offer more than just money. Athlete deployment fund through ambassadors like Juan."
@@ -25,7 +59,7 @@ How the site hangs together:
 | /pickleball | Where the fund is deployed now: the crew, the record, the three levels, the clubs |
 | /ambassadors | How the fund builds with the community. Juan is the first |
 | /juan | The first ambassador, in his own words |
-| /send-6 | One campaign: six athletes to the US Open |
+| /send-6 | The Road to the US Open; Send 6 (six athletes) is its goal |
 | /apply | Grants, open to any athlete |
 | /sponsorship | Partners: what partnership gives back, and the packages |
 | /about, /promise | Who we are, and how giving works |
@@ -695,7 +729,7 @@ This feeds the partner recap, the events page record and future grant applicatio
 2. **Relationships (3.8):** facts confirmed and lines changed on the review link. Ship with Phase 1. GLASA stays off the website.
 3. **LWSRA:** reach out to Mak Nong about a south suburbs session or try it day?
 4. **Clubs:** can we name The Picklr and Palatine Picklers publicly, and as what?
-5. **The model in public:** keep "Hustle and Heart Fund" and describe two lanes (recommended), or introduce a new name.
+5. **The model in public:** settled Nov 5. One fund, the Hustle & Heart Fund, with the Chicago Wheelie Big Dills as its first lane.
 6. **Team accuracy:** Karen's title; adding Tom Daily, Robby Wolf and Juan to About.
 7. **ACE:** CeCe's OK for a public partner page and logo use.
 8. **Adapt Body Shop:** footer until launch?

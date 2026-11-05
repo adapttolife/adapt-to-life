@@ -45,10 +45,13 @@ import { dirname, join } from "node:path";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const CACHE = join(ROOT, "data", "asnm-stats.json");
 // Written by scripts/shoot-asnm.mjs. Falls back only if someone deletes it.
+// Filenames are content-hashed there (media is cached 30 days); never hard-code one.
 let shot = { wide: { w: 1440, h: 925 }, tall: { w: 828, h: 1520 } };
 try {
   shot = JSON.parse(readFileSync(join(ROOT, "data", "asnm-shot.json"), "utf8"));
 } catch {}
+if (!shot.wide?.src || !shot.tall?.src)
+  throw new Error("data/asnm-shot.json has no image names; run npm run asnm:shot");
 const SITE = "https://adaptivesportsnearme.com";
 const esc = (s) =>
   String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
@@ -114,8 +117,8 @@ const block = `<!-- asnm:stats -->
 
       <a class="dir-shot reveal" href="${SITE}" target="_blank" rel="noopener" aria-label="Beta tester sign in at adaptivesportsnearme.com">
         <picture>
-          <source media="(max-width: 900px)" srcset="/images/asnm-directory-tall.webp" width="${shot.tall.w}" height="${shot.tall.h}">
-          <img src="/images/asnm-directory.webp" width="${shot.wide.w}" height="${shot.wide.h}" loading="lazy" decoding="async"
+          <source media="(max-width: 900px)" srcset="${shot.tall.src}" width="${shot.tall.w}" height="${shot.tall.h}">
+          <img src="${shot.wide.src}" width="${shot.wide.w}" height="${shot.wide.h}" loading="lazy" decoding="async"
                alt="The Adaptive Sports Near Me home page: Find your place in adaptive sports, a search box for a city, state or ZIP, and a Pick a sport grid of bright tiles for tennis, basketball, soccer, skiing, swimming, baseball, horseback riding and sled hockey, each with its number of programs.">
         </picture>
         <span class="dir-shot-cap">adaptivesportsnearme.com &middot; beta tester sign in <span class="arrow">&rarr;</span></span>

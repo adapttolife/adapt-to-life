@@ -1,10 +1,12 @@
 {
  "wide": {
   "w": 1440,
-  "h": 925
+  "h": 925,
+  "src": "/images/asnm-directory.f2c97ef83f.webp"
  },
  "tall": {
   "w": 828,
-  "h": 1520
+  "h": 1520,
+  "src": "/images/asnm-directory-tall.37f6e7ecfb.webp"
  }
 }

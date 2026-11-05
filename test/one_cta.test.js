@@ -62,26 +62,23 @@ test("the old giving slogans are gone", () => {
   const crew = camp.find((c) => c.slug === "wheelie-big-dills");
   assert.equal(crew.cta_label, "Donate");
   assert.equal(crew.cta_url, "/donate");
-  assert.equal(
-    camp.find((c) => c.slug === "send-6-us-open").part_of,
-    "wheelie-big-dills",
-  );
 });
 
 test("the cost story uses the same real numbers on every page", () => {
-  // Chair range: Top End SportPB $3,499 to Ultimate Pickleball $5,299 at
-  // amplife.co, read 2026-11-05. $960 and $3,500 are the membership and the
-  // Send 6 per-athlete numbers used everywhere else.
+  // Alec, Nov 5: a sport chair runs $4,000 to $6,000 and insurance doesn't
+  // cover it; $3,500 is about what the US Open has cost per athlete the last
+  // couple of years. $960 is the membership. The chair is a year-round cost,
+  // so the Road page leaves it out (two_bars.test.js checks that).
   const crew = read("public/pickleball.html"),
     fund = read("public/hustle-and-heart.html"),
     road = read("public/send-6.html");
-  assert.ok(crew.includes("about $3,500 to $5,300"));
-  assert.ok(fund.includes("$3,500&ndash;$5,300"));
-  assert.ok(road.includes("$3,500&ndash;$5,300"));
-  for (const html of [crew, fund, road]) {
+  assert.ok(crew.includes("$4,000 to $6,000"));
+  assert.ok(fund.includes("$4,000&ndash;$6,000"));
+  for (const html of [crew, fund]) {
     assert.ok(html.includes("<b>$960</b>") || html.includes(">$960<span>"));
     assert.ok(html.includes("<b>$3,500</b>") || html.includes(">$3,500<span>"));
   }
+  assert.ok(road.includes("The target is $3,500 per athlete"));
   assert.ok(crew.includes("It takes skill and a little luck to get to the US Open."));
   assert.ok(road.includes("It takes skill and a little luck to get to the US Open."));
   assert.ok(fund.includes("Who gets to compete should come down to skill"));

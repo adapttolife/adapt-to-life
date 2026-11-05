@@ -522,6 +522,16 @@
         others.forEach(function (o) {
           var link = el("a", "cb-also-link", o.name);
           link.href = o.page || "/";
+          // Two bars, not one bar and a footnote (Alec, Nov 5): a campaign with
+          // a goal gets its own small bar on this line.
+          var mini = null;
+          var miniFill = null;
+          if (o.goal) {
+            mini = el("span", "cb-also-bar");
+            miniFill = el("span", "cb-also-fill");
+            mini.appendChild(miniFill);
+            link.appendChild(mini);
+          }
           var fig = el(
             "span",
             "cb-also-fig",
@@ -531,8 +541,14 @@
           also.appendChild(link);
           if (o.goal && o.raised_key)
             raised(function (d) {
-              if (d && d.raised)
-                fig.textContent = money(d.raised) + " of " + money(o.goal);
+              if (!d || !d.raised) return;
+              fig.textContent = money(d.raised) + " of " + money(o.goal);
+              var pct = Math.max(0, Math.min(100, (d.raised / o.goal) * 100));
+              requestAnimationFrame(function () {
+                setTimeout(function () {
+                  miniFill.style.width = pct.toFixed(1) + "%";
+                }, 140);
+              });
             }, o.raised_key);
         });
         host.appendChild(also);
@@ -541,12 +557,13 @@
 
       // The live figure lands last. If Givebutter is unreachable the goal
       // stands on its own rather than publishing a $0 we cannot vouch for.
-      if (!c.goal) return; // no ceiling, so no bar: the Road is counted in nights, not a goal
+      if (!c.goal) return; // no ceiling, so no bar
       raised(function (d) {
         // The campaign's own goal leads, so the band always matches the page
         // that explains it. Givebutter's goal mirrors it and is kept in step.
         var goal = c.goal || (d && d.goal);
-        if (!d || !goal) return;
+        // A new goal reads "$13,500 goal" until the first gift lands, not "$0".
+        if (!d || !goal || !d.raised) return;
         label.textContent = money(d.raised) + " of " + money(goal) + " raised";
         var pct = Math.max(0, Math.min(100, (d.raised / goal) * 100));
         requestAnimationFrame(function () {

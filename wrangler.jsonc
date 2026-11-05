@@ -108,6 +108,9 @@
     // reconciliation must never send retroactive thank-yous for the baseline.
     "GIVEBUTTER_DONOR_CUTOFF": "2026-08-08T22:40:55Z",
     "SEND6_SET_ASIDE": "4979",
+    // Givebutter fund ids (two bars, one campaign). Numeric dashboard ids: year 73138, road 73139.
+    "GIVEBUTTER_FUND_YEAR": "1cAbOYqErKd47bTW",
+    "GIVEBUTTER_FUND_ROAD": "1zaWdaD8FygqvTz7",
     "R2_ACCESS_KEY_ID": "d27b427aadef63a7ec1e05eaec108bc0",
     "MAIL_TRANSPORT": "gmail",
     "GMAIL_FROM": "hello@adapttolife.org",
@@ -164,6 +167,9 @@
         "GIVEBUTTER_CAMPAIGN_ID": "683765",
         "GIVEBUTTER_DONOR_CUTOFF": "2026-08-08T22:40:55Z",
         "SEND6_SET_ASIDE": "4979",
+        // Givebutter fund ids (two bars, one campaign). Numeric dashboard ids: year 73138, road 73139.
+        "GIVEBUTTER_FUND_YEAR": "1cAbOYqErKd47bTW",
+        "GIVEBUTTER_FUND_ROAD": "1zaWdaD8FygqvTz7",
         "R2_ACCESS_KEY_ID": "d27b427aadef63a7ec1e05eaec108bc0",
         // "none" is not a supported transport, so mailConfigured() is false and
         // staging sends no mail of its own (src/mail-transport.js).

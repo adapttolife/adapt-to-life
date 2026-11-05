@@ -6,14 +6,16 @@
       "name": "The Chicago Wheelie Big Dills",
       "page": "/pickleball#support",
       "published": true,
-      "beneficiary": "The crew, every week",
-      "when": "Every week",
-      "blurb": "Court time every week, plus equipment, training and travel to compete. $5 puts one athlete on court for a night.",
-      "goal": null,
+      "beneficiary": "The crew, all year",
+      "when": "Year-round",
+      "blurb": "Court time every week and memberships to train all year.",
+      "goal": 13500,
       "raised": null,
-      "raised_source": "none",
+      "raised_source": "api",
+      "raised_key": "year",
       "cta_label": "Donate",
-      "cta_url": "/donate"
+      "cta_url": "/donate",
+      "_note": "Year-round bar (Alec, Nov 5: two bars). Goal: a year of nights at ACE ($3,900) plus ten athletes training ($9,600). Givebutter fund 73138."
     },
     {
       "slug": "send-6-us-open",
@@ -22,14 +24,14 @@
       "published": true,
       "beneficiary": "Six wheelchair pickleball athletes",
       "when": "Spring 2027, Naples, Florida",
-      "blurb": "Six athletes, tournaments through the year to build their rankings, and the US Open in spring 2027. Entry is a lottery, so the road matters.",
+      "blurb": "Six athletes, about $3,500 each: roughly what the US Open has cost the last couple of years. Entry is a lottery, so the road matters.",
       "goal": 21000,
       "raised": null,
       "raised_source": "api",
       "cta_label": "See the road",
       "cta_url": "/send-6",
       "raised_key": "send-6",
-      "part_of": "wheelie-big-dills"
+      "_note": "Road bar. Set-aside from Send 6 plus Givebutter fund 73139."
     },
     {
       "slug": "chicago-classic",

@@ -1615,16 +1615,19 @@ a.camp-band:hover .cb-cta {
   color: var(--orange-ink);
 }
 /* The other campaigns, one line under the card, each with its own total. */
+/* Plain text flow, not flex: on a phone the label and the name share a line
+   and the bar and figure take the next, so the band keeps its reserved height. */
 .cb-also {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.5rem 1.4rem;
   margin: 0.9rem 0 0;
   padding: 0 0.4rem;
   font-size: 0.95rem;
+  line-height: 1.9;
+}
+.cb-also-link + .cb-also-link {
+  margin-left: 1.4rem;
 }
 .cb-also-k {
+  margin-right: 1.1rem;
   font-family: var(--font-label);
   font-size: 0.7rem;
   font-weight: 700;
@@ -1645,6 +1648,25 @@ a.camp-band:hover .cb-cta {
   color: var(--muted);
   text-decoration: none;
   display: inline-block;
+}
+.cb-also-bar {
+  display: inline-block;
+  vertical-align: middle;
+  width: 72px;
+  height: 6px;
+  margin-left: 0.6rem;
+  border-radius: 999px;
+  background: rgba(28, 26, 21, 0.1);
+  overflow: hidden;
+}
+.cb-also-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  min-width: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--orange-ink), var(--orange-hot));
+  transition: width 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 /* ---- contact ------------------------------------------------------------- */
@@ -2156,11 +2178,12 @@ a.info-v {
    including when there is no campaign — an empty band is a real state and must
    never leave a reserved hole behind it. */
 .camp-pending {
-  min-height: 375px;
-} /* measured Nov 2026 with the "also raising" line: 372 at 390, 251 at 1440 */
+  min-height: 369px;
+} /* measured Nov 5 2026 with two bars (year-round in the card, the Road on the
+   line under it): 369 at 390 and 370 at 430, 229 at 1440 */
 @media (min-width: 821px) {
   .camp-pending {
-    min-height: 251px;
+    min-height: 229px;
   }
 }
 

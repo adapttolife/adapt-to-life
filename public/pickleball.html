@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=1e7f1f72">
+<link rel="stylesheet" href="/css/site.css?v=dba9abf7">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches&&"IntersectionObserver" in window)document.documentElement.classList.add("ace-motion");</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SportsTeam","name":"Chicago Wheelie Big Dills","sport":"Wheelchair pickleball","url":"https://adapttolife.org/pickleball","description":"A crew of wheelchair pickleball players growing the sport across the Chicago area, funded and supported by Adapt To Life.","areaServed":{"@type":"City","name":"Chicago"},"logo":"https://adapttolife.org/images/pickleball/wheelie-big-dills-badge.webp","sponsor":{"@type":"NGO","name":"Adapt To Life","url":"https://adapttolife.org"}}</script>
@@ -266,6 +266,15 @@
   .pb-prio li::before{ content:counter(prio, decimal-leading-zero); grid-row:span 2; font-family:var(--font-label); font-weight:800; font-size:0.8rem; letter-spacing:0.14em; color:var(--orange-ink); padding-top:0.25rem; }
   .pb-prio b{ font-family:var(--font-display); font-weight:800; font-size:1.1rem; }
   .pb-prio span{ line-height:1.5; }
+  .pb-prio li > *{ grid-column:2; }
+  .pb-cadence{ gap:1.3rem; }
+  .pb-tag{ display:inline-block; margin-left:0.5rem; padding:0.2rem 0.55rem; border-radius:999px; vertical-align:0.12em; font-family:var(--font-label); font-style:normal; font-weight:800; font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase; background:rgba(28,26,21,0.07); color:var(--ink-soft); }
+  .pb-tag.is-now{ background:rgba(255,92,57,0.13); color:var(--orange-ink); }
+  .pb-bar{ display:flex; align-items:center; gap:0.75rem; margin-top:0.6rem; max-width:30rem; }
+  .pb-bar-track{ flex:1; height:8px; border-radius:999px; background:rgba(28,26,21,0.1); overflow:hidden; }
+  .pb-bar-fill{ display:block; height:100%; width:0; min-width:3px; border-radius:999px; background:linear-gradient(90deg,var(--orange-ink),var(--orange-hot)); transition:width 1.2s cubic-bezier(.2,.8,.2,1); }
+  .pb-bar-fig{ font-family:var(--font-label); font-size:0.8rem; color:var(--muted); white-space:nowrap; }
+  .pb-then{ margin-top:1.3rem; max-width:62ch; line-height:1.5; }
   .pb-card{ scroll-margin-top:96px; }
   .pb-card .pb-tag{ position:absolute; top:1rem; left:1rem; z-index:1; margin:0; padding:0.32rem 0.75rem; border-radius:999px; background:var(--orange); color:#fff; font-family:var(--font-label); font-weight:800; font-size:0.7rem; letter-spacing:0.16em; text-transform:uppercase; line-height:1; }
   @media (prefers-reduced-motion: no-preference){
@@ -572,7 +581,7 @@ fill="currentColor" stroke="none">
         <span class="eyebrow orange">What we're building</span>
         <h2 class="serif statement">More than <em class="italic" style="color:var(--orange)">one trip.</em></h2>
         <p class="prose">Going to the US Open is one goal. The bigger one is an ecosystem for the adaptive sports community to play pickleball in the Chicago area, built with clubs, organizations and coaches.</p>
-        <p class="prose">Trying it is one thing. Playing every week, training every month and competing is another. In a wheelchair, every step costs more, starting with the chair: a new pickleball sport chair runs about $3,500 to $5,300. Here are the real numbers for each level, and what keeps it going.</p>
+        <p class="prose">Trying it is one thing. Playing every week, training every month and competing is another. In a wheelchair, every step costs more, starting with the chair: a sport chair runs $4,000 to $6,000, and insurance doesn&rsquo;t cover it. Here are the real numbers for each level, and what keeps it going.</p>
       </div>
       <ol class="pb-levels" data-m="stagger">
         <li class="pb-level">
@@ -593,8 +602,8 @@ fill="currentColor" stroke="none">
         <li class="pb-level">
           <p class="pb-day">03</p>
           <h3>Compete</h3>
-          <p class="pb-cost"><b>$3,500</b><span>a season, per athlete</span></p>
-          <p>Tournaments through the year to build rankings, monthly fundraiser tournaments with club members, the Chicago Classic and the road to the US Open. $3,500 can cover one athlete&rsquo;s season on the road, including the trip to Naples.</p>
+          <p class="pb-cost"><b>$3,500</b><span>per athlete, for the US Open</span></p>
+          <p>Tournaments through the year to build rankings, monthly fundraiser tournaments with club members, the Chicago Classic and the road to the US Open. $3,500 is about what the US Open has cost each athlete the last couple of years.</p>
           <p class="pb-fund"><b>Kept going by</b> tournament sponsors, entry fees and donors to the fund</p>
           <a class="pb-link" href="/chicago-classic">See the Chicago Classic</a>
         </li>
@@ -648,7 +657,7 @@ fill="currentColor" stroke="none">
       <div class="pb-help" data-m="up">
         <p class="pb-day">What we bring to a club, organization or coach</p>
         <ul>
-          <li><b>Funding</b><span>Court time, memberships and equipment.</span></li>
+          <li><b>Funding</b><span>Court time and memberships. Equipment, one athlete at a time.</span></li>
           <li><b>Coaching know-how</b><span>Clinics, and coaches who have built adaptive programs before.</span></li>
           <li><b>Players and volunteers</b><span>The crew we support, and volunteers on court.</span></li>
           <li><b>Content</b><span>Video and athlete spotlights that help a program grow.</span></li>
@@ -676,14 +685,15 @@ fill="currentColor" stroke="none">
     <div class="wrap">
       <div class="ace-head" data-m="stagger">
         <hr class="tick orange">
-        <span class="eyebrow orange">One fund</span>
+        <span class="eyebrow orange">One fund, two goals</span>
         <h2 class="serif statement">Help us <em class="italic" style="color:var(--orange)">fund it.</em></h2>
-        <p class="prose">Every gift goes to one fund, the <a class="textlink" href="/hustle-and-heart" style="font:inherit;letter-spacing:inherit;">Hustle &amp; Heart Fund</a>. For the Chicago Wheelie Big Dills, it pays for three things, in this order:</p>
-        <ol class="pb-prio">
-          <li><b>Every week</b><span>Court time, memberships and equipment, so the crew plays and trains all year.</span></li>
-          <li><b>The Road to the US Open</b><span>Travel to tournaments to build rankings, and six seats in spring 2027. <a class="textlink" href="/send-6" style="font:inherit;letter-spacing:inherit;">See the road</a></span></li>
-          <li><b>The Chicago Classic</b><span>Our goal: a tournament with free registration, transportation and hotels for every athlete. <a class="textlink" href="/chicago-classic" style="font:inherit;letter-spacing:inherit;">See the goal</a></span></li>
+        <p class="prose">Every gift goes to one fund, the <a class="textlink" href="/hustle-and-heart" style="font:inherit;letter-spacing:inherit;">Hustle &amp; Heart Fund</a>. For the Chicago Wheelie Big Dills, it raises in order: equipment, then training, then travel.</p>
+        <ol class="pb-prio pb-cadence">
+          <li><b>Equipment <em class="pb-tag">Mostly covered</em></b><span>A sport chair runs $4,000 to $6,000, and insurance doesn&rsquo;t cover it. Most of the athletes we support have one, and a couple are looking. When we raise for equipment, we&rsquo;ll raise for one athlete at a time.</span></li>
+          <li><b>Training <em class="pb-tag is-now">Raising now</em></b><span>Year-round: court time every week and memberships to train all year.</span><div class="pb-bar" data-bar data-key="year" data-goal="13500"><span class="pb-bar-track"><span class="pb-bar-fill" data-bar-fill></span></span><span class="pb-bar-fig" data-bar-fig>$13,500 goal</span></div></li>
+          <li><b>Travel <em class="pb-tag is-now">Raising now</em></b><span>The Road to the US Open: six athletes, about $3,500 each, roughly what the US Open has cost the last couple of years. <a class="textlink" href="/send-6" style="font:inherit;letter-spacing:inherit;">See the road</a></span><div class="pb-bar" data-bar data-key="send-6" data-goal="21000"><span class="pb-bar-track"><span class="pb-bar-fill" data-bar-fill></span></span><span class="pb-bar-fig" data-bar-fig>$21,000 goal</span></div></li>
         </ol>
+        <p class="pb-then"><b>Next:</b> the Chicago Classic. Our goal is a tournament with free registration, transportation and hotels for every athlete. <a class="textlink" href="/chicago-classic" style="font:inherit;letter-spacing:inherit;">See the goal</a></p>
       </div>
       <div class="ace-win" data-m="stagger">
         <div><h3>Donate</h3><ul><li>Any amount helps. $5 puts one athlete on court for a night, and $75 covers up to 15 at ACE.</li></ul><a class="btn pb-btn" href="/donate">Donate</a></div>
@@ -891,5 +901,20 @@ fill="currentColor" stroke="none">
 </script>
 <script src="/js/subscribe.js?v=71816eda" defer></script>
 <script src="/js/turnstile-lazy.js?v=12e9b811" defer></script>
+<script>
+  /* The two bars in "Help us fund it": year-round training and the Road. */
+  (function(){
+    [].forEach.call(document.querySelectorAll('[data-bar]'), function(box){
+      var goal = Number(box.getAttribute('data-goal')) || 0;
+      fetch('/api/raised?c=' + box.getAttribute('data-key')).then(function(r){ return r.json(); }).then(function(d){
+        var raised = Number(d.raised) || 0; goal = goal || Number(d.goal) || 0;
+        if (!goal || !raised) return;
+        box.querySelector('[data-bar-fig]').textContent = '$' + raised.toLocaleString('en-US') + ' of $' + goal.toLocaleString('en-US');
+        var pct = Math.max(0, Math.min(100, raised / goal * 100));
+        requestAnimationFrame(function(){ setTimeout(function(){ box.querySelector('[data-bar-fill]').style.width = pct.toFixed(1) + '%'; }, 120); });
+      }).catch(function(){});
+    });
+  })();
+</script>
 </body>
 </html>

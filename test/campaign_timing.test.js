@@ -61,11 +61,14 @@ test("social metadata and generated card source carry the road", async () => {
 
 // Nov 5 2026 (Alec): "we tell the story with different campaigns, but at the
 // end of the day, it all goes to one fund." One Givebutter campaign behind
-// every form; the Chicago Classic is a goal with no form yet.
+// every form; the Chicago Classic is a goal with no form yet. Later that day:
+// "it should be two bars", year-round and the Road, as two designated funds
+// inside that one campaign.
 test("one fund: every giving form is the Hustle & Heart Fund, and the Classic has none", async () => {
   const campaigns = JSON.parse(await text("public/data/campaigns.json")).campaigns;
-  assert.equal(campaigns[0].slug, "wheelie-big-dills", "the lane's weekly ask leads");
-  assert.equal(campaigns[0].goal, null, "week to week has no ceiling");
+  assert.equal(campaigns[0].slug, "wheelie-big-dills", "the year-round ask leads");
+  assert.equal(campaigns[0].goal, 13500, "year-round has its own bar");
+  assert.equal(campaigns[0].raised_key, "year");
   for (const f of [
     "public/donate.html",
     "public/hustle-and-heart.html",

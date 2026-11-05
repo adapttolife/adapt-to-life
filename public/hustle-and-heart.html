@@ -30,11 +30,11 @@
 <link rel="dns-prefetch" href="https://widgets.givebutter.com">
 <link rel="dns-prefetch" href="https://givebuttercdn.com">
 <link rel="dns-prefetch" href="https://js.stripe.com">
-<link rel="preload" href="/css/site.css?v=1e7f1f72" as="style">
+<link rel="preload" href="/css/site.css?v=dba9abf7" as="style">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=1e7f1f72">
+<link rel="stylesheet" href="/css/site.css?v=dba9abf7">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <script src="/js/givebutter-lazy.js?v=29b7ce7b" defer></script>
 <style>
@@ -49,6 +49,7 @@
   .fund-terms a{ display:inline-flex; align-items:center; min-height:44px; color:var(--cream); font-size:0.95rem; text-decoration:underline; text-underline-offset:4px; }
   @media (max-width:880px){ .give-split{ grid-template-columns:1fr; gap:2.2rem; } }
   .give-split .thermo{ max-width:none; margin:1.4rem 0 0; }
+  .give-split .thermo + .thermo{ margin-top:1.6rem; padding-top:1.4rem; border-top:1px solid rgba(255,255,255,0.12); }
   .prog .prog-n{ margin:0 0 0.9rem; font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(1.9rem,3.4vw,2.4rem); line-height:1; letter-spacing:-0.03em; color:var(--orange-ink); }
   .prog .prog-n span{ display:block; margin-top:0.45rem; font-family:var(--font-label); font-style:normal; font-weight:800; font-size:0.7rem; line-height:1.4; letter-spacing:0.16em; text-transform:uppercase; color:var(--ink-soft); }
   .hh-skill{ margin:clamp(2.2rem,4vw,3rem) auto 0; max-width:40ch; text-align:center; font-family:var(--font-display); font-weight:800; font-size:clamp(1.35rem,2.6vw,1.85rem); line-height:1.2; letter-spacing:-0.02em; }
@@ -268,9 +269,9 @@ fill="currentColor" stroke="none">
           <span class="ix-tile sm" aria-hidden="true"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="equipment" data-style="duotone"><g fill="currentColor"><path d="M232 120v72a8 8 0 0 1-8 8H32a8 8 0 0 1-8-8v-72Z" opacity=".2"/><path d="M224 64h-48v-8a24 24 0 0 0-24-24h-48a24 24 0 0 0-24 24v8H32a16 16 0 0 0-16 16v112a16 16 0 0 0 16 16h192a16 16 0 0 0 16-16V80a16 16 0 0 0-16-16M96 56a8 8 0 0 1 8-8h48a8 8 0 0 1 8 8v8H96ZM32 80h192v32h-32v-8a8 8 0 0 0-16 0v8H80v-8a8 8 0 0 0-16 0v8H32Zm192 112H32v-64h32v8a8 8 0 0 0 16 0v-8h96v8a8 8 0 0 0 16 0v-8h32z"/></g></svg></span>
           <span class="tag">Get equipped</span>
           <h3 class="serif h3">Equipment</h3>
-          <!-- Chair range: Top End SportPB $3,499 to Ultimate Pickleball $5,299, amplife.co/collections/top-end-pickleball-wheelchairs, read 2026-11-05. -->
-          <p class="prog-n">$3,500&ndash;$5,300<span>for a new pickleball sport chair</span></p>
-          <p>Sport chairs, protective gear, and repairs. Equipment that works for the athlete and the sport.</p>
+          <!-- Chair range and insurance: Alec, Nov 5 2026 ("anywhere from $4,000 to $6,000"; "Insurance does not cover sports wheelchairs"). -->
+          <p class="prog-n">$4,000&ndash;$6,000<span>for a sport chair, and insurance doesn&rsquo;t cover it</span></p>
+          <p>Sport chairs, protective gear, and repairs. We raise for equipment one athlete at a time, when an athlete needs it.</p>
         </div>
         <div class="prog reveal">
           <span class="ix-tile sm" aria-hidden="true"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="training" data-style="duotone"><g fill="currentColor"><path d="M176 128a48 48 0 1 1-48-48a48 48 0 0 1 48 48" opacity=".2"/><path d="M221.87 83.16A104.1 104.1 0 1 1 195.67 49l22.67-22.68a8 8 0 0 1 11.32 11.32l-96 96a8 8 0 0 1-11.32-11.32l27.72-27.72a40 40 0 1 0 17.87 31.09a8 8 0 1 1 16-.9a56 56 0 1 1-22.38-41.65l22.75-22.75a87.88 87.88 0 1 0 23.13 29.67a8 8 0 0 1 14.44-6.9"/></g></svg></span>
@@ -283,7 +284,7 @@ fill="currentColor" stroke="none">
           <span class="ix-tile sm" aria-hidden="true"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="travel" data-style="duotone"><g fill="currentColor"><path d="m209 81l-33 31l32 88l-24 24l-48-72l-24 24v24l-24 24l-16-40l-40-16l24-24h24l24-24l-72-48l24-24l88 32l31-33a24 24 0 0 1 34 34" opacity=".2"/><path d="m185.33 114.21l29.14-27.43l.17-.16a32 32 0 0 0-45.26-45.26l-.16.17l-27.43 29.14l-83-30.2a8 8 0 0 0-8.39 1.86l-24 24a8 8 0 0 0 1.22 12.31l63.89 42.59L76.69 136H56a8 8 0 0 0-5.65 2.34l-24 24A8 8 0 0 0 29 175.42l36.82 14.73l14.7 36.75l.06.16a8 8 0 0 0 13.18 2.47l23.87-23.88A8 8 0 0 0 120 200v-20.69l14.76-14.76l42.59 63.89a8 8 0 0 0 12.31 1.22l24-24a8 8 0 0 0 1.86-8.39Zm-.07 97.23l-42.59-63.89a8 8 0 0 0-5.87-3.55a7 7 0 0 0-.79 0a8 8 0 0 0-5.66 2.34l-24 24A8 8 0 0 0 104 176v20.69l-13.07 13.07L79.43 181a8 8 0 0 0-4.43-4.43l-28.74-11.5L59.32 152H80a8 8 0 0 0 5.66-2.34l24-24a8 8 0 0 0-1.22-12.32l-63.88-42.6l13.5-13.49l83.22 30.26a8 8 0 0 0 8.56-2l30.94-32.88a16 16 0 0 1 22.62 22.59l-32.87 30.94a8 8 0 0 0-2 8.56l30.26 83.22Z"/></g></svg></span>
           <span class="tag">Get there</span>
           <h3 class="serif h3">Travel</h3>
-          <p class="prog-n">$3,500<span>can cover one athlete&rsquo;s season on the road</span></p>
+          <p class="prog-n">$3,500<span>about what the US Open costs one athlete</span></p>
           <p>Entry fees, transport, lodging, and meals, for tournaments through the year and the US Open.</p>
         </div>
       </div>
@@ -359,12 +360,22 @@ fill="currentColor" stroke="none">
           <hr class="tick orange" style="margin:0 0 1rem;">
           <span class="eyebrow orange">Your turn</span>
           <h2 class="serif statement" style="margin-top:0.7rem;">Put an athlete on the court.</h2>
-          <p class="lead sub" style="margin-top:1rem;">Every gift goes to one fund. Right now it pays for the Chicago Wheelie Big Dills every week first, then travel on the road to the US Open.</p>
+          <p class="lead sub" style="margin-top:1rem;">Every gift goes to one fund, with two goals right now: year-round training for the Chicago Wheelie Big Dills, and the road to the US Open.</p>
           <ul class="gift-ladder" aria-label="What your gift can do">
             <li><b>$5</b><span>puts one athlete on court for a night</span></li>
             <li><b>$75</b><span>covers up to 15 athletes for a night at ACE</span></li>
             <li><b>$960</b><span>can keep one athlete training all year</span></li>
           </ul>
+          <div class="thermo" data-thermo data-goal="13500" data-key="year">
+            <p class="thermo-also">Year-round</p>
+            <p style="margin:0 0 0.9rem; font-size:0.95rem; font-weight:600;">The Chicago Wheelie Big Dills</p>
+            <div class="thermo-row">
+              <span class="thermo-raised" data-thermo-raised></span>
+              <span class="thermo-goal">Our goal is $13,500</span>
+            </div>
+            <div class="thermo-track"><span class="thermo-fill" data-thermo-fill></span></div>
+            <p class="thermo-classic">Court time every week and memberships to train all year.</p>
+          </div>
           <div class="thermo" data-thermo data-goal="21000" data-key="send-6">
             <p class="thermo-also">Also raising</p>
             <p style="margin:0 0 0.9rem; font-size:0.95rem; font-weight:600;">The Road to the US Open</p>
@@ -373,7 +384,7 @@ fill="currentColor" stroke="none">
               <span class="thermo-goal">Our goal is $21,000</span>
             </div>
             <div class="thermo-track"><span class="thermo-fill" data-thermo-fill></span></div>
-            <p class="thermo-classic">Money set aside for travel and six seats. Next comes <a href="/chicago-classic">the Chicago Classic</a>, where our goal is free registration, transportation and hotels for every athlete.</p>
+            <p class="thermo-classic">Six athletes, about $3,500 each. Next comes <a href="/chicago-classic">the Chicago Classic</a>, where our goal is free registration, transportation and hotels for every athlete.</p>
             <a href="/send-6" class="thermo-link">See the road <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
           </div>
           <div class="fund-actions" aria-label="Support the fund">
@@ -532,19 +543,19 @@ fill="currentColor" stroke="none">
 </script>
 
 <script>
-  (function(){
-    var box = document.querySelector('[data-thermo]'); if(!box) return;
+  [].forEach.call(document.querySelectorAll('[data-thermo]'), function(box){
     var fill = box.querySelector('[data-thermo-fill]');
     var amt = box.querySelector('[data-thermo-raised]');
     var goalEl = box.querySelector('.thermo-goal');
     fetch('/api/raised?c=' + (box.getAttribute('data-key') || 'send-6')).then(function(r){ return r.json(); }).then(function(d){
       var raised = Number(d.raised) || 0, goal = Number(box.getAttribute('data-goal')) || Number(d.goal) || 21000;
+      if (!raised) return; // a new goal keeps "Our goal is $13,500" rather than printing $0
       var pct = goal > 0 ? Math.max(0, Math.min(100, raised / goal * 100)) : 0;
       amt.textContent = '$' + raised.toLocaleString('en-US');
       if (goalEl) { goalEl.textContent = 'raised of our $' + goal.toLocaleString('en-US') + ' goal'; }
       requestAnimationFrame(function(){ setTimeout(function(){ fill.style.width = pct.toFixed(1) + '%'; }, 120); });
     }).catch(function(){});
-  })();
+  });
 </script>
 
 <script src="/js/subscribe.js?v=71816eda" defer></script>

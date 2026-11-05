@@ -296,7 +296,7 @@ fill="currentColor" stroke="none">
       .hm-juan::before{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 45% 60% at 25% 50%, rgba(255,92,57,0.2) 0%, transparent 70%); }
       .hm-juan-grid{ display:grid; grid-template-columns:minmax(0,0.9fr) minmax(0,1.1fr); gap:clamp(2rem,5vw,4.5rem); align-items:center; }
       @media (max-width:820px){ .hm-juan-grid{ grid-template-columns:1fr; } }
-      .hm-juan figure{ margin:0; border-radius:20px; overflow:hidden; aspect-ratio:1/1; transform:rotate(-1.2deg); box-shadow:0 0 0 1px rgba(255,255,255,0.08), 0 40px 90px -24px rgba(0,0,0,0.85), 0 0 100px -12px rgba(255,92,57,0.4); }
+      .hm-juan figure{ margin:0; border-radius:20px; overflow:hidden; aspect-ratio:1/1; transform:rotate(-1.2deg); box-shadow:0 0 0 1px rgba(255,255,255,0.08), 0 28px 60px -24px rgba(0,0,0,0.85), 0 0 64px -18px rgba(255,92,57,0.42); }
       @media (max-width:820px){ .hm-juan figure{ transform:none; aspect-ratio:4/3.4; } }
       .hm-juan figure img{ width:100%; height:100%; object-fit:cover; object-position:45% 35%; }
       .hm-juan blockquote{ margin:0.9rem 0 0; font-family:var(--font-display); font-weight:800; font-size:clamp(1.9rem,3.8vw,3rem); line-height:1.08; letter-spacing:-0.025em; color:var(--cream); max-width:18ch; }
@@ -321,6 +321,8 @@ fill="currentColor" stroke="none">
     <style>
       .hm-crew{ position:relative; isolation:isolate; overflow:hidden; padding:clamp(3.5rem,8vw,6rem) 0; }
       .hm-juan + .hm-crew{ padding-top:clamp(0.5rem,2vw,1.5rem); }
+      /* The shared .dark glows sit at the edges and would cut a line between the two; each keeps its own glow instead. */
+      .hm-juan, .hm-juan + .hm-crew{ background-image:none; }
       /* Right after Juan, the glow starts below the seam so the two sections read as one. */
       .hm-juan + .hm-crew::before{ background:radial-gradient(ellipse 50% 60% at 85% 58%, rgba(255,92,57,0.18) 0%, transparent 70%); }
       .hm-crew::before{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 50% 70% at 85% 40%, rgba(255,92,57,0.18) 0%, transparent 70%); }

@@ -114,7 +114,7 @@
     els.or.hidden = !canGive;
     if (canGive) {
       els.giveBtn.setAttribute("href", donateHref(tier, amount));
-      els.giveBtn.textContent = "Give " + money(amount) + " now";
+      els.giveBtn.textContent = "Donate " + money(amount);
     }
 
     // What the sender would have had to type. Kept as real, editable text in the

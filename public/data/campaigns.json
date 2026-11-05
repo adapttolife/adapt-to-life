@@ -8,12 +8,12 @@
       "published": true,
       "beneficiary": "The crew, every week",
       "when": "Every week",
-      "blurb": "Court time, memberships and drop-ins, every week, accessible and affordable. $5 puts one athlete on court for a night.",
+      "blurb": "Court time every week, plus equipment, training and travel, so wheelchair athletes can play, get good and compete. $5 puts one athlete on court for a night.",
       "goal": null,
       "raised": null,
       "raised_source": "none",
-      "cta_label": "Back the crew",
-      "cta_url": "/pickleball#support"
+      "cta_label": "Donate",
+      "cta_url": "/donate"
     },
     {
       "slug": "send-6-us-open",
@@ -28,7 +28,8 @@
       "raised_source": "api",
       "cta_label": "See the road",
       "cta_url": "/send-6",
-      "raised_key": "send-6"
+      "raised_key": "send-6",
+      "part_of": "wheelie-big-dills"
     },
     {
       "slug": "chicago-classic",

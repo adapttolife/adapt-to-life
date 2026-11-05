@@ -215,7 +215,14 @@
   .pb-levels{ list-style:none; margin:clamp(2rem,4vw,3rem) 0 0; padding:0; display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(1rem,2.2vw,1.4rem); }
   .pb-level{ display:flex; flex-direction:column; padding:clamp(1.4rem,2.6vw,2rem); border-radius:18px; background:#fff; box-shadow:0 0 0 1px rgba(12,12,14,0.08), 0 24px 50px -36px rgba(12,12,14,0.35); border-top:4px solid var(--orange); }
   .pb-level h3{ margin-top:0.5rem; font-family:var(--font-display); font-weight:800; font-size:clamp(1.35rem,2.2vw,1.7rem); letter-spacing:-0.02em; }
-  .pb-level > p:not(.pb-day):not(.pb-fund){ margin-top:0.7rem; line-height:1.55; }
+  .pb-level > p:not(.pb-day):not(.pb-fund):not(.pb-cost){ margin-top:0.7rem; line-height:1.55; }
+  .pb-cost{ margin-top:0.8rem; display:flex; flex-direction:column; align-items:flex-start; gap:0.45rem; line-height:1; }
+  .pb-cost b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(2.3rem,4vw,2.9rem); letter-spacing:-0.03em; color:var(--orange-ink); }
+  .pb-cost span{ font-family:var(--font-label); font-weight:800; font-size:0.72rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--ink-soft); }
+  .pb-skill{ margin-top:clamp(2rem,4vw,2.8rem); max-width:62ch; }
+  .pb-skill-line{ margin:0; font-family:var(--font-display); font-weight:800; font-size:clamp(1.35rem,2.6vw,1.85rem); line-height:1.2; letter-spacing:-0.02em; }
+  .pb-skill-line em{ display:block; color:var(--orange-ink); }
+  .pb-skill-note{ margin-top:0.8rem; line-height:1.55; color:var(--ink-soft); }
   .pb-fund{ margin-top:auto; padding-top:1rem; font-size:0.95rem; line-height:1.45; }
   .pb-fund b{ display:block; font-family:var(--font-label); font-weight:800; font-size:0.72rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--orange-ink); margin-bottom:0.25rem; }
   .pb-level .pb-link{ align-self:flex-start; }
@@ -475,7 +482,7 @@ fill="currentColor" stroke="none">
         <h1 class="serif display">The Chicago Wheelie <em class="italic" style="color:var(--orange)">Big Dills.</em></h1>
         <p class="lead sub">A crew of wheelchair pickleball players growing the sport across the Chicago area. We're proud to fund and support them through the <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a>.</p>
         <div class="actions">
-          <a href="#support" class="btn">Back the crew</a>
+          <a href="/donate" class="btn">Donate</a>
           <a href="#building" class="btn ghost">See what we're building</a>
         </div>
       </div>
@@ -564,30 +571,38 @@ fill="currentColor" stroke="none">
         <hr class="tick orange">
         <span class="eyebrow orange">What we're building</span>
         <h2 class="serif statement">More than <em class="italic" style="color:var(--orange)">one trip.</em></h2>
-        <p class="prose">Going to the US Open is one goal. The bigger one is an ecosystem for the adaptive sports community to play pickleball in the Chicago area, built with clubs, organizations and coaches. Here is how it fits together, and what keeps each part going.</p>
+        <p class="prose">Going to the US Open is one goal. The bigger one is an ecosystem for the adaptive sports community to play pickleball in the Chicago area, built with clubs, organizations and coaches.</p>
+        <p class="prose">Trying it is one thing. Playing every week, training every month and competing is another. In a wheelchair, every step costs more, starting with the chair: a new pickleball sport chair runs about $3,500 to $5,300. Here are the real numbers for each level, and what keeps it going.</p>
       </div>
       <ol class="pb-levels" data-m="stagger">
         <li class="pb-level">
           <p class="pb-day">01</p>
           <h3>Play anytime</h3>
-          <p>Open play and drop ins at clubs across the area, with no membership and nothing to lock in. Each place has its own vibe.</p>
+          <p class="pb-cost"><b>$5</b><span>a night, per athlete</span></p>
+          <p>Open play and drop ins at clubs across the area, with no membership and nothing to lock in. At ACE, we cover the drop-in, so every athlete plays free. $75 covers up to 15 for a night.</p>
           <p class="pb-fund"><b>Kept going by</b> night sponsors, host clubs and volunteers</p>
         </li>
         <li class="pb-level">
           <p class="pb-day">02</p>
           <h3>Train to compete</h3>
-          <p>Memberships for athletes who train regularly so they can travel to tournaments. One session a week isn't enough: Juan trains 16 hours a week.</p>
+          <p class="pb-cost"><b>$960</b><span>a year, per athlete</span></p>
+          <p>Memberships for athletes who train regularly so they can travel to tournaments. One session a week isn't enough: Juan trains 16 hours a week. A membership can keep one athlete training all year, for under $3 a day.</p>
           <p class="pb-fund"><b>Kept going by</b> membership sponsors</p>
           <a class="pb-link" href="/sponsorship#tiers">Sponsor an athlete</a>
         </li>
         <li class="pb-level">
           <p class="pb-day">03</p>
           <h3>Compete</h3>
-          <p>Monthly fundraiser tournaments with club members, the Chicago Classic, presented by Adapt To Life, and the road to the US Open in spring 2027.</p>
-          <p class="pb-fund"><b>Kept going by</b> tournament sponsors, entry fees and Send 6 donors</p>
+          <p class="pb-cost"><b>$3,500</b><span>a season, per athlete</span></p>
+          <p>Tournaments through the year to build rankings, monthly fundraiser tournaments with club members, the Chicago Classic and the road to the US Open. $3,500 can cover one athlete&rsquo;s season on the road, including the trip to Naples.</p>
+          <p class="pb-fund"><b>Kept going by</b> tournament sponsors, entry fees and donors to the fund</p>
           <a class="pb-link" href="/chicago-classic">See the Chicago Classic</a>
         </li>
       </ol>
+      <div class="pb-skill" data-m="up">
+        <p class="pb-skill-line">It takes skill and a little luck to get to the US Open. <em class="italic">It shouldn&rsquo;t take money.</em></p>
+        <p class="pb-skill-note">The US Open picks players by lottery. When an athlete&rsquo;s name comes up, money shouldn&rsquo;t be the reason they stay home. We want the best of the best in Naples.</p>
+      </div>
     </div>
   </section>
 
@@ -661,17 +676,17 @@ fill="currentColor" stroke="none">
     <div class="wrap">
       <div class="ace-head" data-m="stagger">
         <hr class="tick orange">
-        <span class="eyebrow orange">Back the crew</span>
+        <span class="eyebrow orange">One fund</span>
         <h2 class="serif statement">Help us <em class="italic" style="color:var(--orange)">fund it.</em></h2>
         <p class="prose">Every gift goes to one fund, the <a class="textlink" href="/hustle-and-heart" style="font:inherit;letter-spacing:inherit;">Hustle &amp; Heart Fund</a>. For the Chicago Wheelie Big Dills, it pays for three things, in this order:</p>
         <ol class="pb-prio">
-          <li><b>Every week</b><span>Court time, memberships and drop-ins, so the crew plays all year.</span></li>
+          <li><b>Every week</b><span>Court time, memberships and equipment, so the crew plays and trains all year.</span></li>
           <li><b>The Road to the US Open</b><span>Travel to tournaments to build rankings, and six seats in spring 2027. <a class="textlink" href="/send-6" style="font:inherit;letter-spacing:inherit;">See the road</a></span></li>
           <li><b>The Chicago Classic</b><span>Our goal: a tournament with free registration, transportation and hotels for every athlete. <a class="textlink" href="/chicago-classic" style="font:inherit;letter-spacing:inherit;">See the goal</a></span></li>
         </ol>
       </div>
       <div class="ace-win" data-m="stagger">
-        <div><h3>Give</h3><ul><li>Any amount helps. $5 puts one athlete on court for a night, and $75 covers up to 15 at ACE.</li></ul><a class="btn pb-btn" href="/donate">Donate</a></div>
+        <div><h3>Donate</h3><ul><li>Any amount helps. $5 puts one athlete on court for a night, and $75 covers up to 15 at ACE.</li></ul><a class="btn pb-btn" href="/donate">Donate</a></div>
         <div><h3>Sponsor</h3><ul><li>Nights, athlete memberships and tournaments, for businesses that want to be part of it.</li></ul><a class="btn ghost pb-btn" href="/sponsorship">See partnerships</a></div>
         <div><h3>Build a program</h3><ul><li>Run a club, an organization or a coaching program? We'll help you build an adaptive one.</li></ul><a class="btn ghost pb-btn" href="mailto:hello@adapttolife.org?subject=Build%20an%20adaptive%20program">Start a conversation</a></div>
       </div>

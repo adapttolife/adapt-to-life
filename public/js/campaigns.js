@@ -133,7 +133,7 @@
     if (d.page) {
       return { href: d.page, label: "See the drive", external: false };
     }
-    return { href: "/donate", label: "Give to the fund", external: false };
+    return { href: "/donate", label: "Donate", external: false };
   }
 
   /* ---- events: one card, everywhere ---------------------------------------
@@ -450,7 +450,8 @@
   function band(hostId, opts) {
     var host = document.getElementById(hostId);
     if (!host) return;
-    var lifted = (opts || {}).lifted;
+    var opt = opts || {};
+    var lifted = opt.lifted;
 
     load(function (store) {
       // Release the reserved height only ONCE THE CONTENT IS IN, not on
@@ -466,13 +467,18 @@
         return;
       }
 
-      // The featured campaign is the first one (The Road, the everyday ask).
-      // The others follow as a line under the card, each with its own total.
+      // The featured campaign is the first one: the Chicago Wheelie Big Dills,
+      // the umbrella every gift funds. The others follow as a line under the
+      // card, each with its own total. Every money button on the site says
+      // "Donate" and goes to /donate (Alec, Nov 5: one call to action), so the
+      // card follows cta_url. A page that IS the donate page passes its own
+      // href and label, because a Donate button there asks somebody to do the
+      // thing they are already doing.
       var a = el(
         "a",
         "camp-band" + (lifted ? " lifted" : "") + (c.goal ? "" : " no-goal"),
       );
-      a.href = c.page || "/send-6";
+      a.href = opt.href || c.cta_url || c.page || "/send-6";
 
       var card = el("div", "camp-band-card");
       var left = el("div");
@@ -492,7 +498,7 @@
         "cb-label",
         c.goal ? money(c.goal) + " goal" : c.when || "",
       );
-      var cta = el("span", "cb-cta", c.cta_label || "See the campaign");
+      var cta = el("span", "cb-cta", opt.cta || c.cta_label || "See the campaign");
       if (c.goal) side.appendChild(bar);
       side.appendChild(label);
       side.appendChild(cta);
@@ -505,7 +511,14 @@
       var others = store.campaigns.slice(1);
       if (others.length) {
         var also = el("p", "cb-also");
-        also.appendChild(el("span", "cb-also-k", "Also raising"));
+        // A campaign that sits under the featured one (The Road sits under the
+        // Wheelie Big Dills) reads as part of it, not as a second ask.
+        var inside = others.every(function (o) {
+          return o.part_of === c.slug;
+        });
+        also.appendChild(
+          el("span", "cb-also-k", inside ? "Including" : "Also raising"),
+        );
         others.forEach(function (o) {
           var link = el("a", "cb-also-link", o.name);
           link.href = o.page || "/";

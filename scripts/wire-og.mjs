@@ -31,6 +31,7 @@ const PER_PAGE = {
   "picklr.html": "picklr",
   "chicago-adaptive-sports.html": "chicago-adaptive-sports",
   "amp.html": "amp",
+  "sponsor-the-crew.html": "sponsor",
 };
 
 // ALT DESCRIBES THE PHOTOGRAPH AGAIN, because from 2026-09-09 the cards ARE
@@ -61,6 +62,7 @@ const ALT = {
   amp: "Active. Mobile. Proud. Adapt To Life. Karen Atkinson water skiing in a sit-ski, a jet ski behind her.",
   "chicago-classic": "The Chicago Classic. Adapt To Life. Juan Ortiz in his sport wheelchair, paddle up, on a dark indoor court.",
   ace: "Something Chicago hasn't seen. Adapt To Life. A wheelchair pickleball player in a white cap leans on the rail with his paddle.",
+  sponsor: "Build it with us. Sponsor the Chicago Wheelie Big Dills, Adapt To Life.",
   pickleball:
     "Chicago Pickleball: Wheelie Big Dills. Adapt To Life. Juan Ortiz, a wheelchair pickleball player in glasses, tosses the ball to serve from his sport wheelchair.",
   juan: "Juan Ortiz. Adapt To Life. Juan, a wheelchair pickleball player in glasses, tosses the ball to serve from his sport wheelchair.",
@@ -86,6 +88,7 @@ const FILE = {
   picklr: "picklr-v1-partner.jpg",
   "chicago-adaptive-sports": "chicago-adaptive-sports-v1-partner.jpg",
   amp: "amp-v1-partner.jpg",
+  sponsor: "sponsor-v2-build.jpg",
   popcorn: "popcorn-v4-content.jpg",
   "hustle-and-heart": "hustle-and-heart-v5-check.jpg",
 };

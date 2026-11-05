@@ -290,6 +290,37 @@ fill="currentColor" stroke="none">
 
   <!-- Current work follows the reason for giving. Shared campaign data owns
        the target and progress. Completed drives remain on the campaign page. -->
+  <section class="hm-crew dark" aria-labelledby="hmCrewTitle">
+    <style>
+      .hm-crew{ position:relative; isolation:isolate; overflow:hidden; padding:clamp(3.5rem,8vw,6rem) 0; }
+      .hm-crew::before{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 50% 70% at 85% 40%, rgba(255,92,57,0.18) 0%, transparent 70%); }
+      .hm-crew-grid{ display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,0.85fr); gap:clamp(2rem,5vw,4.5rem); align-items:center; }
+      @media (max-width:820px){ .hm-crew-grid{ grid-template-columns:1fr; } }
+      .hm-crew-badge{ display:block; width:clamp(104px,10vw,140px); height:auto; margin-bottom:1.2rem; filter:drop-shadow(0 12px 32px rgba(0,0,0,0.6)); }
+      .hm-crew h2{ margin-top:0.8rem; color:var(--cream); }
+      .hm-crew .prose{ margin-top:1rem; color:var(--cream-mute); max-width:46ch; }
+      .hm-crew .textlink{ margin-top:1.4rem; color:var(--orange); }
+      .hm-crew-proof{ list-style:none; margin:0; padding:0; display:grid; gap:1.1rem; }
+      .hm-crew-proof li{ display:grid; grid-template-columns:5.2rem 1fr; align-items:baseline; gap:1rem; padding-bottom:1.1rem; border-bottom:1px solid rgba(255,255,255,0.12); }
+      .hm-crew-proof b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(2.4rem,4.6vw,3.2rem); line-height:0.9; letter-spacing:-0.04em; color:var(--orange); }
+      .hm-crew-proof span{ color:var(--cream); font-weight:600; line-height:1.4; }
+    </style>
+    <div class="wrap hm-crew-grid">
+      <div class="reveal">
+        <img class="hm-crew-badge" src="/images/pickleball/wheelie-big-dills-badge.webp" alt="The Wheelie Big Dills badge: a pickle in a wheelchair swinging a Chicago flag paddle, Wheelchair Pickleball, Chicago, IL, est. 2024" width="640" height="638" loading="lazy" decoding="async">
+        <span class="eyebrow orange">Right now in Chicago</span>
+        <h2 id="hmCrewTitle" class="serif h2">The Chicago Wheelie Big Dills.</h2>
+        <p class="prose">A crew of wheelchair pickleball players growing the sport across the Chicago area, and we&rsquo;re proud to fund and support them. We help the clubs where they play build adaptive programs, from open play to memberships for athletes training to compete.</p>
+        <a href="/pickleball" class="textlink">Meet the crew <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
+      </div>
+      <ul class="hm-crew-proof reveal" aria-label="The crew's record">
+        <li><b>3</b><span>straight US Opens for Robby and Brian</span></li>
+        <li><b>6</b><span>medals at Monster Smash, October 2026</span></li>
+        <li><b>1st</b><span>wheelchair division on the APP Tour, after Juan asked for one</span></li>
+      </ul>
+    </div>
+  </section>
+
   <section class="home-campaign" aria-label="Current fundraising campaign">
     <div class="wrap"><div id="homeBand" class="camp-pending"></div></div>
   </section>
@@ -315,7 +346,7 @@ fill="currentColor" stroke="none">
       <div class="reveal">
         <span class="eyebrow orange" id="hmJuanTitle">Meet our first ambassador</span>
         <blockquote>&ldquo;The first sport I&rsquo;ve ever found where <em>the wheelchair vanishes.</em>&rdquo;</blockquote>
-        <p class="who">Juan Ortiz<span>Paralyzed at 14. Hall of Famer in wheelchair softball. Now leading Send 6 to the US Open.</span></p>
+        <p class="who">Juan Ortiz<span>Paralyzed at 14. Hall of Famer in wheelchair softball. Now building wheelchair pickleball in Chicago, and chasing his first US Open.</span></p>
         <a href="/juan" class="textlink">Read Juan&rsquo;s story <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
       </div>
     </div>

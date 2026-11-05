@@ -28,7 +28,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css?v=2fd6f6ca">
 <link rel="stylesheet" href="/css/sponsor-sheet.css?v=ffe856b5">
-<!-- band:vars --><style data-band-vars>:root{--pg-band-wide:url('/images/hero/panels/pg-band-2-wide.9ac73821.webp');--pg-band-tall:url('/images/hero/panels/pg-band-2-tall.f9278c2d.webp');--pg-give-wide:url('/images/hero/panels/pg-give-wide.b46beed5.webp');--pg-give-tall:url('/images/hero/panels/pg-give-tall.5cece3a5.webp');}</style>
+<!-- band:vars --><style data-band-vars>:root{--pg-band-wide:url('/images/hero/panels/pg-band-2-wide.9ac73821.webp');--pg-band-tall:url('/images/hero/panels/pg-band-2-tall.f9278c2d.webp');--pg-give-wide:url('/images/hero/panels/pg-give-wide.b46beed5.webp');--pg-give-tall:url('/images/hero/panels/pg-give-tall.5cece3a5.webp');}  .bh-road .bh-more .arrow{ display:inline-block; margin-top:0; max-width:none; color:inherit; }
+</style>
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <style>
   /* Partners. Proof first (our first partner), then where support goes (the
@@ -139,6 +140,12 @@
   .partner-when{ margin-top:1.1rem; display:flex; align-items:center; gap:0.8rem; flex-wrap:wrap; font-family:var(--font-label); font-weight:800; font-size:0.78rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--cream); }
   .partner-when span{ display:inline-flex; align-items:center; gap:0.8rem; color:var(--orange); }
   .partner-when span::after{ content:""; width:2px; height:1.1em; background:var(--orange); box-shadow:0 0 12px 0 var(--orange-glow); }
+  .sp-get-list{ list-style:none; margin:clamp(1.8rem,3.6vw,2.6rem) 0 0; padding:0; display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(1rem,2.4vw,1.6rem); }
+  .sp-get-list li{ border-top:3px solid var(--orange); padding-top:1rem; }
+  .sp-get-list b{ display:block; font-family:var(--font-display); font-weight:800; font-size:clamp(1.1rem,1.7vw,1.3rem); letter-spacing:-0.01em; }
+  .sp-get-list span{ display:block; margin-top:0.45rem; line-height:1.5; opacity:0.85; }
+  @media (max-width:900px){ .sp-get-list{ grid-template-columns:1fr 1fr; } }
+  @media (max-width:520px){ .sp-get-list{ grid-template-columns:1fr; } }
   .partner-note{ margin-top:clamp(1.4rem,3vw,2rem); max-width:62ch; opacity:0.78; font-size:0.98rem; line-height:1.55; }
   .partner-more{ margin-top:1.5rem; font-weight:700; color:var(--orange); border-bottom:2px solid currentColor; padding-bottom:2px; }
   @media (max-width:700px){ .partner{ grid-template-columns:1fr; } .partner-photo{ min-height:0; aspect-ratio:4/3.6; } .partner-when{ flex-wrap:nowrap; gap:0.6rem; font-size:0.72rem; letter-spacing:0.1em; } .partner-when span{ gap:0.6rem; white-space:nowrap; } }
@@ -237,7 +244,7 @@ fill="currentColor" stroke="none">
     <div class="wrap sp-hero-copy">
       <p class="sp-kicker">Partner with Adapt To Life</p>
       <h1 class="serif display">Grow adaptive sports <em class="italic" style="color:var(--orange)">with us.</em></h1>
-      <p class="lead sub">Partners help athletes get equipped, keep training, and travel to compete. Together we reach more of them as we grow.</p>
+      <p class="lead sub">Partners help us fund athletes and the clubs, organizations and coaches building adaptive sports, starting with wheelchair pickleball in Chicago.</p>
       <div class="actions">
         <a href="#tiers" class="btn">See the levels <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
         <a href="#partners" class="btn ghost">Our partners</a>
@@ -277,19 +284,32 @@ fill="currentColor" stroke="none">
   <!-- 2. WHERE YOUR SUPPORT GOES: through the fund, into a campaign. Today
        that campaign is Send 6; the sentence says "right now" so it never caps
        the list. -->
+  <section class="band sp-get" aria-labelledby="spGetTitle">
+    <div class="wrap">
+      <span class="eyebrow orange reveal">What partners get</span>
+      <h2 id="spGetTitle" class="serif h2 reveal" style="margin-top:0.8rem;">What partnership <em class="italic" style="color:var(--orange-ink)">gives back.</em></h2>
+      <ul class="sp-get-list">
+        <li class="reveal"><b>Reach</b><span>About 334,000 views in 90 days across Instagram and Facebook, mostly from people who don&rsquo;t follow us yet.</span></li>
+        <li class="reveal"><b>Content</b><span>Weekly video and athlete spotlights with your name on them. Our Monster Smash spotlights drew more than 38,000 views.</span></li>
+        <li class="reveal"><b>A crew with a record</b><span>Three straight US Opens for two of the athletes we support, and six medals at Monster Smash.</span></li>
+        <li class="reveal"><b>Proof, every month</b><span>A short recap with attendance, views and results, so you can see what your support does.</span></li>
+      </ul>
+    </div>
+  </section>
+
   <section class="band tint" id="where">
     <div class="wrap sp-go">
       <div>
         <span class="eyebrow orange reveal">What partnership makes possible</span>
-        <h2 class="serif h2 reveal" style="margin-top:0.8rem;">Equipment, training, and travel. <em class="italic" style="color:var(--orange-ink)">Right now, the road to Naples.</em></h2>
-        <p class="prose reveal">Partner support generally goes to the <a class="textlink" href="/hustle-and-heart" style="font:inherit;letter-spacing:inherit;">Hustle &amp; Heart Fund</a>, then to a campaign. Right now, that campaign is Send 6 to the US Open.</p>
+        <h2 class="serif h2 reveal" style="margin-top:0.8rem;">Equipment, training and travel. <em class="italic" style="color:var(--orange-ink)">And places to play.</em></h2>
+        <p class="prose reveal">Partner support goes to the <a class="textlink" href="/hustle-and-heart" style="font:inherit;letter-spacing:inherit;">Hustle &amp; Heart Fund</a>. It funds athletes and helps clubs, organizations and coaches build adaptive programs. Right now that means an ecosystem for wheelchair pickleball in the Chicago area, in three levels.</p>
         <div class="bh-road reveal">
           <ol>
-            <li class="lit"><b>Train every week</b><span>Court time and coaching, every season.</span></li>
-            <li><b>Travel to tournaments</b><span>Entry fees, flights, and a place to stay, to earn a ranking.</span></li>
-            <li><b>The US Open</b><span>Naples, spring 2027. Our goal is to send six. Two athletes we support have played it each of the last three years.</span></li>
+            <li class="lit"><b>Play anytime</b><span>Open play and drop ins at clubs across the area.</span></li>
+            <li><b>Train to compete</b><span>Memberships for athletes training to travel to tournaments.</span></li>
+            <li><b>Compete</b><span>Monthly tournaments, the Chicago Classic and the road to the US Open.</span></li>
           </ol>
-          <a class="bh-more" href="/send-6">Send 6 to the US Open <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
+          <a class="bh-more" href="/pickleball">See what we&rsquo;re building <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
         </div>
       </div>
       <div class="sp-go-pics reveal">

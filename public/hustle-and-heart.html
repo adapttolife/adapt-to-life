@@ -53,6 +53,15 @@
   .give-split-form givebutter-giving-form{ display:block; width:100%; }
   .thermo{ max-width:540px; margin:1.8rem auto 0; }
   .thermo-row{ display:flex; align-items:baseline; gap:0.5rem; justify-content:center; flex-wrap:wrap; }
+  .hh-lanes-grid{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(1rem,2.6vw,1.8rem); margin-top:clamp(1.8rem,3.6vw,2.6rem); }
+  .hh-lane{ padding:clamp(1.4rem,2.6vw,2rem); border-radius:18px; background:#fff; border-top:4px solid var(--orange); box-shadow:0 0 0 1px rgba(12,12,14,0.08), 0 24px 50px -36px rgba(12,12,14,0.35); }
+  .hh-lane-tag{ font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--orange-ink); }
+  .hh-lane h3{ margin-top:0.5rem; }
+  .hh-lane .prose{ margin-top:0.7rem; }
+  .hh-lane .textlink{ display:inline-block; margin-top:1rem; }
+  .hh-lanes-note{ margin-top:1.6rem; max-width:62ch; }
+  @media (max-width:760px){ .hh-lanes-grid{ grid-template-columns:1fr; } }
+  .thermo-raised:empty{ display:none; }
   .thermo-raised{ font-family:"Newsreader",serif; font-size:clamp(2.4rem,6vw,3.4rem); line-height:1; color:var(--cream); }
   .thermo-goal{ font-family:"Hanken Grotesk",sans-serif; color:rgba(255,255,255,0.6); font-size:0.95rem; }
   .thermo-track{ display:block; height:14px; border-radius:999px; background:rgba(255,255,255,0.14); margin-top:1rem; overflow:hidden; }
@@ -217,20 +226,35 @@ fill="currentColor" stroke="none">
   <section class="bigquote band dark">
     <div class="wrap reading">
       <hr class="tick orange reveal">
-      <blockquote class="reveal">"A year ago I couldn't get through a day without my cane. Now I can play pickleball, keep up with my kid, and choose how I move. The chair didn't fix me. It gave me options I didn't have before."</blockquote>
+      <blockquote class="reveal">"Now I can play pickleball, keep up with my kid, and choose how I move. The chair didn't fix me. It gave me options I didn't have before."</blockquote>
       <div class="reveal">
         <span class="qname">Brian Liss</span>
-        <span class="qrole">Adaptive Athlete</span>
+        <span class="qrole">Three straight US Opens</span>
       </div>
     </div>
   </section>
 
   <!-- 3 · THE PROMISE (one line; the full statement lives on /promise) -->
-  <section class="band statement-block">
-    <div class="wrap reading">
+  <section class="band hh-lanes" aria-labelledby="hhLanesTitle">
+    <div class="wrap">
       <hr class="tick orange reveal">
-      <h2 class="serif statement italic reveal">Support for your next step.</h2>
-      <p class="prose reveal">A first sport, a regular game, or a competition you have been working toward. The next step is yours. We can pay a vendor or program directly, or reimburse an approved expense. <a class="textlink" href="/promise">How Giving Works <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a></p>
+      <span class="eyebrow orange reveal">How the fund invests</span>
+      <h2 id="hhLanesTitle" class="serif h2 reveal" style="margin-top:0.8rem;">Athletes, <em class="italic" style="color:var(--orange-ink)">and the programs they play in.</em></h2>
+      <div class="hh-lanes-grid">
+        <div class="hh-lane reveal">
+          <p class="hh-lane-tag">Athletes</p>
+          <h3 class="serif h3">Support for your next step.</h3>
+          <p class="prose">A first sport, a regular game, or a competition you have been working toward. An athlete applies, and we pay a vendor or program directly, or reimburse an approved expense.</p>
+          <a class="textlink" href="/apply">Apply for support <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
+        </div>
+        <div class="hh-lane reveal">
+          <p class="hh-lane-tag">Programs</p>
+          <h3 class="serif h3">Places to play, and people to play with.</h3>
+          <p class="prose">We help clubs, organizations and coaches build and manage adaptive sports programs, with court time, clinics and coaching know-how. Right now that includes the Chicago Wheelie Big Dills, the wheelchair pickleball crew we fund and support.</p>
+          <a class="textlink" href="/pickleball">Meet the crew <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
+        </div>
+      </div>
+      <p class="hh-lanes-note reveal">Ambassadors like <a class="textlink" href="/juan" style="font:inherit;letter-spacing:inherit;">Juan Ortiz</a> help us see where support will go furthest. <a class="textlink" href="/promise" style="font:inherit;letter-spacing:inherit;">How Giving Works</a></p>
     </div>
   </section>
 
@@ -283,8 +307,8 @@ fill="currentColor" stroke="none">
           <div class="thermo" data-thermo>
             <p style="margin:0 0 0.9rem; font-size:0.95rem; font-weight:600;">Send 6 to the US Open Spring 2027</p>
             <div class="thermo-row">
-              <span class="thermo-raised" data-thermo-raised>$0</span>
-              <span class="thermo-goal">raised of our $21,000 goal</span>
+              <span class="thermo-raised" data-thermo-raised></span>
+              <span class="thermo-goal">Our goal is $21,000</span>
             </div>
             <div class="thermo-track"><span class="thermo-fill" data-thermo-fill></span></div>
             <a href="/send-6" class="thermo-link">View the Send 6 campaign <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>

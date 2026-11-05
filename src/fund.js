@@ -41,9 +41,10 @@ export async function fundPosition(env) {
     raised: online + offline,
     online,
     offline,
-    // Fallback only. The live goal is Givebutter's (Send 6 to the US Open Spring 2027:
-    // 6 athletes x $3,500). Change it there, not here (Spec 115 D3).
-    goal: goal || Number(env.RAISED_GOAL) || 21000,
+    // Fallback only. The live goal is Givebutter's, kept equal to The Road to the
+    // US Open in campaigns.json: a year of nights at ACE ($3,900), ten athletes
+    // training ($9,600) and Send 6 ($21,000). Change both together (Spec 115 D3).
+    goal: goal || Number(env.RAISED_GOAL) || 34500,
     live,
   };
 }

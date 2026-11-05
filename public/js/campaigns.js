@@ -496,8 +496,10 @@
       // The live figure lands last. If Givebutter is unreachable the goal
       // stands on its own rather than publishing a $0 we cannot vouch for.
       raised(function (d) {
-        if (!d || !d.goal) return;
-        var goal = d.goal || c.goal;
+        // The campaign's own goal leads, so the band always matches the page
+        // that explains it. Givebutter's goal mirrors it and is kept in step.
+        var goal = c.goal || (d && d.goal);
+        if (!d || !goal) return;
         label.textContent = money(d.raised) + " of " + money(goal) + " raised";
         var pct = Math.max(0, Math.min(100, (d.raised / goal) * 100));
         requestAnimationFrame(function () {

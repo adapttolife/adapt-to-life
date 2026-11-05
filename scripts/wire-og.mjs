@@ -44,7 +44,7 @@ const ALT = {
   donate:
     "Put an athlete in the game. Adapt To Life. A wheelchair pickleball player swings, the ball in the air beside her.",
   "send-6":
-    "Send 6 to the US Open Spring 2027. Adapt To Life. A wheelchair pickleball player drives across an indoor court.",
+    "The Road to the US Open. Adapt To Life. A wheelchair pickleball player drives across an indoor court.",
   popcorn:
     "Popcorn that helps athletes play. Adapt To Life. A wheelchair pickleball player drives across an indoor court.",
   "hustle-and-heart":
@@ -80,6 +80,7 @@ const FILE = {
   pickleball: "pickleball-v4-badge.jpg",
   ace: "ace-v3-partner.jpg",
   "chicago-classic": "chicago-classic-v1-date.jpg",
+  "send-6": "send-6-v4-road.jpg",
   picklr: "picklr-v1-partner.jpg",
   "chicago-adaptive-sports": "chicago-adaptive-sports-v1-partner.jpg",
   popcorn: "popcorn-v4-content.jpg",

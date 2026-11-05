@@ -15,7 +15,7 @@ Sources: production pages on origin/main (Nov 3, 2026), `/api/raised` on adaptto
 **What the site says today.** The US Open is the spine of the site. It appears on ten pages, including the home page, the fund, the giving page, the partner page and the Brick House page. The weekly program, the Wheelie Big Dills, ACE, the clubs, Monster Smash and the Chicago Classic are almost invisible. The crew's name appears once, deep inside Juan's page. The events page says "Nothing on the calendar right now" even though the crew plays every Thursday. The partner page sells logo placement instead of the value we actually create.
 
 **The new story in one paragraph.**
-Adapt To Life expands access to adaptive sports so athletes can find their place. In Chicago, that starts with pickleball: we are building an ecosystem for the adaptive sports community to play. Three levels. Play anytime: we build relationships with clubs, organizations and groups so there is a day to play, through open play and drop ins with no membership. Train to compete: memberships, for athletes who train regularly to travel to tournaments, because one session a week is not enough. Compete: monthly fundraiser tournaments, our own Chicago Classic, and tournaments on the road. The Chicago Wheelie Big Dills are the crew at the heart of it. We fund it all year, and sending six athletes to the US Open is one of the goals we are raising for.
+Adapt To Life expands access to adaptive sports so athletes can find their place. In Chicago, that starts with pickleball: we are building an ecosystem for the adaptive sports community to play. Three levels. Play anytime: we build relationships with clubs, organizations and groups so there is a day to play, through open play and drop ins with no membership. Train to compete: memberships, for athletes who train regularly to travel to tournaments, because one session a week is not enough. Compete: monthly fundraiser tournaments, our own Chicago Classic, and tournaments on the road. The Chicago Wheelie Big Dills, the crew we fund and support, are at the heart of it. We fund it all year, and sending six athletes to the US Open is one of the goals we are raising for.
 
 **The moves that matter most.**
 1. Give the program a home: a new page for the Wheelie Big Dills and wheelchair pickleball in Chicago, and put it on the home page.
@@ -65,7 +65,7 @@ We expand access to adaptive sports so athletes can find their place.
 ### 3.2 Who we are now
 Use this as the source paragraph. Shorter versions come from it.
 
-> Adapt To Life is building an ecosystem for the adaptive sports community to play pickleball across the Chicago area. We build relationships with clubs, organizations and groups so you can find a day to play: open play and drop ins, no membership, nothing to lock in. For athletes who want to train regularly and travel to tournaments, we offer memberships, covered by sponsors. And we compete, in monthly fundraiser tournaments and next in our own tournament, the Chicago Classic. Our crew, the Chicago Wheelie Big Dills, is at the heart of it.
+> Adapt To Life is building an ecosystem for the adaptive sports community to play pickleball across the Chicago area. We build relationships with clubs, organizations and groups so you can find a day to play: open play and drop ins, no membership, nothing to lock in. For athletes who want to train regularly and travel to tournaments, we offer memberships, covered by sponsors. And we compete, in monthly fundraiser tournaments and next in our own tournament, the Chicago Classic. The Chicago Wheelie Big Dills, the crew we fund and support, are at the heart of it.
 
 One line version for bios and introductions:
 > Adapt To Life is building an ecosystem for adaptive pickleball in Chicago: a day to play for anyone, memberships for athletes training to compete, and tournaments to compete in.
@@ -100,7 +100,7 @@ Approved by Alec (Nov 3): Chicago Wheelie Big Dills. Good search words and fun. 
 | The event | The Chicago Classic | Full name: the Chicago Classic, Wheelchair Pickleball Tournament. Hosted by Adapt To Life and the Chicago Wheelie Big Dills |
 
 How it reads together:
-> The Chicago Wheelie Big Dills are Adapt To Life's wheelchair pickleball crew. Every week they play at clubs across the Chicago area, and next year they host the Chicago Classic, Wheelchair Pickleball Tournament.
+> The Chicago Wheelie Big Dills are a crew of wheelchair pickleball players growing the sport across the Chicago area, and Adapt To Life is proud to fund and support them. Next comes the Chicago Classic, Wheelchair Pickleball Tournament, presented by Adapt To Life and hosted at ACE.
 
 Handles (Rose, Nov 3): @chicagowheeliebigdills, @wheeliebigdills, @chicagobigdills, @chicagowheelchairpickleball and @chicagoclassicpickleball show no account, but confirm in the app before claiming. @thechicagoclassic is taken by an unrelated ballroom dance event with 1,857 followers, another reason the event's full name should always carry "Wheelchair Pickleball". Juan already calls the crew "our Chicagoland wheelchair pickleball team" in a Bread and Butter review. The YouTube playlist did not show up in public search; it may be unlisted, so confirm whose channel it is before embedding.
 
@@ -170,6 +170,8 @@ Public line:
 ### 3.8 How we talk about relationships: support is not partnership
 The principle: Adapt To Life is part of a community, not the owner of it. We support adaptive sports wherever our athletes play, and we only call an organization a partner when both sides have said yes. Said right, this explains every relationship with one idea. Said loosely, it reads as if we are claiming other people's programs.
 
+**Funder, not operator (Alec, Nov 4; insurance).** Adapt To Life is not the program. It funds and supports the Chicago Wheelie Big Dills, a crew of athletes, and clubs host the play. Say: "we're proud to fund and support them", "court time we fund", "athletes we support", "the crew brings the players", "presented by Adapt To Life, hosted at [club]", "volunteers as a coach". Never: "Adapt To Life's crew", "our program", "our sessions", "we host or run", "our athletes train", "our own tournament", "helps run it", "One program". In structured data, Adapt To Life is the team's `sponsor`, not its `parentOrganization`. This applies to the site, social captions, sponsor decks and outreach.
+
 **The words, and when each one is allowed**
 
 | Word on the site | Means | Who today |
@@ -205,7 +207,7 @@ That difference is the whole fix: every session is described by what we actually
 
 | Page | Was | Now |
 |---|---|---|
-| How Giving Works | "We fund a wheelchair pickleball program, including the court they train on." | "We cover court fees for our wheelchair pickleball crew on Thursdays at ACE, and our coaches and athletes volunteer at clubs across the area." |
+| How Giving Works | "We fund a wheelchair pickleball program, including the court they train on." | "We cover court fees for the wheelchair pickleball crew we support on Thursdays at ACE, and our volunteers help at clubs across the area." |
 | Send 6, Training | "Our athletes train every week at Brick House Pickleball, our home court and first partner." | "The work starts long before Naples: weekly court time, clinics and coaching, every season." |
 | Partners | "Train every week: at Brick House, all four seasons." | "Court time and coaching, every season." Plus under the partner list: "Partners listed here have agreed to be listed. We also support programs across the community, like WASA in Wisconsin and LWSRA in the south suburbs, with coaching, clinics and volunteers." |
 | About, Pete | "helped build the wheelchair pickleball program from the ground up." | "helped build wheelchair pickleball on the North Shore from the ground up. Today he volunteers as a coach and helps run a weekly wheelchair pickleball night at Brick House." |
@@ -213,7 +215,7 @@ That difference is the whole fix: every session is described by what we actually
 | Brick House page | "Our home court" | Unchanged. True as stated, and it names no program. |
 
 **The same story, out loud** (for conversations with clubs, sponsors or other organizations)
-> Adapt To Life supports adaptive sports wherever our athletes play. On Thursdays our crew has its own night at ACE, and we cover it, with ACE members volunteering alongside us. On Wednesdays our athletes join a weekly night at Brick House, where Pete volunteers as a coach and helps run it. We have coached for WASA as it started pickleball, and we are working with LWSRA on clinics. When an athlete needs help with fees or equipment, our fund steps in. We partner formally with clubs like Brick House and ACE, and we support the wider community without speaking for anyone else.
+> Adapt To Life funds and supports adaptive sports wherever the athletes we support play. On Thursdays the crew has its own court time at ACE, which we fund, with ACE members volunteering alongside them. On Wednesdays our athletes join a weekly night at Brick House, where Pete volunteers as a coach and helps run it. We have coached for WASA as it started pickleball, and we are working with LWSRA on clinics. When an athlete needs help with fees or equipment, our fund steps in. We partner formally with clubs like Brick House and ACE, and we support the wider community without speaking for anyone else.
 
 ### 3.9 Year round fundraising; campaigns
 > Athletes need support all year, not only before a big trip. Your gift keeps them training every week, traveling to compete and playing in equipment that fits. Some of what we raise goes toward a named goal, like sending six athletes to the US Open.
@@ -288,7 +290,7 @@ Note: tests protect the current home page order (`docs/story-first-ux.md`). The 
 3. **Right now in Chicago (new)**
    Eyebrow: Chicago Wheelchair Pickleball
    Heading: A pickleball community anyone can drop into.
-   Body: Our crew, the Chicago Wheelie Big Dills, plays at clubs across the Chicago area. No membership, nothing to lock in: drop in, have fun and try the sport. We travel to tournaments, we bring home medals, and next we host our own, the Chicago Classic.
+   Body: The Chicago Wheelie Big Dills, a crew of wheelchair pickleball players we're proud to fund and support, play at clubs across the Chicago area. No membership, nothing to lock in: drop in, have fun and try the sport. We travel to tournaments, we bring home medals, and next we host our own, the Chicago Classic.
    Below it: the six athlete cards (section 5), each linking to the athlete's page.
    Link: Meet the crew → `/pickleball`
 
@@ -511,7 +513,7 @@ Guardrails:
 > Hi [name], I'm Alec with Adapt To Life. Our athletes play wheelchair pickleball every week, travel to tournaments, and our spotlights from Monster Smash drew more than 38,000 views. We're hosting our first Chicago Classic, Wheelchair Pickleball Tournament. I'd love to explore gear and tournament support. Could we talk this week?
 
 **Local business**
-> Hi [name], I'm Alec with Adapt To Life. Every Thursday our wheelchair pickleball crew plays in Des Plaines, free for every athlete. $75 covers a whole night, and your business would be named on that night's posts. Would you like to sponsor a Thursday?
+> Hi [name], I'm Alec with Adapt To Life. Every Thursday the wheelchair pickleball crew we support plays in Des Plaines, free for every athlete. $75 covers a whole night, and your business would be named on that night's posts. Would you like to sponsor a Thursday?
 
 **Company team**
 > Hi [name], I'm Alec with Adapt To Life. We host Try Adaptive Night, where people play pickleball from sport chairs alongside our athletes. It's a team experience people remember, and it supports athletes directly. Could I tell you more?

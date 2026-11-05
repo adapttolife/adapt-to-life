@@ -14,13 +14,30 @@
 // this script stops rather than photographing the gate. Override the path with
 // ASNM_BETA_SESSION. The UserWay button is hidden: it floats over the cards.
 //
+// FINGERPRINTED FILENAMES (2026-11-04). public/_headers caches media for 30
+// days and says "If you DO replace an image, rename it." This script used to
+// overwrite asnm-directory.webp in place, so after the 2026-10-30 redesign
+// Alec's phone kept showing the September card design on adapttolife.org for
+// days. Each shot is now named by its content hash (asnm-directory.<hash>.webp)
+// and the name is recorded in data/asnm-shot.json, which build-asnm.mjs reads.
+// Same rule build-hero-panels.py follows for the photo band.
+//
 // Captured at 2x and downscaled, because the frame is rendered ~880px wide on a
 // laptop and a 1:1 capture is visibly soft on a retina screen.
 import { chromium } from "/home/agentos/pw/node_modules/playwright/index.mjs";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { existsSync, statSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  readdirSync,
+  readFileSync,
+  renameSync,
+  statSync,
+  unlinkSync,
+  writeFileSync,
+} from "node:fs";
+import { createHash } from "node:crypto";
 import { homedir } from "node:os";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -50,7 +67,7 @@ const SHOTS = [
     dpr: 2,
     ow: 1440,
     oh: 925,
-    out: join(ROOT, "public", "images", "asnm-directory.webp"),
+    base: "asnm-directory",
   },
   {
     key: "tall",
@@ -59,7 +76,7 @@ const SHOTS = [
     dpr: 3,
     ow: 828,
     oh: 1520,
-    out: join(ROOT, "public", "images", "asnm-directory-tall.webp"),
+    base: "asnm-directory-tall",
   },
 ];
 const SESSION =
@@ -76,6 +93,7 @@ if (!existsSync(SESSION)) {
 const b = await chromium.launch(
   process.env.CHROME ? { executablePath: process.env.CHROME } : {},
 );
+const IMAGES = join(ROOT, "public", "images");
 const dims = {};
 for (const s of SHOTS) {
   const ctx = await b.newContext({
@@ -104,18 +122,26 @@ for (const s of SHOTS) {
   await p.waitForTimeout(4000);
   await p.screenshot({ path: TMP, clip: { x: 0, y: 0, width: s.w, height: s.h } });
   await ctx.close();
+  const out = join(IMAGES, `${s.base}.new.webp`);
   execFileSync("/home/agentos/.venvs/vectorize/bin/python", [
     "-c",
     `
 from PIL import Image
 im = Image.open("${TMP}").convert("RGB")
 im = im.resize((${s.ow}, ${s.oh}), Image.LANCZOS)
-im.save("${s.out}", "WEBP", quality=${s.key === "tall" ? 74 : 78}, method=6)
+im.save("${out}", "WEBP", quality=${s.key === "tall" ? 74 : 78}, method=6)
 `,
   ]);
-  dims[s.key] = { w: s.ow, h: s.oh };
+  const hash = createHash("sha256").update(readFileSync(out)).digest("hex").slice(0, 10);
+  const name = `${s.base}.${hash}.webp`;
+  // Drop earlier shots of this key (fingerprinted or the old fixed name).
+  const mine = new RegExp(`^${s.base}(\\.[0-9a-f]{10})?\\.webp$`);
+  for (const f of readdirSync(IMAGES))
+    if (mine.test(f) && f !== name) unlinkSync(join(IMAGES, f));
+  renameSync(out, join(IMAGES, name));
+  dims[s.key] = { w: s.ow, h: s.oh, src: `/images/${name}` };
   console.log(
-    `  asnm ${s.key} ${s.w}x${s.h} @${s.dpr}x -> ${(statSync(s.out).size / 1024).toFixed(1)} KB`,
+    `  asnm ${s.key} ${s.w}x${s.h} @${s.dpr}x -> ${name} ${(statSync(join(IMAGES, name)).size / 1024).toFixed(1)} KB`,
   );
 }
 await b.close();
@@ -123,4 +149,4 @@ writeFileSync(
   join(ROOT, "data", "asnm-shot.json"),
   JSON.stringify(dims, null, 1) + "\n",
 );
-console.log("  (dimensions recorded in data/asnm-shot.json for build-asnm.mjs)");
+console.log("  (names and dimensions recorded in data/asnm-shot.json for build-asnm.mjs)");

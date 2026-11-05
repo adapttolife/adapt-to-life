@@ -186,7 +186,7 @@ export async function sendApplyReceipt(env, { name, email, sport, need }) {
   let position = "";
   try {
     const f = await fundPosition(env);
-    if (f.live)
+    if (f.live && f.goal)
       position = ` We have raised ${usd(f.raised)} toward ${usd(f.goal)} so far.`;
   } catch (err) {
     console.error("apply receipt: fund position unavailable:", err);

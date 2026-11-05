@@ -35,7 +35,7 @@ import {
   sendAdminLink,
 } from "./asnm_admin_auth.js";
 import { syncGifts } from "./qr_gifts.js";
-import { fundPosition } from "./fund.js";
+import { CAMPAIGN_KEYS, campaignPosition } from "./fund.js";
 import { handleGivebutterWebhook } from "./givebutter_webhook.js";
 import { reconcileDonorJourney } from "./givebutter_reconcile.js";
 import {
@@ -1592,8 +1592,12 @@ async function handleSubscribe(request, env, ctx) {
 // receipt also reads, so the number on the page and the number we put in
 // writing to an applicant come from one place and cannot drift apart.
 async function handleRaised(request, env) {
-  const { raised, online, offline, goal } = await fundPosition(env);
-  const body = JSON.stringify({ raised, online, offline, goal });
+  // ?c=road|send-6|classic. With no key it answers for Send 6, which is what
+  // every bar asked for before the campaigns split, so cached pages stay right.
+  const asked = new URL(request.url).searchParams.get("c") || "send-6";
+  const key = CAMPAIGN_KEYS.includes(asked) ? asked : "send-6";
+  const { raised, online, offline, goal } = await campaignPosition(env, key);
+  const body = JSON.stringify({ key, raised, online, offline, goal });
   return new Response(body, {
     headers: {
       "Content-Type": "application/json",

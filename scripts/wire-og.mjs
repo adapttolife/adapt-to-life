@@ -28,6 +28,7 @@ const PER_PAGE = {
   "pickleball.html": "pickleball",
   "ace.html": "ace",
   "chicago-classic.html": "chicago-classic",
+  "road.html": "road",
   "picklr.html": "picklr",
   "chicago-adaptive-sports.html": "chicago-adaptive-sports",
 };
@@ -44,7 +45,7 @@ const ALT = {
   donate:
     "Put an athlete in the game. Adapt To Life. A wheelchair pickleball player swings, the ball in the air beside her.",
   "send-6":
-    "The Road to the US Open. Adapt To Life. A wheelchair pickleball player drives across an indoor court.",
+    "Send 6 to the US Open Spring 2027. Adapt To Life. A wheelchair pickleball player drives across an indoor court.",
   popcorn:
     "Popcorn that helps athletes play. Adapt To Life. A wheelchair pickleball player drives across an indoor court.",
   "hustle-and-heart":
@@ -57,6 +58,7 @@ const ALT = {
     "The crew's home court is Brick House. Adapt To Life. An athlete in a sport wheelchair and a Brick House Pickleball shirt rolls across the Brick House courts.",
   picklr: "Open play, open doors. Adapt To Life. A player in a sport wheelchair stretches wide for a backhand.",
   "chicago-adaptive-sports": "Push. Play. Persist. Adapt To Life. Juan Ortiz in a Chicago Adaptive Sports shirt.",
+  road: "The Road. Adapt To Life. A player in a sport wheelchair stretches wide for a backhand.",
   "chicago-classic": "The Chicago Classic. Adapt To Life. Juan Ortiz in his sport wheelchair, paddle up, on a dark indoor court.",
   ace: "Something Chicago hasn't seen. Adapt To Life. A wheelchair pickleball player in a white cap leans on the rail with his paddle.",
   pickleball:
@@ -80,7 +82,7 @@ const FILE = {
   pickleball: "pickleball-v4-badge.jpg",
   ace: "ace-v3-partner.jpg",
   "chicago-classic": "chicago-classic-v1-date.jpg",
-  "send-6": "send-6-v4-road.jpg",
+  road: "road-v1-yearround.jpg",
   picklr: "picklr-v1-partner.jpg",
   "chicago-adaptive-sports": "chicago-adaptive-sports-v1-partner.jpg",
   popcorn: "popcorn-v4-content.jpg",

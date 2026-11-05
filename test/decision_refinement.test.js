@@ -11,7 +11,7 @@ test("campaign fallback is prospective and existing gift terms survive", () => {
   assert.ok(s.includes("For new gifts:"));
   assert.ok(s.includes("remaining campaign funds from those gifts"));
   assert.ok(
-    s.indexOf('id="campaign-terms"') < s.indexOf('<a class="btn" href="/donate">'),
+    s.indexOf('id="campaign-terms"') < s.indexOf('<a class="btn" href="#give">'),
   );
   for (const f of ["public/donate.html", "public/hustle-and-heart.html"])
     assert.ok(read(f).includes('href="/promise#campaign-gifts"'));

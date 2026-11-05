@@ -63,11 +63,11 @@
 <meta name="twitter:description" content="Adapt To Life expands access to adaptive sports so athletes can find their place. Built by the community, for the community.">
 <meta name="twitter:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
 <meta name="twitter:image:alt" content="Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.">
-<link rel="preload" href="/css/site.css?v=2fd6f6ca" as="style">
+<link rel="preload" href="/css/site.css?v=5a6f0c11" as="style">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=2fd6f6ca">
+<link rel="stylesheet" href="/css/site.css?v=5a6f0c11">
 <link rel="stylesheet" href="/css/roll-band.css?v=4792bee4">
 <!-- hero:sheet -->
 <link rel="stylesheet" href="/css/hero-mosaic.css?v=f82d1680">
@@ -344,6 +344,8 @@ fill="currentColor" stroke="none">
       .gift-ladder li{ padding:1.1rem 1.1rem 1.2rem; border-radius:16px; background:rgba(255,255,255,0.05); box-shadow:inset 0 0 0 1px rgba(255,255,255,0.12); }
       .gift-ladder b{ display:block; font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(1.9rem,3.4vw,2.5rem); line-height:1; letter-spacing:-0.03em; color:var(--orange); }
       .gift-ladder span{ display:block; margin-top:0.5rem; color:var(--cream); line-height:1.4; font-weight:600; }
+      .gift-ladder-link{ display:block; color:inherit; text-decoration:none; }
+      .gift-ladder-link span{ text-decoration:underline; text-decoration-color:var(--orange); text-underline-offset:3px; }
       @media (max-width:760px){ .gift-ladder{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
     </style>
     <div class="wrap hm-crew-grid">
@@ -509,7 +511,7 @@ fill="currentColor" stroke="none">
         <li><b>$5</b><span>puts one athlete on court for a night</span></li>
         <li><b>$75</b><span>covers up to 15 athletes for a night at ACE</span></li>
         <li><b>$960</b><span>can keep one athlete training all year</span></li>
-        <li><b>$3,500</b><span>can send one athlete to the US Open</span></li>
+        <li><a class="gift-ladder-link" href="/send-6"><b>$3,500</b><span>can send one athlete to the US Open</span></a></li>
       </ul>
       <div class="actions reveal">
         <a href="/donate" class="btn">Donate</a>
@@ -662,7 +664,7 @@ fill="currentColor" stroke="none">
 </script>
 
 <script src="/js/add-to-calendar.js?v=1865647d"></script>
-<script src="/js/campaigns.js?v=ef14909f"></script>
+<script src="/js/campaigns.js?v=c57c81ac"></script>
 <script>
 (function(){
   var C = window.ATLCampaigns;

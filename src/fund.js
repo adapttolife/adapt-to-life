@@ -12,15 +12,41 @@
 // hard-coded goal because a slow widget is harmless. A receipt must never print
 // a number we did not actually read, so it checks `live` and stays silent about
 // the fund's position rather than guessing.
-export async function fundPosition(env) {
-  const campaignId = env.GIVEBUTTER_CAMPAIGN_ID || "683765";
-  const offline = Number(env.OFFLINE_RAISED) || 0;
+// Three campaigns since Nov 5 2026 (Alec: "it should be separate"). Each key is
+// what the site asks for with /api/raised?c=<key>:
+//   road    The Road: the Hustle & Heart Fund's year-round giving. No goal,
+//           because it has no ceiling.
+//   send-6  Send 6 to the US Open Spring 2027. Its offline figure carries what
+//           was raised under Send 6 before the split (popcorn and the online
+//           gifts shown as Send 6 progress then).
+//   classic The Chicago Classic: free registration, transportation and hotels.
+const CAMPAIGNS = {
+  road: (env) => ({
+    id: env.GIVEBUTTER_CAMPAIGN_ID || "683765",
+    offline: Number(env.ROAD_OFFLINE_RAISED) || 0,
+    fallbackGoal: 0,
+  }),
+  "send-6": (env) => ({
+    id: env.GIVEBUTTER_SEND6_CAMPAIGN_ID || "782832",
+    offline: Number(env.SEND6_OFFLINE_RAISED) || 0,
+    fallbackGoal: 21000,
+  }),
+  classic: (env) => ({
+    id: env.GIVEBUTTER_CLASSIC_CAMPAIGN_ID || "782833",
+    offline: Number(env.CLASSIC_OFFLINE_RAISED) || 0,
+    fallbackGoal: 0,
+  }),
+};
+export const CAMPAIGN_KEYS = Object.keys(CAMPAIGNS);
+
+export async function campaignPosition(env, key = "send-6") {
+  const c = (CAMPAIGNS[key] || CAMPAIGNS["send-6"])(env);
   let online = 0;
   let goal = 0;
   let live = false;
   try {
     if (env.GIVEBUTTER_API_KEY) {
-      const r = await fetch(`https://api.givebutter.com/v1/campaigns/${campaignId}`, {
+      const r = await fetch(`https://api.givebutter.com/v1/campaigns/${c.id}`, {
         headers: {
           Authorization: `Bearer ${env.GIVEBUTTER_API_KEY}`,
           Accept: "application/json",
@@ -38,15 +64,18 @@ export async function fundPosition(env) {
     console.error("givebutter raised fetch failed:", err);
   }
   return {
-    raised: online + offline,
+    raised: online + c.offline,
     online,
-    offline,
-    // Fallback only. The live goal is Givebutter's, kept equal to The Road to the
-    // US Open in campaigns.json: a year of nights at ACE ($3,900), ten athletes
-    // training ($9,600) and Send 6 ($21,000). Change both together (Spec 115 D3).
-    goal: goal || Number(env.RAISED_GOAL) || 34500,
+    offline: c.offline,
+    // Fallback only. The live goal is Givebutter's; campaigns.json says the same.
+    goal: goal || c.fallbackGoal,
     live,
   };
+}
+
+// The fund's own position: The Road. The grant receipt reads this.
+export async function fundPosition(env) {
+  return campaignPosition(env, "road");
 }
 
 // Whole dollars, with separators. Grant amounts and campaign goals are always

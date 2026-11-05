@@ -1606,6 +1606,46 @@ a.camp-band:hover .cb-cta {
   background: var(--orange-press);
   border-color: var(--orange-press);
 }
+/* No ceiling, no bar: the featured campaign can be open-ended (The Road). */
+.camp-band.no-goal .cb-label {
+  margin-top: 0;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--orange-ink);
+}
+/* The other campaigns, one line under the card, each with its own total. */
+.cb-also {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1.4rem;
+  margin: 0.9rem 0 0;
+  padding: 0 0.4rem;
+  font-size: 0.95rem;
+}
+.cb-also-k {
+  font-family: var(--font-label);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.cb-also-link {
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--orange);
+  text-underline-offset: 4px;
+}
+.cb-also-fig {
+  margin-left: 0.45rem;
+  font-weight: 400;
+  color: var(--muted);
+  text-decoration: none;
+  display: inline-block;
+}
 
 /* ---- contact ------------------------------------------------------------- */
 .contact-grid {
@@ -2116,11 +2156,11 @@ a.info-v {
    including when there is no campaign — an empty band is a real state and must
    never leave a reserved hole behind it. */
 .camp-pending {
-  min-height: 375px;
-} /* measured: the band renders at 375 on a phone, not 349 */
+  min-height: 455px;
+} /* measured Nov 2026 with the "also raising" line: 455 on a phone, 251 at 1440 */
 @media (min-width: 821px) {
   .camp-pending {
-    min-height: 238px;
+    min-height: 251px;
   }
 }
 

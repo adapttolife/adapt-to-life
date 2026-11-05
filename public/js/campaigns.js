@@ -426,9 +426,10 @@
 
   /* The site thermometer. Falls back to the campaign's own goal and hides the
      raised figure rather than publishing a $0 that is not true. */
-  function raised(cb) {
+  function raised(cb, key) {
     if (typeof fetch !== "function") return cb(null);
-    fetch("/api/raised")
+    // One total per campaign: road, send-6 or classic. No key means Send 6.
+    fetch("/api/raised" + (key ? "?c=" + encodeURIComponent(key) : ""))
       .then(function (r) {
         return r.json();
       })
@@ -465,7 +466,12 @@
         return;
       }
 
-      var a = el("a", "camp-band" + (lifted ? " lifted" : ""));
+      // The featured campaign is the first one (The Road, the everyday ask).
+      // The others follow as a line under the card, each with its own total.
+      var a = el(
+        "a",
+        "camp-band" + (lifted ? " lifted" : "") + (c.goal ? "" : " no-goal"),
+      );
       a.href = c.page || "/send-6";
 
       var card = el("div", "camp-band-card");
@@ -481,9 +487,13 @@
       var bar = el("span", "cb-bar");
       var fill = el("span", "cb-fill");
       bar.appendChild(fill);
-      var label = el("span", "cb-label", c.goal ? money(c.goal) + " goal" : "");
-      var cta = el("span", "cb-cta", "See the campaign");
-      side.appendChild(bar);
+      var label = el(
+        "span",
+        "cb-label",
+        c.goal ? money(c.goal) + " goal" : c.when || "",
+      );
+      var cta = el("span", "cb-cta", c.cta_label || "See the campaign");
+      if (c.goal) side.appendChild(bar);
       side.appendChild(label);
       side.appendChild(cta);
 
@@ -491,10 +501,34 @@
       card.appendChild(side);
       a.appendChild(card);
       host.appendChild(a);
+
+      var others = store.campaigns.slice(1);
+      if (others.length) {
+        var also = el("p", "cb-also");
+        also.appendChild(el("span", "cb-also-k", "Also raising"));
+        others.forEach(function (o) {
+          var link = el("a", "cb-also-link", o.name);
+          link.href = o.page || "/";
+          var fig = el(
+            "span",
+            "cb-also-fig",
+            o.goal ? money(o.goal) + " goal" : o.when || "",
+          );
+          link.appendChild(fig);
+          also.appendChild(link);
+          if (o.goal && o.raised_key)
+            raised(function (d) {
+              if (d && d.raised)
+                fig.textContent = money(d.raised) + " of " + money(o.goal);
+            }, o.raised_key);
+        });
+        host.appendChild(also);
+      }
       host.classList.remove("camp-pending");
 
       // The live figure lands last. If Givebutter is unreachable the goal
       // stands on its own rather than publishing a $0 we cannot vouch for.
+      if (!c.goal) return; // no ceiling, so no bar: the Road is counted in nights, not a goal
       raised(function (d) {
         // The campaign's own goal leads, so the band always matches the page
         // that explains it. Givebutter's goal mirrors it and is kept in step.
@@ -507,7 +541,7 @@
             fill.style.width = pct.toFixed(1) + "%";
           }, 140);
         });
-      });
+      }, c.raised_key);
     });
   }
 
@@ -517,7 +551,7 @@
      Why this is data-driven rather than three lines of hand-written HTML:
      the August popcorn drive's $3,004 already appears on /popcorn and
      /send-6, and it is the same number the thermometer adds via
-     OFFLINE_RAISED. A fourth hand-typed copy is a fourth thing to forget
+     SEND6_OFFLINE_RAISED. A fourth hand-typed copy is a fourth thing to forget
      when the next drive closes. Reads the most recently CLOSED drive that
      has a real `raised` figure, and renders nothing if there is not one —
      an org with no finished drive must not claim a win.

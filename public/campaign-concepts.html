@@ -5,15 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light only">
 <meta name="robots" content="noindex,nofollow">
-<title>Campaign concepts: Scoreboard, refined | Adapt To Life</title>
+<title>Campaign concepts: a wider palette | Adapt To Life</title>
 <link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css?v=5e6e33e6">
 <style>
-  /* Review surface (staging only). Round 2, Alec Nov 5: "I like option A the
-     best, but I don't love it... Color scheme, color contrast, layout."
+  /* Review surface (staging only). Round 3, Alec Nov 5: "Maybe this is the
+     time to expand our color palette. I feel like it's a little bit too much
+     orange, but I like the direction you're going in." Round 2 layout, three
+     palettes; orange only for the money and the button.
      Every variant: the wins first, then the money; one accent for the money
      and the button; two meters, with the empty one framed as where a new gift
      goes; a full-width Donate. All read the live /api/raised?c=wbd. */
@@ -76,92 +78,68 @@
   .av--bright .m2-start{ background:#ff5c39; }
   .av--bright .av-cta{ background:#ff5c39; color:#141414; }
 
-  /* A3 · Spotlight: dark section, a cream card for the money */
-  .av--spot{ background:#0c0c0e; color:var(--cream); border-top:5px solid var(--orange); }
-  .av--spot .av-kicker{ color:var(--orange); }
-  .av--spot .dot{ background:var(--orange); }
-  .av--spot .av-h{ color:var(--cream); }
-  .av--spot .av-h em{ color:var(--orange); }
-  .av--spot .w6 li{ background:#19191c; box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08); }
-  .av--spot .w6 b{ color:var(--cream); }
-  .av--spot .w6 span{ color:var(--cream-mute); }
-  .av--spot .av-money{ background:var(--cream); color:#141414; box-shadow:0 30px 70px -34px rgba(255,92,57,0.55); }
-  .av--spot .av-hero b{ color:var(--orange-ink); }
-  .av--spot .av-hero span, .av--spot .m2-note, .av--spot .av-after{ color:var(--ink-soft); }
-  .av--spot .m2-track{ background:rgba(20,20,20,0.1); }
-  .av--spot .m2-fill{ background:linear-gradient(90deg,var(--orange-ink),var(--orange)); }
-  .av--spot .m2-start{ background:var(--orange-ink); }
-  .av--spot .av-cta{ background:var(--orange-ink); color:#fff; }
 
-  /* A4 · Night game: dark, one accent, the destination as a watermark */
-  .av--night{ background:#0c0c0e; color:var(--cream); }
-  .av--night::before{ content:"NAPLES"; position:absolute; right:-0.06em; top:0.02em; font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(6.5rem,31vw,17rem); line-height:0.8; letter-spacing:-0.06em; color:transparent; -webkit-text-stroke:1.5px rgba(255,255,255,0.08); pointer-events:none; }
-  .av--night .av-kicker{ color:var(--cream-mute); }
-  .av--night .dot{ background:var(--orange); }
-  .av--night .av-h{ color:var(--cream); }
-  .av--night .av-h em{ color:var(--orange); }
-  .av--night .w6 li{ background:transparent; border-radius:0; padding:0.2rem 0 0.2rem 0.7rem; border-left:3px solid var(--orange); }
-  .av--night .w6 b{ color:var(--cream); }
-  .av--night .w6 span{ color:var(--cream-mute); }
-  .av--night .av-money{ background:#17171a; box-shadow:inset 0 0 0 1px rgba(255,255,255,0.1); }
-  .av--night .av-hero b{ color:var(--orange); }
-  .av--night .av-hero span, .av--night .m2-note, .av--night .av-after{ color:var(--cream-mute); }
-  .av--night .m2-track{ background:rgba(255,255,255,0.12); }
-  .av--night .m2-fill{ background:linear-gradient(90deg,var(--orange-ink),var(--orange)); }
-  .av--night .m2-start{ background:var(--orange); }
-  .av--night .av-cta{ background:var(--orange-ink); color:#fff; }
+  /* Swatch strip */
+  .sw{ list-style:none; max-width:1100px; margin:0 auto; padding:0 var(--gutter) 1rem; display:flex; flex-wrap:wrap; gap:0.5rem 1rem; }
+  .sw li{ display:flex; align-items:center; gap:0.5rem; font-size:0.84rem; }
+  .sw i{ flex:none; width:22px; height:22px; border-radius:7px; box-shadow:inset 0 0 0 1px rgba(28,26,21,0.15); }
+  .sw b{ font-weight:800; }
+  .sw span{ color:var(--muted); }
 
-  /* Before: the first A, for comparison */
-  /* Shared pieces --------------------------------------------------------- */
-  .mtr{ display:flex; gap:4px; }
-  .mtr-seg{ flex-basis:0; overflow:hidden; }
-  .mtr-fill{ display:block; height:100%; width:0; background:linear-gradient(90deg,var(--orange-ink),var(--orange) 55%,var(--orange-hot)); transition:width 1.5s cubic-bezier(.2,.8,.2,1); }
-  .lgd{ display:flex; gap:4px; }
-  .lgd p{ flex-basis:0; margin:0; padding-right:0.7rem; display:flex; flex-direction:column; gap:0.12rem; line-height:1.3; }
-  .lgd b{ font-weight:800; font-size:0.92rem; }
-  .lgd span{ font-size:0.92rem; }
-  .lgd i{ font-style:normal; font-size:0.8rem; }
-  .cc-btn{ display:inline-flex; align-items:center; justify-content:center; min-width:12rem; padding:1rem 2rem; border-radius:999px; background:var(--orange-ink); color:#fff; font-weight:800; font-size:1.05rem; text-decoration:none; box-shadow:0 14px 34px -14px var(--orange-glow); }
-  .cc-btn:hover{ background:var(--orange-press); }
-  @media (prefers-reduced-motion:reduce){ .mtr-fill{ transition:none; } }
+  /* Orange stays for the money and the button in every palette. Each palette
+     colors the bars on its own: the every-week bar takes the palette's blue,
+     the road keeps orange (validated: CVD separation and contrast pass). */
+  .av .m2-row[data-part-row="send-6"] .m2-fill{ background:linear-gradient(90deg,#c63f22,#e0532b); }
 
-  /* A · Scoreboard -------------------------------------------------------- */
-  .sb{ position:relative; overflow:hidden; background:#0c0c0e; color:var(--cream); padding:clamp(2.4rem,7vw,4.6rem) 0; }
-  .sb::before{ content:""; position:absolute; inset:0; pointer-events:none;
-    background:
-      radial-gradient(90% 60% at 100% 0%, rgba(255,92,57,0.26), transparent 62%),
-      radial-gradient(70% 50% at 0% 100%, rgba(255,92,57,0.10), transparent 70%); }
-  .sb-wrap{ position:relative; max-width:1100px; margin:0 auto; padding:0 var(--gutter); display:grid; gap:clamp(1.8rem,4vw,2.6rem); }
-  @media (min-width:1000px){ .sb-wrap{ grid-template-columns:1.08fr 1fr; align-items:end; column-gap:3.4rem; } .sb-board-wrap{ grid-column:2; grid-row:1 / span 2; align-self:center; } }
-  .sb-top{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:0.5rem 1rem; padding-bottom:0.9rem; border-bottom:1px solid rgba(255,255,255,0.14); }
-  .sb-live{ display:inline-flex; align-items:center; gap:0.55rem; margin:0; font-family:var(--font-label); font-weight:800; font-size:0.72rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--orange); }
-  .sb-dot{ width:9px; height:9px; border-radius:50%; background:var(--orange); animation:ccPulse 1.8s ease-in-out infinite; }
-  .sb-team{ margin:0; font-weight:800; font-size:0.78rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--cream-mute); }
-  .sb-h{ margin:1.3rem 0 0; color:var(--cream); font-weight:900; font-size:clamp(2.4rem,8vw,4.3rem); line-height:0.95; letter-spacing:-0.04em; }
-  .sb-h em{ display:block; font-style:italic; color:var(--orange); }
-  .sb-money{ padding:clamp(1.2rem,3.4vw,1.8rem); border-radius:22px; background:linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.025)); box-shadow:inset 0 0 0 1px rgba(255,255,255,0.11); }
-  .sb-hero{ margin:0; display:flex; flex-wrap:wrap; align-items:baseline; gap:0.1rem 0.8rem; }
-  .sb-hero b{ font-weight:900; font-style:italic; font-size:clamp(3.6rem,15vw,6.4rem); line-height:0.88; letter-spacing:-0.05em; }
-  .sb-hero span{ color:var(--cream-mute); font-size:clamp(1rem,2.6vw,1.15rem); }
-  .sb .mtr{ height:24px; margin-top:1.3rem; }
-  .sb .mtr-seg{ border-radius:7px; background:rgba(255,255,255,0.12); }
-  .sb .lgd{ margin-top:0.75rem; }
-  .sb .lgd span{ color:var(--cream); }
-  .sb .lgd i{ color:var(--cream-faint); }
-  .sb-board-h{ margin:0 0 0.9rem; display:flex; align-items:center; gap:0.8rem; font-family:var(--font-label); font-weight:800; font-size:0.72rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--cream-mute); }
-  .sb-board-h::after{ content:""; flex:1; height:1px; background:rgba(255,255,255,0.14); }
-  .sb-board{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:2px; border-radius:18px; overflow:hidden; background:rgba(255,255,255,0.1); }
-  .sb-board li{ display:flex; flex-direction:column; gap:0.32rem; padding:1.05rem 1rem 1.15rem; background:#111114; }
-  .sb-board b{ font-weight:900; font-style:italic; font-size:clamp(2rem,6.4vw,2.7rem); line-height:0.95; letter-spacing:-0.035em; color:var(--orange); }
-  .sb-board b.sm{ font-size:clamp(1.45rem,4.6vw,1.9rem); line-height:1.05; }
-  .sb-board span{ font-weight:700; line-height:1.25; }
-  .sb-board i{ font-style:normal; font-size:0.8rem; color:var(--cream-faint); line-height:1.3; }
-  .sb-cta{ display:flex; flex-wrap:wrap; align-items:center; gap:1rem 1.5rem; }
-  .sb-cta p{ margin:0; max-width:40ch; color:var(--cream-mute); font-size:0.95rem; line-height:1.5; }
+  /* P1 · Badge: navy, pickle green, parchment (from the crest) */
+  .av--badge{ background:#13293d; color:var(--cream); border-top:5px solid #a6c24a; }
+  .av--badge .av-kicker{ color:#a6c24a; } .av--badge .dot{ background:#a6c24a; }
+  .av--badge .av-h{ color:var(--cream); } .av--badge .av-h em{ color:#a6c24a; }
+  .av--badge .w6 li{ background:#1c3a52; }
+  .av--badge .w6 b{ color:var(--cream); } .av--badge .w6 span{ color:#c3cfd8; }
+  .av--badge .av-money{ background:#f3e4c6; color:#1a1a1a; box-shadow:0 30px 70px -34px rgba(0,0,0,0.6); }
+  .av--badge .av-hero b{ color:#c63f22; }
+  .av--badge .av-hero span, .av--badge .m2-note, .av--badge .av-after{ color:#4a4033; }
+  .av--badge .m2-track{ background:rgba(19,41,61,0.12); }
+  .av--badge .m2-row[data-part-row="year"] .m2-fill, .av--badge .m2-start{ background:#2a68a0; }
+  .av--badge .av-cta{ background:#c63f22; color:#fff; }
 
+  /* P2 · Chicago: navy and sky blue (the flag on the badge's paddle, CAS, ACE) */
+  .av--chi{ background:#0f2236; color:var(--cream); }
+  .av--chi::before{ content:""; position:absolute; left:0; right:0; top:0; height:16px; pointer-events:none;
+    background:linear-gradient(180deg, #8fd0f0 0 4px, transparent 4px 10px, #8fd0f0 10px 14px, transparent 14px); opacity:0.85; }
+  .av--chi .av-kicker{ color:#8fd0f0; } .av--chi .dot{ background:#ff5c39; }
+  .av--chi .av-h{ color:var(--cream); } .av--chi .av-h em{ color:#8fd0f0; }
+  .av--chi .w6 li{ background:#183353; }
+  .av--chi .w6 b{ color:var(--cream); } .av--chi .w6 span{ color:#b9c7d6; }
+  .av--chi .av-money{ background:var(--cream); color:#1a1a1a; box-shadow:0 30px 70px -34px rgba(0,0,0,0.6); }
+  .av--chi .av-hero b{ color:#c63f22; }
+  .av--chi .av-hero span, .av--chi .m2-note, .av--chi .av-after{ color:var(--ink-soft); }
+  .av--chi .m2-track{ background:rgba(15,34,54,0.1); }
+  .av--chi .m2-row[data-part-row="year"] .m2-fill, .av--chi .m2-start{ background:#2b74b8; }
+  .av--chi .av-cta{ background:#c63f22; color:#fff; }
 
-  @keyframes ccPulse{ 0%,100%{ box-shadow:0 0 0 4px rgba(255,92,57,0.28); } 50%{ box-shadow:0 0 0 10px rgba(255,92,57,0.06); } }
-  @media (prefers-reduced-motion:reduce){ .av-kicker .dot, .m2-start, .sb-dot{ animation:none; } .m2-fill{ transition:none; } }
+  /* P3 · Court: court blue and ball yellow (the courts at ACE) */
+  .av--court{ background:#1d4f91; color:#fff; }
+  .av--court::before{ content:""; position:absolute; inset:clamp(10px,2.4vw,22px); border:2px solid rgba(255,255,255,0.13); border-radius:4px; pointer-events:none;
+    background:linear-gradient(90deg, transparent calc(50% - 1px), rgba(255,255,255,0.13) calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px)); }
+  .av--court .av-kicker{ color:#f2d23c; } .av--court .dot{ background:#f2d23c; }
+  .av--court .av-h{ color:#fff; } .av--court .av-h em{ color:#f2d23c; }
+  .av--court .w6 li{ background:#173f74; }
+  .av--court .w6 b{ color:#fff; } .av--court .w6 span{ color:#c8d6ea; }
+  .av--court .av-money{ background:var(--cream); color:#1a1a1a; box-shadow:0 30px 70px -34px rgba(0,0,0,0.6); }
+  .av--court .av-hero b{ color:#c63f22; }
+  .av--court .av-hero span, .av--court .m2-note, .av--court .av-after{ color:var(--ink-soft); }
+  .av--court .m2-track{ background:rgba(29,79,145,0.12); }
+  .av--court .m2-row[data-part-row="year"] .m2-fill, .av--court .m2-start{ background:#1d4f91; }
+  .av--court .av-cta{ background:#c63f22; color:#fff; }
+  @keyframes ccPulse{ 0%,100%{ box-shadow:0 0 0 4px var(--pulse, rgba(255,92,57,0.28)); } 50%{ box-shadow:0 0 0 10px var(--pulse-fade, rgba(255,92,57,0.06)); } }
+  .av--badge .m2-start{ --pulse:rgba(42,104,160,0.3); --pulse-fade:rgba(42,104,160,0.06); }
+  .av--badge .av-kicker .dot{ --pulse:rgba(166,194,74,0.3); --pulse-fade:rgba(166,194,74,0.06); }
+  .av--chi .m2-start{ --pulse:rgba(43,116,184,0.3); --pulse-fade:rgba(43,116,184,0.06); }
+  .av--court .m2-start{ --pulse:rgba(29,79,145,0.3); --pulse-fade:rgba(29,79,145,0.06); }
+  .av--court .av-kicker .dot{ --pulse:rgba(242,210,60,0.3); --pulse-fade:rgba(242,210,60,0.06); }
+  @media (prefers-reduced-motion:reduce){ .av-kicker .dot, .m2-start{ animation:none; } .m2-fill{ transition:none; } }
 </style>
 </head>
 <body>
@@ -169,18 +147,124 @@
 
 <section class="cc-intro">
   <p class="cc-tag">Review only, not on the live site</p>
-  <h1>Scoreboard, three ways better.</h1>
-  <p class="cc-lede">Same story and the same live numbers. What changed in every version:</p>
+  <h1>Less orange: three wider palettes.</h1>
+  <p class="cc-lede">Same layout you liked, same live numbers. Each palette adds a second dark and a new highlight color. Orange is kept for two things only: the money and the Donate button.</p>
   <ul class="cc-changes">
-    <li>The wins come first, then the money, then one big Donate.</li>
-    <li>One accent: the money number and the button. Everything else steps back.</li>
-    <li>Two bars instead of one split bar. The empty one now says where a new gift goes.</li>
-    <li>Real contrast between the section, the card and the tiles. No muddy glow.</li>
+    <li>Every bar color pair was checked for color blindness and contrast. Pickle green next to orange failed, so green is only a highlight, never a bar.</li>
+    <li>The every-week bar takes each palette&rsquo;s blue; the road stays orange.</li>
   </ul>
-  <nav class="cc-jump" aria-label="Versions"><a href="#a2">A2 · Bright</a><a href="#a3">A3 · Spotlight</a><a href="#a4">A4 · Night game</a><a href="#before">Before</a></nav>
+  <nav class="cc-jump" aria-label="Palettes"><a href="#p1">P1 · Badge</a><a href="#p2">P2 · Chicago</a><a href="#p3">P3 · Court</a><a href="#now">Today&rsquo;s orange</a></nav>
 </section>
 
-<div class="cc-label" id="a2"><b>A2 · Bright</b><span>An orange section with a black card for the money. Game-day loud.</span></div>
+<div class="cc-label" id="p1"><b>P1 · Badge</b><span>Navy, pickle green and parchment, pulled from the Wheelie Big Dills crest.</span></div>
+<ul class="sw"><li><i style="background:#13293d"></i><b>Navy</b><span>#13293D · sections</span></li><li><i style="background:#a6c24a"></i><b>Pickle</b><span>#A6C24A · highlights</span></li><li><i style="background:#f3e4c6"></i><b>Parchment</b><span>#F3E4C6 · money card</span></li><li><i style="background:#2a68a0"></i><b>Badge blue</b><span>#2A68A0 · every-week bar</span></li><li><i style="background:#c63f22"></i><b>Orange</b><span>#C63F22 · money and Donate</span></li></ul>
+<section class="av av--badge" aria-label="Palette P1, Badge">
+  <div class="av-wrap">
+    <div class="av-head">
+      <p class="av-kicker"><span class="dot" aria-hidden="true"></span>Raising now · The Chicago Wheelie Big Dills</p>
+      <h2 class="av-h">Every week on court. <em>Next stop, Naples.</em></h2>
+    </div>
+    <ul class="w6" aria-label="Already on the board">
+      <li><b>3</b><span>straight US Opens</span></li>
+      <li><b>6</b><span>Monster Smash medals</span></li>
+      <li><b>1st</b><span>APP Tour wheelchair division</span></li>
+      <li><b>$3,004</b><span>popcorn drive, 3x its goal</span></li>
+      <li><b>334K</b><span>views in 90 days</span></li>
+      <li><b>Weekly</b><span>on court, all year</span></li>
+    </ul>
+    <div class="av-money">
+      <p class="av-hero"><b data-wbd="total">$34,500</b><span data-wbd="sub">our goal for the year ahead</span></p>
+      <div class="m2">
+        <div class="m2-row" data-part-row="year">
+          <div class="m2-head"><b>Every week</b><span data-part-fig="year">$13,500 a year</span></div>
+          <div class="m2-track"><span class="m2-fill" data-part-fill="year"></span><span class="m2-start" aria-hidden="true"></span></div>
+          <p class="m2-note">First priority. Every new gift starts here.</p>
+        </div>
+        <div class="m2-row" data-part-row="send-6">
+          <div class="m2-head"><b>The Road to the US Open</b><span data-part-fig="send-6">$21,000</span></div>
+          <div class="m2-track"><span class="m2-fill" data-part-fill="send-6"></span><span class="m2-start" aria-hidden="true"></span></div>
+          <p class="m2-note">Six athletes, about $3,500 each</p>
+        </div>
+      </div>
+      <a class="av-cta btn" href="/donate">Donate</a>
+      <p class="av-after">Then the Chicago Classic: our goal is free registration, transportation and hotels for every athlete.</p>
+    </div>
+  </div>
+</section>
+
+<div class="cc-label" id="p2"><b>P2 · Chicago</b><span>Navy and sky blue: the flag on the badge&rsquo;s paddle, and the blues in the CAS and ACE logos.</span></div>
+<ul class="sw"><li><i style="background:#0f2236"></i><b>Navy</b><span>#0F2236 · sections</span></li><li><i style="background:#8fd0f0"></i><b>Sky</b><span>#8FD0F0 · highlights</span></li><li><i style="background:#f9f7f2"></i><b>Cream</b><span>#F9F7F2 · money card</span></li><li><i style="background:#2b74b8"></i><b>Chicago blue</b><span>#2B74B8 · every-week bar</span></li><li><i style="background:#c63f22"></i><b>Orange</b><span>#C63F22 · money and Donate</span></li></ul>
+<section class="av av--chi" aria-label="Palette P2, Chicago">
+  <div class="av-wrap">
+    <div class="av-head">
+      <p class="av-kicker"><span class="dot" aria-hidden="true"></span>Raising now · The Chicago Wheelie Big Dills</p>
+      <h2 class="av-h">Every week on court. <em>Next stop, Naples.</em></h2>
+    </div>
+    <ul class="w6" aria-label="Already on the board">
+      <li><b>3</b><span>straight US Opens</span></li>
+      <li><b>6</b><span>Monster Smash medals</span></li>
+      <li><b>1st</b><span>APP Tour wheelchair division</span></li>
+      <li><b>$3,004</b><span>popcorn drive, 3x its goal</span></li>
+      <li><b>334K</b><span>views in 90 days</span></li>
+      <li><b>Weekly</b><span>on court, all year</span></li>
+    </ul>
+    <div class="av-money">
+      <p class="av-hero"><b data-wbd="total">$34,500</b><span data-wbd="sub">our goal for the year ahead</span></p>
+      <div class="m2">
+        <div class="m2-row" data-part-row="year">
+          <div class="m2-head"><b>Every week</b><span data-part-fig="year">$13,500 a year</span></div>
+          <div class="m2-track"><span class="m2-fill" data-part-fill="year"></span><span class="m2-start" aria-hidden="true"></span></div>
+          <p class="m2-note">First priority. Every new gift starts here.</p>
+        </div>
+        <div class="m2-row" data-part-row="send-6">
+          <div class="m2-head"><b>The Road to the US Open</b><span data-part-fig="send-6">$21,000</span></div>
+          <div class="m2-track"><span class="m2-fill" data-part-fill="send-6"></span><span class="m2-start" aria-hidden="true"></span></div>
+          <p class="m2-note">Six athletes, about $3,500 each</p>
+        </div>
+      </div>
+      <a class="av-cta btn" href="/donate">Donate</a>
+      <p class="av-after">Then the Chicago Classic: our goal is free registration, transportation and hotels for every athlete.</p>
+    </div>
+  </div>
+</section>
+
+<div class="cc-label" id="p3"><b>P3 · Court</b><span>Court blue and ball yellow, like the courts at ACE.</span></div>
+<ul class="sw"><li><i style="background:#1d4f91"></i><b>Court blue</b><span>#1D4F91 · sections</span></li><li><i style="background:#f2d23c"></i><b>Ball yellow</b><span>#F2D23C · highlights</span></li><li><i style="background:#f9f7f2"></i><b>Cream</b><span>#F9F7F2 · money card</span></li><li><i style="background:#1d4f91"></i><b>Court blue</b><span>#1D4F91 · every-week bar</span></li><li><i style="background:#c63f22"></i><b>Orange</b><span>#C63F22 · money and Donate</span></li></ul>
+<section class="av av--court" aria-label="Palette P3, Court">
+  <div class="av-wrap">
+    <div class="av-head">
+      <p class="av-kicker"><span class="dot" aria-hidden="true"></span>Raising now · The Chicago Wheelie Big Dills</p>
+      <h2 class="av-h">Every week on court. <em>Next stop, Naples.</em></h2>
+    </div>
+    <ul class="w6" aria-label="Already on the board">
+      <li><b>3</b><span>straight US Opens</span></li>
+      <li><b>6</b><span>Monster Smash medals</span></li>
+      <li><b>1st</b><span>APP Tour wheelchair division</span></li>
+      <li><b>$3,004</b><span>popcorn drive, 3x its goal</span></li>
+      <li><b>334K</b><span>views in 90 days</span></li>
+      <li><b>Weekly</b><span>on court, all year</span></li>
+    </ul>
+    <div class="av-money">
+      <p class="av-hero"><b data-wbd="total">$34,500</b><span data-wbd="sub">our goal for the year ahead</span></p>
+      <div class="m2">
+        <div class="m2-row" data-part-row="year">
+          <div class="m2-head"><b>Every week</b><span data-part-fig="year">$13,500 a year</span></div>
+          <div class="m2-track"><span class="m2-fill" data-part-fill="year"></span><span class="m2-start" aria-hidden="true"></span></div>
+          <p class="m2-note">First priority. Every new gift starts here.</p>
+        </div>
+        <div class="m2-row" data-part-row="send-6">
+          <div class="m2-head"><b>The Road to the US Open</b><span data-part-fig="send-6">$21,000</span></div>
+          <div class="m2-track"><span class="m2-fill" data-part-fill="send-6"></span><span class="m2-start" aria-hidden="true"></span></div>
+          <p class="m2-note">Six athletes, about $3,500 each</p>
+        </div>
+      </div>
+      <a class="av-cta btn" href="/donate">Donate</a>
+      <p class="av-after">Then the Chicago Classic: our goal is free registration, transportation and hotels for every athlete.</p>
+    </div>
+  </div>
+</section>
+
+<div class="cc-label" id="now"><b>Today&rsquo;s orange</b><span>Round 2&rsquo;s A2 Bright, for comparison.</span></div>
 <section class="av av--bright" aria-label="Version A2, Bright">
   <div class="av-wrap">
     <div class="av-head">
@@ -214,116 +298,6 @@
     </div>
   </div>
 </section>
-
-<div class="cc-label" id="a3"><b>A3 · Spotlight</b><span>A dark section with a cream card, so the money is the brightest thing on the screen.</span></div>
-<section class="av av--spot" aria-label="Version A3, Spotlight">
-  <div class="av-wrap">
-    <div class="av-head">
-      <p class="av-kicker"><span class="dot" aria-hidden="true"></span>Raising now · The Chicago Wheelie Big Dills</p>
-      <h2 class="av-h">Every week on court. <em>Next stop, Naples.</em></h2>
-    </div>
-    <ul class="w6" aria-label="Already on the board">
-      <li><b>3</b><span>straight US Opens</span></li>
-      <li><b>6</b><span>Monster Smash medals</span></li>
-      <li><b>1st</b><span>APP Tour wheelchair division</span></li>
-      <li><b>$3,004</b><span>popcorn drive, 3x its goal</span></li>
-      <li><b>334K</b><span>views in 90 days</span></li>
-      <li><b>Weekly</b><span>on court, all year</span></li>
-    </ul>
-    <div class="av-money">
-      <p class="av-hero"><b data-wbd="total">$34,500</b><span data-wbd="sub">our goal for the year ahead</span></p>
-      <div class="m2">
-        <div class="m2-row" data-part-row="year">
-          <div class="m2-head"><b>Every week</b><span data-part-fig="year">$13,500 a year</span></div>
-          <div class="m2-track"><span class="m2-fill" data-part-fill="year"></span><span class="m2-start" aria-hidden="true"></span></div>
-          <p class="m2-note">First priority. Every new gift starts here.</p>
-        </div>
-        <div class="m2-row" data-part-row="send-6">
-          <div class="m2-head"><b>The Road to the US Open</b><span data-part-fig="send-6">$21,000</span></div>
-          <div class="m2-track"><span class="m2-fill" data-part-fill="send-6"></span><span class="m2-start" aria-hidden="true"></span></div>
-          <p class="m2-note">Six athletes, about $3,500 each</p>
-        </div>
-      </div>
-      <a class="av-cta btn" href="/donate">Donate</a>
-      <p class="av-after">Then the Chicago Classic: our goal is free registration, transportation and hotels for every athlete.</p>
-    </div>
-  </div>
-</section>
-
-<div class="cc-label" id="a4"><b>A4 · Night game</b><span>Closest to the first A: dark, one accent, and Naples as the backdrop.</span></div>
-<section class="av av--night" aria-label="Version A4, Night game">
-  <div class="av-wrap">
-    <div class="av-head">
-      <p class="av-kicker"><span class="dot" aria-hidden="true"></span>Raising now · The Chicago Wheelie Big Dills</p>
-      <h2 class="av-h">Every week on court. <em>Next stop, Naples.</em></h2>
-    </div>
-    <ul class="w6" aria-label="Already on the board">
-      <li><b>3</b><span>straight US Opens</span></li>
-      <li><b>6</b><span>Monster Smash medals</span></li>
-      <li><b>1st</b><span>APP Tour wheelchair division</span></li>
-      <li><b>$3,004</b><span>popcorn drive, 3x its goal</span></li>
-      <li><b>334K</b><span>views in 90 days</span></li>
-      <li><b>Weekly</b><span>on court, all year</span></li>
-    </ul>
-    <div class="av-money">
-      <p class="av-hero"><b data-wbd="total">$34,500</b><span data-wbd="sub">our goal for the year ahead</span></p>
-      <div class="m2">
-        <div class="m2-row" data-part-row="year">
-          <div class="m2-head"><b>Every week</b><span data-part-fig="year">$13,500 a year</span></div>
-          <div class="m2-track"><span class="m2-fill" data-part-fill="year"></span><span class="m2-start" aria-hidden="true"></span></div>
-          <p class="m2-note">First priority. Every new gift starts here.</p>
-        </div>
-        <div class="m2-row" data-part-row="send-6">
-          <div class="m2-head"><b>The Road to the US Open</b><span data-part-fig="send-6">$21,000</span></div>
-          <div class="m2-track"><span class="m2-fill" data-part-fill="send-6"></span><span class="m2-start" aria-hidden="true"></span></div>
-          <p class="m2-note">Six athletes, about $3,500 each</p>
-        </div>
-      </div>
-      <a class="av-cta btn" href="/donate">Donate</a>
-      <p class="av-after">Then the Chicago Classic: our goal is free registration, transportation and hotels for every athlete.</p>
-    </div>
-  </div>
-</section>
-
-<div class="cc-label" id="before"><b>Before</b><span>The first Scoreboard, for comparison.</span></div>
-<section class="sb" aria-label="Concept A, Scoreboard">
-  <div class="sb-wrap">
-    <div>
-      <div class="sb-top">
-        <p class="sb-live"><span class="sb-dot" aria-hidden="true"></span>Raising now</p>
-        <p class="sb-team">The Chicago Wheelie Big Dills</p>
-      </div>
-      <h2 class="sb-h">Every week on court. <em>Next stop, Naples.</em></h2>
-    </div>
-    <div class="sb-money">
-      <p class="sb-hero"><b data-wbd="total">$34,500</b><span data-wbd="sub">our goal for the year ahead</span></p>
-      <div class="mtr" role="img" data-wbd-meter aria-label="Progress toward the goal">
-        <span class="mtr-seg" style="flex-grow:13500"><span class="mtr-fill" data-part-fill="year"></span></span>
-        <span class="mtr-seg" style="flex-grow:21000"><span class="mtr-fill" data-part-fill="send-6"></span></span>
-      </div>
-      <div class="lgd">
-        <p style="flex-grow:13500"><b>Every week</b><span data-part-fig="year">$13,500 a year</span><i>First priority</i></p>
-        <p style="flex-grow:21000"><b>The Road to the US Open</b><span data-part-fig="send-6">$21,000</span><i>Six athletes, about $3,500 each</i></p>
-      </div>
-    </div>
-    <div class="sb-board-wrap">
-      <p class="sb-board-h">Already on the board</p>
-      <ul class="sb-board">
-        <li><b>3</b><span>straight US Opens</span><i>Robby and Brian</i></li>
-        <li><b>6</b><span>medals at Monster Smash</span><i>2 gold, 2 silver, 2 bronze</i></li>
-        <li><b>1st</b><span>wheelchair division on the APP Tour</span><i>Juan asked for it</i></li>
-        <li><b class="sm">Every week</b><span>on court, all year</span><i>At clubs across the area</i></li>
-        <li><b>$3,004</b><span>from the popcorn drive</span><i>Three times its goal</i></li>
-        <li><b>334K</b><span>views in 90 days</span><i>Instagram and Facebook</i></li>
-      </ul>
-    </div>
-    <div class="sb-cta">
-      <a class="cc-btn" href="/donate">Donate</a>
-      <p>Then the Chicago Classic: our goal is free registration, transportation and hotels for every athlete.</p>
-    </div>
-  </div>
-</section>
-
 
 </main>
 

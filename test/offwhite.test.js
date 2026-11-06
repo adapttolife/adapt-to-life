@@ -10,7 +10,7 @@ const read = (p) => readFileSync(join(ROOT, p), "utf8");
 
 // Alec, Nov 6 2026: "On the live site now we have an off white which I like
 // but let's dial that in. I prefer off white than white." Two light
-// neutrals: the page, bone #F4F0E8, and the card, Laura's off-white #F9F7F2.
+// neutrals, both Laura's: the page, beige #EFE8DC, and the card, off-white #F9F7F2.
 
 test("every light colour on the site is one of Laura's two", () => {
   // check-palette.mjs now fails on any near-white that is not the off-white

@@ -117,15 +117,15 @@
      surface that reads as raised on top of it. Using the lighter one for both
      the page AND the cards is what flattened the landing page into one white
      field with a white card floating in it. */
-  /* Bone (Nov 6, Night & Orange): Laura's beige hue, lighter. Beside the
-     warm near-black the beige #EFE8DC read tan; bone stays clearly off-white
-     (not the white Alec ruled out in September) and every text colour reads
-     stronger on it: ink 9.7:1, orange ink 5.0:1, display orange 3.4:1. */
-  --canvas: #f4f0e8; /* bone — the page */
+  /* Laura's beige, the page. Alec, Nov 6, comparing it with a lighter "bone"
+     on his phone: "I like the off white better" — this one, the colour the
+     live site already had. Every text colour passes on it: ink 9.1:1, muted
+     4.6:1, orange ink 4.7:1, display orange 3.2:1 (large type). */
+  --canvas: #efe8dc; /* Laura's beige — the page */
   --paper: #f9f7f2; /* Laura's off-white — cards and raised surfaces.
                                Now genuinely lifts, because the page beneath it
                                is the beige. */
-  --sand: #f4f0e8; /* the page colour, for small tinted accents that sit on
+  --sand: #efe8dc; /* the page colour, for small tinted accents that sit on
                                a --paper surface (nav panel hover, callouts) */
   --hairline: #e7e1d5; /* warm hairline, used sparingly */
 
@@ -592,7 +592,7 @@ section {
    the off white better"). Full-width bands used to alternate the warm page
    colour with the lighter #F9F7F2, and two whites side by side read as a
    mistake, not a rhythm. Now every light section is the warm page colour
-   (--canvas, bone #F4F0E8); the lighter one is only ever a card ON the page, where
+   (--canvas, beige #EFE8DC); the lighter one is only ever a card ON the page, where
    it reads as lift. An alternating band says so with hairlines, not a second
    white, and the rhythm comes from the slate sections. */
 .tint {

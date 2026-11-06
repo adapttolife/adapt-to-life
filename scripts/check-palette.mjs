@@ -25,10 +25,10 @@ const BRAND = {
   // round. Off-white is only 6.9% darker than pure white, so at full-page
   // scale it reads as white — Alec called that twice. The beige is 18.8%
   // darker, three and a half times the separation.
-  "--canvas": "#F4F0E8", // bone — the page (Laura's beige hue, lighter: Nov 2026)
+  "--canvas": "#EFE8DC", // Laura's beige — the page (Alec chose it over a lighter bone, Nov 2026)
   "--paper": "#F9F7F2", // off-white — cards and lifted bands
   "--cream": "#F9F7F2", // off-white, for text on dark
-  "--sand": "#F4F0E8", // the page colour
+  "--sand": "#EFE8DC", // the page colour
   "--ink": "#3B3B46", // Laura's black, confirmed 2026-09-09; on the site since the Nov 2026 refresh
   "--yellow": "#F6BE00",
 };
@@ -65,16 +65,15 @@ const WHITE =
 
 // THE OFF-WHITE, DIALED IN (Alec, Nov 6 2026: "On the live site now we have an
 // off white which I like but let's dial that in. I prefer off white than
-// white."). The site has exactly two light neutrals: the page, bone #F4F0E8
-// (Laura's beige hue, lighter, since Night & Orange), and the card,
-// Laura's off-white #F9F7F2. Any other near-white is drift, and drift is how the site
+// white."). The site has exactly two light neutrals, both Laura's: the page,
+// beige #EFE8DC, and the card, off-white #F9F7F2. Any other near-white is drift, and drift is how the site
 // once ended up with #FBFAF6 and #F4EEE1 that nobody chose: a scrolled nav at
 // #FBFAF6, photo frames at #ECE9E4, a loading skeleton at #F2F2F2. So every
 // solid colour this light must be one of the two, and translucent white text
 // (rgba(255,255,255,0.72) reads as a cool grey) must be the off-white instead.
 const LIGHT_OK = new Set([
   "f9f7f2", // off-white
-  "f4f0e8", // bone, the page
+  "efe8dc", // Laura's beige, the page
   "fcffe6", // artwork, not a surface: the shine on the pickleball in the partner x mark
 ]);
 const lumOf = (r, g, b) => {
@@ -134,7 +133,7 @@ const walk = (dir) => {
         `${e.name}: ${hits.length} pure-white declaration(s) — the brand has no pure white`,
       );
     for (const h of nearWhites(text))
-      fail(`${e.name}: ${h} — use the off-white #F9F7F2 or the bone #F4F0E8`);
+      fail(`${e.name}: ${h} — use the off-white #F9F7F2 or the beige #EFE8DC`);
   }
 };
 walk(ROOT);
@@ -151,7 +150,7 @@ const SYSTEM = {
   "photo-black": "#0F0E0D",
   night: "#171513",
   "night-raised": "#23201D",
-  bone: "#F4F0E8",
+  beige: "#EFE8DC",
   "off-white": "#F9F7F2",
   ink: "#3B3B46",
   "ink-soft": "#3C382F",

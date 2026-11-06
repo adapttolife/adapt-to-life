@@ -55,7 +55,7 @@ test("current initiative details do not cap the mission or repurpose donations",
   assert.ok(promise.includes("Gifts already received keep their original terms."));
   assert.ok(
     promise.includes(
-      "If a program can't meet the safety standards its athletes need, it isn't a program we fund.",
+      "If a program can&rsquo;t meet the safety standards its athletes need, it isn&rsquo;t a program we fund.",
     ),
   );
   const roles = read("data/volunteer-roles.mjs");

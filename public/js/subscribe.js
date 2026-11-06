@@ -42,8 +42,8 @@
               d.confirm
                 ? "Almost done. Check your inbox and tap the button in our email to confirm."
                 : d.existing
-                  ? "You're already on the list. Thanks for being here."
-                  : "You're in. Watch your inbox.",
+                  ? "You’re already on the list. Thanks for being here."
+                  : "You’re in. Watch your inbox.",
               true,
             );
           } else {

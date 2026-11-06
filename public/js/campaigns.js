@@ -563,7 +563,7 @@
       { a: 5, t: "$5 puts one athlete on court for a night." },
       { a: 75, t: "$75 covers up to 15 athletes for a night at ACE." },
       { a: 960, t: "$960 can keep one athlete training all year." },
-      { a: 3500, t: "$3,500 covers about what one athlete's US Open costs." },
+      { a: 3500, t: "$3,500 covers about what one athlete’s US Open costs." },
     ],
   };
   var GIFT_DEFAULT = { monthly: 80, once: 75 };

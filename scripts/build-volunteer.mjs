@@ -33,6 +33,7 @@ import { fileURLToPath } from "node:url";
 import { SHARED, LANES, ROLES, TOOLS, ROLE_TOOLS } from "../data/volunteer-roles.mjs";
 import { icon, logo } from "./lib/icons.mjs";
 import { applyIcons } from "./lib/apply-icons.mjs";
+import { smarten } from "./smart-quotes.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const PUB = join(ROOT, "public");
@@ -365,7 +366,7 @@ const FORM_JS = `<script>
       if (btn && btn.disabled) return;
       window.ATLFormSubmission(f, payload);
       var orig = btn ? btn.textContent : '';
-      if(btn){ btn.disabled = true; btn.textContent = 'Sending...'; }
+      if(btn){ btn.disabled = true; btn.textContent = 'Sending…'; }
       setStatus('', true);
       fetch('/api/volunteer', {
         method:'POST',
@@ -524,11 +525,16 @@ ${sec("Not this", "          " + ul(r.isNot, "jd-no"))}
 // Pages ask for the CSS and JS version they were built with (scripts/version-assets.mjs).
 const VERSIONS = assetVersions();
 const files = new Map();
-files.set(join(PUB, "volunteer.html"), versionHtml(applyIcons(boardPage()), VERSIONS));
+// smarten(): the copy in data/volunteer-roles.mjs is typed with plain quotes;
+// the pages get typographer's quotes (scripts/smart-quotes.mjs).
+files.set(
+  join(PUB, "volunteer.html"),
+  versionHtml(smarten(applyIcons(boardPage())), VERSIONS),
+);
 for (const r of ROLES)
   files.set(
     join(PUB, "volunteer", `${r.slug}.html`),
-    versionHtml(applyIcons(rolePage(r)), VERSIONS),
+    versionHtml(smarten(applyIcons(rolePage(r))), VERSIONS),
   );
 
 mkdirSync(join(PUB, "volunteer"), { recursive: true });

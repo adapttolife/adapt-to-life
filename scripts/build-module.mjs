@@ -36,6 +36,7 @@
 import { readFileSync, writeFileSync, readdirSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { smarten } from "./smart-quotes.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const PUB = join(ROOT, "public");
@@ -215,7 +216,8 @@ export function stamp(page, name = "page") {
     } catch {
       throw new Error(`${name}: campaign-module options are not JSON: ${json}`);
     }
-    const body = render(opts, name)
+    // typographer's quotes in the copy, as on every page (smart-quotes.mjs)
+    const body = smarten(render(opts, name))
       .split("\n")
       .map((l) => (l ? indent + l : l))
       .join("\n");
@@ -223,7 +225,7 @@ export function stamp(page, name = "page") {
   });
   const withNumbers = out.replace(NUMBERS, (m, indent) => {
     found++;
-    const body = renderNumbers()
+    const body = smarten(renderNumbers())
       .split("\n")
       .map((l) => (l ? indent + l : l))
       .join("\n");

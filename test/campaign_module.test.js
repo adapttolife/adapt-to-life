@@ -90,7 +90,7 @@ test("every gift line is a verified unit cost", () => {
     "$5 puts one athlete on court for a night.",
     "$75 covers up to 15 athletes for a night at ACE.",
     "$960 can keep one athlete training all year.",
-    "$3,500 covers about what one athlete's US Open costs.",
+    "$3,500 covers about what one athlete’s US Open costs.",
   ])
     assert.ok(js.includes(line), line);
   // The US Open is a lottery: a gift never promises a seat.
@@ -172,7 +172,7 @@ test("the math lives on /numbers, and every module links to it", () => {
   // Every gift line on the page is the picker's line, word for word.
   const js = read("public/js/campaigns.js");
   for (const m of nb.matchAll(/<li><b>(\$[\d,]+)<\/b><span>([^<]+)<\/span><\/li>/g)) {
-    const line = `${m[1]} ${m[2]}`.replace(/&rsquo;/g, "'");
+    const line = `${m[1]} ${m[2]}`.replace(/&rsquo;/g, "’");
     assert.ok(js.includes(line), `gift line not in the picker: ${line}`);
   }
 

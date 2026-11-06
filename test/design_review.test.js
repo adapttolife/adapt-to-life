@@ -3,6 +3,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
+import { execFileSync } from "node:child_process";
+import { smarten } from "../scripts/smart-quotes.mjs";
 
 // The Nov 6 2026 design review (Alec: "Fix everything you recommended. Take
 // your time. Let's get this right.").
@@ -45,4 +47,51 @@ test("no page skips a heading level (the footer's titles are h2)", () => {
       `${f}: footer titles are h4`,
     );
   }
+});
+
+test("the copy uses typographer's quotes, not typewriter ones", () => {
+  // Nov 6 2026 design review: "We're", "Juan's" and "The chair didn't fix me"
+  // were set with straight marks beside pages already using &rsquo;. Every
+  // page a visitor can reach is checked; `node scripts/smart-quotes.mjs`
+  // fixes a failure. Generated pages (volunteer, the campaign module) run
+  // their output through the same function, so they pass by construction.
+  execFileSync(process.execPath, ["scripts/smart-quotes.mjs", "--check"], {
+    cwd: ROOT,
+    stdio: "pipe",
+  });
+  // The converter itself: apostrophes, pairs, decades, and nothing inside
+  // tags, comments or scripts.
+  const s = (h) => smarten(h);
+  assert.equal(s("<p>We're here</p>"), "<p>We&rsquo;re here</p>");
+  assert.equal(
+    s('<p>Why "Hustle &amp; Heart"</p>'),
+    "<p>Why &ldquo;Hustle &amp; Heart&rdquo;</p>",
+  );
+  assert.equal(s("<p>the athletes' chairs</p>"), "<p>the athletes&rsquo; chairs</p>");
+  assert.equal(s("<p>since '26</p>"), "<p>since &rsquo;26</p>");
+  assert.equal(s("<p>'Go,' she said</p>"), "<p>&lsquo;Go,&rsquo; she said</p>");
+  assert.equal(
+    s('<p>"<em>Option C</em> is awesome"</p>'),
+    "<p>&ldquo;<em>Option C</em> is awesome&rdquo;</p>",
+  );
+  assert.equal(s("<p>Wait...</p>"), "<p>Wait&hellip;</p>");
+  const raw =
+    '<a title="Tim\'s" href="/x">x</a><!-- m {"a":"b"} --><script>var a = "it\'s";</script><code>a\'b</code>';
+  assert.equal(s(raw), raw);
+  // User-facing strings in the scripts that write onto the page.
+  const js = (p) => readFileSync(join(ROOT, p), "utf8");
+  assert.ok(js("public/js/subscribe.js").includes("You’re in. Watch your inbox."));
+  assert.ok(
+    !/'(?:Sending|Joining|Submitting)\.\.\.'|"Sending\.\.\."/.test(
+      [
+        "public/js/sponsor-sheet.js",
+        "public/contact.html",
+        "public/apply.html",
+        "public/waiver.html",
+        "public/subscribe.html",
+      ]
+        .map(js)
+        .join("\n"),
+    ),
+  );
 });

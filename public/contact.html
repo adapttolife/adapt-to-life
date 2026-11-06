@@ -118,7 +118,7 @@ fill="currentColor" stroke="none">
   <section class="hero dark pg-band pg-head--sm">
     <div class="wrap">
       <span class="eyebrow reveal">Contact</span>
-      <h1 class="serif display reveal">Let's talk.</h1>
+      <h1 class="serif display reveal">Let&rsquo;s talk.</h1>
       <p class="lead sub reveal">Looking for a program, asking about funding, or bringing an idea? Tell us how we can help.</p>
     </div>
   </section>
@@ -172,13 +172,13 @@ fill="currentColor" stroke="none">
                 if (tier && /^[A-Za-z ]{3,20}$/.test(tier)) {
                   var msg = document.getElementById('msg');
                   if (msg && !msg.value) {
-                    msg.value = "I'm interested in sponsoring at the " + tier + " level.";
+                    msg.value = "I’m interested in sponsoring at the " + tier + " level.";
                   }
                 }
                 var q = qs.get('rsn');
                 if (q === 'ambassador') {
                   var am = document.getElementById('msg');
-                  if (am && !am.value) am.value = "I'm interested in becoming an Adapt To Life ambassador.";
+                  if (am && !am.value) am.value = "I’m interested in becoming an Adapt To Life ambassador.";
                 }
                 var sel = document.getElementById('rsn');
                 if(q && map[q] && sel){ sel.value = map[q]; }
@@ -188,7 +188,7 @@ fill="currentColor" stroke="none">
             <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only" style="margin-bottom:1rem;"></div>
             <button type="submit" class="btn">Send message</button>
             <p class="form-status" id="formStatus" role="status" aria-live="polite" style="margin-top:.9rem;font-weight:600"></p>
-            <p class="form-note">We'll reply at the email you provide.</p>
+            <p class="form-note">We&rsquo;ll reply at the email you provide.</p>
           </form>
         </div>
       </div>
@@ -252,9 +252,9 @@ fill="currentColor" stroke="none">
         <h2>Organization</h2>
         <a href="/about">Our Story</a>
         <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
-        <a href="/tim">Tim&#39;s Story</a>
-        <a href="/karen">Karen&#39;s Story</a>
-        <a href="/juan">Juan&#39;s Story</a>
+        <a href="/tim">Tim&rsquo;s Story</a>
+        <a href="/karen">Karen&rsquo;s Story</a>
+        <a href="/juan">Juan&rsquo;s Story</a>
         <a href="/adaptive-sports-near-me">Adaptive Sports Near Me · In beta</a>
         <a href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
                 <a href="/roadmap">Roadmap</a>
@@ -358,7 +358,7 @@ fill="currentColor" stroke="none">
       if (btn && btn.disabled) return;
       window.ATLFormSubmission(f, payload);
       var orig = btn ? btn.textContent : '';
-      if(btn){ btn.disabled = true; btn.textContent = 'Sending...'; }
+      if(btn){ btn.disabled = true; btn.textContent = 'Sending…'; }
       setStatus('', true);
       fetch('/api/contact', {
         method:'POST',
@@ -380,7 +380,7 @@ fill="currentColor" stroke="none">
   })();
 </script>
 
-<script src="/js/subscribe.js?v=71816eda" defer></script>
+<script src="/js/subscribe.js?v=7efaf550" defer></script>
 <script src="/js/form-submission.js?v=8dbf21a7" defer></script>
 <script src="/js/turnstile-lazy.js?v=12e9b811" defer></script>
 </body>

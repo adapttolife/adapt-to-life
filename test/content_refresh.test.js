@@ -73,7 +73,7 @@ test("homepage tells participation story without the two-program comparison pane
   assert.equal((closing.match(/class="btn/g) || []).length, 1);
   assert.ok(closing.includes('href="/volunteer" class="textlink"'));
   const quote =
-    "I got into this because someone handed me a brochure when I was six. Now it's our turn to be that for the next athlete.";
+    "I got into this because someone handed me a brochure when I was six. Now it&rsquo;s our turn to be that for the next athlete.";
   assert.equal(html.split(quote).length, 2, "original founder quote appears once");
   assert.ok(html.includes("Help the next athlete find their place."));
   assert.ok(html.includes("We build more ways into adaptive sports."));

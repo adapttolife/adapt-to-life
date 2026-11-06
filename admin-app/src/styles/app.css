@@ -928,6 +928,61 @@
   cursor: pointer;
 }
 
+.feature-toggle-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  max-width: 720px;
+  margin: 18px 0;
+}
+
+.feature-toggle-form .btn {
+  width: fit-content;
+  margin: 0;
+  cursor: pointer;
+}
+
+.feature-toggle-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.feature-toggle {
+  display: grid;
+  grid-template-columns: minmax(170px, 1fr) minmax(260px, 2fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.feature-toggle > div:first-child {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.feature-toggle small {
+  color: var(--ink-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.feature-toggle-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.feature-toggle-actions .btn {
+  margin: 0;
+  cursor: pointer;
+}
+
 @media (max-width: 620px) {
   .beta-tester-form {
     grid-template-columns: 1fr;
@@ -1268,6 +1323,11 @@
   }
 
   .markdown-editor.has-preview .markdown-panes {
+    grid-template-columns: 1fr;
+  }
+
+  .feature-toggle-form,
+  .feature-toggle {
     grid-template-columns: 1fr;
   }
 }

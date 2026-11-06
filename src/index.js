@@ -551,6 +551,140 @@ async function localAsnmAdminCollection(request, env, url) {
 }
 
 export async function localAsnmAdminOperations(request, env, url) {
+  const featureMatch = url.pathname.match(
+    /^\/admin\/api\/asnm\/admin-data\/feature-toggles(?:\/([a-z0-9-]{1,80}))?$/i,
+  );
+  if (featureMatch) {
+    const featureId = featureMatch[1];
+    const timestamp = new Date().toISOString();
+    const featureIdFromName = (value) =>
+      String(value || "")
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 80);
+    const audienceIds = (value) => {
+      if (!Array.isArray(value)) return [];
+      return [
+        ...new Set(value.map((entry) => String(entry || "").trim()).filter(Boolean)),
+      ];
+    };
+
+    try {
+      if (request.method === "GET" && !featureId) {
+        const rows = await env.ASNM_DB.prepare(
+          `SELECT id, name, audience_json, created_at, updated_at
+           FROM feature_toggles
+           ORDER BY name COLLATE NOCASE`,
+        ).all();
+        const items = (rows.results || []).map((row) => {
+          let audienceIds = [];
+          try {
+            const parsed = JSON.parse(String(row.audience_json || "[]"));
+            audienceIds = Array.isArray(parsed) ? parsed : [];
+          } catch {
+            audienceIds = [];
+          }
+          return { ...row, audience_ids: audienceIds };
+        });
+        return json({ ok: true, items }, 200, ADMIN_CACHE);
+      }
+
+      if (request.method === "POST" && !featureId) {
+        const body = await request.json().catch(() => null);
+        const name = String(body?.name || "")
+          .trim()
+          .slice(0, 160);
+        const id = featureIdFromName(name);
+        const audiences = audienceIds(body?.audienceIds);
+        if (!name || !id) {
+          return json({ ok: false, error: "Enter a feature name." }, 422, ADMIN_CACHE);
+        }
+        if (!audiences.length) {
+          return json(
+            { ok: false, error: "Choose Everyone or at least one beta tester group." },
+            422,
+            ADMIN_CACHE,
+          );
+        }
+        await env.ASNM_DB.prepare(
+          `INSERT INTO feature_toggles (id, name, audience_json, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?)`,
+        )
+          .bind(id, name, JSON.stringify(audiences), timestamp, timestamp)
+          .run();
+        return json(
+          { ok: true, item: { id, name, audience_ids: audiences } },
+          201,
+          ADMIN_CACHE,
+        );
+      }
+
+      if (request.method === "PATCH" && featureId) {
+        const body = await request.json().catch(() => null);
+        const name = String(body?.name || "")
+          .trim()
+          .slice(0, 160);
+        const audiences = audienceIds(body?.audienceIds);
+        if (!name) {
+          return json({ ok: false, error: "Enter a feature name." }, 422, ADMIN_CACHE);
+        }
+        if (!audiences.length) {
+          return json(
+            { ok: false, error: "Choose Everyone or at least one beta tester group." },
+            422,
+            ADMIN_CACHE,
+          );
+        }
+        const result = await env.ASNM_DB.prepare(
+          `UPDATE feature_toggles
+           SET name = ?, audience_json = ?, updated_at = ?
+           WHERE id = ?`,
+        )
+          .bind(name, JSON.stringify(audiences), timestamp, featureId)
+          .run();
+        if (!Number(result.meta?.changes || 0)) {
+          return json(
+            { ok: false, error: "Feature toggle not found." },
+            404,
+            ADMIN_CACHE,
+          );
+        }
+        return json(
+          { ok: true, item: { id: featureId, name, audience_ids: audiences } },
+          200,
+          ADMIN_CACHE,
+        );
+      }
+
+      if (request.method === "DELETE" && featureId) {
+        const result = await env.ASNM_DB.prepare(
+          "DELETE FROM feature_toggles WHERE id = ?",
+        )
+          .bind(featureId)
+          .run();
+        if (!Number(result.meta?.changes || 0)) {
+          return json(
+            { ok: false, error: "Feature toggle not found." },
+            404,
+            ADMIN_CACHE,
+          );
+        }
+        return json({ ok: true }, 200, ADMIN_CACHE);
+      }
+
+      return json({ ok: false, error: "Method not allowed" }, 405, ADMIN_CACHE);
+    } catch (error) {
+      console.error("ASNM feature toggle request failed", error);
+      return json(
+        { ok: false, error: "Feature availability is temporarily unavailable." },
+        503,
+        ADMIN_CACHE,
+      );
+    }
+  }
+
   if (url.pathname === "/admin/api/asnm/admin-data/beta-testers") {
     try {
       if (request.method === "GET") {

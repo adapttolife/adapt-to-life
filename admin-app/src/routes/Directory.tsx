@@ -828,13 +828,17 @@ export function Directory({ onFail }: { onFail: () => void }) {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [current, setCurrent] = useState(detailRoute);
-  const [operations, setOperations] = useState<"queue" | "beta" | null>(null);
+  const [operations, setOperations] = useState<"queue" | "beta" | "features" | null>(
+    null,
+  );
   const [queueItems, setQueueItems] = useState<Item[]>([]);
   const [selectedQueueItem, setSelectedQueueItem] = useState<Item | null>(null);
   const [betaTesters, setBetaTesters] = useState<Item[]>([]);
   const [selectedBetaTester, setSelectedBetaTester] = useState<Item | null>(null);
   const [betaGroups, setBetaGroups] = useState<Item[]>([]);
   const [betaGroupError, setBetaGroupError] = useState("");
+  const [featureToggles, setFeatureToggles] = useState<Item[]>([]);
+  const [selectedFeatureToggle, setSelectedFeatureToggle] = useState<Item | null>(null);
 
   const go = (path: string) => {
     history.pushState(null, "", path);
@@ -849,8 +853,23 @@ export function Directory({ onFail }: { onFail: () => void }) {
     return body;
   };
 
+  const loadFeatureToggles = async () => {
+    const body = await request("/admin-data/feature-toggles");
+    setFeatureToggles(body.items || []);
+    return body;
+  };
+
+  const featureAudienceOptions = [
+    { value: "everyone", label: "Everyone" },
+    ...betaGroups.map((group) => ({
+      value: String(group.id),
+      label: String(group.name),
+    })),
+  ];
+
   const chooseKind = (nextKind: Kind) => {
     if (nextKind === kind) return;
+    setOperations(null);
     setLoading(true);
     setQuery("");
     setKind(nextKind);
@@ -915,7 +934,11 @@ export function Directory({ onFail }: { onFail: () => void }) {
   useEffect(() => {
     if (!operations) return;
     const requestForOperation =
-      operations === "queue" ? request("/admin-data/queue") : loadBetaTesters();
+      operations === "queue"
+        ? request("/admin-data/queue")
+        : operations === "beta"
+          ? loadBetaTesters()
+          : Promise.all([loadFeatureToggles(), loadBetaTesters()]);
     requestForOperation
       .then((body) => {
         if (operations === "queue") setQueueItems(body.items || []);
@@ -924,8 +947,8 @@ export function Directory({ onFail }: { onFail: () => void }) {
   }, [operations]);
 
   useEffect(() => {
-    Promise.all([request("/admin-data/queue"), loadBetaTesters()])
-      .then(([queue, beta]) => {
+    Promise.all([request("/admin-data/queue"), loadBetaTesters(), loadFeatureToggles()])
+      .then(([queue]) => {
         setQueueItems(queue.items || []);
       })
       .catch(() => {});
@@ -1194,6 +1217,85 @@ export function Directory({ onFail }: { onFail: () => void }) {
       setMessage("Beta tester removed.");
     } catch (error) {
       handleError(error, "Could not remove that beta tester.");
+    }
+  };
+
+  const createFeatureToggle = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    try {
+      await request("/admin-data/feature-toggles", {
+        method: "POST",
+        body: JSON.stringify({
+          name: String(data.get("name") || ""),
+          audienceIds: data.getAll("audience_ids").map(String),
+        }),
+      });
+      form.reset();
+      await loadFeatureToggles();
+      setMessage("Feature toggle added.");
+    } catch (error) {
+      handleError(error, "Could not add that feature toggle.");
+    }
+  };
+
+  const updateFeatureToggle = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!selectedFeatureToggle) return;
+    const data = new FormData(event.currentTarget);
+    try {
+      const body = await request(
+        `/admin-data/feature-toggles/${selectedFeatureToggle.id}`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({
+            name: String(data.get("name") || ""),
+            audienceIds: data.getAll("audience_ids").map(String),
+          }),
+        },
+      );
+      const saved = body.item as Item;
+      setFeatureToggles((features) =>
+        features.map((feature) =>
+          String(feature.id) === String(saved.id) ? saved : feature,
+        ),
+      );
+      setSelectedFeatureToggle(saved);
+      setMessage("Feature toggle updated.");
+    } catch (error) {
+      handleError(error, "Could not update that feature toggle.");
+    }
+  };
+
+  const updateFeatureAudience = async (feature: Item, audienceIds: string[]) => {
+    try {
+      const body = await request(`/admin-data/feature-toggles/${feature.id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ name: String(feature.name || ""), audienceIds }),
+      });
+      const saved = body.item as Item;
+      setFeatureToggles((features) =>
+        features.map((entry) =>
+          String(entry.id) === String(saved.id) ? saved : entry,
+        ),
+      );
+      setMessage("Feature availability updated.");
+    } catch (error) {
+      handleError(error, "Could not update feature availability.");
+    }
+  };
+
+  const removeFeatureToggle = async (feature: Item) => {
+    if (!confirm(`Delete ${String(feature.name || "this feature toggle")}?`)) return;
+    try {
+      await request(`/admin-data/feature-toggles/${feature.id}`, { method: "DELETE" });
+      setFeatureToggles((features) =>
+        features.filter((entry) => String(entry.id) !== String(feature.id)),
+      );
+      setMessage("Feature toggle deleted.");
+    } catch (error) {
+      handleError(error, "Could not delete that feature toggle.");
     }
   };
 
@@ -1480,6 +1582,144 @@ export function Directory({ onFail }: { onFail: () => void }) {
               </div>
             </div>
           ))}
+        </div>
+        {toast}
+      </section>
+    );
+  }
+
+  if (operations === "features") {
+    if (selectedFeatureToggle) {
+      const audiences = Array.isArray(selectedFeatureToggle.audience_ids)
+        ? selectedFeatureToggle.audience_ids.map(String)
+        : [];
+      return (
+        <section className="directory-page">
+          <button className="back-link" onClick={() => setSelectedFeatureToggle(null)}>
+            ← Feature availability
+          </button>
+          <h2>{String(selectedFeatureToggle.name || "Feature toggle")}</h2>
+          <p className="sub">
+            Choose who can use this Adaptive Sports Near Me feature.
+          </p>
+          <form className="feature-toggle-form" onSubmit={updateFeatureToggle}>
+            <label className="form-field wide">
+              <span>Feature Name</span>
+              <input
+                defaultValue={String(selectedFeatureToggle.name || "")}
+                name="name"
+                placeholder="Feature name"
+                required
+              />
+            </label>
+            <div className="form-field wide">
+              <span>Available To</span>
+              <SearchSelect
+                name="audience_ids"
+                multiple
+                value={audiences}
+                options={featureAudienceOptions}
+                placeholder="Choose everyone or beta tester groups"
+              />
+              <small>
+                Everyone enables the feature for all signed-in organization managers.
+              </small>
+            </div>
+            <button className="btn" type="submit">
+              Save changes
+            </button>
+          </form>
+          {toast}
+        </section>
+      );
+    }
+
+    return (
+      <section className="directory-page">
+        <button className="back-link" onClick={() => setOperations(null)}>
+          ← ASNM directory
+        </button>
+        <h2>Feature Availability</h2>
+        <p className="sub">
+          Control which beta tester groups can use Adaptive Sports Near Me features.
+        </p>
+        <form className="feature-toggle-form" onSubmit={createFeatureToggle}>
+          <label className="form-field">
+            <span>Feature Name</span>
+            <input name="name" placeholder="Feature name" required />
+          </label>
+          <div className="form-field">
+            <span>Available To</span>
+            <SearchSelect
+              name="audience_ids"
+              multiple
+              value={[]}
+              options={featureAudienceOptions}
+              placeholder="Choose everyone or beta tester groups"
+            />
+          </div>
+          <button className="btn" type="submit">
+            Add feature toggle
+          </button>
+        </form>
+        <div className="feature-toggle-list">
+          {featureToggles.length ? (
+            featureToggles.map((feature) => {
+              const audiences = Array.isArray(feature.audience_ids)
+                ? feature.audience_ids.map(String)
+                : [];
+              return (
+                <form
+                  className="feature-toggle"
+                  key={String(feature.id)}
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    updateFeatureAudience(
+                      feature,
+                      new FormData(event.currentTarget)
+                        .getAll("audience_ids")
+                        .map(String),
+                    );
+                  }}
+                >
+                  <div>
+                    <b>{String(feature.name || "Feature toggle")}</b>
+                    <small>{String(feature.id)}</small>
+                  </div>
+                  <div className="feature-toggle-audience">
+                    <SearchSelect
+                      name="audience_ids"
+                      multiple
+                      value={audiences}
+                      options={featureAudienceOptions}
+                      placeholder="Choose availability"
+                    />
+                  </div>
+                  <div className="feature-toggle-actions">
+                    <button className="btn btn--line" type="submit">
+                      Save
+                    </button>
+                    <button
+                      className="btn btn--line"
+                      onClick={() => setSelectedFeatureToggle(feature)}
+                      type="button"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="btn btn--line"
+                      onClick={() => removeFeatureToggle(feature)}
+                      type="button"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </form>
+              );
+            })
+          ) : (
+            <p>No feature toggles have been added.</p>
+          )}
         </div>
         {toast}
       </section>
@@ -2161,6 +2401,12 @@ export function Directory({ onFail }: { onFail: () => void }) {
           onClick={() => setOperations("beta")}
         >
           Beta Testers ({betaTesters.length})
+        </button>
+        <button
+          className={operations === "features" ? "on" : ""}
+          onClick={() => setOperations("features")}
+        >
+          Feature Availability ({featureToggles.length})
         </button>
         {KINDS.map((entry) => (
           <button

@@ -33,11 +33,11 @@
 <link rel="dns-prefetch" href="https://js.stripe.com">
 <link rel="preload" as="script" href="https://widgets.givebutter.com/latest.umd.cjs?acct=7FsgcjXFnW6fabQn">
 <script async src="https://widgets.givebutter.com/latest.umd.cjs?acct=7FsgcjXFnW6fabQn"></script>
-<link rel="preload" href="/css/site.css?v=0327e277" as="style">
+<link rel="preload" href="/css/site.css?v=032c1eb2" as="style">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=0327e277">
+<link rel="stylesheet" href="/css/site.css?v=032c1eb2">
 <link rel="stylesheet" href="/css/page-header.css?v=beb972ef">
 <!-- band:vars --><style data-band-vars>:root{--pg-band-wide:url('/images/hero/panels/pg-band-4-wide.4c52877e.webp');--pg-band-tall:url('/images/hero/panels/pg-band-4-tall.f6e94afc.webp');--pg-give-wide:url('/images/hero/panels/pg-give-wide.b46beed5.webp');--pg-give-tall:url('/images/hero/panels/pg-give-tall.5cece3a5.webp');}</style>
 <link rel="stylesheet" href="/css/roll-band.css?v=1f3b1bd1">
@@ -108,9 +108,7 @@
   .give-fact:first-child{ border-top:1px solid var(--hairline); }
   .give-fact-k{ flex:0 0 11rem; font-family:"Space Mono",monospace; font-size:0.7rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); padding-top:0.28rem; }
   .give-fact-v{ flex:1 1 14rem; color:var(--ink); }
-  /* Six impact tiles, smallest gift first: two rows of three, then the shared breakpoints. */
-  @media (min-width: 561px){ .impact-grid{ grid-template-columns:repeat(3,1fr); } }
-  .impact-any{ margin-top:1.6rem; color:var(--ink-soft); }
+  .impact-any{ margin-top:1.4rem; color:var(--ink-soft); text-align:center; }
 </style>
 </head>
 <body>
@@ -280,14 +278,14 @@ fill="currentColor" stroke="none">
         <span class="eyebrow orange">Your impact</span>
         <h2 class="serif h2" style="margin-top:0.8rem;">What your gift can support</h2>
       </div>
-      <div class="impact-grid">
-        <div class="reveal"><span class="ix-tile sm" aria-hidden="true"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="play" data-style="duotone"><g fill="currentColor"><path d="M128 32a96 96 0 1 0 96 96a96 96 0 0 0-96-96m-20 136V88l64 40Z" opacity=".2"/><path d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m0 192a88 88 0 1 1 88-88a88.1 88.1 0 0 1-88 88m48.24-94.78l-64-40A8 8 0 0 0 100 88v80a8 8 0 0 0 12.24 6.78l64-40a8 8 0 0 0 0-13.56M116 153.57v-51.14L156.91 128Z"/></g></svg></span><div class="impact-n">$5</div><div class="impact-l">Puts one athlete on court for a night at ACE</div></div>
-        <div class="reveal"><span class="ix-tile sm" aria-hidden="true"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="courts" data-style="duotone"><g fill="currentColor"><path d="M232 88v80h-16a40 40 0 0 1 0-80ZM40 88H24v80h16a40 40 0 0 0 0-80" opacity=".2"/><path d="M224 48H32a16 16 0 0 0-16 16v128a16 16 0 0 0 16 16h192a16 16 0 0 0 16-16V64a16 16 0 0 0-16-16m0 112h-8a32 32 0 0 1 0-64h8ZM32 96h8a32 32 0 0 1 0 64h-8Zm0 80h8a48 48 0 0 0 0-96h-8V64h88v128H32Zm192 16h-88V64h88v16h-8a48 48 0 0 0 0 96h8z"/></g></svg></span><div class="impact-n">$75</div><div class="impact-l">Covers up to 15 athletes for a night at ACE</div></div>
-        <div class="reveal"><span class="ix-tile sm" aria-hidden="true"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="equipment" data-style="duotone"><g fill="currentColor"><path d="M232 120v72a8 8 0 0 1-8 8H32a8 8 0 0 1-8-8v-72Z" opacity=".2"/><path d="M224 64h-48v-8a24 24 0 0 0-24-24h-48a24 24 0 0 0-24 24v8H32a16 16 0 0 0-16 16v112a16 16 0 0 0 16 16h192a16 16 0 0 0 16-16V80a16 16 0 0 0-16-16M96 56a8 8 0 0 1 8-8h48a8 8 0 0 1 8 8v8H96ZM32 80h192v32h-32v-8a8 8 0 0 0-16 0v8H80v-8a8 8 0 0 0-16 0v8H32Zm192 112H32v-64h32v8a8 8 0 0 0 16 0v-8h96v8a8 8 0 0 0 16 0v-8h32z"/></g></svg></span><div class="impact-n">$200</div><div class="impact-l">Toward equipment and repairs</div></div>
-        <div class="reveal"><span class="ix-tile sm" aria-hidden="true"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="training" data-style="duotone"><g fill="currentColor"><path d="M176 128a48 48 0 1 1-48-48a48 48 0 0 1 48 48" opacity=".2"/><path d="M221.87 83.16A104.1 104.1 0 1 1 195.67 49l22.67-22.68a8 8 0 0 1 11.32 11.32l-96 96a8 8 0 0 1-11.32-11.32l27.72-27.72a40 40 0 1 0 17.87 31.09a8 8 0 1 1 16-.9a56 56 0 1 1-22.38-41.65l22.75-22.75a87.88 87.88 0 1 0 23.13 29.67a8 8 0 0 1 14.44-6.9"/></g></svg></span><div class="impact-n">$500</div><div class="impact-l">Toward regular training</div></div>
-        <div class="reveal"><span class="ix-tile sm" aria-hidden="true"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="recurring" data-style="duotone"><g fill="currentColor"><path d="M216 128a88 88 0 1 1-88-88a88 88 0 0 1 88 88" opacity=".2"/><path d="M224 48v48a8 8 0 0 1-8 8h-48a8 8 0 0 1 0-16h28.69l-14.63-14.63a79.56 79.56 0 0 0-56.13-23.43h-.45a79.52 79.52 0 0 0-55.89 22.77a8 8 0 0 1-11.18-11.44a96 96 0 0 1 135 .79L208 76.69V48a8 8 0 0 1 16 0m-37.59 135.29a80 80 0 0 1-112.47-.66L59.31 168H88a8 8 0 0 0 0-16H40a8 8 0 0 0-8 8v48a8 8 0 0 0 16 0v-28.69l14.63 14.63A95.43 95.43 0 0 0 130 222.06h.53a95.36 95.36 0 0 0 67.07-27.33a8 8 0 0 0-11.18-11.44Z"/></g></svg></span><div class="impact-n">$960</div><div class="impact-l">One athlete&rsquo;s membership for a year, under $3 a day</div></div>
-        <div class="reveal"><span class="ix-tile sm" aria-hidden="true"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="participation" data-style="duotone"><g fill="currentColor"><path d="M200 48a24 24 0 1 1-24-24a24 24 0 0 1 24 24" opacity=".2"/><path d="M176 80a32 32 0 1 0-32-32a32 32 0 0 0 32 32m0-48a16 16 0 1 1-16 16a16 16 0 0 1 16-16m-8 136a64 64 0 1 1-64-64a8 8 0 0 1 0 16a48 48 0 1 0 48 48a8 8 0 0 1 16 0m38.19-37.07a8 8 0 0 1 1.65 6.64l-16 80A8 8 0 0 1 184 224a7.8 7.8 0 0 1-1.58-.16a8 8 0 0 1-6.27-9.41L190.24 144H128a8 8 0 0 1-6.94-12l20.06-34.9a80.09 80.09 0 0 0-88 9.17A8 8 0 1 1 42.91 94a96 96 0 0 1 113.46-6.42a8 8 0 0 1 2.57 10.69L141.82 128H200a8 8 0 0 1 6.19 2.93"/></g></svg></span><div class="impact-n">$3,500</div><div class="impact-l">One athlete&rsquo;s seat on <a href="/send-6" style="color:inherit;">the road to the US Open</a></div></div>
-      </div>
+      <ul class="gift-list reveal" aria-label="What each amount can do">
+        <li><b>$5</b><span>Puts one athlete on court for a night at ACE</span></li>
+        <li><b>$75</b><span>Covers up to 15 athletes for a night at ACE</span></li>
+        <li><b>$200</b><span>Toward equipment and repairs</span></li>
+        <li><b>$500</b><span>Toward regular training</span></li>
+        <li><b>$960</b><span>One athlete&rsquo;s membership for a year, under $3 a day</span></li>
+        <li><b>$3,500</b><span>One athlete&rsquo;s seat on <a href="/send-6" style="color:inherit;">the road to the US Open</a></span></li>
+      </ul>
       <p class="impact-any reveal">Any amount helps build the fund. <a href="/promise" class="textlink" style="font:inherit;letter-spacing:inherit;">How giving works</a></p>
     </div>
   </section>

@@ -94,6 +94,21 @@
   .hh-now-partners img.is-bh{ height:48px; }
   .hh-now-partners img.is-amp{ height:40px; }
   .hh-now-partners a:hover img{ opacity:1; }
+  /* Alec's order: the nonprofit partners on the first line, the pickleball
+     clubs on the next. The zero-height ::after takes a whole line between
+     them (order 1); on a very narrow phone the clubs can still wrap. */
+  .hh-now-partners::after{ content:""; flex-basis:100%; height:0; margin-top:-1.1rem; order:1; }
+  .hh-now-partners li:nth-child(n+3){ order:2; }
+  .hh-now-partners a{ display:flex; align-items:center; gap:0.55rem; }
+  .hh-now-partners .hh-p-name{ font-family:var(--font-display); font-weight:800; font-size:0.85rem; line-height:1.05; color:var(--cream); }
+  @media (max-width:520px){
+    .hh-now-partners{ gap:1rem 1.2rem; }
+    .hh-now-partners::after{ margin-top:-1rem; }
+    .hh-now-partners img{ height:30px; }
+    .hh-now-partners img.is-word{ height:18px; }
+    .hh-now-partners img.is-bh{ height:40px; }
+    .hh-now-partners img.is-amp{ height:34px; }
+  }
   .hh-now-next{ margin-top:1.4rem; color:var(--cream-mute); font-size:0.95rem; }
   .hh-now-next a{ color:var(--cream); text-decoration:underline; text-decoration-color:var(--orange); text-underline-offset:3px; }
   .hh-now-proof{ list-style:none; margin:0; padding:0; display:grid; gap:1.1rem; }
@@ -241,11 +256,11 @@ fill="currentColor" stroke="none">
         <p class="prose">The first lane is the Chicago Wheelie Big Dills. Our first ambassador, Juan Ortiz, is growing wheelchair pickleball across the Chicago area, and the fund backs him, the crew he plays with, and the clubs that make room for them. Its campaigns, in order: every week on court, the road to the US Open, and the Chicago Classic.</p>
         <p class="hh-now-links"><a href="/pickleball" class="textlink">Meet the crew <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a> <a href="/juan" class="textlink">Read Juan&rsquo;s story <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a></p>
         <ul class="hh-now-partners" aria-label="Our partners">
-          <li><a href="/brickhouse"><img class="is-bh" src="/images/brickhouse/brick-house-logo-orange-black-reverse.svg" alt="Brick House Pickleball" width="372" height="265" loading="lazy"></a></li>
-          <li><a href="/ace"><img src="/images/ace/ace-logo-white.png" alt="ACE Pickleball Club" width="760" height="105" loading="lazy" class="is-word"></a></li>
-          <li><a href="/picklr"><img src="/images/partners/picklr-wordmark-white.png" alt="The Picklr" width="460" height="107" loading="lazy" class="is-word"></a></li>
-          <li><a href="/chicago-adaptive-sports"><img src="/images/partners/cas-mark.png" alt="Chicago Adaptive Sports" width="240" height="193" loading="lazy"></a></li>
+          <li><a href="/chicago-adaptive-sports"><img src="/images/partners/cas-mark.png" alt="" width="240" height="193" loading="lazy"><span class="hh-p-name">Chicago<br>Adaptive Sports</span></a></li>
           <li><a href="/amp"><img src="/images/partners/amp-logo-white.png" alt="AMP Adaptive Sports" width="340" height="159" loading="lazy" class="is-amp"></a></li>
+          <li><a href="/ace"><img src="/images/ace/ace-logo-white.png" alt="ACE Pickleball Club" width="760" height="105" loading="lazy" class="is-word"></a></li>
+          <li><a href="/brickhouse"><img class="is-bh" src="/images/brickhouse/brick-house-logo-orange-black-reverse.svg" alt="Brick House Pickleball" width="372" height="265" loading="lazy"></a></li>
+          <li><a href="/picklr"><img src="/images/partners/picklr-wordmark-white.png" alt="The Picklr" width="460" height="107" loading="lazy" class="is-word"></a></li>
         </ul>
         <p class="hh-now-next">Next: wherever our next ambassador is building. <a href="/ambassadors#join">Know who it should be?</a></p>
       </div>

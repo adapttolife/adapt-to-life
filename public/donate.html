@@ -364,8 +364,14 @@ fill="currentColor" stroke="none">
   <section class="band-sm tint dn-partners" aria-labelledby="dnPartnersTitle">
     <style>
       .dn-partners .wrap{ text-align:center; }
-      .dn-partners ul{ list-style:none; padding:0; margin:1.4rem 0 0; display:flex; flex-wrap:wrap; justify-content:center; gap:1rem; }
-      .dn-partners li a{ display:flex; align-items:center; justify-content:center; width:clamp(150px,16vw,196px); aspect-ratio:3/2; border-radius:16px; background:var(--paper); box-shadow:0 0 0 1px var(--hairline), 0 18px 40px -26px rgba(0,0,0,0.35); transition:transform .2s ease, box-shadow .2s ease; }
+      /* Two rows, Alec's order: the nonprofit partners, then the pickleball
+         clubs. One list on a six-column grid, each tile two columns wide, so
+         the top pair sits centred over the three clubs. */
+      .dn-partners ul{ list-style:none; padding:0; margin:1.4rem auto 0; display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:1rem; max-width:640px; }
+      .dn-partners li{ display:flex; grid-column:span 2; }
+      .dn-partners li:nth-child(1){ grid-column:2 / span 2; }
+      .dn-partners li:nth-child(2){ grid-column:4 / span 2; }
+      .dn-partners li a{ display:flex; align-items:center; justify-content:center; width:100%; aspect-ratio:3/2; border-radius:16px; background:var(--paper); box-shadow:0 0 0 1px var(--hairline), 0 18px 40px -26px rgba(0,0,0,0.35); transition:transform .2s ease, box-shadow .2s ease; }
       .dn-partners li a:hover{ transform:translateY(-2px); box-shadow:0 0 0 1.5px var(--orange), 0 22px 50px -26px rgb(var(--accent-rgb) / 0.45); }
       .dn-partners li img{ width:58%; height:auto; }
       .dn-partners li img.dn-mark{ width:auto; height:56%; }
@@ -375,23 +381,21 @@ fill="currentColor" stroke="none">
       .dn-partners li a.dn-cas img.dn-mark{ height:40%; }
       .dn-partners .dn-name{ font-family:var(--font-display); font-weight:800; font-size:0.85rem; line-height:1.1; color:var(--ink); text-align:center; }
       .dn-partners .textlink{ margin-top:1.4rem; }
-      /* Five in a row on a desktop; two by two below 900px, the fifth
-         centred on its own row. At a 180px minimum a tile used to fit once
-         per row on a phone, so the logos ran as a 724px column. */
-      @media (max-width:899px){
-        .dn-partners ul{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.75rem; max-width:420px; margin-inline:auto; }
-        .dn-partners li a{ width:100%; border-radius:12px; }
-        .dn-partners li:last-child:nth-child(odd){ grid-column:1 / -1; justify-self:center; width:calc(50% - 0.375rem); }
+      @media (max-width:600px){
+        .dn-partners ul{ gap:0.6rem; }
+        .dn-partners li a{ border-radius:12px; }
+        .dn-partners li img{ width:66%; }
+        .dn-partners .dn-name{ font-size:0.7rem; }
       }
     </style>
     <div class="wrap reveal">
       <span class="eyebrow orange" id="dnPartnersTitle">With thanks to our partners</span>
       <ul>
-        <li><a href="/brickhouse" aria-label="Brick House Pickleball, our first partner"><img src="/images/brickhouse/brick-house-logo-orange-black.svg" alt="Brick House Pickleball" width="372" height="265" loading="lazy"></a></li>
-        <li><a href="/ace" aria-label="ACE Pickleball Club, our partner club"><img src="/images/ace/ace-logo.png" alt="ACE Pickleball Club" width="280" height="132" loading="lazy"></a></li>
-        <li><a href="/picklr" aria-label="The Picklr, our partner club"><img src="/images/partners/picklr-wordmark-black.png" alt="The Picklr" width="280" height="65" loading="lazy"></a></li>
         <li><a href="/chicago-adaptive-sports" class="dn-cas" aria-label="Chicago Adaptive Sports, our partner nonprofit"><img class="dn-mark" src="/images/partners/cas-mark.png" alt="" width="240" height="193" loading="lazy"><span class="dn-name">Chicago<br>Adaptive Sports</span></a></li>
         <li><a href="/amp" aria-label="AMP Adaptive Sports, our partner nonprofit"><img src="/images/partners/amp-logo.png" alt="AMP Adaptive Sports" width="340" height="159" loading="lazy"></a></li>
+        <li><a href="/ace" aria-label="ACE Pickleball Club, our partner club"><img src="/images/ace/ace-logo.png" alt="ACE Pickleball Club" width="280" height="132" loading="lazy"></a></li>
+        <li><a href="/brickhouse" aria-label="Brick House Pickleball, our first partner"><img src="/images/brickhouse/brick-house-logo-orange-black.svg" alt="Brick House Pickleball" width="372" height="265" loading="lazy"></a></li>
+        <li><a href="/picklr" aria-label="The Picklr, our partner club"><img src="/images/partners/picklr-wordmark-black.png" alt="The Picklr" width="280" height="65" loading="lazy"></a></li>
       </ul>
       <a class="textlink" href="/sponsorship">Become a partner <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
     </div>

@@ -3676,7 +3676,7 @@ a.win-band:focus-visible {
 }
 .cm-note {
   margin: 0.45rem 0 0;
-  font-size: 0.84rem;
+  font-size: 0.9rem;
   line-height: 1.35;
   color: var(--card-muted);
 }
@@ -3920,4 +3920,34 @@ a.win-band:focus-visible {
 }
 :is(.dark, .on-dark) .btn:focus-visible {
   outline-color: var(--cream);
+}
+
+/* ---- tap targets ---------------------------------------------------------
+   On a touch screen the header's Donate, the menu button, the logo and the
+   standalone arrow links reach 44px to a finger without growing on screen
+   (Nov 6 review: they measured 30-36px tall). The hit area is an invisible
+   layer, so the compact bar Alec approved looks exactly the same. */
+@media (pointer: coarse) {
+  .nav-cta,
+  .menu-btn,
+  .brand,
+  .textlink {
+    position: relative;
+  }
+  .nav-cta::after,
+  .menu-btn::after,
+  .brand::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: max(100%, 44px);
+    height: 44px;
+    transform: translate(-50%, -50%);
+  }
+  .textlink::after {
+    content: "";
+    position: absolute;
+    inset: -8px -4px;
+  }
 }

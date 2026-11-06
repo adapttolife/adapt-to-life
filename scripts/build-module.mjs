@@ -62,6 +62,47 @@ export function webpSize(file) {
   throw new Error(`${file}: unknown WebP chunk ${chunk}`);
 }
 
+// The numbers come from public/data/campaigns.json, the same file the rest of
+// the site reads, and so does the arithmetic behind them (Alec, Nov 6: "it's
+// powerful to show how we got all of our numbers... brings awareness to the
+// reality of how expensive it is"). The build refuses math that does not add
+// up to the goal it explains.
+const CAMPAIGN = JSON.parse(
+  readFileSync(join(PUB, "data/campaigns.json"), "utf8"),
+).campaigns.find((c) => c.slug === "wheelie-big-dills");
+const usd = (n) => "$" + Number(n).toLocaleString("en-US");
+{
+  if (!CAMPAIGN) throw new Error("campaigns.json has no wheelie-big-dills campaign");
+  let sum = 0;
+  for (const p of CAMPAIGN.parts) {
+    const math = (p.math || []).reduce((t, l) => t + l.qty * l.unit, 0);
+    if (math !== p.goal)
+      throw new Error(
+        `campaigns.json: ${p.key} math adds to ${usd(math)}, goal is ${usd(p.goal)}`,
+      );
+    sum += p.goal;
+  }
+  if (sum !== CAMPAIGN.goal)
+    throw new Error(
+      `campaigns.json: parts add to ${usd(sum)}, goal is ${usd(CAMPAIGN.goal)}`,
+    );
+}
+
+// One part's arithmetic as a receipt: what, how many times what, the total,
+// and where the unit cost comes from.
+function mathList(part) {
+  const items = (part.math || []).map(
+    (l) =>
+      `<li><span class="cm-math-k">${esc(l.label)}</span><b>${usd(l.qty * l.unit)}</b>` +
+      `<span class="cm-math-x">${l.qty} ${esc(l.of)} &times; ${l.about ? "about " : ""}${usd(l.unit)}</span>` +
+      (l.note ? `<small>${l.note}</small>` : "") +
+      "</li>",
+  );
+  return items.length
+    ? `<ul class="cm-math" aria-label="How we got ${usd(part.goal)}">${items.join("")}</ul>`
+    : "";
+}
+
 const esc = (s) =>
   String(s)
     .replace(/&(?!amp;|#\d+;|[a-z]+;)/g, "&amp;")
@@ -103,8 +144,17 @@ export function render(opts, where = "page") {
     athleteH: h,
     ctaHref: esc(cta.href),
     ctaLabel: esc(cta.label),
+    goal: usd(CAMPAIGN.goal),
+    outside: CAMPAIGN.outside,
   };
-  return html.replace(/\{\{(\w+)\}\}/g, (m, k) => {
+  return html.replace(/\{\{(\w+)(?::([\w-]+))?\}\}/g, (m, k, key) => {
+    if (key) {
+      const part = CAMPAIGN.parts.find((p) => p.key === key);
+      if (!part) throw new Error(`${where}: no part "${key}" in campaigns.json`);
+      if (k === "goal") return usd(part.goal);
+      if (k === "math") return mathList(part);
+      throw new Error(`${where}: partial asks for {{${k}:${key}}}`);
+    }
     if (!(k in vars)) throw new Error(`${where}: partial asks for {{${k}}}`);
     return String(vars[k]);
   });

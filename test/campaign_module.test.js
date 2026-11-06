@@ -107,3 +107,63 @@ test("the donate page's module points back to the form", () => {
   assert.ok(!mod.includes("data-give>"), "no second picker beside the real form");
   assert.ok(html.includes('id="givePanel"'));
 });
+
+test("the module shows how we got every number, and the math adds up", () => {
+  // Alec, Nov 6: "it's powerful to show how we got all of our numbers for our
+  // fundraising - brings awareness to the reality of how expensive it is."
+  // A practice night is 10 to 15 athletes; at $5 each at ACE, up to 15 is $75.
+  const wbd = JSON.parse(read("public/data/campaigns.json")).campaigns[0];
+  const usd = (n) => "$" + n.toLocaleString("en-US");
+  for (const p of wbd.parts) {
+    assert.ok(p.math && p.math.length, `${p.key} has no math`);
+    assert.equal(
+      p.math.reduce((t, l) => t + l.qty * l.unit, 0),
+      p.goal,
+      `${p.key}: the lines add up to the goal`,
+    );
+  }
+  assert.equal(
+    wbd.parts.reduce((t, p) => t + p.goal, 0),
+    wbd.goal,
+  );
+  const year = wbd.parts.find((p) => p.key === "year").math;
+  assert.deepEqual(
+    year.map((l) => [l.qty, l.unit]),
+    [
+      [52, 75],
+      [10, 960],
+    ],
+    "every week: 52 nights at $75, ten memberships at $960",
+  );
+  assert.equal(75, 5 * 15, "$75 is up to 15 athletes at $5 each");
+  assert.ok(/10 to 15 athletes/.test(year[0].note));
+  assert.ok(/\$4,000 to \$6,000/.test(wbd.outside) && /insurance/.test(wbd.outside));
+
+  for (const { f, html } of carriers()) {
+    const mod = html.slice(
+      html.indexOf('<section class="cm"'),
+      html.indexOf("<!-- /campaign-module -->"),
+    );
+    for (const p of wbd.parts)
+      for (const l of p.math) {
+        assert.ok(mod.includes(`<b>${usd(l.qty * l.unit)}</b>`), `${f}: ${l.label}`);
+        assert.ok(
+          mod.includes(
+            `${l.qty} ${l.of} &times; ${l.about ? "about " : ""}${usd(l.unit)}`,
+          ),
+          `${f}: ${l.label} shows its multiplication`,
+        );
+      }
+    assert.ok(
+      mod.includes(`<span>Every week + the road</span><b>${usd(wbd.goal)}</b>`),
+      f,
+    );
+    assert.ok(mod.includes("insurance doesn&rsquo;t cover it"), `${f}: the chair note`);
+    assert.ok(mod.includes("maybe the country"), `${f}: the ambition`);
+  }
+  // The record tiles carry the practice-night size where they appear.
+  const home = read("public/index.html");
+  assert.ok(
+    home.includes("<li><b>10&ndash;15</b><span>athletes, every week</span></li>"),
+  );
+});

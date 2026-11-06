@@ -3421,6 +3421,13 @@ a.win-band:focus-visible {
   font-style: italic;
   color: var(--em);
 }
+.cm-lede {
+  margin: 1rem 0 0;
+  max-width: 34rem;
+  font-size: clamp(1rem, 2.6vw, 1.12rem);
+  line-height: 1.5;
+  color: var(--muted);
+}
 
 /* What is already on the board: hairline tiles, a whisper of lift, a yellow
    win mark. */
@@ -3610,6 +3617,68 @@ a.win-band:focus-visible {
 }
 .cm-note a:hover {
   text-decoration-color: currentColor;
+}
+/* How we got each number: a receipt under each part. What, how many times
+   what, the total, and where the unit cost comes from (Alec, Nov 6: "brings
+   awareness to the reality of how expensive it is"). */
+.cm-math {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+.cm-math li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 0.8rem;
+  row-gap: 0.1rem;
+  padding-left: 0.75rem;
+  border-left: 2px solid var(--card-hair);
+}
+.cm-math-k {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.cm-math b {
+  font-size: 0.92rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.cm-math-x {
+  grid-column: 1 / -1;
+  font-size: 0.84rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--card-muted);
+}
+.cm-math small {
+  grid-column: 1 / -1;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--card-muted);
+}
+.cm-sum {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.8rem;
+  margin: 1.2rem 0 0;
+  padding-top: 0.8rem;
+  border-top: 1px dashed color-mix(in srgb, var(--card-text) 28%, transparent);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+.cm-sum b {
+  font-size: 1.05rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+.cm-outside {
+  margin: 0.7rem 0 0;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  color: var(--card-muted);
 }
 /* The next goal, shown locked until the road is funded. */
 .cm-row--next .cm-row-top b,

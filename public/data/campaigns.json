@@ -14,9 +14,26 @@
       "raised_source": "api",
       "raised_key": "wbd",
       "parts": [
-        { "key": "year", "label": "Every week", "goal": 13500 },
-        { "key": "send-6", "label": "The Road to the US Open", "goal": 21000, "page": "/send-6" }
+        {
+          "key": "year",
+          "label": "Every week",
+          "goal": 13500,
+          "math": [
+            { "label": "Court time at ACE", "qty": 52, "of": "nights", "unit": 75, "note": "A night is 10 to 15 athletes. At $5 each, up to 15 is $75." },
+            { "label": "Memberships", "qty": 10, "of": "athletes", "unit": 960, "note": "A year of unlimited play at ACE, so an athlete can train to compete. Under $3 a day." }
+          ]
+        },
+        {
+          "key": "send-6",
+          "label": "The Road to the US Open",
+          "goal": 21000,
+          "page": "/send-6",
+          "math": [
+            { "label": "The US Open", "qty": 6, "of": "athletes", "unit": 3500, "about": true, "note": "What it has cost each athlete the last couple of years: entry fees, travel and an accessible room in Naples." }
+          ]
+        }
       ],
+      "outside": "Not in the goal: sport chairs. One runs $4,000 to $6,000, and insurance doesn&rsquo;t cover it. When an athlete needs one, we raise for that athlete.",
       "next": { "label": "the Chicago Classic", "page": "/chicago-classic" },
       "cta_label": "Donate",
       "cta_url": "/donate",

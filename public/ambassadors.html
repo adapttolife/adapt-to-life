@@ -46,7 +46,10 @@
     .am-hero{ display:block; min-height:0; padding:0 0 clamp(2.5rem,7vh,3.5rem); }
     .am-hero-img{ position:relative; display:block; height:min(58svh,520px); }
     .am-hero-img img{ object-position:62% 30%; }
-    .am-hero::after{ background:linear-gradient(180deg, transparent 55%, rgba(23,21,19,0.75) 80%, #3b3b46 96%); }
+    /* On a phone the photo is its own block, so it fades into the night
+       itself; the section's overlay only starts below it. */
+    .am-hero-img::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, transparent 55%, var(--night) 100%); }
+    .am-hero::after{ background:linear-gradient(180deg, transparent 55%, rgba(23,21,19,0.75) 80%, var(--night) 96%); }
     .am-hero .wrap{ margin-top:1.6rem; }
     .am-hero .display{ font-size:clamp(2.5rem,10.5vw,3.3rem); }
   }

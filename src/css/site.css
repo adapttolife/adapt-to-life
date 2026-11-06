@@ -1139,11 +1139,16 @@ em.italic[style*="--orange"] {
   line-height: 1.55;
   max-width: 42ch;
 }
-.footer .col h4 {
+/* Footer column titles are h2: the footer is its own landmark, and as h4 they
+   skipped two levels on every page (Nov 6 design review). They keep the small
+   label look, so everything the global h1-h3 rule sets is reset here. */
+.footer .col h2 {
   font-family: var(--font-label);
   font-size: 0.7rem;
+  line-height: inherit;
   letter-spacing: 0.16em;
   text-transform: uppercase;
+  text-wrap: wrap;
   color: var(--cream-faint);
   font-weight: 700;
   margin-bottom: 1rem;

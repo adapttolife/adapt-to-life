@@ -23,15 +23,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=5f9fca0c">
+<link rel="stylesheet" href="/css/site.css?v=a259d5ba">
 <link rel="stylesheet" href="/css/page-header.css?v=beb972ef">
 <!-- band:vars --><style data-band-vars>:root{--pg-band-wide:url('/images/hero/panels/pg-band-4-wide.4c52877e.webp');--pg-band-tall:url('/images/hero/panels/pg-band-4-tall.f6e94afc.webp');--pg-give-wide:url('/images/hero/panels/pg-give-wide.b46beed5.webp');--pg-give-tall:url('/images/hero/panels/pg-give-tall.5cece3a5.webp');}</style>
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <style>
   .waiver-doc{background:var(--paper);border:1px solid rgba(59,59,70,.12);border-radius:14px;padding:1.6rem 1.5rem;max-height:360px;overflow-y:auto;margin-bottom:1.4rem;line-height:1.6}
-  .waiver-doc h3{margin:.2rem 0 .3rem;font-size:1.2rem}
+  .waiver-doc h2{margin:.2rem 0 .3rem;font-size:1.2rem}
   .waiver-doc .doc-domains{color:#6a675e;font-size:.8rem;margin:0 0 1rem}
-  .waiver-doc h4{margin:1.1rem 0 .35rem;font-size:.98rem}
+  .waiver-doc h3{margin:1.1rem 0 .35rem;font-size:.98rem;font-weight:700;letter-spacing:normal;line-height:1.3}
   .waiver-doc p{margin:0 0 .7rem}
   .waiver-doc ul{margin:0 0 .7rem;padding-left:1.1rem}
   .waiver-doc li{margin:.15rem 0}
@@ -275,7 +275,7 @@ fill="currentColor" stroke="none">
         <p class="legal">Adapt To Life is a recognized 501(c)(3) nonprofit organization. Donations are tax deductible to the extent allowed by law. EIN 41-3213344.</p>
       </div>
       <div class="col">
-        <h4>Organization</h4>
+        <h2>Organization</h2>
         <a href="/about">Our Story</a>
         <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
         <a href="/tim">Tim&#39;s Story</a>
@@ -286,7 +286,7 @@ fill="currentColor" stroke="none">
         <a href="/roadmap">Roadmap</a>
       </div>
       <div class="col">
-        <h4>Get involved</h4>
+        <h2>Get involved</h2>
         <a href="/donate">Donate</a>
         <a href="/promise">How Giving Works</a>
         <a href="/volunteer">Volunteer</a>
@@ -379,11 +379,11 @@ fill="currentColor" stroke="none">
         .then(function(d){
           if(!d || !d.ok){ box.innerHTML = '<p class="sig-hint">Could not load the release. Please reload.</p>'; return; }
           var doc = d.doc, h = '';
-          h += '<h3>' + esc(doc.title) + '</h3>';
+          h += '<h2>' + esc(doc.title) + '</h2>';
           h += '<p class="doc-domains">' + esc(doc.org) + ' · ' + esc(doc.domains) + '</p>';
           h += '<p class="intro">' + esc(doc.intro) + '</p>';
           doc.sections.forEach(function(sec){
-            h += '<h4>' + esc(sec.h) + '</h4>';
+            h += '<h3>' + esc(sec.h) + '</h3>';
             (sec.p||[]).forEach(function(p){ h += '<p>' + esc(p) + '</p>'; });
             if(sec.ul && sec.ul.length){ h += '<ul>' + sec.ul.map(function(li){ return '<li>' + esc(li) + '</li>'; }).join('') + '</ul>'; }
           });

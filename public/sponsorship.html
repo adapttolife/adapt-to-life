@@ -132,6 +132,8 @@
   .partner::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 60% 70% at 85% 30%, rgba(255,92,57,0.18) 0%, transparent 70%); }
   .partner-photo{ display:block; min-height:clamp(320px,36vw,460px); }
   .partner-logo.is-word{ height:auto; width:min(100%, 210px); margin-bottom:0.4rem; }
+  /* On phones the photo is a short 16:9 strip; a tall portrait sets
+     --phone-crop on its img so the strip keeps the face. */
   .partner-photo img{ width:100%; height:100%; object-fit:cover; object-position:50% 30%; transition:transform .6s ease; }
   .partner:hover .partner-photo img{ transform:scale(1.03); }
   .partner-body{ padding:clamp(1.6rem,3.5vw,2.8rem); display:flex; flex-direction:column; align-items:flex-start; justify-content:center; }
@@ -150,7 +152,7 @@
   @media (max-width:520px){ .sp-get-list{ grid-template-columns:1fr; } }
   .partner-note{ margin-top:clamp(1.4rem,3vw,2rem); max-width:62ch; opacity:0.78; font-size:0.98rem; line-height:1.55; }
   .partner-more{ margin-top:1.5rem; font-weight:700; color:#ff5c39; border-bottom:2px solid currentColor; padding-bottom:2px; }
-  @media (max-width:700px){ .partner{ grid-template-columns:1fr; } .partner-photo{ min-height:0; aspect-ratio:4/3.6; } .partner-when{ flex-wrap:nowrap; gap:0.6rem; font-size:0.72rem; letter-spacing:0.1em; } .partner-when span{ gap:0.6rem; white-space:nowrap; } }
+  @media (max-width:700px){ .partner{ grid-template-columns:1fr; } .partner-photo{ min-height:0; aspect-ratio:16/9; } .partner-photo img{ object-position:var(--phone-crop, 50% 30%); } .partner-body{ padding:1.25rem 1.25rem 1.4rem; } .partner-logo{ height:48px; } .partner-kicker{ margin-top:1rem; } .partner-more{ margin-top:1.1rem; } .partner-when{ flex-wrap:nowrap; gap:0.6rem; font-size:0.72rem; letter-spacing:0.1em; } .partner-when span{ gap:0.6rem; white-space:nowrap; } }
   .bh-road .bh-price{ display:block; margin-top:0.6rem; font-style:normal; font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--orange-ink); }
   /* One price list: the per-athlete options sit above the levels, same sheet, same fund. */
   .sp-units-label{ margin-top:clamp(2rem,4vw,2.8rem); font-family:var(--font-label); font-weight:800; font-size:0.8rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--orange); }
@@ -278,7 +280,7 @@ fill="currentColor" stroke="none">
       <div class="partner-list">
         <article class="partner on-dark reveal">
           <a class="partner-photo" href="/brickhouse" tabindex="-1" aria-hidden="true">
-            <img src="/images/brickhouse/hero-bob.webp" alt="" width="1200" height="2000" loading="lazy" decoding="async">
+            <img src="/images/brickhouse/hero-bob.webp" alt="" width="1200" height="2000" loading="lazy" decoding="async" style="--phone-crop:50% 15%;">
           </a>
           <div class="partner-body">
             <img class="partner-logo" src="/images/brickhouse/brick-house-logo-orange-black-reverse.svg" alt="Brick House Pickleball" width="372" height="265">

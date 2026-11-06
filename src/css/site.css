@@ -524,7 +524,10 @@ p {
    (the sticky nav is ABOVE the hero in flow, so it needs its own dark
    background; transparent here would show the white canvas behind it) */
 .nav.over-dark:not(.scrolled) {
-  background-color: var(--ink-warm);
+  /* Black, not slate (Alec, Nov 6: "the landing page looks better with the
+     nav bar black"). It sits on the pitch-black photo wall and the photo
+     bands of the page headers. */
+  background-color: #000;
   background-image: none;
 }
 .nav.over-dark:not(.scrolled) .brand {
@@ -535,11 +538,11 @@ p {
   opacity: 0.82;
 }
 .nav.over-dark:not(.scrolled) .nav-links a.lk.featured {
-  color: var(--teal-on-dark);
+  color: var(--orange); /* 6.6:1 on the black nav */
   opacity: 1;
 }
 .nav.over-dark:not(.scrolled) .nav-links a.lk.featured:hover {
-  color: #8ae1e3;
+  color: var(--orange-hot);
   opacity: 1;
 }
 .nav.over-dark:not(.scrolled) .menu-btn span {
@@ -615,17 +618,18 @@ section {
 /* On slate the accent is teal: orange is kept for action (buttons) and money.
    Small orange text measured 3.6:1 on slate; the teal tint is 5.8:1. */
 :is(.dark, .on-dark) .tick.orange {
-  background: var(--teal);
-  box-shadow: 0 0 12px -2px rgba(0, 183, 189, 0.5);
+  background: #ff5c39;
+  box-shadow: 0 0 12px -2px rgba(255, 92, 57, 0.5);
 }
-/* Headline emphasis on slate takes Laura's exact teal (4.5:1, AA for large
-   text); pages set it inline (color:var(--orange)), which the --orange
-   override above already turns into the lifted teal, so only big type needs
-   this rule. */
-:is(.dark, .on-dark)
-  :is(h1, h2, h3, .display, .statement)
-  em.italic[style*="--orange"] {
-  color: var(--teal) !important;
+/* Headline emphasis stays orange on slate and black (Alec, Nov 6: "Orange is
+   still the main color, we just expanded the color palette to have a more
+   mature website and give us more depth"). Headlines are large text, so
+   orange clears AA there (3.6:1 on slate, 6.6:1 on black). Pages set it
+   inline (color:var(--orange)), which the --orange override above would turn
+   teal, so big type takes Laura's orange back here. Teal stays for small
+   text on slate, badges and data. */
+:is(.dark, .on-dark) em.italic[style*="--orange"] {
+  color: #ff5c39 !important;
 }
 :is(.dark, .on-dark) .eyebrow.gold {
   color: var(--gold);
@@ -3269,7 +3273,7 @@ a.win-band:focus-visible {
   --muted: #c9c7d1;
   --hair: var(--hairline-dark);
   --raised: rgba(255, 255, 255, 0.035);
-  --em: var(--teal);
+  --em: var(--orange);
   --card: var(--paper);
   --card-text: var(--ink);
   --card-muted: #5a5866;

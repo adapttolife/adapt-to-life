@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=2d244518">
+<link rel="stylesheet" href="/css/site.css?v=fe30f498">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches&&"IntersectionObserver" in window)document.documentElement.classList.add("ace-motion");</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SportsTeam","name":"Chicago Wheelie Big Dills","sport":"Wheelchair pickleball","url":"https://adapttolife.org/pickleball","description":"A crew of wheelchair pickleball players growing the sport across the Chicago area, funded and supported by Adapt To Life.","areaServed":{"@type":"City","name":"Chicago"},"logo":"https://adapttolife.org/images/pickleball/wheelie-big-dills-badge.webp","sponsor":{"@type":"NGO","name":"Adapt To Life","url":"https://adapttolife.org"}}</script>
@@ -260,7 +260,9 @@
   .pb-card img{ display:block; width:100%; height:clamp(220px,24vw,300px); object-fit:contain; object-position:50% 100%; filter:drop-shadow(0 18px 30px rgba(0,0,0,0.5)); }
   .pb-card h3{ margin-top:1rem; font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(1.6rem,2.6vw,2.1rem); letter-spacing:-0.03em; color:var(--cream); }
   .pb-card p{ margin-top:0.5rem; color:var(--cream-mute); line-height:1.5; }
-  .pb-card .pb-link{ color:var(--orange); }
+  .pb-card .pb-link{ color:#ff5c39; }
+  /* the quote credit is small on a phone, where orange is 3.6:1 on slate: teal there */
+  @media (max-width:760px){ .pb-quote .ace-together em.italic{ color:var(--teal-on-dark) !important; } }
   .pb-prio{ list-style:none; counter-reset:prio; margin:1.4rem 0 0; padding:0; display:grid; gap:0.9rem; max-width:62ch; }
   .pb-prio li{ counter-increment:prio; display:grid; grid-template-columns:2.2rem 1fr; gap:0.2rem 0.6rem; }
   .pb-prio li::before{ content:counter(prio, decimal-leading-zero); grid-row:span 2; font-family:var(--font-label); font-weight:800; font-size:0.8rem; letter-spacing:0.14em; color:var(--orange-ink); padding-top:0.25rem; }

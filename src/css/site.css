@@ -523,29 +523,35 @@ p {
 /* nav sitting over a dark hero before scroll → dark bar, cream text
    (the sticky nav is ABOVE the hero in flow, so it needs its own dark
    background; transparent here would show the white canvas behind it) */
-.nav.over-dark:not(.scrolled) {
+.nav.over-dark {
   /* Black, not slate (Alec, Nov 6: "the landing page looks better with the
      nav bar black"). It sits on the pitch-black photo wall and the photo
-     bands of the page headers. */
+     bands of the page headers, and it STAYS black when the page scrolls: the
+     old frosted off-white took on whatever was behind it, a third white. */
   background-color: #000;
   background-image: none;
 }
-.nav.over-dark:not(.scrolled) .brand {
+.nav.over-dark.scrolled {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+.nav.over-dark .brand {
   color: var(--cream);
 }
-.nav.over-dark:not(.scrolled) .nav-links a.lk {
+.nav.over-dark .nav-links a.lk {
   color: var(--cream);
   opacity: 0.82;
 }
-.nav.over-dark:not(.scrolled) .nav-links a.lk.featured {
+.nav.over-dark .nav-links a.lk.featured {
   color: var(--orange); /* 6.6:1 on the black nav */
   opacity: 1;
 }
-.nav.over-dark:not(.scrolled) .nav-links a.lk.featured:hover {
+.nav.over-dark .nav-links a.lk.featured:hover {
   color: var(--orange-hot);
   opacity: 1;
 }
-.nav.over-dark:not(.scrolled) .menu-btn span {
+.nav.over-dark .menu-btn span {
   background: var(--cream);
 }
 
@@ -565,11 +571,19 @@ section {
   padding-top: var(--pad-sm);
   padding-bottom: var(--pad-sm);
 }
-/* An alternating band is now a LIFT, not a tint: off-white against the beige
-   page. Same two colours, opposite direction, and it reads as light falling on
-   the section rather than as a stain over it. */
+/* ONE BACKGROUND FOR EVERY LIGHT SECTION (Alec, Nov 6: "I see multiple
+   different whites... Should the website have two different whites? I like
+   the off white better"). Full-width bands used to alternate the warm page
+   colour with the lighter #F9F7F2, and two whites side by side read as a
+   mistake, not a rhythm. Now every light section is the warm page colour
+   (--canvas, #EFE8DC); the lighter one is only ever a card ON the page, where
+   it reads as lift. An alternating band says so with hairlines, not a second
+   white, and the rhythm comes from the slate sections. */
 .tint {
-  background: var(--paper);
+  background: var(--canvas);
+  box-shadow:
+    inset 0 1px 0 rgba(59, 59, 70, 0.08),
+    inset 0 -1px 0 rgba(59, 59, 70, 0.08);
 }
 
 /* full-bleed dark band: Laura's slate. The old orange/gold glow read as a
@@ -1367,7 +1381,7 @@ section {
   color: var(--muted);
 }
 
-.nav.over-dark:not(.scrolled) .nav-toggle {
+.nav.over-dark .nav-toggle {
   color: var(--cream);
   opacity: 0.82;
 }

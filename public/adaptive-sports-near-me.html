@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=c189246b">
+<link rel="stylesheet" href="/css/site.css?v=f0845fad">
 <link rel="stylesheet" href="/css/page-header.css?v=beb972ef">
 <!-- band:vars --><style data-band-vars>:root{--pg-band-wide:url('/images/hero/panels/pg-band-1-wide.3c401bf6.webp');--pg-band-tall:url('/images/hero/panels/pg-band-1-tall.300096dd.webp');--pg-give-wide:url('/images/hero/panels/pg-give-wide.b46beed5.webp');--pg-give-tall:url('/images/hero/panels/pg-give-tall.5cece3a5.webp');}</style>
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
@@ -34,7 +34,7 @@
   /* AMP spotlight — mural backdrop + scrapbook prints */
   .amp-mural{ position:relative; overflow:hidden; }
   .amp-bg{ position:absolute; inset:0; background-image:url('/images/karen-waterskiing.jpg'); background-size:cover; background-position:center 92%; opacity:0.22; filter:saturate(0.85); }
-  .amp-bg::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(26,26,26,0.72), rgba(26,26,26,0.28) 45%, rgba(26,26,26,0.78)); }
+  .amp-bg::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(23,21,19,0.72), rgba(23,21,19,0.28) 45%, rgba(23,21,19,0.78)); }
   .amp-wrap{ position:relative; display:grid; grid-template-columns:1.02fr 0.98fr; gap:clamp(2.2rem,5vw,4.5rem); align-items:center; }
   @media (max-width:880px){ .amp-wrap{ grid-template-columns:1fr; } }
   .amp-prints{ position:relative; display:grid; }
@@ -42,10 +42,10 @@
   .amp-print img{ display:block; width:100%; height:auto; }
   .amp-print.p1 img{ aspect-ratio:3/3.4; object-fit:cover; object-position:50% 28%; }
   .amp-print.p2 img{ aspect-ratio:3/3.4; object-fit:cover; object-position:43% 24%; }
-  .amp-cap{ display:block; margin-top:10px; font-family:'Space Mono',monospace; font-size:0.72rem; letter-spacing:0.04em; color:#4a463f; text-align:center; }
+  .amp-cap{ display:block; margin-top:10px; font-family:'Space Mono',monospace; font-size:0.72rem; letter-spacing:0.04em; color:var(--ink-soft); text-align:center; }
   .amp-print.p1{ width:min(80%,365px); justify-self:start; transform:rotate(-4deg); z-index:1; }
   .amp-print.p2{ width:min(80%,365px); justify-self:end; margin-top:clamp(3.5rem,6.5vw,5rem); transform:rotate(3deg); z-index:2; }
-  .amp-print::before{ content:""; position:absolute; top:-13px; left:50%; width:88px; height:26px; transform:translateX(-50%) rotate(-2deg); background:rgba(255,255,255,0.3); box-shadow:0 2px 6px rgba(0,0,0,0.12); }
+  .amp-print::before{ content:""; position:absolute; top:-13px; left:50%; width:88px; height:26px; transform:translateX(-50%) rotate(-2deg); background:rgba(249,247,242,0.3); box-shadow:0 2px 6px rgba(0,0,0,0.12); }
   .amp-print.p2::before{ transform:translateX(-50%) rotate(2.5deg); }
   .amp-print:hover{ transform:rotate(0) translateY(-6px); z-index:3; box-shadow:0 32px 65px rgba(0,0,0,0.6); }
   .amp-note{ display:block; margin-top:1.1rem; font-family:'Space Mono',monospace; font-size:0.7rem; letter-spacing:0.05em; color:rgba(249,247,242,0.55); text-align:right; }
@@ -87,12 +87,12 @@
   .dir-chip{ display:inline-flex; align-items:center; gap:0.55rem;
     padding:0.62rem 0.95rem; border-radius:999px; font-size:0.92rem;
     background:#000;
-    border:1px solid rgba(255,255,255,0.16); color:var(--cream);
+    border:1px solid rgba(249,247,242,0.16); color:var(--cream);
     text-decoration:none; transition:border-color .15s ease, background .15s ease, color .15s ease; }
   .dir-chip b{ font-variant-numeric:tabular-nums; font-weight:700; color:var(--cream-faint); font-size:0.85rem; }
   /* Hover stays opaque too: a translucent tint would put the ground back behind
      the label at the exact moment somebody is reading it. */
-  a.dir-chip:hover{ border-color:var(--orange); color:var(--orange); background:#140a07; }
+  a.dir-chip:hover{ border-color:var(--orange); color:var(--orange); background:var(--night-raised); }
   a.dir-chip:hover b{ color:var(--orange); }
   a.dir-chip:focus-visible{ outline:2px solid var(--orange); outline-offset:3px; }
   /* Not a link, so it must not invite a click that does nothing — but a dashed

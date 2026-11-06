@@ -31,8 +31,6 @@ const BRAND = {
   "--sand": "#F4F0E8", // the page colour
   "--ink": "#3B3B46", // Laura's black, confirmed 2026-09-09; on the site since the Nov 2026 refresh
   "--yellow": "#F6BE00",
-  "--teal": "#00B7BD",
-  "--purple": "#483698",
 };
 
 // Laura typed the brand black as #3B3V46, which is not a hex colour — V is not
@@ -141,6 +139,100 @@ const walk = (dir) => {
 };
 walk(ROOT);
 walk(new URL("../src/css/", import.meta.url));
+
+// THE WHOLE SYSTEM (Nov 6 2026, Alec: "Audit the whole website across the
+// whole board and make sure our colors are consistent based on our latest
+// progression"). Night & Orange is a closed set: every colour in a
+// stylesheet or a page's styles must be one of these (translucent ones are
+// judged by their base colour), or one of the few pieces of artwork below.
+// Teal and purple are retired; the old orange ink, slate, the pre-refresh
+// near-black, cool greys and translucent pure white are drift.
+const SYSTEM = {
+  "photo-black": "#0F0E0D",
+  night: "#171513",
+  "night-raised": "#23201D",
+  bone: "#F4F0E8",
+  "off-white": "#F9F7F2",
+  ink: "#3B3B46",
+  "ink-soft": "#3C382F",
+  muted: "#6A675E",
+  "cream-mute": "#CFC9BD",
+  "cream-faint": "#BCB7AD",
+  hairline: "#E7E1D5",
+  orange: "#FF5C39",
+  "orange-display": "#E64C2A",
+  "orange-ink": "#B9391E",
+  "orange-press": "#9E2F17",
+  "orange-hot": "#FF765B",
+  yellow: "#F6BE00",
+  gold: "#D4A843",
+  "gold-ink": "#80620F",
+  "gold-press": "#BE9233",
+  ok: "#2E7D32",
+  err: "#C0392B",
+  black: "#000000", // shadows only
+};
+const ART = new Set([
+  "dff23d", // the pickleball in the partner x mark
+  "fcffe6", // its shine
+  "d9904f", // the bronze medal
+  "cd7f32", // its ring
+  "ff966e", // orange as light: the warm sky glow behind the home hero
+  "ff6e46",
+  "ff7850",
+  "ff965a",
+]);
+const SYS = Object.values(SYSTEM).map((h) =>
+  [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16)),
+);
+function offSystem(text) {
+  const out = [];
+  const src = text.replace(/\/\*[\s\S]*?\*\//g, "");
+  for (const m of src.matchAll(
+    /#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b|rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*[\d.]+)?\s*\)/g,
+  )) {
+    let rgb;
+    if (m[0][0] === "#") {
+      let h = m[0].slice(1);
+      if (h.length === 3) h = [...h].map((c) => c + c).join("");
+      rgb = [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16));
+    } else rgb = [+m[1], +m[2], +m[3]];
+    const hex = rgb.map((x) => x.toString(16).padStart(2, "0")).join("");
+    if (ART.has(hex)) continue;
+    const d = Math.min(
+      ...SYS.map((v) => Math.hypot(rgb[0] - v[0], rgb[1] - v[1], rgb[2] - v[2])),
+    );
+    if (d > 6) out.push(m[0]);
+  }
+  return [...new Set(out)];
+}
+const STRICT = [
+  ...readdirSync(new URL("../src/css/", import.meta.url))
+    .filter((f) => f.endsWith(".css") && !/^hero-spectrum/.test(f))
+    .map((f) => new URL(`../src/css/${f}`, import.meta.url)),
+  ...readdirSync(ROOT)
+    .filter(
+      (f) =>
+        f.endsWith(".html") &&
+        !/^(hero-\d|hero-review|campaign-concepts|review|photo-picks)/.test(f),
+    )
+    .map((f) => new URL(f, ROOT)),
+  ...readdirSync(new URL("volunteer/", ROOT))
+    .filter((f) => f.endsWith(".html"))
+    .map((f) => new URL(`volunteer/${f}`, ROOT)),
+];
+for (const url of STRICT) {
+  let text = readFileSync(url, "utf8");
+  if (url.pathname.endsWith(".html"))
+    text = [...text.matchAll(/<style[^>]*>([\s\S]*?)<\/style>|style="([^"]*)"/g)]
+      .map((m) => m[1] || m[2] || "")
+      .join("\n");
+  const bad2 = offSystem(text);
+  if (bad2.length)
+    fail(
+      `${url.pathname.split("/").pop()}: off the Night & Orange system: ${bad2.slice(0, 6).join(", ")}`,
+    );
+}
 
 if (BLACK_IS_A_STAND_IN)
   console.log(

@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=c189246b">
+<link rel="stylesheet" href="/css/site.css?v=f0845fad">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <style>
   /* ==========================================================================
@@ -45,10 +45,10 @@
   .s6-meter-row{ display:flex; align-items:baseline; gap:0.55rem; flex-wrap:wrap; }
   .s6-meter-n{ font-family:var(--font-display); font-weight:900; font-style:italic; letter-spacing:-0.03em; font-size:clamp(2.3rem,5.6vw,3.3rem); line-height:1; color:var(--cream); font-variant-numeric:tabular-nums; }
   .s6-meter-of{ font-size:0.98rem; color:var(--cream-mute); }
-  .s6-meter-track{ display:block; height:12px; border-radius:999px; background:rgba(255,255,255,0.13); margin-top:1rem; overflow:hidden; }
+  .s6-meter-track{ display:block; height:12px; border-radius:999px; background:rgba(249,247,242,0.13); margin-top:1rem; overflow:hidden; }
   .s6-meter-fill{ display:block; height:100%; width:0; border-radius:999px;
     background:linear-gradient(90deg,var(--orange-ink),var(--orange-hot));
-    box-shadow:0 0 22px -2px rgba(232,93,4,0.7);
+    box-shadow:0 0 22px -2px rgba(255,92,57,0.7);
     transition:width 1.3s cubic-bezier(.2,.8,.2,1); }
   /* the meter no longer carries a caption, so it owns the gap to the buttons */
   .s6-hero .actions{ margin-top:2.2rem; }
@@ -62,7 +62,7 @@
     position:relative; overflow:hidden;
     background:var(--paper); border:1px solid var(--hairline); border-radius:16px;
     padding:clamp(1rem,2.2vw,1.4rem) 0.75rem clamp(1.1rem,2.4vw,1.5rem);
-    text-align:center; box-shadow:0 16px 36px -30px rgba(28,26,21,0.32);
+    text-align:center; box-shadow:0 16px 36px -30px rgba(59,59,70,0.32);
   }
   /* the fill rises from the floor of the tile as money comes in */
   .s6-seat-fill{
@@ -84,8 +84,8 @@
   .s6-cost{ list-style:none; padding:0; margin:clamp(2.2rem,4vw,3.2rem) 0 0;
     display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(1.2rem,2.6vw,2rem); }
   @media (max-width:860px){ .s6-cost{ grid-template-columns:1fr; } }
-  .s6-cost-item{ background:var(--paper); border:1px solid rgba(28,26,21,0.09); border-radius:18px;
-    padding:clamp(1.5rem,2.8vw,2.1rem); box-shadow:0 18px 40px -30px rgba(28,26,21,0.3); }
+  .s6-cost-item{ background:var(--paper); border:1px solid rgba(59,59,70,0.09); border-radius:18px;
+    padding:clamp(1.5rem,2.8vw,2.1rem); box-shadow:0 18px 40px -30px rgba(59,59,70,0.3); }
   .s6-cost-item h3{ margin-top:1rem; }
   .s6-skill{ margin-top:1.4rem; max-width:40ch; font-family:var(--font-display); font-weight:800; font-size:clamp(1.3rem,2.5vw,1.75rem); line-height:1.2; letter-spacing:-0.02em; }
   .s6-skill em{ display:block; color:var(--orange-ink); }

@@ -216,14 +216,14 @@ ${roles.map(card).join("\n")}
        ambassadors grow the sport where they live, so they get their own page. -->
   <section class="vol-amb dark">
     <style>
-      .vol-amb{ position:relative; isolation:isolate; overflow:hidden; padding:clamp(2.8rem,6vw,4.2rem) 0; border-top:1px solid rgba(255,255,255,0.08); }
+      .vol-amb{ position:relative; isolation:isolate; overflow:hidden; padding:clamp(2.8rem,6vw,4.2rem) 0; border-top:1px solid rgba(249,247,242,0.08); }
       .vol-amb::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 45% 70% at 80% 50%, rgb(var(--accent-rgb) / 0.11) 0%, transparent 70%); }
       .vol-amb-grid{ display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,0.8fr); gap:clamp(1.6rem,4vw,3.5rem); align-items:center; }
       @media (max-width:760px){ .vol-amb-grid{ grid-template-columns:1fr; } }
       .vol-amb h2{ color:var(--cream); margin-top:0.7rem; }
       .vol-amb p{ color:var(--cream-mute); margin-top:0.9rem; max-width:44ch; }
       .vol-amb .textlink{ margin-top:1.3rem; color:var(--orange); }
-      .vol-amb figure{ margin:0; border-radius:18px; overflow:hidden; aspect-ratio:4/3; box-shadow:0 0 0 1px rgba(255,255,255,0.08), 0 30px 70px -30px rgba(0,0,0,0.9); }
+      .vol-amb figure{ margin:0; border-radius:18px; overflow:hidden; aspect-ratio:4/3; box-shadow:0 0 0 1px rgba(249,247,242,0.08), 0 30px 70px -30px rgba(0,0,0,0.9); }
       .vol-amb img{ width:100%; height:100%; object-fit:cover; object-position:45% 35%; }
     </style>
     <div class="wrap vol-amb-grid">

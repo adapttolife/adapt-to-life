@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=c189246b">
+<link rel="stylesheet" href="/css/site.css?v=f0845fad">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <style>
   /* ==========================================================================
@@ -104,7 +104,7 @@
   .pop-card{
     background:var(--paper); border:1px solid var(--hairline); border-radius:20px;
     padding:clamp(1.4rem,3vw,2.2rem);
-    box-shadow:0 28px 64px -34px rgba(28,26,21,0.42);
+    box-shadow:0 28px 64px -34px rgba(59,59,70,0.42);
     display:grid; grid-template-columns:1fr auto; gap:1.2rem 2rem; align-items:center;
   }
   @media (max-width:760px){ .pop-card{ grid-template-columns:1fr; } }
@@ -131,7 +131,7 @@
   }
   @media (max-width:760px){ .pop-steps{ grid-template-columns:1fr; } }
   .pop-step{
-    background:var(--canvas); border:1px solid rgba(28,26,21,0.09); border-radius:18px;
+    background:var(--canvas); border:1px solid rgba(59,59,70,0.09); border-radius:18px;
     padding:clamp(1.5rem,2.8vw,2.1rem);
   }
   .pop-step-n{
@@ -154,7 +154,7 @@
   @media (max-width:1000px){ .pop-grid{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
   @media (max-width:700px){ .pop-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.8rem; } }
   .pop-fl{
-    background:rgba(255,255,255,0.035); border:1px solid rgba(247,244,238,0.10);
+    background:rgba(249,247,242,0.035); border:1px solid rgba(247,244,238,0.10);
     border-radius:16px; padding:clamp(0.9rem,1.8vw,1.3rem) clamp(0.8rem,1.6vw,1.1rem) clamp(1rem,2vw,1.3rem);
     display:flex; flex-direction:column; align-items:center; text-align:center;
     transition:transform .35s cubic-bezier(.2,.7,.3,1), border-color .35s ease, background .35s ease;
@@ -201,7 +201,7 @@
 
   /* ---- goal bar (renders only when a goal is set) ------------------------ */
   .pop-goal{ margin-top:1.1rem; max-width:340px; }
-  .pop-goal-bar{ height:7px; border-radius:999px; background:rgba(28,26,21,0.10); overflow:hidden; }
+  .pop-goal-bar{ height:7px; border-radius:999px; background:rgba(59,59,70,0.10); overflow:hidden; }
   .pop-goal-fill{
     height:100%; border-radius:999px; min-width:3px;
     background:linear-gradient(90deg, var(--orange-ink), var(--orange-hot));
@@ -238,9 +238,9 @@
   }
   @media (max-width:860px){ .pop-cost{ grid-template-columns:1fr; } }
   .pop-cost-item{
-    background:var(--paper); border:1px solid rgba(28,26,21,0.09); border-radius:18px;
+    background:var(--paper); border:1px solid rgba(59,59,70,0.09); border-radius:18px;
     padding:clamp(1.5rem,2.8vw,2.1rem);
-    box-shadow:0 18px 40px -30px rgba(28,26,21,0.3);
+    box-shadow:0 18px 40px -30px rgba(59,59,70,0.3);
   }
   .pop-cost-ico{ display:block; width:44px; height:44px; color:var(--orange-ink); }
   .pop-cost-ico svg{ width:100%; height:100%; display:block; }

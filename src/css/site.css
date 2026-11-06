@@ -53,8 +53,6 @@
      All three fail AA as small text on either light surface, so they are
      surface and graphic colours, never body text. */
   --yellow: #f6be00;
-  --teal: #00b7bd;
-  --purple: #483698;
 
   /* form status — semantic, not brand. Repainting pass/fail in brand accents
      would cost legibility to buy consistency nobody asked for. */
@@ -87,7 +85,6 @@
   --charcoal: var(--night-raised);
   --slate: var(--night);
   --slate-raised: var(--night-raised);
-  --teal-on-dark: var(--orange); /* teal is retired on the site */
   --hairline-dark: rgba(249, 247, 242, 0.08);
   --r-sm: 6px;
   --r-md: 8px;
@@ -332,7 +329,7 @@ p {
   width: 34px;
 }
 .tick.faint {
-  background: rgba(255, 255, 255, 0.28);
+  background: rgba(249, 247, 242, 0.28);
 }
 
 /* ---- buttons + links ----------------------------------------------------- */
@@ -352,7 +349,7 @@ p {
   color: var(--cream);
   border: 1px solid var(--orange-ink);
   box-shadow:
-    inset 0 1px rgba(255, 255, 255, 0.18),
+    inset 0 1px rgba(249, 247, 242, 0.18),
     0 1px 2px rgba(185, 57, 30, 0.24),
     0 10px 26px -12px rgba(185, 57, 30, 0.5);
   transition:
@@ -553,7 +550,7 @@ p {
 .nav.over-dark.scrolled {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
-  border-bottom-color: rgba(255, 255, 255, 0.08);
+  border-bottom-color: rgba(249, 247, 242, 0.08);
 }
 .nav.over-dark .brand {
   color: var(--cream);
@@ -662,12 +659,12 @@ em.italic[style*="--orange"] {
 }
 :is(.dark, .on-dark) .btn.ghost {
   color: var(--cream);
-  border-color: rgba(255, 255, 255, 0.26);
+  border-color: rgba(249, 247, 242, 0.26);
 }
 :is(.dark, .on-dark) .btn.ghost:hover {
-  background: rgba(255, 255, 255, 0.07);
+  background: rgba(249, 247, 242, 0.07);
   color: var(--cream);
-  border-color: rgba(255, 255, 255, 0.4);
+  border-color: rgba(249, 247, 242, 0.4);
 }
 :is(.dark, .on-dark) .textlink {
   color: var(--cream);
@@ -927,7 +924,7 @@ em.italic[style*="--orange"] {
 }
 .progress-bar {
   height: 12px;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(249, 247, 242, 0.12);
   border-radius: 999px;
   overflow: hidden;
 }
@@ -935,7 +932,7 @@ em.italic[style*="--orange"] {
   height: 100%;
   background: var(--orange);
   border-radius: 999px;
-  box-shadow: 0 0 24px -2px rgba(232, 93, 4, 0.7);
+  box-shadow: 0 0 24px -2px rgba(255, 92, 57, 0.7);
 }
 .metrics {
   display: grid;
@@ -1049,7 +1046,7 @@ em.italic[style*="--orange"] {
   font-style: italic;
   font-weight: 400;
   font-size: clamp(1.05rem, 1.5vw, 1.35rem);
-  color: #9a958d;
+  color: var(--muted);
   transition: color 0.15s ease;
 }
 .community .row span:hover {
@@ -1141,7 +1138,7 @@ em.italic[style*="--orange"] {
   gap: 1rem;
   margin-top: clamp(2.5rem, 5vw, 3.5rem);
   padding-top: 1.4rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1px solid rgba(249, 247, 242, 0.12);
   font-size: 0.85rem;
   color: var(--cream-faint);
 }
@@ -1227,8 +1224,8 @@ em.italic[style*="--orange"] {
 .foot-sub-input {
   flex: 1;
   min-width: 0;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(249, 247, 242, 0.06);
+  border: 1px solid rgba(249, 247, 242, 0.18);
   border-radius: 8px;
   padding: 0.6rem 0.75rem;
   color: var(--cream);
@@ -1240,7 +1237,7 @@ em.italic[style*="--orange"] {
 .foot-sub-input:focus {
   outline: none;
   border-color: var(--orange);
-  background: rgba(255, 255, 255, 0.09);
+  background: rgba(249, 247, 242, 0.09);
 }
 .foot-sub-btn {
   flex: none;
@@ -1339,7 +1336,7 @@ em.italic[style*="--orange"] {
   background: var(--paper);
   border: 1px solid var(--hairline);
   border-radius: 16px;
-  box-shadow: 0 26px 60px -28px rgba(28, 26, 21, 0.45);
+  box-shadow: 0 26px 60px -28px rgba(59, 59, 70, 0.45);
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -1623,7 +1620,7 @@ a.info-v {
   border: 1px solid var(--hairline);
   border-radius: 14px;
   padding: clamp(1.6rem, 3vw, 2.4rem);
-  box-shadow: 0 2px 10px -4px rgba(20, 16, 9, 0.08);
+  box-shadow: 0 2px 10px -4px rgba(23, 21, 19, 0.08);
 }
 .field {
   margin-bottom: 1.15rem;
@@ -1787,7 +1784,7 @@ a.info-v {
   overflow: hidden;
   aspect-ratio: 16/9;
   box-shadow: 0 34px 90px -44px rgba(0, 0, 0, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(249, 247, 242, 0.08);
 }
 .hero-frame .frame-media img {
   width: 100%;
@@ -1806,7 +1803,7 @@ a.info-v {
   overflow: hidden;
   margin-bottom: 1.6rem;
   border: 3px solid var(--paper);
-  box-shadow: 0 14px 34px -18px rgba(20, 16, 9, 0.45);
+  box-shadow: 0 14px 34px -18px rgba(23, 21, 19, 0.45);
 }
 .founder-portrait img {
   width: 100%;
@@ -1827,7 +1824,7 @@ a.info-v {
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 30px 76px -42px rgba(0, 0, 0, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(249, 247, 242, 0.12);
 }
 .photo-frame img {
   width: 100%;
@@ -1931,9 +1928,9 @@ a.info-v {
   gap: 0.7rem;
   padding: clamp(1.8rem, 3.4vw, 2.6rem);
   background: var(--canvas);
-  border: 1px solid rgba(28, 26, 21, 0.09);
+  border: 1px solid rgba(59, 59, 70, 0.09);
   border-radius: 18px;
-  box-shadow: 0 18px 40px -28px rgba(28, 26, 21, 0.28);
+  box-shadow: 0 18px 40px -28px rgba(59, 59, 70, 0.28);
 }
 .path h3 {
   margin: 0;
@@ -2014,7 +2011,7 @@ a.info-v {
   height: 3px;
   width: min(560px, 82%);
   margin-top: clamp(2.6rem, 5vw, 3.6rem);
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(249, 247, 242, 0.1);
   border-radius: 3px;
   overflow: hidden;
 }
@@ -2053,7 +2050,7 @@ a.info-v {
     ),
     radial-gradient(
       ellipse 48% 62% at 102% 102%,
-      rgba(255, 255, 255, 0.04) 0%,
+      rgba(249, 247, 242, 0.04) 0%,
       transparent 58%
     );
 }
@@ -2156,7 +2153,7 @@ a.info-v {
   align-items: center;
   padding: clamp(1.5rem, 3.2vw, 2.2rem) clamp(1.5rem, 3.4vw, 2.4rem);
   background: var(--charcoal);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(249, 247, 242, 0.1);
   border-radius: 20px;
   box-shadow: 0 26px 60px -40px rgba(0, 0, 0, 0.9);
   transition:
@@ -2416,7 +2413,7 @@ a.win-band:focus-visible {
   font-size: 0.84rem;
   font-weight: 600;
   color: var(--ink);
-  background: rgba(28, 26, 21, 0.05);
+  background: rgba(59, 59, 70, 0.05);
   transition:
     background-color 0.16s ease,
     color 0.16s ease;
@@ -3136,7 +3133,7 @@ a.win-band:focus-visible {
 .evc-btn.is-alt {
   background: transparent;
   color: var(--ink);
-  box-shadow: inset 0 0 0 1.5px rgba(28, 26, 21, 0.26);
+  box-shadow: inset 0 0 0 1.5px rgba(59, 59, 70, 0.26);
 }
 .evc-btn.is-alt:hover {
   color: var(--orange-ink);
@@ -3300,7 +3297,7 @@ a.win-band:focus-visible {
   --data: var(--ink);
   --card: var(--paper);
   --card-text: var(--ink);
-  --card-muted: #5a5866;
+  --card-muted: #6a675e; /* the site's warm muted */
   --card-hair: rgba(59, 59, 70, 0.12);
   --track: rgba(59, 59, 70, 0.1);
   --hero: var(--orange-ink);
@@ -3324,7 +3321,7 @@ a.win-band:focus-visible {
 .cm[data-theme="light"] {
   --canvas-cm: var(--sand);
   --text: var(--ink);
-  --muted: #5a5866;
+  --muted: #6a675e;
   --hair: rgba(59, 59, 70, 0.13);
   --raised: var(--paper);
   --em: var(--orange-display);
@@ -3332,7 +3329,7 @@ a.win-band:focus-visible {
   --card: var(--slate);
   --card-text: var(--cream);
   --card-muted: #cfc9bd;
-  --card-hair: rgba(255, 255, 255, 0.1);
+  --card-hair: rgba(249, 247, 242, 0.1);
   --track: rgba(249, 247, 242, 0.14);
   --hero: var(--orange);
   --card-shadow:
@@ -3424,12 +3421,12 @@ a.win-band:focus-visible {
   font-weight: 700;
   letter-spacing: 0.01em;
   background: color-mix(in srgb, var(--accent) 14%, transparent);
-  color: color-mix(in srgb, var(--accent) 42%, var(--text));
+  color: var(--orange-hot);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent);
 }
 .cm[data-theme="light"] .cm-status {
   background: color-mix(in srgb, var(--action) 10%, transparent);
-  color: color-mix(in srgb, var(--action-ink) 70%, var(--text));
+  color: var(--orange-ink);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--action) 22%, transparent);
 }
 .cm-dot {
@@ -3592,18 +3589,18 @@ a.win-band:focus-visible {
 }
 .cm-badge--accent {
   background: color-mix(in srgb, var(--accent) 14%, transparent);
-  color: color-mix(in srgb, var(--action-ink) 75%, var(--card-text));
+  color: var(--orange-ink);
 }
 .cm-badge--action {
   background: color-mix(in srgb, var(--action) 14%, transparent);
-  color: color-mix(in srgb, var(--action-ink) 55%, var(--card-text));
+  color: var(--orange-ink);
 }
 .cm[data-theme="light"] .cm-badge--accent {
-  color: color-mix(in srgb, var(--accent) 55%, var(--card-text));
+  color: var(--orange-hot);
   background: color-mix(in srgb, var(--accent) 20%, transparent);
 }
 .cm[data-theme="light"] .cm-badge--action {
-  color: color-mix(in srgb, var(--action) 45%, var(--card-text));
+  color: var(--orange-hot);
   background: color-mix(in srgb, var(--action) 20%, transparent);
 }
 .cm-badge--quiet {
@@ -3741,7 +3738,7 @@ a.win-band:focus-visible {
     inset 0 0 0 1px var(--card-hair);
 }
 .cm[data-theme="light"] .cm-seg button[aria-checked="true"] {
-  background: color-mix(in srgb, var(--card-text) 14%, var(--card));
+  background: rgba(249, 247, 242, 0.14);
 }
 .cm-amts {
   display: grid;

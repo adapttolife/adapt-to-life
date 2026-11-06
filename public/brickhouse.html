@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=c189246b">
+<link rel="stylesheet" href="/css/site.css?v=f0845fad">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <style>
   /* Brick House partner page. Told in pictures: the partnership lockup over Bob in the Brick House shirt
@@ -76,7 +76,7 @@
   .bh-when span::after{ content:""; width:2px; height:1.15em; background:var(--orange); border-radius:2px; box-shadow:0 0 12px 0 var(--orange-glow); }
   /* The moving picture: a tall frame, tilted like a card on the wall. */
   .bh-film{ position:relative; margin:0; justify-self:center; width:min(100%, 420px, calc((100svh - 160px) * 0.6)); aspect-ratio:9/15; border-radius:22px; overflow:hidden; transform:rotate(1.5deg);
-    box-shadow:0 0 0 1px rgba(255,255,255,0.08), 0 40px 90px -24px rgba(0,0,0,0.85), 0 0 110px -10px rgb(var(--accent-rgb) / 0.45); background:#141414; }
+    box-shadow:0 0 0 1px rgba(249,247,242,0.08), 0 40px 90px -24px rgba(0,0,0,0.85), 0 0 110px -10px rgb(var(--accent-rgb) / 0.45); background:#141414; }
   .bh-film img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 40%; display:block; transform-origin:50% 42%; animation:bh-push 16s ease-in-out infinite alternate; }
   @keyframes bh-push{ from{ transform:scale(1); } to{ transform:scale(1.07); } }
   @media (prefers-reduced-motion: reduce){ .bh-film img{ animation:none; } }
@@ -180,7 +180,7 @@
   .bh-reel > div{ display:flex; flex-direction:column; gap:clamp(0.6rem,1.6vw,1.2rem); }
   .bh-reel > div:nth-child(2){ margin-top:clamp(2.5rem,7vw,6rem); }
   .bh-reel > div:nth-child(3){ margin-top:clamp(1.2rem,3.5vw,3rem); }
-  .bh-reel img{ display:block; width:100%; height:auto; object-fit:cover; border-radius:14px; box-shadow:0 0 0 1px rgba(255,255,255,0.06), 0 24px 50px -24px rgba(0,0,0,0.8); }
+  .bh-reel img{ display:block; width:100%; height:auto; object-fit:cover; border-radius:14px; box-shadow:0 0 0 1px rgba(249,247,242,0.06), 0 24px 50px -24px rgba(0,0,0,0.8); }
   .bh-reel .tall{ aspect-ratio:9/14; }
   .bh-reel .mid{ aspect-ratio:4/5; }
   .bh-reel .lead-shot{ box-shadow:0 0 0 2px var(--orange), 0 0 60px -12px rgb(var(--accent-rgb) / 0.55); }
@@ -220,8 +220,8 @@
   .bh-day{ margin-top:1rem; font-weight:700; font-size:1.2rem; color:var(--cream-mute); }
   .bh-big{ font-family:var(--font-display); font-weight:900; font-size:clamp(4.2rem,12vw,8rem); line-height:0.88; letter-spacing:-0.05em; color:var(--orange); text-shadow:0 0 42px rgb(var(--accent-rgb) / 0.35); }
   .bh-detail .prose{ margin-top:1.1rem; max-width:52ch; }
-  .bh-facts{ margin-top:1.8rem; border-top:1px solid rgba(255,255,255,0.14); }
-  .bh-facts > div{ display:grid; grid-template-columns:6rem 1fr; gap:1rem; padding:0.95rem 0; border-bottom:1px solid rgba(255,255,255,0.14); }
+  .bh-facts{ margin-top:1.8rem; border-top:1px solid rgba(249,247,242,0.14); }
+  .bh-facts > div{ display:grid; grid-template-columns:6rem 1fr; gap:1rem; padding:0.95rem 0; border-bottom:1px solid rgba(249,247,242,0.14); }
   .bh-facts dt{ font-weight:700; color:var(--cream-faint); }
   .bh-facts dd{ color:var(--cream); }
   .bh-actions{ display:flex; flex-wrap:wrap; gap:0.9rem 1rem; margin-top:2rem; }
@@ -237,7 +237,7 @@
   .bk.half{ grid-column:span 1; aspect-ratio:auto; }
   .bk.o{ background:var(--orange); box-shadow:inset 0 -6px 0 rgba(0,0,0,0.14); }
   .bk.c{ background:var(--cream); box-shadow:inset 0 -6px 0 rgba(0,0,0,0.09); }
-  .bk.ph{ background:#1d1d1f var(--img) var(--pos, 50% 30%)/cover no-repeat; filter:grayscale(1) contrast(1.1); }
+  .bk.ph{ background:var(--night-raised) var(--img) var(--pos, 50% 30%)/cover no-repeat; filter:grayscale(1) contrast(1.1); }
   .bk.ph.lit{ filter:none; box-shadow:0 0 0 2px var(--orange), 0 14px 34px -12px rgb(var(--accent-rgb) / 0.6); }
   .bk.next{ border:2px dashed rgb(var(--accent-rgb) / 0.85); background:rgb(var(--accent-rgb) / 0.07); }
   .bh-wall.in .bk{ animation:bh-lay 0.6s cubic-bezier(.2,.7,.2,1) both; animation-delay:calc(var(--i) * 45ms); }

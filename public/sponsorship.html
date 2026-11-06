@@ -26,8 +26,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=c189246b">
-<link rel="stylesheet" href="/css/sponsor-sheet.css?v=ffe856b5">
+<link rel="stylesheet" href="/css/site.css?v=f0845fad">
+<link rel="stylesheet" href="/css/sponsor-sheet.css?v=ae500abe">
 <!-- band:vars --><style data-band-vars>:root{--pg-band-wide:url('/images/hero/panels/pg-band-2-wide.9ac73821.webp');--pg-band-tall:url('/images/hero/panels/pg-band-2-tall.f9278c2d.webp');--pg-give-wide:url('/images/hero/panels/pg-give-wide.b46beed5.webp');--pg-give-tall:url('/images/hero/panels/pg-give-tall.5cece3a5.webp');}  .bh-road .bh-more .arrow{ display:inline-block; margin-top:0; max-width:none; color:inherit; }
 </style>
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
@@ -94,7 +94,7 @@
   .tier-grid{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:clamp(0.8rem,1.6vw,1.2rem); margin-top:clamp(2.4rem,4vw,3.2rem); align-items:end; }
   @media (max-width:1000px){ .tier-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); align-items:stretch; } }
   @media (max-width:560px){ .tier-grid{ grid-template-columns:1fr; } }
-  .tier{ display:flex; flex-direction:column; border-radius:18px; padding:1.6rem 1.4rem 1.4rem; background:rgba(255,255,255,0.04); box-shadow:inset 0 0 0 1px rgba(255,255,255,0.10); }
+  .tier{ display:flex; flex-direction:column; border-radius:18px; padding:1.6rem 1.4rem 1.4rem; background:rgba(249,247,242,0.04); box-shadow:inset 0 0 0 1px rgba(249,247,242,0.10); }
   /* Each step up the ladder stands a little taller. */
   @media (min-width:1001px){ .tier:nth-child(1){ min-height:400px; } .tier:nth-child(2){ min-height:428px; } .tier:nth-child(3){ min-height:456px; } .tier:nth-child(4){ min-height:484px; } }
   .tier.is-popular{ background:linear-gradient(180deg, rgb(var(--accent-rgb) / 0.16), rgb(var(--accent-rgb) / 0.04)); box-shadow:inset 0 0 0 1.5px var(--orange), 0 0 70px -18px rgb(var(--accent-rgb) / 0.55); }
@@ -102,7 +102,7 @@
   .tier-name{ font-family:var(--font-display); font-weight:800; font-size:clamp(1.6rem,2.2vw,1.9rem); letter-spacing:-0.02em; line-height:1; margin-top:0.6rem; color:var(--cream); }
   .tier-price{ font-family:var(--font-display); font-weight:800; font-style:italic; font-size:clamp(1.3rem,1.8vw,1.5rem); letter-spacing:-0.01em; color:#ff5c39; margin-top:0.45rem; }
   .tier-price small{ font-size:0.9rem; font-style:normal; color:var(--cream-mute); font-family:var(--font-body); }
-  .tier-line{ font-size:0.95rem; color:var(--cream-mute); margin:0.7rem 0 0; padding-bottom:1.1rem; border-bottom:1px solid rgba(255,255,255,0.12); }
+  .tier-line{ font-size:0.95rem; color:var(--cream-mute); margin:0.7rem 0 0; padding-bottom:1.1rem; border-bottom:1px solid rgba(249,247,242,0.12); }
   .tier-benefits{ list-style:none; padding:0; margin:1.1rem 0 1.4rem; display:flex; flex-direction:column; gap:0.55rem; flex:1; }
   .tier-benefits li{ position:relative; padding-left:1.3rem; font-size:0.92rem; color:rgba(249,247,242,0.86); line-height:1.4; }
   .tier-benefits li::before{ content:""; position:absolute; left:0; top:0.5em; width:7px; height:7px; border-radius:2px; background:var(--orange); }
@@ -154,7 +154,7 @@
   /* One price list: the per-athlete options sit above the levels, same sheet, same fund. */
   .sp-units-label{ margin-top:clamp(2rem,4vw,2.8rem); font-family:var(--font-label); font-weight:800; font-size:0.8rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--orange); }
   .sp-units{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(0.9rem,2vw,1.4rem); margin-top:1rem; }
-  .sp-unit{ display:flex; flex-direction:column; align-items:flex-start; padding:clamp(1.3rem,2.4vw,1.8rem); border-radius:18px; background:rgba(255,255,255,0.04); box-shadow:inset 0 0 0 1px rgba(255,255,255,0.12); }
+  .sp-unit{ display:flex; flex-direction:column; align-items:flex-start; padding:clamp(1.3rem,2.4vw,1.8rem); border-radius:18px; background:rgba(249,247,242,0.04); box-shadow:inset 0 0 0 1px rgba(249,247,242,0.12); }
   .sp-unit-name{ font-family:var(--font-display); font-weight:800; font-size:clamp(1.15rem,1.8vw,1.35rem); letter-spacing:-0.01em; color:var(--cream); }
   .sp-unit-price{ margin-top:0.4rem; font-family:var(--font-display); font-weight:900; font-size:clamp(2rem,3.4vw,2.6rem); letter-spacing:-0.03em; color:#ff5c39; line-height:1; }
   .sp-unit-price small{ font-size:0.45em; font-weight:700; letter-spacing:0; color:var(--cream-mute); }

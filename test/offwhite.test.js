@@ -133,3 +133,11 @@ test("Night & Orange: one warm near-black, orange does every accent job", () => 
   assert.ok(!/--orange:\s*var\(--teal-on-dark\)/.test(css));
   assert.ok(!/rgba\(0, ?183, ?189/.test(css), "no teal glows in the stylesheet");
 });
+
+test("no page header shows GLASA's Great Lakes Games shirt (band 3 is retired)", () => {
+  // Found in the Nov 6 2026 site audit: header band 3 carries a "Great Lakes
+  // Games" shirt, GLASA's event, and GLASA never appears on the site.
+  for (const f of readdirSync(join(ROOT, "public")).filter((x) => x.endsWith(".html")))
+    assert.ok(!read(`public/${f}`).includes("pg-band-3-"), `${f} uses header band 3`);
+  assert.ok(read("scripts/lib/page-header.mjs").includes('BAND_OF[page] || "4"'));
+});

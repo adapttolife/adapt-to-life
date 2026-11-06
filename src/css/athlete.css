@@ -109,7 +109,7 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--cream-mute);
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(249, 247, 242, 0.22);
   border-radius: 2px;
   padding: 0.34rem 0.6rem;
 }
@@ -289,10 +289,10 @@
   gap: 0.8rem 1.2rem;
   align-items: baseline;
   padding: 1rem 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  border-top: 1px solid rgba(249, 247, 242, 0.14);
 }
 .seat-lines li:last-child {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  border-bottom: 1px solid rgba(249, 247, 242, 0.14);
 }
 .seat-n {
   font-family: var(--font-label);

@@ -45,6 +45,7 @@ export const WBD_GOAL = YEAR_GOAL + ROAD_GOAL;
 async function givebutter(env, id) {
   let online = 0;
   let goal = 0;
+  let donors = 0;
   let live = false;
   try {
     if (env.GIVEBUTTER_API_KEY) {
@@ -59,13 +60,14 @@ async function givebutter(env, id) {
         const d = await r.json();
         online = Number(d.raised) || 0;
         goal = Number(d.goal) || 0;
+        donors = Number(d.donors) || 0;
         live = true;
       }
     }
   } catch (err) {
     console.error("givebutter raised fetch failed:", err);
   }
-  return { online, goal, live };
+  return { online, goal, donors, live };
 }
 
 // The one goal and its parts, filled in priority order.
@@ -82,6 +84,7 @@ async function wbd(env) {
     online: g.online,
     offline: setAside - counted + offline,
     goal: WBD_GOAL,
+    donors: g.donors,
     live: g.live,
     parts: {
       year: { raised: year, goal: YEAR_GOAL },

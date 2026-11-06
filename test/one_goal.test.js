@@ -22,7 +22,7 @@ function withCampaign(online, fn) {
   globalThis.fetch = async () =>
     online === null
       ? new Response("{}", { status: 503 })
-      : new Response(JSON.stringify({ raised: online }), { status: 200 });
+      : new Response(JSON.stringify({ raised: online, donors: 23 }), { status: 200 });
   return fn().finally(() => {
     globalThis.fetch = real;
   });
@@ -49,6 +49,7 @@ test("today: nothing new yet, so every week is empty and the road holds the Send
     assert.equal(w.goal, 34500);
     assert.equal(w.parts.year.raised, 0);
     assert.equal(w.parts["send-6"].raised, 4979);
+    assert.equal(w.donors, 23, "the donor count comes through for social proof");
   }));
 
 test("new gifts fill every week first", () =>

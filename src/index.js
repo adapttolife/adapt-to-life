@@ -1597,8 +1597,11 @@ async function handleRaised(request, env) {
   // bar asked for before the split, so cached pages stay right.
   const asked = new URL(request.url).searchParams.get("c") || "send-6";
   const key = CAMPAIGN_KEYS.includes(asked) ? asked : "send-6";
-  const { raised, online, offline, goal, parts } = await campaignPosition(env, key);
-  const body = JSON.stringify({ key, raised, online, offline, goal, parts });
+  const { raised, online, offline, goal, parts, donors } = await campaignPosition(env, key);
+  // donors: Givebutter's count of people who gave online (social proof on the
+  // campaign module). Popcorn buyers are not in it, so the site says "donors",
+  // never "supporters" or a total of everyone.
+  const body = JSON.stringify({ key, raised, online, offline, goal, parts, donors });
   return new Response(body, {
     headers: {
       "Content-Type": "application/json",

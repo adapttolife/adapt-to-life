@@ -262,6 +262,18 @@ const CARDS = {
     page: "chicago-adaptive-sports.html",
     headline: "Push. Play. <em>Persist</em>.",
   },
+  // AMP Adaptive Sports, partner nonprofit (Nov 6 2026). Karen on the water
+  // at Lauderdale Lakes, from the same master the /karen card uses; the line
+  // is AMP's own, from their gear.
+  amp: {
+    variant: "split",
+    photo: "karen",
+    size: 76,
+    measure: "8ch",
+    out: "public/images/og/amp-v1-partner.jpg",
+    page: "amp.html",
+    headline: "Active. Mobile. <em>Proud</em>.",
+  },
   // Partner club card, same split treatment as Brick House.
   ace: {
     variant: "split",

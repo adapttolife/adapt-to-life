@@ -824,7 +824,11 @@ const BUDGET = {
   // benefit "Logo on our donate page", which now sit within the browser's
   // lazy-load distance at 1440 (~19KB). Same rule and the same ~4% drift as
   // the homepage above: 221 plus 4% is 230.
-  "/donate": { own: 230, total: 9000, reqs: 108, hosts: 21, cls: null },
+  // Then 230 -> 237 the same day: AMP Adaptive Sports became a partner
+  // (Alec: "They are partners"), and its logo tile is 7KB. Measured 228;
+  // plus 4% is 237. (The homepage's new 7KB logo fits inside 635: 617KB,
+  // 43 requests.)
+  "/donate": { own: 237, total: 9000, reqs: 108, hosts: 21, cls: null },
 };
 
 // MEASURE ONE PAGE, ONCE. This was the body of the loop below until the loop

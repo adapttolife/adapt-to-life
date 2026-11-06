@@ -380,7 +380,7 @@ p {
   box-shadow: none;
 }
 .btn.ghost:hover {
-  background: rgba(59, 59, 70, 0.06);
+  background: var(--paper);
   color: var(--ink);
   border-color: rgba(59, 59, 70, 0.4);
 }
@@ -2413,7 +2413,10 @@ a.win-band:focus-visible {
   font-size: 0.84rem;
   font-weight: 600;
   color: var(--ink);
-  background: rgba(59, 59, 70, 0.05);
+  background: var(
+    --paper
+  ); /* the card tone with a hairline: no third tone on the page or on a card */
+  box-shadow: inset 0 0 0 1px rgba(59, 59, 70, 0.12);
   transition:
     background-color 0.16s ease,
     color 0.16s ease;
@@ -3606,6 +3609,12 @@ a.win-band:focus-visible {
 .cm-badge--quiet {
   background: color-mix(in srgb, var(--card-text) 8%, transparent);
   color: var(--card-muted);
+}
+/* On the off-white money card (dark theme) the quiet chip and the switch track
+   are the page off-white, not a grey mix: two light tones, never a third. */
+.cm[data-theme="dark"] .cm-badge--quiet,
+.cm[data-theme="dark"] .cm-seg {
+  background: var(--canvas);
 }
 .cm-track {
   position: relative;

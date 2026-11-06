@@ -141,3 +141,24 @@ test("no page header shows GLASA's Great Lakes Games shirt (band 3 is retired)",
     assert.ok(!read(`public/${f}`).includes("pg-band-3-"), `${f} uses header band 3`);
   assert.ok(read("scripts/lib/page-header.mjs").includes('BAND_OF[page] || "4"'));
 });
+
+test("every page tells the browser its colour: the nav's black", () => {
+  // Nov 6 audit: with no theme-color the phone tinted the status bar a light
+  // grey above the black nav, one more white. Every page says #0f0e0d.
+  const pages = readdirSync(join(ROOT, "public"))
+    .filter(
+      (f) =>
+        f.endsWith(".html") && !/^(hero-|campaign-concepts|review|photo-picks)/.test(f),
+    )
+    .map((f) => `public/${f}`)
+    .concat(
+      readdirSync(join(ROOT, "public/volunteer"))
+        .filter((f) => f.endsWith(".html"))
+        .map((f) => `public/volunteer/${f}`),
+    );
+  for (const f of pages)
+    assert.ok(
+      read(f).includes('<meta name="theme-color" content="#0f0e0d">'),
+      `${f} has no theme-color`,
+    );
+});

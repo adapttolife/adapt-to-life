@@ -69,6 +69,7 @@ function head({ title, desc, canonical, card, cardAlt, page }) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f0e0d">
 <meta name="color-scheme" content="light only">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">

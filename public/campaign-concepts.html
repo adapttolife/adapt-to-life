@@ -5,139 +5,125 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light only">
 <meta name="robots" content="noindex,nofollow">
-<title>Campaign concepts: Laura&rsquo;s palette | Adapt To Life</title>
+<title>Campaign module: one system | Adapt To Life</title>
 <link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css?v=5e6e33e6">
 <style>
-  /* Review surface (staging only). Round 4, Alec Nov 6: "Laura Lian has a
-     brand style guide... in Google Drive... we used it for
-     AdaptiveSportsNearMe.com." Her locked palette (Brand Standards,
-     Canonical Working Reference, Sept 9) already has the accents the site
-     never used: black #3B3B46, yellow #F6BE00, teal #00B7BD, purple #483698.
-     The ASNM quick guide adds the balance rule: 70-80% warm neutrals, 15-25%
-     ink, 5-10% orange as the action signal, 0-5% accent. */
+  /* Review surface (staging only). Round 5, Alec Nov 6: "I love L1 and L3 as
+     one system... go a little bit deeper... T3 code has a really nice style
+     and design that I also think we can learn from and leverage."
+
+     One component, two themes, driven by tokens (the way T3 Code themes its
+     app): data-theme="dark" is L1, data-theme="light" is L3. Colors are
+     Laura's locked palette only. From T3 Code (pingdotgg/t3code,
+     apps/web/src/index.css and components/ui): separation from hairline
+     borders rather than gray fills, one radius scale (8px base), tinted
+     status badges whose text mixes toward the foreground, a button with a
+     1px top highlight, a tinted shadow and a 0.97 press, tabular figures for
+     numbers that line up, and one decelerating curve for anything that
+     moves. */
   body{ background:#f3efe7; }
-  .cc-intro{ max-width:1100px; margin:0 auto; padding:clamp(2rem,6vw,3.4rem) var(--gutter) 1.4rem; }
+  .cc-intro{ max-width:1100px; margin:0 auto; padding:clamp(2rem,6vw,3.4rem) var(--gutter) 1.2rem; }
   .cc-tag{ display:inline-block; margin:0; padding:0.35rem 0.85rem; border-radius:999px; background:var(--orange-ink); color:#fff; font-family:var(--font-label); font-weight:800; font-size:0.7rem; letter-spacing:0.14em; text-transform:uppercase; }
   .cc-intro h1{ margin:1rem 0 0.6rem; font-weight:900; font-size:clamp(2rem,6vw,3rem); line-height:1.02; letter-spacing:-0.03em; }
-  .cc-lede{ margin:0; max-width:58ch; color:var(--ink-soft); font-size:1.05rem; line-height:1.55; }
-  .cc-changes{ margin:1rem 0 0; padding-left:1.1rem; max-width:62ch; color:var(--ink-soft); line-height:1.5; }
-  .cc-changes li{ margin:0.25rem 0; }
+  .cc-lede{ margin:0; max-width:60ch; color:var(--ink-soft); font-size:1.05rem; line-height:1.55; }
+  .cc-changes{ margin:1rem 0 0; padding-left:1.1rem; max-width:64ch; color:var(--ink-soft); line-height:1.5; }
+  .cc-changes li{ margin:0.3rem 0; }
   .cc-jump{ display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:1.2rem; }
   .cc-jump a{ padding:0.5rem 0.9rem; border-radius:999px; background:#fff; box-shadow:inset 0 0 0 1px rgba(28,26,21,0.14); font-weight:700; font-size:0.9rem; color:var(--ink); text-decoration:none; }
-  .cc-label{ max-width:1100px; margin:0 auto; padding:clamp(2.4rem,6vw,3.6rem) var(--gutter) 0.9rem; display:flex; align-items:baseline; gap:0.4rem 0.8rem; flex-wrap:wrap; }
+  .cc-label{ max-width:1100px; margin:0 auto; padding:clamp(2.2rem,6vw,3.4rem) var(--gutter) 0.9rem; display:flex; align-items:baseline; gap:0.4rem 0.8rem; flex-wrap:wrap; }
   .cc-label b{ font-weight:900; font-size:clamp(1.3rem,3.6vw,1.7rem); letter-spacing:-0.02em; }
   .cc-label span{ color:var(--muted); font-size:0.95rem; }
+  .tok{ list-style:none; max-width:1100px; margin:1rem auto 0; padding:0 var(--gutter); display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:0.5rem 1.2rem; }
+  .tok li{ display:flex; align-items:center; gap:0.55rem; font-size:0.84rem; line-height:1.3; }
+  .tok i{ flex:none; width:22px; height:22px; border-radius:6px; box-shadow:inset 0 0 0 1px rgba(28,26,21,0.15); }
+  .tok b{ font-weight:800; } .tok span{ color:var(--muted); }
 
-  /* The refined module ---------------------------------------------------- */
-  .av{ position:relative; overflow:hidden; padding:clamp(2.4rem,7vw,4.4rem) 0; }
-  .av-wrap{ position:relative; max-width:1100px; margin:0 auto; padding:0 var(--gutter); display:grid; gap:clamp(1.5rem,4vw,2rem); }
-  @media (min-width:1000px){ .av-wrap{ grid-template-columns:1.05fr 1fr; column-gap:3.6rem; align-items:center; } .av-head{ grid-column:1; } .w6{ grid-column:1; } .av-money{ grid-column:2; grid-row:1 / span 2; } }
-  .av-kicker{ display:flex; align-items:center; gap:0.55rem; margin:0; font-family:var(--font-label); font-weight:800; font-size:0.7rem; letter-spacing:0.17em; text-transform:uppercase; }
-  .av-kicker .dot{ flex:none; width:9px; height:9px; border-radius:50%; animation:ccPulse 1.8s ease-in-out infinite; }
-  .av-h{ margin:0.9rem 0 0; font-weight:900; font-size:clamp(2.5rem,8.6vw,4.3rem); line-height:0.94; letter-spacing:-0.045em; }
-  .av-h em{ display:block; font-style:italic; }
-  .w6{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0.5rem; }
-  .w6 li{ display:flex; flex-direction:column; gap:0.32rem; padding:0.85rem 0.75rem 0.9rem; border-radius:14px; }
-  .w6 b{ font-weight:900; font-style:italic; font-size:clamp(1.5rem,5.8vw,2.2rem); line-height:1; letter-spacing:-0.035em; white-space:nowrap; }
-  .w6 span{ font-size:0.8rem; font-weight:700; line-height:1.25; }
-  .av-money{ border-radius:26px; padding:clamp(1.35rem,4.2vw,2.1rem); }
-  .av-hero{ margin:0; display:flex; flex-wrap:wrap; align-items:baseline; gap:0.15rem 0.7rem; }
-  .av-hero b{ font-weight:900; font-style:italic; font-size:clamp(3.7rem,16vw,6.2rem); line-height:0.86; letter-spacing:-0.055em; }
-  .av-hero span{ font-size:1.02rem; font-weight:600; }
-  .m2{ margin-top:1.4rem; display:grid; gap:1.15rem; }
-  .m2-head{ display:flex; justify-content:space-between; align-items:baseline; gap:0.2rem 0.8rem; flex-wrap:wrap; }
-  .m2-head b{ font-weight:800; font-size:1rem; }
-  .m2-head span{ font-weight:800; font-size:0.95rem; }
-  @media (max-width:560px){ .m2-head{ flex-direction:column; align-items:flex-start; gap:0.12rem; } }
-  .m2-track{ position:relative; margin-top:0.5rem; height:14px; border-radius:999px; }
-  .m2-fill{ display:block; height:100%; width:0; border-radius:999px; transition:width 1.5s cubic-bezier(.2,.8,.2,1); }
-  .m2-start{ display:none; position:absolute; left:0; top:50%; width:14px; height:14px; margin-top:-7px; border-radius:50%; animation:ccPulse 1.8s ease-in-out infinite; }
-  .m2-row.is-empty .m2-start{ display:block; }
-  .m2-note{ margin:0.45rem 0 0; font-size:0.85rem; line-height:1.35; }
-  .av-cta{ display:flex; align-items:center; justify-content:center; width:100%; margin-top:1.5rem; padding:1.05rem 1.5rem; border-radius:999px; font-weight:800; font-size:1.1rem; text-decoration:none; }
-  .av-after{ margin:0.95rem 0 0; font-size:0.88rem; line-height:1.45; text-align:center; }
+  /* ---- the system: tokens per theme ---------------------------------- */
+  .cm{
+    --ease: cubic-bezier(0.32, 0.72, 0, 1);         /* T3 Code's drawer curve */
+    --r-sm: 6px; --r-md: 8px; --r-lg: 12px; --r-xl: 16px;   /* 8px base scale */
+    --action: #ff5c39; --action-ink: #c63f22;        /* Laura's orange */
+    --accent: #00b7bd;                               /* Laura's teal */
+    --win: #f6be00;                                  /* Laura's yellow */
+    position:relative; overflow:hidden; background:var(--canvas); color:var(--text);
+    padding:clamp(2.4rem,7vw,4.4rem) 0;
+  }
+  .cm[data-theme="dark"]{                            /* L1 · Slate & Teal */
+    --canvas:#3b3b46; --text:#f9f7f2; --muted:#c9c7d1; --hair:rgba(255,255,255,0.09);
+    --raised:rgba(255,255,255,0.035); --em:var(--accent);
+    --card:#f9f7f2; --card-text:#3b3b46; --card-muted:#5a5866; --card-hair:rgba(59,59,70,0.12);
+    --track:rgba(59,59,70,0.1); --hero:var(--action-ink);
+    --card-shadow:0 1px 2px rgba(0,0,0,0.12), 0 24px 48px -24px rgba(0,0,0,0.6);
+  }
+  .cm[data-theme="light"]{                           /* L3 · Beige */
+    --canvas:#efe8dc; --text:#3b3b46; --muted:#5a5866; --hair:rgba(59,59,70,0.13);
+    --raised:#f9f7f2; --em:var(--action-ink);
+    --card:#3b3b46; --card-text:#f9f7f2; --card-muted:#d0cfd8; --card-hair:rgba(255,255,255,0.1);
+    --track:rgba(249,247,242,0.14); --hero:var(--action);
+    --card-shadow:0 1px 2px rgba(59,59,70,0.1), 0 24px 48px -24px rgba(59,59,70,0.55);
+  }
+  .cm-wrap{ position:relative; max-width:1100px; margin:0 auto; padding:0 var(--gutter); display:grid; gap:clamp(1.4rem,4vw,2rem); }
+  @media (min-width:1000px){ .cm-wrap{ grid-template-columns:1.05fr 1fr; column-gap:3.6rem; align-items:center; } .cm-card{ grid-column:2; grid-row:1 / span 2; } }
 
-  /* Swatch strip */
-  .sw{ list-style:none; max-width:1100px; margin:0 auto; padding:0 var(--gutter) 1rem; display:flex; flex-wrap:wrap; gap:0.5rem 1rem; }
-  .sw li{ display:flex; align-items:center; gap:0.5rem; font-size:0.84rem; }
-  .sw i{ flex:none; width:22px; height:22px; border-radius:7px; box-shadow:inset 0 0 0 1px rgba(28,26,21,0.15); }
-  .sw b{ font-weight:800; }
-  .sw span{ color:var(--muted); }
+  /* status badge: tinted background, text mixed toward the foreground */
+  .cm-status{ display:inline-flex; align-items:center; gap:0.5rem; margin:0; padding:0.32rem 0.7rem 0.32rem 0.55rem; border-radius:999px; font-size:0.8rem; font-weight:700; letter-spacing:0.01em;
+    background:color-mix(in srgb, var(--accent) 14%, transparent); color:color-mix(in srgb, var(--accent) 42%, var(--text)); box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent); }
+  .cm[data-theme="light"] .cm-status{ background:color-mix(in srgb, var(--action) 10%, transparent); color:color-mix(in srgb, var(--action-ink) 70%, var(--text)); box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--action) 22%, transparent); }
+  .cm-dot{ width:7px; height:7px; border-radius:50%; background:var(--accent); animation:cmPulse 1.8s var(--ease) infinite; }
+  .cm[data-theme="light"] .cm-dot{ background:var(--action); }
+  .cm-status-sep{ width:1px; height:0.9em; background:currentColor; opacity:0.3; }
+  .cm-h{ margin:1rem 0 0; color:var(--text); font-weight:900; font-size:clamp(2.5rem,8.6vw,4.3rem); line-height:0.94; letter-spacing:-0.045em; }
+  .cm-h em{ display:block; font-style:italic; color:var(--em); }
 
-  /* Orange stays for the money and the button in every palette. Each palette
-     colors the bars on its own: the every-week bar takes the palette's blue,
-     the road keeps orange (validated: CVD separation and contrast pass). */
-  .av .m2-row[data-part-row="send-6"] .m2-fill{ background:linear-gradient(90deg,#c63f22,#e0532b); }
+  /* stats: hairline-bordered tiles, a whisper of raise, no gray fills */
+  .cm-stats{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0.5rem; }
+  .cm-stats li{ position:relative; display:flex; flex-direction:column; gap:0.35rem; padding:0.85rem 0.8rem 0.9rem; border-radius:var(--r-lg); background:var(--raised); box-shadow:inset 0 0 0 1px var(--hair); }
+  .cm-stats li::after{ content:""; position:absolute; left:0.8rem; right:0.8rem; bottom:0; height:2px; border-radius:2px; background:var(--win); opacity:0.9; }
+  .cm-stats b{ font-weight:900; font-style:italic; font-size:clamp(1.5rem,5.8vw,2.15rem); line-height:1; letter-spacing:-0.035em; white-space:nowrap; color:var(--text); }
+  .cm-stats span{ font-size:0.8rem; font-weight:600; line-height:1.3; color:var(--muted); }
 
-  /* P2 · Chicago: navy and sky blue (the flag on the badge's paddle, CAS, ACE) */
-  .av--chi{ background:#0f2236; color:var(--cream); }
-  .av--chi::before{ content:""; position:absolute; left:0; right:0; top:0; height:16px; pointer-events:none;
-    background:linear-gradient(180deg, #8fd0f0 0 4px, transparent 4px 10px, #8fd0f0 10px 14px, transparent 14px); opacity:0.85; }
-  .av--chi .av-kicker{ color:#8fd0f0; } .av--chi .dot{ background:#ff5c39; }
-  .av--chi .av-h{ color:var(--cream); } .av--chi .av-h em{ color:#8fd0f0; }
-  .av--chi .w6 li{ background:#183353; }
-  .av--chi .w6 b{ color:var(--cream); } .av--chi .w6 span{ color:#b9c7d6; }
-  .av--chi .av-money{ background:var(--cream); color:#1a1a1a; box-shadow:0 30px 70px -34px rgba(0,0,0,0.6); }
-  .av--chi .av-hero b{ color:#c63f22; }
-  .av--chi .av-hero span, .av--chi .m2-note, .av--chi .av-after{ color:var(--ink-soft); }
-  .av--chi .m2-track{ background:rgba(15,34,54,0.1); }
-  .av--chi .m2-row[data-part-row="year"] .m2-fill, .av--chi .m2-start{ background:#2b74b8; }
-  .av--chi .av-cta{ background:#c63f22; color:#fff; }
+  /* the money card: the inverse surface, hairline + soft drop */
+  .cm-card{ border-radius:var(--r-xl); padding:clamp(1.35rem,4.2vw,2rem); background:var(--card); color:var(--card-text); box-shadow:inset 0 0 0 1px var(--card-hair), var(--card-shadow); }
+  .cm-hero{ margin:0; display:flex; flex-wrap:wrap; align-items:baseline; gap:0.15rem 0.7rem; }
+  .cm-hero b{ font-weight:900; font-style:italic; font-size:clamp(3.6rem,15.5vw,6rem); line-height:0.86; letter-spacing:-0.055em; color:var(--hero); }
+  .cm-hero span{ font-size:1rem; font-weight:600; color:var(--card-muted); }
+  .cm-rows{ margin-top:1.35rem; display:grid; gap:1.1rem; }
+  .cm-row-top{ display:flex; align-items:center; flex-wrap:wrap; gap:0.35rem 0.5rem; }
+  .cm-row-top b{ font-weight:800; font-size:0.98rem; }
+  .cm-fig{ margin-left:auto; font-weight:800; font-size:0.95rem; font-variant-numeric:tabular-nums; }
+  @media (max-width:420px){ .cm-fig{ margin-left:0; flex-basis:100%; } }
+  .cm-badge{ display:inline-flex; align-items:center; height:20px; padding:0 6px; border-radius:var(--r-sm); font-size:0.7rem; font-weight:800; letter-spacing:0.02em; font-variant-numeric:tabular-nums; }
+  .cm-badge--accent{ background:color-mix(in srgb, var(--accent) 14%, transparent); color:color-mix(in srgb, var(--accent) 38%, var(--card-text)); }
+  .cm-badge--action{ background:color-mix(in srgb, var(--action) 14%, transparent); color:color-mix(in srgb, var(--action-ink) 55%, var(--card-text)); }
+  .cm[data-theme="light"] .cm-badge--accent{ color:color-mix(in srgb, var(--accent) 55%, var(--card-text)); background:color-mix(in srgb, var(--accent) 20%, transparent); }
+  .cm[data-theme="light"] .cm-badge--action{ color:color-mix(in srgb, var(--action) 45%, var(--card-text)); background:color-mix(in srgb, var(--action) 20%, transparent); }
+  .cm-track{ position:relative; margin-top:0.55rem; height:10px; border-radius:999px; background:var(--track); }
+  .cm-fill{ display:block; height:100%; width:0; border-radius:999px; background:var(--accent); transition:width 1.6s var(--ease); }
+  .cm-fill--action{ background:linear-gradient(90deg, var(--action-ink), var(--action)); }
+  .cm-start{ display:none; position:absolute; left:0; top:50%; width:12px; height:12px; margin-top:-6px; border-radius:50%; background:var(--accent); animation:cmPulse 1.8s var(--ease) infinite; }
+  .cm-row.is-empty .cm-start{ display:block; }
+  .cm-note{ margin:0.45rem 0 0; font-size:0.84rem; line-height:1.35; color:var(--card-muted); }
 
+  /* the button, T3 Code style: top highlight, tinted shadow, press */
+  .cm-btn{ position:relative; display:flex; align-items:center; justify-content:center; width:100%; height:54px; margin-top:1.45rem; border-radius:999px; border:1px solid var(--action-ink);
+    background:var(--action-ink); color:#fff; font-weight:800; font-size:1.08rem; text-decoration:none;
+    box-shadow:inset 0 1px rgba(255,255,255,0.18), 0 1px 2px rgba(198,63,34,0.24), 0 10px 26px -12px rgba(198,63,34,0.55);
+    transition:transform .18s var(--ease), background-color .18s var(--ease), box-shadow .18s var(--ease); }
+  .cm-btn:hover{ background:color-mix(in srgb, var(--action-ink) 90%, #fff); }
+  .cm-btn:active{ transform:scale(0.97); box-shadow:inset 0 1px rgba(0,0,0,0.12); }
+  .cm-btn:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
+  .cm[data-theme="light"] .cm-btn{ background:var(--action); border-color:var(--action); color:#1a1a1a; box-shadow:inset 0 1px rgba(255,255,255,0.3), 0 1px 2px rgba(255,92,57,0.3), 0 10px 26px -12px rgba(255,92,57,0.6); }
+  .cm[data-theme="light"] .cm-btn:hover{ background:color-mix(in srgb, var(--action) 90%, #fff); }
+  .cm-after{ margin:0.95rem 0 0; text-align:center; font-size:0.86rem; line-height:1.45; color:var(--card-muted); }
 
-  .av .m2-row[data-part-row="send-6"] .m2-fill{ background:linear-gradient(90deg,#c63f22,#e0532b); }
-
-  /* L1 · Slate & Teal: Laura's black and teal */
-  .av--slate{ background:#3b3b46; color:#f9f7f2; }
-  .av--slate .av-kicker{ color:#f9f7f2; } .av--slate .dot{ background:#00b7bd; --pulse:rgba(0,183,189,0.32); --pulse-fade:rgba(0,183,189,0.06); }
-  .av--slate .av-h{ color:#f9f7f2; } .av--slate .av-h em{ color:#00b7bd; }
-  .av--slate .w6 li{ background:#47475a; }
-  .av--slate .w6 b{ color:#f9f7f2; } .av--slate .w6 span{ color:#d6d4dc; }
-  .av--slate .av-money{ background:#f9f7f2; color:#3b3b46; box-shadow:0 30px 70px -34px rgba(0,0,0,0.55); }
-  .av--slate .av-hero b{ color:#c63f22; }
-  .av--slate .av-hero span, .av--slate .m2-note, .av--slate .av-after{ color:#55535f; }
-  .av--slate .m2-head b, .av--slate .m2-head span{ color:#3b3b46; }
-  .av--slate .m2-track{ background:rgba(59,59,70,0.1); }
-  .av--slate .m2-row[data-part-row="year"] .m2-fill, .av--slate .m2-start{ background:#00b7bd; }
-  .av--slate .m2-start{ --pulse:rgba(0,183,189,0.32); --pulse-fade:rgba(0,183,189,0.06); }
-  .av--slate .av-cta{ background:#c63f22; color:#fff; }
-
-  /* L2 · Purple & Yellow: Laura's purple and yellow */
-  .av--plum{ background:#483698; color:#f9f7f2; }
-  .av--plum .av-kicker{ color:#f6be00; } .av--plum .dot{ background:#f6be00; --pulse:rgba(246,190,0,0.32); --pulse-fade:rgba(246,190,0,0.06); }
-  .av--plum .av-h{ color:#f9f7f2; } .av--plum .av-h em{ color:#f6be00; }
-  .av--plum .w6 li{ background:#55449f; }
-  .av--plum .w6 b{ color:#f9f7f2; } .av--plum .w6 span{ color:#e2ddf3; }
-  .av--plum .av-money{ background:#f9f7f2; color:#3b3b46; box-shadow:0 30px 70px -34px rgba(20,10,60,0.6); }
-  .av--plum .av-hero b{ color:#c63f22; }
-  .av--plum .av-hero span, .av--plum .m2-note, .av--plum .av-after{ color:#55535f; }
-  .av--plum .m2-head b, .av--plum .m2-head span{ color:#3b3b46; }
-  .av--plum .m2-track{ background:rgba(72,54,152,0.1); }
-  .av--plum .m2-row[data-part-row="year"] .m2-fill, .av--plum .m2-start{ background:#5a48b0; }
-  .av--plum .m2-start{ --pulse:rgba(90,72,176,0.32); --pulse-fade:rgba(90,72,176,0.06); }
-  .av--plum .av-cta{ background:#c63f22; color:#fff; }
-
-  /* L3 · Beige: a light version on Laura's page color */
-  .av--beige{ background:#efe8dc; color:#3b3b46; }
-  .av--beige .av-kicker{ color:#3b3b46; } .av--beige .dot{ background:#c63f22; }
-  .av--beige .av-h{ color:#3b3b46; } .av--beige .av-h em{ color:#c63f22; }
-  .av--beige .w6 li{ background:#f9f7f2; box-shadow:inset 0 -4px 0 #f6be00; }
-  .av--beige .w6 b{ color:#3b3b46; } .av--beige .w6 span{ color:#55535f; }
-  .av--beige .av-money{ background:#3b3b46; color:#f9f7f2; box-shadow:0 30px 70px -34px rgba(59,59,70,0.6); }
-  .av--beige .av-hero b{ color:#ff5c39; }
-  .av--beige .av-hero span, .av--beige .m2-note, .av--beige .av-after{ color:#d6d4dc; }
-  .av--beige .m2-head b, .av--beige .m2-head span{ color:#f9f7f2; }
-  .av--beige .m2-track{ background:rgba(249,247,242,0.16); }
-  .av--beige .m2-row[data-part-row="year"] .m2-fill, .av--beige .m2-start{ background:#00b7bd; }
-  .av--beige .m2-start{ --pulse:rgba(0,183,189,0.32); --pulse-fade:rgba(0,183,189,0.06); }
-  .av--beige .av-cta{ background:#ff5c39; color:#1a1a1a; }
-  @keyframes ccPulse{ 0%,100%{ box-shadow:0 0 0 4px var(--pulse, rgba(255,92,57,0.28)); } 50%{ box-shadow:0 0 0 10px var(--pulse-fade, rgba(255,92,57,0.06)); } }
-  .av--chi .m2-start{ --pulse:rgba(43,116,184,0.3); --pulse-fade:rgba(43,116,184,0.06); }
-  @media (prefers-reduced-motion:reduce){ .av-kicker .dot, .m2-start{ animation:none; } .m2-fill{ transition:none; } }
+  @keyframes cmPulse{ 0%,100%{ box-shadow:0 0 0 3px color-mix(in srgb, currentColor 0%, transparent), 0 0 0 4px color-mix(in srgb, var(--accent) 30%, transparent); } 50%{ box-shadow:0 0 0 9px color-mix(in srgb, var(--accent) 6%, transparent); } }
+  .cm[data-theme="light"] .cm-dot{ animation-name:cmPulseAction; }
+  @keyframes cmPulseAction{ 0%,100%{ box-shadow:0 0 0 4px color-mix(in srgb, var(--action) 28%, transparent); } 50%{ box-shadow:0 0 0 9px color-mix(in srgb, var(--action) 6%, transparent); } }
+  @media (prefers-reduced-motion:reduce){ .cm-dot, .cm-start{ animation:none; } .cm-fill, .cm-btn{ transition:none; } }
 </style>
 </head>
 <body>
@@ -145,155 +131,92 @@
 
 <section class="cc-intro">
   <p class="cc-tag">Review only, not on the live site</p>
-  <h1>Laura&rsquo;s palette, finally used.</h1>
-  <p class="cc-lede">Laura&rsquo;s locked palette already has the colors we&rsquo;ve been missing. The site only ever used her orange, off-white and beige. Her black is a soft slate, not true black, and her teal, yellow and purple were never used. Each option below uses only her colors, with the balance from the Adaptive Sports Near Me guide: mostly neutrals, orange as the action signal, and one small accent.</p>
-  <ul class="sw"><li><i style="background:#3b3b46"></i><b>Black</b><span>#3B3B46 · Laura's slate: dark sections, text</span></li><li><i style="background:#ff5c39"></i><b>Orange</b><span>#FF5C39 · action: Donate, the money</span></li><li><i style="background:#00b7bd"></i><b>Teal</b><span>#00B7BD · data accent</span></li><li><i style="background:#f6be00"></i><b>Yellow</b><span>#F6BE00 · wins, celebration</span></li><li><i style="background:#483698"></i><b>Purple</b><span>#483698 · deep sections</span></li><li><i style="background:#f9f7f2"></i><b>Off-white</b><span>#F9F7F2 · cards</span></li><li><i style="background:#efe8dc"></i><b>Beige</b><span>#EFE8DC · the page</span></li></ul>
+  <h1>One system: L1 dark, L3 light.</h1>
+  <p class="cc-lede">The same component in two themes, built from tokens the way T3 Code themes its app. Only Laura&rsquo;s colors, in the Adaptive Sports Near Me balance. What we took from T3 Code:</p>
   <ul class="cc-changes">
-    <li>Balance: 70&ndash;80% neutrals, 15&ndash;25% slate, 5&ndash;10% orange (Donate and the money), 0&ndash;5% accent.</li>
-    <li>Every bar color was checked for color blindness and contrast. Teal next to orange passes; purple uses a lighter step of Laura&rsquo;s purple in the bar.</li>
+    <li><b>Hairlines, not fills.</b> Tiles and cards separate with a 1px border and a whisper of lift, so nothing looks muddy.</li>
+    <li><b>One radius scale</b> (6, 8, 12, 16px) so every corner belongs to the same family.</li>
+    <li><b>Tinted badges</b>: &ldquo;Raising now,&rdquo; &ldquo;First priority&rdquo; and the road&rsquo;s live percentage, colored at 14&ndash;20% with text mixed toward the type color so they stay readable.</li>
+    <li><b>A button that feels pressable</b>: a 1px top highlight, a shadow tinted with its own orange, and a small press when tapped.</li>
+    <li><b>Numbers that line up</b> (tabular figures) and <b>one motion curve</b> for the count-up, the bars and the press.</li>
   </ul>
-  <nav class="cc-jump" aria-label="Options"><a href="#l1">L1 · Slate &amp; Teal</a><a href="#l2">L2 · Purple &amp; Yellow</a><a href="#l3">L3 · Beige</a><a href="#chi">Last round: Chicago</a></nav>
+  <ul class="tok">
+  <li><i style="background:#3b3b46"></i><span><b>Slate #3B3B46</b> · L1 canvas, L3 card and type</span></li>
+  <li><i style="background:#efe8dc"></i><span><b>Beige #EFE8DC</b> · L3 canvas</span></li>
+  <li><i style="background:#f9f7f2"></i><span><b>Off-white #F9F7F2</b> · L1 card, L3 tiles, type on slate</span></li>
+  <li><i style="background:#ff5c39"></i><span><b>Orange #FF5C39 / #C63F22</b> · Donate, the money, the road bar</span></li>
+  <li><i style="background:#00b7bd"></i><span><b>Teal #00B7BD</b> · every-week bar, status, highlights on slate</span></li>
+  <li><i style="background:#f6be00"></i><span><b>Yellow #F6BE00</b> · the 2px win mark under each stat</span></li>
+</ul>
+  <nav class="cc-jump" aria-label="Themes"><a href="#l1">L1 · dark</a><a href="#l3">L3 · light</a></nav>
 </section>
 
-<div class="cc-label" id="l1"><b>L1 · Slate &amp; Teal</b><span>Laura&rsquo;s black and teal. Closest to last round&rsquo;s Chicago, but every color is hers.</span></div>
-<ul class="sw"><li><i style="background:#3b3b46"></i><b>Black</b><span>#3B3B46 · section</span></li><li><i style="background:#00b7bd"></i><b>Teal</b><span>#00B7BD · highlight and every-week bar</span></li><li><i style="background:#f9f7f2"></i><b>Off-white</b><span>#F9F7F2 · money card</span></li><li><i style="background:#c63f22"></i><b>Orange</b><span>#C63F22 · money and Donate</span></li></ul>
-<section class="av av--slate" aria-label="Option L1, Slate and Teal">
-  <div class="av-wrap">
-    <div class="av-head">
-      <p class="av-kicker"><span class="dot" aria-hidden="true"></span>Raising now · The Chicago Wheelie Big Dills</p>
-      <h2 class="av-h">Every week on court. <em>Next stop, Naples.</em></h2>
+<div class="cc-label" id="l1"><b>L1 · dark</b><span>For pages that need a dark block: home, the crew page.</span></div>
+<section class="cm" data-theme="dark" aria-label="Campaign module, dark theme">
+  <div class="cm-wrap">
+    <div class="cm-head">
+      <p class="cm-status"><span class="cm-dot" aria-hidden="true"></span>Raising now<span class="cm-status-sep" aria-hidden="true"></span>The Chicago Wheelie Big Dills</p>
+      <h2 class="cm-h">Every week on court. <em>Next stop, Naples.</em></h2>
     </div>
-    <ul class="w6" aria-label="Already on the board">
+    <ul class="cm-stats" aria-label="Already on the board">
       <li><b>3</b><span>straight US Opens</span></li>
       <li><b>6</b><span>Monster Smash medals</span></li>
       <li><b>1st</b><span>APP Tour wheelchair division</span></li>
-      <li><b>$3,004</b><span>popcorn drive, 3x its goal</span></li>
+      <li><b>$3,004</b><span>popcorn drive, 3&times; its goal</span></li>
       <li><b>334K</b><span>views in 90 days</span></li>
       <li><b>Weekly</b><span>on court, all year</span></li>
     </ul>
-    <div class="av-money">
-      <p class="av-hero"><b data-wbd="total">$34,500</b><span data-wbd="sub">our goal for the year ahead</span></p>
-      <div class="m2">
-        <div class="m2-row" data-part-row="year">
-          <div class="m2-head"><b>Every week</b><span data-part-fig="year">$13,500 a year</span></div>
-          <div class="m2-track"><span class="m2-fill" data-part-fill="year"></span><span class="m2-start" aria-hidden="true"></span></div>
-          <p class="m2-note">First priority. Every new gift starts here.</p>
+    <div class="cm-card">
+      <p class="cm-hero"><b data-wbd="total">$34,500</b><span data-wbd="sub">our goal for the year ahead</span></p>
+      <div class="cm-rows">
+        <div class="cm-row" data-part-row="year">
+          <div class="cm-row-top"><b>Every week</b><span class="cm-badge cm-badge--accent">First priority</span><span class="cm-fig" data-part-fig="year">$13,500 a year</span></div>
+          <div class="cm-track"><span class="cm-fill" data-part-fill="year"></span><span class="cm-start" aria-hidden="true"></span></div>
+          <p class="cm-note">Every new gift starts here.</p>
         </div>
-        <div class="m2-row" data-part-row="send-6">
-          <div class="m2-head"><b>The Road to the US Open</b><span data-part-fig="send-6">$21,000</span></div>
-          <div class="m2-track"><span class="m2-fill" data-part-fill="send-6"></span><span class="m2-start" aria-hidden="true"></span></div>
-          <p class="m2-note">Six athletes, about $3,500 each</p>
+        <div class="cm-row" data-part-row="send-6">
+          <div class="cm-row-top"><b>The Road to the US Open</b><span class="cm-badge cm-badge--action" data-part-pct="send-6">24%</span><span class="cm-fig" data-part-fig="send-6">$21,000</span></div>
+          <div class="cm-track"><span class="cm-fill cm-fill--action" data-part-fill="send-6"></span><span class="cm-start" aria-hidden="true"></span></div>
+          <p class="cm-note">Six athletes, about $3,500 each</p>
         </div>
       </div>
-      <a class="av-cta btn" href="/donate">Donate</a>
-      <p class="av-after">Then the Chicago Classic: our goal is free registration, transportation and hotels for every athlete.</p>
+      <a class="cm-btn btn" href="/donate">Donate</a>
+      <p class="cm-after">Then the Chicago Classic: our goal is free registration, transportation and hotels for every athlete.</p>
     </div>
   </div>
 </section>
 
-<div class="cc-label" id="l2"><b>L2 · Purple &amp; Yellow</b><span>Laura&rsquo;s purple and yellow. The boldest.</span></div>
-<ul class="sw"><li><i style="background:#483698"></i><b>Purple</b><span>#483698 · section</span></li><li><i style="background:#f6be00"></i><b>Yellow</b><span>#F6BE00 · highlight</span></li><li><i style="background:#5a48b0"></i><b>Purple tint</b><span>#5A48B0 · every-week bar</span></li><li><i style="background:#f9f7f2"></i><b>Off-white</b><span>#F9F7F2 · money card</span></li><li><i style="background:#c63f22"></i><b>Orange</b><span>#C63F22 · money and Donate</span></li></ul>
-<section class="av av--plum" aria-label="Option L2, Purple and Yellow">
-  <div class="av-wrap">
-    <div class="av-head">
-      <p class="av-kicker"><span class="dot" aria-hidden="true"></span>Raising now · The Chicago Wheelie Big Dills</p>
-      <h2 class="av-h">Every week on court. <em>Next stop, Naples.</em></h2>
+<div class="cc-label" id="l3"><b>L3 · light</b><span>For pages that need a light block: Donate, How Giving Works.</span></div>
+<section class="cm" data-theme="light" aria-label="Campaign module, light theme">
+  <div class="cm-wrap">
+    <div class="cm-head">
+      <p class="cm-status"><span class="cm-dot" aria-hidden="true"></span>Raising now<span class="cm-status-sep" aria-hidden="true"></span>The Chicago Wheelie Big Dills</p>
+      <h2 class="cm-h">Every week on court. <em>Next stop, Naples.</em></h2>
     </div>
-    <ul class="w6" aria-label="Already on the board">
+    <ul class="cm-stats" aria-label="Already on the board">
       <li><b>3</b><span>straight US Opens</span></li>
       <li><b>6</b><span>Monster Smash medals</span></li>
       <li><b>1st</b><span>APP Tour wheelchair division</span></li>
-      <li><b>$3,004</b><span>popcorn drive, 3x its goal</span></li>
+      <li><b>$3,004</b><span>popcorn drive, 3&times; its goal</span></li>
       <li><b>334K</b><span>views in 90 days</span></li>
       <li><b>Weekly</b><span>on court, all year</span></li>
     </ul>
-    <div class="av-money">
-      <p class="av-hero"><b data-wbd="total">$34,500</b><span data-wbd="sub">our goal for the year ahead</span></p>
-      <div class="m2">
-        <div class="m2-row" data-part-row="year">
-          <div class="m2-head"><b>Every week</b><span data-part-fig="year">$13,500 a year</span></div>
-          <div class="m2-track"><span class="m2-fill" data-part-fill="year"></span><span class="m2-start" aria-hidden="true"></span></div>
-          <p class="m2-note">First priority. Every new gift starts here.</p>
+    <div class="cm-card">
+      <p class="cm-hero"><b data-wbd="total">$34,500</b><span data-wbd="sub">our goal for the year ahead</span></p>
+      <div class="cm-rows">
+        <div class="cm-row" data-part-row="year">
+          <div class="cm-row-top"><b>Every week</b><span class="cm-badge cm-badge--accent">First priority</span><span class="cm-fig" data-part-fig="year">$13,500 a year</span></div>
+          <div class="cm-track"><span class="cm-fill" data-part-fill="year"></span><span class="cm-start" aria-hidden="true"></span></div>
+          <p class="cm-note">Every new gift starts here.</p>
         </div>
-        <div class="m2-row" data-part-row="send-6">
-          <div class="m2-head"><b>The Road to the US Open</b><span data-part-fig="send-6">$21,000</span></div>
-          <div class="m2-track"><span class="m2-fill" data-part-fill="send-6"></span><span class="m2-start" aria-hidden="true"></span></div>
-          <p class="m2-note">Six athletes, about $3,500 each</p>
-        </div>
-      </div>
-      <a class="av-cta btn" href="/donate">Donate</a>
-      <p class="av-after">Then the Chicago Classic: our goal is free registration, transportation and hotels for every athlete.</p>
-    </div>
-  </div>
-</section>
-
-<div class="cc-label" id="l3"><b>L3 · Beige</b><span>A light version on Laura&rsquo;s page color, with the money on a slate card. Fits anywhere a dark block would be too heavy.</span></div>
-<ul class="sw"><li><i style="background:#efe8dc"></i><b>Beige</b><span>#EFE8DC · section</span></li><li><i style="background:#3b3b46"></i><b>Black</b><span>#3B3B46 · type</span></li><li><i style="background:#f6be00"></i><b>Yellow</b><span>#F6BE00 · win marks</span></li><li><i style="background:#00b7bd"></i><b>Teal</b><span>#00B7BD · every-week bar</span></li><li><i style="background:#c63f22"></i><b>Orange</b><span>#C63F22 · money and Donate</span></li></ul>
-<section class="av av--beige" aria-label="Option L3, Beige">
-  <div class="av-wrap">
-    <div class="av-head">
-      <p class="av-kicker"><span class="dot" aria-hidden="true"></span>Raising now · The Chicago Wheelie Big Dills</p>
-      <h2 class="av-h">Every week on court. <em>Next stop, Naples.</em></h2>
-    </div>
-    <ul class="w6" aria-label="Already on the board">
-      <li><b>3</b><span>straight US Opens</span></li>
-      <li><b>6</b><span>Monster Smash medals</span></li>
-      <li><b>1st</b><span>APP Tour wheelchair division</span></li>
-      <li><b>$3,004</b><span>popcorn drive, 3x its goal</span></li>
-      <li><b>334K</b><span>views in 90 days</span></li>
-      <li><b>Weekly</b><span>on court, all year</span></li>
-    </ul>
-    <div class="av-money">
-      <p class="av-hero"><b data-wbd="total">$34,500</b><span data-wbd="sub">our goal for the year ahead</span></p>
-      <div class="m2">
-        <div class="m2-row" data-part-row="year">
-          <div class="m2-head"><b>Every week</b><span data-part-fig="year">$13,500 a year</span></div>
-          <div class="m2-track"><span class="m2-fill" data-part-fill="year"></span><span class="m2-start" aria-hidden="true"></span></div>
-          <p class="m2-note">First priority. Every new gift starts here.</p>
-        </div>
-        <div class="m2-row" data-part-row="send-6">
-          <div class="m2-head"><b>The Road to the US Open</b><span data-part-fig="send-6">$21,000</span></div>
-          <div class="m2-track"><span class="m2-fill" data-part-fill="send-6"></span><span class="m2-start" aria-hidden="true"></span></div>
-          <p class="m2-note">Six athletes, about $3,500 each</p>
+        <div class="cm-row" data-part-row="send-6">
+          <div class="cm-row-top"><b>The Road to the US Open</b><span class="cm-badge cm-badge--action" data-part-pct="send-6">24%</span><span class="cm-fig" data-part-fig="send-6">$21,000</span></div>
+          <div class="cm-track"><span class="cm-fill cm-fill--action" data-part-fill="send-6"></span><span class="cm-start" aria-hidden="true"></span></div>
+          <p class="cm-note">Six athletes, about $3,500 each</p>
         </div>
       </div>
-      <a class="av-cta btn" href="/donate">Donate</a>
-      <p class="av-after">Then the Chicago Classic: our goal is free registration, transportation and hotels for every athlete.</p>
-    </div>
-  </div>
-</section>
-
-<div class="cc-label" id="chi"><b>Last round: P2 Chicago</b><span>Navy and sky blue, colors we&rsquo;d be adding. For comparison.</span></div>
-<section class="av av--chi" aria-label="Palette P2, Chicago">
-  <div class="av-wrap">
-    <div class="av-head">
-      <p class="av-kicker"><span class="dot" aria-hidden="true"></span>Raising now · The Chicago Wheelie Big Dills</p>
-      <h2 class="av-h">Every week on court. <em>Next stop, Naples.</em></h2>
-    </div>
-    <ul class="w6" aria-label="Already on the board">
-      <li><b>3</b><span>straight US Opens</span></li>
-      <li><b>6</b><span>Monster Smash medals</span></li>
-      <li><b>1st</b><span>APP Tour wheelchair division</span></li>
-      <li><b>$3,004</b><span>popcorn drive, 3x its goal</span></li>
-      <li><b>334K</b><span>views in 90 days</span></li>
-      <li><b>Weekly</b><span>on court, all year</span></li>
-    </ul>
-    <div class="av-money">
-      <p class="av-hero"><b data-wbd="total">$34,500</b><span data-wbd="sub">our goal for the year ahead</span></p>
-      <div class="m2">
-        <div class="m2-row" data-part-row="year">
-          <div class="m2-head"><b>Every week</b><span data-part-fig="year">$13,500 a year</span></div>
-          <div class="m2-track"><span class="m2-fill" data-part-fill="year"></span><span class="m2-start" aria-hidden="true"></span></div>
-          <p class="m2-note">First priority. Every new gift starts here.</p>
-        </div>
-        <div class="m2-row" data-part-row="send-6">
-          <div class="m2-head"><b>The Road to the US Open</b><span data-part-fig="send-6">$21,000</span></div>
-          <div class="m2-track"><span class="m2-fill" data-part-fill="send-6"></span><span class="m2-start" aria-hidden="true"></span></div>
-          <p class="m2-note">Six athletes, about $3,500 each</p>
-        </div>
-      </div>
-      <a class="av-cta btn" href="/donate">Donate</a>
-      <p class="av-after">Then the Chicago Classic: our goal is free registration, transportation and hotels for every athlete.</p>
+      <a class="cm-btn btn" href="/donate">Donate</a>
+      <p class="cm-after">Then the Chicago Classic: our goal is free registration, transportation and hotels for every athlete.</p>
     </div>
   </div>
 </section>
@@ -336,6 +259,7 @@
           el.textContent = p.raised ? usd(p.raised) + ' of ' + usd(p.goal) : usd(p.goal) + (k === 'year' ? ' a year' : '');
         });
         each('[data-part-row="' + k + '"]', function (el) { el.classList.toggle('is-empty', !p.raised); });
+        each('[data-part-pct="' + k + '"]', function (el) { el.textContent = Math.round(p.raised / p.goal * 100) + '%'; });
         each('[data-part-fill="' + k + '"]', function (el) {
           whenSeen(el, function () { el.style.width = Math.max(0, Math.min(100, p.raised / p.goal * 100)).toFixed(1) + '%'; });
         });

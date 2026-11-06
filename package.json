@@ -29,7 +29,8 @@
     "check:layout": "node scripts/check-layout.mjs",
     "asnm": "node scripts/build-asnm.mjs",
     "asnm:shot": "node scripts/shoot-asnm.mjs",
-    "icons": "node scripts/build-icons.mjs"
+    "icons": "node scripts/build-icons.mjs",
+    "module": "node scripts/build-module.mjs"
   },
   "repository": {
     "type": "git",

@@ -549,7 +549,10 @@
     // a year for a membership, about $3,500 for a US Open the last couple of
     // years. Monthly figures are those over 12 months ($22 is about $5 a week).
     monthly: [
-      { a: 22, t: "$22 a month keeps one athlete on court every week of the year." },
+      {
+        a: 22,
+        t: "$22 a month keeps one athlete on court every week of the year.",
+      },
       { a: 80, t: "$80 a month can keep one athlete training all year." },
       {
         a: 325,

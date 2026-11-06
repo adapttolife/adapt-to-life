@@ -47,6 +47,7 @@ const BAND_OF = {
   "confirmed.html": "1", // where a confirmed subscriber lands; continues /subscribe
   "sponsorship.html": "2", // sponsor an adaptive athlete
   "roadmap.html": "2",
+  "numbers.html": "2", // what competing really costs
   "promise.html": "3", // 100% to the community
   "contact.html": "3",
   "about.html": "4", // built by the community it serves
@@ -116,6 +117,7 @@ export const PAGE_TIERS = {
   "adapt-body-shop.html": "md",
   "apply.html": "lg",
   "roadmap.html": "md",
+  "numbers.html": "md",
   "karen.html": "md",
   "popcorn.html": "md",
   "send-6.html": "md",

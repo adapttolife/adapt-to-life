@@ -108,9 +108,11 @@ test("the donate page's module points back to the form", () => {
   assert.ok(html.includes('id="givePanel"'));
 });
 
-test("the module shows how we got every number, and the math adds up", () => {
+test("the math lives on /numbers, and every module links to it", () => {
   // Alec, Nov 6: "it's powerful to show how we got all of our numbers for our
   // fundraising - brings awareness to the reality of how expensive it is."
+  // Then, seeing it inside the module: "Maybe we add a button that takes them
+  // to a 'numbers breakdown' page? I feel like it's getting too messy."
   // A practice night is 10 to 15 athletes; at $5 each at ACE, up to 15 is $75.
   const wbd = JSON.parse(read("public/data/campaigns.json")).campaigns[0];
   const usd = (n) => "$" + n.toLocaleString("en-US");
@@ -137,28 +139,57 @@ test("the module shows how we got every number, and the math adds up", () => {
   );
   assert.equal(75, 5 * 15, "$75 is up to 15 athletes at $5 each");
   assert.ok(/10 to 15 athletes/.test(year[0].note));
-  assert.ok(/\$4,000 to \$6,000/.test(wbd.outside) && /insurance/.test(wbd.outside));
 
+  // The breakdown page: generated from the same data, in the sitemap.
+  const nb = read("public/numbers.html");
+  const list = nb.slice(
+    nb.indexOf("<!-- campaign-numbers -->"),
+    nb.indexOf("<!-- /campaign-numbers -->"),
+  );
+  for (const p of wbd.parts) {
+    assert.ok(list.includes(`<h3>${p.label}</h3>`), p.label);
+    for (const l of p.math) {
+      assert.ok(list.includes(`<b>${usd(l.qty * l.unit)}</b>`), l.label);
+      assert.ok(
+        list.includes(
+          `${l.qty} ${l.of} &times; ${l.about ? "about " : ""}${usd(l.unit)}`,
+        ),
+        `${l.label} shows its multiplication`,
+      );
+    }
+  }
+  assert.ok(list.includes(`<span>Every week + the road</span><b>${usd(wbd.goal)}</b>`));
+  assert.ok(nb.includes(`>${usd(wbd.goal)}, <em`), "the heading states the goal");
+  assert.ok(
+    list.includes("The US Open picks players by lottery, so nothing is guaranteed."),
+  );
+  assert.ok(
+    nb.includes("$4,000 to $6,000") && nb.includes("Insurance doesn&rsquo;t cover"),
+  );
+  assert.ok(
+    read("public/sitemap.xml").includes("<loc>https://adapttolife.org/numbers</loc>"),
+  );
+  // Every gift line on the page is the picker's line, word for word.
+  const js = read("public/js/campaigns.js");
+  for (const m of nb.matchAll(/<li><b>(\$[\d,]+)<\/b><span>([^<]+)<\/span><\/li>/g)) {
+    const line = `${m[1]} ${m[2]}`.replace(/&rsquo;/g, "'");
+    assert.ok(js.includes(line), `gift line not in the picker: ${line}`);
+  }
+
+  // The module stays clean: no receipt, one button to the breakdown.
   for (const { f, html } of carriers()) {
     const mod = html.slice(
       html.indexOf('<section class="cm"'),
       html.indexOf("<!-- /campaign-module -->"),
     );
-    for (const p of wbd.parts)
-      for (const l of p.math) {
-        assert.ok(mod.includes(`<b>${usd(l.qty * l.unit)}</b>`), `${f}: ${l.label}`);
-        assert.ok(
-          mod.includes(
-            `${l.qty} ${l.of} &times; ${l.about ? "about " : ""}${usd(l.unit)}`,
-          ),
-          `${f}: ${l.label} shows its multiplication`,
-        );
-      }
-    assert.ok(
-      mod.includes(`<span>Every week + the road</span><b>${usd(wbd.goal)}</b>`),
-      f,
-    );
-    assert.ok(mod.includes("insurance doesn&rsquo;t cover it"), `${f}: the chair note`);
+    assert.ok(!mod.includes("cm-math"), `${f}: the receipt is back in the module`);
+    if (f === "numbers.html")
+      assert.ok(!mod.includes('href="/numbers"'), "no button to the page you are on");
+    else
+      assert.ok(
+        mod.includes('<a class="cm-more" href="/numbers">See the numbers breakdown'),
+        `${f}: no button to the breakdown`,
+      );
     assert.ok(mod.includes("maybe the country"), `${f}: the ambition`);
   }
   // The record tiles carry the practice-night size where they appear.

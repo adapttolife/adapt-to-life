@@ -27,6 +27,8 @@
 //            the same record (the crew page). Default true.
 //   cta      {"href","label"} for the button. Default: Donate, carrying the
 //            picker's default gift into the Givebutter form.
+//   numbers  false drops the "See the numbers breakdown" button (on /numbers,
+//            which is the breakdown). Default true.
 //
 // The markup is src/partials/campaign-module.html, the look is the campaign
 // module section of src/css/site.css and the live numbers come from
@@ -88,19 +90,60 @@ const usd = (n) => "$" + Number(n).toLocaleString("en-US");
     );
 }
 
-// One part's arithmetic as a receipt: what, how many times what, the total,
-// and where the unit cost comes from.
-function mathList(part) {
-  const items = (part.math || []).map(
-    (l) =>
-      `<li><span class="cm-math-k">${esc(l.label)}</span><b>${usd(l.qty * l.unit)}</b>` +
-      `<span class="cm-math-x">${l.qty} ${esc(l.of)} &times; ${l.about ? "about " : ""}${usd(l.unit)}</span>` +
-      (l.note ? `<small>${l.note}</small>` : "") +
-      "</li>",
-  );
-  return items.length
-    ? `<ul class="cm-math" aria-label="How we got ${usd(part.goal)}">${items.join("")}</ul>`
-    : "";
+// THE NUMBERS BREAKDOWN (/numbers). Alec, Nov 6: the receipt inside the module
+// was "getting too messy", so the module carries one button and the full math
+// lives on its own page, rendered from the same campaigns.json: each part, the
+// arithmetic behind it (how many, times what, where the unit cost comes from),
+// the next goal and the total. A page opts in with
+//   <!-- campaign-numbers --> ... <!-- /campaign-numbers -->
+const NUMBERS =
+  /([ \t]*)<!-- campaign-numbers -->\n[\s\S]*?<!-- \/campaign-numbers -->/g;
+
+function mathLines(part) {
+  return (part.math || [])
+    .map(
+      (l) =>
+        `      <li><span class="nb-k">${esc(l.label)}</span>` +
+        `<span class="nb-calc">${l.qty} ${esc(l.of)} &times; ${l.about ? "about " : ""}${usd(l.unit)}</span>` +
+        `<b>${usd(l.qty * l.unit)}</b>` +
+        (l.note ? `<small>${l.note}</small>` : "") +
+        "</li>",
+    )
+    .join("\n");
+}
+
+export function renderNumbers() {
+  const n2 = (i) => String(i + 1).padStart(2, "0");
+  const parts = CAMPAIGN.parts.map((p, i) => {
+    const link = p.page ? ` <a href="${p.page}">See the road</a>` : "";
+    return [
+      `  <li class="nb-part">`,
+      `    <div class="nb-part-top"><span class="nb-n">${n2(i)}</span><h3>${esc(p.label)}</h3>` +
+        (i === 0 ? `<span class="nb-badge">First priority</span>` : "") +
+        `<b class="nb-sum">${usd(p.goal)}${p.key === "year" ? "<small> a year</small>" : ""}</b></div>`,
+      `    <p class="nb-detail">${p.detail || ""}${link}</p>`,
+      `    <ul class="nb-lines" aria-label="How we got ${usd(p.goal)}">`,
+      mathLines(p),
+      `    </ul>`,
+      `  </li>`,
+    ].join("\n");
+  });
+  const nx = CAMPAIGN.next;
+  if (nx)
+    parts.push(
+      [
+        `  <li class="nb-part nb-part--next">`,
+        `    <div class="nb-part-top"><span class="nb-n">${n2(CAMPAIGN.parts.length)}</span><h3>${esc(nx.label.replace(/^the /, "The "))}</h3><span class="nb-badge nb-badge--quiet">Next goal</span><b class="nb-sum nb-sum--tbd">Date to come</b></div>`,
+        `    <p class="nb-detail">${nx.detail || ""}${nx.page ? ` <a href="${nx.page}">See the Classic</a>` : ""}</p>`,
+        `  </li>`,
+      ].join("\n"),
+    );
+  return [
+    `<ol class="nb-parts">`,
+    ...parts,
+    `</ol>`,
+    `<p class="nb-total"><span>${CAMPAIGN.parts.map((p) => esc(p.label === "The Road to the US Open" ? "the road" : p.label)).join(" + ")}</span><b>${usd(CAMPAIGN.goal)}</b></p>`,
+  ].join("\n");
 }
 
 const esc = (s) =>
@@ -136,6 +179,10 @@ export function render(opts, where = "page") {
   if (o.stats === false)
     html = html.replace(/\n<!--stats-->[\s\S]*?<!--\/stats-->/, "");
   else html = html.replace(/\n<!--\/?stats-->/g, "");
+  // numbers: false drops the button to the breakdown (on /numbers itself).
+  if (o.numbers === false)
+    html = html.replace(/\n<!--numbers-->[\s\S]*?<!--\/numbers-->/, "");
+  else html = html.replace(/\n<!--\/?numbers-->/g, "");
   const vars = {
     id: o.id,
     theme: o.theme,
@@ -145,14 +192,12 @@ export function render(opts, where = "page") {
     ctaHref: esc(cta.href),
     ctaLabel: esc(cta.label),
     goal: usd(CAMPAIGN.goal),
-    outside: CAMPAIGN.outside,
   };
   return html.replace(/\{\{(\w+)(?::([\w-]+))?\}\}/g, (m, k, key) => {
     if (key) {
       const part = CAMPAIGN.parts.find((p) => p.key === key);
       if (!part) throw new Error(`${where}: no part "${key}" in campaigns.json`);
       if (k === "goal") return usd(part.goal);
-      if (k === "math") return mathList(part);
       throw new Error(`${where}: partial asks for {{${k}:${key}}}`);
     }
     if (!(k in vars)) throw new Error(`${where}: partial asks for {{${k}}}`);
@@ -176,9 +221,17 @@ export function stamp(page, name = "page") {
       .join("\n");
     return `${indent}<!-- campaign-module ${json} -->\n${body}\n${indent}<!-- /campaign-module -->`;
   });
+  const withNumbers = out.replace(NUMBERS, (m, indent) => {
+    found++;
+    const body = renderNumbers()
+      .split("\n")
+      .map((l) => (l ? indent + l : l))
+      .join("\n");
+    return `${indent}<!-- campaign-numbers -->\n${body}\n${indent}<!-- /campaign-numbers -->`;
+  });
   if (!found) return { html: page, found };
   // The look lives in site.css, so a page needs nothing more than the markup.
-  const html = out.replace(
+  const html = withNumbers.replace(
     /\n<link rel="stylesheet" href="\/css\/campaign-module\.css[^"]*">/g,
     "",
   );

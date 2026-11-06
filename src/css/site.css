@@ -429,7 +429,7 @@ p {
     box-shadow 0.25s ease;
 }
 .nav.scrolled {
-  background: rgba(251, 250, 246, 0.86);
+  background: rgba(249, 247, 242, 0.88); /* Laura's off-white, frosted */
   backdrop-filter: saturate(140%) blur(10px);
   border-bottom-color: var(--hairline);
 }
@@ -3818,4 +3818,34 @@ a.win-band:focus-visible {
   .cm-amts button {
     transition: none;
   }
+}
+
+/* ---- the Givebutter form, on the off-white ------------------------------
+   Givebutter paints its form pure white inside its own frame, and no page
+   style can reach inside it. Multiplied onto Laura's off-white, that white
+   becomes the off-white exactly and its greys warm up; the orange and the
+   text barely move (Alec, Nov 6: "I prefer off white than white").
+   Multiply shows whatever sits behind the form, so it switches on only when
+   campaigns.js sees the form's frame in place (.gb-ready). Then the loading
+   placeholder goes, and the card behind the form is off-white. If that
+   check ever fails, the form simply stays white, as it always was. */
+.gb-card.gb-ready {
+  background-color: var(--paper);
+  isolation: isolate;
+}
+.gb-card.gb-ready givebutter-giving-form {
+  mix-blend-mode: multiply;
+}
+.gb-card.gb-ready .gb-boot {
+  display: none;
+}
+/* On a dark section the off-white card is the form's own: the same 440px
+   Givebutter draws its card at (measured Nov 2026), and the same corners,
+   so no off-white strip shows beside it. */
+.gb-card--solo {
+  max-width: 440px;
+}
+.gb-card--solo.gb-ready {
+  border-radius: 12px;
+  overflow: hidden;
 }

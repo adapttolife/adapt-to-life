@@ -262,7 +262,7 @@
   padding-bottom: 2px;
 }
 .mw-copy .mw-quiet:hover {
-  color: #fff;
+  color: var(--cream); /* off-white, never pure white */
   border-bottom-color: var(--orange-hot);
 }
 
@@ -303,7 +303,7 @@
   }
 }
 .mw-drive-in b {
-  color: #fff;
+  color: var(--cream); /* off-white, never pure white */
   font-weight: 600;
 }
 .mw-drive-in .mw-bar {
@@ -323,7 +323,7 @@
   transition: width 1.1s cubic-bezier(0.22, 0.9, 0.28, 1) 0.5s;
 }
 .mw-drive-in a {
-  color: #fff;
+  color: var(--cream); /* off-white, never pure white */
   border-bottom: 1.5px solid var(--orange);
   padding-bottom: 1px;
 }
@@ -586,7 +586,7 @@
     font-size: clamp(2rem, 8.6vw, 3.2rem);
     line-height: 1.02;
     letter-spacing: -0.035em;
-    color: #fff;
+    color: var(--cream); /* off-white, never pure white */
   }
   /* The em carries `style="color:var(--orange)"` inline. Desktop sets it as a
      serif italic in orange; here we keep the orange and drop only the italic,

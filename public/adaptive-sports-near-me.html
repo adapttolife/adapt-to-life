@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=fe30f498">
+<link rel="stylesheet" href="/css/site.css?v=dc4f5dbc">
 <link rel="stylesheet" href="/css/page-header.css?v=beb972ef">
 <!-- band:vars --><style data-band-vars>:root{--pg-band-wide:url('/images/hero/panels/pg-band-1-wide.3c401bf6.webp');--pg-band-tall:url('/images/hero/panels/pg-band-1-tall.300096dd.webp');--pg-give-wide:url('/images/hero/panels/pg-give-wide.b46beed5.webp');--pg-give-tall:url('/images/hero/panels/pg-give-tall.5cece3a5.webp');}</style>
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
@@ -38,7 +38,7 @@
   .amp-wrap{ position:relative; display:grid; grid-template-columns:1.02fr 0.98fr; gap:clamp(2.2rem,5vw,4.5rem); align-items:center; }
   @media (max-width:880px){ .amp-wrap{ grid-template-columns:1fr; } }
   .amp-prints{ position:relative; display:grid; }
-  .amp-print{ grid-area:1 / 1; display:block; background:#fdfcf9; padding:12px 12px 12px; box-shadow:0 24px 55px rgba(0,0,0,0.5); text-decoration:none; transition:transform .25s ease, box-shadow .25s ease; }
+  .amp-print{ grid-area:1 / 1; display:block; background:var(--paper); padding:12px 12px 12px; box-shadow:0 24px 55px rgba(0,0,0,0.5); text-decoration:none; transition:transform .25s ease, box-shadow .25s ease; }
   .amp-print img{ display:block; width:100%; height:auto; }
   .amp-print.p1 img{ aspect-ratio:3/3.4; object-fit:cover; object-position:50% 28%; }
   .amp-print.p2 img{ aspect-ratio:3/3.4; object-fit:cover; object-position:43% 24%; }
@@ -48,7 +48,7 @@
   .amp-print::before{ content:""; position:absolute; top:-13px; left:50%; width:88px; height:26px; transform:translateX(-50%) rotate(-2deg); background:rgba(255,255,255,0.3); box-shadow:0 2px 6px rgba(0,0,0,0.12); }
   .amp-print.p2::before{ transform:translateX(-50%) rotate(2.5deg); }
   .amp-print:hover{ transform:rotate(0) translateY(-6px); z-index:3; box-shadow:0 32px 65px rgba(0,0,0,0.6); }
-  .amp-note{ display:block; margin-top:1.1rem; font-family:'Space Mono',monospace; font-size:0.7rem; letter-spacing:0.05em; color:rgba(255,255,255,0.55); text-align:right; }
+  .amp-note{ display:block; margin-top:1.1rem; font-family:'Space Mono',monospace; font-size:0.7rem; letter-spacing:0.05em; color:rgba(249,247,242,0.55); text-align:right; }
   @media (max-width:880px){
     .amp-print.p1{ width:min(88%,350px); }
     .amp-print.p2{ width:min(88%,350px); margin-top:clamp(5rem,26vw,7rem); }

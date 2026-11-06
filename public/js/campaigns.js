@@ -747,6 +747,29 @@
     }, "wbd");
   }
 
+  /* The Givebutter form on the off-white (see the matching block at the end
+     of site.css). The form's frame lives two shadow roots down; once it is
+     there and has a height, its .gb-card gets .gb-ready and the blend turns
+     on. No frame within 20 seconds, no change: the form stays white. */
+  function gbOffWhite() {
+    var cards = document.querySelectorAll(".gb-card");
+    Array.prototype.forEach.call(cards, function (card) {
+      var tries = 0;
+      (function check() {
+        var gb = card.querySelector("givebutter-giving-form");
+        var host =
+          gb && gb.shadowRoot && gb.shadowRoot.querySelector("givebutter-iframe");
+        var frame = host && host.shadowRoot && host.shadowRoot.querySelector("iframe");
+        if (frame && frame.getBoundingClientRect().height > 120) {
+          card.classList.add("gb-ready");
+          return;
+        }
+        if (++tries < 80) setTimeout(check, 250);
+      })();
+    });
+  }
+  gbOffWhite();
+
   global.ATLCampaigns = {
     load: load,
     raised: raised,

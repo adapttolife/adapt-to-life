@@ -32,7 +32,7 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  background: #000;
+  background: var(--photo-black);
   padding: clamp(3.5rem, 8vh, 5.5rem) 0 clamp(3.5rem, 8vh, 5.5rem);
 }
 

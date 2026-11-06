@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=1c4f5017">
+<link rel="stylesheet" href="/css/site.css?v=3832772e">
 <link rel="stylesheet" href="/css/sponsor-sheet.css?v=ffe856b5">
 <!-- band:vars --><style data-band-vars>:root{--pg-band-wide:url('/images/hero/panels/pg-band-2-wide.9ac73821.webp');--pg-band-tall:url('/images/hero/panels/pg-band-2-tall.f9278c2d.webp');--pg-give-wide:url('/images/hero/panels/pg-give-wide.b46beed5.webp');--pg-give-tall:url('/images/hero/panels/pg-give-tall.5cece3a5.webp');}  .bh-road .bh-more .arrow{ display:inline-block; margin-top:0; max-width:none; color:inherit; }
 </style>
@@ -37,13 +37,13 @@
      supporters wall with room left on it. Shares /brickhouse's language: dark
      bands with the orange bloom, the italic orange accent, the ATL x Brick
      House lockup with the painted optic yellow x, and the brick. */
-  .sp-hero{ position:relative; isolation:isolate; overflow:hidden; min-height:clamp(560px,78svh,760px); display:flex; align-items:center; padding:clamp(4rem,9vh,6rem) 0; background:#3b3b46; }
+  .sp-hero{ position:relative; isolation:isolate; overflow:hidden; min-height:clamp(560px,78svh,760px); display:flex; align-items:center; padding:clamp(4rem,9vh,6rem) 0; background:var(--night); }
   .sp-hero-img, .sp-hero-img img{ position:absolute; inset:0; width:100%; height:100%; z-index:-2; }
   .sp-hero-img img{ object-fit:cover; object-position:62% 40%; }
   .sp-hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:
-      linear-gradient(90deg, rgba(59,59,70,0.96) 0%, rgba(59,59,70,0.86) 34%, rgba(59,59,70,0.35) 62%, rgba(59,59,70,0.05) 85%),
-      radial-gradient(ellipse 40% 55% at 22% 60%, rgba(0,183,189,0.099) 0%, transparent 70%),
-      linear-gradient(0deg, rgba(59,59,70,0.6) 0%, transparent 30%); }
+      linear-gradient(90deg, rgba(23,21,19,0.96) 0%, rgba(23,21,19,0.86) 34%, rgba(59,59,70,0.35) 62%, rgba(59,59,70,0.05) 85%),
+      radial-gradient(ellipse 40% 55% at 22% 60%, rgba(255,92,57,0.18) 0%, transparent 70%),
+      linear-gradient(0deg, rgba(23,21,19,0.6) 0%, transparent 30%); }
   .sp-kicker{ display:flex; align-items:center; gap:0.9rem; font-family:var(--font-label); font-weight:800; font-size:0.85rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--orange); }
   .sp-kicker::before{ content:""; width:2.2rem; height:2px; background:var(--orange); box-shadow:0 0 12px var(--orange-glow); }
   .sp-hero .display{ max-width:11ch; margin-top:1.4rem; font-size:clamp(2.9rem,6vw,5.6rem); line-height:0.96; }
@@ -53,7 +53,7 @@
     .sp-hero{ display:block; min-height:0; padding:0 0 clamp(2.5rem,7vh,3.5rem); }
     .sp-hero-img{ position:relative; display:block; height:min(62svh,560px); }
     .sp-hero-img img{ object-position:50% 30%; }
-    .sp-hero::after{ background:linear-gradient(180deg, transparent 55%, rgba(59,59,70,0.75) 80%, #3b3b46 96%); }
+    .sp-hero::after{ background:linear-gradient(180deg, transparent 55%, rgba(23,21,19,0.75) 80%, #3b3b46 96%); }
     .sp-hero-copy{ margin-top:1.8rem; position:relative; }
     .sp-hero .display{ font-size:clamp(2.6rem,11vw,3.4rem); }
   }
@@ -88,8 +88,8 @@
      the flagship lit. Founding Partner is the summit, framed in brick. */
   .sp-levels{ position:relative; isolation:isolate; overflow:hidden; }
   .sp-levels::before{ content:""; position:absolute; inset:0; z-index:-1; background:
-      radial-gradient(ellipse 50% 40% at 60% 38%, rgba(0,183,189,0.088) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 40% at 8% 90%, rgba(0,183,189,0.055) 0%, transparent 70%); }
+      radial-gradient(ellipse 50% 40% at 60% 38%, rgba(255,92,57,0.16) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 8% 90%, rgba(255,92,57,0.1) 0%, transparent 70%); }
   .sp-levels .sec-head .prose{ color:var(--cream-mute); max-width:52ch; margin-top:1rem; }
   .tier-grid{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:clamp(0.8rem,1.6vw,1.2rem); margin-top:clamp(2.4rem,4vw,3.2rem); align-items:end; }
   @media (max-width:1000px){ .tier-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); align-items:stretch; } }
@@ -126,9 +126,9 @@
      mark, linking to the page that tells their story. One reads as a feature;
      more wrap into a grid without new CSS. */
   .partner-list{ display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr)); gap:clamp(1rem,2vw,1.4rem); margin-top:clamp(2rem,4vw,2.8rem); }
-  .partner{ display:grid; grid-template-columns:minmax(0,0.9fr) minmax(0,1.1fr); border-radius:22px; overflow:hidden; background:#3b3b46; color:var(--cream); isolation:isolate; position:relative;
+  .partner{ display:grid; grid-template-columns:minmax(0,0.9fr) minmax(0,1.1fr); border-radius:22px; overflow:hidden; background:var(--night); color:var(--cream); isolation:isolate; position:relative;
     box-shadow:0 30px 70px -34px rgba(0,0,0,0.6); }
-  .partner::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 60% 70% at 85% 30%, rgba(0,183,189,0.099) 0%, transparent 70%); }
+  .partner::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 60% 70% at 85% 30%, rgba(255,92,57,0.18) 0%, transparent 70%); }
   .partner-photo{ display:block; min-height:clamp(320px,36vw,460px); }
   .partner-logo.is-word{ height:auto; width:min(100%, 210px); margin-bottom:0.4rem; }
   .partner-photo img{ width:100%; height:100%; object-fit:cover; object-position:50% 30%; transition:transform .6s ease; }

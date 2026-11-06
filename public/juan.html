@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=1c4f5017">
+<link rel="stylesheet" href="/css/site.css?v=3832772e">
 <link rel="stylesheet" href="/css/athlete.css?v=4f9f99df">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <style>
@@ -36,10 +36,10 @@
   .jn-chips li{ font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--cream); padding:0.5rem 0.8rem; border-radius:999px; box-shadow:inset 0 0 0 1px rgba(255,255,255,0.22); }
   .jn-chips li:first-child{ color:var(--orange); box-shadow:inset 0 0 0 1.5px var(--orange); }
   .jn-acts{ display:flex; flex-wrap:wrap; gap:0.9rem 1rem; margin-top:1.8rem; }
-  .jn-start{ position:relative; isolation:isolate; overflow:hidden; background:#3b3b46; }
+  .jn-start{ position:relative; isolation:isolate; overflow:hidden; background:var(--night); }
   .jn-start-img{ position:absolute; inset:0; z-index:-2; }
   .jn-start-img img{ width:100%; height:100%; object-fit:cover; object-position:60% 40%; opacity:0.55; }
-  .jn-start::after{ content:""; position:absolute; inset:0; z-index:-1; background:linear-gradient(90deg, rgba(59,59,70,0.96) 0%, rgba(59,59,70,0.82) 45%, rgba(59,59,70,0.35) 100%), radial-gradient(ellipse 40% 60% at 15% 70%, rgba(0,183,189,0.088) 0%, transparent 70%); }
+  .jn-start::after{ content:""; position:absolute; inset:0; z-index:-1; background:linear-gradient(90deg, rgba(23,21,19,0.96) 0%, rgba(23,21,19,0.82) 45%, rgba(59,59,70,0.35) 100%), radial-gradient(ellipse 40% 60% at 15% 70%, rgba(255,92,57,0.16) 0%, transparent 70%); }
   .jn-big{ font-family:var(--font-display); font-weight:900; font-size:clamp(5rem,16vw,11rem); line-height:0.85; letter-spacing:-0.05em; color:#ff5c39; text-shadow:0 0 60px rgba(255,92,57,0.35); }
   .jn-words{ margin-top:1.6rem; max-width:44ch; font-size:clamp(1.15rem,1.9vw,1.45rem); line-height:1.5; color:var(--cream); }
   .jn-words p + p{ margin-top:1rem; }
@@ -50,12 +50,12 @@
   .jn-ch-era{ font-family:var(--font-label); font-weight:800; font-size:0.72rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--orange-ink); }
   .jn-ch-card h3{ margin-top:0.35rem; font-family:var(--font-display); font-weight:900; font-size:clamp(1.6rem,2.4vw,2rem); letter-spacing:-0.02em; line-height:1; color:var(--ink); }
   .jn-trophy{ display:grid; grid-template-columns:1fr 1fr; gap:1.1rem 1rem; margin:1.3rem 0 0; }
-  .jn-trophy dt{ font-family:var(--font-display); font-weight:900; font-size:clamp(1.3rem,2vw,1.6rem); line-height:1; letter-spacing:-0.02em; color:var(--orange); }
+  .jn-trophy dt{ font-family:var(--font-display); font-weight:900; font-size:clamp(1.3rem,2vw,1.6rem); line-height:1; letter-spacing:-0.02em; color:var(--orange-display); }
   .jn-trophy dd{ margin:0.35rem 0 0; font-size:0.9rem; line-height:1.35; color:var(--ink-soft); }
   .jn-ch-text{ margin-top:1rem; color:var(--ink-soft); line-height:1.5; }
   .jn-ch-q{ margin-top:1rem; padding-left:0.9rem; border-left:3px solid var(--orange); font-weight:700; color:var(--ink); }
-  .jn-ch-card.is-now{ background:#3b3b46; box-shadow:0 0 0 1px rgb(var(--accent-rgb) / 0.45), 0 30px 70px -30px rgb(var(--accent-rgb) / 0.45); }
-  .jn-ch-card.is-now::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 70% 60% at 85% 15%, rgba(0,183,189,0.121) 0%, transparent 70%); }
+  .jn-ch-card.is-now{ background:var(--night); box-shadow:0 0 0 1px rgb(var(--accent-rgb) / 0.45), 0 30px 70px -30px rgb(var(--accent-rgb) / 0.45); }
+  .jn-ch-card.is-now::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 70% 60% at 85% 15%, rgba(255,92,57,0.22) 0%, transparent 70%); }
   .jn-ch-card.is-now .jn-ch-era{ color:var(--orange); }
   .jn-ch-card.is-now h3{ color:var(--cream); }
   .jn-ch-years{ list-style:none; padding:0; margin:1.2rem 0 0; display:grid; gap:0.85rem; }
@@ -84,12 +84,12 @@
   .jn-kit div{ padding:1.3rem 1.4rem; border-radius:16px; background:var(--paper); box-shadow:0 0 0 1px var(--hairline); }
   .jn-kit b{ display:block; font-family:var(--font-display); font-weight:800; font-size:1.25rem; color:var(--ink); }
   .jn-kit span{ display:block; margin-top:0.35rem; color:var(--ink-soft); }
-  .jn-code{ margin-top:1.6rem; padding:1.4rem; border-radius:16px; background:#3b3b46; color:var(--cream); }
-  .jn-code .code-chip{ display:inline-block; margin-top:0.6rem; font-family:var(--font-display); font-weight:900; font-size:1.6rem; letter-spacing:0.02em; color:#ff5c39; }
+  .jn-code{ margin-top:1.6rem; padding:1.4rem; border-radius:16px; background:var(--night); color:var(--cream); }
+  .jn-code .code-chip{ display:inline-block; margin-top:0.6rem; font-family:var(--font-display); font-weight:900; font-size:1.6rem; letter-spacing:0.02em; color:var(--orange-display); }
   .jn-code p{ color:var(--cream-mute); font-size:0.95rem; margin-top:0.6rem; }
   .jn-code a{ color:var(--orange); font-weight:700; }
-  .jn-chair{ margin-top:1.8rem; display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,0.95fr); border-radius:22px; overflow:hidden; background:#3b3b46; color:var(--cream); box-shadow:0 30px 70px -34px rgba(0,0,0,0.6); position:relative; isolation:isolate; }
-  .jn-chair::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 55% 70% at 90% 20%, rgba(0,183,189,0.099) 0%, transparent 70%); }
+  .jn-chair{ margin-top:1.8rem; display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,0.95fr); border-radius:22px; overflow:hidden; background:var(--night); color:var(--cream); box-shadow:0 30px 70px -34px rgba(0,0,0,0.6); position:relative; isolation:isolate; }
+  .jn-chair::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 55% 70% at 90% 20%, rgba(255,92,57,0.18) 0%, transparent 70%); }
   .jn-chair figure{ margin:0; min-height:100%; }
   .jn-chair figure img{ width:100%; height:100%; object-fit:cover; object-position:55% 60%; display:block; }
   .jn-chair-body{ padding:clamp(1.6rem,3.4vw,2.6rem); }
@@ -101,11 +101,11 @@
   @media (max-width:760px){ .jn-chair{ grid-template-columns:1fr; } .jn-chair figure{ aspect-ratio:1600/1345; } }
   .jn-kit{ grid-template-columns:1fr !important; }
   .jn-paddle{ grid-template-columns:minmax(0,1.1fr) minmax(0,0.9fr); }
-  .jn-paddle figure{ order:2; background:#3b3b46; }
+  .jn-paddle figure{ order:2; background:var(--night); }
   .jn-paddle figure img{ object-position:50% 40%; }
   .jn-code-in{ margin-top:1.3rem; padding:1.1rem 0; border-top:1px solid rgba(255,255,255,0.12); border-bottom:1px solid rgba(255,255,255,0.12); }
   .jn-code-in > span{ display:block; font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--orange); }
-  .jn-code-in .code-chip{ display:inline-block; margin-top:0.5rem; font-family:var(--font-display); font-weight:900; font-size:clamp(1.6rem,3vw,2.1rem); letter-spacing:0.01em; color:#ff5c39; }
+  .jn-code-in .code-chip{ display:inline-block; margin-top:0.5rem; font-family:var(--font-display); font-weight:900; font-size:clamp(1.6rem,3vw,2.1rem); letter-spacing:0.01em; color:var(--orange-display); }
   .jn-code-in p{ margin-top:0.6rem; font-size:0.92rem; color:var(--cream-mute); }
   .jn-code-in a{ color:var(--orange); font-weight:700; }
   @media (max-width:760px){ .jn-paddle{ grid-template-columns:1fr; } .jn-paddle figure{ order:0; aspect-ratio:4/5; } }
@@ -302,7 +302,7 @@ fill="currentColor" stroke="none">
   </section>
 
   <!-- ON COURT: the raw ones. Variety is the point; this is Juan, unposed. -->
-  <section class="band-sm" style="background:#3b3b46;">
+  <section class="band-sm" style="background:var(--night);">
     <div class="wrap jn-pair">
       <figure class="jn-photo reveal"><img src="/images/athletes/juan-celebrate.webp" width="1600" height="1200" alt="Juan Ortiz sticks his tongue out and throws his arms wide courtside, paddle in his lap" loading="lazy" decoding="async"></figure>
       <figure class="jn-photo reveal"><img src="/images/athletes/juan-portrait.webp" width="1000" height="1500" alt="Juan Ortiz sits in his sport wheelchair with his paddle, looking straight at the camera" loading="lazy" decoding="async"></figure>

@@ -26,16 +26,16 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=1c4f5017">
+<link rel="stylesheet" href="/css/site.css?v=3832772e">
 <style>
   /* Ambassadors: the program. One card per ambassador, each linking to their
      own page (/juan is the pattern), the same way Partners works. */
-  .am-hero{ position:relative; isolation:isolate; overflow:hidden; min-height:clamp(540px,74svh,720px); display:flex; align-items:center; padding:clamp(4rem,9vh,6rem) 0; background:#3b3b46; }
+  .am-hero{ position:relative; isolation:isolate; overflow:hidden; min-height:clamp(540px,74svh,720px); display:flex; align-items:center; padding:clamp(4rem,9vh,6rem) 0; background:var(--night); }
   .am-hero-img{ position:absolute; inset:0; z-index:-2; }
   .am-hero-img img{ width:100%; height:100%; object-fit:cover; object-position:70% 35%; }
   .am-hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:
-      linear-gradient(90deg, rgba(59,59,70,0.97) 0%, rgba(59,59,70,0.88) 36%, rgba(59,59,70,0.35) 66%, rgba(59,59,70,0.1) 90%),
-      radial-gradient(ellipse 40% 55% at 22% 60%, rgba(0,183,189,0.099) 0%, transparent 70%); }
+      linear-gradient(90deg, rgba(23,21,19,0.97) 0%, rgba(23,21,19,0.88) 36%, rgba(59,59,70,0.35) 66%, rgba(59,59,70,0.1) 90%),
+      radial-gradient(ellipse 40% 55% at 22% 60%, rgba(255,92,57,0.18) 0%, transparent 70%); }
   .am-kicker{ display:flex; align-items:center; gap:0.9rem; font-family:var(--font-label); font-weight:800; font-size:0.85rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--orange); }
   .am-kicker::before{ content:""; width:2.2rem; height:2px; background:var(--orange); box-shadow:0 0 12px var(--orange-glow); }
   .am-hero .display{ max-width:12ch; margin-top:1.4rem; font-size:clamp(2.8rem,5.8vw,5.2rem); line-height:0.97; }
@@ -45,13 +45,13 @@
     .am-hero{ display:block; min-height:0; padding:0 0 clamp(2.5rem,7vh,3.5rem); }
     .am-hero-img{ position:relative; display:block; height:min(58svh,520px); }
     .am-hero-img img{ object-position:62% 30%; }
-    .am-hero::after{ background:linear-gradient(180deg, transparent 55%, rgba(59,59,70,0.75) 80%, #3b3b46 96%); }
+    .am-hero::after{ background:linear-gradient(180deg, transparent 55%, rgba(23,21,19,0.75) 80%, #3b3b46 96%); }
     .am-hero .wrap{ margin-top:1.6rem; }
     .am-hero .display{ font-size:clamp(2.5rem,10.5vw,3.3rem); }
   }
   .am-list{ display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr)); gap:clamp(1rem,2vw,1.4rem); margin-top:clamp(2rem,4vw,2.8rem); }
-  .am-card{ display:grid; grid-template-columns:minmax(0,0.9fr) minmax(0,1.1fr); border-radius:22px; overflow:hidden; background:#3b3b46; color:var(--cream); position:relative; isolation:isolate; box-shadow:0 30px 70px -34px rgba(0,0,0,0.6); }
-  .am-card::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 60% 70% at 85% 30%, rgba(0,183,189,0.099) 0%, transparent 70%); }
+  .am-card{ display:grid; grid-template-columns:minmax(0,0.9fr) minmax(0,1.1fr); border-radius:22px; overflow:hidden; background:var(--night); color:var(--cream); position:relative; isolation:isolate; box-shadow:0 30px 70px -34px rgba(0,0,0,0.6); }
+  .am-card::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 60% 70% at 85% 30%, rgba(255,92,57,0.18) 0%, transparent 70%); }
   .am-card-photo{ display:block; min-height:clamp(320px,36vw,440px); }
   .am-card-photo img{ width:100%; height:100%; object-fit:cover; object-position:40% 30%; }
   .am-card-body{ padding:clamp(1.6rem,3.5vw,2.8rem); display:flex; flex-direction:column; justify-content:center; align-items:flex-start; }

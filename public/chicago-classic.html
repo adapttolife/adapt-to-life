@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=1c4f5017">
+<link rel="stylesheet" href="/css/site.css?v=3832772e">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches&&"IntersectionObserver" in window)document.documentElement.classList.add("ace-motion");</script>
 <style>
@@ -35,15 +35,15 @@
   /* 1. Hero: one photograph, edge to edge. The athlete sits right, the words
      sit left on the dark wall behind him; on phones the photo leads and the
      words follow on black. */
-  .ace-hero{ position:relative; isolation:isolate; overflow:hidden; min-height:min(100svh, 980px); display:flex; align-items:center; padding:clamp(7rem,14vh,9rem) 0 clamp(4rem,9vh,6rem); background:#3b3b46; }
+  .ace-hero{ position:relative; isolation:isolate; overflow:hidden; min-height:min(100svh, 980px); display:flex; align-items:center; padding:clamp(7rem,14vh,9rem) 0 clamp(4rem,9vh,6rem); background:var(--night); }
   .ace-hero-photo{ position:absolute; top:0; bottom:0; right:0; left:30%; z-index:-2; margin:0; -webkit-mask-image:linear-gradient(90deg, transparent 0%, #000 30%); mask-image:linear-gradient(90deg, transparent 0%, #000 30%); }
   .ace-hero-photo img{ width:100%; height:100%; object-fit:cover; object-position:55% 35%; display:block; animation:ace-push 22s ease-in-out infinite alternate; transform-origin:70% 40%; }
   @keyframes ace-push{ from{ transform:scale(1.02); } to{ transform:scale(1.08); } }
   @media (prefers-reduced-motion: reduce){ .ace-hero-photo img{ animation:none; } }
   .ace-hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:
-      radial-gradient(ellipse 50% 60% at 18% 60%, rgba(0,183,189,0.110) 0%, transparent 70%),
-      linear-gradient(90deg, rgba(59,59,70,0.6) 0%, rgba(59,59,70,0.3) 40%, transparent 60%),
-      linear-gradient(0deg, rgba(59,59,70,0.85) 0%, transparent 28%); }
+      radial-gradient(ellipse 50% 60% at 18% 60%, rgba(255,92,57,0.2) 0%, transparent 70%),
+      linear-gradient(90deg, rgba(23,21,19,0.6) 0%, rgba(59,59,70,0.3) 40%, transparent 60%),
+      linear-gradient(0deg, rgba(23,21,19,0.85) 0%, transparent 28%); }
   .ace-hero-copy{ max-width:34rem; }
   .ace-kicker{ display:flex; align-items:center; gap:0.9rem; font-family:var(--font-label); font-weight:800; font-size:0.9rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--orange); }
   .ace-kicker::before{ content:""; width:2.2rem; height:2px; background:var(--orange); box-shadow:0 0 12px var(--orange-glow); }
@@ -58,7 +58,7 @@
     .ace-hero{ display:block; min-height:0; padding:0 0 clamp(2.6rem,7vh,3.5rem); }
     .ace-hero-photo{ position:relative; inset:auto; left:auto; height:min(72svh, 620px); -webkit-mask-image:none; mask-image:none; }
     .ace-hero-photo img{ object-position:40% 30%; animation:none; }
-    .ace-hero-photo::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(59,59,70,0.55) 0%, transparent 22%, transparent 55%, #3b3b46 100%); }
+    .ace-hero-photo::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(23,21,19,0.55) 0%, transparent 22%, transparent 55%, #3b3b46 100%); }
     .ace-hero::after{ display:none; }
     .ace-hero .wrap{ margin-top:-7rem; position:relative; }
     .ace-cue{ display:none; }
@@ -154,7 +154,7 @@
 
   /* A taste: Monster Smash as the model, one big number and the medal row. */
   .ace-taste{ position:relative; isolation:isolate; overflow:hidden; }
-  .ace-taste::before{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 50% 60% at 85% 40%, rgba(0,183,189,0.121) 0%, transparent 70%); }
+  .ace-taste::before{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 50% 60% at 85% 40%, rgba(255,92,57,0.22) 0%, transparent 70%); }
   .ace-taste .statement{ color:var(--cream); }
   .ace-taste .ace-head .prose{ color:var(--cream-mute); }
   .ace-taste-grid{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(2rem,5vw,4.5rem); align-items:center; }
@@ -207,7 +207,7 @@
 
   /* A note from Alec */
   .ace-letter{ display:grid; grid-template-columns:minmax(0,0.8fr) minmax(0,1.2fr); gap:clamp(1.8rem,5vw,4rem); align-items:center; margin:0; max-width:1000px; margin-inline:auto; }
-  .ace-letter img{ width:100%; height:auto; align-self:center; aspect-ratio:1/1; object-fit:cover; object-position:45% 30%; border-radius:22px; box-shadow:0 30px 70px -36px rgba(59,59,70,0.55); }
+  .ace-letter img{ width:100%; height:auto; align-self:center; aspect-ratio:1/1; object-fit:cover; object-position:45% 30%; border-radius:22px; box-shadow:0 30px 70px -36px rgba(23,21,19,0.55); }
   .ace-letter blockquote{ margin:0; }
   .ace-letter p{ font-size:clamp(1.05rem,1.5vw,1.2rem); line-height:1.6; margin-top:0.9rem; max-width:46ch; }
   .ace-letter .ace-letter-hi{ margin-top:0; font-family:var(--font-display); font-weight:800; font-size:clamp(1.5rem,2.6vw,2rem); letter-spacing:-0.02em; }
@@ -252,20 +252,20 @@
   .ace-side{ position:relative; display:grid; grid-template-columns:1fr 1fr; min-height:clamp(360px,42vw,560px); background:var(--ink-warm); overflow:hidden; }
   .ace-side img{ width:100%; height:100%; object-fit:cover; display:block; }
   .ace-side img:first-child{ object-position:35% 40%; }
-  .ace-side::after{ content:""; position:absolute; inset:0; background:radial-gradient(ellipse 60% 70% at 50% 55%, rgba(59,59,70,0.78) 0%, rgba(59,59,70,0.45) 55%, rgba(59,59,70,0.2) 100%); }
+  .ace-side::after{ content:""; position:absolute; inset:0; background:radial-gradient(ellipse 60% 70% at 50% 55%, rgba(23,21,19,0.78) 0%, rgba(59,59,70,0.45) 55%, rgba(59,59,70,0.2) 100%); }
   .ace-seam{ position:absolute; left:50%; top:0; bottom:0; width:3px; transform:translateX(-50%); background:var(--orange); box-shadow:0 0 22px 0 var(--orange-glow); z-index:1; }
   .ace-together{ position:absolute; z-index:2; left:50%; top:50%; transform:translate(-50%,-50%); width:min(92%, 30ch); margin:0; text-align:center; color:var(--cream); font-family:var(--font-display); font-weight:800; font-size:clamp(1.5rem,3.4vw,2.6rem); line-height:1.12; letter-spacing:-0.025em; text-shadow:0 2px 24px rgba(0,0,0,0.7); }
   @media (max-width:700px){
     .ace-side{ grid-template-columns:1fr; grid-template-rows:1fr 1fr; min-height:clamp(480px,140vw,660px); }
     .ace-seam{ left:0; right:0; top:50%; bottom:auto; width:auto; height:3px; transform:translateY(-50%); }
-    .ace-together{ width:min(90%, 26ch); padding:1rem 1.2rem; border-radius:14px; background:rgba(59,59,70,0.82); box-shadow:0 0 0 1px rgb(var(--accent-rgb) / 0.5); }
+    .ace-together{ width:min(90%, 26ch); padding:1rem 1.2rem; border-radius:14px; background:rgba(23,21,19,0.82); box-shadow:0 0 0 1px rgb(var(--accent-rgb) / 0.5); }
   }
 
   /* The wishlist: six groups on the dark band. */
   .ace-wish{ position:relative; isolation:isolate; overflow:hidden; }
   .ace-wish::before{ content:""; position:absolute; inset:0; z-index:-1; background:
-      radial-gradient(ellipse 55% 45% at 80% 20%, rgba(0,183,189,0.099) 0%, transparent 70%),
-      radial-gradient(ellipse 45% 40% at 8% 90%, rgba(0,183,189,0.055) 0%, transparent 70%); }
+      radial-gradient(ellipse 55% 45% at 80% 20%, rgba(255,92,57,0.18) 0%, transparent 70%),
+      radial-gradient(ellipse 45% 40% at 8% 90%, rgba(255,92,57,0.1) 0%, transparent 70%); }
   .ace-wish .statement{ color:var(--cream); }
   .ace-wish .ace-head .prose{ color:var(--cream-mute); }
   .ace-groups{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(1rem,2vw,1.4rem); margin-top:clamp(2.2rem,4.5vw,3.5rem); }
@@ -291,7 +291,7 @@
   /* Close: the last word over one more photograph, held low and dark. */
   .ace-final{ position:relative; isolation:isolate; overflow:hidden; }
   .ace-final::before{ content:""; position:absolute; inset:0; z-index:-2; background:url('/images/ace/paddle-raise.webp') 62% 35%/cover no-repeat; filter:grayscale(1) brightness(0.45); }
-  .ace-final::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 60% 70% at 50% 50%, rgba(59,59,70,0.55) 0%, rgba(59,59,70,0.92) 100%); }
+  .ace-final::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 60% 70% at 50% 50%, rgba(23,21,19,0.55) 0%, rgba(23,21,19,0.92) 100%); }
   /* Close */
   .ace-close{ text-align:center; }
   .ace-close .tick{ margin:0 auto 1rem; }

@@ -21,14 +21,22 @@
   --font-label: "Sofia Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
 
   /* brand */
+  /* The orange family (Night & Orange, Nov 2026). One hue, three jobs:
+       --orange          Laura's orange: every accent on night (5.9:1)
+       --orange-display  big headline emphasis on the light page (3.2:1;
+                         the bright orange is 2.5:1 there)
+       --orange-ink      small text, links and button fills on light (4.7:1
+                         on the page; off-white on it 5.4:1) */
   --orange: #ff5c39;
-  --orange-ink: #c63f22;
-  --orange-press: #a72f17;
+  --orange-display: #e64c2a;
+  --gold-ink: #80620f; /* gold for small text on light (4.7:1 on the page) */
+  --orange-ink: #b9391e;
+  --orange-press: #9e2f17;
   --orange-hot: #ff765b;
   --orange-glow: rgba(255, 92, 57, 0.42);
   --orange-bloom: rgba(255, 92, 57, 0.12);
   /* The accent as channels, so page glows and rings can say
-     rgb(var(--accent-rgb) / 0.4): orange on light, teal inside .dark. */
+     rgb(var(--accent-rgb) / 0.4). */
   --accent-rgb: 255 92 57;
   --gold: #d4a843;
   --gold-press: #be9233; /* reserved for Tim / reverence */
@@ -64,16 +72,23 @@
                                5.28 on the off-white, and is imperceptibly
                                different to the eye. A palette change moves
                                contrast; check it, do not assume it. */
-  --ink-warm: #3b3b46; /* dark band base: Laura's slate black (design refresh,
-                          Nov 2026; was #0c0c0e near-black) */
-  --charcoal: #47475a; /* raised dark surface: slate, one step up */
-  /* Design refresh (Nov 2026): Laura's palette in the ASNM balance (70-80%
-     neutrals, 15-25% slate, 5-10% orange for action, 0-5% accent), with
-     T3 Code's details: hairlines over fills, one radius scale, one curve. */
-  --slate: #3b3b46;
-  --slate-raised: #47475a;
-  --teal-on-dark: #4dcdd1; /* Laura's teal lifted for small text on slate: 5.8:1 */
-  --hairline-dark: rgba(255, 255, 255, 0.09);
+  /* Night (Nov 2026, Alec picked "option B" and asked to make it better).
+     A warm near-black: every other colour here is warm (orange, the
+     off-white, yellow), and a dead-neutral black read cold beside them.
+       --photo-black   the nav and photograph bands (orange 6.3:1)
+       --night         every dark section, the footer (orange 5.9:1,
+                       off-white 17:1, yellow 10.7:1)
+       --night-raised  cards on dark (orange 5.3:1)
+     Laura's black #3B3B46 stays as --ink: text and the logo on light. */
+  --photo-black: #0f0e0d;
+  --night: #171513;
+  --night-raised: #23201d;
+  --ink-warm: var(--night);
+  --charcoal: var(--night-raised);
+  --slate: var(--night);
+  --slate-raised: var(--night-raised);
+  --teal-on-dark: var(--orange); /* teal is retired on the site */
+  --hairline-dark: rgba(249, 247, 242, 0.08);
   --r-sm: 6px;
   --r-md: 8px;
   --r-lg: 12px;
@@ -294,7 +309,7 @@ p {
   color: var(--orange-ink);
 }
 .eyebrow.gold {
-  color: var(--gold);
+  color: var(--gold-ink); /* 4.7:1 on the page; the bright gold is for dark */
 }
 .tick {
   width: 40px;
@@ -334,8 +349,8 @@ p {
   border: 1px solid var(--orange-ink);
   box-shadow:
     inset 0 1px rgba(255, 255, 255, 0.18),
-    0 1px 2px rgba(198, 63, 34, 0.24),
-    0 10px 26px -12px rgba(198, 63, 34, 0.5);
+    0 1px 2px rgba(185, 57, 30, 0.24),
+    0 10px 26px -12px rgba(185, 57, 30, 0.5);
   transition:
     background-color 0.18s var(--ease),
     transform 0.18s var(--ease),
@@ -354,7 +369,7 @@ p {
   box-shadow: inset 0 1px rgba(0, 0, 0, 0.12);
 }
 .btn:focus-visible {
-  outline: 2px solid var(--teal);
+  outline: 2px solid var(--ink);
   outline-offset: 3px;
 }
 .btn.ghost {
@@ -528,7 +543,7 @@ p {
      nav bar black"). It sits on the pitch-black photo wall and the photo
      bands of the page headers, and it STAYS black when the page scrolls: the
      old frosted off-white took on whatever was behind it, a third white. */
-  background-color: #000;
+  background-color: var(--photo-black);
   background-image: none;
 }
 .nav.over-dark.scrolled {
@@ -586,34 +601,25 @@ section {
     inset 0 -1px 0 rgba(59, 59, 70, 0.08);
 }
 
-/* full-bleed dark band: Laura's slate. The old orange/gold glow read as a
-   brown smear on slate, so the atmosphere is a faint cool lift instead. */
-.dark,
-.on-dark,
-.footer {
-  /* Inside a dark section the accent is teal (orange measured 3.6:1 on slate
-     for small text). Buttons keep their orange: they use --orange-ink, which
-     this does not touch. Money figures that must stay orange set #ff5c39.
-     .on-dark is the same switch for a card or panel painted slate inside a
-     light section, without the section background. */
-  --orange: var(--teal-on-dark);
-  --orange-hot: #8ae1e3;
-  --orange-glow: rgba(0, 183, 189, 0.42);
-  --orange-bloom: rgba(0, 183, 189, 0.12);
-  --accent-rgb: 0 183 189;
-}
+/* NIGHT & ORANGE (Alec, Nov 6: "I like option B - what can we do to make it
+   better?"). One warm near-black for every dark surface (--night), a deeper
+   one for photographs and the nav (--photo-black), a lifted one for cards on
+   dark (--night-raised). Orange reads 5.9:1 on night, so it does every accent
+   job on dark, small text included, and the old teal switch is gone. Depth
+   comes from tone and from orange as light, not from more hues.
+   .on-dark marks a night card inside a light section for the helpers below. */
 .dark {
   color: var(--cream);
-  background-color: var(--ink-warm);
+  background-color: var(--night);
   background-image:
     radial-gradient(
-      ellipse 70% 55% at 82% 0%,
-      rgba(255, 255, 255, 0.05) 0%,
+      ellipse 70% 55% at 85% 0%,
+      rgba(255, 92, 57, 0.09) 0%,
       transparent 62%
     ),
     radial-gradient(
       ellipse 60% 60% at 0% 100%,
-      rgba(0, 183, 189, 0.05) 0%,
+      rgba(255, 92, 57, 0.045) 0%,
       transparent 60%
     );
 }
@@ -629,27 +635,26 @@ section {
 .dark .eyebrow {
   color: var(--cream-faint);
 }
-/* On slate the accent is teal: orange is kept for action (buttons) and money.
-   Small orange text measured 3.6:1 on slate; the teal tint is 5.8:1. */
+/* The signature tick and every accent on night are Laura's orange. */
 :is(.dark, .on-dark) .tick.orange {
   background: #ff5c39;
   box-shadow: 0 0 12px -2px rgba(255, 92, 57, 0.5);
 }
-/* Headline emphasis stays orange on slate and black (Alec, Nov 6: "Orange is
-   still the main color, we just expanded the color palette to have a more
-   mature website and give us more depth"). Headlines are large text, so
-   orange clears AA there (3.6:1 on slate, 6.6:1 on black). Pages set it
-   inline (color:var(--orange)), which the --orange override above would turn
-   teal, so big type takes Laura's orange back here. Teal stays for small
-   text on slate, badges and data. */
+/* Headline emphasis. Pages set it inline (color:var(--orange)). On night that
+   is Laura's orange (5.9:1); on the light page the bright orange measures
+   2.5:1, under the 3:1 floor even for large type, so there it takes the
+   display orange (3.2:1), the same hue a shade deeper. */
+em.italic[style*="--orange"] {
+  color: var(--orange-display) !important;
+}
 :is(.dark, .on-dark) em.italic[style*="--orange"] {
-  color: #ff5c39 !important;
+  color: var(--orange) !important;
 }
 :is(.dark, .on-dark) .eyebrow.gold {
   color: var(--gold);
 }
 :is(.dark, .on-dark) .eyebrow.orange {
-  color: var(--teal-on-dark);
+  color: var(--orange);
 }
 :is(.dark, .on-dark) .btn.ghost {
   color: var(--cream);
@@ -662,11 +667,11 @@ section {
 }
 :is(.dark, .on-dark) .textlink {
   color: var(--cream);
-  border-bottom-color: var(--teal);
+  border-bottom-color: var(--orange);
 }
 :is(.dark, .on-dark) .textlink:hover {
-  color: var(--teal-on-dark);
-  border-bottom-color: var(--teal-on-dark);
+  color: var(--orange-hot);
+  border-bottom-color: var(--orange-hot);
 }
 /* optional background photo hook: add inline style="--bg:url(...)" + class .has-bg */
 .dark.has-bg::before {
@@ -1465,7 +1470,7 @@ section {
     border-bottom: 1px solid var(--hairline);
   }
   .mobile-menu a.m-cta {
-    color: var(--orange);
+    color: var(--orange-ink); /* 4.7:1 on the light menu panel */
     border-bottom: none;
   }
   .mobile-menu a.featured {
@@ -2033,8 +2038,7 @@ a.info-v {
   }
 }
 
-/* Hero atmosphere on slate: a teal glow and a white lift, bold type. Warm
-   glows read as a brown smear on slate. */
+/* Hero atmosphere on night: orange as light and a white lift, bold type. */
 .hero-atmos {
   background-image:
     radial-gradient(
@@ -2112,11 +2116,11 @@ a.info-v {
   background:
     linear-gradient(
       100deg,
-      rgba(59, 59, 70, 0.94) 0%,
-      rgba(59, 59, 70, 0.8) 46%,
+      rgba(23, 21, 19, 0.94) 0%,
+      rgba(23, 21, 19, 0.8) 46%,
       rgba(59, 59, 70, 0.42) 100%
     ),
-    linear-gradient(to top, rgba(59, 59, 70, 0.78), rgba(59, 59, 70, 0) 46%);
+    linear-gradient(to top, rgba(23, 21, 19, 0.78), rgba(23, 21, 19, 0) 46%);
 }
 .hero-cine .hero-media {
   background-position: center 34%;
@@ -2838,7 +2842,7 @@ a.win-band:focus-visible {
 }
 .jd-form .field input,
 .jd-form .field textarea {
-  background: rgba(59, 59, 70, 0.5);
+  background: rgba(23, 21, 19, 0.5);
   border-color: rgba(247, 244, 238, 0.22);
   color: var(--cream);
 }
@@ -3053,7 +3057,7 @@ a.win-band:focus-visible {
 .evc-fact a {
   color: var(--ink);
   font-weight: 600;
-  border-bottom: 1px solid rgba(198, 63, 34, 0.45);
+  border-bottom: 1px solid rgba(185, 57, 30, 0.45);
   transition:
     color 0.15s ease,
     border-color 0.15s ease;
@@ -3252,10 +3256,11 @@ a.win-band:focus-visible {
 
 /* ---- campaign module ---------------------------------------------------- */
 /* The campaign module: what the crew has already done, then the one goal,
-   then a gift you can size. One component in two themes (Alec, Nov 6: "I
-   love L1 and L3 as one system"): data-theme="dark" is L1, slate and teal;
-   data-theme="light" is L3, beige with a slate money card. Laura's locked
-   colors only.
+   then a gift you can size. One component in two themes: data-theme="dark"
+   is night with an off-white money card; data-theme="light" is the page
+   colour with a night money card. Night & Orange (Nov 2026): orange carries
+   the accents, the "every week" bar is neutral (ink on the light card,
+   off-white on the night one), wins are yellow.
 
    Borrowed from T3 Code: hairlines instead of gray fills, one radius scale,
    tinted badges whose text mixes toward the foreground, a pressable button,
@@ -3272,7 +3277,7 @@ a.win-band:focus-visible {
 .cm {
   --action: var(--orange);
   --action-ink: var(--orange-ink);
-  --accent: var(--teal);
+  --accent: var(--orange);
   --win: var(--yellow);
   position: relative;
   isolation: isolate;
@@ -3284,10 +3289,11 @@ a.win-band:focus-visible {
 .cm[data-theme="dark"] {
   --canvas-cm: var(--slate);
   --text: var(--cream);
-  --muted: #c9c7d1;
+  --muted: #cfc9bd;
   --hair: var(--hairline-dark);
-  --raised: rgba(255, 255, 255, 0.035);
+  --raised: rgba(249, 247, 242, 0.04);
   --em: var(--orange);
+  --data: var(--ink);
   --card: var(--paper);
   --card-text: var(--ink);
   --card-muted: #5a5866;
@@ -3298,21 +3304,35 @@ a.win-band:focus-visible {
   --ghost-o: 0.18;
   --ghost-blend: screen;
 }
+/* Orange as light: a faint warm glow behind the dark module's headline. */
+.cm[data-theme="dark"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 60% 45% at 18% 8%,
+    rgba(255, 92, 57, 0.1) 0%,
+    transparent 65%
+  );
+}
 .cm[data-theme="light"] {
   --canvas-cm: var(--sand);
   --text: var(--ink);
   --muted: #5a5866;
   --hair: rgba(59, 59, 70, 0.13);
   --raised: var(--paper);
-  --em: var(--orange-ink);
+  --em: var(--orange-display);
+  --data: var(--cream);
   --card: var(--slate);
   --card-text: var(--cream);
-  --card-muted: #d0cfd8;
+  --card-muted: #cfc9bd;
   --card-hair: rgba(255, 255, 255, 0.1);
   --track: rgba(249, 247, 242, 0.14);
   --hero: var(--orange);
   --card-shadow:
-    0 1px 2px rgba(59, 59, 70, 0.1), 0 24px 48px -24px rgba(59, 59, 70, 0.55);
+    0 1px 2px rgba(59, 59, 70, 0.1), 0 24px 48px -24px rgba(23, 21, 19, 0.55);
   --ghost-o: 0.15;
   --ghost-blend: multiply;
 }
@@ -3568,7 +3588,7 @@ a.win-band:focus-visible {
 }
 .cm-badge--accent {
   background: color-mix(in srgb, var(--accent) 14%, transparent);
-  color: color-mix(in srgb, var(--accent) 38%, var(--card-text));
+  color: color-mix(in srgb, var(--action-ink) 75%, var(--card-text));
 }
 .cm-badge--action {
   background: color-mix(in srgb, var(--action) 14%, transparent);
@@ -3598,7 +3618,7 @@ a.win-band:focus-visible {
   height: 100%;
   width: 0;
   border-radius: 999px;
-  background: var(--accent);
+  background: var(--data);
   transition: width 1.6s var(--ease);
 }
 .cm-fill--action {
@@ -3613,7 +3633,7 @@ a.win-band:focus-visible {
   height: 12px;
   margin-top: -6px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--data);
   animation: cmPulse 1.8s var(--ease) infinite;
 }
 .cm-row.is-empty .cm-start {
@@ -3862,4 +3882,7 @@ a.win-band:focus-visible {
 .gb-card--solo.gb-ready {
   border-radius: 12px;
   overflow: hidden;
+}
+:is(.dark, .on-dark) .btn:focus-visible {
+  outline-color: var(--cream);
 }

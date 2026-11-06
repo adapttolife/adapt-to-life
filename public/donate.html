@@ -369,7 +369,18 @@ fill="currentColor" stroke="none">
       .dn-partners li a:hover{ transform:translateY(-2px); box-shadow:0 0 0 1.5px var(--orange), 0 22px 50px -26px rgb(var(--accent-rgb) / 0.45); }
       .dn-partners li img{ width:58%; height:auto; }
       .dn-partners li img.dn-mark{ width:auto; height:56%; }
+      /* The star alone is not a name most visitors know, so it carries one,
+         as it does on the home page. */
+      .dn-partners li a.dn-cas{ flex-direction:column; gap:0.45rem; }
+      .dn-partners li a.dn-cas img.dn-mark{ height:40%; }
+      .dn-partners .dn-name{ font-family:var(--font-display); font-weight:800; font-size:0.85rem; line-height:1.1; color:var(--ink); text-align:center; }
       .dn-partners .textlink{ margin-top:1.4rem; }
+      /* Two by two on a phone. At 180px minimum a tile fit once per row, so
+         the four logos ran as a 724px column. */
+      @media (max-width:600px){
+        .dn-partners ul{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.75rem; max-width:420px; margin-inline:auto; }
+        .dn-partners li a{ width:100%; border-radius:12px; }
+      }
     </style>
     <div class="wrap reveal">
       <span class="eyebrow orange" id="dnPartnersTitle">With thanks to our partners</span>
@@ -377,7 +388,7 @@ fill="currentColor" stroke="none">
         <li><a href="/brickhouse" aria-label="Brick House Pickleball, our first partner"><img src="/images/brickhouse/brick-house-logo-orange-black.svg" alt="Brick House Pickleball" width="372" height="265" loading="lazy"></a></li>
         <li><a href="/ace" aria-label="ACE Pickleball Club, our partner club"><img src="/images/ace/ace-logo.png" alt="ACE Pickleball Club" width="280" height="132" loading="lazy"></a></li>
         <li><a href="/picklr" aria-label="The Picklr, our partner club"><img src="/images/partners/picklr-wordmark-black.png" alt="The Picklr" width="280" height="65" loading="lazy"></a></li>
-        <li><a href="/chicago-adaptive-sports" aria-label="Chicago Adaptive Sports, our partner nonprofit"><img class="dn-mark" src="/images/partners/cas-mark.png" alt="Chicago Adaptive Sports" width="240" height="193" loading="lazy"></a></li>
+        <li><a class="dn-cas" href="/chicago-adaptive-sports" aria-label="Chicago Adaptive Sports, our partner nonprofit"><img class="dn-mark" src="/images/partners/cas-mark.png" alt="" width="240" height="193" loading="lazy"><span class="dn-name">Chicago<br>Adaptive Sports</span></a></li>
       </ul>
       <a class="textlink" href="/sponsorship">Become a partner <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
     </div>

@@ -95,3 +95,26 @@ test("the copy uses typographer's quotes, not typewriter ones", () => {
     ),
   );
 });
+
+test("donate: more ways to give is a ledger beside the advisor's card", () => {
+  // Alec, Nov 6 2026, on replacing the 2x2 grid of icon cards: "I love that
+  // idea." The four ways are hairline rows, and the facts an advisor asks for
+  // sit beside them in one dark card instead of a section further down.
+  const html = read("public/donate.html");
+  const a = html.indexOf('<section class="band give-more"');
+  const sec = html.slice(a, html.indexOf("</section>", a));
+  assert.ok(a > 0, "the section is there");
+  assert.equal((sec.match(/class="gm-way"/g) || []).length, 4);
+  assert.ok(!sec.includes("ix-tile"), "no icon tiles");
+  assert.ok(sec.includes('id="details"'), "the advisor card keeps the #details anchor");
+  assert.ok(sec.includes('<span class="give-fact-v">41-3213344</span>'));
+  assert.equal((html.match(/id="details"/g) || []).length, 1, "one details block");
+  assert.ok(sec.includes('href="#givePanel"'), "monthly points back to the form");
+  // The monthly line is the picker's own verified unit cost.
+  assert.ok(
+    read("public/js/campaigns.js").includes(
+      "$80 a month can keep one athlete training all year.",
+    ),
+  );
+  assert.ok(sec.includes("$80 a month can keep one athlete training all year."));
+});

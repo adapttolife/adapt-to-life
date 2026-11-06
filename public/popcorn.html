@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=032c1eb2">
+<link rel="stylesheet" href="/css/site.css?v=17e541cd">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <style>
   /* ==========================================================================
@@ -62,7 +62,7 @@
   .pop-hero-copy .display{ margin-top:1.4rem; max-width:15ch; }
   .pop-hero-copy .sub{ max-width:48ch; }
   .pop-hero-meta{
-    margin-top:1.5rem; font-family:"Space Mono",monospace; font-size:0.74rem;
+    margin-top:1.5rem; font-family:var(--font-label); font-size:0.74rem;
     letter-spacing:0.09em; text-transform:uppercase; color:var(--cream-faint);
   }
   .pop-hero-meta .on{ color:var(--orange-hot); }
@@ -111,7 +111,7 @@
   @media (max-width:760px){ .pop-card{ grid-template-columns:1fr; } }
   .pop-status{
     display:inline-flex; align-items:center; gap:0.5rem;
-    font-family:"Space Mono",monospace; font-size:0.68rem; font-weight:700;
+    font-family:var(--font-label); font-size:0.68rem; font-weight:700;
     letter-spacing:0.16em; text-transform:uppercase;
   }
   .pop-status .dot{ width:8px; height:8px; border-radius:50%; background:var(--muted); flex:0 0 auto; }
@@ -121,7 +121,7 @@
   .pop-status.is-closed{ color:var(--muted); }
   .pop-card h2{ margin-top:0.7rem; }
   .pop-card-sub{ margin-top:0.5rem; color:var(--ink-soft); max-width:52ch; }
-  .pop-dates{ margin-top:0.9rem; font-family:"Space Mono",monospace; font-size:0.76rem; color:var(--muted); letter-spacing:0.05em; }
+  .pop-dates{ margin-top:0.9rem; font-family:var(--font-label); font-size:0.76rem; color:var(--muted); letter-spacing:0.05em; }
   .pop-card-cta{ display:flex; flex-direction:column; align-items:flex-start; gap:0.6rem; }
   .pop-card-cta .sml{ font-size:0.8rem; color:var(--muted); }
 
@@ -136,7 +136,7 @@
     padding:clamp(1.5rem,2.8vw,2.1rem);
   }
   .pop-step-n{
-    font-family:"Space Mono",monospace; font-size:0.72rem; font-weight:700;
+    font-family:var(--font-label); font-size:0.72rem; font-weight:700;
     letter-spacing:0.18em; color:var(--orange-ink);
   }
   .pop-step-head{ display:flex; align-items:center; justify-content:space-between; }
@@ -166,11 +166,11 @@
     filter:drop-shadow(0 18px 24px rgba(0,0,0,0.55));
   }
   .pop-fl-tag{
-    margin-top:0.85rem; font-family:"Space Mono",monospace; font-size:0.6rem; font-weight:700;
+    margin-top:0.85rem; font-family:var(--font-label); font-size:0.6rem; font-weight:700;
     letter-spacing:0.16em; text-transform:uppercase; color:var(--gold);
   }
   .pop-fl-name{ margin-top:0.4rem; font-weight:600; font-size:0.95rem; line-height:1.25; color:var(--cream); }
-  .pop-fl-price{ margin-top:0.3rem; font-family:"Space Mono",monospace; font-size:0.82rem; color:var(--cream-faint); }
+  .pop-fl-price{ margin-top:0.3rem; font-family:var(--font-label); font-size:0.82rem; color:var(--cream-faint); }
 
   /* ---- what it funds ---------------------------------------------------- */
   .pop-funds{ display:grid; grid-template-columns:1.08fr 0.92fr; gap:clamp(1.8rem,4vw,3.6rem); align-items:center; }
@@ -185,15 +185,15 @@
   }
   .pop-row:first-child{ border-top:1px solid var(--hairline); }
   .pop-row-name{ font-weight:600; }
-  .pop-row-when{ font-family:"Space Mono",monospace; font-size:0.76rem; color:var(--muted); }
-  .pop-row-out{ margin-left:auto; font-family:"Space Mono",monospace; font-size:0.82rem; color:var(--ink-soft); }
+  .pop-row-when{ font-family:var(--font-label); font-size:0.76rem; color:var(--muted); }
+  .pop-row-out{ margin-left:auto; font-family:var(--font-label); font-size:0.82rem; color:var(--ink-soft); }
 
   /* ---- clickable flavor cards ------------------------------------------- */
   .pop-grid > li{ display:flex; }
   a.pop-fl{ width:100%; color:inherit; text-decoration:none; cursor:pointer; }
   a.pop-fl:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:3px; }
   .pop-fl-go{
-    margin-top:0.7rem; font-family:"Space Mono",monospace; font-size:0.62rem; font-weight:700;
+    margin-top:0.7rem; font-family:var(--font-label); font-size:0.62rem; font-weight:700;
     letter-spacing:0.16em; text-transform:uppercase; color:var(--orange-hot);
     opacity:0; transform:translateY(4px); transition:opacity .3s ease, transform .3s ease;
   }
@@ -208,7 +208,7 @@
     background:linear-gradient(90deg, var(--orange-ink), var(--orange-hot));
   }
   .pop-goal-label{
-    margin-top:0.5rem; font-family:"Space Mono",monospace; font-size:0.74rem;
+    margin-top:0.5rem; font-family:var(--font-label); font-size:0.74rem;
     letter-spacing:0.04em; color:var(--muted);
   }
 
@@ -223,11 +223,11 @@
   .pop-join-n{
     flex:0 0 auto; width:24px; height:24px; border-radius:50%;
     background:var(--orange-ink); color:var(--cream);
-    font-family:"Space Mono",monospace; font-size:0.72rem; font-weight:700;
+    font-family:var(--font-label); font-size:0.72rem; font-weight:700;
     display:inline-flex; align-items:center; justify-content:center;
   }
   .pop-code{
-    font-family:"Space Mono",monospace; letter-spacing:0.14em;
+    font-family:var(--font-label); letter-spacing:0.14em;
     background:var(--paper); border:1px solid var(--hairline); border-radius:8px;
     padding:0.12rem 0.5rem; margin-left:0.15rem; white-space:nowrap;
   }
@@ -247,7 +247,7 @@
   .pop-cost-ico svg{ width:100%; height:100%; display:block; }
   .pop-cost-item h3{ margin-top:1rem; }
   .pop-cost-n{
-    margin-top:0.25rem; font-family:"Space Mono",monospace; font-size:0.86rem;
+    margin-top:0.25rem; font-family:var(--font-label); font-size:0.86rem;
     letter-spacing:0.05em; color:var(--orange-ink);
   }
   .pop-cost-item .prose{ margin-top:0.7rem; font-size:0.97rem; }

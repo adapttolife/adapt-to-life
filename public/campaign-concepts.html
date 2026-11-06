@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=fe30f498">
+<link rel="stylesheet" href="/css/site.css?v=dc4f5dbc">
 <style>
   /* Review surface (staging only). Round 5, Alec Nov 6: "I love L1 and L3 as
      one system... go a little bit deeper... T3 code has a really nice style
@@ -25,15 +25,15 @@
      1px top highlight, a tinted shadow and a 0.97 press, tabular figures for
      numbers that line up, and one decelerating curve for anything that
      moves. */
-  body{ background:#f3efe7; }
+  body{ background:#efe8dc; }
   .cc-intro{ max-width:1100px; margin:0 auto; padding:clamp(2rem,6vw,3.4rem) var(--gutter) 1.2rem; }
-  .cc-tag{ display:inline-block; margin:0; padding:0.35rem 0.85rem; border-radius:999px; background:var(--orange-ink); color:#fff; font-family:var(--font-label); font-weight:800; font-size:0.7rem; letter-spacing:0.14em; text-transform:uppercase; }
+  .cc-tag{ display:inline-block; margin:0; padding:0.35rem 0.85rem; border-radius:999px; background:var(--orange-ink); color:#f9f7f2; font-family:var(--font-label); font-weight:800; font-size:0.7rem; letter-spacing:0.14em; text-transform:uppercase; }
   .cc-intro h1{ margin:1rem 0 0.6rem; font-weight:900; font-size:clamp(2rem,6vw,3rem); line-height:1.02; letter-spacing:-0.03em; }
   .cc-lede{ margin:0; max-width:60ch; color:var(--ink-soft); font-size:1.05rem; line-height:1.55; }
   .cc-changes{ margin:1rem 0 0; padding-left:1.1rem; max-width:64ch; color:var(--ink-soft); line-height:1.5; }
   .cc-changes li{ margin:0.3rem 0; }
   .cc-jump{ display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:1.2rem; }
-  .cc-jump a{ padding:0.5rem 0.9rem; border-radius:999px; background:#fff; box-shadow:inset 0 0 0 1px rgba(28,26,21,0.14); font-weight:700; font-size:0.9rem; color:var(--ink); text-decoration:none; }
+  .cc-jump a{ padding:0.5rem 0.9rem; border-radius:999px; background:#f9f7f2; box-shadow:inset 0 0 0 1px rgba(28,26,21,0.14); font-weight:700; font-size:0.9rem; color:var(--ink); text-decoration:none; }
   .cc-label{ max-width:1100px; margin:0 auto; padding:clamp(2.2rem,6vw,3.4rem) var(--gutter) 0.9rem; display:flex; align-items:baseline; gap:0.4rem 0.8rem; flex-wrap:wrap; }
   .cc-label b{ font-weight:900; font-size:clamp(1.3rem,3.6vw,1.7rem); letter-spacing:-0.02em; }
   .cc-label span{ color:var(--muted); font-size:0.95rem; }
@@ -110,14 +110,14 @@
 
   /* the button, T3 Code style: top highlight, tinted shadow, press */
   .cm-btn{ position:relative; display:flex; align-items:center; justify-content:center; width:100%; height:54px; margin-top:1.45rem; border-radius:999px; border:1px solid var(--action-ink);
-    background:var(--action-ink); color:#fff; font-weight:800; font-size:1.08rem; text-decoration:none;
+    background:var(--action-ink); color:#f9f7f2; font-weight:800; font-size:1.08rem; text-decoration:none;
     box-shadow:inset 0 1px rgba(255,255,255,0.18), 0 1px 2px rgba(198,63,34,0.24), 0 10px 26px -12px rgba(198,63,34,0.55);
     transition:transform .18s var(--ease), background-color .18s var(--ease), box-shadow .18s var(--ease); }
-  .cm-btn:hover{ background:color-mix(in srgb, var(--action-ink) 90%, #fff); }
+  .cm-btn:hover{ background:color-mix(in srgb, var(--action-ink) 90%, #f9f7f2); }
   .cm-btn:active{ transform:scale(0.97); box-shadow:inset 0 1px rgba(0,0,0,0.12); }
   .cm-btn:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
   .cm[data-theme="light"] .cm-btn{ background:var(--action); border-color:var(--action); color:#1a1a1a; box-shadow:inset 0 1px rgba(255,255,255,0.3), 0 1px 2px rgba(255,92,57,0.3), 0 10px 26px -12px rgba(255,92,57,0.6); }
-  .cm[data-theme="light"] .cm-btn:hover{ background:color-mix(in srgb, var(--action) 90%, #fff); }
+  .cm[data-theme="light"] .cm-btn:hover{ background:color-mix(in srgb, var(--action) 90%, #f9f7f2); }
   .cm-after-unused{ margin:0.95rem 0 0; text-align:center; font-size:0.86rem; line-height:1.45; color:var(--card-muted); }
 
   @keyframes cmPulse{ 0%,100%{ box-shadow:0 0 0 3px color-mix(in srgb, currentColor 0%, transparent), 0 0 0 4px color-mix(in srgb, var(--accent) 30%, transparent); } 50%{ box-shadow:0 0 0 9px color-mix(in srgb, var(--accent) 6%, transparent); } }
@@ -176,7 +176,7 @@
   /* theme switch for the review page */
   .cc-theme{ display:inline-flex; gap:0; margin-top:1rem; padding:3px; border-radius:999px; background:rgba(28,26,21,0.08); }
   .cc-theme button{ appearance:none; border:0; cursor:pointer; padding:0.5rem 1.1rem; border-radius:999px; background:transparent; font:inherit; font-weight:800; font-size:0.9rem; color:var(--ink-soft); }
-  .cc-theme button[aria-pressed="true"]{ background:#fff; color:var(--ink); box-shadow:0 1px 2px rgba(0,0,0,0.12); }
+  .cc-theme button[aria-pressed="true"]{ background:#f9f7f2; color:var(--ink); box-shadow:0 1px 2px rgba(0,0,0,0.12); }
 </style>
 </head>
 <body>

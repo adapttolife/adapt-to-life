@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light only">
 <meta name="robots" content="noindex,nofollow">
-<title>Campaign module: one system | Adapt To Life</title>
+<title>Campaign module: learning from the best | Adapt To Life</title>
 <link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -118,12 +118,41 @@
   .cm-btn:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
   .cm[data-theme="light"] .cm-btn{ background:var(--action); border-color:var(--action); color:#1a1a1a; box-shadow:inset 0 1px rgba(255,255,255,0.3), 0 1px 2px rgba(255,92,57,0.3), 0 10px 26px -12px rgba(255,92,57,0.6); }
   .cm[data-theme="light"] .cm-btn:hover{ background:color-mix(in srgb, var(--action) 90%, #fff); }
-  .cm-after{ margin:0.95rem 0 0; text-align:center; font-size:0.86rem; line-height:1.45; color:var(--card-muted); }
+  .cm-after-unused{ margin:0.95rem 0 0; text-align:center; font-size:0.86rem; line-height:1.45; color:var(--card-muted); }
 
   @keyframes cmPulse{ 0%,100%{ box-shadow:0 0 0 3px color-mix(in srgb, currentColor 0%, transparent), 0 0 0 4px color-mix(in srgb, var(--accent) 30%, transparent); } 50%{ box-shadow:0 0 0 9px color-mix(in srgb, var(--accent) 6%, transparent); } }
   .cm[data-theme="light"] .cm-dot{ animation-name:cmPulseAction; }
   @keyframes cmPulseAction{ 0%,100%{ box-shadow:0 0 0 4px color-mix(in srgb, var(--action) 28%, transparent); } 50%{ box-shadow:0 0 0 9px color-mix(in srgb, var(--action) 6%, transparent); } }
   @media (prefers-reduced-motion:reduce){ .cm-dot, .cm-start{ animation:none; } .cm-fill, .cm-btn{ transition:none; } }
+
+  /* ---- round 6: lessons from Airbnb, GoFundMe, Kickstarter, charity: water */
+  /* People first (Airbnb): the crew, standing on a baseline like a court line */
+  .cm-crew{ margin:0 0 1.1rem; }
+  .cm-crew-row{ display:flex; align-items:flex-end; gap:2px; padding-bottom:6px; border-bottom:1px solid var(--card-hair); }
+  .cm-crew-row img{ height:46px; width:auto; }
+  .cm-crew figcaption{ margin-top:0.45rem; font-size:0.78rem; line-height:1.35; color:var(--card-muted); }
+  /* The next goal, locked (Kickstarter stretch goals) */
+  .cm-row--next .cm-row-top b{ color:var(--card-muted); }
+  .cm-row--next .cm-fig{ font-weight:600; color:var(--card-muted); }
+  .cm-badge--quiet{ background:color-mix(in srgb, var(--card-text) 8%, transparent); color:var(--card-muted); }
+  .cm-track--locked{ background:repeating-linear-gradient(90deg, var(--track) 0 10px, transparent 10px 16px); }
+  /* What your gift covers (Airbnb's price breakdown, charity: water's proof) */
+  .cm-give{ margin-top:1.3rem; padding-top:1.2rem; border-top:1px solid var(--card-hair); }
+  .cm-seg{ display:inline-flex; padding:3px; border-radius:999px; background:color-mix(in srgb, var(--card-text) 7%, transparent); }
+  .cm-seg button{ appearance:none; border:0; cursor:pointer; padding:0.45rem 0.95rem; border-radius:999px; background:transparent; color:var(--card-muted); font:inherit; font-weight:800; font-size:0.86rem; transition:background-color .2s var(--ease), color .2s var(--ease); }
+  .cm-seg button[aria-checked="true"]{ background:var(--card); color:var(--card-text); box-shadow:0 1px 2px rgba(0,0,0,0.12), inset 0 0 0 1px var(--card-hair); }
+  .cm[data-theme="light"] .cm-seg button[aria-checked="true"]{ background:color-mix(in srgb, var(--card-text) 14%, var(--card)); }
+  .cm-amts{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:0.4rem; margin-top:0.8rem; }
+  .cm-amts.is-3{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .cm-amts button{ appearance:none; cursor:pointer; height:46px; border-radius:var(--r-md); border:1px solid var(--card-hair); background:transparent; color:var(--card-text); font:inherit; font-weight:800; font-size:1rem; font-variant-numeric:tabular-nums; transition:border-color .2s var(--ease), background-color .2s var(--ease), transform .15s var(--ease); }
+  .cm-amts button:active{ transform:scale(0.97); }
+  .cm-amts button[aria-checked="true"]{ border-color:var(--action-ink); background:color-mix(in srgb, var(--action) 10%, transparent); box-shadow:inset 0 0 0 1px var(--action-ink); }
+  .cm[data-theme="light"] .cm-amts button[aria-checked="true"]{ border-color:var(--action); box-shadow:inset 0 0 0 1px var(--action); background:color-mix(in srgb, var(--action) 16%, transparent); }
+  .cm-seg button:focus-visible, .cm-amts button:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  .cm-impact{ margin:0.75rem 0 0; min-height:2.7em; font-weight:700; font-size:0.95rem; line-height:1.35; }
+  /* Trust, quietly (Airbnb's trust signals) */
+  .cm-trust{ display:flex; flex-wrap:wrap; justify-content:center; gap:0.2rem 0.9rem; margin:0.9rem 0 0; font-size:0.78rem; color:var(--card-muted); text-align:center; }
+  .cm-trust span{ white-space:nowrap; }
 </style>
 </head>
 <body>
@@ -131,14 +160,14 @@
 
 <section class="cc-intro">
   <p class="cc-tag">Review only, not on the live site</p>
-  <h1>One system: L1 dark, L3 light.</h1>
-  <p class="cc-lede">The same component in two themes, built from tokens the way T3 Code themes its app. Only Laura&rsquo;s colors, in the Adaptive Sports Near Me balance. What we took from T3 Code:</p>
+  <h1>Learning from the best.</h1>
+  <p class="cc-lede">The same system, with five patterns borrowed from products that are best at this job:</p>
   <ul class="cc-changes">
-    <li><b>Hairlines, not fills.</b> Tiles and cards separate with a 1px border and a whisper of lift, so nothing looks muddy.</li>
-    <li><b>One radius scale</b> (6, 8, 12, 16px) so every corner belongs to the same family.</li>
-    <li><b>Tinted badges</b>: &ldquo;Raising now,&rdquo; &ldquo;First priority&rdquo; and the road&rsquo;s live percentage, colored at 14&ndash;20% with text mixed toward the type color so they stay readable.</li>
-    <li><b>A button that feels pressable</b>: a 1px top highlight, a shadow tinted with its own orange, and a small press when tapped.</li>
-    <li><b>Numbers that line up</b> (tabular figures) and <b>one motion curve</b> for the count-up, the bars and the press.</li>
+    <li><b>Airbnb, people first:</b> the crew stands at the top of the money card, on a line like a court line. You see who you&rsquo;re backing before you see a number.</li>
+    <li><b>Airbnb, the price breakdown, and charity: water, the proof:</b> pick Monthly or One time, pick an amount, and it tells you exactly what it covers. Donate opens the form with that amount already filled in.</li>
+    <li><b>Monthly first:</b> &ldquo;every week&rdquo; is a monthly cost, so monthly is the default, the way the best giving programs do it.</li>
+    <li><b>Kickstarter, the next goal:</b> the Chicago Classic is a locked row under the bars. It opens after the road.</li>
+    <li><b>GoFundMe and Airbnb, trust:</b> a live donor count, and the tax-deductible and EIN line, quietly, under the button.</li>
   </ul>
   <ul class="tok">
   <li><i style="background:#3b3b46"></i><span><b>Slate #3B3B46</b> · L1 canvas, L3 card and type</span></li>
@@ -167,6 +196,7 @@
       <li><b>Weekly</b><span>on court, all year</span></li>
     </ul>
     <div class="cm-card">
+      <figure class="cm-crew"><div class="cm-crew-row" aria-hidden="true"><img src="/images/pickleball/mini/juan.webp" alt="" width="88" height="128" loading="lazy" decoding="async"><img src="/images/pickleball/mini/brian.webp" alt="" width="135" height="128" loading="lazy" decoding="async"><img src="/images/pickleball/mini/bob.webp" alt="" width="79" height="128" loading="lazy" decoding="async"><img src="/images/pickleball/mini/robby.webp" alt="" width="92" height="128" loading="lazy" decoding="async"><img src="/images/pickleball/mini/ken.webp" alt="" width="94" height="128" loading="lazy" decoding="async"><img src="/images/pickleball/mini/amanda.webp" alt="" width="131" height="128" loading="lazy" decoding="async"></div><figcaption>Juan, Brian, Bob, Robby, Ken and Amanda: six of the Chicago Wheelie Big Dills</figcaption></figure>
       <p class="cm-hero"><b data-wbd="total">$34,500</b><span data-wbd="sub">our goal for the year ahead</span></p>
       <div class="cm-rows">
         <div class="cm-row" data-part-row="year">
@@ -179,9 +209,22 @@
           <div class="cm-track"><span class="cm-fill cm-fill--action" data-part-fill="send-6"></span><span class="cm-start" aria-hidden="true"></span></div>
           <p class="cm-note">Six athletes, about $3,500 each</p>
         </div>
+        <div class="cm-row cm-row--next">
+          <div class="cm-row-top"><b>The Chicago Classic</b><span class="cm-badge cm-badge--quiet">Next goal</span><span class="cm-fig">Opens after the road</span></div>
+          <div class="cm-track cm-track--locked" aria-hidden="true"></div>
+          <p class="cm-note">Free registration, transportation and hotels for every athlete.</p>
+        </div>
       </div>
-      <a class="cm-btn btn" href="/donate">Donate</a>
-      <p class="cm-after">Then the Chicago Classic: our goal is free registration, transportation and hotels for every athlete.</p>
+      <div class="cm-give" data-give>
+        <div class="cm-seg" role="radiogroup" aria-label="How often">
+          <button type="button" role="radio" aria-checked="true" data-freq="monthly">Monthly</button>
+          <button type="button" role="radio" aria-checked="false" data-freq="once">One time</button>
+        </div>
+        <div class="cm-amts" role="radiogroup" aria-label="Amount" data-amts></div>
+        <p class="cm-impact" data-impact aria-live="polite">$80 a month can keep one athlete training all year.</p>
+      </div>
+      <a class="cm-btn btn" href="/donate?amount=80&amp;frequency=monthly" data-give-link>Donate</a>
+      <p class="cm-trust"><span data-donors hidden></span><span>Tax-deductible</span><span>501(c)(3) · EIN 41-3213344</span><span>Secure checkout by Givebutter</span></p>
     </div>
   </div>
 </section>
@@ -202,6 +245,7 @@
       <li><b>Weekly</b><span>on court, all year</span></li>
     </ul>
     <div class="cm-card">
+      <figure class="cm-crew"><div class="cm-crew-row" aria-hidden="true"><img src="/images/pickleball/mini/juan.webp" alt="" width="88" height="128" loading="lazy" decoding="async"><img src="/images/pickleball/mini/brian.webp" alt="" width="135" height="128" loading="lazy" decoding="async"><img src="/images/pickleball/mini/bob.webp" alt="" width="79" height="128" loading="lazy" decoding="async"><img src="/images/pickleball/mini/robby.webp" alt="" width="92" height="128" loading="lazy" decoding="async"><img src="/images/pickleball/mini/ken.webp" alt="" width="94" height="128" loading="lazy" decoding="async"><img src="/images/pickleball/mini/amanda.webp" alt="" width="131" height="128" loading="lazy" decoding="async"></div><figcaption>Juan, Brian, Bob, Robby, Ken and Amanda: six of the Chicago Wheelie Big Dills</figcaption></figure>
       <p class="cm-hero"><b data-wbd="total">$34,500</b><span data-wbd="sub">our goal for the year ahead</span></p>
       <div class="cm-rows">
         <div class="cm-row" data-part-row="year">
@@ -214,9 +258,22 @@
           <div class="cm-track"><span class="cm-fill cm-fill--action" data-part-fill="send-6"></span><span class="cm-start" aria-hidden="true"></span></div>
           <p class="cm-note">Six athletes, about $3,500 each</p>
         </div>
+        <div class="cm-row cm-row--next">
+          <div class="cm-row-top"><b>The Chicago Classic</b><span class="cm-badge cm-badge--quiet">Next goal</span><span class="cm-fig">Opens after the road</span></div>
+          <div class="cm-track cm-track--locked" aria-hidden="true"></div>
+          <p class="cm-note">Free registration, transportation and hotels for every athlete.</p>
+        </div>
       </div>
-      <a class="cm-btn btn" href="/donate">Donate</a>
-      <p class="cm-after">Then the Chicago Classic: our goal is free registration, transportation and hotels for every athlete.</p>
+      <div class="cm-give" data-give>
+        <div class="cm-seg" role="radiogroup" aria-label="How often">
+          <button type="button" role="radio" aria-checked="true" data-freq="monthly">Monthly</button>
+          <button type="button" role="radio" aria-checked="false" data-freq="once">One time</button>
+        </div>
+        <div class="cm-amts" role="radiogroup" aria-label="Amount" data-amts></div>
+        <p class="cm-impact" data-impact aria-live="polite">$80 a month can keep one athlete training all year.</p>
+      </div>
+      <a class="cm-btn btn" href="/donate?amount=80&amp;frequency=monthly" data-give-link>Donate</a>
+      <p class="cm-trust"><span data-donors hidden></span><span>Tax-deductible</span><span>501(c)(3) · EIN 41-3213344</span><span>Secure checkout by Givebutter</span></p>
     </div>
   </div>
 </section>
@@ -251,6 +308,7 @@
     fetch('/api/raised?c=wbd').then(function (r) { return r.json(); }).then(function (d) {
       if (!d || !d.goal || !d.raised) return;
       var parts = d.parts || {};
+      if (d.donors) each('[data-donors]', function (el) { el.textContent = 'Join ' + d.donors + ' donors'; el.hidden = false; });
       each('[data-wbd="sub"]', function (el) { el.textContent = 'raised toward our ' + usd(d.goal) + ' goal'; });
       each('[data-wbd="total"]', function (el) { el.textContent = '$0'; whenSeen(el, function () { countUp(el, d.raised); }); });
       Object.keys(parts).forEach(function (k) {
@@ -265,6 +323,61 @@
         });
       });
     }).catch(function () {});
+  })();
+
+  /* What your gift covers. Every line comes from a verified unit cost:
+     $5 a night at ACE (15 x $5 = $75), $960 a year for a membership, $3,500
+     for a US Open; monthly figures are those over 12 months. The Donate link
+     carries the choice into the Givebutter form (?amount=&frequency=, from
+     Givebutter's URL prefill docs). */
+  (function () {
+    var OPTIONS = {
+      monthly: [
+        { a: 22, t: '$22 a month keeps one athlete on court every week of the year.' },
+        { a: 80, t: '$80 a month can keep one athlete training all year.' },
+        { a: 325, t: '$325 a month covers a night at ACE every week for up to 15 athletes.' }
+      ],
+      once: [
+        { a: 5, t: '$5 puts one athlete on court for a night.' },
+        { a: 75, t: '$75 covers up to 15 athletes for a night at ACE.' },
+        { a: 960, t: '$960 can keep one athlete training all year.' },
+        { a: 3500, t: '$3,500 can send one athlete to the US Open.' }
+      ]
+    };
+    var DEFAULT = { monthly: 80, once: 75 };
+    [].forEach.call(document.querySelectorAll('[data-give]'), function (box) {
+      var card = box.closest('.cm-card');
+      var link = card.querySelector('[data-give-link]');
+      var amts = box.querySelector('[data-amts]');
+      var impact = box.querySelector('[data-impact]');
+      var freq = 'monthly';
+      function choose(opt) {
+        [].forEach.call(amts.children, function (b) { b.setAttribute('aria-checked', String(Number(b.dataset.a) === opt.a)); });
+        impact.textContent = opt.t;
+        link.href = '/donate?amount=' + opt.a + (freq === 'monthly' ? '&frequency=monthly' : '');
+      }
+      function render() {
+        amts.innerHTML = '';
+        amts.classList.toggle('is-3', OPTIONS[freq].length === 3);
+        OPTIONS[freq].forEach(function (opt) {
+          var b = document.createElement('button');
+          b.type = 'button'; b.setAttribute('role', 'radio'); b.dataset.a = opt.a;
+          b.textContent = '$' + opt.a.toLocaleString('en-US');
+          b.setAttribute('aria-label', '$' + opt.a.toLocaleString('en-US') + (freq === 'monthly' ? ' a month' : ' once'));
+          b.addEventListener('click', function () { choose(opt); });
+          amts.appendChild(b);
+        });
+        choose(OPTIONS[freq].filter(function (o) { return o.a === DEFAULT[freq]; })[0]);
+      }
+      [].forEach.call(box.querySelectorAll('[data-freq]'), function (b) {
+        b.addEventListener('click', function () {
+          freq = b.dataset.freq;
+          [].forEach.call(box.querySelectorAll('[data-freq]'), function (x) { x.setAttribute('aria-checked', String(x === b)); });
+          render();
+        });
+      });
+      render();
+    });
   })();
 </script>
 </body>

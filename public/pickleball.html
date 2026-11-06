@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=032c1eb2">
+<link rel="stylesheet" href="/css/site.css?v=17e541cd">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches&&"IntersectionObserver" in window)document.documentElement.classList.add("ace-motion");</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SportsTeam","name":"Chicago Wheelie Big Dills","sport":"Wheelchair pickleball","url":"https://adapttolife.org/pickleball","description":"A crew of wheelchair pickleball players growing the sport across the Chicago area, funded and supported by Adapt To Life.","areaServed":{"@type":"City","name":"Chicago"},"logo":"https://adapttolife.org/images/pickleball/wheelie-big-dills-badge.webp","sponsor":{"@type":"NGO","name":"Adapt To Life","url":"https://adapttolife.org"}}</script>
@@ -279,7 +279,17 @@
     .pb-card:hover{ transform:translateY(-6px); box-shadow:inset 0 0 0 1px rgb(var(--accent-rgb) / 0.55), 0 30px 60px -30px rgb(var(--accent-rgb) / 0.45); }
   }
   @media (max-width:900px){ .pb-six{ grid-template-columns:1fr 1fr; } }
-  @media (max-width:520px){ .pb-six{ grid-template-columns:1fr; } .pb-card img{ height:260px; } }
+  /* On a phone the six stay two across (Nov 6 review: one card per row was
+     ~2,500px of scrolling for six people). */
+  @media (max-width:520px){
+    .pb-six{ grid-template-columns:1fr 1fr; gap:0.6rem; }
+    .pb-card{ padding:0.75rem 0.75rem 0.95rem; border-radius:16px; }
+    .pb-card img{ height:170px; }
+    .pb-card h3{ margin-top:0.6rem; font-size:1.3rem; }
+    .pb-card p{ font-size:0.875rem; line-height:1.4; }
+    .pb-card .pb-tag{ top:0.6rem; left:0.6rem; padding:0.25rem 0.55rem; font-size:0.6rem; }
+    .pb-card .pb-link{ margin-top:0.6rem; font-size:0.875rem; }
+  }
   /* The crew's badge, above the kicker. */
   .pb-badge{ display:block; width:clamp(112px,10.5vw,150px); height:auto; margin-bottom:clamp(1rem,2vw,1.5rem); filter:drop-shadow(0 12px 32px rgba(0,0,0,0.6)); }
   @media (prefers-reduced-motion: no-preference){

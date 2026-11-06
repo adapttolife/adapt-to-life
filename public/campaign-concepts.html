@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light only">
 <meta name="robots" content="noindex,nofollow">
-<title>Campaign module: learning from the best | Adapt To Life</title>
+<title>Campaign module: the athletes as atmosphere | Adapt To Life</title>
 <link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -67,7 +67,7 @@
     --card-shadow:0 1px 2px rgba(59,59,70,0.1), 0 24px 48px -24px rgba(59,59,70,0.55);
   }
   .cm-wrap{ position:relative; max-width:1100px; margin:0 auto; padding:0 var(--gutter); display:grid; gap:clamp(1.4rem,4vw,2rem); }
-  @media (min-width:1000px){ .cm-wrap{ grid-template-columns:1.05fr 1fr; column-gap:3.6rem; align-items:center; } .cm-card{ grid-column:2; grid-row:1 / span 2; } }
+  @media (min-width:1000px){ .cm-wrap{ grid-template-columns:1.05fr 1fr; grid-template-rows:auto 1fr; column-gap:3.6rem; row-gap:2rem; align-items:start; } .cm-head{ align-self:end; } .cm-stats{ align-self:start; } .cm-card{ grid-column:2; grid-row:1 / span 2; align-self:center; } }
 
   /* status badge: tinted background, text mixed toward the foreground */
   .cm-status{ display:inline-flex; align-items:center; gap:0.5rem; margin:0; padding:0.32rem 0.7rem 0.32rem 0.55rem; border-radius:999px; font-size:0.8rem; font-weight:700; letter-spacing:0.01em;
@@ -95,7 +95,7 @@
   .cm-row-top{ display:flex; align-items:center; flex-wrap:wrap; gap:0.35rem 0.5rem; }
   .cm-row-top b{ font-weight:800; font-size:0.98rem; }
   .cm-fig{ margin-left:auto; font-weight:800; font-size:0.95rem; font-variant-numeric:tabular-nums; }
-  @media (max-width:420px){ .cm-fig{ margin-left:0; flex-basis:100%; } }
+  @media (max-width:560px){ .cm-fig{ margin-left:0; flex-basis:100%; } }
   .cm-badge{ display:inline-flex; align-items:center; height:20px; padding:0 6px; border-radius:var(--r-sm); font-size:0.7rem; font-weight:800; letter-spacing:0.02em; font-variant-numeric:tabular-nums; }
   .cm-badge--accent{ background:color-mix(in srgb, var(--accent) 14%, transparent); color:color-mix(in srgb, var(--accent) 38%, var(--card-text)); }
   .cm-badge--action{ background:color-mix(in srgb, var(--action) 14%, transparent); color:color-mix(in srgb, var(--action-ink) 55%, var(--card-text)); }
@@ -153,6 +153,30 @@
   /* Trust, quietly (Airbnb's trust signals) */
   .cm-trust{ display:flex; flex-wrap:wrap; justify-content:center; gap:0.2rem 0.9rem; margin:0.9rem 0 0; font-size:0.78rem; color:var(--card-muted); text-align:center; }
   .cm-trust span{ white-space:nowrap; }
+
+  /* ---- round 7: the athletes as atmosphere, not clip art ----------------- */
+  .cm-bg{ position:absolute; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
+  .cm-wrap{ z-index:1; }
+  .cm[data-theme="dark"]{ --ghost-o:0.16; --ghost-blend:screen; }
+  .cm[data-theme="light"]{ --ghost-o:0.13; --ghost-blend:multiply; }
+  /* A · Ghost lineup: the six, gray and faded, behind the headline and stats;
+     the money card overlaps them */
+  .cm-bg--lineup img{ position:absolute; left:50%; top:clamp(70px,16vw,140px); height:clamp(330px,88vw,440px); width:auto; max-width:none; transform:translateX(-50%); opacity:calc(var(--ghost-o) * 1.35); mix-blend-mode:var(--ghost-blend); }
+  @media (min-width:1000px){ .cm-bg--lineup img{ top:auto; bottom:-10px; height:460px; } }
+  /* B · On court: the crew at the ACE net as a faded texture, gone before the card */
+  .cm-bg--photo img{ position:absolute; inset:0; width:100%; height:64%; object-fit:cover; object-position:58% 30%; opacity:calc(var(--ghost-o) * 1.15); mix-blend-mode:var(--ghost-blend); }
+  .cm-bg--photo::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, transparent 0%, transparent 30%, var(--canvas) 62%); }
+  @media (min-width:1000px){
+    .cm-bg--photo img{ height:100%; width:64%; object-position:55% 35%; }
+    .cm-bg--photo::after{ background:linear-gradient(90deg, transparent 0%, transparent 35%, var(--canvas) 62%); }
+  }
+  /* C · One athlete: a single big figure, sweeping in from the right */
+  .cm-bg--one img{ position:absolute; right:-14%; top:-10px; height:clamp(320px,92vw,600px); width:auto; max-width:none; opacity:calc(var(--ghost-o) * 1.15); mix-blend-mode:var(--ghost-blend); }
+  @media (min-width:1000px){ .cm-bg--one img{ right:auto; left:-4%; top:-40px; bottom:auto; height:620px; transform:scaleX(-1); } }
+  /* theme switch for the review page */
+  .cc-theme{ display:inline-flex; gap:0; margin-top:1rem; padding:3px; border-radius:999px; background:rgba(28,26,21,0.08); }
+  .cc-theme button{ appearance:none; border:0; cursor:pointer; padding:0.5rem 1.1rem; border-radius:999px; background:transparent; font:inherit; font-weight:800; font-size:0.9rem; color:var(--ink-soft); }
+  .cc-theme button[aria-pressed="true"]{ background:#fff; color:var(--ink); box-shadow:0 1px 2px rgba(0,0,0,0.12); }
 </style>
 </head>
 <body>
@@ -160,28 +184,15 @@
 
 <section class="cc-intro">
   <p class="cc-tag">Review only, not on the live site</p>
-  <h1>Learning from the best.</h1>
-  <p class="cc-lede">The same system, with five patterns borrowed from products that are best at this job:</p>
-  <ul class="cc-changes">
-    <li><b>Airbnb, people first:</b> the crew stands at the top of the money card, on a line like a court line. You see who you&rsquo;re backing before you see a number.</li>
-    <li><b>Airbnb, the price breakdown, and charity: water, the proof:</b> pick Monthly or One time, pick an amount, and it tells you exactly what it covers. Donate opens the form with that amount already filled in.</li>
-    <li><b>Monthly first:</b> &ldquo;every week&rdquo; is a monthly cost, so monthly is the default, the way the best giving programs do it.</li>
-    <li><b>Kickstarter, the next goal:</b> the Chicago Classic is a locked row under the bars. It opens after the road.</li>
-    <li><b>GoFundMe and Airbnb, trust:</b> a live donor count, and the tax-deductible and EIN line, quietly, under the button.</li>
-  </ul>
-  <ul class="tok">
-  <li><i style="background:#3b3b46"></i><span><b>Slate #3B3B46</b> · L1 canvas, L3 card and type</span></li>
-  <li><i style="background:#efe8dc"></i><span><b>Beige #EFE8DC</b> · L3 canvas</span></li>
-  <li><i style="background:#f9f7f2"></i><span><b>Off-white #F9F7F2</b> · L1 card, L3 tiles, type on slate</span></li>
-  <li><i style="background:#ff5c39"></i><span><b>Orange #FF5C39 / #C63F22</b> · Donate, the money, the road bar</span></li>
-  <li><i style="background:#00b7bd"></i><span><b>Teal #00B7BD</b> · every-week bar, status, highlights on slate</span></li>
-  <li><i style="background:#f6be00"></i><span><b>Yellow #F6BE00</b> · the 2px win mark under each stat</span></li>
-</ul>
-  <nav class="cc-jump" aria-label="Themes"><a href="#l1">L1 · dark</a><a href="#l3">L3 · light</a></nav>
+  <h1>The athletes, as atmosphere.</h1>
+  <p class="cc-lede">The lineup is out of the money card. Here are three ways to put the crew behind the module instead: big, gray and faded, so they set the mood without crowding the numbers. Flip the switch to see each one dark or light.</p>
+  <div class="cc-theme" role="group" aria-label="Theme"><button type="button" aria-pressed="true" data-set-theme="dark">Dark (L1)</button><button type="button" aria-pressed="false" data-set-theme="light">Light (L3)</button></div>
+  <nav class="cc-jump" aria-label="Options"><a href="#a">A · Ghost lineup</a><a href="#b">B · On court</a><a href="#c">C · One athlete</a></nav>
 </section>
 
-<div class="cc-label" id="l1"><b>L1 · dark</b><span>For pages that need a dark block: home, the crew page.</span></div>
-<section class="cm" data-theme="dark" aria-label="Campaign module, dark theme">
+<div class="cc-label" id="a"><b>A · Ghost lineup</b><span>All six, gray and faded behind the headline and stats. The money card overlaps them.</span></div>
+<section class="cm" data-theme="dark" aria-label="Option A, ghost lineup">
+  <div class="cm-bg cm-bg--lineup" aria-hidden="true"><img src="/images/pickleball/ghost/lineup.webp" alt="" width="1696" height="320" decoding="async"></div>
   <div class="cm-wrap">
     <div class="cm-head">
       <p class="cm-status"><span class="cm-dot" aria-hidden="true"></span>Raising now<span class="cm-status-sep" aria-hidden="true"></span>The Chicago Wheelie Big Dills</p>
@@ -196,7 +207,6 @@
       <li><b>Weekly</b><span>on court, all year</span></li>
     </ul>
     <div class="cm-card">
-      <figure class="cm-crew"><div class="cm-crew-row" aria-hidden="true"><img src="/images/pickleball/mini/juan.webp" alt="" width="88" height="128" loading="lazy" decoding="async"><img src="/images/pickleball/mini/brian.webp" alt="" width="135" height="128" loading="lazy" decoding="async"><img src="/images/pickleball/mini/bob.webp" alt="" width="79" height="128" loading="lazy" decoding="async"><img src="/images/pickleball/mini/robby.webp" alt="" width="92" height="128" loading="lazy" decoding="async"><img src="/images/pickleball/mini/ken.webp" alt="" width="94" height="128" loading="lazy" decoding="async"><img src="/images/pickleball/mini/amanda.webp" alt="" width="131" height="128" loading="lazy" decoding="async"></div><figcaption>Juan, Brian, Bob, Robby, Ken and Amanda: six of the Chicago Wheelie Big Dills</figcaption></figure>
       <p class="cm-hero"><b data-wbd="total">$34,500</b><span data-wbd="sub">our goal for the year ahead</span></p>
       <div class="cm-rows">
         <div class="cm-row" data-part-row="year">
@@ -229,8 +239,9 @@
   </div>
 </section>
 
-<div class="cc-label" id="l3"><b>L3 · light</b><span>For pages that need a light block: Donate, How Giving Works.</span></div>
-<section class="cm" data-theme="light" aria-label="Campaign module, light theme">
+<div class="cc-label" id="b"><b>B · On court</b><span>A real high five at the net, as a faded texture that fades out before the card.</span></div>
+<section class="cm" data-theme="dark" aria-label="Option B, on court">
+  <div class="cm-bg cm-bg--photo" aria-hidden="true"><img src="/images/pickleball/ghost/crew-highfive-gray.webp" alt="" width="1200" height="800" decoding="async"></div>
   <div class="cm-wrap">
     <div class="cm-head">
       <p class="cm-status"><span class="cm-dot" aria-hidden="true"></span>Raising now<span class="cm-status-sep" aria-hidden="true"></span>The Chicago Wheelie Big Dills</p>
@@ -245,7 +256,55 @@
       <li><b>Weekly</b><span>on court, all year</span></li>
     </ul>
     <div class="cm-card">
-      <figure class="cm-crew"><div class="cm-crew-row" aria-hidden="true"><img src="/images/pickleball/mini/juan.webp" alt="" width="88" height="128" loading="lazy" decoding="async"><img src="/images/pickleball/mini/brian.webp" alt="" width="135" height="128" loading="lazy" decoding="async"><img src="/images/pickleball/mini/bob.webp" alt="" width="79" height="128" loading="lazy" decoding="async"><img src="/images/pickleball/mini/robby.webp" alt="" width="92" height="128" loading="lazy" decoding="async"><img src="/images/pickleball/mini/ken.webp" alt="" width="94" height="128" loading="lazy" decoding="async"><img src="/images/pickleball/mini/amanda.webp" alt="" width="131" height="128" loading="lazy" decoding="async"></div><figcaption>Juan, Brian, Bob, Robby, Ken and Amanda: six of the Chicago Wheelie Big Dills</figcaption></figure>
+      <p class="cm-hero"><b data-wbd="total">$34,500</b><span data-wbd="sub">our goal for the year ahead</span></p>
+      <div class="cm-rows">
+        <div class="cm-row" data-part-row="year">
+          <div class="cm-row-top"><b>Every week</b><span class="cm-badge cm-badge--accent">First priority</span><span class="cm-fig" data-part-fig="year">$13,500 a year</span></div>
+          <div class="cm-track"><span class="cm-fill" data-part-fill="year"></span><span class="cm-start" aria-hidden="true"></span></div>
+          <p class="cm-note">Every new gift starts here.</p>
+        </div>
+        <div class="cm-row" data-part-row="send-6">
+          <div class="cm-row-top"><b>The Road to the US Open</b><span class="cm-badge cm-badge--action" data-part-pct="send-6">24%</span><span class="cm-fig" data-part-fig="send-6">$21,000</span></div>
+          <div class="cm-track"><span class="cm-fill cm-fill--action" data-part-fill="send-6"></span><span class="cm-start" aria-hidden="true"></span></div>
+          <p class="cm-note">Six athletes, about $3,500 each</p>
+        </div>
+        <div class="cm-row cm-row--next">
+          <div class="cm-row-top"><b>The Chicago Classic</b><span class="cm-badge cm-badge--quiet">Next goal</span><span class="cm-fig">Opens after the road</span></div>
+          <div class="cm-track cm-track--locked" aria-hidden="true"></div>
+          <p class="cm-note">Free registration, transportation and hotels for every athlete.</p>
+        </div>
+      </div>
+      <div class="cm-give" data-give>
+        <div class="cm-seg" role="radiogroup" aria-label="How often">
+          <button type="button" role="radio" aria-checked="true" data-freq="monthly">Monthly</button>
+          <button type="button" role="radio" aria-checked="false" data-freq="once">One time</button>
+        </div>
+        <div class="cm-amts" role="radiogroup" aria-label="Amount" data-amts></div>
+        <p class="cm-impact" data-impact aria-live="polite">$80 a month can keep one athlete training all year.</p>
+      </div>
+      <a class="cm-btn btn" href="/donate?amount=80&amp;frequency=monthly" data-give-link>Donate</a>
+      <p class="cm-trust"><span data-donors hidden></span><span>Tax-deductible</span><span>501(c)(3) · EIN 41-3213344</span><span>Secure checkout by Givebutter</span></p>
+    </div>
+  </div>
+</section>
+
+<div class="cc-label" id="c"><b>C · One athlete</b><span>A single big figure, faded, sweeping in behind the headline.</span></div>
+<section class="cm" data-theme="dark" aria-label="Option C, one athlete">
+  <div class="cm-bg cm-bg--one" aria-hidden="true"><img src="/images/pickleball/ghost/brian-gray.webp" alt="" width="677" height="640" decoding="async"></div>
+  <div class="cm-wrap">
+    <div class="cm-head">
+      <p class="cm-status"><span class="cm-dot" aria-hidden="true"></span>Raising now<span class="cm-status-sep" aria-hidden="true"></span>The Chicago Wheelie Big Dills</p>
+      <h2 class="cm-h">Every week on court. <em>Next stop, Naples.</em></h2>
+    </div>
+    <ul class="cm-stats" aria-label="Already on the board">
+      <li><b>3</b><span>straight US Opens</span></li>
+      <li><b>6</b><span>Monster Smash medals</span></li>
+      <li><b>1st</b><span>APP Tour wheelchair division</span></li>
+      <li><b>$3,004</b><span>popcorn drive, 3&times; its goal</span></li>
+      <li><b>334K</b><span>views in 90 days</span></li>
+      <li><b>Weekly</b><span>on court, all year</span></li>
+    </ul>
+    <div class="cm-card">
       <p class="cm-hero"><b data-wbd="total">$34,500</b><span data-wbd="sub">our goal for the year ahead</span></p>
       <div class="cm-rows">
         <div class="cm-row" data-part-row="year">
@@ -377,6 +436,17 @@
         });
       });
       render();
+    });
+  })();
+
+  /* Review page: one switch flips every module between L1 and L3. */
+  (function () {
+    var btns = document.querySelectorAll('[data-set-theme]');
+    [].forEach.call(btns, function (b) {
+      b.addEventListener('click', function () {
+        [].forEach.call(btns, function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+        [].forEach.call(document.querySelectorAll('.cm'), function (m) { m.setAttribute('data-theme', b.dataset.setTheme); });
+      });
     });
   })();
 </script>

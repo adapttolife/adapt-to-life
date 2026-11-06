@@ -22,12 +22,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=5e6e33e6">
+<link rel="stylesheet" href="/css/site.css?v=bd1d320d">
 <link rel="stylesheet" href="/css/page-header.css?v=beb972ef">
 <!-- band:vars --><style data-band-vars>:root{--pg-band-wide:url('/images/hero/panels/pg-band-4-wide.4c52877e.webp');--pg-band-tall:url('/images/hero/panels/pg-band-4-tall.f6e94afc.webp');--pg-give-wide:url('/images/hero/panels/pg-give-wide.b46beed5.webp');--pg-give-tall:url('/images/hero/panels/pg-give-tall.5cece3a5.webp');}</style>
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <style>
-  .waiver-doc{background:var(--paper);border:1px solid rgba(12,12,14,.12);border-radius:14px;padding:1.6rem 1.5rem;max-height:360px;overflow-y:auto;margin-bottom:1.4rem;line-height:1.6}
+  .waiver-doc{background:var(--paper);border:1px solid rgba(59,59,70,.12);border-radius:14px;padding:1.6rem 1.5rem;max-height:360px;overflow-y:auto;margin-bottom:1.4rem;line-height:1.6}
   .waiver-doc h3{margin:.2rem 0 .3rem;font-size:1.2rem}
   .waiver-doc .doc-domains{color:#9a9a9e;font-size:.8rem;margin:0 0 1rem}
   .waiver-doc h4{margin:1.1rem 0 .35rem;font-size:.98rem}
@@ -36,17 +36,17 @@
   .waiver-doc li{margin:.15rem 0}
   .waiver-doc .intro{color:#3a3a3e}
   .who-row{display:flex;gap:.6rem;flex-wrap:wrap;margin:.2rem 0 1rem}
-  .who{flex:1 1 220px;display:flex;gap:.55rem;align-items:center;border:1px solid rgba(12,12,14,.18);border-radius:10px;padding:.7rem .8rem;cursor:pointer;font-size:.92rem}
+  .who{flex:1 1 220px;display:flex;gap:.55rem;align-items:center;border:1px solid rgba(59,59,70,.18);border-radius:10px;padding:.7rem .8rem;cursor:pointer;font-size:.92rem}
   .who input{width:18px;height:18px;flex:0 0 auto;accent-color:#FF5C39}
   .who:has(input:checked){border-color:#FF5C39;box-shadow:0 0 0 1px #FF5C39 inset}
   .sig-wrap{margin:.2rem 0 1rem}
   .sig-tabs{display:inline-flex;gap:.25rem;background:#efece6;border-radius:10px;padding:.25rem;margin:.4rem 0 .6rem}
   .sig-tab{border:0;background:none;font:600 .9rem/1 "Hanken Grotesk",sans-serif;color:#6b6b70;padding:.5rem .9rem;border-radius:8px;cursor:pointer}
-  .sig-tab[aria-selected="true"]{background:var(--paper);color:#0C0C0E;box-shadow:0 1px 3px rgba(0,0,0,.08)}
-  .sig-pad{width:100%;height:180px;background:var(--paper);border:1px dashed rgba(12,12,14,.35);border-radius:12px;touch-action:none;cursor:crosshair;display:block}
+  .sig-tab[aria-selected="true"]{background:var(--paper);color:#3b3b46;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  .sig-pad{width:100%;height:180px;background:var(--paper);border:1px dashed rgba(59,59,70,.35);border-radius:12px;touch-action:none;cursor:crosshair;display:block}
   .sig-pad.locked{cursor:not-allowed}
   .sig-type{display:none}
-  .sig-type input{width:100%;height:80px;background:var(--paper);border:1px solid rgba(12,12,14,.18);border-radius:12px;padding:0 1rem;font-family:"Dancing Script",cursive;font-size:2.6rem;color:#0C0C0E}
+  .sig-type input{width:100%;height:80px;background:var(--paper);border:1px solid rgba(59,59,70,.18);border-radius:12px;padding:0 1rem;font-family:"Dancing Script",cursive;font-size:2.6rem;color:#3b3b46}
   .sig-baseline{display:flex;align-items:center;gap:.5rem;color:#9a9a9e;font-size:.8rem;margin-top:.35rem}
   .sig-row{display:flex;justify-content:space-between;align-items:center;margin-top:.5rem}
   .sig-hint{color:#6b6b70;font-size:.85rem}
@@ -54,7 +54,7 @@
   @media (max-width:560px){ .sig-pad{height:150px} .sig-type input{font-size:2.1rem;height:70px} }
   .agree{display:flex;gap:.6rem;align-items:flex-start;margin:.4rem 0 1.2rem;font-size:.95rem}
   .agree input{margin-top:.25rem;width:18px;height:18px;flex:0 0 auto}
-  .waiver-done{background:var(--paper);border:1px solid rgba(12,12,14,.12);border-radius:14px;padding:2rem 1.6rem;text-align:center}
+  .waiver-done{background:var(--paper);border:1px solid rgba(59,59,70,.12);border-radius:14px;padding:2rem 1.6rem;text-align:center}
   .waiver-done .big{font-size:1.3rem;font-weight:700;margin:.2rem 0 .6rem}
 </style>
 </head>
@@ -210,7 +210,7 @@ fill="currentColor" stroke="none">
       <div id="waiverDone" class="waiver-done reveal" style="display:none">
         <div class="big">Thank you, your release is signed.</div>
         <p>A signed copy has been recorded. Here's your document.</p>
-        <iframe id="waiverFrame" title="Your signed release" style="width:100%;height:420px;border:1px solid rgba(12,12,14,.12);border-radius:12px;margin:1.2rem 0"></iframe>
+        <iframe id="waiverFrame" title="Your signed release" style="width:100%;height:420px;border:1px solid rgba(59,59,70,.12);border-radius:12px;margin:1.2rem 0"></iframe>
         <p style="display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap">
           <a id="waiverDownload" class="btn" href="#" target="_blank" rel="noopener">Download signed PDF</a>
           <a id="waiverVerify" class="textlink" href="#" target="_blank" rel="noopener" style="align-self:center">Verify this document <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
@@ -416,7 +416,7 @@ fill="currentColor" stroke="none">
       canvas.width = Math.round(rect.width * ratio);
       canvas.height = Math.round(rect.height * ratio);
       ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-      ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#0C0C0E';
+      ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#3b3b46';
     }
     sizeCanvas();
     window.addEventListener('resize', function(){
@@ -447,7 +447,7 @@ fill="currentColor" stroke="none">
     var sigText = document.getElementById('sigText');
     function typedDataUrl(){
       var c=document.createElement('canvas'); c.width=600; c.height=160;
-      var x=c.getContext('2d'); x.fillStyle='#0C0C0E'; x.textBaseline='middle';
+      var x=c.getContext('2d'); x.fillStyle='#3b3b46'; x.textBaseline='middle';
       x.font='64px "Dancing Script", cursive';
       x.fillText(sigText.value.trim() || ' ', 12, 92);
       return c.toDataURL('image/png');

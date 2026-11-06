@@ -29,7 +29,7 @@ const BRAND = {
   "--paper": "#F9F7F2", // off-white — cards and lifted bands
   "--cream": "#F9F7F2", // off-white, for text on dark
   "--sand": "#EFE8DC", // beige
-  "--ink": "#1A1A1A", // STAND-IN, see below
+  "--ink": "#3B3B46", // Laura's black, confirmed 2026-09-09; on the site since the Nov 2026 refresh
   "--yellow": "#F6BE00",
   "--teal": "#00B7BD",
   "--purple": "#483698",
@@ -39,7 +39,7 @@ const BRAND = {
 // a hex digit. Until she sends the corrected value, #1A1A1A stands in (taken
 // from the flat logo rebuild). This is recorded here rather than in a note so
 // that whoever gets her correction knows exactly what to change and where.
-const BLACK_IS_A_STAND_IN = true;
+const BLACK_IS_A_STAND_IN = false; // resolved: Laura confirmed #3B3B46 (Brand Standards doc, 2026-09-09)
 
 // src/, not public/. From 2026-09-09 public/css is a BUILD ARTEFACT written by
 // scripts/build-css.mjs, so a failure reported against it would name a file

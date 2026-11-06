@@ -217,7 +217,7 @@ ${roles.map(card).join("\n")}
   <section class="vol-amb dark">
     <style>
       .vol-amb{ position:relative; isolation:isolate; overflow:hidden; padding:clamp(2.8rem,6vw,4.2rem) 0; border-top:1px solid rgba(255,255,255,0.08); }
-      .vol-amb::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 45% 70% at 80% 50%, rgba(255,92,57,0.2) 0%, transparent 70%); }
+      .vol-amb::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 45% 70% at 80% 50%, rgb(var(--accent-rgb) / 0.11) 0%, transparent 70%); }
       .vol-amb-grid{ display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,0.8fr); gap:clamp(1.6rem,4vw,3.5rem); align-items:center; }
       @media (max-width:760px){ .vol-amb-grid{ grid-template-columns:1fr; } }
       .vol-amb h2{ color:var(--cream); margin-top:0.7rem; }

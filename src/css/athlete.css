@@ -62,7 +62,7 @@
   height: auto;
   position: relative;
   z-index: 1;
-  filter: drop-shadow(-10px -6px 16px rgba(255, 140, 90, 0.3))
+  filter: drop-shadow(-10px -6px 16px rgb(var(--accent-rgb) / 0.26))
     drop-shadow(6px 10px 22px rgba(0, 0, 0, 0.55));
 }
 /* the floor. An ellipse under the wheels, not a box-shadow on the image box,
@@ -358,7 +358,7 @@
 .share-btn:hover {
   background: var(--orange);
   border-color: var(--orange);
-  color: #fff;
+  color: var(--cream);
 }
 .share-msg {
   font-size: 0.88rem;

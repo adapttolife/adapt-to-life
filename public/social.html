@@ -149,7 +149,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=5e6e33e6">
+<link rel="stylesheet" href="/css/site.css?v=bd1d320d">
 <style>
   /* Social: where Instagram meets the site. Built on the index pattern
      (site.css): symbols from the dictionary, not photographs, and the room
@@ -162,7 +162,7 @@
      @adapt_to_life_org feed tagged or heard from, named for how we crossed
      paths; individuals stay off this page unless they have said yes. */
   .so-hero{ position:relative; isolation:isolate; overflow:hidden; padding:clamp(4rem,9vh,5.5rem) 0 clamp(2.4rem,5vh,3.2rem); }
-  .so-hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 50% 80% at 85% 30%, rgba(255,92,57,0.22) 0%, transparent 70%); }
+  .so-hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 50% 80% at 85% 30%, rgba(0,183,189,0.121) 0%, transparent 70%); }
   .so-kicker{ display:flex; align-items:center; gap:0.9rem; font-family:var(--font-label); font-weight:800; font-size:0.85rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--orange); }
   .so-kicker::before{ content:""; width:2.2rem; height:2px; background:var(--orange); box-shadow:0 0 12px var(--orange-glow); }
   .so-hero .display{ margin-top:1.2rem; max-width:14ch; font-size:clamp(2.7rem,5.4vw,4.8rem); line-height:0.96; }
@@ -173,7 +173,7 @@
   .so-reels-band{ padding:clamp(1.2rem,3vw,2rem) 0 clamp(3.2rem,6vw,4.5rem); }
   .so-reels{ list-style:none; padding:0; margin:clamp(1.4rem,2.6vw,2rem) 0 0; display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:clamp(0.7rem,1.4vw,1rem); }
   .so-reel a{ position:relative; display:flex; flex-direction:column; aspect-ratio:4/5; padding:1rem; border-radius:18px; overflow:hidden; color:var(--cream);
-    background:linear-gradient(165deg, rgba(255,92,57,0.24) 0%, rgba(255,92,57,0.04) 45%, transparent 70%), var(--charcoal);
+    background:linear-gradient(165deg, rgb(var(--accent-rgb) / 0.24) 0%, rgb(var(--accent-rgb) / 0.04) 45%, transparent 70%), var(--charcoal);
     box-shadow:inset 0 0 0 1px rgba(249,247,242,0.1); transition:box-shadow .2s ease, transform .2s ease; }
   .so-reel a:hover{ box-shadow:inset 0 0 0 1.5px var(--orange); transform:translateY(-3px); }
   .so-reel a:focus-visible{ outline:2px solid var(--orange); outline-offset:3px; }
@@ -349,7 +349,7 @@ fill="currentColor" stroke="none">
       <h2 id="soOrgsTitle" class="serif h2">Who we play alongside.</h2>
       <p class="so-note" style="margin-top:0.9rem;">Organizations from our Instagram: the ones we've tagged, played with, or heard from in the comments. Being listed here doesn't mean a formal partnership. Our partners are on <a class="textlink" href="/sponsorship">Partners</a>.</p>
 
-      <article class="so-lead">
+      <article class="so-lead on-dark">
         <img src="/images/brickhouse/brick-house-logo-orange-black-reverse.svg" alt="Brick House Pickleball" width="160" height="70">
         <div>
           <span class="eyebrow">Our first partner club</span>

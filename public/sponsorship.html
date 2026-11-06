@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=5e6e33e6">
+<link rel="stylesheet" href="/css/site.css?v=bd1d320d">
 <link rel="stylesheet" href="/css/sponsor-sheet.css?v=ffe856b5">
 <!-- band:vars --><style data-band-vars>:root{--pg-band-wide:url('/images/hero/panels/pg-band-2-wide.9ac73821.webp');--pg-band-tall:url('/images/hero/panels/pg-band-2-tall.f9278c2d.webp');--pg-give-wide:url('/images/hero/panels/pg-give-wide.b46beed5.webp');--pg-give-tall:url('/images/hero/panels/pg-give-tall.5cece3a5.webp');}  .bh-road .bh-more .arrow{ display:inline-block; margin-top:0; max-width:none; color:inherit; }
 </style>
@@ -37,13 +37,13 @@
      supporters wall with room left on it. Shares /brickhouse's language: dark
      bands with the orange bloom, the italic orange accent, the ATL x Brick
      House lockup with the painted optic yellow x, and the brick. */
-  .sp-hero{ position:relative; isolation:isolate; overflow:hidden; min-height:clamp(560px,78svh,760px); display:flex; align-items:center; padding:clamp(4rem,9vh,6rem) 0; background:#0C0C0E; }
+  .sp-hero{ position:relative; isolation:isolate; overflow:hidden; min-height:clamp(560px,78svh,760px); display:flex; align-items:center; padding:clamp(4rem,9vh,6rem) 0; background:#3b3b46; }
   .sp-hero-img, .sp-hero-img img{ position:absolute; inset:0; width:100%; height:100%; z-index:-2; }
   .sp-hero-img img{ object-fit:cover; object-position:62% 40%; }
   .sp-hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:
-      linear-gradient(90deg, rgba(12,12,14,0.96) 0%, rgba(12,12,14,0.86) 34%, rgba(12,12,14,0.35) 62%, rgba(12,12,14,0.05) 85%),
-      radial-gradient(ellipse 40% 55% at 22% 60%, rgba(255,92,57,0.18) 0%, transparent 70%),
-      linear-gradient(0deg, rgba(12,12,14,0.6) 0%, transparent 30%); }
+      linear-gradient(90deg, rgba(59,59,70,0.96) 0%, rgba(59,59,70,0.86) 34%, rgba(59,59,70,0.35) 62%, rgba(59,59,70,0.05) 85%),
+      radial-gradient(ellipse 40% 55% at 22% 60%, rgba(0,183,189,0.099) 0%, transparent 70%),
+      linear-gradient(0deg, rgba(59,59,70,0.6) 0%, transparent 30%); }
   .sp-kicker{ display:flex; align-items:center; gap:0.9rem; font-family:var(--font-label); font-weight:800; font-size:0.85rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--orange); }
   .sp-kicker::before{ content:""; width:2.2rem; height:2px; background:var(--orange); box-shadow:0 0 12px var(--orange-glow); }
   .sp-hero .display{ max-width:11ch; margin-top:1.4rem; font-size:clamp(2.9rem,6vw,5.6rem); line-height:0.96; }
@@ -53,7 +53,7 @@
     .sp-hero{ display:block; min-height:0; padding:0 0 clamp(2.5rem,7vh,3.5rem); }
     .sp-hero-img{ position:relative; display:block; height:min(62svh,560px); }
     .sp-hero-img img{ object-position:50% 30%; }
-    .sp-hero::after{ background:linear-gradient(180deg, transparent 55%, rgba(12,12,14,0.75) 80%, #0C0C0E 96%); }
+    .sp-hero::after{ background:linear-gradient(180deg, transparent 55%, rgba(59,59,70,0.75) 80%, #3b3b46 96%); }
     .sp-hero-copy{ margin-top:1.8rem; position:relative; }
     .sp-hero .display{ font-size:clamp(2.6rem,11vw,3.4rem); }
   }
@@ -69,9 +69,9 @@
   @media (max-width:820px){ .sp-go{ grid-template-columns:1fr; } .sp-go-pics{ order:-1; } .sp-go-pics img{ aspect-ratio:4/5; } }
   .bh-road{ margin-top:clamp(2.2rem,4.5vw,3.2rem); }
   .bh-road ol{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(1rem,2.2vw,1.6rem); position:relative; }
-  .bh-road ol::before{ content:""; position:absolute; left:0; right:0; top:7px; height:2px; background:linear-gradient(90deg, var(--orange), rgba(255,92,57,0.25)); }
+  .bh-road ol::before{ content:""; position:absolute; left:0; right:0; top:7px; height:2px; background:linear-gradient(90deg, var(--orange), rgb(var(--accent-rgb) / 0.25)); }
   .bh-road li{ position:relative; padding-top:1.6rem; }
-  .bh-road li::before{ content:""; position:absolute; left:0; top:0; width:16px; height:16px; border-radius:50%; background:var(--paper); box-shadow:inset 0 0 0 2px rgba(255,92,57,0.7); }
+  .bh-road li::before{ content:""; position:absolute; left:0; top:0; width:16px; height:16px; border-radius:50%; background:var(--paper); box-shadow:inset 0 0 0 2px rgb(var(--accent-rgb) / 0.7); }
   .bh-road li.lit::before{ background:var(--orange); box-shadow:0 0 18px 2px var(--orange-glow); }
   .bh-road b{ display:block; font-family:var(--font-display); font-weight:800; font-size:clamp(1.05rem,1.6vw,1.25rem); color:var(--ink); letter-spacing:-0.01em; }
   .bh-road li.lit b{ color:var(--orange-ink); }
@@ -79,7 +79,7 @@
   .bh-more{ display:inline-block; margin-top:1.8rem; font-weight:700; color:var(--orange-ink); border-bottom:2px solid currentColor; padding-bottom:2px; }
   @media (max-width:700px){
     .bh-road ol{ grid-template-columns:1fr; gap:1.3rem; padding-left:1.8rem; }
-    .bh-road ol::before{ left:7px; right:auto; top:0; bottom:0; width:2px; height:auto; background:linear-gradient(180deg, var(--orange), rgba(255,92,57,0.25)); }
+    .bh-road ol::before{ left:7px; right:auto; top:0; bottom:0; width:2px; height:auto; background:linear-gradient(180deg, var(--orange), rgb(var(--accent-rgb) / 0.25)); }
     .bh-road li{ padding-top:0; }
     .bh-road li::before{ left:-1.8rem; top:0.2rem; }
   }
@@ -88,8 +88,8 @@
      the flagship lit. Founding Partner is the summit, framed in brick. */
   .sp-levels{ position:relative; isolation:isolate; overflow:hidden; }
   .sp-levels::before{ content:""; position:absolute; inset:0; z-index:-1; background:
-      radial-gradient(ellipse 50% 40% at 60% 38%, rgba(255,92,57,0.16) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 40% at 8% 90%, rgba(255,92,57,0.10) 0%, transparent 70%); }
+      radial-gradient(ellipse 50% 40% at 60% 38%, rgba(0,183,189,0.088) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 8% 90%, rgba(0,183,189,0.055) 0%, transparent 70%); }
   .sp-levels .sec-head .prose{ color:var(--cream-mute); max-width:52ch; margin-top:1rem; }
   .tier-grid{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:clamp(0.8rem,1.6vw,1.2rem); margin-top:clamp(2.4rem,4vw,3.2rem); align-items:end; }
   @media (max-width:1000px){ .tier-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); align-items:stretch; } }
@@ -97,7 +97,7 @@
   .tier{ display:flex; flex-direction:column; border-radius:18px; padding:1.6rem 1.4rem 1.4rem; background:rgba(255,255,255,0.04); box-shadow:inset 0 0 0 1px rgba(255,255,255,0.10); }
   /* Each step up the ladder stands a little taller. */
   @media (min-width:1001px){ .tier:nth-child(1){ min-height:400px; } .tier:nth-child(2){ min-height:428px; } .tier:nth-child(3){ min-height:456px; } .tier:nth-child(4){ min-height:484px; } }
-  .tier.is-popular{ background:linear-gradient(180deg, rgba(255,92,57,0.16), rgba(255,92,57,0.04)); box-shadow:inset 0 0 0 1.5px var(--orange), 0 0 70px -18px rgba(255,92,57,0.55); }
+  .tier.is-popular{ background:linear-gradient(180deg, rgb(var(--accent-rgb) / 0.16), rgb(var(--accent-rgb) / 0.04)); box-shadow:inset 0 0 0 1.5px var(--orange), 0 0 70px -18px rgb(var(--accent-rgb) / 0.55); }
   .tier-flag{ font-family:var(--font-label); font-weight:800; font-size:0.7rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--orange); min-height:1rem; }
   .tier-name{ font-family:var(--font-display); font-weight:800; font-size:clamp(1.6rem,2.2vw,1.9rem); letter-spacing:-0.02em; line-height:1; margin-top:0.6rem; color:var(--cream); }
   .tier-price{ font-family:var(--font-display); font-weight:800; font-style:italic; font-size:clamp(1.3rem,1.8vw,1.5rem); letter-spacing:-0.01em; color:var(--orange); margin-top:0.45rem; }
@@ -109,7 +109,7 @@
   .tier .btn{ width:100%; text-align:center; justify-content:center; }
   .tier .btn.ghost{ color:var(--cream); box-shadow:inset 0 0 0 1.5px rgba(249,247,242,0.5); background:transparent; }
   .founding{ position:relative; margin-top:clamp(1rem,2vw,1.4rem); border-radius:18px; padding:clamp(1.8rem,4vw,2.8rem); color:var(--cream); display:grid; grid-template-columns:1fr 1fr; gap:clamp(1.4rem,3vw,2.4rem); align-items:center; overflow:hidden; isolation:isolate;
-    background:#141416; box-shadow:inset 0 0 0 1.5px rgba(255,92,57,0.55), 0 30px 80px -30px rgba(0,0,0,0.9); }
+    background:#141416; box-shadow:inset 0 0 0 1.5px rgb(var(--accent-rgb) / 0.55), 0 30px 80px -30px rgba(0,0,0,0.9); }
   .founding::before{ content:""; position:absolute; inset:0; z-index:-1; opacity:0.9; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='48'%3E%3Cg fill='none' stroke='%23FF5C39' stroke-opacity='0.13'%3E%3Cpath d='M0 .5h96M0 24.5h96M.5 0v24M48.5 0v24M24.5 24v24M72.5 24v24'/%3E%3C/g%3E%3C/svg%3E");
     -webkit-mask-image:linear-gradient(90deg, transparent 0%, #000 70%); mask-image:linear-gradient(90deg, transparent 0%, #000 70%); }
   @media (max-width:760px){ .founding{ grid-template-columns:1fr; } .founding::before{ -webkit-mask-image:linear-gradient(180deg, transparent 0%, #000 90%); mask-image:linear-gradient(180deg, transparent 0%, #000 90%); } }
@@ -126,9 +126,9 @@
      mark, linking to the page that tells their story. One reads as a feature;
      more wrap into a grid without new CSS. */
   .partner-list{ display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr)); gap:clamp(1rem,2vw,1.4rem); margin-top:clamp(2rem,4vw,2.8rem); }
-  .partner{ display:grid; grid-template-columns:minmax(0,0.9fr) minmax(0,1.1fr); border-radius:22px; overflow:hidden; background:#0C0C0E; color:var(--cream); isolation:isolate; position:relative;
+  .partner{ display:grid; grid-template-columns:minmax(0,0.9fr) minmax(0,1.1fr); border-radius:22px; overflow:hidden; background:#3b3b46; color:var(--cream); isolation:isolate; position:relative;
     box-shadow:0 30px 70px -34px rgba(0,0,0,0.6); }
-  .partner::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 60% 70% at 85% 30%, rgba(255,92,57,0.18) 0%, transparent 70%); }
+  .partner::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 60% 70% at 85% 30%, rgba(0,183,189,0.099) 0%, transparent 70%); }
   .partner-photo{ display:block; min-height:clamp(320px,36vw,460px); }
   .partner-logo.is-word{ height:auto; width:min(100%, 210px); margin-bottom:0.4rem; }
   .partner-photo img{ width:100%; height:100%; object-fit:cover; object-position:50% 30%; transition:transform .6s ease; }
@@ -275,7 +275,7 @@ fill="currentColor" stroke="none">
         <h2 class="serif h2" style="margin-top:0.8rem;">With thanks to <em class="italic" style="color:var(--orange-ink)">our partners.</em></h2>
       </div>
       <div class="partner-list">
-        <article class="partner reveal">
+        <article class="partner on-dark reveal">
           <a class="partner-photo" href="/brickhouse" tabindex="-1" aria-hidden="true">
             <img src="/images/brickhouse/hero-bob.webp" alt="" width="1200" height="2000" loading="lazy" decoding="async">
           </a>
@@ -288,7 +288,7 @@ fill="currentColor" stroke="none">
             <a class="partner-more" href="/brickhouse">See the partnership <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
           </div>
         </article>
-        <article class="partner reveal">
+        <article class="partner on-dark reveal">
           <a class="partner-photo" href="/ace" tabindex="-1" aria-hidden="true">
             <img src="/images/ace/hero-cap-tall.webp" alt="" width="1000" height="1130" loading="lazy" decoding="async">
           </a>
@@ -301,7 +301,7 @@ fill="currentColor" stroke="none">
             <a class="partner-more" href="/ace">See the partnership <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
           </div>
         </article>
-        <article class="partner reveal">
+        <article class="partner on-dark reveal">
           <a class="partner-photo" href="/picklr" tabindex="-1" aria-hidden="true">
             <img src="/images/ace/court-swing.webp" alt="" width="1800" height="1200" loading="lazy" decoding="async" style="object-position:74% 40%;">
           </a>
@@ -314,7 +314,7 @@ fill="currentColor" stroke="none">
             <a class="partner-more" href="/picklr">See the partnership <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
           </div>
         </article>
-        <article class="partner reveal">
+        <article class="partner on-dark reveal">
           <a class="partner-photo" href="/chicago-adaptive-sports" tabindex="-1" aria-hidden="true">
             <img src="/images/athletes/juan-portrait.webp" alt="" width="1000" height="1500" loading="lazy" decoding="async" style="object-position:50% 3%;">
           </a>

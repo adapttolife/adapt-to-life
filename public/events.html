@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=5e6e33e6">
+<link rel="stylesheet" href="/css/site.css?v=bd1d320d">
 <style>
   /* Events: the index. Every dated thing we take part in comes from
      /data/campaigns.json (the same file as the home calendar), so a date is
@@ -35,8 +35,8 @@
      calendar. */
   .ev-hero{ position:relative; isolation:isolate; overflow:hidden; padding:clamp(4.5rem,11vh,7rem) 0 clamp(3rem,7vh,4.5rem); }
   .ev-hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:
-      radial-gradient(ellipse 50% 70% at 80% 40%, rgba(255,92,57,0.22) 0%, transparent 70%),
-      radial-gradient(ellipse 35% 50% at 8% 90%, rgba(255,92,57,0.10) 0%, transparent 70%); }
+      radial-gradient(ellipse 50% 70% at 80% 40%, rgba(0,183,189,0.121) 0%, transparent 70%),
+      radial-gradient(ellipse 35% 50% at 8% 90%, rgba(0,183,189,0.055) 0%, transparent 70%); }
   .ev-kicker{ display:flex; align-items:center; gap:0.9rem; font-family:var(--font-label); font-weight:800; font-size:0.85rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--orange); }
   .ev-kicker::before{ content:""; width:2.2rem; height:2px; background:var(--orange); box-shadow:0 0 12px var(--orange-glow); }
   .ev-hero .display{ margin-top:1.3rem; max-width:12ch; font-size:clamp(2.9rem,6vw,5.4rem); line-height:0.96; }
@@ -45,7 +45,7 @@
   .ev-up{ padding-top:clamp(0.5rem,2vw,1.5rem); }
   .ev-up > .wrap > .eyebrow{ display:block; margin-bottom:1.2rem; }
   .ev-date{ display:flex; align-items:baseline; gap:0.7rem; }
-  .ev-date b{ font-family:var(--font-display); font-weight:900; font-size:clamp(2.6rem,5vw,3.6rem); line-height:0.9; letter-spacing:-0.04em; color:var(--orange); text-shadow:0 0 36px rgba(255,92,57,0.3); }
+  .ev-date b{ font-family:var(--font-display); font-weight:900; font-size:clamp(2.6rem,5vw,3.6rem); line-height:0.9; letter-spacing:-0.04em; color:var(--orange); text-shadow:0 0 36px rgb(var(--accent-rgb) / 0.3); }
   .ev-date span{ font-family:var(--font-label); font-weight:800; font-size:0.8rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--cream); }
   .ev-tag{ margin-top:1rem; font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--orange); }
   .ev-place{ margin-top:0.5rem; font-weight:600; color:var(--cream); }

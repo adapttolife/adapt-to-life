@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=5e6e33e6">
+<link rel="stylesheet" href="/css/site.css?v=bd1d320d">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <style>
   /* Brick House partner page. Told in pictures: the partnership lockup over Bob in the Brick House shirt
@@ -41,9 +41,9 @@
   .bh-hero{ position:relative; isolation:isolate; overflow:hidden; padding:clamp(2.5rem,6vh,4.5rem) 0 clamp(3.5rem,8vh,6rem); }
   .bh-hero::before{ content:""; position:absolute; inset:-12px; z-index:-2; background:url('/images/brickhouse/court-wide.webp') 50% 40%/cover no-repeat; filter:blur(2px) saturate(0.9) brightness(0.75); }
   .bh-hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:
-      radial-gradient(ellipse 45% 60% at 74% 50%, rgba(255,92,57,0.26) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 50% at 12% 20%, rgba(255,92,57,0.10) 0%, transparent 70%),
-      linear-gradient(90deg, rgba(12,12,14,0.96) 0%, rgba(12,12,14,0.86) 45%, rgba(12,12,14,0.5) 100%); }
+      radial-gradient(ellipse 45% 60% at 74% 50%, rgba(0,183,189,0.143) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 50% at 12% 20%, rgba(0,183,189,0.055) 0%, transparent 70%),
+      linear-gradient(90deg, rgba(59,59,70,0.96) 0%, rgba(59,59,70,0.86) 45%, rgba(59,59,70,0.5) 100%); }
   .bh-hero-grid{ display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,0.85fr); gap:clamp(2rem,5vw,4.5rem); align-items:center; }
   .bh-kicker{ display:flex; align-items:center; gap:0.9rem; font-family:var(--font-label); font-weight:800; font-size:0.9rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--orange); }
   .bh-kicker::before{ content:""; width:2.2rem; height:2px; background:var(--orange); box-shadow:0 0 12px var(--orange-glow); }
@@ -76,11 +76,11 @@
   .bh-when span::after{ content:""; width:2px; height:1.15em; background:var(--orange); border-radius:2px; box-shadow:0 0 12px 0 var(--orange-glow); }
   /* The moving picture: a tall frame, tilted like a card on the wall. */
   .bh-film{ position:relative; margin:0; justify-self:center; width:min(100%, 420px, calc((100svh - 160px) * 0.6)); aspect-ratio:9/15; border-radius:22px; overflow:hidden; transform:rotate(1.5deg);
-    box-shadow:0 0 0 1px rgba(255,255,255,0.08), 0 40px 90px -24px rgba(0,0,0,0.85), 0 0 110px -10px rgba(255,92,57,0.45); background:#141414; }
+    box-shadow:0 0 0 1px rgba(255,255,255,0.08), 0 40px 90px -24px rgba(0,0,0,0.85), 0 0 110px -10px rgb(var(--accent-rgb) / 0.45); background:#141414; }
   .bh-film img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 40%; display:block; transform-origin:50% 42%; animation:bh-push 16s ease-in-out infinite alternate; }
   @keyframes bh-push{ from{ transform:scale(1); } to{ transform:scale(1.07); } }
   @media (prefers-reduced-motion: reduce){ .bh-film img{ animation:none; } }
-  .bh-film::after{ content:""; position:absolute; inset:0; background:linear-gradient(0deg, rgba(12,12,14,0.35), transparent 30%); pointer-events:none; }
+  .bh-film::after{ content:""; position:absolute; inset:0; background:linear-gradient(0deg, rgba(59,59,70,0.35), transparent 30%); pointer-events:none; }
   .bh-city, .bh-hours{ font-style:normal; }
   .bh-dot{ font-weight:inherit; }
   @media (max-width:480px){ .bh-hero .bh-when{ flex-wrap:wrap; row-gap:0.35rem; } .bh-hours{ flex-basis:100%; } .bh-dot{ display:none; } }
@@ -90,9 +90,9 @@
     /* Phones: a poster. The film runs edge to edge; the two marks sit on the
        plain block wall above the player; the words follow below. */
     .bh-hero{ padding:0 0 clamp(2.5rem,7vh,3.5rem); }
-    .bh-hero{ background:#0C0C0E; }
+    .bh-hero{ background:#3b3b46; }
     .bh-hero::before{ display:none; }
-    .bh-hero::after{ background: radial-gradient(ellipse 90% 22% at 30% 88%, rgba(255,92,57,0.16) 0%, transparent 70%); }
+    .bh-hero::after{ background: radial-gradient(ellipse 90% 22% at 30% 88%, rgba(0,183,189,0.088) 0%, transparent 70%); }
     .bh-hero-grid{ grid-template-columns:1fr; gap:0; }
     .bh-hero-copy{ display:contents; }
     .bh-film, .bh-kicker, .bh-duo{ grid-row:1; grid-column:1; }
@@ -100,8 +100,8 @@
     /* The photo starts below the lockup and fades up into the dark, so the
        marks sit on black and never on his head. */
     .bh-film img{ top:8.6rem; height:calc(100% - 8.6rem); object-position:50% 30%; animation:none; }
-    .bh-film{ background:#0C0C0E; }
-    .bh-film::after{ background:linear-gradient(180deg, #0C0C0E 0%, #0C0C0E 8.6rem, rgba(12,12,14,0.55) calc(8.6rem + 3.5rem), transparent calc(8.6rem + 9rem), transparent 70%, rgba(12,12,14,0.9) 90%, #0C0C0E 100%); }
+    .bh-film{ background:#3b3b46; }
+    .bh-film::after{ background:linear-gradient(180deg, #3b3b46 0%, #3b3b46 8.6rem, rgba(59,59,70,0.55) calc(8.6rem + 3.5rem), transparent calc(8.6rem + 9rem), transparent 70%, rgba(59,59,70,0.9) 90%, #3b3b46 100%); }
     .bh-kicker, .bh-duo{ position:relative; z-index:2; align-self:start; justify-self:center; }
     .bh-kicker{ margin-top:1.3rem; font-size:0.78rem; }
     .bh-kicker::before{ width:1.4rem; }
@@ -158,13 +158,13 @@
   .bh-side img{ width:100%; height:100%; object-fit:cover; display:block; }
   .bh-side img:first-child{ object-position:50% 32%; }
   .bh-side img:nth-child(2){ object-position:45% 40%; }
-  .bh-side::after{ content:""; position:absolute; inset:0; background:radial-gradient(ellipse 60% 70% at 50% 55%, rgba(12,12,14,0.78) 0%, rgba(12,12,14,0.45) 55%, rgba(12,12,14,0.2) 100%); }
+  .bh-side::after{ content:""; position:absolute; inset:0; background:radial-gradient(ellipse 60% 70% at 50% 55%, rgba(59,59,70,0.78) 0%, rgba(59,59,70,0.45) 55%, rgba(59,59,70,0.2) 100%); }
   .bh-side .bh-seam{ position:absolute; left:50%; top:0; bottom:0; width:3px; transform:translateX(-50%); background:var(--orange); box-shadow:0 0 22px 0 var(--orange-glow); z-index:1; }
   .bh-together{ position:absolute; z-index:2; left:50%; top:50%; transform:translate(-50%,-50%); width:min(92%, 30ch); margin:0; text-align:center; color:var(--cream); font-family:var(--font-display); font-weight:800; font-size:clamp(1.5rem,3.4vw,2.6rem); line-height:1.12; letter-spacing:-0.025em; text-shadow:0 2px 24px rgba(0,0,0,0.7); }
   @media (max-width:700px){
     .bh-side{ grid-template-columns:1fr; grid-template-rows:1fr 1fr; min-height:clamp(520px,150vw,700px); }
     .bh-side .bh-seam{ left:0; right:0; top:50%; bottom:auto; width:auto; height:3px; transform:translateY(-50%); }
-    .bh-together{ width:min(90%, 26ch); padding:1rem 1.2rem; border-radius:14px; background:rgba(12,12,14,0.82); box-shadow:0 0 0 1px rgba(255,92,57,0.5); }
+    .bh-together{ width:min(90%, 26ch); padding:1rem 1.2rem; border-radius:14px; background:rgba(59,59,70,0.82); box-shadow:0 0 0 1px rgb(var(--accent-rgb) / 0.5); }
   }
 
   /* On the new courts: our athletes already playing at Brick House. A dark band with
@@ -172,8 +172,8 @@
      down twice, so it reads as a day on court and not a grid of products. */
   .bh-on{ position:relative; isolation:isolate; overflow:hidden; }
   .bh-on::before{ content:""; position:absolute; inset:0; z-index:-1; background:
-      radial-gradient(ellipse 55% 45% at 78% 30%, rgba(255,92,57,0.20) 0%, transparent 70%),
-      radial-gradient(ellipse 45% 40% at 10% 85%, rgba(255,92,57,0.12) 0%, transparent 70%); }
+      radial-gradient(ellipse 55% 45% at 78% 30%, rgba(0,183,189,0.110) 0%, transparent 70%),
+      radial-gradient(ellipse 45% 40% at 10% 85%, rgba(0,183,189,0.066) 0%, transparent 70%); }
   .bh-on .bh-start-head .statement{ color:var(--cream); }
   .bh-on .bh-start-head .prose{ color:var(--cream-mute); }
   .bh-reel{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(0.6rem,1.6vw,1.2rem); margin-top:clamp(2.2rem,4.5vw,3.5rem); align-items:start; }
@@ -183,7 +183,7 @@
   .bh-reel img{ display:block; width:100%; height:auto; object-fit:cover; border-radius:14px; box-shadow:0 0 0 1px rgba(255,255,255,0.06), 0 24px 50px -24px rgba(0,0,0,0.8); }
   .bh-reel .tall{ aspect-ratio:9/14; }
   .bh-reel .mid{ aspect-ratio:4/5; }
-  .bh-reel .lead-shot{ box-shadow:0 0 0 2px var(--orange), 0 0 60px -12px rgba(255,92,57,0.55); }
+  .bh-reel .lead-shot{ box-shadow:0 0 0 2px var(--orange), 0 0 60px -12px rgb(var(--accent-rgb) / 0.55); }
   @media (max-width:700px){
     .bh-reel{ grid-template-columns:1fr 1fr; }
     .bh-reel > div:nth-child(2){ margin-top:2.2rem; }
@@ -195,9 +195,9 @@
   /* The road to the US Open: four stops on one orange court line, the first lit. */
   .bh-road{ margin-top:clamp(3rem,6vw,4.5rem); }
   .bh-road ol{ list-style:none; margin:1.2rem 0 0; padding:0; display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(1rem,2.5vw,2rem); position:relative; }
-  .bh-road ol::before{ content:""; position:absolute; left:0; right:0; top:7px; height:2px; background:linear-gradient(90deg, var(--orange), rgba(255,92,57,0.25)); }
+  .bh-road ol::before{ content:""; position:absolute; left:0; right:0; top:7px; height:2px; background:linear-gradient(90deg, var(--orange), rgb(var(--accent-rgb) / 0.25)); }
   .bh-road li{ position:relative; padding-top:1.6rem; }
-  .bh-road li::before{ content:""; position:absolute; left:0; top:0; width:16px; height:16px; border-radius:50%; background:var(--ink-warm, #141414); box-shadow:inset 0 0 0 2px rgba(255,92,57,0.6); }
+  .bh-road li::before{ content:""; position:absolute; left:0; top:0; width:16px; height:16px; border-radius:50%; background:var(--ink-warm, #141414); box-shadow:inset 0 0 0 2px rgb(var(--accent-rgb) / 0.6); }
   .bh-road li.lit::before{ background:var(--orange); box-shadow:0 0 18px 2px var(--orange-glow); }
   .bh-road b{ display:block; font-family:var(--font-display); font-weight:800; font-size:clamp(1.1rem,1.8vw,1.35rem); color:var(--cream); letter-spacing:-0.01em; }
   .bh-road li.lit b{ color:var(--orange); }
@@ -205,7 +205,7 @@
   .bh-road .bh-more{ color:var(--orange); margin-top:1.8rem; }
   @media (max-width:700px){
     .bh-road ol{ grid-template-columns:1fr; gap:1.4rem; padding-left:1.8rem; }
-    .bh-road ol::before{ left:7px; right:auto; top:0; bottom:0; width:2px; height:auto; background:linear-gradient(180deg, var(--orange), rgba(255,92,57,0.25)); }
+    .bh-road ol::before{ left:7px; right:auto; top:0; bottom:0; width:2px; height:auto; background:linear-gradient(180deg, var(--orange), rgb(var(--accent-rgb) / 0.25)); }
     .bh-road li{ padding-top:0; }
     .bh-road li::before{ left:-1.8rem; top:0.2rem; }
   }
@@ -216,9 +216,9 @@
   .bh-event{ display:grid; grid-template-columns:1fr; gap:clamp(2rem,5vw,4.5rem); align-items:start; }
   @media (max-width:820px){ .bh-event{ grid-template-columns:1fr; } }
   .bh-date{ position:relative; border-left:4px solid var(--orange); padding-left:clamp(1rem,2.5vw,1.6rem); }
-  .bh-date::before{ content:""; position:absolute; z-index:-1; left:-30%; top:-20%; width:150%; height:140%; background:radial-gradient(ellipse at 40% 55%, rgba(255,92,57,0.22) 0%, transparent 65%); pointer-events:none; }
+  .bh-date::before{ content:""; position:absolute; z-index:-1; left:-30%; top:-20%; width:150%; height:140%; background:radial-gradient(ellipse at 40% 55%, rgba(0,183,189,0.121) 0%, transparent 65%); pointer-events:none; }
   .bh-day{ margin-top:1rem; font-weight:700; font-size:1.2rem; color:var(--cream-mute); }
-  .bh-big{ font-family:var(--font-display); font-weight:900; font-size:clamp(4.2rem,12vw,8rem); line-height:0.88; letter-spacing:-0.05em; color:var(--orange); text-shadow:0 0 42px rgba(255,92,57,0.35); }
+  .bh-big{ font-family:var(--font-display); font-weight:900; font-size:clamp(4.2rem,12vw,8rem); line-height:0.88; letter-spacing:-0.05em; color:var(--orange); text-shadow:0 0 42px rgb(var(--accent-rgb) / 0.35); }
   .bh-detail .prose{ margin-top:1.1rem; max-width:52ch; }
   .bh-facts{ margin-top:1.8rem; border-top:1px solid rgba(255,255,255,0.14); }
   .bh-facts > div{ display:grid; grid-template-columns:6rem 1fr; gap:1rem; padding:0.95rem 0; border-bottom:1px solid rgba(255,255,255,0.14); }
@@ -238,12 +238,12 @@
   .bk.o{ background:var(--orange); box-shadow:inset 0 -6px 0 rgba(0,0,0,0.14); }
   .bk.c{ background:var(--cream); box-shadow:inset 0 -6px 0 rgba(0,0,0,0.09); }
   .bk.ph{ background:#1d1d1f var(--img) var(--pos, 50% 30%)/cover no-repeat; filter:grayscale(1) contrast(1.1); }
-  .bk.ph.lit{ filter:none; box-shadow:0 0 0 2px var(--orange), 0 14px 34px -12px rgba(255,92,57,0.6); }
-  .bk.next{ border:2px dashed rgba(255,92,57,0.85); background:rgba(255,92,57,0.07); }
+  .bk.ph.lit{ filter:none; box-shadow:0 0 0 2px var(--orange), 0 14px 34px -12px rgb(var(--accent-rgb) / 0.6); }
+  .bk.next{ border:2px dashed rgb(var(--accent-rgb) / 0.85); background:rgb(var(--accent-rgb) / 0.07); }
   .bh-wall.in .bk{ animation:bh-lay 0.6s cubic-bezier(.2,.7,.2,1) both; animation-delay:calc(var(--i) * 45ms); }
   .bh-wall.in .bk.next{ animation:bh-lay 0.6s cubic-bezier(.2,.7,.2,1) both, bh-wait 2.4s ease-in-out 1.6s infinite; animation-delay:calc(var(--i) * 45ms), calc(var(--i) * 45ms + 1.4s); }
   @keyframes bh-lay{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:none; } }
-  @keyframes bh-wait{ 0%,100%{ border-color:rgba(255,92,57,0.85); } 50%{ border-color:rgba(255,92,57,0.35); } }
+  @keyframes bh-wait{ 0%,100%{ border-color:rgb(var(--accent-rgb) / 0.85); } 50%{ border-color:rgb(var(--accent-rgb) / 0.35); } }
   @media (prefers-reduced-motion: reduce){ .bh-wall.in .bk, .bh-wall.in .bk.next{ animation:none; } }
   .bh-sign{ margin-top:clamp(2.5rem,5vw,3.5rem); font-family:var(--font-display); font-weight:800; font-style:italic; font-size:clamp(1.5rem,3vw,2.2rem); letter-spacing:-0.02em; color:var(--orange); }
   .bh-road .bh-more .arrow{ display:inline-block; margin-top:0; max-width:none; color:inherit; }
@@ -406,7 +406,7 @@ fill="currentColor" stroke="none">
     </div>
   </section>
 
-  <svg class="bh-bricks" aria-hidden="true" focusable="false"><defs><pattern id="bhb1" width="96" height="48" patternUnits="userSpaceOnUse"><rect x="2" y="2" width="44" height="20" rx="2" fill="#FF5C39"/><rect x="50" y="2" width="44" height="20" rx="2" fill="#0C0C0E"/><rect x="-22" y="26" width="44" height="20" rx="2" fill="#0C0C0E"/><rect x="26" y="26" width="44" height="20" rx="2" fill="#FF5C39"/><rect x="74" y="26" width="44" height="20" rx="2" fill="#0C0C0E"/></pattern></defs><rect width="100%" height="100%" fill="url(#bhb1)"/></svg>
+  <svg class="bh-bricks" aria-hidden="true" focusable="false"><defs><pattern id="bhb1" width="96" height="48" patternUnits="userSpaceOnUse"><rect x="2" y="2" width="44" height="20" rx="2" fill="#FF5C39"/><rect x="50" y="2" width="44" height="20" rx="2" fill="#3b3b46"/><rect x="-22" y="26" width="44" height="20" rx="2" fill="#3b3b46"/><rect x="26" y="26" width="44" height="20" rx="2" fill="#FF5C39"/><rect x="74" y="26" width="44" height="20" rx="2" fill="#3b3b46"/></pattern></defs><rect width="100%" height="100%" fill="url(#bhb1)"/></svg>
 
   <!-- Visit the courts. The reopening date stays as a fact; the invite does not. -->
   <section class="band dark bh-open" id="opening">
@@ -467,7 +467,7 @@ fill="currentColor" stroke="none">
   </section>
 
   <!-- SIDE BY SIDE: their court, our athletes, one line across both -->
-  <section class="bh-side" aria-label="Their courts beside our athletes: the Brick House net and lockers, and Adapt To Life players meeting at the net">
+  <section class="bh-side on-dark" aria-label="Their courts beside our athletes: the Brick House net and lockers, and Adapt To Life players meeting at the net">
     <img src="/images/brickhouse/bh-lockers.webp" alt="" loading="lazy" width="1200" height="2133">
     <img src="/images/athletes/wheelie-58.webp" alt="" loading="lazy" width="1500" height="1000">
     <span class="bh-seam" aria-hidden="true"></span>
@@ -510,7 +510,7 @@ fill="currentColor" stroke="none">
   </section>
 
 
-  <svg class="bh-bricks" aria-hidden="true" focusable="false"><defs><pattern id="bhb2" width="96" height="48" patternUnits="userSpaceOnUse"><rect x="2" y="2" width="44" height="20" rx="2" fill="#FF5C39"/><rect x="50" y="2" width="44" height="20" rx="2" fill="#0C0C0E"/><rect x="-22" y="26" width="44" height="20" rx="2" fill="#0C0C0E"/><rect x="26" y="26" width="44" height="20" rx="2" fill="#FF5C39"/><rect x="74" y="26" width="44" height="20" rx="2" fill="#0C0C0E"/></pattern></defs><rect width="100%" height="100%" fill="url(#bhb2)"/></svg>
+  <svg class="bh-bricks" aria-hidden="true" focusable="false"><defs><pattern id="bhb2" width="96" height="48" patternUnits="userSpaceOnUse"><rect x="2" y="2" width="44" height="20" rx="2" fill="#FF5C39"/><rect x="50" y="2" width="44" height="20" rx="2" fill="#3b3b46"/><rect x="-22" y="26" width="44" height="20" rx="2" fill="#3b3b46"/><rect x="26" y="26" width="44" height="20" rx="2" fill="#FF5C39"/><rect x="74" y="26" width="44" height="20" rx="2" fill="#3b3b46"/></pattern></defs><rect width="100%" height="100%" fill="url(#bhb2)"/></svg>
 
   <!-- 5. GROW TOGETHER: our athletes laid as a wall, Brick House the newest brick, room left to build -->
   <section class="closing dark band-lg">

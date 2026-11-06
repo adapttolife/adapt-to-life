@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=bd1d320d">
+<link rel="stylesheet" href="/css/site.css?v=25cf0e4f">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches&&"IntersectionObserver" in window)document.documentElement.classList.add("ace-motion");</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SportsTeam","name":"Chicago Wheelie Big Dills","sport":"Wheelchair pickleball","url":"https://adapttolife.org/pickleball","description":"A crew of wheelchair pickleball players growing the sport across the Chicago area, funded and supported by Adapt To Life.","areaServed":{"@type":"City","name":"Chicago"},"logo":"https://adapttolife.org/images/pickleball/wheelie-big-dills-badge.webp","sponsor":{"@type":"NGO","name":"Adapt To Life","url":"https://adapttolife.org"}}</script>
@@ -270,18 +270,6 @@
   .pb-cadence{ gap:1.3rem; }
   .pb-tag{ display:inline-block; margin-left:0.5rem; padding:0.2rem 0.55rem; border-radius:999px; vertical-align:0.12em; font-family:var(--font-label); font-style:normal; font-weight:800; font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase; background:rgba(28,26,21,0.07); color:var(--ink-soft); }
   .pb-tag.is-now{ background:rgb(var(--accent-rgb) / 0.13); color:var(--orange-ink); }
-  .pb-goal{ margin-top:1.4rem; max-width:40rem; }
-  .pb-goal-n{ margin:0 0 0.7rem; display:flex; align-items:baseline; flex-wrap:wrap; gap:0.3rem 0.6rem; }
-  .pb-goal-n b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(2rem,4vw,2.6rem); line-height:1; letter-spacing:-0.03em; color:var(--orange-ink); }
-  .pb-goal-n b:empty{ display:none; }
-  .pb-goal-n span{ color:var(--ink-soft); }
-  .pb-segs{ display:flex; gap:4px; height:12px; }
-  .pb-seg{ flex-basis:0; border-radius:999px; background:rgba(28,26,21,0.1); overflow:hidden; }
-  .pb-seg-fill{ display:block; height:100%; width:0; border-radius:999px; background:linear-gradient(90deg,var(--orange-ink),var(--orange-hot)); transition:width 1.2s cubic-bezier(.2,.8,.2,1); }
-  .pb-seg-keys{ display:flex; gap:4px; margin-top:0.55rem; font-size:0.86rem; line-height:1.35; }
-  .pb-seg-keys span{ flex-basis:0; padding-right:0.6rem; }
-  .pb-seg-keys b{ display:block; font-weight:700; }
-  .pb-seg-keys i{ font-style:normal; color:var(--muted); }
   .pb-then{ margin-top:1.3rem; max-width:62ch; line-height:1.5; }
   .pb-card{ scroll-margin-top:96px; }
   .pb-card .pb-tag{ position:absolute; top:1rem; left:1rem; z-index:1; margin:0; padding:0.32rem 0.75rem; border-radius:999px; background:var(--orange); color:var(--ink); font-family:var(--font-label); font-weight:800; font-size:0.7rem; letter-spacing:0.16em; text-transform:uppercase; line-height:1; }
@@ -689,24 +677,60 @@ fill="currentColor" stroke="none">
   </section>
 
   <!-- 6. SUPPORT -->
-  <section class="band tint" id="support">
+  <!-- The one goal, live: the module (scripts/build-module.mjs). The record
+       already leads this page, so no stats here. -->
+  <!-- campaign-module {"id":"support","theme":"dark","athlete":"bob","stats":false} -->
+  <section class="cm" id="support" data-cm data-theme="dark" aria-labelledby="support-title">
+      <div class="cm-bg" aria-hidden="true" style="--ghost:url(/images/pickleball/ghost/bob-gray.webp);--ghost-ar:393/640"></div>
+      <div class="cm-wrap">
+        <div class="cm-head">
+          <p class="cm-status"><span class="cm-dot" aria-hidden="true"></span>Raising now<span class="cm-status-sep" aria-hidden="true"></span>The Chicago Wheelie Big Dills</p>
+          <h2 class="cm-h" id="support-title">Every week on court. <em>Next stop, Naples.</em></h2>
+        </div>
+        <div class="cm-card">
+          <p class="cm-hero"><b data-cm-total>$34,500</b><span data-cm-sub>our goal for the year ahead</span></p>
+          <div class="cm-rows">
+            <div class="cm-row" data-part-row="year">
+              <div class="cm-row-top"><b>Every week</b><span class="cm-badge cm-badge--accent">First priority</span><span class="cm-fig" data-part-fig="year">$13,500 a year</span></div>
+              <div class="cm-track"><span class="cm-fill" data-part-fill="year"></span><span class="cm-start" aria-hidden="true"></span></div>
+              <p class="cm-note">Court time and memberships. Every new gift starts here.</p>
+            </div>
+            <div class="cm-row" data-part-row="send-6">
+              <div class="cm-row-top"><b>The Road to the US Open</b><span class="cm-badge cm-badge--action" data-part-pct="send-6" hidden></span><span class="cm-fig" data-part-fig="send-6">$21,000</span></div>
+              <div class="cm-track"><span class="cm-fill cm-fill--action" data-part-fill="send-6"></span><span class="cm-start" aria-hidden="true"></span></div>
+              <p class="cm-note">Six athletes, about $3,500 each. <a href="/send-6">See the road</a></p>
+            </div>
+            <div class="cm-row cm-row--next">
+              <div class="cm-row-top"><b>The Chicago Classic</b><span class="cm-badge cm-badge--quiet">Next goal</span><span class="cm-fig">Date to come</span></div>
+              <div class="cm-track cm-track--locked" aria-hidden="true"></div>
+              <p class="cm-note">Our goal: free registration, transportation and hotels for every athlete. <a href="/chicago-classic">The Classic</a></p>
+            </div>
+          </div>
+          <div class="cm-give" data-give>
+            <div class="cm-seg" role="radiogroup" aria-label="How often">
+              <button type="button" role="radio" aria-checked="true" data-freq="monthly">Monthly</button>
+              <button type="button" role="radio" aria-checked="false" data-freq="once">One time</button>
+            </div>
+            <div class="cm-amts is-3" role="radiogroup" aria-label="Amount" data-amts>
+              <button type="button" role="radio" aria-checked="false" data-a="22" aria-label="$22 a month">$22</button>
+              <button type="button" role="radio" aria-checked="true" data-a="80" aria-label="$80 a month">$80</button>
+              <button type="button" role="radio" aria-checked="false" data-a="325" aria-label="$325 a month">$325</button>
+            </div>
+            <p class="cm-impact" data-impact aria-live="polite">$80 a month can keep one athlete training all year.</p>
+          </div>
+          <a class="cm-btn btn" href="/donate?amount=80&amp;frequency=monthly" data-give-link>Donate</a>
+          <p class="cm-trust"><span data-donors hidden></span><span>Tax-deductible</span><span>501(c)(3) &middot; EIN 41-3213344</span><span>Secure checkout by Givebutter</span></p>
+        </div>
+      </div>
+    </section>
+  <!-- /campaign-module -->
+  <section class="band tint" id="how-it-adds-up">
     <div class="wrap">
       <div class="ace-head" data-m="stagger">
         <hr class="tick orange">
         <span class="eyebrow orange">One goal</span>
         <h2 class="serif statement">Help us <em class="italic" style="color:var(--orange)">fund it.</em></h2>
         <p class="prose">Every gift goes to the Chicago Wheelie Big Dills, through the <a class="textlink" href="/hustle-and-heart" style="font:inherit;letter-spacing:inherit;">Hustle &amp; Heart Fund</a>. One goal for the year ahead, funded in this order:</p>
-        <div class="pb-goal" data-goal-box data-key="wbd">
-          <p class="pb-goal-n"><b data-goal-raised></b><span data-goal-of>Our goal for the year ahead: $34,500</span></p>
-          <div class="pb-segs" aria-hidden="true">
-            <span class="pb-seg" style="flex-grow:13500"><span class="pb-seg-fill" data-seg-fill="year"></span></span>
-            <span class="pb-seg" style="flex-grow:21000"><span class="pb-seg-fill" data-seg-fill="send-6"></span></span>
-          </div>
-          <div class="pb-seg-keys">
-            <span style="flex-grow:13500"><b>Every week</b> <i data-seg-fig="year">$13,500</i></span>
-            <span style="flex-grow:21000"><b>The Road to the US Open</b> <i data-seg-fig="send-6">$21,000</i></span>
-          </div>
-        </div>
         <ol class="pb-prio pb-cadence">
           <li><b>Every week <em class="pb-tag is-now">First</em></b><span>$13,500 a year: court time at ACE every week ($3,900) and memberships so ten athletes can train all year ($9,600).</span></li>
           <li><b>The Road to the US Open</b><span>$21,000: six athletes, about $3,500 each, roughly what the US Open has cost the last couple of years. Money raised for Send 6 stays on the road. <a class="textlink" href="/send-6" style="font:inherit;letter-spacing:inherit;">See the road</a></span></li>
@@ -920,23 +944,7 @@ fill="currentColor" stroke="none">
 </script>
 <script src="/js/subscribe.js?v=71816eda" defer></script>
 <script src="/js/turnstile-lazy.js?v=12e9b811" defer></script>
-<script>
-  /* "Help us fund it": one goal and its parts (Alec, Nov 5). */
-  (function(){
-    var box = document.querySelector('[data-goal-box]'); if(!box) return;
-    var usd = function(n){ return '$' + Math.round(n).toLocaleString('en-US'); };
-    fetch('/api/raised?c=' + box.getAttribute('data-key')).then(function(r){ return r.json(); }).then(function(d){
-      if (!d || !d.raised || !d.goal) return;
-      box.querySelector('[data-goal-raised]').textContent = usd(d.raised);
-      box.querySelector('[data-goal-of]').textContent = 'raised of our ' + usd(d.goal) + ' goal for the year ahead';
-      var parts = d.parts || {};
-      Object.keys(parts).forEach(function(k){
-        var p = parts[k], fig = box.querySelector('[data-seg-fig="' + k + '"]'), fill = box.querySelector('[data-seg-fill="' + k + '"]');
-        if (fig && p.raised) fig.textContent = usd(p.raised) + ' of ' + usd(p.goal);
-        if (fill && p.goal) { var pct = Math.max(0, Math.min(100, p.raised / p.goal * 100)); requestAnimationFrame(function(){ setTimeout(function(){ fill.style.width = pct.toFixed(1) + '%'; }, 120); }); }
-      });
-    }).catch(function(){});
-  })();
-</script>
+<script src="/js/campaigns.js?v=d85e741e"></script>
+<script>window.ATLCampaigns.module();</script>
 </body>
 </html>

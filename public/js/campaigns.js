@@ -439,6 +439,7 @@
           raised: Number(d.raised) || 0,
           goal: Number(d.goal) || 0,
           parts: d.parts || null,
+          donors: Number(d.donors) || 0,
         });
       })
       .catch(function (err) {
@@ -447,177 +448,9 @@
       });
   }
 
-  /* The campaign band: one partial, four pages. Renders the active campaign
-     into `hostId`, or renders nothing at all if there is no campaign or the
-     data is unreachable. Nothing is the correct empty state here: the pages it
-     sits on are complete without it, and a band that cannot name a real goal
-     is worse than no band. */
-  function band(hostId, opts) {
-    var host = document.getElementById(hostId);
-    if (!host) return;
-    var opt = opts || {};
-    var lifted = opt.lifted;
-
-    load(function (store) {
-      // Release the reserved height only ONCE THE CONTENT IS IN, not on
-      // arrival of the data. Removing it first collapsed the box to nothing
-      // for the frame between the class going and the markup landing, so the
-      // page shifted DOWN and then back UP — measured on /donate as a section
-      // going 67px -> 0 -> 67 at about 1.5s, and CLS 0.247 on the page where
-      // somebody is entering a card. The reservation exists precisely to
-      // cover this gap; releasing it early gave the jump back.
-      var c = store && store.campaigns[0];
-      if (!c) {
-        host.classList.remove("camp-pending");
-        return;
-      }
-
-      // The featured campaign is the first one: the Chicago Wheelie Big Dills,
-      // the one program every gift funds. Every money button on the site says
-      // "Donate" and goes to /donate (Alec, Nov 5: one call to action), so the
-      // card follows cta_url. A page that IS the donate page passes its own
-      // href and label, because a Donate button there asks somebody to do the
-      // thing they are already doing.
-      var a = el(
-        "a",
-        "camp-band" + (lifted ? " lifted" : "") + (c.goal ? "" : " no-goal"),
-      );
-      a.href = opt.href || c.cta_url || c.page || "/send-6";
-
-      var card = el("div", "camp-band-card");
-      var left = el("div");
-      var eyebrow = el("span", "cb-eyebrow");
-      eyebrow.appendChild(el("span", "dot"));
-      eyebrow.appendChild(document.createTextNode("Raising now"));
-      left.appendChild(eyebrow);
-      left.appendChild(el("span", "cb-name", c.name));
-      if (c.blurb) left.appendChild(el("span", "cb-blurb", c.blurb));
-
-      // One goal, one bar (Alec, Nov 5): a campaign with parts draws one bar
-      // split into them, each part as wide as its share of the goal and
-      // filled on its own, so the bar never claims money for a part that
-      // has none. The parts are listed under the card in priority order.
-      var parts = Array.isArray(c.parts) && c.parts.length ? c.parts : null;
-      var side = el("div", "cb-side");
-      var bar;
-      var fill = null;
-      var segFills = {};
-      if (parts) {
-        bar = el("span", "cb-segs");
-        parts.forEach(function (p) {
-          var seg = el("span", "cb-seg");
-          seg.style.flexGrow = String(p.goal || 1);
-          var f = el("span", "cb-fill");
-          seg.appendChild(f);
-          segFills[p.key] = f;
-          bar.appendChild(seg);
-        });
-      } else {
-        bar = el("span", "cb-bar");
-        fill = el("span", "cb-fill");
-        bar.appendChild(fill);
-      }
-      var label = el(
-        "span",
-        "cb-label",
-        c.goal ? money(c.goal) + " goal" : c.when || "",
-      );
-      var cta = el("span", "cb-cta", opt.cta || c.cta_label || "See the campaign");
-      if (c.goal) side.appendChild(bar);
-      side.appendChild(label);
-      side.appendChild(cta);
-
-      card.appendChild(left);
-      card.appendChild(side);
-      a.appendChild(card);
-      host.appendChild(a);
-
-      // Under the card: the parts of the goal, then any other campaign. A
-      // campaign that is a part of this one (The Road) is drawn in the bar,
-      // not listed again as a second ask.
-      var figs = {};
-      var others = store.campaigns.slice(1).filter(function (o) {
-        return o.part_of !== c.slug;
-      });
-      if (parts || others.length) {
-        var also = el("p", "cb-also");
-        if (parts) {
-          parts.forEach(function (p) {
-            var item = el(
-              p.page ? "a" : "span",
-              p.page ? "cb-also-link" : "cb-also-item",
-              p.label,
-            );
-            if (p.page) item.href = p.page;
-            var fig = el("span", "cb-also-fig", money(p.goal));
-            item.appendChild(fig);
-            figs[p.key] = fig;
-            also.appendChild(item);
-          });
-          if (c.next && c.next.label) {
-            var nx = el("a", "cb-also-link cb-also-next", "Then " + c.next.label);
-            nx.href = c.next.page || "/";
-            also.appendChild(nx);
-          }
-        } else {
-          also.appendChild(el("span", "cb-also-k", "Also raising"));
-        }
-        others.forEach(function (o) {
-          var link = el("a", "cb-also-link", o.name);
-          link.href = o.page || "/";
-          var ofig = el(
-            "span",
-            "cb-also-fig",
-            o.goal ? money(o.goal) + " goal" : o.when || "",
-          );
-          link.appendChild(ofig);
-          also.appendChild(link);
-          if (o.goal && o.raised_key)
-            raised(function (d) {
-              if (d && d.raised)
-                ofig.textContent = money(d.raised) + " of " + money(o.goal);
-            }, o.raised_key);
-        });
-        host.appendChild(also);
-      }
-      host.classList.remove("camp-pending");
-
-      // The live figure lands last. If Givebutter is unreachable the goal
-      // stands on its own rather than publishing a $0 we cannot vouch for.
-      if (!c.goal) return; // no ceiling, so no bar
-      raised(function (d) {
-        // The campaign's own goal leads, so the band always matches the page
-        // that explains it.
-        var goal = c.goal || (d && d.goal);
-        // A new goal reads "$34,500 goal" until the first gift lands, not "$0".
-        if (!d || !goal || !d.raised) return;
-        label.textContent = money(d.raised) + " of " + money(goal) + " raised";
-        var widths = [];
-        if (parts && d.parts) {
-          parts.forEach(function (p) {
-            var pr = d.parts[p.key];
-            if (!pr) return;
-            var pg = p.goal || pr.goal;
-            if (pr.raised && figs[p.key])
-              figs[p.key].textContent = money(pr.raised) + " of " + money(pg);
-            widths.push([segFills[p.key], pg ? (pr.raised / pg) * 100 : 0]);
-          });
-        } else if (fill) {
-          widths.push([fill, (d.raised / goal) * 100]);
-        }
-        requestAnimationFrame(function () {
-          setTimeout(function () {
-            widths.forEach(function (w) {
-              w[0].style.width = Math.max(0, Math.min(100, w[1])).toFixed(1) + "%";
-            });
-          }, 140);
-        });
-      }, c.raised_key);
-    });
-  }
-
-  /* The result band: the counterpart to band(). band() says what we are
-     raising NOW; this says what a finished drive actually brought in.
+  /* The result band: the counterpart to the campaign module. The module says
+     what we are raising NOW; this says what a finished drive actually brought
+     in.
 
      Why this is data-driven rather than three lines of hand-written HTML:
      the August popcorn drive's $3,004 already appears on /popcorn and
@@ -704,10 +537,217 @@
     });
   }
 
+  /* The campaign module (src/partials/campaign-module.html, stamped into
+     pages by scripts/build-module.mjs). The markup ships complete with the
+     goal, so a page without data still reads true: "$34,500, our goal for the
+     year ahead". When the live total lands it counts up from $0 as the card
+     comes into view, each part fills on its own, an empty part shows a pulse
+     where the next gift lands, and the donor count joins the trust line.
+     Never a $0 we cannot vouch for: no raised figure, no change. */
+  var GIFTS = {
+    // Every line is a verified unit cost: $5 a night at ACE (15 for $75), $960
+    // a year for a membership, about $3,500 for a US Open the last couple of
+    // years. Monthly figures are those over 12 months ($22 is about $5 a week).
+    monthly: [
+      { a: 22, t: "$22 a month keeps one athlete on court every week of the year." },
+      { a: 80, t: "$80 a month can keep one athlete training all year." },
+      {
+        a: 325,
+        t: "$325 a month covers a night at ACE every week for up to 15 athletes.",
+      },
+    ],
+    once: [
+      { a: 5, t: "$5 puts one athlete on court for a night." },
+      { a: 75, t: "$75 covers up to 15 athletes for a night at ACE." },
+      { a: 960, t: "$960 can keep one athlete training all year." },
+      { a: 3500, t: "$3,500 covers about what one athlete's US Open costs." },
+    ],
+  };
+  var GIFT_DEFAULT = { monthly: 80, once: 75 };
+
+  function reduced() {
+    return !!(
+      global.matchMedia && global.matchMedia("(prefers-reduced-motion: reduce)").matches
+    );
+  }
+
+  function whenSeen(node, fn) {
+    if (!("IntersectionObserver" in global)) return fn();
+    var io = new IntersectionObserver(
+      function (entries) {
+        if (
+          entries.some(function (e) {
+            return e.isIntersecting;
+          })
+        ) {
+          io.disconnect();
+          fn();
+        }
+      },
+      { threshold: 0.35 },
+    );
+    io.observe(node);
+  }
+
+  // The faded athlete behind the module is decoration: paint it only when the
+  // module is within a screen of view, so a visit that never scrolls there
+  // never downloads it.
+  function near(node) {
+    if (!("IntersectionObserver" in global)) return node.classList.add("is-near");
+    var io = new IntersectionObserver(
+      function (entries) {
+        if (
+          entries.some(function (e) {
+            return e.isIntersecting;
+          })
+        ) {
+          io.disconnect();
+          node.classList.add("is-near");
+        }
+      },
+      { rootMargin: "200px 0px" },
+    );
+    io.observe(node);
+  }
+
+  function countUp(node, to) {
+    if (reduced() || typeof requestAnimationFrame !== "function") {
+      node.textContent = money(Math.round(to));
+      return;
+    }
+    var t0 = null;
+    var dur = 1400;
+    function step(t) {
+      if (t0 === null) t0 = t;
+      var p = Math.min(1, (t - t0) / dur);
+      node.textContent = money(Math.round(to * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  function each(root, sel, fn) {
+    Array.prototype.forEach.call(root.querySelectorAll(sel), fn);
+  }
+
+  function picker(card) {
+    var box = card.querySelector("[data-give]");
+    var link = card.querySelector("[data-give-link]");
+    if (!box || !link) return;
+    var amts = box.querySelector("[data-amts]");
+    var impact = box.querySelector("[data-impact]");
+    var freq = "monthly";
+    function choose(opt) {
+      Array.prototype.forEach.call(amts.children, function (b) {
+        b.setAttribute(
+          "aria-checked",
+          String(Number(b.getAttribute("data-a")) === opt.a),
+        );
+      });
+      impact.textContent = opt.t;
+      link.href =
+        "/donate?amount=" + opt.a + (freq === "monthly" ? "&frequency=monthly" : "");
+    }
+    function draw() {
+      amts.innerHTML = "";
+      amts.classList.toggle("is-3", GIFTS[freq].length === 3);
+      GIFTS[freq].forEach(function (opt) {
+        var label = "$" + opt.a.toLocaleString("en-US");
+        var b = el("button", null, label);
+        b.type = "button";
+        b.setAttribute("role", "radio");
+        b.setAttribute("data-a", String(opt.a));
+        b.setAttribute(
+          "aria-label",
+          label + (freq === "monthly" ? " a month" : " once"),
+        );
+        b.addEventListener("click", function () {
+          choose(opt);
+        });
+        amts.appendChild(b);
+      });
+      choose(
+        GIFTS[freq].filter(function (o) {
+          return o.a === GIFT_DEFAULT[freq];
+        })[0],
+      );
+    }
+    each(box, "[data-freq]", function (b) {
+      b.addEventListener("click", function () {
+        freq = b.getAttribute("data-freq");
+        each(box, "[data-freq]", function (x) {
+          x.setAttribute("aria-checked", String(x === b));
+        });
+        draw();
+      });
+    });
+    // The static buttons are monthly with $80 chosen; rebuilding them binds
+    // the clicks without changing what is on screen.
+    draw();
+  }
+
+  function module(root) {
+    var scope = root || document;
+    var mods = scope.querySelectorAll("[data-cm]");
+    if (!mods.length) return;
+    Array.prototype.forEach.call(mods, function (m) {
+      var card = m.querySelector(".cm-card");
+      if (card) picker(card);
+      var bg = m.querySelector(".cm-bg");
+      if (bg) near(bg);
+    });
+    raised(function (d) {
+      if (!d || !d.raised) return;
+      var parts = d.parts || {};
+      Array.prototype.forEach.call(mods, function (m) {
+        if (d.donors)
+          each(m, "[data-donors]", function (n) {
+            n.textContent = "Join " + d.donors + " donors";
+            n.hidden = false;
+          });
+        if (d.goal)
+          each(m, "[data-cm-sub]", function (n) {
+            n.textContent = "raised toward our " + money(d.goal) + " goal";
+          });
+        each(m, "[data-cm-total]", function (n) {
+          n.textContent = "$0";
+          whenSeen(n, function () {
+            countUp(n, d.raised);
+          });
+        });
+        Object.keys(parts).forEach(function (k) {
+          var p = parts[k] || {};
+          var pr = Number(p.raised) || 0;
+          var pg = Number(p.goal) || 0;
+          if (!pg) return;
+          each(m, '[data-part-fig="' + k + '"]', function (n) {
+            n.textContent = pr
+              ? money(pr) + " of " + money(pg)
+              : money(pg) + (k === "year" ? " a year" : "");
+          });
+          each(m, '[data-part-row="' + k + '"]', function (n) {
+            n.classList.toggle("is-empty", !pr);
+          });
+          each(m, '[data-part-pct="' + k + '"]', function (n) {
+            if (!pr) return;
+            n.textContent = Math.round((pr / pg) * 100) + "%";
+            n.hidden = false;
+          });
+          each(m, '[data-part-fill="' + k + '"]', function (n) {
+            whenSeen(n, function () {
+              n.style.width =
+                Math.max(0, Math.min(100, (pr / pg) * 100)).toFixed(1) + "%";
+            });
+          });
+        });
+      });
+    }, "wbd");
+  }
+
   global.ATLCampaigns = {
     load: load,
     raised: raised,
-    band: band,
+    module: module,
     result: result,
     localDate: localDate,
     today: today,

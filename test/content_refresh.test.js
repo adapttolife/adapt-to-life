@@ -49,10 +49,12 @@ test("homepage tells participation story without the two-program comparison pane
   const html = read("public/index.html");
   assert.ok(html.includes('id="participation"'));
   assert.ok(html.includes("A chance to play should not come down to luck."));
-  assert.ok(html.indexOf('id="participation"') < html.indexOf('id="homeBand"'));
-  assert.ok(html.indexOf('id="homeBand"') < html.indexOf('id="next-step"'));
+  // The campaign module (scripts/build-module.mjs) follows the participation
+  // story and comes before the next step.
+  assert.ok(html.indexOf('id="participation"') < html.indexOf('id="campaign"'));
+  assert.ok(html.indexOf('id="campaign"') < html.indexOf('id="next-step"'));
   assert.ok(!html.includes('id="homeResult"'));
-  assert.ok(html.includes("C.band('homeBand', { lifted: false })"));
+  assert.ok(html.includes("C.module();"));
   const welcome = html.split('class="home-welcome dark"')[1].split("</div>")[0];
   assert.ok(
     !welcome.includes("<a "),

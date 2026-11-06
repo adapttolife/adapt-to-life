@@ -32,11 +32,11 @@
 <link rel="dns-prefetch" href="https://js.stripe.com">
 <link rel="preload" as="script" href="https://widgets.givebutter.com/latest.umd.cjs?acct=7FsgcjXFnW6fabQn">
 <script async src="https://widgets.givebutter.com/latest.umd.cjs?acct=7FsgcjXFnW6fabQn"></script>
-<link rel="preload" href="/css/site.css?v=bd1d320d" as="style">
+<link rel="preload" href="/css/site.css?v=25cf0e4f" as="style">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=bd1d320d">
+<link rel="stylesheet" href="/css/site.css?v=25cf0e4f">
 <link rel="stylesheet" href="/css/page-header.css?v=beb972ef">
 <!-- band:vars --><style data-band-vars>:root{--pg-band-wide:url('/images/hero/panels/pg-band-3-wide.3f0c6f24.webp');--pg-band-tall:url('/images/hero/panels/pg-band-3-tall.f37597ee.webp');--pg-give-wide:url('/images/hero/panels/pg-give-wide.b46beed5.webp');--pg-give-tall:url('/images/hero/panels/pg-give-tall.5cece3a5.webp');}</style>
 <link rel="stylesheet" href="/css/roll-band.css?v=4792bee4">
@@ -225,10 +225,50 @@ fill="currentColor" stroke="none">
     </div>
   </section>
 
-  <!-- CAMPAIGN BAND — what the gift you just considered is going toward -->
-  <section class="band-sm tint">
-    <div class="wrap"><div id="donateBand" class="camp-pending"></div></div>
-  </section>
+  <!-- WHERE IT GOES — what the gift you just considered is going toward. The
+       form is right above, so no picker here: the button goes back to it. No
+       athlete behind it either: it is in view on load, and /donate is the
+       page with the tightest weight budget (scripts/check-site.mjs). -->
+  <!-- campaign-module {"id":"where-it-goes","theme":"light","athlete":null,"give":false,"cta":{"href":"#givePanel","label":"Choose an amount"}} -->
+  <section class="cm" id="where-it-goes" data-cm data-theme="light" aria-labelledby="where-it-goes-title">
+      <div class="cm-wrap">
+        <div class="cm-head">
+          <p class="cm-status"><span class="cm-dot" aria-hidden="true"></span>Raising now<span class="cm-status-sep" aria-hidden="true"></span>The Chicago Wheelie Big Dills</p>
+          <h2 class="cm-h" id="where-it-goes-title">Every week on court. <em>Next stop, Naples.</em></h2>
+        </div>
+        <ul class="cm-stats" aria-label="Already on the board">
+          <li><b>3</b><span>straight US Opens</span></li>
+          <li><b>6</b><span>Monster Smash medals</span></li>
+          <li><b>1st</b><span>APP Tour wheelchair division</span></li>
+          <li><b>$3,004</b><span>popcorn drive, 3&times; its goal</span></li>
+          <li><b>334K</b><span>views in 90 days</span></li>
+          <li><b>Weekly</b><span>on court, all year</span></li>
+        </ul>
+        <div class="cm-card">
+          <p class="cm-hero"><b data-cm-total>$34,500</b><span data-cm-sub>our goal for the year ahead</span></p>
+          <div class="cm-rows">
+            <div class="cm-row" data-part-row="year">
+              <div class="cm-row-top"><b>Every week</b><span class="cm-badge cm-badge--accent">First priority</span><span class="cm-fig" data-part-fig="year">$13,500 a year</span></div>
+              <div class="cm-track"><span class="cm-fill" data-part-fill="year"></span><span class="cm-start" aria-hidden="true"></span></div>
+              <p class="cm-note">Court time and memberships. Every new gift starts here.</p>
+            </div>
+            <div class="cm-row" data-part-row="send-6">
+              <div class="cm-row-top"><b>The Road to the US Open</b><span class="cm-badge cm-badge--action" data-part-pct="send-6" hidden></span><span class="cm-fig" data-part-fig="send-6">$21,000</span></div>
+              <div class="cm-track"><span class="cm-fill cm-fill--action" data-part-fill="send-6"></span><span class="cm-start" aria-hidden="true"></span></div>
+              <p class="cm-note">Six athletes, about $3,500 each. <a href="/send-6">See the road</a></p>
+            </div>
+            <div class="cm-row cm-row--next">
+              <div class="cm-row-top"><b>The Chicago Classic</b><span class="cm-badge cm-badge--quiet">Next goal</span><span class="cm-fig">Date to come</span></div>
+              <div class="cm-track cm-track--locked" aria-hidden="true"></div>
+              <p class="cm-note">Our goal: free registration, transportation and hotels for every athlete. <a href="/chicago-classic">The Classic</a></p>
+            </div>
+          </div>
+          <a class="cm-btn btn" href="#givePanel" data-give-link>Choose an amount</a>
+          <p class="cm-trust"><span data-donors hidden></span><span>Tax-deductible</span><span>501(c)(3) &middot; EIN 41-3213344</span><span>Secure checkout by Givebutter</span></p>
+        </div>
+      </div>
+    </section>
+  <!-- /campaign-module -->
 
   <!-- IMPACT -->
   <section class="band">
@@ -561,8 +601,8 @@ fill="currentColor" stroke="none">
 
 <!-- Donation form is the embedded Givebutter giving form above; no custom JS needed. -->
 
-<script src="/js/campaigns.js?v=5bb030e9"></script>
-<script>window.ATLCampaigns.band('donateBand', { href: '/pickleball#support', cta: 'See where it goes' });</script>
+<script src="/js/campaigns.js?v=d85e741e"></script>
+<script>window.ATLCampaigns.module();</script>
 <script src="/js/subscribe.js?v=71816eda" defer></script>
 <script src="/js/turnstile-lazy.js?v=12e9b811" defer></script>
 </body>

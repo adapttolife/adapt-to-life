@@ -43,7 +43,7 @@ test("campaign page and supporting cards name the road", async () => {
     "the US Open is a lottery; the page never promises a spot",
   );
   assert.ok(fund.includes(`>${CAMPAIGN}<`));
-  assert.ok(fund.includes('href="/send-6" class="thermo-link">See the road'));
+  assert.ok(fund.includes('<a href="/send-6">See the road</a>'), "the module links the road");
   assert.ok(
     popcorn.includes(`>${HISTORY}</a>`),
     "popcorn history names what it paid into",

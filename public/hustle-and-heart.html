@@ -30,11 +30,11 @@
 <link rel="dns-prefetch" href="https://widgets.givebutter.com">
 <link rel="dns-prefetch" href="https://givebuttercdn.com">
 <link rel="dns-prefetch" href="https://js.stripe.com">
-<link rel="preload" href="/css/site.css?v=bd1d320d" as="style">
+<link rel="preload" href="/css/site.css?v=25cf0e4f" as="style">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=bd1d320d">
+<link rel="stylesheet" href="/css/site.css?v=25cf0e4f">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <script src="/js/givebutter-lazy.js?v=29b7ce7b" defer></script>
 <style>
@@ -48,28 +48,16 @@
   .fund-terms{ margin:0 0 1rem; }
   .fund-terms a{ display:inline-flex; align-items:center; min-height:44px; color:var(--cream); font-size:0.95rem; text-decoration:underline; text-underline-offset:4px; }
   @media (max-width:880px){ .give-split{ grid-template-columns:1fr; gap:2.2rem; } }
-  .give-split .thermo{ max-width:none; margin:1.4rem 0 0; }
-  .thermo-segs{ display:flex; gap:4px; height:14px; margin-top:1rem; }
-  .thermo-seg{ flex-basis:0; border-radius:999px; background:rgba(255,255,255,0.14); overflow:hidden; }
-  .thermo-keys{ display:flex; gap:4px; margin-top:0.6rem; }
-  .thermo-keys p{ flex-basis:0; margin:0; padding-right:0.6rem; font-size:0.86rem; font-weight:600; line-height:1.35; color:var(--cream); }
-  .thermo-keys span{ display:block; font-weight:400; color:var(--cream-mute); }
   .prog .prog-n{ margin:0 0 0.9rem; font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(1.9rem,3.4vw,2.4rem); line-height:1; letter-spacing:-0.03em; color:var(--orange-ink); }
   .prog .prog-n span{ display:block; margin-top:0.45rem; font-family:var(--font-label); font-style:normal; font-weight:800; font-size:0.7rem; line-height:1.4; letter-spacing:0.16em; text-transform:uppercase; color:var(--ink-soft); }
   .hh-skill{ margin:clamp(2.2rem,4vw,3rem) auto 0; max-width:40ch; text-align:center; font-family:var(--font-display); font-weight:800; font-size:clamp(1.35rem,2.6vw,1.85rem); line-height:1.2; letter-spacing:-0.02em; }
   .hh-skill em{ display:block; color:var(--orange-ink); }
-  .thermo-also{ margin:0 0 0.4rem; font-family:var(--font-label); font-weight:800; font-size:0.72rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--orange); }
-  .thermo-classic{ margin:0.8rem 0 0; font-size:0.92rem; color:var(--cream-mute); }
-  .thermo-classic a{ color:var(--cream); text-decoration:underline; text-decoration-color:var(--orange); text-underline-offset:3px; }
   .gift-ladder{ list-style:none; margin:1.4rem 0 0; padding:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.7rem; }
   .gift-ladder li{ padding:0.9rem 1rem 1rem; border-radius:14px; background:rgba(255,255,255,0.05); box-shadow:inset 0 0 0 1px rgba(255,255,255,0.12); }
   .gift-ladder b{ display:block; font-family:var(--font-display); font-weight:900; font-style:italic; font-size:1.8rem; line-height:1; letter-spacing:-0.03em; color:#ff5c39; }
   .gift-ladder span{ display:block; margin-top:0.4rem; color:var(--cream); line-height:1.4; font-weight:600; font-size:0.95rem; }
   .gift-ladder li:last-child:nth-child(odd){ grid-column:1 / -1; }
-  .give-split .thermo-row{ justify-content:flex-start; }
   .give-split-form givebutter-giving-form{ display:block; width:100%; }
-  .thermo{ max-width:540px; margin:1.8rem auto 0; }
-  .thermo-row{ display:flex; align-items:baseline; gap:0.5rem; justify-content:center; flex-wrap:wrap; }
   .hh-model-lead{ margin-top:1rem; max-width:62ch; }
   .hh-steps{ list-style:none; margin:clamp(1.8rem,3.6vw,2.6rem) 0 0; padding:0; display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(1rem,2.4vw,1.6rem); }
   .hh-steps li{ padding:clamp(1.3rem,2.4vw,1.8rem); border-radius:18px; background:var(--paper); border-top:4px solid var(--orange); box-shadow:0 0 0 1px rgba(59,59,70,0.08), 0 24px 50px -36px rgba(59,59,70,0.35); }
@@ -98,13 +86,6 @@
   .hh-now-proof li{ display:grid; grid-template-columns:7.4rem 1fr; align-items:baseline; gap:1rem; padding-bottom:1.1rem; border-bottom:1px solid rgba(255,255,255,0.12); }
   .hh-now-proof b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(2.4rem,4.6vw,3.2rem); line-height:0.9; letter-spacing:-0.04em; color:var(--yellow); }
   .hh-now-proof span{ color:var(--cream); font-weight:600; line-height:1.4; }
-  .thermo-raised:empty{ display:none; }
-  .thermo-raised{ font-family:var(--font-display); font-weight:900; font-style:italic; letter-spacing:-0.03em; font-size:clamp(2.4rem,6vw,3.4rem); line-height:1; color:var(--cream); }
-  .thermo-goal{ font-family:"Hanken Grotesk",sans-serif; color:rgba(255,255,255,0.6); font-size:0.95rem; }
-  .thermo-track{ display:block; height:14px; border-radius:999px; background:rgba(255,255,255,0.14); margin-top:1rem; overflow:hidden; }
-  .thermo-fill{ display:block; height:100%; width:0; border-radius:999px; background:linear-gradient(90deg,#FF5C39,#ff9f87); transition:width 1.3s cubic-bezier(.2,.8,.2,1); }
-  .thermo-link{ display:inline-block; margin-top:1.05rem; font-family:"Hanken Grotesk",sans-serif; font-weight:600; color:var(--orange); text-decoration:none; }
-  .thermo-link:hover{ text-decoration:underline; }
   /* Space held for the Givebutter embed so its late mount cannot shove the
      page. Measured on prod: the settled form is 552px on a phone and 508px on
      a desktop, so these sit just under each. */
@@ -357,6 +338,49 @@ fill="currentColor" stroke="none">
     </div>
   </section>
 
+  <!-- The one goal, live: the module (scripts/build-module.mjs). The form is
+       right below, so no picker: the button goes to it. -->
+  <!-- campaign-module {"id":"the-goal","theme":"dark","athlete":"juan","give":false,"cta":{"href":"#fund-donation","label":"Donate"}} -->
+  <section class="cm" id="the-goal" data-cm data-theme="dark" aria-labelledby="the-goal-title">
+      <div class="cm-bg" aria-hidden="true" style="--ghost:url(/images/pickleball/ghost/juan-gray.webp);--ghost-ar:438/640"></div>
+      <div class="cm-wrap">
+        <div class="cm-head">
+          <p class="cm-status"><span class="cm-dot" aria-hidden="true"></span>Raising now<span class="cm-status-sep" aria-hidden="true"></span>The Chicago Wheelie Big Dills</p>
+          <h2 class="cm-h" id="the-goal-title">Every week on court. <em>Next stop, Naples.</em></h2>
+        </div>
+        <ul class="cm-stats" aria-label="Already on the board">
+          <li><b>3</b><span>straight US Opens</span></li>
+          <li><b>6</b><span>Monster Smash medals</span></li>
+          <li><b>1st</b><span>APP Tour wheelchair division</span></li>
+          <li><b>$3,004</b><span>popcorn drive, 3&times; its goal</span></li>
+          <li><b>334K</b><span>views in 90 days</span></li>
+          <li><b>Weekly</b><span>on court, all year</span></li>
+        </ul>
+        <div class="cm-card">
+          <p class="cm-hero"><b data-cm-total>$34,500</b><span data-cm-sub>our goal for the year ahead</span></p>
+          <div class="cm-rows">
+            <div class="cm-row" data-part-row="year">
+              <div class="cm-row-top"><b>Every week</b><span class="cm-badge cm-badge--accent">First priority</span><span class="cm-fig" data-part-fig="year">$13,500 a year</span></div>
+              <div class="cm-track"><span class="cm-fill" data-part-fill="year"></span><span class="cm-start" aria-hidden="true"></span></div>
+              <p class="cm-note">Court time and memberships. Every new gift starts here.</p>
+            </div>
+            <div class="cm-row" data-part-row="send-6">
+              <div class="cm-row-top"><b>The Road to the US Open</b><span class="cm-badge cm-badge--action" data-part-pct="send-6" hidden></span><span class="cm-fig" data-part-fig="send-6">$21,000</span></div>
+              <div class="cm-track"><span class="cm-fill cm-fill--action" data-part-fill="send-6"></span><span class="cm-start" aria-hidden="true"></span></div>
+              <p class="cm-note">Six athletes, about $3,500 each. <a href="/send-6">See the road</a></p>
+            </div>
+            <div class="cm-row cm-row--next">
+              <div class="cm-row-top"><b>The Chicago Classic</b><span class="cm-badge cm-badge--quiet">Next goal</span><span class="cm-fig">Date to come</span></div>
+              <div class="cm-track cm-track--locked" aria-hidden="true"></div>
+              <p class="cm-note">Our goal: free registration, transportation and hotels for every athlete. <a href="/chicago-classic">The Classic</a></p>
+            </div>
+          </div>
+          <a class="cm-btn btn" href="#fund-donation" data-give-link>Donate</a>
+          <p class="cm-trust"><span data-donors hidden></span><span>Tax-deductible</span><span>501(c)(3) &middot; EIN 41-3213344</span><span>Secure checkout by Givebutter</span></p>
+        </div>
+      </div>
+    </section>
+  <!-- /campaign-module -->
   <section class="closing dark band-lg give-moment">
     <div class="wrap">
       <div class="give-split">
@@ -370,24 +394,6 @@ fill="currentColor" stroke="none">
             <li><b>$75</b><span>covers up to 15 athletes for a night at ACE</span></li>
             <li><b>$960</b><span>can keep one athlete training all year</span></li>
           </ul>
-          <div class="thermo" data-thermo data-goal="34500" data-key="wbd">
-            <p class="thermo-also">One goal for the year ahead</p>
-            <p style="margin:0 0 0.9rem; font-size:0.95rem; font-weight:600;">The Chicago Wheelie Big Dills</p>
-            <div class="thermo-row">
-              <span class="thermo-raised" data-thermo-raised></span>
-              <span class="thermo-goal">Our goal is $34,500</span>
-            </div>
-            <div class="thermo-segs" aria-hidden="true">
-              <span class="thermo-seg" style="flex-grow:13500"><span class="thermo-fill" data-seg-fill="year"></span></span>
-              <span class="thermo-seg" style="flex-grow:21000"><span class="thermo-fill" data-seg-fill="send-6"></span></span>
-            </div>
-            <div class="thermo-keys">
-              <p style="flex-grow:13500">Every week first<span data-seg-fig="year">$13,500</span></p>
-              <p style="flex-grow:21000">The Road to the US Open<span data-seg-fig="send-6">$21,000</span></p>
-            </div>
-            <p class="thermo-classic">Then <a href="/chicago-classic">the Chicago Classic</a>, where our goal is free registration, transportation and hotels for every athlete.</p>
-            <a href="/send-6" class="thermo-link">See the road <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
-          </div>
           <div class="fund-actions" aria-label="Support the fund">
             <a href="#fund-donation" class="btn">Donate</a>
           </div>
@@ -543,28 +549,8 @@ fill="currentColor" stroke="none">
   })();
 </script>
 
-<script>
-  [].forEach.call(document.querySelectorAll('[data-thermo]'), function(box){
-    var fill = box.querySelector('[data-thermo-fill]');
-    var amt = box.querySelector('[data-thermo-raised]');
-    var goalEl = box.querySelector('.thermo-goal');
-    fetch('/api/raised?c=' + (box.getAttribute('data-key') || 'send-6')).then(function(r){ return r.json(); }).then(function(d){
-      var raised = Number(d.raised) || 0, goal = Number(box.getAttribute('data-goal')) || Number(d.goal) || 21000;
-      if (!raised) return; // a new goal keeps "Our goal is $34,500" rather than printing $0
-      var pct = goal > 0 ? Math.max(0, Math.min(100, raised / goal * 100)) : 0;
-      amt.textContent = '$' + raised.toLocaleString('en-US');
-      if (goalEl) { goalEl.textContent = 'raised of our $' + goal.toLocaleString('en-US') + ' goal'; }
-      if (fill) requestAnimationFrame(function(){ setTimeout(function(){ fill.style.width = pct.toFixed(1) + '%'; }, 120); });
-      // One goal, two parts (Alec, Nov 5): each part fills on its own.
-      var parts = d.parts || {};
-      Object.keys(parts).forEach(function(k){
-        var pt = parts[k], f = box.querySelector('[data-seg-fill="' + k + '"]'), fig = box.querySelector('[data-seg-fig="' + k + '"]');
-        if (fig && pt.raised) fig.textContent = '$' + pt.raised.toLocaleString('en-US') + ' of $' + pt.goal.toLocaleString('en-US');
-        if (f && pt.goal) { var pp = Math.max(0, Math.min(100, pt.raised / pt.goal * 100)); requestAnimationFrame(function(){ setTimeout(function(){ f.style.width = pp.toFixed(1) + '%'; }, 120); }); }
-      });
-    }).catch(function(){});
-  });
-</script>
+<script src="/js/campaigns.js?v=d85e741e"></script>
+<script>window.ATLCampaigns.module();</script>
 
 <script src="/js/subscribe.js?v=71816eda" defer></script>
 <script src="/js/turnstile-lazy.js?v=12e9b811" defer></script>

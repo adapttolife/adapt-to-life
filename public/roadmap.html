@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=bd1d320d">
+<link rel="stylesheet" href="/css/site.css?v=25cf0e4f">
 <link rel="stylesheet" href="/css/page-header.css?v=beb972ef">
 <!-- band:vars --><style data-band-vars>:root{--pg-band-wide:url('/images/hero/panels/pg-band-2-wide.9ac73821.webp');--pg-band-tall:url('/images/hero/panels/pg-band-2-tall.f9278c2d.webp');--pg-give-wide:url('/images/hero/panels/pg-give-wide.b46beed5.webp');--pg-give-tall:url('/images/hero/panels/pg-give-tall.5cece3a5.webp');}</style>
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
@@ -128,12 +128,62 @@ fill="currentColor" stroke="none">
     </div>
   </section>
 
-  <!-- ACTIVE CAMPAIGN — the shared band, not a restatement. This block used to
-       hand-write the name, the goal and the pitch, which is how it ended up
+  <!-- ACTIVE CAMPAIGN — the shared module, not a restatement. This block used
+       to hand-write the name, the goal and the pitch, which is how it ended up
        still saying "Send 5" and "$17,500" long after both had changed. -->
-  <section class="band-sm tint">
-    <div class="wrap"><div id="roadmapBand" class="camp-pending"></div></div>
-  </section>
+  <!-- campaign-module {"id":"campaign","theme":"light","athlete":"ken"} -->
+  <section class="cm" id="campaign" data-cm data-theme="light" aria-labelledby="campaign-title">
+      <div class="cm-bg" aria-hidden="true" style="--ghost:url(/images/pickleball/ghost/ken-gray.webp);--ghost-ar:469/640"></div>
+      <div class="cm-wrap">
+        <div class="cm-head">
+          <p class="cm-status"><span class="cm-dot" aria-hidden="true"></span>Raising now<span class="cm-status-sep" aria-hidden="true"></span>The Chicago Wheelie Big Dills</p>
+          <h2 class="cm-h" id="campaign-title">Every week on court. <em>Next stop, Naples.</em></h2>
+        </div>
+        <ul class="cm-stats" aria-label="Already on the board">
+          <li><b>3</b><span>straight US Opens</span></li>
+          <li><b>6</b><span>Monster Smash medals</span></li>
+          <li><b>1st</b><span>APP Tour wheelchair division</span></li>
+          <li><b>$3,004</b><span>popcorn drive, 3&times; its goal</span></li>
+          <li><b>334K</b><span>views in 90 days</span></li>
+          <li><b>Weekly</b><span>on court, all year</span></li>
+        </ul>
+        <div class="cm-card">
+          <p class="cm-hero"><b data-cm-total>$34,500</b><span data-cm-sub>our goal for the year ahead</span></p>
+          <div class="cm-rows">
+            <div class="cm-row" data-part-row="year">
+              <div class="cm-row-top"><b>Every week</b><span class="cm-badge cm-badge--accent">First priority</span><span class="cm-fig" data-part-fig="year">$13,500 a year</span></div>
+              <div class="cm-track"><span class="cm-fill" data-part-fill="year"></span><span class="cm-start" aria-hidden="true"></span></div>
+              <p class="cm-note">Court time and memberships. Every new gift starts here.</p>
+            </div>
+            <div class="cm-row" data-part-row="send-6">
+              <div class="cm-row-top"><b>The Road to the US Open</b><span class="cm-badge cm-badge--action" data-part-pct="send-6" hidden></span><span class="cm-fig" data-part-fig="send-6">$21,000</span></div>
+              <div class="cm-track"><span class="cm-fill cm-fill--action" data-part-fill="send-6"></span><span class="cm-start" aria-hidden="true"></span></div>
+              <p class="cm-note">Six athletes, about $3,500 each. <a href="/send-6">See the road</a></p>
+            </div>
+            <div class="cm-row cm-row--next">
+              <div class="cm-row-top"><b>The Chicago Classic</b><span class="cm-badge cm-badge--quiet">Next goal</span><span class="cm-fig">Date to come</span></div>
+              <div class="cm-track cm-track--locked" aria-hidden="true"></div>
+              <p class="cm-note">Our goal: free registration, transportation and hotels for every athlete. <a href="/chicago-classic">The Classic</a></p>
+            </div>
+          </div>
+          <div class="cm-give" data-give>
+            <div class="cm-seg" role="radiogroup" aria-label="How often">
+              <button type="button" role="radio" aria-checked="true" data-freq="monthly">Monthly</button>
+              <button type="button" role="radio" aria-checked="false" data-freq="once">One time</button>
+            </div>
+            <div class="cm-amts is-3" role="radiogroup" aria-label="Amount" data-amts>
+              <button type="button" role="radio" aria-checked="false" data-a="22" aria-label="$22 a month">$22</button>
+              <button type="button" role="radio" aria-checked="true" data-a="80" aria-label="$80 a month">$80</button>
+              <button type="button" role="radio" aria-checked="false" data-a="325" aria-label="$325 a month">$325</button>
+            </div>
+            <p class="cm-impact" data-impact aria-live="polite">$80 a month can keep one athlete training all year.</p>
+          </div>
+          <a class="cm-btn btn" href="/donate?amount=80&amp;frequency=monthly" data-give-link>Donate</a>
+          <p class="cm-trust"><span data-donors hidden></span><span>Tax-deductible</span><span>501(c)(3) &middot; EIN 41-3213344</span><span>Secure checkout by Givebutter</span></p>
+        </div>
+      </div>
+    </section>
+  <!-- /campaign-module -->
 
   <!-- NOW (light) -->
   <section class="band">
@@ -394,8 +444,8 @@ fill="currentColor" stroke="none">
   })();
 </script>
 
-<script src="/js/campaigns.js?v=5bb030e9"></script>
-<script>window.ATLCampaigns.band('roadmapBand');</script>
+<script src="/js/campaigns.js?v=d85e741e"></script>
+<script>window.ATLCampaigns.module();</script>
 <script src="/js/subscribe.js?v=71816eda" defer></script>
 <script src="/js/turnstile-lazy.js?v=12e9b811" defer></script>
 </body>

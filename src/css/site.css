@@ -1543,206 +1543,6 @@ section {
   }
 }
 
-/* ---- campaign band (Spec 115) --------------------------------------------
-   One partial, four pages: /, /donate, /hustle-and-heart, /roadmap. It answers
-   the question an identity page never answers, which is "what is happening
-   right now." The goal figure comes from /api/raised on every instance, so
-   changing it in Givebutter changes it everywhere and it can never disagree
-   with itself across pages.
-   -------------------------------------------------------------------------- */
-.camp-band {
-  display: block;
-}
-.camp-band-card {
-  display: grid;
-  grid-template-columns: 1fr minmax(0, 290px);
-  gap: 1.2rem clamp(1.6rem, 3.4vw, 3rem);
-  align-items: center;
-  background: var(--paper);
-  border: 1px solid var(--hairline);
-  border-radius: 20px;
-  padding: clamp(1.4rem, 3vw, 2.2rem);
-  box-shadow: 0 28px 64px -34px rgba(28, 26, 21, 0.42);
-  transition:
-    border-color 0.2s ease,
-    transform 0.2s ease;
-}
-a.camp-band:hover .camp-band-card {
-  border-color: rgba(255, 92, 57, 0.4);
-  transform: translateY(-2px);
-}
-a.camp-band:focus-visible {
-  outline: 2px solid var(--orange-hot);
-  outline-offset: 4px;
-  border-radius: 20px;
-}
-@media (max-width: 820px) {
-  .camp-band-card {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* pulled up over the dark band above it, the way /popcorn's active card sits */
-.camp-band.lifted {
-  margin-top: clamp(-3.6rem, -5vw, -2.2rem);
-  position: relative;
-  z-index: 5;
-}
-
-.cb-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: var(--font-label);
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--orange-ink);
-}
-.cb-eyebrow .dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--orange);
-  box-shadow: 0 0 0 4px var(--orange-bloom);
-}
-.cb-name {
-  display: block;
-  margin-top: 0.7rem;
-  font-family: var(--font-display);
-  font-weight: 500;
-  font-size: clamp(1.5rem, 2.6vw, 2.05rem);
-  line-height: 1.1;
-  letter-spacing: -0.012em;
-  color: var(--ink);
-}
-.cb-blurb {
-  display: block;
-  margin-top: 0.6rem;
-  color: var(--ink-soft);
-  max-width: 52ch;
-  font-size: 1rem;
-}
-.cb-side {
-  display: flex;
-  flex-direction: column;
-  gap: 0.9rem;
-}
-.cb-bar {
-  display: block;
-  height: 8px;
-  border-radius: 999px;
-  background: rgba(28, 26, 21, 0.1);
-  overflow: hidden;
-}
-.cb-fill {
-  display: block;
-  height: 100%;
-  width: 0;
-  min-width: 3px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--orange-ink), var(--orange-hot));
-  transition: width 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-/* One goal split into its parts: each part as wide as its share of the goal,
-   filled on its own. */
-.cb-segs {
-  display: flex;
-  gap: 4px;
-  height: 8px;
-}
-.cb-seg {
-  flex-basis: 0;
-  border-radius: 999px;
-  background: rgba(28, 26, 21, 0.1);
-  overflow: hidden;
-}
-.cb-seg .cb-fill {
-  min-width: 0;
-}
-.cb-label {
-  display: block;
-  margin-top: -0.35rem;
-  font-family: var(--font-label);
-  font-size: 0.78rem;
-  color: var(--muted);
-}
-.cb-cta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  font-weight: 600;
-  font-size: 0.98rem;
-  padding: 0.82rem 1.55rem;
-  border-radius: 999px;
-  background: var(--orange-ink);
-  color: var(--cream);
-  border: 1.5px solid var(--orange-ink);
-  box-shadow: 0 8px 26px -10px var(--orange-glow);
-}
-a.camp-band:hover .cb-cta {
-  background: var(--orange-press);
-  border-color: var(--orange-press);
-}
-/* No ceiling, no bar: the featured campaign can be open-ended (The Road). */
-.camp-band.no-goal .cb-label {
-  margin-top: 0;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--orange-ink);
-}
-/* The other campaigns, one line under the card, each with its own total. */
-/* Plain text flow, not flex: on a phone the label and the name share a line
-   and the bar and figure take the next, so the band keeps its reserved height. */
-.cb-also {
-  margin: 0.9rem 0 0;
-  padding: 0 0.4rem;
-  font-size: 0.95rem;
-  line-height: 1.9;
-}
-.cb-also-link,
-.cb-also-item {
-  display: inline-block;
-  margin-right: 1.4rem;
-}
-/* On a phone the band keeps to the goal's two parts; the Classic is on the
-   pages it links to. */
-@media (max-width: 560px) {
-  .cb-also-next {
-    display: none;
-  }
-}
-.cb-also-item {
-  color: var(--ink);
-  font-weight: 600;
-}
-.cb-also-k {
-  margin-right: 1.1rem;
-  font-family: var(--font-label);
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.cb-also-link {
-  color: var(--ink);
-  font-weight: 600;
-  text-decoration: underline;
-  text-decoration-color: var(--orange);
-  text-underline-offset: 4px;
-}
-.cb-also-fig {
-  margin-left: 0.45rem;
-  font-weight: 400;
-  color: var(--muted);
-  text-decoration: none;
-  display: inline-block;
-}
-
 /* ---- contact ------------------------------------------------------------- */
 .contact-grid {
   display: grid;
@@ -2316,7 +2116,7 @@ a.info-v {
 }
 
 /* ---- drive result band ("we finished one") ----------------------------
-   The counterpart to .camp-band. That one says what we are raising NOW;
+   The counterpart to the campaign module. That one says what we are raising NOW;
    this says what a finished drive actually brought in. Rendered from
    campaigns.json by ATLCampaigns.result(), never hand-typed, so the
    number cannot drift from the source the rest of the site reads. */
@@ -3431,3 +3231,550 @@ a.win-band:focus-visible {
   --icon-check: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22currentColor%22%20d%3D%22m232.49%2080.49l-128%20128a12%2012%200%200%201-17%200l-56-56a12%2012%200%201%201%2017-17L96%20183L215.51%2063.51a12%2012%200%200%201%2017%2017Z%22%2F%3E%3C%2Fsvg%3E");
   --icon-more: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22currentColor%22%20d%3D%22M228%20128a12%2012%200%200%201-12%2012h-76v76a12%2012%200%200%201-24%200v-76H40a12%2012%200%200%201%200-24h76V40a12%2012%200%200%201%2024%200v76h76a12%2012%200%200%201%2012%2012%22%2F%3E%3C%2Fsvg%3E");
 } /* icons:end */
+
+/* ---- campaign module ---------------------------------------------------- */
+/* The campaign module: what the crew has already done, then the one goal,
+   then a gift you can size. One component in two themes (Alec, Nov 6: "I
+   love L1 and L3 as one system"): data-theme="dark" is L1, slate and teal;
+   data-theme="light" is L3, beige with a slate money card. Laura's locked
+   colors only.
+
+   Borrowed from T3 Code: hairlines instead of gray fills, one radius scale,
+   tinted badges whose text mixes toward the foreground, a pressable button,
+   tabular figures and one ease curve. Borrowed from Airbnb and friends: the
+   price-style breakdown under the amount, monthly first, the next goal shown
+   locked, a quiet trust line. Behind it, one big athlete, gray and faded, a
+   different one per page (round 7, option C).
+
+   Markup: src/partials/campaign-module.html, stamped into pages by
+   scripts/build-module.mjs. Behaviour: public/js/campaigns.js, module().
+   It lives in site.css rather than its own file so the pages that carry it
+   (the homepage among them) spend no extra request on it. */
+
+.cm {
+  --action: var(--orange);
+  --action-ink: var(--orange-ink);
+  --accent: var(--teal);
+  --win: var(--yellow);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--canvas-cm);
+  color: var(--text);
+  padding: clamp(2.6rem, 7vw, 4.6rem) 0;
+}
+.cm[data-theme="dark"] {
+  --canvas-cm: var(--slate);
+  --text: var(--cream);
+  --muted: #c9c7d1;
+  --hair: var(--hairline-dark);
+  --raised: rgba(255, 255, 255, 0.035);
+  --em: var(--teal);
+  --card: var(--paper);
+  --card-text: var(--ink);
+  --card-muted: #5a5866;
+  --card-hair: rgba(59, 59, 70, 0.12);
+  --track: rgba(59, 59, 70, 0.1);
+  --hero: var(--orange-ink);
+  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 24px 48px -24px rgba(0, 0, 0, 0.6);
+  --ghost-o: 0.18;
+  --ghost-blend: screen;
+}
+.cm[data-theme="light"] {
+  --canvas-cm: var(--sand);
+  --text: var(--ink);
+  --muted: #5a5866;
+  --hair: rgba(59, 59, 70, 0.13);
+  --raised: var(--paper);
+  --em: var(--orange-ink);
+  --card: var(--slate);
+  --card-text: var(--cream);
+  --card-muted: #d0cfd8;
+  --card-hair: rgba(255, 255, 255, 0.1);
+  --track: rgba(249, 247, 242, 0.14);
+  --hero: var(--orange);
+  --card-shadow:
+    0 1px 2px rgba(59, 59, 70, 0.1), 0 24px 48px -24px rgba(59, 59, 70, 0.55);
+  --ghost-o: 0.15;
+  --ghost-blend: multiply;
+}
+
+/* One big athlete, gray and faded: sweeps in from the right on a phone,
+   mirrored to the left of the headline on a wide screen. A background, not
+   an <img>: it is decoration, and module() paints it (.is-near) only when the
+   module comes within a screen of view, so it never weighs on a page that is
+   not scrolled to it (the homepage budget in scripts/check-site.mjs). */
+.cm-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.cm-bg::before {
+  content: "";
+  position: absolute;
+  right: -14%;
+  top: -10px;
+  height: clamp(320px, 92vw, 600px);
+  aspect-ratio: var(--ghost-ar, 1);
+  background: no-repeat center / contain;
+  opacity: var(--ghost-o);
+  mix-blend-mode: var(--ghost-blend);
+}
+.cm-bg.is-near::before {
+  background-image: var(--ghost);
+}
+@media (min-width: 1000px) {
+  .cm-bg::before {
+    right: auto;
+    left: -4%;
+    top: -40px;
+    height: 620px;
+    transform: scaleX(-1);
+  }
+}
+
+.cm-wrap {
+  position: relative;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  display: grid;
+  gap: clamp(1.4rem, 4vw, 2rem);
+}
+@media (min-width: 1000px) {
+  .cm-wrap {
+    grid-template-columns: 1.05fr 1fr;
+    grid-template-rows: auto 1fr;
+    column-gap: 3.6rem;
+    row-gap: 2rem;
+    align-items: start;
+  }
+  .cm-head {
+    align-self: end;
+  }
+  .cm-stats {
+    align-self: start;
+  }
+  .cm-card {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: center;
+  }
+  /* Without the stats (the crew page leads with its record), the headline
+     centres on the card instead of leaving a hole under it. */
+  .cm-wrap:not(:has(.cm-stats)) .cm-head {
+    grid-row: 1 / span 2;
+    align-self: center;
+  }
+}
+
+/* The status badge: a tinted background, text mixed toward the foreground. */
+.cm-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0.32rem 0.7rem 0.32rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: color-mix(in srgb, var(--accent) 42%, var(--text));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+.cm[data-theme="light"] .cm-status {
+  background: color-mix(in srgb, var(--action) 10%, transparent);
+  color: color-mix(in srgb, var(--action-ink) 70%, var(--text));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--action) 22%, transparent);
+}
+.cm-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: cmPulse 1.8s var(--ease) infinite;
+}
+.cm[data-theme="light"] .cm-dot {
+  background: var(--action);
+  animation-name: cmPulseAction;
+}
+.cm-status-sep {
+  width: 1px;
+  height: 0.9em;
+  background: currentColor;
+  opacity: 0.3;
+}
+.cm .cm-h {
+  margin: 1rem 0 0;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(2.5rem, 8.6vw, 4.3rem);
+  line-height: 0.94;
+  letter-spacing: -0.045em;
+}
+.cm .cm-h em {
+  display: block;
+  font-style: italic;
+  color: var(--em);
+}
+
+/* What is already on the board: hairline tiles, a whisper of lift, a yellow
+   win mark. */
+.cm-stats {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+.cm-stats li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.85rem 0.8rem 0.9rem;
+  border-radius: var(--r-lg);
+  background: var(--raised);
+  box-shadow: inset 0 0 0 1px var(--hair);
+}
+.cm-stats li::after {
+  content: "";
+  position: absolute;
+  left: 0.8rem;
+  right: 0.8rem;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--win);
+  opacity: 0.9;
+}
+.cm-stats b {
+  font-weight: 900;
+  font-style: italic;
+  font-size: clamp(1.5rem, 5.8vw, 2.15rem);
+  line-height: 1;
+  letter-spacing: -0.035em;
+  white-space: nowrap;
+  color: var(--text);
+}
+.cm-stats span {
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--muted);
+}
+
+/* The money card: the inverse surface, a hairline and a soft drop. */
+.cm-card {
+  border-radius: var(--r-xl);
+  padding: clamp(1.35rem, 4.2vw, 2rem);
+  background: var(--card);
+  color: var(--card-text);
+  box-shadow:
+    inset 0 0 0 1px var(--card-hair),
+    var(--card-shadow);
+}
+.cm-hero {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15rem 0.7rem;
+}
+.cm-hero b {
+  font-weight: 900;
+  font-style: italic;
+  font-size: clamp(3.6rem, 15.5vw, 6rem);
+  line-height: 0.86;
+  letter-spacing: -0.055em;
+  font-variant-numeric: tabular-nums;
+  color: var(--hero);
+}
+.cm-hero span {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--card-muted);
+}
+.cm-rows {
+  margin-top: 1.35rem;
+  display: grid;
+  gap: 1.1rem;
+}
+.cm-row-top {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.5rem;
+}
+.cm-row-top b {
+  font-weight: 800;
+  font-size: 0.98rem;
+}
+.cm-fig {
+  margin-left: auto;
+  font-weight: 800;
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 560px) {
+  .cm-fig {
+    margin-left: 0;
+    flex-basis: 100%;
+  }
+}
+.cm-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--r-sm);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.cm-badge[hidden] {
+  display: none;
+}
+.cm-badge--accent {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: color-mix(in srgb, var(--accent) 38%, var(--card-text));
+}
+.cm-badge--action {
+  background: color-mix(in srgb, var(--action) 14%, transparent);
+  color: color-mix(in srgb, var(--action-ink) 55%, var(--card-text));
+}
+.cm[data-theme="light"] .cm-badge--accent {
+  color: color-mix(in srgb, var(--accent) 55%, var(--card-text));
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+}
+.cm[data-theme="light"] .cm-badge--action {
+  color: color-mix(in srgb, var(--action) 45%, var(--card-text));
+  background: color-mix(in srgb, var(--action) 20%, transparent);
+}
+.cm-badge--quiet {
+  background: color-mix(in srgb, var(--card-text) 8%, transparent);
+  color: var(--card-muted);
+}
+.cm-track {
+  position: relative;
+  margin-top: 0.55rem;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--track);
+}
+.cm-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  transition: width 1.6s var(--ease);
+}
+.cm-fill--action {
+  background: linear-gradient(90deg, var(--action-ink), var(--action));
+}
+.cm-start {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  margin-top: -6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: cmPulse 1.8s var(--ease) infinite;
+}
+.cm-row.is-empty .cm-start {
+  display: block;
+}
+.cm-note {
+  margin: 0.45rem 0 0;
+  font-size: 0.84rem;
+  line-height: 1.35;
+  color: var(--card-muted);
+}
+.cm-note a {
+  color: var(--card-text);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--card-text) 35%, transparent);
+  text-underline-offset: 2px;
+  white-space: nowrap;
+}
+.cm-note a:hover {
+  text-decoration-color: currentColor;
+}
+/* The next goal, shown locked until the road is funded. */
+.cm-row--next .cm-row-top b,
+.cm-row--next .cm-fig {
+  color: var(--card-muted);
+}
+.cm-row--next .cm-fig {
+  font-weight: 600;
+}
+.cm-track--locked {
+  background: repeating-linear-gradient(
+    90deg,
+    var(--track) 0 10px,
+    transparent 10px 16px
+  );
+}
+
+/* What a gift covers: monthly first, every line a verified unit cost. */
+.cm-give {
+  margin-top: 1.3rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--card-hair);
+}
+.cm-seg {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--card-text) 7%, transparent);
+}
+.cm-seg button {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  padding: 0.45rem 0.95rem;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--card-muted);
+  font: inherit;
+  font-weight: 800;
+  font-size: 0.86rem;
+  transition:
+    background-color 0.2s var(--ease),
+    color 0.2s var(--ease);
+}
+.cm-seg button[aria-checked="true"] {
+  background: var(--card);
+  color: var(--card-text);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.12),
+    inset 0 0 0 1px var(--card-hair);
+}
+.cm[data-theme="light"] .cm-seg button[aria-checked="true"] {
+  background: color-mix(in srgb, var(--card-text) 14%, var(--card));
+}
+.cm-amts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.4rem;
+  margin-top: 0.8rem;
+}
+.cm-amts.is-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.cm-amts button {
+  appearance: none;
+  cursor: pointer;
+  height: 46px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--card-hair);
+  background: transparent;
+  color: var(--card-text);
+  font: inherit;
+  font-weight: 800;
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+  transition:
+    border-color 0.2s var(--ease),
+    background-color 0.2s var(--ease),
+    transform 0.15s var(--ease);
+}
+.cm-amts button:active {
+  transform: scale(0.97);
+}
+.cm-amts button[aria-checked="true"] {
+  border-color: var(--action-ink);
+  background: color-mix(in srgb, var(--action) 10%, transparent);
+  box-shadow: inset 0 0 0 1px var(--action-ink);
+}
+.cm[data-theme="light"] .cm-amts button[aria-checked="true"] {
+  border-color: var(--action);
+  box-shadow: inset 0 0 0 1px var(--action);
+  background: color-mix(in srgb, var(--action) 16%, transparent);
+}
+.cm-seg button:focus-visible,
+.cm-amts button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.cm-impact {
+  margin: 0.75rem 0 0;
+  min-height: 2.7em;
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.35;
+}
+
+/* The button: the site's pressable button, full width in the card. */
+.cm .cm-btn {
+  display: flex;
+  width: 100%;
+  height: 54px;
+  margin-top: 1.45rem;
+  padding: 0 1.2rem;
+  justify-content: center;
+  font-size: 1.08rem;
+  font-weight: 800;
+}
+.cm .cm-btn:focus-visible {
+  outline-color: var(--accent);
+}
+
+/* Trust, quietly. */
+.cm-trust {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.2rem 0.9rem;
+  margin: 0.9rem 0 0;
+  font-size: 0.78rem;
+  color: var(--card-muted);
+  text-align: center;
+}
+.cm-trust span {
+  white-space: nowrap;
+}
+.cm-trust span[hidden] {
+  display: none;
+}
+
+@keyframes cmPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 9px color-mix(in srgb, var(--accent) 6%, transparent);
+  }
+}
+@keyframes cmPulseAction {
+  0%,
+  100% {
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--action) 28%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 9px color-mix(in srgb, var(--action) 6%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cm-dot,
+  .cm-start {
+    animation: none;
+  }
+  .cm-fill,
+  .cm-seg button,
+  .cm-amts button {
+    transition: none;
+  }
+}

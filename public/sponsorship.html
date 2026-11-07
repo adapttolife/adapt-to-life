@@ -175,7 +175,10 @@
   .sp-clubs-list li{ padding:0.95rem 0; border-bottom:1px solid rgba(249,247,242,0.12); color:var(--cream); line-height:1.5; }
   .sp-clubs-list + .sp-clubs-k{ margin-top:clamp(1.6rem,3vw,2.2rem); }
   .sp-clubs-note{ color:var(--cream-mute); line-height:1.6; margin-bottom:0; }
-  .sp-clubs-cta{ margin-top:clamp(1.8rem,3.4vw,2.6rem); }
+  .sp-clubs-head .prose + .prose{ margin-top:0.8rem; }
+  .sp-clubs-foot{ margin-top:clamp(2rem,3.8vw,2.8rem); display:flex; flex-wrap:wrap; align-items:center; gap:1rem 1.8rem; }
+  .sp-clubs-foot p{ margin:0; max-width:46ch; color:var(--cream-mute); line-height:1.55; }
+  .sp-clubs-foot .textlink{ color:var(--orange); }
   @media (max-width:700px){ .partner{ grid-template-columns:1fr; } .partner-photo{ min-height:0; aspect-ratio:16/9; } .partner-photo img{ object-position:var(--phone-crop, 50% 30%); } .partner-body{ padding:1.25rem 1.25rem 1.4rem; } .partner-logo{ height:48px; } .partner-kicker{ margin-top:1rem; } .partner-more{ margin-top:1.1rem; } .partner-when{ flex-wrap:nowrap; gap:0.6rem; font-size:0.72rem; letter-spacing:0.1em; } .partner-when span{ gap:0.6rem; white-space:nowrap; } }
   .bh-road .bh-price{ display:block; margin-top:0.6rem; font-style:normal; font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--orange-ink); }
   /* One price list: the per-athlete options sit above the levels, same sheet, same fund. */
@@ -377,38 +380,46 @@ fill="currentColor" stroke="none">
     </div>
   </section>
 
-    <!-- HOW WE PARTNER WITH CLUBS (Alec, Nov 7 2026): clubs should not have to
-       keep discounting to be part of adaptive sports. We budget at a club's
-       regular prices; a club that gives more is thanked for a gift, never
-       asked for one. No prices for any one club here on purpose. -->
+    <!-- HOW WE PARTNER WITH CLUBS (Alec, Nov 7 2026). Principles, not
+       promises: plan at a club's regular rates instead of counting on
+       discounts; every partnership is shaped around how the club already
+       works; the club runs its courts and programs, we fund and support;
+       a club that gives more is thanked, never expected to. No one club's
+       prices here, and no absolutes ("every", "never", "at prices the club
+       sets") that a single partnership could break. -->
   <section class="band dark sp-clubs" id="clubs" aria-labelledby="spClubsTitle">
     <div class="wrap">
       <div class="sp-clubs-head">
         <span class="eyebrow orange reveal">How we partner with clubs</span>
         <h2 id="spClubsTitle" class="serif h2 reveal" style="margin-top:0.8rem;">A partnership that works <em class="italic" style="color:var(--orange)">for the club too.</em></h2>
-        <p class="prose reveal">A club&rsquo;s courts are its business, so we don&rsquo;t build programs on discounts. We budget every night and every membership at the club&rsquo;s regular price. Donors and sponsors cover it, so athletes can play free.</p>
+        <p class="prose reveal">Clubs make room for adaptive athletes, and their courts are their business. So when we plan and raise money, we start from a club&rsquo;s regular rates instead of counting on discounts. That keeps the partnership fair to the club and steady for the athletes.</p>
+        <p class="prose reveal">Every partnership looks a little different. Some clubs host a weekly night. Others welcome athletes into open play. We start with how the club already works.</p>
       </div>
       <div class="sp-clubs-grid">
         <div class="reveal">
-          <h3 class="sp-clubs-k">What the club gets</h3>
+          <h3 class="sp-clubs-k">What a club can expect from us</h3>
           <ul class="sp-clubs-list">
-            <li>Paid court time and memberships, at prices the club sets.</li>
-            <li>New people on court: athletes, and the families, friends and volunteers who come with them.</li>
-            <li>A program that belongs to the club. We fund it, and we bring coaching help and volunteers.</li>
-            <li>A page on our site that links to theirs, and photos and video from nights on court.</li>
+            <li>Paid court time and memberships for the athletes we support, at rates we agree on up front.</li>
+            <li>New players through the door: athletes, and the families, friends and volunteers who come with them.</li>
+            <li>Help growing the program, with coaching and volunteers, while the club runs its courts and its programs.</li>
+            <li>A page on our site with a link to theirs, and help telling the story with photos and video.</li>
           </ul>
         </div>
         <div class="reveal">
-          <h3 class="sp-clubs-k">What we ask</h3>
+          <h3 class="sp-clubs-k">What helps a partnership work</h3>
           <ul class="sp-clubs-list">
-            <li>A regular time on court, and a warm welcome.</li>
-            <li>One person at the club we can call.</li>
+            <li>A regular time on court that fits the club&rsquo;s schedule.</li>
+            <li>An accessible, welcoming space for adaptive athletes.</li>
+            <li>One point person on each side, and costs agreed before the first night.</li>
           </ul>
           <h3 class="sp-clubs-k">When a club gives more</h3>
-          <p class="sp-clubs-note">Some clubs want to give more, like extra court time or a night on the house. That&rsquo;s a gift, and we thank them for it in public. It&rsquo;s never the price of a partnership, and it stretches every donation further.</p>
+          <p class="sp-clubs-note">Some clubs choose to give more, like extra court time or a reduced rate. It&rsquo;s welcome, not expected. We thank them in the way they prefer, and it helps more athletes get on court.</p>
         </div>
       </div>
-      <p class="sp-clubs-cta reveal"><a class="btn" href="mailto:hello@adapttolife.org?subject=Build%20an%20adaptive%20program">Start a conversation</a></p>
+      <div class="sp-clubs-foot reveal">
+        <a class="btn" href="mailto:hello@adapttolife.org?subject=Build%20an%20adaptive%20program">Start a conversation</a>
+        <p>For donors and sponsors, it means a clear picture of what each gift pays for. <a class="textlink" href="/numbers" style="font:inherit;letter-spacing:inherit;">See the numbers</a></p>
+      </div>
     </div>
   </section>
 

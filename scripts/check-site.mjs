@@ -739,7 +739,13 @@ const BUDGET = {
   // and paints at 280 device px from a 320px file; pngquant saves 3KB across
   // the logos; no inline icon is duplicated. 635 is 610 plus ~4% for encoder
   // and CF drift, the allowance this table always carries; 44 is 42 plus two.
-  "/": { own: 635, total: 900, reqs: 44, hosts: 4, cls: 0.1 },
+  // 44 -> 47 requests on 2026-11-07, measured on adapttolife.org right after
+  // the release (cf74302): 45. The live zone runs Cloudflare Web Analytics,
+  // a beacon script from static.cloudflareinsights.com plus its report, two
+  // requests the workers.dev review link never loads, so 44 (42 on review
+  // plus two) was set two short. 47 is the live 45 plus two. Own bytes on
+  // the live site: 617KB, inside 635.
+  "/": { own: 635, total: 900, reqs: 47, hosts: 4, cls: 0.1 },
   // cls:null, still — but for a smaller and better-understood reason than
   // before. The Givebutter cause IS fixed: reserving the panel's height took
   // MOBILE from 0.12-0.76 down to a flat 0 across five runs in every condition

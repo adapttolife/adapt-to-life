@@ -2,7 +2,7 @@ import { fileURLToPath } from "node:url";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { readFileSync, readdirSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
@@ -66,30 +66,45 @@ test("the module states the goal from campaigns.json and never a $0", () => {
       html.indexOf("<!-- /campaign-module -->"),
     );
     assert.ok(mod.includes(`data-cm-total>${usd(wbd.goal)}<`), f);
+    assert.ok(!/>\$0</.test(mod), `${f} prints $0`);
+    // Under Donate, only what a donor needs at that moment (Alec, Nov 7): the
+    // EIN is in every footer and on /donate, and a donor count belongs on
+    // /numbers, where both kinds of supporter can be shown honestly.
+    assert.ok(
+      mod.includes(
+        '<p class="cm-trust"><span>Tax-deductible</span><span>Secure checkout by Givebutter</span></p>',
+      ),
+      `${f}: the line under Donate`,
+    );
+    assert.ok(!mod.includes("EIN"), `${f}: the EIN is back in the card`);
+    assert.ok(!/donors/i.test(mod), `${f}: a donor count is back in the card`);
+    // /numbers shows every bar above its card, so its card leaves them out.
+    if (f === "numbers.html") {
+      assert.ok(!mod.includes('class="cm-rows"'), "the bars repeat on /numbers");
+      continue;
+    }
     assert.ok(mod.includes(`>${usd(part("year"))} a year<`), f);
     assert.ok(mod.includes(`>${usd(part("send-6"))}<`), f);
-    assert.ok(!/>\$0</.test(mod), `${f} prints $0`);
     // The Road's percentage is live only: no stale figure in the markup.
     assert.ok(/data-part-pct="send-6" hidden><\/span>/.test(mod), f);
-    assert.ok(mod.includes("EIN 41-3213344"), f);
   }
 });
 
 test("every gift line is a verified unit cost", () => {
   const js = read("public/js/campaigns.js");
   // $15 a night at ACE, up to 15 for $225; $129 a month ($1,548 a year) for a membership; about
-  // $3,500 for a US Open; monthly lines are the same costs over 12 months.
+  // $3,500 for a US Open; a month of nights is four nights.
   assert.equal(15 * 15, 225);
   assert.equal(129 * 12, 1548);
-  assert.equal(975 * 12, 225 * 52);
-  assert.equal(65 * 12, 15 * 52, "$65 a month is exactly $15 a week");
+  assert.equal(900, 4 * 225, "$900 a month is four nights at $225");
+  assert.equal(60, 4 * 15, "$60 a month is four nights at $15");
   for (const line of [
-    "$65 a month keeps one athlete on court every week of the year.",
-    "$129 a month can keep one athlete training all year.",
-    "$975 a month covers a night at ACE every week for up to 15 athletes.",
+    "$60 a month: four nights at $15, for one athlete.",
+    "$129 a month: unlimited sessions for one athlete to compete.",
+    "$900 a month: four nights at $225, for up to 15 athletes.",
     "$15 puts one athlete on court for a night.",
     "$225 covers up to 15 athletes for a night at ACE.",
-    "$1,548 can keep one athlete training all year.",
+    "$1,548 covers a year of unlimited sessions for one athlete.",
     "$3,500 covers about what one athlete’s US Open costs.",
   ])
     assert.ok(js.includes(line), line);
@@ -172,7 +187,9 @@ test("the math lives on /numbers, and every module links to it", () => {
   // Every gift line on the page is the picker's line, word for word.
   const js = read("public/js/campaigns.js");
   for (const m of nb.matchAll(/<li><b>(\$[\d,]+)<\/b><span>([^<]+)<\/span><\/li>/g)) {
-    const line = `${m[1]} ${m[2]}`.replace(/&rsquo;/g, "’");
+    const line = `${m[1]} ${m[2]}`
+      .replace(/&rsquo;/g, "’")
+      .replace(/&nbsp;/g, "\u00a0");
     assert.ok(js.includes(line), `gift line not in the picker: ${line}`);
   }
 
@@ -192,9 +209,122 @@ test("the math lives on /numbers, and every module links to it", () => {
       );
     assert.ok(mod.includes("maybe the country"), `${f}: the ambition`);
   }
-  // The record tiles carry the practice-night size where they appear.
+  // Alec, Nov 7: "all of this is too messy... Where to look and what to care
+  // about". The card keeps the total, two bars, the next goal and the gift:
+  // no record tiles (the record lives on the crew section and /pickleball),
+  // no gifts-plus-court-time line, and each percentage where its bar ends,
+  // never in a badge on the title line.
+  for (const { f, html } of carriers()) {
+    const mod = html.slice(
+      html.indexOf('<section class="cm"'),
+      html.indexOf("<!-- /campaign-module -->"),
+    );
+    assert.ok(!mod.includes("cm-stats"), `${f}: the record tiles are back`);
+    assert.ok(!mod.includes("data-cm-split"), `${f}: the gifts line is back`);
+    assert.ok(!/cm-badge[^"]*" data-part-pct/.test(mod), `${f}: a percentage badge`);
+    // Alec, Nov 7: a short description for each part; the Chicago Classic
+    // joins the card when it starts; one fill per bar (the split, with its
+    // key, is on /numbers).
+    assert.ok(
+      !mod.includes("Chicago Classic"),
+      `${f}: the Classic is back in the card`,
+    );
+    assert.ok(!mod.includes("data-part-kind"), `${f}: the court-time stripe is back`);
+    assert.ok(!mod.includes("got it started"), `${f}: the long note is back`);
+    if (f === "numbers.html") continue;
+    assert.ok(mod.includes('<p class="cm-note">Court time and memberships.</p>'), f);
+    for (const k of ["year", "send-6"])
+      assert.ok(
+        new RegExp(
+          `</div><span class="cm-pct" data-part-pct="${k}" hidden></span></div>`,
+        ).test(mod),
+        `${f}: the ${k} percentage ends its bar`,
+      );
+  }
+});
+
+// Alec, Nov 7 2026: "don't say first priority"; the six seats are the six on
+// the crew page, by name and photo; /numbers reads as one route.
+test("no First priority, six named seats, and the numbers as a route", () => {
+  const data = JSON.parse(read("public/data/campaigns.json"));
+  const road = data.campaigns
+    .find((c) => c.slug === "wheelie-big-dills")
+    .parts.find((p) => p.key === "send-6");
+  const names = road.seats.map((s) => s.name);
+  assert.deepEqual(names, ["Juan", "Brian", "Bob", "Robby", "Ken", "Amanda"]);
+  const crew = read("public/pickleball.html");
+  for (const s of road.seats) {
+    assert.ok(crew.includes(`<h3>${s.name}</h3>`), `${s.name} is on the crew page`);
+    assert.ok(
+      existsSync(join(ROOT, `public/images/pickleball/seats/${s.slug}.webp`)),
+      `${s.name} has a seat picture`,
+    );
+  }
+  assert.ok(existsSync(join(ROOT, "public/images/pickleball/seats/faces.webp")));
+  const road6 = read("public/send-6.html");
+  const tiles = road6.slice(
+    road6.indexOf("<!-- campaign-seats -->"),
+    road6.indexOf("<!-- /campaign-seats -->"),
+  );
+  assert.equal((tiles.match(/class="s6-seat"/g) || []).length, 6);
+  for (const n of names) assert.ok(tiles.includes(`>${n}<`), `${n} names a seat`);
+  assert.ok(!road6.includes("Seat 2"), "no anonymous seats");
+  for (const f of readdirSync(join(ROOT, "public")).filter(
+    // the concept labs and hero labs are review-only, as in the other page tests
+    (x) =>
+      x.endsWith(".html") && !/^(hero-|campaign-concepts|review|photo-picks)/.test(x),
+  ))
+    assert.ok(
+      !read(`public/${f}`).includes("First priority"),
+      `${f} says First priority`,
+    );
   const home = read("public/index.html");
   assert.ok(
-    home.includes("<li><b>10&ndash;15</b><span>athletes, every week</span></li>"),
+    home.includes(
+      `aria-label="The six seats: Juan, Brian, Bob, Robby, Ken and Amanda"`,
+    ),
   );
+  const nums = read("public/numbers.html");
+  const route = nums.slice(
+    nums.indexOf('<ol class="nb-route"'),
+    nums.indexOf("</ol>", nums.indexOf('<ol class="nb-route"')),
+  );
+  const order = [...route.matchAll(/<li class="nb-stop([^"]*)"/g)].map((m) =>
+    m[1].trim(),
+  );
+  assert.deepEqual(order, ["nb-stop--now", "", "nb-stop--finish", "nb-stop--next"]);
+});
+
+// The Donate link a page ships with (before the picker runs, or without
+// script) starts at the picker's own default, so no stale amount survives.
+// It was $80, left from the old $5-based buttons (Nov 7, 2026).
+test("the Donate link starts at the picker's default amount", () => {
+  const js = read("public/js/campaigns.js");
+  const def = Number(js.match(/GIFT_DEFAULT = \{ monthly: (\d+)/)[1]);
+  assert.ok(
+    new RegExp(`\\{\\s*a: ${def},\\s*t: "`).test(js),
+    "the default is one of the buttons",
+  );
+  for (const { f, html } of carriers()) {
+    for (const m of html.matchAll(/href="\/donate\?amount=(\d+)[^"]*" data-give-link/g))
+      assert.equal(Number(m[1]), def, `${f}: the Donate link starts at $${m[1]}`);
+  }
+  const email = read("src/newsletter-series.js");
+  for (const m of email.matchAll(/\/donate\?amount=(\d+)/g))
+    assert.equal(Number(m[1]), def, `an email asks for $${m[1]}`);
+});
+
+// /numbers says who gave, honestly: Givebutter's online donors (live) and the
+// popcorn drive's supporters (campaigns.json), side by side, never summed.
+test("/numbers names who gave, without counting anyone twice", () => {
+  const data = JSON.parse(read("public/data/campaigns.json"));
+  const popcorn = data.drives.find((d) => d.slug === "popcorn-2026-08");
+  assert.equal(popcorn.supporters, 83);
+  const nums = read("public/numbers.html");
+  assert.ok(
+    nums.includes(
+      '<p class="nb-people" data-nb-people hidden>The gifts came from <span data-nb-donors></span> online and 83 popcorn supporters.</p>',
+    ),
+  );
+  assert.ok(read("public/js/campaigns.js").includes('"[data-nb-people]"'));
 });

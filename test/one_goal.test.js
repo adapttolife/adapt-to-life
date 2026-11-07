@@ -7,6 +7,7 @@ import {
   YEAR_GOAL,
   ROAD_GOAL,
   WBD_GOAL,
+  YEAR_INKIND,
 } from "../src/fund.js";
 
 const read = (p) => readFileSync(new URL("../" + p, import.meta.url), "utf8");
@@ -42,12 +43,14 @@ test("one goal is every week plus the road", () => {
   assert.equal(WBD_GOAL, 48180);
 });
 
-test("today: nothing new yet, so every week is empty and the road holds the Send 6 money", () =>
+test("today: every week starts with the club's court time, and the road holds the Send 6 money", () =>
   withCampaign(1975, async () => {
     const w = await campaignPosition(ENV, "wbd");
-    assert.equal(w.raised, 4979);
+    assert.equal(w.raised, 4979, "gifts only; court time is kept apart");
+    assert.equal(w.inkind, 5200);
     assert.equal(w.goal, 48180);
-    assert.equal(w.parts.year.raised, 0);
+    assert.equal(w.parts.year.raised, 5200);
+    assert.equal(w.parts.year.inkind, 5200);
     assert.equal(w.parts["send-6"].raised, 4979);
     assert.equal(w.donors, 23, "the donor count comes through for social proof");
   }));
@@ -56,24 +59,25 @@ test("new gifts fill every week first", () =>
   withCampaign(1975 + 5000, async () => {
     const w = await campaignPosition(ENV, "wbd");
     assert.equal(w.raised, 4979 + 5000);
-    assert.equal(w.parts.year.raised, 5000);
+    assert.equal(w.parts.year.raised, 5200 + 5000);
     assert.equal(w.parts["send-6"].raised, 4979);
-    assert.equal((await campaignPosition(ENV, "year")).raised, 5000);
+    assert.equal((await campaignPosition(ENV, "year")).raised, 5200 + 5000);
   }));
 
 test("once every week is funded, gifts move to the road", () =>
   withCampaign(1975 + 30000, async () => {
     const w = await campaignPosition(ENV, "wbd");
+    // Every week needs $27,180 - $5,200 = $21,980 in gifts; the other $8,020 goes on.
     assert.equal(w.parts.year.raised, 27180);
-    assert.equal(w.parts["send-6"].raised, 4979 + 2820);
-    assert.equal((await campaignPosition(ENV, "send-6")).raised, 4979 + 2820);
+    assert.equal(w.parts["send-6"].raised, 4979 + 8020);
+    assert.equal((await campaignPosition(ENV, "send-6")).raised, 4979 + 8020);
   }));
 
 test("with Givebutter down the bar shows only what we hold ourselves", () =>
   withCampaign(null, async () => {
     const w = await campaignPosition(ENV, "wbd");
     assert.equal(w.raised, 4979);
-    assert.equal(w.parts.year.raised, 0);
+    assert.equal(w.parts.year.raised, 5200, "the club's court time does not depend on Givebutter");
     assert.equal(w.live, false);
   }));
 
@@ -150,4 +154,32 @@ test("equipment stays out of the goal and the Road, and the chair number is Alec
   assert.ok(crew.includes("$4,000 to $6,000, and insurance doesn&rsquo;t cover it"));
   assert.ok(crew.includes("Equipment sits outside the goal."));
   for (const html of [fund, crew, s6]) assert.ok(!html.includes("$5,300"));
+});
+
+test("the club's court time: $10 a night for 10 athletes, 52 nights, never named on a page", () => {
+  // Alec, Nov 7 2026: the drop in is $15, we pay $5, the club gives $10. "Just
+  // keep it average": 10 athletes a week for 52 weeks.
+  assert.equal(YEAR_INKIND, 10 * 10 * 52);
+  const js = read("public/js/campaigns.js");
+  assert.ok(js.includes(" in court time from a partner club"));
+  for (const f of ["public/js/campaigns.js", "src/partials/campaign-module.html", "public/ace.html", "public/numbers.html"]) {
+    const t = read(f);
+    assert.ok(!/\$10 (an|a|per) (athlete|person|drop)/i.test(t), f + " names the rate");
+    assert.ok(!/\$5 (an|a|per) (athlete|person|drop)/i.test(t), f + " names what we pay");
+  }
+});
+
+test("/api/raised?c=wbd hands the court time to the page beside the gifts", async () => {
+  const { default: worker } = await import("../src/index.js");
+  const real = globalThis.fetch;
+  globalThis.fetch = async () => new Response(JSON.stringify({ raised: 1975, donors: 23 }), { status: 200 });
+  try {
+    const res = await worker.fetch(new Request("https://adapttolife.org/api/raised?c=wbd"), ENV, { waitUntil() {} });
+    const d = await res.json();
+    assert.equal(d.raised, 4979, "gifts only");
+    assert.equal(d.inkind, 5200, "court time, apart");
+    assert.equal(d.parts.year.inkind, 5200);
+  } finally {
+    globalThis.fetch = real;
+  }
 });

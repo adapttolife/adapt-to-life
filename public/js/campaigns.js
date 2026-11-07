@@ -257,7 +257,15 @@
     var meta = el("p", "evc-meta");
     meta.appendChild(el("span", "evc-tag", eventTag(d)));
     var soon = countdown(d);
-    if (soon) meta.appendChild(el("span", "evc-soon", soon));
+    if (soon) {
+      // Coming up carries the clock; on the day it is a live dot, in green.
+      var live = soon === "Today" || soon === "Happening now";
+      var chip = el("span", "evc-soon" + (live ? " is-live" : ""), soon);
+      var mark = live ? el("span", "live-dot") : sym("time");
+      if (live) mark.setAttribute("aria-hidden", "true");
+      chip.insertBefore(mark, chip.firstChild);
+      meta.appendChild(chip);
+    }
     box.appendChild(meta);
     box.appendChild(el(opts.heading || "h3", "evc-name", d.name));
     var facts = el("ul", "evc-facts");
@@ -426,17 +434,25 @@
 
   /* The site thermometer. Falls back to the campaign's own goal and hides the
      raised figure rather than publishing a $0 that is not true. */
+  var raisedCache = {};
   function raised(cb, key) {
     if (typeof fetch !== "function") return cb(null);
     // One total per key: wbd (the one goal, with its parts), year, send-6 or
-    // classic. No key means the Road (send-6).
-    fetch("/api/raised" + (key ? "?c=" + encodeURIComponent(key) : ""))
-      .then(function (r) {
+    // classic. No key means the Road (send-6). One request per key per page:
+    // the module and the /numbers bars share it.
+    var k = key || "";
+    if (!raisedCache[k])
+      raisedCache[k] = fetch(
+        "/api/raised" + (key ? "?c=" + encodeURIComponent(key) : ""),
+      ).then(function (r) {
         return r.json();
-      })
+      });
+    raisedCache[k]
       .then(function (d) {
         cb({
           raised: Number(d.raised) || 0,
+          // Court time a partner club gives toward every week (wbd only).
+          inkind: Number(d.inkind) || 0,
           goal: Number(d.goal) || 0,
           parts: d.parts || null,
           donors: Number(d.donors) || 0,
@@ -545,24 +561,34 @@
      where the next gift lands, and the donor count joins the trust line.
      Never a $0 we cannot vouch for: no raised figure, no change. */
   var GIFTS = {
-    // Every line is a verified unit cost: $15 a night at ACE (15 for $225), $1,548
-    // a year for a membership, about $3,500 for a US Open the last couple of
-    // years. Monthly figures are those over 12 months ($65 is exactly $15 a week, every week).
+    // Every line is a verified unit cost: $15 a night at ACE (15 for $225), $129
+    // a month for a membership ($1,548 for 12 months), about $3,500 for a US
+    // Open the last couple of years. A month of nights is four nights, so the
+    // math needs no calculator: $60 is 4 x $15 and $900 is 4 x $225 (Alec,
+    // Nov 7: "How did you get 65? 15 x 4 is $60?"). The membership line sells
+    // the unlimited sessions, one line on a desktop card ("Let's shorten it
+    // up"), and no line names the club's membership ("Just say membership").
     monthly: [
       {
-        a: 65,
-        t: "$65 a month keeps one athlete on court every week of the year.",
+        a: 60,
+        t: "$60 a month: four nights at $15, for one athlete.",
       },
-      { a: 129, t: "$129 a month can keep one athlete training all year." },
       {
-        a: 975,
-        t: "$975 a month covers a night at ACE every week for up to 15 athletes.",
+        a: 129,
+        t: "$129 a month: unlimited sessions for one athlete to compete.",
+      },
+      {
+        a: 900,
+        t: "$900 a month: four nights at $225, for up to 15 athletes.",
       },
     ],
     once: [
       { a: 15, t: "$15 puts one athlete on court for a night." },
       { a: 225, t: "$225 covers up to 15 athletes for a night at ACE." },
-      { a: 1548, t: "$1,548 can keep one athlete training all year." },
+      {
+        a: 1548,
+        t: "$1,548 covers a year of unlimited sessions for one athlete.",
+      },
       { a: 3500, t: "$3,500 covers about what one athlete’s US Open costs." },
     ],
   };
@@ -689,7 +715,128 @@
     draw();
   }
 
+  /* /numbers: how much of each part is covered so far, in the module's
+     colours (green gifts, blue striped court time), and one bar for the whole
+     goal with its key and what is left to raise. Hidden until real numbers
+     arrive, so the page never shows a $0 that is not true. */
+  function pctW(a, b) {
+    return Math.max(0, Math.min(100, (a / b) * 100)).toFixed(1) + "%";
+  }
+  /* Symbols (site.css, "symbols"): one class each, drawn by the stylesheet
+     from the dictionary. Decorative: the words beside them say it too. */
+  function sym(name, cls) {
+    var i = document.createElement("i");
+    i.className = "sym sym--" + name + (cls ? " " + cls : "");
+    i.setAttribute("aria-hidden", "true");
+    return i;
+  }
+  /* The key for a data colour: a chip in that colour carrying its symbol,
+     hand-heart for gifts, the court for court time a partner club gives. */
+  function key(kind, cls) {
+    var k = document.createElement("i");
+    k.className = cls + (kind ? " " + cls + "--kind" : "");
+    k.setAttribute("aria-hidden", "true");
+    k.appendChild(sym(kind ? "courts" : "giving"));
+    return k;
+  }
+
+  function numbersBars() {
+    // The six faces paint once their row is near view (site.css, .face).
+    Array.prototype.forEach.call(document.querySelectorAll(".nb-crew"), near);
+    if (!document.querySelector("[data-nb-row], [data-nb-total]")) return;
+    raised(function (d) {
+      if (!d || !d.raised) return;
+      var parts = d.parts || {};
+      Object.keys(parts).forEach(function (k) {
+        var p = parts[k] || {};
+        var pr = Number(p.raised) || 0;
+        var pg = Number(p.goal) || 0;
+        var pk = Math.min(Number(p.inkind) || 0, pr);
+        if (!pg || !pr) return;
+        each(document, '[data-nb-row="' + k + '"]', function (n) {
+          n.hidden = false;
+          n.classList.toggle("has-gifts", pr - pk > 0 && pk > 0);
+          n.classList.toggle("is-done", pr >= pg);
+        });
+        each(document, '[data-nb-fig="' + k + '"]', function (n) {
+          n.textContent = money(pr) + " of " + money(pg);
+        });
+        each(document, '[data-nb-pct="' + k + '"]', function (n) {
+          n.textContent = Math.round((pr / pg) * 100) + "%";
+        });
+
+        each(document, '[data-nb-kind="' + k + '"]', function (n) {
+          whenSeen(n, function () {
+            n.style.width = pctW(pk, pg);
+          });
+        });
+        each(document, '[data-nb-fill="' + k + '"]', function (n) {
+          whenSeen(n, function () {
+            n.style.width = pctW(pr - pk, pg);
+          });
+        });
+      });
+      var goal = Number(d.goal) || 0;
+      var gifts = Number(d.raised) || 0;
+      var kind = Number(d.inkind) || 0;
+      if (!goal) return;
+      each(document, "[data-nb-total]", function (n) {
+        n.hidden = false;
+        n.classList.toggle("has-gifts", gifts > 0 && kind > 0);
+        n.classList.toggle("is-done", gifts + kind >= goal);
+      });
+      // The finish station on the route turns yellow when the goal is met.
+      each(document, ".nb-stop--finish", function (n) {
+        n.classList.toggle("is-done", gifts + kind >= goal);
+      });
+      each(document, '[data-nb-kind="total"]', function (n) {
+        whenSeen(n, function () {
+          n.style.width = pctW(kind, goal);
+        });
+      });
+      each(document, '[data-nb-fill="total"]', function (n) {
+        whenSeen(n, function () {
+          n.style.width = pctW(gifts, goal);
+        });
+      });
+      // Who gave: Givebutter's donors online, and the popcorn drive's
+      // supporters (stamped from campaigns.json), side by side and never
+      // added up, because some people did both.
+      if (d.donors)
+        each(document, "[data-nb-people]", function (n) {
+          each(n, "[data-nb-donors]", function (x) {
+            x.textContent = d.donors + (d.donors === 1 ? " donor" : " donors");
+          });
+          n.hidden = false;
+        });
+      each(document, "[data-nb-legend]", function (n) {
+        n.textContent = "";
+        var so = document.createElement("span");
+        so.className = "nb-so";
+        so.textContent = money(gifts + kind) + " so far";
+        n.appendChild(so);
+        var g = document.createElement("span");
+        g.appendChild(key(false, "nb-key"));
+        g.appendChild(document.createTextNode(money(gifts) + " in gifts"));
+        n.appendChild(g);
+        if (kind) {
+          var c = document.createElement("span");
+          c.appendChild(key(true, "nb-key"));
+          c.appendChild(
+            document.createTextNode(money(kind) + " in court time from a partner club"),
+          );
+          n.appendChild(c);
+        }
+        var left = document.createElement("span");
+        left.className = "nb-left";
+        left.textContent = money(Math.max(0, goal - gifts - kind)) + " to go";
+        n.appendChild(left);
+      });
+    }, "wbd");
+  }
+
   function module(root) {
+    numbersBars();
     var scope = root || document;
     var mods = scope.querySelectorAll("[data-cm]");
     if (!mods.length) return;
@@ -698,38 +845,48 @@
       if (card) picker(card);
       var bg = m.querySelector(".cm-bg");
       if (bg) near(bg);
+      var faces = m.querySelector(".cm-faces");
+      if (faces) near(faces);
     });
     raised(function (d) {
       if (!d || !d.raised) return;
       var parts = d.parts || {};
       Array.prototype.forEach.call(mods, function (m) {
-        if (d.donors)
-          each(m, "[data-donors]", function (n) {
-            n.textContent = "Join " + d.donors + " donors";
-            n.hidden = false;
-          });
+        // Court time a partner club gives counts toward the goal beside the
+        // gifts: one total, and a line under it that keeps the two apart.
+        var kind = Number(d.inkind) || 0;
         if (d.goal)
           each(m, "[data-cm-sub]", function (n) {
-            n.textContent = "raised toward our " + money(d.goal) + " goal";
+            n.textContent =
+              (kind ? "toward our " : "raised toward our ") + money(d.goal) + " goal";
           });
         each(m, "[data-cm-total]", function (n) {
           n.textContent = "$0";
           whenSeen(n, function () {
-            countUp(n, d.raised);
+            countUp(n, (Number(d.raised) || 0) + kind);
           });
         });
+        // Each part: what is covered so far as one fill (the partner club's
+        // court time included; /numbers keeps the two apart with a key), the
+        // amount with the raised figure in bold, and the share where the bar
+        // ends. Alec, Nov 7: "where to look and what to care about".
         Object.keys(parts).forEach(function (k) {
           var p = parts[k] || {};
           var pr = Number(p.raised) || 0;
           var pg = Number(p.goal) || 0;
           if (!pg) return;
           each(m, '[data-part-fig="' + k + '"]', function (n) {
-            n.textContent = pr
-              ? money(pr) + " of " + money(pg)
-              : money(pg) + (k === "year" ? " a year" : "");
+            if (!pr) {
+              n.textContent = money(pg) + (k === "year" ? " a year" : "");
+              return;
+            }
+            n.textContent = "";
+            n.appendChild(el("b", null, money(pr)));
+            n.appendChild(document.createTextNode(" of " + money(pg)));
           });
           each(m, '[data-part-row="' + k + '"]', function (n) {
             n.classList.toggle("is-empty", !pr);
+            n.classList.toggle("is-done", pr >= pg);
           });
           each(m, '[data-part-pct="' + k + '"]', function (n) {
             if (!pr) return;
@@ -790,6 +947,7 @@
     eventCard: eventCard,
     countdown: countdown,
     el: el,
+    sym: sym,
     arrow: arrow,
     wire: wire,
   };

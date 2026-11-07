@@ -125,10 +125,12 @@ test("the numbers in the saved emails are still the site's numbers", () => {
   for (const part of wbd.parts) assert.ok(all.includes(usd(part.goal)), part.key);
   assert.ok(
     read("public/js/campaigns.js").includes(
-      "$129 a month can keep one athlete training all year.",
+      "$129 a month: unlimited sessions for one athlete to compete.",
     ),
   );
-  assert.ok(all.includes("$129 a month can keep one athlete training all year."));
+  assert.ok(
+    all.includes("$129 a month: unlimited sessions for one athlete to compete."),
+  );
   const sponsorship = read("public/sponsorship.html");
   for (const price of ["$225", "$1,548", "$15,480"]) {
     assert.ok(sponsorship.includes(price), `${price} on /sponsorship`);
@@ -189,7 +191,9 @@ test("the plain welcome reads as a letter, with one link, and its text twin says
   );
   assert.ok(text.startsWith("Thanks for signing up."));
   assert.ok(
-    text.includes("Chicago Pickleball: Wheelie Big Dills (https://adapttolife.org/pickleball?"),
+    text.includes(
+      "Chicago Pickleball: Wheelie Big Dills (https://adapttolife.org/pickleball?",
+    ),
   );
   assert.ok(text.includes("\nAlec\nFounder, Adapt To Life\n"));
 });

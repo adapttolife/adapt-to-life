@@ -56,7 +56,7 @@
 
   /* form status — semantic, not brand. Repainting pass/fail in brand accents
      would cost legibility to buy consistency nobody asked for. */
-  --ok: #2e7d32;
+  --ok: var(--good-ink); /* form success: the supporting green */
   --err: #c0392b;
 
   /* ink + canvas (warm, never pure white/black) */
@@ -1056,6 +1056,217 @@ em.italic[style*="--orange"] {
   .gift-list li:nth-child(4) {
     border-top: 0;
   }
+}
+
+/* ---- supporting colours -------------------------------------------------
+   Alec, Nov 7 2026: "let's lean into how they throw in additional colors with
+   their brand colors" (T3 Code). Night, Orange, Off-white and Beige stay the
+   brand. Each supporting colour has one job and only ever appears as a small
+   label, a dot or a data mark, never a background, headline or button:
+     green  = live, funded, gifts
+     blue   = next, in progress, court time
+     yellow = wins (already in use)    red = errors (already in use)
+     grey   = not yet
+   Labels follow T3 Code's badge recipe: an 8% tint (16% on dark) behind a
+   deeper shade for the text. Every label reads at 5:1 or better on the
+   off-white card, the beige page, Night and the raised Night card. */
+:root {
+  --good: #008300;
+  --good-ink: #006300;
+  --good-dot: #008300;
+  --info: #2a78d6;
+  --info-ink: #1c5cab;
+  --info-dot: #2a78d6;
+  --tag-tint: 8%;
+  --tag-neutral-bg: rgba(59, 59, 70, 0.07);
+  --tag-neutral-ink: #6a675e;
+  --win-ink: #6b4f00;
+  --win-tint: 18%;
+}
+.dark,
+.on-dark,
+.footer,
+.cm .cm-card {
+  --good-ink: #4cc38a;
+  --good-dot: #4cc38a;
+  --info-ink: #86b6ef;
+  --info-dot: #86b6ef;
+  --tag-tint: 16%;
+  --tag-neutral-bg: rgba(249, 247, 242, 0.08);
+  --tag-neutral-ink: #cfc9bd;
+  --win-ink: var(--yellow);
+  --win-tint: 16%;
+}
+/* A light card on a dark band (the event card on /events) takes the light
+   values back, so its labels keep their contrast on the paper. */
+.evc {
+  --good-ink: #006300;
+  --good-dot: #008300;
+  --info-ink: #1c5cab;
+  --info-dot: #2a78d6;
+  --tag-tint: 8%;
+  --tag-neutral-bg: rgba(59, 59, 70, 0.07);
+  --tag-neutral-ink: #6a675e;
+  --win-ink: #6b4f00;
+  --win-tint: 18%;
+}
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.3em 0.72em;
+  border-radius: 999px;
+  font-family: var(--font-label);
+  font-size: 0.66rem;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  white-space: nowrap;
+  vertical-align: 0.12em;
+}
+.tag--good {
+  background: color-mix(in srgb, var(--good) var(--tag-tint), transparent);
+  color: var(--good-ink);
+}
+.tag--info {
+  background: color-mix(in srgb, var(--info) var(--tag-tint), transparent);
+  color: var(--info-ink);
+}
+.tag--neutral {
+  background: var(--tag-neutral-bg);
+  color: var(--tag-neutral-ink);
+}
+/* A win: a result we can point to. Yellow carries it as the tint and the
+   medal; on light the text is the deep step (5.8:1 on the beige page), on dark
+   the yellow itself (7.6:1 on Night). */
+.tag--win {
+  background: color-mix(in srgb, var(--yellow) var(--win-tint), transparent);
+  color: var(--win-ink);
+}
+.tag--win::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 1.3em;
+  height: 1.3em;
+  margin-left: -0.2em;
+  background: currentColor;
+  -webkit-mask: var(--icon-win) center/contain no-repeat;
+  mask: var(--icon-win) center/contain no-repeat;
+}
+
+/* ---- symbols -------------------------------------------------------------
+   Alec, Nov 7 2026: "go beyond color and leverage icons and symbols". Every
+   colour now travels with a symbol from the dictionary (data/icons.mjs,
+   css: true), drawn by the stylesheet as a mask so it costs one class:
+     <i class="sym sym--win" aria-hidden="true"></i>
+   The shape says what it is, the colour (currentColor) says how it stands:
+   medal = a win, hand-heart = gifts, court = court time, flag = the goal,
+   checkered flag = the finish, lock = not started, clock = coming up. The
+   words beside a symbol always say the same thing, so it is never the only
+   way to read it. */
+.sym {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 1.15em;
+  height: 1.15em;
+  vertical-align: -0.2em;
+  background: currentColor;
+  -webkit-mask: var(--sym) center/contain no-repeat;
+  mask: var(--sym) center/contain no-repeat;
+}
+.sym--win {
+  --sym: var(--icon-win);
+}
+.sym--goal {
+  --sym: var(--icon-goal);
+}
+.sym--finished {
+  --sym: var(--icon-finished);
+}
+.sym--locked {
+  --sym: var(--icon-locked);
+}
+.sym--giving {
+  --sym: var(--icon-giving);
+}
+.sym--courts {
+  --sym: var(--icon-courts);
+}
+.sym--training {
+  --sym: var(--icon-training);
+}
+.sym--travel {
+  --sym: var(--icon-travel);
+}
+.sym--tournament {
+  --sym: var(--icon-tournament);
+}
+.sym--participation {
+  --sym: var(--icon-participation);
+}
+.sym--stories {
+  --sym: var(--icon-stories);
+}
+.sym--recurring {
+  --sym: var(--icon-recurring);
+}
+.sym--event {
+  --sym: var(--icon-event);
+}
+.sym--time {
+  --sym: var(--icon-time);
+}
+.sym--place {
+  --sym: var(--icon-place);
+}
+.sym--pickleball {
+  --sym: var(--icon-pickleball);
+}
+.sym--check {
+  --sym: var(--icon-check);
+}
+.tag .sym {
+  width: 1.3em;
+  height: 1.3em;
+  margin-left: -0.2em;
+}
+/* Live: a pulsing dot, the one status drawn as a dot rather than a symbol
+   (T3 Code's running state). It stops for reduced motion. */
+.tag .live-dot,
+.live-dot {
+  flex: 0 0 auto;
+  width: 0.6em;
+  height: 0.6em;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 0 0 color-mix(in srgb, currentColor 45%, transparent);
+  animation: livePulse 1.8s var(--ease) infinite;
+}
+@keyframes livePulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, currentColor 45%, transparent);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 0.45em color-mix(in srgb, currentColor 0%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .live-dot {
+    animation: none;
+  }
+}
+/* Roadmap phase tiles: the icon wears the phase's colour on the dark tile. */
+.ix-tile.is-good {
+  color: #4cc38a;
+}
+.ix-tile.is-info {
+  color: #86b6ef;
+}
+.ix-tile.is-neutral {
+  color: #cfc9bd;
 }
 
 /* ---- community strip ----------------------------------------------------- */
@@ -3048,16 +3259,30 @@ a.win-band:focus-visible {
   text-transform: uppercase;
   color: var(--orange-ink);
 }
+/* The countdown is a status: blue while it is coming up, green once it is
+   happening (campaigns.js adds is-live). */
 .evc-soon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
   font-family: var(--font-label);
   font-weight: 800;
   font-size: 0.66rem;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: var(--orange-ink);
-  background: rgba(255, 92, 57, 0.12);
+  color: var(--info-ink);
+  background: color-mix(in srgb, var(--info) var(--tag-tint), transparent);
   padding: 0.24rem 0.58rem;
   border-radius: 999px;
+}
+.evc-soon .sym {
+  width: 1.3em;
+  height: 1.3em;
+  margin-left: -0.15em;
+}
+.evc-soon.is-live {
+  color: var(--good-ink);
+  background: color-mix(in srgb, var(--good) var(--tag-tint), transparent);
 }
 .evc .evc-name {
   grid-area: name;
@@ -3285,6 +3510,22 @@ a.win-band:focus-visible {
 
 /* icons:start: mask variables written by scripts/build-icons.mjs from data/icons.mjs (meanings with css: true). */
 :root {
+  --icon-giving: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22currentColor%22%20d%3D%22M232.76%20137.88a28.66%2028.66%200%200%200-12-5.39C236.19%20114.94%20244%2097.37%20244%2080c0-28.67-23.09-52-51.46-52A51.77%2051.77%200%200%200%20156%2042.85A51.77%2051.77%200%200%200%20119.46%2028C91.09%2028%2068%2051.33%2068%2080c0%2010.15%202.72%2020.3%208.22%2030.7a35.9%2035.9%200%200%200-11.73%207.84L43%20140H20a20%2020%200%200%200-20%2020v40a20%2020%200%200%200%2020%2020h100a12%2012%200%200%200%202.91-.36l64-16a11.4%2011.4%200%200%200%201.79-.6l38.82-16.54c.23-.09.45-.19.67-.3a28.61%2028.61%200%200%200%204.57-48.32M119.46%2052a27.18%2027.18%200%200%201%2025.44%2016.56a12%2012%200%200%200%2022.2%200A27.18%2027.18%200%200%201%20192.54%2052C207.42%2052%20220%2064.82%20220%2080c0%2018.06-15%2038.84-43.38%2060.19l-4.62%201.07V140a32%2032%200%200%200-32-32h-37.29C95.42%2097.76%2092%2088.77%2092%2080c0-15.18%2012.58-28%2027.46-28M24%20164h12v32H24Zm193.68.61l-37.51%2016L118.52%20196H60v-39l21.46-21.46a11.93%2011.93%200%200%201%208.48-3.54H140a8%208%200%200%201%200%2016h-28a12%2012%200%200%200%200%2024h32a12.2%2012.2%200%200%200%202.69-.3l67-15.41l.47-.12a4.61%204.61%200%200%201%205.82%204.44a4.58%204.58%200%200%201-2.3%204%22%2F%3E%3C%2Fsvg%3E");
+  --icon-stories: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22currentColor%22%20d%3D%22m229.7%2082.84l-175.94-54l-.16-.05A20%2020%200%200%200%2028%2048v144a20%2020%200%200%200%2019.94%2020a20.4%2020.4%200%200%200%205.66-.81h.16l78.24-24V196a20%2020%200%200%200%2020%2020h32a20%2020%200%200%200%2020-20v-30.94l25.7-7.89A20.1%2020.1%200%200%200%20244%20138v-36a20.1%2020.1%200%200%200-14.3-19.16M52%20186.58V53.43L132%2078v84ZM180%20192h-24v-12.22l24-7.36Zm40-56.95l-64%2019.63V85.33L220%20105Z%22%2F%3E%3C%2Fsvg%3E");
+  --icon-participation: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22currentColor%22%20d%3D%22M176%2084a36%2036%200%201%200-36-36a36%2036%200%200%200%2036%2036m0-48a12%2012%200%201%201-12%2012a12%2012%200%200%201%2012-12m29.28%2096.39a12%2012%200%200%201%202.49%2010l-16%2080A12%2012%200%200%201%20180%20232a12%2012%200%200%201-2.36-.23a12%2012%200%200%201-9.42-14.12L181.36%20152H124a12%2012%200%200%201-10.4-18l17.92-31.2a76.1%2076.1%200%200%200-79.88%2010.55a12%2012%200%200%201-15.28-18.49a100%20100%200%200%201%20118.19-6.68a12%2012%200%200%201%203.85%2016L144.74%20128H196a12%2012%200%200%201%209.28%204.39m-41.47%2044.52a64%2064%200%201%201-73.64-68.16a12%2012%200%200%201%203.66%2023.72a40%2040%200%201%200%2046.05%2042.62a12%2012%200%201%201%2023.93%201.82%22%2F%3E%3C%2Fsvg%3E");
+  --icon-pickleball: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20fill%3D%22currentColor%22%20d%3D%22M9.377%2016.721q-.846%200-1.64-.312T6.31%2015.47l-3.608-3.62q-.348-.348-.525-.785T2%2010.169t.177-.907t.525-.816l3.783-3.802q.348-.348.785-.525t.896-.177t.907.177t.816.545L13.47%208.27q.635.639.952%201.437q.318.798.318%201.65q0%20.887-.351%201.761t-1.02%201.562l5.251%205.252q.146.146.156.347t-.156.366t-.354.165t-.353-.165l-5.253-5.252q-.686.67-1.548.998q-.862.33-1.736.33m9.754-7.953q-1.197%200-2.029-.845q-.833-.846-.833-2.043t.833-2.039T19.131%203t2.043.846t.845%202.042t-.845%202.039t-2.043.842%22%2F%3E%3C%2Fsvg%3E");
+  --icon-courts: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22currentColor%22%20d%3D%22M224%2044H32a20%2020%200%200%200-20%2020v128a20%2020%200%200%200%2020%2020h192a20%2020%200%200%200%2020-20V64a20%2020%200%200%200-20-20m-4%20112h-4a28%2028%200%200%201%200-56h4ZM36%20100h4a28%2028%200%200%201%200%2056h-4Zm0%2080h4a52%2052%200%200%200%200-104h-4v-8h80v120H36Zm104%208V68h80v8h-4a52%2052%200%200%200%200%20104h4v8Z%22%2F%3E%3C%2Fsvg%3E");
+  --icon-event: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22currentColor%22%20d%3D%22M208%2028h-20v-4a12%2012%200%200%200-24%200v4H92v-4a12%2012%200%200%200-24%200v4H48a20%2020%200%200%200-20%2020v160a20%2020%200%200%200%2020%2020h160a20%2020%200%200%200%2020-20V48a20%2020%200%200%200-20-20M68%2052a12%2012%200%200%200%2024%200h72a12%2012%200%200%200%2024%200h16v24H52V52ZM52%20204V100h152v104Zm92-76a16%2016%200%201%201-16-16a16%2016%200%200%201%2016%2016m48%200a16%2016%200%201%201-16-16a16%2016%200%200%201%2016%2016m-96%2048a16%2016%200%201%201-16-16a16%2016%200%200%201%2016%2016m48%200a16%2016%200%201%201-16-16a16%2016%200%200%201%2016%2016m48%200a16%2016%200%201%201-16-16a16%2016%200%200%201%2016%2016%22%2F%3E%3C%2Fsvg%3E");
+  --icon-tournament: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22currentColor%22%20d%3D%22M232%2060h-20V48a12%2012%200%200%200-12-12H56a12%2012%200%200%200-12%2012v12H24A20%2020%200%200%200%204%2080v16a44.05%2044.05%200%200%200%2044%2044h.77A84.18%2084.18%200%200%200%20116%20195.15V212H96a12%2012%200%200%200%200%2024h64a12%2012%200%200%200%200-24h-20v-16.89c30.94-4.51%2056.53-26.2%2067-55.11h1a44.05%2044.05%200%200%200%2044-44V80a20%2020%200%200%200-20-20M28%2096V84h16v28c0%201.21%200%202.41.09%203.61A20%2020%200%200%201%2028%2096m160%2015.1c0%2033.33-26.71%2060.65-59.54%2060.9A60%2060%200%200%201%2068%20112V60h120ZM228%2096a20%2020%200%200%201-16.12%2019.62c.08-1.5.12-3%20.12-4.52V84h16Z%22%2F%3E%3C%2Fsvg%3E");
+  --icon-training: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22currentColor%22%20d%3D%22M229.26%2090.4a108%20108%200%200%201-177.63%20114A108%20108%200%200%201%20195.41%2043.63l20.1-20.11a12%2012%200%200%201%2017%2017l-96%2096a12%2012%200%201%201-17-17l24-24a36%2036%200%201%200%2019.76%2039.65a12%2012%200%200%201%2023.53%204.74a60%2060%200%201%201-25.73-62l17.23-17.17a84%2084%200%201%200%2028.46%2038a12%2012%200%201%201%2022.5-8.35Z%22%2F%3E%3C%2Fsvg%3E");
+  --icon-travel: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22currentColor%22%20d%3D%22m190%20115.31l27.21-25.61l.26-.26a36%2036%200%200%200-50.91-50.91c-.09.08-.17.17-.26.26L140.69%2066L60.1%2036.71a12%2012%200%200%200-12.58%202.79l-24%2024A12%2012%200%200%200%2025.34%2082l59.83%2039.88L75%20132H56a12%2012%200%200%200-8.48%203.51l-24%2024a12%2012%200%200%200%204%2019.62l35.23%2014.1l14.06%2035.14l.09.22a12%2012%200%200%200%2019.76%203.7l23.81-23.81A12%2012%200%200%200%20124%20200v-19l10.13-10.13L174%20230.65a12%2012%200%200%200%2018.47%201.83l24-24a12%2012%200%200%200%202.79-12.59Zm-4.11%2089.85L146%20145.33a12%2012%200%200%200-8.8-5.28a12%2012%200%200%200-1.2-.05a12%2012%200%200%200-8.49%203.52l-24%2024A12%2012%200%200%200%20100%20176v19l-7.62%207.62l-9.24-23.1a12%2012%200%200%200-6.69-6.69l-23.1-9.24L61%20156h19a12%2012%200%200%200%208.48-3.51l24-24a12%2012%200%200%200-1.82-18.49L50.84%2070.12l8.24-8.25l80.83%2029.39a12%2012%200%200%200%2012.84-3.05l30.89-32.82a12%2012%200%200%201%2017%2017l-32.82%2030.89a12%2012%200%200%200-3.06%2012.84l29.4%2080.82Z%22%2F%3E%3C%2Fsvg%3E");
+  --icon-recurring: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22currentColor%22%20d%3D%22M228%2048v48a12%2012%200%200%201-12%2012h-48a12%2012%200%200%201%200-24h19l-7.8-7.8a75.55%2075.55%200%200%200-53.32-22.26h-.43a75.5%2075.5%200%200%200-53.06%2021.63a12%2012%200%201%201-16.78-17.16a99.38%2099.38%200%200%201%2069.87-28.47h.52a99.42%2099.42%200%200%201%2070.2%2029.29L204%2067V48a12%2012%200%200%201%2024%200m-44.39%20132.43a75.5%2075.5%200%200%201-53.09%2021.63h-.43a75.55%2075.55%200%200%201-53.32-22.26L69%20172h19a12%2012%200%200%200%200-24H40a12%2012%200%200%200-12%2012v48a12%2012%200%200%200%2024%200v-19l7.8%207.8a99.42%2099.42%200%200%200%2070.2%2029.26h.56a99.38%2099.38%200%200%200%2069.87-28.47a12%2012%200%200%200-16.78-17.16Z%22%2F%3E%3C%2Fsvg%3E");
+  --icon-win: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22currentColor%22%20d%3D%22M220%2096a92%2092%200%201%200-152%2069.69V240a12%2012%200%200%200%2017.37%2010.73L128%20229.42l42.64%2021.31A12%2012%200%200%200%20188%20240v-74.31A91.86%2091.86%200%200%200%20220%2096M60%2096a68%2068%200%201%201%2068%2068a68.07%2068.07%200%200%201-68-68m104%20124.59l-30.64-15.32a12%2012%200%200%200-10.74%200L92%20220.58v-39.92a92%2092%200%200%200%2072%200ZM128%20148a52%2052%200%201%200-52-52a52.06%2052.06%200%200%200%2052%2052m0-80a28%2028%200%201%201-28%2028a28%2028%200%200%201%2028-28%22%2F%3E%3C%2Fsvg%3E");
+  --icon-goal: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22currentColor%22%20d%3D%22m243.94%2092.67l-184-64A12%2012%200%200%200%2044%2040v176a12%2012%200%200%200%2024%200v-39.47l175.94-61.2a12%2012%200%200%200%200-22.66M68%20151.12V56.88L203.47%20104Z%22%2F%3E%3C%2Fsvg%3E");
+  --icon-finished: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22currentColor%22%20d%3D%22M229%2045a12%2012%200%200%200-12.85%201.84c-24.71%2021.41-44.53%2013.31-74.82-1.68c-28.14-13.89-63.16-31.22-101.19%201.72A12%2012%200%200%200%2036%2056v168a12%2012%200%200%200%2024%200v-42.29c22.84-17.13%2042.1-9.11%2070.68%205c16.23%208%2034.74%2017.2%2054.8%2017.2c14.72%200%2030.28-4.94%2046.38-18.88A12%2012%200%200%200%20236%20176V56a12%2012%200%200%200-7-11m-43.52%2038.91A63%2063%200%200%200%20212%2078.08v32.15c-11%208.26-21.2%2010.67-32%209.37V83.66c1.81.15%203.64.25%205.48.25M156%2078.08v34.09c-4.64-2-9.5-4.4-14.68-7A255%20255%200%200%200%20116%2093.83V59.75c4.64%202%209.5%204.4%2014.68%207A253%20253%200%200%200%20156%2078.08M92%2052.32v35.92a63.33%2063.33%200%200%200-32%205.61V61.68C71%2053.42%2081.2%2051%2092%2052.32M86.52%20148A63%2063%200%200%200%2060%20153.86V121.7c11-8.25%2021.2-10.66%2032-9.36v35.94c-1.81-.15-3.64-.28-5.48-.28m29.48%205.86v-34.09c4.64%202%209.5%204.4%2014.68%207A253%20253%200%200%200%20156%20138.1v34.09c-4.64-2.05-9.5-4.4-14.68-7A251%20251%200%200%200%20116%20153.86m64%2025.76v-35.94c1.81.14%203.64.24%205.48.24a62.85%2062.85%200%200%200%2026.52-5.85v32.19c-11%208.26-21.2%2010.66-32%209.36%22%2F%3E%3C%2Fsvg%3E");
+  --icon-locked: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22currentColor%22%20d%3D%22M208%2076h-28V56a52%2052%200%200%200-104%200v20H48a20%2020%200%200%200-20%2020v112a20%2020%200%200%200%2020%2020h160a20%2020%200%200%200%2020-20V96a20%2020%200%200%200-20-20M100%2056a28%2028%200%200%201%2056%200v20h-56Zm104%20148H52V100h152Z%22%2F%3E%3C%2Fsvg%3E");
+  --icon-time: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22currentColor%22%20d%3D%22M128%2020a108%20108%200%201%200%20108%20108A108.12%20108.12%200%200%200%20128%2020m0%20192a84%2084%200%201%201%2084-84a84.09%2084.09%200%200%201-84%2084m68-84a12%2012%200%200%201-12%2012h-56a12%2012%200%200%201-12-12V72a12%2012%200%200%201%2024%200v44h44a12%2012%200%200%201%2012%2012%22%2F%3E%3C%2Fsvg%3E");
+  --icon-place: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22currentColor%22%20d%3D%22M128%2060a44%2044%200%201%200%2044%2044a44.05%2044.05%200%200%200-44-44m0%2064a20%2020%200%201%201%2020-20a20%2020%200%200%201-20%2020m0-112a92.1%2092.1%200%200%200-92%2092c0%2077.36%2081.64%20135.4%2085.12%20137.83a12%2012%200%200%200%2013.76%200a259%20259%200%200%200%2042.18-39C205.15%20170.57%20220%20136.37%20220%20104a92.1%2092.1%200%200%200-92-92m31.3%20174.71a249.4%20249.4%200%200%201-31.3%2030.18a249.4%20249.4%200%200%201-31.3-30.18C80%20167.37%2060%20137.31%2060%20104a68%2068%200%200%201%20136%200c0%2033.31-20%2063.37-36.7%2082.71%22%2F%3E%3C%2Fsvg%3E");
   --icon-check: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22currentColor%22%20d%3D%22m232.49%2080.49l-128%20128a12%2012%200%200%201-17%200l-56-56a12%2012%200%201%201%2017-17L96%20183L215.51%2063.51a12%2012%200%200%201%2017%2017Z%22%2F%3E%3C%2Fsvg%3E");
   --icon-more: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22currentColor%22%20d%3D%22M228%20128a12%2012%200%200%201-12%2012h-76v76a12%2012%200%200%201-24%200v-76H40a12%2012%200%200%201%200-24h76V40a12%2012%200%200%201%2024%200v76h76a12%2012%200%200%201%2012%2012%22%2F%3E%3C%2Fsvg%3E");
 } /* icons:end */
@@ -3328,13 +3569,19 @@ a.win-band:focus-visible {
   --hair: var(--hairline-dark);
   --raised: rgba(249, 247, 242, 0.04);
   --em: var(--orange);
-  --data: var(--ink);
-  --card: var(--paper);
-  --card-text: var(--ink);
-  --card-muted: #6a675e; /* the site's warm muted */
-  --card-hair: rgba(59, 59, 70, 0.12);
-  --track: rgba(59, 59, 70, 0.1);
-  --hero: var(--orange-ink);
+  /* The money card is Night on every page (Alec, Nov 7 2026: option D, the
+     total in yellow on a Night card). On the Night section it is the raised
+     step with a hairline, like the stat tiles beside it. */
+  --data: var(--cream);
+  --gift: #008300;
+  --kind: #3987e5;
+  --card: var(--night-raised);
+  --card-text: var(--cream);
+  --card-muted: #cfc9bd;
+  --card-hair: rgba(249, 247, 242, 0.1);
+  --track: rgba(249, 247, 242, 0.14);
+  /* Yellow means a win: money already secured reads at 10.7:1 on Night. */
+  --hero: var(--yellow);
   --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 24px 48px -24px rgba(0, 0, 0, 0.6);
   --ghost-o: 0.18;
   --ghost-blend: screen;
@@ -3360,12 +3607,14 @@ a.win-band:focus-visible {
   --raised: var(--paper);
   --em: var(--orange-display);
   --data: var(--cream);
+  --gift: #008300;
+  --kind: #3987e5;
   --card: var(--slate);
   --card-text: var(--cream);
   --card-muted: #cfc9bd;
   --card-hair: rgba(249, 247, 242, 0.1);
   --track: rgba(249, 247, 242, 0.14);
-  --hero: var(--orange);
+  --hero: var(--yellow);
   --card-shadow:
     0 1px 2px rgba(59, 59, 70, 0.1), 0 24px 48px -24px rgba(23, 21, 19, 0.55);
   --ghost-o: 0.15;
@@ -3407,6 +3656,16 @@ a.win-band:focus-visible {
     transform: scaleX(-1);
   }
 }
+/* A figure with lettering on it keeps its photographed orientation, so the
+   words read the right way round (build-module: mirror false). Ryan, the one
+   today, wears his cap at the very top of the photo, so he sits a little
+   lower to keep his face in the section. */
+@media (min-width: 1000px) {
+  .cm-bg--true::before {
+    transform: none;
+    top: 6px;
+  }
+}
 
 .cm-wrap {
   position: relative;
@@ -3424,26 +3683,22 @@ a.win-band:focus-visible {
     row-gap: 2rem;
     align-items: start;
   }
+  /* The headline beside the card, centred on it. The six record tiles that
+     sat under it are gone (Alec, Nov 7: "too messy"; the record lives on the
+     crew section and /pickleball). */
   .cm-head {
-    align-self: end;
-  }
-  .cm-stats {
-    align-self: start;
+    grid-row: 1 / span 2;
+    align-self: center;
   }
   .cm-card {
     grid-column: 2;
     grid-row: 1 / span 2;
     align-self: center;
   }
-  /* Without the stats (the crew page leads with its record), the headline
-     centres on the card instead of leaving a hole under it. */
-  .cm-wrap:not(:has(.cm-stats)) .cm-head {
-    grid-row: 1 / span 2;
-    align-self: center;
-  }
 }
 
-/* The status badge: a tinted background, text mixed toward the foreground. */
+/* The status badge: live, so it is green like every live status on the
+   site, a tinted background with the text mixed toward the foreground. */
 .cm-status {
   display: inline-flex;
   align-items: center;
@@ -3454,25 +3709,29 @@ a.win-band:focus-visible {
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.01em;
-  background: color-mix(in srgb, var(--accent) 14%, transparent);
-  color: var(--orange-hot);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent);
+  background: color-mix(in srgb, var(--live) 14%, transparent);
+  color: var(--live);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--live) 24%, transparent);
 }
 .cm[data-theme="light"] .cm-status {
-  background: color-mix(in srgb, var(--action) 10%, transparent);
-  color: var(--orange-ink);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--action) 22%, transparent);
+  background: color-mix(in srgb, var(--live) 8%, transparent);
+  color: var(--good-ink);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--live) 20%, transparent);
 }
 .cm-dot {
+  --pulse: var(--live);
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--accent);
-  animation: cmPulse 1.8s var(--ease) infinite;
+  background: var(--live);
+  animation: cmPulseLive 1.8s var(--ease) infinite;
 }
-.cm[data-theme="light"] .cm-dot {
-  background: var(--action);
-  animation-name: cmPulseAction;
+/* Live is green: on the dark section the lighter step, on the sand the deeper. */
+.cm[data-theme="dark"] {
+  --live: #4cc38a;
+}
+.cm[data-theme="light"] {
+  --live: #008300;
 }
 .cm-status-sep {
   width: 1px;
@@ -3499,53 +3758,6 @@ a.win-band:focus-visible {
   max-width: 34rem;
   font-size: clamp(1rem, 2.6vw, 1.12rem);
   line-height: 1.5;
-  color: var(--muted);
-}
-
-/* What is already on the board: hairline tiles, a whisper of lift, a yellow
-   win mark. */
-.cm-stats {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.5rem;
-}
-.cm-stats li {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  padding: 0.85rem 0.8rem 0.9rem;
-  border-radius: var(--r-lg);
-  background: var(--raised);
-  box-shadow: inset 0 0 0 1px var(--hair);
-}
-.cm-stats li::after {
-  content: "";
-  position: absolute;
-  left: 0.8rem;
-  right: 0.8rem;
-  bottom: 0;
-  height: 2px;
-  border-radius: 2px;
-  background: var(--win);
-  opacity: 0.9;
-}
-.cm-stats b {
-  font-weight: 900;
-  font-style: italic;
-  font-size: clamp(1.5rem, 5.8vw, 2.15rem);
-  line-height: 1;
-  letter-spacing: -0.035em;
-  white-space: nowrap;
-  color: var(--text);
-}
-.cm-stats span {
-  font-size: 0.8rem;
-  font-weight: 600;
-  line-height: 1.3;
   color: var(--muted);
 }
 
@@ -3595,11 +3807,18 @@ a.win-band:focus-visible {
   font-weight: 800;
   font-size: 0.98rem;
 }
+/* The amount: the raised figure in bold, "of $goal" quieter, so the eye
+   lands on what is covered. */
 .cm-fig {
   margin-left: auto;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 0.95rem;
   font-variant-numeric: tabular-nums;
+  color: var(--card-muted);
+}
+.cm-fig b {
+  font-weight: 800;
+  color: var(--card-text);
 }
 @media (max-width: 560px) {
   .cm-fig {
@@ -3607,48 +3826,9 @@ a.win-band:focus-visible {
     flex-basis: 100%;
   }
 }
-.cm-badge {
-  display: inline-flex;
-  align-items: center;
-  height: 20px;
-  padding: 0 6px;
-  border-radius: var(--r-sm);
-  font-size: 0.7rem;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  font-variant-numeric: tabular-nums;
-}
-.cm-badge[hidden] {
-  display: none;
-}
-.cm-badge--accent {
-  background: color-mix(in srgb, var(--accent) 14%, transparent);
-  color: var(--orange-ink);
-}
-.cm-badge--action {
-  background: color-mix(in srgb, var(--action) 14%, transparent);
-  color: var(--orange-ink);
-}
-.cm[data-theme="light"] .cm-badge--accent {
-  color: var(--orange-hot);
-  background: color-mix(in srgb, var(--accent) 20%, transparent);
-}
-.cm[data-theme="light"] .cm-badge--action {
-  color: var(--orange-hot);
-  background: color-mix(in srgb, var(--action) 20%, transparent);
-}
-.cm-badge--quiet {
-  background: color-mix(in srgb, var(--card-text) 8%, transparent);
-  color: var(--card-muted);
-}
-/* On the off-white money card (dark theme) the quiet chip and the switch track
-   are the page off-white, not a grey mix: two light tones, never a third. */
-.cm[data-theme="dark"] .cm-badge--quiet,
-.cm[data-theme="dark"] .cm-seg {
-  background: var(--canvas);
-}
 .cm-track {
   position: relative;
+  display: flex;
   margin-top: 0.55rem;
   height: 10px;
   border-radius: 999px;
@@ -3659,12 +3839,18 @@ a.win-band:focus-visible {
   height: 100%;
   width: 0;
   border-radius: 999px;
-  background: var(--data);
+  background: var(--gift);
   transition: width 1.6s var(--ease);
 }
+/* Gifts are one colour wherever they appear, so the road wears it too:
+   colour says where the money came from, not which part it is in. Orange
+   stays the brand (the total, the button), never a data colour. */
 .cm-fill--action {
-  background: linear-gradient(90deg, var(--action-ink), var(--action));
+  background: var(--gift);
 }
+/* One fill per bar: everything covered so far, the partner club's court
+   time included. /numbers keeps the gifts and the court time apart, with a
+   key; the card only answers how far along each part is. */
 .cm-start {
   display: none;
   position: absolute;
@@ -3674,8 +3860,9 @@ a.win-band:focus-visible {
   height: 12px;
   margin-top: -6px;
   border-radius: 50%;
-  background: var(--data);
-  animation: cmPulse 1.8s var(--ease) infinite;
+  --pulse: var(--gift);
+  background: var(--gift);
+  animation: cmPulseLive 1.8s var(--ease) infinite;
 }
 .cm-row.is-empty .cm-start {
   display: block;
@@ -3727,20 +3914,102 @@ a.win-band:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
-/* The next goal, shown locked until the road is funded. */
-.cm-row--next .cm-row-top b,
-.cm-row--next .cm-fig {
+
+/* Symbols in the module (see "symbols" above). Restraint, because the card
+   has to stay clean (Alec, Nov 6: "it's getting too messy"): one quiet
+   symbol per row for what the part is (training for every week, travel for
+   the road); each bar ends in its percentage; and the road is cut into its
+   six seats, with the six athletes' faces beside it. The Chicago Classic
+   joins the card when it starts (Alec, Nov 7). */
+.cm-row-top b {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+.cm-row-top b .sym {
+  width: 1.05rem;
+  height: 1.05rem;
   color: var(--card-muted);
 }
-.cm-row--next .cm-fig {
-  font-weight: 600;
+.cm-lane {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.55rem;
 }
-.cm-track--locked {
+.cm-lane .cm-track {
+  flex: 1 1 auto;
+  margin-top: 0;
+}
+/* How much of the part is covered, as plain text where the bar ends: one
+   number, one place, in the green that means money in (Alec, Nov 7: "move
+   the percentage green box to a better location"). Its width is kept before
+   the numbers arrive, so the bars never jump. */
+.cm-pct {
+  flex: 0 0 2.6rem;
+  text-align: right;
+  font-size: 0.9rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--good-ink);
+}
+.cm-pct[hidden] {
+  display: block;
+  visibility: hidden;
+}
+/* The road is six seats: five hairline gaps in the bar, one per $3,500. */
+.cm-track--seats::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
   background: repeating-linear-gradient(
     90deg,
-    var(--track) 0 10px,
-    transparent 10px 16px
+    transparent 0 calc(100% / 6 - 2px),
+    var(--card) calc(100% / 6 - 2px) calc(100% / 6)
   );
+}
+/* The road's six seats are six athletes (campaigns.json; faces cut by
+   scripts/build-seats.mjs into one strip). One request for six faces, painted
+   only once the row is near view. The road is one goal, so the faces carry no
+   progress of their own: the bar does; all six take a green ring together
+   when it is done. */
+.face {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: var(--face, 1.75rem);
+  height: var(--face, 1.75rem);
+  border-radius: 50%;
+  background-color: var(--face-bg, rgba(249, 247, 242, 0.1));
+  background-repeat: no-repeat;
+  background-size: 600% 100%;
+  background-position: calc(var(--i, 0) * 20%) 0;
+}
+.is-near .face {
+  background-image: url("/images/pickleball/seats/faces.webp");
+}
+.cm-note--crew {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.65rem;
+}
+.cm-faces {
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+.cm-faces .face {
+  --face: 2rem;
+  box-shadow: 0 0 0 2px var(--card);
+}
+.cm-faces .face + .face {
+  margin-left: -0.28rem;
+}
+.cm-row.is-done .cm-faces .face {
+  box-shadow:
+    0 0 0 2px var(--card),
+    0 0 0 3.5px var(--live);
 }
 
 /* What a gift covers: monthly first, every line a verified unit cost. */
@@ -3777,7 +4046,7 @@ a.win-band:focus-visible {
     0 1px 2px rgba(0, 0, 0, 0.12),
     inset 0 0 0 1px var(--card-hair);
 }
-.cm[data-theme="light"] .cm-seg button[aria-checked="true"] {
+.cm .cm-seg button[aria-checked="true"] {
   background: rgba(249, 247, 242, 0.14);
 }
 .cm-amts {
@@ -3814,7 +4083,7 @@ a.win-band:focus-visible {
   background: color-mix(in srgb, var(--action) 10%, transparent);
   box-shadow: inset 0 0 0 1px var(--action-ink);
 }
-.cm[data-theme="light"] .cm-amts button[aria-checked="true"] {
+.cm .cm-amts button[aria-checked="true"] {
   border-color: var(--action);
   box-shadow: inset 0 0 0 1px var(--action);
   background: color-mix(in srgb, var(--action) 16%, transparent);
@@ -3824,12 +4093,22 @@ a.win-band:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
+/* The line under the amounts says what the Donate button will do, so it sits
+   close to it. Two lines are kept for it wherever a gift line can wrap (a
+   phone, and the narrow two-column card from 1000 to 1099px), so switching
+   amounts never moves the button; where every line fits on one, one. Measured
+   on all seven gift lines, Nov 7 2026. */
 .cm-impact {
   margin: 0.75rem 0 0;
   min-height: 2.7em;
   font-weight: 700;
   font-size: 0.95rem;
   line-height: 1.35;
+}
+@media (min-width: 560px) and (max-width: 999px), (min-width: 1100px) {
+  .cm-impact {
+    min-height: 1.35em;
+  }
 }
 
 /* The button: the site's pressable button, full width in the card. */
@@ -3872,6 +4151,15 @@ a.win-band:focus-visible {
   }
   50% {
     box-shadow: 0 0 0 9px color-mix(in srgb, var(--accent) 6%, transparent);
+  }
+}
+@keyframes cmPulseLive {
+  0%,
+  100% {
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--pulse) 28%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 9px color-mix(in srgb, var(--pulse) 6%, transparent);
   }
 }
 @keyframes cmPulseAction {

@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=a259d5ba">
+<link rel="stylesheet" href="/css/site.css?v=f3c06679">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches&&"IntersectionObserver" in window)document.documentElement.classList.add("ace-motion");</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SportsTeam","name":"Chicago Pickleball: Wheelie Big Dills","alternateName":["Wheelie Big Dills","Chicago Wheelie Big Dills"],"sport":"Wheelchair pickleball","url":"https://adapttolife.org/pickleball","description":"A crew of wheelchair pickleball players growing the sport across the Chicago area, funded and supported by Adapt To Life.","areaServed":{"@type":"City","name":"Chicago"},"logo":"https://adapttolife.org/images/pickleball/wheelie-big-dills-badge.webp","sponsor":{"@type":"NGO","name":"Adapt To Life","url":"https://adapttolife.org"}}</script>
@@ -271,6 +271,7 @@
   .pb-cadence{ gap:1.3rem; }
   .pb-tag{ display:inline-block; margin-left:0.5rem; padding:0.2rem 0.55rem; border-radius:999px; vertical-align:0.12em; font-family:var(--font-label); font-style:normal; font-weight:800; font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase; background:var(--paper); box-shadow:inset 0 0 0 1px rgba(59,59,70,0.12); color:var(--ink-soft); }
   .pb-tag.is-now{ background:rgb(var(--accent-rgb) / 0.13); color:var(--orange-ink); }
+  .pb-tag.is-next{ background:color-mix(in srgb, var(--info) var(--tag-tint), transparent); color:var(--info-ink); }
   .pb-then{ margin-top:1.3rem; max-width:62ch; line-height:1.5; }
   .pb-card{ scroll-margin-top:96px; }
   .pb-card .pb-tag{ position:absolute; top:1rem; left:1rem; z-index:1; margin:0; padding:0.32rem 0.75rem; border-radius:999px; background:var(--orange); color:var(--night); font-family:var(--font-label); font-weight:800; font-size:0.7rem; letter-spacing:0.16em; text-transform:uppercase; line-height:1; }
@@ -436,8 +437,8 @@ fill="currentColor" stroke="none">
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navOurWork">Our Work<svg class="caret" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="caret" data-style="bold"><path fill="currentColor" d="m216.49 104.49l-80 80a12 12 0 0 1-17 0l-80-80a12 12 0 0 1 17-17L128 159l71.51-71.52a12 12 0 0 1 17 17Z"/></svg></button>
         <div class="nav-panel" id="navOurWork">
           <a href="/hustle-and-heart"><span class="np-t">Hustle &amp; Heart Fund</span><span class="np-d">Support for equipment, training, and travel</span></a>
-          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d">In beta · Find adaptive programs by sport and location</span></a>
-          <a href="/adapt-body-shop"><span class="np-t">Adapt Body Shop</span><span class="np-d">Coming soon · Gear for the community</span></a>
+          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d"><span class="tag tag--info">In beta</span> Find adaptive programs by sport and location</span></a>
+          <a href="/adapt-body-shop"><span class="np-t">Adapt Body Shop</span><span class="np-d"><span class="tag tag--neutral">Coming soon</span> Gear for the community</span></a>
         </div>
       </div>
       <div class="nav-group">
@@ -466,8 +467,8 @@ fill="currentColor" stroke="none">
     <div class="wrap mwrap">
       <span class="m-group">Our Work</span>
       <a class="m-sub" href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
-      <a class="m-sub" href="/adaptive-sports-near-me">Adaptive Sports Near Me · In beta</a>
-      <a class="m-sub" href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
+      <a class="m-sub" href="/adaptive-sports-near-me">Adaptive Sports Near Me <span class="tag tag--info">In beta</span></a>
+      <a class="m-sub" href="/adapt-body-shop">Adapt Body Shop <span class="tag tag--neutral">Coming soon</span></a>
       <span class="m-group">Get Involved</span>
       <a class="m-sub" href="/volunteer">Volunteer</a>
       <a class="m-sub" href="/sponsorship">Partners</a>
@@ -536,7 +537,7 @@ fill="currentColor" stroke="none">
   </section>
 
   <!-- 3. MEET THE SIX -->
-  <section class="band dark pb-crew">
+  <section class="band dark pb-crew" id="crew">
     <div class="wrap">
       <div class="ace-head" data-m="stagger">
         <hr class="tick orange">
@@ -596,14 +597,14 @@ fill="currentColor" stroke="none">
           <p class="pb-day">01</p>
           <h3>Play anytime</h3>
           <p class="pb-cost"><b>$15</b><span>a night, per athlete</span></p>
-          <p>Open play and drop ins at clubs across the area, with no membership and nothing to lock in. At ACE, we cover the drop-in, so every athlete plays free. $225 covers up to 15 for a night.</p>
+          <p>Open play and drop-ins at clubs across the area, with no membership and nothing to lock in. At ACE, we cover the drop-in, so every athlete plays free. $225 covers up to 15 for a night.</p>
           <p class="pb-fund"><b>Kept going by</b> night sponsors, host clubs and volunteers</p>
         </li>
         <li class="pb-level">
           <p class="pb-day">02</p>
           <h3>Train to compete</h3>
           <p class="pb-cost"><b>$129</b><span>a month, per athlete</span></p>
-          <p>Memberships for athletes who train regularly so they can travel to tournaments. One session a week isn&rsquo;t enough: Juan trains 16 hours a week. A membership can keep one athlete training all year, for $129 a month.</p>
+          <p>Memberships for athletes who train regularly so they can travel to tournaments. One session a week isn&rsquo;t enough: Juan trains 16 hours a week. A membership is $129 a month for unlimited sessions, so a year of training is $1,548.</p>
           <p class="pb-fund"><b>Kept going by</b> membership sponsors</p>
           <a class="pb-link" href="/sponsorship#tiers">Sponsor an athlete</a>
         </li>
@@ -628,9 +629,9 @@ fill="currentColor" stroke="none">
     <div class="wrap">
       <div class="ace-head" data-m="stagger">
         <hr class="tick orange">
-        <span class="eyebrow orange">With clubs, organizations and coaches</span>
+        <span class="eyebrow orange">Home courts</span>
         <h2 class="serif statement">Places to play, <em class="italic" style="color:var(--orange)">built together.</em></h2>
-        <p class="prose">Through ambassadors like Juan Ortiz, we help clubs, organizations and coaches build and manage adaptive sports programs, so the adaptive sports community has places to play across the area. Some sessions have a sport chair to try or a coach on hand, and some are just open play. We grow each one little by little.</p>
+        <p class="prose">Through ambassadors like Juan Ortiz, we help clubs, organizations and coaches build and manage adaptive sports programs, so the adaptive sports community has places to play across the area. Some sessions have a sport chair to try or a coach on hand, and some are just open play. We grow each one little by little. It&rsquo;s the <a class="textlink" href="/sponsorship#clubs" style="font:inherit;letter-spacing:inherit;">Home Court Model</a> at work.</p>
       </div>
       <div class="pb-nights pb-sessions" data-m="stagger">
         <article class="pb-night">
@@ -656,9 +657,9 @@ fill="currentColor" stroke="none">
         </article>
         <article class="pb-night pb-next">
           <p class="pb-day">What&rsquo;s next</p>
-          <h3>Your club?</h3>
+          <h3>Your club next</h3>
           <p class="pb-where">Across the Chicago area</p>
-          <p>Clubs, organizations and coaches: we&rsquo;ll help you build and manage an adaptive program of your own.</p>
+          <p>Clubs, YMCAs, schools and coaches: we&rsquo;ll help you build and manage an adaptive program of your own.</p>
           <a class="pb-link" href="mailto:hello@adapttolife.org?subject=Build%20an%20adaptive%20program">Start a conversation</a>
         </article>
       </div>
@@ -691,7 +692,7 @@ fill="currentColor" stroke="none">
   <!-- 6. SUPPORT -->
   <!-- The one goal, live: the module (scripts/build-module.mjs). The record
        already leads this page, so no stats here. -->
-  <!-- campaign-module {"id":"support","theme":"dark","athlete":"bob","stats":false} -->
+  <!-- campaign-module {"id":"support","theme":"dark","athlete":"bob"} -->
   <section class="cm" id="support" data-cm data-theme="dark" aria-labelledby="support-title">
       <div class="cm-bg" aria-hidden="true" style="--ghost:url(/images/pickleball/ghost/bob-gray.webp);--ghost-ar:393/640"></div>
       <div class="cm-wrap">
@@ -704,19 +705,14 @@ fill="currentColor" stroke="none">
           <p class="cm-hero"><b data-cm-total>$48,180</b><span data-cm-sub>our goal for the year ahead</span></p>
           <div class="cm-rows">
             <div class="cm-row" data-part-row="year">
-              <div class="cm-row-top"><b>Every week</b><span class="cm-badge cm-badge--accent">First priority</span><span class="cm-fig" data-part-fig="year">$27,180 a year</span></div>
-              <div class="cm-track"><span class="cm-fill" data-part-fill="year"></span><span class="cm-start" aria-hidden="true"></span></div>
-              <p class="cm-note">Court time and memberships. Every new gift starts here.</p>
+              <div class="cm-row-top"><b><i class="sym sym--training" aria-hidden="true"></i>Every week</b><span class="cm-fig" data-part-fig="year">$27,180 a year</span></div>
+              <div class="cm-lane"><div class="cm-track"><span class="cm-fill" data-part-fill="year"></span><span class="cm-start" aria-hidden="true"></span></div><span class="cm-pct" data-part-pct="year" hidden></span></div>
+              <p class="cm-note">Court time and memberships.</p>
             </div>
             <div class="cm-row" data-part-row="send-6">
-              <div class="cm-row-top"><b>The Road to the US Open</b><span class="cm-badge cm-badge--action" data-part-pct="send-6" hidden></span><span class="cm-fig" data-part-fig="send-6">$21,000</span></div>
-              <div class="cm-track"><span class="cm-fill cm-fill--action" data-part-fill="send-6"></span><span class="cm-start" aria-hidden="true"></span></div>
-              <p class="cm-note">Six athletes, about $3,500 each. <a href="/send-6">See the road</a></p>
-            </div>
-            <div class="cm-row cm-row--next">
-              <div class="cm-row-top"><b>The Chicago Classic</b><span class="cm-badge cm-badge--quiet">Next goal</span><span class="cm-fig">Date to come</span></div>
-              <div class="cm-track cm-track--locked" aria-hidden="true"></div>
-              <p class="cm-note">Our goal: free registration, transportation and hotels for every athlete.</p>
+              <div class="cm-row-top"><b><i class="sym sym--travel" aria-hidden="true"></i>The Road to the US Open</b><span class="cm-fig" data-part-fig="send-6">$21,000</span></div>
+              <div class="cm-lane"><div class="cm-track cm-track--seats"><span class="cm-fill cm-fill--action" data-part-fill="send-6"></span><span class="cm-start" aria-hidden="true"></span></div><span class="cm-pct" data-part-pct="send-6" hidden></span></div>
+              <p class="cm-note cm-note--crew"><span class="cm-faces" role="img" aria-label="The six seats: Juan, Brian, Bob, Robby, Ken and Amanda"><i class="face" style="--i:0" title="Juan"></i><i class="face" style="--i:1" title="Brian"></i><i class="face" style="--i:2" title="Bob"></i><i class="face" style="--i:3" title="Robby"></i><i class="face" style="--i:4" title="Ken"></i><i class="face" style="--i:5" title="Amanda"></i></span><span>Six athletes, about $3,500 each. <a href="/send-6">See the road</a></span></p>
             </div>
           </div>
           <a class="cm-more" href="/numbers">See the numbers breakdown <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
@@ -726,14 +722,14 @@ fill="currentColor" stroke="none">
               <button type="button" role="radio" aria-checked="false" data-freq="once">One time</button>
             </div>
             <div class="cm-amts is-3" role="radiogroup" aria-label="Amount" data-amts>
-              <button type="button" role="radio" aria-checked="false" data-a="65" aria-label="$65 a month">$65</button>
+              <button type="button" role="radio" aria-checked="false" data-a="60" aria-label="$60 a month">$60</button>
               <button type="button" role="radio" aria-checked="true" data-a="129" aria-label="$129 a month">$129</button>
-              <button type="button" role="radio" aria-checked="false" data-a="975" aria-label="$975 a month">$975</button>
+              <button type="button" role="radio" aria-checked="false" data-a="900" aria-label="$900 a month">$900</button>
             </div>
-            <p class="cm-impact" data-impact aria-live="polite">$129 a month can keep one athlete training all year.</p>
+            <p class="cm-impact" data-impact aria-live="polite">$129 a month: unlimited sessions for one athlete to compete.</p>
           </div>
-          <a class="cm-btn btn" href="/donate?amount=80&amp;frequency=monthly" data-give-link>Donate</a>
-          <p class="cm-trust"><span data-donors hidden></span><span>Tax-deductible</span><span>501(c)(3) &middot; EIN 41-3213344</span><span>Secure checkout by Givebutter</span></p>
+          <a class="cm-btn btn" href="/donate?amount=129&amp;frequency=monthly" data-give-link>Donate</a>
+          <p class="cm-trust"><span>Tax-deductible</span><span>Secure checkout by Givebutter</span></p>
         </div>
       </div>
     </section>
@@ -748,14 +744,14 @@ fill="currentColor" stroke="none">
         <ol class="pb-prio pb-cadence">
           <li><b>Every week <em class="pb-tag is-now">First</em></b><span>$27,180 a year: court time at ACE every week ($11,700) and memberships so ten athletes can train all year ($15,480).</span></li>
           <li><b>The Road to the US Open</b><span>$21,000: six athletes, about $3,500 each, roughly what the US Open has cost the last couple of years. Money raised for Send 6 stays on the road. <a class="textlink" href="/send-6" style="font:inherit;letter-spacing:inherit;">See the road</a></span></li>
-          <li><b>The Chicago Classic <em class="pb-tag">Next</em></b><span>Our goal is a tournament with free registration, transportation and hotels for every athlete. It joins the goal once it has a date. <a class="textlink" href="/chicago-classic" style="font:inherit;letter-spacing:inherit;">See the goal</a></span></li>
+          <li><b>The Chicago Classic <em class="pb-tag is-next">Next</em></b><span>Our goal is a tournament with free registration, transportation and hotels for every athlete. It joins the goal once it has a date. <a class="textlink" href="/chicago-classic" style="font:inherit;letter-spacing:inherit;">See the goal</a></span></li>
         </ol>
         <p class="pb-then">Equipment sits outside the goal. A sport chair runs $4,000 to $6,000, and insurance doesn&rsquo;t cover it. Most of the athletes we support have one; when one needs a chair, we&rsquo;ll raise for that athlete.</p>
       </div>
       <div class="ace-win" data-m="stagger">
         <div><h3>Donate</h3><ul><li>Any amount helps. $15 puts one athlete on court for a night, and $225 covers up to 15 at ACE.</li></ul><a class="btn pb-btn" href="/donate">Donate</a></div>
         <div><h3>Sponsor</h3><ul><li>Nights, athlete memberships and tournaments, for businesses that want to be part of it.</li></ul><a class="btn ghost pb-btn" href="/sponsorship">See partnerships</a></div>
-        <div><h3>Build a program</h3><ul><li>Run a club, an organization or a coaching program? We&rsquo;ll help you build an adaptive one.</li></ul><a class="btn ghost pb-btn" href="mailto:hello@adapttolife.org?subject=Build%20an%20adaptive%20program">Start a conversation</a></div>
+        <div><h3>Build a program</h3><ul><li>Clubs, YMCAs, schools and coaches: we&rsquo;ll help you build an adaptive program with the <a class="textlink" href="/sponsorship#clubs" style="font:inherit;letter-spacing:inherit;">Home Court Model</a>.</li></ul><a class="btn ghost pb-btn" href="mailto:hello@adapttolife.org?subject=Build%20an%20adaptive%20program">Start a conversation</a></div>
       </div>
     </div>
   </section>
@@ -838,8 +834,8 @@ fill="currentColor" stroke="none">
         <a href="/tim">Tim&rsquo;s Story</a>
         <a href="/karen">Karen&rsquo;s Story</a>
         <a href="/juan">Juan&rsquo;s Story</a>
-        <a href="/adaptive-sports-near-me">Adaptive Sports Near Me · In beta</a>
-        <a href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
+        <a href="/adaptive-sports-near-me">Adaptive Sports Near Me <span class="tag tag--info">In beta</span></a>
+        <a href="/adapt-body-shop">Adapt Body Shop <span class="tag tag--neutral">Coming soon</span></a>
                 <a href="/roadmap">Roadmap</a>
       </div>
       <div class="col">
@@ -956,9 +952,9 @@ fill="currentColor" stroke="none">
     }
   })();
 </script>
-<script src="/js/subscribe.js?v=ae0e28c8" defer></script>
+<script src="/js/subscribe.js?v=7efaf550" defer></script>
 <script src="/js/turnstile-lazy.js?v=12e9b811" defer></script>
-<script src="/js/campaigns.js?v=e7c705eb"></script>
+<script src="/js/campaigns.js?v=5f1e3af5"></script>
 <script>window.ATLCampaigns.module();</script>
 </body>
 </html>

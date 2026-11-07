@@ -31,11 +31,11 @@
 <link rel="dns-prefetch" href="https://widgets.givebutter.com">
 <link rel="dns-prefetch" href="https://givebuttercdn.com">
 <link rel="dns-prefetch" href="https://js.stripe.com">
-<link rel="preload" href="/css/site.css?v=a259d5ba" as="style">
+<link rel="preload" href="/css/site.css?v=f3c06679" as="style">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=a259d5ba">
+<link rel="stylesheet" href="/css/site.css?v=f3c06679">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <script src="/js/givebutter-lazy.js?v=29b7ce7b" defer></script>
 <style>
@@ -115,6 +115,11 @@
   .hh-now-proof li{ display:grid; grid-template-columns:7.4rem 1fr; align-items:baseline; gap:1rem; padding-bottom:1.1rem; border-bottom:1px solid rgba(249,247,242,0.12); }
   .hh-now-proof b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(2.4rem,4.6vw,3.2rem); line-height:0.9; letter-spacing:-0.04em; color:var(--yellow); }
   .hh-now-proof span{ color:var(--cream); font-weight:600; line-height:1.4; }
+  /* Court time and the clubs that host it are blue, as in the bars; the reach
+     stays yellow, a milestone. */
+  .hh-now-proof li.is-court b{ color:#86b6ef; }
+  .hh-now-proof span .sym{ width:1.1em; height:1.1em; margin-right:0.45rem; color:var(--yellow); }
+  .hh-now-proof li.is-court span .sym{ color:#86b6ef; }
   /* Space held for the Givebutter embed so its late mount cannot shove the
      page. Measured on prod: the settled form is 552px on a phone and 508px on
      a desktop, so these sit just under each. */
@@ -161,8 +166,8 @@ fill="currentColor" stroke="none">
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navOurWork">Our Work<svg class="caret" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="caret" data-style="bold"><path fill="currentColor" d="m216.49 104.49l-80 80a12 12 0 0 1-17 0l-80-80a12 12 0 0 1 17-17L128 159l71.51-71.52a12 12 0 0 1 17 17Z"/></svg></button>
         <div class="nav-panel" id="navOurWork">
           <a href="/hustle-and-heart"><span class="np-t">Hustle &amp; Heart Fund</span><span class="np-d">Support for equipment, training, and travel</span></a>
-          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d">In beta · Find adaptive programs by sport and location</span></a>
-          <a href="/adapt-body-shop"><span class="np-t">Adapt Body Shop</span><span class="np-d">Coming soon · Gear for the community</span></a>
+          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d"><span class="tag tag--info">In beta</span> Find adaptive programs by sport and location</span></a>
+          <a href="/adapt-body-shop"><span class="np-t">Adapt Body Shop</span><span class="np-d"><span class="tag tag--neutral">Coming soon</span> Gear for the community</span></a>
         </div>
       </div>
       <div class="nav-group">
@@ -191,8 +196,8 @@ fill="currentColor" stroke="none">
     <div class="wrap mwrap">
       <span class="m-group">Our Work</span>
       <a class="m-sub" href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
-      <a class="m-sub" href="/adaptive-sports-near-me">Adaptive Sports Near Me · In beta</a>
-      <a class="m-sub" href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
+      <a class="m-sub" href="/adaptive-sports-near-me">Adaptive Sports Near Me <span class="tag tag--info">In beta</span></a>
+      <a class="m-sub" href="/adapt-body-shop">Adapt Body Shop <span class="tag tag--neutral">Coming soon</span></a>
       <span class="m-group">Get Involved</span>
       <a class="m-sub" href="/volunteer">Volunteer</a>
       <a class="m-sub" href="/sponsorship">Partners</a>
@@ -237,7 +242,7 @@ fill="currentColor" stroke="none">
       <hr class="tick orange reveal">
       <span class="eyebrow orange reveal">How the fund works</span>
       <h2 id="hhModelTitle" class="serif h2 reveal" style="margin-top:0.8rem;">We fund it, <em class="italic" style="color:var(--orange-ink)">and we build it together.</em></h2>
-      <p class="prose reveal hh-model-lead">The Hustle &amp; Heart Fund works through ambassadors: athletes and coaches who grow a sport where they live. Money goes to athletes, and to the programs around them: starting them, coaching them and keeping them running. Each ambassador&rsquo;s work becomes a lane, and every lane tells its story through its own campaigns.</p>
+      <p class="prose reveal hh-model-lead">The Hustle &amp; Heart Fund works through ambassadors: athletes and coaches who grow a sport where they live. Money goes to athletes, and to the programs around them: starting them, coaching them and keeping them running. Each ambassador&rsquo;s work becomes a lane, and every lane tells its story through its own campaigns. Programs are built on the <a class="textlink" href="/sponsorship#clubs" style="font:inherit;letter-spacing:inherit;">Home Court Model</a>: a host brings the courts, athletes bring their game, and supporters bring the funding.</p>
       <ol class="hh-steps">
         <li class="reveal"><p class="hh-step-n">01</p><b>Ambassadors build</b><span>Athletes and coaches like Juan grow a sport where they live, with clubs, organizations and coaches.</span></li>
         <li class="reveal"><p class="hh-step-n">02</p><b>The fund backs them</b><span>Funding, plus coaching know-how, club relationships, volunteers and content that helps a program grow.</span></li>
@@ -266,9 +271,9 @@ fill="currentColor" stroke="none">
         <p class="hh-now-next">Next: wherever our next ambassador is building. <a href="/ambassadors#join">Know who it should be?</a></p>
       </div>
       <ul class="hh-now-proof reveal" aria-label="What the fund brings in Chicago">
-        <li><b>$225</b><span>covers court time for up to 15 athletes for a night at ACE</span></li>
-        <li><b>3</b><span>clubs where the crew plays across the Chicago area</span></li>
-        <li><b>334K</b><span>views in 90 days across Instagram and Facebook</span></li>
+        <li class="is-court"><b>$225</b><span><i class="sym sym--courts" aria-hidden="true"></i>covers court time for up to 15 athletes for a night at ACE</span></li>
+        <li class="is-court"><b>3</b><span><i class="sym sym--place" aria-hidden="true"></i>clubs where the crew plays across the Chicago area</span></li>
+        <li><b>334K</b><span><i class="sym sym--stories" aria-hidden="true"></i>views in 90 days across Instagram and Facebook</span></li>
       </ul>
     </div>
   </section>
@@ -293,7 +298,7 @@ fill="currentColor" stroke="none">
           <span class="ix-tile sm" aria-hidden="true"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="training" data-style="duotone"><g fill="currentColor"><path d="M176 128a48 48 0 1 1-48-48a48 48 0 0 1 48 48" opacity=".2"/><path d="M221.87 83.16A104.1 104.1 0 1 1 195.67 49l22.67-22.68a8 8 0 0 1 11.32 11.32l-96 96a8 8 0 0 1-11.32-11.32l27.72-27.72a40 40 0 1 0 17.87 31.09a8 8 0 1 1 16-.9a56 56 0 1 1-22.38-41.65l22.75-22.75a87.88 87.88 0 1 0 23.13 29.67a8 8 0 0 1 14.44-6.9"/></g></svg></span>
           <span class="tag">Build skills</span>
           <h3 class="serif h3">Training</h3>
-          <p class="prog-n">$1,548<span>can keep one athlete training all year</span></p>
+          <p class="prog-n">$1,548<span>a year of unlimited sessions for one athlete, $129 a month</span></p>
           <p>Coaching, clinics, and practice space. Time to build skills and confidence, at your own level.</p>
         </div>
         <div class="prog reveal">
@@ -380,36 +385,23 @@ fill="currentColor" stroke="none">
           <h2 class="cm-h" id="the-goal-title">Every week on court. <em>Next stop, Naples.</em></h2>
           <p class="cm-lede">Building the best wheelchair pickleball in the Chicago area, maybe the country.</p>
         </div>
-        <ul class="cm-stats" aria-label="Already on the board">
-          <li><b>3</b><span>straight US Opens</span></li>
-          <li><b>6</b><span>Monster Smash medals</span></li>
-          <li><b>1st</b><span>APP Tour wheelchair division</span></li>
-          <li><b>$3,004</b><span>popcorn drive, 3&times; its goal</span></li>
-          <li><b>334K</b><span>views in 90 days</span></li>
-          <li><b>10&ndash;15</b><span>athletes, every week</span></li>
-        </ul>
         <div class="cm-card">
           <p class="cm-hero"><b data-cm-total>$48,180</b><span data-cm-sub>our goal for the year ahead</span></p>
           <div class="cm-rows">
             <div class="cm-row" data-part-row="year">
-              <div class="cm-row-top"><b>Every week</b><span class="cm-badge cm-badge--accent">First priority</span><span class="cm-fig" data-part-fig="year">$27,180 a year</span></div>
-              <div class="cm-track"><span class="cm-fill" data-part-fill="year"></span><span class="cm-start" aria-hidden="true"></span></div>
-              <p class="cm-note">Court time and memberships. Every new gift starts here.</p>
+              <div class="cm-row-top"><b><i class="sym sym--training" aria-hidden="true"></i>Every week</b><span class="cm-fig" data-part-fig="year">$27,180 a year</span></div>
+              <div class="cm-lane"><div class="cm-track"><span class="cm-fill" data-part-fill="year"></span><span class="cm-start" aria-hidden="true"></span></div><span class="cm-pct" data-part-pct="year" hidden></span></div>
+              <p class="cm-note">Court time and memberships.</p>
             </div>
             <div class="cm-row" data-part-row="send-6">
-              <div class="cm-row-top"><b>The Road to the US Open</b><span class="cm-badge cm-badge--action" data-part-pct="send-6" hidden></span><span class="cm-fig" data-part-fig="send-6">$21,000</span></div>
-              <div class="cm-track"><span class="cm-fill cm-fill--action" data-part-fill="send-6"></span><span class="cm-start" aria-hidden="true"></span></div>
-              <p class="cm-note">Six athletes, about $3,500 each. <a href="/send-6">See the road</a></p>
-            </div>
-            <div class="cm-row cm-row--next">
-              <div class="cm-row-top"><b>The Chicago Classic</b><span class="cm-badge cm-badge--quiet">Next goal</span><span class="cm-fig">Date to come</span></div>
-              <div class="cm-track cm-track--locked" aria-hidden="true"></div>
-              <p class="cm-note">Our goal: free registration, transportation and hotels for every athlete.</p>
+              <div class="cm-row-top"><b><i class="sym sym--travel" aria-hidden="true"></i>The Road to the US Open</b><span class="cm-fig" data-part-fig="send-6">$21,000</span></div>
+              <div class="cm-lane"><div class="cm-track cm-track--seats"><span class="cm-fill cm-fill--action" data-part-fill="send-6"></span><span class="cm-start" aria-hidden="true"></span></div><span class="cm-pct" data-part-pct="send-6" hidden></span></div>
+              <p class="cm-note cm-note--crew"><span class="cm-faces" role="img" aria-label="The six seats: Juan, Brian, Bob, Robby, Ken and Amanda"><i class="face" style="--i:0" title="Juan"></i><i class="face" style="--i:1" title="Brian"></i><i class="face" style="--i:2" title="Bob"></i><i class="face" style="--i:3" title="Robby"></i><i class="face" style="--i:4" title="Ken"></i><i class="face" style="--i:5" title="Amanda"></i></span><span>Six athletes, about $3,500 each. <a href="/send-6">See the road</a></span></p>
             </div>
           </div>
           <a class="cm-more" href="/numbers">See the numbers breakdown <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
           <a class="cm-btn btn" href="#fund-donation" data-give-link>Donate</a>
-          <p class="cm-trust"><span data-donors hidden></span><span>Tax-deductible</span><span>501(c)(3) &middot; EIN 41-3213344</span><span>Secure checkout by Givebutter</span></p>
+          <p class="cm-trust"><span>Tax-deductible</span><span>Secure checkout by Givebutter</span></p>
         </div>
       </div>
     </section>
@@ -425,7 +417,7 @@ fill="currentColor" stroke="none">
           <ul class="gift-ladder" aria-label="What your gift can do">
             <li><b>$15</b><span>puts one athlete on court for a night</span></li>
             <li><b>$225</b><span>covers up to 15 athletes for a night at ACE</span></li>
-            <li><b>$1,548</b><span>can keep one athlete training all year</span></li>
+            <li><b>$1,548</b><span>covers a year of unlimited sessions for one athlete</span></li>
           </ul>
           <div class="fund-actions" aria-label="Support the fund">
             <a href="#fund-donation" class="btn">Donate</a>
@@ -499,8 +491,8 @@ fill="currentColor" stroke="none">
         <a href="/tim">Tim&rsquo;s Story</a>
         <a href="/karen">Karen&rsquo;s Story</a>
         <a href="/juan">Juan&rsquo;s Story</a>
-        <a href="/adaptive-sports-near-me">Adaptive Sports Near Me · In beta</a>
-        <a href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
+        <a href="/adaptive-sports-near-me">Adaptive Sports Near Me <span class="tag tag--info">In beta</span></a>
+        <a href="/adapt-body-shop">Adapt Body Shop <span class="tag tag--neutral">Coming soon</span></a>
                 <a href="/roadmap">Roadmap</a>
       </div>
       <div class="col">
@@ -582,10 +574,10 @@ fill="currentColor" stroke="none">
   })();
 </script>
 
-<script src="/js/campaigns.js?v=e7c705eb"></script>
+<script src="/js/campaigns.js?v=5f1e3af5"></script>
 <script>window.ATLCampaigns.module();</script>
 
-<script src="/js/subscribe.js?v=ae0e28c8" defer></script>
+<script src="/js/subscribe.js?v=7efaf550" defer></script>
 <script src="/js/turnstile-lazy.js?v=12e9b811" defer></script>
 </body>
 </html>

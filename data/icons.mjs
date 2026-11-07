@@ -47,6 +47,7 @@ export const MEANINGS = {
     src: "ph",
     icon: "hand-heart",
     means: "Giving and fundraising: money and support that reach athletes",
+    css: true,
   },
   operations: {
     src: "ph",
@@ -57,11 +58,13 @@ export const MEANINGS = {
     src: "ph",
     icon: "megaphone-simple",
     means: "Stories and reach: social, writing, photo, video, press",
+    css: true,
   },
   participation: {
     src: "ph",
     icon: "wheelchair-motion",
     means: "Taking part in sport: coaching, events, equipment, mentoring",
+    css: true,
   },
   connections: {
     src: "ph",
@@ -74,11 +77,13 @@ export const MEANINGS = {
     src: "msl",
     icon: "pickleball-rounded",
     means: "Pickleball specifically",
+    css: true,
   }, // filled: the outline closes into a magnifier at 18px
   courts: {
     src: "ph",
     icon: "court-basketball",
     means: "Courts and venues that host us",
+    css: true,
   },
   community: {
     src: "ph",
@@ -91,8 +96,18 @@ export const MEANINGS = {
     means: "Support and conversation in the comments",
   },
   play: { src: "ph", icon: "play-circle", means: "Watch a video or reel" },
-  event: { src: "ph", icon: "calendar-dots", means: "A dated event or campaign" },
-  tournament: { src: "ph", icon: "trophy", means: "Tournaments and results" },
+  event: {
+    src: "ph",
+    icon: "calendar-dots",
+    means: "A dated event or campaign",
+    css: true,
+  },
+  tournament: {
+    src: "ph",
+    icon: "trophy",
+    means: "Tournaments and results",
+    css: true,
+  },
 
   // How the fund spends: the content standard's own sequence. Equipment,
   // training and travel always appear with these three symbols, in this order.
@@ -105,11 +120,13 @@ export const MEANINGS = {
     src: "ph",
     icon: "target",
     means: "Training: practice, clinics, coaching time",
+    css: true,
   },
   travel: {
     src: "ph",
     icon: "airplane-tilt",
     means: "Travel: getting to the tournament or event",
+    css: true,
   },
 
   // How a grant works, from application to money (/apply), and money arriving.
@@ -131,6 +148,7 @@ export const MEANINGS = {
     src: "ph",
     icon: "arrows-clockwise",
     means: "Something that repeats, like a monthly gift",
+    css: true,
   },
   business: { src: "ph", icon: "buildings", means: "A business or employer" },
   tribute: {
@@ -163,14 +181,41 @@ export const MEANINGS = {
     means: "Open to everyone: no account, no fee",
   },
 
+  // Progress and results: the symbols that ride with the site's data colours
+  // (green money in, blue court time and next, yellow wins, grey not yet), so
+  // a status never relies on colour alone. Drawn by the stylesheet (.sym).
+  win: {
+    src: "ph",
+    icon: "medal",
+    means: "A result won: a medal, a title, an honour",
+    css: true,
+  },
+  goal: {
+    src: "ph",
+    icon: "flag-pennant",
+    means: "A goal we are working toward, or the next one",
+    css: true,
+  },
+  finished: {
+    src: "ph",
+    icon: "flag-checkered",
+    means: "The finish: where a bar ends, or a drive that has closed",
+    css: true,
+  },
+  locked: {
+    src: "ph",
+    icon: "lock-simple",
+    means: "Not started yet: it opens when the goal before it is met",
+    css: true,
+  },
   // Where a piece of work stands (/roadmap).
   live: { src: "ph", icon: "check-circle", means: "Live today: done and available" },
   building: { src: "ph", icon: "hammer", means: "Being built or strengthened now" },
   later: { src: "ph", icon: "compass", means: "Where we are headed next" },
 
   // Row details and navigation: plain on purpose.
-  time: { src: "ph", icon: "clock", means: "How much time something takes" },
-  place: { src: "ph", icon: "map-pin", means: "A city or venue" },
+  time: { src: "ph", icon: "clock", means: "How much time something takes", css: true },
+  place: { src: "ph", icon: "map-pin", means: "A city or venue", css: true },
   arrow: { src: "ph", icon: "arrow-right", means: "Go to a page on this site" },
   external: { src: "ph", icon: "arrow-up-right", means: "Opens another site" },
   back: {

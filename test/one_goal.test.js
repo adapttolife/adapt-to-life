@@ -118,7 +118,7 @@ test("pages draw one bar with its parts, and no gift is steered to a fund", () =
   assert.ok(crew.includes('id="support" data-cm'), "/pickleball#support lands on it");
   const list = crew.slice(crew.indexOf('<ol class="pb-prio pb-cadence">'));
   const order = [
-    ">Every week <",
+    ">Every week<", // no "First" tag (Alec: never "First priority")
     ">The Road to the US Open<",
     ">The Chicago Classic <",
   ].map((t) => list.indexOf(t));

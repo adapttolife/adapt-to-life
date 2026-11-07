@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=f201953b">
+<link rel="stylesheet" href="/css/site.css?v=2cf7f54b">
 <link rel="stylesheet" href="/css/athlete.css?v=e92b04d2">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <style>
@@ -36,7 +36,8 @@
   .jn-chips{ list-style:none; padding:0; margin:1.4rem 0 0; display:flex; flex-wrap:wrap; gap:0.5rem; }
   .jn-chips li{ font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--cream); padding:0.5rem 0.8rem; border-radius:999px; box-shadow:inset 0 0 0 1px rgba(249,247,242,0.22); }
   /* The Hall of Fame is a win, so it wears the site's win colour. */
-  .jn-chips li:first-child{ color:var(--yellow); box-shadow:inset 0 0 0 1.5px var(--yellow); }
+  .jn-chips li:first-child{ display:inline-flex; align-items:center; gap:0.4rem; color:var(--yellow); box-shadow:inset 0 0 0 1.5px var(--yellow); }
+  .jn-chips .sym{ width:1.25em; height:1.25em; margin-left:-0.15em; }
   .jn-acts{ display:flex; flex-wrap:wrap; gap:0.9rem 1rem; margin-top:1.8rem; }
   .jn-start{ position:relative; isolation:isolate; overflow:hidden; background:var(--night); }
   .jn-start-img{ position:absolute; inset:0; z-index:-2; }
@@ -54,8 +55,8 @@
   .jn-trophy{ display:grid; grid-template-columns:1fr 1fr; gap:1.1rem 1rem; margin:1.3rem 0 0; }
   /* Each honour gets a yellow medal (the site's win colour); the words stay
      in ink so they read on the paper card. */
-  .jn-trophy dt{ display:flex; align-items:center; gap:0.45rem; font-family:var(--font-display); font-weight:900; font-size:clamp(1.3rem,2vw,1.6rem); line-height:1; letter-spacing:-0.02em; color:var(--ink); }
-  .jn-trophy dt::before{ content:""; flex:0 0 auto; width:0.5em; height:0.5em; border-radius:50%; background:var(--yellow); box-shadow:inset 0 0 0 1px rgba(107,79,0,0.35), 0 0 0 3px rgba(246,190,0,0.18); }
+  .jn-trophy dt{ display:flex; align-items:flex-start; gap:0.45rem; font-family:var(--font-display); font-weight:900; font-size:clamp(1.3rem,2vw,1.6rem); line-height:1; letter-spacing:-0.02em; color:var(--ink); }
+  .jn-trophy dt::before{ content:""; flex:0 0 auto; width:0.8em; height:0.8em; margin-top:0.08em; background:var(--gold-ink); -webkit-mask:var(--icon-win) center/contain no-repeat; mask:var(--icon-win) center/contain no-repeat; }
   .jn-trophy dd{ margin:0.35rem 0 0; font-size:0.9rem; line-height:1.35; color:var(--ink-soft); }
   .jn-ch-text{ margin-top:1rem; color:var(--ink-soft); line-height:1.5; }
   .jn-ch-q{ margin-top:1rem; padding-left:0.9rem; border-left:3px solid var(--orange); font-weight:700; color:var(--ink); }
@@ -64,7 +65,11 @@
   .jn-ch-card.is-now .jn-ch-era{ color:var(--orange); }
   .jn-ch-card.is-now h3{ color:var(--cream); }
   .jn-ch-years{ list-style:none; padding:0; margin:1.2rem 0 0; display:grid; gap:0.85rem; }
-  .jn-ch-years li{ display:grid; grid-template-columns:3.4rem 1fr; gap:0.6rem; align-items:baseline; }
+  /* Each year leads with what it was: pickleball found, a win, the road. */
+  .jn-ch-years li{ display:grid; grid-template-columns:1.2rem 3.2rem 1fr; gap:0.55rem; align-items:baseline; }
+  .jn-ch-years .sym{ position:relative; top:0.2em; width:1.15rem; height:1.15rem; color:var(--cream-mute); }
+  .jn-ch-years li.win .sym{ color:var(--yellow); }
+  .jn-ch-years li.lit .sym{ color:var(--orange); }
   .jn-ch-years b{ font-family:var(--font-display); font-weight:900; font-size:1.15rem; color:var(--cream-mute); }
   .jn-ch-years span{ color:var(--cream-mute); line-height:1.4; }
   .jn-ch-years li.lit b{ color:var(--orange); text-shadow:0 0 22px rgb(var(--accent-rgb) / 0.45); }
@@ -214,7 +219,7 @@ fill="currentColor" stroke="none">
           <hr class="tick orange reveal">
           <p class="lead sub reveal">Paralyzed at 14. Hall of Famer in wheelchair softball. Dad of three. Now he is our first ambassador, building wheelchair pickleball in Chicago for everyone who comes after him, and chasing his first US Open.</p>
           <ul class="jn-chips reveal">
-            <li>Wheelchair Softball Hall of Fame</li>
+            <li><i class="sym sym--win" aria-hidden="true"></i>Wheelchair Softball Hall of Fame</li>
             <li>University of Illinois basketball</li>
             <li>16 hours a week on court</li>
           </ul>
@@ -272,9 +277,9 @@ fill="currentColor" stroke="none">
           <p class="jn-ch-era">Now</p>
           <h3>The pioneer</h3>
           <ol class="jn-ch-years">
-            <li><b>2025</b><span>Finds pickleball at a Chicago Park District clinic.</span></li>
-            <li class="win"><b>2026</b><span>Gets the APP Tour its first wheelchair division.</span></li>
-            <li class="lit"><b>2027</b><span>The road to his first US Open.</span></li>
+            <li><i class="sym sym--pickleball" aria-hidden="true"></i><b>2025</b><span>Finds pickleball at a Chicago Park District clinic.</span></li>
+            <li class="win"><i class="sym sym--win" aria-hidden="true"></i><b>2026</b><span>Gets the APP Tour its first wheelchair division.</span></li>
+            <li class="lit"><i class="sym sym--travel" aria-hidden="true"></i><b>2027</b><span>The road to his first US Open.</span></li>
           </ol>
           <a class="jn-ch-go" href="#seat">His road to the US Open <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
         </article>

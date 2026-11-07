@@ -37,6 +37,7 @@ import { readFileSync, writeFileSync, readdirSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { smarten } from "./smart-quotes.mjs";
+import { icon } from "./lib/icons.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const PUB = join(ROOT, "public");
@@ -113,19 +114,35 @@ function mathLines(part) {
     .join("\n");
 }
 
+// Each part wears the symbol of the cost it pays for, the same three the
+// fund's cost cards use (data/icons.mjs): every week is training, the road is
+// travel, the Classic is a tournament.
+const PART_SYMBOL = { year: "training", "send-6": "travel", next: "tournament" };
+const tile = (k) =>
+  `<span class="ix-tile sm nb-tile" aria-hidden="true">${icon(PART_SYMBOL[k], "duotone")}</span>`;
+const flag = `<i class="sym sym--finished nb-flag" aria-hidden="true"></i>`;
+// The road is six seats, one athlete each (campaigns.js fills them).
+const seatRow = (k) =>
+  `<div class="nb-seats" data-nb-seats="${k}" role="img" aria-label="Six seats, one athlete each">` +
+  `<i class="sym sym--participation"></i>`.repeat(6) +
+  `</div>`;
+
 export function renderNumbers() {
   const n2 = (i) => String(i + 1).padStart(2, "0");
   const parts = CAMPAIGN.parts.map((p, i) => {
     const link = p.page ? ` <a href="${p.page}">See the road</a>` : "";
+    const road = p.key === "send-6";
     return [
       `  <li class="nb-part">`,
-      `    <div class="nb-part-top"><span class="nb-n">${n2(i)}</span><h3>${esc(p.label)}</h3>` +
+      `    <div class="nb-part-top">${tile(p.key)}<span class="nb-n">${n2(i)}</span><h3>${esc(p.label)}</h3>` +
         (i === 0 ? `<span class="nb-badge">First priority</span>` : "") +
         `<b class="nb-sum">${usd(p.goal)}${p.key === "year" ? "<small> a year</small>" : ""}</b></div>`,
       `    <p class="nb-detail">${p.detail || ""}${link}</p>`,
       `    <div class="nb-prog" data-nb-row="${p.key}" hidden>` +
         `<div class="nb-prog-top"><span class="nb-prog-k">Covered so far</span><span class="tag tag--good" data-nb-pct="${p.key}"></span><span class="nb-prog-fig" data-nb-fig="${p.key}"></span></div>` +
-        `<div class="nb-track"><span class="nb-fill nb-fill--kind" data-nb-kind="${p.key}"></span><span class="nb-fill" data-nb-fill="${p.key}"></span></div></div>`,
+        `<div class="nb-lane"><div class="nb-track${road ? " nb-track--seats" : ""}"><span class="nb-fill nb-fill--kind" data-nb-kind="${p.key}"></span><span class="nb-fill" data-nb-fill="${p.key}"></span></div>${flag}</div>` +
+        (road ? seatRow(p.key) : "") +
+        `</div>`,
       `    <ul class="nb-lines" aria-label="How we got ${usd(p.goal)}">`,
       mathLines(p),
       `    </ul>`,
@@ -137,9 +154,9 @@ export function renderNumbers() {
     parts.push(
       [
         `  <li class="nb-part nb-part--next">`,
-        `    <div class="nb-part-top"><span class="nb-n">${n2(CAMPAIGN.parts.length)}</span><h3>${esc(nx.label.replace(/^the /, "The "))}</h3><span class="nb-badge nb-badge--info">Next goal</span><b class="nb-sum nb-sum--tbd">Date to come</b></div>`,
+        `    <div class="nb-part-top">${tile("next")}<span class="nb-n">${n2(CAMPAIGN.parts.length)}</span><h3>${esc(nx.label.replace(/^the /, "The "))}</h3><span class="nb-badge nb-badge--info"><i class="sym sym--goal" aria-hidden="true"></i>Next goal</span><b class="nb-sum nb-sum--tbd">Date to come</b></div>`,
         `    <p class="nb-detail">${nx.detail || ""}${nx.page ? ` <a href="${nx.page}">See the Classic</a>` : ""}</p>`,
-        `    <div class="nb-track nb-track--locked" aria-hidden="true"></div>`,
+        `    <div class="nb-lane"><i class="sym sym--locked nb-lock" aria-hidden="true"></i><div class="nb-track nb-track--locked" aria-hidden="true"></div></div>`,
         `  </li>`,
       ].join("\n"),
     );
@@ -148,7 +165,7 @@ export function renderNumbers() {
     ...parts,
     `</ol>`,
     `<div class="nb-total"><p class="nb-total-top"><span>${CAMPAIGN.parts.map((p) => esc(p.label === "The Road to the US Open" ? "the road" : p.label)).join(" + ")}</span><b>${usd(CAMPAIGN.goal)}</b></p>` +
-      `<div class="nb-total-prog" data-nb-total hidden><div class="nb-track nb-track--lg"><span class="nb-fill nb-fill--kind" data-nb-kind="total"></span><span class="nb-fill" data-nb-fill="total"></span></div><p class="nb-legend" data-nb-legend></p></div></div>`,
+      `<div class="nb-total-prog" data-nb-total hidden><div class="nb-lane"><div class="nb-track nb-track--lg"><span class="nb-fill nb-fill--kind" data-nb-kind="total"></span><span class="nb-fill" data-nb-fill="total"></span></div>${flag}</div><p class="nb-legend" data-nb-legend></p></div></div>`,
   ].join("\n");
 }
 

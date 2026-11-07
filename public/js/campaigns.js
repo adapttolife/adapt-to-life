@@ -257,14 +257,15 @@
     var meta = el("p", "evc-meta");
     meta.appendChild(el("span", "evc-tag", eventTag(d)));
     var soon = countdown(d);
-    if (soon)
-      meta.appendChild(
-        el(
-          "span",
-          "evc-soon" + (soon === "Today" || soon === "Happening now" ? " is-live" : ""),
-          soon,
-        ),
-      );
+    if (soon) {
+      // Coming up carries the clock; on the day it is a live dot, in green.
+      var live = soon === "Today" || soon === "Happening now";
+      var chip = el("span", "evc-soon" + (live ? " is-live" : ""), soon);
+      var mark = live ? el("span", "live-dot") : sym("time");
+      if (live) mark.setAttribute("aria-hidden", "true");
+      chip.insertBefore(mark, chip.firstChild);
+      meta.appendChild(chip);
+    }
     box.appendChild(meta);
     box.appendChild(el(opts.heading || "h3", "evc-name", d.name));
     var facts = el("ul", "evc-facts");
@@ -711,11 +712,62 @@
   function pctW(a, b) {
     return Math.max(0, Math.min(100, (a / b) * 100)).toFixed(1) + "%";
   }
-  function swatch(kind) {
+  /* Symbols (site.css, "symbols"): one class each, drawn by the stylesheet
+     from the dictionary. Decorative: the words beside them say it too. */
+  function sym(name, cls) {
     var i = document.createElement("i");
-    i.className = "nb-swatch" + (kind ? " nb-swatch--kind" : "");
+    i.className = "sym sym--" + name + (cls ? " " + cls : "");
     i.setAttribute("aria-hidden", "true");
     return i;
+  }
+  /* The key for a data colour: a chip in that colour carrying its symbol,
+     hand-heart for gifts, the court for court time a partner club gives. */
+  function key(kind, cls) {
+    var k = document.createElement("i");
+    k.className = cls + (kind ? " " + cls + "--kind" : "");
+    k.setAttribute("aria-hidden", "true");
+    k.appendChild(sym(kind ? "courts" : "giving"));
+    return k;
+  }
+  /* A percentage drawn as a ring, for the badge beside the number. */
+  function ring(pct) {
+    var ns = "http://www.w3.org/2000/svg";
+    var svg = document.createElementNS(ns, "svg");
+    svg.setAttribute("class", "ring");
+    svg.setAttribute("viewBox", "0 0 16 16");
+    svg.setAttribute("aria-hidden", "true");
+    [
+      ["ring-bg", 100],
+      ["ring-fg", Math.max(0, Math.min(100, pct))],
+    ].forEach(function (c) {
+      var e = document.createElementNS(ns, "circle");
+      e.setAttribute("class", c[0]);
+      e.setAttribute("cx", "8");
+      e.setAttribute("cy", "8");
+      e.setAttribute("r", "6");
+      e.setAttribute("pathLength", "100");
+      e.setAttribute("stroke-dasharray", c[1].toFixed(1) + " 100");
+      svg.appendChild(e);
+    });
+    return svg;
+  }
+  /* Six seats, one athlete each: every seat fills with its share of the
+     road's money, the same rule as the seat tiles on /send-6, so a part-
+     covered seat shows a part fill and is never rounded up. */
+  function seats(n, raisedAmt, goal) {
+    var list = n.querySelectorAll(".sym");
+    if (!list.length || !goal) return;
+    var per = goal / list.length,
+      full = 0;
+    Array.prototype.forEach.call(list, function (s, i) {
+      var share = Math.max(0, Math.min(1, (raisedAmt - i * per) / per));
+      if (share >= 1) full++;
+      s.style.setProperty("--fill", (share * 100).toFixed(1) + "%");
+    });
+    n.setAttribute(
+      "aria-label",
+      full + " of " + list.length + " seats covered so far, one athlete each",
+    );
   }
   function numbersBars() {
     if (!document.querySelector("[data-nb-row], [data-nb-total]")) return;
@@ -731,12 +783,19 @@
         each(document, '[data-nb-row="' + k + '"]', function (n) {
           n.hidden = false;
           n.classList.toggle("has-gifts", pr - pk > 0 && pk > 0);
+          n.classList.toggle("is-done", pr >= pg);
         });
         each(document, '[data-nb-fig="' + k + '"]', function (n) {
           n.textContent = money(pr) + " of " + money(pg);
         });
         each(document, '[data-nb-pct="' + k + '"]', function (n) {
-          n.textContent = Math.round((pr / pg) * 100) + "% covered";
+          var pct = Math.round((pr / pg) * 100);
+          n.textContent = "";
+          n.appendChild(ring(pct));
+          n.appendChild(document.createTextNode(pct + "% covered"));
+        });
+        each(document, '[data-nb-seats="' + k + '"]', function (n) {
+          seats(n, pr, pg);
         });
         each(document, '[data-nb-kind="' + k + '"]', function (n) {
           whenSeen(n, function () {
@@ -774,12 +833,12 @@
         so.textContent = money(gifts + kind) + " so far";
         n.appendChild(so);
         var g = document.createElement("span");
-        g.appendChild(swatch(false));
+        g.appendChild(key(false, "nb-key"));
         g.appendChild(document.createTextNode(money(gifts) + " in gifts"));
         n.appendChild(g);
         if (kind) {
           var c = document.createElement("span");
-          c.appendChild(swatch(true));
+          c.appendChild(key(true, "nb-key"));
           c.appendChild(
             document.createTextNode(money(kind) + " in court time from a partner club"),
           );
@@ -787,7 +846,10 @@
         }
         var left = document.createElement("span");
         left.className = "nb-left";
-        left.textContent = money(Math.max(0, goal - gifts - kind)) + " to go";
+        left.appendChild(sym("finished"));
+        left.appendChild(
+          document.createTextNode(money(Math.max(0, goal - gifts - kind)) + " to go"),
+        );
         n.appendChild(left);
       });
     }, "wbd");
@@ -824,17 +886,11 @@
         if (kind)
           each(m, "[data-cm-split]", function (n) {
             n.textContent = "";
-            var gift = document.createElement("i");
-            gift.className = "cm-swatch";
-            gift.setAttribute("aria-hidden", "true");
-            n.appendChild(gift);
+            n.appendChild(key(false, "cm-key"));
             n.appendChild(
               document.createTextNode(money(d.raised) + " in gifts, plus "),
             );
-            var sw = document.createElement("i");
-            sw.className = "cm-swatch cm-swatch--kind";
-            sw.setAttribute("aria-hidden", "true");
-            n.appendChild(sw);
+            n.appendChild(key(true, "cm-key"));
             n.appendChild(
               document.createTextNode(
                 money(kind) + " in court time from a partner club",
@@ -862,6 +918,10 @@
           each(m, '[data-part-row="' + k + '"]', function (n) {
             n.classList.toggle("is-empty", !pr);
             n.classList.toggle("has-gifts", pr - pk > 0);
+            n.classList.toggle("is-done", pr >= pg);
+          });
+          each(m, '[data-part-seats="' + k + '"]', function (n) {
+            seats(n, pr, pg);
           });
           if (pk)
             each(m, '[data-part-note="' + k + '"]', function (n) {
@@ -876,7 +936,10 @@
           });
           each(m, '[data-part-pct="' + k + '"]', function (n) {
             if (!pr) return;
-            n.textContent = Math.round((pr / pg) * 100) + "%";
+            var pct = Math.round((pr / pg) * 100);
+            n.textContent = "";
+            n.appendChild(ring(pct));
+            n.appendChild(document.createTextNode(pct + "%"));
             n.hidden = false;
           });
           each(m, '[data-part-fill="' + k + '"]', function (n) {
@@ -933,6 +996,7 @@
     eventCard: eventCard,
     countdown: countdown,
     el: el,
+    sym: sym,
     arrow: arrow,
     wire: wire,
   };

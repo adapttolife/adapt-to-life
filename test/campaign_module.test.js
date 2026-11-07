@@ -197,8 +197,15 @@ test("the math lives on /numbers, and every module links to it", () => {
   const home = read("public/index.html");
   assert.ok(
     home.includes(
-      '<li class="is-court"><b>10&ndash;15</b><span>athletes, every week</span></li>',
+      '<li class="is-court"><b>10&ndash;15</b><span><i class="sym sym--courts" aria-hidden="true"></i>athletes, every week</span></li>',
     ),
   );
   assert.ok(home.includes('<li class="is-gift"><b>$3,004</b>'));
+  // Every record tile names its kind with a symbol, so colour never works alone.
+  const stats = home.slice(
+    home.indexOf('<ul class="cm-stats"'),
+    home.indexOf("</ul>", home.indexOf('<ul class="cm-stats"')),
+  );
+  assert.equal((stats.match(/<li\b/g) || []).length, 6);
+  assert.equal((stats.match(/class="sym sym--/g) || []).length, 6);
 });

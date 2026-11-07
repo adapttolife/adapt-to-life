@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=f201953b">
+<link rel="stylesheet" href="/css/site.css?v=2cf7f54b">
 <link rel="stylesheet" href="/css/sponsor-sheet.css?v=ae500abe">
 <!-- band:vars --><style data-band-vars>:root{--pg-band-wide:url('/images/hero/panels/pg-band-2-wide.9ac73821.webp');--pg-band-tall:url('/images/hero/panels/pg-band-2-tall.f9278c2d.webp');--pg-give-wide:url('/images/hero/panels/pg-give-wide.b46beed5.webp');--pg-give-tall:url('/images/hero/panels/pg-give-tall.5cece3a5.webp');}  .bh-road .bh-more .arrow{ display:inline-block; margin-top:0; max-width:none; color:inherit; }
 </style>
@@ -187,6 +187,12 @@
      time is blue, the athlete's game and wins are yellow, the supporter's
      gifts are green, and together they make the program, in orange. The plus
      signs step back so the colours carry it; the equals sign stays orange. */
+  /* Each part leads with its symbol in its colour: the court, the athlete,
+     the hand that gives, and the circle of a program that keeps going. */
+  .sp-formula b .sym{ width:1.05em; height:1.05em; margin-right:0.4rem; vertical-align:-0.16em; }
+  .sp-formula li.is-host b .sym{ color:#86b6ef; }
+  .sp-formula li.is-athlete b .sym{ color:var(--yellow); }
+  .sp-formula li.is-supporter b .sym{ color:#4cc38a; }
   .sp-formula li.is-host{ border-top:2px solid #3987e5; }
   .sp-formula li.is-host dt{ color:#86b6ef; }
   .sp-formula li.is-athlete{ border-top:2px solid var(--yellow); }
@@ -423,28 +429,28 @@ fill="currentColor" stroke="none">
       </div>
       <ol class="sp-formula reveal" aria-label="The Home Court Model">
         <li class="is-host">
-          <b>The host</b>
+          <b><i class="sym sym--courts" aria-hidden="true"></i>The host</b>
           <dl>
             <dt>Brings</dt><dd>Courts on a regular night, at a club, YMCA, school or park.</dd>
             <dt>Gets</dt><dd>Paid court time, new players and their families, and a story that sets the club apart.</dd>
           </dl>
         </li>
         <li class="is-athlete">
-          <b>The athlete</b>
+          <b><i class="sym sym--participation" aria-hidden="true"></i>The athlete</b>
           <dl>
             <dt>Brings</dt><dd>Their game, led by ambassadors like Juan Ortiz, with coaching and volunteers from us.</dd>
             <dt>Gets</dt><dd>A home court to train, compete and bring the next athlete in.</dd>
           </dl>
         </li>
         <li class="is-supporter">
-          <b>The supporter</b>
+          <b><i class="sym sym--giving" aria-hidden="true"></i>The supporter</b>
           <dl>
             <dt>Brings</dt><dd>Funding, planned at the host&rsquo;s regular rates.</dd>
             <dt>Gets</dt><dd>Results they can see and numbers that add up. <a class="textlink" href="/numbers" style="font:inherit;letter-spacing:inherit;">See the numbers</a></dd>
           </dl>
         </li>
         <li class="sp-result">
-          <b>A program that lasts</b>
+          <b><i class="sym sym--recurring" aria-hidden="true"></i>A program that lasts</b>
           <p>Run by the host and backed by all of us, season after season.</p>
         </li>
       </ol>

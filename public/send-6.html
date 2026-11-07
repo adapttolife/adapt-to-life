@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=f201953b">
+<link rel="stylesheet" href="/css/site.css?v=2cf7f54b">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <style>
   /* ==========================================================================
@@ -46,7 +46,14 @@
   .s6-meter-row{ display:flex; align-items:baseline; gap:0.55rem; flex-wrap:wrap; }
   .s6-meter-n{ font-family:var(--font-display); font-weight:900; font-style:italic; letter-spacing:-0.03em; font-size:clamp(2.3rem,5.6vw,3.3rem); line-height:1; color:var(--cream); font-variant-numeric:tabular-nums; }
   .s6-meter-of{ font-size:0.98rem; color:var(--cream-mute); }
-  .s6-meter-track{ display:block; height:12px; border-radius:999px; background:rgba(249,247,242,0.13); margin-top:1rem; overflow:hidden; }
+  .s6-meter-track{ position:relative; display:block; height:12px; border-radius:999px; background:rgba(249,247,242,0.13); margin-top:1rem; overflow:hidden; }
+  /* Symbols (site.css): the bar is six seats, one athlete each (five hairline
+     gaps), and it ends at a checkered flag that turns yellow at the goal. */
+  .s6-meter-track::after{ content:""; position:absolute; inset:0; pointer-events:none; background:repeating-linear-gradient(90deg, transparent 0 calc(100% / 6 - 2px), var(--night) calc(100% / 6 - 2px) calc(100% / 6)); }
+  .s6-lane{ display:flex; align-items:center; gap:0.65rem; margin-top:1rem; }
+  .s6-lane .s6-meter-track{ flex:1 1 auto; margin-top:0; }
+  .s6-flag{ width:1.15rem; height:1.15rem; color:rgba(249,247,242,0.5); }
+  .s6-meter.is-done .s6-flag{ color:var(--yellow); }
   /* The site's data colours (site.css, supporting colours): the bar is green
      because it is gifts, and the figure turns yellow once it is money raised,
      the same win colour as the module's total. The goal alone stays cream. */
@@ -84,6 +91,11 @@
     filter:grayscale(1) contrast(0.92); opacity:0.5; transition:filter .5s ease, opacity .5s ease; }
   .s6-seat-ico img{ width:100%; height:100%; display:block; object-fit:contain; }
   .s6-seat.is-on .s6-seat-ico{ filter:none; opacity:1; }
+  /* A covered seat gets a check in a green disc, so covered never relies on
+     the fill colour alone. */
+  .s6-seat.is-on::before, .s6-seat.is-on::after{ content:""; position:absolute; top:10px; right:10px; width:22px; height:22px; }
+  .s6-seat.is-on::before{ border-radius:50%; background:var(--good); box-shadow:0 0 0 3px var(--paper); }
+  .s6-seat.is-on::after{ background:var(--cream); -webkit-mask:var(--icon-check) center/13px no-repeat; mask:var(--icon-check) center/13px no-repeat; }
   .s6-seat-n{ margin-top:0.7rem; font-family:var(--font-label); font-size:0.68rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); }
   .s6-seat-amt{ margin-top:0.25rem; font-size:0.92rem; color:var(--ink-soft); }
   .s6-seats-note{ margin-top:clamp(1.4rem,2.6vw,2rem); text-align:center; color:var(--muted); font-size:0.94rem; max-width:56ch; margin-inline:auto; }
@@ -113,6 +125,8 @@
   .s6-pill{ display:inline-flex; align-items:center; gap:0.42rem; font-family:var(--font-label);
     font-size:0.63rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); }
   .s6-pill .dot{ width:7px; height:7px; border-radius:50%; background:var(--muted); flex:0 0 auto; }
+  .s6-pill .sym{ width:1.35em; height:1.35em; margin-left:-0.15em; }
+  .s6-pill .live-dot{ width:7px; height:7px; }
   /* Open is green, coming up is blue, finished stays grey. */
   .s6-pill.is-open{ color:var(--good-ink); }
   .s6-pill.is-open .dot{ background:var(--good-dot); box-shadow:0 0 0 4px color-mix(in srgb, var(--good) 16%, transparent); }
@@ -223,7 +237,7 @@ fill="currentColor" stroke="none">
         <span class="s6-meter-n" id="s6Raised">$21,000</span>
         <span class="s6-meter-of" id="s6Of">to go</span>
       </div>
-      <span class="s6-meter-track"><span class="s6-meter-fill" id="s6Fill"></span></span>
+      <span class="s6-lane"><span class="s6-meter-track"><span class="s6-meter-fill" id="s6Fill"></span></span><i class="sym sym--finished s6-flag" aria-hidden="true"></i></span>
     </div>
 
     <p class="prose reveal" id="campaign-terms" style="margin-top:1rem; color:var(--cream-mute);">Every gift goes to the Hustle &amp; Heart Fund for Chicago Pickleball: Wheelie Big Dills, every week first, then the road to the US Open. Money already raised for Send 6, including the popcorn drive, stays on the road. <a href="/promise#campaign-gifts" style="color:inherit;">How Giving Works</a>.</p>
@@ -467,7 +481,7 @@ fill="currentColor" stroke="none">
   })();
 </script>
 
-<script src="/js/campaigns.js?v=eced4acf"></script>
+<script src="/js/campaigns.js?v=ea0ed502"></script>
 <script>
 (function(){
   var C = window.ATLCampaigns;
@@ -528,6 +542,8 @@ fill="currentColor" stroke="none">
 
     var pct = goal > 0 ? Math.max(0, Math.min(100, raised / goal * 100)) : 0;
     if (nEl){ nEl.textContent = C.money(raised); nEl.classList.add('is-raised'); }
+    var meterEl = document.getElementById('s6Meter');
+    if (meterEl) meterEl.classList.toggle('is-done', raised >= goal);
     if (ofEl) ofEl.textContent = 'raised of our ' + C.money(goal) + ' goal';
     if (fillEl){
       requestAnimationFrame(function(){
@@ -554,7 +570,8 @@ fill="currentColor" stroke="none">
     var main = C.el('div','s6-drive-main');
 
     var pill = C.el('span','s6-pill is-' + (st === 'open' ? 'open' : st));
-    pill.appendChild(C.el('span','dot'));
+    // Open is a live dot; coming up is the clock, finished the checkered flag.
+    pill.appendChild(st === 'open' ? C.el('span','live-dot') : C.sym(st === 'soon' ? 'time' : 'finished'));
     pill.appendChild(document.createTextNode(
       st === 'open' ? 'Open now' : st === 'soon' ? 'Coming up' : 'Finished'
     ));
@@ -588,7 +605,7 @@ fill="currentColor" stroke="none">
     var li = C.el('li','s6-drive reveal in');
     var main = C.el('div','s6-drive-main');
     var pill = C.el('span','s6-pill is-open');
-    pill.appendChild(C.el('span','dot'));
+    pill.appendChild(C.el('span','live-dot'));
     pill.appendChild(document.createTextNode('Always open'));
     main.appendChild(pill);
     main.appendChild(C.el('p','s6-drive-name','Direct gifts'));

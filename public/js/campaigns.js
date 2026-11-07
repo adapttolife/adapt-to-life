@@ -561,15 +561,21 @@
      where the next gift lands, and the donor count joins the trust line.
      Never a $0 we cannot vouch for: no raised figure, no change. */
   var GIFTS = {
-    // Every line is a verified unit cost: $15 a night at ACE (15 for $225), $1,548
-    // a year for a membership, about $3,500 for a US Open the last couple of
-    // years. Monthly figures are those over 12 months ($65 is exactly $15 a week, every week).
+    // Every line is a verified unit cost: $15 a night at ACE (15 for $225), $129
+    // a month for a membership ($1,548 for 12 months), about $3,500 for a US
+    // Open the last couple of years. Monthly figures are those over 12 months
+    // ($65 is exactly $15 a week, every week). Alec, Nov 7: "$129 a month is
+    // ACE membership (then times it by 12)", so the monthly line says what the
+    // month buys and the year shows its math.
     monthly: [
       {
         a: 65,
-        t: "$65 a month keeps one athlete on court every week of the year.",
+        t: "$65 a month puts one athlete on court every week.",
       },
-      { a: 129, t: "$129 a month can keep one athlete training all year." },
+      {
+        a: 129,
+        t: "$129 a month covers one athlete’s ACE membership, so they can train every week.",
+      },
       {
         a: 975,
         t: "$975 a month covers a night at ACE every week for up to 15 athletes.",
@@ -578,7 +584,10 @@
     once: [
       { a: 15, t: "$15 puts one athlete on court for a night." },
       { a: 225, t: "$225 covers up to 15 athletes for a night at ACE." },
-      { a: 1548, t: "$1,548 can keep one athlete training all year." },
+      {
+        a: 1548,
+        t: "$1,548 covers a year of one athlete’s ACE membership: 12 months at $129.",
+      },
       { a: 3500, t: "$3,500 covers about what one athlete’s US Open costs." },
     ],
   };

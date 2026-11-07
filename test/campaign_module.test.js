@@ -84,12 +84,12 @@ test("every gift line is a verified unit cost", () => {
   assert.equal(975 * 12, 225 * 52);
   assert.equal(65 * 12, 15 * 52, "$65 a month is exactly $15 a week");
   for (const line of [
-    "$65 a month keeps one athlete on court every week of the year.",
-    "$129 a month can keep one athlete training all year.",
+    "$65 a month puts one athlete on court every week.",
+    "$129 a month covers one athlete’s ACE membership, so they can train every week.",
     "$975 a month covers a night at ACE every week for up to 15 athletes.",
     "$15 puts one athlete on court for a night.",
     "$225 covers up to 15 athletes for a night at ACE.",
-    "$1,548 can keep one athlete training all year.",
+    "$1,548 covers a year of one athlete’s ACE membership: 12\u00a0months at $129.",
     "$3,500 covers about what one athlete’s US Open costs.",
   ])
     assert.ok(js.includes(line), line);
@@ -172,7 +172,9 @@ test("the math lives on /numbers, and every module links to it", () => {
   // Every gift line on the page is the picker's line, word for word.
   const js = read("public/js/campaigns.js");
   for (const m of nb.matchAll(/<li><b>(\$[\d,]+)<\/b><span>([^<]+)<\/span><\/li>/g)) {
-    const line = `${m[1]} ${m[2]}`.replace(/&rsquo;/g, "’");
+    const line = `${m[1]} ${m[2]}`
+      .replace(/&rsquo;/g, "’")
+      .replace(/&nbsp;/g, "\u00a0");
     assert.ok(js.includes(line), `gift line not in the picker: ${line}`);
   }
 

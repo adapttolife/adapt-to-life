@@ -164,16 +164,21 @@
   .partner-links .partner-more{ margin-top:0; }
   .partner-site{ font-weight:600; color:var(--cream-mute); border-bottom:1px solid rgba(249,247,242,0.35); padding-bottom:2px; overflow-wrap:anywhere; }
   .partner-site:hover, .partner-site:focus-visible{ color:var(--cream); border-bottom-color:var(--cream); }
-  /* How we partner: the formula. Four terms in a row with + + = in the
-     gaps on desktop; stacked on a phone, where each operator leads its term.
-     Operators are CSS with empty alt text, so a screen reader reads a plain
-     list of four. */
-  .sp-clubs-head{ max-width:60ch; }
-  .sp-clubs-head .prose{ margin-top:1rem; color:var(--cream-mute); }
-  .sp-formula{ --fgap:clamp(2.4rem,4.2vw,3.8rem); list-style:none; margin:clamp(2.2rem,4.4vw,3.2rem) 0 0; padding:0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)) minmax(0,1.25fr); gap:var(--fgap); }
+  /* The Home Court Model: three partners and the result, + + = in the
+     gaps on desktop; stacked on a phone, where each operator leads its
+     title. Each partner shows Brings and Gets. Operators are CSS with empty
+     alt text, so a screen reader reads a plain list of four. */
+  .sp-clubs-head{ max-width:62ch; }
+  .sp-clubs-lead{ margin-top:1rem; font-size:clamp(1.08rem,1.45vw,1.25rem); line-height:1.6; color:var(--cream); }
+  .sp-formula{ --fgap:clamp(2.4rem,4.2vw,3.8rem); list-style:none; margin:clamp(2.4rem,4.6vw,3.4rem) 0 0; padding:0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)) minmax(0,1.1fr); gap:var(--fgap); }
   .sp-formula li{ position:relative; padding-top:1.15rem; border-top:1px solid rgba(249,247,242,0.18); }
   .sp-formula b{ display:block; font-family:var(--font-display); font-weight:800; font-size:clamp(1.35rem,1.9vw,1.65rem); line-height:1.08; letter-spacing:-0.02em; color:var(--cream); text-wrap:balance; }
-  .sp-formula span{ display:block; margin-top:0.65rem; color:var(--cream-mute); line-height:1.55; }
+  .sp-formula dl{ margin:0.9rem 0 0; }
+  .sp-formula dt{ font-family:var(--font-label); font-size:0.72rem; font-weight:800; letter-spacing:0.16em; text-transform:uppercase; color:var(--orange); }
+  .sp-formula dt + dd{ margin:0.3rem 0 0; }
+  .sp-formula dd + dt{ margin-top:0.85rem; }
+  .sp-formula dd, .sp-formula .sp-result p{ color:var(--cream-mute); line-height:1.55; }
+  .sp-formula .sp-result p{ margin:0.9rem 0 0; color:var(--cream); }
   .sp-formula li + li::before{ content:"+" / ""; position:absolute; left:calc(var(--fgap) / -2); top:0.75rem; transform:translateX(-50%); font-family:var(--font-display); font-weight:400; font-size:clamp(1.9rem,2.8vw,2.5rem); line-height:1; color:var(--orange); }
   .sp-formula li:last-child::before{ content:"=" / ""; }
   .sp-formula .sp-result{ border-top:2px solid var(--orange); }
@@ -185,8 +190,12 @@
     .sp-formula li + li b::before{ content:"+" / ""; display:inline-block; width:1.4rem; color:var(--orange); font-weight:400; }
     .sp-formula li:last-child b::before{ content:"=" / ""; }
   }
-  .sp-clubs-foot{ margin-top:clamp(2.2rem,4vw,3rem); display:flex; flex-wrap:wrap; align-items:center; gap:1rem 1.6rem; }
-  .sp-clubs-foot p{ margin:0; color:var(--cream); font-weight:600; }
+  .sp-proof{ margin:clamp(2rem,3.8vw,2.8rem) 0 0; color:var(--cream-mute); line-height:1.6; }
+  .sp-proof span{ display:block; margin-bottom:0.35rem; font-family:var(--font-label); font-size:0.72rem; font-weight:800; letter-spacing:0.16em; text-transform:uppercase; color:var(--orange); }
+  .sp-proof a{ color:var(--cream); text-decoration:underline; text-decoration-color:var(--orange); text-decoration-thickness:2px; text-underline-offset:4px; }
+  .sp-clubs-foot{ margin-top:clamp(2rem,3.8vw,2.8rem); padding-top:clamp(1.6rem,3vw,2.2rem); border-top:1px solid rgba(249,247,242,0.12); display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1.2rem 2rem; }
+  .sp-clubs-close{ margin:0; font-family:var(--font-display); font-weight:800; font-size:clamp(1.25rem,2vw,1.6rem); letter-spacing:-0.015em; color:var(--cream); }
+  .sp-clubs-foot .actions{ margin:0; }
   @media (max-width:700px){ .partner{ grid-template-columns:1fr; } .partner-photo{ min-height:0; aspect-ratio:16/9; } .partner-photo img{ object-position:var(--phone-crop, 50% 30%); } .partner-body{ padding:1.25rem 1.25rem 1.4rem; } .partner-logo{ height:48px; } .partner-kicker{ margin-top:1rem; } .partner-more{ margin-top:1.1rem; } .partner-when{ flex-wrap:nowrap; gap:0.6rem; font-size:0.72rem; letter-spacing:0.1em; } .partner-when span{ gap:0.6rem; white-space:nowrap; } }
   .bh-road .bh-price{ display:block; margin-top:0.6rem; font-style:normal; font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--orange-ink); }
   /* One price list: the per-athlete options sit above the levels, same sheet, same fund. */
@@ -388,27 +397,53 @@ fill="currentColor" stroke="none">
     </div>
   </section>
 
-    <!-- HOW WE PARTNER (Alec, Nov 7 2026): one formula for how a program
-       gets built, whoever the partner is (a club, a YMCA, a school, a
-       company), and it runs both ways. Kept short on purpose: the earlier
-       lists read like terms and conditions. Principles survive as phrases:
-       planned at the host's regular rates; run by the host. -->
+    <!-- THE HOME COURT MODEL (Alec, Nov 7 2026): how we build adaptive
+       programs with clubs, YMCAs, schools and companies. Three partners,
+       each shown with what it brings and what it gets back, so the two way
+       street is on the page, not claimed. Principles kept as phrases: no
+       host has to give its courts away; funding planned at the host's
+       regular rates; run by the host. Proof: the home courts today. -->
   <section class="band dark sp-clubs" id="clubs" aria-labelledby="spClubsTitle">
     <div class="wrap">
       <div class="sp-clubs-head">
         <span class="eyebrow orange reveal">How we partner</span>
-        <h2 id="spClubsTitle" class="serif h2 reveal" style="margin-top:0.8rem;">How a program <em class="italic" style="color:var(--orange)">gets built.</em></h2>
-        <p class="prose reveal">Clubs, YMCAs, schools and companies each partner in their own way, but the formula is the same. It runs both ways: everyone brings something, and everyone gets something back.</p>
+        <h2 id="spClubsTitle" class="serif h2 reveal" style="margin-top:0.8rem;">The <em class="italic" style="color:var(--orange)">Home Court</em> Model.</h2>
+        <p class="prose sp-clubs-lead reveal">Every athlete needs a home court: a place to train, compete and belong. We build them with clubs, YMCAs, schools and companies, and no host has to give its courts away to be part of it.</p>
       </div>
-      <ol class="sp-formula reveal" aria-label="How a program gets built">
-        <li><b>A place to play</b><span>Courts, gyms, pools and fields from clubs, YMCAs, schools and parks.</span></li>
-        <li><b>Athletes and coaches</b><span>Through ambassadors like Juan Ortiz, we bring athletes, coaching and volunteers.</span></li>
-        <li><b>Steady funding</b><span>Donors, sponsors and companies cover the costs, planned at the host&rsquo;s regular rates. <a class="textlink" href="/numbers" style="font:inherit;letter-spacing:inherit;">See the numbers</a></span></li>
-        <li class="sp-result"><b>A program that lasts</b><span>Run by the host and backed by all of us. The host gains new players, athletes gain a home, and supporters see what they built.</span></li>
+      <ol class="sp-formula reveal" aria-label="The Home Court Model">
+        <li>
+          <b>The host</b>
+          <dl>
+            <dt>Brings</dt><dd>Courts on a regular night, at a club, YMCA, school or park.</dd>
+            <dt>Gets</dt><dd>Paid court time, new players and their families, and a story that sets the club apart.</dd>
+          </dl>
+        </li>
+        <li>
+          <b>The athlete</b>
+          <dl>
+            <dt>Brings</dt><dd>Their game, led by ambassadors like Juan Ortiz, with coaching and volunteers from us.</dd>
+            <dt>Gets</dt><dd>A home court to train, compete and bring the next athlete in.</dd>
+          </dl>
+        </li>
+        <li>
+          <b>The supporter</b>
+          <dl>
+            <dt>Brings</dt><dd>Funding, planned at the host&rsquo;s regular rates.</dd>
+            <dt>Gets</dt><dd>Results they can see and numbers that add up. <a class="textlink" href="/numbers" style="font:inherit;letter-spacing:inherit;">See the numbers</a></dd>
+          </dl>
+        </li>
+        <li class="sp-result">
+          <b>A program that lasts</b>
+          <p>Run by the host and backed by all of us, season after season.</p>
+        </li>
       </ol>
+      <p class="sp-proof reveal"><span>Home courts today</span> <a href="/ace">ACE Pickleball Club</a> in Des Plaines, <a href="/brickhouse">Brick House Pickleball</a> in Lake Forest and <a href="/picklr">The Picklr</a> in Mount Prospect.</p>
       <div class="sp-clubs-foot reveal">
-        <a class="btn" href="mailto:hello@adapttolife.org?subject=Build%20an%20adaptive%20program">Start a conversation</a>
-        <p>Tell us what you have. We&rsquo;ll build from there.</p>
+        <p class="sp-clubs-close">Bring your courts. We&rsquo;ll help with the rest.</p>
+        <div class="actions">
+          <a class="btn" href="mailto:hello@adapttolife.org?subject=Build%20an%20adaptive%20program">Start a conversation</a>
+          <a class="btn ghost" href="#tiers">Ways to sponsor</a>
+        </div>
       </div>
     </div>
   </section>

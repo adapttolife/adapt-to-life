@@ -1,18 +1,22 @@
-// src/newsletter-series.js — the welcome series every new subscriber gets.
+// src/newsletter-series.js — the welcome email every new subscriber gets.
 //
 // Alec, Nov 7 2026: "Let's make sure resend is working as intended and we
-// created the emails... help me come up with the best series of emails to help
-// streamline our email marketing (when somebody gets subscribed and anything
-// else that comes after that)."
+// created the emails." I built a five email series; seeing it, he said: "Let's
+// take a moment and just do one email, and keep it simple. Save these other
+// ones... but don't use them. Let's just keep one email for now. Keep it super
+// simple."
 //
-// What happens when someone signs up:
+// So, today, when someone signs up:
 //   1. /api/subscribe adds them to the Adapt To Life segment in Resend
 //      (src/newsletter.js), exactly as before.
 //   2. startWelcome() records them in newsletter_journey (agent-mail D1) and
-//      sends email 1 straight away, so "Watch your inbox" is true.
-//   3. The ten minute cron (runWelcomeSeries) sends the rest on schedule:
-//      day 2, day 5, day 9, day 14. Then they are on the regular newsletter,
-//      which is written and sent as a Broadcast in Resend.
+//      sends one plain letter from Alec straight away, so "Watch your inbox" is
+//      true. That is all. After that they hear from us through the newsletter,
+//      written and sent as a Broadcast in Resend.
+//
+// The other emails are kept below in SAVED_FOR_LATER and nothing sends them.
+// The series machinery (the journey row, the ten minute cron in
+// runWelcomeSeries) stays, so bringing one back is moving it into WELCOME.
 //
 // Every email goes out through Resend from mail.adapttolife.org (the domain
 // verified there), with replies to hello@adapttolife.org. Every email carries an
@@ -20,9 +24,10 @@
 // ask for. Unsubscribing stops this series and marks the contact unsubscribed
 // in Resend, so Broadcasts skip them too.
 //
-// Before each send the contact is checked in Resend (someone who unsubscribed
-// from a Broadcast gets nothing more), and the ask (email 4) is skipped for
-// anyone who has already given (donor_gifts in atl-waivers).
+// Before any later send the contact is checked in Resend (someone who
+// unsubscribed from a Broadcast gets nothing more), and an email marked
+// skipForDonors is skipped for anyone who has already given (donor_gifts in
+// atl-waivers).
 //
 // Copy follows the Adapt To Life voice (skills: adapt-to-life-brand-voice):
 // short, plain, warm, no dashes, no rhetorical questions, facts from the site.
@@ -46,14 +51,38 @@ export function link(path, content) {
   return url.toString();
 }
 
-// THE SERIES. `day` is days after signup. Paragraphs are plain text; the
-// renderer escapes them. Facts are the site's own, checked Nov 7 2026:
-// index.html (the brochure, 10 to 15 athletes, Naples), tim.html, juan.html,
-// pickleball.html (the record, Brian's line), numbers.html (the goal),
-// promise.html (overhead), sponsorship.html (prices), campaigns.js ($80 line).
+// THE EMAIL. One plain letter from Alec, the way he writes: short, warm, one
+// thought a paragraph, one link. No photo, no button, no header; a letter from
+// a person is also what mail apps most often put in the main inbox rather than
+// a promotions tab. The opening follows his own published welcome ("We're here
+// to expand access to adaptive sports so athletes can find their place.").
 export const WELCOME = [
   {
     key: "welcome",
+    day: 0,
+    plain: true,
+    subject: "Welcome to Adapt To Life",
+    preheader: "Thanks for signing up.",
+    paragraphs: [
+      "Thanks for signing up.",
+      {
+        text: "We’re here to expand access to adaptive sports so athletes can find their place. Right now that means the Chicago Wheelie Big Dills, a crew of wheelchair pickleball players on court every week.",
+        link: { label: "the Chicago Wheelie Big Dills", href: "/pickleball" },
+      },
+      "We’ll write when there’s something worth sharing.",
+    ],
+  },
+];
+
+// SAVED FOR LATER, NOT SENT (Alec, Nov 7: "Save these other ones... but don't
+// use them"). The designed series he reviewed that day: the first welcome
+// (photo and button), then day 2, 5, 9 and 14. Nothing reads this list;
+// startWelcome and runWelcomeSeries walk WELCOME only. Facts are the site's
+// own, checked Nov 7 2026: index.html, tim.html, juan.html, pickleball.html,
+// numbers.html, promise.html, sponsorship.html, campaigns.js.
+export const SAVED_FOR_LATER = [
+  {
+    key: "welcome-designed",
     day: 0,
     subject: "You’re on the list",
     preheader: "A short hello, and what to expect from us.",
@@ -200,14 +229,82 @@ const p = (html, extra = "") =>
 const a = (label, href) =>
   `<a href="${esc(href)}" style="color:${C.orange};font-weight:700;text-decoration:underline">${esc(label)}</a>`;
 
+// A paragraph is plain text, or { text, link: { label, href } } with the label
+// found in the text and linked in place.
+function paraHtml(para, step, linkStyle) {
+  if (typeof para === "string") return esc(para);
+  const at = para.text.indexOf(para.link.label);
+  if (at < 0) throw new Error(`link label not in paragraph: ${para.link.label}`);
+  const href = esc(hrefFor(para.link, step));
+  return (
+    esc(para.text.slice(0, at)) +
+    `<a href="${href}" style="${linkStyle}">${esc(para.link.label)}</a>` +
+    esc(para.text.slice(at + para.link.label.length))
+  );
+}
+function paraText(para, step) {
+  if (typeof para === "string") return para;
+  const at = para.text.indexOf(para.link.label) + para.link.label.length;
+  return `${para.text.slice(0, at)} (${hrefFor(para.link, step)})${para.text.slice(at)}`;
+}
+
+// THE PLAIN LETTER: what a person would send. No header, no photo, no button,
+// no background colour (the mail app's own, so dark mode reads it too). One
+// typeface, the text, Alec's name, and the small print every email must carry.
+function renderPlain(step, { unsubscribeUrl }) {
+  // The link takes the mail app's own colour, like any personal email: no one
+  // orange reads on both a white page and a dark mode page.
+  const linkStyle = "text-decoration:underline";
+  const para = (html, extra = "") =>
+    `<p style="margin:0 0 16px;font-size:17px;line-height:1.55;${extra}">${html}</p>`;
+  const body = (step.paragraphs || []).map((x) => para(paraHtml(x, step, linkStyle)));
+  const html = [
+    `<!doctype html><html lang="en"><head><meta charset="utf-8">`,
+    `<meta name="viewport" content="width=device-width,initial-scale=1">`,
+    `<title>${esc(step.subject)}</title></head>`,
+    `<body style="margin:0;padding:0">`,
+    `<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent">${esc(step.preheader)}${"&#8199;&#65279;&#847; ".repeat(30)}</div>`,
+    `<div style="max-width:560px;padding:24px 20px;font-family:${FONT}">`,
+    body.join(""),
+    para(
+      `Alec<br><span style="font-size:15px;opacity:0.75">Founder, Adapt To Life</span>`,
+      "margin-top:24px",
+    ),
+    `<p style="margin:32px 0 0;font-size:13px;line-height:1.55;opacity:0.7">`,
+    `You’re getting this because you signed up at adapttolife.org. <a href="${esc(unsubscribeUrl)}" style="color:inherit;text-decoration:underline">Unsubscribe</a><br>`,
+    `Adapt To Life NFP, a 501(c)(3) nonprofit. EIN 41-3213344.`,
+    `</p></div></body></html>`,
+  ].join("");
+  const text = [
+    ...(step.paragraphs || []).flatMap((x) => [paraText(x, step), ""]),
+    "Alec",
+    "Founder, Adapt To Life",
+    "",
+    "You’re getting this because you signed up at adapttolife.org.",
+    `Unsubscribe: ${unsubscribeUrl}`,
+    "Adapt To Life NFP, a 501(c)(3) nonprofit. EIN 41-3213344.",
+  ].join("\n");
+  return { subject: step.subject, html, text };
+}
+
 export function renderEmail(
   step,
   { unsubscribeUrl, isDonor = false, assetOrigin = SITE } = {},
 ) {
   if (!unsubscribeUrl) throw new Error("renderEmail needs an unsubscribe URL");
+  if (step.plain) return renderPlain(step, { unsubscribeUrl });
   const asset = (path) => new URL(path, assetOrigin).toString();
   const parts = [];
-  for (const para of step.paragraphs || []) parts.push(p(esc(para)));
+  for (const para of step.paragraphs || [])
+    parts.push(
+      p(
+        paraHtml(
+          para,
+          step,
+          `color:${C.orange};font-weight:700;text-decoration:underline`,
+        ),
+      ),
+    );
   for (const item of step.items || [])
     parts.push(
       p(`${esc(item.text)}<br>${a(item.link.label, hrefFor(item.link, step))}`),
@@ -262,7 +359,7 @@ export function renderEmail(
   ].join("");
 
   const lines = [];
-  for (const para of step.paragraphs || []) lines.push(para, "");
+  for (const para of step.paragraphs || []) lines.push(paraText(para, step), "");
   for (const item of step.items || [])
     lines.push(item.text, `${item.link.label}: ${hrefFor(item.link, step)}`, "");
   if (step.highlight) lines.push(step.highlight, "");

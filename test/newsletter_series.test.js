@@ -1,12 +1,16 @@
-// The newsletter welcome series (src/newsletter-series.js): the five emails,
-// how they render, how they are sent through Resend, and how a subscriber
-// moves through them. Alec, Nov 7 2026: "make sure resend is working as
-// intended and we created the emails."
+// The newsletter welcome email (src/newsletter-series.js): the one plain letter
+// a new subscriber gets, the designed emails saved for later, how they render,
+// how they go out through Resend, and the unsubscribe link.
+//
+// Alec, Nov 7 2026: "make sure resend is working as intended and we created
+// the emails." Then, seeing five: "Let's just keep one email for now. Keep it
+// super simple."
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
   WELCOME,
+  SAVED_FOR_LATER,
   renderEmail,
   sendSeriesEmail,
   startWelcome,
@@ -18,13 +22,17 @@ import {
 
 const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), "utf8");
 const DAY = 24 * 60 * 60 * 1000;
+const ALL = [...WELCOME, ...SAVED_FOR_LATER];
+const UNSUB = "https://adapttolife.org/unsubscribe?e=a%40b.co&t=tok";
 
 // ---- the copy -------------------------------------------------------------
 const copyOf = (step) =>
   [
     step.subject,
     step.preheader,
-    ...(step.paragraphs || []),
+    ...(step.paragraphs || []).flatMap((x) =>
+      typeof x === "string" ? [x] : [x.text, x.link.label],
+    ),
     ...(step.items || []).flatMap((i) => [i.text, i.link.label]),
     step.highlight,
     step.closing,
@@ -34,34 +42,28 @@ const copyOf = (step) =>
     step.secondary?.label,
   ].filter(Boolean);
 
-test("five emails over two weeks, each with a subject, a preheader and one clear action", () => {
-  assert.deepEqual(
-    WELCOME.map((s) => [s.key, s.day]),
-    [
-      ["welcome", 0],
-      ["fund", 2],
-      ["crew", 5],
-      ["ask", 9],
-      ["ways", 14],
-    ],
+test("one plain email, sent at signup; the rest are saved and never sent", () => {
+  assert.equal(WELCOME.length, 1);
+  const [welcome] = WELCOME;
+  assert.equal(welcome.key, "welcome");
+  assert.equal(welcome.day, 0);
+  assert.equal(welcome.plain, true);
+  assert.ok(
+    !welcome.image && !welcome.cta && !welcome.ps,
+    "no photo, no button, no P.S.",
   );
-  for (const s of WELCOME) {
-    assert.ok(s.subject.length <= 50, `${s.key}: subject under 50 characters`);
-    assert.ok(
-      s.preheader.length >= 20 && s.preheader.length <= 90,
-      `${s.key}: preheader`,
-    );
-    assert.ok(s.cta || s.items, `${s.key}: has an action`);
-  }
-  // Only the ask is skipped for people who have already given.
+  assert.equal(welcome.subject, "Welcome to Adapt To Life");
+  assert.ok(welcome.paragraphs.length <= 4, "super simple");
   assert.deepEqual(
-    WELCOME.filter((s) => s.skipForDonors).map((s) => s.key),
-    ["ask"],
+    SAVED_FOR_LATER.map((s) => s.key),
+    ["welcome-designed", "fund", "crew", "ask", "ways"],
   );
+  for (const saved of SAVED_FOR_LATER)
+    assert.ok(!WELCOME.includes(saved), `${saved.key} is not in the sending list`);
 });
 
 test("the copy keeps the Adapt To Life voice: no dashes, no questions, no GLASA", () => {
-  for (const s of WELCOME)
+  for (const s of ALL)
     for (const line of copyOf(s)) {
       assert.ok(
         !/[‒-―-]/.test(line.replace(/@adapt_to_life_org/, "")),
@@ -74,13 +76,38 @@ test("the copy keeps the Adapt To Life voice: no dashes, no questions, no GLASA"
     }
 });
 
-test("every money button and link says Donate", () => {
-  for (const s of WELCOME) {
+test("the welcome is built on Alec's own published words and the site's facts", () => {
+  const text = copyOf(WELCOME[0]).join("\n");
+  // His accepted welcome (skills: adapt-to-life-brand-voice): "We're here to
+  // expand access to adaptive sports so athletes can find their place."
+  assert.ok(
+    text.includes(
+      "We’re here to expand access to adaptive sports so athletes can find their place.",
+    ),
+  );
+  assert.ok(
+    read("public/index.html").includes(
+      "We expand access to adaptive sports so athletes can find their place.",
+    ),
+  );
+  assert.ok(
+    text.includes(
+      "the Chicago Wheelie Big Dills, a crew of wheelchair pickleball players on court every week",
+    ),
+  );
+  assert.ok(
+    read("public/pickleball.html").includes("A crew of wheelchair pickleball players"),
+  );
+});
+
+test("every money button and link says Donate (the saved emails too)", () => {
+  for (const s of ALL) {
     const links = [
       s.cta,
       s.secondary,
       s.psForNonDonors?.link,
       ...(s.items || []).map((i) => i.link),
+      ...(s.paragraphs || []).filter((x) => typeof x !== "string").map((x) => x.link),
     ].filter(Boolean);
     for (const l of links)
       if (/^\/donate/.test(l.href))
@@ -88,8 +115,8 @@ test("every money button and link says Donate", () => {
   }
 });
 
-test("the numbers in the emails are the site's numbers", () => {
-  const all = WELCOME.flatMap(copyOf).join("\n");
+test("the numbers in the saved emails are still the site's numbers", () => {
+  const all = ALL.flatMap(copyOf).join("\n");
   const wbd = JSON.parse(read("public/data/campaigns.json")).campaigns.find(
     (c) => c.slug === "wheelie-big-dills",
   );
@@ -108,31 +135,27 @@ test("the numbers in the emails are the site's numbers", () => {
     assert.ok(all.includes(price), `${price} in the emails`);
   }
   assert.ok(
-    read("public/index.html").includes("10&ndash;15</b><span>athletes, every week"),
-  );
-  assert.ok(all.includes("10 to 15 wheelchair pickleball players"));
-  assert.ok(
     read("public/promise.html").includes("Right now Alec covers the overhead himself."),
   );
 });
 
 // ---- rendering --------------------------------------------------------------
-test("each email renders with the logo, the unsubscribe link and a plain text twin", () => {
-  const unsub = "https://adapttolife.org/unsubscribe?e=a%40b.co&t=tok";
-  for (const s of WELCOME) {
-    const { subject, html, text } = renderEmail(s, { unsubscribeUrl: unsub });
+test("every email renders with the unsubscribe link and a plain text twin", () => {
+  for (const s of ALL) {
+    const { subject, html, text } = renderEmail(s, { unsubscribeUrl: UNSUB });
     assert.equal(subject, s.subject);
-    assert.ok(html.includes("/images/email/atl-logo-cream.png"), `${s.key}: logo`);
+    if (s.plain)
+      assert.ok(!html.includes("<img"), `${s.key}: a plain letter has no images`);
+    else assert.ok(html.includes("/images/email/atl-logo-cream.png"), `${s.key}: logo`);
     assert.ok(
-      html.includes(unsub.replace(/&/g, "&amp;")),
+      html.includes(UNSUB.replace(/&/g, "&amp;")),
       `${s.key}: unsubscribe in html`,
     );
-    assert.ok(text.includes(`Unsubscribe: ${unsub}`), `${s.key}: unsubscribe in text`);
+    assert.ok(text.includes(`Unsubscribe: ${UNSUB}`), `${s.key}: unsubscribe in text`);
     assert.ok(html.includes(s.preheader), `${s.key}: preheader`);
     assert.ok(html.includes("EIN 41-3213344"), `${s.key}: legal line`);
-    // Every image says what it shows.
-    for (const img of html.match(/<img [^>]*>/g)) assert.match(img, /alt="[^"]+"/);
-    // Site links are absolute and carry the series' UTM tags.
+    for (const img of html.match(/<img [^>]*>/g) || [])
+      assert.match(img, /alt="[^"]+"/);
     for (const m of html.matchAll(/href="([^"]+)"/g)) {
       const href = m[1].replace(/&amp;/g, "&");
       if (
@@ -151,21 +174,40 @@ test("each email renders with the logo, the unsubscribe link and a plain text tw
   assert.throws(() => renderEmail(WELCOME[0], {}), /unsubscribe/);
 });
 
-test("donors do not get the P.S. asking them to give", () => {
-  const ways = WELCOME.find((s) => s.key === "ways");
-  const unsubscribeUrl = "https://adapttolife.org/unsubscribe?e=x&t=y";
+test("the plain welcome reads as a letter, with one link, and its text twin says the same", () => {
+  const { html, text } = renderEmail(WELCOME[0], { unsubscribeUrl: UNSUB });
+  const links = [...html.matchAll(/<a href="([^"]+)"/g)].map((m) => m[1]);
+  assert.equal(links.length, 2, "the crew link and the unsubscribe link");
+  assert.match(
+    links[0],
+    /^https:\/\/adapttolife\.org\/pickleball\?utm_source=newsletter/,
+  );
+  assert.ok(html.includes(">the Chicago Wheelie Big Dills</a>"));
   assert.ok(
-    renderEmail(ways, { unsubscribeUrl }).text.includes("If you’d like to give"),
+    !html.includes("background:"),
+    "the mail app's own background, dark mode included",
+  );
+  assert.ok(text.startsWith("Thanks for signing up."));
+  assert.ok(
+    text.includes("the Chicago Wheelie Big Dills (https://adapttolife.org/pickleball?"),
+  );
+  assert.ok(text.includes("\nAlec\nFounder, Adapt To Life\n"));
+});
+
+test("donors do not get the P.S. asking them to give (saved email)", () => {
+  const ways = SAVED_FOR_LATER.find((s) => s.key === "ways");
+  assert.ok(
+    renderEmail(ways, { unsubscribeUrl: UNSUB }).text.includes("If you’d like to give"),
   );
   assert.ok(
-    !renderEmail(ways, { unsubscribeUrl, isDonor: true }).text.includes(
+    !renderEmail(ways, { unsubscribeUrl: UNSUB, isDonor: true }).text.includes(
       "If you’d like to give",
     ),
   );
 });
 
-test("every image the emails use is on the site", () => {
-  for (const s of WELCOME.filter((s) => s.image))
+test("every image the saved emails use is on the site", () => {
+  for (const s of ALL.filter((s) => s.image))
     assert.ok(
       readFileSync(new URL(`../public${s.image.src}`, import.meta.url)).length > 10000,
       s.image.src,
@@ -321,7 +363,7 @@ const envWith = (db, donors = fakeDonors()) => ({
 });
 
 // ---- sending ---------------------------------------------------------------------
-test("an email goes to Resend from mail.adapttolife.org with one click unsubscribe headers", async () => {
+test("the email goes to Resend from mail.adapttolife.org with one click unsubscribe headers", async () => {
   const resend = fakeResend();
   const env = envWith(fakeD1());
   await withFetch(resend.fetch, () =>
@@ -334,7 +376,7 @@ test("an email goes to Resend from mail.adapttolife.org with one click unsubscri
   assert.equal(call.body.from, "Alec at Adapt To Life <hello@mail.adapttolife.org>");
   assert.equal(call.body.reply_to, "hello@adapttolife.org");
   assert.deepEqual(call.body.to, ["fan@example.com"]);
-  assert.equal(call.body.subject, "You’re on the list");
+  assert.equal(call.body.subject, "Welcome to Adapt To Life");
   assert.match(
     call.body.headers["List-Unsubscribe"],
     /^<https:\/\/adapttolife\.org\/unsubscribe\?e=fan%40example\.com&t=[\w-]+>, <mailto:hello@adapttolife\.org\?subject=Unsubscribe>$/,
@@ -351,7 +393,7 @@ test("an email goes to Resend from mail.adapttolife.org with one click unsubscri
 });
 
 // ---- the journey ---------------------------------------------------------------------
-test("a new subscriber gets email 1 at once, then each email on its day", async () => {
+test("a new subscriber gets the welcome at once, and nothing after it", async () => {
   const db = fakeD1();
   const env = envWith(db);
   const resend = fakeResend();
@@ -363,23 +405,16 @@ test("a new subscriber gets email 1 at once, then each email on its day", async 
     });
     assert.equal(out.started, true);
     assert.equal(out.sent, true);
-    assert.equal(resend.sent().length, 1, "email 1 straight away");
-    // Nothing more until day 2.
-    assert.equal((await runWelcomeSeries(env, { now: t0 + DAY })).sent, 0);
-    for (const [day, key] of [
-      [2, "fund"],
-      [5, "crew"],
-      [9, "ask"],
-      [14, "ways"],
-    ]) {
-      const r = await runWelcomeSeries(env, { now: t0 + day * DAY + 60000 });
-      assert.equal(r.sent, 1, `day ${day}`);
-      assert.equal(resend.sent().at(-1).body.tags[1].value, key);
-    }
+    for (const day of [1, 2, 5, 9, 14, 30])
+      assert.equal(
+        (await runWelcomeSeries(env, { now: t0 + day * DAY })).sent,
+        0,
+        `day ${day}`,
+      );
   });
+  assert.equal(resend.sent().length, 1);
   assert.equal(db.rows.get("fan@example.com").status, "done");
-  assert.equal(resend.sent().length, 5);
-  // Starting again does nothing: one series per person.
+  // Starting again does nothing: one welcome per person.
   await withFetch(resend.fetch, async () => {
     assert.equal(
       (await startWelcome(env, "fan@example.com", { now: t0 + 20 * DAY })).started,
@@ -388,27 +423,22 @@ test("a new subscriber gets email 1 at once, then each email on its day", async 
   });
 });
 
-test("someone who has given skips the ask, and the last email has no P.S. asking them to give", async () => {
+test("donors get the welcome too: there is no ask in it", async () => {
   const db = fakeD1();
   const env = envWith(db, fakeDonors(["donor@example.com"]));
   const resend = fakeResend();
-  const t0 = Date.parse("2026-11-07T15:00:00Z");
-  await withFetch(resend.fetch, async () => {
-    await startWelcome(env, "donor@example.com", { now: t0 });
-    for (const day of [2, 5, 9, 14])
-      await runWelcomeSeries(env, { now: t0 + day * DAY + 60000 });
-  });
-  const keys = resend.sent().map((c) => c.body.tags[1].value);
-  assert.deepEqual(keys, ["welcome", "fund", "crew", "ways"]);
-  assert.ok(!resend.sent().at(-1).body.text.includes("If you’d like to give"));
+  await withFetch(resend.fetch, () =>
+    startWelcome(env, "donor@example.com", { now: Date.parse("2026-11-07T15:00:00Z") }),
+  );
+  assert.equal(resend.sent().length, 1);
   assert.equal(db.rows.get("donor@example.com").status, "done");
 });
 
-test("someone who unsubscribed in Resend gets nothing more", async () => {
+test("a retry checks Resend first: someone who unsubscribed meanwhile gets nothing", async () => {
   const db = fakeD1();
   const env = envWith(db);
   const t0 = Date.parse("2026-11-07T15:00:00Z");
-  await withFetch(fakeResend().fetch, () =>
+  await withFetch(fakeResend({ sendStatus: 500 }).fetch, () =>
     startWelcome(env, "gone@example.com", { now: t0 }),
   );
   const later = fakeResend({ contact: { unsubscribed: true } });
@@ -426,20 +456,19 @@ test("a failed send is retried later, and gives up after six tries", async () =>
     startWelcome(env, "retry@example.com", { now: t0 }),
   );
   const row = db.rows.get("retry@example.com");
-  assert.equal(row.step, 0, "still on email 1");
+  assert.equal(row.step, 0, "still on the welcome");
   assert.equal(row.attempts, 1);
   assert.ok(Date.parse(row.next_at) > t0, "retry is scheduled");
-  let now = t0;
   await withFetch(failing.fetch, async () => {
     for (let i = 0; i < 6; i++) {
-      now = Date.parse(db.rows.get("retry@example.com").next_at) + 1000;
+      const now = Date.parse(db.rows.get("retry@example.com").next_at) + 1000;
       await runWelcomeSeries(env, { now });
     }
   });
   assert.equal(db.rows.get("retry@example.com").status, "stopped");
 });
 
-test("the series is off unless WELCOME_SERIES is on", async () => {
+test("the email is off unless WELCOME_SERIES is on", async () => {
   const db = fakeD1();
   const env = { ...envWith(db), WELCOME_SERIES: "off" };
   const resend = fakeResend();
@@ -459,7 +488,7 @@ test("the series is off unless WELCOME_SERIES is on", async () => {
   );
 });
 
-test("unsubscribing stops the series and marks the contact unsubscribed in Resend", async () => {
+test("unsubscribing stops it and marks the contact unsubscribed in Resend", async () => {
   const db = fakeD1();
   const env = envWith(db);
   const resend = fakeResend();
@@ -499,7 +528,9 @@ test("/unsubscribe: the link unsubscribes, one click POST answers 200, a forged 
     const forged = await w.fetch(
       new Request(good.replace("click%40", "other%40")),
       env,
-      { waitUntil() {} },
+      {
+        waitUntil() {},
+      },
     );
     assert.equal(forged.status, 400);
     assert.match(await forged.text(), /didn’t work/);
@@ -507,7 +538,7 @@ test("/unsubscribe: the link unsubscribes, one click POST answers 200, a forged 
   assert.equal(resend.calls.filter((c) => c.method === "PATCH").length, 2);
 });
 
-test("a new signup through /api/subscribe starts the series; an existing one does not", async () => {
+test("a new signup through /api/subscribe gets the welcome; an existing one does not", async () => {
   const w = await worker();
   const waits = [];
   const ctx = { waitUntil: (p) => waits.push(p) };
@@ -566,8 +597,8 @@ test("a new signup through /api/subscribe starts the series; an existing one doe
     const first = await signup();
     assert.equal(first.status, 200);
     await Promise.allSettled(waits.splice(0));
-    assert.equal(sent.length, 1, "the welcome email went out");
-    assert.equal(sent[0].subject, "You’re on the list");
+    assert.equal(sent.length, 1, "the welcome went out");
+    assert.equal(sent[0].subject, "Welcome to Adapt To Life");
     assert.equal(journey.rows.get("new@example.com").contact_id, "c-new");
     const again = await signup();
     assert.deepEqual(await again.json(), { ok: true, existing: true });

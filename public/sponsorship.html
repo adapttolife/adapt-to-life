@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0f0e0d">
 <meta name="color-scheme" content="light only">
-<title>Partners | Adapt To Life</title>
+<title>Partners and Sponsors | Adaptive Sports in Chicago | Adapt To Life</title>
 <meta name="description" content="Adapt To Life partners with Chicago Adaptive Sports, AMP Adaptive Sports, ACE Pickleball Club, Brick House Pickleball and The Picklr. See how we partner with clubs, and how to sponsor.">
 <link rel="canonical" href="https://adapttolife.org/sponsorship">
 <link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-v2-option2-32.png">
 <link rel="apple-touch-icon" href="/images/apple-touch-icon-v2-option2.png">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Partners | Adapt To Life">
+<meta property="og:title" content="Partners and Sponsors | Adaptive Sports in Chicago | Adapt To Life">
 <meta property="og:description" content="Adapt To Life partners with Chicago Adaptive Sports, AMP Adaptive Sports, ACE Pickleball Club, Brick House Pickleball and The Picklr. See how we partner with clubs, and how to sponsor.">
 <meta property="og:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
 <meta property="og:image:width" content="1200">
@@ -20,7 +20,7 @@
 <meta property="og:image:alt" content="Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.">
 <meta property="og:url" content="https://adapttolife.org/sponsorship">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Partners | Adapt To Life">
+<meta name="twitter:title" content="Partners and Sponsors | Adaptive Sports in Chicago | Adapt To Life">
 <meta name="twitter:description" content="Adapt To Life partners with Chicago Adaptive Sports, AMP Adaptive Sports, ACE Pickleball Club, Brick House Pickleball and The Picklr. See how we partner with clubs, and how to sponsor.">
 <meta name="twitter:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
 <meta name="twitter:image:alt" content="Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.">
@@ -153,7 +153,11 @@
   .sp-get-list span{ display:block; margin-top:0.45rem; line-height:1.5; opacity:0.85; }
   @media (max-width:900px){ .sp-get-list{ grid-template-columns:1fr 1fr; } }
   @media (max-width:520px){ .sp-get-list{ grid-template-columns:1fr; } }
-  .partner-note{ margin-top:clamp(1.4rem,3vw,2rem); max-width:62ch; opacity:0.78; font-size:0.98rem; line-height:1.55; }
+  /* Across the community: centred under the partner cards, with each organization named in full and linked. */
+  .sp-community{ margin:clamp(2.4rem,5vw,3.6rem) auto 0; max-width:58ch; text-align:center; }
+  .sp-community-k{ margin:0; font-family:var(--font-label); font-size:0.78rem; font-weight:800; letter-spacing:0.18em; text-transform:uppercase; color:var(--orange-ink); }
+  .sp-community-t{ margin:0.75rem 0 0; font-size:clamp(1.02rem,1.35vw,1.15rem); line-height:1.65; color:var(--ink-soft); }
+  .sp-community a{ color:var(--ink); text-decoration:underline; text-decoration-color:var(--orange); text-decoration-thickness:2px; text-underline-offset:4px; }
   .partner-more{ margin-top:1.5rem; font-weight:700; color:#ff5c39; border-bottom:2px solid currentColor; padding-bottom:2px; }
   /* Each partner's own website beside our page about them: a real link for people, and for search. rel=noopener only, so the partner sees the visit come from us. */
   .partner-links{ margin-top:1.5rem; display:flex; flex-wrap:wrap; align-items:baseline; gap:0.7rem 1.6rem; }
@@ -187,6 +191,7 @@
   @media (max-width:860px){ .sp-units{ grid-template-columns:1fr; } }
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"ItemList","name":"Adapt To Life partners","itemListElement":[{"@type":"ListItem","position":1,"item":{"@type":"NGO","name":"Chicago Adaptive Sports","url":"https://www.chicagoadaptivesports.com/"}},{"@type":"ListItem","position":2,"item":{"@type":"NGO","name":"AMP Adaptive Sports","url":"https://www.adaptivemobilityproviders.org/"}},{"@type":"ListItem","position":3,"item":{"@type":"SportsActivityLocation","name":"ACE Pickleball Club","url":"https://www.acepickleballclub.com/desplaines-il"}},{"@type":"ListItem","position":4,"item":{"@type":"SportsActivityLocation","name":"Brick House Pickleball","url":"https://brickhousepb.com/"}},{"@type":"ListItem","position":5,"item":{"@type":"SportsActivityLocation","name":"The Picklr","url":"https://thepicklr.com/location/mount-prospect/"}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://adapttolife.org/"},{"@type":"ListItem","position":2,"name":"Partners","item":"https://adapttolife.org/sponsorship"}]}</script>
 </head>
 <body>
 
@@ -365,7 +370,10 @@ fill="currentColor" stroke="none">
           </div>
         </article>
       </div>
-      <p class="partner-note">Partners listed here have agreed to be listed. We also support programs across the community, like WASA in Wisconsin and LWSRA in the south suburbs, with coaching, clinics and volunteers. If you run a club, an organization or a coaching program, we can help you build and manage an adaptive program too.</p>
+      <div class="sp-community reveal">
+        <p class="sp-community-k">Across the community</p>
+        <p class="sp-community-t">We also support programs beyond our partner clubs with coaching, clinics and volunteers, like the <a href="https://www.wasa.org/" target="_blank" rel="noopener">Wisconsin Adaptive Sports Association (WASA)</a> and the <a href="https://lwsra.org/" target="_blank" rel="noopener">Lincolnway Special Recreation Association (LWSRA)</a> in the south suburbs.</p>
+      </div>
     </div>
   </section>
 

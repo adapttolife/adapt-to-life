@@ -3649,6 +3649,7 @@ a.win-band:focus-visible {
 }
 .cm-track {
   position: relative;
+  display: flex;
   margin-top: 0.55rem;
   height: 10px;
   border-radius: 999px;
@@ -3664,6 +3665,38 @@ a.win-band:focus-visible {
 }
 .cm-fill--action {
   background: linear-gradient(90deg, var(--action-ink), var(--action));
+}
+/* Court time a partner club gives: the first piece of every week, striped so
+   it reads apart from gifts. The key sits under the total (.cm-split). */
+.cm-fill--kind,
+.cm-swatch {
+  background: repeating-linear-gradient(
+    135deg,
+    var(--data) 0 3px,
+    color-mix(in srgb, var(--data) 42%, transparent) 3px 6px
+  );
+}
+.cm-row.has-gifts .cm-fill--kind {
+  border-radius: 999px 0 0 999px;
+}
+.cm-row.has-gifts .cm-fill--kind + .cm-fill {
+  border-radius: 0 999px 999px 0;
+}
+.cm-hero .cm-split {
+  flex-basis: 100%;
+  margin-top: 0.45rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--card-muted);
+}
+.cm-swatch {
+  display: inline-block;
+  width: 1.4em;
+  height: 0.6em;
+  margin: 0 0.4em 0 0.1em;
+  border-radius: 999px;
+  vertical-align: 0.05em;
 }
 .cm-start {
   display: none;

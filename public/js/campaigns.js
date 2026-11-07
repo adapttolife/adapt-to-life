@@ -437,6 +437,8 @@
       .then(function (d) {
         cb({
           raised: Number(d.raised) || 0,
+          // Court time a partner club gives toward every week (wbd only).
+          inkind: Number(d.inkind) || 0,
           goal: Number(d.goal) || 0,
           parts: d.parts || null,
           donors: Number(d.donors) || 0,
@@ -708,20 +710,42 @@
             n.textContent = "Join " + d.donors + " donors";
             n.hidden = false;
           });
+        // Court time a partner club gives counts toward the goal beside the
+        // gifts: one total, and a line under it that keeps the two apart.
+        var kind = Number(d.inkind) || 0;
         if (d.goal)
           each(m, "[data-cm-sub]", function (n) {
-            n.textContent = "raised toward our " + money(d.goal) + " goal";
+            n.textContent =
+              (kind ? "toward our " : "raised toward our ") + money(d.goal) + " goal";
+          });
+        if (kind)
+          each(m, "[data-cm-split]", function (n) {
+            n.textContent = "";
+            n.appendChild(
+              document.createTextNode(money(d.raised) + " in gifts, plus "),
+            );
+            var sw = document.createElement("i");
+            sw.className = "cm-swatch";
+            sw.setAttribute("aria-hidden", "true");
+            n.appendChild(sw);
+            n.appendChild(
+              document.createTextNode(
+                money(kind) + " in court time from a partner club",
+              ),
+            );
+            n.hidden = false;
           });
         each(m, "[data-cm-total]", function (n) {
           n.textContent = "$0";
           whenSeen(n, function () {
-            countUp(n, d.raised);
+            countUp(n, (Number(d.raised) || 0) + kind);
           });
         });
         Object.keys(parts).forEach(function (k) {
           var p = parts[k] || {};
           var pr = Number(p.raised) || 0;
           var pg = Number(p.goal) || 0;
+          var pk = Math.min(Number(p.inkind) || 0, pr);
           if (!pg) return;
           each(m, '[data-part-fig="' + k + '"]', function (n) {
             n.textContent = pr
@@ -730,6 +754,18 @@
           });
           each(m, '[data-part-row="' + k + '"]', function (n) {
             n.classList.toggle("is-empty", !pr);
+            n.classList.toggle("has-gifts", pr - pk > 0);
+          });
+          if (pk)
+            each(m, '[data-part-note="' + k + '"]', function (n) {
+              n.textContent =
+                "Court time and memberships. A partner club\u2019s court time got it started, and every new gift builds on it.";
+            });
+          each(m, '[data-part-kind="' + k + '"]', function (n) {
+            whenSeen(n, function () {
+              n.style.width =
+                Math.max(0, Math.min(100, (pk / pg) * 100)).toFixed(1) + "%";
+            });
           });
           each(m, '[data-part-pct="' + k + '"]', function (n) {
             if (!pr) return;
@@ -739,7 +775,7 @@
           each(m, '[data-part-fill="' + k + '"]', function (n) {
             whenSeen(n, function () {
               n.style.width =
-                Math.max(0, Math.min(100, (pr / pg) * 100)).toFixed(1) + "%";
+                Math.max(0, Math.min(100, ((pr - pk) / pg) * 100)).toFixed(1) + "%";
             });
           });
         });

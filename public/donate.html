@@ -135,6 +135,8 @@
   .gift-group-k{ margin:0 0 0.6rem; font-family:var(--font-label); font-size:0.78rem; font-weight:800; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); }
   .gift-groups .gift-list{ margin:0; max-width:none; grid-template-columns:minmax(0,1fr); grid-template-rows:none; grid-auto-flow:row; }
   .gift-groups .gift-list li:nth-child(4){ border-top:1px solid rgba(59,59,70,0.1); }
+  /* How often, under every amount, as on /numbers. */
+  .gift-groups .gift-list b small{ display:block; margin-top:0.35rem; font-family:var(--font-label); font-style:normal; font-size:0.64rem; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); }
 </style>
 </head>
 <body>
@@ -264,18 +266,18 @@ fill="currentColor" stroke="none">
         <div class="gift-group">
           <h3 class="gift-group-k">Monthly</h3>
           <ul class="gift-list" aria-label="Monthly gifts">
-            <li><b>$60</b><span>a month: four nights at $15, for one athlete.</span></li>
-            <li><b>$129</b><span>a month: unlimited sessions for one athlete to compete.</span></li>
-            <li><b>$900</b><span>a month: four nights at $225, for up to 15 athletes.</span></li>
+            <li><b>$60<small>a month</small></b><span>Four nights on court every month for one athlete.</span></li>
+            <li><b>$129<small>a month</small></b><span>Unlimited sessions every month for one athlete to compete.</span></li>
+            <li><b>$900<small>a month</small></b><span>Four nights on court every month for up to 15 athletes.</span></li>
           </ul>
         </div>
         <div class="gift-group">
           <h3 class="gift-group-k">One time</h3>
           <ul class="gift-list" aria-label="One-time gifts">
-            <li><b>$15</b><span>puts one athlete on court for a night.</span></li>
-            <li><b>$225</b><span>covers up to 15 athletes for a night at ACE.</span></li>
-            <li><b>$1,548</b><span>covers a year of unlimited sessions for one athlete.</span></li>
-            <li><b>$3,500</b><span>covers about what one athlete&rsquo;s US Open costs.</span></li>
+            <li><b>$15<small>one time</small></b><span>One night on court for one athlete.</span></li>
+            <li><b>$225<small>one time</small></b><span>One night on court for up to 15 athletes.</span></li>
+            <li><b>$1,548<small>one time</small></b><span>A year of unlimited sessions for one athlete.</span></li>
+            <li><b>$3,500<small>one time</small></b><span>About one athlete&rsquo;s US Open: entry, travel and a room.</span></li>
           </ul>
         </div>
       </div>
@@ -637,7 +639,7 @@ fill="currentColor" stroke="none">
 
 <!-- Donation form is the embedded Givebutter giving form above; no custom JS needed. -->
 
-<script src="/js/campaigns.js?v=123ad3f4"></script>
+<script src="/js/campaigns.js?v=1ebb50c5"></script>
 <script>window.ATLCampaigns.module();</script>
 <script src="/js/subscribe.js?v=7efaf550" defer></script>
 <script src="/js/turnstile-lazy.js?v=12e9b811" defer></script>

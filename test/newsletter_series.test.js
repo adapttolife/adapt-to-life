@@ -123,13 +123,15 @@ test("the numbers in the saved emails are still the site's numbers", () => {
   const usd = (n) => "$" + n.toLocaleString("en-US");
   assert.ok(all.includes(usd(wbd.goal)), "the goal");
   for (const part of wbd.parts) assert.ok(all.includes(usd(part.goal)), part.key);
+  // The picker's line has no amount (the button shows it); the email stands
+  // alone, so it says the amount and the same thing.
   assert.ok(
     read("public/js/campaigns.js").includes(
-      "$129 a month: unlimited sessions for one athlete to compete.",
+      "Unlimited sessions every month for one athlete to compete.",
     ),
   );
   assert.ok(
-    all.includes("$129 a month: unlimited sessions for one athlete to compete."),
+    all.includes("$129 a month gives one athlete unlimited sessions to compete."),
   );
   const sponsorship = read("public/sponsorship.html");
   for (const price of ["$225", "$1,548", "$15,480"]) {

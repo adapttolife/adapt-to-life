@@ -99,13 +99,13 @@ test("every gift line is a verified unit cost", () => {
   assert.equal(900, 4 * 225, "$900 a month is four nights at $225");
   assert.equal(60, 4 * 15, "$60 a month is four nights at $15");
   for (const line of [
-    "$60 a month: four nights at $15, for one athlete.",
-    "$129 a month: unlimited sessions for one athlete to compete.",
-    "$900 a month: four nights at $225, for up to 15 athletes.",
-    "$15 puts one athlete on court for a night.",
-    "$225 covers up to 15 athletes for a night at ACE.",
-    "$1,548 covers a year of unlimited sessions for one athlete.",
-    "$3,500 covers about what one athlete’s US Open costs.",
+    "Four nights on court every month for one athlete.",
+    "Unlimited sessions every month for one athlete to compete.",
+    "Four nights on court every month for up to 15 athletes.",
+    "One night on court for one athlete.",
+    "One night on court for up to 15 athletes.",
+    "A year of unlimited sessions for one athlete.",
+    "About one athlete’s US Open: entry, travel and a room.",
   ])
     assert.ok(js.includes(line), line);
   // The US Open is a lottery: a gift never promises a seat.
@@ -372,13 +372,28 @@ test("/donate says what a gift does; /numbers shows how we got it", () => {
     "Monthly first",
   );
   const lines = [
-    ...impact.matchAll(/<li><b>(\$[\d,]+)<\/b><span>(.*?)<\/span><\/li>/g),
-  ].map((m) => `${m[1]} ${plain(m[2])}`);
+    ...impact.matchAll(
+      /<li><b>(\$[\d,]+)<small>(a month|one time)<\/small><\/b><span>(.*?)<\/span><\/li>/g,
+    ),
+  ].map((m) => ({ amount: m[1], often: m[2], line: plain(m[3]) }));
   assert.deepEqual(
-    lines,
+    lines.map((l) => l.line),
     [...monthly, ...once].map((g) => g.t),
     "/donate's lines are the picker's",
   );
+  assert.deepEqual(
+    lines.map((l) => l.amount),
+    [...monthly, ...once].map((g) => money(g.a)),
+  );
+  assert.deepEqual(
+    lines.map((l) => l.often),
+    [...monthly.map(() => "a month"), ...once.map(() => "one time")],
+  );
+  // Alec, Nov 7: each line says what the gift buys, how often and for whom,
+  // and never repeats the amount the button already shows.
+  for (const g of [...monthly, ...once])
+    assert.ok(!/\$/.test(g.t.split(" at ")[0]), g.t);
+  for (const g of monthly) assert.ok(g.t.includes("every month"), g.t);
   assert.ok(impact.includes('href="/numbers#gifts"'), "/donate hands off to the math");
   assert.ok(!impact.includes("$4,000"), "the chair is a way to give, not a gift line");
 
@@ -411,5 +426,13 @@ test("/donate says what a gift does; /numbers shows how we got it", () => {
     const n = (x) => +x.replace(/,/g, "");
     assert.equal(money(n(m[1]) * n(m[2])), amount, `${calc} is ${amount}`);
   }
+  const whats = [...gifts.matchAll(/<span class="nb-gift-what">(.*?)<\/span>/g)].map(
+    (m) => plain(m[1]),
+  );
+  assert.deepEqual(
+    whats,
+    [...monthly, ...once].map((g) => g.t),
+    "/numbers says the same line",
+  );
   assert.ok(gifts.includes('href="/donate"'), "/numbers hands back to the donate page");
 });

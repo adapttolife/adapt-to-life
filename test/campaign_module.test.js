@@ -2,7 +2,7 @@ import { fileURLToPath } from "node:url";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { readFileSync, readdirSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
@@ -208,4 +208,52 @@ test("the math lives on /numbers, and every module links to it", () => {
   );
   assert.equal((stats.match(/<li\b/g) || []).length, 6);
   assert.equal((stats.match(/class="sym sym--/g) || []).length, 6);
+});
+
+// Alec, Nov 7 2026: "don't say first priority"; the six seats are the six on
+// the crew page, by name and photo; /numbers reads as one route.
+test("no First priority, six named seats, and the numbers as a route", () => {
+  const data = JSON.parse(read("public/data/campaigns.json"));
+  const road = data.campaigns
+    .find((c) => c.slug === "wheelie-big-dills")
+    .parts.find((p) => p.key === "send-6");
+  const names = road.seats.map((s) => s.name);
+  assert.deepEqual(names, ["Juan", "Brian", "Bob", "Robby", "Ken", "Amanda"]);
+  const crew = read("public/pickleball.html");
+  for (const s of road.seats) {
+    assert.ok(crew.includes(`<h3>${s.name}</h3>`), `${s.name} is on the crew page`);
+    assert.ok(
+      existsSync(join(ROOT, `public/images/pickleball/seats/${s.slug}.webp`)),
+      `${s.name} has a seat picture`,
+    );
+  }
+  assert.ok(existsSync(join(ROOT, "public/images/pickleball/seats/faces.webp")));
+  const road6 = read("public/send-6.html");
+  const tiles = road6.slice(
+    road6.indexOf("<!-- campaign-seats -->"),
+    road6.indexOf("<!-- /campaign-seats -->"),
+  );
+  assert.equal((tiles.match(/class="s6-seat"/g) || []).length, 6);
+  for (const n of names) assert.ok(tiles.includes(`>${n}<`), `${n} names a seat`);
+  assert.ok(!road6.includes("Seat 2"), "no anonymous seats");
+  for (const f of readdirSync(join(ROOT, "public")).filter((x) => x.endsWith(".html")))
+    assert.ok(
+      !read(`public/${f}`).includes("First priority"),
+      `${f} says First priority`,
+    );
+  const home = read("public/index.html");
+  assert.ok(
+    home.includes(
+      `aria-label="The six seats: Juan, Brian, Bob, Robby, Ken and Amanda"`,
+    ),
+  );
+  const nums = read("public/numbers.html");
+  const route = nums.slice(
+    nums.indexOf('<ol class="nb-route"'),
+    nums.indexOf("</ol>", nums.indexOf('<ol class="nb-route"')),
+  );
+  const order = [...route.matchAll(/<li class="nb-stop([^"]*)"/g)].map((m) =>
+    m[1].trim(),
+  );
+  assert.deepEqual(order, ["nb-stop--now", "", "nb-stop--finish", "nb-stop--next"]);
 });

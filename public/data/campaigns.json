@@ -30,6 +30,15 @@
           "goal": 21000,
           "page": "/send-6",
           "detail": "Tournaments through the year to build rankings, then Naples. The US Open picks players by lottery, so nothing is guaranteed.",
+          "_seats": "Alec, Nov 7 2026: the six seats are the six athletes on the crew page (Meet the crew, /pickleball). Same names, same order, same photos. Faces and figures are cut from public/images/pickleball/<slug>.webp by scripts/build-seats.mjs.",
+          "seats": [
+            { "name": "Juan", "slug": "juan", "page": "/juan" },
+            { "name": "Brian", "slug": "brian" },
+            { "name": "Bob", "slug": "bob" },
+            { "name": "Robby", "slug": "robby" },
+            { "name": "Ken", "slug": "ken" },
+            { "name": "Amanda", "slug": "amanda" }
+          ],
           "math": [
             { "label": "The US Open", "qty": 6, "of": "athletes", "unit": 3500, "about": true, "note": "What it has cost each athlete the last couple of years: entry fees, travel and an accessible room in Naples." }
           ]

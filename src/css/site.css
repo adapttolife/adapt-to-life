@@ -3882,17 +3882,9 @@ a.win-band:focus-visible {
 .cm-badge[hidden] {
   display: none;
 }
-.cm-badge--accent {
-  background: color-mix(in srgb, var(--accent) 14%, transparent);
-  color: var(--orange-ink);
-}
 .cm-badge--action {
   background: color-mix(in srgb, var(--action) 14%, transparent);
   color: var(--orange-ink);
-}
-.cm .cm-badge--accent {
-  color: var(--orange-hot);
-  background: color-mix(in srgb, var(--accent) 20%, transparent);
 }
 .cm .cm-badge--action {
   color: var(--orange-hot);
@@ -4038,8 +4030,8 @@ a.win-band:focus-visible {
    has to stay clean (Alec, Nov 6: "it's getting too messy"): one quiet
    symbol per row for what the part is, the same three as the fund's costs
    (training, travel, a tournament); a checkered flag where each bar ends,
-   yellow once the bar gets there; a lock where the next goal waits; and six
-   seats under the road, one athlete each, filling green as money arrives. */
+   yellow once the bar gets there; a lock where the next goal waits; and the
+   road cut into its six seats, with the six athletes' faces beside it. */
 .cm-row-top b {
   display: inline-flex;
   align-items: center;
@@ -4087,24 +4079,46 @@ a.win-band:focus-visible {
     var(--card) calc(100% / 6 - 2px) calc(100% / 6)
   );
 }
-.cm-seats {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  justify-items: center;
-  margin: 0.4rem calc(0.95rem + 0.5rem) 0 0;
-  --seat-on: var(--live);
-  --seat-off: color-mix(in srgb, var(--card-text) 22%, transparent);
+/* The road's six seats are six athletes (campaigns.json; faces cut by
+   scripts/build-seats.mjs into one strip). One request for six faces, painted
+   only once the row is near view. The road is one goal, so the faces carry no
+   progress of their own: the bar does; all six take a green ring together
+   when it is done. */
+.face {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: var(--face, 1.75rem);
+  height: var(--face, 1.75rem);
+  border-radius: 50%;
+  background-color: var(--face-bg, rgba(249, 247, 242, 0.1));
+  background-repeat: no-repeat;
+  background-size: 600% 100%;
+  background-position: calc(var(--i, 0) * 20%) 0;
 }
-.cm-seats .sym {
-  width: 1.05rem;
-  height: 1.05rem;
-  /* A seat fills left to right with its share of the money, the same rule
-     as the seat tiles on /send-6: a part-covered seat shows a part fill. */
-  background: linear-gradient(
-    90deg,
-    var(--seat-on) var(--fill, 0%),
-    var(--seat-off) var(--fill, 0%)
-  );
+.is-near .face {
+  background-image: url("/images/pickleball/seats/faces.webp");
+}
+.cm-note--crew {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.65rem;
+}
+.cm-faces {
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+.cm-faces .face {
+  --face: 1.7rem;
+  box-shadow: 0 0 0 2px var(--card);
+}
+.cm-faces .face + .face {
+  margin-left: -0.45rem;
+}
+.cm-row.is-done .cm-faces .face {
+  box-shadow:
+    0 0 0 2px var(--card),
+    0 0 0 3.5px var(--live);
 }
 /* The key under the total: a chip in each data colour with its symbol. */
 .cm-key {

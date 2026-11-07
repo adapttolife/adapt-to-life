@@ -751,25 +751,10 @@
     });
     return svg;
   }
-  /* Six seats, one athlete each: every seat fills with its share of the
-     road's money, the same rule as the seat tiles on /send-6, so a part-
-     covered seat shows a part fill and is never rounded up. */
-  function seats(n, raisedAmt, goal) {
-    var list = n.querySelectorAll(".sym");
-    if (!list.length || !goal) return;
-    var per = goal / list.length,
-      full = 0;
-    Array.prototype.forEach.call(list, function (s, i) {
-      var share = Math.max(0, Math.min(1, (raisedAmt - i * per) / per));
-      if (share >= 1) full++;
-      s.style.setProperty("--fill", (share * 100).toFixed(1) + "%");
-    });
-    n.setAttribute(
-      "aria-label",
-      full + " of " + list.length + " seats covered so far, one athlete each",
-    );
-  }
+
   function numbersBars() {
+    // The six faces paint once their row is near view (site.css, .face).
+    Array.prototype.forEach.call(document.querySelectorAll(".nb-crew"), near);
     if (!document.querySelector("[data-nb-row], [data-nb-total]")) return;
     raised(function (d) {
       if (!d || !d.raised) return;
@@ -794,9 +779,7 @@
           n.appendChild(ring(pct));
           n.appendChild(document.createTextNode(pct + "% covered"));
         });
-        each(document, '[data-nb-seats="' + k + '"]', function (n) {
-          seats(n, pr, pg);
-        });
+
         each(document, '[data-nb-kind="' + k + '"]', function (n) {
           whenSeen(n, function () {
             n.style.width = pctW(pk, pg);
@@ -815,6 +798,11 @@
       each(document, "[data-nb-total]", function (n) {
         n.hidden = false;
         n.classList.toggle("has-gifts", gifts > 0 && kind > 0);
+        n.classList.toggle("is-done", gifts + kind >= goal);
+      });
+      // The finish station on the route turns yellow when the goal is met.
+      each(document, ".nb-stop--finish", function (n) {
+        n.classList.toggle("is-done", gifts + kind >= goal);
       });
       each(document, '[data-nb-kind="total"]', function (n) {
         whenSeen(n, function () {
@@ -865,6 +853,8 @@
       if (card) picker(card);
       var bg = m.querySelector(".cm-bg");
       if (bg) near(bg);
+      var faces = m.querySelector(".cm-faces");
+      if (faces) near(faces);
     });
     raised(function (d) {
       if (!d || !d.raised) return;
@@ -920,9 +910,7 @@
             n.classList.toggle("has-gifts", pr - pk > 0);
             n.classList.toggle("is-done", pr >= pg);
           });
-          each(m, '[data-part-seats="' + k + '"]', function (n) {
-            seats(n, pr, pg);
-          });
+
           if (pk)
             each(m, '[data-part-note="' + k + '"]', function (n) {
               n.textContent =

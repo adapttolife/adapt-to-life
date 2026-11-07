@@ -568,28 +568,32 @@
     // Nov 7: "How did you get 65? 15 x 4 is $60?"). The membership line sells
     // the unlimited sessions, one line on a desktop card ("Let's shorten it
     // up"), and no line names the club's membership ("Just say membership").
+    // Each line says what the gift buys, how often and for whom, never the
+    // amount: the button and the Monthly/One time toggle already show it
+    // (Alec, Nov 7: "Should we add monthly? ... Is there a shorter and better
+    // way to articulate this?"). /donate and /numbers use these same lines.
     monthly: [
       {
         a: 60,
-        t: "$60 a month: four nights at $15, for one athlete.",
+        t: "Four nights on court every month for one athlete.",
       },
       {
         a: 129,
-        t: "$129 a month: unlimited sessions for one athlete to compete.",
+        t: "Unlimited sessions every month for one athlete to compete.",
       },
       {
         a: 900,
-        t: "$900 a month: four nights at $225, for up to 15 athletes.",
+        t: "Four nights on court every month for up to 15 athletes.",
       },
     ],
     once: [
-      { a: 15, t: "$15 puts one athlete on court for a night." },
-      { a: 225, t: "$225 covers up to 15 athletes for a night at ACE." },
+      { a: 15, t: "One night on court for one athlete." },
+      { a: 225, t: "One night on court for up to 15 athletes." },
       {
         a: 1548,
-        t: "$1,548 covers a year of unlimited sessions for one athlete.",
+        t: "A year of unlimited sessions for one athlete.",
       },
-      { a: 3500, t: "$3,500 covers about what one athlete’s US Open costs." },
+      { a: 3500, t: "About one athlete’s US Open: entry, travel and a room." },
     ],
   };
   var GIFT_DEFAULT = { monthly: 129, once: 225 };
@@ -858,7 +862,9 @@
         if (d.goal)
           each(m, "[data-cm-sub]", function (n) {
             n.textContent =
-              (kind ? "toward our " : "raised toward our ") + money(d.goal) + " goal";
+              (kind ? "toward our " : "raised toward our ") +
+              money(d.goal) +
+              " goal for the year ahead";
           });
         each(m, "[data-cm-total]", function (n) {
           n.textContent = "$0";

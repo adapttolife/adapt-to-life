@@ -99,13 +99,13 @@ test("every gift line is a verified unit cost", () => {
   assert.equal(900, 4 * 225, "$900 a month is four nights at $225");
   assert.equal(60, 4 * 15, "$60 a month is four nights at $15");
   for (const line of [
-    "$60 a month: four nights at $15, for one athlete.",
-    "$129 a month: unlimited sessions for one athlete to compete.",
-    "$900 a month: four nights at $225, for up to 15 athletes.",
-    "$15 puts one athlete on court for a night.",
-    "$225 covers up to 15 athletes for a night at ACE.",
-    "$1,548 covers a year of unlimited sessions for one athlete.",
-    "$3,500 covers about what one athlete’s US Open costs.",
+    "Four nights on court every month for one athlete.",
+    "Unlimited sessions every month for one athlete to compete.",
+    "Four nights on court every month for up to 15 athletes.",
+    "One night on court for one athlete.",
+    "One night on court for up to 15 athletes.",
+    "A year of unlimited sessions for one athlete.",
+    "About one athlete’s US Open: entry, travel and a room.",
   ])
     assert.ok(js.includes(line), line);
   // The US Open is a lottery: a gift never promises a seat.
@@ -184,14 +184,8 @@ test("the math lives on /numbers, and every module links to it", () => {
   assert.ok(
     read("public/sitemap.xml").includes("<loc>https://adapttolife.org/numbers</loc>"),
   );
-  // Every gift line on the page is the picker's line, word for word.
-  const js = read("public/js/campaigns.js");
-  for (const m of nb.matchAll(/<li><b>(\$[\d,]+)<\/b><span>([^<]+)<\/span><\/li>/g)) {
-    const line = `${m[1]} ${m[2]}`
-      .replace(/&rsquo;/g, "’")
-      .replace(/&nbsp;/g, "\u00a0");
-    assert.ok(js.includes(line), `gift line not in the picker: ${line}`);
-  }
+  // The gift lines on /numbers show their arithmetic now; the test "/donate
+  // says what a gift does; /numbers shows how we got it" checks them.
 
   // The module stays clean: no receipt, one button to the breakdown.
   for (const { f, html } of carriers()) {
@@ -232,7 +226,12 @@ test("the math lives on /numbers, and every module links to it", () => {
     assert.ok(!mod.includes("data-part-kind"), `${f}: the court-time stripe is back`);
     assert.ok(!mod.includes("got it started"), `${f}: the long note is back`);
     if (f === "numbers.html") continue;
-    assert.ok(mod.includes('<p class="cm-note">Court time and memberships.</p>'), f);
+    assert.ok(
+      mod.includes(
+        '<p class="cm-note">A year of court time and memberships for 10 athletes.</p>',
+      ),
+      f,
+    );
     for (const k of ["year", "send-6"])
       assert.ok(
         new RegExp(
@@ -327,4 +326,113 @@ test("/numbers names who gave, without counting anyone twice", () => {
     ),
   );
   assert.ok(read("public/js/campaigns.js").includes('"[data-nb-people]"'));
+});
+
+// Alec, Nov 7 2026: /donate and /numbers complement each other. /donate says
+// what each gift does, in the picker's own words; /numbers shows how we got
+// each amount. Same amounts on both, Monthly first, and every product adds up.
+test("/donate says what a gift does; /numbers shows how we got it", () => {
+  const js = read("public/js/campaigns.js");
+  const picker = (freq) => {
+    const block = js.slice(
+      js.indexOf(`${freq}: [`),
+      js.indexOf("]", js.indexOf(`${freq}: [`)),
+    );
+    return [...block.matchAll(/a: (\d+),\s*t: "([^"]+)"/g)].map((m) => ({
+      a: +m[1],
+      t: m[2],
+    }));
+  };
+  const monthly = picker("monthly");
+  const once = picker("once");
+  assert.deepEqual(
+    monthly.map((g) => g.a),
+    [60, 129, 900],
+  );
+  assert.deepEqual(
+    once.map((g) => g.a),
+    [15, 225, 1548, 3500],
+  );
+  const money = (n) => "$" + n.toLocaleString("en-US");
+  const plain = (h) =>
+    h
+      .replace(/<[^>]+>/g, "")
+      .replace(/&rsquo;/g, "’")
+      .replace(/&times;/g, "×")
+      .replace(/&nbsp;/g, " ");
+
+  // /donate: two lists, Monthly then One time, each line the picker's line.
+  const don = read("public/donate.html");
+  const impact = don.slice(
+    don.indexOf('id="impact"'),
+    don.indexOf("</section>", don.indexOf('id="impact"')),
+  );
+  assert.ok(
+    impact.indexOf(">Monthly<") < impact.indexOf(">One time<"),
+    "Monthly first",
+  );
+  const lines = [
+    ...impact.matchAll(
+      /<li><b>(\$[\d,]+)<small>(a month|one time)<\/small><\/b><span>(.*?)<\/span><\/li>/g,
+    ),
+  ].map((m) => ({ amount: m[1], often: m[2], line: plain(m[3]) }));
+  assert.deepEqual(
+    lines.map((l) => l.line),
+    [...monthly, ...once].map((g) => g.t),
+    "/donate's lines are the picker's",
+  );
+  assert.deepEqual(
+    lines.map((l) => l.amount),
+    [...monthly, ...once].map((g) => money(g.a)),
+  );
+  assert.deepEqual(
+    lines.map((l) => l.often),
+    [...monthly.map(() => "a month"), ...once.map(() => "one time")],
+  );
+  // Alec, Nov 7: each line says what the gift buys, how often and for whom,
+  // and never repeats the amount the button already shows.
+  for (const g of [...monthly, ...once])
+    assert.ok(!/\$/.test(g.t.split(" at ")[0]), g.t);
+  for (const g of monthly) assert.ok(g.t.includes("every month"), g.t);
+  assert.ok(impact.includes('href="/numbers#gifts"'), "/donate hands off to the math");
+  assert.ok(!impact.includes("$4,000"), "the chair is a way to give, not a gift line");
+
+  // /numbers: the same amounts in the same order, each with its arithmetic.
+  const nums = read("public/numbers.html");
+  const gifts = nums.slice(
+    nums.indexOf('id="gifts"'),
+    nums.indexOf("</section>", nums.indexOf('id="gifts"')),
+  );
+  const rows = [
+    ...gifts.matchAll(
+      /<li><b>(\$[\d,]+)<small>(a month|one time)<\/small><\/b><span class="nb-gift-calc">(.*?)<\/span>/g,
+    ),
+  ].map((m) => ({ amount: m[1], often: m[2], calc: plain(m[3]) }));
+  assert.deepEqual(
+    rows.map((r) => r.amount),
+    [...monthly, ...once].map((g) => money(g.a)),
+  );
+  // Every amount says how often (Alec, Nov 7: "Should it say monthly?"), and a
+  // monthly line's arithmetic says "a month" too.
+  assert.deepEqual(
+    rows.map((r) => r.often),
+    [...monthly.map(() => "a month"), ...once.map(() => "one time")],
+  );
+  for (const { amount, often, calc } of rows) {
+    if (often === "a month")
+      assert.ok(calc.includes("a month"), `${calc} says a month`);
+    const m = calc.match(/^([\d,]+) [a-z]+(?: a month)? × \$([\d,]+)$/);
+    if (!m) continue; // "1 membership a month", "about one US Open"
+    const n = (x) => +x.replace(/,/g, "");
+    assert.equal(money(n(m[1]) * n(m[2])), amount, `${calc} is ${amount}`);
+  }
+  const whats = [...gifts.matchAll(/<span class="nb-gift-what">(.*?)<\/span>/g)].map(
+    (m) => plain(m[1]),
+  );
+  assert.deepEqual(
+    whats,
+    [...monthly, ...once].map((g) => g.t),
+    "/numbers says the same line",
+  );
+  assert.ok(gifts.includes('href="/donate"'), "/numbers hands back to the donate page");
 });

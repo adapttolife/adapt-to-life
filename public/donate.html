@@ -129,6 +129,14 @@
   .give-fact-k{ flex:0 0 11rem; font-family:var(--font-label); font-size:0.7rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); padding-top:0.28rem; }
   .give-fact-v{ flex:1 1 14rem; color:var(--ink); }
   .impact-any{ margin-top:1.4rem; color:var(--ink-soft); text-align:center; }
+  /* Two short lists side by side, Monthly then One time, each one column. */
+  .gift-groups{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(1rem,2.4vw,1.6rem); max-width:920px; margin:clamp(1.6rem,3vw,2.2rem) auto 0; align-items:start; }
+  @media (max-width:760px){ .gift-groups{ grid-template-columns:1fr; } }
+  .gift-group-k{ margin:0 0 0.6rem; font-family:var(--font-label); font-size:0.78rem; font-weight:800; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); }
+  .gift-groups .gift-list{ margin:0; max-width:none; grid-template-columns:minmax(0,1fr); grid-template-rows:none; grid-auto-flow:row; }
+  .gift-groups .gift-list li:nth-child(4){ border-top:1px solid rgba(59,59,70,0.1); }
+  /* How often, under every amount, as on /numbers. */
+  .gift-groups .gift-list b small{ display:block; margin-top:0.35rem; font-family:var(--font-label); font-style:normal; font-size:0.64rem; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); }
 </style>
 </head>
 <body>
@@ -244,10 +252,42 @@ fill="currentColor" stroke="none">
     </div>
   </section>
 
-  <!-- WHERE IT GOES — what the gift you just considered is going toward. The
-       form is right above, so no picker here: the button goes back to it. No
-       athlete behind it either: it is in view on load, and /donate is the
-       page with the tightest weight budget (scripts/check-site.mjs). -->
+  <!-- IMPACT — what each gift does, in the same amounts and words as the
+       campaign card and the checkout (campaigns.js, GIFTS), Monthly first
+       because the form opens on Monthly. The arithmetic behind each amount is
+       on /numbers (#gifts); this page only says what a gift does. -->
+  <section class="band" id="impact">
+    <div class="wrap">
+      <div class="reveal sec-head">
+        <span class="eyebrow orange">Your impact</span>
+        <h2 class="serif h2" style="margin-top:0.8rem;">What your gift does</h2>
+      </div>
+      <div class="gift-groups reveal">
+        <div class="gift-group">
+          <h3 class="gift-group-k">Monthly</h3>
+          <ul class="gift-list" aria-label="Monthly gifts">
+            <li><b>$60<small>a month</small></b><span>Four nights on court every month for one athlete.</span></li>
+            <li><b>$129<small>a month</small></b><span>Unlimited sessions every month for one athlete to compete.</span></li>
+            <li><b>$900<small>a month</small></b><span>Four nights on court every month for up to 15 athletes.</span></li>
+          </ul>
+        </div>
+        <div class="gift-group">
+          <h3 class="gift-group-k">One time</h3>
+          <ul class="gift-list" aria-label="One-time gifts">
+            <li><b>$15<small>one time</small></b><span>One night on court for one athlete.</span></li>
+            <li><b>$225<small>one time</small></b><span>One night on court for up to 15 athletes.</span></li>
+            <li><b>$1,548<small>one time</small></b><span>A year of unlimited sessions for one athlete.</span></li>
+            <li><b>$3,500<small>one time</small></b><span>About one athlete&rsquo;s US Open: entry, travel and a room.</span></li>
+          </ul>
+        </div>
+      </div>
+      <p class="impact-any reveal">Any amount helps. <a href="/numbers#gifts" class="textlink" style="font:inherit;letter-spacing:inherit;">See how we got each number</a></p>
+    </div>
+  </section>
+
+  <!-- WHERE IT GOES — after what each gift does (just above), where the goal
+       stands. No picker here: the form is at the top, and the button goes
+       back to it. -->
   <!-- campaign-module {"id":"where-it-goes","theme":"light","athlete":null,"give":false,"cta":{"href":"#givePanel","label":"Choose an amount"}} -->
   <section class="cm" id="where-it-goes" data-cm data-theme="light" aria-labelledby="where-it-goes-title">
       <div class="cm-wrap">
@@ -262,12 +302,12 @@ fill="currentColor" stroke="none">
             <div class="cm-row" data-part-row="year">
               <div class="cm-row-top"><b><i class="sym sym--training" aria-hidden="true"></i>Every week</b><span class="cm-fig" data-part-fig="year">$27,180 a year</span></div>
               <div class="cm-lane"><div class="cm-track"><span class="cm-fill" data-part-fill="year"></span><span class="cm-start" aria-hidden="true"></span></div><span class="cm-pct" data-part-pct="year" hidden></span></div>
-              <p class="cm-note">Court time and memberships.</p>
+              <p class="cm-note">A year of court time and memberships for 10 athletes.</p>
             </div>
             <div class="cm-row" data-part-row="send-6">
               <div class="cm-row-top"><b><i class="sym sym--travel" aria-hidden="true"></i>The Road to the US Open</b><span class="cm-fig" data-part-fig="send-6">$21,000</span></div>
               <div class="cm-lane"><div class="cm-track cm-track--seats"><span class="cm-fill cm-fill--action" data-part-fill="send-6"></span><span class="cm-start" aria-hidden="true"></span></div><span class="cm-pct" data-part-pct="send-6" hidden></span></div>
-              <p class="cm-note cm-note--crew"><span class="cm-faces" role="img" aria-label="The six seats: Juan, Brian, Bob, Robby, Ken and Amanda"><i class="face" style="--i:0" title="Juan"></i><i class="face" style="--i:1" title="Brian"></i><i class="face" style="--i:2" title="Bob"></i><i class="face" style="--i:3" title="Robby"></i><i class="face" style="--i:4" title="Ken"></i><i class="face" style="--i:5" title="Amanda"></i></span><span>Six athletes, about $3,500 each. <a href="/send-6">See the road</a></span></p>
+              <p class="cm-note cm-note--crew"><span class="cm-faces" role="img" aria-label="The six seats: Juan, Brian, Bob, Robby, Ken and Amanda"><i class="face" style="--i:0" title="Juan"></i><i class="face" style="--i:1" title="Brian"></i><i class="face" style="--i:2" title="Bob"></i><i class="face" style="--i:3" title="Robby"></i><i class="face" style="--i:4" title="Ken"></i><i class="face" style="--i:5" title="Amanda"></i></span><span>Six athletes, about $3,500 each, for the 2027 US Open. <a href="/send-6">See the road</a></span></p>
             </div>
           </div>
           <a class="cm-more" href="/numbers">See the numbers breakdown <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
@@ -277,25 +317,6 @@ fill="currentColor" stroke="none">
       </div>
     </section>
   <!-- /campaign-module -->
-
-  <!-- IMPACT -->
-  <section class="band">
-    <div class="wrap">
-      <div class="reveal sec-head">
-        <span class="eyebrow orange">Your impact</span>
-        <h2 class="serif h2" style="margin-top:0.8rem;">What your gift can support</h2>
-      </div>
-      <ul class="gift-list reveal" aria-label="What each amount can do">
-        <li><b>$15</b><span>Puts one athlete on court for a night at ACE</span></li>
-        <li><b>$60</b><span>A month: four nights at $15, for one athlete</span></li>
-        <li><b>$129</b><span>A month of unlimited sessions for one athlete to compete</span></li>
-        <li><b>$225</b><span>Covers up to 15 athletes for a night at ACE</span></li>
-        <li><b>$3,500</b><span>One athlete&rsquo;s seat on <a href="/send-6" style="color:inherit;">the road to the US Open</a></span></li>
-        <li><b>$4,000</b><span>to $6,000 for a sport chair, which insurance doesn&rsquo;t cover. Raised one athlete at a time.</span></li>
-      </ul>
-      <p class="impact-any reveal">Any amount helps build the fund. <a href="/promise" class="textlink" style="font:inherit;letter-spacing:inherit;">How giving works</a></p>
-    </div>
-  </section>
 
   <!-- MORE WAYS TO GIVE: the four ways as a ledger, beside the card an
        advisor needs. It was a 2x2 grid of icon cards with the advisor facts in
@@ -312,13 +333,13 @@ fill="currentColor" stroke="none">
       <div class="gm-grid">
         <ul class="gm-list reveal">
           <li class="gm-way">
-            <h3 class="gm-t">Every month</h3>
-            <p class="gm-d">$129 a month: unlimited sessions for one athlete to compete. Choose Monthly in the form and give what works for you.</p>
-            <a class="textlink gm-go" href="#givePanel">Choose an amount <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
-          </li>
-          <li class="gm-way">
             <h3 class="gm-t">In honor or memory</h3>
             <p class="gm-d">Give in someone&rsquo;s name. Add it in the donation note.</p>
+          </li>
+          <li class="gm-way">
+            <h3 class="gm-t">A sport chair</h3>
+            <p class="gm-d">A sport chair runs $4,000 to $6,000, and insurance doesn&rsquo;t cover it. We raise for one athlete at a time.</p>
+            <a class="textlink gm-go" href="/contact?rsn=donor">Talk to us <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
           </li>
           <li class="gm-way">
             <h3 class="gm-t">Through your business</h3>
@@ -618,7 +639,7 @@ fill="currentColor" stroke="none">
 
 <!-- Donation form is the embedded Givebutter giving form above; no custom JS needed. -->
 
-<script src="/js/campaigns.js?v=5f1e3af5"></script>
+<script src="/js/campaigns.js?v=1ebb50c5"></script>
 <script>window.ATLCampaigns.module();</script>
 <script src="/js/subscribe.js?v=7efaf550" defer></script>
 <script src="/js/turnstile-lazy.js?v=12e9b811" defer></script>

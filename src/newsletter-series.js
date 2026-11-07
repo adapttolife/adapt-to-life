@@ -145,7 +145,7 @@ export const SAVED_FOR_LATER = [
       "Right now I cover our overhead myself while we build revenue so the work can stand on its own.",
     ],
     highlight: "$129 a month: unlimited sessions for one athlete to compete.",
-    cta: { label: "Donate", href: "/donate?amount=80&frequency=monthly" },
+    cta: { label: "Donate", href: "/donate?amount=129&frequency=monthly" },
     secondary: { label: "See the numbers breakdown", href: "/numbers" },
     fine: "Donations are tax deductible to the extent allowed by law. Adapt To Life is a 501(c)(3) nonprofit, EIN 41-3213344.",
   },

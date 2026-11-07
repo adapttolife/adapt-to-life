@@ -256,7 +256,7 @@ export function render(opts, where = "page") {
     [w, h] = webpSize(img);
   }
   const cta = o.cta || {
-    href: o.give ? "/donate?amount=80&frequency=monthly" : "/donate",
+    href: o.give ? "/donate?amount=129&frequency=monthly" : "/donate",
     label: "Donate",
   };
   let html = PARTIAL;

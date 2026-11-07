@@ -84,9 +84,9 @@ test("every gift line is a verified unit cost", () => {
   assert.equal(975 * 12, 225 * 52);
   assert.equal(65 * 12, 15 * 52, "$65 a month is exactly $15 a week");
   for (const line of [
-    "$65 a month puts one athlete on court every week.",
+    "$65 a month: one athlete at $15 a night, every week.",
     "$129 a month: unlimited sessions for one athlete to compete.",
-    "$975 a month covers a night at ACE every week for up to 15 athletes.",
+    "$975 a month: up to 15 athletes at $15 a night, every week.",
     "$15 puts one athlete on court for a night.",
     "$225 covers up to 15 athletes for a night at ACE.",
     "$1,548 covers a year of unlimited sessions for one athlete.",
@@ -262,4 +262,23 @@ test("no First priority, six named seats, and the numbers as a route", () => {
     m[1].trim(),
   );
   assert.deepEqual(order, ["nb-stop--now", "", "nb-stop--finish", "nb-stop--next"]);
+});
+
+// The Donate link a page ships with (before the picker runs, or without
+// script) starts at the picker's own default, so no stale amount survives.
+// It was $80, left from the old $5-based buttons (Nov 7, 2026).
+test("the Donate link starts at the picker's default amount", () => {
+  const js = read("public/js/campaigns.js");
+  const def = Number(js.match(/GIFT_DEFAULT = \{ monthly: (\d+)/)[1]);
+  assert.ok(
+    new RegExp(`\\{\\s*a: ${def},\\s*t: "`).test(js),
+    "the default is one of the buttons",
+  );
+  for (const { f, html } of carriers()) {
+    for (const m of html.matchAll(/href="\/donate\?amount=(\d+)[^"]*" data-give-link/g))
+      assert.equal(Number(m[1]), def, `${f}: the Donate link starts at $${m[1]}`);
+  }
+  const email = read("src/newsletter-series.js");
+  for (const m of email.matchAll(/\/donate\?amount=(\d+)/g))
+    assert.equal(Number(m[1]), def, `an email asks for $${m[1]}`);
 });

@@ -569,11 +569,13 @@
     // month buys; "Don't say ACE membership. Just say membership."; and
     // "Let's shorten it up... We need to do better job at selling 129. 129 is
     // unlimited sessions throughout the week - it takes many sessions every
-    // week to compete in tournaments". One line on a desktop card.
+    // week to compete in tournaments". One line on a desktop card. Alec, Nov 7,
+    // on $65: "We want to get people to donate at the actual dollar, which is
+    // $15", so the drop-in lines show the $15 they are built from.
     monthly: [
       {
         a: 65,
-        t: "$65 a month puts one athlete on court every week.",
+        t: "$65 a month: one athlete at $15 a night, every week.",
       },
       {
         a: 129,
@@ -581,7 +583,7 @@
       },
       {
         a: 975,
-        t: "$975 a month covers a night at ACE every week for up to 15 athletes.",
+        t: "$975 a month: up to 15 athletes at $15 a night, every week.",
       },
     ],
     once: [

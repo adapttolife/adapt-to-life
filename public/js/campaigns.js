@@ -721,11 +721,15 @@
         if (kind)
           each(m, "[data-cm-split]", function (n) {
             n.textContent = "";
+            var gift = document.createElement("i");
+            gift.className = "cm-swatch";
+            gift.setAttribute("aria-hidden", "true");
+            n.appendChild(gift);
             n.appendChild(
               document.createTextNode(money(d.raised) + " in gifts, plus "),
             );
             var sw = document.createElement("i");
-            sw.className = "cm-swatch";
+            sw.className = "cm-swatch cm-swatch--kind";
             sw.setAttribute("aria-hidden", "true");
             n.appendChild(sw);
             n.appendChild(

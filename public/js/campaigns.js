@@ -734,16 +734,6 @@
     i.setAttribute("aria-hidden", "true");
     return i;
   }
-  /* The key for a data colour: a chip in that colour carrying its symbol,
-     hand-heart for gifts, the court for court time a partner club gives. */
-  function key(kind, cls) {
-    var k = document.createElement("i");
-    k.className = cls + (kind ? " " + cls + "--kind" : "");
-    k.setAttribute("aria-hidden", "true");
-    k.appendChild(sym(kind ? "courts" : "giving"));
-    return k;
-  }
-
   function numbersBars() {
     // The six faces paint once their row is near view (site.css, .face).
     Array.prototype.forEach.call(document.querySelectorAll(".nb-crew"), near);
@@ -813,28 +803,20 @@
           });
           n.hidden = false;
         });
-      each(document, "[data-nb-legend]", function (n) {
-        n.textContent = "";
-        var so = document.createElement("span");
-        so.className = "nb-so";
-        so.textContent = money(gifts + kind) + " so far";
-        n.appendChild(so);
-        var g = document.createElement("span");
-        g.appendChild(key(false, "nb-key"));
-        g.appendChild(document.createTextNode(money(gifts) + " in gifts"));
-        n.appendChild(g);
-        if (kind) {
-          var c = document.createElement("span");
-          c.appendChild(key(true, "nb-key"));
-          c.appendChild(
-            document.createTextNode(money(kind) + " in court time from a partner club"),
-          );
-          n.appendChild(c);
-        }
-        var left = document.createElement("span");
-        left.className = "nb-left";
-        left.textContent = money(Math.max(0, goal - gifts - kind)) + " to go";
-        n.appendChild(left);
+      // The ledger under the bar: each part, then so far and to go.
+      var sums = {
+        kind: kind,
+        gifts: gifts,
+        so: gifts + kind,
+        left: Math.max(0, goal - gifts - kind),
+      };
+      Object.keys(sums).forEach(function (s) {
+        each(document, '[data-nb-sum="' + s + '"]', function (n) {
+          n.textContent = money(sums[s]);
+        });
+      });
+      each(document, '[data-nb-part="kind"]', function (n) {
+        n.hidden = !kind;
       });
     }, "wbd");
   }

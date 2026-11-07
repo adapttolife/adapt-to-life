@@ -322,10 +322,34 @@ test("/numbers names who gave, without counting anyone twice", () => {
   const nums = read("public/numbers.html");
   assert.ok(
     nums.includes(
-      '<p class="nb-people" data-nb-people hidden>The gifts came from <span data-nb-donors></span> online and 83 popcorn supporters.</p>',
+      '<span class="nb-ledger-k">Gifts<small class="nb-people" data-nb-people hidden>From <span data-nb-donors></span> online and 83 popcorn supporters</small></span>',
     ),
+    "who gave sits under the gifts line",
   );
   assert.ok(read("public/js/campaigns.js").includes('"[data-nb-people]"'));
+});
+
+// Alec, Nov 7 2026, on the finish card's old legend: "This looks horrible. We
+// can do better." Under the bar now: one ledger in the bar's order (court time,
+// then gifts), each with a swatch of its segment, then so far and to go under a
+// rule, every amount in one right-hand column.
+test("/numbers: the finish card's ledger adds up top to bottom", () => {
+  const nums = read("public/numbers.html");
+  const a = nums.indexOf('<ul class="nb-ledger">');
+  const ledger = nums.slice(a, nums.indexOf("</ul>", a));
+  assert.ok(a > 0, "the ledger is there");
+  const order = ["kind", "gifts", "so", "left"].map((k) =>
+    ledger.indexOf(`data-nb-sum="${k}"`),
+  );
+  assert.ok(order.every((i, n) => i > 0 && (n === 0 || i > order[n - 1])), "bar order, then the sums");
+  assert.ok(ledger.includes('<i class="nb-swatch nb-swatch--kind" aria-hidden="true"></i><span class="nb-ledger-k">Court time<small>From a partner club</small></span>'));
+  assert.ok(ledger.includes('<span class="nb-ledger-k">So far</span>'));
+  assert.ok(ledger.includes('<span class="nb-ledger-k">To go</span>'));
+  assert.ok(!/nb-legend|nb-key/.test(nums), "the old legend and its chips are gone");
+  const js = read("public/js/campaigns.js");
+  assert.ok(!/nb-legend|function key\(/.test(js));
+  assert.ok(js.includes("left: Math.max(0, goal - gifts - kind)"));
+  assert.ok(js.includes("so: gifts + kind"));
 });
 
 // Alec, Nov 7 2026: /donate and /numbers complement each other. /donate says

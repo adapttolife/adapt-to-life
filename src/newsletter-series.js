@@ -66,8 +66,8 @@ export const WELCOME = [
     paragraphs: [
       "Thanks for signing up.",
       {
-        text: "We’re here to expand access to adaptive sports so athletes can find their place. Right now that means the Chicago Wheelie Big Dills, a crew of wheelchair pickleball players on court every week.",
-        link: { label: "the Chicago Wheelie Big Dills", href: "/pickleball" },
+        text: "We’re here to expand access to adaptive sports so athletes can find their place. Right now that means Chicago Pickleball: Wheelie Big Dills, a crew of wheelchair pickleball players on court every week.",
+        link: { label: "Chicago Pickleball: Wheelie Big Dills", href: "/pickleball" },
       },
       "We’ll write when there’s something worth sharing.",
     ],
@@ -93,7 +93,7 @@ export const SAVED_FOR_LATER = [
     paragraphs: [
       "Thanks for signing up. I’m Alec, and I started Adapt To Life.",
       "A brochure introduced me to adaptive sports when I was six. Sport gave me somewhere to belong and something to work toward. Finding that should not come down to luck, and neither should having the support to keep playing.",
-      "Right now that means the Chicago Wheelie Big Dills, a crew of 10 to 15 wheelchair pickleball players on court every week. Next stop, Naples.",
+      "Right now that means Chicago Pickleball: Wheelie Big Dills, a crew of 10 to 15 wheelchair pickleball players on court every week. Next stop, Naples.",
       "We’ll write when there’s something worth sharing: an athlete’s story, a result, or a moment when your help counts.",
     ],
     cta: { label: "Meet the crew", href: "/pickleball" },
@@ -140,11 +140,11 @@ export const SAVED_FOR_LATER = [
       alt: "Juan Ortiz serves on an indoor court.",
     },
     paragraphs: [
-      "Playing every week costs real money. A night of court time at ACE is $75 for up to 15 athletes. A year of unlimited play, so an athlete can train to compete, is $960. A sport chair runs $4,000 to $6,000, and insurance doesn’t cover it.",
-      "Our goal for the year ahead is $34,500: $13,500 to keep the crew on court every week, then $21,000 for the road to the US Open. Every new gift starts with the first line.",
+      "Playing every week costs real money. A night of court time at ACE is $225 for up to 15 athletes. A year of unlimited play, so an athlete can train to compete, is $1,548. A sport chair runs $4,000 to $6,000, and insurance doesn’t cover it.",
+      "Our goal for the year ahead is $48,180: $27,180 to keep the crew on court every week, then $21,000 for the road to the US Open. Every new gift starts with the first line.",
       "Right now I cover our overhead myself while we build revenue so the work can stand on its own.",
     ],
-    highlight: "$80 a month can keep one athlete training all year.",
+    highlight: "$129 a month can keep one athlete training all year.",
     cta: { label: "Donate", href: "/donate?amount=80&frequency=monthly" },
     secondary: { label: "See the numbers breakdown", href: "/numbers" },
     fine: "Donations are tax deductible to the extent allowed by law. Adapt To Life is a 501(c)(3) nonprofit, EIN 41-3213344.",
@@ -157,7 +157,7 @@ export const SAVED_FOR_LATER = [
     paragraphs: ["Giving money is one way to help. Here are a few others."],
     items: [
       {
-        text: "If you run a business, sponsor a night at ACE for $75, an athlete for a year for $960, or the whole Train to Compete program for $9,600.",
+        text: "If you run a business, sponsor a night at ACE for $225, an athlete for a year for $1,548, or the whole Train to Compete program for $15,480.",
         link: { label: "See sponsorship", href: "/sponsorship" },
       },
       {

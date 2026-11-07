@@ -3,13 +3,13 @@
   "campaigns": [
     {
       "slug": "wheelie-big-dills",
-      "name": "The Chicago Wheelie Big Dills",
+      "name": "Chicago Pickleball: Wheelie Big Dills",
       "page": "/pickleball#support",
       "published": true,
       "beneficiary": "The crew, all year",
       "when": "Year-round",
       "blurb": "One goal for the year ahead: every week first, then the road to the US Open.",
-      "goal": 34500,
+      "goal": 48180,
       "raised": null,
       "raised_source": "api",
       "raised_key": "wbd",
@@ -17,11 +17,11 @@
         {
           "key": "year",
           "label": "Every week",
-          "goal": 13500,
+          "goal": 27180,
           "detail": "Court time and memberships, so athletes can play every week and train to compete. Every new gift starts here.",
           "math": [
-            { "label": "Court time at ACE", "qty": 52, "of": "nights", "unit": 75, "note": "A night is 10 to 15 athletes. At $5 each, up to 15 is $75." },
-            { "label": "Memberships", "qty": 10, "of": "athletes", "unit": 960, "note": "A year of unlimited play at ACE, so an athlete can train to compete. Under $3 a day." }
+            { "label": "Court time at ACE", "qty": 52, "of": "nights", "unit": 225, "note": "A night is 10 to 15 athletes. At $15 each, ACE’s drop-in price, up to 15 is $225." },
+            { "label": "Memberships", "qty": 10, "of": "athletes", "unit": 1548, "note": "ACE’s premium membership, $129 a month: a year of unlimited play, so an athlete can train to compete." }
           ]
         },
         {
@@ -42,7 +42,7 @@
       },
       "cta_label": "Donate",
       "cta_url": "/donate",
-      "_note": "One goal, one bar (Alec, Nov 5). Every week ($13,500: a year of nights at ACE, $3,900, plus ten athletes training, $9,600) fills first, then the Road ($21,000). The Classic joins the goal when it has a date and a budget."
+      "_note": "One goal, one bar (Alec, Nov 5). Every week ($27,180: a year of nights at ACE, $11,700, plus ten athletes training, $15,480) fills first, then the Road ($21,000). The Classic joins the goal when it has a date and a budget."
     },
     {
       "slug": "send-6-us-open",

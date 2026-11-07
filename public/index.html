@@ -334,6 +334,8 @@ fill="currentColor" stroke="none">
       .hm-crew-head{ display:flex; align-items:center; gap:clamp(0.9rem,2vw,1.4rem); }
       .hm-crew-badge{ display:block; flex:none; width:clamp(76px,8vw,112px); height:auto; filter:drop-shadow(0 12px 32px rgba(0,0,0,0.6)); }
       .hm-crew h2{ margin-top:0.45rem; color:var(--cream); }
+      /* Each half of the title stays whole: one line when there is room, otherwise it breaks at the colon. */
+      .hm-crew-head h2 span{ display:inline-block; }
       .hm-crew .prose{ margin-top:1rem; color:var(--cream-mute); max-width:46ch; }
       .hm-crew .textlink{ margin-top:1.4rem; color:var(--orange); }
       .hm-crew .prose a{ color:var(--cream); text-decoration:underline; text-decoration-color:var(--orange); text-decoration-thickness:2px; text-underline-offset:4px; }
@@ -363,8 +365,8 @@ fill="currentColor" stroke="none">
         <div class="hm-crew-head">
           <img class="hm-crew-badge" src="/images/pickleball/wheelie-big-dills-badge.webp" alt="The Wheelie Big Dills badge: a pickle in a wheelchair swinging a Chicago flag paddle, Wheelchair Pickleball, Chicago, IL, est. 2024" width="320" height="319" loading="lazy" decoding="async">
           <div>
-            <span class="eyebrow orange">Right now in Chicago</span>
-            <h2 id="hmCrewTitle" class="serif h2">The Chicago Wheelie Big Dills.</h2>
+            <span class="eyebrow orange">Right now</span>
+            <h2 id="hmCrewTitle" class="serif h2"><span>Chicago Pickleball:</span> <span>Wheelie Big Dills</span></h2>
           </div>
         </div>
         <p class="prose">This is the crew Juan plays with: wheelchair pickleball players growing the sport across the Chicago area. We&rsquo;re proud to fund and support them through the <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a>, and with Juan we help the clubs where they play build adaptive programs, from open play to memberships for athletes training to compete.</p>

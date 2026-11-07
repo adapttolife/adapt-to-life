@@ -1399,12 +1399,14 @@ export default {
     ) {
       if (request.method !== "POST") return json({ ok: false }, 405);
       if (await overFormLimit(env, request)) return json(RATE_LIMITED, 429);
-      const TEST = "newsletter-test@agents.adapttolife.org";
       const series = await import("./newsletter-series.js");
       let body = {};
       try {
         body = await request.json();
       } catch {}
+      // Two fixed recipients: the Worker's own test inbox, or Alec's inbox for
+      // a real Gmail check (test sends carry a [Test n/5] subject prefix).
+      const TEST = body.to === "alec" ? "alec@alecability.com" : "newsletter-test@agents.adapttolife.org";
       const origin = url.origin;
       try {
         if (body.action === "signup") {
@@ -1417,7 +1419,8 @@ export default {
         if (body.action === "send") {
           const step = series.WELCOME.find((s) => s.key === body.step);
           if (!step) return json({ ok: false, error: "no such step" }, 400);
-          const out = await series.sendSeriesEmail(env, TEST, step, {
+          const n = series.WELCOME.indexOf(step) + 1;
+          const out = await series.sendSeriesEmail(env, TEST, { ...step, subject: `[Test ${n}/5] ${step.subject}` }, {
             assetOrigin: origin,
             isDonor: Boolean(body.donor),
             idempotencySuffix: `-review-${Date.now()}`,
@@ -1426,6 +1429,13 @@ export default {
         }
         if (body.action === "unsubscribe-url")
           return json({ ok: true, url: (await series.unsubscribeUrl(env, TEST)).replace("https://adapttolife.org", origin) });
+        if (body.action === "email-status") {
+          const res = await fetch(`https://api.resend.com/emails/${encodeURIComponent(String(body.id || ""))}`, {
+            headers: { Authorization: `Bearer ${env.RESEND_API_KEY}` },
+          });
+          const e = await res.json().catch(() => ({}));
+          return json({ ok: res.ok, status: res.status, last_event: e.last_event, to: e.to, from: e.from, subject: e.subject, created_at: e.created_at });
+        }
         if (body.action === "status") {
           const row = await env.AGENT_MAIL_DB.prepare("SELECT * FROM newsletter_journey WHERE email = ?").bind(TEST).first();
           return json({ ok: true, row });

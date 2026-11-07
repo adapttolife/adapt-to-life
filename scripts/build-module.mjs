@@ -123,6 +123,9 @@ export function renderNumbers() {
         (i === 0 ? `<span class="nb-badge">First priority</span>` : "") +
         `<b class="nb-sum">${usd(p.goal)}${p.key === "year" ? "<small> a year</small>" : ""}</b></div>`,
       `    <p class="nb-detail">${p.detail || ""}${link}</p>`,
+      `    <div class="nb-prog" data-nb-row="${p.key}" hidden>` +
+        `<div class="nb-prog-top"><span class="nb-prog-k">Covered so far</span><span class="tag tag--good" data-nb-pct="${p.key}"></span><span class="nb-prog-fig" data-nb-fig="${p.key}"></span></div>` +
+        `<div class="nb-track"><span class="nb-fill nb-fill--kind" data-nb-kind="${p.key}"></span><span class="nb-fill" data-nb-fill="${p.key}"></span></div></div>`,
       `    <ul class="nb-lines" aria-label="How we got ${usd(p.goal)}">`,
       mathLines(p),
       `    </ul>`,
@@ -136,6 +139,7 @@ export function renderNumbers() {
         `  <li class="nb-part nb-part--next">`,
         `    <div class="nb-part-top"><span class="nb-n">${n2(CAMPAIGN.parts.length)}</span><h3>${esc(nx.label.replace(/^the /, "The "))}</h3><span class="nb-badge nb-badge--info">Next goal</span><b class="nb-sum nb-sum--tbd">Date to come</b></div>`,
         `    <p class="nb-detail">${nx.detail || ""}${nx.page ? ` <a href="${nx.page}">See the Classic</a>` : ""}</p>`,
+        `    <div class="nb-track nb-track--locked" aria-hidden="true"></div>`,
         `  </li>`,
       ].join("\n"),
     );
@@ -143,7 +147,8 @@ export function renderNumbers() {
     `<ol class="nb-parts">`,
     ...parts,
     `</ol>`,
-    `<p class="nb-total"><span>${CAMPAIGN.parts.map((p) => esc(p.label === "The Road to the US Open" ? "the road" : p.label)).join(" + ")}</span><b>${usd(CAMPAIGN.goal)}</b></p>`,
+    `<div class="nb-total"><p class="nb-total-top"><span>${CAMPAIGN.parts.map((p) => esc(p.label === "The Road to the US Open" ? "the road" : p.label)).join(" + ")}</span><b>${usd(CAMPAIGN.goal)}</b></p>` +
+      `<div class="nb-total-prog" data-nb-total hidden><div class="nb-track nb-track--lg"><span class="nb-fill nb-fill--kind" data-nb-kind="total"></span><span class="nb-fill" data-nb-fill="total"></span></div><p class="nb-legend" data-nb-legend></p></div></div>`,
   ].join("\n");
 }
 

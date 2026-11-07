@@ -63,9 +63,31 @@
     .nb-calc{ grid-column:1 / -1; grid-row:2; }
     .nb-lines small{ grid-row:3; }
   }
-  .nb-total{ display:flex; justify-content:space-between; align-items:baseline; gap:1rem; max-width:52rem; margin:1.4rem 0 0; padding:1.1rem clamp(1.2rem,3vw,1.8rem); border-radius:var(--r-xl); background:var(--slate); color:var(--cream); font-weight:800; }
+  .nb-total{ max-width:52rem; margin:1.4rem 0 0; padding:1.1rem clamp(1.2rem,3vw,1.8rem); border-radius:var(--r-xl); background:var(--slate); color:var(--cream); font-weight:800; }
+  .nb-total-top{ display:flex; justify-content:space-between; align-items:baseline; gap:1rem; margin:0; }
+  /* Covered so far, in the module's colours: green gifts, blue striped court
+     time (colour plus texture), a 2px gap between them, and the dotted track
+     for a goal that has not started. */
+  .nb-prog{ margin-top:1rem; }
+  .nb-prog-top{ display:flex; align-items:center; flex-wrap:wrap; gap:0.4rem 0.6rem; font-size:0.92rem; }
+  .nb-prog-k{ font-weight:700; color:var(--ink-soft); }
+  .nb-prog-fig{ margin-left:auto; font-weight:800; font-variant-numeric:tabular-nums; }
+  .nb-track{ display:flex; margin-top:0.5rem; height:10px; border-radius:999px; background:rgba(59,59,70,0.1); }
+  .nb-track--lg{ height:14px; margin-top:0.8rem; background:rgba(249,247,242,0.14); }
+  .nb-track--locked{ margin-top:1rem; background:repeating-linear-gradient(90deg, rgba(59,59,70,0.14) 0 10px, transparent 10px 16px); }
+  .nb-fill{ display:block; height:100%; width:0; border-radius:999px; background:var(--good); transition:width 1.6s var(--ease); }
+  .nb-fill--kind, .nb-swatch.nb-swatch--kind{ background:repeating-linear-gradient(135deg, var(--info) 0 3px, color-mix(in srgb, var(--info) 55%, transparent) 3px 6px); }
+  .nb-total .nb-fill--kind, .nb-total .nb-swatch.nb-swatch--kind{ background:repeating-linear-gradient(135deg, #3987e5 0 3px, color-mix(in srgb, #3987e5 55%, transparent) 3px 6px); }
+  .has-gifts .nb-fill--kind{ margin-right:2px; }
+  .nb-legend{ display:flex; flex-wrap:wrap; align-items:baseline; gap:0.35rem 1.2rem; margin:0.7rem 0 0; font-size:0.92rem; font-weight:600; color:#cfc9bd; }
+  /* Secured money is yellow, the same win colour as the module's total. */
+  .nb-legend .nb-so{ font-family:var(--font-display); font-style:italic; font-weight:900; font-size:1.3rem; letter-spacing:-0.02em; color:var(--yellow); }
+  .nb-legend .nb-left{ margin-left:auto; color:var(--cream); font-weight:800; }
+  .nb-swatch{ display:inline-block; width:1.4em; height:0.6em; margin-right:0.45em; border-radius:999px; background:var(--good); vertical-align:0.05em; }
+  @media (prefers-reduced-motion: reduce){ .nb-fill{ transition:none; } }
   .nb-total b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(1.8rem,4vw,2.4rem); letter-spacing:-0.03em; font-variant-numeric:tabular-nums; color:#ff5c39; }
   .nb-foot{ max-width:52rem; margin:1.2rem 0 0; color:var(--ink-soft); line-height:1.5; }
+  .nb-prices{ max-width:52rem; margin-top:1.4rem; }
   .nb-chair .nb-money{ color:#ff5c39; }
   .nb-gifts{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(1rem,3vw,2.4rem); max-width:56rem; margin-top:clamp(1.6rem,3vw,2.2rem); }
   @media (max-width:760px){ .nb-gifts{ grid-template-columns:1fr; } }
@@ -180,6 +202,7 @@ fill="currentColor" stroke="none">
         <li class="nb-part">
           <div class="nb-part-top"><span class="nb-n">01</span><h3>Every week</h3><span class="nb-badge">First priority</span><b class="nb-sum">$27,180<small> a year</small></b></div>
           <p class="nb-detail">Court time and memberships, so athletes can play every week and train to compete. Every new gift starts here.</p>
+          <div class="nb-prog" data-nb-row="year" hidden><div class="nb-prog-top"><span class="nb-prog-k">Covered so far</span><span class="tag tag--good" data-nb-pct="year"></span><span class="nb-prog-fig" data-nb-fig="year"></span></div><div class="nb-track"><span class="nb-fill nb-fill--kind" data-nb-kind="year"></span><span class="nb-fill" data-nb-fill="year"></span></div></div>
           <ul class="nb-lines" aria-label="How we got $27,180">
             <li><span class="nb-k">Court time at ACE</span><span class="nb-calc">52 nights &times; $225</span><b>$11,700</b><small>A night is 10 to 15 athletes. A drop in at ACE is $15, so up to 15 is $225.</small></li>
             <li><span class="nb-k">Memberships</span><span class="nb-calc">10 athletes &times; $1,548</span><b>$15,480</b><small>ACE’s premium membership, $129 a month: a year of unlimited play, so an athlete can train to compete.</small></li>
@@ -188,6 +211,7 @@ fill="currentColor" stroke="none">
         <li class="nb-part">
           <div class="nb-part-top"><span class="nb-n">02</span><h3>The Road to the US Open</h3><b class="nb-sum">$21,000</b></div>
           <p class="nb-detail">Tournaments through the year to build rankings, then Naples. The US Open picks players by lottery, so nothing is guaranteed. <a href="/send-6">See the road</a></p>
+          <div class="nb-prog" data-nb-row="send-6" hidden><div class="nb-prog-top"><span class="nb-prog-k">Covered so far</span><span class="tag tag--good" data-nb-pct="send-6"></span><span class="nb-prog-fig" data-nb-fig="send-6"></span></div><div class="nb-track"><span class="nb-fill nb-fill--kind" data-nb-kind="send-6"></span><span class="nb-fill" data-nb-fill="send-6"></span></div></div>
           <ul class="nb-lines" aria-label="How we got $21,000">
             <li><span class="nb-k">The US Open</span><span class="nb-calc">6 athletes &times; about $3,500</span><b>$21,000</b><small>What it has cost each athlete the last couple of years: entry fees, travel and an accessible room in Naples.</small></li>
           </ul>
@@ -195,9 +219,10 @@ fill="currentColor" stroke="none">
         <li class="nb-part nb-part--next">
           <div class="nb-part-top"><span class="nb-n">03</span><h3>The Chicago Classic</h3><span class="nb-badge nb-badge--info">Next goal</span><b class="nb-sum nb-sum--tbd">Date to come</b></div>
           <p class="nb-detail">Our goal: free registration, transportation and hotels for every athlete. It joins the goal once it has a date and a budget. <a href="/chicago-classic">See the Classic</a></p>
+          <div class="nb-track nb-track--locked" aria-hidden="true"></div>
         </li>
       </ol>
-      <p class="nb-total"><span>Every week + the road</span><b>$48,180</b></p>
+      <div class="nb-total"><p class="nb-total-top"><span>Every week + the road</span><b>$48,180</b></p><div class="nb-total-prog" data-nb-total hidden><div class="nb-track nb-track--lg"><span class="nb-fill nb-fill--kind" data-nb-kind="total"></span><span class="nb-fill" data-nb-fill="total"></span></div><p class="nb-legend" data-nb-legend></p></div></div>
       <!-- /campaign-numbers -->
       <p class="prose nb-prices reveal">These are ACE&rsquo;s regular prices. We plan at regular rates, so the program doesn&rsquo;t depend on a discount. When a club gives more, it helps more athletes get on court. <a class="textlink" href="/sponsorship#clubs" style="font:inherit;letter-spacing:inherit;">How we partner</a></p>
       <p class="nb-foot">Every gift goes to the Hustle &amp; Heart Fund, and we pay clubs and vendors directly. <a class="textlink" href="/promise">How Giving Works</a></p>
@@ -432,7 +457,7 @@ fill="currentColor" stroke="none">
     }
   })();
 </script>
-<script src="/js/campaigns.js?v=eb242e62"></script>
+<script src="/js/campaigns.js?v=301db615"></script>
 <script>window.ATLCampaigns.module();</script>
 <script src="/js/subscribe.js?v=7efaf550" defer></script>
 <script src="/js/turnstile-lazy.js?v=12e9b811" defer></script>

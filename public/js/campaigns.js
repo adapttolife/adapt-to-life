@@ -426,14 +426,20 @@
 
   /* The site thermometer. Falls back to the campaign's own goal and hides the
      raised figure rather than publishing a $0 that is not true. */
+  var raisedCache = {};
   function raised(cb, key) {
     if (typeof fetch !== "function") return cb(null);
     // One total per key: wbd (the one goal, with its parts), year, send-6 or
-    // classic. No key means the Road (send-6).
-    fetch("/api/raised" + (key ? "?c=" + encodeURIComponent(key) : ""))
-      .then(function (r) {
+    // classic. No key means the Road (send-6). One request per key per page:
+    // the module and the /numbers bars share it.
+    var k = key || "";
+    if (!raisedCache[k])
+      raisedCache[k] = fetch(
+        "/api/raised" + (key ? "?c=" + encodeURIComponent(key) : ""),
+      ).then(function (r) {
         return r.json();
-      })
+      });
+    raisedCache[k]
       .then(function (d) {
         cb({
           raised: Number(d.raised) || 0,
@@ -691,7 +697,97 @@
     draw();
   }
 
+  /* /numbers: how much of each part is covered so far, in the module's
+     colours (green gifts, blue striped court time), and one bar for the whole
+     goal with its key and what is left to raise. Hidden until real numbers
+     arrive, so the page never shows a $0 that is not true. */
+  function pctW(a, b) {
+    return Math.max(0, Math.min(100, (a / b) * 100)).toFixed(1) + "%";
+  }
+  function swatch(kind) {
+    var i = document.createElement("i");
+    i.className = "nb-swatch" + (kind ? " nb-swatch--kind" : "");
+    i.setAttribute("aria-hidden", "true");
+    return i;
+  }
+  function numbersBars() {
+    if (!document.querySelector("[data-nb-row], [data-nb-total]")) return;
+    raised(function (d) {
+      if (!d || !d.raised) return;
+      var parts = d.parts || {};
+      Object.keys(parts).forEach(function (k) {
+        var p = parts[k] || {};
+        var pr = Number(p.raised) || 0;
+        var pg = Number(p.goal) || 0;
+        var pk = Math.min(Number(p.inkind) || 0, pr);
+        if (!pg || !pr) return;
+        each(document, '[data-nb-row="' + k + '"]', function (n) {
+          n.hidden = false;
+          n.classList.toggle("has-gifts", pr - pk > 0 && pk > 0);
+        });
+        each(document, '[data-nb-fig="' + k + '"]', function (n) {
+          n.textContent = money(pr) + " of " + money(pg);
+        });
+        each(document, '[data-nb-pct="' + k + '"]', function (n) {
+          n.textContent = Math.round((pr / pg) * 100) + "% covered";
+        });
+        each(document, '[data-nb-kind="' + k + '"]', function (n) {
+          whenSeen(n, function () {
+            n.style.width = pctW(pk, pg);
+          });
+        });
+        each(document, '[data-nb-fill="' + k + '"]', function (n) {
+          whenSeen(n, function () {
+            n.style.width = pctW(pr - pk, pg);
+          });
+        });
+      });
+      var goal = Number(d.goal) || 0;
+      var gifts = Number(d.raised) || 0;
+      var kind = Number(d.inkind) || 0;
+      if (!goal) return;
+      each(document, "[data-nb-total]", function (n) {
+        n.hidden = false;
+        n.classList.toggle("has-gifts", gifts > 0 && kind > 0);
+      });
+      each(document, '[data-nb-kind="total"]', function (n) {
+        whenSeen(n, function () {
+          n.style.width = pctW(kind, goal);
+        });
+      });
+      each(document, '[data-nb-fill="total"]', function (n) {
+        whenSeen(n, function () {
+          n.style.width = pctW(gifts, goal);
+        });
+      });
+      each(document, "[data-nb-legend]", function (n) {
+        n.textContent = "";
+        var so = document.createElement("span");
+        so.className = "nb-so";
+        so.textContent = money(gifts + kind) + " so far";
+        n.appendChild(so);
+        var g = document.createElement("span");
+        g.appendChild(swatch(false));
+        g.appendChild(document.createTextNode(money(gifts) + " in gifts"));
+        n.appendChild(g);
+        if (kind) {
+          var c = document.createElement("span");
+          c.appendChild(swatch(true));
+          c.appendChild(
+            document.createTextNode(money(kind) + " in court time from a partner club"),
+          );
+          n.appendChild(c);
+        }
+        var left = document.createElement("span");
+        left.className = "nb-left";
+        left.textContent = money(Math.max(0, goal - gifts - kind)) + " to go";
+        n.appendChild(left);
+      });
+    }, "wbd");
+  }
+
   function module(root) {
+    numbersBars();
     var scope = root || document;
     var mods = scope.querySelectorAll("[data-cm]");
     if (!mods.length) return;

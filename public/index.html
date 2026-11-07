@@ -337,7 +337,10 @@ fill="currentColor" stroke="none">
       /* Each half of the title stays whole: one line when there is room, otherwise it breaks at the colon. */
       .hm-crew-head h2 span{ display:block; }
       /* The place reads as a label over the name: smaller, so Wheelie Big Dills leads and the top line is never the longer one. */
-      .hm-crew-head h2 span:first-child{ font-size:0.78em; margin-bottom:0.08em; }
+      .hm-crew-head h2{ margin-top:0; }
+      .hm-crew-head h2 span:first-child{ font-size:0.58em; font-weight:600; letter-spacing:-0.01em; color:var(--cream-mute); margin-bottom:0.15em; }
+      .hm-crew-head h2 span:last-child{ font-size:1.15em; line-height:1; }
+      @media (max-width:359px){ .hm-crew-head h2 span:last-child{ font-size:1em; } }
       .hm-crew .prose{ margin-top:1rem; color:var(--cream-mute); max-width:46ch; }
       .hm-crew .textlink{ margin-top:1.4rem; color:var(--orange); }
       .hm-crew .prose a{ color:var(--cream); text-decoration:underline; text-decoration-color:var(--orange); text-decoration-thickness:2px; text-underline-offset:4px; }
@@ -367,7 +370,6 @@ fill="currentColor" stroke="none">
         <div class="hm-crew-head">
           <img class="hm-crew-badge" src="/images/pickleball/wheelie-big-dills-badge.webp" alt="The Wheelie Big Dills badge: a pickle in a wheelchair swinging a Chicago flag paddle, Wheelchair Pickleball, Chicago, IL, est. 2024" width="320" height="319" loading="lazy" decoding="async">
           <div>
-            <span class="eyebrow orange">Right now</span>
             <h2 id="hmCrewTitle" class="serif h2"><span>Chicago Pickleball:</span> <span>Wheelie Big Dills</span></h2>
           </div>
         </div>

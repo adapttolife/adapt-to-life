@@ -839,6 +839,7 @@ export function Directory({ onFail }: { onFail: () => void }) {
   const [betaGroupError, setBetaGroupError] = useState("");
   const [featureToggles, setFeatureToggles] = useState<Item[]>([]);
   const [selectedFeatureToggle, setSelectedFeatureToggle] = useState<Item | null>(null);
+  const [maintenanceEnabled, setMaintenanceEnabled] = useState(false);
 
   const go = (path: string) => {
     history.pushState(null, "", path);
@@ -856,6 +857,12 @@ export function Directory({ onFail }: { onFail: () => void }) {
   const loadFeatureToggles = async () => {
     const body = await request("/admin-data/feature-toggles");
     setFeatureToggles(body.items || []);
+    return body;
+  };
+
+  const loadMaintenanceMode = async () => {
+    const body = await request("/admin-data/maintenance-mode");
+    setMaintenanceEnabled(Boolean(body.enabled));
     return body;
   };
 
@@ -938,7 +945,11 @@ export function Directory({ onFail }: { onFail: () => void }) {
         ? request("/admin-data/queue")
         : operations === "beta"
           ? loadBetaTesters()
-          : Promise.all([loadFeatureToggles(), loadBetaTesters()]);
+          : Promise.all([
+              loadFeatureToggles(),
+              loadBetaTesters(),
+              loadMaintenanceMode(),
+            ]);
     requestForOperation
       .then((body) => {
         if (operations === "queue") setQueueItems(body.items || []);
@@ -947,7 +958,12 @@ export function Directory({ onFail }: { onFail: () => void }) {
   }, [operations]);
 
   useEffect(() => {
-    Promise.all([request("/admin-data/queue"), loadBetaTesters(), loadFeatureToggles()])
+    Promise.all([
+      request("/admin-data/queue"),
+      loadBetaTesters(),
+      loadFeatureToggles(),
+      loadMaintenanceMode(),
+    ])
       .then(([queue]) => {
         setQueueItems(queue.items || []);
       })
@@ -1299,6 +1315,23 @@ export function Directory({ onFail }: { onFail: () => void }) {
     }
   };
 
+  const setMaintenanceMode = async (enabled: boolean) => {
+    try {
+      const body = await request("/admin-data/maintenance-mode", {
+        method: "PATCH",
+        body: JSON.stringify({ enabled }),
+      });
+      setMaintenanceEnabled(Boolean(body.enabled));
+      setMessage(
+        body.enabled
+          ? "ASNM maintenance mode enabled."
+          : "ASNM maintenance mode disabled.",
+      );
+    } catch (error) {
+      handleError(error, "Could not update maintenance mode.");
+    }
+  };
+
   const acceptQueueItem = async () => {
     if (!selectedQueueItem) return;
     try {
@@ -1643,6 +1676,20 @@ export function Directory({ onFail }: { onFail: () => void }) {
         <p className="sub">
           Control which beta tester groups can use Adaptive Sports Near Me features.
         </p>
+        <label className="switch-field maintenance-mode">
+          <span>
+            <b>Maintenance Mode</b>
+            <small>
+              Temporarily show a maintenance page across Adaptive Sports Near Me.
+            </small>
+          </span>
+          <input
+            checked={maintenanceEnabled}
+            onChange={(event) => setMaintenanceMode(event.currentTarget.checked)}
+            type="checkbox"
+          />
+          <i aria-hidden="true" />
+        </label>
         <form className="feature-toggle-form" onSubmit={createFeatureToggle}>
           <label className="form-field">
             <span>Feature Name</span>

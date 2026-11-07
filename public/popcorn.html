@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=35fb40ed">
+<link rel="stylesheet" href="/css/site.css?v=f201953b">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <style>
   /* ==========================================================================
@@ -115,9 +115,11 @@
     letter-spacing:0.16em; text-transform:uppercase;
   }
   .pop-status .dot{ width:8px; height:8px; border-radius:50%; background:var(--muted); flex:0 0 auto; }
-  .pop-status.is-open{ color:var(--orange-ink); }
-  .pop-status.is-open .dot{ background:var(--orange); box-shadow:0 0 0 4px var(--orange-bloom); }
-  .pop-status.is-soon{ color:var(--muted); }
+  /* Open is green and opening soon is blue, as on every status on the site. */
+  .pop-status.is-open{ color:var(--good-ink); }
+  .pop-status.is-open .dot{ background:var(--good-dot); box-shadow:0 0 0 4px color-mix(in srgb, var(--good) 16%, transparent); }
+  .pop-status.is-soon{ color:var(--info-ink); }
+  .pop-status.is-soon .dot{ background:var(--info-dot); }
   .pop-status.is-closed{ color:var(--muted); }
   .pop-card h2{ margin-top:0.7rem; }
   .pop-card-sub{ margin-top:0.5rem; color:var(--ink-soft); max-width:52ch; }
@@ -187,6 +189,7 @@
   .pop-row-name{ font-weight:600; }
   .pop-row-when{ font-family:var(--font-label); font-size:0.76rem; color:var(--muted); }
   .pop-row-out{ margin-left:auto; font-family:var(--font-label); font-size:0.82rem; color:var(--ink-soft); }
+  .pop-row-out.tag{ font-size:0.66rem; }
 
   /* ---- clickable flavor cards ------------------------------------------- */
   .pop-grid > li{ display:flex; }
@@ -205,7 +208,7 @@
   .pop-goal-bar{ height:7px; border-radius:999px; background:rgba(59,59,70,0.10); overflow:hidden; }
   .pop-goal-fill{
     height:100%; border-radius:999px; min-width:3px;
-    background:linear-gradient(90deg, var(--orange-ink), var(--orange-hot));
+    background:var(--good);
   }
   .pop-goal-label{
     margin-top:0.5rem; font-family:var(--font-label); font-size:0.74rem;
@@ -658,7 +661,7 @@ fill="currentColor" stroke="none">
 }
 </script>
 
-<script src="/js/campaigns.js?v=301db615"></script>
+<script src="/js/campaigns.js?v=eced4acf"></script>
 <script>
 (function(){
   var data;
@@ -925,8 +928,10 @@ fill="currentColor" stroke="none">
           var row = el('div','pop-row');
           row.appendChild(el('span','pop-row-name', c.name));
           row.appendChild(el('span','pop-row-when', span(localDate(c.opens), localDate(c.closes))));
-          row.appendChild(el('span','pop-row-out',
-            (typeof c.raised === 'number') ? money(c.raised) + ' to the fund' : 'Total being counted'));
+          // Money that came in is green, like every gift on the site.
+          row.appendChild((typeof c.raised === 'number')
+            ? el('span','pop-row-out tag tag--good', money(c.raised) + ' to the fund')
+            : el('span','pop-row-out','Total being counted'));
           past.appendChild(row);
         });
       }

@@ -185,6 +185,7 @@ const SYSTEM = {
   "good-ink-dark": "#4CC38A", // green label text and dots on dark
   "info-ink": "#1C5CAB", // blue label text on light
   "info-ink-dark": "#86B6EF", // blue label text and dots on dark
+  "win-ink": "#6B4F00", // win label text on light (yellow is the dot and tint)
   err: "#C0392B",
   black: "#000000", // shadows only
 };

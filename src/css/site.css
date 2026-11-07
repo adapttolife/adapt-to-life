@@ -1080,6 +1080,8 @@ em.italic[style*="--orange"] {
   --tag-tint: 8%;
   --tag-neutral-bg: rgba(59, 59, 70, 0.07);
   --tag-neutral-ink: #6a675e;
+  --win-ink: #6b4f00;
+  --win-tint: 18%;
 }
 .dark,
 .on-dark,
@@ -1092,6 +1094,21 @@ em.italic[style*="--orange"] {
   --tag-tint: 16%;
   --tag-neutral-bg: rgba(249, 247, 242, 0.08);
   --tag-neutral-ink: #cfc9bd;
+  --win-ink: var(--yellow);
+  --win-tint: 16%;
+}
+/* A light card on a dark band (the event card on /events) takes the light
+   values back, so its labels keep their contrast on the paper. */
+.evc {
+  --good-ink: #006300;
+  --good-dot: #008300;
+  --info-ink: #1c5cab;
+  --info-dot: #2a78d6;
+  --tag-tint: 8%;
+  --tag-neutral-bg: rgba(59, 59, 70, 0.07);
+  --tag-neutral-ink: #6a675e;
+  --win-ink: #6b4f00;
+  --win-tint: 18%;
 }
 .tag {
   display: inline-flex;
@@ -1120,6 +1137,22 @@ em.italic[style*="--orange"] {
 .tag--neutral {
   background: var(--tag-neutral-bg);
   color: var(--tag-neutral-ink);
+}
+/* A win: a result we can point to. Yellow carries it as the dot and the tint;
+   on light the text is the deep step (5.8:1 on the beige page), on dark the
+   yellow itself (7.6:1 on Night). */
+.tag--win {
+  background: color-mix(in srgb, var(--yellow) var(--win-tint), transparent);
+  color: var(--win-ink);
+}
+.tag--win::before {
+  content: "";
+  width: 0.62em;
+  height: 0.62em;
+  border-radius: 50%;
+  background: var(--yellow);
+  box-shadow: inset 0 0 0 1px rgba(107, 79, 0, 0.35);
+  flex: 0 0 auto;
 }
 /* Roadmap phase tiles: the icon wears the phase's colour on the dark tile. */
 .ix-tile.is-good {
@@ -3122,16 +3155,22 @@ a.win-band:focus-visible {
   text-transform: uppercase;
   color: var(--orange-ink);
 }
+/* The countdown is a status: blue while it is coming up, green once it is
+   happening (campaigns.js adds is-live). */
 .evc-soon {
   font-family: var(--font-label);
   font-weight: 800;
   font-size: 0.66rem;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: var(--orange-ink);
-  background: rgba(255, 92, 57, 0.12);
+  color: var(--info-ink);
+  background: color-mix(in srgb, var(--info) var(--tag-tint), transparent);
   padding: 0.24rem 0.58rem;
   border-radius: 999px;
+}
+.evc-soon.is-live {
+  color: var(--good-ink);
+  background: color-mix(in srgb, var(--good) var(--tag-tint), transparent);
 }
 .evc .evc-name {
   grid-area: name;
@@ -3525,7 +3564,8 @@ a.win-band:focus-visible {
   }
 }
 
-/* The status badge: a tinted background, text mixed toward the foreground. */
+/* The status badge: live, so it is green like every live status on the
+   site, a tinted background with the text mixed toward the foreground. */
 .cm-status {
   display: inline-flex;
   align-items: center;
@@ -3536,14 +3576,14 @@ a.win-band:focus-visible {
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.01em;
-  background: color-mix(in srgb, var(--accent) 14%, transparent);
-  color: var(--orange-hot);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent);
+  background: color-mix(in srgb, var(--live) 14%, transparent);
+  color: var(--live);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--live) 24%, transparent);
 }
 .cm[data-theme="light"] .cm-status {
-  background: color-mix(in srgb, var(--action) 10%, transparent);
-  color: var(--orange-ink);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--action) 22%, transparent);
+  background: color-mix(in srgb, var(--live) 8%, transparent);
+  color: var(--good-ink);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--live) 20%, transparent);
 }
 .cm-dot {
   --pulse: var(--live);
@@ -3588,8 +3628,9 @@ a.win-band:focus-visible {
   color: var(--muted);
 }
 
-/* What is already on the board: hairline tiles, a whisper of lift, a yellow
-   win mark. */
+/* What is already on the board: hairline tiles, a whisper of lift, and a
+   mark in the colour of what the number is: yellow for a win, green for money
+   raised, blue for court time (the same green and blue as the bars). */
 .cm-stats {
   list-style: none;
   margin: 0;
@@ -3618,6 +3659,12 @@ a.win-band:focus-visible {
   border-radius: 2px;
   background: var(--win);
   opacity: 0.9;
+}
+.cm-stats li.is-gift::after {
+  background: var(--live);
+}
+.cm-stats li.is-court::after {
+  background: var(--kind);
 }
 .cm-stats b {
   font-weight: 900;

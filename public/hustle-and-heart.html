@@ -31,11 +31,11 @@
 <link rel="dns-prefetch" href="https://widgets.givebutter.com">
 <link rel="dns-prefetch" href="https://givebuttercdn.com">
 <link rel="dns-prefetch" href="https://js.stripe.com">
-<link rel="preload" href="/css/site.css?v=35fb40ed" as="style">
+<link rel="preload" href="/css/site.css?v=f201953b" as="style">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=35fb40ed">
+<link rel="stylesheet" href="/css/site.css?v=f201953b">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <script src="/js/givebutter-lazy.js?v=29b7ce7b" defer></script>
 <style>
@@ -115,6 +115,9 @@
   .hh-now-proof li{ display:grid; grid-template-columns:7.4rem 1fr; align-items:baseline; gap:1rem; padding-bottom:1.1rem; border-bottom:1px solid rgba(249,247,242,0.12); }
   .hh-now-proof b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(2.4rem,4.6vw,3.2rem); line-height:0.9; letter-spacing:-0.04em; color:var(--yellow); }
   .hh-now-proof span{ color:var(--cream); font-weight:600; line-height:1.4; }
+  /* Court time and the clubs that host it are blue, as in the bars; the reach
+     stays yellow, a milestone. */
+  .hh-now-proof li.is-court b{ color:#86b6ef; }
   /* Space held for the Givebutter embed so its late mount cannot shove the
      page. Measured on prod: the settled form is 552px on a phone and 508px on
      a desktop, so these sit just under each. */
@@ -266,8 +269,8 @@ fill="currentColor" stroke="none">
         <p class="hh-now-next">Next: wherever our next ambassador is building. <a href="/ambassadors#join">Know who it should be?</a></p>
       </div>
       <ul class="hh-now-proof reveal" aria-label="What the fund brings in Chicago">
-        <li><b>$225</b><span>covers court time for up to 15 athletes for a night at ACE</span></li>
-        <li><b>3</b><span>clubs where the crew plays across the Chicago area</span></li>
+        <li class="is-court"><b>$225</b><span>covers court time for up to 15 athletes for a night at ACE</span></li>
+        <li class="is-court"><b>3</b><span>clubs where the crew plays across the Chicago area</span></li>
         <li><b>334K</b><span>views in 90 days across Instagram and Facebook</span></li>
       </ul>
     </div>
@@ -384,9 +387,9 @@ fill="currentColor" stroke="none">
           <li><b>3</b><span>straight US Opens</span></li>
           <li><b>6</b><span>Monster Smash medals</span></li>
           <li><b>1st</b><span>APP Tour wheelchair division</span></li>
-          <li><b>$3,004</b><span>popcorn drive, 3&times; its goal</span></li>
+          <li class="is-gift"><b>$3,004</b><span>popcorn drive, 3&times; its goal</span></li>
           <li><b>334K</b><span>views in 90 days</span></li>
-          <li><b>10&ndash;15</b><span>athletes, every week</span></li>
+          <li class="is-court"><b>10&ndash;15</b><span>athletes, every week</span></li>
         </ul>
         <div class="cm-card">
           <p class="cm-hero"><b data-cm-total>$48,180</b><span data-cm-sub>our goal for the year ahead</span><span class="cm-split" data-cm-split hidden></span></p>
@@ -582,7 +585,7 @@ fill="currentColor" stroke="none">
   })();
 </script>
 
-<script src="/js/campaigns.js?v=301db615"></script>
+<script src="/js/campaigns.js?v=eced4acf"></script>
 <script>window.ATLCampaigns.module();</script>
 
 <script src="/js/subscribe.js?v=7efaf550" defer></script>

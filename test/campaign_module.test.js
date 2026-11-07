@@ -192,9 +192,13 @@ test("the math lives on /numbers, and every module links to it", () => {
       );
     assert.ok(mod.includes("maybe the country"), `${f}: the ambition`);
   }
-  // The record tiles carry the practice-night size where they appear.
+  // The record tiles carry the practice-night size where they appear, marked
+  // blue as court time (the money tile green, the wins yellow).
   const home = read("public/index.html");
   assert.ok(
-    home.includes("<li><b>10&ndash;15</b><span>athletes, every week</span></li>"),
+    home.includes(
+      '<li class="is-court"><b>10&ndash;15</b><span>athletes, every week</span></li>',
+    ),
   );
+  assert.ok(home.includes('<li class="is-gift"><b>$3,004</b>'));
 });

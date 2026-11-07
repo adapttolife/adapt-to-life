@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=35fb40ed">
+<link rel="stylesheet" href="/css/site.css?v=f201953b">
 <style>
   /* Events: the index. Every dated thing we take part in comes from
      /data/campaigns.json (the same file as the home calendar), so a date is
@@ -56,6 +56,8 @@
   .ev-row .ev-when{ font-family:var(--font-display); font-weight:800; font-size:1.15rem; letter-spacing:-0.01em; color:var(--orange-ink); line-height:1.15; }
   .ev-row .ev-name{ font-family:var(--font-display); font-weight:800; font-size:1.2rem; letter-spacing:-0.01em; color:var(--ink); }
   .ev-row .ev-meta{ margin-top:0.25rem; color:var(--muted); font-size:0.92rem; }
+  .ev-row .ev-res{ display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.45rem; }
+  .ev-row .ev-res .tag{ white-space:normal; }
   .ev-row .ev-go{ font-weight:700; color:var(--orange-ink); white-space:nowrap; border-bottom:2px solid currentColor; padding-bottom:2px; }
   @media (max-width:640px){ .ev-row{ grid-template-columns:1fr; gap:0.4rem; } .ev-row .ev-go{ justify-self:start; margin-top:0.5rem; } }
   .ev-empty{ margin-top:1.2rem; color:var(--ink-soft); max-width:46ch; }
@@ -341,7 +343,7 @@ fill="currentColor" stroke="none">
   })();
 </script>
 <script src="/js/add-to-calendar.js?v=1865647d"></script>
-<script src="/js/campaigns.js?v=301db615"></script>
+<script src="/js/campaigns.js?v=eced4acf"></script>
 <script>
 (function(){
   var C = window.ATLCampaigns;
@@ -364,9 +366,15 @@ fill="currentColor" stroke="none">
     li.appendChild(C.el('p', 'ev-when', C.driveWhen(d) + (d.time_note && !past ? ' · ' + d.time_note : '')));
     var mid = C.el('div');
     mid.appendChild(C.el('p', 'ev-name', d.name));
-    var meta = [label(d), place(d)];
-    if (past && typeof d.raised === 'number' && d.raised > 0) meta.push(C.money(d.raised) + ' raised');
-    mid.appendChild(C.el('p', 'ev-meta', meta.filter(Boolean).join(' · ')));
+    // The record in the site's colours: a result is a win (yellow), money that
+    // came in is green. Both are verified facts kept in campaigns.json.
+    if (past && (d.result || (typeof d.raised === 'number' && d.raised > 0))){
+      var res = C.el('p', 'ev-res');
+      if (d.result) res.appendChild(C.el('span', 'tag tag--win', d.result));
+      if (typeof d.raised === 'number' && d.raised > 0) res.appendChild(C.el('span', 'tag tag--good', C.money(d.raised) + ' raised'));
+      mid.appendChild(res);
+    }
+    mid.appendChild(C.el('p', 'ev-meta', [label(d), place(d)].filter(Boolean).join(' · ')));
     li.appendChild(mid);
     if (!past || d.page) li.appendChild(link(d)); else li.appendChild(C.el('span'));
     return li;

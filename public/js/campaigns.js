@@ -257,7 +257,14 @@
     var meta = el("p", "evc-meta");
     meta.appendChild(el("span", "evc-tag", eventTag(d)));
     var soon = countdown(d);
-    if (soon) meta.appendChild(el("span", "evc-soon", soon));
+    if (soon)
+      meta.appendChild(
+        el(
+          "span",
+          "evc-soon" + (soon === "Today" || soon === "Happening now" ? " is-live" : ""),
+          soon,
+        ),
+      );
     box.appendChild(meta);
     box.appendChild(el(opts.heading || "h3", "evc-name", d.name));
     var facts = el("ul", "evc-facts");

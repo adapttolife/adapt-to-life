@@ -1389,6 +1389,53 @@ export default {
       return handleUnsubscribe(request, env, url);
     }
 
+    // REVIEW ONLY (thursday-ten; never merged): prove the welcome series end
+    // to end through the real Resend account. It can only ever mail one fixed
+    // test inbox, which the Worker itself receives (agents.adapttolife.org),
+    // and only on the review host. Remove after the test.
+    if (
+      url.pathname === "/api/newsletter-test" &&
+      url.hostname === "review-adapt-to-life.adapt-to-life.workers.dev"
+    ) {
+      if (request.method !== "POST") return json({ ok: false }, 405);
+      if (await overFormLimit(env, request)) return json(RATE_LIMITED, 429);
+      const TEST = "newsletter-test@agents.adapttolife.org";
+      const series = await import("./newsletter-series.js");
+      let body = {};
+      try {
+        body = await request.json();
+      } catch {}
+      const origin = url.origin;
+      try {
+        if (body.action === "signup") {
+          const sub = await safeNewsletterSubscribe(env, TEST, "review-test");
+          const started = sub.ok && !sub.existing
+            ? await series.startWelcome(env, TEST, { contactId: sub.contactId || null, assetOrigin: origin })
+            : null;
+          return json({ ok: true, subscribe: sub, started });
+        }
+        if (body.action === "send") {
+          const step = series.WELCOME.find((s) => s.key === body.step);
+          if (!step) return json({ ok: false, error: "no such step" }, 400);
+          const out = await series.sendSeriesEmail(env, TEST, step, {
+            assetOrigin: origin,
+            isDonor: Boolean(body.donor),
+            idempotencySuffix: `-review-${Date.now()}`,
+          });
+          return json({ ok: true, sent: out });
+        }
+        if (body.action === "unsubscribe-url")
+          return json({ ok: true, url: (await series.unsubscribeUrl(env, TEST)).replace("https://adapttolife.org", origin) });
+        if (body.action === "status") {
+          const row = await env.AGENT_MAIL_DB.prepare("SELECT * FROM newsletter_journey WHERE email = ?").bind(TEST).first();
+          return json({ ok: true, row });
+        }
+        return json({ ok: false, error: "unknown action" }, 400);
+      } catch (err) {
+        return json({ ok: false, error: String(err?.message || err).slice(0, 400) }, 500);
+      }
+    }
+
     // Givebutter signs successful-transaction deliveries. The handler records
     // the gift before attempting ATL's follow-up. Ordinary webhook retries are
     // idempotent; the cron reclaims interrupted or transiently failed attempts

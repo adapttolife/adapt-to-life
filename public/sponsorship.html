@@ -5,23 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0f0e0d">
 <meta name="color-scheme" content="light only">
-<title>Partners | Adapt To Life</title>
-<meta name="description" content="Partner with Adapt To Life. Your support goes to the Hustle & Heart Fund, which backs athletes and the clubs, organizations and coaches building adaptive sports.">
+<title>Partners and Sponsors | Adaptive Sports in Chicago | Adapt To Life</title>
+<meta name="description" content="Adapt To Life partners with Chicago Adaptive Sports, AMP Adaptive Sports, ACE Pickleball Club, Brick House Pickleball and The Picklr. See how we partner with clubs, and how to sponsor.">
 <link rel="canonical" href="https://adapttolife.org/sponsorship">
 <link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-v2-option2-32.png">
 <link rel="apple-touch-icon" href="/images/apple-touch-icon-v2-option2.png">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Partners | Adapt To Life">
-<meta property="og:description" content="Partner with Adapt To Life. Your support goes to the Hustle & Heart Fund, which backs athletes and the clubs, organizations and coaches building adaptive sports.">
+<meta property="og:title" content="Partners and Sponsors | Adaptive Sports in Chicago | Adapt To Life">
+<meta property="og:description" content="Adapt To Life partners with Chicago Adaptive Sports, AMP Adaptive Sports, ACE Pickleball Club, Brick House Pickleball and The Picklr. See how we partner with clubs, and how to sponsor.">
 <meta property="og:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.">
 <meta property="og:url" content="https://adapttolife.org/sponsorship">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Partners | Adapt To Life">
-<meta name="twitter:description" content="Partner with Adapt To Life. Your support goes to the Hustle & Heart Fund, which backs athletes and the clubs, organizations and coaches building adaptive sports.">
+<meta name="twitter:title" content="Partners and Sponsors | Adaptive Sports in Chicago | Adapt To Life">
+<meta name="twitter:description" content="Adapt To Life partners with Chicago Adaptive Sports, AMP Adaptive Sports, ACE Pickleball Club, Brick House Pickleball and The Picklr. See how we partner with clubs, and how to sponsor.">
 <meta name="twitter:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
 <meta name="twitter:image:alt" content="Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -137,7 +137,7 @@
   .partner-logo.is-word{ height:auto; width:min(100%, 210px); margin-bottom:0.4rem; }
   /* On phones the photo is a short 16:9 strip; a tall portrait sets
      --phone-crop on its img so the strip keeps the face. */
-  .partner-photo img{ width:100%; height:100%; object-fit:cover; object-position:50% 30%; transition:transform .6s ease; }
+  .partner-photo img{ width:100%; height:100%; object-fit:cover; object-position:var(--crop, 50% 30%); transition:transform .6s ease; }
   .partner:hover .partner-photo img{ transform:scale(1.03); }
   .partner-body{ padding:clamp(1.6rem,3.5vw,2.8rem); display:flex; flex-direction:column; align-items:flex-start; justify-content:center; }
   .partner-logo{ height:clamp(58px,6vw,78px); width:auto; }
@@ -153,8 +153,49 @@
   .sp-get-list span{ display:block; margin-top:0.45rem; line-height:1.5; opacity:0.85; }
   @media (max-width:900px){ .sp-get-list{ grid-template-columns:1fr 1fr; } }
   @media (max-width:520px){ .sp-get-list{ grid-template-columns:1fr; } }
-  .partner-note{ margin-top:clamp(1.4rem,3vw,2rem); max-width:62ch; opacity:0.78; font-size:0.98rem; line-height:1.55; }
+  /* Across the community: centred under the partner cards, with each organization named in full and linked. */
+  .sp-community{ margin:clamp(2.4rem,5vw,3.6rem) auto 0; max-width:58ch; text-align:center; }
+  .sp-community-k{ margin:0; font-family:var(--font-label); font-size:0.78rem; font-weight:800; letter-spacing:0.18em; text-transform:uppercase; color:var(--orange-ink); }
+  .sp-community-t{ margin:0.75rem 0 0; font-size:clamp(1.02rem,1.35vw,1.15rem); line-height:1.65; color:var(--ink-soft); }
+  .sp-community a{ color:var(--ink); text-decoration:underline; text-decoration-color:var(--orange); text-decoration-thickness:2px; text-underline-offset:4px; }
   .partner-more{ margin-top:1.5rem; font-weight:700; color:#ff5c39; border-bottom:2px solid currentColor; padding-bottom:2px; }
+  /* Each partner's own website beside our page about them: a real link for people, and for search. rel=noopener only, so the partner sees the visit come from us. */
+  .partner-links{ margin-top:1.5rem; display:flex; flex-wrap:wrap; align-items:baseline; gap:0.7rem 1.6rem; }
+  .partner-links .partner-more{ margin-top:0; }
+  .partner-site{ font-weight:600; color:var(--cream-mute); border-bottom:1px solid rgba(249,247,242,0.35); padding-bottom:2px; overflow-wrap:anywhere; }
+  .partner-site:hover, .partner-site:focus-visible{ color:var(--cream); border-bottom-color:var(--cream); }
+  /* The Home Court Model: three partners and the result, + + = in the
+     gaps on desktop; stacked on a phone, where each operator leads its
+     title. Each partner shows Brings and Gets. Operators are CSS with empty
+     alt text, so a screen reader reads a plain list of four. */
+  .sp-clubs-head{ max-width:62ch; }
+  .sp-clubs-lead{ margin-top:1rem; font-size:clamp(1.08rem,1.45vw,1.25rem); line-height:1.6; color:var(--cream); }
+  .sp-formula{ --fgap:clamp(2.4rem,4.2vw,3.8rem); list-style:none; margin:clamp(2.4rem,4.6vw,3.4rem) 0 0; padding:0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)) minmax(0,1.1fr); gap:var(--fgap); }
+  .sp-formula li{ position:relative; padding-top:1.15rem; border-top:1px solid rgba(249,247,242,0.18); }
+  .sp-formula b{ display:block; font-family:var(--font-display); font-weight:800; font-size:clamp(1.35rem,1.9vw,1.65rem); line-height:1.08; letter-spacing:-0.02em; color:var(--cream); text-wrap:balance; }
+  .sp-formula dl{ margin:0.9rem 0 0; }
+  .sp-formula dt{ font-family:var(--font-label); font-size:0.72rem; font-weight:800; letter-spacing:0.16em; text-transform:uppercase; color:var(--orange); }
+  .sp-formula dt + dd{ margin:0.3rem 0 0; }
+  .sp-formula dd + dt{ margin-top:0.85rem; }
+  .sp-formula dd, .sp-formula .sp-result p{ color:var(--cream-mute); line-height:1.55; }
+  .sp-formula .sp-result p{ margin:0.9rem 0 0; color:var(--cream); }
+  .sp-formula li + li::before{ content:"+" / ""; position:absolute; left:calc(var(--fgap) / -2); top:0.75rem; transform:translateX(-50%); font-family:var(--font-display); font-weight:400; font-size:clamp(1.9rem,2.8vw,2.5rem); line-height:1; color:var(--orange); }
+  .sp-formula li:last-child::before{ content:"=" / ""; }
+  .sp-formula .sp-result{ border-top:2px solid var(--orange); }
+  .sp-formula .sp-result b{ color:var(--orange); }
+  @media (max-width:900px){
+    .sp-formula{ grid-template-columns:1fr; gap:0; }
+    .sp-formula li{ padding:1.1rem 0 1.3rem; }
+    .sp-formula li + li::before, .sp-formula li:last-child::before{ content:none; }
+    .sp-formula li + li b::before{ content:"+" / ""; display:inline-block; width:1.4rem; color:var(--orange); font-weight:400; }
+    .sp-formula li:last-child b::before{ content:"=" / ""; }
+  }
+  .sp-proof{ margin:clamp(2rem,3.8vw,2.8rem) 0 0; color:var(--cream-mute); line-height:1.6; }
+  .sp-proof span{ display:block; margin-bottom:0.35rem; font-family:var(--font-label); font-size:0.72rem; font-weight:800; letter-spacing:0.16em; text-transform:uppercase; color:var(--orange); }
+  .sp-proof a{ color:var(--cream); text-decoration:underline; text-decoration-color:var(--orange); text-decoration-thickness:2px; text-underline-offset:4px; }
+  .sp-clubs-foot{ margin-top:clamp(2rem,3.8vw,2.8rem); padding-top:clamp(1.6rem,3vw,2.2rem); border-top:1px solid rgba(249,247,242,0.12); display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1.2rem 2rem; }
+  .sp-clubs-close{ margin:0; font-family:var(--font-display); font-weight:800; font-size:clamp(1.25rem,2vw,1.6rem); letter-spacing:-0.015em; color:var(--cream); }
+  .sp-clubs-foot .actions{ margin:0; }
   @media (max-width:700px){ .partner{ grid-template-columns:1fr; } .partner-photo{ min-height:0; aspect-ratio:16/9; } .partner-photo img{ object-position:var(--phone-crop, 50% 30%); } .partner-body{ padding:1.25rem 1.25rem 1.4rem; } .partner-logo{ height:48px; } .partner-kicker{ margin-top:1rem; } .partner-more{ margin-top:1.1rem; } .partner-when{ flex-wrap:nowrap; gap:0.6rem; font-size:0.72rem; letter-spacing:0.1em; } .partner-when span{ gap:0.6rem; white-space:nowrap; } }
   .bh-road .bh-price{ display:block; margin-top:0.6rem; font-style:normal; font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--orange-ink); }
   /* One price list: the per-athlete options sit above the levels, same sheet, same fund. */
@@ -169,6 +210,8 @@
   .sp-units + .sp-units-label + .tier-grid{ margin-top:1rem; }
   @media (max-width:860px){ .sp-units{ grid-template-columns:1fr; } }
 </style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"ItemList","name":"Adapt To Life partners","itemListElement":[{"@type":"ListItem","position":1,"item":{"@type":"NGO","name":"Chicago Adaptive Sports","url":"https://www.chicagoadaptivesports.com/"}},{"@type":"ListItem","position":2,"item":{"@type":"NGO","name":"AMP Adaptive Sports","url":"https://www.adaptivemobilityproviders.org/"}},{"@type":"ListItem","position":3,"item":{"@type":"SportsActivityLocation","name":"ACE Pickleball Club","url":"https://www.acepickleballclub.com/desplaines-il"}},{"@type":"ListItem","position":4,"item":{"@type":"SportsActivityLocation","name":"Brick House Pickleball","url":"https://brickhousepb.com/"}},{"@type":"ListItem","position":5,"item":{"@type":"SportsActivityLocation","name":"The Picklr","url":"https://thepicklr.com/location/mount-prospect/"}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://adapttolife.org/"},{"@type":"ListItem","position":2,"name":"Partners","item":"https://adapttolife.org/sponsorship"}]}</script>
 </head>
 <body>
 
@@ -291,7 +334,7 @@ fill="currentColor" stroke="none">
             <h3 class="serif h3">Chicago Adaptive Sports</h3>
             <p class="partner-line">A Chicagoland nonprofit that envisions a Chicago where every athlete has an opportunity to play. Juan Ortiz, our first ambassador, serves on its board.</p>
             <p class="partner-when"><span>Partner nonprofit</span> Chicago, IL</p>
-            <a class="partner-more" href="/chicago-adaptive-sports">See the partnership <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
+            <div class="partner-links"><a class="partner-more" href="/chicago-adaptive-sports">See the partnership <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a><a class="partner-site" href="https://www.chicagoadaptivesports.com/" target="_blank" rel="noopener" aria-label="chicagoadaptivesports.com, Chicago Adaptive Sports website, opens in a new tab">chicagoadaptivesports.com</a></div>
           </div>
         </article>
         <article class="partner on-dark reveal">
@@ -304,7 +347,7 @@ fill="currentColor" stroke="none">
             <h3 class="serif h3">AMP Adaptive Sports</h3>
             <p class="partner-line">A Wisconsin nonprofit that gets athletes of all abilities on the water and the snow. Karen Atkinson, on our board, serves on its board too.</p>
             <p class="partner-when"><span>Partner nonprofit</span> Elkhorn, WI</p>
-            <a class="partner-more" href="/amp">See the partnership <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
+            <div class="partner-links"><a class="partner-more" href="/amp">See the partnership <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a><a class="partner-site" href="https://www.adaptivemobilityproviders.org/" target="_blank" rel="noopener" aria-label="adaptivemobilityproviders.org, AMP Adaptive Sports website, opens in a new tab">adaptivemobilityproviders.org</a></div>
           </div>
         </article>
         <article class="partner on-dark reveal">
@@ -317,7 +360,7 @@ fill="currentColor" stroke="none">
             <h3 class="serif h3">ACE Pickleball Club</h3>
             <p class="partner-line">Court time we fund in Des Plaines, free for every athlete, and memberships for athletes who train to compete.</p>
             <p class="partner-when"><span>Partner club</span> Des Plaines, IL</p>
-            <a class="partner-more" href="/ace">See the partnership <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
+            <div class="partner-links"><a class="partner-more" href="/ace">See the partnership <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a><a class="partner-site" href="https://www.acepickleballclub.com/desplaines-il" target="_blank" rel="noopener" aria-label="acepickleballclub.com, ACE Pickleball Club website, opens in a new tab">acepickleballclub.com</a></div>
           </div>
         </article>
         <article class="partner on-dark reveal">
@@ -330,12 +373,12 @@ fill="currentColor" stroke="none">
             <h3 class="serif h3">Brick House Pickleball</h3>
             <p class="partner-line">The crew&rsquo;s home court in Lake Forest, open 24/7/365. Athletes we support play there every week, all four seasons.</p>
             <p class="partner-when"><span>Home court</span> Lake Forest, IL</p>
-            <a class="partner-more" href="/brickhouse">See the partnership <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
+            <div class="partner-links"><a class="partner-more" href="/brickhouse">See the partnership <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a><a class="partner-site" href="https://brickhousepb.com/" target="_blank" rel="noopener" aria-label="brickhousepb.com, Brick House Pickleball website, opens in a new tab">brickhousepb.com</a></div>
           </div>
         </article>
         <article class="partner on-dark reveal">
           <a class="partner-photo" href="/picklr" tabindex="-1" aria-hidden="true">
-            <img src="/images/ace/court-swing.webp" alt="" width="1800" height="1200" loading="lazy" decoding="async" style="object-position:74% 40%;">
+            <img src="/images/athletes/ryan-reach.webp" alt="" width="960" height="1200" loading="lazy" decoding="async" style="--crop:50% 40%; --phone-crop:50% 18%;">
           </a>
           <div class="partner-body">
             <img class="partner-logo is-word" src="/images/partners/picklr-wordmark-white.png" alt="The Picklr" width="460" height="107">
@@ -343,15 +386,69 @@ fill="currentColor" stroke="none">
             <h3 class="serif h3">The Picklr</h3>
             <p class="partner-line">Open play with the crew in Mount Prospect, alongside the club&rsquo;s own players. Clinics, tournaments and fundraisers are on the table.</p>
             <p class="partner-when"><span>Partner club</span> Mount Prospect, IL</p>
-            <a class="partner-more" href="/picklr">See the partnership <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
+            <div class="partner-links"><a class="partner-more" href="/picklr">See the partnership <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a><a class="partner-site" href="https://thepicklr.com/location/mount-prospect/" target="_blank" rel="noopener" aria-label="thepicklr.com, The Picklr Mount Prospect website, opens in a new tab">thepicklr.com</a></div>
           </div>
         </article>
       </div>
-      <p class="partner-note">Partners listed here have agreed to be listed. We also support programs across the community, like WASA in Wisconsin and LWSRA in the south suburbs, with coaching, clinics and volunteers. If you run a club, an organization or a coaching program, we can help you build and manage an adaptive program too.</p>
+      <div class="sp-community reveal">
+        <p class="sp-community-k">Across the community</p>
+        <p class="sp-community-t">We also support programs beyond our partner clubs with coaching, clinics and volunteers, like the <a href="https://www.wasa.org/" target="_blank" rel="noopener">Wisconsin Adaptive Sports Association (WASA)</a> and the <a href="https://lwsra.org/" target="_blank" rel="noopener">Lincolnway Special Recreation Association (LWSRA)</a> in the south suburbs.</p>
+      </div>
     </div>
   </section>
 
-  <!-- 2. WHERE YOUR SUPPORT GOES: through the fund, into a campaign. Today
+    <!-- THE HOME COURT MODEL (Alec, Nov 7 2026): how we build adaptive
+       programs with clubs, YMCAs, schools and companies. Three partners,
+       each shown with what it brings and what it gets back, so the two way
+       street is on the page, not claimed. Principles kept as phrases: no
+       host has to give its courts away; funding planned at the host's
+       regular rates; run by the host. Proof: the home courts today. -->
+  <section class="band dark sp-clubs" id="clubs" aria-labelledby="spClubsTitle">
+    <div class="wrap">
+      <div class="sp-clubs-head">
+        <span class="eyebrow orange reveal">How we partner</span>
+        <h2 id="spClubsTitle" class="serif h2 reveal" style="margin-top:0.8rem;">The <em class="italic" style="color:var(--orange)">Home Court</em> Model.</h2>
+        <p class="prose sp-clubs-lead reveal">Every athlete needs a home court: a place to train, compete and belong. We build them with clubs, YMCAs, schools and companies, and no host has to give its courts away to be part of it.</p>
+      </div>
+      <ol class="sp-formula reveal" aria-label="The Home Court Model">
+        <li>
+          <b>The host</b>
+          <dl>
+            <dt>Brings</dt><dd>Courts on a regular night, at a club, YMCA, school or park.</dd>
+            <dt>Gets</dt><dd>Paid court time, new players and their families, and a story that sets the club apart.</dd>
+          </dl>
+        </li>
+        <li>
+          <b>The athlete</b>
+          <dl>
+            <dt>Brings</dt><dd>Their game, led by ambassadors like Juan Ortiz, with coaching and volunteers from us.</dd>
+            <dt>Gets</dt><dd>A home court to train, compete and bring the next athlete in.</dd>
+          </dl>
+        </li>
+        <li>
+          <b>The supporter</b>
+          <dl>
+            <dt>Brings</dt><dd>Funding, planned at the host&rsquo;s regular rates.</dd>
+            <dt>Gets</dt><dd>Results they can see and numbers that add up. <a class="textlink" href="/numbers" style="font:inherit;letter-spacing:inherit;">See the numbers</a></dd>
+          </dl>
+        </li>
+        <li class="sp-result">
+          <b>A program that lasts</b>
+          <p>Run by the host and backed by all of us, season after season.</p>
+        </li>
+      </ol>
+      <p class="sp-proof reveal"><span>Home courts today</span> <a href="/ace">ACE Pickleball Club</a> in Des Plaines, <a href="/brickhouse">Brick House Pickleball</a> in Lake Forest and <a href="/picklr">The Picklr</a> in Mount Prospect.</p>
+      <div class="sp-clubs-foot reveal">
+        <p class="sp-clubs-close">Bring your courts. We&rsquo;ll help with the rest.</p>
+        <div class="actions">
+          <a class="btn" href="mailto:hello@adapttolife.org?subject=Build%20an%20adaptive%20program">Start a conversation</a>
+          <a class="btn ghost" href="#tiers">Ways to sponsor</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<!-- 2. WHERE YOUR SUPPORT GOES: through the fund, into a campaign. Today
        that campaign is Send 6; the sentence says "right now" so it never caps
        the list. -->
   <section class="band sp-get" aria-labelledby="spGetTitle">
@@ -375,8 +472,8 @@ fill="currentColor" stroke="none">
         <p class="prose reveal">Partner support goes to the <span style="white-space:nowrap;"><a class="textlink" href="/hustle-and-heart" style="font:inherit;letter-spacing:inherit;">Hustle &amp; Heart Fund</a>.</span> We pay clubs and vendors directly. Right now the fund builds three levels of wheelchair pickleball across the Chicago area, and each level pays for something different.</p>
         <div class="bh-road reveal">
           <ol>
-            <li class="lit"><b>Play anytime</b><span>Court time, so athletes can drop in and play free.</span><em class="bh-price">$75 covers up to 15 athletes at ACE</em></li>
-            <li><b>Train to compete</b><span>Memberships for athletes who train for tournaments, because one session a week is not enough.</span><em class="bh-price">$960 an athlete, a year: under $3 a day</em></li>
+            <li class="lit"><b>Play anytime</b><span>Court time, so athletes can drop in and play free.</span><em class="bh-price">$225 covers up to 15 athletes at ACE</em></li>
+            <li><b>Train to compete</b><span>Memberships for athletes who train for tournaments, because one session a week is not enough.</span><em class="bh-price">$129 a month an athlete, $1,548 a year</em></li>
             <li><b>Compete</b><span>Entry fees, travel and tournaments, including the Chicago Classic.</span><em class="bh-price">From $500 a tournament</em></li>
           </ol>
           <a class="bh-more" href="/pickleball">See what we&rsquo;re building <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
@@ -403,21 +500,21 @@ fill="currentColor" stroke="none">
       <div class="sp-units">
         <div class="sp-unit reveal">
           <div class="sp-unit-name">Sponsor a night</div>
-          <div class="sp-unit-price">$75</div>
-          <p class="sp-unit-line">Court time for up to 15 athletes for a night at ACE, at $5 each.</p>
-          <a href="/contact?rsn=sponsor&amp;tier=Night%20sponsor" data-sponsor-tier="Night sponsor" data-sponsor-price="$75" data-sponsor-line="Court time for up to 15 athletes for a night at ACE, at $5 each." data-sponsor-amount="75" class="btn ghost">Sponsor a night</a>
+          <div class="sp-unit-price">$225</div>
+          <p class="sp-unit-line">Court time for up to 15 athletes for a night at ACE, at $15 each.</p>
+          <a href="/contact?rsn=sponsor&amp;tier=Night%20sponsor" data-sponsor-tier="Night sponsor" data-sponsor-price="$225" data-sponsor-line="Court time for up to 15 athletes for a night at ACE, at $15 each." data-sponsor-amount="75" class="btn ghost">Sponsor a night</a>
         </div>
         <div class="sp-unit reveal">
           <div class="sp-unit-name">Sponsor an athlete</div>
-          <div class="sp-unit-price">$960<small>&nbsp;a year</small></div>
-          <p class="sp-unit-line">One athlete&rsquo;s unlimited membership for a year, under $3 a day, so they can train to compete.</p>
-          <a href="/contact?rsn=sponsor&amp;tier=Athlete%20sponsor" data-sponsor-tier="Athlete sponsor" data-sponsor-price="$960 a year" data-sponsor-line="One athlete's unlimited membership for a year, under $3 a day, so they can train to compete." data-sponsor-amount="960" class="btn ghost">Sponsor an athlete</a>
+          <div class="sp-unit-price">$1,548<small>&nbsp;a year</small></div>
+          <p class="sp-unit-line">One athlete&rsquo;s unlimited membership for a year, $129 a month, so they can train to compete.</p>
+          <a href="/contact?rsn=sponsor&amp;tier=Athlete%20sponsor" data-sponsor-tier="Athlete sponsor" data-sponsor-price="$1,548 a year" data-sponsor-line="One athlete's unlimited membership for a year, $129 a month, so they can train to compete." data-sponsor-amount="960" class="btn ghost">Sponsor an athlete</a>
         </div>
         <div class="sp-unit reveal">
           <div class="sp-unit-name">Train to Compete, presented by you</div>
-          <div class="sp-unit-price">$9,600<small>&nbsp;a year</small></div>
+          <div class="sp-unit-price">$15,480<small>&nbsp;a year</small></div>
           <p class="sp-unit-line">Ten athletes on unlimited memberships for a year, with your name on the program.</p>
-          <a href="/contact?rsn=sponsor&amp;tier=Train%20to%20Compete" data-sponsor-tier="Train to Compete" data-sponsor-price="$9,600 a year" data-sponsor-line="Ten athletes on unlimited memberships for a year, with your name on the program." class="btn ghost">Talk to us</a>
+          <a href="/contact?rsn=sponsor&amp;tier=Train%20to%20Compete" data-sponsor-tier="Train to Compete" data-sponsor-price="$15,480 a year" data-sponsor-line="Ten athletes on unlimited memberships for a year, with your name on the program." class="btn ghost">Talk to us</a>
         </div>
       </div>
       <p class="sp-units-label reveal">Partnership levels</p>

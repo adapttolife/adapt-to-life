@@ -67,7 +67,7 @@ test("the old giving slogans are gone", () => {
 test("the cost story uses the same real numbers on every page", () => {
   // Alec, Nov 5: a sport chair runs $4,000 to $6,000 and insurance doesn't
   // cover it; $3,500 is about what the US Open has cost per athlete the last
-  // couple of years. $960 is the membership. The chair is a year-round cost,
+  // couple of years. A membership is $129 a month ($1,548 a year). The chair is a year-round cost,
   // so the Road page leaves it out (two_bars.test.js checks that).
   const crew = read("public/pickleball.html"),
     fund = read("public/hustle-and-heart.html"),
@@ -75,7 +75,7 @@ test("the cost story uses the same real numbers on every page", () => {
   assert.ok(crew.includes("$4,000 to $6,000"));
   assert.ok(fund.includes("$4,000&ndash;$6,000"));
   for (const html of [crew, fund]) {
-    assert.ok(html.includes("<b>$960</b>") || html.includes(">$960<span>"));
+    assert.ok(html.includes("<b>$129</b>") || html.includes(">$1,548<span>") || html.includes("<b>$1,548</b>"));
     assert.ok(html.includes("<b>$3,500</b>") || html.includes(">$3,500<span>"));
   }
   assert.ok(road.includes("The target is $3,500 per athlete"));

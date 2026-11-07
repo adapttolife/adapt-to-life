@@ -33,7 +33,9 @@ The site header, footer, favicon and social cards use single-color traces of the
 | `atl-logo-2026-ui.svg` | Lightweight trace for the site UI. |
 | `atl-logo-v2-option2-ui.svg` | The trace the OG card generator and `/images/brand/atl-logo-512.png` are built from. |
 
-## The Chicago Wheelie Big Dills (the crew we fund and support)
+## Chicago Pickleball: Wheelie Big Dills (the crew we fund and support)
+
+**The name (Alec, 2026-11-07).** The full name is "Chicago Pickleball: Wheelie Big Dills". Use it in headings, labels, page titles, share cards and campaign names, and at the first mention in each section of copy. When the name repeats in the same passage, say "the Wheelie Big Dills". Don't use the retired form "The Chicago Wheelie Big Dills". If a sentence would carry a second colon after the name, use a comma instead ("funds Chicago Pickleball: Wheelie Big Dills, every week first"). The campaign's slug `wheelie-big-dills` and its keys stay as they are; they are identifiers, not copy.
 
 The crew's own badge, added 2026-11-05 at Alec's request. It is the crew's identity, not Adapt To Life's mark: Adapt To Life funds and supports the crew and does not run it (insurance; see the funder, not operator rule). Never merge it into an Adapt To Life logo or lockup, and keep the Adapt To Life mark separate wherever both appear.
 

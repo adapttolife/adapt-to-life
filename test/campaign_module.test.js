@@ -228,7 +228,7 @@ test("the math lives on /numbers, and every module links to it", () => {
     if (f === "numbers.html") continue;
     assert.ok(
       mod.includes(
-        '<p class="cm-note">Court time and memberships for 10 athletes.</p>',
+        '<p class="cm-note">A year of court time and memberships for 10 athletes.</p>',
       ),
       f,
     );
@@ -390,16 +390,24 @@ test("/donate says what a gift does; /numbers shows how we got it", () => {
   );
   const rows = [
     ...gifts.matchAll(
-      /<li><b>(\$[\d,]+)<\/b><span class="nb-gift-calc">(.*?)<\/span>/g,
+      /<li><b>(\$[\d,]+)<small>(a month|one time)<\/small><\/b><span class="nb-gift-calc">(.*?)<\/span>/g,
     ),
-  ].map((m) => ({ amount: m[1], calc: plain(m[2]) }));
+  ].map((m) => ({ amount: m[1], often: m[2], calc: plain(m[3]) }));
   assert.deepEqual(
     rows.map((r) => r.amount),
     [...monthly, ...once].map((g) => money(g.a)),
   );
-  for (const { amount, calc } of rows) {
-    const m = calc.match(/^([\d,]+) [a-z]+ × \$([\d,]+)$/);
-    if (!m) continue; // "1 membership", "about one US Open"
+  // Every amount says how often (Alec, Nov 7: "Should it say monthly?"), and a
+  // monthly line's arithmetic says "a month" too.
+  assert.deepEqual(
+    rows.map((r) => r.often),
+    [...monthly.map(() => "a month"), ...once.map(() => "one time")],
+  );
+  for (const { amount, often, calc } of rows) {
+    if (often === "a month")
+      assert.ok(calc.includes("a month"), `${calc} says a month`);
+    const m = calc.match(/^([\d,]+) [a-z]+(?: a month)? × \$([\d,]+)$/);
+    if (!m) continue; // "1 membership a month", "about one US Open"
     const n = (x) => +x.replace(/,/g, "");
     assert.equal(money(n(m[1]) * n(m[2])), amount, `${calc} is ${amount}`);
   }

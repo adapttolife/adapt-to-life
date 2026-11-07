@@ -131,6 +131,8 @@
   .nb-gift-col li{ display:grid; grid-template-columns:5.4rem 1fr; align-items:baseline; column-gap:0.8rem; row-gap:0.15rem; padding:0.8rem 0; border-top:1px solid rgba(59,59,70,0.12); }
   /* Each amount, its arithmetic in the route's calc style, then what it is. */
   .nb-gift-col li b{ grid-row:1 / span 2; }
+  /* How often, under every amount (Alec, Nov 7: "Should it say monthly?"). */
+  .nb-gift-col b small{ display:block; margin-top:0.35rem; font-family:var(--font-label); font-style:normal; font-size:0.64rem; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); }
   .nb-gift-col .nb-gift-calc{ grid-column:2; font-weight:800; font-variant-numeric:tabular-nums; color:var(--ink); }
   .nb-gift-col .nb-gift-what{ grid-column:2; font-size:0.94rem; }
   .nb-gifts-lead{ margin-top:0.9rem; }
@@ -235,7 +237,7 @@ fill="currentColor" stroke="none">
       <div class="nb-head reveal">
         <span class="eyebrow orange">The goal for the year ahead</span>
         <h2 class="serif statement" id="nbGoalTitle">$48,180, <em class="italic" style="color:var(--orange)">line by line.</em></h2>
-        <p class="prose">One goal, funded in this order. Every new gift goes to the first line until it is covered.</p>
+        <p class="prose">For the year ahead: a night on court every week for 10 to 15 athletes, a year of memberships for 10 of them, and six athletes on the road to the US Open in spring 2027. One goal, funded in this order: every new gift goes to the first line until it is covered.</p>
       </div>
       <!-- campaign-numbers -->
       <ol class="nb-route" aria-label="The journey: every week, then the road, then the Chicago Classic">
@@ -243,10 +245,10 @@ fill="currentColor" stroke="none">
           <span class="nb-station" aria-hidden="true"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="training" data-style="duotone"><g fill="currentColor"><path d="M176 128a48 48 0 1 1-48-48a48 48 0 0 1 48 48" opacity=".2"/><path d="M221.87 83.16A104.1 104.1 0 1 1 195.67 49l22.67-22.68a8 8 0 0 1 11.32 11.32l-96 96a8 8 0 0 1-11.32-11.32l27.72-27.72a40 40 0 1 0 17.87 31.09a8 8 0 1 1 16-.9a56 56 0 1 1-22.38-41.65l22.75-22.75a87.88 87.88 0 1 0 23.13 29.67a8 8 0 0 1 14.44-6.9"/></g></svg></span>
           <div class="nb-part">
           <div class="nb-part-top"><span class="nb-n">01</span><h3>Every week</h3><b class="nb-sum">$27,180<small> a year</small></b></div>
-          <p class="nb-detail">Court time and memberships for 10 athletes, so they can play every week and train to compete. Every new gift starts here.</p>
+          <p class="nb-detail">A year of court time and memberships for 10 athletes, so they can play every week and train to compete. Every new gift starts here.</p>
           <div class="nb-prog" data-nb-row="year" hidden><div class="nb-prog-top"><span class="nb-prog-k">Covered so far</span><span class="nb-prog-fig" data-nb-fig="year"></span></div><div class="nb-lane"><div class="nb-track"><span class="nb-fill nb-fill--kind" data-nb-kind="year"></span><span class="nb-fill" data-nb-fill="year"></span></div><span class="nb-pct" data-nb-pct="year"></span></div></div>
           <ul class="nb-lines" aria-label="How we got $27,180">
-            <li><span class="nb-k">Court time at ACE</span><span class="nb-calc">52 nights &times; $225</span><b>$11,700</b><small>A night is 10 to 15 athletes. A drop-in at ACE is $15, so a night for up to 15 is $225.</small></li>
+            <li><span class="nb-k">Court time at ACE</span><span class="nb-calc">52 nights &times; $225</span><b>$11,700</b><small>One night a week for a year. A night is 10 to 15 athletes, and a drop-in at ACE is $15, so a night for up to 15 is $225.</small></li>
             <li><span class="nb-k">Memberships</span><span class="nb-calc">10 athletes &times; $1,548</span><b>$15,480</b><small>A membership is $129 a month, or $1,548 a year, for unlimited sessions. It takes many sessions a week to compete in tournaments and build a ranking.</small></li>
           </ul>
           </div>
@@ -255,7 +257,7 @@ fill="currentColor" stroke="none">
           <span class="nb-station" aria-hidden="true"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="travel" data-style="duotone"><g fill="currentColor"><path d="m209 81l-33 31l32 88l-24 24l-48-72l-24 24v24l-24 24l-16-40l-40-16l24-24h24l24-24l-72-48l24-24l88 32l31-33a24 24 0 0 1 34 34" opacity=".2"/><path d="m185.33 114.21l29.14-27.43l.17-.16a32 32 0 0 0-45.26-45.26l-.16.17l-27.43 29.14l-83-30.2a8 8 0 0 0-8.39 1.86l-24 24a8 8 0 0 0 1.22 12.31l63.89 42.59L76.69 136H56a8 8 0 0 0-5.65 2.34l-24 24A8 8 0 0 0 29 175.42l36.82 14.73l14.7 36.75l.06.16a8 8 0 0 0 13.18 2.47l23.87-23.88A8 8 0 0 0 120 200v-20.69l14.76-14.76l42.59 63.89a8 8 0 0 0 12.31 1.22l24-24a8 8 0 0 0 1.86-8.39Zm-.07 97.23l-42.59-63.89a8 8 0 0 0-5.87-3.55a7 7 0 0 0-.79 0a8 8 0 0 0-5.66 2.34l-24 24A8 8 0 0 0 104 176v20.69l-13.07 13.07L79.43 181a8 8 0 0 0-4.43-4.43l-28.74-11.5L59.32 152H80a8 8 0 0 0 5.66-2.34l24-24a8 8 0 0 0-1.22-12.32l-63.88-42.6l13.5-13.49l83.22 30.26a8 8 0 0 0 8.56-2l30.94-32.88a16 16 0 0 1 22.62 22.59l-32.87 30.94a8 8 0 0 0-2 8.56l30.26 83.22Z"/></g></svg></span>
           <div class="nb-part">
           <div class="nb-part-top"><span class="nb-n">02</span><h3>The Road to the US Open</h3><b class="nb-sum">$21,000</b></div>
-          <p class="nb-detail">Tournaments through the year to build rankings, then Naples. The US Open picks players by lottery, so nothing is guaranteed. Money raised for the road earlier, the popcorn drive included, stays on the road. <a href="/send-6">See the road</a></p>
+          <p class="nb-detail">Tournaments through the year to build rankings, then Naples in spring 2027. The US Open picks players by lottery, so nothing is guaranteed. Money raised for the road earlier, the popcorn drive included, stays on the road. <a href="/send-6">See the road</a></p>
           <div class="nb-prog" data-nb-row="send-6" hidden><div class="nb-prog-top"><span class="nb-prog-k">Covered so far</span><span class="nb-prog-fig" data-nb-fig="send-6"></span></div><div class="nb-lane"><div class="nb-track nb-track--seats"><span class="nb-fill nb-fill--kind" data-nb-kind="send-6"></span><span class="nb-fill" data-nb-fill="send-6"></span></div><span class="nb-pct" data-nb-pct="send-6"></span></div></div>
           <ul class="nb-lines" aria-label="How we got $21,000">
             <li><span class="nb-k">The US Open</span><span class="nb-calc">6 athletes &times; about $3,500</span><b>$21,000</b><small>What it has cost each athlete the last couple of years: entry fees, travel and an accessible room in Naples.</small></li>
@@ -304,18 +306,18 @@ fill="currentColor" stroke="none">
         <div class="nb-gift-col reveal">
           <h3>Monthly</h3>
           <ul>
-            <li><b>$60</b><span class="nb-gift-calc">4 nights &times; $15</span><span class="nb-gift-what">Four nights on court for one athlete.</span></li>
-            <li><b>$129</b><span class="nb-gift-calc">1 membership</span><span class="nb-gift-what">Unlimited sessions for one athlete to compete.</span></li>
-            <li><b>$900</b><span class="nb-gift-calc">4 nights &times; $225</span><span class="nb-gift-what">Four nights on court for up to 15 athletes.</span></li>
+            <li><b>$60<small>a month</small></b><span class="nb-gift-calc">4 nights a month &times; $15</span><span class="nb-gift-what">One athlete on court four nights every month.</span></li>
+            <li><b>$129<small>a month</small></b><span class="nb-gift-calc">1 membership a month</span><span class="nb-gift-what">One athlete&rsquo;s membership: unlimited sessions every month.</span></li>
+            <li><b>$900<small>a month</small></b><span class="nb-gift-calc">4 nights a month &times; $225</span><span class="nb-gift-what">Up to 15 athletes on court four nights every month.</span></li>
           </ul>
         </div>
         <div class="nb-gift-col reveal">
           <h3>One time</h3>
           <ul>
-            <li><b>$15</b><span class="nb-gift-calc">1 night &times; $15</span><span class="nb-gift-what">One night on court for one athlete.</span></li>
-            <li><b>$225</b><span class="nb-gift-calc">15 athletes &times; $15</span><span class="nb-gift-what">One night on court for up to 15 athletes.</span></li>
-            <li><b>$1,548</b><span class="nb-gift-calc">12 months &times; $129</span><span class="nb-gift-what">A year of unlimited sessions for one athlete.</span></li>
-            <li><b>$3,500</b><span class="nb-gift-calc">about one US Open</span><span class="nb-gift-what">Entry fees, travel and an accessible room in Naples, for one athlete.</span></li>
+            <li><b>$15<small>one time</small></b><span class="nb-gift-calc">1 night &times; $15</span><span class="nb-gift-what">One athlete on court for one night.</span></li>
+            <li><b>$225<small>one time</small></b><span class="nb-gift-calc">15 athletes &times; $15</span><span class="nb-gift-what">Up to 15 athletes on court for one night.</span></li>
+            <li><b>$1,548<small>one time</small></b><span class="nb-gift-calc">12 months &times; $129</span><span class="nb-gift-what">One athlete&rsquo;s membership for a full year.</span></li>
+            <li><b>$3,500<small>one time</small></b><span class="nb-gift-calc">about one US Open</span><span class="nb-gift-what">One athlete&rsquo;s US Open: entry fees, travel and an accessible room in Naples.</span></li>
           </ul>
         </div>
       </div>
@@ -495,7 +497,7 @@ fill="currentColor" stroke="none">
     }
   })();
 </script>
-<script src="/js/campaigns.js?v=5f1e3af5"></script>
+<script src="/js/campaigns.js?v=123ad3f4"></script>
 <script>window.ATLCampaigns.module();</script>
 <script src="/js/subscribe.js?v=7efaf550" defer></script>
 <script src="/js/turnstile-lazy.js?v=12e9b811" defer></script>

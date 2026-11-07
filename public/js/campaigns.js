@@ -858,7 +858,9 @@
         if (d.goal)
           each(m, "[data-cm-sub]", function (n) {
             n.textContent =
-              (kind ? "toward our " : "raised toward our ") + money(d.goal) + " goal";
+              (kind ? "toward our " : "raised toward our ") +
+              money(d.goal) +
+              " goal for the year ahead";
           });
         each(m, "[data-cm-total]", function (n) {
           n.textContent = "$0";

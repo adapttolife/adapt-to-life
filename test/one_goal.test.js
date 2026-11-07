@@ -168,3 +168,18 @@ test("the club's court time: $10 a night for 10 athletes, 52 nights, never named
     assert.ok(!/\$5 (an|a|per) (athlete|person|drop)/i.test(t), f + " names what we pay");
   }
 });
+
+test("/api/raised?c=wbd hands the court time to the page beside the gifts", async () => {
+  const { default: worker } = await import("../src/index.js");
+  const real = globalThis.fetch;
+  globalThis.fetch = async () => new Response(JSON.stringify({ raised: 1975, donors: 23 }), { status: 200 });
+  try {
+    const res = await worker.fetch(new Request("https://adapttolife.org/api/raised?c=wbd"), ENV, { waitUntil() {} });
+    const d = await res.json();
+    assert.equal(d.raised, 4979, "gifts only");
+    assert.equal(d.inkind, 5200, "court time, apart");
+    assert.equal(d.parts.year.inkind, 5200);
+  } finally {
+    globalThis.fetch = real;
+  }
+});

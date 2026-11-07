@@ -220,11 +220,21 @@ export function renderNumbers() {
       `  <li class="nb-stop nb-stop--finish">`,
       `    <span class="nb-station nb-station--finish" aria-hidden="true">${flag.replace("nb-flag", "nb-station-flag")}</span>`,
       `    <div class="nb-total"><p class="nb-total-top"><span>${CAMPAIGN.parts.map((p) => esc(p.label === "The Road to the US Open" ? "the road" : p.label)).join(" + ")}</span><b>${usd(CAMPAIGN.goal)}</b></p>` +
-        `<div class="nb-total-prog" data-nb-total hidden><div class="nb-track nb-track--lg"><span class="nb-fill nb-fill--kind" data-nb-kind="total"></span><span class="nb-fill" data-nb-fill="total"></span></div><p class="nb-legend" data-nb-legend></p>` +
+        // Under the bar, one small ledger in the bar's order: each part with a
+        // swatch of its segment, then so far and to go under a rule. Every
+        // amount sits in one right-hand column, so it adds up at a glance
+        // (Alec, Nov 7 2026: "This looks horrible. We can do better.").
+        `<div class="nb-total-prog" data-nb-total hidden><div class="nb-track nb-track--lg"><span class="nb-fill nb-fill--kind" data-nb-kind="total"></span><span class="nb-fill" data-nb-fill="total"></span></div>` +
+        `<ul class="nb-ledger">` +
+        `<li data-nb-part="kind" hidden><i class="nb-swatch nb-swatch--kind" aria-hidden="true"></i><span class="nb-ledger-k">Court time<small>From a partner club</small></span><span class="nb-ledger-v" data-nb-sum="kind"></span></li>` +
+        `<li><i class="nb-swatch" aria-hidden="true"></i><span class="nb-ledger-k">Gifts` +
         (SUPPORTERS
-          ? `<p class="nb-people" data-nb-people hidden>The gifts came from <span data-nb-donors></span> online and ${SUPPORTERS} ${SUPPORTER_LABEL}.</p>`
+          ? `<small class="nb-people" data-nb-people hidden>From <span data-nb-donors></span> online and ${SUPPORTERS} ${SUPPORTER_LABEL}</small>`
           : "") +
-        `</div></div>`,
+        `</span><span class="nb-ledger-v" data-nb-sum="gifts"></span></li>` +
+        `<li class="nb-ledger-sum nb-ledger-so"><span class="nb-ledger-k">So far</span><span class="nb-ledger-v" data-nb-sum="so"></span></li>` +
+        `<li class="nb-ledger-sum"><span class="nb-ledger-k">To go</span><span class="nb-ledger-v" data-nb-sum="left"></span></li>` +
+        `</ul></div></div>`,
       `  </li>`,
     ].join("\n"),
   );

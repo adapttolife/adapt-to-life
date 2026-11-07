@@ -559,6 +559,48 @@ async function localAsnmAdminCollection(request, env, url) {
 }
 
 export async function localAsnmAdminOperations(request, env, url) {
+  if (url.pathname === "/admin/api/asnm/admin-data/maintenance-mode") {
+    try {
+      if (request.method === "GET") {
+        const setting = await env.ASNM_DB.prepare(
+          "SELECT value FROM site_settings WHERE key = 'maintenance_mode'",
+        ).first();
+        return json(
+          {
+            ok: true,
+            enabled: ["1", "true"].includes(String(setting?.value || "").toLowerCase()),
+          },
+          200,
+          ADMIN_CACHE,
+        );
+      }
+
+      if (request.method === "PATCH") {
+        const body = await request.json().catch(() => null);
+        const value = body?.enabled === true ? "1" : "0";
+        await env.ASNM_DB.prepare(
+          `INSERT INTO site_settings (key, value, updated_at)
+           VALUES ('maintenance_mode', ?, ?)
+           ON CONFLICT(key) DO UPDATE SET
+             value = excluded.value,
+             updated_at = excluded.updated_at`,
+        )
+          .bind(value, new Date().toISOString())
+          .run();
+        return json({ ok: true, enabled: value === "1" }, 200, ADMIN_CACHE);
+      }
+
+      return json({ ok: false, error: "Method not allowed" }, 405, ADMIN_CACHE);
+    } catch (error) {
+      console.error("ASNM maintenance mode request failed", error);
+      return json(
+        { ok: false, error: "Maintenance mode is temporarily unavailable." },
+        503,
+        ADMIN_CACHE,
+      );
+    }
+  }
+
   const featureMatch = url.pathname.match(
     /^\/admin\/api\/asnm\/admin-data\/feature-toggles(?:\/([a-z0-9-]{1,80}))?$/i,
   );
@@ -1967,7 +2009,10 @@ async function handleRaised(request, env) {
   // bar asked for before the split, so cached pages stay right.
   const asked = new URL(request.url).searchParams.get("c") || "send-6";
   const key = CAMPAIGN_KEYS.includes(asked) ? asked : "send-6";
-  const { raised, online, offline, goal, parts, donors } = await campaignPosition(env, key);
+  const { raised, online, offline, goal, parts, donors } = await campaignPosition(
+    env,
+    key,
+  );
   // donors: Givebutter's count of people who gave online (social proof on the
   // campaign module). Popcorn buyers are not in it, so the site says "donors",
   // never "supporters" or a total of everyone.

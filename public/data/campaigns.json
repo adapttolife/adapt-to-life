@@ -20,8 +20,8 @@
           "goal": 27180,
           "detail": "Court time and memberships, so athletes can play every week and train to compete. Every new gift starts here.",
           "math": [
-            { "label": "Court time at ACE", "qty": 52, "of": "nights", "unit": 225, "note": "A night is 10 to 15 athletes. A drop in at ACE is $15, so up to 15 is $225." },
-            { "label": "Memberships", "qty": 10, "of": "athletes", "unit": 1548, "note": "A membership is $129 a month for unlimited sessions. It takes many sessions a week to compete in tournaments and build a ranking." }
+            { "label": "Court time at ACE", "qty": 52, "of": "nights", "unit": 225, "note": "A night is 10 to 15 athletes. A drop-in at ACE is $15, so a night for up to 15 is $225." },
+            { "label": "Memberships", "qty": 10, "of": "athletes", "unit": 1548, "note": "A membership is $129 a month, or $1,548 a year, for unlimited sessions. It takes many sessions a week to compete in tournaments and build a ranking." }
           ]
         },
         {
@@ -29,7 +29,7 @@
           "label": "The Road to the US Open",
           "goal": 21000,
           "page": "/send-6",
-          "detail": "Tournaments through the year to build rankings, then Naples. The US Open picks players by lottery, so nothing is guaranteed.",
+          "detail": "Tournaments through the year to build rankings, then Naples. The US Open picks players by lottery, so nothing is guaranteed. Money raised for the road earlier, the popcorn drive included, stays on the road.",
           "_seats": "Alec, Nov 7 2026: the six seats are the six athletes on the crew page (Meet the crew, /pickleball). Same names, same order, same photos. Faces and figures are cut from public/images/pickleball/<slug>.webp by scripts/build-seats.mjs.",
           "seats": [
             { "name": "Juan", "slug": "juan", "page": "/juan" },

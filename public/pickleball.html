@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=33c022c9">
+<link rel="stylesheet" href="/css/site.css?v=ea1e4efe">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches&&"IntersectionObserver" in window)document.documentElement.classList.add("ace-motion");</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SportsTeam","name":"Chicago Pickleball: Wheelie Big Dills","alternateName":["Wheelie Big Dills","Chicago Wheelie Big Dills"],"sport":"Wheelchair pickleball","url":"https://adapttolife.org/pickleball","description":"A crew of wheelchair pickleball players growing the sport across the Chicago area, funded and supported by Adapt To Life.","areaServed":{"@type":"City","name":"Chicago"},"logo":"https://adapttolife.org/images/pickleball/wheelie-big-dills-badge.webp","sponsor":{"@type":"NGO","name":"Adapt To Life","url":"https://adapttolife.org"}}</script>
@@ -271,6 +271,7 @@
   .pb-cadence{ gap:1.3rem; }
   .pb-tag{ display:inline-block; margin-left:0.5rem; padding:0.2rem 0.55rem; border-radius:999px; vertical-align:0.12em; font-family:var(--font-label); font-style:normal; font-weight:800; font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase; background:var(--paper); box-shadow:inset 0 0 0 1px rgba(59,59,70,0.12); color:var(--ink-soft); }
   .pb-tag.is-now{ background:rgb(var(--accent-rgb) / 0.13); color:var(--orange-ink); }
+  .pb-tag.is-next{ background:color-mix(in srgb, var(--info) var(--tag-tint), transparent); color:var(--info-ink); }
   .pb-then{ margin-top:1.3rem; max-width:62ch; line-height:1.5; }
   .pb-card{ scroll-margin-top:96px; }
   .pb-card .pb-tag{ position:absolute; top:1rem; left:1rem; z-index:1; margin:0; padding:0.32rem 0.75rem; border-radius:999px; background:var(--orange); color:var(--night); font-family:var(--font-label); font-weight:800; font-size:0.7rem; letter-spacing:0.16em; text-transform:uppercase; line-height:1; }
@@ -436,8 +437,8 @@ fill="currentColor" stroke="none">
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navOurWork">Our Work<svg class="caret" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="caret" data-style="bold"><path fill="currentColor" d="m216.49 104.49l-80 80a12 12 0 0 1-17 0l-80-80a12 12 0 0 1 17-17L128 159l71.51-71.52a12 12 0 0 1 17 17Z"/></svg></button>
         <div class="nav-panel" id="navOurWork">
           <a href="/hustle-and-heart"><span class="np-t">Hustle &amp; Heart Fund</span><span class="np-d">Support for equipment, training, and travel</span></a>
-          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d">In beta · Find adaptive programs by sport and location</span></a>
-          <a href="/adapt-body-shop"><span class="np-t">Adapt Body Shop</span><span class="np-d">Coming soon · Gear for the community</span></a>
+          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d"><span class="tag tag--info">In beta</span> Find adaptive programs by sport and location</span></a>
+          <a href="/adapt-body-shop"><span class="np-t">Adapt Body Shop</span><span class="np-d"><span class="tag tag--neutral">Coming soon</span> Gear for the community</span></a>
         </div>
       </div>
       <div class="nav-group">
@@ -466,8 +467,8 @@ fill="currentColor" stroke="none">
     <div class="wrap mwrap">
       <span class="m-group">Our Work</span>
       <a class="m-sub" href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
-      <a class="m-sub" href="/adaptive-sports-near-me">Adaptive Sports Near Me · In beta</a>
-      <a class="m-sub" href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
+      <a class="m-sub" href="/adaptive-sports-near-me">Adaptive Sports Near Me <span class="tag tag--info">In beta</span></a>
+      <a class="m-sub" href="/adapt-body-shop">Adapt Body Shop <span class="tag tag--neutral">Coming soon</span></a>
       <span class="m-group">Get Involved</span>
       <a class="m-sub" href="/volunteer">Volunteer</a>
       <a class="m-sub" href="/sponsorship">Partners</a>
@@ -704,17 +705,17 @@ fill="currentColor" stroke="none">
           <p class="cm-hero"><b data-cm-total>$48,180</b><span data-cm-sub>our goal for the year ahead</span><span class="cm-split" data-cm-split hidden></span></p>
           <div class="cm-rows">
             <div class="cm-row" data-part-row="year">
-              <div class="cm-row-top"><b>Every week</b><span class="cm-badge cm-badge--accent">First priority</span><span class="cm-badge cm-badge--action" data-part-pct="year" hidden></span><span class="cm-fig" data-part-fig="year">$27,180 a year</span></div>
+              <div class="cm-row-top"><b>Every week</b><span class="cm-badge cm-badge--accent">First priority</span><span class="cm-badge cm-badge--good" data-part-pct="year" hidden></span><span class="cm-fig" data-part-fig="year">$27,180 a year</span></div>
               <div class="cm-track"><span class="cm-fill cm-fill--kind" data-part-kind="year"></span><span class="cm-fill" data-part-fill="year"></span><span class="cm-start" aria-hidden="true"></span></div>
               <p class="cm-note" data-part-note="year">Court time and memberships. Every new gift starts here.</p>
             </div>
             <div class="cm-row" data-part-row="send-6">
-              <div class="cm-row-top"><b>The Road to the US Open</b><span class="cm-badge cm-badge--action" data-part-pct="send-6" hidden></span><span class="cm-fig" data-part-fig="send-6">$21,000</span></div>
+              <div class="cm-row-top"><b>The Road to the US Open</b><span class="cm-badge cm-badge--good" data-part-pct="send-6" hidden></span><span class="cm-fig" data-part-fig="send-6">$21,000</span></div>
               <div class="cm-track"><span class="cm-fill cm-fill--action" data-part-fill="send-6"></span><span class="cm-start" aria-hidden="true"></span></div>
               <p class="cm-note">Six athletes, about $3,500 each. <a href="/send-6">See the road</a></p>
             </div>
             <div class="cm-row cm-row--next">
-              <div class="cm-row-top"><b>The Chicago Classic</b><span class="cm-badge cm-badge--quiet">Next goal</span><span class="cm-fig">Date to come</span></div>
+              <div class="cm-row-top"><b>The Chicago Classic</b><span class="cm-badge cm-badge--info">Next goal</span><span class="cm-fig">Date to come</span></div>
               <div class="cm-track cm-track--locked" aria-hidden="true"></div>
               <p class="cm-note">Our goal: free registration, transportation and hotels for every athlete.</p>
             </div>
@@ -748,7 +749,7 @@ fill="currentColor" stroke="none">
         <ol class="pb-prio pb-cadence">
           <li><b>Every week <em class="pb-tag is-now">First</em></b><span>$27,180 a year: court time at ACE every week ($11,700) and memberships so ten athletes can train all year ($15,480).</span></li>
           <li><b>The Road to the US Open</b><span>$21,000: six athletes, about $3,500 each, roughly what the US Open has cost the last couple of years. Money raised for Send 6 stays on the road. <a class="textlink" href="/send-6" style="font:inherit;letter-spacing:inherit;">See the road</a></span></li>
-          <li><b>The Chicago Classic <em class="pb-tag">Next</em></b><span>Our goal is a tournament with free registration, transportation and hotels for every athlete. It joins the goal once it has a date. <a class="textlink" href="/chicago-classic" style="font:inherit;letter-spacing:inherit;">See the goal</a></span></li>
+          <li><b>The Chicago Classic <em class="pb-tag is-next">Next</em></b><span>Our goal is a tournament with free registration, transportation and hotels for every athlete. It joins the goal once it has a date. <a class="textlink" href="/chicago-classic" style="font:inherit;letter-spacing:inherit;">See the goal</a></span></li>
         </ol>
         <p class="pb-then">Equipment sits outside the goal. A sport chair runs $4,000 to $6,000, and insurance doesn&rsquo;t cover it. Most of the athletes we support have one; when one needs a chair, we&rsquo;ll raise for that athlete.</p>
       </div>
@@ -838,8 +839,8 @@ fill="currentColor" stroke="none">
         <a href="/tim">Tim&rsquo;s Story</a>
         <a href="/karen">Karen&rsquo;s Story</a>
         <a href="/juan">Juan&rsquo;s Story</a>
-        <a href="/adaptive-sports-near-me">Adaptive Sports Near Me · In beta</a>
-        <a href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
+        <a href="/adaptive-sports-near-me">Adaptive Sports Near Me <span class="tag tag--info">In beta</span></a>
+        <a href="/adapt-body-shop">Adapt Body Shop <span class="tag tag--neutral">Coming soon</span></a>
                 <a href="/roadmap">Roadmap</a>
       </div>
       <div class="col">

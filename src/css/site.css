@@ -56,7 +56,7 @@
 
   /* form status — semantic, not brand. Repainting pass/fail in brand accents
      would cost legibility to buy consistency nobody asked for. */
-  --ok: #2e7d32;
+  --ok: var(--good-ink); /* form success: the supporting green */
   --err: #c0392b;
 
   /* ink + canvas (warm, never pure white/black) */
@@ -1056,6 +1056,80 @@ em.italic[style*="--orange"] {
   .gift-list li:nth-child(4) {
     border-top: 0;
   }
+}
+
+/* ---- supporting colours -------------------------------------------------
+   Alec, Nov 7 2026: "let's lean into how they throw in additional colors with
+   their brand colors" (T3 Code). Night, Orange, Off-white and Beige stay the
+   brand. Each supporting colour has one job and only ever appears as a small
+   label, a dot or a data mark, never a background, headline or button:
+     green  = live, funded, gifts
+     blue   = next, in progress, court time
+     yellow = wins (already in use)    red = errors (already in use)
+     grey   = not yet
+   Labels follow T3 Code's badge recipe: an 8% tint (16% on dark) behind a
+   deeper shade for the text. Every label reads at 5:1 or better on the
+   off-white card, the beige page, Night and the raised Night card. */
+:root {
+  --good: #008300;
+  --good-ink: #006300;
+  --good-dot: #008300;
+  --info: #2a78d6;
+  --info-ink: #1c5cab;
+  --info-dot: #2a78d6;
+  --tag-tint: 8%;
+  --tag-neutral-bg: rgba(59, 59, 70, 0.07);
+  --tag-neutral-ink: #6a675e;
+}
+.dark,
+.on-dark,
+.footer,
+.cm[data-theme="light"] .cm-card {
+  --good-ink: #4cc38a;
+  --good-dot: #4cc38a;
+  --info-ink: #86b6ef;
+  --info-dot: #86b6ef;
+  --tag-tint: 16%;
+  --tag-neutral-bg: rgba(249, 247, 242, 0.08);
+  --tag-neutral-ink: #cfc9bd;
+}
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.3em 0.72em;
+  border-radius: 999px;
+  font-family: var(--font-label);
+  font-size: 0.66rem;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  white-space: nowrap;
+  vertical-align: 0.12em;
+}
+.tag--good {
+  background: color-mix(in srgb, var(--good) var(--tag-tint), transparent);
+  color: var(--good-ink);
+}
+.tag--info {
+  background: color-mix(in srgb, var(--info) var(--tag-tint), transparent);
+  color: var(--info-ink);
+}
+.tag--neutral {
+  background: var(--tag-neutral-bg);
+  color: var(--tag-neutral-ink);
+}
+/* Roadmap phase tiles: the icon wears the phase's colour on the dark tile. */
+.ix-tile.is-good {
+  color: #4cc38a;
+}
+.ix-tile.is-info {
+  color: #86b6ef;
+}
+.ix-tile.is-neutral {
+  color: #cfc9bd;
 }
 
 /* ---- community strip ----------------------------------------------------- */
@@ -3468,15 +3542,19 @@ a.win-band:focus-visible {
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--action) 22%, transparent);
 }
 .cm-dot {
+  --pulse: var(--live);
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--accent);
-  animation: cmPulse 1.8s var(--ease) infinite;
+  background: var(--live);
+  animation: cmPulseLive 1.8s var(--ease) infinite;
 }
-.cm[data-theme="light"] .cm-dot {
-  background: var(--action);
-  animation-name: cmPulseAction;
+/* Live is green: on the dark section the lighter step, on the sand the deeper. */
+.cm[data-theme="dark"] {
+  --live: #4cc38a;
+}
+.cm[data-theme="light"] {
+  --live: #008300;
 }
 .cm-status-sep {
   width: 1px;
@@ -3645,6 +3723,15 @@ a.win-band:focus-visible {
   background: color-mix(in srgb, var(--card-text) 8%, transparent);
   color: var(--card-muted);
 }
+/* Supporting colours in the module: progress is green, the next goal blue. */
+.cm-badge--good {
+  background: color-mix(in srgb, var(--good) calc(var(--tag-tint) + 4%), transparent);
+  color: var(--good-ink);
+}
+.cm-badge--info {
+  background: color-mix(in srgb, var(--info) calc(var(--tag-tint) + 4%), transparent);
+  color: var(--info-ink);
+}
 /* On the off-white money card (dark theme) the quiet chip and the switch track
    are the page off-white, not a grey mix: two light tones, never a third. */
 .cm[data-theme="dark"] .cm-badge--quiet,
@@ -3714,8 +3801,9 @@ a.win-band:focus-visible {
   height: 12px;
   margin-top: -6px;
   border-radius: 50%;
+  --pulse: var(--gift);
   background: var(--gift);
-  animation: cmPulse 1.8s var(--ease) infinite;
+  animation: cmPulseLive 1.8s var(--ease) infinite;
 }
 .cm-row.is-empty .cm-start {
   display: block;
@@ -3912,6 +4000,15 @@ a.win-band:focus-visible {
   }
   50% {
     box-shadow: 0 0 0 9px color-mix(in srgb, var(--accent) 6%, transparent);
+  }
+}
+@keyframes cmPulseLive {
+  0%,
+  100% {
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--pulse) 28%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 9px color-mix(in srgb, var(--pulse) 6%, transparent);
   }
 }
 @keyframes cmPulseAction {

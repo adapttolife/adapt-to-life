@@ -179,6 +179,12 @@ const SYSTEM = {
   "data-gift": "#008300", // gifts, on both cards
   "data-kind": "#2A78D6", // court time a partner club gives, light card
   "data-kind-dark": "#3987E5", // the same, stepped for the dark card
+  // Their text shades for labels (T3 Code's recipe: a tint behind a deeper
+  // shade). 5:1 or better on off-white, beige, Night and the raised Night.
+  "good-ink": "#006300", // green label text on light
+  "good-ink-dark": "#4CC38A", // green label text and dots on dark
+  "info-ink": "#1C5CAB", // blue label text on light
+  "info-ink-dark": "#86B6EF", // blue label text and dots on dark
   err: "#C0392B",
   black: "#000000", // shadows only
 };

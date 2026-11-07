@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=33c022c9">
+<link rel="stylesheet" href="/css/site.css?v=ea1e4efe">
 <link rel="stylesheet" href="/css/page-header.css?v=beb972ef">
 <!-- band:vars --><style data-band-vars>:root{--pg-band-wide:url('/images/hero/panels/pg-band-2-wide.9ac73821.webp');--pg-band-tall:url('/images/hero/panels/pg-band-2-tall.f9278c2d.webp');--pg-give-wide:url('/images/hero/panels/pg-give-wide.b46beed5.webp');--pg-give-tall:url('/images/hero/panels/pg-give-tall.5cece3a5.webp');}</style>
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
@@ -46,6 +46,7 @@
   .nb-part-top h3{ margin:0; font-size:clamp(1.15rem,2.4vw,1.4rem); font-weight:800; letter-spacing:-0.01em; }
   .nb-badge{ display:inline-flex; align-items:center; align-self:center; height:22px; padding:0 8px; border-radius:var(--r-sm); font-size:0.72rem; font-weight:800; background:color-mix(in srgb, var(--orange) 14%, transparent); color:var(--orange-ink); }
   .nb-badge--quiet{ background:var(--canvas); color:var(--muted); }
+  .nb-badge--info{ background:color-mix(in srgb, var(--info) 10%, transparent); color:var(--info-ink); }
   .nb-sum{ margin-left:auto; font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(1.5rem,3.4vw,2rem); letter-spacing:-0.03em; font-variant-numeric:tabular-nums; color:var(--orange-ink); }
   .nb-sum small{ font-size:0.5em; font-style:normal; font-weight:700; letter-spacing:0; color:var(--muted); }
   .nb-sum--tbd{ font-family:inherit; font-size:1rem; font-style:normal; font-weight:700; letter-spacing:0; color:var(--muted); }
@@ -111,8 +112,8 @@ fill="currentColor" stroke="none">
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navOurWork">Our Work<svg class="caret" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="caret" data-style="bold"><path fill="currentColor" d="m216.49 104.49l-80 80a12 12 0 0 1-17 0l-80-80a12 12 0 0 1 17-17L128 159l71.51-71.52a12 12 0 0 1 17 17Z"/></svg></button>
         <div class="nav-panel" id="navOurWork">
           <a href="/hustle-and-heart"><span class="np-t">Hustle &amp; Heart Fund</span><span class="np-d">Support for equipment, training, and travel</span></a>
-          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d">In beta · Find adaptive programs by sport and location</span></a>
-          <a href="/adapt-body-shop"><span class="np-t">Adapt Body Shop</span><span class="np-d">Coming soon · Gear for the community</span></a>
+          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d"><span class="tag tag--info">In beta</span> Find adaptive programs by sport and location</span></a>
+          <a href="/adapt-body-shop"><span class="np-t">Adapt Body Shop</span><span class="np-d"><span class="tag tag--neutral">Coming soon</span> Gear for the community</span></a>
         </div>
       </div>
       <div class="nav-group">
@@ -141,8 +142,8 @@ fill="currentColor" stroke="none">
     <div class="wrap mwrap">
       <span class="m-group">Our Work</span>
       <a class="m-sub" href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
-      <a class="m-sub" href="/adaptive-sports-near-me">Adaptive Sports Near Me · In beta</a>
-      <a class="m-sub" href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
+      <a class="m-sub" href="/adaptive-sports-near-me">Adaptive Sports Near Me <span class="tag tag--info">In beta</span></a>
+      <a class="m-sub" href="/adapt-body-shop">Adapt Body Shop <span class="tag tag--neutral">Coming soon</span></a>
       <span class="m-group">Get Involved</span>
       <a class="m-sub" href="/volunteer">Volunteer</a>
       <a class="m-sub" href="/sponsorship">Partners</a>
@@ -192,7 +193,7 @@ fill="currentColor" stroke="none">
           </ul>
         </li>
         <li class="nb-part nb-part--next">
-          <div class="nb-part-top"><span class="nb-n">03</span><h3>The Chicago Classic</h3><span class="nb-badge nb-badge--quiet">Next goal</span><b class="nb-sum nb-sum--tbd">Date to come</b></div>
+          <div class="nb-part-top"><span class="nb-n">03</span><h3>The Chicago Classic</h3><span class="nb-badge nb-badge--info">Next goal</span><b class="nb-sum nb-sum--tbd">Date to come</b></div>
           <p class="nb-detail">Our goal: free registration, transportation and hotels for every athlete. It joins the goal once it has a date and a budget. <a href="/chicago-classic">See the Classic</a></p>
         </li>
       </ol>
@@ -255,17 +256,17 @@ fill="currentColor" stroke="none">
           <p class="cm-hero"><b data-cm-total>$48,180</b><span data-cm-sub>our goal for the year ahead</span><span class="cm-split" data-cm-split hidden></span></p>
           <div class="cm-rows">
             <div class="cm-row" data-part-row="year">
-              <div class="cm-row-top"><b>Every week</b><span class="cm-badge cm-badge--accent">First priority</span><span class="cm-badge cm-badge--action" data-part-pct="year" hidden></span><span class="cm-fig" data-part-fig="year">$27,180 a year</span></div>
+              <div class="cm-row-top"><b>Every week</b><span class="cm-badge cm-badge--accent">First priority</span><span class="cm-badge cm-badge--good" data-part-pct="year" hidden></span><span class="cm-fig" data-part-fig="year">$27,180 a year</span></div>
               <div class="cm-track"><span class="cm-fill cm-fill--kind" data-part-kind="year"></span><span class="cm-fill" data-part-fill="year"></span><span class="cm-start" aria-hidden="true"></span></div>
               <p class="cm-note" data-part-note="year">Court time and memberships. Every new gift starts here.</p>
             </div>
             <div class="cm-row" data-part-row="send-6">
-              <div class="cm-row-top"><b>The Road to the US Open</b><span class="cm-badge cm-badge--action" data-part-pct="send-6" hidden></span><span class="cm-fig" data-part-fig="send-6">$21,000</span></div>
+              <div class="cm-row-top"><b>The Road to the US Open</b><span class="cm-badge cm-badge--good" data-part-pct="send-6" hidden></span><span class="cm-fig" data-part-fig="send-6">$21,000</span></div>
               <div class="cm-track"><span class="cm-fill cm-fill--action" data-part-fill="send-6"></span><span class="cm-start" aria-hidden="true"></span></div>
               <p class="cm-note">Six athletes, about $3,500 each. <a href="/send-6">See the road</a></p>
             </div>
             <div class="cm-row cm-row--next">
-              <div class="cm-row-top"><b>The Chicago Classic</b><span class="cm-badge cm-badge--quiet">Next goal</span><span class="cm-fig">Date to come</span></div>
+              <div class="cm-row-top"><b>The Chicago Classic</b><span class="cm-badge cm-badge--info">Next goal</span><span class="cm-fig">Date to come</span></div>
               <div class="cm-track cm-track--locked" aria-hidden="true"></div>
               <p class="cm-note">Our goal: free registration, transportation and hotels for every athlete.</p>
             </div>
@@ -349,8 +350,8 @@ fill="currentColor" stroke="none">
         <a href="/tim">Tim&rsquo;s Story</a>
         <a href="/karen">Karen&rsquo;s Story</a>
         <a href="/juan">Juan&rsquo;s Story</a>
-        <a href="/adaptive-sports-near-me">Adaptive Sports Near Me · In beta</a>
-        <a href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
+        <a href="/adaptive-sports-near-me">Adaptive Sports Near Me <span class="tag tag--info">In beta</span></a>
+        <a href="/adapt-body-shop">Adapt Body Shop <span class="tag tag--neutral">Coming soon</span></a>
                 <a href="/roadmap">Roadmap</a>
       </div>
       <div class="col">

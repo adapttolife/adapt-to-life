@@ -134,7 +134,7 @@ export function renderNumbers() {
     parts.push(
       [
         `  <li class="nb-part nb-part--next">`,
-        `    <div class="nb-part-top"><span class="nb-n">${n2(CAMPAIGN.parts.length)}</span><h3>${esc(nx.label.replace(/^the /, "The "))}</h3><span class="nb-badge nb-badge--quiet">Next goal</span><b class="nb-sum nb-sum--tbd">Date to come</b></div>`,
+        `    <div class="nb-part-top"><span class="nb-n">${n2(CAMPAIGN.parts.length)}</span><h3>${esc(nx.label.replace(/^the /, "The "))}</h3><span class="nb-badge nb-badge--info">Next goal</span><b class="nb-sum nb-sum--tbd">Date to come</b></div>`,
         `    <p class="nb-detail">${nx.detail || ""}${nx.page ? ` <a href="${nx.page}">See the Classic</a>` : ""}</p>`,
         `  </li>`,
       ].join("\n"),

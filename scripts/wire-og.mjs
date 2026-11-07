@@ -62,7 +62,7 @@ const ALT = {
   "chicago-classic": "The Chicago Classic. Adapt To Life. Juan Ortiz in his sport wheelchair, paddle up, on a dark indoor court.",
   ace: "Something Chicago hasn't seen. Adapt To Life. A wheelchair pickleball player in a white cap leans on the rail with his paddle.",
   pickleball:
-    "Chicago Wheelchair Pickleball. The Chicago Wheelie Big Dills. An ecosystem for adaptive pickleball. The crew's badge, and Juan Ortiz in his sport wheelchair.",
+    "Chicago Pickleball: Wheelie Big Dills. Adapt To Life. Juan Ortiz, a wheelchair pickleball player in glasses, tosses the ball to serve from his sport wheelchair.",
   juan: "Juan Ortiz. Adapt To Life. Juan, a wheelchair pickleball player in glasses, tosses the ball to serve from his sport wheelchair.",
 };
 
@@ -79,7 +79,7 @@ const FILE = {
   _default: "home-v4-color.jpg",
   juan: "juan-v2-serve.jpg",
   brickhouse: "brickhouse-v3-crewhome.jpg",
-  pickleball: "pickleball-v4-badge.jpg",
+  pickleball: "pickleball-v5-name.jpg",
   ace: "ace-v3-partner.jpg",
   "chicago-classic": "chicago-classic-v1-date.jpg",
   "send-6": "send-6-v4-road.jpg",

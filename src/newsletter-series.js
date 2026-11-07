@@ -66,8 +66,8 @@ export const WELCOME = [
     paragraphs: [
       "Thanks for signing up.",
       {
-        text: "We’re here to expand access to adaptive sports so athletes can find their place. Right now that means the Chicago Wheelie Big Dills, a crew of wheelchair pickleball players on court every week.",
-        link: { label: "the Chicago Wheelie Big Dills", href: "/pickleball" },
+        text: "We’re here to expand access to adaptive sports so athletes can find their place. Right now that means Chicago Pickleball: Wheelie Big Dills, a crew of wheelchair pickleball players on court every week.",
+        link: { label: "Chicago Pickleball: Wheelie Big Dills", href: "/pickleball" },
       },
       "We’ll write when there’s something worth sharing.",
     ],
@@ -93,7 +93,7 @@ export const SAVED_FOR_LATER = [
     paragraphs: [
       "Thanks for signing up. I’m Alec, and I started Adapt To Life.",
       "A brochure introduced me to adaptive sports when I was six. Sport gave me somewhere to belong and something to work toward. Finding that should not come down to luck, and neither should having the support to keep playing.",
-      "Right now that means the Chicago Wheelie Big Dills, a crew of 10 to 15 wheelchair pickleball players on court every week. Next stop, Naples.",
+      "Right now that means Chicago Pickleball: Wheelie Big Dills, a crew of 10 to 15 wheelchair pickleball players on court every week. Next stop, Naples.",
       "We’ll write when there’s something worth sharing: an athlete’s story, a result, or a moment when your help counts.",
     ],
     cta: { label: "Meet the crew", href: "/pickleball" },

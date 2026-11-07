@@ -92,7 +92,7 @@ test("the welcome is built on Alec's own published words and the site's facts", 
   );
   assert.ok(
     text.includes(
-      "the Chicago Wheelie Big Dills, a crew of wheelchair pickleball players on court every week",
+      "Chicago Pickleball: Wheelie Big Dills, a crew of wheelchair pickleball players on court every week",
     ),
   );
   assert.ok(
@@ -182,14 +182,14 @@ test("the plain welcome reads as a letter, with one link, and its text twin says
     links[0],
     /^https:\/\/adapttolife\.org\/pickleball\?utm_source=newsletter/,
   );
-  assert.ok(html.includes(">the Chicago Wheelie Big Dills</a>"));
+  assert.ok(html.includes(">Chicago Pickleball: Wheelie Big Dills</a>"));
   assert.ok(
     !html.includes("background:"),
     "the mail app's own background, dark mode included",
   );
   assert.ok(text.startsWith("Thanks for signing up."));
   assert.ok(
-    text.includes("the Chicago Wheelie Big Dills (https://adapttolife.org/pickleball?"),
+    text.includes("Chicago Pickleball: Wheelie Big Dills (https://adapttolife.org/pickleball?"),
   );
   assert.ok(text.includes("\nAlec\nFounder, Adapt To Life\n"));
 });

@@ -4109,11 +4109,11 @@ a.win-band:focus-visible {
   flex: 0 0 auto;
 }
 .cm-faces .face {
-  --face: 1.7rem;
+  --face: 2rem;
   box-shadow: 0 0 0 2px var(--card);
 }
 .cm-faces .face + .face {
-  margin-left: -0.45rem;
+  margin-left: -0.28rem;
 }
 .cm-row.is-done .cm-faces .face {
   box-shadow:

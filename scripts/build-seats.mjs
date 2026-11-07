@@ -32,16 +32,22 @@ const road = data.campaigns
   .parts.find((p) => p.key === "send-6");
 const SEATS = road.seats;
 
-// Head and shoulders, as [centre x, centre y, side] in each 900px-tall
-// cutout. Set by eye against the photos; check the strip after a new photo.
+// The face, centred: [centre x, centre y, side] in each 900px-tall cutout.
+// The centre is the middle of the head (top of the hair or cap to the chin),
+// on the face rather than the hair, and the side is about 1.25 times the
+// head's height, so the face fills the circle (Alec, Nov 7: "center the
+// profile images better so we can see their face better"). Heads that touch
+// the top of a cutout get transparent room above them, so the face can sit
+// in the middle. Measured on a 50px grid; check the strip after a new photo.
 const FACE = {
-  juan: [338, 120, 250],
-  brian: [578, 140, 270],
-  bob: [296, 250, 220],
-  robby: [336, 128, 250],
-  ken: [430, 118, 220],
-  amanda: [474, 120, 220],
+  juan: [365, 95, 225],
+  brian: [612, 100, 225],
+  bob: [322, 222, 175],
+  robby: [348, 108, 255],
+  ken: [458, 76, 185],
+  amanda: [442, 84, 205],
 };
+const PAD = 160;
 const FACE_PX = 96;
 const FIGURE_H = 200;
 
@@ -76,10 +82,24 @@ for (const [i, s] of SEATS.entries()) {
   const box = FACE[s.slug];
   if (!box) throw new Error(`no face box for ${s.slug}`);
   const [cx, cy, side] = box;
-  const left = Math.max(0, Math.min(meta.width - side, Math.round(cx - side / 2)));
-  const top = Math.max(0, Math.min(meta.height - side, Math.round(cy - side / 2)));
+  // Pad with transparency first, so a box can reach above a head that
+  // touches the top of the cutout.
+  const padded = await sharp(file)
+    .extend({
+      top: PAD,
+      bottom: PAD,
+      left: PAD,
+      right: PAD,
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    })
+    .png()
+    .toBuffer();
+  const left = Math.round(cx - side / 2) + PAD;
+  const top = Math.round(cy - side / 2) + PAD;
+  if (left < 0 || top < 0 || left + side > meta.width + 2 * PAD)
+    throw new Error(`face box for ${s.slug} leaves the picture`);
   faces.push({
-    input: await sharp(file)
+    input: await sharp(padded)
       .extract({ left, top, width: side, height: side })
       .resize(FACE_PX, FACE_PX)
       .png()

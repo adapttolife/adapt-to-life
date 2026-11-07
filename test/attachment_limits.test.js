@@ -15,7 +15,7 @@ import assert from "node:assert/strict";
 import { attachmentLimitsFor } from "../src/agent_mail.js";
 
 const MIB = 1024 * 1024;
-const B64_INFLATION = 4 / 3 * 1.027; // base64 + CRLF every 76 chars
+const B64_INFLATION = (4 / 3) * 1.027; // base64 + CRLF every 76 chars
 const PLATFORM_CAP_PLAIN = 5 * MIB;
 const PLATFORM_CAP_VERIFIED = 25 * MIB;
 
@@ -61,16 +61,18 @@ test("both budgets still fit the platform cap AFTER base64 inflation", () => {
 
   assert.ok(
     plain * B64_INFLATION < PLATFORM_CAP_PLAIN,
-    `${(plain / MIB).toFixed(1)} MiB decoded -> ${(plain * B64_INFLATION / MIB).toFixed(1)} MiB on the wire, over the 5 MiB cap`,
+    `${(plain / MIB).toFixed(1)} MiB decoded -> ${((plain * B64_INFLATION) / MIB).toFixed(1)} MiB on the wire, over the 5 MiB cap`,
   );
   assert.ok(
     verified * B64_INFLATION < PLATFORM_CAP_VERIFIED,
-    `${(verified / MIB).toFixed(1)} MiB decoded -> ${(verified * B64_INFLATION / MIB).toFixed(1)} MiB on the wire, over the 25 MiB cap`,
+    `${(verified / MIB).toFixed(1)} MiB decoded -> ${((verified * B64_INFLATION) / MIB).toFixed(1)} MiB on the wire, over the 25 MiB cap`,
   );
 
   // And the old value must be recognised as unsendable, so nobody restores it.
-  assert.ok(4 * MIB * B64_INFLATION > PLATFORM_CAP_PLAIN,
-    "4 MiB decoded should exceed the 5 MiB plain cap once base64'd — that was the latent bug");
+  assert.ok(
+    4 * MIB * B64_INFLATION > PLATFORM_CAP_PLAIN,
+    "4 MiB decoded should exceed the 5 MiB plain cap once base64'd — that was the latent bug",
+  );
 });
 
 test("a full-resolution print file fits for Alec", () => {
@@ -78,6 +80,8 @@ test("a full-resolution print file fits for Alec", () => {
   // and was refused for no platform reason.
   const printFile = 5.5 * 1000 * 1000;
   assert.ok(attachmentLimitsFor("alec@alecability.com").totalBytes > printFile);
-  assert.ok(attachmentLimitsFor("someone@example.com").totalBytes < printFile,
-    "and unverified recipients still cannot, correctly");
+  assert.ok(
+    attachmentLimitsFor("someone@example.com").totalBytes < printFile,
+    "and unverified recipients still cannot, correctly",
+  );
 });

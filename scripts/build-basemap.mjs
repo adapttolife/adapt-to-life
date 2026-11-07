@@ -12,7 +12,8 @@ import { feature, mesh } from "topojson-client";
 import { presimplify, simplify, quantile } from "topojson-simplify";
 import { geoAlbersUsa, geoPath } from "d3-geo";
 
-const W = 960, H = 500;
+const W = 960,
+  H = 500;
 const src = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
 
 const raw = await (await fetch(src)).json();
@@ -48,5 +49,7 @@ export const BASEMAP_OUTLINE = ${JSON.stringify(round(outline))};
 export const BASEMAP_INTERIOR = ${JSON.stringify(round(interior))};
 `;
 writeFileSync("admin-app/src/lib/basemap.ts", out);
-console.log(`  basemap: ${(out.length / 1024).toFixed(1)}KB of path data`
-  + ` (vs 114KB TopoJSON + a library at runtime)`);
+console.log(
+  `  basemap: ${(out.length / 1024).toFixed(1)}KB of path data` +
+    ` (vs 114KB TopoJSON + a library at runtime)`,
+);

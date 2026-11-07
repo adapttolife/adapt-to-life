@@ -25,6 +25,12 @@ const PER_PAGE = {
   "volunteer.html": "volunteer",
   "juan.html": "juan",
   "brickhouse.html": "brickhouse",
+  "pickleball.html": "pickleball",
+  "ace.html": "ace",
+  "chicago-classic.html": "chicago-classic",
+  "picklr.html": "picklr",
+  "chicago-adaptive-sports.html": "chicago-adaptive-sports",
+  "amp.html": "amp",
 };
 
 // ALT DESCRIBES THE PHOTOGRAPH AGAIN, because from 2026-09-09 the cards ARE
@@ -34,15 +40,29 @@ const PER_PAGE = {
 // and then who is actually pictured, briefly. An organisation built around
 // disabled athletes does not ship an unlabelled — or a mislabelled — image.
 const ALT = {
-  _default: "Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.",
-  donate: "Put an athlete in the game. Adapt To Life. A wheelchair pickleball player swings, the ball in the air beside her.",
-  "send-6": "Send 6 to the US Open Spring 2027. Adapt To Life. A wheelchair pickleball player drives across an indoor court.",
-  popcorn: "Popcorn that helps athletes play. Adapt To Life. A wheelchair pickleball player drives across an indoor court.",
-  "hustle-and-heart": "Keep your game going. The Hustle and Heart Fund, Adapt To Life. A wheelchair pickleball player in a headband holds his paddle.",
-  volunteer: "Your place on this team. Adapt To Life. A wheelchair pickleball player in a cap reaches for a shot.",
+  _default:
+    "Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.",
+  donate:
+    "Put an athlete in the game. Adapt To Life. A wheelchair pickleball player swings, the ball in the air beside her.",
+  "send-6":
+    "The Road to the US Open. Adapt To Life. A wheelchair pickleball player drives across an indoor court.",
+  popcorn:
+    "Popcorn that helps athletes play. Adapt To Life. A wheelchair pickleball player drives across an indoor court.",
+  "hustle-and-heart":
+    "More than a check. The Hustle and Heart Fund, Adapt To Life. A wheelchair pickleball player in a headband holds his paddle.",
+  volunteer:
+    "Your place on this team. Adapt To Life. A wheelchair pickleball player in a cap reaches for a shot.",
   // An athlete profile card is his name over his own face, so the alt is the
   // name and then the man, in that order.
-  brickhouse: "Come play with us at Brick House. Adapt To Life. An athlete in a sport wheelchair and a Brick House Pickleball shirt rolls across the Brick House courts.",
+  brickhouse:
+    "The crew's home court is Brick House. Adapt To Life. An athlete in a sport wheelchair and a Brick House Pickleball shirt rolls across the Brick House courts.",
+  picklr: "Open play, open doors. Adapt To Life. A player in a sport wheelchair stretches wide for a backhand.",
+  "chicago-adaptive-sports": "Push. Play. Persist. Adapt To Life. Juan Ortiz in a Chicago Adaptive Sports shirt.",
+  amp: "Active. Mobile. Proud. Adapt To Life. Karen Atkinson water skiing in a sit-ski, a jet ski behind her.",
+  "chicago-classic": "The Chicago Classic. Adapt To Life. Juan Ortiz in his sport wheelchair, paddle up, on a dark indoor court.",
+  ace: "Something Chicago hasn't seen. Adapt To Life. A wheelchair pickleball player in a white cap leans on the rail with his paddle.",
+  pickleball:
+    "Chicago Pickleball: Wheelie Big Dills. Adapt To Life. Juan Ortiz, a wheelchair pickleball player in glasses, tosses the ball to serve from his sport wheelchair.",
   juan: "Juan Ortiz. Adapt To Life. Juan, a wheelchair pickleball player in glasses, tosses the ball to serve from his sport wheelchair.",
 };
 
@@ -58,11 +78,19 @@ const ALT = {
 const FILE = {
   _default: "home-v4-color.jpg",
   juan: "juan-v2-serve.jpg",
-  brickhouse: "brickhouse-v1-opening.jpg",
+  brickhouse: "brickhouse-v3-crewhome.jpg",
+  pickleball: "pickleball-v5-name.jpg",
+  ace: "ace-v3-partner.jpg",
+  "chicago-classic": "chicago-classic-v1-date.jpg",
+  "send-6": "send-6-v4-road.jpg",
+  picklr: "picklr-v1-partner.jpg",
+  "chicago-adaptive-sports": "chicago-adaptive-sports-v1-partner.jpg",
+  amp: "amp-v1-partner.jpg",
   popcorn: "popcorn-v4-content.jpg",
-  "hustle-and-heart": "hustle-and-heart-v4-content.jpg",
+  "hustle-and-heart": "hustle-and-heart-v5-check.jpg",
 };
-const fileFor = (card) => FILE[card] ?? `${card === "_default" ? "home" : card}-v3-athlete.jpg`;
+const fileFor = (card) =>
+  FILE[card] ?? `${card === "_default" ? "home" : card}-v3-athlete.jpg`;
 const url = (card) => `${BASE}/images/og/${fileFor(card)}`;
 
 function setMeta(html, selector, attr, value) {
@@ -80,11 +108,17 @@ function ensureAfter(html, anchorRe, tag, presenceRe) {
   return html.replace(anchorRe, `${m[0]}\n${tag}`);
 }
 
-let changed = 0, skipped = 0;
-for (const file of readdirSync(PUB).filter((f) => f.endsWith(".html")).sort()) {
+let changed = 0,
+  skipped = 0;
+for (const file of readdirSync(PUB)
+  .filter((f) => f.endsWith(".html"))
+  .sort()) {
   const path = join(PUB, file);
   let html = readFileSync(path, "utf8");
-  if (!/property="og:image"/.test(html)) { skipped++; continue; }
+  if (!/property="og:image"/.test(html)) {
+    skipped++;
+    continue;
+  }
 
   const card = PER_PAGE[file] || "_default";
   const src = url(card);
@@ -92,24 +126,32 @@ for (const file of readdirSync(PUB).filter((f) => f.endsWith(".html")).sort()) {
 
   // the card file must exist before a page is allowed to point at it
   const local = join(PUB, "images/og", fileFor(card));
-  if (!existsSync(local)) throw new Error(`${file}: card missing at ${local} (run make-og.mjs first)`);
+  if (!existsSync(local))
+    throw new Error(`${file}: card missing at ${local} (run make-og.mjs first)`);
 
   const before = html;
   html = setMeta(html, "property", "og:image", src) ?? html;
   html = setMeta(html, "name", "twitter:image", src) ?? html;
-  html = ensureAfter(html,
+  html = ensureAfter(
+    html,
     /<meta property="og:image" content="[^"]*">/,
     `<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">\n<meta property="og:image:alt" content="${alt}">`,
-    /<meta property="og:image:width"[\s\S]*?<meta property="og:image:alt" content="[^"]*">/);
+    /<meta property="og:image:width"[\s\S]*?<meta property="og:image:alt" content="[^"]*">/,
+  );
   // waiver.html carries og tags but no twitter block, so this half is optional
   if (/name="twitter:image"/.test(html)) {
-    html = ensureAfter(html,
+    html = ensureAfter(
+      html,
       /<meta name="twitter:image" content="[^"]*">/,
       `<meta name="twitter:image:alt" content="${alt}">`,
-      /<meta name="twitter:image:alt" content="[^"]*">/);
+      /<meta name="twitter:image:alt" content="[^"]*">/,
+    );
   }
 
-  if (html !== before) { writeFileSync(path, html); changed++; }
+  if (html !== before) {
+    writeFileSync(path, html);
+    changed++;
+  }
   console.log(`${file.padEnd(28)} -> ${card === "_default" ? "default card" : card}`);
 }
 console.log(`\n${changed} page(s) rewritten, ${skipped} without og tags`);

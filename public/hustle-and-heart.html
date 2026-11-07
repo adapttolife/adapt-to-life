@@ -3,26 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f0e0d">
 <meta name="color-scheme" content="light only">
-<title>The Hustle &amp; Heart Fund | Adapt To Life</title>
-<meta name="description" content="The Hustle &amp; Heart Fund helps adaptive athletes with equipment, training, and travel. Learn how the fund works, apply for support, or give.">
+<title>The Hustle &amp; Heart Fund for Adaptive Athletes | Adapt To Life</title>
+<meta name="description" content="Adapt To Life's athlete deployment fund. Through ambassadors like Juan Ortiz, it funds athletes and the people building adaptive sports where they live.">
 <link rel="canonical" href="https://adapttolife.org/hustle-and-heart">
 <link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-v2-option2-32.png">
 <link rel="apple-touch-icon" href="/images/apple-touch-icon-v2-option2.png">
 <meta property="og:type" content="website">
-<meta property="og:title" content="The Hustle &amp; Heart Fund | Adapt To Life">
-<meta property="og:description" content="The Hustle &amp; Heart Fund helps adaptive athletes with equipment, training, and travel. Learn how the fund works, apply for support, or give.">
-<meta property="og:image" content="https://adapttolife.org/images/og/hustle-and-heart-v4-content.jpg">
+<meta property="og:title" content="The Hustle &amp; Heart Fund for Adaptive Athletes | Adapt To Life">
+<meta property="og:description" content="Adapt To Life's athlete deployment fund. Through ambassadors like Juan Ortiz, it funds athletes and the people building adaptive sports where they live.">
+<meta property="og:image" content="https://adapttolife.org/images/og/hustle-and-heart-v5-check.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Keep your game going. The Hustle and Heart Fund, Adapt To Life. A wheelchair pickleball player in a headband holds his paddle.">
+<meta property="og:image:alt" content="More than a check. The Hustle and Heart Fund, Adapt To Life. A wheelchair pickleball player in a headband holds his paddle.">
 <meta property="og:url" content="https://adapttolife.org/hustle-and-heart">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="The Hustle &amp; Heart Fund | Adapt To Life">
-<meta name="twitter:description" content="The Hustle &amp; Heart Fund helps adaptive athletes with equipment, training, and travel. Learn how the fund works, apply for support, or give.">
-<meta name="twitter:image" content="https://adapttolife.org/images/og/hustle-and-heart-v4-content.jpg">
-<meta name="twitter:image:alt" content="Keep your game going. The Hustle and Heart Fund, Adapt To Life. A wheelchair pickleball player in a headband holds his paddle.">
+<meta name="twitter:title" content="The Hustle &amp; Heart Fund for Adaptive Athletes | Adapt To Life">
+<meta name="twitter:description" content="Adapt To Life's athlete deployment fund. Through ambassadors like Juan Ortiz, it funds athletes and the people building adaptive sports where they live.">
+<meta name="twitter:image" content="https://adapttolife.org/images/og/hustle-and-heart-v5-check.jpg">
+<meta name="twitter:image:alt" content="More than a check. The Hustle and Heart Fund, Adapt To Life. A wheelchair pickleball player in a headband holds his paddle.">
 <link rel="preconnect" href="https://widgets.givebutter.com" crossorigin>
 <link rel="preconnect" href="https://givebuttercdn.com" crossorigin>
 <link rel="preconnect" href="https://givebutter.com">
@@ -30,13 +31,13 @@
 <link rel="dns-prefetch" href="https://widgets.givebutter.com">
 <link rel="dns-prefetch" href="https://givebuttercdn.com">
 <link rel="dns-prefetch" href="https://js.stripe.com">
-<link rel="preload" href="/css/site.css?v=e2740b17" as="style">
+<link rel="preload" href="/css/site.css?v=f3c06679" as="style">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=e2740b17">
-<script src="/js/attribution.js?v=dad1936b" defer></script>
-<script src="/js/givebutter-lazy.js?v=e6872d95" defer></script>
+<link rel="stylesheet" href="/css/site.css?v=f3c06679">
+<script src="/js/attribution.js?v=dd7f55f9" defer></script>
+<script src="/js/givebutter-lazy.js?v=29b7ce7b" defer></script>
 <style>
   .give-moment{ padding-block:clamp(2.5rem,5vw,4.5rem); }
   .give-split{ display:grid; grid-template-columns:1.02fr 0.98fr; gap:clamp(2rem,5vw,4rem); align-items:start; text-align:left; }
@@ -48,17 +49,77 @@
   .fund-terms{ margin:0 0 1rem; }
   .fund-terms a{ display:inline-flex; align-items:center; min-height:44px; color:var(--cream); font-size:0.95rem; text-decoration:underline; text-underline-offset:4px; }
   @media (max-width:880px){ .give-split{ grid-template-columns:1fr; gap:2.2rem; } }
-  .give-split .thermo{ max-width:none; margin:1.4rem 0 0; }
-  .give-split .thermo-row{ justify-content:flex-start; }
+  .prog .prog-n{ margin:0 0 0.9rem; font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(1.9rem,3.4vw,2.4rem); line-height:1; letter-spacing:-0.03em; color:var(--orange-ink); }
+  .prog .prog-n span{ display:block; margin-top:0.45rem; font-family:var(--font-label); font-style:normal; font-weight:800; font-size:0.7rem; line-height:1.4; letter-spacing:0.16em; text-transform:uppercase; color:var(--ink-soft); }
+  /* The cost of playing, as three tight cards (Nov 6 review): the icon sits
+     beside the label and title instead of stacked above them, so each card
+     is a row shorter; every word and figure stays. */
+  .hh-costs{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(0.9rem,2.4vw,1.6rem); margin-top:clamp(2rem,4vw,3rem); }
+  .hh-costs .prog{ display:grid; grid-template-columns:auto minmax(0,1fr); column-gap:0.85rem; align-content:start; padding:clamp(1.1rem,2.6vw,1.6rem); border-radius:var(--r-xl); background:var(--paper); box-shadow:inset 0 0 0 1px rgba(59,59,70,0.1), 0 18px 40px -30px rgba(59,59,70,0.5); }
+  .hh-costs .prog > .ix-tile{ grid-row:1 / span 2; align-self:center; margin:0; }
+  .hh-costs .prog > .tag{ grid-column:2; align-self:end; }
+  .hh-costs .prog > h3{ grid-column:2; margin:0.15rem 0 0; align-self:start; }
+  .hh-costs .prog > p{ grid-column:1 / -1; }
+  .hh-costs .prog > .prog-n{ margin-top:1rem; }
+  .hh-costs .prog > p:last-child{ margin-bottom:0; }
+  @media (max-width:820px){ .hh-costs{ grid-template-columns:1fr; } }
+  .hh-skill{ margin:clamp(2.2rem,4vw,3rem) auto 0; max-width:40ch; text-align:center; font-family:var(--font-display); font-weight:800; font-size:clamp(1.35rem,2.6vw,1.85rem); line-height:1.2; letter-spacing:-0.02em; }
+  .hh-skill em{ display:block; color:var(--orange-ink); }
+  .gift-ladder{ list-style:none; margin:1.4rem 0 0; padding:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.7rem; }
+  .gift-ladder li{ padding:0.9rem 1rem 1rem; border-radius:14px; background:rgba(249,247,242,0.05); box-shadow:inset 0 0 0 1px rgba(249,247,242,0.12); }
+  .gift-ladder b{ display:block; font-family:var(--font-display); font-weight:900; font-style:italic; font-size:1.8rem; line-height:1; letter-spacing:-0.03em; color:#ff5c39; }
+  .gift-ladder span{ display:block; margin-top:0.4rem; color:var(--cream); line-height:1.4; font-weight:600; font-size:0.95rem; }
+  .gift-ladder li:last-child:nth-child(odd){ grid-column:1 / -1; }
   .give-split-form givebutter-giving-form{ display:block; width:100%; }
-  .thermo{ max-width:540px; margin:1.8rem auto 0; }
-  .thermo-row{ display:flex; align-items:baseline; gap:0.5rem; justify-content:center; flex-wrap:wrap; }
-  .thermo-raised{ font-family:"Newsreader",serif; font-size:clamp(2.4rem,6vw,3.4rem); line-height:1; color:var(--cream); }
-  .thermo-goal{ font-family:"Hanken Grotesk",sans-serif; color:rgba(255,255,255,0.6); font-size:0.95rem; }
-  .thermo-track{ display:block; height:14px; border-radius:999px; background:rgba(255,255,255,0.14); margin-top:1rem; overflow:hidden; }
-  .thermo-fill{ display:block; height:100%; width:0; border-radius:999px; background:linear-gradient(90deg,#FF5C39,#ff9f87); transition:width 1.3s cubic-bezier(.2,.8,.2,1); }
-  .thermo-link{ display:inline-block; margin-top:1.05rem; font-family:"Hanken Grotesk",sans-serif; font-weight:600; color:var(--orange); text-decoration:none; }
-  .thermo-link:hover{ text-decoration:underline; }
+  .hh-model-lead{ margin-top:1rem; max-width:62ch; }
+  .hh-steps{ list-style:none; margin:clamp(1.8rem,3.6vw,2.6rem) 0 0; padding:0; display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(1rem,2.4vw,1.6rem); }
+  .hh-steps li{ padding:clamp(1.3rem,2.4vw,1.8rem); border-radius:18px; background:var(--paper); border-top:4px solid var(--orange); box-shadow:0 0 0 1px rgba(59,59,70,0.08), 0 24px 50px -36px rgba(59,59,70,0.35); }
+  .hh-step-n{ font-family:var(--font-label); font-weight:800; font-size:0.78rem; letter-spacing:0.2em; color:var(--orange-ink); }
+  .hh-steps b{ display:block; margin-top:0.4rem; font-family:var(--font-display); font-weight:800; font-size:clamp(1.2rem,1.9vw,1.45rem); letter-spacing:-0.015em; }
+  .hh-steps span{ display:block; margin-top:0.55rem; line-height:1.5; }
+  .hh-model-note{ margin-top:1.6rem; max-width:66ch; }
+  @media (max-width:820px){ .hh-steps{ grid-template-columns:1fr; } }
+  .hh-now{ position:relative; isolation:isolate; overflow:hidden; }
+  .hh-now::before{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 50% 70% at 85% 40%, rgba(255,92,57,0.18) 0%, transparent 70%); }
+  .hh-now-grid{ display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,0.85fr); gap:clamp(2rem,5vw,4.5rem); align-items:center; }
+  @media (max-width:820px){ .hh-now-grid{ grid-template-columns:1fr; } }
+  .hh-now-badge{ display:block; width:clamp(104px,10vw,140px); height:auto; margin-bottom:1.2rem; filter:drop-shadow(0 12px 32px rgba(0,0,0,0.6)); }
+  .hh-now h2{ margin-top:0.8rem; color:var(--cream); }
+  .hh-now .prose{ margin-top:1rem; color:var(--cream-mute); max-width:46ch; }
+  .hh-now-links{ margin-top:1.4rem; display:flex; flex-wrap:wrap; gap:0.6rem 1.6rem; }
+  .hh-now-links .textlink{ color:var(--orange); }
+  .hh-now-partners{ list-style:none; margin:1.6rem 0 0; padding:1.2rem 0 0; border-top:1px solid rgba(249,247,242,0.12); display:flex; flex-wrap:wrap; align-items:center; gap:1.1rem 1.8rem; }
+  .hh-now-partners img{ height:36px; width:auto; opacity:0.92; transition:opacity .2s ease; }
+  .hh-now-partners img.is-word{ height:22px; }
+  .hh-now-partners img.is-bh{ height:48px; }
+  .hh-now-partners img.is-amp{ height:40px; }
+  .hh-now-partners a:hover img{ opacity:1; }
+  /* Alec's order: the nonprofit partners on the first line, the pickleball
+     clubs on the next. The zero-height ::after takes a whole line between
+     them (order 1); on a very narrow phone the clubs can still wrap. */
+  .hh-now-partners::after{ content:""; flex-basis:100%; height:0; margin-top:-1.1rem; order:1; }
+  .hh-now-partners li:nth-child(n+3){ order:2; }
+  .hh-now-partners a{ display:flex; align-items:center; gap:0.55rem; }
+  .hh-now-partners .hh-p-name{ font-family:var(--font-display); font-weight:800; font-size:0.85rem; line-height:1.05; color:var(--cream); }
+  @media (max-width:520px){
+    .hh-now-partners{ gap:1rem 1.2rem; }
+    .hh-now-partners::after{ margin-top:-1rem; }
+    .hh-now-partners img{ height:30px; }
+    .hh-now-partners img.is-word{ height:18px; }
+    .hh-now-partners img.is-bh{ height:40px; }
+    .hh-now-partners img.is-amp{ height:34px; }
+  }
+  .hh-now-next{ margin-top:1.4rem; color:var(--cream-mute); font-size:0.95rem; }
+  .hh-now-next a{ color:var(--cream); text-decoration:underline; text-decoration-color:var(--orange); text-underline-offset:3px; }
+  .hh-now-proof{ list-style:none; margin:0; padding:0; display:grid; gap:1.1rem; }
+  .hh-now-proof li{ display:grid; grid-template-columns:7.4rem 1fr; align-items:baseline; gap:1rem; padding-bottom:1.1rem; border-bottom:1px solid rgba(249,247,242,0.12); }
+  .hh-now-proof b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(2.4rem,4.6vw,3.2rem); line-height:0.9; letter-spacing:-0.04em; color:var(--yellow); }
+  .hh-now-proof span{ color:var(--cream); font-weight:600; line-height:1.4; }
+  /* Court time and the clubs that host it are blue, as in the bars; the reach
+     stays yellow, a milestone. */
+  .hh-now-proof li.is-court b{ color:#86b6ef; }
+  .hh-now-proof span .sym{ width:1.1em; height:1.1em; margin-right:0.45rem; color:var(--yellow); }
+  .hh-now-proof li.is-court span .sym{ color:#86b6ef; }
   /* Space held for the Givebutter embed so its late mount cannot shove the
      page. Measured on prod: the settled form is 552px on a phone and 508px on
      a desktop, so these sit just under each. */
@@ -67,6 +128,7 @@
   /* Keep Tim's head in the mobile photo crop; desktop framing is unchanged. */
   @media (max-width:820px){ .hero-2col .h2col-media .photo-frame img{ object-position:center top; } }
 </style>
+<style>.name-place{ display:block; font-size:0.6em; font-weight:600; letter-spacing:-0.01em; font-style:normal; color:var(--cream-mute); margin-bottom:0.12em; }</style>
 </head>
 <body>
 
@@ -101,15 +163,15 @@ fill="currentColor" stroke="none">
 </g></svg>Adapt To Life</a>
     <nav class="nav-links">
       <div class="nav-group">
-        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navOurWork">Our Work<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 3 3-3"/></svg></button>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navOurWork">Our Work<svg class="caret" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="caret" data-style="bold"><path fill="currentColor" d="m216.49 104.49l-80 80a12 12 0 0 1-17 0l-80-80a12 12 0 0 1 17-17L128 159l71.51-71.52a12 12 0 0 1 17 17Z"/></svg></button>
         <div class="nav-panel" id="navOurWork">
           <a href="/hustle-and-heart"><span class="np-t">Hustle &amp; Heart Fund</span><span class="np-d">Support for equipment, training, and travel</span></a>
-          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d">Find adaptive programs by sport and location</span></a>
-          <a href="/adapt-body-shop"><span class="np-t">Adapt Body Shop</span><span class="np-d">Coming soon · Gear for the community</span></a>
+          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d"><span class="tag tag--info">In beta</span> Find adaptive programs by sport and location</span></a>
+          <a href="/adapt-body-shop"><span class="np-t">Adapt Body Shop</span><span class="np-d"><span class="tag tag--neutral">Coming soon</span> Gear for the community</span></a>
         </div>
       </div>
       <div class="nav-group">
-        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navJoin">Get Involved<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 3 3-3"/></svg></button>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navJoin">Get Involved<svg class="caret" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="caret" data-style="bold"><path fill="currentColor" d="m216.49 104.49l-80 80a12 12 0 0 1-17 0l-80-80a12 12 0 0 1 17-17L128 159l71.51-71.52a12 12 0 0 1 17 17Z"/></svg></button>
         <div class="nav-panel" id="navJoin">
           <a href="/volunteer"><span class="np-t">Volunteer</span><span class="np-d">Roles to fill, and our ambassador program</span></a>
           <a href="/sponsorship"><span class="np-t">Partners</span><span class="np-d">Our partners, and how to join them</span></a>
@@ -117,7 +179,7 @@ fill="currentColor" stroke="none">
         </div>
       </div>
       <div class="nav-group">
-        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navAbout">About<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 3 3-3"/></svg></button>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navAbout">About<svg class="caret" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="caret" data-style="bold"><path fill="currentColor" d="m216.49 104.49l-80 80a12 12 0 0 1-17 0l-80-80a12 12 0 0 1 17-17L128 159l71.51-71.52a12 12 0 0 1 17 17Z"/></svg></button>
         <div class="nav-panel" id="navAbout">
           <a href="/promise"><span class="np-t">How Giving Works</span><span class="np-d">How gifts support athletes and the work around them</span></a>
           <a href="/about"><span class="np-t">Our Story</span><span class="np-d">The people who built this, and why</span></a>
@@ -134,8 +196,8 @@ fill="currentColor" stroke="none">
     <div class="wrap mwrap">
       <span class="m-group">Our Work</span>
       <a class="m-sub" href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
-      <a class="m-sub" href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
-      <a class="m-sub" href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
+      <a class="m-sub" href="/adaptive-sports-near-me">Adaptive Sports Near Me <span class="tag tag--info">In beta</span></a>
+      <a class="m-sub" href="/adapt-body-shop">Adapt Body Shop <span class="tag tag--neutral">Coming soon</span></a>
       <span class="m-group">Get Involved</span>
       <a class="m-sub" href="/volunteer">Volunteer</a>
       <a class="m-sub" href="/sponsorship">Partners</a>
@@ -144,7 +206,7 @@ fill="currentColor" stroke="none">
       <a class="m-sub" href="/promise">How Giving Works</a>
       <a class="m-sub" href="/about">Our Story</a>
       <a class="featured" href="/apply">Apply for support</a>
-      <a class="m-cta" href="/donate">Donate &rarr;</a>
+      <a class="m-cta" href="/donate">Donate <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
     </div>
   </div>
 </header>
@@ -157,16 +219,16 @@ fill="currentColor" stroke="none">
       <div class="h2col">
         <div class="h2col-text">
           <span class="eyebrow reveal">The Hustle &amp; Heart Fund</span>
-          <h1 class="serif display reveal">Keep your game <em class="italic">going.</em></h1>
-          <p class="lead sub reveal">The Hustle &amp; Heart Fund helps adaptive athletes with equipment, training, and travel. Named for <a href="/tim" class="textlink">Tim Gruensfelder</a>: all hustle, all heart.</p>
+          <h1 class="serif display reveal">More than <em class="italic">a check.</em></h1>
+          <p class="lead sub reveal">The Hustle &amp; Heart Fund is our athlete deployment fund: through ambassadors like <a href="/juan" class="textlink" style="font:inherit;letter-spacing:inherit;">Juan Ortiz</a>, it funds and builds with people in the community, so athletes can train, travel and compete. Named for <a href="/tim" class="textlink" style="font:inherit;letter-spacing:inherit;">Tim Gruensfelder</a>: all hustle, all heart.</p>
           <div class="actions reveal">
             <a href="/donate" class="btn">Donate</a>
             <a href="/apply" class="btn ghost">Apply for a grant</a>
           </div>
         </div>
         <div class="h2col-media reveal">
-          <div class="photo-frame"><img src="/images/tim.webp" alt="Tim Gruensfelder, who inspired the Hustle &amp; Heart Fund"></div>
-          <p class="h2col-cap">Tim's love of the game is part of everything this fund stands for. <a class="textlink" href="/tim">His story <span class="arrow">&rarr;</span></a></p>
+          <div class="photo-frame"><img src="/images/tim.webp" alt="Tim Gruensfelder, who inspired the Hustle &amp; Heart Fund" width="1079" height="705"></div>
+          <p class="h2col-cap">Tim&rsquo;s love of the game is part of everything this fund stands for. <a class="textlink" href="/tim">His story <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a></p>
         </div>
       </div>
     </div>
@@ -174,30 +236,80 @@ fill="currentColor" stroke="none">
 
 
   <!-- 2 · THE COST (merged — the hook + what your dollar covers) -->
+  <!-- HOW THE FUND WORKS: the ambassador model -->
+  <section class="band hh-model" aria-labelledby="hhModelTitle">
+    <div class="wrap">
+      <hr class="tick orange reveal">
+      <span class="eyebrow orange reveal">How the fund works</span>
+      <h2 id="hhModelTitle" class="serif h2 reveal" style="margin-top:0.8rem;">We fund it, <em class="italic" style="color:var(--orange-ink)">and we build it together.</em></h2>
+      <p class="prose reveal hh-model-lead">The Hustle &amp; Heart Fund works through ambassadors: athletes and coaches who grow a sport where they live. Money goes to athletes, and to the programs around them: starting them, coaching them and keeping them running. Each ambassador&rsquo;s work becomes a lane, and every lane tells its story through its own campaigns. Programs are built on the <a class="textlink" href="/sponsorship#clubs" style="font:inherit;letter-spacing:inherit;">Home Court Model</a>: a host brings the courts, athletes bring their game, and supporters bring the funding.</p>
+      <ol class="hh-steps">
+        <li class="reveal"><p class="hh-step-n">01</p><b>Ambassadors build</b><span>Athletes and coaches like Juan grow a sport where they live, with clubs, organizations and coaches.</span></li>
+        <li class="reveal"><p class="hh-step-n">02</p><b>The fund backs them</b><span>Funding, plus coaching know-how, club relationships, volunteers and content that helps a program grow.</span></li>
+        <li class="reveal"><p class="hh-step-n">03</p><b>Athletes play and compete</b><span>Court time, memberships, equipment and travel for the athletes in those programs.</span></li>
+      </ol>
+      <p class="hh-model-note reveal">Any athlete can apply for support, ambassador or not. We pay a vendor or program directly, or reimburse an approved expense. <a class="textlink" href="/ambassadors" style="font:inherit;letter-spacing:inherit;">How ambassadors work</a>, or <a class="textlink" href="/apply" style="font:inherit;letter-spacing:inherit;">apply for a grant</a>.</p>
+    </div>
+  </section>
+
+  <!-- WHERE IT IS DEPLOYED NOW -->
+  <section class="band dark hh-now" aria-labelledby="hhNowTitle">
+    <div class="wrap hh-now-grid">
+      <div class="reveal">
+        <img class="hh-now-badge" src="/images/pickleball/wheelie-big-dills-badge.webp" alt="The Wheelie Big Dills badge: a pickle in a wheelchair swinging a Chicago flag paddle, Wheelchair Pickleball, Chicago, IL, est. 2024" width="320" height="319" loading="lazy" decoding="async">
+        <span class="eyebrow orange">The first lane</span>
+        <h2 id="hhNowTitle" class="serif h2"><span class="name-place">Chicago Pickleball:</span> Wheelie Big Dills</h2>
+        <p class="prose">The first lane is the Wheelie Big Dills. Our first ambassador, Juan Ortiz, is growing wheelchair pickleball across the Chicago area, and the fund backs him, the crew he plays with, and the clubs that make room for them. Its campaigns, in order: every week on court, the road to the US Open, and the Chicago Classic.</p>
+        <p class="hh-now-links"><a href="/pickleball" class="textlink">Meet the crew <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a> <a href="/juan" class="textlink">Read Juan&rsquo;s story <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a></p>
+        <ul class="hh-now-partners" aria-label="Our partners">
+          <li><a href="/chicago-adaptive-sports"><img src="/images/partners/cas-mark.png" alt="" width="240" height="193" loading="lazy"><span class="hh-p-name">Chicago<br>Adaptive Sports</span></a></li>
+          <li><a href="/amp"><img src="/images/partners/amp-logo-white.png" alt="AMP Adaptive Sports" width="340" height="159" loading="lazy" class="is-amp"></a></li>
+          <li><a href="/ace"><img src="/images/ace/ace-logo-white.png" alt="ACE Pickleball Club" width="760" height="105" loading="lazy" class="is-word"></a></li>
+          <li><a href="/brickhouse"><img class="is-bh" src="/images/brickhouse/brick-house-logo-orange-black-reverse.svg" alt="Brick House Pickleball" width="372" height="265" loading="lazy"></a></li>
+          <li><a href="/picklr"><img src="/images/partners/picklr-wordmark-white.png" alt="The Picklr" width="460" height="107" loading="lazy" class="is-word"></a></li>
+        </ul>
+        <p class="hh-now-next">Next: wherever our next ambassador is building. <a href="/ambassadors#join">Know who it should be?</a></p>
+      </div>
+      <ul class="hh-now-proof reveal" aria-label="What the fund brings in Chicago">
+        <li class="is-court"><b>$225</b><span><i class="sym sym--courts" aria-hidden="true"></i>covers court time for up to 15 athletes for a night at ACE</span></li>
+        <li class="is-court"><b>3</b><span><i class="sym sym--place" aria-hidden="true"></i>clubs where the crew plays across the Chicago area</span></li>
+        <li><b>334K</b><span><i class="sym sym--stories" aria-hidden="true"></i>views in 90 days across Instagram and Facebook</span></li>
+      </ul>
+    </div>
+  </section>
+
   <section class="band-lg tint">
     <div class="wrap">
       <div class="reveal sec-head">
         <span class="eyebrow orange">The cost of playing</span>
         <h2 class="serif statement italic" style="margin-top:0.9rem;">The desire to play is there. The cost can stand in the way.</h2>
-        <p class="prose" style="margin-top:1rem;">The right equipment gets you started. Training helps you grow. Travel gets you to the next opportunity.</p>
+        <p class="prose" style="margin-top:1rem;">It&rsquo;s one thing to try a sport. It&rsquo;s another to play every week, train every month and travel to compete, and in a wheelchair every step costs more. Here are the real numbers in wheelchair pickleball.</p>
       </div>
-      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:clamp(1.6rem,4vw,3.5rem); margin-top:clamp(2.4rem,4vw,3.4rem);">
+      <div class="hh-costs">
         <div class="prog reveal">
+          <span class="ix-tile sm" aria-hidden="true"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="equipment" data-style="duotone"><g fill="currentColor"><path d="M232 120v72a8 8 0 0 1-8 8H32a8 8 0 0 1-8-8v-72Z" opacity=".2"/><path d="M224 64h-48v-8a24 24 0 0 0-24-24h-48a24 24 0 0 0-24 24v8H32a16 16 0 0 0-16 16v112a16 16 0 0 0 16 16h192a16 16 0 0 0 16-16V80a16 16 0 0 0-16-16M96 56a8 8 0 0 1 8-8h48a8 8 0 0 1 8 8v8H96ZM32 80h192v32h-32v-8a8 8 0 0 0-16 0v8H80v-8a8 8 0 0 0-16 0v8H32Zm192 112H32v-64h32v8a8 8 0 0 0 16 0v-8h96v8a8 8 0 0 0 16 0v-8h32z"/></g></svg></span>
           <span class="tag">Get equipped</span>
           <h3 class="serif h3">Equipment</h3>
-          <p>Sport chairs, protective gear, and repairs. Equipment that works for the athlete and the sport.</p>
+          <!-- Chair range and insurance: Alec, Nov 5 2026 ("anywhere from $4,000 to $6,000"; "Insurance does not cover sports wheelchairs"). -->
+          <p class="prog-n">$4,000&ndash;$6,000<span>for a sport chair, and insurance doesn&rsquo;t cover it</span></p>
+          <p>Sport chairs, protective gear, and repairs. We raise for equipment one athlete at a time, when an athlete needs it.</p>
         </div>
         <div class="prog reveal">
+          <span class="ix-tile sm" aria-hidden="true"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="training" data-style="duotone"><g fill="currentColor"><path d="M176 128a48 48 0 1 1-48-48a48 48 0 0 1 48 48" opacity=".2"/><path d="M221.87 83.16A104.1 104.1 0 1 1 195.67 49l22.67-22.68a8 8 0 0 1 11.32 11.32l-96 96a8 8 0 0 1-11.32-11.32l27.72-27.72a40 40 0 1 0 17.87 31.09a8 8 0 1 1 16-.9a56 56 0 1 1-22.38-41.65l22.75-22.75a87.88 87.88 0 1 0 23.13 29.67a8 8 0 0 1 14.44-6.9"/></g></svg></span>
           <span class="tag">Build skills</span>
           <h3 class="serif h3">Training</h3>
+          <p class="prog-n">$1,548<span>a year of unlimited sessions for one athlete, $129 a month</span></p>
           <p>Coaching, clinics, and practice space. Time to build skills and confidence, at your own level.</p>
         </div>
         <div class="prog reveal">
+          <span class="ix-tile sm" aria-hidden="true"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="travel" data-style="duotone"><g fill="currentColor"><path d="m209 81l-33 31l32 88l-24 24l-48-72l-24 24v24l-24 24l-16-40l-40-16l24-24h24l24-24l-72-48l24-24l88 32l31-33a24 24 0 0 1 34 34" opacity=".2"/><path d="m185.33 114.21l29.14-27.43l.17-.16a32 32 0 0 0-45.26-45.26l-.16.17l-27.43 29.14l-83-30.2a8 8 0 0 0-8.39 1.86l-24 24a8 8 0 0 0 1.22 12.31l63.89 42.59L76.69 136H56a8 8 0 0 0-5.65 2.34l-24 24A8 8 0 0 0 29 175.42l36.82 14.73l14.7 36.75l.06.16a8 8 0 0 0 13.18 2.47l23.87-23.88A8 8 0 0 0 120 200v-20.69l14.76-14.76l42.59 63.89a8 8 0 0 0 12.31 1.22l24-24a8 8 0 0 0 1.86-8.39Zm-.07 97.23l-42.59-63.89a8 8 0 0 0-5.87-3.55a7 7 0 0 0-.79 0a8 8 0 0 0-5.66 2.34l-24 24A8 8 0 0 0 104 176v20.69l-13.07 13.07L79.43 181a8 8 0 0 0-4.43-4.43l-28.74-11.5L59.32 152H80a8 8 0 0 0 5.66-2.34l24-24a8 8 0 0 0-1.22-12.32l-63.88-42.6l13.5-13.49l83.22 30.26a8 8 0 0 0 8.56-2l30.94-32.88a16 16 0 0 1 22.62 22.59l-32.87 30.94a8 8 0 0 0-2 8.56l30.26 83.22Z"/></g></svg></span>
           <span class="tag">Get there</span>
           <h3 class="serif h3">Travel</h3>
-          <p>Entry fees, transport, lodging, and meals. The costs of getting to an event and taking part.</p>
+          <p class="prog-n">$3,500<span>about what the US Open costs one athlete</span></p>
+          <p>Entry fees, transport, lodging, and meals, for tournaments through the year and the US Open.</p>
         </div>
       </div>
+      <p class="hh-skill reveal">Who gets to compete should come down to skill, <em class="italic">not money.</em></p>
     </div>
   </section>
 
@@ -213,22 +325,16 @@ fill="currentColor" stroke="none">
   <section class="bigquote band dark">
     <div class="wrap reading">
       <hr class="tick orange reveal">
-      <blockquote class="reveal">"A year ago I couldn't get through a day without my cane. Now I can play pickleball, keep up with my kid, and choose how I move. The chair didn't fix me. It gave me options I didn't have before."</blockquote>
+      <blockquote class="reveal">&ldquo;Now I can play pickleball, keep up with my kid, and choose how I move. The chair didn&rsquo;t fix me. It gave me options I didn&rsquo;t have before.&rdquo;</blockquote>
       <div class="reveal">
         <span class="qname">Brian Liss</span>
-        <span class="qrole">Adaptive Athlete</span>
+        <span class="qrole">Three straight US Opens</span>
       </div>
     </div>
   </section>
 
   <!-- 3 · THE PROMISE (one line; the full statement lives on /promise) -->
-  <section class="band statement-block">
-    <div class="wrap reading">
-      <hr class="tick orange reveal">
-      <h2 class="serif statement italic reveal">Support for your next step.</h2>
-      <p class="prose reveal">A first sport, a regular game, or a competition you have been working toward. The next step is yours. We can pay a vendor or program directly, or reimburse an approved expense. <a class="textlink" href="/promise">How Giving Works <span class="arrow">&rarr;</span></a></p>
-    </div>
-  </section>
+
 
 
   <!-- 4 · WHY IT CARRIES HIS NAME.
@@ -251,7 +357,7 @@ fill="currentColor" stroke="none">
       <span class="eyebrow orange reveal">Why it carries his name</span>
       <h2 class="serif h2 reveal" style="margin-top:0.8rem;">Tim Gruensfelder, 1996&ndash;2018.</h2>
       <p class="prose reveal" style="margin-top:1.4rem;">Tim found wheelchair basketball after childhood cancer. He chased loose balls, put in the work, and earned a college scholarship. When cancer returned in 2018, he was 22.</p>
-      <p class="prose reveal" style="margin-top:1rem;">The fund carries his name so more athletes can have the chance to play, practice, and grow in a sport they love. <a class="textlink" href="/tim">Tim's story <span class="arrow">&rarr;</span></a></p>
+      <p class="prose reveal" style="margin-top:1rem;">The fund carries his name so more athletes can have the chance to play, practice, and grow in a sport they love. <a class="textlink" href="/tim">Tim&rsquo;s story <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a></p>
     </div>
   </section>
 
@@ -268,6 +374,38 @@ fill="currentColor" stroke="none">
     </div>
   </section>
 
+  <!-- The one goal, live: the module (scripts/build-module.mjs). The form is
+       right below, so no picker: the button goes to it. -->
+  <!-- campaign-module {"id":"the-goal","theme":"dark","athlete":"juan","give":false,"cta":{"href":"#fund-donation","label":"Donate"}} -->
+  <section class="cm" id="the-goal" data-cm data-theme="dark" aria-labelledby="the-goal-title">
+      <div class="cm-bg" aria-hidden="true" style="--ghost:url(/images/pickleball/ghost/juan-gray.webp);--ghost-ar:438/640"></div>
+      <div class="cm-wrap">
+        <div class="cm-head">
+          <p class="cm-status"><span class="cm-dot" aria-hidden="true"></span>Raising now<span class="cm-status-sep" aria-hidden="true"></span>Chicago Pickleball: Wheelie Big Dills</p>
+          <h2 class="cm-h" id="the-goal-title">Every week on court. <em>Next stop, Naples.</em></h2>
+          <p class="cm-lede">Building the best wheelchair pickleball in the Chicago area, maybe the country.</p>
+        </div>
+        <div class="cm-card">
+          <p class="cm-hero"><b data-cm-total>$48,180</b><span data-cm-sub>our goal for the year ahead</span></p>
+          <div class="cm-rows">
+            <div class="cm-row" data-part-row="year">
+              <div class="cm-row-top"><b><i class="sym sym--training" aria-hidden="true"></i>Every week</b><span class="cm-fig" data-part-fig="year">$27,180 a year</span></div>
+              <div class="cm-lane"><div class="cm-track"><span class="cm-fill" data-part-fill="year"></span><span class="cm-start" aria-hidden="true"></span></div><span class="cm-pct" data-part-pct="year" hidden></span></div>
+              <p class="cm-note">A year of court time and memberships for 10 athletes.</p>
+            </div>
+            <div class="cm-row" data-part-row="send-6">
+              <div class="cm-row-top"><b><i class="sym sym--travel" aria-hidden="true"></i>The Road to the US Open</b><span class="cm-fig" data-part-fig="send-6">$21,000</span></div>
+              <div class="cm-lane"><div class="cm-track cm-track--seats"><span class="cm-fill cm-fill--action" data-part-fill="send-6"></span><span class="cm-start" aria-hidden="true"></span></div><span class="cm-pct" data-part-pct="send-6" hidden></span></div>
+              <p class="cm-note cm-note--crew"><span class="cm-faces" role="img" aria-label="The six seats: Juan, Brian, Bob, Robby, Ken and Amanda"><i class="face" style="--i:0" title="Juan"></i><i class="face" style="--i:1" title="Brian"></i><i class="face" style="--i:2" title="Bob"></i><i class="face" style="--i:3" title="Robby"></i><i class="face" style="--i:4" title="Ken"></i><i class="face" style="--i:5" title="Amanda"></i></span><span>Six athletes, about $3,500 each, for the 2027 US Open. <a href="/send-6">See the road</a></span></p>
+            </div>
+          </div>
+          <a class="cm-more" href="/numbers">See the numbers breakdown <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
+          <a class="cm-btn btn" href="#fund-donation" data-give-link>Donate</a>
+          <p class="cm-trust"><span>Tax-deductible</span><span>Secure checkout by Givebutter</span></p>
+        </div>
+      </div>
+    </section>
+  <!-- /campaign-module -->
   <section class="closing dark band-lg give-moment">
     <div class="wrap">
       <div class="give-split">
@@ -275,23 +413,19 @@ fill="currentColor" stroke="none">
           <hr class="tick orange" style="margin:0 0 1rem;">
           <span class="eyebrow orange">Your turn</span>
           <h2 class="serif statement" style="margin-top:0.7rem;">Put an athlete on the court.</h2>
-          <p class="lead sub" style="margin-top:1rem;">Help cover the cost of taking part. Every gift adds to what the fund can make possible.</p>
-          <div class="thermo" data-thermo>
-            <p style="margin:0 0 0.9rem; font-size:0.95rem; font-weight:600;">Send 6 to the US Open Spring 2027</p>
-            <div class="thermo-row">
-              <span class="thermo-raised" data-thermo-raised>$0</span>
-              <span class="thermo-goal">raised of our $21,000 goal</span>
-            </div>
-            <div class="thermo-track"><span class="thermo-fill" data-thermo-fill></span></div>
-            <a href="/send-6" class="thermo-link">View the Send 6 campaign <span class="arrow">&rarr;</span></a>
-          </div>
+          <p class="lead sub" style="margin-top:1rem;">Every gift goes to one fund. Right now it funds Chicago Pickleball: Wheelie Big Dills, every week first, then the road to the US Open.</p>
+          <ul class="gift-ladder" aria-label="What your gift can do">
+            <li><b>$15</b><span>One night on court for one athlete.</span></li>
+            <li><b>$225</b><span>One night on court for up to 15 athletes.</span></li>
+            <li><b>$1,548</b><span>A year of unlimited sessions for one athlete.</span></li>
+          </ul>
           <div class="fund-actions" aria-label="Support the fund">
             <a href="#fund-donation" class="btn">Donate</a>
           </div>
         </div>
         <div class="give-split-form reveal" id="fund-donation" tabindex="-1" aria-label="Donation form">
           <p class="fund-terms"><a href="/promise#campaign-gifts">Campaign giving terms</a></p>
-          <givebutter-giving-form campaign="IXM5DR"></givebutter-giving-form>
+          <div class="gb-card gb-card--solo"><givebutter-giving-form campaign="IXM5DR"></givebutter-giving-form></div>
         </div>
       </div>
     </div>
@@ -335,33 +469,41 @@ fill="currentColor" stroke="none">
           <label class="foot-sub-label" for="footEm">Follow the work</label>
           <div class="foot-sub-row">
             <input class="foot-sub-input" id="footEm" name="em" type="email" autocomplete="email" placeholder="you@example.com" aria-label="Your email">
-            <button class="foot-sub-btn" type="submit" aria-label="Join the list">&rarr;</button>
+            <button class="foot-sub-btn" type="submit" aria-label="Join the list"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></button>
           </div>
           <input type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
           <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only"></div>
           <p class="foot-sub-msg" role="status" aria-live="polite"></p>
         </form>
+        <div class="foot-follow">
+          <span class="foot-sub-label">Follow us</span>
+          <div class="social">
+        <a href="https://www.instagram.com/adapt_to_life_org/" aria-label="Adapt To Life on Instagram" target="_blank" rel="me noopener noreferrer"><svg class="ix-svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false" data-logo="instagram"><path fill="currentColor" d="M7.03.084c-1.277.06-2.149.264-2.91.563a5.9 5.9 0 0 0-2.124 1.388a5.9 5.9 0 0 0-1.38 2.127C.321 4.926.12 5.8.064 7.076s-.069 1.688-.063 4.947s.021 3.667.083 4.947c.061 1.277.264 2.149.563 2.911c.308.789.72 1.457 1.388 2.123a5.9 5.9 0 0 0 2.129 1.38c.763.295 1.636.496 2.913.552c1.278.056 1.689.069 4.947.063s3.668-.021 4.947-.082c1.28-.06 2.147-.265 2.91-.563a5.9 5.9 0 0 0 2.123-1.388a5.9 5.9 0 0 0 1.38-2.129c.295-.763.496-1.636.551-2.912c.056-1.28.07-1.69.063-4.948c-.006-3.258-.02-3.667-.081-4.947c-.06-1.28-.264-2.148-.564-2.911a5.9 5.9 0 0 0-1.387-2.123a5.9 5.9 0 0 0-2.128-1.38c-.764-.294-1.636-.496-2.914-.55C15.647.009 15.236-.006 11.977 0S8.31.021 7.03.084m.14 21.693c-1.17-.05-1.805-.245-2.228-.408a3.7 3.7 0 0 1-1.382-.895a3.7 3.7 0 0 1-.9-1.378c-.165-.423-.363-1.058-.417-2.228c-.06-1.264-.072-1.644-.08-4.848c-.006-3.204.006-3.583.061-4.848c.05-1.169.246-1.805.408-2.228c.216-.561.477-.96.895-1.382a3.7 3.7 0 0 1 1.379-.9c.423-.165 1.057-.361 2.227-.417c1.265-.06 1.644-.072 4.848-.08c3.203-.006 3.583.006 4.85.062c1.168.05 1.804.244 2.227.408c.56.216.96.475 1.382.895s.681.817.9 1.378c.165.422.362 1.056.417 2.227c.06 1.265.074 1.645.08 4.848c.005 3.203-.006 3.583-.061 4.848c-.051 1.17-.245 1.805-.408 2.23c-.216.56-.477.96-.896 1.38a3.7 3.7 0 0 1-1.378.9c-.422.165-1.058.362-2.226.418c-1.266.06-1.645.072-4.85.079s-3.582-.006-4.848-.06m9.783-16.192a1.44 1.44 0 1 0 1.437-1.442a1.44 1.44 0 0 0-1.437 1.442M5.839 12.012a6.161 6.161 0 1 0 12.323-.024a6.162 6.162 0 0 0-12.323.024M8 12.008A4 4 0 1 1 12.008 16A4 4 0 0 1 8 12.008"/></svg></a>
+        <a href="https://www.facebook.com/profile.php?id=61592619668321" aria-label="Adapt To Life on Facebook" target="_blank" rel="me noopener noreferrer"><svg class="ix-svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false" data-logo="facebook"><path fill="currentColor" d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978c.401 0 .955.042 1.468.103a9 9 0 0 1 1.141.195v3.325a9 9 0 0 0-.653-.036a27 27 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.7 1.7 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103l-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647"/></svg></a>
+      </div>
+        </div>
         <p class="legal">Adapt To Life is a recognized 501(c)(3) nonprofit organization. Donations are tax deductible to the extent allowed by law. EIN 41-3213344.</p>
       </div>
       <div class="col">
-        <h4>Organization</h4>
+        <h2>Organization</h2>
         <a href="/about">Our Story</a>
         <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
-        <a href="/tim">Tim&#39;s Story</a>
-        <a href="/karen">Karen&#39;s Story</a>
-        <a href="/juan">Juan&#39;s Story</a>
-        <a href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
-        <a href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
+        <a href="/tim">Tim&rsquo;s Story</a>
+        <a href="/karen">Karen&rsquo;s Story</a>
+        <a href="/juan">Juan&rsquo;s Story</a>
+        <a href="/adaptive-sports-near-me">Adaptive Sports Near Me <span class="tag tag--info">In beta</span></a>
+        <a href="/adapt-body-shop">Adapt Body Shop <span class="tag tag--neutral">Coming soon</span></a>
                 <a href="/roadmap">Roadmap</a>
       </div>
       <div class="col">
-        <h4>Get involved</h4>
+        <h2>Get involved</h2>
         <a href="/donate">Donate</a>
         <a href="/promise">How Giving Works</a>
         <a href="/volunteer">Volunteer</a>
         <a href="/ambassadors">Ambassadors</a>
         <a href="/sponsorship">Become a partner</a>
         <a href="/events">Events</a>
+        <a href="/social">Social</a>
         <a href="/apply">Apply for support</a>
         <a href="https://sign.adapttolife.org/waiver?source=atl">Photo and media release</a>
         <a href="/subscribe">Join the list</a>
@@ -370,10 +512,6 @@ fill="currentColor" stroke="none">
       </div>
     </div>
     <div class="footer-bottom">
-      <div class="social">
-        <a href="https://www.instagram.com/adapt_to_life_org/" aria-label="Adapt To Life on Instagram" target="_blank" rel="me noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16M12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63c-.79.3-1.46.72-2.13 1.38C1.35 2.68.93 3.35.63 4.14.33 4.9.13 5.78.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.3.79.72 1.46 1.38 2.13.67.66 1.34 1.08 2.13 1.38.76.3 1.64.5 2.91.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56.79-.3 1.46-.72 2.13-1.38.66-.67 1.08-1.34 1.38-2.13.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91-.3-.79-.72-1.46-1.38-2.13C21.32 1.35 20.65.93 19.86.63c-.76-.3-1.64-.5-2.91-.56C15.67.01 15.26 0 12 0z"/><path d="M12 5.84A6.16 6.16 0 1 0 18.16 12 6.16 6.16 0 0 0 12 5.84zm0 10.16A4 4 0 1 1 16 12a4 4 0 0 1-4 4z"/><circle cx="18.41" cy="5.59" r="1.44"/></svg></a>
-        <a href="https://www.facebook.com/profile.php?id=61592619668321" aria-label="Adapt To Life on Facebook" target="_blank" rel="me noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.96h-1.51c-1.49 0-1.96.93-1.96 1.89v2.26h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z"/></svg></a>
-      </div>
       <span>&copy; 2026 Adapt To Life</span>
     </div>
   </div>
@@ -436,23 +574,10 @@ fill="currentColor" stroke="none">
   })();
 </script>
 
-<script>
-  (function(){
-    var box = document.querySelector('[data-thermo]'); if(!box) return;
-    var fill = box.querySelector('[data-thermo-fill]');
-    var amt = box.querySelector('[data-thermo-raised]');
-    var goalEl = box.querySelector('.thermo-goal');
-    fetch('/api/raised').then(function(r){ return r.json(); }).then(function(d){
-      var raised = Number(d.raised) || 0, goal = Number(d.goal) || 21000;
-      var pct = goal > 0 ? Math.max(0, Math.min(100, raised / goal * 100)) : 0;
-      amt.textContent = '$' + raised.toLocaleString('en-US');
-      if (goalEl) { goalEl.textContent = 'raised of our $' + goal.toLocaleString('en-US') + ' goal'; }
-      requestAnimationFrame(function(){ setTimeout(function(){ fill.style.width = pct.toFixed(1) + '%'; }, 120); });
-    }).catch(function(){});
-  })();
-</script>
+<script src="/js/campaigns.js?v=0cb1b850"></script>
+<script>window.ATLCampaigns.module();</script>
 
-<script src="/js/subscribe.js?v=e8aeb3cc" defer></script>
-<script src="/js/turnstile-lazy.js?v=6b5d6c4a" defer></script>
+<script src="/js/subscribe.js?v=7efaf550" defer></script>
+<script src="/js/turnstile-lazy.js?v=12e9b811" defer></script>
 </body>
 </html>

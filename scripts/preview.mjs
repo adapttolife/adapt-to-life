@@ -142,13 +142,16 @@ for (const att of pngs.attachments) {
   writeFileSync(join(OUT, `${att.contentId}.png`), Buffer.from(att.content, "base64"));
 }
 
-const { body_html } = resolveMarkdownBody({ body_markdown: FIXTURE_MD }, { chartImages: pngs.images });
+const { body_html } = resolveMarkdownBody(
+  { body_markdown: FIXTURE_MD },
+  { chartImages: pngs.images },
+);
 // Browsers don't resolve cid:; point at the files written above. Page shell
 // mimics a mail client's reading pane (neutral gray around the body).
 const emailHtml =
-  "<!doctype html><html><head><meta charset=\"utf-8\"><title>email register</title></head>" +
-  "<body style=\"margin:0;background:#e9e9e7;padding:24px\">" +
-  "<div style=\"max-width:760px;margin:0 auto;background:#ffffff;padding:20px 24px\">" +
+  '<!doctype html><html><head><meta charset="utf-8"><title>email register</title></head>' +
+  '<body style="margin:0;background:#e9e9e7;padding:24px">' +
+  '<div style="max-width:760px;margin:0 auto;background:#ffffff;padding:20px 24px">' +
   body_html.replace(/cid:([A-Za-z0-9._@-]+)/g, "$1.png") +
   "</div></body></html>";
 writeFileSync(join(OUT, "email.html"), emailHtml);
@@ -169,7 +172,11 @@ const env = {
     prepare(sql) {
       return {
         bind() {
-          return { async first() { return /FROM messages WHERE id = \?/.test(sql) ? row : null; } };
+          return {
+            async first() {
+              return /FROM messages WHERE id = \?/.test(sql) ? row : null;
+            },
+          };
         },
       };
     },
@@ -180,4 +187,6 @@ const request = new Request(`https://adapttolife.org/r/${token}`, { method: "GET
 const res = await handleReportView(request, env, new URL(request.url));
 writeFileSync(join(OUT, "report.html"), await res.text());
 
-console.log(`wrote ${OUT}/email.html + report.html + ${pngs.attachments.length} png(s)`);
+console.log(
+  `wrote ${OUT}/email.html + report.html + ${pngs.attachments.length} png(s)`,
+);

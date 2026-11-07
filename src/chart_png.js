@@ -81,7 +81,7 @@ function ensureInit() {
         resvgWasm: mod.resvgWasm,
         interRegular: mod.interRegular,
         interSemiBold: mod.interSemiBold,
-      })
+      }),
     );
   }
   return initStarted;
@@ -157,7 +157,13 @@ function buildTree(chart) {
     const n = xLabels.length;
     xPix = (i) => PLOT_INSET + (i / (n - 1)) * innerW;
     const maxLabels = Math.min(6, n);
-    const idxs = [...new Set(Array.from({ length: maxLabels }, (_v, k) => Math.round((k * (n - 1)) / (maxLabels - 1))))];
+    const idxs = [
+      ...new Set(
+        Array.from({ length: maxLabels }, (_v, k) =>
+          Math.round((k * (n - 1)) / (maxLabels - 1)),
+        ),
+      ),
+    ];
     xTicks = idxs.map((i) => ({ pix: xPix(i), label: xLabels[i] }));
   }
 
@@ -167,16 +173,32 @@ function buildTree(chart) {
     const isZero = t === 0 && y.lo < 0 && y.hi > 0;
     shapes.push({
       type: "line",
-      props: { x1: 0, y1: round2(yPix(t)), x2: plotW, y2: round2(yPix(t)), stroke: isZero ? ZERO_LINE : CHART_HAIRLINE, strokeWidth: 1 },
+      props: {
+        x1: 0,
+        y1: round2(yPix(t)),
+        x2: plotW,
+        y2: round2(yPix(t)),
+        stroke: isZero ? ZERO_LINE : CHART_HAIRLINE,
+        strokeWidth: 1,
+      },
     });
   }
   series.forEach((values, s) => {
     const color = SERIES_COLORS[s];
     if (type === "line") {
-      const pts = values.map((v, i) => `${round2(xPix(i))},${round2(yPix(v))}`).join(" ");
+      const pts = values
+        .map((v, i) => `${round2(xPix(i))},${round2(yPix(v))}`)
+        .join(" ");
       shapes.push({
         type: "polyline",
-        props: { points: pts, fill: "none", stroke: color, strokeWidth: 2, strokeLinejoin: "round", strokeLinecap: "round" },
+        props: {
+          points: pts,
+          fill: "none",
+          stroke: color,
+          strokeWidth: 2,
+          strokeLinejoin: "round",
+          strokeLinecap: "round",
+        },
       });
       if (values.length <= 20) {
         // Spec 100: markers wear a 2px surface ring (dataviz spec) so dots
@@ -184,7 +206,14 @@ function buildTree(chart) {
         values.forEach((v, i) => {
           shapes.push({
             type: "circle",
-            props: { cx: round2(xPix(i)), cy: round2(yPix(v)), r: 4, fill: color, stroke: "#ffffff", strokeWidth: 2 },
+            props: {
+              cx: round2(xPix(i)),
+              cy: round2(yPix(v)),
+              r: 4,
+              fill: color,
+              stroke: "#ffffff",
+              strokeWidth: 2,
+            },
           });
         });
       }
@@ -192,7 +221,15 @@ function buildTree(chart) {
       values.forEach((v, i) => {
         shapes.push({
           type: "circle",
-          props: { cx: round2(xPix(xValues[i])), cy: round2(yPix(v)), r: 4.5, fill: color, fillOpacity: 0.9, stroke: "#ffffff", strokeWidth: 2 },
+          props: {
+            cx: round2(xPix(xValues[i])),
+            cy: round2(yPix(v)),
+            r: 4.5,
+            fill: color,
+            fillOpacity: 0.9,
+            stroke: "#ffffff",
+            strokeWidth: 2,
+          },
         });
       });
     }
@@ -203,9 +240,18 @@ function buildTree(chart) {
   const yLabelEls = y.ticks.map((t) =>
     el(
       "div",
-      { position: "absolute", top: round2(yPix(t) - 7), left: 0, width: Y_AXIS_W - AXIS_GAP, display: "flex", justifyContent: "flex-end", fontSize: 12, color: CHART_MUTED },
-      fmtTick(t, y.decimals)
-    )
+      {
+        position: "absolute",
+        top: round2(yPix(t) - 7),
+        left: 0,
+        width: Y_AXIS_W - AXIS_GAP,
+        display: "flex",
+        justifyContent: "flex-end",
+        fontSize: 12,
+        color: CHART_MUTED,
+      },
+      fmtTick(t, y.decimals),
+    ),
   );
   const xLabelEls = xTicks.map(({ pix, label }, i) => {
     const first = i === 0;
@@ -222,7 +268,7 @@ function buildTree(chart) {
         fontSize: 11,
         color: CHART_MUTED,
       },
-      String(label)
+      String(label),
     );
   });
 
@@ -231,28 +277,69 @@ function buildTree(chart) {
   const children = [];
   children.push(
     el("div", { display: "flex", flexDirection: "row", height: plotH }, [
-      el("div", { position: "relative", width: Y_AXIS_W, height: plotH, display: "flex" }, yLabelEls),
+      el(
+        "div",
+        { position: "relative", width: Y_AXIS_W, height: plotH, display: "flex" },
+        yLabelEls,
+      ),
       {
         type: "svg",
-        props: { width: plotW, height: plotH, viewBox: `0 0 ${plotW} ${plotH}`, children: shapes },
+        props: {
+          width: plotW,
+          height: plotH,
+          viewBox: `0 0 ${plotW} ${plotH}`,
+          children: shapes,
+        },
       },
-    ])
+    ]),
   );
-  children.push(el("div", { position: "relative", height: X_AXIS_H, width: plotW, marginLeft: Y_AXIS_W + AXIS_GAP, display: "flex" }, xLabelEls));
+  children.push(
+    el(
+      "div",
+      {
+        position: "relative",
+        height: X_AXIS_H,
+        width: plotW,
+        marginLeft: Y_AXIS_W + AXIS_GAP,
+        display: "flex",
+      },
+      xLabelEls,
+    ),
+  );
 
   return el(
     "div",
-    { display: "flex", flexDirection: "column", width: WIDTH, height: HEIGHT, backgroundColor: "#ffffff", fontFamily: "Inter", padding: PAD },
-    children
+    {
+      display: "flex",
+      flexDirection: "column",
+      width: WIDTH,
+      height: HEIGHT,
+      backgroundColor: "#ffffff",
+      fontFamily: "Inter",
+      padding: PAD,
+    },
+    children,
   );
 }
 
 // Renders one parsed chart to PNG bytes. Throws on engine failure — callers
 // catch and degrade. Returns display + raster dimensions for the <img> tag.
 export async function renderChartPng(chart) {
-  const svg = await satori(buildTree(chart), { width: WIDTH, height: HEIGHT, fonts: engineFonts });
-  const png = new Resvg(svg, { fitTo: { mode: "width", value: WIDTH * SCALE } }).render().asPng();
-  return { png, width: WIDTH, height: HEIGHT, pngWidth: WIDTH * SCALE, pngHeight: HEIGHT * SCALE };
+  const svg = await satori(buildTree(chart), {
+    width: WIDTH,
+    height: HEIGHT,
+    fonts: engineFonts,
+  });
+  const png = new Resvg(svg, { fitTo: { mode: "width", value: WIDTH * SCALE } })
+    .render()
+    .asPng();
+  return {
+    png,
+    width: WIDTH,
+    height: HEIGHT,
+    pngWidth: WIDTH * SCALE,
+    pngHeight: HEIGHT * SCALE,
+  };
 }
 
 // ── markdown scan + send-path entry ─────────────────────────────────────
@@ -321,7 +408,10 @@ export async function renderMarkdownChartPngs(markdown) {
           contentId: cid,
         });
       } catch (err) {
-        console.error("chart png render failed (degrading to table):", err && err.message);
+        console.error(
+          "chart png render failed (degrading to table):",
+          err && err.message,
+        );
       }
     }
   } catch (err) {

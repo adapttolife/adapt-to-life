@@ -10,11 +10,27 @@ function read(name) {
 
 function parseJsonc(text) {
   let out = "";
-  let inString = false, inLine = false, inBlock = false, escaped = false;
+  let inString = false,
+    inLine = false,
+    inBlock = false,
+    escaped = false;
   for (let i = 0; i < text.length; i += 1) {
-    const c = text[i], next = text[i + 1];
-    if (inLine) { if (c === "\n") { inLine = false; out += c; } continue; }
-    if (inBlock) { if (c === "*" && next === "/") { inBlock = false; i += 1; } continue; }
+    const c = text[i],
+      next = text[i + 1];
+    if (inLine) {
+      if (c === "\n") {
+        inLine = false;
+        out += c;
+      }
+      continue;
+    }
+    if (inBlock) {
+      if (c === "*" && next === "/") {
+        inBlock = false;
+        i += 1;
+      }
+      continue;
+    }
     if (inString) {
       out += c;
       if (escaped) escaped = false;
@@ -22,8 +38,15 @@ function parseJsonc(text) {
       else if (c === '"') inString = false;
       continue;
     }
-    if (c === "/" && next === "/") { inLine = true; continue; }
-    if (c === "/" && next === "*") { inBlock = true; i += 1; continue; }
+    if (c === "/" && next === "/") {
+      inLine = true;
+      continue;
+    }
+    if (c === "/" && next === "*") {
+      inBlock = true;
+      i += 1;
+      continue;
+    }
     if (c === '"') inString = true;
     out += c;
   }
@@ -41,19 +64,25 @@ test("agent-mail is a distinct Worker on its private custom domain only", () => 
   assert.equal(agentMail.name, "amelioration-agent-mail");
   assert.equal(agentMail.main, "src/agent_mail_worker.js");
   assert.notEqual(agentMail.name, atl.name);
-  assert.deepEqual(agentMail.routes, [{ pattern: "api.amelioration.is", custom_domain: true }]);
+  assert.deepEqual(agentMail.routes, [
+    { pattern: "api.amelioration.is", custom_domain: true },
+  ]);
 });
 
 test("agent-mail holds its mail stores, outbound binding, and lifecycle consumer", () => {
   assert.deepEqual(agentMail.d1_databases, [expectedD1]);
   assert.equal(agentMail.r2_buckets, undefined);
   assert.deepEqual(agentMail.send_email, [{ name: "SEND_EMAIL" }]);
-  assert.deepEqual(agentMail.queues, { consumers: [{
-    queue: "agent-mail-email-events",
-    max_batch_size: 10,
-    max_retries: 5,
-    dead_letter_queue: "agent-mail-email-events-dlq",
-  }] });
+  assert.deepEqual(agentMail.queues, {
+    consumers: [
+      {
+        queue: "agent-mail-email-events",
+        max_batch_size: 10,
+        max_retries: 5,
+        dead_letter_queue: "agent-mail-email-events-dlq",
+      },
+    ],
+  });
   for (const key of ["assets", "kv_namespaces", "triggers"])
     assert.equal(agentMail[key], undefined, `agent-mail must not configure ${key}`);
 });
@@ -64,7 +93,11 @@ test("agent-mail keeps only non-secret mail/report configuration", () => {
     REPORT_LINK_BASE: atl.vars.REPORT_LINK_BASE,
   });
   for (const secret of ["AGENT_MAIL_TOKEN", "MAIL_BELL_SECRETS", "REPORT_LINK_SECRET"])
-    assert.equal(agentMail.vars[secret], undefined, `${secret} must remain a Worker secret`);
+    assert.equal(
+      agentMail.vars[secret],
+      undefined,
+      `${secret} must remain a Worker secret`,
+    );
 });
 
 test("agent-mail observability and local font bundling are enabled", () => {
@@ -75,5 +108,8 @@ test("agent-mail observability and local font bundling are enabled", () => {
 });
 
 test("package exposes an explicit deploy command for the dedicated Worker", () => {
-  assert.match(pkg.scripts["deploy:agent-mail"] || "", /wrangler deploy --config wrangler\.agent-mail\.jsonc/);
+  assert.match(
+    pkg.scripts["deploy:agent-mail"] || "",
+    /wrangler deploy --config wrangler\.agent-mail\.jsonc/,
+  );
 });

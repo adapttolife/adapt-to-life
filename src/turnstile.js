@@ -9,16 +9,25 @@
 export async function verifyTurnstile(env, token, ip) {
   if (!env || !env.TURNSTILE_SECRET_KEY) {
     if (env && env.TURNSTILE_MODE === "off") return true;
-    console.error('turnstile: TURNSTILE_SECRET_KEY is unset and TURNSTILE_MODE is not "off" — refusing the submission');
+    console.error(
+      'turnstile: TURNSTILE_SECRET_KEY is unset and TURNSTILE_MODE is not "off" — refusing the submission',
+    );
     return false;
   }
   if (!token) return false;
   try {
-    const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ secret: env.TURNSTILE_SECRET_KEY, response: token, remoteip: ip || undefined }),
-    });
+    const res = await fetch(
+      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          secret: env.TURNSTILE_SECRET_KEY,
+          response: token,
+          remoteip: ip || undefined,
+        }),
+      },
+    );
     const out = await res.json();
     return !!out.success;
   } catch (err) {
@@ -48,4 +57,7 @@ export async function overFormLimit(env, request) {
   }
 }
 
-export const RATE_LIMITED = { ok: false, error: "Too many submissions from your network. Please wait a minute and try again." };
+export const RATE_LIMITED = {
+  ok: false,
+  error: "Too many submissions from your network. Please wait a minute and try again.",
+};

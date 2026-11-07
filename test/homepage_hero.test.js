@@ -16,16 +16,25 @@ import { readFileSync, existsSync } from "node:fs";
 const html = readFileSync(new URL("../public/index.html", import.meta.url), "utf8");
 
 test("the homepage hero is the mosaic", () => {
-  assert.match(html, /<section class="hero-wall-photo[^"]*" id="heroStage" data-variant="1">/,
-    'index.html is not carrying variant 1. Run: node scripts/apply-hero.mjs 1');
+  assert.match(
+    html,
+    /<section class="hero-wall-photo[^"]*" id="heroStage" data-variant="1">/,
+    "index.html is not carrying variant 1. Run: node scripts/apply-hero.mjs 1",
+  );
 });
 
 test("the hero stylesheet is linked exactly once", () => {
   // Stylesheet links carry ?v=<hash> (scripts/version-assets.mjs); the check is
   // about WHICH sheet and HOW MANY, so the version is allowed but not required.
-  const links = html.match(/<link rel="stylesheet" href="\/css\/hero-[a-z]+\.css(?:\?v=[0-9a-f]+)?">/g) || [];
+  const links =
+    html.match(
+      /<link rel="stylesheet" href="\/css\/hero-[a-z]+\.css(?:\?v=[0-9a-f]+)?">/g,
+    ) || [];
   assert.equal(links.length, 1, `expected one hero stylesheet, found ${links.length}`);
-  assert.match(links[0], /^<link rel="stylesheet" href="\/css\/hero-mosaic\.css(?:\?v=[0-9a-f]+)?">$/);
+  assert.match(
+    links[0],
+    /^<link rel="stylesheet" href="\/css\/hero-mosaic\.css(?:\?v=[0-9a-f]+)?">$/,
+  );
 });
 
 test("the hero script block is present and not duplicated", () => {
@@ -39,14 +48,50 @@ test("every panel the hero references exists, and is fingerprinted", () => {
   // the interior band in place under that policy cost four review rounds: every
   // fix shipped, and Alec's browser kept serving the first version. A URL
   // without a content hash in it is that bug waiting to happen again.
-  const used = [...html.matchAll(/\/images\/hero\/panels\/([a-z0-9-]+\.[0-9a-f]{8}\.webp)/g)]
-    .map((m) => m[1]);
-  assert.ok(used.length >= 10, `hero references only ${used.length} fingerprinted panels`);
-  const plain = [...html.matchAll(/\/images\/hero\/panels\/([a-z0-9-]+)\.webp/g)].map((m) => m[1]);
-  assert.equal(plain.length, 0,
-    `hero references un-fingerprinted panels: ${plain.join(", ")}`);
+  const used = [
+    ...html.matchAll(/\/images\/hero\/panels\/([a-z0-9-]+\.[0-9a-f]{8}\.webp)/g),
+  ].map((m) => m[1]);
+  assert.ok(
+    used.length >= 10,
+    `hero references only ${used.length} fingerprinted panels`,
+  );
+  const plain = [...html.matchAll(/\/images\/hero\/panels\/([a-z0-9-]+)\.webp/g)].map(
+    (m) => m[1],
+  );
+  assert.equal(
+    plain.length,
+    0,
+    `hero references un-fingerprinted panels: ${plain.join(", ")}`,
+  );
   for (const file of new Set(used)) {
-    assert.ok(existsSync(new URL(`../public/images/hero/panels/${file}`, import.meta.url)),
-      `hero references "${file}" which is not on disk`);
+    assert.ok(
+      existsSync(new URL(`../public/images/hero/panels/${file}`, import.meta.url)),
+      `hero references "${file}" which is not on disk`,
+    );
   }
+});
+
+test("no wall panel is cut from a frame showing GLASA's shirts", () => {
+  // GLASA is never named on this site, and that includes what people are
+  // wearing. Until Nov 6 2026 the wall's "profile" panel was JLA_5989, a man in
+  // a "Great Lakes Games" shirt (GLASA's event), visible on desktop. It is
+  // JLA_6011 now (Alec approved the swap). These frames from the same ACE shoot
+  // show the Great Lakes Games shirt or GLASA's staff shirt; none of them may
+  // become a homepage panel.
+  const GLASA_SHIRTS = new Set([
+    "JLA_5989.jpg",
+    "JLA_5990.jpg",
+    "JLA_5991.jpg",
+    "JLA_6136.jpg",
+    "JLA_6192.jpg",
+    "JLA_6193.jpg",
+  ]);
+  const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), "utf8");
+  const panels = JSON.parse(read("public/images/hero/panels/panels.json"));
+  const hashes = JSON.parse(read("public/images/hero/panels/hashes.json"));
+  for (const [name, p] of Object.entries(panels)) {
+    assert.ok(!GLASA_SHIRTS.has(p.src), `panel "${name}" is cut from ${p.src}`);
+  }
+  assert.equal(panels.profile.src, "JLA_6011.jpg");
+  assert.ok(html.includes(`/images/hero/panels/${hashes["profile.webp"]}`));
 });

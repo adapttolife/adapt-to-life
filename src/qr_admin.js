@@ -75,12 +75,17 @@ export async function verifyAccess(request) {
     const jwk = (await accessKeys()).find((k) => k.kid === header.kid);
     if (!jwk) return null;
     const key = await crypto.subtle.importKey(
-      "jwk", jwk, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["verify"]
+      "jwk",
+      jwk,
+      { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+      false,
+      ["verify"],
     );
     const ok = await crypto.subtle.verify(
-      "RSASSA-PKCS1-v1_5", key,
+      "RSASSA-PKCS1-v1_5",
+      key,
       b64urlToBytes(s),
-      new TextEncoder().encode(`${h}.${p}`)
+      new TextEncoder().encode(`${h}.${p}`),
     );
     if (!ok) return null;
     return payload.email || payload.common_name || "unknown";
@@ -99,8 +104,13 @@ export function validateDest(dest) {
   if (d.startsWith("//")) return "protocol-relative URLs are not allowed";
   if (d.startsWith("/")) return null;
   let u;
-  try { u = new URL(d); } catch { return "destination must be a path like /send-6 or a full https:// URL"; }
-  if (u.protocol !== "https:" && u.protocol !== "http:") return "only http(s) destinations are allowed";
+  try {
+    u = new URL(d);
+  } catch {
+    return "destination must be a path like /send-6 or a full https:// URL";
+  }
+  if (u.protocol !== "https:" && u.protocol !== "http:")
+    return "only http(s) destinations are allowed";
   return null;
 }
 
@@ -114,34 +124,53 @@ export function validateSlug(slug) {
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data, null, 2), {
     status,
-    headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "no-store",
+    },
   });
 
 async function logEvent(env, slug, action, oldDest, newDest, actor, detail) {
   await env.WAIVERS_DB.prepare(
     `INSERT INTO qr_code_events (slug, action, old_dest, new_dest, actor, detail, at)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`
-  ).bind(slug, action, oldDest || null, newDest || null, actor, detail || null, new Date().toISOString()).run();
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+  )
+    .bind(
+      slug,
+      action,
+      oldDest || null,
+      newDest || null,
+      actor,
+      detail || null,
+      new Date().toISOString(),
+    )
+    .run();
 }
 
 // One query per fact, joined in JS. Three small reads on a page one or two
 // people open is cheaper to read than a triple LEFT JOIN nobody can debug.
 async function overview(env) {
-  const codes = (await env.WAIVERS_DB.prepare(
-    `SELECT slug, dest, rule, label, surface, notes, active, created_at, updated_at, retired_at
-       FROM qr_codes ORDER BY active DESC, slug`
-  ).all()).results || [];
+  const codes =
+    (
+      await env.WAIVERS_DB.prepare(
+        `SELECT slug, dest, rule, label, surface, notes, active, created_at, updated_at, retired_at
+       FROM qr_codes ORDER BY active DESC, slug`,
+      ).all()
+    ).results || [];
 
-  const scans = (await env.WAIVERS_DB.prepare(
-    `SELECT slug,
+  const scans =
+    (
+      await env.WAIVERS_DB.prepare(
+        `SELECT slug,
             COUNT(*)                        AS scans,
             COUNT(DISTINCT substr(scanned_at, 1, 10)) AS days,
             SUM(CASE WHEN device = 'ios'     THEN 1 ELSE 0 END) AS ios,
             SUM(CASE WHEN device = 'android' THEN 1 ELSE 0 END) AS android,
             SUM(CASE WHEN device NOT IN ('ios','android') OR device IS NULL THEN 1 ELSE 0 END) AS other,
             MAX(scanned_at)                 AS last_scan
-       FROM qr_scans GROUP BY slug`
-  ).all()).results || [];
+       FROM qr_scans GROUP BY slug`,
+      ).all()
+    ).results || [];
 
   const gifts = await giftsBySlug(env);
 
@@ -150,16 +179,29 @@ async function overview(env) {
   return codes.map((c) => ({
     ...c,
     active: Boolean(c.active),
-    scans: byScan.get(c.slug) || { scans: 0, days: 0, ios: 0, android: 0, other: 0, last_scan: null },
+    scans: byScan.get(c.slug) || {
+      scans: 0,
+      days: 0,
+      ios: 0,
+      android: 0,
+      other: 0,
+      last_scan: null,
+    },
     money: byGift.get(c.slug) || { gifts: 0, dollars: 0, last_gift: null },
     url: `https://adapttolife.org/q/${c.slug}`,
   }));
 }
 
-export async function handleAdmin(request, env, url) {
-  const email = await verifyAccess(request);
+export async function handleAdmin(request, env, url, authenticatedEmail = null) {
+  const email = authenticatedEmail || (await verifyAccess(request));
   if (!email) {
-    return json({ ok: false, error: "not authorised — reach this page through Cloudflare Access" }, 403);
+    return json(
+      {
+        ok: false,
+        error: "not authorised — reach this page through Cloudflare Access",
+      },
+      403,
+    );
   }
   if (!env.WAIVERS_DB) return json({ ok: false, error: "no database binding" }, 503);
 
@@ -173,32 +215,63 @@ export async function handleAdmin(request, env, url) {
   // sticker already carrying it (D4).
   if (path === "/admin/api/codes" && request.method === "POST") {
     const body = await request.json().catch(() => ({}));
-    const slug = String(body.slug || "").trim().toLowerCase();
+    const slug = String(body.slug || "")
+      .trim()
+      .toLowerCase();
     const bad = validateSlug(slug) || validateDest(body.dest);
     if (bad) return json({ ok: false, error: bad }, 400);
-    if (!String(body.label || "").trim()) return json({ ok: false, error: "label is required" }, 400);
+    if (!String(body.label || "").trim())
+      return json({ ok: false, error: "label is required" }, 400);
 
-    const existing = await env.WAIVERS_DB.prepare(`SELECT slug FROM qr_codes WHERE slug = ?`).bind(slug).first();
+    const existing = await env.WAIVERS_DB.prepare(
+      `SELECT slug FROM qr_codes WHERE slug = ?`,
+    )
+      .bind(slug)
+      .first();
     if (existing) {
-      return json({ ok: false, error: `"${slug}" already exists. Slugs are printed matter and are never reused — pick a new one.` }, 409);
+      return json(
+        {
+          ok: false,
+          error: `"${slug}" already exists. Slugs are printed matter and are never reused — pick a new one.`,
+        },
+        409,
+      );
     }
 
     const now = new Date().toISOString();
     await env.WAIVERS_DB.prepare(
       `INSERT INTO qr_codes (slug, dest, rule, label, surface, notes, active, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?)`
-    ).bind(
-      slug, String(body.dest).trim(), body.rule === "campaign-follow" ? "campaign-follow" : null,
-      String(body.label).trim(), (body.surface || "print").trim(), body.notes || null, now, now
-    ).run();
-    await logEvent(env, slug, "mint", null, String(body.dest).trim(), email, body.label);
+       VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?)`,
+    )
+      .bind(
+        slug,
+        String(body.dest).trim(),
+        body.rule === "campaign-follow" ? "campaign-follow" : null,
+        String(body.label).trim(),
+        (body.surface || "print").trim(),
+        body.notes || null,
+        now,
+        now,
+      )
+      .run();
+    await logEvent(
+      env,
+      slug,
+      "mint",
+      null,
+      String(body.dest).trim(),
+      email,
+      body.label,
+    );
     _resetCaches();
     return json({ ok: true, slug, url: `https://adapttolife.org/q/${slug}` }, 201);
   }
 
   if (path.startsWith("/admin/api/codes/") && request.method === "PATCH") {
     const slug = path.slice("/admin/api/codes/".length).toLowerCase();
-    const row = await env.WAIVERS_DB.prepare(`SELECT * FROM qr_codes WHERE slug = ?`).bind(slug).first();
+    const row = await env.WAIVERS_DB.prepare(`SELECT * FROM qr_codes WHERE slug = ?`)
+      .bind(slug)
+      .first();
     if (!row) return json({ ok: false, error: "no such code" }, 404);
 
     const body = await request.json().catch(() => ({}));
@@ -212,25 +285,43 @@ export async function handleAdmin(request, env, url) {
       if (bad) return json({ ok: false, error: bad }, 400);
       newDest = String(body.dest).trim();
       if (newDest !== row.dest) action = "repoint";
-      fields.push("dest = ?"); binds.push(newDest);
+      fields.push("dest = ?");
+      binds.push(newDest);
     }
     if (body.rule !== undefined) {
-      fields.push("rule = ?"); binds.push(body.rule === "campaign-follow" ? "campaign-follow" : null);
+      fields.push("rule = ?");
+      binds.push(body.rule === "campaign-follow" ? "campaign-follow" : null);
     }
-    if (body.label !== undefined)   { fields.push("label = ?");   binds.push(String(body.label).trim()); }
-    if (body.surface !== undefined) { fields.push("surface = ?"); binds.push(String(body.surface).trim() || "print"); }
-    if (body.notes !== undefined)   { fields.push("notes = ?");   binds.push(body.notes || null); }
+    if (body.label !== undefined) {
+      fields.push("label = ?");
+      binds.push(String(body.label).trim());
+    }
+    if (body.surface !== undefined) {
+      fields.push("surface = ?");
+      binds.push(String(body.surface).trim() || "print");
+    }
+    if (body.notes !== undefined) {
+      fields.push("notes = ?");
+      binds.push(body.notes || null);
+    }
     if (body.active !== undefined) {
       const active = body.active ? 1 : 0;
       action = active ? "restore" : "retire";
-      fields.push("active = ?");     binds.push(active);
-      fields.push("retired_at = ?"); binds.push(active ? null : new Date().toISOString());
+      fields.push("active = ?");
+      binds.push(active);
+      fields.push("retired_at = ?");
+      binds.push(active ? null : new Date().toISOString());
     }
     if (!fields.length) return json({ ok: false, error: "nothing to change" }, 400);
 
-    fields.push("updated_at = ?"); binds.push(new Date().toISOString());
+    fields.push("updated_at = ?");
+    binds.push(new Date().toISOString());
     binds.push(slug);
-    await env.WAIVERS_DB.prepare(`UPDATE qr_codes SET ${fields.join(", ")} WHERE slug = ?`).bind(...binds).run();
+    await env.WAIVERS_DB.prepare(
+      `UPDATE qr_codes SET ${fields.join(", ")} WHERE slug = ?`,
+    )
+      .bind(...binds)
+      .run();
     await logEvent(env, slug, action, row.dest, newDest, email, body.reason || null);
     _resetCaches();
     return json({ ok: true, slug, action });
@@ -240,42 +331,79 @@ export async function handleAdmin(request, env, url) {
   // browser never holds raw scan rows — the page is a view, not a copy of the
   // database.
   if (path === "/admin/api/analytics" && request.method === "GET") {
-    const days = Math.min(365, Math.max(7, parseInt(url.searchParams.get("days") || "90", 10)));
+    const days = Math.min(
+      365,
+      Math.max(7, parseInt(url.searchParams.get("days") || "90", 10)),
+    );
     const since = new Date(Date.now() - days * 86400000).toISOString().slice(0, 10);
     const q = async (sql, ...binds) =>
-      ((await env.WAIVERS_DB.prepare(sql).bind(...binds).all()).results) || [];
+      (
+        await env.WAIVERS_DB.prepare(sql)
+          .bind(...binds)
+          .all()
+      ).results || [];
 
-    const [daily, byCode, byCity, byDevice, byBrowser, byOs, gifts, totals] = await Promise.all([
-      q(`SELECT substr(scanned_at,1,10) day, COUNT(*) n FROM qr_scans
-          WHERE substr(scanned_at,1,10) >= ? GROUP BY day ORDER BY day`, since),
-      q(`SELECT slug, COUNT(*) n FROM qr_scans
-          WHERE substr(scanned_at,1,10) >= ? AND kind='known' GROUP BY slug ORDER BY n DESC`, since),
-      // Bot traffic is excluded from the map on purpose: a datacentre is not a
-      // place anyone stood. It stays in the totals so nothing silently vanishes.
-      q(`SELECT city, region, country, latitude lat, longitude lon, COUNT(*) n
+    const [daily, byCode, byCity, byDevice, byBrowser, byOs, gifts, totals] =
+      await Promise.all([
+        q(
+          `SELECT substr(scanned_at,1,10) day, COUNT(*) n FROM qr_scans
+          WHERE substr(scanned_at,1,10) >= ? GROUP BY day ORDER BY day`,
+          since,
+        ),
+        q(
+          `SELECT slug, COUNT(*) n FROM qr_scans
+          WHERE substr(scanned_at,1,10) >= ? AND kind='known' GROUP BY slug ORDER BY n DESC`,
+          since,
+        ),
+        // Bot traffic is excluded from the map on purpose: a datacentre is not a
+        // place anyone stood. It stays in the totals so nothing silently vanishes.
+        q(
+          `SELECT city, region, country, latitude lat, longitude lon, COUNT(*) n
            FROM qr_scans
           WHERE substr(scanned_at,1,10) >= ? AND latitude IS NOT NULL AND city IS NOT NULL
-          GROUP BY city, region, country, lat, lon ORDER BY n DESC LIMIT 60`, since),
-      q(`SELECT COALESCE(device,'unknown') k, COUNT(*) n FROM qr_scans
-          WHERE substr(scanned_at,1,10) >= ? GROUP BY k ORDER BY n DESC`, since),
-      q(`SELECT COALESCE(browser,'unknown') k, COUNT(*) n FROM qr_scans
-          WHERE substr(scanned_at,1,10) >= ? GROUP BY k ORDER BY n DESC`, since),
-      q(`SELECT COALESCE(os,'unknown') k, COUNT(*) n FROM qr_scans
-          WHERE substr(scanned_at,1,10) >= ? GROUP BY k ORDER BY n DESC`, since),
-      q(`SELECT slug, COUNT(*) gifts, COALESCE(SUM(CASE WHEN status='succeeded' THEN donated END),0) dollars
+          GROUP BY city, region, country, lat, lon ORDER BY n DESC LIMIT 60`,
+          since,
+        ),
+        q(
+          `SELECT COALESCE(device,'unknown') k, COUNT(*) n FROM qr_scans
+          WHERE substr(scanned_at,1,10) >= ? GROUP BY k ORDER BY n DESC`,
+          since,
+        ),
+        q(
+          `SELECT COALESCE(browser,'unknown') k, COUNT(*) n FROM qr_scans
+          WHERE substr(scanned_at,1,10) >= ? GROUP BY k ORDER BY n DESC`,
+          since,
+        ),
+        q(
+          `SELECT COALESCE(os,'unknown') k, COUNT(*) n FROM qr_scans
+          WHERE substr(scanned_at,1,10) >= ? GROUP BY k ORDER BY n DESC`,
+          since,
+        ),
+        q(`SELECT slug, COUNT(*) gifts, COALESCE(SUM(CASE WHEN status='succeeded' THEN donated END),0) dollars
            FROM qr_gifts GROUP BY slug ORDER BY dollars DESC`),
-      q(`SELECT COUNT(*) scans,
+        q(
+          `SELECT COUNT(*) scans,
                 COUNT(DISTINCT city) cities,
                 COUNT(DISTINCT substr(scanned_at,1,10)) days,
                 SUM(CASE WHEN network LIKE '%Hetzner%' OR network LIKE '%Amazon%'
                           OR network LIKE '%Google%' OR network LIKE '%Microsoft%'
                           OR network LIKE '%DigitalOcean%' THEN 1 ELSE 0 END) likely_bots
-           FROM qr_scans WHERE substr(scanned_at,1,10) >= ?`, since),
-    ]);
+           FROM qr_scans WHERE substr(scanned_at,1,10) >= ?`,
+          since,
+        ),
+      ]);
 
     return json({
-      ok: true, days, since,
-      daily, byCode, byCity, byDevice, byBrowser, byOs, gifts,
+      ok: true,
+      days,
+      since,
+      daily,
+      byCode,
+      byCity,
+      byDevice,
+      byBrowser,
+      byOs,
+      gifts,
       totals: totals[0] || { scans: 0, cities: 0, days: 0, likely_bots: 0 },
     });
   }
@@ -283,7 +411,7 @@ export async function handleAdmin(request, env, url) {
   if (path === "/admin/api/history" && request.method === "GET") {
     const { results } = await env.WAIVERS_DB.prepare(
       `SELECT slug, action, old_dest, new_dest, actor, detail, at
-         FROM qr_code_events ORDER BY at DESC LIMIT 100`
+         FROM qr_code_events ORDER BY at DESC LIMIT 100`,
     ).all();
     return json({ ok: true, events: results || [] });
   }

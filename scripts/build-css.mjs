@@ -43,11 +43,19 @@ export function stripCss(css) {
     // string literal — copy verbatim, honour backslash escapes
     if (c === '"' || c === "'") {
       const quote = c;
-      out += c; i++;
+      out += c;
+      i++;
       while (i < n) {
-        if (css[i] === "\\") { out += css[i] + (css[i + 1] ?? ""); i += 2; continue; }
+        if (css[i] === "\\") {
+          out += css[i] + (css[i + 1] ?? "");
+          i += 2;
+          continue;
+        }
         out += css[i];
-        if (css[i] === quote) { i++; break; }
+        if (css[i] === quote) {
+          i++;
+          break;
+        }
         i++;
       }
       continue;
@@ -64,36 +72,51 @@ export function stripCss(css) {
     if (css.startsWith("url(", i)) {
       let j = i + 4;
       while (j < n && /\s/.test(css[j])) j++;
-      if (css[j] !== '"' && css[j] !== "'") {          // unquoted: take to ")"
+      if (css[j] !== '"' && css[j] !== "'") {
+        // unquoted: take to ")"
         const close = css.indexOf(")", i);
-        if (close === -1) { out += css.slice(i); break; }
-        out += css.slice(i, close + 1); i = close + 1;
+        if (close === -1) {
+          out += css.slice(i);
+          break;
+        }
+        out += css.slice(i, close + 1);
+        i = close + 1;
         continue;
       }
-      out += css.slice(i, j); i = j;                    // quoted: let the string branch run
+      out += css.slice(i, j);
+      i = j; // quoted: let the string branch run
       continue;
     }
     // comment
     if (c === "/" && css[i + 1] === "*") {
       const end = css.indexOf("*/", i + 2);
       i = end === -1 ? n : end + 2;
-      out += " ";                    // keep a separator: `a/**/b` is not `ab`
+      out += " "; // keep a separator: `a/**/b` is not `ab`
       continue;
     }
-    out += c; i++;
+    out += c;
+    i++;
   }
   return out.replace(/\s+/g, " ").replace(/^\s+|\s+$/g, "") + "\n";
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   mkdirSync(OUT, { recursive: true });
-  let before = 0, after = 0;
-  for (const f of readdirSync(SRC).filter((f) => f.endsWith(".css")).sort()) {
+  let before = 0,
+    after = 0;
+  for (const f of readdirSync(SRC)
+    .filter((f) => f.endsWith(".css"))
+    .sort()) {
     const src = readFileSync(join(SRC, f), "utf8");
     const min = stripCss(src);
     writeFileSync(join(OUT, f), min);
-    before += src.length; after += min.length;
-    console.log(`  ${f.padEnd(20)} ${String(src.length).padStart(7)} -> ${String(min.length).padStart(6)}  (${Math.round((1 - min.length / src.length) * 100)}% off)`);
+    before += src.length;
+    after += min.length;
+    console.log(
+      `  ${f.padEnd(20)} ${String(src.length).padStart(7)} -> ${String(min.length).padStart(6)}  (${Math.round((1 - min.length / src.length) * 100)}% off)`,
+    );
   }
-  console.log(`  ${"TOTAL".padEnd(20)} ${String(before).padStart(7)} -> ${String(after).padStart(6)}  (${Math.round((1 - after / before) * 100)}% off)`);
+  console.log(
+    `  ${"TOTAL".padEnd(20)} ${String(before).padStart(7)} -> ${String(after).padStart(6)}  (${Math.round((1 - after / before) * 100)}% off)`,
+  );
 }

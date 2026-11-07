@@ -34,7 +34,8 @@ const LINK = `<link href="${HREF}" rel="stylesheet">`;
 // fallback face. Correctness beats speed when nobody is waiting.
 const OG_LINK = `<link href="${HREF.replace("display=swap", "display=block")}" rel="stylesheet">`;
 
-const GF_LINK = /<link href="https:\/\/fonts\.googleapis\.com\/css2\?[^"]*" rel="stylesheet">/g;
+const GF_LINK =
+  /<link href="https:\/\/fonts\.googleapis\.com\/css2\?[^"]*" rel="stylesheet">/g;
 
 function retype(file, url, link) {
   const before = readFileSync(url, "utf8");
@@ -59,8 +60,10 @@ const walk = (dir) => {
 walk(ROOT);
 
 // the two templates that generate HTML rather than being it
-for (const [rel, link] of [["../src/og/card.html", OG_LINK],
-                           ["../scripts/build-volunteer.mjs", LINK]]) {
+for (const [rel, link] of [
+  ["../src/og/card.html", OG_LINK],
+  ["../scripts/build-volunteer.mjs", LINK],
+]) {
   const url = new URL(rel, import.meta.url);
   if (retype(rel, url, link)) {
     n++;

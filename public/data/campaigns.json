@@ -1,19 +1,89 @@
 {
-  "_comment": "Spec 115 \u2014 the campaign layer's single source. A CAMPAIGN is what we are raising for and who it reaches; it gets a page. A DRIVE is a dated way we raise it; it feeds exactly one campaign and is a row on that campaign's page until it earns its own page (as popcorn did). Adding a drive is appending one object here. Set published:false to keep a verified record on file without publishing it. Dates are ISO (YYYY-MM-DD) and read as LOCAL dates. raised stays null until a number is real.",
+  "_comment": "Spec 115 — the campaign layer's single source. A CAMPAIGN is what we are raising for and who it reaches; it gets a page. A DRIVE is a dated way we raise it; it feeds exactly one campaign and is a row on that campaign's page until it earns its own page (as popcorn did). Adding a drive is appending one object here. Set published:false to keep a verified record on file without publishing it. Dates are ISO (YYYY-MM-DD) and read as LOCAL dates. raised stays null until a number is real.",
   "campaigns": [
     {
+      "slug": "wheelie-big-dills",
+      "name": "Chicago Pickleball: Wheelie Big Dills",
+      "page": "/pickleball#support",
+      "published": true,
+      "beneficiary": "The crew, all year",
+      "when": "Year-round",
+      "blurb": "One goal for the year ahead: every week first, then the road to the US Open.",
+      "goal": 48180,
+      "raised": null,
+      "raised_source": "api",
+      "raised_key": "wbd",
+      "parts": [
+        {
+          "key": "year",
+          "label": "Every week",
+          "goal": 27180,
+          "detail": "A year of court time and memberships for 10 athletes, so they can play every week and train to compete. Every new gift starts here.",
+          "math": [
+            { "label": "Court time at ACE", "qty": 52, "of": "nights", "unit": 225, "note": "One night a week for a year. A night is 10 to 15 athletes, and a drop-in at ACE is $15, so a night for up to 15 is $225." },
+            { "label": "Memberships", "qty": 10, "of": "athletes", "unit": 1548, "note": "A membership is $129 a month, or $1,548 a year, for unlimited sessions. It takes many sessions a week to compete in tournaments and build a ranking." }
+          ]
+        },
+        {
+          "key": "send-6",
+          "label": "The Road to the US Open",
+          "goal": 21000,
+          "page": "/send-6",
+          "detail": "Tournaments through the year to build rankings, then Naples in spring 2027. The US Open picks players by lottery, so nothing is guaranteed. Money raised for the road earlier, the popcorn drive included, stays on the road.",
+          "_seats": "Alec, Nov 7 2026: the six seats are the six athletes on the crew page (Meet the crew, /pickleball). Same names, same order, same photos. Faces and figures are cut from public/images/pickleball/<slug>.webp by scripts/build-seats.mjs.",
+          "seats": [
+            { "name": "Juan", "slug": "juan", "page": "/juan" },
+            { "name": "Brian", "slug": "brian" },
+            { "name": "Bob", "slug": "bob" },
+            { "name": "Robby", "slug": "robby" },
+            { "name": "Ken", "slug": "ken" },
+            { "name": "Amanda", "slug": "amanda" }
+          ],
+          "math": [
+            { "label": "The US Open", "qty": 6, "of": "athletes", "unit": 3500, "about": true, "note": "What it has cost each athlete the last couple of years: entry fees, travel and an accessible room in Naples." }
+          ]
+        }
+      ],
+      "next": {
+        "label": "the Chicago Classic",
+        "page": "/chicago-classic",
+        "detail": "Our goal: free registration, transportation and hotels for every athlete. It joins the goal once it has a date and a budget."
+      },
+      "cta_label": "Donate",
+      "cta_url": "/donate",
+      "_note": "One goal, one bar (Alec, Nov 5). Every week ($27,180: a year of nights at ACE, $11,700, plus ten athletes training, $15,480) fills first, then the Road ($21,000). The Classic joins the goal when it has a date and a budget."
+    },
+    {
       "slug": "send-6-us-open",
-      "name": "Send 6 to the US Open Spring 2027",
+      "name": "The Road to the US Open",
       "page": "/send-6",
       "published": true,
-      "beneficiary": "Six adaptive pickleball athletes",
+      "beneficiary": "Six wheelchair pickleball athletes",
       "when": "Spring 2027, Naples, Florida",
-      "blurb": "Help six adaptive pickleball athletes prepare for the US Open in Naples. Our $21,000 target supports equipment, training, and travel.",
+      "blurb": "Six athletes, about $3,500 each: roughly what the US Open has cost the last couple of years. Entry is a lottery, so the road matters.",
       "goal": 21000,
       "raised": null,
       "raised_source": "api",
-      "cta_label": "See the campaign",
-      "cta_url": "/send-6"
+      "cta_label": "See the road",
+      "cta_url": "/send-6",
+      "raised_key": "send-6",
+      "part_of": "wheelie-big-dills",
+      "_note": "The second part of the one goal. Starts with the Send 6 set-aside, then fills once every week is funded."
+    },
+    {
+      "slug": "chicago-classic",
+      "name": "The Chicago Classic",
+      "page": "/chicago-classic",
+      "published": false,
+      "beneficiary": "Every athlete who plays it",
+      "when": "Date and court to come",
+      "blurb": "Our goal: free registration, transportation and hotels for every athlete.",
+      "goal": null,
+      "raised": null,
+      "raised_source": "none",
+      "cta_label": "See the Classic",
+      "cta_url": "/chicago-classic",
+      "_note": "Not raising yet (Alec, Nov 5): the page states the goal; no form, no band."
     }
   ],
   "drives": [
@@ -32,6 +102,8 @@
       "time_note": "",
       "goal": 1000,
       "raised": 3004,
+      "supporters": 83,
+      "_supporters": "Double Good's count of people who bought from the store (Alec, Nov 7 2026: 'at least 80 something from our popcorn fundraiser'). Givebutter's donor count (online gifts) never included them; /numbers shows both, apart, so no one is counted twice.",
       "store_url": "https://popup.doublegood.com/s/89fjuv65",
       "join_url": "https://popup.doublegood.com/event/5c049f98-86bb-11f1-b4c1-4fb1d2de4810",
       "event_code": "PPL VSR"
@@ -48,6 +120,7 @@
       "ends_at": "2026-08-09",
       "our_date": "2026-08-09",
       "our_division": "Wheelchair Open Doubles (All Ages)",
+      "result": "First APP wheelchair division",
       "venue": "Danny Cunniff Park",
       "city": "Highland Park",
       "state": "IL",
@@ -58,31 +131,6 @@
       "cta_url": "https://app.pickleballden.com/external-tournament/1359608"
     },
     {
-      "_note": "An EVENT, not a drive: it raises nothing and feeds no campaign. type 'event' keeps it off campaign pages and out of QR campaign-follow (src/qr.js liveDrive is fundraiser-only). It is on /events and the home calendar because our athletes will be on court. page is the partner's own page.",
-      "slug": "brickhouse-grand-opening-2026",
-      "name": "Brick House grand opening",
-      "type": "event",
-      "relationship": "partner_event",
-      "published": true,
-      "summary": "Tour the new facility, meet the people behind the club, and play a few games with the Adapt To Life team.",
-      "starts_at": "2026-10-25",
-      "ends_at": "2026-10-25",
-      "time_start": "12:00",
-      "time_end": "17:00",
-      "time_note": "12 to 5 pm, come and go",
-      "venue": "Brick House Pickleball",
-      "city": "Lake Forest",
-      "state": "IL",
-      "image": "/images/brickhouse/hero-bob.webp",
-      "page": "/brickhouse",
-      "ics": "/cal/brickhouse-grand-opening-2026.ics",
-      "address": "28457 Ballard Drive Unit H, Lake Forest, IL 60045",
-      "cta_label": "Grand opening details",
-      "calendar_title": "Brick House Pickleball grand opening",
-      "calendar_sequence": 1,
-      "updated": "2026-10-02"
-    },
-    {
       "_note": "A tournament our athletes play in. The Pickle Lodge hosts it and it raises nothing for us, so it has no campaign field and QR campaign-follow ignores it. Dates, venue and address from the official listing (pickleballtournaments.com/tournaments/monster-smash-2026, read 2026-10-02). Eastern time.",
       "slug": "monster-smash-2026",
       "name": "Monster Smash",
@@ -90,6 +138,7 @@
       "relationship": "we_compete",
       "published": true,
       "summary": "A Halloween tournament weekend in Cincinnati. Our athletes are in the wheelchair brackets.",
+      "result": "6 medals",
       "starts_at": "2026-10-23",
       "ends_at": "2026-10-25",
       "tz": "America/New_York",

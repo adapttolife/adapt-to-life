@@ -61,14 +61,24 @@ function db(row, rows) {
 // Every binding the ATL Worker has that this one must not use. Touching one is
 // the failure.
 function env(extra = {}) {
-  const boom = (name) => new Proxy({}, {
-    get() { throw new Error(`reports Worker touched ${name}`); },
-  });
+  const boom = (name) =>
+    new Proxy(
+      {},
+      {
+        get() {
+          throw new Error(`reports Worker touched ${name}`);
+        },
+      },
+    );
   return {
     REPORT_LINK_SECRET: SECRET,
     REPORT_LINK_BASE: "https://reports.amelioration.is",
     AGENT_MAIL_DB: db(ROW, [ROW]),
-    ASSETS: { fetch() { throw new Error("reports Worker served a static asset"); } },
+    ASSETS: {
+      fetch() {
+        throw new Error("reports Worker served a static asset");
+      },
+    },
     WAIVERS_DB: boom("WAIVERS_DB"),
     WAIVERS_BUCKET: boom("WAIVERS_BUCKET"),
     AGENT_MAIL_BUCKET: boom("AGENT_MAIL_BUCKET"),
@@ -78,7 +88,11 @@ function env(extra = {}) {
 }
 
 function get(path, init = {}) {
-  return worker.fetch(new Request(`https://reports.amelioration.is${path}`, init), env(), {});
+  return worker.fetch(
+    new Request(`https://reports.amelioration.is${path}`, init),
+    env(),
+    {},
+  );
 }
 
 // The one 404 every failure mode must be indistinguishable from: the one a
@@ -95,7 +109,11 @@ async function assertSame404(res) {
   for (const [k, v] of want.headers) {
     assert.equal(res.headers.get(k), v, `404 header ${k} differs`);
   }
-  assert.equal([...res.headers].length, [...want.headers].length, "404 has extra headers");
+  assert.equal(
+    [...res.headers].length,
+    [...want.headers].length,
+    "404 has extra headers",
+  );
 }
 
 // ---- the two surfaces that DO exist ----------------------------------------
@@ -164,7 +182,11 @@ test("no secret configured → the same 404 for a well-formed token", async () =
   const token = await makeReportToken(SECRET, MSG_ID);
   const e = env();
   delete e.REPORT_LINK_SECRET;
-  const res = await worker.fetch(new Request(`https://reports.amelioration.is/r/${token}`), e, {});
+  const res = await worker.fetch(
+    new Request(`https://reports.amelioration.is/r/${token}`),
+    e,
+    {},
+  );
   assert.equal(res.status, 404);
 });
 
@@ -193,7 +215,11 @@ test("no waivers", async () => {
 });
 
 test("no agent-mail API, even with a bearer token", async () => {
-  const init = { method: "POST", headers: { Authorization: "Bearer whatever" }, body: "{}" };
+  const init = {
+    method: "POST",
+    headers: { Authorization: "Bearer whatever" },
+    body: "{}",
+  };
   await assertSame404(await get("/api/agent-mail/threads", init));
   await assertSame404(await get("/api/agent-mail/send", init));
   await assertSame404(await get("/api/agent-mail/threads"));
@@ -204,23 +230,43 @@ test("no QR redirects", async () => {
 });
 
 test("no redirect behavior: nothing here 3xx-es", async () => {
-  for (const path of ["/", "/review", "/review.html", "/r", "/lib", "/r/../api/contact"]) {
+  for (const path of [
+    "/",
+    "/review",
+    "/review.html",
+    "/r",
+    "/lib",
+    "/r/../api/contact",
+  ]) {
     const res = await get(path);
-    assert.ok(res.status < 300 || res.status >= 400, `${path} redirected (${res.status})`);
+    assert.ok(
+      res.status < 300 || res.status >= 400,
+      `${path} redirected (${res.status})`,
+    );
     assert.equal(res.headers.get("Location"), null);
   }
 });
 
 test("the signing hub's root redirect does not exist on this Worker", async () => {
-  const res = await worker.fetch(new Request("https://sign.adapttolife.org/"), env(), {});
+  const res = await worker.fetch(
+    new Request("https://sign.adapttolife.org/"),
+    env(),
+    {},
+  );
   await assertSame404(res);
 });
 
 test("legacy hostnames get no special treatment: only /r/ and /lib/ are served", async () => {
   const token = await makeReportToken(SECRET, MSG_ID);
-  const ok = await worker.fetch(new Request(`https://adapttolife.org/r/${token}`), env(), {});
+  const ok = await worker.fetch(
+    new Request(`https://adapttolife.org/r/${token}`),
+    env(),
+    {},
+  );
   assert.equal(ok.status, 200);
-  await assertSame404(await worker.fetch(new Request("https://adapttolife.org/"), env(), {}));
+  await assertSame404(
+    await worker.fetch(new Request("https://adapttolife.org/"), env(), {}),
+  );
 });
 
 test("unsupported methods on a valid token → the same 404", async () => {
@@ -235,12 +281,23 @@ test("unsupported methods on a valid token → the same 404", async () => {
 
 test("the Worker exposes fetch only — no email, no cron", () => {
   assert.equal(typeof worker.fetch, "function");
-  assert.equal(worker.email, undefined, "an email handler would accept inbound mail here");
-  assert.equal(worker.scheduled, undefined, "a cron handler would run the Drive backlog here");
+  assert.equal(
+    worker.email,
+    undefined,
+    "an email handler would accept inbound mail here",
+  );
+  assert.equal(
+    worker.scheduled,
+    undefined,
+    "a cron handler would run the Drive backlog here",
+  );
 });
 
 test("the Worker imports report rendering and nothing else (source pin)", () => {
-  const src = readFileSync(fileURLToPath(new URL("../src/reports_worker.js", import.meta.url)), "utf8");
+  const src = readFileSync(
+    fileURLToPath(new URL("../src/reports_worker.js", import.meta.url)),
+    "utf8",
+  );
   const imports = [...src.matchAll(/^import[^\n]*from\s+"([^"]+)"/gm)].map((m) => m[1]);
   assert.deepEqual(imports, ["./report_view.js"]);
 });

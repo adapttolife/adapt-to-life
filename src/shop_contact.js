@@ -1,4 +1,4 @@
-import { mailConfigured } from './mail-transport.js';
+import { mailConfigured } from "./mail-transport.js";
 // Adapt Body Shop contact form — the server half.
 //
 // The shop is a headless Hydrogen storefront on its own Worker
@@ -31,7 +31,13 @@ import { mailConfigured } from './mail-transport.js';
 // sweep rather than an inline call.
 
 import {
-  cfSend, SHOP_FROM, SHOP_INBOX, shopShell, houseQuote, houseLabel, esc,
+  cfSend,
+  SHOP_FROM,
+  SHOP_INBOX,
+  shopShell,
+  houseQuote,
+  houseLabel,
+  esc,
   recordTransactionalFailure,
 } from "./email.js";
 import { getGoogleAccessToken, SHEETS_SCOPE } from "./google.js";
@@ -96,8 +102,20 @@ export async function handleShopContact(request, env, ctx) {
   // answered with a cheerful ok so a bot learns nothing.
   if (str(data.company)) return json({ ok: true });
 
-  if (!(await verifyTurnstile(env, str(data.cf_token), request.headers.get("CF-Connecting-IP")))) {
-    return json({ ok: false, error: "Verification failed. Please reload the page and try again." }, 403);
+  if (
+    !(await verifyTurnstile(
+      env,
+      str(data.cf_token),
+      request.headers.get("CF-Connecting-IP"),
+    ))
+  ) {
+    return json(
+      {
+        ok: false,
+        error: "Verification failed. Please reload the page and try again.",
+      },
+      403,
+    );
   }
 
   // The footer newsletter sign-up shares this door (and every gate above) but
@@ -120,9 +138,13 @@ export async function handleShopContact(request, env, ctx) {
   if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
     return json({ ok: false, error: "A valid email address is required." }, 422);
   }
-  if (!message) return json({ ok: false, error: "Please tell us how we can help." }, 422);
+  if (!message)
+    return json({ ok: false, error: "Please tell us how we can help." }, 422);
   if (ORDER_TOPICS.has(topic) && !orderNumber) {
-    return json({ ok: false, error: "Please add your order number so we can look it up." }, 422);
+    return json(
+      { ok: false, error: "Please add your order number so we can look it up." },
+      422,
+    );
   }
 
   const id = crypto.randomUUID();
@@ -140,7 +162,9 @@ export async function handleShopContact(request, env, ctx) {
     ref: str(data.ref, 80),
     ip: request.headers.get("CF-Connecting-IP") || "",
     country: cf.country || "",
-    userAgent: str(data.user_agent, 300) || (request.headers.get("User-Agent") || "").slice(0, 300),
+    userAgent:
+      str(data.user_agent, 300) ||
+      (request.headers.get("User-Agent") || "").slice(0, 300),
   };
 
   // D1 is the record. If this fails the customer is told plainly and given an
@@ -150,16 +174,31 @@ export async function handleShopContact(request, env, ctx) {
     await env.WAIVERS_DB.prepare(
       `INSERT INTO shop_messages
          (id, created_at, name, email, topic, order_number, message, source, ref, ip, country, user_agent)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`
-    ).bind(
-      row.id, row.createdAt, row.name, row.email, row.topic, row.orderNumber,
-      row.message, row.source, row.ref, row.ip, row.country, row.userAgent
-    ).run();
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
+    )
+      .bind(
+        row.id,
+        row.createdAt,
+        row.name,
+        row.email,
+        row.topic,
+        row.orderNumber,
+        row.message,
+        row.source,
+        row.ref,
+        row.ip,
+        row.country,
+        row.userAgent,
+      )
+      .run();
   } catch (err) {
     console.error("shop contact D1 insert failed:", err);
     return json(
-      { ok: false, error: `Could not save your message. Please email ${SHOP_INBOX} and we will pick it up there.` },
-      502
+      {
+        ok: false,
+        error: `Could not save your message. Please email ${SHOP_INBOX} and we will pick it up there.`,
+      },
+      502,
     );
   }
 
@@ -205,19 +244,25 @@ async function handleShopNewsletter(request, env, data) {
     await env.WAIVERS_DB.prepare(
       `INSERT INTO shop_subscribers (email, created_at, source, ref, ip, country, user_agent)
        VALUES (?,?,?,?,?,?,?)
-       ON CONFLICT(email) DO NOTHING`
-    ).bind(
-      email,
-      new Date().toISOString(),
-      str(data.source, 300),
-      str(data.ref, 80),
-      request.headers.get("CF-Connecting-IP") || "",
-      cf.country || "",
-      str(data.user_agent, 300) || (request.headers.get("User-Agent") || "").slice(0, 300),
-    ).run();
+       ON CONFLICT(email) DO NOTHING`,
+    )
+      .bind(
+        email,
+        new Date().toISOString(),
+        str(data.source, 300),
+        str(data.ref, 80),
+        request.headers.get("CF-Connecting-IP") || "",
+        cf.country || "",
+        str(data.user_agent, 300) ||
+          (request.headers.get("User-Agent") || "").slice(0, 300),
+      )
+      .run();
   } catch (err) {
     console.error("shop newsletter D1 insert failed:", err);
-    return json({ ok: false, error: "Could not save your sign-up. Please try again." }, 502);
+    return json(
+      { ok: false, error: "Could not save your sign-up. Please try again." },
+      502,
+    );
   }
   return json({ ok: true, subscribed: true });
 }
@@ -231,8 +276,11 @@ async function deliver(env, row) {
   await notifyShop(env, row);
   if (okReceipt) {
     try {
-      await env.WAIVERS_DB.prepare("UPDATE shop_messages SET receipt_sent = 1 WHERE id = ?")
-        .bind(row.id).run();
+      await env.WAIVERS_DB.prepare(
+        "UPDATE shop_messages SET receipt_sent = 1 WHERE id = ?",
+      )
+        .bind(row.id)
+        .run();
     } catch (err) {
       console.error("shop contact receipt flag failed:", err);
     }
@@ -246,7 +294,10 @@ async function deliver(env, row) {
 // question, offer a fake ticket number, or sign off as a person who did not
 // write it.
 export async function sendShopReceipt(env, row) {
-  const first = String(row.name || "").trim().split(/\s+/)[0] || "there";
+  const first =
+    String(row.name || "")
+      .trim()
+      .split(/\s+/)[0] || "there";
   const subject = row.orderNumber
     ? `We got your message about order ${row.orderNumber}`
     : "We got your message";
@@ -267,22 +318,32 @@ export async function sendShopReceipt(env, row) {
       `<p>Thanks for writing to Adapt Body Shop. Your message is in and a person will read it — ` +
       `you will hear back within <strong>${esc(REPLY_WINDOW)}</strong>.</p>` +
       `<p>If anything below is wrong, just reply to this email and it goes straight onto the same thread.</p>` +
-      houseLabel(row.orderNumber ? `${row.topic} · order ${row.orderNumber}` : row.topic) +
+      houseLabel(
+        row.orderNumber ? `${row.topic} · order ${row.orderNumber}` : row.topic,
+      ) +
       houseQuote(esc(row.message)) +
       `<p style="margin-top:24px;color:#6e6b62;font-size:14px">` +
       `Every shirt funds adaptive sport. A purchase is not a donation — ` +
-      `<a href="https://adapttolife.org" style="color:#c63f22">adapttolife.org</a> is where the org lives.</p>`
+      `<a href="https://adapttolife.org" style="color:#c63f22">adapttolife.org</a> is where the org lives.</p>`,
   );
 
-  return send(env, {
-    from: SHOP_FROM,
-    to: row.email,
-    replyTo: SHOP_INBOX,
-    subject,
-    text,
-    html,
-    headers: { "X-ABS-Form": "contact", "X-ABS-Topic": row.topic, "X-ABS-Id": row.id },
-  }, "shop contact receipt");
+  return send(
+    env,
+    {
+      from: SHOP_FROM,
+      to: row.email,
+      replyTo: SHOP_INBOX,
+      subject,
+      text,
+      html,
+      headers: {
+        "X-ABS-Form": "contact",
+        "X-ABS-Topic": row.topic,
+        "X-ABS-Id": row.id,
+      },
+    },
+    "shop contact receipt",
+  );
 }
 
 // The shop's own copy. Not a bcc on the customer's receipt: a bcc makes the
@@ -314,24 +375,32 @@ async function notifyShop(env, row) {
       `<a href="mailto:${esc(row.email)}" style="color:#c63f22">${esc(row.email)}</a>&gt;</p>` +
       houseQuote(esc(row.message)) +
       `<table style="margin-top:20px;border-collapse:collapse;font-size:14px;color:#3c382f">` +
-      meta.slice(1).map(([k, v]) =>
-        `<tr><td style="padding:2px 14px 2px 0;color:#6e6b62;white-space:nowrap">${esc(k)}</td>` +
-        `<td style="padding:2px 0">${esc(v)}</td></tr>`
-      ).join("") +
+      meta
+        .slice(1)
+        .map(
+          ([k, v]) =>
+            `<tr><td style="padding:2px 14px 2px 0;color:#6e6b62;white-space:nowrap">${esc(k)}</td>` +
+            `<td style="padding:2px 0">${esc(v)}</td></tr>`,
+        )
+        .join("") +
       `</table>` +
       `<p style="margin-top:20px;color:#6e6b62;font-size:14px">Their auto-reply promised an answer within ` +
-      `${esc(REPLY_WINDOW)}. Reply here and it reaches them directly.</p>`
+      `${esc(REPLY_WINDOW)}. Reply here and it reaches them directly.</p>`,
   );
 
-  return send(env, {
-    from: SHOP_FROM,
-    to: SHOP_INBOX,
-    replyTo: `${row.name} <${row.email}>`,
-    subject,
-    text,
-    html,
-    headers: { "X-ABS-Form": "contact-internal", "X-ABS-Id": row.id },
-  }, "shop contact notification");
+  return send(
+    env,
+    {
+      from: SHOP_FROM,
+      to: SHOP_INBOX,
+      replyTo: `${row.name} <${row.email}>`,
+      subject,
+      text,
+      html,
+      headers: { "X-ABS-Form": "contact-internal", "X-ABS-Id": row.id },
+    },
+    "shop contact notification",
+  );
 }
 
 // Identical contract to receipts.js send(): never throws, records a row the
@@ -362,34 +431,66 @@ async function send(env, msg, label) {
 // rows into the tab a human maintains by hand is how a CRM stops being trusted.
 // ---------------------------------------------------------------------------
 const CRM_HEADER = [
-  "Date", "Name", "Email", "Topic", "Order", "Message", "Page", "Referral code", "Record ID",
+  "Date",
+  "Name",
+  "Email",
+  "Topic",
+  "Order",
+  "Message",
+  "Page",
+  "Referral code",
+  "Record ID",
 ];
 
 export async function runShopCrmBacklog(env) {
-  if (!env.GOOGLE_SA_JSON) { console.error("shop CRM sync not configured (no GOOGLE_SA_JSON)"); return; }
+  if (!env.GOOGLE_SA_JSON) {
+    console.error("shop CRM sync not configured (no GOOGLE_SA_JSON)");
+    return;
+  }
   if (!env.WAIVERS_DB) return;
 
   let rows;
   try {
-    rows = (await env.WAIVERS_DB.prepare(
-      "SELECT * FROM shop_messages WHERE crm_row IS NULL ORDER BY created_at ASC LIMIT 25"
-    ).all()).results || [];
-  } catch (err) { console.error("shop CRM backlog query failed:", err); return; }
+    rows =
+      (
+        await env.WAIVERS_DB.prepare(
+          "SELECT * FROM shop_messages WHERE crm_row IS NULL ORDER BY created_at ASC LIMIT 25",
+        ).all()
+      ).results || [];
+  } catch (err) {
+    console.error("shop CRM backlog query failed:", err);
+    return;
+  }
   if (!rows.length) return;
 
   let token;
-  try { token = await getGoogleAccessToken(env, SHEETS_SCOPE); }
-  catch (err) { console.error("shop CRM token mint failed:", err); return; }
+  try {
+    token = await getGoogleAccessToken(env, SHEETS_SCOPE);
+  } catch (err) {
+    console.error("shop CRM token mint failed:", err);
+    return;
+  }
 
-  try { await ensureCrmTab(token, CRM_TAB, CRM_HEADER); }
-  catch (err) { console.error("shop CRM tab check failed:", err); return; }
+  try {
+    await ensureCrmTab(token, CRM_TAB, CRM_HEADER);
+  } catch (err) {
+    console.error("shop CRM tab check failed:", err);
+    return;
+  }
 
   // One append for the whole batch — the API returns the exact range it wrote,
   // which is what gets stored back as the idempotency marker. Appending row by
   // row would burn a quota unit each and give 25 chances to half-finish.
   const values = rows.map((r) => [
-    r.created_at, r.name, r.email, r.topic, r.order_number || "",
-    r.message, r.source || "", r.ref || "", r.id,
+    r.created_at,
+    r.name,
+    r.email,
+    r.topic,
+    r.order_number || "",
+    r.message,
+    r.source || "",
+    r.ref || "",
+    r.id,
   ]);
 
   let updatedRange;
@@ -399,11 +500,17 @@ export async function runShopCrmBacklog(env) {
         `${encodeURIComponent(CRM_TAB)}!A:I:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,
       {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ values }),
-      }
+      },
     );
-    if (!res.ok) throw new Error(`sheets append ${res.status} ${await res.text().catch(() => "")}`);
+    if (!res.ok)
+      throw new Error(
+        `sheets append ${res.status} ${await res.text().catch(() => "")}`,
+      );
     updatedRange = (await res.json())?.updates?.updatedRange || "appended";
   } catch (err) {
     // Left unmarked on purpose: the next tick retries the same rows. The cost of
@@ -416,7 +523,8 @@ export async function runShopCrmBacklog(env) {
   for (const r of rows) {
     try {
       await env.WAIVERS_DB.prepare("UPDATE shop_messages SET crm_row = ? WHERE id = ?")
-        .bind(updatedRange, r.id).run();
+        .bind(updatedRange, r.id)
+        .run();
     } catch (err) {
       console.error("shop CRM mark failed for", r.id, err);
     }
@@ -431,23 +539,40 @@ const NEWSLETTER_TAB = "Shop Newsletter";
 const NEWSLETTER_HEADER = ["Date", "Email", "Page", "Referral code"];
 
 export async function runShopNewsletterBacklog(env) {
-  if (!env.GOOGLE_SA_JSON) { console.error("shop newsletter CRM sync not configured (no GOOGLE_SA_JSON)"); return; }
+  if (!env.GOOGLE_SA_JSON) {
+    console.error("shop newsletter CRM sync not configured (no GOOGLE_SA_JSON)");
+    return;
+  }
   if (!env.WAIVERS_DB) return;
 
   let rows;
   try {
-    rows = (await env.WAIVERS_DB.prepare(
-      "SELECT * FROM shop_subscribers WHERE crm_row IS NULL ORDER BY created_at ASC LIMIT 25"
-    ).all()).results || [];
-  } catch (err) { console.error("shop newsletter backlog query failed:", err); return; }
+    rows =
+      (
+        await env.WAIVERS_DB.prepare(
+          "SELECT * FROM shop_subscribers WHERE crm_row IS NULL ORDER BY created_at ASC LIMIT 25",
+        ).all()
+      ).results || [];
+  } catch (err) {
+    console.error("shop newsletter backlog query failed:", err);
+    return;
+  }
   if (!rows.length) return;
 
   let token;
-  try { token = await getGoogleAccessToken(env, SHEETS_SCOPE); }
-  catch (err) { console.error("shop newsletter token mint failed:", err); return; }
+  try {
+    token = await getGoogleAccessToken(env, SHEETS_SCOPE);
+  } catch (err) {
+    console.error("shop newsletter token mint failed:", err);
+    return;
+  }
 
-  try { await ensureCrmTab(token, NEWSLETTER_TAB, NEWSLETTER_HEADER); }
-  catch (err) { console.error("shop newsletter tab check failed:", err); return; }
+  try {
+    await ensureCrmTab(token, NEWSLETTER_TAB, NEWSLETTER_HEADER);
+  } catch (err) {
+    console.error("shop newsletter tab check failed:", err);
+    return;
+  }
 
   const values = rows.map((r) => [r.created_at, r.email, r.source || "", r.ref || ""]);
   let updatedRange;
@@ -457,11 +582,17 @@ export async function runShopNewsletterBacklog(env) {
         `${encodeURIComponent(NEWSLETTER_TAB)}!A:D:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,
       {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ values }),
-      }
+      },
     );
-    if (!res.ok) throw new Error(`sheets append ${res.status} ${await res.text().catch(() => "")}`);
+    if (!res.ok)
+      throw new Error(
+        `sheets append ${res.status} ${await res.text().catch(() => "")}`,
+      );
     updatedRange = (await res.json())?.updates?.updatedRange || "appended";
   } catch (err) {
     console.error("shop newsletter CRM append failed:", err);
@@ -470,13 +601,18 @@ export async function runShopNewsletterBacklog(env) {
 
   for (const r of rows) {
     try {
-      await env.WAIVERS_DB.prepare("UPDATE shop_subscribers SET crm_row = ? WHERE email = ?")
-        .bind(updatedRange, r.email).run();
+      await env.WAIVERS_DB.prepare(
+        "UPDATE shop_subscribers SET crm_row = ? WHERE email = ?",
+      )
+        .bind(updatedRange, r.email)
+        .run();
     } catch (err) {
       console.error("shop newsletter CRM mark failed for", r.email, err);
     }
   }
-  console.log(`shop newsletter CRM sync: ${rows.length} sign-up(s) filed to ${updatedRange}`);
+  console.log(
+    `shop newsletter CRM sync: ${rows.length} sign-up(s) filed to ${updatedRange}`,
+  );
 }
 
 // Create the tab and its header the first time, so nobody has to hand-prepare
@@ -487,9 +623,12 @@ async function ensureCrmTab(token, tab, header) {
   const lastCol = String.fromCharCode(64 + header.length);
   const metaRes = await fetch(
     `https://sheets.googleapis.com/v4/spreadsheets/${CRM_SHEET_ID}?fields=sheets.properties.title`,
-    { headers: { Authorization: `Bearer ${token}` } }
+    { headers: { Authorization: `Bearer ${token}` } },
   );
-  if (!metaRes.ok) throw new Error(`sheets meta ${metaRes.status} ${await metaRes.text().catch(() => "")}`);
+  if (!metaRes.ok)
+    throw new Error(
+      `sheets meta ${metaRes.status} ${await metaRes.text().catch(() => "")}`,
+    );
   const titles = ((await metaRes.json()).sheets || []).map((s) => s.properties.title);
   if (titles.includes(tab)) return;
 
@@ -499,11 +638,20 @@ async function ensureCrmTab(token, tab, header) {
       method: "POST",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        requests: [{ addSheet: { properties: { title: tab, gridProperties: { frozenRowCount: 1 } } } }],
+        requests: [
+          {
+            addSheet: {
+              properties: { title: tab, gridProperties: { frozenRowCount: 1 } },
+            },
+          },
+        ],
       }),
-    }
+    },
   );
-  if (!addRes.ok) throw new Error(`sheets addSheet ${addRes.status} ${await addRes.text().catch(() => "")}`);
+  if (!addRes.ok)
+    throw new Error(
+      `sheets addSheet ${addRes.status} ${await addRes.text().catch(() => "")}`,
+    );
 
   const headRes = await fetch(
     `https://sheets.googleapis.com/v4/spreadsheets/${CRM_SHEET_ID}/values/` +
@@ -512,9 +660,12 @@ async function ensureCrmTab(token, tab, header) {
       method: "PUT",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       body: JSON.stringify({ values: [header] }),
-    }
+    },
   );
-  if (!headRes.ok) throw new Error(`sheets header ${headRes.status} ${await headRes.text().catch(() => "")}`);
+  if (!headRes.ok)
+    throw new Error(
+      `sheets header ${headRes.status} ${await headRes.text().catch(() => "")}`,
+    );
 }
 
 // --- helpers ---------------------------------------------------------------
@@ -538,8 +689,9 @@ function timingSafeEqual(a, b) {
   return diff === 0;
 }
 
-
-function str(v, max = 5000) { return (typeof v === "string" ? v : "").trim().slice(0, max); }
+function str(v, max = 5000) {
+  return (typeof v === "string" ? v : "").trim().slice(0, max);
+}
 
 function json(obj, status = 200) {
   return new Response(JSON.stringify(obj), {

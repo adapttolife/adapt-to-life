@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f0e0d">
 <meta name="color-scheme" content="light only">
 <title>Juan Ortiz | Adapt To Life</title>
 <meta name="description" content="Paralyzed at 14, Hall of Famer in wheelchair softball, dad of three, and now chasing his first US Open in wheelchair pickleball. Meet Juan Ortiz, Adapt To Life's first ambassador.">
@@ -26,21 +27,23 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=e2740b17">
-<link rel="stylesheet" href="/css/athlete.css?v=736a215c">
-<script src="/js/attribution.js?v=dad1936b" defer></script>
+<link rel="stylesheet" href="/css/site.css?v=f3c06679">
+<link rel="stylesheet" href="/css/athlete.css?v=e92b04d2">
+<script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <style>
   /* Juan's page: his story in his words. Facts come from Alec's approved CAF
      letter; quotes are Juan's own answers (Sept 22), punctuation only. */
   .jn-chips{ list-style:none; padding:0; margin:1.4rem 0 0; display:flex; flex-wrap:wrap; gap:0.5rem; }
-  .jn-chips li{ font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--cream); padding:0.5rem 0.8rem; border-radius:999px; box-shadow:inset 0 0 0 1px rgba(255,255,255,0.22); }
-  .jn-chips li:first-child{ color:var(--orange); box-shadow:inset 0 0 0 1.5px var(--orange); }
+  .jn-chips li{ font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--cream); padding:0.5rem 0.8rem; border-radius:999px; box-shadow:inset 0 0 0 1px rgba(249,247,242,0.22); }
+  /* The Hall of Fame is a win, so it wears the site's win colour. */
+  .jn-chips li:first-child{ display:inline-flex; align-items:center; gap:0.4rem; color:var(--yellow); box-shadow:inset 0 0 0 1.5px var(--yellow); }
+  .jn-chips .sym{ width:1.25em; height:1.25em; margin-left:-0.15em; }
   .jn-acts{ display:flex; flex-wrap:wrap; gap:0.9rem 1rem; margin-top:1.8rem; }
-  .jn-start{ position:relative; isolation:isolate; overflow:hidden; background:#0C0C0E; }
+  .jn-start{ position:relative; isolation:isolate; overflow:hidden; background:var(--night); }
   .jn-start-img{ position:absolute; inset:0; z-index:-2; }
   .jn-start-img img{ width:100%; height:100%; object-fit:cover; object-position:60% 40%; opacity:0.55; }
-  .jn-start::after{ content:""; position:absolute; inset:0; z-index:-1; background:linear-gradient(90deg, rgba(12,12,14,0.96) 0%, rgba(12,12,14,0.82) 45%, rgba(12,12,14,0.35) 100%), radial-gradient(ellipse 40% 60% at 15% 70%, rgba(255,92,57,0.16) 0%, transparent 70%); }
-  .jn-big{ font-family:var(--font-display); font-weight:900; font-size:clamp(5rem,16vw,11rem); line-height:0.85; letter-spacing:-0.05em; color:var(--orange); text-shadow:0 0 60px rgba(255,92,57,0.35); }
+  .jn-start::after{ content:""; position:absolute; inset:0; z-index:-1; background:linear-gradient(90deg, rgba(23,21,19,0.96) 0%, rgba(23,21,19,0.82) 45%, rgba(59,59,70,0.35) 100%), radial-gradient(ellipse 40% 60% at 15% 70%, rgba(255,92,57,0.16) 0%, transparent 70%); }
+  .jn-big{ font-family:var(--font-display); font-weight:900; font-size:clamp(5rem,16vw,11rem); line-height:0.85; letter-spacing:-0.05em; color:#ff5c39; text-shadow:0 0 60px rgba(255,92,57,0.35); }
   .jn-words{ margin-top:1.6rem; max-width:44ch; font-size:clamp(1.15rem,1.9vw,1.45rem); line-height:1.5; color:var(--cream); }
   .jn-words p + p{ margin-top:1rem; }
   .jn-by{ margin-top:1.4rem; font-family:var(--font-label); font-weight:800; font-size:0.78rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--orange); }
@@ -50,21 +53,29 @@
   .jn-ch-era{ font-family:var(--font-label); font-weight:800; font-size:0.72rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--orange-ink); }
   .jn-ch-card h3{ margin-top:0.35rem; font-family:var(--font-display); font-weight:900; font-size:clamp(1.6rem,2.4vw,2rem); letter-spacing:-0.02em; line-height:1; color:var(--ink); }
   .jn-trophy{ display:grid; grid-template-columns:1fr 1fr; gap:1.1rem 1rem; margin:1.3rem 0 0; }
-  .jn-trophy dt{ font-family:var(--font-display); font-weight:900; font-size:clamp(1.3rem,2vw,1.6rem); line-height:1; letter-spacing:-0.02em; color:var(--orange); }
+  /* Each honour gets a yellow medal (the site's win colour); the words stay
+     in ink so they read on the paper card. */
+  .jn-trophy dt{ display:flex; align-items:flex-start; gap:0.45rem; font-family:var(--font-display); font-weight:900; font-size:clamp(1.3rem,2vw,1.6rem); line-height:1; letter-spacing:-0.02em; color:var(--ink); }
+  .jn-trophy dt::before{ content:""; flex:0 0 auto; width:0.8em; height:0.8em; margin-top:0.08em; background:var(--gold-ink); -webkit-mask:var(--icon-win) center/contain no-repeat; mask:var(--icon-win) center/contain no-repeat; }
   .jn-trophy dd{ margin:0.35rem 0 0; font-size:0.9rem; line-height:1.35; color:var(--ink-soft); }
   .jn-ch-text{ margin-top:1rem; color:var(--ink-soft); line-height:1.5; }
   .jn-ch-q{ margin-top:1rem; padding-left:0.9rem; border-left:3px solid var(--orange); font-weight:700; color:var(--ink); }
-  .jn-ch-card.is-now{ background:#0C0C0E; box-shadow:0 0 0 1px rgba(255,92,57,0.45), 0 30px 70px -30px rgba(255,92,57,0.45); }
+  .jn-ch-card.is-now{ background:var(--night); box-shadow:0 0 0 1px rgb(var(--accent-rgb) / 0.45), 0 30px 70px -30px rgb(var(--accent-rgb) / 0.45); }
   .jn-ch-card.is-now::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 70% 60% at 85% 15%, rgba(255,92,57,0.22) 0%, transparent 70%); }
   .jn-ch-card.is-now .jn-ch-era{ color:var(--orange); }
   .jn-ch-card.is-now h3{ color:var(--cream); }
   .jn-ch-years{ list-style:none; padding:0; margin:1.2rem 0 0; display:grid; gap:0.85rem; }
-  .jn-ch-years li{ display:grid; grid-template-columns:3.4rem 1fr; gap:0.6rem; align-items:baseline; }
+  /* Each year leads with what it was: pickleball found, a win, the road. */
+  .jn-ch-years li{ display:grid; grid-template-columns:1.2rem 3.2rem 1fr; gap:0.55rem; align-items:baseline; }
+  .jn-ch-years .sym{ position:relative; top:0.2em; width:1.15rem; height:1.15rem; color:var(--cream-mute); }
+  .jn-ch-years li.win .sym{ color:var(--yellow); }
+  .jn-ch-years li.lit .sym{ color:var(--orange); }
   .jn-ch-years b{ font-family:var(--font-display); font-weight:900; font-size:1.15rem; color:var(--cream-mute); }
   .jn-ch-years span{ color:var(--cream-mute); line-height:1.4; }
-  .jn-ch-years li.lit b{ color:var(--orange); text-shadow:0 0 22px rgba(255,92,57,0.45); }
+  .jn-ch-years li.lit b{ color:var(--orange); text-shadow:0 0 22px rgb(var(--accent-rgb) / 0.45); }
   .jn-ch-years li.lit span{ color:var(--cream); font-weight:700; }
-  .jn-ch-go{ display:inline-block; margin-top:1.3rem; font-weight:700; color:var(--orange); border-bottom:2px solid currentColor; padding-bottom:2px; }
+  .jn-ch-years li.win b{ color:var(--yellow); }
+  .jn-ch-go{ display:inline-block; margin-top:1.3rem; font-weight:700; color:#ff5c39; border-bottom:2px solid currentColor; padding-bottom:2px; }
   .jn-split{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(2rem,5vw,4.5rem); align-items:center; }
   @media (max-width:820px){ .jn-split{ grid-template-columns:1fr; } }
   .jn-photo{ margin:0; border-radius:20px; overflow:hidden; box-shadow:0 30px 70px -34px rgba(0,0,0,0.6); }
@@ -77,18 +88,18 @@
   @media (max-width:640px){ .jn-pair{ grid-template-columns:1fr; } .jn-pair .jn-photo{ transform:none !important; } }
   .jn-quote{ text-align:center; }
   .jn-quote blockquote{ margin:0 auto; max-width:26ch; font-family:var(--font-display); font-weight:800; font-size:clamp(1.7rem,3.8vw,3rem); line-height:1.12; letter-spacing:-0.025em; color:var(--cream); }
-  .jn-quote blockquote em{ color:var(--orange); }
+  .jn-quote blockquote em{ color:#ff5c39; }
   .jn-quote .jn-by{ margin-top:1.8rem; }
   .jn-kit{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; margin-top:1.8rem; }
   @media (max-width:640px){ .jn-kit{ grid-template-columns:1fr; } }
   .jn-kit div{ padding:1.3rem 1.4rem; border-radius:16px; background:var(--paper); box-shadow:0 0 0 1px var(--hairline); }
   .jn-kit b{ display:block; font-family:var(--font-display); font-weight:800; font-size:1.25rem; color:var(--ink); }
   .jn-kit span{ display:block; margin-top:0.35rem; color:var(--ink-soft); }
-  .jn-code{ margin-top:1.6rem; padding:1.4rem; border-radius:16px; background:#0C0C0E; color:var(--cream); }
-  .jn-code .code-chip{ display:inline-block; margin-top:0.6rem; font-family:var(--font-display); font-weight:900; font-size:1.6rem; letter-spacing:0.02em; color:var(--orange); }
+  .jn-code{ margin-top:1.6rem; padding:1.4rem; border-radius:16px; background:var(--night); color:var(--cream); }
+  .jn-code .code-chip{ display:inline-block; margin-top:0.6rem; font-family:var(--font-display); font-weight:900; font-size:1.6rem; letter-spacing:0.02em; color:var(--orange-display); }
   .jn-code p{ color:var(--cream-mute); font-size:0.95rem; margin-top:0.6rem; }
   .jn-code a{ color:var(--orange); font-weight:700; }
-  .jn-chair{ margin-top:1.8rem; display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,0.95fr); border-radius:22px; overflow:hidden; background:#0C0C0E; color:var(--cream); box-shadow:0 30px 70px -34px rgba(0,0,0,0.6); position:relative; isolation:isolate; }
+  .jn-chair{ margin-top:1.8rem; display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,0.95fr); border-radius:22px; overflow:hidden; background:var(--night); color:var(--cream); box-shadow:0 30px 70px -34px rgba(0,0,0,0.6); position:relative; isolation:isolate; }
   .jn-chair::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 55% 70% at 90% 20%, rgba(255,92,57,0.18) 0%, transparent 70%); }
   .jn-chair figure{ margin:0; min-height:100%; }
   .jn-chair figure img{ width:100%; height:100%; object-fit:cover; object-position:55% 60%; display:block; }
@@ -101,15 +112,15 @@
   @media (max-width:760px){ .jn-chair{ grid-template-columns:1fr; } .jn-chair figure{ aspect-ratio:1600/1345; } }
   .jn-kit{ grid-template-columns:1fr !important; }
   .jn-paddle{ grid-template-columns:minmax(0,1.1fr) minmax(0,0.9fr); }
-  .jn-paddle figure{ order:2; background:#0C0C0E; }
+  .jn-paddle figure{ order:2; background:var(--night); }
   .jn-paddle figure img{ object-position:50% 40%; }
-  .jn-code-in{ margin-top:1.3rem; padding:1.1rem 0; border-top:1px solid rgba(255,255,255,0.12); border-bottom:1px solid rgba(255,255,255,0.12); }
+  .jn-code-in{ margin-top:1.3rem; padding:1.1rem 0; border-top:1px solid rgba(249,247,242,0.12); border-bottom:1px solid rgba(249,247,242,0.12); }
   .jn-code-in > span{ display:block; font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--orange); }
-  .jn-code-in .code-chip{ display:inline-block; margin-top:0.5rem; font-family:var(--font-display); font-weight:900; font-size:clamp(1.6rem,3vw,2.1rem); letter-spacing:0.01em; color:var(--orange); }
+  .jn-code-in .code-chip{ display:inline-block; margin-top:0.5rem; font-family:var(--font-display); font-weight:900; font-size:clamp(1.6rem,3vw,2.1rem); letter-spacing:0.01em; color:var(--orange-display); }
   .jn-code-in p{ margin-top:0.6rem; font-size:0.92rem; color:var(--cream-mute); }
   .jn-code-in a{ color:var(--orange); font-weight:700; }
   @media (max-width:760px){ .jn-paddle{ grid-template-columns:1fr; } .jn-paddle figure{ order:0; aspect-ratio:4/5; } }
-  .jn-seat-total{ margin-top:1.4rem; font-family:var(--font-display); font-weight:800; font-size:clamp(1.6rem,3vw,2.2rem); color:var(--orange); }
+  .jn-seat-total{ margin-top:1.4rem; font-family:var(--font-display); font-weight:800; font-size:clamp(1.6rem,3vw,2.2rem); color:#ff5c39; }
 </style>
 </head>
 <body>
@@ -146,15 +157,15 @@ fill="currentColor" stroke="none">
 </g></svg>Adapt To Life</a>
     <nav class="nav-links">
       <div class="nav-group">
-        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navOurWork">Our Work<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 3 3-3"/></svg></button>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navOurWork">Our Work<svg class="caret" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="caret" data-style="bold"><path fill="currentColor" d="m216.49 104.49l-80 80a12 12 0 0 1-17 0l-80-80a12 12 0 0 1 17-17L128 159l71.51-71.52a12 12 0 0 1 17 17Z"/></svg></button>
         <div class="nav-panel" id="navOurWork">
           <a href="/hustle-and-heart"><span class="np-t">Hustle &amp; Heart Fund</span><span class="np-d">Support for equipment, training, and travel</span></a>
-          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d">Find adaptive programs by sport and location</span></a>
-          <a href="/adapt-body-shop"><span class="np-t">Adapt Body Shop</span><span class="np-d">Coming soon · Gear for the community</span></a>
+          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d"><span class="tag tag--info">In beta</span> Find adaptive programs by sport and location</span></a>
+          <a href="/adapt-body-shop"><span class="np-t">Adapt Body Shop</span><span class="np-d"><span class="tag tag--neutral">Coming soon</span> Gear for the community</span></a>
         </div>
       </div>
       <div class="nav-group">
-        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navJoin">Get Involved<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 3 3-3"/></svg></button>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navJoin">Get Involved<svg class="caret" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="caret" data-style="bold"><path fill="currentColor" d="m216.49 104.49l-80 80a12 12 0 0 1-17 0l-80-80a12 12 0 0 1 17-17L128 159l71.51-71.52a12 12 0 0 1 17 17Z"/></svg></button>
         <div class="nav-panel" id="navJoin">
           <a href="/volunteer"><span class="np-t">Volunteer</span><span class="np-d">Roles to fill, and our ambassador program</span></a>
           <a href="/sponsorship"><span class="np-t">Partners</span><span class="np-d">Our partners, and how to join them</span></a>
@@ -162,7 +173,7 @@ fill="currentColor" stroke="none">
         </div>
       </div>
       <div class="nav-group">
-        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navAbout">About<svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l3 3 3-3"/></svg></button>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navAbout">About<svg class="caret" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="caret" data-style="bold"><path fill="currentColor" d="m216.49 104.49l-80 80a12 12 0 0 1-17 0l-80-80a12 12 0 0 1 17-17L128 159l71.51-71.52a12 12 0 0 1 17 17Z"/></svg></button>
         <div class="nav-panel" id="navAbout">
           <a href="/promise"><span class="np-t">How Giving Works</span><span class="np-d">How gifts support athletes and the work around them</span></a>
           <a href="/about"><span class="np-t">Our Story</span><span class="np-d">The people who built this, and why</span></a>
@@ -179,8 +190,8 @@ fill="currentColor" stroke="none">
     <div class="wrap mwrap">
       <span class="m-group">Our Work</span>
       <a class="m-sub" href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
-      <a class="m-sub" href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
-      <a class="m-sub" href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
+      <a class="m-sub" href="/adaptive-sports-near-me">Adaptive Sports Near Me <span class="tag tag--info">In beta</span></a>
+      <a class="m-sub" href="/adapt-body-shop">Adapt Body Shop <span class="tag tag--neutral">Coming soon</span></a>
       <span class="m-group">Get Involved</span>
       <a class="m-sub" href="/volunteer">Volunteer</a>
       <a class="m-sub" href="/sponsorship">Partners</a>
@@ -189,7 +200,7 @@ fill="currentColor" stroke="none">
       <a class="m-sub" href="/promise">How Giving Works</a>
       <a class="m-sub" href="/about">Our Story</a>
       <a class="featured" href="/apply">Apply for support</a>
-      <a class="m-cta" href="/donate">Donate &rarr;</a>
+      <a class="m-cta" href="/donate">Donate <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
     </div>
   </div>
 </header>
@@ -206,14 +217,14 @@ fill="currentColor" stroke="none">
           </div>
           <h1 class="serif display reveal">Juan Ortiz</h1>
           <hr class="tick orange reveal">
-          <p class="lead sub reveal">Paralyzed at 14. Hall of Famer in wheelchair softball. Dad of three. Now he is chasing his first US Open in wheelchair pickleball, and building the sport for everyone who comes after him.</p>
+          <p class="lead sub reveal">Paralyzed at 14. Hall of Famer in wheelchair softball. Dad of three. Now he is our first ambassador, building wheelchair pickleball in Chicago for everyone who comes after him, and chasing his first US Open.</p>
           <ul class="jn-chips reveal">
-            <li>Wheelchair Softball Hall of Fame</li>
+            <li><i class="sym sym--win" aria-hidden="true"></i>Wheelchair Softball Hall of Fame</li>
             <li>University of Illinois basketball</li>
             <li>16 hours a week on court</li>
           </ul>
           <div class="jn-acts reveal">
-            <a href="#seat" class="btn">Send Juan to Naples <span class="arrow">&rarr;</span></a>
+            <a href="/donate?utm_source=athlete-profile&amp;utm_medium=web&amp;utm_campaign=juan" class="btn">Donate <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
             <a href="#story" class="btn ghost">Read his story</a>
           </div>
         </div>
@@ -225,7 +236,7 @@ fill="currentColor" stroke="none">
   </section>
 
   <!-- WHERE IT STARTED: his words, raw. -->
-  <section class="jn-start band-lg" id="story">
+  <section class="jn-start band-lg dark" id="story">
     <div class="jn-start-img" aria-hidden="true"><img src="/images/athletes/juan-court.webp" alt="" loading="lazy" decoding="async" width="2000" height="1333"></div>
     <div class="wrap">
       <span class="eyebrow orange reveal">Where it started</span>
@@ -262,15 +273,15 @@ fill="currentColor" stroke="none">
           <p class="jn-ch-text">Steps back from competing to be there for his three kids: practices, catch, Saturdays from diamond to diamond.</p>
           <p class="jn-ch-q">&ldquo;That became my new championship.&rdquo;</p>
         </article>
-        <article class="jn-ch-card is-now reveal">
+        <article class="jn-ch-card is-now on-dark reveal">
           <p class="jn-ch-era">Now</p>
           <h3>The pioneer</h3>
           <ol class="jn-ch-years">
-            <li><b>2025</b><span>Finds pickleball at a Chicago Park District clinic.</span></li>
-            <li><b>2026</b><span>Gets the APP Tour its first wheelchair division.</span></li>
-            <li class="lit"><b>2027</b><span>Naples. His first US Open.</span></li>
+            <li><i class="sym sym--pickleball" aria-hidden="true"></i><b>2025</b><span>Finds pickleball at a Chicago Park District clinic.</span></li>
+            <li class="win"><i class="sym sym--win" aria-hidden="true"></i><b>2026</b><span>Gets the APP Tour its first wheelchair division.</span></li>
+            <li class="lit"><i class="sym sym--travel" aria-hidden="true"></i><b>2027</b><span>The road to his first US Open.</span></li>
           </ol>
-          <a class="jn-ch-go" href="#seat">Send Juan to Naples <span class="arrow">&rarr;</span></a>
+          <a class="jn-ch-go" href="#seat">His road to the US Open <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
         </article>
       </div>
     </div>
@@ -288,7 +299,7 @@ fill="currentColor" stroke="none">
         <p class="jn-q">&ldquo;That first day was hilarious and humbling. None of us knew what we were doing. If we managed to get to a third shot in a rally, everyone congratulated each other.&rdquo;</p>
         <p class="jn-q">&ldquo;At the end of that first session, the coach asked, &lsquo;Who&rsquo;s coming back next week?&rsquo; It was an immediate, hard yes from everyone.&rdquo;</p>
         <p class="jn-q">&ldquo;My time as a sideline cheerleader for my kids is completely nonnegotiable. I had to make a hard choice between the sports I&rsquo;ve played for 20 years and this new game where I&rsquo;m still grinding to learn as a rookie. I chose pickleball.&rdquo;</p>
-        <p class="prose" style="margin-top:1.2rem;">This year he passed on softball nationals to focus on it.</p>
+        <p class="prose" style="margin-top:1.2rem;">In 2026 he passed on softball nationals to focus on it.</p>
       </div>
     </div>
   </section>
@@ -302,7 +313,7 @@ fill="currentColor" stroke="none">
   </section>
 
   <!-- ON COURT: the raw ones. Variety is the point; this is Juan, unposed. -->
-  <section class="band-sm" style="background:#0C0C0E;">
+  <section class="band-sm" style="background:var(--night);">
     <div class="wrap jn-pair">
       <figure class="jn-photo reveal"><img src="/images/athletes/juan-celebrate.webp" width="1600" height="1200" alt="Juan Ortiz sticks his tongue out and throws his arms wide courtside, paddle in his lap" loading="lazy" decoding="async"></figure>
       <figure class="jn-photo reveal"><img src="/images/athletes/juan-portrait.webp" width="1000" height="1500" alt="Juan Ortiz sits in his sport wheelchair with his paddle, looking straight at the camera" loading="lazy" decoding="async"></figure>
@@ -314,11 +325,11 @@ fill="currentColor" stroke="none">
     <div class="wrap reading">
       <span class="eyebrow orange reveal">Building the sport</span>
       <h2 class="serif h2 reveal" style="margin-top:0.8rem;">&ldquo;That sport has to exist first.&rdquo;</h2>
-      <p class="prose reveal" style="margin-top:1.2rem;">In August, Juan asked the APP Tour&rsquo;s Vlasic Classic for a wheelchair division, and got one: the APP&rsquo;s first. Five full teams played it, more than any other amateur bracket there. When lightning stopped play outside, the tournament moved indoors and they finished it.</p>
-      <p class="prose reveal" style="margin-top:1rem;">He has not stopped since. He is asking tournament directors for more wheelchair divisions, talking with the Chicago Park District and local adaptive programs about a Chicago program and tournament, and getting his crew, the Wheelie Big Dills, on court every week. When a tournament has no wheelchair division, he signs up anyway and plays able bodied players.</p>
+      <p class="prose reveal" style="margin-top:1.2rem;">In August 2026, Juan asked the APP Tour&rsquo;s Vlasic Classic for a wheelchair division, and got one: the APP&rsquo;s first. Five full teams played it, more than any other amateur bracket there. When lightning stopped play outside, the tournament moved indoors and they finished it.</p>
+      <p class="prose reveal" style="margin-top:1rem;">He has not stopped since. He is asking tournament directors for more wheelchair divisions, talking with the Chicago Park District and local adaptive programs about a Chicago program and tournament, and getting his crew, Chicago Pickleball: Wheelie Big Dills, on court every week. When a tournament has no wheelchair division, he signs up anyway and plays able bodied players.</p>
       <p class="jn-q reveal">&ldquo;In basketball and softball, I was lucky to have huge, established adaptive programs supporting us. Wheelchair pickleball doesn&rsquo;t have that infrastructure yet. If an adaptive athlete wants to try a sport, that sport has to exist first.&rdquo;</p>
       <p class="jn-q reveal">&ldquo;Selfishly, I want to build this program so I can compete at the highest level, but the real goal is building it for everyone else too.&rdquo;</p>
-      <p class="prose reveal" style="margin-top:1.2rem;">Juan is leading the fundraising for <a class="textlink" href="/send-6" style="font:inherit;letter-spacing:inherit;">Send 6 to the US Open</a>, and he is the first of our <a class="textlink" href="/ambassadors" style="font:inherit;letter-spacing:inherit;">ambassadors</a>.</p>
+      <p class="prose reveal" style="margin-top:1.2rem;">Juan is leading the fundraising for <a class="textlink" href="/send-6" style="font:inherit;letter-spacing:inherit;">Send 6 to the US Open</a>, and he is the first of our <a class="textlink" href="/ambassadors" style="font:inherit;letter-spacing:inherit;">ambassadors</a>. Ambassadors show the Hustle &amp; Heart Fund where it will do the most, and we pay the clubs and vendors directly.</p>
     </div>
   </section>
 
@@ -329,7 +340,7 @@ fill="currentColor" stroke="none">
       <h2 class="serif h2 reveal" style="margin-top:0.8rem;">The setup.</h2>
       <!-- THE CHAIR: a feature of its own. Facts from Alec's approved CAF
            letter and Juan's own words; no claim of a brand relationship. -->
-      <article class="jn-chair reveal">
+      <article class="jn-chair on-dark reveal">
         <figure><img src="/images/athletes/juan-chair.webp" alt="Juan's PER4MAX chair mid serve: green spokes, white frame, red rims, and orange casters" width="1600" height="1345" loading="lazy" decoding="async"></figure>
         <div class="jn-chair-body">
           <span class="eyebrow orange">His chair</span>
@@ -339,7 +350,7 @@ fill="currentColor" stroke="none">
           <p class="jn-chair-q">&ldquo;I even have the Adapt To Life QR code right on my sports chair. Scan it and help send our team to the US Open.&rdquo;</p>
         </div>
       </article>
-      <article class="jn-chair jn-paddle reveal">
+      <article class="jn-chair jn-paddle on-dark reveal">
         <figure><img src="/images/athletes/juan-loco.webp" alt="Juan's Bread and Butter Loco paddle in its cover: a skull in a sombrero with two pistols, Loco in orange, and Bring The Smoke" width="1100" height="1765" loading="lazy" decoding="async"></figure>
         <div class="jn-chair-body">
           <span class="eyebrow orange">His paddle</span>
@@ -348,7 +359,7 @@ fill="currentColor" stroke="none">
           <div class="jn-code-in">
             <span>His code</span>
             <b class="code-chip">JuanitoLoco</b>
-            <p>Juan is a Bread &amp; Butter ambassador. His code takes 10% off, and the commission Bread &amp; Butter pays him goes to Adapt To Life for the trip to Naples. <a href="https://breadandbutterpickleball.com/?utm_source=adapttolife&amp;utm_medium=referral&amp;utm_campaign=juan" rel="sponsored nofollow noopener" target="_blank">Shop Bread &amp; Butter &rarr;</a></p>
+            <p>Juan is a Bread &amp; Butter ambassador. His code takes 10% off, and the commission Bread &amp; Butter pays him goes to Adapt To Life for the trip to Naples. <a href="https://breadandbutterpickleball.com/?utm_source=adapttolife&amp;utm_medium=referral&amp;utm_campaign=juan" rel="sponsored nofollow noopener" target="_blank">Shop Bread &amp; Butter <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external" data-style="bold"><path fill="currentColor" d="M204 64v104a12 12 0 0 1-24 0V93L72.49 200.49a12 12 0 0 1-17-17L163 76H88a12 12 0 0 1 0-24h104a12 12 0 0 1 12 12"/></svg></span></a></p>
           </div>
           <p class="jn-chair-q">&ldquo;If you see me out on the court, come try my Loco yourself.&rdquo;</p>
         </div>
@@ -360,14 +371,14 @@ fill="currentColor" stroke="none">
   <section class="dark band-lg" id="seat">
     <div class="wrap reading">
       <span class="eyebrow orange reveal">His seat</span>
-      <h2 class="serif display reveal" style="margin-top:1rem;">Send Juan to <em class="italic" style="color:var(--orange)">his first US Open.</em></h2>
-      <p class="lead sub reveal">Adapt To Life is raising $21,000 to send six wheelchair pickleball athletes to the US Open in Naples in spring 2027: equipment, training, and travel. Juan is the first of the six.</p>
+      <h2 class="serif display reveal" style="margin-top:1rem;">On the road to <em class="italic" style="color:var(--orange)">his first US Open.</em></h2>
+      <p class="lead sub reveal">Send 6 raises $21,000 for six wheelchair pickleball athletes on the road to the US Open in Naples in spring 2027, with tournaments through the year to build their rankings. Juan holds the first seat. The US Open picks players by lottery, so nothing is guaranteed. Two of his crewmates, Robby Wolf and Brian Liss, have each played it the last three years. Juan wants to be next.</p>
       <p class="jn-q reveal" style="color:var(--cream); border-color:var(--orange); margin-top:1.4rem;">&ldquo;Going to Naples brings back that giddy, nervous excitement I felt as a kid heading to my very first tournaments. It&rsquo;s the ultimate proving ground.&rdquo;</p>
-      <p class="jn-seat-total reveal">About $3,500 puts Juan on that court.</p>
-      <p class="prose reveal" style="margin-top:1rem; font-size:0.92rem; color:var(--cream-mute);">If the campaign is fully funded or cannot go ahead, remaining campaign funds support the Hustle &amp; Heart Fund. <a class="textlink" href="/promise" style="font:inherit;letter-spacing:inherit;">How giving works</a></p>
+      <p class="jn-seat-total reveal">About $3,500 gets Juan to Naples if his name comes up.</p>
+      <p class="prose reveal" style="margin-top:1rem; font-size:0.92rem; color:var(--cream-mute);">Every gift goes to the Hustle &amp; Heart Fund for Chicago Pickleball: Wheelie Big Dills, every week first, then the road to the US Open. <a class="textlink" href="/promise" style="font:inherit;letter-spacing:inherit;">How giving works</a></p>
       <div class="actions reveal" style="display:flex; flex-wrap:wrap; gap:0.9rem 1rem; margin-top:2.2rem;">
-        <a href="/donate?utm_source=athlete-profile&amp;utm_medium=web&amp;utm_campaign=juan" class="btn">Cover part of Juan&rsquo;s seat <span class="arrow">&rarr;</span></a>
-        <a href="/send-6" class="btn ghost">About Send 6</a>
+        <a href="/donate?utm_source=athlete-profile&amp;utm_medium=web&amp;utm_campaign=juan" class="btn">Donate <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
+        <a href="/send-6" class="btn ghost">The Road to the US Open</a>
       </div>
     </div>
   </section>
@@ -426,33 +437,41 @@ fill="currentColor" stroke="none">
           <label class="foot-sub-label" for="footEm">Follow the work</label>
           <div class="foot-sub-row">
             <input class="foot-sub-input" id="footEm" name="em" type="email" autocomplete="email" placeholder="you@example.com" aria-label="Your email">
-            <button class="foot-sub-btn" type="submit" aria-label="Join the list">&rarr;</button>
+            <button class="foot-sub-btn" type="submit" aria-label="Join the list"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></button>
           </div>
           <input type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
           <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only"></div>
           <p class="foot-sub-msg" role="status" aria-live="polite"></p>
         </form>
+        <div class="foot-follow">
+          <span class="foot-sub-label">Follow us</span>
+          <div class="social">
+        <a href="https://www.instagram.com/adapt_to_life_org/" aria-label="Adapt To Life on Instagram" target="_blank" rel="me noopener noreferrer"><svg class="ix-svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false" data-logo="instagram"><path fill="currentColor" d="M7.03.084c-1.277.06-2.149.264-2.91.563a5.9 5.9 0 0 0-2.124 1.388a5.9 5.9 0 0 0-1.38 2.127C.321 4.926.12 5.8.064 7.076s-.069 1.688-.063 4.947s.021 3.667.083 4.947c.061 1.277.264 2.149.563 2.911c.308.789.72 1.457 1.388 2.123a5.9 5.9 0 0 0 2.129 1.38c.763.295 1.636.496 2.913.552c1.278.056 1.689.069 4.947.063s3.668-.021 4.947-.082c1.28-.06 2.147-.265 2.91-.563a5.9 5.9 0 0 0 2.123-1.388a5.9 5.9 0 0 0 1.38-2.129c.295-.763.496-1.636.551-2.912c.056-1.28.07-1.69.063-4.948c-.006-3.258-.02-3.667-.081-4.947c-.06-1.28-.264-2.148-.564-2.911a5.9 5.9 0 0 0-1.387-2.123a5.9 5.9 0 0 0-2.128-1.38c-.764-.294-1.636-.496-2.914-.55C15.647.009 15.236-.006 11.977 0S8.31.021 7.03.084m.14 21.693c-1.17-.05-1.805-.245-2.228-.408a3.7 3.7 0 0 1-1.382-.895a3.7 3.7 0 0 1-.9-1.378c-.165-.423-.363-1.058-.417-2.228c-.06-1.264-.072-1.644-.08-4.848c-.006-3.204.006-3.583.061-4.848c.05-1.169.246-1.805.408-2.228c.216-.561.477-.96.895-1.382a3.7 3.7 0 0 1 1.379-.9c.423-.165 1.057-.361 2.227-.417c1.265-.06 1.644-.072 4.848-.08c3.203-.006 3.583.006 4.85.062c1.168.05 1.804.244 2.227.408c.56.216.96.475 1.382.895s.681.817.9 1.378c.165.422.362 1.056.417 2.227c.06 1.265.074 1.645.08 4.848c.005 3.203-.006 3.583-.061 4.848c-.051 1.17-.245 1.805-.408 2.23c-.216.56-.477.96-.896 1.38a3.7 3.7 0 0 1-1.378.9c-.422.165-1.058.362-2.226.418c-1.266.06-1.645.072-4.85.079s-3.582-.006-4.848-.06m9.783-16.192a1.44 1.44 0 1 0 1.437-1.442a1.44 1.44 0 0 0-1.437 1.442M5.839 12.012a6.161 6.161 0 1 0 12.323-.024a6.162 6.162 0 0 0-12.323.024M8 12.008A4 4 0 1 1 12.008 16A4 4 0 0 1 8 12.008"/></svg></a>
+        <a href="https://www.facebook.com/profile.php?id=61592619668321" aria-label="Adapt To Life on Facebook" target="_blank" rel="me noopener noreferrer"><svg class="ix-svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false" data-logo="facebook"><path fill="currentColor" d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978c.401 0 .955.042 1.468.103a9 9 0 0 1 1.141.195v3.325a9 9 0 0 0-.653-.036a27 27 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.7 1.7 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103l-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647"/></svg></a>
+      </div>
+        </div>
         <p class="legal">Adapt To Life is a recognized 501(c)(3) nonprofit organization. Donations are tax deductible to the extent allowed by law. EIN 41-3213344.</p>
       </div>
       <div class="col">
-        <h4>Organization</h4>
+        <h2>Organization</h2>
         <a href="/about">Our Story</a>
         <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
-        <a href="/tim">Tim&#39;s Story</a>
-        <a href="/karen">Karen&#39;s Story</a>
-        <a href="/juan">Juan&#39;s Story</a>
-        <a href="/adaptive-sports-near-me">Adaptive Sports Near Me</a>
-        <a href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
+        <a href="/tim">Tim&rsquo;s Story</a>
+        <a href="/karen">Karen&rsquo;s Story</a>
+        <a href="/juan">Juan&rsquo;s Story</a>
+        <a href="/adaptive-sports-near-me">Adaptive Sports Near Me <span class="tag tag--info">In beta</span></a>
+        <a href="/adapt-body-shop">Adapt Body Shop <span class="tag tag--neutral">Coming soon</span></a>
                 <a href="/roadmap">Roadmap</a>
       </div>
       <div class="col">
-        <h4>Get involved</h4>
+        <h2>Get involved</h2>
         <a href="/donate">Donate</a>
         <a href="/promise">How Giving Works</a>
         <a href="/volunteer">Volunteer</a>
         <a href="/ambassadors">Ambassadors</a>
         <a href="/sponsorship">Become a partner</a>
         <a href="/events">Events</a>
+        <a href="/social">Social</a>
         <a href="/apply">Apply for support</a>
         <a href="https://sign.adapttolife.org/waiver?source=atl">Photo and media release</a>
         <a href="/subscribe">Join the list</a>
@@ -461,10 +480,6 @@ fill="currentColor" stroke="none">
       </div>
     </div>
     <div class="footer-bottom">
-      <div class="social">
-        <a href="https://www.instagram.com/adapt_to_life_org/" aria-label="Adapt To Life on Instagram" target="_blank" rel="me noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16M12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63c-.79.3-1.46.72-2.13 1.38C1.35 2.68.93 3.35.63 4.14.33 4.9.13 5.78.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.3.79.72 1.46 1.38 2.13.67.66 1.34 1.08 2.13 1.38.76.3 1.64.5 2.91.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56.79-.3 1.46-.72 2.13-1.38.66-.67 1.08-1.34 1.38-2.13.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91-.3-.79-.72-1.46-1.38-2.13C21.32 1.35 20.65.93 19.86.63c-.76-.3-1.64-.5-2.91-.56C15.67.01 15.26 0 12 0z"/><path d="M12 5.84A6.16 6.16 0 1 0 18.16 12 6.16 6.16 0 0 0 12 5.84zm0 10.16A4 4 0 1 1 16 12a4 4 0 0 1-4 4z"/><circle cx="18.41" cy="5.59" r="1.44"/></svg></a>
-        <a href="https://www.facebook.com/profile.php?id=61592619668321" aria-label="Adapt To Life on Facebook" target="_blank" rel="me noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.96h-1.51c-1.49 0-1.96.93-1.96 1.89v2.26h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z"/></svg></a>
-      </div>
       <span>&copy; 2026 Adapt To Life</span>
     </div>
   </div>
@@ -527,8 +542,8 @@ fill="currentColor" stroke="none">
   })();
 </script>
 
-<script src="/js/subscribe.js?v=e8aeb3cc" defer></script>
-<script src="/js/turnstile-lazy.js?v=6b5d6c4a" defer></script>
+<script src="/js/subscribe.js?v=7efaf550" defer></script>
+<script src="/js/turnstile-lazy.js?v=12e9b811" defer></script>
 
 <script>
   // Copy-link, with the 2013 fallback for any browser that refuses the

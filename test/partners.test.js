@@ -8,32 +8,88 @@ import { readFileSync, existsSync } from "node:fs";
 const pub = new URL("../public/", import.meta.url);
 const read = (f) => readFileSync(new URL(f, pub), "utf8");
 const partners = read("sponsorship.html");
-const cards = [...partners.matchAll(/<article class="partner[^"]*">([\s\S]*?)<\/article>/g)].map((m) => m[1]);
-const pages = cards.map((c) => (c.match(/class="partner-more" href="\/([a-z0-9-]+)"/) || [])[1]);
+const cards = [
+  ...partners.matchAll(/<article class="partner[^"]*">([\s\S]*?)<\/article>/g),
+].map((m) => m[1]);
+const pages = cards.map(
+  (c) => (c.match(/class="partner-more" href="\/([a-z0-9-]+)"/) || [])[1],
+);
 
 test("/sponsorship lists at least one partner, each with a page link", () => {
   assert.ok(cards.length >= 1, "no partner cards");
-  pages.forEach((p, i) => assert.ok(p, `partner card ${i + 1} has no partner-more link`));
+  pages.forEach((p, i) =>
+    assert.ok(p, `partner card ${i + 1} has no partner-more link`),
+  );
 });
 
 for (const slug of pages.filter(Boolean)) {
   test(`partner page /${slug} is complete`, () => {
-    assert.ok(existsSync(new URL(`${slug}.html`, pub)), `public/${slug}.html is missing`);
+    assert.ok(
+      existsSync(new URL(`${slug}.html`, pub)),
+      `public/${slug}.html is missing`,
+    );
     const html = read(`${slug}.html`);
-    const og = (html.match(/<meta property="og:image" content="([^"]+)"/) || [])[1] || "";
-    const tw = (html.match(/<meta name="twitter:image" content="([^"]+)"/) || [])[1] || "";
-    assert.ok(og && !/\/og\/home-/.test(og), `/${slug} shares with the default card (${og}); give it its own`);
+    const og =
+      (html.match(/<meta property="og:image" content="([^"]+)"/) || [])[1] || "";
+    const tw =
+      (html.match(/<meta name="twitter:image" content="([^"]+)"/) || [])[1] || "";
+    assert.ok(
+      og && !/\/og\/home-/.test(og),
+      `/${slug} shares with the default card (${og}); give it its own`,
+    );
     assert.equal(tw, og, "twitter:image matches og:image");
-    assert.ok(existsSync(new URL(og.replace("https://adapttolife.org/", ""), pub)), `${og} was never rendered`);
+    assert.ok(
+      existsSync(new URL(og.replace("https://adapttolife.org/", ""), pub)),
+      `${og} was never rendered`,
+    );
     assert.ok(html.includes('href="/sponsorship"'), `/${slug} links back to Partners`);
-    assert.ok(read("sitemap.xml").includes(`https://adapttolife.org/${slug}</loc>`), `/${slug} is in the sitemap`);
+    assert.ok(
+      read("sitemap.xml").includes(`https://adapttolife.org/${slug}</loc>`),
+      `/${slug} is in the sitemap`,
+    );
   });
 }
 
 test("donate page partner logos (the Coach benefit) link to partners listed on /sponsorship", () => {
   const donate = read("donate.html");
-  const block = (donate.match(/<section class="band-sm tint dn-partners"[\s\S]*?<\/section>/) || [""])[0];
+  const block = (donate.match(
+    /<section class="band-sm tint dn-partners"[\s\S]*?<\/section>/,
+  ) || [""])[0];
   const linked = [...block.matchAll(/<li><a href="\/([a-z0-9-]+)"/g)].map((m) => m[1]);
   assert.ok(linked.length >= 1, "donate page shows partner logos");
-  for (const slug of linked) assert.ok(pages.includes(slug), `/${slug} on /donate is not a partner card on /sponsorship`);
+  for (const slug of linked)
+    assert.ok(
+      pages.includes(slug),
+      `/${slug} on /donate is not a partner card on /sponsorship`,
+    );
+});
+
+test("every partner list on the site names the same partners, in the same order", () => {
+  // Nov 6 2026: AMP Adaptive Sports joined (Alec: "They are partners"). A new
+  // partner goes on /sponsorship with its own page, and into every logo row,
+  // or this fails: the home strip, the donate tiles and the fund page's row.
+  const slugsIn = (html, re) => {
+    const block = (html.match(re) || [""])[0];
+    return [...block.matchAll(/<li><a href="\/([a-z0-9-]+)"/g)].map((m) => m[1]);
+  };
+  const order = pages.filter(Boolean);
+  assert.ok(order.includes("amp"), "AMP is a partner card on /sponsorship");
+  assert.deepEqual(
+    slugsIn(read("index.html"), /<section class="hm-partners"[\s\S]*?<\/section>/),
+    order,
+    "home page partner strip",
+  );
+  assert.deepEqual(
+    slugsIn(
+      read("donate.html"),
+      /<section class="band-sm tint dn-partners"[\s\S]*?<\/section>/,
+    ),
+    order,
+    "donate page partner tiles",
+  );
+  assert.deepEqual(
+    slugsIn(read("hustle-and-heart.html"), /<ul class="hh-now-partners"[\s\S]*?<\/ul>/),
+    order,
+    "fund page partner row",
+  );
 });

@@ -11,7 +11,9 @@ import { readFileSync } from "node:fs";
 // Intrinsic sizes come from the cut-out build (scripts/build-hero-cutouts.py),
 // so width/height attributes can never drift from the files on disk and the
 // hero cannot shift layout while the images decode.
-const DIM = JSON.parse(readFileSync(new URL("../../public/images/hero/dims.json", import.meta.url), "utf8"));
+const DIM = JSON.parse(
+  readFileSync(new URL("../../public/images/hero/dims.json", import.meta.url), "utf8"),
+);
 const dim = (f) => `width="${DIM[f][0]}" height="${DIM[f][1]}"`;
 
 const ROOT = new URL("../../public/", import.meta.url);
@@ -39,14 +41,24 @@ export const HERO_END = "  <!-- 2 · CAMPAIGN BAND";
 //   r    rotation in degrees. Kept under ~1.2: enough to read as a pinned-up
 //        wall, past that it reads as a template.
 //   m    "m" drops the panel below 900px (see .m-drop in hero-mosaic.css)
-const PANELS = JSON.parse(readFileSync(new URL("../../public/images/hero/panels/panels.json", import.meta.url), "utf8"));
+const PANELS = JSON.parse(
+  readFileSync(
+    new URL("../../public/images/hero/panels/panels.json", import.meta.url),
+    "utf8",
+  ),
+);
 
 // Content-hashed filenames. public/_headers caches media for 30 days and says
 // to rename an image if you replace it; overwriting one in place means every
 // returning visitor keeps the old bytes for a month. Every generated image is
 // fingerprinted by build-hero-panels.py and resolved through this manifest, so
 // changing a pixel changes the URL and nothing can go stale.
-const HASH = JSON.parse(readFileSync(new URL("../../public/images/hero/panels/hashes.json", import.meta.url), "utf8"));
+const HASH = JSON.parse(
+  readFileSync(
+    new URL("../../public/images/hero/panels/hashes.json", import.meta.url),
+    "utf8",
+  ),
+);
 export const hashed = (file) => HASH[file] || file;
 
 // D — THE MOSAIC. The wall is authored around a quiet left third for the type;
@@ -56,32 +68,32 @@ const MOSAIC = [
   // sits in. It used to hug the right half because the copy block was four
   // elements tall; with five words there, the bottom-left was simply empty.
   // back plane — the room, not the subjects
-  { n: "serve",      x: 2,  y: 58, w: 15, d: 1, r: -0.7, m: "m" },
-  { n: "rally",      x: 19, y: 76, w: 16, d: 1, r:  0.6, m: "m" },
-  { n: "court",      x: 76, y: 26, w: 15, d: 1, r: -0.5, m: "m" },
-  { n: "shout",      x: 51, y: 22, w: 10, d: 1, r:  0.9, m: "m" },
+  { n: "serve", x: 2, y: 58, w: 15, d: 1, r: -0.7, m: "m" },
+  { n: "rally", x: 19, y: 76, w: 16, d: 1, r: 0.6, m: "m" },
+  { n: "court", x: 76, y: 26, w: 15, d: 1, r: -0.5, m: "m" },
+  { n: "shout", x: 51, y: 22, w: 10, d: 1, r: 0.9, m: "m" },
   { n: "close-dink", x: 66, y: 36, w: 11, d: 1, r: -0.8, m: "m" },
-  { n: "paddle",     x: 62, y: 80, w: 11, d: 1, r:  0.7, m: "m" },
-  { n: "lobby",      x: 34, y: 64, w: 11, d: 1, r: -0.6, m: "m" },
+  { n: "paddle", x: 62, y: 80, w: 11, d: 1, r: 0.7, m: "m" },
+  { n: "lobby", x: 34, y: 64, w: 11, d: 1, r: -0.6, m: "m" },
   // These two fill the left-centre hole the copy block leaves. `turned` — a
   // back to camera — used to be the left one, chosen back when this slot was
   // purely structural. Alec ruled that out for the main banner at any size, so
   // it is a real portrait now. Same job, no throwaway.
-  { n: "bench",      x: 27, y: 30, w: 14, d: 1, r:  0.5, m: "m" },
-  { n: "profile",    x: 47, y: 38, w: 10, d: 1, r: -0.8, m: "m" },
+  { n: "bench", x: 27, y: 30, w: 14, d: 1, r: 0.5, m: "m" },
+  { n: "profile", x: 47, y: 38, w: 10, d: 1, r: -0.8, m: "m" },
   // mid plane
-  { n: "toss",       x: 69, y: 0,  w: 17, d: 2, r:  0.5, m: "m" },
+  { n: "toss", x: 69, y: 0, w: 17, d: 2, r: 0.5, m: "m" },
   // Swapped 2026-09-09 at Alec's call: Robby (whitecap) comes up to the
   // top-centre slot beside the headline and the laughing frame drops to the
   // bottom-left corner. Same two boxes, same depth plane — only the occupants
   // changed, so the wall's composition is untouched.
-  { n: "whitecap",   x: 44, y: 4,  w: 12, d: 2, r: -0.9, m: "m" },
-  { n: "laugh",      x: 5,  y: 74, w: 13, d: 2, r:  0.8, m: "m" },
-  { n: "reach",      x: 90, y: 40, w: 14, d: 2, r: -0.6, m: "s" },
-  { n: "swing",      x: 54, y: 56, w: 11, d: 2, r:  0.9, m: "m" },
-  { n: "seated",     x: 87, y: 70, w: 13, d: 2, r:  0.6, m: "m" },
-  { n: "grin",       x: 76, y: 50, w: 12, d: 2, r: -0.5, m: "s" },
-  { n: "lanyard",    x: 88, y: 14, w: 11, d: 2, r:  0.6, m: "m" },
+  { n: "whitecap", x: 44, y: 4, w: 12, d: 2, r: -0.9, m: "m" },
+  { n: "laugh", x: 5, y: 74, w: 13, d: 2, r: 0.8, m: "m" },
+  { n: "reach", x: 90, y: 40, w: 14, d: 2, r: -0.6, m: "s" },
+  { n: "swing", x: 54, y: 56, w: 11, d: 2, r: 0.9, m: "m" },
+  { n: "seated", x: 87, y: 70, w: 13, d: 2, r: 0.6, m: "m" },
+  { n: "grin", x: 76, y: 50, w: 12, d: 2, r: -0.5, m: "s" },
+  { n: "lanyard", x: 88, y: 14, w: 11, d: 2, r: 0.6, m: "m" },
   // front plane — five photographs carry the whole header.
   //
   // It was four, deliberately, and I argued for keeping it at four when Alec
@@ -101,25 +113,25 @@ const MOSAIC = [
   // accent word at y308-404, so the headline contrast is untouched (3.18:1,
   // identical to before). That clearance is the constraint on moving it further
   // up — the accent has only 0.18 over its floor at 1920.
-  { n: "net",        x: 17, y: 48, w: 17, d: 3, r: -0.7, m: "m" },
-  { n: "smile-close",x: 82, y: 4,  w: 16, d: 3, r:  0.7, m: "s" },
-  { n: "dink",       x: 57, y: 10, w: 19, d: 3, r: -0.6, m: "" },
-  { n: "brian",      x: 41, y: 55, w: 16, d: 3, r:  0.5, m: "s" },
-  { n: "forehand",   x: 62, y: 64, w: 27, d: 3, r: -0.4, m: "" },
+  { n: "net", x: 17, y: 48, w: 17, d: 3, r: -0.7, m: "m" },
+  { n: "smile-close", x: 82, y: 4, w: 16, d: 3, r: 0.7, m: "s" },
+  { n: "dink", x: 57, y: 10, w: 19, d: 3, r: -0.6, m: "" },
+  { n: "brian", x: 41, y: 55, w: 16, d: 3, r: 0.5, m: "s" },
+  { n: "forehand", x: 62, y: 64, w: 27, d: 3, r: -0.4, m: "" },
 ];
 
 // E — THE BANNER. One row, bottom-aligned to a single baseline, heights
 // varying so the top edge is a skyline rather than a ruler. y is ignored;
 // h is the panel's height as a % of the hero and the crop fills it.
 const BANNER = [
-  { n: "bn-reach",  x: -4, w: 16, h: 64, d: 1, m: "m" },
-  { n: "bn-swing",  x:  9, w: 16, h: 78, d: 2, m: "m" },
-  { n: "bn-brian",  x: 22, w: 16, h: 94, d: 3, m: "s" },
+  { n: "bn-reach", x: -4, w: 16, h: 64, d: 1, m: "m" },
+  { n: "bn-swing", x: 9, w: 16, h: 78, d: 2, m: "m" },
+  { n: "bn-brian", x: 22, w: 16, h: 94, d: 3, m: "s" },
   { n: "bn-seated", x: 35, w: 16, h: 70, d: 2, m: "m" },
-  { n: "bn-dink",   x: 48, w: 16, h: 100, d: 3, m: "" },
-  { n: "bn-grin",   x: 61, w: 16, h: 74, d: 2, m: "m" },
-  { n: "bn-smile",  x: 74, w: 16, h: 90, d: 3, m: "" },
-  { n: "bn-white",  x: 87, w: 16, h: 68, d: 2, m: "s" },
+  { n: "bn-dink", x: 48, w: 16, h: 100, d: 3, m: "" },
+  { n: "bn-grin", x: 61, w: 16, h: 74, d: 2, m: "m" },
+  { n: "bn-smile", x: 74, w: 16, h: 90, d: 3, m: "" },
+  { n: "bn-white", x: 87, w: 16, h: 68, d: 2, m: "s" },
 ];
 
 // NARROW LAYOUTS.
@@ -180,8 +192,10 @@ export const MOSAIC_GRID = [
   // This list is the phone composition and NOTHING ELSE — the desktop wall is
   // the x/y/w/d rows above and is untouched by editing here. That separation is
   // the whole reason the grid became a list instead of a scatter.
-  "net",        "whitecap",
-  "brian",      "forehand",
+  "net",
+  "whitecap",
+  "brian",
+  "forehand",
 ];
 // All four must be FRONT-plane panels: depth is baked into the files now, so a
 // "lit" cell drawn from a pre-darkened mid or back file would still be dim.
@@ -206,18 +220,18 @@ const MOSAIC_GRID_LIT = new Set(["net", "whitecap", "brian", "forehand"]);
 // from a matte of each finished panel — the top of the subject plus a little
 // headroom — so the window lands on the face rather than the torso.
 const MOSAIC_GRID_POS = {
-  "dink": 5,
+  dink: 5,
   "smile-close": 7,
-  "brian": 19,
-  "forehand": 0,
+  brian: 19,
+  forehand: 0,
   // net is the same 3:2 landscape shape as forehand and crops the same way.
   // x is the live axis here (see the emit): 38 walks the window left, onto the
   // chair at the edge of the frame. Alec, 2026-09-11 — the whole point of the
   // pass is that the chairs read.
-  "net": [38, 0],
+  net: [38, 0],
   // 50 = centre. whitecap's 7 was pinning him to the TOP of his own frame at
   // iPad width, which spent the cell on the blurred banner above his head.
-  "whitecap": 50
+  whitecap: 50,
 };
 
 // VERTICAL FRAMING, and why object-position could not do this job.
@@ -314,10 +328,10 @@ const MOSAIC_GRID_POS = {
 // paid for by RAISING the left man rather than LOWERING the right one, because
 // lowering forehand is the one move that hides the wheel. Measured after: eye
 // lines ~20px apart at 390 — level to the eye, and both chairs visible.
-const MOSAIC_GRID_LIFT = { "whitecap": 42, "brian": 14, "forehand": 0 };
+const MOSAIC_GRID_LIFT = { whitecap: 42, brian: 14, forehand: 0 };
 
 const BANNER_PHONE = {
-  "bn-dink":  { x: -6, w: 58, h: 100 },
+  "bn-dink": { x: -6, w: 58, h: 100 },
   "bn-smile": { x: 48, w: 58, h: 86 },
 };
 
@@ -348,14 +362,16 @@ const boxRule = (p, meta, q, mode) => {
 const panelHtml = (p, i) => {
   const meta = PANELS[p.n];
   if (!meta) throw new Error(`panel "${p.n}" is not in panels.json`);
-  return `      <figure class="mw-p p-${p.n} d${p.d}" style="--r:${p.r || 0}deg; --d:${60 + i * 45}ms;">` +
+  return (
+    `      <figure class="mw-p p-${p.n} d${p.d}" style="--r:${p.r || 0}deg; --d:${60 + i * 45}ms;">` +
     `<img src="/images/hero/panels/${hashed(`${p.n}.webp`)}" width="${meta.w}" height="${meta.h}" alt="" ` +
     // Priority follows WHAT IS ACTUALLY SEEN FIRST, not depth. Depth alone was a
     // safe proxy while every phone cell happened to be front-plane; the moment a
     // mid-plane panel entered the grid (whitecap, 2026-09-09) that proxy would
     // have shipped `loading="lazy"` on one of the only four images a phone
     // renders, all of them above the fold.
-    `${p.d === 3 || MOSAIC_GRID.includes(p.n) ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></figure>`;
+    `${p.d === 3 || MOSAIC_GRID.includes(p.n) ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></figure>`
+  );
 };
 
 // Wide, then narrow. The cut-over is 900px, not 640: a 768x1024 tablet is a
@@ -367,18 +383,28 @@ const panelHtml = (p, i) => {
 // honest way to thin a collage; shrinking all nineteen turns nineteen
 // photographs into nineteen smudges.
 const layoutCss = (rows, phone, mode) => {
-  const wide = rows.map((p) =>
-    `  .mw-p.p-${p.n}{ ${boxRule(p, PANELS[p.n], null, mode)} }`);
+  const wide = rows.map(
+    (p) => `  .mw-p.p-${p.n}{ ${boxRule(p, PANELS[p.n], null, mode)} }`,
+  );
 
   // The banner keeps a placed narrow layout — it is two columns and a headline,
   // which is already a grid by another name.
   if (mode === "banner") {
-    const small = rows.filter((p) => phone[p.n]).map((p) =>
-      `    .mw-p.p-${p.n}{ display:block; ${boxRule(p, PANELS[p.n], phone[p.n], mode)} }`);
-    return ["<style>", ...wide,
+    const small = rows
+      .filter((p) => phone[p.n])
+      .map(
+        (p) =>
+          `    .mw-p.p-${p.n}{ display:block; ${boxRule(p, PANELS[p.n], phone[p.n], mode)} }`,
+      );
+    return [
+      "<style>",
+      ...wide,
       "  @media (max-width:900px){",
-      "    .mw-p{ display:none; }", ...small,
-      "  }", "</style>"].join("\n");
+      "    .mw-p{ display:none; }",
+      ...small,
+      "  }",
+      "</style>",
+    ].join("\n");
   }
 
   // The mosaic goes to a grid. Every positioning property the wide layout set
@@ -386,9 +412,10 @@ const layoutCss = (rows, phone, mode) => {
   // wide rules are `.mw-p.p-dink{ width:19% }`, so a reset written as `.mw-p{
   // width:auto }` loses and the "grid" renders as nineteen tiny scattered
   // rectangles. It did. The reset therefore ships inside each cell's own rule.
-  const RESET = "position:static; left:auto; top:auto; right:auto; bottom:auto; " +
-                "width:auto; height:100%; aspect-ratio:auto; transform:none; " +
-                "border-radius:0; box-shadow:none;";
+  const RESET =
+    "position:static; left:auto; top:auto; right:auto; bottom:auto; " +
+    "width:auto; height:100%; aspect-ratio:auto; transform:none; " +
+    "border-radius:0; box-shadow:none;";
   const cells = MOSAIC_GRID.flatMap((n, i) => {
     const out = [
       `    .mw-p.p-${n}{ display:block; order:${i}; ${RESET} }`,
@@ -406,23 +433,36 @@ const layoutCss = (rows, phone, mode) => {
     // -L% is exactly the L% of extra height added above — they cancel and the
     // cell stays full. (margin-top would NOT work here: percentage margins
     // resolve against WIDTH, which on a 199x310 cell is a different number.)
-    if (L) out.push(`    .mw-p.p-${n} img{ height:${100 + Math.abs(L)}%; position:relative; top:${L > 0 ? -L : 0}%; }`);
+    if (L)
+      out.push(
+        `    .mw-p.p-${n} img{ height:${100 + Math.abs(L)}%; position:relative; top:${L > 0 ? -L : 0}%; }`,
+      );
     return out;
   });
   // the handful left at full brightness, one rule each so they out-specify the
   // blanket dim in hero-mosaic.css
-  const lit = [...MOSAIC_GRID_LIT].map((n) =>
-    `    .mw-p.p-${n} img{ filter:grayscale(1) brightness(1) contrast(1.04); }`);
-  return ["<style>", ...wide,
+  const lit = [...MOSAIC_GRID_LIT].map(
+    (n) => `    .mw-p.p-${n} img{ filter:grayscale(1) brightness(1) contrast(1.04); }`,
+  );
+  return [
+    "<style>",
+    ...wide,
     "  @media (max-width:900px){",
     "    .mw-p{ display:none; }",
-    ...cells, ...lit,
-    "  }", "</style>"].join("\n");
+    ...cells,
+    ...lit,
+    "  }",
+    "</style>",
+  ].join("\n");
 };
 
 const wall = (rows) => {
-  const at = (d) => rows.map((p, i) => [p, i]).filter(([p]) => p.d === d)
-    .map(([p, i]) => panelHtml(p, i)).join("\n");
+  const at = (d) =>
+    rows
+      .map((p, i) => [p, i])
+      .filter(([p]) => p.d === d)
+      .map(([p, i]) => panelHtml(p, i))
+      .join("\n");
   return [
     '    <div class="mw-wall" aria-hidden="true">',
     at(1),
@@ -433,7 +473,6 @@ const wall = (rows) => {
     "    </div>",
   ].join("\n");
 };
-
 
 const ATMOS = `    <div class="hs-grain"></div>
     <div class="hs-vig"></div>`;
@@ -488,20 +527,32 @@ ${layoutCss(BANNER, BANNER_PHONE, "banner")}
    who stands where is data.
    -------------------------------------------------------------------------- */
 const TEAM = [
-  { slot: "t-brian",  file: "trace-brian",  depth: 2, alt: "Brian, mid-rally with his paddle up" },
-  { slot: "t-ben",    file: "trace-ben",    depth: 2, alt: "Ben reaching wide for a shot" },
-  { slot: "t-aubrey", file: "trace-aubrey", depth: 2, alt: "Aubrey, laughing between points" },
-  { slot: "t-ryan",   file: "trace-ryan",   depth: 3, alt: "Ryan setting up a serve" },
-  { slot: "t-juan",   file: "trace-juan",   depth: 3, alt: "Juan turning into a forehand" },
+  {
+    slot: "t-brian",
+    file: "trace-brian",
+    depth: 2,
+    alt: "Brian, mid-rally with his paddle up",
+  },
+  { slot: "t-ben", file: "trace-ben", depth: 2, alt: "Ben reaching wide for a shot" },
+  {
+    slot: "t-aubrey",
+    file: "trace-aubrey",
+    depth: 2,
+    alt: "Aubrey, laughing between points",
+  },
+  { slot: "t-ryan", file: "trace-ryan", depth: 3, alt: "Ryan setting up a serve" },
+  { slot: "t-juan", file: "trace-juan", depth: 3, alt: "Juan turning into a forehand" },
 ];
 
 const teamHtml = TEAM.map((m) => {
   const f = `${m.file}.webp`;
   const [w, h] = DIM[f];
   const front = m.depth === 3;
-  return `      <figure class="st-fig ${m.slot} k${m.depth}">` +
+  return (
+    `      <figure class="st-fig ${m.slot} k${m.depth}">` +
     `<img src="/images/hero/${f}" width="${w}" height="${h}" alt="" ` +
-    `${front ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></figure>`;
+    `${front ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></figure>`
+  );
 }).join("\n");
 
 const HERO_3 = `  <!-- 1 · HERO — the stadium banner (variant 3) -->
@@ -573,10 +624,28 @@ const HERO_KNOCKOUT = `  <!-- 1 · HERO — the knockout (variant 4) -->
 // The strip is duplicated so the marquee can translate by exactly one copy and
 // loop with no seam. aria-hidden on the whole track: it is texture, and a
 // screen reader does not need eight empty images read to it twice.
-const STRIP_COLUMNS = ["bn-brian", "bn-dink", "bn-smile", "bn-swing", "bn-grin",
-                       "bn-white", "bn-seated", "bn-reach"];
+const STRIP_COLUMNS = [
+  "bn-brian",
+  "bn-dink",
+  "bn-smile",
+  "bn-swing",
+  "bn-grin",
+  "bn-white",
+  "bn-seated",
+  "bn-reach",
+];
 const stripRun = [...STRIP_COLUMNS, ...STRIP_COLUMNS]
-  .map((n, i) => "        " + img(n, "", i < 4 ? 'fetchpriority="high" decoding="async"' : 'loading="lazy" decoding="async"'))
+  .map(
+    (n, i) =>
+      "        " +
+      img(
+        n,
+        "",
+        i < 4
+          ? 'fetchpriority="high" decoding="async"'
+          : 'loading="lazy" decoding="async"',
+      ),
+  )
   .join("\n");
 
 const HERO_STRIP = `  <!-- 1 · HERO — the moving strip (variant 5) -->
@@ -599,15 +668,38 @@ ${stripRun}
 // Eighteen cells, four of them alive. Which four is data — moving a face into
 // the light should not be a stylesheet edit.
 const GRID_CELLS = [
-  "close-dink", "laugh", "net", "smile-close", "reach", "court",
-  "toss", "dink", "grin", "brian", "paddle", "swing",
-  "serve", "whitecap", "rally", "forehand", "seated", "lobby",
+  "close-dink",
+  "laugh",
+  "net",
+  "smile-close",
+  "reach",
+  "court",
+  "toss",
+  "dink",
+  "grin",
+  "brian",
+  "paddle",
+  "swing",
+  "serve",
+  "whitecap",
+  "rally",
+  "forehand",
+  "seated",
+  "lobby",
 ];
 const GRID_LIT = new Set(["smile-close", "dink", "brian", "grin"]);
-const gridCells = GRID_CELLS.map((n, i) =>
-  `      <figure${GRID_LIT.has(n) ? ' class="on"' : ""}>` +
-  img(n, "", i < 6 ? 'fetchpriority="high" decoding="async"' : 'loading="lazy" decoding="async"') +
-  "</figure>").join("\n");
+const gridCells = GRID_CELLS.map(
+  (n, i) =>
+    `      <figure${GRID_LIT.has(n) ? ' class="on"' : ""}>` +
+    img(
+      n,
+      "",
+      i < 6
+        ? 'fetchpriority="high" decoding="async"'
+        : 'loading="lazy" decoding="async"',
+    ) +
+    "</figure>",
+).join("\n");
 
 const HERO_GRID = `  <!-- 1 · HERO — the contact sheet (variant 6) -->
   <section class="hero-spec hero-grid dark hero-var" id="heroStage" data-variant="6">
@@ -646,11 +738,11 @@ const HERO_SPLIT_ONE = `  <!-- 1 · HERO — the split (variant 7) -->
    it would mean re-typing the same markup one class apart.
    -------------------------------------------------------------------------- */
 const COURT = [
-  { slot: "f-brian",  file: "trace-brian",  depth: 1 },
-  { slot: "f-ben",    file: "trace-ben",    depth: 2 },
+  { slot: "f-brian", file: "trace-brian", depth: 1 },
+  { slot: "f-ben", file: "trace-ben", depth: 2 },
   { slot: "f-aubrey", file: "trace-aubrey", depth: 2 },
-  { slot: "f-ryan",   file: "trace-ryan",   depth: 3 },
-  { slot: "f-juan",   file: "trace-juan",   depth: 3 },
+  { slot: "f-ryan", file: "trace-ryan", depth: 3 },
+  { slot: "f-juan", file: "trace-juan", depth: 3 },
 ];
 // The front two carry a reflection: the same file again, flipped and masked in
 // CSS. It is a second <img> rather than a background because the alpha has to
@@ -658,8 +750,13 @@ const COURT = [
 // The browser fetches it once.
 const courtTeam = COURT.map((m) => {
   const front = m.depth === 3;
-  const tag = cut(m.file, front ? 'fetchpriority="high" decoding="async"' : 'loading="lazy" decoding="async"');
-  const refl = front ? `<span class="ct-refl" aria-hidden="true">${cut(m.file, 'loading="lazy" decoding="async"')}</span>` : "";
+  const tag = cut(
+    m.file,
+    front ? 'fetchpriority="high" decoding="async"' : 'loading="lazy" decoding="async"',
+  );
+  const refl = front
+    ? `<span class="ct-refl" aria-hidden="true">${cut(m.file, 'loading="lazy" decoding="async"')}</span>`
+    : "";
   return `      <figure class="ct-fig ${m.slot} c${m.depth}">${tag}${refl}</figure>`;
 }).join("\n");
 
@@ -684,17 +781,33 @@ ${courtTeam}
    team spread across a floor. Built from the same markup with one modifier
    class so the arrangement is genuinely the only variable between the links.
    -------------------------------------------------------------------------- */
-const HERO_STADIUM_PLATE = HERO_COURT
-  .replace('class="hero-spec hero-court dark hero-var" id="heroStage" data-variant="8"',
-           'class="hero-spec hero-court is-tight dark hero-var" id="heroStage" data-variant="9"')
-  .replace("<!-- 1 · HERO — the court (variant 8) -->",
-           "<!-- 1 · HERO — the stadium, on the plate (variant 9) -->");
+const HERO_STADIUM_PLATE = HERO_COURT.replace(
+  'class="hero-spec hero-court dark hero-var" id="heroStage" data-variant="8"',
+  'class="hero-spec hero-court is-tight dark hero-var" id="heroStage" data-variant="9"',
+).replace(
+  "<!-- 1 · HERO — the court (variant 8) -->",
+  "<!-- 1 · HERO — the stadium, on the plate (variant 9) -->",
+);
 
-const VARIANTS = { 1: HERO_D, 2: HERO_E, 3: HERO_FRAME, 4: HERO_KNOCKOUT,
-                   5: HERO_STRIP, 6: HERO_GRID, 7: HERO_SPLIT_ONE, 9: HERO_STADIUM_PLATE };
+const VARIANTS = {
+  1: HERO_D,
+  2: HERO_E,
+  3: HERO_FRAME,
+  4: HERO_KNOCKOUT,
+  5: HERO_STRIP,
+  6: HERO_GRID,
+  7: HERO_SPLIT_ONE,
+  9: HERO_STADIUM_PLATE,
+};
 const LABEL = {
-  1: "1 · Mosaic", 2: "2 · Banner", 3: "3 · One frame", 4: "4 · Knockout",
-  5: "5 · Strip", 6: "6 · Grid", 7: "7 · Split", 9: "9 · Stadium",
+  1: "1 · Mosaic",
+  2: "2 · Banner",
+  3: "3 · One frame",
+  4: "4 · Knockout",
+  5: "5 · Strip",
+  6: "6 · Grid",
+  7: "7 · Split",
+  9: "9 · Stadium",
 };
 
 // The stage script: entrance, depth parallax, and the live drive strip. Kept

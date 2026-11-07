@@ -8,13 +8,37 @@
 // website does not belong in the critical path of shipping this one. Run it by
 // hand when the directory's design changes:  npm run asnm:shot
 //
+// BETA (2026-10-30). Since the beta gate went up (ASNM #132), a logged-out
+// browser sees only the sign-in card, so the shots are taken signed in with a
+// beta tester's saved session (Playwright storageState, 30 days). Without one
+// this script stops rather than photographing the gate. Override the path with
+// ASNM_BETA_SESSION. The UserWay button is hidden: it floats over the cards.
+//
+// FINGERPRINTED FILENAMES (2026-11-04). public/_headers caches media for 30
+// days and says "If you DO replace an image, rename it." This script used to
+// overwrite asnm-directory.webp in place, so after the 2026-10-30 redesign
+// Alec's phone kept showing the September card design on adapttolife.org for
+// days. Each shot is now named by its content hash (asnm-directory.<hash>.webp)
+// and the name is recorded in data/asnm-shot.json, which build-asnm.mjs reads.
+// Same rule build-hero-panels.py follows for the photo band.
+//
 // Captured at 2x and downscaled, because the frame is rendered ~880px wide on a
 // laptop and a 1:1 capture is visibly soft on a retina screen.
 import { chromium } from "/home/agentos/pw/node_modules/playwright/index.mjs";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { statSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  readdirSync,
+  readFileSync,
+  renameSync,
+  statSync,
+  unlinkSync,
+  writeFileSync,
+} from "node:fs";
+import { createHash } from "node:crypto";
+import { homedir } from "node:os";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const TMP = "/tmp/asnm-shot.png";
@@ -22,7 +46,8 @@ const TMP = "/tmp/asnm-shot.png";
 // broken image rather than as "there is more below". 925 lands just under the
 // "Recently verified" subtitle: a clean seam, and the cropped first row still
 // implies the page continues.
-const W = 1440, H = 925;
+const W = 1440,
+  H = 925;
 
 // TWO CAPTURES, art-directed, the same wide/tall split this site already uses
 // for its band imagery. A 1440px desktop screenshot rendered 350px wide on a
@@ -35,29 +60,93 @@ const SHOTS = [
   // 1440 gives it about 1.4x for a retina screen; shipping the full 2x capture
   // was 203KB for detail nobody resolves. The tall shot renders ~350 CSS px on
   // a phone, so 828 is a genuine 2.4x.
-  { key: "wide", w: 1440, h: 925, dpr: 2, ow: 1440, oh: 925,
-    out: join(ROOT, "public", "images", "asnm-directory.webp") },
-  { key: "tall", w: 414,  h: 760, dpr: 3, ow: 828,  oh: 1520,
-    out: join(ROOT, "public", "images", "asnm-directory-tall.webp") },
+  {
+    key: "wide",
+    w: 1440,
+    h: 925,
+    dpr: 2,
+    ow: 1440,
+    oh: 925,
+    base: "asnm-directory",
+  },
+  {
+    key: "tall",
+    w: 414,
+    h: 760,
+    dpr: 3,
+    ow: 828,
+    oh: 1520,
+    base: "asnm-directory-tall",
+  },
 ];
-const b = await chromium.launch();
+const SESSION =
+  process.env.ASNM_BETA_SESSION ||
+  join(homedir(), ".config/agentos/asnm/prod-beta-session.json");
+if (!existsSync(SESSION)) {
+  console.error(
+    `  asnm:shot needs a beta tester session at ${SESSION} (ASNM_BETA_SESSION); not photographing the sign-in gate`,
+  );
+  process.exit(1);
+}
+// CHROME overrides the browser when the playwright module and the installed
+// headless shell drift apart (the module wants a build that is not downloaded).
+const b = await chromium.launch(
+  process.env.CHROME ? { executablePath: process.env.CHROME } : {},
+);
+const IMAGES = join(ROOT, "public", "images");
 const dims = {};
 for (const s of SHOTS) {
-  const p = await b.newPage({ viewport: { width: s.w, height: s.h }, deviceScaleFactor: s.dpr, reducedMotion: "reduce" });
-  await p.goto("https://adaptivesportsnearme.com/", { waitUntil: "load", timeout: 90000 });
+  const ctx = await b.newContext({
+    storageState: SESSION,
+    viewport: { width: s.w, height: s.h },
+    deviceScaleFactor: s.dpr,
+    reducedMotion: "reduce",
+  });
+  await ctx.addInitScript(() => {
+    const st = document.createElement("style");
+    st.textContent = ".uwy,.userway_buttons_wrapper,.uwif{display:none!important}";
+    document.addEventListener("DOMContentLoaded", () => document.head.appendChild(st));
+  });
+  const p = await ctx.newPage();
+  await p.goto("https://adaptivesportsnearme.com/", {
+    waitUntil: "load",
+    timeout: 90000,
+  });
+  if (await p.locator("#beta-login").count()) {
+    console.error(
+      "  asnm:shot: the beta session has expired (the page shows the sign-in gate); renew it, then run again",
+    );
+    process.exit(1);
+  }
   await p.evaluate(() => document.fonts.ready);
   await p.waitForTimeout(4000);
   await p.screenshot({ path: TMP, clip: { x: 0, y: 0, width: s.w, height: s.h } });
-  await p.close();
-  execFileSync("/home/agentos/.venvs/vectorize/bin/python", ["-c", `
+  await ctx.close();
+  const out = join(IMAGES, `${s.base}.new.webp`);
+  execFileSync("/home/agentos/.venvs/vectorize/bin/python", [
+    "-c",
+    `
 from PIL import Image
 im = Image.open("${TMP}").convert("RGB")
 im = im.resize((${s.ow}, ${s.oh}), Image.LANCZOS)
-im.save("${s.out}", "WEBP", quality=${s.key === "tall" ? 74 : 78}, method=6)
-`]);
-  dims[s.key] = { w: s.ow, h: s.oh };
-  console.log(`  asnm ${s.key} ${s.w}x${s.h} @${s.dpr}x -> ${(statSync(s.out).size / 1024).toFixed(1)} KB`);
+im.save("${out}", "WEBP", quality=${s.key === "tall" ? 74 : 78}, method=6)
+`,
+  ]);
+  const hash = createHash("sha256").update(readFileSync(out)).digest("hex").slice(0, 10);
+  const name = `${s.base}.${hash}.webp`;
+  // Drop earlier shots of this key (fingerprinted or the old fixed name).
+  const mine = new RegExp(`^${s.base}(\\.[0-9a-f]{10})?\\.webp$`);
+  for (const f of readdirSync(IMAGES))
+    if (mine.test(f) && f !== name) unlinkSync(join(IMAGES, f));
+  renameSync(out, join(IMAGES, name));
+  dims[s.key] = { w: s.ow, h: s.oh, src: `/images/${name}` };
+  console.log(
+    `  asnm ${s.key} ${s.w}x${s.h} @${s.dpr}x -> ${name} ${(statSync(join(IMAGES, name)).size / 1024).toFixed(1)} KB`,
+  );
 }
 await b.close();
-writeFileSync(join(ROOT, "data", "asnm-shot.json"), JSON.stringify(dims, null, 1) + "\n");
-console.log("  (dimensions recorded in data/asnm-shot.json for build-asnm.mjs)");
+writeFileSync(
+  join(ROOT, "data", "asnm-shot.json"),
+  JSON.stringify(dims, null, 1) + "\n",
+);
+console.log("  (names and dimensions recorded in data/asnm-shot.json for build-asnm.mjs)");

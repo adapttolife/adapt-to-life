@@ -34,7 +34,10 @@ import { readFileSync, readdirSync } from "node:fs";
 const ROOT = new URL("../public/", import.meta.url);
 const SKIP = new Set(["review.html", "photo-picks.html"]);
 let bad = 0;
-const fail = (page, msg) => { console.log(`  FAIL ${page.padEnd(26)} ${msg}`); bad++; };
+const fail = (page, msg) => {
+  console.log(`  FAIL ${page.padEnd(26)} ${msg}`);
+  bad++;
+};
 
 for (const file of readdirSync(ROOT).filter((f) => f.endsWith(".html"))) {
   if (SKIP.has(file) || file.startsWith("hero-")) continue;
@@ -44,19 +47,32 @@ for (const file of readdirSync(ROOT).filter((f) => f.endsWith(".html"))) {
   // Buttons are grouped by the .actions block they sit in; a group is one
   // decision offered at one moment, which is the unit these rules are about.
   for (const g of html.match(/<div class="actions[^"]*"[\s\S]*?<\/div>/g) || []) {
-    const btns = [...g.matchAll(/<a\b[^>]*href="([^"]+)"[^>]*class="([^"]*\bbtn\b[^"]*)"[^>]*>([\s\S]*?)<\/a>/g)]
-      .map((m) => ({ href: m[1], cls: m[2], text: m[3].replace(/<[^>]+>/g, "").trim() }));
+    const btns = [
+      ...g.matchAll(
+        /<a\b[^>]*href="([^"]+)"[^>]*class="([^"]*\bbtn\b[^"]*)"[^>]*>([\s\S]*?)<\/a>/g,
+      ),
+    ].map((m) => ({
+      href: m[1],
+      cls: m[2],
+      text: m[3].replace(/<[^>]+>/g, "").trim(),
+    }));
     if (!btns.length) continue;
 
     const primaries = btns.filter((b) => !/\bghost\b|\bquiet\b/.test(b.cls));
     if (primaries.length > 1)
-      fail(page, `${primaries.length} primary buttons in one group: ${primaries.map((b) => `"${b.text}"`).join(", ")}`);
+      fail(
+        page,
+        `${primaries.length} primary buttons in one group: ${primaries.map((b) => `"${b.text}"`).join(", ")}`,
+      );
 
     const seen = new Map();
     for (const b of btns) {
       const key = b.href.split("#")[0] || b.href;
       if (seen.has(key) && key !== "")
-        fail(page, `two buttons, one destination (${key}): "${seen.get(key)}" and "${b.text}"`);
+        fail(
+          page,
+          `two buttons, one destination (${key}): "${seen.get(key)}" and "${b.text}"`,
+        );
       else seen.set(key, b.text);
 
       const dest = b.href.replace(/[?#].*$/, "").replace(/\/$/, "");
@@ -70,7 +86,10 @@ for (const file of readdirSync(ROOT).filter((f) => f.endsWith(".html"))) {
     const tag = m[1];
     if (!/\bclass="[^"]*\bbtn\b/.test(tag) || !/href="#"/.test(tag)) continue;
     const id = (tag.match(/id="([^"]+)"/) || [])[1];
-    if (!id) { fail(page, `a btn has href="#" and no id, so nothing can fill it`); continue; }
+    if (!id) {
+      fail(page, `a btn has href="#" and no id, so nothing can fill it`);
+      continue;
+    }
     m[1] = id;
     // Referenced by script is the bar, not "assigned nearby". /popcorn wires
     // this button through a helper — wire(el, href) — so the assignment is
@@ -78,8 +97,7 @@ for (const file of readdirSync(ROOT).filter((f) => f.endsWith(".html"))) {
     // button dead. What actually matters is whether ANY code knows the button
     // exists. If nothing references it, the "#" is permanent.
     const refs = (html.match(new RegExp(`\\b${id}\\b`, "g")) || []).length;
-    if (refs < 2)
-      fail(page, `button #${id} has href="#" and no script references it`);
+    if (refs < 2) fail(page, `button #${id} has href="#" and no script references it`);
   }
 }
 console.log(bad ? `\n${bad} CTA problem(s).` : "\nevery button offers something real.");

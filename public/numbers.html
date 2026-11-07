@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f0e0d">
+<meta name="color-scheme" content="light only">
+<title>The Numbers | Adapt To Life</title>
+<meta name="description" content="Every number in our $48,180 goal for the year ahead, and how we got it: court time, memberships and the US Open. Plus what a sport chair costs, which insurance doesn&rsquo;t cover.">
+<link rel="canonical" href="https://adapttolife.org/numbers">
+<link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-v2-option2-32.png">
+<link rel="apple-touch-icon" href="/images/apple-touch-icon-v2-option2.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="The Numbers | Adapt To Life">
+<meta property="og:description" content="Every number in our $48,180 goal for the year ahead, and how we got it: court time, memberships and the US Open. Plus what a sport chair costs, which insurance doesn&rsquo;t cover.">
+<meta property="og:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.">
+<meta property="og:url" content="https://adapttolife.org/numbers">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Numbers | Adapt To Life">
+<meta name="twitter:description" content="Every number in our $48,180 goal for the year ahead, and how we got it: court time, memberships and the US Open. Plus what a sport chair costs, which insurance doesn&rsquo;t cover.">
+<meta name="twitter:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
+<meta name="twitter:image:alt" content="Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/site.css?v=f3c06679">
+<link rel="stylesheet" href="/css/page-header.css?v=58d2788e">
+<!-- band:vars --><style data-band-vars>:root{--pg-band-wide:url('/images/hero/panels/pg-band-2-wide.9ac73821.webp');--pg-band-tall:url('/images/hero/panels/pg-band-2-tall.f9278c2d.webp');--pg-give-wide:url('/images/hero/panels/pg-give-wide.b46beed5.webp');--pg-give-tall:url('/images/hero/panels/pg-give-tall.5cece3a5.webp');}</style>
+<script src="/js/attribution.js?v=dd7f55f9" defer></script>
+<style>
+  /* The numbers breakdown (Alec, Nov 6: "Maybe we add a button that takes them
+     to a 'numbers breakdown' page? I feel like it's getting too messy"). The
+     campaign module carries one button here; this page shows every number in
+     the goal and how we got it. The goal section is generated from
+     public/data/campaigns.json by scripts/build-module.mjs. */
+  .nb-head{ max-width:44rem; }
+  .nb-head .prose{ margin-top:1rem; }
+  /* The route (Alec, Nov 7): one line through a station per stop, in the
+     order the money goes. The stations are the house symbol tile; the line is
+     solid through this year's goal and dashed on to the next one. */
+  .nb-route{ --stn:42px; --gut:3.9rem; --gap:clamp(1rem,2vw,1.4rem); --stn-top:clamp(1.05rem,2.6vw,1.55rem); --rail:rgba(59,59,70,0.2);
+    list-style:none; margin:clamp(2rem,4vw,2.8rem) 0 0; padding:0 0 0 var(--gut); display:grid; gap:var(--gap); max-width:56rem; }
+  @media (max-width:600px){ .nb-route{ --stn:34px; --gut:2.9rem; } }
+  .nb-stop{ position:relative; }
+  .nb-stop::after{ content:""; position:absolute; left:calc(var(--gut) / -2 - 1.5px); top:calc(var(--stn-top) + var(--stn) + 6px); bottom:calc(-1 * (var(--gap) + var(--stn-top) - 6px)); width:3px; border-radius:3px; background:var(--rail); }
+  .nb-stop:last-child::after{ content:none; }
+  .nb-stop--finish::after{ background:repeating-linear-gradient(180deg, var(--rail) 0 7px, transparent 7px 13px); }
+  .nb-station{ position:absolute; z-index:1; top:var(--stn-top); left:calc((var(--gut) + var(--stn)) / -2); width:var(--stn); height:var(--stn); border-radius:12px; display:grid; place-items:center; background:var(--ink-warm); color:var(--orange); box-shadow:0 12px 28px -14px rgba(0,0,0,0.55); }
+  .nb-station .ix-svg{ width:calc(var(--stn) * 0.54); height:calc(var(--stn) * 0.54); }
+  /* where new gifts go now: a live dot on the first station */
+  .nb-stop--now .nb-station::after{ content:""; position:absolute; top:-4px; right:-4px; width:12px; height:12px; border-radius:50%; background:var(--good); box-shadow:0 0 0 3px var(--canvas, #efe8dc); }
+  .nb-station--finish{ background:var(--slate); color:var(--cream); }
+  .nb-station-flag{ width:calc(var(--stn) * 0.5); height:calc(var(--stn) * 0.5); }
+  .nb-stop--finish.is-done .nb-station--finish{ color:var(--yellow); }
+  .nb-station--next{ background:transparent; color:rgba(59,59,70,0.5); box-shadow:inset 0 0 0 2px rgba(59,59,70,0.22); }
+  .nb-part{ padding:clamp(1.2rem,3vw,1.8rem); border-radius:var(--r-xl); background:var(--paper); box-shadow:inset 0 0 0 1px rgba(59,59,70,0.1), 0 18px 40px -30px rgba(23,21,19,0.5); }
+  .nb-part-top{ display:flex; align-items:center; flex-wrap:wrap; gap:0.4rem 0.7rem; }
+  .nb-n{ font-family:var(--font-label); font-weight:800; font-size:0.75rem; letter-spacing:0.16em; color:var(--orange-ink); }
+  .nb-part-top h3{ margin:0; font-size:clamp(1.15rem,2.4vw,1.4rem); font-weight:800; letter-spacing:-0.01em; }
+  .nb-badge{ display:inline-flex; align-items:center; align-self:center; height:22px; padding:0 8px; border-radius:var(--r-sm); font-size:0.72rem; font-weight:800; background:color-mix(in srgb, var(--orange) 14%, transparent); color:var(--orange-ink); }
+  .nb-badge--quiet{ background:var(--canvas); color:var(--muted); }
+  .nb-badge--info{ background:color-mix(in srgb, var(--info) 10%, transparent); color:var(--info-ink); }
+  .nb-sum{ margin-left:auto; font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(1.5rem,3.4vw,2rem); letter-spacing:-0.03em; font-variant-numeric:tabular-nums; color:var(--orange-ink); }
+  .nb-sum small{ font-size:0.5em; font-style:normal; font-weight:700; letter-spacing:0; color:var(--muted); }
+  .nb-sum--tbd{ font-family:inherit; font-size:1rem; font-style:normal; font-weight:700; letter-spacing:0; color:var(--muted); }
+  .nb-detail{ margin:0.6rem 0 0; max-width:44rem; color:var(--ink-soft); line-height:1.5; }
+  .nb-detail a{ color:var(--ink); font-weight:700; text-decoration:underline; text-underline-offset:2px; text-decoration-color:rgba(59,59,70,0.35); }
+  .nb-lines{ list-style:none; margin:1rem 0 0; padding:0; }
+  .nb-lines li{ display:grid; grid-template-columns:minmax(0,1fr) auto auto; align-items:baseline; column-gap:1.2rem; row-gap:0.2rem; padding:0.85rem 0; border-top:1px dashed rgba(59,59,70,0.22); }
+  .nb-k{ font-weight:800; }
+  .nb-calc{ font-weight:600; font-variant-numeric:tabular-nums; color:var(--ink-soft); }
+  .nb-lines b{ min-width:5.5ch; text-align:right; font-weight:900; font-size:1.05rem; font-variant-numeric:tabular-nums; }
+  .nb-lines small{ grid-column:1 / -1; font-size:0.9rem; line-height:1.45; color:var(--muted); }
+  @media (max-width:560px){
+    .nb-lines li{ grid-template-columns:minmax(0,1fr) auto; }
+    .nb-calc{ grid-column:1 / -1; grid-row:2; }
+    .nb-lines small{ grid-row:3; }
+  }
+  .nb-total{ max-width:none; margin:0; padding:1.1rem clamp(1.2rem,3vw,1.8rem); border-radius:var(--r-xl); background:var(--slate); color:var(--cream); font-weight:800; }
+  .nb-total-top{ display:flex; justify-content:space-between; align-items:baseline; gap:1rem; margin:0; }
+  .nb-total-top > span{ line-height:1.25; }
+  /* Covered so far, in the module's colours: green gifts, blue striped court
+     time (colour plus texture), a 2px gap between them, and the dotted track
+     for a goal that has not started. */
+  .nb-prog{ margin-top:1rem; }
+  .nb-prog-top{ display:flex; align-items:center; flex-wrap:wrap; gap:0.4rem 0.6rem; font-size:0.92rem; }
+  .nb-prog-k{ font-weight:700; color:var(--ink-soft); }
+  .nb-prog-fig{ margin-left:auto; font-weight:800; font-variant-numeric:tabular-nums; }
+  .nb-track{ position:relative; display:flex; margin-top:0.5rem; height:10px; border-radius:999px; background:rgba(59,59,70,0.1); }
+  .nb-track--lg{ height:14px; margin-top:0.8rem; background:rgba(249,247,242,0.14); }
+  /* Symbols (site.css, "symbols"): the cost each part pays for in the house
+     tile, a checkered flag where each bar ends (yellow once it gets there), a
+     lock where the next goal waits, and the road's six seats. */
+  .nb-lane{ display:flex; align-items:center; gap:0.55rem; margin-top:0.5rem; }
+  .nb-lane .nb-track{ flex:1 1 auto; margin-top:0; }
+  /* How much is covered, as plain text where the bar ends (the module's
+     rule): one number, one place, in the green of money in. */
+  .nb-pct{ flex:0 0 2.8rem; text-align:right; font-size:0.92rem; font-weight:800; font-variant-numeric:tabular-nums; color:var(--good-ink); }
+  .nb-track--seats::after{ content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none; background:repeating-linear-gradient(90deg, transparent 0 calc(100% / 6 - 2px), var(--paper) calc(100% / 6 - 2px) calc(100% / 6)); }
+  /* The six seats: the athletes from the crew page, by name. */
+  .nb-crew{ list-style:none; margin:1rem 0 0; padding:0.9rem 0 0; border-top:1px dashed rgba(59,59,70,0.18); display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:0.5rem; text-align:center; }
+  .nb-crew li{ display:grid; justify-items:center; gap:0.35rem; }
+  .nb-crew .face{ --face:clamp(2.9rem,7.6vw,3.6rem); --face-bg:rgba(59,59,70,0.08); }
+  .nb-crew span{ font-family:var(--font-display); font-style:italic; font-weight:800; font-size:0.92rem; line-height:1.1; color:var(--ink); }
+  .nb-crew a{ color:inherit; text-decoration:none; border-bottom:2px solid var(--orange); }
+  @media (max-width:420px){ .nb-crew{ grid-template-columns:repeat(3,minmax(0,1fr)); row-gap:0.8rem; } }
+  .nb-fill{ display:block; height:100%; width:0; border-radius:999px; background:var(--good); transition:width 1.6s var(--ease); }
+  .nb-fill--kind{ background:repeating-linear-gradient(135deg, var(--info) 0 3px, color-mix(in srgb, var(--info) 55%, transparent) 3px 6px); }
+  .nb-total .nb-fill--kind{ background:repeating-linear-gradient(135deg, #3987e5 0 3px, color-mix(in srgb, #3987e5 55%, transparent) 3px 6px); }
+  .has-gifts .nb-fill--kind{ margin-right:2px; }
+  /* Under the bar, a ledger in the bar's order: each part with a swatch cut
+     from its segment, then so far and to go under a rule. Every amount in one
+     right-hand column, so it adds up without a calculator. */
+  .nb-ledger{ list-style:none; margin:0.85rem 0 0; padding:0; font-size:0.95rem; line-height:1.35; }
+  .nb-ledger li{ display:grid; grid-template-columns:1.3rem minmax(0,1fr) auto; column-gap:0.6rem; align-items:baseline; padding:0.28rem 0; }
+  .nb-ledger li[hidden]{ display:none; }
+  .nb-swatch{ align-self:start; height:0.55rem; margin-top:calc((1.35em - 0.55rem) / 2); border-radius:999px; background:var(--good); }
+  .nb-swatch--kind{ background:repeating-linear-gradient(135deg, #3987e5 0 3px, color-mix(in srgb, #3987e5 55%, transparent) 3px 6px); }
+  .nb-ledger-k{ font-weight:600; color:var(--cream); }
+  .nb-ledger-v{ font-weight:800; font-variant-numeric:tabular-nums; text-align:right; color:var(--cream); }
+  .nb-ledger small{ display:block; margin-top:0.1rem; font-size:0.84rem; font-weight:500; line-height:1.4; color:#cfc9bd; }
+  .nb-ledger small[hidden]{ display:none; }
+  .nb-ledger-sum .nb-ledger-k{ grid-column:1 / 3; font-weight:800; }
+  .nb-ledger .nb-ledger-so{ margin-top:0.4rem; border-top:1px solid rgba(249,247,242,0.18); padding-top:0.6rem; }
+  /* Secured money is yellow, the same win colour as the module's total. */
+  .nb-ledger-so .nb-ledger-v{ color:var(--yellow); }
+  .nb-ledger-sum:last-child .nb-ledger-k{ font-weight:600; color:#cfc9bd; }
+  @media (prefers-reduced-motion: reduce){ .nb-fill{ transition:none; } }
+  .nb-total-top b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(1.8rem,4vw,2.4rem); letter-spacing:-0.03em; font-variant-numeric:tabular-nums; color:#ff5c39; }
+  .nb-foot{ max-width:52rem; margin:1.2rem 0 0; color:var(--ink-soft); line-height:1.5; }
+  .nb-prices{ max-width:52rem; margin-top:1.4rem; }
+  .nb-chair .nb-money{ color:#ff5c39; }
+  .nb-gifts{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(1rem,3vw,2.4rem); max-width:56rem; margin-top:clamp(1.6rem,3vw,2.2rem); }
+  @media (max-width:760px){ .nb-gifts{ grid-template-columns:1fr; } }
+  .nb-gift-col h3{ margin:0 0 0.4rem; font-family:var(--font-label); font-size:0.78rem; font-weight:800; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); }
+  .nb-gift-col ul{ list-style:none; margin:0; padding:0; }
+  .nb-gift-col li{ display:grid; grid-template-columns:5.4rem 1fr; align-items:baseline; column-gap:0.8rem; row-gap:0.15rem; padding:0.8rem 0; border-top:1px solid rgba(59,59,70,0.12); }
+  /* Each amount, its arithmetic in the route's calc style, then what it is. */
+  .nb-gift-col li b{ grid-row:1 / span 2; }
+  /* How often, under every amount (Alec, Nov 7: "Should it say monthly?"). */
+  .nb-gift-col b small{ display:block; margin-top:0.35rem; font-family:var(--font-label); font-style:normal; font-size:0.64rem; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); }
+  .nb-gift-col .nb-gift-calc{ grid-column:2; font-weight:800; font-variant-numeric:tabular-nums; color:var(--ink); }
+  .nb-gift-col .nb-gift-what{ grid-column:2; font-size:0.94rem; }
+  .nb-gifts-lead{ margin-top:0.9rem; }
+  .nb-gift-col b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:1.6rem; letter-spacing:-0.03em; font-variant-numeric:tabular-nums; color:var(--orange-ink); }
+  .nb-gift-col span{ line-height:1.45; color:var(--ink-soft); }
+</style>
+</head>
+<body>
+
+<header class="nav over-dark" id="nav">
+  <div class="wrap nav-inner">
+    <a href="/" class="brand"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500.000000 457.000000" class="brand-logo" aria-hidden="true" focusable="false"><g transform="translate(0.000000,457.000000) scale(0.100000,-0.100000)"
+fill="currentColor" stroke="none">
+<path d="M2059 4548 c-14 -13 -99 -185 -198 -403 -96 -209 -238 -519 -316
+-690 -202 -440 -304 -662 -333 -725 -29 -65 -163 -358 -237 -520 -29 -63 -139
+-304 -245 -535 -291 -637 -404 -882 -445 -970 -20 -44 -56 -123 -80 -175 -53
+-118 -172 -375 -191 -414 -53 -108 -28 -116 371 -116 356 0 369 2 394 57 11
+23 190 440 524 1217 72 168 77 206 52 406 -69 554 79 859 585 1205 111 76 137
+101 165 155 20 40 233 517 330 742 23 53 45 90 56 93 20 7 59 -10 59 -26 0 -9
+208 -480 215 -488 3 -2 35 25 72 59 169 156 360 182 566 79 51 -27 51 -24 -54
+206 -134 293 -232 511 -306 675 -93 210 -35 190 -539 190 -421 0 -421 0 -445
+-22z"/>
+<path d="M3060 3404 c-127 -44 -200 -148 -200 -284 0 -358 507 -412 590 -62
+52 220 -174 420 -390 346z"/>
+<path d="M2334 2885 c-396 -102 -739 -406 -825 -732 -32 -119 -37 -419 -7
+-373 2 3 32 61 67 130 180 354 428 530 745 530 135 0 133 2 115 -107 -53 -333
+27 -498 243 -498 106 0 119 9 95 60 -36 75 -15 139 134 406 128 229 134 355
+26 476 -106 117 -372 166 -593 108z"/>
+<path fill="#FF5C39" d="M2242 2133 c-193 -421 -156 -742 101 -859 127 -58 282 -41 606 66
+403 134 502 93 711 -292 386 -708 698 -982 1176 -1030 158 -17 167 -8 53 50
+-349 178 -546 441 -794 1062 -293 734 -505 846 -1178 623 -249 -82 -337 -90
+-440 -40 -116 58 -187 202 -190 389 -2 116 -5 118 -45 31z"/>
+<path d="M1893 1869 c-616 -376 -623 -1289 -11 -1695 117 -78 206 -113 411
+-163 57 -13 236 -15 286 -2 20 6 68 17 106 26 399 93 694 425 771 869 45 256
+-59 389 -280 362 -87 -11 -104 -30 -80 -92 46 -119 16 -335 -66 -474 -199
+-338 -665 -446 -974 -226 -323 230 -382 720 -118 982 42 42 42 42 42 186 0 96
+5 163 15 201 25 97 17 99 -102 26z"/>
+</g></svg>Adapt To Life</a>
+    <nav class="nav-links">
+      <div class="nav-group">
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navOurWork">Our Work<svg class="caret" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="caret" data-style="bold"><path fill="currentColor" d="m216.49 104.49l-80 80a12 12 0 0 1-17 0l-80-80a12 12 0 0 1 17-17L128 159l71.51-71.52a12 12 0 0 1 17 17Z"/></svg></button>
+        <div class="nav-panel" id="navOurWork">
+          <a href="/hustle-and-heart"><span class="np-t">Hustle &amp; Heart Fund</span><span class="np-d">Support for equipment, training, and travel</span></a>
+          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d"><span class="tag tag--info">In beta</span> Find adaptive programs by sport and location</span></a>
+          <a href="/adapt-body-shop"><span class="np-t">Adapt Body Shop</span><span class="np-d"><span class="tag tag--neutral">Coming soon</span> Gear for the community</span></a>
+        </div>
+      </div>
+      <div class="nav-group">
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navJoin">Get Involved<svg class="caret" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="caret" data-style="bold"><path fill="currentColor" d="m216.49 104.49l-80 80a12 12 0 0 1-17 0l-80-80a12 12 0 0 1 17-17L128 159l71.51-71.52a12 12 0 0 1 17 17Z"/></svg></button>
+        <div class="nav-panel" id="navJoin">
+          <a href="/volunteer"><span class="np-t">Volunteer</span><span class="np-d">Roles to fill, and our ambassador program</span></a>
+          <a href="/sponsorship"><span class="np-t">Partners</span><span class="np-d">Our partners, and how to join them</span></a>
+          <a href="/events"><span class="np-t">Events</span><span class="np-d">Tournaments, fundraisers, and gatherings</span></a>
+        </div>
+      </div>
+      <div class="nav-group">
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navAbout">About<svg class="caret" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="caret" data-style="bold"><path fill="currentColor" d="m216.49 104.49l-80 80a12 12 0 0 1-17 0l-80-80a12 12 0 0 1 17-17L128 159l71.51-71.52a12 12 0 0 1 17 17Z"/></svg></button>
+        <div class="nav-panel" id="navAbout">
+          <a href="/promise"><span class="np-t">How Giving Works</span><span class="np-d">How gifts support athletes and the work around them</span></a>
+          <a href="/about"><span class="np-t">Our Story</span><span class="np-d">The people who built this, and why</span></a>
+        </div>
+      </div>
+      <a class="lk featured" href="/apply">Apply for support</a>
+      <a class="nav-cta" href="/donate">Donate</a>
+    </nav>
+    <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="mobile-menu">
+    <div class="wrap mwrap">
+      <span class="m-group">Our Work</span>
+      <a class="m-sub" href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
+      <a class="m-sub" href="/adaptive-sports-near-me">Adaptive Sports Near Me <span class="tag tag--info">In beta</span></a>
+      <a class="m-sub" href="/adapt-body-shop">Adapt Body Shop <span class="tag tag--neutral">Coming soon</span></a>
+      <span class="m-group">Get Involved</span>
+      <a class="m-sub" href="/volunteer">Volunteer</a>
+      <a class="m-sub" href="/sponsorship">Partners</a>
+      <a class="m-sub" href="/events">Events</a>
+      <span class="m-group">About</span>
+      <a class="m-sub" href="/promise">How Giving Works</a>
+      <a class="m-sub" href="/about">Our Story</a>
+      <a class="featured" href="/apply">Apply for support</a>
+      <a class="m-cta" href="/donate">Donate <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
+    </div>
+  </div>
+</header>
+<main>
+
+  <!-- HERO -->
+  <section class="hero dark pg-band pg-head--md">
+    <div class="wrap">
+      <span class="eyebrow reveal">The numbers breakdown</span>
+      <h1 class="serif display reveal">What it really<br><em class="italic" style="color:var(--orange)">costs.</em></h1>
+      <p class="lead sub reveal">Adaptive sports cost more at every step. Here is every number in our goal for the year ahead, and how we got it.</p>
+    </div>
+  </section>
+
+  <!-- THE GOAL, LINE BY LINE — the list is generated from campaigns.json -->
+  <section class="band" id="the-goal" aria-labelledby="nbGoalTitle">
+    <div class="wrap">
+      <div class="nb-head reveal">
+        <span class="eyebrow orange">The goal for the year ahead</span>
+        <h2 class="serif statement" id="nbGoalTitle">$48,180, <em class="italic" style="color:var(--orange)">line by line.</em></h2>
+        <p class="prose">For the year ahead: a night on court every week for 10 to 15 athletes, a year of memberships for 10 of them, and six athletes on the road to the US Open in spring 2027. One goal, funded in this order: every new gift goes to the first line until it is covered.</p>
+      </div>
+      <!-- campaign-numbers -->
+      <ol class="nb-route" aria-label="The journey: every week, then the road, then the Chicago Classic">
+        <li class="nb-stop nb-stop--now">
+          <span class="nb-station" aria-hidden="true"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="training" data-style="duotone"><g fill="currentColor"><path d="M176 128a48 48 0 1 1-48-48a48 48 0 0 1 48 48" opacity=".2"/><path d="M221.87 83.16A104.1 104.1 0 1 1 195.67 49l22.67-22.68a8 8 0 0 1 11.32 11.32l-96 96a8 8 0 0 1-11.32-11.32l27.72-27.72a40 40 0 1 0 17.87 31.09a8 8 0 1 1 16-.9a56 56 0 1 1-22.38-41.65l22.75-22.75a87.88 87.88 0 1 0 23.13 29.67a8 8 0 0 1 14.44-6.9"/></g></svg></span>
+          <div class="nb-part">
+          <div class="nb-part-top"><span class="nb-n">01</span><h3>Every week</h3><b class="nb-sum">$27,180<small> a year</small></b></div>
+          <p class="nb-detail">A year of court time and memberships for 10 athletes, so they can play every week and train to compete. Every new gift starts here.</p>
+          <div class="nb-prog" data-nb-row="year" hidden><div class="nb-prog-top"><span class="nb-prog-k">Covered so far</span><span class="nb-prog-fig" data-nb-fig="year"></span></div><div class="nb-lane"><div class="nb-track"><span class="nb-fill nb-fill--kind" data-nb-kind="year"></span><span class="nb-fill" data-nb-fill="year"></span></div><span class="nb-pct" data-nb-pct="year"></span></div></div>
+          <ul class="nb-lines" aria-label="How we got $27,180">
+            <li><span class="nb-k">Court time at ACE</span><span class="nb-calc">52 nights &times; $225</span><b>$11,700</b><small>One night a week for a year. A night is 10 to 15 athletes, and a drop-in at ACE is $15, so a night for up to 15 is $225.</small></li>
+            <li><span class="nb-k">Memberships</span><span class="nb-calc">10 athletes &times; $1,548</span><b>$15,480</b><small>A membership is $129 a month, or $1,548 a year, for unlimited sessions. It takes many sessions a week to compete in tournaments and build a ranking.</small></li>
+          </ul>
+          </div>
+        </li>
+        <li class="nb-stop">
+          <span class="nb-station" aria-hidden="true"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="travel" data-style="duotone"><g fill="currentColor"><path d="m209 81l-33 31l32 88l-24 24l-48-72l-24 24v24l-24 24l-16-40l-40-16l24-24h24l24-24l-72-48l24-24l88 32l31-33a24 24 0 0 1 34 34" opacity=".2"/><path d="m185.33 114.21l29.14-27.43l.17-.16a32 32 0 0 0-45.26-45.26l-.16.17l-27.43 29.14l-83-30.2a8 8 0 0 0-8.39 1.86l-24 24a8 8 0 0 0 1.22 12.31l63.89 42.59L76.69 136H56a8 8 0 0 0-5.65 2.34l-24 24A8 8 0 0 0 29 175.42l36.82 14.73l14.7 36.75l.06.16a8 8 0 0 0 13.18 2.47l23.87-23.88A8 8 0 0 0 120 200v-20.69l14.76-14.76l42.59 63.89a8 8 0 0 0 12.31 1.22l24-24a8 8 0 0 0 1.86-8.39Zm-.07 97.23l-42.59-63.89a8 8 0 0 0-5.87-3.55a7 7 0 0 0-.79 0a8 8 0 0 0-5.66 2.34l-24 24A8 8 0 0 0 104 176v20.69l-13.07 13.07L79.43 181a8 8 0 0 0-4.43-4.43l-28.74-11.5L59.32 152H80a8 8 0 0 0 5.66-2.34l24-24a8 8 0 0 0-1.22-12.32l-63.88-42.6l13.5-13.49l83.22 30.26a8 8 0 0 0 8.56-2l30.94-32.88a16 16 0 0 1 22.62 22.59l-32.87 30.94a8 8 0 0 0-2 8.56l30.26 83.22Z"/></g></svg></span>
+          <div class="nb-part">
+          <div class="nb-part-top"><span class="nb-n">02</span><h3>The Road to the US Open</h3><b class="nb-sum">$21,000</b></div>
+          <p class="nb-detail">Tournaments through the year to build rankings, then Naples in spring 2027. The US Open picks players by lottery, so nothing is guaranteed. Money raised for the road earlier, the popcorn drive included, stays on the road. <a href="/send-6">See the road</a></p>
+          <div class="nb-prog" data-nb-row="send-6" hidden><div class="nb-prog-top"><span class="nb-prog-k">Covered so far</span><span class="nb-prog-fig" data-nb-fig="send-6"></span></div><div class="nb-lane"><div class="nb-track nb-track--seats"><span class="nb-fill nb-fill--kind" data-nb-kind="send-6"></span><span class="nb-fill" data-nb-fill="send-6"></span></div><span class="nb-pct" data-nb-pct="send-6"></span></div></div>
+          <ul class="nb-lines" aria-label="How we got $21,000">
+            <li><span class="nb-k">The US Open</span><span class="nb-calc">6 athletes &times; about $3,500</span><b>$21,000</b><small>What it has cost each athlete the last couple of years: entry fees, travel and an accessible room in Naples.</small></li>
+          </ul>
+          <ul class="nb-crew" aria-label="The six seats"><li><i class="face" style="--i:0" title="Juan"></i><span><a href="/juan">Juan</a></span></li><li><i class="face" style="--i:1" title="Brian"></i><span>Brian</span></li><li><i class="face" style="--i:2" title="Bob"></i><span>Bob</span></li><li><i class="face" style="--i:3" title="Robby"></i><span>Robby</span></li><li><i class="face" style="--i:4" title="Ken"></i><span>Ken</span></li><li><i class="face" style="--i:5" title="Amanda"></i><span>Amanda</span></li></ul>
+          </div>
+        </li>
+        <li class="nb-stop nb-stop--finish">
+          <span class="nb-station nb-station--finish" aria-hidden="true"><i class="sym sym--finished nb-station-flag" aria-hidden="true"></i></span>
+          <div class="nb-total"><p class="nb-total-top"><span>Every week + the road</span><b>$48,180</b></p><div class="nb-total-prog" data-nb-total hidden><div class="nb-track nb-track--lg"><span class="nb-fill nb-fill--kind" data-nb-kind="total"></span><span class="nb-fill" data-nb-fill="total"></span></div><ul class="nb-ledger"><li data-nb-part="kind" hidden><i class="nb-swatch nb-swatch--kind" aria-hidden="true"></i><span class="nb-ledger-k">Court time<small>From a partner club</small></span><span class="nb-ledger-v" data-nb-sum="kind"></span></li><li><i class="nb-swatch" aria-hidden="true"></i><span class="nb-ledger-k">Gifts<small class="nb-people" data-nb-people hidden>From <span data-nb-donors></span> online and 83 popcorn supporters</small></span><span class="nb-ledger-v" data-nb-sum="gifts"></span></li><li class="nb-ledger-sum nb-ledger-so"><span class="nb-ledger-k">So far</span><span class="nb-ledger-v" data-nb-sum="so"></span></li><li class="nb-ledger-sum"><span class="nb-ledger-k">To go</span><span class="nb-ledger-v" data-nb-sum="left"></span></li></ul></div></div>
+        </li>
+        <li class="nb-stop nb-stop--next">
+          <span class="nb-station nb-station--next" aria-hidden="true"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="tournament" data-style="duotone"><g fill="currentColor"><path d="M200 48v63.1c0 39.7-31.75 72.6-71.45 72.9A72 72 0 0 1 56 112V48Z" opacity=".2"/><path d="M232 64h-24V48a8 8 0 0 0-8-8H56a8 8 0 0 0-8 8v16H24A16 16 0 0 0 8 80v16a40 40 0 0 0 40 40h3.65A80.13 80.13 0 0 0 120 191.61V216H96a8 8 0 0 0 0 16h64a8 8 0 0 0 0-16h-24v-24.42c31.94-3.23 58.44-25.64 68.08-55.58H208a40 40 0 0 0 40-40V80a16 16 0 0 0-16-16M48 120a24 24 0 0 1-24-24V80h24v32q0 4 .39 8Zm144-8.9c0 35.52-29 64.64-64 64.9a64 64 0 0 1-64-64V56h128ZM232 96a24 24 0 0 1-24 24h-.5a82 82 0 0 0 .5-8.9V80h24Z"/></g></svg></span>
+          <div class="nb-part nb-part--next">
+          <div class="nb-part-top"><span class="nb-n">03</span><h3>The Chicago Classic</h3><span class="nb-badge nb-badge--info"><i class="sym sym--goal" aria-hidden="true"></i>Next goal</span><b class="nb-sum nb-sum--tbd">Date to come</b></div>
+          <p class="nb-detail">Our goal: free registration, transportation and hotels for every athlete. It joins the goal once it has a date and a budget. <a href="/chicago-classic">See the Classic</a></p>
+          </div>
+        </li>
+      </ol>
+      <!-- /campaign-numbers -->
+      <p class="prose nb-prices reveal">These are ACE&rsquo;s regular prices. We plan at regular rates, so the program doesn&rsquo;t depend on a discount. When a club gives more, it helps more athletes get on court. <a class="textlink" href="/sponsorship#clubs" style="font:inherit;letter-spacing:inherit;">How we partner</a></p>
+      <p class="nb-foot">Every gift goes to the Hustle &amp; Heart Fund, and we pay clubs and vendors directly. <a class="textlink" href="/promise">How Giving Works</a></p>
+    </div>
+  </section>
+
+  <!-- NOT IN THE GOAL -->
+  <section class="dark band-lg nb-chair" aria-labelledby="nbChairTitle">
+    <div class="wrap reading">
+      <span class="eyebrow orange reveal">Not in the goal</span>
+      <h2 class="serif statement reveal" id="nbChairTitle" style="margin-top:0.9rem;">A sport chair: <em class="italic nb-money">$4,000 to $6,000.</em></h2>
+      <p class="prose reveal" style="margin-top:1.2rem;">Insurance doesn&rsquo;t cover sport wheelchairs. Most of the athletes we support have one. When one needs a chair, we raise for that athlete, outside this goal.</p>
+    </div>
+  </section>
+
+  <!-- WHAT A GIFT DOES — every amount on /donate (and the campaign card),
+       with the arithmetic behind it. /donate says what a gift does; this
+       says how we got the number. Same amounts, same order: Monthly first. -->
+  <section class="band tint" id="gifts" aria-labelledby="nbGiftTitle">
+    <div class="wrap">
+      <div class="nb-head reveal">
+        <span class="eyebrow orange">What a gift does</span>
+        <h2 class="serif statement" id="nbGiftTitle">The same math, <em class="italic" style="color:var(--orange)">gift by gift.</em></h2>
+        <p class="prose nb-gifts-lead">Every amount on the <a class="textlink" href="/donate" style="font:inherit;letter-spacing:inherit;">donate page</a>, and how we got it.</p>
+      </div>
+      <div class="nb-gifts">
+        <div class="nb-gift-col reveal">
+          <h3>Monthly</h3>
+          <ul>
+            <li><b>$60<small>a month</small></b><span class="nb-gift-calc">4 nights a month &times; $15</span><span class="nb-gift-what">Four nights on court every month for one athlete.</span></li>
+            <li><b>$129<small>a month</small></b><span class="nb-gift-calc">1 membership a month</span><span class="nb-gift-what">Unlimited sessions every month for one athlete to compete.</span></li>
+            <li><b>$900<small>a month</small></b><span class="nb-gift-calc">4 nights a month &times; $225</span><span class="nb-gift-what">Four nights on court every month for up to 15 athletes.</span></li>
+          </ul>
+        </div>
+        <div class="nb-gift-col reveal">
+          <h3>One time</h3>
+          <ul>
+            <li><b>$15<small>one time</small></b><span class="nb-gift-calc">1 night &times; $15</span><span class="nb-gift-what">One night on court for one athlete.</span></li>
+            <li><b>$225<small>one time</small></b><span class="nb-gift-calc">15 athletes &times; $15</span><span class="nb-gift-what">One night on court for up to 15 athletes.</span></li>
+            <li><b>$1,548<small>one time</small></b><span class="nb-gift-calc">12 months &times; $129</span><span class="nb-gift-what">A year of unlimited sessions for one athlete.</span></li>
+            <li><b>$3,500<small>one time</small></b><span class="nb-gift-calc">what recent US Opens cost</span><span class="nb-gift-what">About one athlete&rsquo;s US Open: entry, travel and a room.</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHERE IT STANDS — the live module closes the page -->
+  <!-- campaign-module {"id":"campaign","theme":"dark","athlete":"robby","numbers":false,"rows":false} -->
+  <section class="cm" id="campaign" data-cm data-theme="dark" aria-labelledby="campaign-title">
+      <div class="cm-bg" aria-hidden="true" style="--ghost:url(/images/pickleball/ghost/robby-gray.webp);--ghost-ar:462/640"></div>
+      <div class="cm-wrap">
+        <div class="cm-head">
+          <p class="cm-status"><span class="cm-dot" aria-hidden="true"></span>Raising now<span class="cm-status-sep" aria-hidden="true"></span>Chicago Pickleball: Wheelie Big Dills</p>
+          <h2 class="cm-h" id="campaign-title">Every week on court. <em>Next stop, Naples.</em></h2>
+          <p class="cm-lede">Building the best wheelchair pickleball in the Chicago area, maybe the country.</p>
+        </div>
+        <div class="cm-card">
+          <p class="cm-hero"><b data-cm-total>$48,180</b><span data-cm-sub>our goal for the year ahead</span></p>
+          <div class="cm-give" data-give>
+            <div class="cm-seg" role="radiogroup" aria-label="How often">
+              <button type="button" role="radio" aria-checked="true" data-freq="monthly">Monthly</button>
+              <button type="button" role="radio" aria-checked="false" data-freq="once">One time</button>
+            </div>
+            <div class="cm-amts is-3" role="radiogroup" aria-label="Amount" data-amts>
+              <button type="button" role="radio" aria-checked="false" data-a="60" aria-label="$60 a month">$60</button>
+              <button type="button" role="radio" aria-checked="true" data-a="129" aria-label="$129 a month">$129</button>
+              <button type="button" role="radio" aria-checked="false" data-a="900" aria-label="$900 a month">$900</button>
+            </div>
+            <p class="cm-impact" data-impact aria-live="polite">Unlimited sessions every month for one athlete to compete.</p>
+          </div>
+          <a class="cm-btn btn" href="/donate?amount=129&amp;frequency=monthly" data-give-link>Donate</a>
+          <p class="cm-trust"><span>Tax-deductible</span><span>Secure checkout by Givebutter</span></p>
+        </div>
+      </div>
+    </section>
+  <!-- /campaign-module -->
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="brandcol">
+        <a href="/" class="brand"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500.000000 457.000000" class="brand-logo" aria-hidden="true" focusable="false"><g transform="translate(0.000000,457.000000) scale(0.100000,-0.100000)"
+fill="currentColor" stroke="none">
+<path d="M2059 4548 c-14 -13 -99 -185 -198 -403 -96 -209 -238 -519 -316
+-690 -202 -440 -304 -662 -333 -725 -29 -65 -163 -358 -237 -520 -29 -63 -139
+-304 -245 -535 -291 -637 -404 -882 -445 -970 -20 -44 -56 -123 -80 -175 -53
+-118 -172 -375 -191 -414 -53 -108 -28 -116 371 -116 356 0 369 2 394 57 11
+23 190 440 524 1217 72 168 77 206 52 406 -69 554 79 859 585 1205 111 76 137
+101 165 155 20 40 233 517 330 742 23 53 45 90 56 93 20 7 59 -10 59 -26 0 -9
+208 -480 215 -488 3 -2 35 25 72 59 169 156 360 182 566 79 51 -27 51 -24 -54
+206 -134 293 -232 511 -306 675 -93 210 -35 190 -539 190 -421 0 -421 0 -445
+-22z"/>
+<path d="M3060 3404 c-127 -44 -200 -148 -200 -284 0 -358 507 -412 590 -62
+52 220 -174 420 -390 346z"/>
+<path d="M2334 2885 c-396 -102 -739 -406 -825 -732 -32 -119 -37 -419 -7
+-373 2 3 32 61 67 130 180 354 428 530 745 530 135 0 133 2 115 -107 -53 -333
+27 -498 243 -498 106 0 119 9 95 60 -36 75 -15 139 134 406 128 229 134 355
+26 476 -106 117 -372 166 -593 108z"/>
+<path fill="#FF5C39" d="M2242 2133 c-193 -421 -156 -742 101 -859 127 -58 282 -41 606 66
+403 134 502 93 711 -292 386 -708 698 -982 1176 -1030 158 -17 167 -8 53 50
+-349 178 -546 441 -794 1062 -293 734 -505 846 -1178 623 -249 -82 -337 -90
+-440 -40 -116 58 -187 202 -190 389 -2 116 -5 118 -45 31z"/>
+<path d="M1893 1869 c-616 -376 -623 -1289 -11 -1695 117 -78 206 -113 411
+-163 57 -13 236 -15 286 -2 20 6 68 17 106 26 399 93 694 425 771 869 45 256
+-59 389 -280 362 -87 -11 -104 -30 -80 -92 46 -119 16 -335 -66 -474 -199
+-338 -665 -446 -974 -226 -323 230 -382 720 -118 982 42 42 42 42 42 186 0 96
+5 163 15 201 25 97 17 99 -102 26z"/>
+</g></svg>Adapt To Life</a>
+        <p class="tagline">Your place in adaptive sports.</p>
+        <form class="foot-sub js-subscribe" data-source="footer" novalidate>
+          <label class="foot-sub-label" for="footEm">Follow the work</label>
+          <div class="foot-sub-row">
+            <input class="foot-sub-input" id="footEm" name="em" type="email" autocomplete="email" placeholder="you@example.com" aria-label="Your email">
+            <button class="foot-sub-btn" type="submit" aria-label="Join the list"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></button>
+          </div>
+          <input type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only"></div>
+          <p class="foot-sub-msg" role="status" aria-live="polite"></p>
+        </form>
+        <div class="foot-follow">
+          <span class="foot-sub-label">Follow us</span>
+          <div class="social">
+        <a href="https://www.instagram.com/adapt_to_life_org/" aria-label="Adapt To Life on Instagram" target="_blank" rel="me noopener noreferrer"><svg class="ix-svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false" data-logo="instagram"><path fill="currentColor" d="M7.03.084c-1.277.06-2.149.264-2.91.563a5.9 5.9 0 0 0-2.124 1.388a5.9 5.9 0 0 0-1.38 2.127C.321 4.926.12 5.8.064 7.076s-.069 1.688-.063 4.947s.021 3.667.083 4.947c.061 1.277.264 2.149.563 2.911c.308.789.72 1.457 1.388 2.123a5.9 5.9 0 0 0 2.129 1.38c.763.295 1.636.496 2.913.552c1.278.056 1.689.069 4.947.063s3.668-.021 4.947-.082c1.28-.06 2.147-.265 2.91-.563a5.9 5.9 0 0 0 2.123-1.388a5.9 5.9 0 0 0 1.38-2.129c.295-.763.496-1.636.551-2.912c.056-1.28.07-1.69.063-4.948c-.006-3.258-.02-3.667-.081-4.947c-.06-1.28-.264-2.148-.564-2.911a5.9 5.9 0 0 0-1.387-2.123a5.9 5.9 0 0 0-2.128-1.38c-.764-.294-1.636-.496-2.914-.55C15.647.009 15.236-.006 11.977 0S8.31.021 7.03.084m.14 21.693c-1.17-.05-1.805-.245-2.228-.408a3.7 3.7 0 0 1-1.382-.895a3.7 3.7 0 0 1-.9-1.378c-.165-.423-.363-1.058-.417-2.228c-.06-1.264-.072-1.644-.08-4.848c-.006-3.204.006-3.583.061-4.848c.05-1.169.246-1.805.408-2.228c.216-.561.477-.96.895-1.382a3.7 3.7 0 0 1 1.379-.9c.423-.165 1.057-.361 2.227-.417c1.265-.06 1.644-.072 4.848-.08c3.203-.006 3.583.006 4.85.062c1.168.05 1.804.244 2.227.408c.56.216.96.475 1.382.895s.681.817.9 1.378c.165.422.362 1.056.417 2.227c.06 1.265.074 1.645.08 4.848c.005 3.203-.006 3.583-.061 4.848c-.051 1.17-.245 1.805-.408 2.23c-.216.56-.477.96-.896 1.38a3.7 3.7 0 0 1-1.378.9c-.422.165-1.058.362-2.226.418c-1.266.06-1.645.072-4.85.079s-3.582-.006-4.848-.06m9.783-16.192a1.44 1.44 0 1 0 1.437-1.442a1.44 1.44 0 0 0-1.437 1.442M5.839 12.012a6.161 6.161 0 1 0 12.323-.024a6.162 6.162 0 0 0-12.323.024M8 12.008A4 4 0 1 1 12.008 16A4 4 0 0 1 8 12.008"/></svg></a>
+        <a href="https://www.facebook.com/profile.php?id=61592619668321" aria-label="Adapt To Life on Facebook" target="_blank" rel="me noopener noreferrer"><svg class="ix-svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false" data-logo="facebook"><path fill="currentColor" d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978c.401 0 .955.042 1.468.103a9 9 0 0 1 1.141.195v3.325a9 9 0 0 0-.653-.036a27 27 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.7 1.7 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103l-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647"/></svg></a>
+      </div>
+        </div>
+        <p class="legal">Adapt To Life is a recognized 501(c)(3) nonprofit organization. Donations are tax deductible to the extent allowed by law. EIN 41-3213344.</p>
+      </div>
+      <div class="col">
+        <h2>Organization</h2>
+        <a href="/about">Our Story</a>
+        <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
+        <a href="/tim">Tim&rsquo;s Story</a>
+        <a href="/karen">Karen&rsquo;s Story</a>
+        <a href="/juan">Juan&rsquo;s Story</a>
+        <a href="/adaptive-sports-near-me">Adaptive Sports Near Me <span class="tag tag--info">In beta</span></a>
+        <a href="/adapt-body-shop">Adapt Body Shop <span class="tag tag--neutral">Coming soon</span></a>
+                <a href="/roadmap">Roadmap</a>
+      </div>
+      <div class="col">
+        <h2>Get involved</h2>
+        <a href="/donate">Donate</a>
+        <a href="/promise">How Giving Works</a>
+        <a href="/volunteer">Volunteer</a>
+        <a href="/ambassadors">Ambassadors</a>
+        <a href="/sponsorship">Become a partner</a>
+        <a href="/events">Events</a>
+        <a href="/social">Social</a>
+        <a href="/apply">Apply for support</a>
+        <a href="https://sign.adapttolife.org/waiver?source=atl">Photo and media release</a>
+        <a href="/subscribe">Join the list</a>
+        <a href="/contact">Contact</a>
+        <a href="mailto:hello@adapttolife.org">hello@adapttolife.org</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Adapt To Life</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var toggles = document.querySelectorAll('.nav-toggle');
+    function closeAll(except){
+      toggles.forEach(function(t){
+        if (t === except) return;
+        t.setAttribute('aria-expanded','false');
+        var pnl = document.getElementById(t.getAttribute('aria-controls'));
+        if (pnl) pnl.classList.remove('open');
+      });
+    }
+    toggles.forEach(function(t){
+      var panel = document.getElementById(t.getAttribute('aria-controls'));
+      t.addEventListener('click', function(e){
+        e.stopPropagation();
+        var open = t.getAttribute('aria-expanded') === 'true';
+        closeAll(t);
+        t.setAttribute('aria-expanded', open ? 'false' : 'true');
+        if (panel) panel.classList.toggle('open', !open);
+      });
+    });
+    document.addEventListener('click', function(){ closeAll(null); });
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape') closeAll(null);
+    });
+  })();
+  (function(){
+    var nav = document.getElementById('nav');
+    var menuBtn = document.getElementById('menuBtn');
+    menuBtn.addEventListener('click', function(){
+      var open = nav.classList.toggle('open');
+      menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    nav.querySelectorAll('.mobile-menu a').forEach(function(a){
+      a.addEventListener('click', function(){ nav.classList.remove('open'); menuBtn.setAttribute('aria-expanded','false'); });
+    });
+    var onScroll = function(){ if(window.scrollY > 8){ nav.classList.add('scrolled'); } else { nav.classList.remove('scrolled'); } };
+    window.addEventListener('scroll', onScroll, { passive:true });
+    onScroll();
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var reveals = document.querySelectorAll('.reveal');
+    if(reduce || !('IntersectionObserver' in window)){
+      reveals.forEach(function(el){ el.classList.add('in'); });
+    } else {
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+      }, { threshold:0.12, rootMargin:'0px 0px -8% 0px' });
+      reveals.forEach(function(el){ io.observe(el); });
+      window.addEventListener('load', function(){
+        document.querySelectorAll('.hero .reveal').forEach(function(el, i){
+          setTimeout(function(){ el.classList.add('in'); }, 60 + i*70);
+        });
+      });
+    }
+  })();
+</script>
+<script src="/js/campaigns.js?v=0cb1b850"></script>
+<script>window.ATLCampaigns.module();</script>
+<script src="/js/subscribe.js?v=7efaf550" defer></script>
+<script src="/js/turnstile-lazy.js?v=12e9b811" defer></script>
+</body>
+</html>

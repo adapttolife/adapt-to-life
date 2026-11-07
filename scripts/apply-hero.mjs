@@ -17,11 +17,21 @@
 // at /hero-N and what ships are the same bytes.
 import { readFileSync, writeFileSync } from "node:fs";
 import { versionHtml, unversionHtml } from "./version-assets.mjs";
-import { VARIANTS, LABEL, STAGE_JS, ROOT, HERO_START, HERO_END, sheetFor } from "./lib/heroes.mjs";
+import {
+  VARIANTS,
+  LABEL,
+  STAGE_JS,
+  ROOT,
+  HERO_START,
+  HERO_END,
+  sheetFor,
+} from "./lib/heroes.mjs";
 
 const key = String(process.argv[2] || "").trim();
 if (!VARIANTS[key]) {
-  console.error(`usage: node scripts/apply-hero.mjs <${Object.keys(VARIANTS).join("|")}>`);
+  console.error(
+    `usage: node scripts/apply-hero.mjs <${Object.keys(VARIANTS).join("|")}>`,
+  );
   process.exit(1);
 }
 
@@ -35,17 +45,22 @@ if (a < 0 || b < 0) throw new Error("hero markers not found in index.html");
 html = html.slice(0, a) + VARIANTS[key] + html.slice(b);
 
 // 2 · the stylesheet. Marked so re-running swaps it instead of stacking.
-const SHEET_RE = /\n<!-- hero:sheet -->\n<link rel="stylesheet" href="\/css\/hero-[a-z]+\.css">/;
+const SHEET_RE =
+  /\n<!-- hero:sheet -->\n<link rel="stylesheet" href="\/css\/hero-[a-z]+\.css">/;
 const sheet = `\n<!-- hero:sheet -->\n<link rel="stylesheet" href="/css/${sheetFor(key)}.css">`;
 html = SHEET_RE.test(html)
   ? html.replace(SHEET_RE, sheet)
-  : html.replace('<link rel="stylesheet" href="/css/site.css">',
-                 `<link rel="stylesheet" href="/css/site.css">${sheet}`);
+  : html.replace(
+      '<link rel="stylesheet" href="/css/site.css">',
+      `<link rel="stylesheet" href="/css/site.css">${sheet}`,
+    );
 
 // 3 · the stage script, same marker discipline
 const JS_RE = /\n<!-- hero:script -->[\s\S]*?<!-- \/hero:script -->/;
 const js = `\n<!-- hero:script -->${STAGE_JS}<!-- /hero:script -->`;
-html = JS_RE.test(html) ? html.replace(JS_RE, js) : html.replace("</body>", `${js}\n</body>`);
+html = JS_RE.test(html)
+  ? html.replace(JS_RE, js)
+  : html.replace("</body>", `${js}\n</body>`);
 
 writeFileSync(FILE, versionHtml(html));
 console.log(`public/index.html now carries ${LABEL[key]} (${sheetFor(key)}.css)`);

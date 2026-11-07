@@ -7,14 +7,21 @@ import { join } from "node:path";
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const PUBLIC = join(ROOT, "public");
 const CORAL = "#FF5C39";
-const INK = "#1A1A1A";
+// Laura's black (Brand Standards, Canonical Working Reference: locked
+// 2026-09-09, "The correct hex code for the black is #3B3B46"). It is the ink in
+// brand/identity/atl-primary.svg. #1A1A1A was the stand-in until the Nov 2026
+// design refresh moved the site onto it.
+const INK = "#3B3B46";
 
-async function filesUnder(dir, extensions = new Set([".html", ".css", ".js", ".mjs", ".svg"])) {
+async function filesUnder(
+  dir,
+  extensions = new Set([".html", ".css", ".js", ".mjs", ".svg"]),
+) {
   const files = [];
   for (const entry of await readdir(dir, { withFileTypes: true })) {
     if ([".git", ".wrangler", "node_modules"].includes(entry.name)) continue;
     const path = join(dir, entry.name);
-    if (entry.isDirectory()) files.push(...await filesUnder(path, extensions));
+    if (entry.isDirectory()) files.push(...(await filesUnder(path, extensions)));
     else if ([...extensions].some((ext) => entry.name.endsWith(ext))) files.push(path);
   }
   return files;
@@ -22,17 +29,34 @@ async function filesUnder(dir, extensions = new Set([".html", ".css", ".js", ".m
 
 test("Option 2 is the canonical public brand palette", async () => {
   const css = await readFile(join(PUBLIC, "css/site.css"), "utf8");
-  assert.match(css, /--orange:#FF5C39\b/, "primary accent must match the vector PDF exactly");
-  assert.match(css, /--ink:#1A1A1A\b/, "primary ink must match the vector PDF exactly");
+  assert.match(
+    css,
+    /--orange:\s*#FF5C39\b/i,
+    "primary accent must match the vector PDF exactly",
+  );
+  assert.match(
+    css,
+    /--ink:\s*#3B3B46\b/i,
+    "primary ink must match the vector PDF exactly",
+  );
 
   for (const path of await filesUnder(ROOT)) {
     const relative = path.slice(ROOT.length).replaceAll("\\", "/");
     // Historical long-cached assets remain byte-identical by policy. Tests also
     // name the retired values explicitly so regressions can reject them.
-    if (relative.startsWith("test/") || relative.startsWith("public/images/") || relative.startsWith("brand/") || relative.startsWith("docs/")) continue;
+    if (
+      relative.startsWith("test/") ||
+      relative.startsWith("public/images/") ||
+      relative.startsWith("brand/") ||
+      relative.startsWith("docs/")
+    )
+      continue;
     const text = await readFile(path, "utf8");
     assert.ok(!text.includes("#E8572A"), `${relative} retains the retired site orange`);
-    assert.ok(!text.includes("rgba(232,87,42"), `${relative} retains retired orange RGB channels`);
+    assert.ok(
+      !text.includes("rgba(232,87,42"),
+      `${relative} retains retired orange RGB channels`,
+    );
   }
 });
 
@@ -44,8 +68,14 @@ test("every public monogram renders the Option 2 coral gesture", async () => {
     const marks = html.match(/<svg[^>]*class="brand-logo"[\s\S]*?<\/svg>/g) ?? [];
     assert.equal(marks.length, 2, `${name} should have a header and footer monogram`);
     for (const mark of marks) {
-      assert.ok(mark.includes('fill="currentColor"'), `${name} needs context-aware ink`);
-      assert.ok(mark.includes(`fill="${CORAL}"`), `${name} needs the Option 2 coral gesture`);
+      assert.ok(
+        mark.includes('fill="currentColor"'),
+        `${name} needs context-aware ink`,
+      );
+      assert.ok(
+        mark.includes(`fill="${CORAL}"`),
+        `${name} needs the Option 2 coral gesture`,
+      );
     }
   }
 });
@@ -54,16 +84,27 @@ test("browser and social metadata use cache-safe Option 2 asset paths", async ()
   const pages = await filesUnder(PUBLIC, new Set([".html"]));
   for (const path of pages) {
     const html = await readFile(path, "utf8");
-    if (html.includes('rel="icon"')) assert.ok(html.includes('/images/favicon-v2-option2.svg'), `${path.slice(PUBLIC.length)} favicon is stale`);
-    for (const image of [...html.matchAll(/<meta[^>]+(?:property="og:image"|name="twitter:image")[^>]+content="([^"]+)"/g)].map((m) => m[1])) {
+    if (html.includes('rel="icon"'))
+      assert.ok(
+        html.includes("/images/favicon-v2-option2.svg"),
+        `${path.slice(PUBLIC.length)} favicon is stale`,
+      );
+    for (const image of [
+      ...html.matchAll(
+        /<meta[^>]+(?:property="og:image"|name="twitter:image")[^>]+content="([^"]+)"/g,
+      ),
+    ].map((m) => m[1])) {
       // This test is about paths being CACHE-SAFE, i.e. versioned — not about
       // one particular version. The token moved to v3-athlete on 2026-09-09
       // when the cards became photographs, and it will move again; pinning the
       // literal made "the design changed" indistinguishable from "the path went
       // stale", which is the opposite of what the name promises. The favicon
       // assertion above is untouched, because the favicon did not change.
-      assert.match(image, /\/images\/og\/[a-z0-9-]+-v\d+-[a-z0-9-]+\.jpg$/,
-        `${path.slice(PUBLIC.length)} social card is not on a cache-safe versioned path`);
+      assert.match(
+        image,
+        /\/images\/og\/[a-z0-9-]+-v\d+-[a-z0-9-]+\.jpg$/,
+        `${path.slice(PUBLIC.length)} social card is not on a cache-safe versioned path`,
+      );
     }
   }
 });

@@ -24,19 +24,27 @@
 //   node scripts/make-og.mjs home popcorn    # render named cards only
 //   node scripts/make-og.mjs --out ~/scratch/stingel/og-candidate  # candidates
 import { chromium } from "playwright";
-import { readFileSync, writeFileSync, mkdirSync, mkdtempSync, rmSync, statSync } from "node:fs";
+import {
+  readFileSync,
+  writeFileSync,
+  mkdirSync,
+  mkdtempSync,
+  rmSync,
+  statSync,
+} from "node:fs";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { ROLES } from "../data/volunteer-roles.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const W = 1200, H = 630;
-const MIN_HEADLINE_PX = 62;      // 62/4 ~= 15px in a chat thread — readable
+const W = 1200,
+  H = 630;
+const MIN_HEADLINE_PX = 62; // 62/4 ~= 15px in a chat thread — readable
 const BUDGET_BYTES = 300 * 1024; // WhatsApp-class preview ceiling
-const MIN_SEAM_CLEAR = 24;       // gap the type must leave before the photo
-const DSF = 2;                   // render scale; the card is supersampled from 2x
-const MAX_UPSCALE = 1.0;         // no upscaling, ever: it cannot be undone later
+const MIN_SEAM_CLEAR = 24; // gap the type must leave before the photo
+const DSF = 2; // render scale; the card is supersampled from 2x
+const MAX_UPSCALE = 1.0; // no upscaling, ever: it cannot be undone later
 
 // Photos are the site's own, of real athletes. `pos` is the CSS
 // background-position that keeps the subject in frame after the 1.91:1 crop.
@@ -47,13 +55,13 @@ const MAX_UPSCALE = 1.0;         // no upscaling, ever: it cannot be undone late
 // invisible at 1200px and mushy on a retina phone. assets/ is outside the
 // deployed asset directory, so the masters cost the visitor nothing.
 const PHOTOS = {
-  karen:    { file: "assets/photos/karen-waterskiing.jpg", pos: "52% 40%" },
-  coaching: { file: "assets/photos/coaching.jpg",          pos: "34% 44%" },
+  karen: { file: "assets/photos/karen-waterskiing.jpg", pos: "52% 40%" },
+  coaching: { file: "assets/photos/coaching.jpg", pos: "34% 44%" },
   // Adaptive pickleball, because the US Open in Naples is a PICKLEBALL
   // championship. Ruled out a warmer frame from the same set: another
   // organisation's logo was legible on it, and a partner's branding does not
   // belong on our card (the same call as the popcorn vendor's bag).
-  pickle:   { file: "assets/photos/pickleball-court.jpg",    pos: "27% 58%" },
+  pickle: { file: "assets/photos/pickleball-court.jpg", pos: "27% 58%" },
   // ---- the wall, at card size (added 2026-09-09) -------------------------
   // The same 45MP frames the homepage wall is built from, so a share card and
   // the page it opens are visibly the same shoot. `pos` is VERTICAL-ONLY here
@@ -68,18 +76,45 @@ const PHOTOS = {
   // cover, which enlarges the subject AND opens horizontal slack so `pos` can
   // place a face clear of the type. The resolution gate has room to spare: even
   // 220% uses about half the master's height, so none of this upscales.
-  "paddle-portrait": { file: "assets/photos/paddle-portrait.jpg", pos: "44% 36%", zoom: "auto 150%" },
-  "chair-drive":     { file: "assets/photos/chair-drive.jpg",     pos: "62% 34%", zoom: "auto 145%" },
+  "paddle-portrait": {
+    file: "assets/photos/paddle-portrait.jpg",
+    pos: "44% 36%",
+    zoom: "auto 150%",
+  },
+  "chair-drive": {
+    file: "assets/photos/chair-drive.jpg",
+    pos: "62% 34%",
+    zoom: "auto 145%",
+  },
   // 190% took her head off. She is framed full-body mid-swing, so the zoom that
   // makes her big enough is also the zoom that crops her, and the answer is a
   // gentler scale with the window pulled UP rather than a tighter one centred.
-  "court-swing":     { file: "assets/photos/court-swing.jpg",     pos: "36% 16%", zoom: "auto 158%" },
-  "cap-profile":     { file: "assets/photos/cap-profile.jpg",     pos: "18% 40%", zoom: "auto 165%" },
+  "court-swing": {
+    file: "assets/photos/court-swing.jpg",
+    pos: "36% 16%",
+    zoom: "auto 158%",
+  },
+  "cap-profile": {
+    file: "assets/photos/cap-profile.jpg",
+    pos: "18% 40%",
+    zoom: "auto 165%",
+  },
+  // Same frame for a split card: the photo panel is only the right half, so the
+  // face has to sit in it rather than at the far edge.
+  "cap-profile-split": {
+    file: "assets/photos/cap-profile.jpg",
+    pos: "62% 36%",
+    zoom: "auto 118%",
+  },
   // The one frame that stays in colour (see .card.athlete.color in card.html).
   // Chosen by Alec off the live card, 2026-09-10. He sits well right of centre
   // and side-on, so the type side stays empty wall at every zoom that keeps him
   // legible, and a gentler 138% is enough because he is already large in frame.
-  "paddle-raise":    { file: "assets/photos/paddle-raise.jpg",    pos: "58% 40%", zoom: "auto 138%" },
+  "paddle-raise": {
+    file: "assets/photos/paddle-raise.jpg",
+    pos: "58% 40%",
+    zoom: "auto 138%",
+  },
 
   // Juan (Spec 191). The master is pre-cropped to card ratio with him RIGHT of
   // centre, because the athlete variant lays its type down the left. The source
@@ -87,11 +122,11 @@ const PHOTOS = {
   // full-width sliver of gym and a very small athlete. Cropping the master is
   // the fix, not zooming the card. The crop keeps his shirt legible, which is
   // the only sport context a head-and-shoulders card gets to carry.
-  "juan-portrait":  { file: "assets/photos/juan-portrait.jpg",  pos: "62% 46%" },
+  "juan-portrait": { file: "assets/photos/juan-portrait.jpg", pos: "62% 46%" },
   // v2 (2026-10-02): JLA_5947, Juan serving in a plain black shirt. The v1
   // portrait showed another organization's shirt, which the site does not run.
   // Pre-cropped to card ratio with him right of centre, clear of the type.
-  "juan-serve":     { file: "assets/photos/juan-serve.jpg",     pos: "60% 40%" },
+  "juan-serve": { file: "assets/photos/juan-serve.jpg", pos: "60% 40%" },
 
   // Brick House (2026-10-02): the /brickhouse hero, from the 4K clip, already
   // graded black and white with the page's own recipe. A 2160px portrait cannot
@@ -101,13 +136,13 @@ const PHOTOS = {
 
   // Brand artwork, not a photograph: the mark rendered as an object. Both files
   // arrived with a Gemini sparkle in the corner and are cropped to exclude it.
-  black:    { file: "assets/art/mark-black.jpg",             pos: "50% 42%" },
-  fire:     { file: "assets/art/mark-fire.jpg",              pos: "50% 46%" },
+  black: { file: "assets/art/mark-black.jpg", pos: "50% 42%" },
+  fire: { file: "assets/art/mark-fire.jpg", pos: "50% 46%" },
   // PARKED, not forgotten: Alec's own water shot exists only as a 1600x1067
   // web copy, which the resolution gate rejects for any crop that fills a panel.
   // Its master (JNC02305.JPG, 6.8MB) is the one file the Drive connector will
   // not return. Give this a >=2200px-tall master and send-6 can use it again.
-  alec:     { file: "public/images/alec-waterskiing.jpg",  pos: "50% 36%" },
+  alec: { file: "public/images/alec-waterskiing.jpg", pos: "50% 36%" },
 };
 
 // THE CARDS. `headline` takes one <em> for the italic orange accent.
@@ -132,34 +167,144 @@ const CARDS = {
   // The home card alone runs the colour treatment, on its own -v4 path for the
   // same cache reason the -v3 rename was made: a card that changes picture at
   // an old URL keeps serving the old picture to every thread that scraped it.
-  home: { ...ATHLETE, variant: "athlete color", photo: "paddle-raise",
-    out: "public/images/og/home-v4-color.jpg", page: "index.html",
-    headline: "Your place in <em>adaptive sports</em>." },
-  donate: { ...ATHLETE, photo: "court-swing",
-    out: "public/images/og/donate-v3-athlete.jpg", page: "donate.html",
-    headline: "Put an athlete <em>in the game</em>." },
-  "send-6": { ...ATHLETE, photo: "chair-drive", size: 66, measure: "15ch",
-    out: "public/images/og/send-6-v3-athlete.jpg", page: "send-6.html",
-    headline: "Send 6 to the <em>US Open</em> Spring 2027." },
-  popcorn: { ...ATHLETE, photo: "chair-drive", size: 62, measure: "16ch",
-    out: "public/images/og/popcorn-v4-content.jpg", page: "popcorn.html",
-    headline: "Popcorn that helps <em>athletes play</em>." },
-  "hustle-and-heart": { ...ATHLETE, photo: "paddle-portrait", size: 70, measure: "14ch",
-    out: "public/images/og/hustle-and-heart-v4-content.jpg", page: "hustle-and-heart.html",
-    headline: "Keep your game <em>going</em>." },
+  home: {
+    ...ATHLETE,
+    variant: "athlete color",
+    photo: "paddle-raise",
+    out: "public/images/og/home-v4-color.jpg",
+    page: "index.html",
+    headline: "Your place in <em>adaptive sports</em>.",
+  },
+  donate: {
+    ...ATHLETE,
+    photo: "court-swing",
+    out: "public/images/og/donate-v3-athlete.jpg",
+    page: "donate.html",
+    headline: "Put an athlete <em>in the game</em>.",
+  },
+  "send-6": {
+    ...ATHLETE,
+    photo: "chair-drive",
+    size: 66,
+    measure: "15ch",
+    out: "public/images/og/send-6-v4-road.jpg",
+    page: "send-6.html",
+    headline: "The Road to the <em>US Open</em>.",
+  },
+  popcorn: {
+    ...ATHLETE,
+    photo: "chair-drive",
+    size: 62,
+    measure: "16ch",
+    out: "public/images/og/popcorn-v4-content.jpg",
+    page: "popcorn.html",
+    headline: "Popcorn that helps <em>athletes play</em>.",
+  },
+  "hustle-and-heart": {
+    ...ATHLETE,
+    photo: "paddle-portrait",
+    size: 70,
+    measure: "14ch",
+    out: "public/images/og/hustle-and-heart-v5-check.jpg",
+    page: "hustle-and-heart.html",
+    headline: "More than <em>a check</em>.",
+  },
   // An athlete profile card is the page's h1 and nothing else (GATE 0), and for
   // a profile that is exactly right: the card is a poster with his name on it,
   // sent by him, to people who know him.
-  juan: { ...ATHLETE, photo: "juan-serve", size: 104, measure: "7ch",
-    out: "public/images/og/juan-v2-serve.jpg", page: "juan.html",
-    headline: "Juan <em>Ortiz</em>" },
-  // The grand opening card. Split, not athlete: see "brickhouse-hero" above.
-  brickhouse: { variant: "split", photo: "brickhouse-hero", size: 66, measure: "11ch",
-    out: "public/images/og/brickhouse-v1-opening.jpg", page: "brickhouse.html",
-    headline: "Come play with us <em>at Brick House</em>." },
-  volunteer: { ...ATHLETE, photo: "cap-profile",
-    out: "public/images/og/volunteer-v3-athlete.jpg", page: "volunteer.html",
-    headline: "Your place on <em>this team</em>." },
+  juan: {
+    ...ATHLETE,
+    photo: "juan-serve",
+    size: 104,
+    measure: "7ch",
+    out: "public/images/og/juan-v2-serve.jpg",
+    page: "juan.html",
+    headline: "Juan <em>Ortiz</em>",
+  },
+  // Home court card. Split, not athlete: see "brickhouse-hero" above.
+  // Same photograph and split treatment. v2 because the headline changed after
+  // the reopening, and an old URL would keep serving the old line.
+  brickhouse: {
+    variant: "split",
+    photo: "brickhouse-hero",
+    size: 66,
+    measure: "11ch",
+    out: "public/images/og/brickhouse-v3-crewhome.jpg",
+    page: "brickhouse.html",
+    headline: "The crew's home court <em>is Brick House</em>.",
+  },
+  // The Chicago Classic: same split treatment, Juan with his paddle up.
+  "chicago-classic": {
+    variant: "split",
+    photo: "paddle-raise",
+    size: 72,
+    measure: "9ch",
+    out: "public/images/og/chicago-classic-v1-date.jpg",
+    page: "chicago-classic.html",
+    headline: "The Chicago <em>Classic</em>.",
+  },
+  // The crew's page: Juan serving, in the split treatment. v5 (2026-11-07)
+  // because the crew's title became "Chicago Pickleball: Wheelie Big Dills",
+  // and an old URL would keep serving the old name. v4 was drawn outside this
+  // script (badge, kicker line, system type); this one is the house card, and
+  // gate 0 keeps it equal to the page's h1.
+  pickleball: {
+    variant: "split",
+    photo: "juan-serve",
+    size: 66,
+    measure: "9ch",
+    out: "public/images/og/pickleball-v5-name.jpg",
+    page: "pickleball.html",
+    headline: "Chicago Pickleball: <em>Wheelie Big Dills</em>",
+  },
+  // Partner pages: the same split treatment.
+  picklr: {
+    variant: "split",
+    photo: "court-swing",
+    size: 72,
+    measure: "9ch",
+    out: "public/images/og/picklr-v1-partner.jpg",
+    page: "picklr.html",
+    headline: "Open play, <em>open doors</em>.",
+  },
+  "chicago-adaptive-sports": {
+    variant: "split",
+    photo: "juan-portrait",
+    size: 76,
+    measure: "8ch",
+    out: "public/images/og/chicago-adaptive-sports-v1-partner.jpg",
+    page: "chicago-adaptive-sports.html",
+    headline: "Push. Play. <em>Persist</em>.",
+  },
+  // AMP Adaptive Sports, partner nonprofit (Nov 6 2026). Karen on the water
+  // at Lauderdale Lakes, from the same master the /karen card uses; the line
+  // is AMP's own, from their gear.
+  amp: {
+    variant: "split",
+    photo: "karen",
+    size: 76,
+    measure: "8ch",
+    out: "public/images/og/amp-v1-partner.jpg",
+    page: "amp.html",
+    headline: "Active. Mobile. <em>Proud</em>.",
+  },
+  // Partner club card, same split treatment as Brick House.
+  ace: {
+    variant: "split",
+    photo: "cap-profile-split",
+    size: 66,
+    measure: "11ch",
+    out: "public/images/og/ace-v3-partner.jpg",
+    page: "ace.html",
+    headline: "Something Chicago <em>hasn't seen</em>.",
+  },
+  volunteer: {
+    ...ATHLETE,
+    photo: "cap-profile",
+    out: "public/images/og/volunteer-v3-athlete.jpg",
+    page: "volunteer.html",
+    headline: "Your place on <em>this team</em>.",
+  },
 };
 
 // One card per volunteer role, derived from data/volunteer-roles.mjs rather than
@@ -175,16 +320,20 @@ const CARDS = {
 // rather than a sentence, and "Sponsorship and partnership lead" needs the room.
 for (const r of ROLES) {
   const words = r.name.split(" ");
-  const accented = words.length > 1
-    ? `${words.slice(0, -1).join(" ")} <em>${words[words.length - 1]}</em>`
-    : `<em>${r.name}</em>`;
+  const accented =
+    words.length > 1
+      ? `${words.slice(0, -1).join(" ")} <em>${words[words.length - 1]}</em>`
+      : `<em>${r.name}</em>`;
   CARDS[`role-${r.slug}`] = {
     // The roles are children of /volunteer, so they carry /volunteer's athlete.
     // One shared frame across 27 cards is right here in a way it was NOT right
     // across the six editorial cards: those are six different propositions and
     // needed to look different in a feed; these are one proposition with 27
     // job titles, and the title is the thing that has to change.
-    ...ATHLETE, size: 68, measure: "16ch", photo: "cap-profile",
+    ...ATHLETE,
+    size: 68,
+    measure: "16ch",
+    photo: "cap-profile",
     out: `public/images/og/role-${r.slug}-v3-athlete.jpg`,
     page: `volunteer/${r.slug}.html`,
     headline: accented,
@@ -195,34 +344,113 @@ for (const r of ROLES) {
 const LINE = "Your place in <em>adaptive sports</em>.";
 // The photo panel in a split card is ~150px wide in a chat thread, so the
 // subject is zoomed until she holds it at that size.
-const SPLIT = { variant: "split", photo: "karen", headline: LINE, size: 74,
-                measure: "12ch", zoom: "auto 168%", pos: "56% 34%" };
+const SPLIT = {
+  variant: "split",
+  photo: "karen",
+  headline: LINE,
+  size: 74,
+  measure: "12ch",
+  zoom: "auto 168%",
+  pos: "56% 34%",
+};
 const CANDIDATES = {
-  "m1-home-black":   { out: "m1-home-black.jpg", variant: "mono", photo: "black",
-    headline: "Your place in <em>adaptive sports</em>.", size: 76, measure: "13ch" },
-  "m2-send6-black":  { out: "m2-send6-black.jpg", variant: "mono", photo: "black",
-    headline: "Send 6 to the <em>US Open</em> Spring 2027.", size: 68, measure: "16ch" },
-  "m3-donate-black": { out: "m3-donate-black.jpg", variant: "mono", photo: "black",
-    headline: "Put an athlete <em>in the game</em>.", size: 76, measure: "13ch" },
-  "m4-home-fire":    { out: "m4-home-fire.jpg", variant: "mono", photo: "fire",
-    headline: "Your place in <em>adaptive sports</em>.", size: 76, measure: "13ch" },
+  "m1-home-black": {
+    out: "m1-home-black.jpg",
+    variant: "mono",
+    photo: "black",
+    headline: "Your place in <em>adaptive sports</em>.",
+    size: 76,
+    measure: "13ch",
+  },
+  "m2-send6-black": {
+    out: "m2-send6-black.jpg",
+    variant: "mono",
+    photo: "black",
+    headline: "Send 6 to the <em>US Open</em> Spring 2027.",
+    size: 68,
+    measure: "16ch",
+  },
+  "m3-donate-black": {
+    out: "m3-donate-black.jpg",
+    variant: "mono",
+    photo: "black",
+    headline: "Put an athlete <em>in the game</em>.",
+    size: 76,
+    measure: "13ch",
+  },
+  "m4-home-fire": {
+    out: "m4-home-fire.jpg",
+    variant: "mono",
+    photo: "fire",
+    headline: "Your place in <em>adaptive sports</em>.",
+    size: 76,
+    measure: "13ch",
+  },
   // ---- athlete set, 2026-09-09 -------------------------------------------
-  "a-home-paddle":  { out: "a-home-paddle.jpg",  variant: "athlete", photo: "paddle-portrait",
-    headline: "Your place in <em>adaptive sports</em>.", size: 76, measure: "13ch" },
-  "a-home-cap":     { out: "a-home-cap.jpg",     variant: "athlete", photo: "cap-profile",
-    headline: "Your place in <em>adaptive sports</em>.", size: 76, measure: "13ch" },
-  "a-donate-swing": { out: "a-donate-swing.jpg", variant: "athlete", photo: "court-swing",
-    headline: "Put an athlete <em>in the game</em>.", size: 76, measure: "13ch" },
-  "a-donate-drive": { out: "a-donate-drive.jpg", variant: "athlete", photo: "chair-drive",
-    headline: "Put an athlete <em>in the game</em>.", size: 76, measure: "13ch" },
-  "a-send6-drive":  { out: "a-send6-drive.jpg",  variant: "athlete", photo: "chair-drive",
-    headline: "Send 6 to the <em>US Open</em> Spring 2027.", size: 66, measure: "15ch" },
-  "a-volunteer":    { out: "a-volunteer.jpg",    variant: "athlete", photo: "paddle-portrait",
-    headline: "Your place on <em>this team</em>.", size: 76, measure: "13ch" },
-  "a-hustle":       { out: "a-hustle.jpg",       variant: "athlete", photo: "court-swing",
-    headline: "Keep your game <em>going</em>.", size: 70, measure: "14ch" },
+  "a-home-paddle": {
+    out: "a-home-paddle.jpg",
+    variant: "athlete",
+    photo: "paddle-portrait",
+    headline: "Your place in <em>adaptive sports</em>.",
+    size: 76,
+    measure: "13ch",
+  },
+  "a-home-cap": {
+    out: "a-home-cap.jpg",
+    variant: "athlete",
+    photo: "cap-profile",
+    headline: "Your place in <em>adaptive sports</em>.",
+    size: 76,
+    measure: "13ch",
+  },
+  "a-donate-swing": {
+    out: "a-donate-swing.jpg",
+    variant: "athlete",
+    photo: "court-swing",
+    headline: "Put an athlete <em>in the game</em>.",
+    size: 76,
+    measure: "13ch",
+  },
+  "a-donate-drive": {
+    out: "a-donate-drive.jpg",
+    variant: "athlete",
+    photo: "chair-drive",
+    headline: "Put an athlete <em>in the game</em>.",
+    size: 76,
+    measure: "13ch",
+  },
+  "a-send6-drive": {
+    out: "a-send6-drive.jpg",
+    variant: "athlete",
+    photo: "chair-drive",
+    headline: "Send 6 to the <em>US Open</em> Spring 2027.",
+    size: 66,
+    measure: "15ch",
+  },
+  "a-volunteer": {
+    out: "a-volunteer.jpg",
+    variant: "athlete",
+    photo: "paddle-portrait",
+    headline: "Your place on <em>this team</em>.",
+    size: 76,
+    measure: "13ch",
+  },
+  "a-hustle": {
+    out: "a-hustle.jpg",
+    variant: "athlete",
+    photo: "court-swing",
+    headline: "Keep your game <em>going</em>.",
+    size: 70,
+    measure: "14ch",
+  },
 
-  "b-paper": { out: "b-paper.jpg", variant: "light", headline: LINE, size: 96, measure: "13ch" },
+  "b-paper": {
+    out: "b-paper.jpg",
+    variant: "light",
+    headline: LINE,
+    size: 96,
+    measure: "13ch",
+  },
   "c-split": { ...SPLIT, out: "c-split.jpg" },
   "d-split-light": { ...SPLIT, out: "d-split-light.jpg", variant: "split light" },
 };
@@ -231,7 +459,9 @@ const args = process.argv.slice(2);
 const outIdx = args.indexOf("--out");
 const outDir = outIdx >= 0 ? args[outIdx + 1] : null;
 // guard the -1 case: without --out, outIdx+1 is 0 and would eat the first name
-const names = args.filter((a, i) => !a.startsWith("--") && !(outIdx >= 0 && i === outIdx + 1));
+const names = args.filter(
+  (a, i) => !a.startsWith("--") && !(outIdx >= 0 && i === outIdx + 1),
+);
 const set = outDir ? CANDIDATES : CARDS;
 const todo = names.length ? names : Object.keys(set);
 
@@ -250,8 +480,14 @@ function dataUri(rel) {
 }
 
 function intrinsic(rel) {
-  const [w, h] = execFileSync("identify", ["-format", "%w %h", join(ROOT, rel) + "[0]"],
-    { encoding: "utf8" }).trim().split(" ").map(Number);
+  const [w, h] = execFileSync(
+    "identify",
+    ["-format", "%w %h", join(ROOT, rel) + "[0]"],
+    { encoding: "utf8" },
+  )
+    .trim()
+    .split(" ")
+    .map(Number);
   return { w, h };
 }
 
@@ -263,92 +499,138 @@ function sourceScale({ box, src, zoom }) {
   let renderedH;
   const m = /auto\s+([\d.]+)%/.exec(zoom || "");
   if (m) renderedH = box.h * (parseFloat(m[1]) / 100);
-  else renderedH = box.h * Math.max((box.w / box.h) / (src.w / src.h), 1); // cover
+  else renderedH = box.h * Math.max(box.w / box.h / (src.w / src.h), 1); // cover
   return (renderedH * DSF) / src.h;
 }
 
-const browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined });
-const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 2 });
+const browser = await chromium.launch({
+  executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined,
+});
+const page = await browser.newPage({
+  viewport: { width: W, height: H },
+  deviceScaleFactor: 2,
+});
 await page.goto(`file://${join(ROOT, "src/og/card.html")}`);
 await page.waitForFunction(() => document.fonts.ready.then(() => true));
 
 let failed = false;
 for (const name of todo) {
   const card = set[name];
-  if (!card) { console.error(`unknown card: ${name}`); failed = true; continue; }
+  if (!card) {
+    console.error(`unknown card: ${name}`);
+    failed = true;
+    continue;
+  }
   const photo = card.photo ? PHOTOS[card.photo] : null;
 
   // GATE 0 — the headline IS the page's h1. Without this the two drift the
   // first time the page is edited, and the drift is invisible on the site.
   if (card.page) {
     const pageHtml = readFileSync(join(ROOT, "public", card.page), "utf8");
-    const h1 = pageHtml.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)?.[1]
-      ?.replace(/<[^>]*>/g, "").replace(/&amp;/g, "&").replace(/\s+/g, " ").trim();
-    const line = card.headline.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+    const h1 = pageHtml
+      .match(/<h1[^>]*>([\s\S]*?)<\/h1>/)?.[1]
+      ?.replace(/<[^>]*>/g, "")
+      .replace(/&amp;/g, "&")
+      .replace(/\s+/g, " ")
+      .trim();
+    const line = card.headline
+      .replace(/<[^>]*>/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
     if (h1 !== line) {
       failed = true;
-      console.log(`FAIL ${name.padEnd(18)} headline does not match ${card.page} h1\n` +
-                  `       card: ${line}\n       page: ${h1}`);
+      console.log(
+        `FAIL ${name.padEnd(18)} headline does not match ${card.page} h1\n` +
+          `       card: ${line}\n       page: ${h1}`,
+      );
       continue;
     }
   }
 
-  await page.evaluate(({ card, markSvg, photoUri, pos, zoom }) => {
-    const el = document.getElementById("card");
-    el.className = `card${card.variant ? " " + card.variant : ""}`;
-    document.getElementById("mark").innerHTML = markSvg;
-    document.getElementById("headline").innerHTML = card.headline;
-    el.style.setProperty("--size", `${card.size}px`);
-    el.style.setProperty("--measure", card.measure);
-    const p = document.getElementById("photo");
-    const s = document.getElementById("scrim");
-    const w = document.getElementById("watermark");
-    if (photoUri) {
-      p.style.backgroundImage = `url("${photoUri}")`;
-      p.style.setProperty("--pos", pos);
-      p.style.setProperty("--zoom", zoom || "cover");
-      p.hidden = false; s.hidden = false; w.hidden = true; w.innerHTML = "";
-    } else {
-      p.hidden = true; s.hidden = true;
-      w.hidden = false; w.innerHTML = markSvg;
-    }
-  }, { card, markSvg: mark(card.variant), photoUri: photo ? dataUri(photo.file) : null,
-       pos: card.pos || photo?.pos, zoom: card.zoom || photo?.zoom });
+  await page.evaluate(
+    ({ card, markSvg, photoUri, pos, zoom }) => {
+      const el = document.getElementById("card");
+      el.className = `card${card.variant ? " " + card.variant : ""}`;
+      document.getElementById("mark").innerHTML = markSvg;
+      document.getElementById("headline").innerHTML = card.headline;
+      el.style.setProperty("--size", `${card.size}px`);
+      el.style.setProperty("--measure", card.measure);
+      const p = document.getElementById("photo");
+      const s = document.getElementById("scrim");
+      const w = document.getElementById("watermark");
+      if (photoUri) {
+        p.style.backgroundImage = `url("${photoUri}")`;
+        p.style.setProperty("--pos", pos);
+        p.style.setProperty("--zoom", zoom || "cover");
+        p.hidden = false;
+        s.hidden = false;
+        w.hidden = true;
+        w.innerHTML = "";
+      } else {
+        p.hidden = true;
+        s.hidden = true;
+        w.hidden = false;
+        w.innerHTML = markSvg;
+      }
+    },
+    {
+      card,
+      markSvg: mark(card.variant),
+      photoUri: photo ? dataUri(photo.file) : null,
+      pos: card.pos || photo?.pos,
+      zoom: card.zoom || photo?.zoom,
+    },
+  );
 
   await page.waitForTimeout(160);
 
   // GATE 1 — thumbnail legibility + nothing outside the frame
-  const probe = await page.evaluate(({ W, H }) => {
-    const h1 = document.getElementById("headline");
-    const size = parseFloat(getComputedStyle(h1).fontSize);
-    const over = [];
-    document.querySelectorAll(".inner *").forEach((el) => {
-      const r = el.getBoundingClientRect();
-      if (r.width > 0 && (r.right > W + 1 || r.left < -1 || r.bottom > H + 1 || r.top < -1)) {
-        over.push(`${el.tagName}${el.id ? "#" + el.id : ""} ${Math.round(r.left)},${Math.round(r.top)} ${Math.round(r.right)}x${Math.round(r.bottom)}`);
-      }
-    });
-    // In a split card the type must clear the photo seam. A full stop landing
-    // on the photograph is invisible at 1200px and obvious at 300px.
-    const card = document.getElementById("card");
-    const photo = document.getElementById("photo");
-    const seam = card.classList.contains("split") && !photo.hidden
-      ? photo.getBoundingClientRect().left : null;
-    let clear = null;
-    if (seam !== null) {
-      // measure the inked width of each line, not the block's max-width box
-      const r = document.createRange();
-      let right = 0;
-      h1.childNodes.forEach((n) => {
-        r.selectNodeContents(n);
-        for (const rect of r.getClientRects()) right = Math.max(right, rect.right);
+  const probe = await page.evaluate(
+    ({ W, H }) => {
+      const h1 = document.getElementById("headline");
+      const size = parseFloat(getComputedStyle(h1).fontSize);
+      const over = [];
+      document.querySelectorAll(".inner *").forEach((el) => {
+        const r = el.getBoundingClientRect();
+        if (
+          r.width > 0 &&
+          (r.right > W + 1 || r.left < -1 || r.bottom > H + 1 || r.top < -1)
+        ) {
+          over.push(
+            `${el.tagName}${el.id ? "#" + el.id : ""} ${Math.round(r.left)},${Math.round(r.top)} ${Math.round(r.right)}x${Math.round(r.bottom)}`,
+          );
+        }
       });
-      clear = Math.round(seam - right);
-    }
-    const pb = photo.hidden ? null : photo.getBoundingClientRect();
-    return { size, lines: Math.round(h1.getBoundingClientRect().height / (size * 1.02)),
-             over, clear, box: pb ? { w: pb.width, h: pb.height } : null };
-  }, { W, H });
+      // In a split card the type must clear the photo seam. A full stop landing
+      // on the photograph is invisible at 1200px and obvious at 300px.
+      const card = document.getElementById("card");
+      const photo = document.getElementById("photo");
+      const seam =
+        card.classList.contains("split") && !photo.hidden
+          ? photo.getBoundingClientRect().left
+          : null;
+      let clear = null;
+      if (seam !== null) {
+        // measure the inked width of each line, not the block's max-width box
+        const r = document.createRange();
+        let right = 0;
+        h1.childNodes.forEach((n) => {
+          r.selectNodeContents(n);
+          for (const rect of r.getClientRects()) right = Math.max(right, rect.right);
+        });
+        clear = Math.round(seam - right);
+      }
+      const pb = photo.hidden ? null : photo.getBoundingClientRect();
+      return {
+        size,
+        lines: Math.round(h1.getBoundingClientRect().height / (size * 1.02)),
+        over,
+        clear,
+        box: pb ? { w: pb.width, h: pb.height } : null,
+      };
+    },
+    { W, H },
+  );
 
   const out = outDir ? join(outDir, card.out) : join(ROOT, card.out);
   mkdirSync(dirname(out), { recursive: true });
@@ -359,10 +641,25 @@ for (const name of todo) {
   const scratch = mkdtempSync(join(scratchRoot, "atl-og-render-"));
   const tmp = join(scratch, `og-2x-${name}.png`);
   try {
-    writeFileSync(tmp, await page.screenshot({ type: "png", clip: { x: 0, y: 0, width: W, height: H } }));
-    execFileSync("convert", [tmp, "-filter", "Lanczos", "-resize", `${W}x${H}`,
-      "-strip", "-interlace", "Plane", "-sampling-factor", "4:2:0",
-      "-quality", "86", out]);
+    writeFileSync(
+      tmp,
+      await page.screenshot({ type: "png", clip: { x: 0, y: 0, width: W, height: H } }),
+    );
+    execFileSync("convert", [
+      tmp,
+      "-filter",
+      "Lanczos",
+      "-resize",
+      `${W}x${H}`,
+      "-strip",
+      "-interlace",
+      "Plane",
+      "-sampling-factor",
+      "4:2:0",
+      "-quality",
+      "86",
+      out,
+    ]);
   } finally {
     rmSync(scratch, { recursive: true, force: true });
   }
@@ -373,23 +670,34 @@ for (const name of todo) {
   const okWeight = statSync(out).size <= BUDGET_BYTES;
   const okSeam = probe.clear === null || probe.clear >= MIN_SEAM_CLEAR;
   // GATE 4 — the crop must not upscale the photograph past MAX_UPSCALE
-  const scale = photo && probe.box
-    ? sourceScale({ box: probe.box, src: intrinsic(photo.file), zoom: card.zoom || photo.zoom })
-    : null;
+  const scale =
+    photo && probe.box
+      ? sourceScale({
+          box: probe.box,
+          src: intrinsic(photo.file),
+          zoom: card.zoom || photo.zoom,
+        })
+      : null;
   const okScale = scale === null || scale <= MAX_UPSCALE;
   const ok = okSize && okFrame && okWeight && okSeam && okScale;
   if (!ok) failed = true;
   console.log(
     `${ok ? "PASS" : "FAIL"} ${name.padEnd(18)} ${String(kb).padStart(3)}KB  ` +
-    `headline ${Math.round(probe.size)}px/${probe.lines} lines` +
-    (probe.clear === null ? "" : `  seam clear ${probe.clear}px`) +
-    (scale === null ? "" : `  photo ${scale <= 1 ? "sharp" : scale.toFixed(2) + "x upscaled"}`) +
-    `  ${out}` +
-    (okSize ? "" : `  [headline < ${MIN_HEADLINE_PX}px: unreadable in a chat thread]`) +
-    (okFrame ? "" : `  [outside frame: ${probe.over.join("; ")}]`) +
-    (okSeam ? "" : `  [type within ${MIN_SEAM_CLEAR}px of the photo seam]`) +
-    (okScale ? "" : `  [source too small: crop upscales ${scale.toFixed(2)}x, needs a ~${Math.ceil(intrinsic(photo.file).h * scale / 100) * 100}px-tall master]`) +
-    (okWeight ? "" : `  [over ${BUDGET_BYTES / 1024}KB preview budget]`)
+      `headline ${Math.round(probe.size)}px/${probe.lines} lines` +
+      (probe.clear === null ? "" : `  seam clear ${probe.clear}px`) +
+      (scale === null
+        ? ""
+        : `  photo ${scale <= 1 ? "sharp" : scale.toFixed(2) + "x upscaled"}`) +
+      `  ${out}` +
+      (okSize
+        ? ""
+        : `  [headline < ${MIN_HEADLINE_PX}px: unreadable in a chat thread]`) +
+      (okFrame ? "" : `  [outside frame: ${probe.over.join("; ")}]`) +
+      (okSeam ? "" : `  [type within ${MIN_SEAM_CLEAR}px of the photo seam]`) +
+      (okScale
+        ? ""
+        : `  [source too small: crop upscales ${scale.toFixed(2)}x, needs a ~${Math.ceil((intrinsic(photo.file).h * scale) / 100) * 100}px-tall master]`) +
+      (okWeight ? "" : `  [over ${BUDGET_BYTES / 1024}KB preview budget]`),
   );
 }
 

@@ -12,37 +12,121 @@
 // hard-coded goal because a slow widget is harmless. A receipt must never print
 // a number we did not actually read, so it checks `live` and stays silent about
 // the fund's position rather than guessing.
-export async function fundPosition(env) {
-  const campaignId = env.GIVEBUTTER_CAMPAIGN_ID || "683765";
-  const offline = Number(env.OFFLINE_RAISED) || 0;
+// One goal, one bar (Alec, Nov 5 2026): "one campaign bar... puts together
+// all of the initiatives into one big number... Then it shows how much of
+// this pays for the year and how much of this pays for the U.S. Open." And
+// "When you donate, it goes to just one program": the Chicago Wheelie Big
+// Dills, through the one Givebutter campaign (the Hustle & Heart Fund). No
+// donor picks a fund. "Our first priority is to raise money for the weekly
+// training, then the U.S. Open. After that, Chicago Classic."
+//
+// So new gifts fill the parts in that order: every week first, up to its
+// goal, then the road. Money raised under Send 6 before the one-goal model
+// (SEND6_SET_ASIDE: $3,004 popcorn + $1,975 online) keeps its terms and sits
+// on the road from the start. SEND6_ONLINE_COUNTED is the part of
+// Givebutter's online total already inside that set-aside, so it is never
+// counted twice. Equipment is raised per athlete and is not in the goal; the
+// Chicago Classic joins the goal once it has a date and a budget.
+//
+// Keys the site asks for with /api/raised?c=<key>:
+//   wbd     The one goal: every week + the road, with both parts.
+//   year    Every week: court time every week and memberships to train all
+//           year. $27,180: a year of nights at ACE ($11,700, 52 x $225) and ten
+//           athletes training ($15,480, 10 x $1,548).
+//   send-6  The Road to the US Open. $21,000: six athletes at about $3,500,
+//           roughly what the US Open has cost the last couple of years.
+//   fund    The whole campaign. Grant receipts read this.
+//   classic The Chicago Classic: a goal we talk about, not yet in the total.
+export const CAMPAIGN_KEYS = ["fund", "wbd", "year", "send-6", "classic"];
+export const YEAR_GOAL = 27180;
+export const ROAD_GOAL = 21000;
+export const WBD_GOAL = YEAR_GOAL + ROAD_GOAL;
+// Court time a partner club gives toward every week (Alec, Nov 7 2026). The
+// club's drop in is $15 and we pay $5, so the club gives $10 an athlete a
+// night: the first gift toward every week. Counted conservatively at 10
+// athletes a night (10 to 15 come) for the 52 nights of the year ahead:
+// 10 x $10 x 52 = $5,200. Pages show it as court time from a partner club and
+// never name the club or the rate (Alec: saying it on the page hurts more
+// than it helps). New gifts fill the rest of every week, then the road.
+export const YEAR_INKIND = 5200;
+
+async function givebutter(env, id) {
   let online = 0;
   let goal = 0;
+  let donors = 0;
   let live = false;
   try {
     if (env.GIVEBUTTER_API_KEY) {
-      const r = await fetch(`https://api.givebutter.com/v1/campaigns/${campaignId}`, {
-        headers: { Authorization: `Bearer ${env.GIVEBUTTER_API_KEY}`, Accept: "application/json" },
+      const r = await fetch(`https://api.givebutter.com/v1/campaigns/${id}`, {
+        headers: {
+          Authorization: `Bearer ${env.GIVEBUTTER_API_KEY}`,
+          Accept: "application/json",
+        },
         cf: { cacheTtl: 60, cacheEverything: true },
       });
       if (r.ok) {
         const d = await r.json();
         online = Number(d.raised) || 0;
         goal = Number(d.goal) || 0;
+        donors = Number(d.donors) || 0;
         live = true;
       }
     }
   } catch (err) {
     console.error("givebutter raised fetch failed:", err);
   }
+  return { online, goal, donors, live };
+}
+
+// The one goal and its parts, filled in priority order.
+async function wbd(env) {
+  const g = await givebutter(env, env.GIVEBUTTER_CAMPAIGN_ID || "683765");
+  const setAside = Number(env.SEND6_SET_ASIDE) || 0;
+  const counted = Number(env.SEND6_ONLINE_COUNTED) || 0;
+  const offline = Number(env.FUND_OFFLINE_RAISED) || 0;
+  const fresh = Math.max(0, g.online - counted) + offline;
+  const inkind = Math.min(YEAR_INKIND, YEAR_GOAL);
+  const yearCash = Math.min(fresh, YEAR_GOAL - inkind);
+  const road = Math.min(setAside + Math.max(0, fresh - (YEAR_GOAL - inkind)), ROAD_GOAL);
   return {
-    raised: online + offline,
-    online,
-    offline,
-    // Fallback only. The live goal is Givebutter's (Send 6 to the US Open Spring 2027:
-    // 6 athletes x $3,500). Change it there, not here (Spec 115 D3).
-    goal: goal || Number(env.RAISED_GOAL) || 21000,
-    live,
+    raised: setAside + fresh,
+    inkind,
+    online: g.online,
+    offline: setAside - counted + offline,
+    goal: WBD_GOAL,
+    donors: g.donors,
+    live: g.live,
+    parts: {
+      year: { raised: yearCash + inkind, inkind, goal: YEAR_GOAL },
+      "send-6": { raised: road, goal: ROAD_GOAL },
+    },
   };
+}
+
+export async function campaignPosition(env, key = "send-6") {
+  if (key === "fund") {
+    const g = await givebutter(env, env.GIVEBUTTER_CAMPAIGN_ID || "683765");
+    const offline = Number(env.FUND_OFFLINE_RAISED) || 0;
+    return {
+      raised: g.online + offline,
+      online: g.online,
+      offline,
+      goal: 0,
+      live: g.live,
+    };
+  }
+  if (key === "classic")
+    return { raised: 0, online: 0, offline: 0, goal: 0, live: true };
+  const w = await wbd(env);
+  if (key === "wbd") return w;
+  const part = w.parts[key === "year" ? "year" : "send-6"];
+  return { raised: part.raised, online: 0, offline: 0, goal: part.goal, live: w.live };
+}
+
+// The fund's own position. The grant receipt reads this; with no goal it
+// quotes no figure, which is the honest answer for an open-ended fund.
+export async function fundPosition(env) {
+  return campaignPosition(env, "fund");
 }
 
 // Whole dollars, with separators. Grant amounts and campaign goals are always

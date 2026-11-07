@@ -41,7 +41,7 @@
     { "pattern": "www.adapttolife.org", "custom_domain": true },
     { "pattern": "sign.adapttolife.org", "custom_domain": true }
   ],
-  "workers_dev": true,
+  "workers_dev": false,
   "preview_urls": true,
   "assets": {
     "directory": "./public",
@@ -68,9 +68,6 @@
   "vars": {
     "ENV_NAME": "production",
     "INTAKE_INBOX": "hello@adapttolife.org",
-    // Non-secret config. Forms, gifts and waivers live in D1; the Google Sheet CRM
-    // is refreshed from D1. Nothing writes to ClickUp or Airtable any more.
-    "BEEHIIV_PUBLICATION_ID": "pub_d1bfe66c-074f-464a-a94a-d0cce6d21943",
     // Google Shared Drive ("Adapt To Life") for the signed-release archive.
     // The service account JSON is a secret: cfrun wrangler secret put GOOGLE_SA_JSON
     // That SAME credential also mirrors Adapt Body Shop contact-form messages
@@ -110,17 +107,29 @@
     // Exact creation time of ATL's donor-journey activation webhook. Scheduled
     // reconciliation must never send retroactive thank-yous for the baseline.
     "GIVEBUTTER_DONOR_CUTOFF": "2026-08-08T22:40:55Z",
-    "OFFLINE_RAISED": "3004",
+    "SEND6_SET_ASIDE": "4979",
+    // The part of Givebutter's online total already inside SEND6_SET_ASIDE.
+    "SEND6_ONLINE_COUNTED": "1975",
     "R2_ACCESS_KEY_ID": "d27b427aadef63a7ec1e05eaec108bc0",
     "MAIL_TRANSPORT": "gmail",
-    "GMAIL_FROM": "hello@adapttolife.org"
+    "GMAIL_FROM": "hello@adapttolife.org",
+    "RESEND_SEGMENT_ID": "a2640e82-34df-446d-b5f8-0ad6f31d352e",
+    // The welcome series (src/newsletter-series.js). "off" stops new emails
+    // without a code change; the sender is the domain verified in Resend.
+    "WELCOME_SERIES": "on",
+    "NEWSLETTER_FROM": "Alec at Adapt To Life <hello@mail.adapttolife.org>",
+    "NEWSLETTER_REPLY_TO": "hello@adapttolife.org"
   },
   // Signed-waiver storage: archived to Google Drive, with the signing record in D1.
   "d1_databases": [
     { "binding": "WAIVERS_DB", "database_name": "atl-waivers", "database_id": "a1050703-c625-4028-962b-49cc3fa317fd" },
     // Spec 32 agent email: threads/messages/inboxes (source of truth).
     { "binding": "AGENT_MAIL_DB", "database_name": "agent-mail", "database_id": "a280a0e4-96db-4b39-a1fb-99f57b8d27be" },
-    { "binding": "INTAKE", "database_name": "atl-intake", "database_id": "5f9c4771-25ba-4e83-aadf-00bc698329bf" }
+    { "binding": "INTAKE", "database_name": "atl-intake", "database_id": "5f9c4771-25ba-4e83-aadf-00bc698329bf" },
+    { "binding": "ASNM_DB", "database_name": "asnm-db", "database_id": "055916fd-3e58-4599-b11e-ffaedabe0f0b" }
+  ],
+  "services": [
+    { "binding": "ASNM", "service": "adaptivesportsnearme" }
   ],
   // Outbound email via Cloudflare Email Sending (native binding, no API key). Used by
   // src/email.js cfSend for agent replies + waiver receipts. Sender domains
@@ -155,18 +164,27 @@
         "ENV_NAME": "staging",
         "STAGING": "1",
         "INTAKE_INBOX": "hello@adapttolife.org",
-        "BEEHIIV_PUBLICATION_ID": "pub_d1bfe66c-074f-464a-a94a-d0cce6d21943",
         "WAIVERS_DRIVE_ID": "1NAW-FAeJKJnGgmMgzgRGS78CxE5WYo-p",
         "AGENT_MAIL_DOMAIN": "agents.adapttolife.org",
         "REPORT_LINK_BASE": "https://reports.amelioration.is",
         "GRANTS_INBOX": "hello@adapttolife.org",
         "GIVEBUTTER_CAMPAIGN_ID": "683765",
         "GIVEBUTTER_DONOR_CUTOFF": "2026-08-08T22:40:55Z",
-        "OFFLINE_RAISED": "3004",
+        "SEND6_SET_ASIDE": "4979",
+        // The part of Givebutter's online total already inside SEND6_SET_ASIDE.
+        "SEND6_ONLINE_COUNTED": "1975",
         "R2_ACCESS_KEY_ID": "d27b427aadef63a7ec1e05eaec108bc0",
+        // "none" is not a supported transport, so mailConfigured() is false and
+        // staging sends no mail of its own (src/mail-transport.js).
         "MAIL_TRANSPORT": "gmail",
         "GMAIL_FROM": "hello@adapttolife.org",
-        "TURNSTILE_MODE": "off"
+        "TURNSTILE_MODE": "off",
+        "ASNM_ADMIN_ORIGIN": "https://staging-adaptivesportsnearme.adapt-to-life.workers.dev",
+        "RESEND_SEGMENT_ID": "a2640e82-34df-446d-b5f8-0ad6f31d352e",
+        // Mirrors production; inert here (staging has no Resend key or cron).
+        "WELCOME_SERIES": "on",
+        "NEWSLETTER_FROM": "Alec at Adapt To Life <hello@mail.adapttolife.org>",
+        "NEWSLETTER_REPLY_TO": "hello@adapttolife.org"
       },
       "routes": [],
       // Run the real application for every route, with staging cache/index headers.
@@ -174,7 +192,8 @@
       "d1_databases": [
         { "binding": "WAIVERS_DB", "database_name": "atl-waivers", "database_id": "a1050703-c625-4028-962b-49cc3fa317fd" },
         { "binding": "AGENT_MAIL_DB", "database_name": "agent-mail", "database_id": "a280a0e4-96db-4b39-a1fb-99f57b8d27be" },
-        { "binding": "INTAKE", "database_name": "atl-intake", "database_id": "5f9c4771-25ba-4e83-aadf-00bc698329bf" }
+        { "binding": "INTAKE", "database_name": "atl-intake", "database_id": "5f9c4771-25ba-4e83-aadf-00bc698329bf" },
+        { "binding": "ASNM_DB", "database_name": "asnm-db-staging", "database_id": "d3f67da7-60a3-44b6-9215-28665492d3f9" }
       ],
       "r2_buckets": [],
       "send_email": [{ "name": "SEND_EMAIL" }],

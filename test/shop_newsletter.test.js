@@ -29,7 +29,10 @@ const MIGRATION = readFileSync(
   new URL("../schema/migrations/2026-10-03-shop-subscribers.sql", import.meta.url),
   "utf8",
 );
-const BASE_SCHEMA = readFileSync(new URL("../schema/shop_messages.sql", import.meta.url), "utf8");
+const BASE_SCHEMA = readFileSync(
+  new URL("../schema/shop_messages.sql", import.meta.url),
+  "utf8",
+);
 
 function setup({ db = sqliteD1(BASE_SCHEMA), turnstileOff = true } = {}) {
   const sent = [];
@@ -37,7 +40,12 @@ function setup({ db = sqliteD1(BASE_SCHEMA), turnstileOff = true } = {}) {
   const env = {
     SHOP_CONTACT_KEY: KEY,
     WAIVERS_DB: db,
-    SEND_EMAIL: { async send(msg) { sent.push(msg); return {}; } },
+    SEND_EMAIL: {
+      async send(msg) {
+        sent.push(msg);
+        return {};
+      },
+    },
   };
   if (turnstileOff) env.TURNSTILE_MODE = "off";
   const ctx = { waitUntil: (p) => jobs.push(p) };
@@ -45,7 +53,10 @@ function setup({ db = sqliteD1(BASE_SCHEMA), turnstileOff = true } = {}) {
 }
 
 function post(body, { key = KEY } = {}) {
-  const headers = new Headers({ "Content-Type": "application/json", "CF-Connecting-IP": "203.0.113.9" });
+  const headers = new Headers({
+    "Content-Type": "application/json",
+    "CF-Connecting-IP": "203.0.113.9",
+  });
   if (key !== null) headers.set("X-Shop-Key", key);
   return new Request("https://adapttolife.org/api/shop-contact", {
     method: "POST",
@@ -69,7 +80,11 @@ const subscribers = (db) => db.sql.prepare("SELECT * FROM shop_subscribers").all
 
 test("the migration and the base schema define the same table", () => {
   const db = sqliteD1(MIGRATION);
-  const cols = (d) => d.sql.prepare("PRAGMA table_info(shop_subscribers)").all().map((c) => c.name);
+  const cols = (d) =>
+    d.sql
+      .prepare("PRAGMA table_info(shop_subscribers)")
+      .all()
+      .map((c) => c.name);
   assert.deepEqual(cols(db), cols(sqliteD1(BASE_SCHEMA)));
   // Re-applying is harmless: the migration is IF NOT EXISTS throughout.
   db.sql.exec(MIGRATION);
@@ -129,7 +144,12 @@ test("a sign-up sends no auto-reply, no shop notice, and is not a message", asyn
 test("a contact message still goes the contact way", async () => {
   const { db, env, ctx, sent, jobs } = setup();
   const res = await handleShopContact(
-    post({ name: "Dana", email: "dana@example.com", topic: "Sizing help", message: "M or L?" }),
+    post({
+      name: "Dana",
+      email: "dana@example.com",
+      topic: "Sizing help",
+      message: "M or L?",
+    }),
     env,
     ctx,
   );
@@ -174,7 +194,8 @@ test("the gates still apply: key, honeypot, Turnstile", async () => {
 // --- the Sheet mirror -------------------------------------------------------
 
 const SA_PRIVATE_KEY = generateKeyPairSync("rsa", { modulusLength: 2048 })
-  .privateKey.export({ type: "pkcs8", format: "pem" }).toString();
+  .privateKey.export({ type: "pkcs8", format: "pem" })
+  .toString();
 
 function crmEnv(db) {
   return {
@@ -197,18 +218,27 @@ test("newsletter rows go to their own tab and are marked only after the append",
   const db = await seeded();
   const calls = [];
   const realFetch = globalThis.fetch;
-  t.after(() => { globalThis.fetch = realFetch; });
+  t.after(() => {
+    globalThis.fetch = realFetch;
+  });
   globalThis.fetch = async (url, init) => {
     const u = String(url);
     calls.push({ u, body: init?.body });
-    if (u.includes("/token")) return new Response(JSON.stringify({ access_token: "tok" }), { status: 200 });
+    if (u.includes("/token"))
+      return new Response(JSON.stringify({ access_token: "tok" }), { status: 200 });
     if (u.includes("?fields=sheets.properties.title")) {
-      return new Response(JSON.stringify({ sheets: [{ properties: { title: "Shop Messages" } }] }), { status: 200 });
+      return new Response(
+        JSON.stringify({ sheets: [{ properties: { title: "Shop Messages" } }] }),
+        { status: 200 },
+      );
     }
     if (u.includes(":batchUpdate")) return new Response("{}", { status: 200 });
     if (u.includes("A1:D1")) return new Response("{}", { status: 200 });
     if (u.includes(":append")) {
-      return new Response(JSON.stringify({ updates: { updatedRange: "'Shop Newsletter'!A2:D2" } }), { status: 200 });
+      return new Response(
+        JSON.stringify({ updates: { updatedRange: "'Shop Newsletter'!A2:D2" } }),
+        { status: 200 },
+      );
     }
     return new Response("unexpected", { status: 500 });
   };
@@ -216,11 +246,24 @@ test("newsletter rows go to their own tab and are marked only after the append",
   await runShopNewsletterBacklog(crmEnv(db));
   const append = calls.find((c) => c.u.includes(":append"));
   assert.match(append.u, /Shop%20Newsletter!A:D:append/);
-  assert.deepEqual(JSON.parse(append.body).values[0].slice(1), ["reader@example.com", "/collections/all", ""]);
+  assert.deepEqual(JSON.parse(append.body).values[0].slice(1), [
+    "reader@example.com",
+    "/collections/all",
+    "",
+  ]);
   // The tab did not exist, so it was created with its own header.
-  assert.ok(calls.some((c) => c.u.includes(":batchUpdate") && c.body.includes("Shop Newsletter")));
+  assert.ok(
+    calls.some(
+      (c) => c.u.includes(":batchUpdate") && c.body.includes("Shop Newsletter"),
+    ),
+  );
   const header = calls.find((c) => c.u.includes("A1:D1"));
-  assert.deepEqual(JSON.parse(header.body).values[0], ["Date", "Email", "Page", "Referral code"]);
+  assert.deepEqual(JSON.parse(header.body).values[0], [
+    "Date",
+    "Email",
+    "Page",
+    "Referral code",
+  ]);
   assert.equal(subscribers(db)[0].crm_row, "'Shop Newsletter'!A2:D2");
   // Never into the contact queue's tab.
   assert.ok(!calls.some((c) => c.u.includes("Shop%20Messages!")));
@@ -229,12 +272,18 @@ test("newsletter rows go to their own tab and are marked only after the append",
 test("a Sheets failure leaves sign-ups unmarked so the next tick retries", async (t) => {
   const db = await seeded();
   const realFetch = globalThis.fetch;
-  t.after(() => { globalThis.fetch = realFetch; });
+  t.after(() => {
+    globalThis.fetch = realFetch;
+  });
   globalThis.fetch = async (url) => {
     const u = String(url);
-    if (u.includes("/token")) return new Response(JSON.stringify({ access_token: "tok" }), { status: 200 });
+    if (u.includes("/token"))
+      return new Response(JSON.stringify({ access_token: "tok" }), { status: 200 });
     if (u.includes("?fields=sheets.properties.title")) {
-      return new Response(JSON.stringify({ sheets: [{ properties: { title: "Shop Newsletter" } }] }), { status: 200 });
+      return new Response(
+        JSON.stringify({ sheets: [{ properties: { title: "Shop Newsletter" } }] }),
+        { status: 200 },
+      );
     }
     return new Response("nope", { status: 503 });
   };

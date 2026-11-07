@@ -14,35 +14,49 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
 import { execFileSync } from "node:child_process";
-import { LANES, ROLES, SHARED } from "../data/volunteer-roles.mjs";
+import { LANES, ROLES, SHARED, TOOLS, ROLE_TOOLS } from "../data/volunteer-roles.mjs";
 
 const root = new URL("../", import.meta.url);
 const read = (rel) => readFileSync(new URL(rel, root), "utf8");
 const BOARD = read("public/volunteer.html");
-const PAGES = new Map(ROLES.map((r) => [r.slug, read(`public/volunteer/${r.slug}.html`)]));
-const body = (html) => html.slice(html.indexOf("<main>"), html.indexOf("</main>")).replace(/<!--[\s\S]*?-->/g, "");
+const PAGES = new Map(
+  ROLES.map((r) => [r.slug, read(`public/volunteer/${r.slug}.html`)]),
+);
+const body = (html) =>
+  html
+    .slice(html.indexOf("<main>"), html.indexOf("</main>"))
+    .replace(/<!--[\s\S]*?-->/g, "");
 
 // ---- 1. the tree matches the data ---------------------------------------
 
 test("the generated tree is up to date", () => {
   // Regenerates in a scratch check and fails if anything on disk differs.
   execFileSync(process.execPath, ["scripts/build-volunteer.mjs", "--check"], {
-    cwd: root, stdio: "pipe",
+    cwd: root,
+    stdio: "pipe",
   });
 });
 
 test("every role has a page, and every page has a role", () => {
   for (const r of ROLES) {
-    assert.ok(existsSync(new URL(`public/volunteer/${r.slug}.html`, root)), `no page for ${r.slug}`);
+    assert.ok(
+      existsSync(new URL(`public/volunteer/${r.slug}.html`, root)),
+      `no page for ${r.slug}`,
+    );
   }
 });
 
-test("the whole card is one link to its role page", () => {
+test("the whole row is one link to its role page", () => {
   // Alec, 2026-09-02: almost everyone applies for one role, so the shortest path
-  // wins. One tap on the card, then a two-field form on the role page.
+  // wins. One tap on the row, then a two-field form on the role page. Since
+  // 2026-10-29 the board is an index of rows (site.css): the role name is the
+  // link and .ix-link stretches it over the whole row.
   for (const r of ROLES) {
-    assert.match(BOARD, new RegExp(`<a class="role" href="/volunteer/${r.slug}">`),
-      `the board does not link ${r.slug} as a whole card`);
+    assert.match(
+      BOARD,
+      new RegExp(`<a class="ix-link" href="/volunteer/${r.slug}">`),
+      `the board does not link ${r.slug} as a whole card`,
+    );
   }
 });
 
@@ -50,17 +64,32 @@ test("the board carries no role picker", () => {
   // The multi-select cost a reader two decisions before reaching a form they
   // could have had on the role page. If checkboxes come back, so does the
   // problem, and the card stops being tappable as a single target.
-  assert.doesNotMatch(BOARD, /name="role"[^>]*type="checkbox"|class="role-cb"/, "the board has role checkboxes again");
-  assert.doesNotMatch(BOARD, /<label class="role["\s]/, "a card is wrapped in a label again");
+  assert.doesNotMatch(
+    BOARD,
+    /name="role"[^>]*type="checkbox"|class="role-cb"/,
+    "the board has role checkboxes again",
+  );
+  assert.doesNotMatch(
+    BOARD,
+    /<label class="role["\s]/,
+    "a card is wrapped in a label again",
+  );
 });
 
-test("a card contains no nested link or form control", () => {
-  // The card IS an anchor, so an <a> or an <input> inside it would be invalid
-  // and would fight the tap.
-  const cards = [...BOARD.matchAll(/<a class="role" href="[^"]*">([\s\S]*?)<\/a>/g)].map((m) => m[1]);
+test("a row's link contains no nested link or form control", () => {
+  // The role link is an anchor, so an <a> or an <input> inside it would be
+  // invalid and would fight the tap. The "Works in" tool links are siblings
+  // of it, layered above the stretched link, never inside it.
+  const cards = [
+    ...BOARD.matchAll(/<a class="ix-link" href="\/volunteer\/[^"]*">([\s\S]*?)<\/a>/g),
+  ].map((m) => m[1]);
   assert.equal(cards.length, ROLES.length);
   for (const c of cards) {
-    assert.doesNotMatch(c, /<a\s|<input|<button|<label/, "a card contains a nested link or control");
+    assert.doesNotMatch(
+      c,
+      /<a\s|<input|<button|<label/,
+      "a card contains a nested link or control",
+    );
   }
 });
 
@@ -69,29 +98,60 @@ test("every role page carries its own two-field apply form", () => {
   // on the page you are already reading.
   for (const [slug, html] of PAGES) {
     const r = ROLES.find((x) => x.slug === slug);
-    assert.ok(html.includes(`<input type="hidden" name="role" value="${r.name.replace(/&/g, "&amp;")}">`),
-      `${slug} does not carry its role in a hidden input`);
-    assert.match(html, /<form class="jd-form[^"]*" id="volForm"/, `${slug} has no apply form`);
+    assert.ok(
+      html.includes(
+        `<input type="hidden" name="role" value="${r.name.replace(/&/g, "&amp;")}">`,
+      ),
+      `${slug} does not carry its role in a hidden input`,
+    );
+    assert.match(
+      html,
+      /<form class="jd-form[^"]*" id="volForm"/,
+      `${slug} has no apply form`,
+    );
     assert.match(html, /name="name"[^>]*type="text"/, `${slug} has no name field`);
     assert.match(html, /name="em"[^>]*type="email"/, `${slug} has no email field`);
-    assert.match(html, /action="\/api\/volunteer"|\/api\/volunteer/, `${slug} does not post to the API`);
+    assert.match(
+      html,
+      /action="\/api\/volunteer"|\/api\/volunteer/,
+      `${slug} does not post to the API`,
+    );
     assert.match(html, /cf-turnstile/, `${slug} has no spam gate`);
     // Two visible fields by default: anything else is behind a shut <details>.
-    const form = html.slice(html.indexOf('<form class="jd-form'), html.indexOf("</form>"));
+    const form = html.slice(
+      html.indexOf('<form class="jd-form'),
+      html.indexOf("</form>"),
+    );
     const outside = form.slice(0, form.indexOf("<details"));
     const visible = [...outside.matchAll(/<label for="/g)].length;
-    assert.equal(visible, 2, `${slug} shows ${visible} fields before the optional section, expected 2`);
-    assert.match(form, /<details class="jd-more">/, `${slug} does not hide its optional fields`);
-    assert.doesNotMatch(form, /<details class="jd-more" open/, `${slug} opens its optional fields by default`);
+    assert.equal(
+      visible,
+      2,
+      `${slug} shows ${visible} fields before the optional section, expected 2`,
+    );
+    assert.match(
+      form,
+      /<details class="jd-more">/,
+      `${slug} does not hide its optional fields`,
+    );
+    assert.doesNotMatch(
+      form,
+      /<details class="jd-more" open/,
+      `${slug} opens its optional fields by default`,
+    );
   }
 });
 
 test("every role page's share card exists on disk", () => {
   for (const [slug, html] of PAGES) {
-    const m = html.match(/property="og:image" content="https:\/\/adapttolife\.org([^"]+)"/);
+    const m = html.match(
+      /property="og:image" content="https:\/\/adapttolife\.org([^"]+)"/,
+    );
     assert.ok(m, `${slug} has no og:image`);
-    assert.ok(existsSync(new URL(`public${m[1]}`, root)),
-      `${slug} points at ${m[1]}, which is not in the tree (run npm run cards)`);
+    assert.ok(
+      existsSync(new URL(`public${m[1]}`, root)),
+      `${slug} points at ${m[1]}, which is not in the tree (run npm run cards)`,
+    );
   }
 });
 
@@ -119,7 +179,11 @@ test("every role page says it is unpaid and creates no employment relationship",
   assert.match(SHARED.legal, /[Uu]npaid volunteer role/);
   assert.match(SHARED.legal, /no employment relationship/);
   for (const [slug, html] of PAGES) {
-    assert.match(html, /no employment relationship/, `${slug} is missing the legal line`);
+    assert.match(
+      html,
+      /no employment relationship/,
+      `${slug} is missing the legal line`,
+    );
     assert.match(html, /Volunteer, unpaid/, `${slug} does not label itself unpaid`);
   }
 });
@@ -131,9 +195,15 @@ test("the terms of joining live on the board, once, and not on every role page",
     assert.ok(BOARD.includes(t), `the board is missing the term "${t}"`);
   }
   for (const [slug, html] of PAGES) {
-    assert.ok(html.includes("hear back either way"), `${slug} drops the one promise we make`);
-    assert.doesNotMatch(html, /What you get out of it|No busywork, and a real scope/,
-      `${slug} repeats the board's terms`);
+    assert.ok(
+      html.includes("hear back either way"),
+      `${slug} drops the one promise we make`,
+    );
+    assert.doesNotMatch(
+      html,
+      /What you get out of it|No busywork, and a real scope/,
+      `${slug} repeats the board's terms`,
+    );
   }
 });
 
@@ -149,7 +219,8 @@ test("no role page narrates its own design to the reader", () => {
     /This is what we would actually ask you to do/i,
   ];
   for (const [slug, html] of PAGES) {
-    for (const re of banned) assert.doesNotMatch(html, re, `${slug} explains itself to the reader`);
+    for (const re of banned)
+      assert.doesNotMatch(html, re, `${slug} explains itself to the reader`);
   }
 });
 
@@ -157,7 +228,9 @@ test("a role page stays under 500 words", () => {
   // 985 when Alec called it bloated. The budget is the check, because prose
   // creeps back one helpful sentence at a time.
   for (const [slug, html] of PAGES) {
-    const text = body(html).replace(/<[^>]+>/g, " ").replace(/&[a-z]+;/g, " ");
+    const text = body(html)
+      .replace(/<[^>]+>/g, " ")
+      .replace(/&[a-z]+;/g, " ");
     const words = text.split(/\s+/).filter(Boolean).length;
     assert.ok(words < 500, `${slug} is ${words} words, over the 500 budget`);
   }
@@ -174,7 +247,8 @@ test("no role page claims a grant has been made", () => {
     /athletes funded so far/i,
   ];
   for (const [slug, html] of PAGES) {
-    for (const re of banned) assert.doesNotMatch(body(html), re, `${slug} claims a track record`);
+    for (const re of banned)
+      assert.doesNotMatch(body(html), re, `${slug} claims a track record`);
   }
 });
 
@@ -208,8 +282,29 @@ test("no role page emits JobPosting structured data", () => {
 test("every role names its time cost on the board", () => {
   for (const r of ROLES) {
     assert.ok(r.time && r.time.length > 2, `${r.slug} has no time chip`);
-    assert.match(BOARD, new RegExp(`<span class="role-t">${r.time.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</span>`),
-      `${r.slug} card does not show its time`);
+    assert.match(
+      BOARD,
+      new RegExp(
+        `<span class="ix-time"><svg[^>]*>.*?</svg>${r.time.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</span>`,
+      ),
+      `${r.slug} row does not show its time`,
+    );
+  }
+});
+
+test("every role's tools are real entries, shown on the board and its page", () => {
+  // TOOLS holds only what this organization actually runs, our own sites,
+  // and official references; a key that is not in it is a typo or a guess.
+  for (const r of ROLES) {
+    const keys = ROLE_TOOLS[r.slug] || [];
+    for (const k of keys) assert.ok(TOOLS[k], `${r.slug} lists unknown tool ${k}`);
+    if (!keys.length) continue;
+    const page = readFileSync(new URL(`public/volunteer/${r.slug}.html`, root), "utf8");
+    for (const k of keys) {
+      const href = TOOLS[k].href.replace(/&/g, "&amp;");
+      assert.ok(page.includes(`href="${href}"`), `${r.slug} page does not link ${k}`);
+      assert.ok(BOARD.includes(`href="${href}"`), `the board does not link ${k}`);
+    }
   }
 });
 
@@ -217,20 +312,48 @@ test("the content model holds its own length budget", () => {
   // The board is for scanning and the page is for the argument, so a card is
   // one sentence and everything editorial belongs in `why`.
   for (const r of ROLES) {
-    const sentences = (t) => t.split(/(?<=[.!?])\s+/).filter((x) => x.split(/\s+/).length > 2).length;
+    const sentences = (t) =>
+      t.split(/(?<=[.!?])\s+/).filter((x) => x.split(/\s+/).length > 2).length;
     assert.ok(sentences(r.card) <= 1, `${r.slug} card is more than one sentence`);
     assert.ok(sentences(r.why) <= 2, `${r.slug} why is more than two sentences`);
     assert.ok(r.own.length <= 3, `${r.slug} has ${r.own.length} work bullets, max 3`);
-    assert.ok(r.first.length <= 3, `${r.slug} has ${r.first.length} first-month steps, max 3`);
-    assert.ok(r.helps.length <= 2, `${r.slug} has ${r.helps.length} helps bullets, max 2`);
-    assert.ok(r.isNot.length <= 2, `${r.slug} has ${r.isNot.length} not-this bullets, max 2`);
-    assert.equal(typeof r.skip, "string", `${r.slug} skip must be one line, not a list`);
+    assert.ok(
+      r.first.length <= 3,
+      `${r.slug} has ${r.first.length} first-month steps, max 3`,
+    );
+    assert.ok(
+      r.helps.length <= 2,
+      `${r.slug} has ${r.helps.length} helps bullets, max 2`,
+    );
+    assert.ok(
+      r.isNot.length <= 2,
+      `${r.slug} has ${r.isNot.length} not-this bullets, max 2`,
+    );
+    assert.equal(
+      typeof r.skip,
+      "string",
+      `${r.slug} skip must be one line, not a list`,
+    );
   }
 });
 
 test("the data model is complete and internally consistent", () => {
-  const need = ["slug", "lane", "name", "card", "time", "where", "withWhom",
-    "why", "own", "first", "helps", "skip", "isNot", "payoff"];
+  const need = [
+    "slug",
+    "lane",
+    "name",
+    "card",
+    "time",
+    "where",
+    "withWhom",
+    "why",
+    "own",
+    "first",
+    "helps",
+    "skip",
+    "isNot",
+    "payoff",
+  ];
   const lanes = new Set(LANES.map((l) => l.key));
   const slugs = new Set();
   for (const r of ROLES) {
@@ -238,10 +361,19 @@ test("the data model is complete and internally consistent", () => {
     assert.ok(lanes.has(r.lane), `${r.slug} is in unknown lane ${r.lane}`);
     assert.ok(!slugs.has(r.slug), `duplicate slug ${r.slug}`);
     slugs.add(r.slug);
-    assert.equal(r.slug, r.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
-      `${r.slug} does not match its name`);
+    assert.equal(
+      r.slug,
+      r.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, ""),
+      `${r.slug} does not match its name`,
+    );
   }
   for (const l of LANES) {
-    assert.ok(ROLES.some((r) => r.lane === l.key), `lane ${l.key} has no roles`);
+    assert.ok(
+      ROLES.some((r) => r.lane === l.key),
+      `lane ${l.key} has no roles`,
+    );
   }
 });

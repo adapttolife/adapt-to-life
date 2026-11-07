@@ -28,26 +28,31 @@
 //
 // Read the size table in docs/qr-print.md before choosing --size.
 
-import fs from 'fs';
-import path from 'path';
-import { execFileSync } from 'child_process';
-import { chromium } from 'playwright';
-import { PNG } from 'pngjs';
-import jsQR from 'jsqr';
+import fs from "fs";
+import path from "path";
+import { execFileSync } from "child_process";
+import { chromium } from "playwright";
+import { PNG } from "pngjs";
+import jsQR from "jsqr";
 import {
-  renderCode, BASE, CREAM, readDistanceRatio, MODULE_MM_WARN, MODULE_MM_FAIL,
-} from './lib/qr-art.mjs';
+  renderCode,
+  BASE,
+  CREAM,
+  readDistanceRatio,
+  MODULE_MM_WARN,
+  MODULE_MM_FAIL,
+} from "./lib/qr-art.mjs";
 
 const SHEETS = {
-  letter: { w: 215.9, h: 279.4, label: 'US Letter' },
-  a4:     { w: 210.0, h: 297.0, label: 'A4' },
+  letter: { w: 215.9, h: 279.4, label: "US Letter" },
+  a4: { w: 210.0, h: 297.0, label: "A4" },
   // Apparel and signage artwork is not laid out on paper. `fit` sizes the page
   // to the artwork itself; without it a 254mm shirt graphic was being placed on
   // a 215.9mm letter page, silently clipped, and then correctly failed the
   // decode gate — with an error message blaming the size for the wrong reason.
-  fit:    { w: 0, h: 0, label: 'fit to artwork' },
+  fit: { w: 0, h: 0, label: "fit to artwork" },
 };
-const OUT = process.env.ATL_QR_OUT || path.join(process.cwd(), 'public/qr');
+const OUT = process.env.ATL_QR_OUT || path.join(process.cwd(), "public/qr");
 // Resolution the gate rasterises at. Raise it with --gate-dpi to tell a genuine
 // marginal code apart from a rasteriser artifact: a code that fails at 400 and
 // passes at 1200 was sitting close enough to the edge that sub-pixel placement
@@ -57,7 +62,7 @@ const DEFAULT_GATE_DPI = 400;
 const args = process.argv.slice(2);
 const flag = (name, dflt) => {
   const hit = args.find((a) => a.startsWith(`--${name}=`));
-  return hit ? hit.split('=').slice(1).join('=') : dflt;
+  return hit ? hit.split("=").slice(1).join("=") : dflt;
 };
 const mm = (v) => {
   const s = String(v).trim();
@@ -65,27 +70,32 @@ const mm = (v) => {
   if (!isFinite(n)) throw new Error(`not a length: ${s}`);
   if (/in$/.test(s)) return n * 25.4;
   if (/cm$/.test(s)) return n * 10;
-  return n;                       // bare numbers and mm are millimetres
+  return n; // bare numbers and mm are millimetres
 };
 
-const slugs = args.filter((a) => !a.startsWith('--'));
+const slugs = args.filter((a) => !a.startsWith("--"));
 if (slugs.length !== 1) {
-  console.error('usage: make-qr-sheet.mjs <slug> --size=45mm [--sheet=letter|a4] [--style=frame|plain] [--ink=mono|brand] [--bleed=0] [--gutter=6mm] [--copies=auto]');
+  console.error(
+    "usage: make-qr-sheet.mjs <slug> --size=45mm [--sheet=letter|a4] [--style=frame|plain] [--ink=mono|brand] [--bleed=0] [--gutter=6mm] [--copies=auto]",
+  );
   process.exit(1);
 }
-const slug   = slugs[0];
-const style  = flag('style', 'frame');
-const ink    = flag('ink', 'mono');   // black and white by default
-const apparel = args.includes('--apparel');  // square modules, no hairline: see lib/qr-art.mjs
-const sheet  = SHEETS[flag('sheet', 'letter')];
-const size   = mm(flag('size', '45mm'));
-const bleed  = mm(flag('bleed', '0'));
-const gutter = mm(flag('gutter', '6mm'));
-const margin = mm(flag('margin', '12mm'));
-const copiesWanted = flag('copies', 'auto');
-let GATE_DPI = parseInt(flag('gate-dpi', '0'), 10) || 0;   // 0 = derive it below
-const keepRaster = args.includes('--keep-raster');
-if (!sheet) { console.error('unknown --sheet'); process.exit(1); }
+const slug = slugs[0];
+const style = flag("style", "frame");
+const ink = flag("ink", "mono"); // black and white by default
+const apparel = args.includes("--apparel"); // square modules, no hairline: see lib/qr-art.mjs
+const sheet = SHEETS[flag("sheet", "letter")];
+const size = mm(flag("size", "45mm"));
+const bleed = mm(flag("bleed", "0"));
+const gutter = mm(flag("gutter", "6mm"));
+const margin = mm(flag("margin", "12mm"));
+const copiesWanted = flag("copies", "auto");
+let GATE_DPI = parseInt(flag("gate-dpi", "0"), 10) || 0; // 0 = derive it below
+const keepRaster = args.includes("--keep-raster");
+if (!sheet) {
+  console.error("unknown --sheet");
+  process.exit(1);
+}
 
 const url = BASE + slug;
 const art = renderCode(url, { style, ink, apparel });
@@ -94,21 +104,26 @@ const art = renderCode(url, { style, ink, apparel });
 const pieceW = size;
 const pieceH = size * (art.heightUnits / art.widthUnits);
 // The symbol square (code + quiet zone) as a fraction of the full artwork.
-const codeMm   = size * (art.codeUnits / art.widthUnits);
+const codeMm = size * (art.codeUnits / art.widthUnits);
 const moduleMm = codeMm / (art.modules + 2 * 4);
 const symbolMm = moduleMm * art.modules;
-const quietMm  = moduleMm * 4;
-const readMm   = symbolMm * readDistanceRatio;
+const quietMm = moduleMm * 4;
+const readMm = symbolMm * readDistanceRatio;
 
-if (sheet.w === 0) {          // --sheet=fit: page becomes the artwork plus margin
+if (sheet.w === 0) {
+  // --sheet=fit: page becomes the artwork plus margin
   sheet.w = pieceW + 2 * margin;
   sheet.h = pieceH + 2 * margin;
 }
-const cellW = pieceW + gutter, cellH = pieceH + gutter;
+const cellW = pieceW + gutter,
+  cellH = pieceH + gutter;
 const cols = Math.max(1, Math.floor((sheet.w - 2 * margin + gutter) / cellW));
 const rows = Math.max(1, Math.floor((sheet.h - 2 * margin + gutter) / cellH));
 const perSheet = cols * rows;
-const copies = copiesWanted === 'auto' ? perSheet : Math.min(parseInt(copiesWanted, 10) || 1, perSheet);
+const copies =
+  copiesWanted === "auto"
+    ? perSheet
+    : Math.min(parseInt(copiesWanted, 10) || 1, perSheet);
 
 // Centre the block that is actually used. Anchoring to the top-left margin
 // left ~45mm of dead stock down one side of a full sheet, which looks like a
@@ -132,70 +147,103 @@ const originY = (sheet.h - (rowsUsed * cellH - gutter)) / 2;
 // pixels on a module. --gate-dpi still forces an exact value for diagnosis.
 if (!GATE_DPI) {
   const wanted = DEFAULT_GATE_DPI;
-  const perModule = Math.max(8, Math.round(moduleMm * wanted / 25.4));
-  GATE_DPI = Math.round(perModule * 25.4 / moduleMm);
+  const perModule = Math.max(8, Math.round((moduleMm * wanted) / 25.4));
+  GATE_DPI = Math.round((perModule * 25.4) / moduleMm);
 }
 
 const fmt = (n) => `${n.toFixed(2)}mm`;
 const inches = (n) => `${(n / 25.4).toFixed(2)}in`;
 
 console.log(`\n  /q/${slug}  →  ${url}`);
-console.log(`  ${sheet.label} · ${style} · ${ink} · ${copies} of ${perSheet} positions (${cols}×${rows})\n`);
-console.log(`  finished piece   ${fmt(pieceW)} × ${fmt(pieceH)}   (${inches(pieceW)} × ${inches(pieceH)})`);
-console.log(`  symbol           ${fmt(symbolMm)}   ${art.modules}×${art.modules} modules`);
+console.log(
+  `  ${sheet.label} · ${style} · ${ink} · ${copies} of ${perSheet} positions (${cols}×${rows})\n`,
+);
+console.log(
+  `  finished piece   ${fmt(pieceW)} × ${fmt(pieceH)}   (${inches(pieceW)} × ${inches(pieceH)})`,
+);
+console.log(
+  `  symbol           ${fmt(symbolMm)}   ${art.modules}×${art.modules} modules`,
+);
 console.log(`  one module       ${moduleMm.toFixed(3)}mm`);
 console.log(`  quiet zone       ${fmt(quietMm)}   (4 modules, ISO minimum)`);
-console.log(`  reads from up to ${(readMm / 1000).toFixed(2)}m  (${(readMm / 25.4 / 12).toFixed(1)}ft)\n`);
+console.log(
+  `  reads from up to ${(readMm / 1000).toFixed(2)}m  (${(readMm / 25.4 / 12).toFixed(1)}ft)\n`,
+);
 
 // ---- guard 1: can this be printed at all? --------------------------------
 if (moduleMm < MODULE_MM_FAIL) {
-  console.error(`  REFUSED: one module is ${moduleMm.toFixed(3)}mm, under the ${MODULE_MM_FAIL}mm floor.`);
-  console.error(`  Nothing prints reliably that small. Make it at least ${fmt(size * MODULE_MM_FAIL / moduleMm)} wide.`);
+  console.error(
+    `  REFUSED: one module is ${moduleMm.toFixed(3)}mm, under the ${MODULE_MM_FAIL}mm floor.`,
+  );
+  console.error(
+    `  Nothing prints reliably that small. Make it at least ${fmt((size * MODULE_MM_FAIL) / moduleMm)} wide.`,
+  );
   process.exit(1);
 }
 if (moduleMm < MODULE_MM_WARN) {
-  console.warn(`  WARNING: one module is ${moduleMm.toFixed(3)}mm, under the ${MODULE_MM_WARN}mm comfort line.`);
-  console.warn(`  A good commercial printer will hold this; an office laser or a cheap sticker`);
-  console.warn(`  vendor may close up the gaps. Prefer ${fmt(size * MODULE_MM_WARN / moduleMm)} or wider, and`);
-  console.warn(`  do the physical scan test (AC1) on the actual stock before ordering volume.\n`);
+  console.warn(
+    `  WARNING: one module is ${moduleMm.toFixed(3)}mm, under the ${MODULE_MM_WARN}mm comfort line.`,
+  );
+  console.warn(
+    `  A good commercial printer will hold this; an office laser or a cheap sticker`,
+  );
+  console.warn(
+    `  vendor may close up the gaps. Prefer ${fmt((size * MODULE_MM_WARN) / moduleMm)} or wider, and`,
+  );
+  console.warn(
+    `  do the physical scan test (AC1) on the actual stock before ordering volume.\n`,
+  );
 }
 if (gutter < 4 && copies > 1) {
-  console.warn(`  WARNING: a ${fmt(gutter)} gutter leaves little room for crop marks and a cutting blade.\n`);
+  console.warn(
+    `  WARNING: a ${fmt(gutter)} gutter leaves little room for crop marks and a cutting blade.\n`,
+  );
 }
 
 // ---- the sheet -----------------------------------------------------------
 // Laid out in real millimetres so what the PDF says is what the printer gets.
 // Crop marks sit in the GUTTER, outside the trim box — never inside the code's
 // quiet zone, which is guard 2.
-const MARK = 3, MARK_GAP = 1;
-let pieces = '';
-const rects = [];   // trim boxes in mm, reused by the decode gate
+const MARK = 3,
+  MARK_GAP = 1;
+let pieces = "";
+const rects = []; // trim boxes in mm, reused by the decode gate
 for (let i = 0; i < copies; i++) {
-  const r = Math.floor(i / cols), c = i % cols;
-  const x = originX + c * cellW, y = originY + r * cellH;
+  const r = Math.floor(i / cols),
+    c = i % cols;
+  const x = originX + c * cellW,
+    y = originY + r * cellH;
   rects.push({ x, y, w: pieceW, h: pieceH });
 
   if (bleed > 0) {
     // A square cream backdrop past the trim line, so trimming anywhere inside
     // the bleed still yields a clean cream edge. Note this squares off the
     // tile's rounded corner by design — a die-cut piece is cut to shape.
-    pieces += `<div style="position:absolute;left:${x - bleed}mm;top:${y - bleed}mm;`
-      + `width:${pieceW + 2 * bleed}mm;height:${pieceH + 2 * bleed}mm;background:${CREAM}"></div>`;
+    pieces +=
+      `<div style="position:absolute;left:${x - bleed}mm;top:${y - bleed}mm;` +
+      `width:${pieceW + 2 * bleed}mm;height:${pieceH + 2 * bleed}mm;background:${CREAM}"></div>`;
   }
-  pieces += `<div style="position:absolute;left:${x}mm;top:${y}mm;width:${pieceW}mm;height:${pieceH}mm">`
-    + art.svg.replace(/ width="[\d.]+" height="[\d.]+"/, ' width="100%" height="100%"')
-    + `</div>`;
+  pieces +=
+    `<div style="position:absolute;left:${x}mm;top:${y}mm;width:${pieceW}mm;height:${pieceH}mm">` +
+    art.svg.replace(/ width="[\d.]+" height="[\d.]+"/, ' width="100%" height="100%"') +
+    `</div>`;
 
   // Corner crop marks, hairline, in the gutter. A fitted single piece has no
   // gutter to put them in, and a screen printer wants clean artwork anyway.
-  if (copies > 1) for (const [cx, cy, dx, dy] of [
-    [x, y, -1, -1], [x + pieceW, y, 1, -1], [x, y + pieceH, -1, 1], [x + pieceW, y + pieceH, 1, 1],
-  ]) {
-    pieces += `<div style="position:absolute;left:${cx + dx * MARK_GAP - (dx < 0 ? MARK : 0)}mm;top:${cy}mm;`
-      + `width:${MARK}mm;height:0;border-top:0.12mm solid #999"></div>`;
-    pieces += `<div style="position:absolute;left:${cx}mm;top:${cy + dy * MARK_GAP - (dy < 0 ? MARK : 0)}mm;`
-      + `width:0;height:${MARK}mm;border-left:0.12mm solid #999"></div>`;
-  }
+  if (copies > 1)
+    for (const [cx, cy, dx, dy] of [
+      [x, y, -1, -1],
+      [x + pieceW, y, 1, -1],
+      [x, y + pieceH, -1, 1],
+      [x + pieceW, y + pieceH, 1, 1],
+    ]) {
+      pieces +=
+        `<div style="position:absolute;left:${cx + dx * MARK_GAP - (dx < 0 ? MARK : 0)}mm;top:${cy}mm;` +
+        `width:${MARK}mm;height:0;border-top:0.12mm solid #999"></div>`;
+      pieces +=
+        `<div style="position:absolute;left:${cx}mm;top:${cy + dy * MARK_GAP - (dy < 0 ? MARK : 0)}mm;` +
+        `width:0;height:${MARK}mm;border-left:0.12mm solid #999"></div>`;
+    }
 }
 
 const slugLine = `/q/${slug} · ${fmt(pieceW)} wide · module ${moduleMm.toFixed(3)}mm · reads to ${(readMm / 25.4 / 12).toFixed(1)}ft · adapttolife.org`;
@@ -211,16 +259,22 @@ ${pieces}
 <div class="slugline">${slugLine}</div>
 </body></html>`;
 
-const dir = path.join(OUT, 'print');
+const dir = path.join(OUT, "print");
 fs.mkdirSync(dir, { recursive: true });
-const base = `sheet-${slug}-${Math.round(size)}mm-${flag('sheet', 'letter')}${style === 'plain' ? '-plain' : ''}${ink === 'brand' ? '-brand' : ''}${apparel ? '-apparel' : ''}${bleed ? '-bleed' : ''}`;
+const base = `sheet-${slug}-${Math.round(size)}mm-${flag("sheet", "letter")}${style === "plain" ? "-plain" : ""}${ink === "brand" ? "-brand" : ""}${apparel ? "-apparel" : ""}${bleed ? "-bleed" : ""}`;
 const pdfPath = path.join(dir, `${base}.pdf`);
 
 const browser = await chromium.launch();
 const page = await browser.newPage();
-await page.setContent(html, { waitUntil: 'networkidle' });
-await page.waitForTimeout(900);                       // let Space Mono land
-await page.pdf({ path: pdfPath, width: `${sheet.w}mm`, height: `${sheet.h}mm`, printBackground: true, pageRanges: '1' });
+await page.setContent(html, { waitUntil: "networkidle" });
+await page.waitForTimeout(900); // let Space Mono land
+await page.pdf({
+  path: pdfPath,
+  width: `${sheet.w}mm`,
+  height: `${sheet.h}mm`,
+  printBackground: true,
+  pageRanges: "1",
+});
 await browser.close();
 
 // ---- guard 3: decode every position on the RASTERISED pdf ----------------
@@ -229,13 +283,21 @@ await browser.close();
 // decoded alone, because jsQR finds one code per image and a sheet where a
 // single position is broken looks exactly like a perfect one.
 const rasterBase = path.join(dir, `.gate-${base}`);
-execFileSync('pdftoppm', ['-r', String(GATE_DPI), '-png', '-singlefile', pdfPath, rasterBase]);
+execFileSync("pdftoppm", [
+  "-r",
+  String(GATE_DPI),
+  "-png",
+  "-singlefile",
+  pdfPath,
+  rasterBase,
+]);
 const rasterPath = `${rasterBase}.png`;
 const img = PNG.sync.read(fs.readFileSync(rasterPath));
 const pxPerMm = GATE_DPI / 25.4;
 
 function cropDecode({ x, y, w, h }) {
-  const x0 = Math.max(0, Math.floor(x * pxPerMm)), y0 = Math.max(0, Math.floor(y * pxPerMm));
+  const x0 = Math.max(0, Math.floor(x * pxPerMm)),
+    y0 = Math.max(0, Math.floor(y * pxPerMm));
   const cw = Math.min(img.width - x0, Math.ceil(w * pxPerMm));
   const ch = Math.min(img.height - y0, Math.ceil(h * pxPerMm));
   const buf = new Uint8ClampedArray(cw * ch * 4);
@@ -251,7 +313,9 @@ for (let i = 0; i < rects.length; i++) {
   const got = cropDecode(rects[i]);
   if (!got || got.data !== url) {
     bad++;
-    console.error(`  position ${i + 1} of ${rects.length}: DECODE FAILED${got ? ` (read "${got.data}")` : ''}`);
+    console.error(
+      `  position ${i + 1} of ${rects.length}: DECODE FAILED${got ? ` (read "${got.data}")` : ""}`,
+    );
   }
 }
 if (!keepRaster) fs.unlinkSync(rasterPath);
@@ -259,17 +323,33 @@ else console.log(`  raster kept: ${rasterPath}`);
 
 if (bad) {
   if (!keepRaster) fs.unlinkSync(pdfPath);
-  console.error(`\n  ${bad}/${rects.length} positions failed at ${GATE_DPI} DPI. PDF deleted — nothing here is printable.`);
-  console.error(`\n  Identical artwork failing in SOME positions and not others is the signature of a`);
-  console.error(`  marginal size, not broken art: one module is ${(moduleMm / 25.4 * GATE_DPI).toFixed(2)} pixels at this resolution, and when`);
-  console.error(`  that is not a whole number the sub-pixel placement differs per position. Re-run`);
-  console.error(`  with --gate-dpi=1200: if it passes there, the code is simply too small for a`);
-  console.error(`  mid-range printer and the fix is to go wider, not to lower the gate.\n`);
+  console.error(
+    `\n  ${bad}/${rects.length} positions failed at ${GATE_DPI} DPI. PDF deleted — nothing here is printable.`,
+  );
+  console.error(
+    `\n  Identical artwork failing in SOME positions and not others is the signature of a`,
+  );
+  console.error(
+    `  marginal size, not broken art: one module is ${((moduleMm / 25.4) * GATE_DPI).toFixed(2)} pixels at this resolution, and when`,
+  );
+  console.error(
+    `  that is not a whole number the sub-pixel placement differs per position. Re-run`,
+  );
+  console.error(
+    `  with --gate-dpi=1200: if it passes there, the code is simply too small for a`,
+  );
+  console.error(
+    `  mid-range printer and the fix is to go wider, not to lower the gate.\n`,
+  );
   process.exit(1);
 }
 
 console.log(`  all ${rects.length} positions decoded at ${GATE_DPI} DPI`);
 console.log(`  → ${pdfPath}\n`);
-console.log(`  Before ordering volume, run the PHYSICAL scan test (AC1): print one sheet at`);
-console.log(`  100% scale, and scan it with three phones including one 3+ years old, indoors`);
+console.log(
+  `  Before ordering volume, run the PHYSICAL scan test (AC1): print one sheet at`,
+);
+console.log(
+  `  100% scale, and scan it with three phones including one 3+ years old, indoors`,
+);
 console.log(`  and in daylight. Software decoding is necessary and not sufficient.\n`);

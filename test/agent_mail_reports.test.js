@@ -22,7 +22,11 @@ const INBOXES = [
   { address: "julia@agents.adapttolife.org", default_agent: "julia" },
 ];
 const THREADS = [
-  { id: "t-charlie-1", inbox: "charlie@agents.adapttolife.org", assigned_agent: "charlie" },
+  {
+    id: "t-charlie-1",
+    inbox: "charlie@agents.adapttolife.org",
+    assigned_agent: "charlie",
+  },
   { id: "t-julia-1", inbox: "julia@agents.adapttolife.org", assigned_agent: "julia" },
 ];
 const MESSAGES = [
@@ -79,42 +83,62 @@ const MESSAGES = [
 // then limit last.
 function runReportsQuery(sql, args) {
   let i = 0;
-  let rows = MESSAGES.filter((m) => m.direction === "out" && m.body_markdown != null).map((m) => ({
+  let rows = MESSAGES.filter(
+    (m) => m.direction === "out" && m.body_markdown != null,
+  ).map((m) => ({
     ...m,
     thread: THREADS.find((t) => t.id === m.thread_id),
   }));
 
   if (/threads\.inbox IN \(SELECT address FROM inboxes/.test(sql)) {
-    const agentA = args[i]; i += 1;
-    const agentB = args[i]; i += 1;
-    const owned = INBOXES.filter((ib) => ib.default_agent === agentA).map((ib) => ib.address);
-    rows = rows.filter((m) => owned.includes(m.thread.inbox) || m.thread.assigned_agent === agentB);
+    const agentA = args[i];
+    i += 1;
+    const agentB = args[i];
+    i += 1;
+    const owned = INBOXES.filter((ib) => ib.default_agent === agentA).map(
+      (ib) => ib.address,
+    );
+    rows = rows.filter(
+      (m) => owned.includes(m.thread.inbox) || m.thread.assigned_agent === agentB,
+    );
   }
   if (/lower\(messages\.to_addr\) = \?/.test(sql)) {
-    const to = args[i]; i += 1;
+    const to = args[i];
+    i += 1;
     rows = rows.filter((m) => m.to_addr.toLowerCase() === to);
   }
   if (/messages\.created_at >= \?/.test(sql)) {
-    const since = args[i]; i += 1;
+    const since = args[i];
+    i += 1;
     rows = rows.filter((m) => m.created_at >= since);
   }
   if (/messages\.created_at <= \?/.test(sql)) {
-    const until = args[i]; i += 1;
+    const until = args[i];
+    i += 1;
     rows = rows.filter((m) => m.created_at <= until);
   }
   if (/messages\.subject LIKE \?/.test(sql)) {
-    const likePattern = args[i]; i += 1;
+    const likePattern = args[i];
+    i += 1;
     const needle = likePattern.slice(1, -1).replace(/\\(.)/g, "$1").toLowerCase();
     rows = rows.filter((m) => (m.subject || "").toLowerCase().includes(needle));
   }
   const limit = args[args.length - 1];
 
-  rows.sort((a, b) => (a.created_at < b.created_at ? 1 : a.created_at > b.created_at ? -1 : 0));
+  rows.sort((a, b) =>
+    a.created_at < b.created_at ? 1 : a.created_at > b.created_at ? -1 : 0,
+  );
   rows = rows.slice(0, limit);
 
   const includeBody = /body_markdown AS body_markdown/.test(sql);
   return rows.map((m) => {
-    const row = { id: m.id, thread_id: m.thread_id, to: m.to_addr, subject: m.subject, created_at: m.created_at };
+    const row = {
+      id: m.id,
+      thread_id: m.thread_id,
+      to: m.to_addr,
+      subject: m.subject,
+      created_at: m.created_at,
+    };
     if (includeBody) row.body_markdown = m.body_markdown;
     return row;
   });
@@ -130,11 +154,13 @@ function reportsDb({ agentForToken = null } = {}) {
           calls.push({ sql, args });
           return {
             async first() {
-              if (/FROM agent_tokens/.test(sql)) return agentForToken ? { agent: agentForToken } : null;
+              if (/FROM agent_tokens/.test(sql))
+                return agentForToken ? { agent: agentForToken } : null;
               return null;
             },
             async all() {
-              if (/FROM messages JOIN threads/.test(sql)) return { results: runReportsQuery(sql, args) };
+              if (/FROM messages JOIN threads/.test(sql))
+                return { results: runReportsQuery(sql, args) };
               return { results: [] };
             },
             async run() {
@@ -149,12 +175,18 @@ function reportsDb({ agentForToken = null } = {}) {
 }
 
 function baseEnv(dbOpts) {
-  return { AGENT_MAIL_TOKEN: OPERATOR_TOKEN, REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: reportsDb(dbOpts) };
+  return {
+    AGENT_MAIL_TOKEN: OPERATOR_TOKEN,
+    REPORT_LINK_SECRET: SECRET,
+    AGENT_MAIL_DB: reportsDb(dbOpts),
+  };
 }
 
 async function call(env, token, qs = "") {
   const u = `https://adapttolife.org/api/agent-mail/reports${qs ? `?${qs}` : ""}`;
-  const request = new Request(u, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
+  const request = new Request(u, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
   return handleAgentMailApi(request, env, new URL(request.url));
 }
 
@@ -186,7 +218,10 @@ test("reports: an agent sees only its own thread's reports — the other agent's
   assert.deepEqual(ids.sort(), ["m-week1", "m-week2"]);
   assert.ok(!ids.includes("m-julia"), "julia's report must not leak to charlie");
   assert.ok(!ids.includes("m-inbound"), "inbound message is never a report");
-  assert.ok(!ids.includes("m-legacy"), "out message without body_markdown is never a report");
+  assert.ok(
+    !ids.includes("m-legacy"),
+    "out message without body_markdown is never a report",
+  );
 });
 
 test("reports: the operator token sees reports across every agent", async () => {
@@ -201,7 +236,10 @@ test("reports: a different agent token only sees its own — cross-check the oth
   const env = baseEnv({ agentForToken: "julia" });
   const res = await call(env, "julias-agent-token");
   const body = await res.json();
-  assert.deepEqual(body.reports.map((r) => r.id), ["m-julia"]);
+  assert.deepEqual(
+    body.reports.map((r) => r.id),
+    ["m-julia"],
+  );
 });
 
 // ── (2) filters -------------------------------------------------------------
@@ -210,35 +248,58 @@ test("reports: to= narrows to an exact (case-insensitive) recipient match", asyn
   const env = baseEnv();
   const res = await call(env, OPERATOR_TOKEN, "to=ALEC@example.com");
   const body = await res.json();
-  assert.deepEqual(body.reports.map((r) => r.id), ["m-julia"]);
+  assert.deepEqual(
+    body.reports.map((r) => r.id),
+    ["m-julia"],
+  );
 });
 
 test("reports: since= excludes older reports", async () => {
   const env = baseEnv({ agentForToken: "charlie" });
   const res = await call(env, "charlies-agent-token", "since=2026-07-10");
   const body = await res.json();
-  assert.deepEqual(body.reports.map((r) => r.id), ["m-week2"]);
+  assert.deepEqual(
+    body.reports.map((r) => r.id),
+    ["m-week2"],
+  );
 });
 
 test("reports: until= excludes newer reports", async () => {
   const env = baseEnv({ agentForToken: "charlie" });
   const res = await call(env, "charlies-agent-token", "until=2026-07-06");
   const body = await res.json();
-  assert.deepEqual(body.reports.map((r) => r.id), ["m-week1"]);
+  assert.deepEqual(
+    body.reports.map((r) => r.id),
+    ["m-week1"],
+  );
 });
 
 test("reports: q= substring-matches the subject", async () => {
   const env = baseEnv({ agentForToken: "charlie" });
-  const res = await call(env, "charlies-agent-token", `q=${encodeURIComponent("Week 2")}`);
+  const res = await call(
+    env,
+    "charlies-agent-token",
+    `q=${encodeURIComponent("Week 2")}`,
+  );
   const body = await res.json();
-  assert.deepEqual(body.reports.map((r) => r.id), ["m-week2"]);
+  assert.deepEqual(
+    body.reports.map((r) => r.id),
+    ["m-week2"],
+  );
 });
 
 test("reports: filters combine (to + since)", async () => {
   const env = baseEnv({ agentForToken: "charlie" });
-  const res = await call(env, "charlies-agent-token", "to=nick@example.com&since=2026-07-10");
+  const res = await call(
+    env,
+    "charlies-agent-token",
+    "to=nick@example.com&since=2026-07-10",
+  );
   const body = await res.json();
-  assert.deepEqual(body.reports.map((r) => r.id), ["m-week2"]);
+  assert.deepEqual(
+    body.reports.map((r) => r.id),
+    ["m-week2"],
+  );
 });
 
 // ── (3) body=1 ----------------------------------------------------------

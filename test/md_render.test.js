@@ -2,14 +2,22 @@
 // dependencies (node's built-in test runner + assert).
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { renderMarkdown, deriveText, resolveMarkdownBody, VERDICT_COLORS } from "../src/md_render.js";
+import {
+  renderMarkdown,
+  deriveText,
+  resolveMarkdownBody,
+  VERDICT_COLORS,
+} from "../src/md_render.js";
 
 const FIXTURE = [
   "# Heading One",
   "",
   "## Heading Two",
   "",
-  "This has **bold text** and *italic text* and \\`inline code\\`.".replace(/\\`/g, "`"),
+  "This has **bold text** and *italic text* and \\`inline code\\`.".replace(
+    /\\`/g,
+    "`",
+  ),
   "",
   "- first item",
   "- second item with [a link](https://example.com/path)",
@@ -86,12 +94,22 @@ test("renderMarkdown: zero literal markdown syntax survives in the visible conte
   // content only: no stray '**' (unconverted bold) and no leading '#' heading
   // markers should be visible to the reader.
   const visibleText = html.replace(/<[^>]+>/g, " ");
-  assert.equal(visibleText.includes("**"), false, "no literal ** should remain in visible text");
-  assert.equal(/(^|\s)#{1,3}\s/.test(visibleText), false, "no literal heading '#' marker should remain in visible text");
+  assert.equal(
+    visibleText.includes("**"),
+    false,
+    "no literal ** should remain in visible text",
+  );
+  assert.equal(
+    /(^|\s)#{1,3}\s/.test(visibleText),
+    false,
+    "no literal heading '#' marker should remain in visible text",
+  );
 });
 
 test("renderMarkdown: relative-looking hrefs are left untouched (no resolution)", () => {
-  const html = renderMarkdown("[relative](./some/path.md) and [dotdot](../up/there.md)");
+  const html = renderMarkdown(
+    "[relative](./some/path.md) and [dotdot](../up/there.md)",
+  );
   assert.match(html, /<a href="\.\/some\/path\.md"/);
   assert.match(html, /<a href="\.\.\/up\/there\.md"/);
 });
@@ -128,32 +146,48 @@ test("renderMarkdown: approved-baseline styles are pinned verbatim", () => {
     'style="color:#256abf"',
   ];
   for (const fragment of BASELINE) {
-    assert.ok(html.includes(fragment), `approved baseline fragment missing: ${fragment}`);
+    assert.ok(
+      html.includes(fragment),
+      `approved baseline fragment missing: ${fragment}`,
+    );
   }
 });
 
 test("resolveMarkdownBody: body_text-only sends render by default (2026-07-05 hardening)", () => {
-  const { body_html, body_text } = resolveMarkdownBody({ body_text: "plain reply\n\nwith **bold**" });
+  const { body_html, body_text } = resolveMarkdownBody({
+    body_text: "plain reply\n\nwith **bold**",
+  });
   assert.ok(body_html, "body_text-only must produce rendered html");
-  assert.ok(body_html.includes("background:#ffffff"), "renders in the approved baseline wrapper");
+  assert.ok(
+    body_html.includes("background:#ffffff"),
+    "renders in the approved baseline wrapper",
+  );
   assert.match(body_html, /<strong>bold<\/strong>/);
   assert.equal(body_text, "plain reply\n\nwith **bold**");
 });
 
 test("resolveMarkdownBody: explicit body_html still wins (report register untouched)", () => {
   const custom = "<div>REPORT</div>";
-  const { body_html } = resolveMarkdownBody({ body_text: "t", body_html: custom, body_markdown: "# nope" });
+  const { body_html } = resolveMarkdownBody({
+    body_text: "t",
+    body_html: custom,
+    body_markdown: "# nope",
+  });
   assert.equal(body_html, custom);
 });
 
 test("resolveMarkdownBody: body_markdown renders and derives text", () => {
-  const { body_html, body_text } = resolveMarkdownBody({ body_markdown: "# Hi\n\n- a" });
+  const { body_html, body_text } = resolveMarkdownBody({
+    body_markdown: "# Hi\n\n- a",
+  });
   assert.match(body_html, /<h1[^>]*>Hi<\/h1>/);
   assert.ok(body_text.includes("Hi"));
 });
 
 test("renderMarkdown: task-list bullets render check/box marks, never literal [x]", () => {
-  const html = renderMarkdown("- [x] shipped the thing\n- [ ] still open\n- plain item");
+  const html = renderMarkdown(
+    "- [x] shipped the thing\n- [ ] still open\n- plain item",
+  );
   assert.match(html, /<span style="color:#006300">\u2713<\/span> shipped the thing/);
   assert.match(html, /<span style="color:#898781">\u2610<\/span> still open/);
   assert.match(html, /<li[^>]*>plain item<\/li>/);
@@ -181,35 +215,63 @@ test("verdict accent: RISK gets the red border + tinted chip, text stays ink (un
   assert.ok(html.includes(expectedTag), `expected tag missing: ${expectedTag}`);
   // The text itself carries no color override \u2014 it's still the plain
   // <strong> content, only the chip's frame is colored.
-  assert.ok(!html.includes("color:#a02d2d\">NVDA"), "verdict text is not repainted \u2014 only the chip frame is");
+  assert.ok(
+    !html.includes('color:#a02d2d">NVDA'),
+    "verdict text is not repainted \u2014 only the chip frame is",
+  );
 });
 
 test("verdict accent: CONFIRMING gets the green border + tinted chip", () => {
   const html = renderMarkdown("**LLY \u2014 CONFIRMING**");
-  assert.match(html, new RegExp(`border-left:3px solid ${VERDICT_COLORS.CONFIRMING.border};background-color:${VERDICT_COLORS.CONFIRMING.bg}`));
+  assert.match(
+    html,
+    new RegExp(
+      `border-left:3px solid ${VERDICT_COLORS.CONFIRMING.border};background-color:${VERDICT_COLORS.CONFIRMING.bg}`,
+    ),
+  );
   assert.match(html, /<strong[^>]*>LLY \u2014 CONFIRMING<\/strong>/);
 });
 
 test("verdict accent: BUY shares CONFIRMING's green (both are affirming verdicts)", () => {
   const html = renderMarkdown("**AAPL \u2014 BUY**");
-  assert.match(html, new RegExp(`border-left:3px solid ${VERDICT_COLORS.BUY.border};background-color:${VERDICT_COLORS.BUY.bg}`));
+  assert.match(
+    html,
+    new RegExp(
+      `border-left:3px solid ${VERDICT_COLORS.BUY.border};background-color:${VERDICT_COLORS.BUY.bg}`,
+    ),
+  );
   assert.equal(VERDICT_COLORS.BUY.border, VERDICT_COLORS.CONFIRMING.border);
   assert.equal(VERDICT_COLORS.BUY.bg, VERDICT_COLORS.CONFIRMING.bg);
 });
 
 test("verdict accent: WATCHLIST gets the amber border + tinted chip", () => {
   const html = renderMarkdown("**TSM \u2014 WATCHLIST**");
-  assert.match(html, new RegExp(`border-left:3px solid ${VERDICT_COLORS.WATCHLIST.border};background-color:${VERDICT_COLORS.WATCHLIST.bg}`));
+  assert.match(
+    html,
+    new RegExp(
+      `border-left:3px solid ${VERDICT_COLORS.WATCHLIST.border};background-color:${VERDICT_COLORS.WATCHLIST.bg}`,
+    ),
+  );
 });
 
 test("verdict accent: PASS gets the neutral gray border + tinted chip", () => {
   const html = renderMarkdown("**AVGO \u2014 PASS**");
-  assert.match(html, new RegExp(`border-left:3px solid ${VERDICT_COLORS.PASS.border};background-color:${VERDICT_COLORS.PASS.bg}`));
+  assert.match(
+    html,
+    new RegExp(
+      `border-left:3px solid ${VERDICT_COLORS.PASS.border};background-color:${VERDICT_COLORS.PASS.bg}`,
+    ),
+  );
 });
 
 test("verdict accent: NOTHING MATERIAL shares PASS's neutral gray", () => {
   const html = renderMarkdown("**MSFT \u2014 NOTHING MATERIAL**");
-  assert.match(html, new RegExp(`border-left:3px solid ${VERDICT_COLORS["NOTHING MATERIAL"].border};background-color:${VERDICT_COLORS["NOTHING MATERIAL"].bg}`));
+  assert.match(
+    html,
+    new RegExp(
+      `border-left:3px solid ${VERDICT_COLORS["NOTHING MATERIAL"].border};background-color:${VERDICT_COLORS["NOTHING MATERIAL"].bg}`,
+    ),
+  );
   assert.equal(VERDICT_COLORS["NOTHING MATERIAL"].border, VERDICT_COLORS.PASS.border);
 });
 

@@ -72,7 +72,9 @@ function libraryDb(rows) {
         bind() {
           return {
             async all() {
-              return /lower\(to_addr\) = \?/.test(sql) ? { results: rows } : { results: [] };
+              return /lower\(to_addr\) = \?/.test(sql)
+                ? { results: rows }
+                : { results: [] };
             },
             async first() {
               return null;
@@ -85,7 +87,9 @@ function libraryDb(rows) {
 }
 
 async function viewLib(env, token) {
-  const request = new Request(`https://adapttolife.org/lib/${token}`, { method: "GET" });
+  const request = new Request(`https://adapttolife.org/lib/${token}`, {
+    method: "GET",
+  });
   return handleLibraryView(request, env, new URL(request.url));
 }
 
@@ -105,8 +109,18 @@ test("library view: tampered/garbage token → 404", async () => {
 
 test("library view: lists only that recipient's reports — date, from-agent, subject linking to /r/", async () => {
   const rows = [
-    { id: "m-newer", subject: "Weekly <brief>", from_addr: "julia@agents.adapttolife.org", created_at: "2026-07-18 09:00:00" },
-    { id: "m-older", subject: "Monthly digest", from_addr: "charlie@agents.adapttolife.org", created_at: "2026-07-01 09:00:00" },
+    {
+      id: "m-newer",
+      subject: "Weekly <brief>",
+      from_addr: "julia@agents.adapttolife.org",
+      created_at: "2026-07-18 09:00:00",
+    },
+    {
+      id: "m-older",
+      subject: "Monthly digest",
+      from_addr: "charlie@agents.adapttolife.org",
+      created_at: "2026-07-01 09:00:00",
+    },
   ];
   const token = await makeLibraryToken(SECRET, "nick@example.com");
   const env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: libraryDb(rows) };
@@ -123,7 +137,9 @@ test("library view: lists only that recipient's reports — date, from-agent, su
   assert.match(html, /2026-07-18 09:00:00/);
   assert.match(html, /Monthly digest/);
   // Each subject links to its own minted /r/ permalink, verifying to the row's message id.
-  const m = html.match(/href="(https:\/\/adapttolife\.org\/r\/[A-Za-z0-9_-]+)"[^>]*>Weekly/);
+  const m = html.match(
+    /href="(https:\/\/adapttolife\.org\/r\/[A-Za-z0-9_-]+)"[^>]*>Weekly/,
+  );
   assert.ok(m, "subject links to a minted /r/ url");
   const linkToken = m[1].split("/r/")[1];
   assert.equal(await verifyReportToken(SECRET, linkToken), "m-newer");
@@ -147,12 +163,20 @@ test("library view: empty result set renders the empty state, not a crash", asyn
 
 test("footer: reportFooterHtml with a recipient adds the Report library link on the same line", async () => {
   const env = { REPORT_LINK_SECRET: SECRET };
-  const html = await reportFooterHtml(env, { body_markdown: CHART_MD }, MSG_ID, "Nick@Example.com");
+  const html = await reportFooterHtml(
+    env,
+    { body_markdown: CHART_MD },
+    MSG_ID,
+    "Nick@Example.com",
+  );
   assert.match(html, /View interactive/);
   assert.match(html, /Report library/);
   // Same line: one <div>, both links, joined by the house " &middot; " separator.
   assert.equal((html.match(/<div/g) || []).length, 1);
-  assert.match(html, /View interactive[\s\S]*&middot;[\s\S]*Report library[\s\S]*<\/div>/);
+  assert.match(
+    html,
+    /View interactive[\s\S]*&middot;[\s\S]*Report library[\s\S]*<\/div>/,
+  );
   const libToken = html.match(/\/lib\/([A-Za-z0-9_-]+)/)[1];
   assert.equal(await verifyLibraryToken(SECRET, libToken), "nick@example.com");
 });
@@ -166,13 +190,18 @@ test("footer: no recipient → single link only, no library href, no throw", asy
 });
 
 test("footer: still empty without charts/secret regardless of recipient (existing conditions unchanged)", async () => {
-  const noSecret = await reportFooterHtml({}, { body_markdown: CHART_MD }, MSG_ID, "nick@example.com");
+  const noSecret = await reportFooterHtml(
+    {},
+    { body_markdown: CHART_MD },
+    MSG_ID,
+    "nick@example.com",
+  );
   assert.equal(noSecret, "");
   const noChart = await reportFooterHtml(
     { REPORT_LINK_SECRET: SECRET },
     { body_markdown: "# Daily\n\nAll quiet." },
     MSG_ID,
-    "nick@example.com"
+    "nick@example.com",
   );
   assert.equal(noChart, "");
 });
@@ -192,8 +221,10 @@ function sendDb() {
           return {
             async first() {
               if (/SELECT 1 AS ok FROM inboxes/.test(sql)) return { ok: 1 };
-              if (/SELECT default_agent FROM inboxes/.test(sql)) return { default_agent: "charlie" };
-              if (/datetime\('now', '-1 hour'\)/.test(sql)) return { thread_n: 0, inbox_n: 0 };
+              if (/SELECT default_agent FROM inboxes/.test(sql))
+                return { default_agent: "charlie" };
+              if (/datetime\('now', '-1 hour'\)/.test(sql))
+                return { thread_n: 0, inbox_n: 0 };
               if (/start of day/.test(sql)) return { n: 0 };
               return null;
             },
@@ -217,12 +248,25 @@ test("footer end-to-end: /send with a recipient carries both links; library toke
     AGENT_MAIL_TOKEN: OPERATOR_TOKEN,
     AGENT_MAIL_DB: db,
     REPORT_LINK_SECRET: SECRET,
-    SEND_EMAIL: { async send(msg) { sentMsgs.push(msg); return { id: "cf-1" }; } },
+    SEND_EMAIL: {
+      async send(msg) {
+        sentMsgs.push(msg);
+        return { id: "cf-1" };
+      },
+    },
   };
   const request = new Request("https://adapttolife.org/api/agent-mail/send", {
     method: "POST",
-    headers: { Authorization: `Bearer ${OPERATOR_TOKEN}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from: "charlie@agents.adapttolife.org", to: "nick@example.com", subject: "Daily", body_markdown: CHART_MD }),
+    headers: {
+      Authorization: `Bearer ${OPERATOR_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: "charlie@agents.adapttolife.org",
+      to: "nick@example.com",
+      subject: "Daily",
+      body_markdown: CHART_MD,
+    }),
   });
   const res = await handleAgentMailApi(request, env, new URL(request.url));
   assert.equal(res.status, 200);
@@ -295,11 +339,14 @@ test("reply line: names the assigned agent, points at the inbox, no form/mailto"
   const html = await res.text();
   assert.match(
     html,
-    /This report came from charlie\. Questions, pushback, a name you want dug into — just reply to the email; I read every reply\./
+    /This report came from charlie\. Questions, pushback, a name you want dug into — just reply to the email; I read every reply\./,
   );
   assert.match(html, /<p class="reply-line">/);
   assert.ok(!html.includes("<form"), "no form on the page");
-  assert.ok(!html.includes("mailto:"), "no mailto link — the reply happens in their inbox");
+  assert.ok(
+    !html.includes("mailto:"),
+    "no mailto link — the reply happens in their inbox",
+  );
   assert.ok(!html.includes("ask-box"), "ask-box class retired");
 });
 
@@ -311,7 +358,8 @@ test("reply line: missing/failed thread lookup falls back to 'the desk', never b
         bind() {
           return {
             async first() {
-              if (/FROM messages WHERE id = \?/.test(sql)) return { ...ASK_ROW, thread_id: null };
+              if (/FROM messages WHERE id = \?/.test(sql))
+                return { ...ASK_ROW, thread_id: null };
               return null;
             },
           };
@@ -329,7 +377,9 @@ test("reply line: missing/failed thread lookup falls back to 'the desk', never b
 test("GET on the retired /ask sub-route now 404s like any other unknown path", async () => {
   const token = await makeReportToken(SECRET, MSG_ID);
   const env = { REPORT_LINK_SECRET: SECRET, AGENT_MAIL_DB: askDb() };
-  const request = new Request(`https://adapttolife.org/r/${token}/ask`, { method: "GET" });
+  const request = new Request(`https://adapttolife.org/r/${token}/ask`, {
+    method: "GET",
+  });
   const res = await handleReportView(request, env, new URL(request.url));
   assert.equal(res.status, 404);
 });
@@ -356,7 +406,10 @@ test("CSP: /r/ page is default-src 'none' with no form-action (the ask-box's exc
   const csp = res.headers.get("Content-Security-Policy");
   assert.match(csp, /default-src 'none'/);
   assert.ok(!/form-action/.test(csp), "form-action addition retired with the ask-box");
-  assert.ok(!/connect-src|img-src|frame-src/.test(csp), "no new permissive directives snuck in");
+  assert.ok(
+    !/connect-src|img-src|frame-src/.test(csp),
+    "no new permissive directives snuck in",
+  );
 
   const html = await res.text();
   assert.ok(!/<form/.test(html), "no form anywhere on the page");
@@ -377,7 +430,11 @@ test("drill-down: the runtime script embeds the data-table + client-side CSV mac
   assert.match(html, /type: "text\/csv"/);
   assert.match(html, /URL\.createObjectURL\(blob\)/);
   assert.match(html, /dl\.download = "chart-data\.csv"/);
-  assert.match(html, /addDrillDown\(host, data\)/, "wired into the per-chart render loop");
+  assert.match(
+    html,
+    /addDrillDown\(host, data\)/,
+    "wired into the per-chart render loop",
+  );
   assert.match(html, /className = "data-toggle"/);
 
   // No new endpoint, no external request: everything rides the same inline
@@ -401,7 +458,9 @@ test("drill-down: bar/stacked/line/scatter table headers derive from the chart's
         bind() {
           return {
             async first() {
-              return /FROM messages WHERE id = \?/.test(sql) ? { ...ASK_ROW, body_markdown: stackedMd } : null;
+              return /FROM messages WHERE id = \?/.test(sql)
+                ? { ...ASK_ROW, body_markdown: stackedMd }
+                : null;
             },
             async all() {
               return { results: [] };
@@ -437,7 +496,9 @@ test("drill-down: grouped-bar CSV serializes Label + one column per series (no T
         bind() {
           return {
             async first() {
-              return /FROM messages WHERE id = \?/.test(sql) ? { ...ASK_ROW, body_markdown: groupedMd } : null;
+              return /FROM messages WHERE id = \?/.test(sql)
+                ? { ...ASK_ROW, body_markdown: groupedMd }
+                : null;
             },
             async all() {
               return { results: [] };
@@ -455,7 +516,10 @@ test("drill-down: grouped-bar CSV serializes Label + one column per series (no T
   // The grouped-bar table branch: ["Label"].concat(d.names), one row per
   // category as [label, v1, v2, ...] — raw numbers, no unit, no Total.
   assert.match(html, /headers: \["Label"\]\.concat\(d\.names \|\| \[\]\)/);
-  assert.match(html, /rows: d\.rows\.map\(function \(r\) \{ return \[r\[0\]\]\.concat\(r\[1\]\); \}\)/);
+  assert.match(
+    html,
+    /rows: d\.rows\.map\(function \(r\) \{ return \[r\[0\]\]\.concat\(r\[1\]\); \}\)/,
+  );
   // And the payload it serializes from carries the raw grouped rows.
   assert.match(html, /"rows":\[\["NVDA",\[14\.2,11\.8\]\]\]/);
 });

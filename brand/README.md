@@ -1,5 +1,7 @@
 # Brand files: which one to use
 
+This folder is the map of Adapt To Life's design assets: logos, icons and symbols, what is current, what is retired, and where the rest lives across adapttolife.org, adaptivesportsnearme.com and adaptbodyshop.com. Current comes first; retired is labeled with a date and a reason, and kept so it can come back.
+
 Read this before you pick a logo for anything. On 2026-09-29 an agent put the retired swoosh mark on a signed grant letter because it took `atl-logo.svg`, the most official-sounding name in the repo, at face value. That file existed in two places, `brand/` and `public/images/`, with nothing saying it was retired. The `brand/` copy now lives in `obsolete/`, and `test/brand_door.test.js` fails if a file in this folder is not listed below.
 
 The design source of truth is Alec's Drive: *Adapt To Life Brand Standards, Canonical Working Reference* (Google Doc) and the Laura Lian Creative Partners identity set dated 2026-09-02. `identity/` is a copy of that set. If the two ever disagree, Drive wins; re-copy it here.
@@ -31,6 +33,47 @@ The site header, footer, favicon and social cards use single-color traces of the
 | `atl-logo-2026-ui.svg` | Lightweight trace for the site UI. |
 | `atl-logo-v2-option2-ui.svg` | The trace the OG card generator and `/images/brand/atl-logo-512.png` are built from. |
 
+## Chicago Pickleball: Wheelie Big Dills (the crew we fund and support)
+
+**The name (Alec, 2026-11-07).** The full name is "Chicago Pickleball: Wheelie Big Dills". Use it in headings, labels, page titles, share cards and campaign names, and at the first mention in each section of copy. When the name repeats in the same passage, say "the Wheelie Big Dills". Don't use the retired form "The Chicago Wheelie Big Dills". If a sentence would carry a second colon after the name, use a comma instead ("funds Chicago Pickleball: Wheelie Big Dills, every week first"). The campaign's slug `wheelie-big-dills` and its keys stay as they are; they are identifiers, not copy.
+
+The crew's own badge, added 2026-11-05 at Alec's request. It is the crew's identity, not Adapt To Life's mark: Adapt To Life funds and supports the crew and does not run it (insurance; see the funder, not operator rule). Never merge it into an Adapt To Life logo or lockup, and keep the Adapt To Life mark separate wherever both appear.
+
+| File | Use it for |
+|---|---|
+| `wheelie-big-dills/wheelie-big-dills-badge-original.png` | The badge exactly as Alec supplied it (1254 x 1254, black square corners). The master. |
+| `wheelie-big-dills/wheelie-big-dills-badge-transparent.png` | The same badge with the black corners removed, so the round badge sits on any background. Use this one for shirts, stickers, social posts and slides. |
+
+The website copy is `public/images/pickleball/wheelie-big-dills-badge.webp` (640 px, transparent), used on `/pickleball` and the sponsor page. Both PNGs are also in Drive, in the "The Wheelie Big Dills" folder.
+
+## Icons and symbols (current, since 2026-10-29)
+
+One meaning, one picture, everywhere. Pages ask for a meaning (`giving`, `place`) and the symbol dictionary, `data/icons.mjs`, says which drawing that is. `npm run icons` pulls each drawing from its open-source package into `scripts/lib/icons.mjs`, and the tests fail if that file falls behind the dictionary.
+
+| File | Use it for |
+|---|---|
+| `icons/README.md` | **Start here for icons.** The catalog of the current collection, with a preview of every symbol and logo. GitHub renders it. Generated. |
+| `icons/svg/` | One SVG per meaning per style (`giving.svg`, `giving-duotone.svg`, …), ready for Figma, Canva or a slide. Generated. |
+| `icons/logos/` | The platform and tool logos we use, one SVG each. Generated. |
+| `icons/sheet.html` | Every meaning in every style at 18, 28 and 56px on both page colors. Generated; open it before shipping a new icon. |
+
+Each library has one job, so they complement each other instead of clashing:
+
+| Library | Job | License |
+|---|---|---|
+| Phosphor | The core voice: lane symbols, chips, row details, navigation | MIT |
+| Material Symbols Light | Sport and accessibility symbols Phosphor lacks, pickleball above all | Apache 2.0 |
+| Hugeicons (free set) | Fallback for a meaning nobody above draws | MIT |
+| Simple Icons | Real logos of platforms and tools we use (Instagram, Facebook, Buffer, Google) | CC0 |
+| Tabler | Internal tools only, such as Mission Control; never public pages | MIT |
+| Lucide | Retired from public pages: it reads as the default look of AI-built sites | ISC |
+
+`npm run icons` also keeps the shared pieces in step: every icon on a public page, the header carets, the link arrows (the external arrow whenever a link leaves adapttolife.org), the footer logos, the photo-band controls, the event-card and add-to-calendar icons in `public/js/`, and the check and plus masks the stylesheet draws (`--icon-check`, `--icon-more`). `scripts/lib/apply-icons.mjs` is the one place that knows those patterns, and `test/icons.test.js` fails on a hand-drawn icon or a typed arrow in a link.
+
+The style is part of the message: **duotone** is a section's symbol (a lane tile), **regular** is chips and row details, **bold** is where you are, **fill** is selected. A **logo** only ever means a tool or platform, never a concept. A tool with no official logo shows its name alone. Motion is built-in CSS first and Anime.js only when CSS runs out, and it always respects the visitor's reduce-motion setting.
+
+The research behind these choices (packages, licenses, GitHub and X activity, 2026-10-29) is summarized in PR #206.
+
 ## Retired: never use
 
 | File | Why it is still here |
@@ -39,3 +82,33 @@ The site header, footer, favicon and social cards use single-color traces of the
 | `obsolete/atl-logo-2000px.png` | Raster of the same retired mark. |
 | `obsolete/atl-logo-before-after.png` | The comparison image from the 2026-07-30 trace cleanup. |
 | `public/images/atl-logo.svg` (outside this folder) | The same retired mark, kept at its old URL on purpose because caches and old pages still request it. Its hash is pinned in `test/site_logo.test.js`. It is not a source for anything new. |
+| `obsolete/icons-2026-10-custom/README.md` | **Retired 2026-10-29.** Why the custom icon set and reel covers were retired, and how to bring them back. |
+| `obsolete/icons-2026-10-custom/icons.mjs` | The thirteen custom line icons (wheel, court, paddle, paddle tap), as they were in `scripts/lib/icons.mjs`. |
+| `obsolete/icons-2026-10-custom/reel-covers.json` | The six line-art reel covers from `/social`. |
+| `obsolete/icons-2026-10-custom/sheet.html` | Open to see the retired set and covers at real sizes. |
+| `obsolete/icons-2026-10-custom/svg/` | Each retired icon and cover as its own SVG, previewed in that folder's README. |
+| 3D sport icons (adaptivesportsnearme repo, `archive/icons/3d-sport-chairs/`) | **Retired 2026-10-29.** Eleven 3D sport renders that ASNM's category chips used before Alec's flat drawings replaced them. Nothing on the site uses them; they are labeled and kept there. |
+
+## Design assets across the three sites
+
+Where everything else lives, so nobody has to go looking. Each site keeps its own files; this is the index.
+
+| Site and repo | Asset | Where | Status |
+|---|---|---|---|
+| adapttolife.org (`adapttolife/adapt-to-life`) | Logos | this folder | Current: `identity/` for print, the `atl-logo-2026*` traces for the site |
+| | Icons and symbols | `data/icons.mjs` → `scripts/lib/icons.mjs` | Current (see above) |
+| | Photographs | `public/images/athletes/`, `public/images/brickhouse/`, `public/images/hero/` | Current. They belong to the hooks: home, landing, donate and campaign pages, not the pages in between |
+| | Share cards | `public/images/og/` | Current, generated by `npm run cards` |
+| adaptivesportsnearme.com (`adapttolife/adaptivesportsnearme`) | Sport drawings ("emblems") | `public/emblems/sports/` | Current. Alec's flat vector drawings, one per sport; Drive is the source (see that folder's README) |
+| | Sport drawings in motion | `public/emblems/motion/` | Current. Each drawing plays its sport's move |
+| | Adaptive badge | `public/emblems/adaptive.svg` | Current |
+| | Grant, event and sport badge PNGs | `archive/icons/emblem-pngs/` | **Retired 2026-10-29**. Nothing called them |
+| | Scenes | `public/scenes/` | Current |
+| | UI icons | `public/app/icons.js` (a Lucide subset) | Current there; a candidate to move onto this dictionary |
+| | 3D sport icons | `archive/icons/3d-sport-chairs/` | **Retired 2026-10-29** |
+| | Earlier sport photos | `archive/sport-photos/` | Retired before 2026-10-29 |
+| | The map for that repo | `docs/ICONS-AND-LOGOS.md` | Current |
+| adaptbodyshop.com (`adapttolife/adapt-body-shop-storefront`) | Logo traces and the hero source | `brand/` in that repo | Current |
+| | UI icons | `app/components/Icons.tsx` | Current (search, account, cart) |
+| | The older Liquid theme | `adapttolife/adapt-body-shop` | Not what serves the shop; do not take assets from it |
+

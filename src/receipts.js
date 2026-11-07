@@ -22,7 +22,13 @@ import { mailConfigured } from "./mail-transport.js";
 // than telling someone their grant application did not go through. Every path
 // here swallows its error and logs it.
 import {
-  cfSend, HOUSE_FROM, HOUSE_INBOX, houseShell, houseQuote, houseLabel, esc,
+  cfSend,
+  HOUSE_FROM,
+  HOUSE_INBOX,
+  houseShell,
+  houseQuote,
+  houseLabel,
+  esc,
   recordTransactionalFailure,
 } from "./email.js";
 import { fundPosition, usd } from "./fund.js";
@@ -47,8 +53,9 @@ const grantsInbox = (env) => env.GRANTS_INBOX || HOUSE_INBOX;
 async function send(env, msg, label) {
   try {
     if (!mailConfigured(env)) {
-      // Staging has no send_email binding by design, so this is the normal path
-      // there and must stay quiet rather than look like a fault. Deliberately
+      // Staging has no send_email binding and MAIL_TRANSPORT "none" by design,
+      // so this is the normal path there and must stay quiet rather than look
+      // like a fault. Deliberately
       // NOT recorded as a failure: staging is supposed to look like this, and a
       // ledger that cries wolf on every staging deploy gets ignored on the day
       // it is right.
@@ -58,21 +65,41 @@ async function send(env, msg, label) {
     // Contact acknowledgments are part of the house correspondence record,
     // not a second notification service. Keep their original-content BCC.
     // Other forms retain their existing audience/privacy boundary.
-    if (env.INTAKE_SEPARATE_NOTIFICATION && label !== 'contact receipt') { msg = {...msg}; delete msg.bcc; }
+    if (env.INTAKE_SEPARATE_NOTIFICATION && label !== "contact receipt") {
+      msg = { ...msg };
+      delete msg.bcc;
+    }
     if (env.INTAKE_SUBMISSION_ID) {
       const id = String(env.INTAKE_SUBMISSION_ID);
-      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)) throw Error('Invalid intake reference');
-      msg = {...msg, text: `${msg.text}\n\nReference: ${id}`,
+      if (
+        !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+          id,
+        )
+      )
+        throw Error("Invalid intake reference");
+      msg = {
+        ...msg,
+        text: `${msg.text}\n\nReference: ${id}`,
         html: `${msg.html}<p style="font-size:12px;color:#6b6b70">Reference: ${esc(id)}</p>`,
-        headers: {...msg.headers, 'X-ATL-Intake-ID': id, 'Auto-Submitted':'auto-generated'}};
+        headers: {
+          ...msg.headers,
+          "X-ATL-Intake-ID": id,
+          "Auto-Submitted": "auto-generated",
+        },
+      };
     }
     const result = await cfSend(env, msg);
     if (env.INTAKE_CAPTURE_RECEIPT) {
-      if (typeof result?.messageId !== 'string' || !result.messageId.trim()) {
-        throw Error('Email send returned no provider identifier; verify before retry');
+      if (typeof result?.messageId !== "string" || !result.messageId.trim()) {
+        throw Error("Email send returned no provider identifier; verify before retry");
       }
-      return {messageId:result.messageId, status:'accepted', provider:result.provider || 'cloudflare',
-        to:msg.to, bcc:msg.bcc||null};
+      return {
+        messageId: result.messageId,
+        status: "accepted",
+        provider: result.provider || "cloudflare",
+        to: msg.to,
+        bcc: msg.bcc || null,
+      };
     }
     return true;
   } catch (err) {
@@ -86,24 +113,32 @@ async function send(env, msg, label) {
 
 // Contact form. Short on purpose — it confirms receipt and sets the reply
 // expectation the page already makes, and does not pretend to be more.
-export async function sendContactReceipt(env, { name, email, message, type, tier, amount }) {
-  const first = String(name || "").trim().split(/\s+/)[0] || "there";
+export async function sendContactReceipt(
+  env,
+  { name, email, message, type, tier, amount },
+) {
+  const first =
+    String(name || "")
+      .trim()
+      .split(/\s+/)[0] || "there";
   const subject = "We got your message";
-  const sponsorship = tier ? `Sponsorship interest: ${tier}${amount ? ` ($${amount})` : ''}. This is an inquiry, not a payment or commitment.` : '';
+  const sponsorship = tier
+    ? `Sponsorship interest: ${tier}${amount ? ` ($${amount})` : ""}. This is an inquiry, not a payment or commitment.`
+    : "";
   const text =
     `Hi ${first},\n\n` +
     `Thanks for reaching out. Your message reached us and a person will read it.\n\n` +
     `We reply as soon as we can. If it is urgent, just answer this email.\n\n` +
-    (sponsorship ? `${sponsorship}\n\n` : '') +
+    (sponsorship ? `${sponsorship}\n\n` : "") +
     `What you sent:\n${message || "(no message)"}\n\n` +
     `Adapt To Life\n501(c)(3) nonprofit, EIN 41-3213344`;
   const html = houseShell(
     `<p>Hi ${esc(first)},</p>` +
       `<p>Thanks for reaching out. Your message reached us and a person will read it.</p>` +
       `<p>We reply as soon as we can. If it is urgent, just answer this email.</p>` +
-      (sponsorship ? `<p>${esc(sponsorship)}</p>` : '') +
+      (sponsorship ? `<p>${esc(sponsorship)}</p>` : "") +
       houseLabel("What you sent") +
-      houseQuote(esc(message || "(no message)"))
+      houseQuote(esc(message || "(no message)")),
   );
   return send(
     env,
@@ -118,7 +153,7 @@ export async function sendContactReceipt(env, { name, email, message, type, tier
       // Gives the house something to filter on without opening the message.
       headers: { "X-ATL-Form": "contact", "X-ATL-Type": String(type || "") },
     },
-    "contact receipt"
+    "contact receipt",
   );
 }
 
@@ -142,13 +177,17 @@ export async function sendContactReceipt(env, { name, email, message, type, tier
 // The fund position is best-effort. If Givebutter is unreachable the sentence
 // is dropped rather than guessed: a wrong number here is worse than no number.
 export async function sendApplyReceipt(env, { name, email, sport, need }) {
-  const first = String(name || "").trim().split(/\s+/)[0] || "there";
+  const first =
+    String(name || "")
+      .trim()
+      .split(/\s+/)[0] || "there";
   const subject = "Your Hustle & Heart Fund application";
 
   let position = "";
   try {
     const f = await fundPosition(env);
-    if (f.live) position = ` We have raised ${usd(f.raised)} toward ${usd(f.goal)} so far.`;
+    if (f.live && f.goal)
+      position = ` We have raised ${usd(f.raised)} toward ${usd(f.goal)} so far.`;
   } catch (err) {
     console.error("apply receipt: fund position unavailable:", err);
   }
@@ -190,13 +229,13 @@ export async function sendApplyReceipt(env, { name, email, sport, need }) {
         ? houseLabel("What we have") +
           houseQuote(
             (sport ? `<div>Sport: ${esc(sport)}</div>` : "") +
-              (need ? `<div>What you asked for: ${esc(need)}</div>` : "")
+              (need ? `<div>What you asked for: ${esc(need)}</div>` : ""),
           )
         : "") +
       `<p style="margin-top:24px">Optional, and it has no bearing on your application: ` +
       `the fund grows fastest through people who already care about one athlete. If you ` +
       `want to help it along, <a href="${FUND_URL}" style="color:#c2410c">share it with ` +
-      `the people who root for you</a>.</p>`
+      `the people who root for you</a>.</p>`,
   );
 
   return send(
@@ -211,7 +250,7 @@ export async function sendApplyReceipt(env, { name, email, sport, need }) {
       html,
       headers: { "X-ATL-Form": "apply" },
     },
-    "apply receipt"
+    "apply receipt",
   );
 }
 
@@ -230,7 +269,10 @@ export async function sendApplyReceipt(env, { name, email, sport, need }) {
 //      and got asked for money in the same breath learns what we actually
 //      wanted, and the ask costs more than it earns.
 export async function sendVolunteerReceipt(env, { name, email, roles, bring }) {
-  const first = String(name || "").trim().split(/\s+/)[0] || "there";
+  const first =
+    String(name || "")
+      .trim()
+      .split(/\s+/)[0] || "there";
   const picked = Array.isArray(roles) ? roles.filter(Boolean) : [];
   const subject = "Thanks for offering to help";
 
@@ -245,7 +287,9 @@ export async function sendVolunteerReceipt(env, { name, email, roles, bring }) {
     `Hi ${first},\n\n` +
     `Thanks for putting your hand up. That reached us.\n\n` +
     `${promise}\n\n` +
-    (picked.length ? `What you picked:\n${picked.map((r) => `  - ${r}`).join("\n")}\n\n` : "") +
+    (picked.length
+      ? `What you picked:\n${picked.map((r) => `  - ${r}`).join("\n")}\n\n`
+      : "") +
     (bring ? `What you told us:\n${bring}\n\n` : "") +
     `If anything changes on your end, or you thought of something after you hit ` +
     `send, just reply to this email.\n\n` +
@@ -261,7 +305,7 @@ export async function sendVolunteerReceipt(env, { name, email, roles, bring }) {
         : "") +
       (bring ? houseLabel("What you told us") + houseQuote(esc(bring)) : "") +
       `<p>If anything changes on your end, or you thought of something after you ` +
-      `hit send, just reply to this email.</p>`
+      `hit send, just reply to this email.</p>`,
   );
 
   return send(
@@ -275,8 +319,11 @@ export async function sendVolunteerReceipt(env, { name, email, roles, bring }) {
       text,
       html,
       // Lets the house filter the board without opening the message.
-      headers: { "X-ATL-Form": "volunteer", "X-ATL-Roles": picked.join("; ").slice(0, 200) },
+      headers: {
+        "X-ATL-Form": "volunteer",
+        "X-ATL-Roles": picked.join("; ").slice(0, 200),
+      },
     },
-    "volunteer receipt"
+    "volunteer receipt",
   );
 }

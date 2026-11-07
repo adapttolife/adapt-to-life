@@ -11,7 +11,7 @@
 // makes no outbound request) and a stubbed SEND_EMAIL binding — same no-new-deps convention as the other tests here.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import {formBindings} from "./helpers/form-db.js";
+import { formBindings } from "./helpers/form-db.js";
 
 const SLOW_MS = 1500;
 
@@ -26,7 +26,9 @@ function stubFetch() {
   globalThis.fetch = async (url) => {
     throw new Error("unexpected fetch to " + url);
   };
-  return () => { globalThis.fetch = realFetch; };
+  return () => {
+    globalThis.fetch = realFetch;
+  };
 }
 
 function env(sendStarted, sendFinished) {
@@ -40,7 +42,7 @@ function env(sendStarted, sendFinished) {
         sendStarted.push(Date.now());
         await new Promise((r) => setTimeout(r, SLOW_MS));
         sendFinished.push(Date.now());
-        return {messageId:"offline-provider-"+sendFinished.length};
+        return { messageId: "offline-provider-" + sendFinished.length };
       },
     },
   };
@@ -50,7 +52,13 @@ function contactRequest() {
   return new Request("https://adapttolife.org/api/contact", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ fn: "Alec", ln: "Tranel", em: "a@example.com", msg: "Hello", rsn: "" }),
+    body: JSON.stringify({
+      fn: "Alec",
+      ln: "Tranel",
+      em: "a@example.com",
+      msg: "Hello",
+      rsn: "",
+    }),
   });
 }
 
@@ -58,7 +66,8 @@ test("the contact response does not wait for the receipt to send", async () => {
   const restore = stubFetch();
   try {
     const worker = await loadWorker();
-    const started = [], finished = [];
+    const started = [],
+      finished = [];
     const scheduled = [];
     const ctx = { waitUntil: (p) => scheduled.push(p) };
 
@@ -72,16 +81,30 @@ test("the contact response does not wait for the receipt to send", async () => {
     assert.match(result.receipt, /^[0-9a-f-]{36}$/);
 
     // The whole point. A 1.5s send must not show up in the response time.
-    assert.ok(elapsed < SLOW_MS / 2,
-      `response took ${elapsed}ms with a ${SLOW_MS}ms send — the receipt is back on the critical path`);
-    assert.equal(finished.length, 0, "send had not finished when the response was returned");
+    assert.ok(
+      elapsed < SLOW_MS / 2,
+      `response took ${elapsed}ms with a ${SLOW_MS}ms send — the receipt is back on the critical path`,
+    );
+    assert.equal(
+      finished.length,
+      0,
+      "send had not finished when the response was returned",
+    );
     // One durable dispatcher; raw record + independent steps already exist.
     // Losing waitUntil cannot lose the work: scheduled recovery reads the outbox.
-    assert.equal(scheduled.length, 1, "one durable dispatcher accelerates the persisted work");
+    assert.equal(
+      scheduled.length,
+      1,
+      "one durable dispatcher accelerates the persisted work",
+    );
 
     // And it does still actually complete afterwards.
     await Promise.all(scheduled);
-    assert.equal(finished.length, 2, "both independent correspondence sends run after the response");
+    assert.equal(
+      finished.length,
+      2,
+      "both independent correspondence sends run after the response",
+    );
   } finally {
     restore();
   }
@@ -91,7 +114,8 @@ test("a missing ctx does not break or delay the submission", async () => {
   const restore = stubFetch();
   try {
     const worker = await loadWorker();
-    const started = [], finished = [];
+    const started = [],
+      finished = [];
     const t0 = Date.now();
     // No ctx at all — must not throw on ctx.waitUntil, must not hang.
     const res = await worker.fetch(contactRequest(), env(started, finished), undefined);

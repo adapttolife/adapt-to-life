@@ -283,6 +283,7 @@ const groups = [
     "Fundraisers and roles",
     ["store", "order", "coaching", "scope", "reply", "search", "open"],
   ],
+  ["Progress and results", ["win", "goal", "finished", "locked"]],
   ["Where work stands", ["live", "building", "later"]],
   [
     "Details, navigation and controls",

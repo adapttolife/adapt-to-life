@@ -243,6 +243,20 @@ const CARDS = {
     page: "chicago-classic.html",
     headline: "The Chicago <em>Classic</em>.",
   },
+  // The crew's page: Juan serving, in the split treatment. v5 (2026-11-07)
+  // because the crew's title became "Chicago Pickleball: Wheelie Big Dills",
+  // and an old URL would keep serving the old name. v4 was drawn outside this
+  // script (badge, kicker line, system type); this one is the house card, and
+  // gate 0 keeps it equal to the page's h1.
+  pickleball: {
+    variant: "split",
+    photo: "juan-serve",
+    size: 66,
+    measure: "9ch",
+    out: "public/images/og/pickleball-v5-name.jpg",
+    page: "pickleball.html",
+    headline: "Chicago Pickleball: <em>Wheelie Big Dills</em>",
+  },
   // Partner pages: the same split treatment.
   picklr: {
     variant: "split",

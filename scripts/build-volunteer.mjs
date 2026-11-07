@@ -190,7 +190,7 @@ ${roles.map(card).join("\n")}
 
   return (
     head({
-      title: "Volunteer | Adapt To Life",
+      title: "Volunteer in Adaptive Sports | Adapt To Life",
       desc: "Help more people take part in adaptive sports. Explore volunteer roles, time commitments, and ways to contribute your skills.",
       canonical: `${SITE}/volunteer`,
       page: "volunteer.html",

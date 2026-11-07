@@ -31,16 +31,24 @@
 // Keys the site asks for with /api/raised?c=<key>:
 //   wbd     The one goal: every week + the road, with both parts.
 //   year    Every week: court time every week and memberships to train all
-//           year. $13,500: a year of nights at ACE ($3,900, 52 x $75) and ten
-//           athletes training ($9,600, 10 x $960).
+//           year. $27,180: a year of nights at ACE ($11,700, 52 x $225) and ten
+//           athletes training ($15,480, 10 x $1,548).
 //   send-6  The Road to the US Open. $21,000: six athletes at about $3,500,
 //           roughly what the US Open has cost the last couple of years.
 //   fund    The whole campaign. Grant receipts read this.
 //   classic The Chicago Classic: a goal we talk about, not yet in the total.
 export const CAMPAIGN_KEYS = ["fund", "wbd", "year", "send-6", "classic"];
-export const YEAR_GOAL = 13500;
+export const YEAR_GOAL = 27180;
 export const ROAD_GOAL = 21000;
 export const WBD_GOAL = YEAR_GOAL + ROAD_GOAL;
+// Court time a partner club gives toward every week (Alec, Nov 7 2026). The
+// club's drop in is $15 and we pay $5, so the club gives $10 an athlete a
+// night: the first gift toward every week. Counted conservatively at 10
+// athletes a night (10 to 15 come) for the 52 nights of the year ahead:
+// 10 x $10 x 52 = $5,200. Pages show it as court time from a partner club and
+// never name the club or the rate (Alec: saying it on the page hurts more
+// than it helps). New gifts fill the rest of every week, then the road.
+export const YEAR_INKIND = 5200;
 
 async function givebutter(env, id) {
   let online = 0;
@@ -77,17 +85,19 @@ async function wbd(env) {
   const counted = Number(env.SEND6_ONLINE_COUNTED) || 0;
   const offline = Number(env.FUND_OFFLINE_RAISED) || 0;
   const fresh = Math.max(0, g.online - counted) + offline;
-  const year = Math.min(fresh, YEAR_GOAL);
-  const road = Math.min(setAside + Math.max(0, fresh - YEAR_GOAL), ROAD_GOAL);
+  const inkind = Math.min(YEAR_INKIND, YEAR_GOAL);
+  const yearCash = Math.min(fresh, YEAR_GOAL - inkind);
+  const road = Math.min(setAside + Math.max(0, fresh - (YEAR_GOAL - inkind)), ROAD_GOAL);
   return {
     raised: setAside + fresh,
+    inkind,
     online: g.online,
     offline: setAside - counted + offline,
     goal: WBD_GOAL,
     donors: g.donors,
     live: g.live,
     parts: {
-      year: { raised: year, goal: YEAR_GOAL },
+      year: { raised: yearCash + inkind, inkind, goal: YEAR_GOAL },
       "send-6": { raised: road, goal: ROAD_GOAL },
     },
   };

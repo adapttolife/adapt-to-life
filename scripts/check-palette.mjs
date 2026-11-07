@@ -168,6 +168,24 @@ const SYSTEM = {
   "gold-ink": "#80620F",
   "gold-press": "#BE9233",
   ok: "#2E7D32",
+  // DATA COLOURS (Alec, Nov 7 2026: "Why can we not use green or some other
+  // colors? T3 code design has their main color scheme then throw other
+  // colors in there."). Night & Orange stays the brand; these two only ever
+  // fill campaign bars and their legend swatches. Picked from the dataviz
+  // reference palette and validated on both cards: CVD separation 26.5
+  // (light card) and 27.3 (dark card) against a target of 8, and 3:1 or
+  // better on each. Court time also carries a stripe, so colour never works
+  // alone.
+  "data-gift": "#008300", // gifts, on both cards
+  "data-kind": "#2A78D6", // court time a partner club gives, light card
+  "data-kind-dark": "#3987E5", // the same, stepped for the dark card
+  // Their text shades for labels (T3 Code's recipe: a tint behind a deeper
+  // shade). 5:1 or better on off-white, beige, Night and the raised Night.
+  "good-ink": "#006300", // green label text on light
+  "good-ink-dark": "#4CC38A", // green label text and dots on dark
+  "info-ink": "#1C5CAB", // blue label text on light
+  "info-ink-dark": "#86B6EF", // blue label text and dots on dark
+  "win-ink": "#6B4F00", // win label text on light (yellow is the dot and tint)
   err: "#C0392B",
   black: "#000000", // shadows only
 };

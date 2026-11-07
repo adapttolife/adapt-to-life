@@ -66,7 +66,7 @@ test("social metadata and generated card source carry the road", async () => {
 test("one fund: every giving form is the Hustle & Heart Fund, and the Classic has none", async () => {
   const campaigns = JSON.parse(await text("public/data/campaigns.json")).campaigns;
   assert.equal(campaigns[0].slug, "wheelie-big-dills", "the one goal leads");
-  assert.equal(campaigns[0].goal, 34500, "every week plus the road, in one bar");
+  assert.equal(campaigns[0].goal, 48180, "every week plus the road, in one bar");
   assert.equal(campaigns[0].raised_key, "wbd");
   for (const f of [
     "public/donate.html",

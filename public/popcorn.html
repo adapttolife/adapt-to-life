@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=a259d5ba">
+<link rel="stylesheet" href="/css/site.css?v=f3c06679">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <style>
   /* ==========================================================================
@@ -115,9 +115,12 @@
     letter-spacing:0.16em; text-transform:uppercase;
   }
   .pop-status .dot{ width:8px; height:8px; border-radius:50%; background:var(--muted); flex:0 0 auto; }
-  .pop-status.is-open{ color:var(--orange-ink); }
-  .pop-status.is-open .dot{ background:var(--orange); box-shadow:0 0 0 4px var(--orange-bloom); }
-  .pop-status.is-soon{ color:var(--muted); }
+  /* Open is green and opening soon is blue, as on every status on the site. */
+  .pop-status.is-open{ color:var(--good-ink); }
+  .pop-status.is-open .dot{ background:var(--good-dot); box-shadow:0 0 0 4px color-mix(in srgb, var(--good) 16%, transparent); }
+  .pop-status.is-soon{ color:var(--info-ink); }
+  .pop-status.is-soon .dot{ background:var(--info-dot); }
+  .pop-status .sym{ width:1.3em; height:1.3em; }
   .pop-status.is-closed{ color:var(--muted); }
   .pop-card h2{ margin-top:0.7rem; }
   .pop-card-sub{ margin-top:0.5rem; color:var(--ink-soft); max-width:52ch; }
@@ -187,6 +190,7 @@
   .pop-row-name{ font-weight:600; }
   .pop-row-when{ font-family:var(--font-label); font-size:0.76rem; color:var(--muted); }
   .pop-row-out{ margin-left:auto; font-family:var(--font-label); font-size:0.82rem; color:var(--ink-soft); }
+  .pop-row-out.tag{ font-size:0.66rem; }
 
   /* ---- clickable flavor cards ------------------------------------------- */
   .pop-grid > li{ display:flex; }
@@ -205,7 +209,7 @@
   .pop-goal-bar{ height:7px; border-radius:999px; background:rgba(59,59,70,0.10); overflow:hidden; }
   .pop-goal-fill{
     height:100%; border-radius:999px; min-width:3px;
-    background:linear-gradient(90deg, var(--orange-ink), var(--orange-hot));
+    background:var(--good);
   }
   .pop-goal-label{
     margin-top:0.5rem; font-family:var(--font-label); font-size:0.74rem;
@@ -319,8 +323,8 @@ fill="currentColor" stroke="none">
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navOurWork">Our Work<svg class="caret" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="caret" data-style="bold"><path fill="currentColor" d="m216.49 104.49l-80 80a12 12 0 0 1-17 0l-80-80a12 12 0 0 1 17-17L128 159l71.51-71.52a12 12 0 0 1 17 17Z"/></svg></button>
         <div class="nav-panel" id="navOurWork">
           <a href="/hustle-and-heart"><span class="np-t">Hustle &amp; Heart Fund</span><span class="np-d">Support for equipment, training, and travel</span></a>
-          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d">In beta · Find adaptive programs by sport and location</span></a>
-          <a href="/adapt-body-shop"><span class="np-t">Adapt Body Shop</span><span class="np-d">Coming soon · Gear for the community</span></a>
+          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d"><span class="tag tag--info">In beta</span> Find adaptive programs by sport and location</span></a>
+          <a href="/adapt-body-shop"><span class="np-t">Adapt Body Shop</span><span class="np-d"><span class="tag tag--neutral">Coming soon</span> Gear for the community</span></a>
         </div>
       </div>
       <div class="nav-group">
@@ -349,8 +353,8 @@ fill="currentColor" stroke="none">
     <div class="wrap mwrap">
       <span class="m-group">Our Work</span>
       <a class="m-sub" href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
-      <a class="m-sub" href="/adaptive-sports-near-me">Adaptive Sports Near Me · In beta</a>
-      <a class="m-sub" href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
+      <a class="m-sub" href="/adaptive-sports-near-me">Adaptive Sports Near Me <span class="tag tag--info">In beta</span></a>
+      <a class="m-sub" href="/adapt-body-shop">Adapt Body Shop <span class="tag tag--neutral">Coming soon</span></a>
       <span class="m-group">Get Involved</span>
       <a class="m-sub" href="/volunteer">Volunteer</a>
       <a class="m-sub" href="/sponsorship">Partners</a>
@@ -409,8 +413,7 @@ fill="currentColor" stroke="none">
   <div class="wrap reading">
     <span class="eyebrow orange reveal">Where the support goes</span>
     <h2 class="serif h2 reveal" style="margin-top:0.8rem;">Help six athletes get to the US Open.</h2>
-    <p class="prose reveal" style="margin-top:1rem;">The August popcorn drive contributed to <a class="textlink" href="/send-6">Send 6 to the US Open Spring 2027</a>. That campaign brings equipment, training, and travel together for six adaptive pickleball athletes.</p>
-    <p class="prose reveal" style="margin-top:1rem;">Together, those orders help get athletes to Naples.</p>
+    <p class="prose reveal" style="margin-top:1rem;">The August popcorn drive raised $3,004 for <a class="textlink" href="/send-6">Send 6 to the US Open Spring 2027</a>, now the road to the US Open: tournaments through the year for six athletes, then Naples.</p>
     <a class="textlink reveal" href="/send-6" style="margin-top:1.4rem;">See the campaign <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
   </div>
 </section>
@@ -551,8 +554,8 @@ fill="currentColor" stroke="none">
         <a href="/tim">Tim&rsquo;s Story</a>
         <a href="/karen">Karen&rsquo;s Story</a>
         <a href="/juan">Juan&rsquo;s Story</a>
-        <a href="/adaptive-sports-near-me">Adaptive Sports Near Me · In beta</a>
-        <a href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
+        <a href="/adaptive-sports-near-me">Adaptive Sports Near Me <span class="tag tag--info">In beta</span></a>
+        <a href="/adapt-body-shop">Adapt Body Shop <span class="tag tag--neutral">Coming soon</span></a>
         <a href="/roadmap">Roadmap</a>
       </div>
       <div class="col">
@@ -658,7 +661,7 @@ fill="currentColor" stroke="none">
 }
 </script>
 
-<script src="/js/campaigns.js?v=2934099c"></script>
+<script src="/js/campaigns.js?v=5f1e3af5"></script>
 <script>
 (function(){
   var data;
@@ -796,7 +799,7 @@ fill="currentColor" stroke="none">
         var left = el('div');
 
         var sEl = el('span','pop-status is-' + (st === 'open' ? 'open' : 'soon'));
-        sEl.appendChild(el('span','dot'));
+        sEl.appendChild(st === 'open' ? el('span','live-dot') : window.ATLCampaigns.sym('time'));
         sEl.appendChild(document.createTextNode(st === 'open' ? 'Open now' : 'Opening soon'));
         left.appendChild(sEl);
         left.appendChild(el('h2','serif h2', current.name));
@@ -925,8 +928,13 @@ fill="currentColor" stroke="none">
           var row = el('div','pop-row');
           row.appendChild(el('span','pop-row-name', c.name));
           row.appendChild(el('span','pop-row-when', span(localDate(c.opens), localDate(c.closes))));
-          row.appendChild(el('span','pop-row-out',
-            (typeof c.raised === 'number') ? money(c.raised) + ' to the fund' : 'Total being counted'));
+          // Money that came in is green, like every gift on the site.
+          var out;
+          if (typeof c.raised === 'number'){
+            out = el('span','pop-row-out tag tag--good', money(c.raised) + ' to the fund');
+            out.insertBefore(window.ATLCampaigns.sym('giving'), out.firstChild);
+          } else out = el('span','pop-row-out','Total being counted');
+          row.appendChild(out);
           past.appendChild(row);
         });
       }

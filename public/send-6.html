@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=a259d5ba">
+<link rel="stylesheet" href="/css/site.css?v=f3c06679">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <style>
   /* ==========================================================================
@@ -46,10 +46,15 @@
   .s6-meter-row{ display:flex; align-items:baseline; gap:0.55rem; flex-wrap:wrap; }
   .s6-meter-n{ font-family:var(--font-display); font-weight:900; font-style:italic; letter-spacing:-0.03em; font-size:clamp(2.3rem,5.6vw,3.3rem); line-height:1; color:var(--cream); font-variant-numeric:tabular-nums; }
   .s6-meter-of{ font-size:0.98rem; color:var(--cream-mute); }
-  .s6-meter-track{ display:block; height:12px; border-radius:999px; background:rgba(249,247,242,0.13); margin-top:1rem; overflow:hidden; }
+  .s6-meter-track{ position:relative; display:block; height:12px; border-radius:999px; background:rgba(249,247,242,0.13); margin-top:1rem; overflow:hidden; }
+  /* The bar is six seats, one athlete each: five hairline gaps. */
+  .s6-meter-track::after{ content:""; position:absolute; inset:0; pointer-events:none; background:repeating-linear-gradient(90deg, transparent 0 calc(100% / 6 - 2px), var(--night) calc(100% / 6 - 2px) calc(100% / 6)); }
+  /* The site's data colours (site.css, supporting colours): the bar is green
+     because it is gifts, and the figure turns yellow once it is money raised,
+     the same win colour as the module's total. The goal alone stays cream. */
+  .s6-meter-n.is-raised{ color:var(--yellow); }
   .s6-meter-fill{ display:block; height:100%; width:0; border-radius:999px;
-    background:linear-gradient(90deg,var(--orange-ink),var(--orange-hot));
-    box-shadow:0 0 22px -2px rgba(255,92,57,0.7);
+    background:var(--good);
     transition:width 1.3s cubic-bezier(.2,.8,.2,1); }
   /* the meter no longer carries a caption, so it owns the gap to the buttons */
   .s6-hero .actions{ margin-top:2.2rem; }
@@ -68,16 +73,25 @@
   /* the fill rises from the floor of the tile as money comes in */
   .s6-seat-fill{
     position:absolute; left:0; right:0; bottom:0; height:0;
-    background:linear-gradient(180deg, var(--orange-bloom), rgb(var(--accent-rgb) / 0.20));
+    background:linear-gradient(180deg, color-mix(in srgb, var(--good) 12%, transparent), color-mix(in srgb, var(--good) 26%, transparent));
+    box-shadow:inset 0 2px 0 color-mix(in srgb, var(--good) 55%, transparent);
     transition:height 1.3s cubic-bezier(.2,.8,.2,1);
   }
-  .s6-seat > *{ position:relative; }
-  /* the chair sits in grayscale until the seat is covered, then it comes to life */
-  .s6-seat-ico{ display:block; width:clamp(52px,6.4vw,64px); height:clamp(52px,6.4vw,64px); margin:0 auto;
-    filter:grayscale(1) contrast(0.92); opacity:0.5; transition:filter .5s ease, opacity .5s ease; }
-  .s6-seat-ico img{ width:100%; height:100%; display:block; object-fit:contain; }
-  .s6-seat.is-on .s6-seat-ico{ filter:none; opacity:1; }
-  .s6-seat-n{ margin-top:0.7rem; font-family:var(--font-label); font-size:0.68rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); }
+  /* Lift the content above the fill, but not the fill itself: with the fill
+     relative too, its percentage height had nothing to resolve against and
+     the seats never showed the money coming in. */
+  .s6-seat > :not(.s6-seat-fill){ position:relative; }
+  /* Each seat is an athlete from the crew page (Alec, Nov 7: "more impactful,
+     more personal"), in colour from the start: the fill shows the money, the
+     person never waits to be shown. */
+  .s6-seat-img{ display:block; width:auto; max-width:100%; height:clamp(88px,9.4vw,116px); margin:0 auto; object-fit:contain; }
+  /* A covered seat gets a check in a green disc, so covered never relies on
+     the fill colour alone. */
+  .s6-seat.is-on::before, .s6-seat.is-on::after{ content:""; position:absolute; top:10px; right:10px; width:22px; height:22px; }
+  .s6-seat.is-on::before{ border-radius:50%; background:var(--good); box-shadow:0 0 0 3px var(--paper); }
+  .s6-seat.is-on::after{ background:var(--cream); -webkit-mask:var(--icon-check) center/13px no-repeat; mask:var(--icon-check) center/13px no-repeat; }
+  .s6-seat-n{ margin-top:0.6rem; font-family:var(--font-display); font-style:italic; font-weight:800; font-size:clamp(1.05rem,1.6vw,1.2rem); letter-spacing:-0.01em; line-height:1.1; color:var(--ink); }
+  .s6-seat-n a{ color:inherit; text-decoration:none; border-bottom:2px solid var(--orange); }
   .s6-seat-amt{ margin-top:0.25rem; font-size:0.92rem; color:var(--ink-soft); }
   .s6-seats-note{ margin-top:clamp(1.4rem,2.6vw,2rem); text-align:center; color:var(--muted); font-size:0.94rem; max-width:56ch; margin-inline:auto; }
 
@@ -106,8 +120,13 @@
   .s6-pill{ display:inline-flex; align-items:center; gap:0.42rem; font-family:var(--font-label);
     font-size:0.63rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); }
   .s6-pill .dot{ width:7px; height:7px; border-radius:50%; background:var(--muted); flex:0 0 auto; }
-  .s6-pill.is-open{ color:var(--orange-ink); }
-  .s6-pill.is-open .dot{ background:var(--orange); box-shadow:0 0 0 4px var(--orange-bloom); }
+  .s6-pill .sym{ width:1.35em; height:1.35em; margin-left:-0.15em; }
+  .s6-pill .live-dot{ width:7px; height:7px; }
+  /* Open is green, coming up is blue, finished stays grey. */
+  .s6-pill.is-open{ color:var(--good-ink); }
+  .s6-pill.is-open .dot{ background:var(--good-dot); box-shadow:0 0 0 4px color-mix(in srgb, var(--good) 16%, transparent); }
+  .s6-pill.is-soon{ color:var(--info-ink); }
+  .s6-pill.is-soon .dot{ background:var(--info-dot); }
   .s6-drive .btn{ flex:0 0 auto; }
   .s6-empty{ color:var(--muted); text-align:center; margin-top:1.4rem; }
   .s6-bigger{ margin-top:1.2rem; max-width:62ch; color:var(--ink-soft); }
@@ -154,8 +173,8 @@ fill="currentColor" stroke="none">
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navOurWork">Our Work<svg class="caret" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="caret" data-style="bold"><path fill="currentColor" d="m216.49 104.49l-80 80a12 12 0 0 1-17 0l-80-80a12 12 0 0 1 17-17L128 159l71.51-71.52a12 12 0 0 1 17 17Z"/></svg></button>
         <div class="nav-panel" id="navOurWork">
           <a href="/hustle-and-heart"><span class="np-t">Hustle &amp; Heart Fund</span><span class="np-d">Support for equipment, training, and travel</span></a>
-          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d">In beta · Find adaptive programs by sport and location</span></a>
-          <a href="/adapt-body-shop"><span class="np-t">Adapt Body Shop</span><span class="np-d">Coming soon · Gear for the community</span></a>
+          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d"><span class="tag tag--info">In beta</span> Find adaptive programs by sport and location</span></a>
+          <a href="/adapt-body-shop"><span class="np-t">Adapt Body Shop</span><span class="np-d"><span class="tag tag--neutral">Coming soon</span> Gear for the community</span></a>
         </div>
       </div>
       <div class="nav-group">
@@ -184,8 +203,8 @@ fill="currentColor" stroke="none">
     <div class="wrap mwrap">
       <span class="m-group">Our Work</span>
       <a class="m-sub" href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
-      <a class="m-sub" href="/adaptive-sports-near-me">Adaptive Sports Near Me · In beta</a>
-      <a class="m-sub" href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
+      <a class="m-sub" href="/adaptive-sports-near-me">Adaptive Sports Near Me <span class="tag tag--info">In beta</span></a>
+      <a class="m-sub" href="/adapt-body-shop">Adapt Body Shop <span class="tag tag--neutral">Coming soon</span></a>
       <span class="m-group">Get Involved</span>
       <a class="m-sub" href="/volunteer">Volunteer</a>
       <a class="m-sub" href="/sponsorship">Partners</a>
@@ -216,7 +235,7 @@ fill="currentColor" stroke="none">
       <span class="s6-meter-track"><span class="s6-meter-fill" id="s6Fill"></span></span>
     </div>
 
-    <p class="prose reveal" id="campaign-terms" style="margin-top:1rem; color:var(--cream-mute);">Every gift goes to the Hustle &amp; Heart Fund for the Chicago Wheelie Big Dills: every week first, then the road to the US Open. Money already raised for Send 6, including the popcorn drive, stays on the road. <a href="/promise#campaign-gifts" style="color:inherit;">How Giving Works</a>.</p>
+    <p class="prose reveal" id="campaign-terms" style="margin-top:1rem; color:var(--cream-mute);">Every gift goes to the Hustle &amp; Heart Fund for Chicago Pickleball: Wheelie Big Dills, every week first, then the road to the US Open. Money already raised for Send 6, including the popcorn drive, stays on the road. <a href="/promise#campaign-gifts" style="color:inherit;">How Giving Works</a>.</p>
     <div class="actions reveal">
       <a class="btn" href="#give">Donate</a>
       <a class="btn ghost" href="#cost">Where the money goes</a>
@@ -232,9 +251,18 @@ fill="currentColor" stroke="none">
       <h2 class="serif h2 reveal" style="margin-top:0.7rem;">Six seats. One athlete each.</h2>
       <p class="reveal" style="margin-top:1rem; color:var(--ink-soft);">$3,500 per athlete, about what the US Open has cost the last couple of years. Together, the six seats make up $21,000.</p>
     </div>
-    <ul class="s6-seats" id="s6Seats"></ul>
-    <p class="s6-seats-note reveal"><a class="textlink" href="/juan" style="font:inherit;letter-spacing:inherit;">Juan Ortiz</a> holds the first seat and is leading the campaign. The other athletes are selected through the fund&rsquo;s grant process, and we will name them here once they are confirmed.</p>
-    <p class="s6-bigger reveal">The road is part of one goal: $34,500 for <a class="textlink" href="/pickleball#support" style="font:inherit;letter-spacing:inherit;">the Chicago Wheelie Big Dills</a> in the year ahead, every week first. Equipment is raised one athlete at a time. After the road, our goal is <a class="textlink" href="/chicago-classic" style="font:inherit;letter-spacing:inherit;">the Chicago Classic</a>.</p>
+    <ul class="s6-seats" id="s6Seats">
+      <!-- campaign-seats -->
+      <li class="s6-seat"><span class="s6-seat-fill"></span><img class="s6-seat-img" src="/images/pickleball/seats/juan.webp" alt="" width="137" height="200" loading="lazy" decoding="async"><p class="s6-seat-n"><a href="/juan">Juan</a></p><p class="s6-seat-amt">$3,500</p></li>
+      <li class="s6-seat"><span class="s6-seat-fill"></span><img class="s6-seat-img" src="/images/pickleball/seats/brian.webp" alt="" width="212" height="200" loading="lazy" decoding="async"><p class="s6-seat-n">Brian</p><p class="s6-seat-amt">$3,500</p></li>
+      <li class="s6-seat"><span class="s6-seat-fill"></span><img class="s6-seat-img" src="/images/pickleball/seats/bob.webp" alt="" width="123" height="200" loading="lazy" decoding="async"><p class="s6-seat-n">Bob</p><p class="s6-seat-amt">$3,500</p></li>
+      <li class="s6-seat"><span class="s6-seat-fill"></span><img class="s6-seat-img" src="/images/pickleball/seats/robby.webp" alt="" width="144" height="200" loading="lazy" decoding="async"><p class="s6-seat-n">Robby</p><p class="s6-seat-amt">$3,500</p></li>
+      <li class="s6-seat"><span class="s6-seat-fill"></span><img class="s6-seat-img" src="/images/pickleball/seats/ken.webp" alt="" width="146" height="200" loading="lazy" decoding="async"><p class="s6-seat-n">Ken</p><p class="s6-seat-amt">$3,500</p></li>
+      <li class="s6-seat"><span class="s6-seat-fill"></span><img class="s6-seat-img" src="/images/pickleball/seats/amanda.webp" alt="" width="204" height="200" loading="lazy" decoding="async"><p class="s6-seat-n">Amanda</p><p class="s6-seat-amt">$3,500</p></li>
+      <!-- /campaign-seats -->
+    </ul>
+    <p class="s6-seats-note reveal"><a class="textlink" href="/juan" style="font:inherit;letter-spacing:inherit;">Juan Ortiz</a> is leading the campaign for six of the Wheelie Big Dills, one seat each. The road is one goal, so the six seats fill together. <a class="textlink" href="/pickleball#crew" style="font:inherit;letter-spacing:inherit;">Meet the crew</a></p>
+    <p class="s6-bigger reveal">The road is part of one goal: $48,180 for <a class="textlink" href="/pickleball#support" style="font:inherit;letter-spacing:inherit;">Chicago Pickleball: Wheelie Big Dills</a> in the year ahead, every week first. Equipment is raised one athlete at a time. After the road, our goal is <a class="textlink" href="/chicago-classic" style="font:inherit;letter-spacing:inherit;">the Chicago Classic</a>.</p>
   </div>
 </section>
 
@@ -310,7 +338,7 @@ fill="currentColor" stroke="none">
     <h2 class="serif display reveal">Help them get there.</h2>
     <p class="lead sub reveal">Choose an amount that works for you. Help the next athlete prepare and take part.</p>
     <div class="s6-give reveal"><div class="gb-card gb-card--solo"><givebutter-giving-form campaign="IXM5DR"></givebutter-giving-form></div></div>
-    <p class="s6-give-note">Every gift goes to the Chicago Wheelie Big Dills: every week first, then the road to the US Open. Secure checkout by Givebutter.</p>
+    <p class="s6-give-note">Every gift goes to Chicago Pickleball: Wheelie Big Dills, every week first, then the road to the US Open. Secure checkout by Givebutter.</p>
   </div>
 </section>
 
@@ -374,8 +402,8 @@ fill="currentColor" stroke="none">
         <a href="/tim">Tim&rsquo;s Story</a>
         <a href="/karen">Karen&rsquo;s Story</a>
         <a href="/juan">Juan&rsquo;s Story</a>
-        <a href="/adaptive-sports-near-me">Adaptive Sports Near Me · In beta</a>
-        <a href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
+        <a href="/adaptive-sports-near-me">Adaptive Sports Near Me <span class="tag tag--info">In beta</span></a>
+        <a href="/adapt-body-shop">Adapt Body Shop <span class="tag tag--neutral">Coming soon</span></a>
                 <a href="/roadmap">Roadmap</a>
       </div>
       <div class="col">
@@ -457,7 +485,7 @@ fill="currentColor" stroke="none">
   })();
 </script>
 
-<script src="/js/campaigns.js?v=2934099c"></script>
+<script src="/js/campaigns.js?v=5f1e3af5"></script>
 <script>
 (function(){
   var C = window.ATLCampaigns;
@@ -466,38 +494,10 @@ fill="currentColor" stroke="none">
   var PER_SEAT = 3500;
   var GOAL = SEATS * PER_SEAT;   // the fallback if /api/raised is unreachable
 
-  // One 8KB image, six tiles, one request. Transparent background so the
-  // funding fill can rise behind the chair without a white box around it.
-  var SEAT_ICO =
-    '<img src="/images/seat-pickleball.webp" alt="" width="192" height="192" decoding="async">';
-
-  /* ---- the six seats ------------------------------------------------------ */
-  var seatFills = [];
-  (function buildSeats(){
-    var host = document.getElementById('s6Seats');
-    if (!host) return;
-    for (var i = 0; i < SEATS; i++){
-      var li = C.el('li','s6-seat reveal in');
-      var fill = C.el('span','s6-seat-fill');
-      var ico = C.el('span','s6-seat-ico');
-      ico.setAttribute('aria-hidden','true');
-      ico.innerHTML = SEAT_ICO;
-      li.appendChild(fill);
-      li.appendChild(ico);
-      if (i === 0) {
-        /* Seat one has a name. Juan is confirmed and leads the campaign. */
-        var who = C.el('p','s6-seat-n');
-        var a = C.el('a', null, 'Juan Ortiz'); a.href = '/juan'; a.style.color = 'inherit'; a.style.borderBottom = '2px solid var(--orange)';
-        who.appendChild(a);
-        li.appendChild(who);
-      } else {
-        li.appendChild(C.el('p','s6-seat-n','Seat ' + (i + 1)));
-      }
-      li.appendChild(C.el('p','s6-seat-amt', C.money(PER_SEAT)));
-      host.appendChild(li);
-      seatFills.push({ tile:li, fill:fill });
-    }
-  })();
+  /* ---- the six seats ------------------------------------------------------
+     Stamped by scripts/build-module.mjs from campaigns.json: six athletes from
+     the crew page, in the chair, by name. */
+  var seatTiles = document.querySelectorAll('#s6Seats .s6-seat');
 
   /* ---- the live number ---------------------------------------------------- */
   C.raised(function(d){
@@ -517,7 +517,9 @@ fill="currentColor" stroke="none">
     }
 
     var pct = goal > 0 ? Math.max(0, Math.min(100, raised / goal * 100)) : 0;
-    if (nEl) nEl.textContent = C.money(raised);
+    if (nEl){ nEl.textContent = C.money(raised); nEl.classList.add('is-raised'); }
+    var meterEl = document.getElementById('s6Meter');
+    if (meterEl) meterEl.classList.toggle('is-done', raised >= goal);
     if (ofEl) ofEl.textContent = 'raised of our ' + C.money(goal) + ' goal';
     if (fillEl){
       requestAnimationFrame(function(){
@@ -525,13 +527,13 @@ fill="currentColor" stroke="none">
       });
     }
 
-    // Seats fill left to right off the same money. The partial seat shows a
-    // partial fill, because rounding it up would be a claim we cannot make.
-    var perSeat = goal / SEATS;
-    seatFills.forEach(function(s, i){
-      var share = Math.max(0, Math.min(1, (raised - i * perSeat) / perSeat));
-      if (share >= 1) s.tile.classList.add('is-on');
-      setTimeout(function(){ s.fill.style.height = (share * 100).toFixed(1) + '%'; }, 200 + i * 90);
+    // The seats have names now, and the road is one goal, so no athlete shows
+    // as paid before the others: all six rise to the road's level together,
+    // and all six take the check when the road is covered.
+    Array.prototype.forEach.call(seatTiles, function(t, i){
+      var f = t.querySelector('.s6-seat-fill');
+      t.classList.toggle('is-on', pct >= 100);
+      if (f) setTimeout(function(){ f.style.height = pct.toFixed(1) + '%'; }, 200 + i * 90);
     });
   }, 'send-6');
 
@@ -544,7 +546,8 @@ fill="currentColor" stroke="none">
     var main = C.el('div','s6-drive-main');
 
     var pill = C.el('span','s6-pill is-' + (st === 'open' ? 'open' : st));
-    pill.appendChild(C.el('span','dot'));
+    // Open is a live dot; coming up is the clock, finished the checkered flag.
+    pill.appendChild(st === 'open' ? C.el('span','live-dot') : C.sym(st === 'soon' ? 'time' : 'finished'));
     pill.appendChild(document.createTextNode(
       st === 'open' ? 'Open now' : st === 'soon' ? 'Coming up' : 'Finished'
     ));
@@ -578,7 +581,7 @@ fill="currentColor" stroke="none">
     var li = C.el('li','s6-drive reveal in');
     var main = C.el('div','s6-drive-main');
     var pill = C.el('span','s6-pill is-open');
-    pill.appendChild(C.el('span','dot'));
+    pill.appendChild(C.el('span','live-dot'));
     pill.appendChild(document.createTextNode('Always open'));
     main.appendChild(pill);
     main.appendChild(C.el('p','s6-drive-name','Direct gifts'));

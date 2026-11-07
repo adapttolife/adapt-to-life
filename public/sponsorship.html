@@ -137,7 +137,7 @@
   .partner-logo.is-word{ height:auto; width:min(100%, 210px); margin-bottom:0.4rem; }
   /* On phones the photo is a short 16:9 strip; a tall portrait sets
      --phone-crop on its img so the strip keeps the face. */
-  .partner-photo img{ width:100%; height:100%; object-fit:cover; object-position:50% 30%; transition:transform .6s ease; }
+  .partner-photo img{ width:100%; height:100%; object-fit:cover; object-position:var(--crop, 50% 30%); transition:transform .6s ease; }
   .partner:hover .partner-photo img{ transform:scale(1.03); }
   .partner-body{ padding:clamp(1.6rem,3.5vw,2.8rem); display:flex; flex-direction:column; align-items:flex-start; justify-content:center; }
   .partner-logo{ height:clamp(58px,6vw,78px); width:auto; }
@@ -353,7 +353,7 @@ fill="currentColor" stroke="none">
         </article>
         <article class="partner on-dark reveal">
           <a class="partner-photo" href="/picklr" tabindex="-1" aria-hidden="true">
-            <img src="/images/ace/court-swing.webp" alt="" width="1800" height="1200" loading="lazy" decoding="async" style="object-position:74% 40%;">
+            <img src="/images/athletes/ryan-reach.webp" alt="" width="960" height="1200" loading="lazy" decoding="async" style="--crop:50% 40%; --phone-crop:50% 18%;">
           </a>
           <div class="partner-body">
             <img class="partner-logo is-word" src="/images/partners/picklr-wordmark-white.png" alt="The Picklr" width="460" height="107">

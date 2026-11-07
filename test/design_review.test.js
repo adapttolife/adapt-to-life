@@ -109,14 +109,14 @@ test("donate: more ways to give is a ledger beside the advisor's card", () => {
   assert.ok(sec.includes('id="details"'), "the advisor card keeps the #details anchor");
   assert.ok(sec.includes('<span class="give-fact-v">41-3213344</span>'));
   assert.equal((html.match(/id="details"/g) || []).length, 1, "one details block");
-  assert.ok(sec.includes('href="#givePanel"'), "monthly points back to the form");
-  // The monthly line is the picker's own verified unit cost.
+  // Alec, Nov 7: /donate and /numbers complement each other. The monthly
+  // gifts lead "What your gift does" above (the form opens on Monthly), so the
+  // fourth way is a sport chair: the one gift the form can't take, raised one
+  // athlete at a time.
   assert.ok(
-    read("public/js/campaigns.js").includes(
-      "$129 a month: unlimited sessions for one athlete to compete.",
-    ),
+    sec.includes('<h3 class="gm-t">A sport chair</h3>'),
+    "the chair is a way to give",
   );
-  assert.ok(
-    sec.includes("$129 a month: unlimited sessions for one athlete to compete."),
-  );
+  assert.ok(sec.includes("$4,000 to $6,000"));
+  assert.ok(!sec.includes("Every month"), "monthly lives in the impact list now");
 });

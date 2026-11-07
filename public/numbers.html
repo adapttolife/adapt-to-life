@@ -128,7 +128,12 @@
   @media (max-width:760px){ .nb-gifts{ grid-template-columns:1fr; } }
   .nb-gift-col h3{ margin:0 0 0.4rem; font-family:var(--font-label); font-size:0.78rem; font-weight:800; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); }
   .nb-gift-col ul{ list-style:none; margin:0; padding:0; }
-  .nb-gift-col li{ display:grid; grid-template-columns:5.4rem 1fr; align-items:baseline; gap:0.8rem; padding:0.8rem 0; border-top:1px solid rgba(59,59,70,0.12); }
+  .nb-gift-col li{ display:grid; grid-template-columns:5.4rem 1fr; align-items:baseline; column-gap:0.8rem; row-gap:0.15rem; padding:0.8rem 0; border-top:1px solid rgba(59,59,70,0.12); }
+  /* Each amount, its arithmetic in the route's calc style, then what it is. */
+  .nb-gift-col li b{ grid-row:1 / span 2; }
+  .nb-gift-col .nb-gift-calc{ grid-column:2; font-weight:800; font-variant-numeric:tabular-nums; color:var(--ink); }
+  .nb-gift-col .nb-gift-what{ grid-column:2; font-size:0.94rem; }
+  .nb-gifts-lead{ margin-top:0.9rem; }
   .nb-gift-col b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:1.6rem; letter-spacing:-0.03em; font-variant-numeric:tabular-nums; color:var(--orange-ink); }
   .nb-gift-col span{ line-height:1.45; color:var(--ink-soft); }
 </style>
@@ -285,29 +290,32 @@ fill="currentColor" stroke="none">
     </div>
   </section>
 
-  <!-- WHAT A GIFT DOES -->
-  <section class="band tint" aria-labelledby="nbGiftTitle">
+  <!-- WHAT A GIFT DOES — every amount on /donate (and the campaign card),
+       with the arithmetic behind it. /donate says what a gift does; this
+       says how we got the number. Same amounts, same order: Monthly first. -->
+  <section class="band tint" id="gifts" aria-labelledby="nbGiftTitle">
     <div class="wrap">
       <div class="nb-head reveal">
         <span class="eyebrow orange">What a gift does</span>
         <h2 class="serif statement" id="nbGiftTitle">The same math, <em class="italic" style="color:var(--orange)">gift by gift.</em></h2>
+        <p class="prose nb-gifts-lead">Every amount on the <a class="textlink" href="/donate" style="font:inherit;letter-spacing:inherit;">donate page</a>, and how we got it.</p>
       </div>
       <div class="nb-gifts">
         <div class="nb-gift-col reveal">
-          <h3>One time</h3>
+          <h3>Monthly</h3>
           <ul>
-            <li><b>$15</b><span>puts one athlete on court for a night.</span></li>
-            <li><b>$225</b><span>covers up to 15 athletes for a night at ACE.</span></li>
-            <li><b>$1,548</b><span>covers a year of unlimited sessions for one athlete.</span></li>
-            <li><b>$3,500</b><span>covers about what one athlete&rsquo;s US Open costs.</span></li>
+            <li><b>$60</b><span class="nb-gift-calc">4 nights &times; $15</span><span class="nb-gift-what">Four nights on court for one athlete.</span></li>
+            <li><b>$129</b><span class="nb-gift-calc">1 membership</span><span class="nb-gift-what">Unlimited sessions for one athlete to compete.</span></li>
+            <li><b>$900</b><span class="nb-gift-calc">4 nights &times; $225</span><span class="nb-gift-what">Four nights on court for up to 15 athletes.</span></li>
           </ul>
         </div>
         <div class="nb-gift-col reveal">
-          <h3>Monthly</h3>
+          <h3>One time</h3>
           <ul>
-            <li><b>$60</b><span>a month: four nights at $15, for one athlete.</span></li>
-            <li><b>$129</b><span>a month: unlimited sessions for one athlete to compete.</span></li>
-            <li><b>$900</b><span>a month: four nights at $225, for up to 15 athletes.</span></li>
+            <li><b>$15</b><span class="nb-gift-calc">1 night &times; $15</span><span class="nb-gift-what">One night on court for one athlete.</span></li>
+            <li><b>$225</b><span class="nb-gift-calc">15 athletes &times; $15</span><span class="nb-gift-what">One night on court for up to 15 athletes.</span></li>
+            <li><b>$1,548</b><span class="nb-gift-calc">12 months &times; $129</span><span class="nb-gift-what">A year of unlimited sessions for one athlete.</span></li>
+            <li><b>$3,500</b><span class="nb-gift-calc">about one US Open</span><span class="nb-gift-what">Entry fees, travel and an accessible room in Naples, for one athlete.</span></li>
           </ul>
         </div>
       </div>

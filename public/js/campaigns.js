@@ -565,8 +565,9 @@
     // a month for a membership ($1,548 for 12 months), about $3,500 for a US
     // Open the last couple of years. Monthly figures are those over 12 months
     // ($65 is exactly $15 a week, every week). Alec, Nov 7: "$129 a month is
-    // ACE membership (then times it by 12)", so the monthly line says what the
-    // month buys and the year shows its math.
+    // [a] membership (then times it by 12)", so the monthly line says what the
+    // month buys and the year shows its math; and "Don't say ACE membership.
+    // Just say membership."
     monthly: [
       {
         a: 65,
@@ -574,7 +575,7 @@
       },
       {
         a: 129,
-        t: "$129 a month covers one athlete’s ACE membership, so they can train every week.",
+        t: "$129 a month covers one athlete’s membership, so they can train every week.",
       },
       {
         a: 975,
@@ -586,7 +587,7 @@
       { a: 225, t: "$225 covers up to 15 athletes for a night at ACE." },
       {
         a: 1548,
-        t: "$1,548 covers a year of one athlete’s ACE membership: 12 months at $129.",
+        t: "$1,548 covers a year of one athlete’s membership: 12 months at $129.",
       },
       { a: 3500, t: "$3,500 covers about what one athlete’s US Open costs." },
     ],

@@ -85,11 +85,11 @@ test("every gift line is a verified unit cost", () => {
   assert.equal(65 * 12, 15 * 52, "$65 a month is exactly $15 a week");
   for (const line of [
     "$65 a month puts one athlete on court every week.",
-    "$129 a month covers one athlete’s ACE membership, so they can train every week.",
+    "$129 a month covers one athlete’s membership, so they can train every week.",
     "$975 a month covers a night at ACE every week for up to 15 athletes.",
     "$15 puts one athlete on court for a night.",
     "$225 covers up to 15 athletes for a night at ACE.",
-    "$1,548 covers a year of one athlete’s ACE membership: 12\u00a0months at $129.",
+    "$1,548 covers a year of one athlete’s membership: 12\u00a0months at $129.",
     "$3,500 covers about what one athlete’s US Open costs.",
   ])
     assert.ok(js.includes(line), line);

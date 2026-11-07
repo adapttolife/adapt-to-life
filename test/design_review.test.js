@@ -113,12 +113,12 @@ test("donate: more ways to give is a ledger beside the advisor's card", () => {
   // The monthly line is the picker's own verified unit cost.
   assert.ok(
     read("public/js/campaigns.js").includes(
-      "$129 a month covers one athlete’s ACE membership, so they can train every week.",
+      "$129 a month covers one athlete’s membership, so they can train every week.",
     ),
   );
   assert.ok(
     sec.includes(
-      "$129 a month covers one athlete&rsquo;s ACE membership, so they can train every week.",
+      "$129 a month covers one athlete&rsquo;s membership, so they can train every week.",
     ),
   );
 });

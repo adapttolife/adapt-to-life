@@ -436,6 +436,12 @@
     0 1px 2px rgba(0, 0, 0, 0.55),
     0 2px 14px rgba(0, 0, 0, 0.45);
 }
+/* Text on a paper card inside the band (the donate page's giving form) sits
+   on the card, not the picture: no photo shadow, or it reads as smudged
+   right under the checkout (found Nov 7 2026). */
+.hero.pg-band > .wrap .gb-card :is(p, a, li) {
+  text-shadow: none;
+}
 
 @media (max-width: 900px) {
   /* Narrow: the words take the top, the columns take everything under them —

@@ -113,7 +113,12 @@
     "R2_ACCESS_KEY_ID": "d27b427aadef63a7ec1e05eaec108bc0",
     "MAIL_TRANSPORT": "gmail",
     "GMAIL_FROM": "hello@adapttolife.org",
-    "RESEND_SEGMENT_ID": "a2640e82-34df-446d-b5f8-0ad6f31d352e"
+    "RESEND_SEGMENT_ID": "a2640e82-34df-446d-b5f8-0ad6f31d352e",
+    // The welcome series (src/newsletter-series.js). "off" stops new emails
+    // without a code change; the sender is the domain verified in Resend.
+    "WELCOME_SERIES": "on",
+    "NEWSLETTER_FROM": "Alec at Adapt To Life <hello@mail.adapttolife.org>",
+    "NEWSLETTER_REPLY_TO": "hello@adapttolife.org"
   },
   // Signed-waiver storage: archived to Google Drive, with the signing record in D1.
   "d1_databases": [
@@ -175,7 +180,11 @@
         "GMAIL_FROM": "hello@adapttolife.org",
         "TURNSTILE_MODE": "off",
         "ASNM_ADMIN_ORIGIN": "https://staging-adaptivesportsnearme.adapt-to-life.workers.dev",
-        "RESEND_SEGMENT_ID": "a2640e82-34df-446d-b5f8-0ad6f31d352e"
+        "RESEND_SEGMENT_ID": "a2640e82-34df-446d-b5f8-0ad6f31d352e",
+        // Mirrors production; inert here (staging has no Resend key or cron).
+        "WELCOME_SERIES": "on",
+        "NEWSLETTER_FROM": "Alec at Adapt To Life <hello@mail.adapttolife.org>",
+        "NEWSLETTER_REPLY_TO": "hello@adapttolife.org"
       },
       "routes": [],
       // Run the real application for every route, with staging cache/index headers.

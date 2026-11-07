@@ -27,6 +27,9 @@
 //            picker's default gift into the Givebutter form.
 //   numbers  false drops the "See the numbers breakdown" button (on /numbers,
 //            which is the breakdown). Default true.
+//   rows     false drops the two progress bars, leaving the total and the
+//            gift (on /numbers, where the page above already shows every bar).
+//            Default true.
 //   mirror   false keeps the figure the way it was photographed on a desktop,
 //            where the others are flipped to face the page. For a photo with
 //            lettering (Ryan's shirt and cap), which would read backwards.
@@ -263,6 +266,8 @@ export function render(opts, where = "page") {
     html = html.replace('class="cm-bg"', 'class="cm-bg cm-bg--true"');
   if (!o.give) html = html.replace(/\n<!--give-->[\s\S]*?<!--\/give-->/, "");
   else html = html.replace(/\n<!--\/?give-->/g, "");
+  if (o.rows === false) html = html.replace(/\n<!--rows-->[\s\S]*?<!--\/rows-->/, "");
+  else html = html.replace(/\n<!--\/?rows-->/g, "");
   // numbers: false drops the button to the breakdown (on /numbers itself).
   if (o.numbers === false)
     html = html.replace(/\n<!--numbers-->[\s\S]*?<!--\/numbers-->/, "");

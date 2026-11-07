@@ -861,33 +861,27 @@
             countUp(n, (Number(d.raised) || 0) + kind);
           });
         });
+        // Each part: what is covered so far as one fill (the partner club's
+        // court time included; /numbers keeps the two apart with a key), the
+        // amount with the raised figure in bold, and the share where the bar
+        // ends. Alec, Nov 7: "where to look and what to care about".
         Object.keys(parts).forEach(function (k) {
           var p = parts[k] || {};
           var pr = Number(p.raised) || 0;
           var pg = Number(p.goal) || 0;
-          var pk = Math.min(Number(p.inkind) || 0, pr);
           if (!pg) return;
           each(m, '[data-part-fig="' + k + '"]', function (n) {
-            n.textContent = pr
-              ? money(pr) + " of " + money(pg)
-              : money(pg) + (k === "year" ? " a year" : "");
+            if (!pr) {
+              n.textContent = money(pg) + (k === "year" ? " a year" : "");
+              return;
+            }
+            n.textContent = "";
+            n.appendChild(el("b", null, money(pr)));
+            n.appendChild(document.createTextNode(" of " + money(pg)));
           });
           each(m, '[data-part-row="' + k + '"]', function (n) {
             n.classList.toggle("is-empty", !pr);
-            n.classList.toggle("has-gifts", pr - pk > 0);
             n.classList.toggle("is-done", pr >= pg);
-          });
-
-          if (pk)
-            each(m, '[data-part-note="' + k + '"]', function (n) {
-              n.textContent =
-                "Court time and memberships. A partner club\u2019s court time got it started, and every new gift builds on it.";
-            });
-          each(m, '[data-part-kind="' + k + '"]', function (n) {
-            whenSeen(n, function () {
-              n.style.width =
-                Math.max(0, Math.min(100, (pk / pg) * 100)).toFixed(1) + "%";
-            });
           });
           each(m, '[data-part-pct="' + k + '"]', function (n) {
             if (!pr) return;
@@ -897,7 +891,7 @@
           each(m, '[data-part-fill="' + k + '"]', function (n) {
             whenSeen(n, function () {
               n.style.width =
-                Math.max(0, Math.min(100, ((pr - pk) / pg) * 100)).toFixed(1) + "%";
+                Math.max(0, Math.min(100, (pr / pg) * 100)).toFixed(1) + "%";
             });
           });
         });

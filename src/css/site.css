@@ -3807,52 +3807,24 @@ a.win-band:focus-visible {
   font-weight: 800;
   font-size: 0.98rem;
 }
+/* The amount: the raised figure in bold, "of $goal" quieter, so the eye
+   lands on what is covered. */
 .cm-fig {
   margin-left: auto;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 0.95rem;
   font-variant-numeric: tabular-nums;
+  color: var(--card-muted);
+}
+.cm-fig b {
+  font-weight: 800;
+  color: var(--card-text);
 }
 @media (max-width: 560px) {
   .cm-fig {
     margin-left: 0;
     flex-basis: 100%;
   }
-}
-.cm-badge {
-  display: inline-flex;
-  align-items: center;
-  height: 20px;
-  padding: 0 6px;
-  border-radius: var(--r-sm);
-  font-size: 0.7rem;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  font-variant-numeric: tabular-nums;
-}
-.cm-badge[hidden] {
-  display: none;
-}
-.cm-badge--action {
-  background: color-mix(in srgb, var(--action) 14%, transparent);
-  color: var(--orange-ink);
-}
-.cm .cm-badge--action {
-  color: var(--orange-hot);
-  background: color-mix(in srgb, var(--action) 20%, transparent);
-}
-.cm-badge--quiet {
-  background: color-mix(in srgb, var(--card-text) 8%, transparent);
-  color: var(--card-muted);
-}
-/* Supporting colours in the module: progress is green, the next goal blue. */
-.cm-badge--good {
-  background: color-mix(in srgb, var(--good) calc(var(--tag-tint) + 4%), transparent);
-  color: var(--good-ink);
-}
-.cm-badge--info {
-  background: color-mix(in srgb, var(--info) calc(var(--tag-tint) + 4%), transparent);
-  color: var(--info-ink);
 }
 .cm-track {
   position: relative;
@@ -3876,20 +3848,9 @@ a.win-band:focus-visible {
 .cm-fill--action {
   background: var(--gift);
 }
-/* Court time a partner club gives: the first piece of every week, blue and
-   striped (colour plus texture, so it never relies on colour alone). Where
-   gifts follow it, a 2px gap keeps the two pieces apart. The note under the
-   bar names it. */
-.cm-fill--kind {
-  background: repeating-linear-gradient(
-    135deg,
-    var(--kind) 0 3px,
-    color-mix(in srgb, var(--kind) 55%, transparent) 3px 6px
-  );
-}
-.cm-row.has-gifts .cm-fill--kind {
-  margin-right: 2px;
-}
+/* One fill per bar: everything covered so far, the partner club's court
+   time included. /numbers keeps the gifts and the court time apart, with a
+   key; the card only answers how far along each part is. */
 .cm-start {
   display: none;
   position: absolute;
@@ -3953,20 +3914,13 @@ a.win-band:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
-/* The next goal: muted, and no bar until it has money. */
-.cm-row--next .cm-row-top b,
-.cm-row--next .cm-fig {
-  color: var(--card-muted);
-}
-.cm-row--next .cm-fig {
-  font-weight: 600;
-}
 
 /* Symbols in the module (see "symbols" above). Restraint, because the card
    has to stay clean (Alec, Nov 6: "it's getting too messy"): one quiet
-   symbol per row for what the part is, the same three as the fund's costs
-   (training, travel, a tournament); each bar ends in its percentage; and the
-   road is cut into its six seats, with the six athletes' faces beside it. */
+   symbol per row for what the part is (training for every week, travel for
+   the road); each bar ends in its percentage; and the road is cut into its
+   six seats, with the six athletes' faces beside it. The Chicago Classic
+   joins the card when it starts (Alec, Nov 7). */
 .cm-row-top b {
   display: inline-flex;
   align-items: center;
@@ -3976,11 +3930,6 @@ a.win-band:focus-visible {
   width: 1.05rem;
   height: 1.05rem;
   color: var(--card-muted);
-}
-.cm-badge .sym {
-  width: 0.95rem;
-  height: 0.95rem;
-  margin: 0 0.25rem 0 -0.1rem;
 }
 .cm-lane {
   display: flex;

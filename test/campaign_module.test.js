@@ -66,12 +66,17 @@ test("the module states the goal from campaigns.json and never a $0", () => {
       html.indexOf("<!-- /campaign-module -->"),
     );
     assert.ok(mod.includes(`data-cm-total>${usd(wbd.goal)}<`), f);
+    assert.ok(!/>\$0</.test(mod), `${f} prints $0`);
+    assert.ok(mod.includes("EIN 41-3213344"), f);
+    // /numbers shows every bar above its card, so its card leaves them out.
+    if (f === "numbers.html") {
+      assert.ok(!mod.includes('class="cm-rows"'), "the bars repeat on /numbers");
+      continue;
+    }
     assert.ok(mod.includes(`>${usd(part("year"))} a year<`), f);
     assert.ok(mod.includes(`>${usd(part("send-6"))}<`), f);
-    assert.ok(!/>\$0</.test(mod), `${f} prints $0`);
     // The Road's percentage is live only: no stale figure in the markup.
     assert.ok(/data-part-pct="send-6" hidden><\/span>/.test(mod), f);
-    assert.ok(mod.includes("EIN 41-3213344"), f);
   }
 });
 
@@ -207,6 +212,17 @@ test("the math lives on /numbers, and every module links to it", () => {
     assert.ok(!mod.includes("cm-stats"), `${f}: the record tiles are back`);
     assert.ok(!mod.includes("data-cm-split"), `${f}: the gifts line is back`);
     assert.ok(!/cm-badge[^"]*" data-part-pct/.test(mod), `${f}: a percentage badge`);
+    // Alec, Nov 7: a short description for each part; the Chicago Classic
+    // joins the card when it starts; one fill per bar (the split, with its
+    // key, is on /numbers).
+    assert.ok(
+      !mod.includes("Chicago Classic"),
+      `${f}: the Classic is back in the card`,
+    );
+    assert.ok(!mod.includes("data-part-kind"), `${f}: the court-time stripe is back`);
+    assert.ok(!mod.includes("got it started"), `${f}: the long note is back`);
+    if (f === "numbers.html") continue;
+    assert.ok(mod.includes('<p class="cm-note">Court time and memberships.</p>'), f);
     for (const k of ["year", "send-6"])
       assert.ok(
         new RegExp(

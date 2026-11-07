@@ -29,6 +29,10 @@
 //            picker's default gift into the Givebutter form.
 //   numbers  false drops the "See the numbers breakdown" button (on /numbers,
 //            which is the breakdown). Default true.
+//   mirror   false keeps the figure the way it was photographed on a desktop,
+//            where the others are flipped to face the page. For a photo with
+//            lettering (Ryan's shirt and cap), which would read backwards.
+//            Default true.
 //
 // The markup is src/partials/campaign-module.html, the look is the campaign
 // module section of src/css/site.css and the live numbers come from
@@ -258,6 +262,8 @@ export function render(opts, where = "page") {
   let html = PARTIAL;
   if (o.athlete === null) html = html.replace(/\n<!--bg-->[\s\S]*?<!--\/bg-->/, "");
   else html = html.replace(/\n<!--\/?bg-->/g, "");
+  if (o.mirror === false)
+    html = html.replace('class="cm-bg"', 'class="cm-bg cm-bg--true"');
   if (!o.give) html = html.replace(/\n<!--give-->[\s\S]*?<!--\/give-->/, "");
   else html = html.replace(/\n<!--\/?give-->/g, "");
   if (o.stats === false)

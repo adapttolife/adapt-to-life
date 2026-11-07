@@ -3656,6 +3656,16 @@ a.win-band:focus-visible {
     transform: scaleX(-1);
   }
 }
+/* A figure with lettering on it keeps its photographed orientation, so the
+   words read the right way round (build-module: mirror false). Ryan, the one
+   today, wears his cap at the very top of the photo, so he sits a little
+   lower to keep his face in the section. */
+@media (min-width: 1000px) {
+  .cm-bg--true::before {
+    transform: none;
+    top: 6px;
+  }
+}
 
 .cm-wrap {
   position: relative;

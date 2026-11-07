@@ -167,7 +167,14 @@ PANELS = [
     # phone cell is 195 CSS px at 2x = 390 device px, and the widest desktop
     # slot is 14% of 1440 at 2x = 404. 560 was 8KB of pixels nobody resolves,
     # and it put the homepage over its own-bytes budget.
-    ("profile",      "JLA_5989.jpg", 3/4,  0.40, 0.52, 0.80, "front"),
+    #
+    # JLA_6011, not JLA_5989, since 2026-11-06. 5989 was a man in profile in a
+    # "Great Lakes Games" shirt, which is GLASA's event, and GLASA is never
+    # named on this site (photos included). Alec approved the swap. 6011 is an
+    # athlete in a power chair, paddle and ball in hand, nobody else on the
+    # wall; zoom 0.66 keeps his head the size the old frame's was (about a
+    # quarter of the panel) and the anchors hold his face in the top third.
+    ("profile",      "JLA_6011.jpg", 3/4,  0.40, 0.38, 0.66, "front"),
 
     # --- widening the rotation ------------------------------------------------
     # Alec: "widen the rotation but not the basketball kids." Four frames from

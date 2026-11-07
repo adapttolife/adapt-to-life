@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f0e0d">
 <meta name="color-scheme" content="light only">
 <title>Grant writer (volunteer) | Adapt To Life</title>
 <meta name="description" content="Find the foundations that fund adaptive sport, and write the applications.">
@@ -26,9 +27,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=5e6e33e6">
+<link rel="stylesheet" href="/css/site.css?v=a259d5ba">
 <link rel="stylesheet" href="/css/page-header.css?v=beb972ef">
-<style data-band-vars>:root{--pg-band-wide:url('/images/hero/panels/pg-band-3-wide.3f0c6f24.webp');--pg-band-tall:url('/images/hero/panels/pg-band-3-tall.f37597ee.webp');--pg-give-wide:url('/images/hero/panels/pg-give-wide.b46beed5.webp');--pg-give-tall:url('/images/hero/panels/pg-give-tall.5cece3a5.webp');}</style>
+<style data-band-vars>:root{--pg-band-wide:url('/images/hero/panels/pg-band-4-wide.4c52877e.webp');--pg-band-tall:url('/images/hero/panels/pg-band-4-tall.f6e94afc.webp');--pg-give-wide:url('/images/hero/panels/pg-give-wide.b46beed5.webp');--pg-give-tall:url('/images/hero/panels/pg-give-tall.5cece3a5.webp');}</style>
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 </head>
 <body>
@@ -179,7 +180,7 @@ fill="currentColor" stroke="none">
         <div class="jd-apply-copy">
           <span class="eyebrow orange reveal">Apply</span>
           <h2 class="serif h2 reveal" style="margin-top:0.7rem;">Grant writer.</h2>
-          <p class="lead sub reveal">Start with your name and email. We'll talk through the work, timing, and any screening or credentials before you begin.</p>
+          <p class="lead sub reveal">Start with your name and email. We&rsquo;ll talk through the work, timing, and any screening or credentials before you begin.</p>
         </div>
         <form class="jd-form reveal" id="volForm" novalidate>
           <input type="hidden" name="role" value="Grant writer">
@@ -255,18 +256,18 @@ fill="currentColor" stroke="none">
         <p class="legal">Adapt To Life is a recognized 501(c)(3) nonprofit organization. Donations are tax deductible to the extent allowed by law. EIN 41-3213344.</p>
       </div>
       <div class="col">
-        <h4>Organization</h4>
+        <h2>Organization</h2>
         <a href="/about">Our Story</a>
         <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
-        <a href="/tim">Tim&#39;s Story</a>
-        <a href="/karen">Karen&#39;s Story</a>
-        <a href="/juan">Juan&#39;s Story</a>
+        <a href="/tim">Tim&rsquo;s Story</a>
+        <a href="/karen">Karen&rsquo;s Story</a>
+        <a href="/juan">Juan&rsquo;s Story</a>
         <a href="/adaptive-sports-near-me">Adaptive Sports Near Me · In beta</a>
         <a href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
                 <a href="/roadmap">Roadmap</a>
       </div>
       <div class="col">
-        <h4>Get involved</h4>
+        <h2>Get involved</h2>
         <a href="/donate">Donate</a>
         <a href="/promise">How Giving Works</a>
         <a href="/volunteer">Volunteer</a>
@@ -374,7 +375,7 @@ fill="currentColor" stroke="none">
       if (btn && btn.disabled) return;
       window.ATLFormSubmission(f, payload);
       var orig = btn ? btn.textContent : '';
-      if(btn){ btn.disabled = true; btn.textContent = 'Sending...'; }
+      if(btn){ btn.disabled = true; btn.textContent = 'Sending…'; }
       setStatus('', true);
       fetch('/api/volunteer', {
         method:'POST',
@@ -396,7 +397,7 @@ fill="currentColor" stroke="none">
   })();
 </script>
 
-<script src="/js/subscribe.js?v=71816eda" defer></script>
+<script src="/js/subscribe.js?v=7efaf550" defer></script>
 <script src="/js/form-submission.js?v=8dbf21a7" defer></script>
 <script src="/js/turnstile-lazy.js?v=12e9b811" defer></script>
 </body>

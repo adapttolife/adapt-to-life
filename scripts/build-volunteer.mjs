@@ -33,6 +33,7 @@ import { fileURLToPath } from "node:url";
 import { SHARED, LANES, ROLES, TOOLS, ROLE_TOOLS } from "../data/volunteer-roles.mjs";
 import { icon, logo } from "./lib/icons.mjs";
 import { applyIcons } from "./lib/apply-icons.mjs";
+import { smarten } from "./smart-quotes.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const PUB = join(ROOT, "public");
@@ -69,6 +70,7 @@ function head({ title, desc, canonical, card, cardAlt, page }) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f0e0d">
 <meta name="color-scheme" content="light only">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
@@ -216,14 +218,14 @@ ${roles.map(card).join("\n")}
        ambassadors grow the sport where they live, so they get their own page. -->
   <section class="vol-amb dark">
     <style>
-      .vol-amb{ position:relative; isolation:isolate; overflow:hidden; padding:clamp(2.8rem,6vw,4.2rem) 0; border-top:1px solid rgba(255,255,255,0.08); }
-      .vol-amb::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 45% 70% at 80% 50%, rgba(255,92,57,0.2) 0%, transparent 70%); }
+      .vol-amb{ position:relative; isolation:isolate; overflow:hidden; padding:clamp(2.8rem,6vw,4.2rem) 0; border-top:1px solid rgba(249,247,242,0.08); }
+      .vol-amb::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 45% 70% at 80% 50%, rgb(var(--accent-rgb) / 0.11) 0%, transparent 70%); }
       .vol-amb-grid{ display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,0.8fr); gap:clamp(1.6rem,4vw,3.5rem); align-items:center; }
       @media (max-width:760px){ .vol-amb-grid{ grid-template-columns:1fr; } }
       .vol-amb h2{ color:var(--cream); margin-top:0.7rem; }
       .vol-amb p{ color:var(--cream-mute); margin-top:0.9rem; max-width:44ch; }
       .vol-amb .textlink{ margin-top:1.3rem; color:var(--orange); }
-      .vol-amb figure{ margin:0; border-radius:18px; overflow:hidden; aspect-ratio:4/3; box-shadow:0 0 0 1px rgba(255,255,255,0.08), 0 30px 70px -30px rgba(0,0,0,0.9); }
+      .vol-amb figure{ margin:0; border-radius:18px; overflow:hidden; aspect-ratio:4/3; box-shadow:0 0 0 1px rgba(249,247,242,0.08), 0 30px 70px -30px rgba(0,0,0,0.9); }
       .vol-amb img{ width:100%; height:100%; object-fit:cover; object-position:45% 35%; }
     </style>
     <div class="wrap vol-amb-grid">
@@ -364,7 +366,7 @@ const FORM_JS = `<script>
       if (btn && btn.disabled) return;
       window.ATLFormSubmission(f, payload);
       var orig = btn ? btn.textContent : '';
-      if(btn){ btn.disabled = true; btn.textContent = 'Sending...'; }
+      if(btn){ btn.disabled = true; btn.textContent = 'Sending…'; }
       setStatus('', true);
       fetch('/api/volunteer', {
         method:'POST',
@@ -523,11 +525,16 @@ ${sec("Not this", "          " + ul(r.isNot, "jd-no"))}
 // Pages ask for the CSS and JS version they were built with (scripts/version-assets.mjs).
 const VERSIONS = assetVersions();
 const files = new Map();
-files.set(join(PUB, "volunteer.html"), versionHtml(applyIcons(boardPage()), VERSIONS));
+// smarten(): the copy in data/volunteer-roles.mjs is typed with plain quotes;
+// the pages get typographer's quotes (scripts/smart-quotes.mjs).
+files.set(
+  join(PUB, "volunteer.html"),
+  versionHtml(smarten(applyIcons(boardPage())), VERSIONS),
+);
 for (const r of ROLES)
   files.set(
     join(PUB, "volunteer", `${r.slug}.html`),
-    versionHtml(applyIcons(rolePage(r)), VERSIONS),
+    versionHtml(smarten(applyIcons(rolePage(r))), VERSIONS),
   );
 
 mkdirSync(join(PUB, "volunteer"), { recursive: true });

@@ -29,12 +29,23 @@ export async function safeNewsletterSubscribe(env, input, campaign, extra = {}) 
 
   try {
     key = await digest(`${segmentId}\\n${email}`);
-    const claim = await db
+    let claim = await db
       .prepare(
         "INSERT OR IGNORE INTO newsletter_delivery_claims (claim_key,publication_id,state) VALUES (?,?,'creating') RETURNING claim_key",
       )
       .bind(key, segmentId)
       .first();
+    // A claim left at needs-review is a signup that failed part way (Resend
+    // timed out or refused). It used to answer "already on the list" for ever,
+    // so the person was told they were subscribed and never was. Take it back
+    // and try again; only a finished claim means they are on the list.
+    if (!claim)
+      claim = await db
+        .prepare(
+          "UPDATE newsletter_delivery_claims SET state='creating' WHERE claim_key=? AND state='needs-review' RETURNING claim_key",
+        )
+        .bind(key)
+        .first();
     if (!claim) return { ok: true, existing: true };
 
     const body = { email, unsubscribed: false, segments: [{ id: segmentId }] };
@@ -70,7 +81,7 @@ export async function safeNewsletterSubscribe(env, input, campaign, extra = {}) 
       )
       .bind(contact?.id || null, key)
       .run();
-    return { ok: true, ...(contact ? {} : { existing: true }) };
+    return { ok: true, ...(contact ? { contactId: contact.id } : { existing: true }) };
   } catch (error) {
     console.error("newsletter signup failed closed", {
       reason: error?.name === "TimeoutError" ? "timeout" : "operation-failed",

@@ -120,7 +120,7 @@
     // What the sender would have had to type. Kept as real, editable text in the
     // note rather than a hidden field, so nothing is sent on their behalf that
     // they cannot see — the same principle the /contact prefill was built on.
-    els.msg.value = "I'm interested in sponsoring at the " + tier + " level.";
+    els.msg.value = "I’m interested in sponsoring at the " + tier + " level.";
 
     // The filterable half. `source` is a ClickUp field on the Contacts list, so
     // "how many people asked about Captain this quarter" becomes a view instead
@@ -311,7 +311,7 @@
     window.ATLFormSubmission(els.form, payload);
     var label = els.submit.textContent;
     els.submit.disabled = true;
-    els.submit.textContent = "Sending...";
+    els.submit.textContent = "Sending…";
     setStatus("", null);
 
     fetch("/api/contact", {

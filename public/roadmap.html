@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f0e0d">
 <meta name="color-scheme" content="light only">
 <title>Roadmap | Adapt To Life</title>
 <meta name="description" content="See what Adapt To Life offers now and what we are building next to help more people take part in adaptive sports.">
@@ -26,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=5e6e33e6">
+<link rel="stylesheet" href="/css/site.css?v=a259d5ba">
 <link rel="stylesheet" href="/css/page-header.css?v=beb972ef">
 <!-- band:vars --><style data-band-vars>:root{--pg-band-wide:url('/images/hero/panels/pg-band-2-wide.9ac73821.webp');--pg-band-tall:url('/images/hero/panels/pg-band-2-tall.f9278c2d.webp');--pg-give-wide:url('/images/hero/panels/pg-give-wide.b46beed5.webp');--pg-give-tall:url('/images/hero/panels/pg-give-tall.5cece3a5.webp');}</style>
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
@@ -128,12 +129,64 @@ fill="currentColor" stroke="none">
     </div>
   </section>
 
-  <!-- ACTIVE CAMPAIGN — the shared band, not a restatement. This block used to
-       hand-write the name, the goal and the pitch, which is how it ended up
+  <!-- ACTIVE CAMPAIGN — the shared module, not a restatement. This block used
+       to hand-write the name, the goal and the pitch, which is how it ended up
        still saying "Send 5" and "$17,500" long after both had changed. -->
-  <section class="band-sm tint">
-    <div class="wrap"><div id="roadmapBand" class="camp-pending"></div></div>
-  </section>
+  <!-- campaign-module {"id":"campaign","theme":"light","athlete":"ken"} -->
+  <section class="cm" id="campaign" data-cm data-theme="light" aria-labelledby="campaign-title">
+      <div class="cm-bg" aria-hidden="true" style="--ghost:url(/images/pickleball/ghost/ken-gray.webp);--ghost-ar:469/640"></div>
+      <div class="cm-wrap">
+        <div class="cm-head">
+          <p class="cm-status"><span class="cm-dot" aria-hidden="true"></span>Raising now<span class="cm-status-sep" aria-hidden="true"></span>The Chicago Wheelie Big Dills</p>
+          <h2 class="cm-h" id="campaign-title">Every week on court. <em>Next stop, Naples.</em></h2>
+          <p class="cm-lede">Building the best wheelchair pickleball in the Chicago area, maybe the country.</p>
+        </div>
+        <ul class="cm-stats" aria-label="Already on the board">
+          <li><b>3</b><span>straight US Opens</span></li>
+          <li><b>6</b><span>Monster Smash medals</span></li>
+          <li><b>1st</b><span>APP Tour wheelchair division</span></li>
+          <li><b>$3,004</b><span>popcorn drive, 3&times; its goal</span></li>
+          <li><b>334K</b><span>views in 90 days</span></li>
+          <li><b>10&ndash;15</b><span>athletes, every week</span></li>
+        </ul>
+        <div class="cm-card">
+          <p class="cm-hero"><b data-cm-total>$34,500</b><span data-cm-sub>our goal for the year ahead</span></p>
+          <div class="cm-rows">
+            <div class="cm-row" data-part-row="year">
+              <div class="cm-row-top"><b>Every week</b><span class="cm-badge cm-badge--accent">First priority</span><span class="cm-fig" data-part-fig="year">$13,500 a year</span></div>
+              <div class="cm-track"><span class="cm-fill" data-part-fill="year"></span><span class="cm-start" aria-hidden="true"></span></div>
+              <p class="cm-note">Court time and memberships. Every new gift starts here.</p>
+            </div>
+            <div class="cm-row" data-part-row="send-6">
+              <div class="cm-row-top"><b>The Road to the US Open</b><span class="cm-badge cm-badge--action" data-part-pct="send-6" hidden></span><span class="cm-fig" data-part-fig="send-6">$21,000</span></div>
+              <div class="cm-track"><span class="cm-fill cm-fill--action" data-part-fill="send-6"></span><span class="cm-start" aria-hidden="true"></span></div>
+              <p class="cm-note">Six athletes, about $3,500 each. <a href="/send-6">See the road</a></p>
+            </div>
+            <div class="cm-row cm-row--next">
+              <div class="cm-row-top"><b>The Chicago Classic</b><span class="cm-badge cm-badge--quiet">Next goal</span><span class="cm-fig">Date to come</span></div>
+              <div class="cm-track cm-track--locked" aria-hidden="true"></div>
+              <p class="cm-note">Our goal: free registration, transportation and hotels for every athlete.</p>
+            </div>
+          </div>
+          <a class="cm-more" href="/numbers">See the numbers breakdown <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
+          <div class="cm-give" data-give>
+            <div class="cm-seg" role="radiogroup" aria-label="How often">
+              <button type="button" role="radio" aria-checked="true" data-freq="monthly">Monthly</button>
+              <button type="button" role="radio" aria-checked="false" data-freq="once">One time</button>
+            </div>
+            <div class="cm-amts is-3" role="radiogroup" aria-label="Amount" data-amts>
+              <button type="button" role="radio" aria-checked="false" data-a="22" aria-label="$22 a month">$22</button>
+              <button type="button" role="radio" aria-checked="true" data-a="80" aria-label="$80 a month">$80</button>
+              <button type="button" role="radio" aria-checked="false" data-a="325" aria-label="$325 a month">$325</button>
+            </div>
+            <p class="cm-impact" data-impact aria-live="polite">$80 a month can keep one athlete training all year.</p>
+          </div>
+          <a class="cm-btn btn" href="/donate?amount=80&amp;frequency=monthly" data-give-link>Donate</a>
+          <p class="cm-trust"><span data-donors hidden></span><span>Tax-deductible</span><span>501(c)(3) &middot; EIN 41-3213344</span><span>Secure checkout by Givebutter</span></p>
+        </div>
+      </div>
+    </section>
+  <!-- /campaign-module -->
 
   <!-- NOW (light) -->
   <section class="band">
@@ -208,7 +261,7 @@ fill="currentColor" stroke="none">
     <div class="wrap">
       <div class="reveal sec-head">
         <span class="ix-tile " aria-hidden="true"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="later" data-style="duotone"><g fill="currentColor"><path d="M128 32a96 96 0 1 0 96 96a96 96 0 0 0-96-96m16 112l-64 32l32-64l64-32Z" opacity=".2"/><path d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m0 192a88 88 0 1 1 88-88a88.1 88.1 0 0 1-88 88m44.42-143.16l-64 32a8.05 8.05 0 0 0-3.58 3.58l-32 64A8 8 0 0 0 80 184a8.1 8.1 0 0 0 3.58-.84l64-32a8.05 8.05 0 0 0 3.58-3.58l32-64a8 8 0 0 0-10.74-10.74M138 138l-40.11 20.11L118 118l40.15-20.07Z"/></g></svg></span><span class="eyebrow orange" style="display:block;margin-top:1rem;">Later</span>
-        <h2 class="serif h2" style="margin-top:0.8rem;">Where we're headed</h2>
+        <h2 class="serif h2" style="margin-top:0.8rem;">Where we&rsquo;re headed</h2>
       </div>
       <div class="progs">
         <div class="reveal">
@@ -305,18 +358,18 @@ fill="currentColor" stroke="none">
         <p class="legal">Adapt To Life is a recognized 501(c)(3) nonprofit organization. Donations are tax deductible to the extent allowed by law. EIN 41-3213344.</p>
       </div>
       <div class="col">
-        <h4>Organization</h4>
+        <h2>Organization</h2>
         <a href="/about">Our Story</a>
         <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
-        <a href="/tim">Tim&#39;s Story</a>
-        <a href="/karen">Karen&#39;s Story</a>
-        <a href="/juan">Juan&#39;s Story</a>
+        <a href="/tim">Tim&rsquo;s Story</a>
+        <a href="/karen">Karen&rsquo;s Story</a>
+        <a href="/juan">Juan&rsquo;s Story</a>
         <a href="/adaptive-sports-near-me">Adaptive Sports Near Me · In beta</a>
         <a href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
                 <a href="/roadmap">Roadmap</a>
       </div>
       <div class="col">
-        <h4>Get involved</h4>
+        <h2>Get involved</h2>
         <a href="/donate">Donate</a>
         <a href="/promise">How Giving Works</a>
         <a href="/volunteer">Volunteer</a>
@@ -394,9 +447,9 @@ fill="currentColor" stroke="none">
   })();
 </script>
 
-<script src="/js/campaigns.js?v=5bb030e9"></script>
-<script>window.ATLCampaigns.band('roadmapBand');</script>
-<script src="/js/subscribe.js?v=71816eda" defer></script>
+<script src="/js/campaigns.js?v=2934099c"></script>
+<script>window.ATLCampaigns.module();</script>
+<script src="/js/subscribe.js?v=7efaf550" defer></script>
 <script src="/js/turnstile-lazy.js?v=12e9b811" defer></script>
 </body>
 </html>

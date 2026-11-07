@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f0e0d">
 <meta name="color-scheme" content="light only">
 <title>The Hustle &amp; Heart Fund | Adapt To Life</title>
 <meta name="description" content="Adapt To Life's athlete deployment fund. Through ambassadors like Juan Ortiz, it funds athletes and the people building adaptive sports where they live.">
@@ -30,11 +31,11 @@
 <link rel="dns-prefetch" href="https://widgets.givebutter.com">
 <link rel="dns-prefetch" href="https://givebuttercdn.com">
 <link rel="dns-prefetch" href="https://js.stripe.com">
-<link rel="preload" href="/css/site.css?v=5e6e33e6" as="style">
+<link rel="preload" href="/css/site.css?v=a259d5ba" as="style">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=5e6e33e6">
+<link rel="stylesheet" href="/css/site.css?v=a259d5ba">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <script src="/js/givebutter-lazy.js?v=29b7ce7b" defer></script>
 <style>
@@ -48,31 +49,31 @@
   .fund-terms{ margin:0 0 1rem; }
   .fund-terms a{ display:inline-flex; align-items:center; min-height:44px; color:var(--cream); font-size:0.95rem; text-decoration:underline; text-underline-offset:4px; }
   @media (max-width:880px){ .give-split{ grid-template-columns:1fr; gap:2.2rem; } }
-  .give-split .thermo{ max-width:none; margin:1.4rem 0 0; }
-  .thermo-segs{ display:flex; gap:4px; height:14px; margin-top:1rem; }
-  .thermo-seg{ flex-basis:0; border-radius:999px; background:rgba(255,255,255,0.14); overflow:hidden; }
-  .thermo-keys{ display:flex; gap:4px; margin-top:0.6rem; }
-  .thermo-keys p{ flex-basis:0; margin:0; padding-right:0.6rem; font-size:0.86rem; font-weight:600; line-height:1.35; color:var(--cream); }
-  .thermo-keys span{ display:block; font-weight:400; color:var(--cream-mute); }
   .prog .prog-n{ margin:0 0 0.9rem; font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(1.9rem,3.4vw,2.4rem); line-height:1; letter-spacing:-0.03em; color:var(--orange-ink); }
   .prog .prog-n span{ display:block; margin-top:0.45rem; font-family:var(--font-label); font-style:normal; font-weight:800; font-size:0.7rem; line-height:1.4; letter-spacing:0.16em; text-transform:uppercase; color:var(--ink-soft); }
+  /* The cost of playing, as three tight cards (Nov 6 review): the icon sits
+     beside the label and title instead of stacked above them, so each card
+     is a row shorter; every word and figure stays. */
+  .hh-costs{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(0.9rem,2.4vw,1.6rem); margin-top:clamp(2rem,4vw,3rem); }
+  .hh-costs .prog{ display:grid; grid-template-columns:auto minmax(0,1fr); column-gap:0.85rem; align-content:start; padding:clamp(1.1rem,2.6vw,1.6rem); border-radius:var(--r-xl); background:var(--paper); box-shadow:inset 0 0 0 1px rgba(59,59,70,0.1), 0 18px 40px -30px rgba(59,59,70,0.5); }
+  .hh-costs .prog > .ix-tile{ grid-row:1 / span 2; align-self:center; margin:0; }
+  .hh-costs .prog > .tag{ grid-column:2; align-self:end; }
+  .hh-costs .prog > h3{ grid-column:2; margin:0.15rem 0 0; align-self:start; }
+  .hh-costs .prog > p{ grid-column:1 / -1; }
+  .hh-costs .prog > .prog-n{ margin-top:1rem; }
+  .hh-costs .prog > p:last-child{ margin-bottom:0; }
+  @media (max-width:820px){ .hh-costs{ grid-template-columns:1fr; } }
   .hh-skill{ margin:clamp(2.2rem,4vw,3rem) auto 0; max-width:40ch; text-align:center; font-family:var(--font-display); font-weight:800; font-size:clamp(1.35rem,2.6vw,1.85rem); line-height:1.2; letter-spacing:-0.02em; }
   .hh-skill em{ display:block; color:var(--orange-ink); }
-  .thermo-also{ margin:0 0 0.4rem; font-family:var(--font-label); font-weight:800; font-size:0.72rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--orange); }
-  .thermo-classic{ margin:0.8rem 0 0; font-size:0.92rem; color:var(--cream-mute); }
-  .thermo-classic a{ color:var(--cream); text-decoration:underline; text-decoration-color:var(--orange); text-underline-offset:3px; }
   .gift-ladder{ list-style:none; margin:1.4rem 0 0; padding:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.7rem; }
-  .gift-ladder li{ padding:0.9rem 1rem 1rem; border-radius:14px; background:rgba(255,255,255,0.05); box-shadow:inset 0 0 0 1px rgba(255,255,255,0.12); }
-  .gift-ladder b{ display:block; font-family:var(--font-display); font-weight:900; font-style:italic; font-size:1.8rem; line-height:1; letter-spacing:-0.03em; color:var(--orange); }
+  .gift-ladder li{ padding:0.9rem 1rem 1rem; border-radius:14px; background:rgba(249,247,242,0.05); box-shadow:inset 0 0 0 1px rgba(249,247,242,0.12); }
+  .gift-ladder b{ display:block; font-family:var(--font-display); font-weight:900; font-style:italic; font-size:1.8rem; line-height:1; letter-spacing:-0.03em; color:#ff5c39; }
   .gift-ladder span{ display:block; margin-top:0.4rem; color:var(--cream); line-height:1.4; font-weight:600; font-size:0.95rem; }
   .gift-ladder li:last-child:nth-child(odd){ grid-column:1 / -1; }
-  .give-split .thermo-row{ justify-content:flex-start; }
   .give-split-form givebutter-giving-form{ display:block; width:100%; }
-  .thermo{ max-width:540px; margin:1.8rem auto 0; }
-  .thermo-row{ display:flex; align-items:baseline; gap:0.5rem; justify-content:center; flex-wrap:wrap; }
   .hh-model-lead{ margin-top:1rem; max-width:62ch; }
   .hh-steps{ list-style:none; margin:clamp(1.8rem,3.6vw,2.6rem) 0 0; padding:0; display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(1rem,2.4vw,1.6rem); }
-  .hh-steps li{ padding:clamp(1.3rem,2.4vw,1.8rem); border-radius:18px; background:#fff; border-top:4px solid var(--orange); box-shadow:0 0 0 1px rgba(12,12,14,0.08), 0 24px 50px -36px rgba(12,12,14,0.35); }
+  .hh-steps li{ padding:clamp(1.3rem,2.4vw,1.8rem); border-radius:18px; background:var(--paper); border-top:4px solid var(--orange); box-shadow:0 0 0 1px rgba(59,59,70,0.08), 0 24px 50px -36px rgba(59,59,70,0.35); }
   .hh-step-n{ font-family:var(--font-label); font-weight:800; font-size:0.78rem; letter-spacing:0.2em; color:var(--orange-ink); }
   .hh-steps b{ display:block; margin-top:0.4rem; font-family:var(--font-display); font-weight:800; font-size:clamp(1.2rem,1.9vw,1.45rem); letter-spacing:-0.015em; }
   .hh-steps span{ display:block; margin-top:0.55rem; line-height:1.5; }
@@ -87,24 +88,33 @@
   .hh-now .prose{ margin-top:1rem; color:var(--cream-mute); max-width:46ch; }
   .hh-now-links{ margin-top:1.4rem; display:flex; flex-wrap:wrap; gap:0.6rem 1.6rem; }
   .hh-now-links .textlink{ color:var(--orange); }
-  .hh-now-partners{ list-style:none; margin:1.6rem 0 0; padding:1.2rem 0 0; border-top:1px solid rgba(255,255,255,0.12); display:flex; flex-wrap:wrap; align-items:center; gap:1.1rem 1.8rem; }
+  .hh-now-partners{ list-style:none; margin:1.6rem 0 0; padding:1.2rem 0 0; border-top:1px solid rgba(249,247,242,0.12); display:flex; flex-wrap:wrap; align-items:center; gap:1.1rem 1.8rem; }
   .hh-now-partners img{ height:36px; width:auto; opacity:0.92; transition:opacity .2s ease; }
   .hh-now-partners img.is-word{ height:22px; }
   .hh-now-partners img.is-bh{ height:48px; }
+  .hh-now-partners img.is-amp{ height:40px; }
   .hh-now-partners a:hover img{ opacity:1; }
+  /* Alec's order: the nonprofit partners on the first line, the pickleball
+     clubs on the next. The zero-height ::after takes a whole line between
+     them (order 1); on a very narrow phone the clubs can still wrap. */
+  .hh-now-partners::after{ content:""; flex-basis:100%; height:0; margin-top:-1.1rem; order:1; }
+  .hh-now-partners li:nth-child(n+3){ order:2; }
+  .hh-now-partners a{ display:flex; align-items:center; gap:0.55rem; }
+  .hh-now-partners .hh-p-name{ font-family:var(--font-display); font-weight:800; font-size:0.85rem; line-height:1.05; color:var(--cream); }
+  @media (max-width:520px){
+    .hh-now-partners{ gap:1rem 1.2rem; }
+    .hh-now-partners::after{ margin-top:-1rem; }
+    .hh-now-partners img{ height:30px; }
+    .hh-now-partners img.is-word{ height:18px; }
+    .hh-now-partners img.is-bh{ height:40px; }
+    .hh-now-partners img.is-amp{ height:34px; }
+  }
   .hh-now-next{ margin-top:1.4rem; color:var(--cream-mute); font-size:0.95rem; }
   .hh-now-next a{ color:var(--cream); text-decoration:underline; text-decoration-color:var(--orange); text-underline-offset:3px; }
   .hh-now-proof{ list-style:none; margin:0; padding:0; display:grid; gap:1.1rem; }
-  .hh-now-proof li{ display:grid; grid-template-columns:7.4rem 1fr; align-items:baseline; gap:1rem; padding-bottom:1.1rem; border-bottom:1px solid rgba(255,255,255,0.12); }
-  .hh-now-proof b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(2.4rem,4.6vw,3.2rem); line-height:0.9; letter-spacing:-0.04em; color:var(--orange); }
+  .hh-now-proof li{ display:grid; grid-template-columns:7.4rem 1fr; align-items:baseline; gap:1rem; padding-bottom:1.1rem; border-bottom:1px solid rgba(249,247,242,0.12); }
+  .hh-now-proof b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(2.4rem,4.6vw,3.2rem); line-height:0.9; letter-spacing:-0.04em; color:var(--yellow); }
   .hh-now-proof span{ color:var(--cream); font-weight:600; line-height:1.4; }
-  .thermo-raised:empty{ display:none; }
-  .thermo-raised{ font-family:var(--font-display); font-weight:900; font-style:italic; letter-spacing:-0.03em; font-size:clamp(2.4rem,6vw,3.4rem); line-height:1; color:var(--cream); }
-  .thermo-goal{ font-family:"Hanken Grotesk",sans-serif; color:rgba(255,255,255,0.6); font-size:0.95rem; }
-  .thermo-track{ display:block; height:14px; border-radius:999px; background:rgba(255,255,255,0.14); margin-top:1rem; overflow:hidden; }
-  .thermo-fill{ display:block; height:100%; width:0; border-radius:999px; background:linear-gradient(90deg,#FF5C39,#ff9f87); transition:width 1.3s cubic-bezier(.2,.8,.2,1); }
-  .thermo-link{ display:inline-block; margin-top:1.05rem; font-family:"Hanken Grotesk",sans-serif; font-weight:600; color:var(--orange); text-decoration:none; }
-  .thermo-link:hover{ text-decoration:underline; }
   /* Space held for the Givebutter embed so its late mount cannot shove the
      page. Measured on prod: the settled form is 552px on a phone and 508px on
      a desktop, so these sit just under each. */
@@ -211,8 +221,8 @@ fill="currentColor" stroke="none">
           </div>
         </div>
         <div class="h2col-media reveal">
-          <div class="photo-frame"><img src="/images/tim.webp" alt="Tim Gruensfelder, who inspired the Hustle &amp; Heart Fund"></div>
-          <p class="h2col-cap">Tim's love of the game is part of everything this fund stands for. <a class="textlink" href="/tim">His story <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a></p>
+          <div class="photo-frame"><img src="/images/tim.webp" alt="Tim Gruensfelder, who inspired the Hustle &amp; Heart Fund" width="1079" height="705"></div>
+          <p class="h2col-cap">Tim&rsquo;s love of the game is part of everything this fund stands for. <a class="textlink" href="/tim">His story <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a></p>
         </div>
       </div>
     </div>
@@ -246,10 +256,11 @@ fill="currentColor" stroke="none">
         <p class="prose">The first lane is the Chicago Wheelie Big Dills. Our first ambassador, Juan Ortiz, is growing wheelchair pickleball across the Chicago area, and the fund backs him, the crew he plays with, and the clubs that make room for them. Its campaigns, in order: every week on court, the road to the US Open, and the Chicago Classic.</p>
         <p class="hh-now-links"><a href="/pickleball" class="textlink">Meet the crew <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a> <a href="/juan" class="textlink">Read Juan&rsquo;s story <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a></p>
         <ul class="hh-now-partners" aria-label="Our partners">
-          <li><a href="/brickhouse"><img class="is-bh" src="/images/brickhouse/brick-house-logo-orange-black-reverse.svg" alt="Brick House Pickleball" width="372" height="265" loading="lazy"></a></li>
+          <li><a href="/chicago-adaptive-sports"><img src="/images/partners/cas-mark.png" alt="" width="240" height="193" loading="lazy"><span class="hh-p-name">Chicago<br>Adaptive Sports</span></a></li>
+          <li><a href="/amp"><img src="/images/partners/amp-logo-white.png" alt="AMP Adaptive Sports" width="340" height="159" loading="lazy" class="is-amp"></a></li>
           <li><a href="/ace"><img src="/images/ace/ace-logo-white.png" alt="ACE Pickleball Club" width="760" height="105" loading="lazy" class="is-word"></a></li>
+          <li><a href="/brickhouse"><img class="is-bh" src="/images/brickhouse/brick-house-logo-orange-black-reverse.svg" alt="Brick House Pickleball" width="372" height="265" loading="lazy"></a></li>
           <li><a href="/picklr"><img src="/images/partners/picklr-wordmark-white.png" alt="The Picklr" width="460" height="107" loading="lazy" class="is-word"></a></li>
-          <li><a href="/chicago-adaptive-sports"><img src="/images/partners/cas-mark.png" alt="Chicago Adaptive Sports" width="240" height="193" loading="lazy"></a></li>
         </ul>
         <p class="hh-now-next">Next: wherever our next ambassador is building. <a href="/ambassadors#join">Know who it should be?</a></p>
       </div>
@@ -268,7 +279,7 @@ fill="currentColor" stroke="none">
         <h2 class="serif statement italic" style="margin-top:0.9rem;">The desire to play is there. The cost can stand in the way.</h2>
         <p class="prose" style="margin-top:1rem;">It&rsquo;s one thing to try a sport. It&rsquo;s another to play every week, train every month and travel to compete, and in a wheelchair every step costs more. Here are the real numbers in wheelchair pickleball.</p>
       </div>
-      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:clamp(1.6rem,4vw,3.5rem); margin-top:clamp(2.4rem,4vw,3.4rem);">
+      <div class="hh-costs">
         <div class="prog reveal">
           <span class="ix-tile sm" aria-hidden="true"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="equipment" data-style="duotone"><g fill="currentColor"><path d="M232 120v72a8 8 0 0 1-8 8H32a8 8 0 0 1-8-8v-72Z" opacity=".2"/><path d="M224 64h-48v-8a24 24 0 0 0-24-24h-48a24 24 0 0 0-24 24v8H32a16 16 0 0 0-16 16v112a16 16 0 0 0 16 16h192a16 16 0 0 0 16-16V80a16 16 0 0 0-16-16M96 56a8 8 0 0 1 8-8h48a8 8 0 0 1 8 8v8H96ZM32 80h192v32h-32v-8a8 8 0 0 0-16 0v8H80v-8a8 8 0 0 0-16 0v8H32Zm192 112H32v-64h32v8a8 8 0 0 0 16 0v-8h96v8a8 8 0 0 0 16 0v-8h32z"/></g></svg></span>
           <span class="tag">Get equipped</span>
@@ -308,7 +319,7 @@ fill="currentColor" stroke="none">
   <section class="bigquote band dark">
     <div class="wrap reading">
       <hr class="tick orange reveal">
-      <blockquote class="reveal">"Now I can play pickleball, keep up with my kid, and choose how I move. The chair didn't fix me. It gave me options I didn't have before."</blockquote>
+      <blockquote class="reveal">&ldquo;Now I can play pickleball, keep up with my kid, and choose how I move. The chair didn&rsquo;t fix me. It gave me options I didn&rsquo;t have before.&rdquo;</blockquote>
       <div class="reveal">
         <span class="qname">Brian Liss</span>
         <span class="qrole">Three straight US Opens</span>
@@ -340,7 +351,7 @@ fill="currentColor" stroke="none">
       <span class="eyebrow orange reveal">Why it carries his name</span>
       <h2 class="serif h2 reveal" style="margin-top:0.8rem;">Tim Gruensfelder, 1996&ndash;2018.</h2>
       <p class="prose reveal" style="margin-top:1.4rem;">Tim found wheelchair basketball after childhood cancer. He chased loose balls, put in the work, and earned a college scholarship. When cancer returned in 2018, he was 22.</p>
-      <p class="prose reveal" style="margin-top:1rem;">The fund carries his name so more athletes can have the chance to play, practice, and grow in a sport they love. <a class="textlink" href="/tim">Tim's story <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a></p>
+      <p class="prose reveal" style="margin-top:1rem;">The fund carries his name so more athletes can have the chance to play, practice, and grow in a sport they love. <a class="textlink" href="/tim">Tim&rsquo;s story <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a></p>
     </div>
   </section>
 
@@ -357,6 +368,51 @@ fill="currentColor" stroke="none">
     </div>
   </section>
 
+  <!-- The one goal, live: the module (scripts/build-module.mjs). The form is
+       right below, so no picker: the button goes to it. -->
+  <!-- campaign-module {"id":"the-goal","theme":"dark","athlete":"juan","give":false,"cta":{"href":"#fund-donation","label":"Donate"}} -->
+  <section class="cm" id="the-goal" data-cm data-theme="dark" aria-labelledby="the-goal-title">
+      <div class="cm-bg" aria-hidden="true" style="--ghost:url(/images/pickleball/ghost/juan-gray.webp);--ghost-ar:438/640"></div>
+      <div class="cm-wrap">
+        <div class="cm-head">
+          <p class="cm-status"><span class="cm-dot" aria-hidden="true"></span>Raising now<span class="cm-status-sep" aria-hidden="true"></span>The Chicago Wheelie Big Dills</p>
+          <h2 class="cm-h" id="the-goal-title">Every week on court. <em>Next stop, Naples.</em></h2>
+          <p class="cm-lede">Building the best wheelchair pickleball in the Chicago area, maybe the country.</p>
+        </div>
+        <ul class="cm-stats" aria-label="Already on the board">
+          <li><b>3</b><span>straight US Opens</span></li>
+          <li><b>6</b><span>Monster Smash medals</span></li>
+          <li><b>1st</b><span>APP Tour wheelchair division</span></li>
+          <li><b>$3,004</b><span>popcorn drive, 3&times; its goal</span></li>
+          <li><b>334K</b><span>views in 90 days</span></li>
+          <li><b>10&ndash;15</b><span>athletes, every week</span></li>
+        </ul>
+        <div class="cm-card">
+          <p class="cm-hero"><b data-cm-total>$34,500</b><span data-cm-sub>our goal for the year ahead</span></p>
+          <div class="cm-rows">
+            <div class="cm-row" data-part-row="year">
+              <div class="cm-row-top"><b>Every week</b><span class="cm-badge cm-badge--accent">First priority</span><span class="cm-fig" data-part-fig="year">$13,500 a year</span></div>
+              <div class="cm-track"><span class="cm-fill" data-part-fill="year"></span><span class="cm-start" aria-hidden="true"></span></div>
+              <p class="cm-note">Court time and memberships. Every new gift starts here.</p>
+            </div>
+            <div class="cm-row" data-part-row="send-6">
+              <div class="cm-row-top"><b>The Road to the US Open</b><span class="cm-badge cm-badge--action" data-part-pct="send-6" hidden></span><span class="cm-fig" data-part-fig="send-6">$21,000</span></div>
+              <div class="cm-track"><span class="cm-fill cm-fill--action" data-part-fill="send-6"></span><span class="cm-start" aria-hidden="true"></span></div>
+              <p class="cm-note">Six athletes, about $3,500 each. <a href="/send-6">See the road</a></p>
+            </div>
+            <div class="cm-row cm-row--next">
+              <div class="cm-row-top"><b>The Chicago Classic</b><span class="cm-badge cm-badge--quiet">Next goal</span><span class="cm-fig">Date to come</span></div>
+              <div class="cm-track cm-track--locked" aria-hidden="true"></div>
+              <p class="cm-note">Our goal: free registration, transportation and hotels for every athlete.</p>
+            </div>
+          </div>
+          <a class="cm-more" href="/numbers">See the numbers breakdown <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
+          <a class="cm-btn btn" href="#fund-donation" data-give-link>Donate</a>
+          <p class="cm-trust"><span data-donors hidden></span><span>Tax-deductible</span><span>501(c)(3) &middot; EIN 41-3213344</span><span>Secure checkout by Givebutter</span></p>
+        </div>
+      </div>
+    </section>
+  <!-- /campaign-module -->
   <section class="closing dark band-lg give-moment">
     <div class="wrap">
       <div class="give-split">
@@ -370,31 +426,13 @@ fill="currentColor" stroke="none">
             <li><b>$75</b><span>covers up to 15 athletes for a night at ACE</span></li>
             <li><b>$960</b><span>can keep one athlete training all year</span></li>
           </ul>
-          <div class="thermo" data-thermo data-goal="34500" data-key="wbd">
-            <p class="thermo-also">One goal for the year ahead</p>
-            <p style="margin:0 0 0.9rem; font-size:0.95rem; font-weight:600;">The Chicago Wheelie Big Dills</p>
-            <div class="thermo-row">
-              <span class="thermo-raised" data-thermo-raised></span>
-              <span class="thermo-goal">Our goal is $34,500</span>
-            </div>
-            <div class="thermo-segs" aria-hidden="true">
-              <span class="thermo-seg" style="flex-grow:13500"><span class="thermo-fill" data-seg-fill="year"></span></span>
-              <span class="thermo-seg" style="flex-grow:21000"><span class="thermo-fill" data-seg-fill="send-6"></span></span>
-            </div>
-            <div class="thermo-keys">
-              <p style="flex-grow:13500">Every week first<span data-seg-fig="year">$13,500</span></p>
-              <p style="flex-grow:21000">The Road to the US Open<span data-seg-fig="send-6">$21,000</span></p>
-            </div>
-            <p class="thermo-classic">Then <a href="/chicago-classic">the Chicago Classic</a>, where our goal is free registration, transportation and hotels for every athlete.</p>
-            <a href="/send-6" class="thermo-link">See the road <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
-          </div>
           <div class="fund-actions" aria-label="Support the fund">
             <a href="#fund-donation" class="btn">Donate</a>
           </div>
         </div>
         <div class="give-split-form reveal" id="fund-donation" tabindex="-1" aria-label="Donation form">
           <p class="fund-terms"><a href="/promise#campaign-gifts">Campaign giving terms</a></p>
-          <givebutter-giving-form campaign="IXM5DR"></givebutter-giving-form>
+          <div class="gb-card gb-card--solo"><givebutter-giving-form campaign="IXM5DR"></givebutter-giving-form></div>
         </div>
       </div>
     </div>
@@ -454,18 +492,18 @@ fill="currentColor" stroke="none">
         <p class="legal">Adapt To Life is a recognized 501(c)(3) nonprofit organization. Donations are tax deductible to the extent allowed by law. EIN 41-3213344.</p>
       </div>
       <div class="col">
-        <h4>Organization</h4>
+        <h2>Organization</h2>
         <a href="/about">Our Story</a>
         <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
-        <a href="/tim">Tim&#39;s Story</a>
-        <a href="/karen">Karen&#39;s Story</a>
-        <a href="/juan">Juan&#39;s Story</a>
+        <a href="/tim">Tim&rsquo;s Story</a>
+        <a href="/karen">Karen&rsquo;s Story</a>
+        <a href="/juan">Juan&rsquo;s Story</a>
         <a href="/adaptive-sports-near-me">Adaptive Sports Near Me · In beta</a>
         <a href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
                 <a href="/roadmap">Roadmap</a>
       </div>
       <div class="col">
-        <h4>Get involved</h4>
+        <h2>Get involved</h2>
         <a href="/donate">Donate</a>
         <a href="/promise">How Giving Works</a>
         <a href="/volunteer">Volunteer</a>
@@ -543,30 +581,10 @@ fill="currentColor" stroke="none">
   })();
 </script>
 
-<script>
-  [].forEach.call(document.querySelectorAll('[data-thermo]'), function(box){
-    var fill = box.querySelector('[data-thermo-fill]');
-    var amt = box.querySelector('[data-thermo-raised]');
-    var goalEl = box.querySelector('.thermo-goal');
-    fetch('/api/raised?c=' + (box.getAttribute('data-key') || 'send-6')).then(function(r){ return r.json(); }).then(function(d){
-      var raised = Number(d.raised) || 0, goal = Number(box.getAttribute('data-goal')) || Number(d.goal) || 21000;
-      if (!raised) return; // a new goal keeps "Our goal is $34,500" rather than printing $0
-      var pct = goal > 0 ? Math.max(0, Math.min(100, raised / goal * 100)) : 0;
-      amt.textContent = '$' + raised.toLocaleString('en-US');
-      if (goalEl) { goalEl.textContent = 'raised of our $' + goal.toLocaleString('en-US') + ' goal'; }
-      if (fill) requestAnimationFrame(function(){ setTimeout(function(){ fill.style.width = pct.toFixed(1) + '%'; }, 120); });
-      // One goal, two parts (Alec, Nov 5): each part fills on its own.
-      var parts = d.parts || {};
-      Object.keys(parts).forEach(function(k){
-        var pt = parts[k], f = box.querySelector('[data-seg-fill="' + k + '"]'), fig = box.querySelector('[data-seg-fig="' + k + '"]');
-        if (fig && pt.raised) fig.textContent = '$' + pt.raised.toLocaleString('en-US') + ' of $' + pt.goal.toLocaleString('en-US');
-        if (f && pt.goal) { var pp = Math.max(0, Math.min(100, pt.raised / pt.goal * 100)); requestAnimationFrame(function(){ setTimeout(function(){ f.style.width = pp.toFixed(1) + '%'; }, 120); }); }
-      });
-    }).catch(function(){});
-  });
-</script>
+<script src="/js/campaigns.js?v=2934099c"></script>
+<script>window.ATLCampaigns.module();</script>
 
-<script src="/js/subscribe.js?v=71816eda" defer></script>
+<script src="/js/subscribe.js?v=7efaf550" defer></script>
 <script src="/js/turnstile-lazy.js?v=12e9b811" defer></script>
 </body>
 </html>

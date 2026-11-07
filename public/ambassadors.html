@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f0e0d">
 <meta name="color-scheme" content="light only">
 <title>Ambassadors | Adapt To Life</title>
 <meta name="description" content="Adapt To Life ambassadors are athletes, coaches, and connectors who bring the next athlete into adaptive sports. Juan Ortiz is the first.">
@@ -26,15 +27,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=5e6e33e6">
+<link rel="stylesheet" href="/css/site.css?v=a259d5ba">
 <style>
   /* Ambassadors: the program. One card per ambassador, each linking to their
      own page (/juan is the pattern), the same way Partners works. */
-  .am-hero{ position:relative; isolation:isolate; overflow:hidden; min-height:clamp(540px,74svh,720px); display:flex; align-items:center; padding:clamp(4rem,9vh,6rem) 0; background:#0C0C0E; }
+  .am-hero{ position:relative; isolation:isolate; overflow:hidden; min-height:clamp(540px,74svh,720px); display:flex; align-items:center; padding:clamp(4rem,9vh,6rem) 0; background:var(--night); }
   .am-hero-img{ position:absolute; inset:0; z-index:-2; }
   .am-hero-img img{ width:100%; height:100%; object-fit:cover; object-position:70% 35%; }
   .am-hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:
-      linear-gradient(90deg, rgba(12,12,14,0.97) 0%, rgba(12,12,14,0.88) 36%, rgba(12,12,14,0.35) 66%, rgba(12,12,14,0.1) 90%),
+      linear-gradient(90deg, rgba(23,21,19,0.97) 0%, rgba(23,21,19,0.88) 36%, rgba(59,59,70,0.35) 66%, rgba(59,59,70,0.1) 90%),
       radial-gradient(ellipse 40% 55% at 22% 60%, rgba(255,92,57,0.18) 0%, transparent 70%); }
   .am-kicker{ display:flex; align-items:center; gap:0.9rem; font-family:var(--font-label); font-weight:800; font-size:0.85rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--orange); }
   .am-kicker::before{ content:""; width:2.2rem; height:2px; background:var(--orange); box-shadow:0 0 12px var(--orange-glow); }
@@ -45,12 +46,15 @@
     .am-hero{ display:block; min-height:0; padding:0 0 clamp(2.5rem,7vh,3.5rem); }
     .am-hero-img{ position:relative; display:block; height:min(58svh,520px); }
     .am-hero-img img{ object-position:62% 30%; }
-    .am-hero::after{ background:linear-gradient(180deg, transparent 55%, rgba(12,12,14,0.75) 80%, #0C0C0E 96%); }
+    /* On a phone the photo is its own block, so it fades into the night
+       itself; the section's overlay only starts below it. */
+    .am-hero-img::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, transparent 55%, var(--night) 100%); }
+    .am-hero::after{ background:linear-gradient(180deg, transparent 55%, rgba(23,21,19,0.75) 80%, var(--night) 96%); }
     .am-hero .wrap{ margin-top:1.6rem; }
     .am-hero .display{ font-size:clamp(2.5rem,10.5vw,3.3rem); }
   }
   .am-list{ display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr)); gap:clamp(1rem,2vw,1.4rem); margin-top:clamp(2rem,4vw,2.8rem); }
-  .am-card{ display:grid; grid-template-columns:minmax(0,0.9fr) minmax(0,1.1fr); border-radius:22px; overflow:hidden; background:#0C0C0E; color:var(--cream); position:relative; isolation:isolate; box-shadow:0 30px 70px -34px rgba(0,0,0,0.6); }
+  .am-card{ display:grid; grid-template-columns:minmax(0,0.9fr) minmax(0,1.1fr); border-radius:22px; overflow:hidden; background:var(--night); color:var(--cream); position:relative; isolation:isolate; box-shadow:0 30px 70px -34px rgba(0,0,0,0.6); }
   .am-card::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 60% 70% at 85% 30%, rgba(255,92,57,0.18) 0%, transparent 70%); }
   .am-card-photo{ display:block; min-height:clamp(320px,36vw,440px); }
   .am-card-photo img{ width:100%; height:100%; object-fit:cover; object-position:40% 30%; }
@@ -59,12 +63,12 @@
   .am-card .h3{ margin-top:0.4rem; color:var(--cream); font-size:clamp(1.8rem,3vw,2.6rem); letter-spacing:-0.02em; line-height:1.02; }
   .am-card .line{ margin-top:0.8rem; color:var(--cream-mute); max-width:38ch; }
   .am-card .q{ margin-top:1rem; padding-left:1rem; border-left:3px solid var(--orange); color:var(--cream); font-weight:600; max-width:36ch; }
-  .am-next{ grid-column:1/-1; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1rem 2rem; padding:clamp(1.4rem,3vw,2rem) clamp(1.6rem,3.5vw,2.8rem); border-radius:22px; border:2px dashed rgba(12,12,14,0.22); }
+  .am-next{ grid-column:1/-1; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1rem 2rem; padding:clamp(1.4rem,3vw,2rem) clamp(1.6rem,3.5vw,2.8rem); border-radius:22px; border:2px dashed rgba(59,59,70,0.22); }
   .am-next .tag{ font-family:var(--font-label); font-weight:800; font-size:0.78rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--orange-ink); }
   .am-next .h3{ margin-top:0.3rem; font-size:clamp(1.5rem,2.4vw,2rem); letter-spacing:-0.02em; line-height:1.05; }
   .am-next .line{ margin-top:0.5rem; max-width:56ch; color:var(--ink-soft); }
   .am-next .am-more{ margin-top:0; color:var(--orange-ink); white-space:nowrap; }
-  .am-more{ margin-top:1.5rem; font-weight:700; color:var(--orange); border-bottom:2px solid currentColor; padding-bottom:2px; }
+  .am-more{ margin-top:1.5rem; font-weight:700; color:#ff5c39; border-bottom:2px solid currentColor; padding-bottom:2px; }
   @media (max-width:700px){ .am-card{ grid-template-columns:1fr; } .am-card-photo{ min-height:0; aspect-ratio:4/3.6; } }
   .am-ways{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(1rem,2vw,1.4rem); margin-top:clamp(2rem,4vw,2.8rem); }
   @media (max-width:860px){ .am-ways{ grid-template-columns:1fr; } }
@@ -81,7 +85,7 @@
   /* The dictionary check (--icon-check): what is included on each side. */
   .am-two li{ padding-left:1.6rem; }
   .am-two li::before{ content:""; position:absolute; left:0; top:0.2em; width:1em; height:1em; background:var(--orange); -webkit-mask:var(--icon-check) center/contain no-repeat; mask:var(--icon-check) center/contain no-repeat; }
-  .am-promise{ margin-top:2.2rem; padding:1.3rem 1.4rem; border-radius:16px; box-shadow:inset 0 0 0 1px rgba(255,255,255,0.14); color:var(--cream-mute); max-width:60ch; }
+  .am-promise{ margin-top:2.2rem; padding:1.3rem 1.4rem; border-radius:16px; box-shadow:inset 0 0 0 1px rgba(249,247,242,0.14); color:var(--cream-mute); max-width:60ch; }
 </style>
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 </head>
@@ -191,7 +195,7 @@ fill="currentColor" stroke="none">
         <h2 class="serif h2" style="margin-top:0.8rem;">It starts with <em class="italic" style="color:var(--orange-ink)">a pioneer.</em></h2>
       </div>
       <div class="am-list">
-        <article class="am-card reveal">
+        <article class="am-card on-dark reveal">
           <a class="am-card-photo" href="/juan" tabindex="-1" aria-hidden="true"><img src="/images/hero/trace-juan.webp" alt="" width="752" height="1100" loading="lazy" decoding="async" style="object-fit:contain; background:#141416;"></a>
           <div class="am-card-body">
             <p class="tag">Our first ambassador</p>
@@ -325,18 +329,18 @@ fill="currentColor" stroke="none">
         <p class="legal">Adapt To Life is a recognized 501(c)(3) nonprofit organization. Donations are tax deductible to the extent allowed by law. EIN 41-3213344.</p>
       </div>
       <div class="col">
-        <h4>Organization</h4>
+        <h2>Organization</h2>
         <a href="/about">Our Story</a>
         <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
-        <a href="/tim">Tim&#39;s Story</a>
-        <a href="/karen">Karen&#39;s Story</a>
-        <a href="/juan">Juan&#39;s Story</a>
+        <a href="/tim">Tim&rsquo;s Story</a>
+        <a href="/karen">Karen&rsquo;s Story</a>
+        <a href="/juan">Juan&rsquo;s Story</a>
         <a href="/adaptive-sports-near-me">Adaptive Sports Near Me · In beta</a>
         <a href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
                 <a href="/roadmap">Roadmap</a>
       </div>
       <div class="col">
-        <h4>Get involved</h4>
+        <h2>Get involved</h2>
         <a href="/donate">Donate</a>
         <a href="/promise">How Giving Works</a>
         <a href="/volunteer">Volunteer</a>
@@ -413,7 +417,7 @@ fill="currentColor" stroke="none">
     }
   })();
 </script>
-<script src="/js/subscribe.js?v=71816eda" defer></script>
+<script src="/js/subscribe.js?v=7efaf550" defer></script>
 <script src="/js/turnstile-lazy.js?v=12e9b811" defer></script>
 </body>
 </html>

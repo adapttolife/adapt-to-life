@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f0e0d">
 <meta name="color-scheme" content="light only">
 <title>Popcorn Fundraiser | Adapt To Life</title>
 <meta name="description" content="See how Adapt To Life popcorn fundraisers support adaptive athletes. Find an open drive, view past results, or give directly to the fund.">
@@ -26,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=5e6e33e6">
+<link rel="stylesheet" href="/css/site.css?v=a259d5ba">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <style>
   /* ==========================================================================
@@ -61,7 +62,7 @@
   .pop-hero-copy .display{ margin-top:1.4rem; max-width:15ch; }
   .pop-hero-copy .sub{ max-width:48ch; }
   .pop-hero-meta{
-    margin-top:1.5rem; font-family:"Space Mono",monospace; font-size:0.74rem;
+    margin-top:1.5rem; font-family:var(--font-label); font-size:0.74rem;
     letter-spacing:0.09em; text-transform:uppercase; color:var(--cream-faint);
   }
   .pop-hero-meta .on{ color:var(--orange-hot); }
@@ -104,13 +105,13 @@
   .pop-card{
     background:var(--paper); border:1px solid var(--hairline); border-radius:20px;
     padding:clamp(1.4rem,3vw,2.2rem);
-    box-shadow:0 28px 64px -34px rgba(28,26,21,0.42);
+    box-shadow:0 28px 64px -34px rgba(59,59,70,0.42);
     display:grid; grid-template-columns:1fr auto; gap:1.2rem 2rem; align-items:center;
   }
   @media (max-width:760px){ .pop-card{ grid-template-columns:1fr; } }
   .pop-status{
     display:inline-flex; align-items:center; gap:0.5rem;
-    font-family:"Space Mono",monospace; font-size:0.68rem; font-weight:700;
+    font-family:var(--font-label); font-size:0.68rem; font-weight:700;
     letter-spacing:0.16em; text-transform:uppercase;
   }
   .pop-status .dot{ width:8px; height:8px; border-radius:50%; background:var(--muted); flex:0 0 auto; }
@@ -120,7 +121,7 @@
   .pop-status.is-closed{ color:var(--muted); }
   .pop-card h2{ margin-top:0.7rem; }
   .pop-card-sub{ margin-top:0.5rem; color:var(--ink-soft); max-width:52ch; }
-  .pop-dates{ margin-top:0.9rem; font-family:"Space Mono",monospace; font-size:0.76rem; color:var(--muted); letter-spacing:0.05em; }
+  .pop-dates{ margin-top:0.9rem; font-family:var(--font-label); font-size:0.76rem; color:var(--muted); letter-spacing:0.05em; }
   .pop-card-cta{ display:flex; flex-direction:column; align-items:flex-start; gap:0.6rem; }
   .pop-card-cta .sml{ font-size:0.8rem; color:var(--muted); }
 
@@ -131,11 +132,11 @@
   }
   @media (max-width:760px){ .pop-steps{ grid-template-columns:1fr; } }
   .pop-step{
-    background:var(--canvas); border:1px solid rgba(28,26,21,0.09); border-radius:18px;
+    background:var(--canvas); border:1px solid rgba(59,59,70,0.09); border-radius:18px;
     padding:clamp(1.5rem,2.8vw,2.1rem);
   }
   .pop-step-n{
-    font-family:"Space Mono",monospace; font-size:0.72rem; font-weight:700;
+    font-family:var(--font-label); font-size:0.72rem; font-weight:700;
     letter-spacing:0.18em; color:var(--orange-ink);
   }
   .pop-step-head{ display:flex; align-items:center; justify-content:space-between; }
@@ -154,7 +155,7 @@
   @media (max-width:1000px){ .pop-grid{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
   @media (max-width:700px){ .pop-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.8rem; } }
   .pop-fl{
-    background:rgba(255,255,255,0.035); border:1px solid rgba(247,244,238,0.10);
+    background:rgba(249,247,242,0.035); border:1px solid rgba(247,244,238,0.10);
     border-radius:16px; padding:clamp(0.9rem,1.8vw,1.3rem) clamp(0.8rem,1.6vw,1.1rem) clamp(1rem,2vw,1.3rem);
     display:flex; flex-direction:column; align-items:center; text-align:center;
     transition:transform .35s cubic-bezier(.2,.7,.3,1), border-color .35s ease, background .35s ease;
@@ -165,11 +166,11 @@
     filter:drop-shadow(0 18px 24px rgba(0,0,0,0.55));
   }
   .pop-fl-tag{
-    margin-top:0.85rem; font-family:"Space Mono",monospace; font-size:0.6rem; font-weight:700;
+    margin-top:0.85rem; font-family:var(--font-label); font-size:0.6rem; font-weight:700;
     letter-spacing:0.16em; text-transform:uppercase; color:var(--gold);
   }
   .pop-fl-name{ margin-top:0.4rem; font-weight:600; font-size:0.95rem; line-height:1.25; color:var(--cream); }
-  .pop-fl-price{ margin-top:0.3rem; font-family:"Space Mono",monospace; font-size:0.82rem; color:var(--cream-faint); }
+  .pop-fl-price{ margin-top:0.3rem; font-family:var(--font-label); font-size:0.82rem; color:var(--cream-faint); }
 
   /* ---- what it funds ---------------------------------------------------- */
   .pop-funds{ display:grid; grid-template-columns:1.08fr 0.92fr; gap:clamp(1.8rem,4vw,3.6rem); align-items:center; }
@@ -184,15 +185,15 @@
   }
   .pop-row:first-child{ border-top:1px solid var(--hairline); }
   .pop-row-name{ font-weight:600; }
-  .pop-row-when{ font-family:"Space Mono",monospace; font-size:0.76rem; color:var(--muted); }
-  .pop-row-out{ margin-left:auto; font-family:"Space Mono",monospace; font-size:0.82rem; color:var(--ink-soft); }
+  .pop-row-when{ font-family:var(--font-label); font-size:0.76rem; color:var(--muted); }
+  .pop-row-out{ margin-left:auto; font-family:var(--font-label); font-size:0.82rem; color:var(--ink-soft); }
 
   /* ---- clickable flavor cards ------------------------------------------- */
   .pop-grid > li{ display:flex; }
   a.pop-fl{ width:100%; color:inherit; text-decoration:none; cursor:pointer; }
   a.pop-fl:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:3px; }
   .pop-fl-go{
-    margin-top:0.7rem; font-family:"Space Mono",monospace; font-size:0.62rem; font-weight:700;
+    margin-top:0.7rem; font-family:var(--font-label); font-size:0.62rem; font-weight:700;
     letter-spacing:0.16em; text-transform:uppercase; color:var(--orange-hot);
     opacity:0; transform:translateY(4px); transition:opacity .3s ease, transform .3s ease;
   }
@@ -201,13 +202,13 @@
 
   /* ---- goal bar (renders only when a goal is set) ------------------------ */
   .pop-goal{ margin-top:1.1rem; max-width:340px; }
-  .pop-goal-bar{ height:7px; border-radius:999px; background:rgba(28,26,21,0.10); overflow:hidden; }
+  .pop-goal-bar{ height:7px; border-radius:999px; background:rgba(59,59,70,0.10); overflow:hidden; }
   .pop-goal-fill{
     height:100%; border-radius:999px; min-width:3px;
     background:linear-gradient(90deg, var(--orange-ink), var(--orange-hot));
   }
   .pop-goal-label{
-    margin-top:0.5rem; font-family:"Space Mono",monospace; font-size:0.74rem;
+    margin-top:0.5rem; font-family:var(--font-label); font-size:0.74rem;
     letter-spacing:0.04em; color:var(--muted);
   }
 
@@ -222,11 +223,11 @@
   .pop-join-n{
     flex:0 0 auto; width:24px; height:24px; border-radius:50%;
     background:var(--orange-ink); color:var(--cream);
-    font-family:"Space Mono",monospace; font-size:0.72rem; font-weight:700;
+    font-family:var(--font-label); font-size:0.72rem; font-weight:700;
     display:inline-flex; align-items:center; justify-content:center;
   }
   .pop-code{
-    font-family:"Space Mono",monospace; letter-spacing:0.14em;
+    font-family:var(--font-label); letter-spacing:0.14em;
     background:var(--paper); border:1px solid var(--hairline); border-radius:8px;
     padding:0.12rem 0.5rem; margin-left:0.15rem; white-space:nowrap;
   }
@@ -238,15 +239,15 @@
   }
   @media (max-width:860px){ .pop-cost{ grid-template-columns:1fr; } }
   .pop-cost-item{
-    background:var(--paper); border:1px solid rgba(28,26,21,0.09); border-radius:18px;
+    background:var(--paper); border:1px solid rgba(59,59,70,0.09); border-radius:18px;
     padding:clamp(1.5rem,2.8vw,2.1rem);
-    box-shadow:0 18px 40px -30px rgba(28,26,21,0.3);
+    box-shadow:0 18px 40px -30px rgba(59,59,70,0.3);
   }
   .pop-cost-ico{ display:block; width:44px; height:44px; color:var(--orange-ink); }
   .pop-cost-ico svg{ width:100%; height:100%; display:block; }
   .pop-cost-item h3{ margin-top:1rem; }
   .pop-cost-n{
-    margin-top:0.25rem; font-family:"Space Mono",monospace; font-size:0.86rem;
+    margin-top:0.25rem; font-family:var(--font-label); font-size:0.86rem;
     letter-spacing:0.05em; color:var(--orange-ink);
   }
   .pop-cost-item .prose{ margin-top:0.7rem; font-size:0.97rem; }
@@ -544,18 +545,18 @@ fill="currentColor" stroke="none">
         <p class="legal">Adapt To Life is a recognized 501(c)(3) nonprofit organization. Donations are tax deductible to the extent allowed by law. EIN 41-3213344.</p>
       </div>
       <div class="col">
-        <h4>Organization</h4>
+        <h2>Organization</h2>
         <a href="/about">Our Story</a>
         <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
-        <a href="/tim">Tim&#39;s Story</a>
-        <a href="/karen">Karen&#39;s Story</a>
-        <a href="/juan">Juan&#39;s Story</a>
+        <a href="/tim">Tim&rsquo;s Story</a>
+        <a href="/karen">Karen&rsquo;s Story</a>
+        <a href="/juan">Juan&rsquo;s Story</a>
         <a href="/adaptive-sports-near-me">Adaptive Sports Near Me · In beta</a>
         <a href="/adapt-body-shop">Adapt Body Shop · Coming soon</a>
         <a href="/roadmap">Roadmap</a>
       </div>
       <div class="col">
-        <h4>Get involved</h4>
+        <h2>Get involved</h2>
         <a href="/donate">Donate</a>
         <a href="/promise">How Giving Works</a>
         <a href="/volunteer">Volunteer</a>
@@ -657,7 +658,7 @@ fill="currentColor" stroke="none">
 }
 </script>
 
-<script src="/js/campaigns.js?v=5bb030e9"></script>
+<script src="/js/campaigns.js?v=2934099c"></script>
 <script>
 (function(){
   var data;
@@ -934,7 +935,7 @@ fill="currentColor" stroke="none">
 })();
 </script>
 
-<script src="/js/subscribe.js?v=71816eda" defer></script>
+<script src="/js/subscribe.js?v=7efaf550" defer></script>
 <script src="/js/turnstile-lazy.js?v=12e9b811" defer></script>
 </body>
 </html>

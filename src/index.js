@@ -1,4 +1,12 @@
 import { safeNewsletterSubscribe } from "./newsletter.js";
+import {
+  startWelcome,
+  runWelcomeSeries,
+  validUnsubscribe,
+  unsubscribe,
+  unsubscribePage,
+  normalizeEmail,
+} from "./newsletter-series.js";
 import { acceptForm, sweepForms } from "./forms.js";
 // Adapt To Life — Worker entry.
 // Serves the static site (env.ASSETS) and handles form submissions at /api/contact,
@@ -1028,6 +1036,14 @@ export default {
       return handleSubscribe(request, env, ctx);
     }
 
+    // The unsubscribe link in every newsletter email (src/newsletter-series.js).
+    // GET is the person clicking it; POST is the one click unsubscribe mail
+    // apps send from the List-Unsubscribe header (RFC 8058), which wants an
+    // empty 200 back.
+    if (url.pathname === "/unsubscribe") {
+      return handleUnsubscribe(request, env, url);
+    }
+
     // Givebutter signs successful-transaction deliveries. The handler records
     // the gift before attempting ATL's follow-up. Ordinary webhook retries are
     // idempotent; the cron reclaims interrupted or transiently failed attempts
@@ -1153,6 +1169,14 @@ export default {
     );
 
     ctx.waitUntil(runDriveBacklog(env));
+    // The newsletter welcome series: whatever is due (src/newsletter-series.js).
+    ctx.waitUntil(
+      runWelcomeSeries(env)
+        .then((r) => {
+          if (r.sent || r.failed) console.log("welcome series:", JSON.stringify(r));
+        })
+        .catch((err) => console.error("welcome series crashed:", err?.message || err)),
+    );
     ctx.waitUntil(
       runShopCrmBacklog(env).catch((err) =>
         console.error("shop CRM sync crashed:", err),
@@ -1572,6 +1596,15 @@ async function handleSubscribe(request, env, ctx) {
   const source = str(data.source).slice(0, 80) || "adapttolife.org";
   const result = await safeNewsletterSubscribe(env, email, source);
   if (!result.ok) return json({ ok: false, error: result.error }, result.status);
+  // A new subscriber starts the welcome series: email 1 now, the rest on the
+  // cron. Someone already on the list does not start it again.
+  if (!result.existing)
+    after(
+      ctx,
+      startWelcome(env, email, { contactId: result.contactId || null }).catch((err) =>
+        console.error("welcome series could not start:", err?.message || err),
+      ),
+    );
   after(
     ctx,
     tellAlec(env, {
@@ -1584,6 +1617,41 @@ async function handleSubscribe(request, env, ctx) {
     }),
   );
   return json({ ok: true, ...(result.existing ? { existing: true } : {}) });
+}
+
+async function handleUnsubscribe(request, env, url) {
+  const email = normalizeEmail(url.searchParams.get("e"));
+  const token = url.searchParams.get("t") || "";
+  const page = (ok, status = 200) =>
+    new Response(unsubscribePage({ ok, email }), {
+      status,
+      headers: {
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": "no-store",
+        "X-Robots-Tag": "noindex",
+      },
+    });
+  if (request.method !== "GET" && request.method !== "POST")
+    return new Response("Method not allowed", { status: 405 });
+  let valid = false;
+  try {
+    valid = await validUnsubscribe(env, email, token);
+  } catch {
+    valid = false;
+  }
+  if (!valid)
+    return request.method === "POST"
+      ? new Response("Invalid unsubscribe link", { status: 400 })
+      : page(false, 400);
+  try {
+    await unsubscribe(env, email);
+  } catch (err) {
+    console.error("unsubscribe failed:", err?.message || err);
+    return request.method === "POST"
+      ? new Response("Try again later", { status: 503 })
+      : page(false, 503);
+  }
+  return request.method === "POST" ? new Response("", { status: 200 }) : page(true);
 }
 
 // Public fundraising total for the site thermometer: Givebutter's live "raised" for the

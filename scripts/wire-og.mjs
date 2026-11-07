@@ -30,6 +30,7 @@ const PER_PAGE = {
   "chicago-classic.html": "chicago-classic",
   "picklr.html": "picklr",
   "chicago-adaptive-sports.html": "chicago-adaptive-sports",
+  "amp.html": "amp",
 };
 
 // ALT DESCRIBES THE PHOTOGRAPH AGAIN, because from 2026-09-09 the cards ARE
@@ -57,6 +58,7 @@ const ALT = {
     "The crew's home court is Brick House. Adapt To Life. An athlete in a sport wheelchair and a Brick House Pickleball shirt rolls across the Brick House courts.",
   picklr: "Open play, open doors. Adapt To Life. A player in a sport wheelchair stretches wide for a backhand.",
   "chicago-adaptive-sports": "Push. Play. Persist. Adapt To Life. Juan Ortiz in a Chicago Adaptive Sports shirt.",
+  amp: "Active. Mobile. Proud. Adapt To Life. Karen Atkinson water skiing in a sit-ski, a jet ski behind her.",
   "chicago-classic": "The Chicago Classic. Adapt To Life. Juan Ortiz in his sport wheelchair, paddle up, on a dark indoor court.",
   ace: "Something Chicago hasn't seen. Adapt To Life. A wheelchair pickleball player in a white cap leans on the rail with his paddle.",
   pickleball:
@@ -83,6 +85,7 @@ const FILE = {
   "send-6": "send-6-v4-road.jpg",
   picklr: "picklr-v1-partner.jpg",
   "chicago-adaptive-sports": "chicago-adaptive-sports-v1-partner.jpg",
+  amp: "amp-v1-partner.jpg",
   popcorn: "popcorn-v4-content.jpg",
   "hustle-and-heart": "hustle-and-heart-v5-check.jpg",
 };

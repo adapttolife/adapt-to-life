@@ -99,13 +99,19 @@ test("pages draw one bar with its parts, and no gift is steered to a fund", () =
     "wheelie-big-dills",
   );
 
+  // The fund page and the crew page draw the goal with the campaign module
+  // (scripts/build-module.mjs), one row per part, filled from /api/raised?c=wbd.
   const fund = read("public/hustle-and-heart.html");
-  assert.ok(fund.includes('data-thermo data-goal="34500" data-key="wbd"'));
-  assert.ok(
-    fund.includes('data-seg-fill="year"') && fund.includes('data-seg-fill="send-6"'),
-  );
   const crew = read("public/pickleball.html");
-  assert.ok(crew.includes('data-goal-box data-key="wbd"'));
+  for (const html of [fund, crew]) {
+    assert.ok(html.includes('<section class="cm" '));
+    assert.ok(
+      html.includes('data-part-fill="year"') &&
+        html.includes('data-part-fill="send-6"'),
+    );
+    assert.ok(html.includes("window.ATLCampaigns.module();"));
+  }
+  assert.ok(crew.includes('id="support" data-cm'), "/pickleball#support lands on it");
   const list = crew.slice(crew.indexOf('<ol class="pb-prio pb-cadence">'));
   const order = [
     ">Every week <",

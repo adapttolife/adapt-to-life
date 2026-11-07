@@ -47,17 +47,21 @@ const BAND_OF = {
   "confirmed.html": "1", // where a confirmed subscriber lands; continues /subscribe
   "sponsorship.html": "2", // sponsor an adaptive athlete
   "roadmap.html": "2",
-  "promise.html": "3", // 100% to the community
-  "contact.html": "3",
+  "numbers.html": "2", // what competing really costs
+  // Band 3 is retired: one of its panels shows a "Great Lakes Games" shirt,
+  // GLASA's event, and GLASA never appears on the site (Nov 6, 2026). Its
+  // pages moved to band 4, faces too.
+  "promise.html": "4", // 100% to the community
+  "contact.html": "4",
   "about.html": "4", // built by the community it serves
   "waiver.html": "4",
 };
-// A page not in the list gets 3. Every page that actually paints a band is
+// A page not in the list gets 4 (band 3 is retired). Every page that actually paints a band is
 // named above — a hero without pg-band (the role pages, /apply's single
 // photograph, /donate's mosaic) is emitted these variables and ignores them —
 // so the default is only ever the starting point for a page that does not
 // exist yet.
-export const bandOf = (page) => BAND_OF[page] || "3";
+export const bandOf = (page) => BAND_OF[page] || "4";
 
 // data-band-vars is not decoration. It is the only thing that tells the
 // replacement in apply-page-headers.mjs which <style> elements are ITS OWN and
@@ -116,6 +120,7 @@ export const PAGE_TIERS = {
   "adapt-body-shop.html": "md",
   "apply.html": "lg",
   "roadmap.html": "md",
+  "numbers.html": "md",
   "karen.html": "md",
   "popcorn.html": "md",
   "send-6.html": "md",

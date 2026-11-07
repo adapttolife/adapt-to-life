@@ -726,7 +726,20 @@ const BUDGET = {
   // the rest the page. 520 is that plus ~60KB of deliberate headroom: enough
   // for two more panels or a page of comments without anyone having to think
   // about it, and still far below the point where a real accident hides.
-  "/": { own: 520, total: 900, reqs: 40, hosts: 4, cls: 0.1 },
+  // 2026-11-06: 520 -> 635 own, 40 -> 44 requests, under Alec's 2026-09-09
+  // rule (below): a cap moves for a decision he made, not for carelessness.
+  // Production (main, 1fd9bc5) already measured 572KB here, over 520, before
+  // design-refresh: the story reset added sections the cap never saw. This
+  // branch measures 610KB / 42 requests by this checker's method (decoded
+  // bytes, 1440x900, no scroll). What it added, all asked for: the campaign
+  // module on every page (+11KB site.css, +6KB campaigns.js, 4.5KB markup),
+  // the crew badge (32KB), the partner strip's four logos (four requests,
+  // ~30KB), and section styles (+5KB). Juan's photo got a 960w source (-59KB).
+  // Checked for carelessness first: the badge is already lossy at about q75
+  // and paints at 280 device px from a 320px file; pngquant saves 3KB across
+  // the logos; no inline icon is duplicated. 635 is 610 plus ~4% for encoder
+  // and CF drift, the allowance this table always carries; 44 is 42 plus two.
+  "/": { own: 635, total: 900, reqs: 44, hosts: 4, cls: 0.1 },
   // cls:null, still — but for a smaller and better-understood reason than
   // before. The Givebutter cause IS fixed: reserving the panel's height took
   // MOBILE from 0.12-0.76 down to a flat 0 across five runs in every condition
@@ -805,7 +818,17 @@ const BUDGET = {
   // nineteen third-party hosts, and a donor on a bad connection is the one
   // visitor whose experience is worth protecting with a number. 200 leaves room
   // to write, not to be careless.
-  "/donate": { own: 200, total: 9000, reqs: 108, hosts: 21, cls: null },
+  // 2026-11-06: 200 -> 230. Production measures 190KB; design-refresh
+  // measures 221KB. The 31KB is the site-wide campaign module (+11KB
+  // site.css, +6KB campaigns.js) and the partner logos, the Coach-level
+  // benefit "Logo on our donate page", which now sit within the browser's
+  // lazy-load distance at 1440 (~19KB). Same rule and the same ~4% drift as
+  // the homepage above: 221 plus 4% is 230.
+  // Then 230 -> 237 the same day: AMP Adaptive Sports became a partner
+  // (Alec: "They are partners"), and its logo tile is 7KB. Measured 228;
+  // plus 4% is 237. (The homepage's new 7KB logo fits inside 635: 617KB,
+  // 43 requests.)
+  "/donate": { own: 237, total: 9000, reqs: 108, hosts: 21, cls: null },
 };
 
 // MEASURE ONE PAGE, ONCE. This was the body of the loop below until the loop

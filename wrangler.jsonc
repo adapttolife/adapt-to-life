@@ -107,11 +107,18 @@
     // Exact creation time of ATL's donor-journey activation webhook. Scheduled
     // reconciliation must never send retroactive thank-yous for the baseline.
     "GIVEBUTTER_DONOR_CUTOFF": "2026-08-08T22:40:55Z",
-    "OFFLINE_RAISED": "3004",
+    "SEND6_SET_ASIDE": "4979",
+    // The part of Givebutter's online total already inside SEND6_SET_ASIDE.
+    "SEND6_ONLINE_COUNTED": "1975",
     "R2_ACCESS_KEY_ID": "d27b427aadef63a7ec1e05eaec108bc0",
     "MAIL_TRANSPORT": "gmail",
     "GMAIL_FROM": "hello@adapttolife.org",
-    "RESEND_SEGMENT_ID": "a2640e82-34df-446d-b5f8-0ad6f31d352e"
+    "RESEND_SEGMENT_ID": "a2640e82-34df-446d-b5f8-0ad6f31d352e",
+    // The welcome series (src/newsletter-series.js). "off" stops new emails
+    // without a code change; the sender is the domain verified in Resend.
+    "WELCOME_SERIES": "on",
+    "NEWSLETTER_FROM": "Alec at Adapt To Life <hello@mail.adapttolife.org>",
+    "NEWSLETTER_REPLY_TO": "hello@adapttolife.org"
   },
   // Signed-waiver storage: archived to Google Drive, with the signing record in D1.
   "d1_databases": [
@@ -163,7 +170,9 @@
         "GRANTS_INBOX": "hello@adapttolife.org",
         "GIVEBUTTER_CAMPAIGN_ID": "683765",
         "GIVEBUTTER_DONOR_CUTOFF": "2026-08-08T22:40:55Z",
-        "OFFLINE_RAISED": "3004",
+        "SEND6_SET_ASIDE": "4979",
+        // The part of Givebutter's online total already inside SEND6_SET_ASIDE.
+        "SEND6_ONLINE_COUNTED": "1975",
         "R2_ACCESS_KEY_ID": "d27b427aadef63a7ec1e05eaec108bc0",
         // "none" is not a supported transport, so mailConfigured() is false and
         // staging sends no mail of its own (src/mail-transport.js).
@@ -171,7 +180,11 @@
         "GMAIL_FROM": "hello@adapttolife.org",
         "TURNSTILE_MODE": "off",
         "ASNM_ADMIN_ORIGIN": "https://staging-adaptivesportsnearme.adapt-to-life.workers.dev",
-        "RESEND_SEGMENT_ID": "a2640e82-34df-446d-b5f8-0ad6f31d352e"
+        "RESEND_SEGMENT_ID": "a2640e82-34df-446d-b5f8-0ad6f31d352e",
+        // Mirrors production; inert here (staging has no Resend key or cron).
+        "WELCOME_SERIES": "on",
+        "NEWSLETTER_FROM": "Alec at Adapt To Life <hello@mail.adapttolife.org>",
+        "NEWSLETTER_REPLY_TO": "hello@adapttolife.org"
       },
       "routes": [],
       // Run the real application for every route, with staging cache/index headers.

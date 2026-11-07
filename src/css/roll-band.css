@@ -32,7 +32,7 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  background: #000;
+  background: var(--photo-black);
   padding: clamp(3.5rem, 8vh, 5.5rem) 0 clamp(3.5rem, 8vh, 5.5rem);
 }
 
@@ -191,7 +191,7 @@
   cursor: pointer;
   color: var(--cream);
   background: rgba(12, 12, 14, 0.62);
-  border: 1px solid rgba(255, 255, 255, 0.24);
+  border: 1px solid rgba(249, 247, 242, 0.24);
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
   transition:

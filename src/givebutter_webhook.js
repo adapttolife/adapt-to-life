@@ -295,7 +295,7 @@ export async function sendDonorThankYou(env, gift) {
   const name = gift.firstName || "there";
   const updates = gift.communicationOptIn
     ? "Because you chose to hear from us, we'll share meaningful campaign updates and show you what gifts like yours helped make possible."
-    : "You can follow the campaign whenever you want at adapttolife.org/roadmap.";
+    : "You can follow the crew whenever you want at adapttolife.org/pickleball.";
   const textBody = [
     `Hi ${name},`,
     "",
@@ -305,8 +305,8 @@ export async function sendDonorThankYou(env, gift) {
     "",
     "Givebutter sent your official receipt separately. " + updates,
     "",
-    "See where the money goes: https://adapttolife.org/send-6",
-    "Follow our progress: https://adapttolife.org/roadmap",
+    "See where the money goes: https://adapttolife.org/numbers",
+    "Meet the crew: https://adapttolife.org/pickleball",
     "",
     "With hustle and heart,",
     houseSignoff(),
@@ -316,8 +316,8 @@ export async function sendDonorThankYou(env, gift) {
       `<p><strong>Thank you for putting an athlete in the game.</strong></p>` +
       `<p>Your gift helps adaptive athletes take part through equipment, training, and travel.</p>` +
       `<p>Givebutter sent your official receipt separately. ${esc(updates)}</p>` +
-      `<p><a href="https://adapttolife.org/send-6">See where the money goes</a><br>` +
-      `<a href="https://adapttolife.org/roadmap">Follow our progress</a></p>` +
+      `<p><a href="https://adapttolife.org/numbers">See where the money goes</a><br>` +
+      `<a href="https://adapttolife.org/pickleball">Meet the crew</a></p>` +
       `<p>With hustle and heart,</p>`,
   );
   return cfSend(env, {

@@ -63,3 +63,33 @@ test("donate page partner logos (the Coach benefit) link to partners listed on /
       `/${slug} on /donate is not a partner card on /sponsorship`,
     );
 });
+
+test("every partner list on the site names the same partners, in the same order", () => {
+  // Nov 6 2026: AMP Adaptive Sports joined (Alec: "They are partners"). A new
+  // partner goes on /sponsorship with its own page, and into every logo row,
+  // or this fails: the home strip, the donate tiles and the fund page's row.
+  const slugsIn = (html, re) => {
+    const block = (html.match(re) || [""])[0];
+    return [...block.matchAll(/<li><a href="\/([a-z0-9-]+)"/g)].map((m) => m[1]);
+  };
+  const order = pages.filter(Boolean);
+  assert.ok(order.includes("amp"), "AMP is a partner card on /sponsorship");
+  assert.deepEqual(
+    slugsIn(read("index.html"), /<section class="hm-partners"[\s\S]*?<\/section>/),
+    order,
+    "home page partner strip",
+  );
+  assert.deepEqual(
+    slugsIn(
+      read("donate.html"),
+      /<section class="band-sm tint dn-partners"[\s\S]*?<\/section>/,
+    ),
+    order,
+    "donate page partner tiles",
+  );
+  assert.deepEqual(
+    slugsIn(read("hustle-and-heart.html"), /<ul class="hh-now-partners"[\s\S]*?<\/ul>/),
+    order,
+    "fund page partner row",
+  );
+});

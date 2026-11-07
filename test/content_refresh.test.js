@@ -49,10 +49,12 @@ test("homepage tells participation story without the two-program comparison pane
   const html = read("public/index.html");
   assert.ok(html.includes('id="participation"'));
   assert.ok(html.includes("A chance to play should not come down to luck."));
-  assert.ok(html.indexOf('id="participation"') < html.indexOf('id="homeBand"'));
-  assert.ok(html.indexOf('id="homeBand"') < html.indexOf('id="next-step"'));
+  // The campaign module (scripts/build-module.mjs) follows the participation
+  // story and comes before the next step.
+  assert.ok(html.indexOf('id="participation"') < html.indexOf('id="campaign"'));
+  assert.ok(html.indexOf('id="campaign"') < html.indexOf('id="next-step"'));
   assert.ok(!html.includes('id="homeResult"'));
-  assert.ok(html.includes("C.band('homeBand', { lifted: false })"));
+  assert.ok(html.includes("C.module();"));
   const welcome = html.split('class="home-welcome dark"')[1].split("</div>")[0];
   assert.ok(
     !welcome.includes("<a "),
@@ -71,7 +73,7 @@ test("homepage tells participation story without the two-program comparison pane
   assert.equal((closing.match(/class="btn/g) || []).length, 1);
   assert.ok(closing.includes('href="/volunteer" class="textlink"'));
   const quote =
-    "I got into this because someone handed me a brochure when I was six. Now it's our turn to be that for the next athlete.";
+    "I got into this because someone handed me a brochure when I was six. Now it&rsquo;s our turn to be that for the next athlete.";
   assert.equal(html.split(quote).length, 2, "original founder quote appears once");
   assert.ok(html.includes("Help the next athlete find their place."));
   assert.ok(html.includes("We build more ways into adaptive sports."));

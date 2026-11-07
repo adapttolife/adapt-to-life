@@ -119,4 +119,8 @@ test("donate: more ways to give is a ledger beside the advisor's card", () => {
   );
   assert.ok(sec.includes("$4,000 to $6,000"));
   assert.ok(!sec.includes("Every month"), "monthly lives in the impact list now");
+  // Nov 7: Givebutter's dedication option is on, so the line names the
+  // form's own words instead of the free-text note.
+  assert.ok(sec.includes("Choose &ldquo;Give in honor/memory&rdquo; on the form."));
+  assert.ok(!sec.includes("donation note"));
 });

@@ -160,8 +160,8 @@ test("the club's court time: $10 a night for 10 athletes, 52 nights, never named
   // Alec, Nov 7 2026: the drop in is $15, we pay $5, the club gives $10. "Just
   // keep it average": 10 athletes a week for 52 weeks.
   assert.equal(YEAR_INKIND, 10 * 10 * 52);
-  const js = read("public/js/campaigns.js");
-  assert.ok(js.includes(" in court time from a partner club"));
+  // The /numbers ledger says "a partner club", never the club's name.
+  assert.ok(read("public/numbers.html").includes('<span class="nb-ledger-k">Court time<small>From a partner club</small></span>'));
   for (const f of ["public/js/campaigns.js", "src/partials/campaign-module.html", "public/ace.html", "public/numbers.html"]) {
     const t = read(f);
     assert.ok(!/\$10 (an|a|per) (athlete|person|drop)/i.test(t), f + " names the rate");

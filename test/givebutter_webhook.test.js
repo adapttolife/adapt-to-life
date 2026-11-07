@@ -1,5 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
   claimAndThank,
   handleGivebutterWebhook,
@@ -33,6 +34,19 @@ function db() {
           if (/SELECT email_status FROM donor_gifts/.test(sql)) {
             const row = gifts.get(String(args[0]));
             return row ? { email_status: row.email_status } : null;
+          }
+          if (/AS earlier_thanks FROM donor_gifts/.test(sql)) {
+            const [email, campaignId, transactionId] = args;
+            for (const row of gifts.values())
+              if (
+                row.email === email &&
+                row.campaign_id === campaignId &&
+                row.recurring === 1 &&
+                row.transaction_id !== transactionId &&
+                ["pending", "sending", "retry", "sent"].includes(row.email_status)
+              )
+                return { earlier_thanks: 1 };
+            return null;
           }
           if (/SELECT attempt_count FROM donor_gifts/.test(sql)) {
             const row = gifts.get(String(args[0]));
@@ -319,8 +333,20 @@ test("a successful gift is recorded and receives the ATL follow-up", async () =>
   assert.equal(msg.to, "jordan@example.com");
   assert.equal(msg.replyTo, "hello@adapttolife.org");
   assert.match(msg.subject, /thank you/i);
-  assert.match(msg.text, /equipment, training, and travel/i);
-  assert.match(msg.text, /official receipt separately/i);
+  // The Hustle & Heart Fund's gift line is the /donate lead, word for word.
+  const line =
+    "Right now, your gift keeps Chicago Pickleball: Wheelie Big Dills on court every week, then helps send athletes to the US Open.";
+  assert.ok(msg.text.includes(line));
+  assert.ok(msg.html.includes(line));
+  assert.ok(
+    readFileSync(new URL("../public/donate.html", import.meta.url), "utf8").includes(
+      `<p class="lead sub reveal">${line}</p>`,
+    ),
+    "the email and the /donate lead say the same thing",
+  );
+  assert.doesNotMatch(msg.text, /equipment, training, and travel/i);
+  assert.match(msg.text, /official receipt separately\./i);
+  assert.doesNotMatch(msg.text, /each month/i, "a one-time gift");
   assert.match(msg.text, /chose to hear from us/i);
   assert.match(msg.text, /show you what gifts like yours helped make possible/i);
 });
@@ -345,6 +371,96 @@ test("plan_id marks a recurring gift from Givebutter's documented payload", asyn
   );
   await finish(s);
   assert.equal(s.donorDb.gifts.get("tx_123").recurring, 1);
+});
+
+test("a gift to another campaign keeps the general line", async () => {
+  const s = setup();
+  await handleGivebutterWebhook(
+    signedRequest(
+      payload({ campaign_id: "685049", campaign_title: "Adapt To Life Sponsors" }),
+    ),
+    s.env,
+    s.ctx,
+  );
+  await finish(s);
+  assert.equal(s.sent.length, 1);
+  assert.match(s.sent[0].text, /equipment, training, and travel/);
+  assert.doesNotMatch(s.sent[0].text, /Wheelie Big Dills/);
+});
+
+test("a monthly gift is thanked once, on its first charge", async () => {
+  // Nov 7 2026: the form opens on Monthly. Givebutter receipts every charge;
+  // the same thank-you from us every month would read like a machine.
+  const s = setup();
+  await handleGivebutterWebhook(
+    signedRequest(payload({ plan_id: "plan_1" })),
+    s.env,
+    s.ctx,
+  );
+  await finish(s);
+  assert.equal(s.sent.length, 1);
+  assert.match(
+    s.sent[0].text,
+    /Givebutter sent your official receipt separately and will send one each month\./,
+  );
+
+  s.scheduled.length = 0;
+  await handleGivebutterWebhook(
+    signedRequest(
+      payload({ id: "tx_124", plan_id: "plan_1", transacted_at: "2026-09-08T23:00:00Z" }),
+    ),
+    s.env,
+    s.ctx,
+  );
+  await finish(s);
+  assert.equal(s.sent.length, 1, "no second thank-you");
+  assert.equal(s.donorDb.gifts.size, 2, "the second charge is still recorded");
+  assert.equal(s.donorDb.gifts.get("tx_124").email_status, "no_email");
+  // The recovery path doesn't pick it up either.
+  assert.equal((await recoverDonorEmails(s.env)).sent, 0);
+  assert.equal(s.sent.length, 1);
+
+  // The same donor's one-time gift is thanked as usual.
+  s.scheduled.length = 0;
+  await handleGivebutterWebhook(
+    signedRequest(payload({ id: "tx_125", transacted_at: "2026-09-10T23:00:00Z" })),
+    s.env,
+    s.ctx,
+  );
+  await finish(s);
+  assert.equal(s.sent.length, 2);
+  assert.doesNotMatch(s.sent[1].text, /each month/);
+});
+
+test("a monthly donor whose first thank-you failed is thanked on the next charge", async () => {
+  const s = setup();
+  s.donorDb.gifts.set("tx_first", {
+    transaction_id: "tx_first",
+    contact_id: "contact_1",
+    first_name: "Jordan",
+    last_name: "Rivers",
+    email: "jordan@example.com",
+    amount: 129,
+    donated: 129,
+    campaign_id: "683765",
+    campaign_title: "Hustle & Heart Fund",
+    communication_opt_in: 1,
+    recurring: 1,
+    transacted_at: "2026-08-09T12:00:00Z",
+    email_status: "failed",
+    attempt_count: 4,
+    next_attempt_at: null,
+    last_error: "email unavailable",
+    lease_token: null,
+  });
+  await handleGivebutterWebhook(
+    signedRequest(payload({ id: "tx_next", plan_id: "plan_1" })),
+    s.env,
+    s.ctx,
+  );
+  await finish(s);
+  assert.equal(s.sent.length, 1);
+  assert.equal(s.donorDb.gifts.get("tx_next").email_status, "sent");
 });
 
 test("the ten-minute recovery path reclaims a stale sending lease", async () => {

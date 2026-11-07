@@ -106,7 +106,14 @@ export async function recordGift(env, transaction) {
   const gift = normalizeGift(transaction);
   if (!gift.transactionId) throw new Error("missing transaction id");
   const now = new Date().toISOString();
-  const initialStatus = gift.email ? "pending" : "no_email";
+  // A monthly gift is thanked once, on its first charge. Givebutter receipts
+  // every charge itself, and the same thank-you from us every month reads like
+  // a machine. A later charge is still recorded (Givebutter is the money
+  // record), as "no_email": no ATL email is owed for it.
+  const initialStatus =
+    !gift.email || (gift.recurring && (await monthlyAlreadyThanked(env, gift)))
+      ? "no_email"
+      : "pending";
   const result = await env.WAIVERS_DB.prepare(
     `INSERT INTO donor_gifts
       (transaction_id, contact_id, first_name, last_name, email, amount, donated,
@@ -134,6 +141,21 @@ export async function recordGift(env, transaction) {
     )
     .run();
   return { ...gift, inserted: Boolean(result?.meta?.changes) };
+}
+
+// An earlier monthly charge from the same donor to the same campaign that was
+// thanked, or is about to be. A first thank-you that failed doesn't count, so
+// the next charge carries it instead.
+async function monthlyAlreadyThanked(env, gift) {
+  const row = await env.WAIVERS_DB.prepare(
+    `SELECT 1 AS earlier_thanks FROM donor_gifts
+      WHERE email = ? AND campaign_id = ? AND recurring = 1 AND transaction_id <> ?
+        AND email_status IN ('pending', 'sending', 'retry', 'sent')
+      LIMIT 1`,
+  )
+    .bind(gift.email, gift.campaignId, gift.transactionId)
+    .first();
+  return Boolean(row);
 }
 
 export async function claimAndThank(env, gift) {
@@ -291,19 +313,35 @@ export async function recoverDonorEmails(env) {
   };
 }
 
+// The Hustle & Heart Fund on Givebutter. A gift to it gets the /donate page's
+// own sentence for where the money goes right now; any other campaign keeps
+// the general line.
+const HUSTLE_HEART_CAMPAIGN_ID = "683765";
+
+export function giftLine(gift) {
+  return gift.campaignId === HUSTLE_HEART_CAMPAIGN_ID
+    ? "Right now, your gift keeps Chicago Pickleball: Wheelie Big Dills on court every week, then helps send athletes to the US Open."
+    : "Your gift helps adaptive athletes take part through equipment, training, and travel.";
+}
+
 export async function sendDonorThankYou(env, gift) {
   const name = gift.firstName || "there";
   const updates = gift.communicationOptIn
     ? "Because you chose to hear from us, we'll share meaningful campaign updates and show you what gifts like yours helped make possible."
     : "You can follow the crew whenever you want at adapttolife.org/pickleball.";
+  // A monthly donor hears from us once; Givebutter's receipt comes every month.
+  const receipt = gift.recurring
+    ? "Givebutter sent your official receipt separately and will send one each month."
+    : "Givebutter sent your official receipt separately.";
+  const line = giftLine(gift);
   const textBody = [
     `Hi ${name},`,
     "",
     "Thank you for putting an athlete in the game.",
     "",
-    "Your gift helps adaptive athletes take part through equipment, training, and travel.",
+    line,
     "",
-    "Givebutter sent your official receipt separately. " + updates,
+    `${receipt} ${updates}`,
     "",
     "See where the money goes: https://adapttolife.org/numbers",
     "Meet the crew: https://adapttolife.org/pickleball",
@@ -314,8 +352,8 @@ export async function sendDonorThankYou(env, gift) {
   const html = houseShell(
     `<p>Hi ${esc(name)},</p>` +
       `<p><strong>Thank you for putting an athlete in the game.</strong></p>` +
-      `<p>Your gift helps adaptive athletes take part through equipment, training, and travel.</p>` +
-      `<p>Givebutter sent your official receipt separately. ${esc(updates)}</p>` +
+      `<p>${esc(line)}</p>` +
+      `<p>${esc(receipt)} ${esc(updates)}</p>` +
       `<p><a href="https://adapttolife.org/numbers">See where the money goes</a><br>` +
       `<a href="https://adapttolife.org/pickleball">Meet the crew</a></p>` +
       `<p>With hustle and heart,</p>`,

@@ -3683,20 +3683,15 @@ a.win-band:focus-visible {
     row-gap: 2rem;
     align-items: start;
   }
+  /* The headline beside the card, centred on it. The six record tiles that
+     sat under it are gone (Alec, Nov 7: "too messy"; the record lives on the
+     crew section and /pickleball). */
   .cm-head {
-    align-self: end;
-  }
-  .cm-stats {
-    align-self: start;
-  }
-  .cm-card {
-    grid-column: 2;
     grid-row: 1 / span 2;
     align-self: center;
   }
-  /* Without the stats (the crew page leads with its record), the headline
-     centres on the card instead of leaving a hole under it. */
-  .cm-wrap:not(:has(.cm-stats)) .cm-head {
+  .cm-card {
+    grid-column: 2;
     grid-row: 1 / span 2;
     align-self: center;
   }
@@ -3763,60 +3758,6 @@ a.win-band:focus-visible {
   max-width: 34rem;
   font-size: clamp(1rem, 2.6vw, 1.12rem);
   line-height: 1.5;
-  color: var(--muted);
-}
-
-/* What is already on the board: hairline tiles, a whisper of lift, and a
-   mark in the colour of what the number is: yellow for a win, green for money
-   raised, blue for court time (the same green and blue as the bars). */
-.cm-stats {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.5rem;
-}
-.cm-stats li {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  padding: 0.85rem 0.8rem 0.9rem;
-  border-radius: var(--r-lg);
-  background: var(--raised);
-  box-shadow: inset 0 0 0 1px var(--hair);
-}
-.cm-stats li::after {
-  content: "";
-  position: absolute;
-  left: 0.8rem;
-  right: 0.8rem;
-  bottom: 0;
-  height: 2px;
-  border-radius: 2px;
-  background: var(--win);
-  opacity: 0.9;
-}
-.cm-stats li.is-gift::after {
-  background: var(--live);
-}
-.cm-stats li.is-court::after {
-  background: var(--kind);
-}
-.cm-stats b {
-  font-weight: 900;
-  font-style: italic;
-  font-size: clamp(1.5rem, 5.8vw, 2.15rem);
-  line-height: 1;
-  letter-spacing: -0.035em;
-  white-space: nowrap;
-  color: var(--text);
-}
-.cm-stats span {
-  font-size: 0.8rem;
-  font-weight: 600;
-  line-height: 1.3;
   color: var(--muted);
 }
 
@@ -3937,8 +3878,8 @@ a.win-band:focus-visible {
 }
 /* Court time a partner club gives: the first piece of every week, blue and
    striped (colour plus texture, so it never relies on colour alone). Where
-   gifts follow it, a 2px gap keeps the two pieces apart. The key sits under
-   the total (.cm-split, .cm-key). */
+   gifts follow it, a 2px gap keeps the two pieces apart. The note under the
+   bar names it. */
 .cm-fill--kind {
   background: repeating-linear-gradient(
     135deg,
@@ -3948,14 +3889,6 @@ a.win-band:focus-visible {
 }
 .cm-row.has-gifts .cm-fill--kind {
   margin-right: 2px;
-}
-.cm-hero .cm-split {
-  flex-basis: 100%;
-  margin-top: 0.45rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  line-height: 1.4;
-  color: var(--card-muted);
 }
 .cm-start {
   display: none;
@@ -4020,7 +3953,7 @@ a.win-band:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
-/* The next goal, shown locked until the road is funded. */
+/* The next goal: muted, and no bar until it has money. */
 .cm-row--next .cm-row-top b,
 .cm-row--next .cm-fig {
   color: var(--card-muted);
@@ -4028,20 +3961,12 @@ a.win-band:focus-visible {
 .cm-row--next .cm-fig {
   font-weight: 600;
 }
-.cm-track--locked {
-  background: repeating-linear-gradient(
-    90deg,
-    var(--track) 0 10px,
-    transparent 10px 16px
-  );
-}
 
 /* Symbols in the module (see "symbols" above). Restraint, because the card
    has to stay clean (Alec, Nov 6: "it's getting too messy"): one quiet
    symbol per row for what the part is, the same three as the fund's costs
-   (training, travel, a tournament); a checkered flag where each bar ends,
-   yellow once the bar gets there; a lock where the next goal waits; and the
-   road cut into its six seats, with the six athletes' faces beside it. */
+   (training, travel, a tournament); each bar ends in its percentage; and the
+   road is cut into its six seats, with the six athletes' faces beside it. */
 .cm-row-top b {
   display: inline-flex;
   align-items: center;
@@ -4067,14 +3992,21 @@ a.win-band:focus-visible {
   flex: 1 1 auto;
   margin-top: 0;
 }
-.cm-flag,
-.cm-lock {
-  width: 0.95rem;
-  height: 0.95rem;
-  color: color-mix(in srgb, var(--card-text) 45%, transparent);
+/* How much of the part is covered, as plain text where the bar ends: one
+   number, one place, in the green that means money in (Alec, Nov 7: "move
+   the percentage green box to a better location"). Its width is kept before
+   the numbers arrive, so the bars never jump. */
+.cm-pct {
+  flex: 0 0 2.6rem;
+  text-align: right;
+  font-size: 0.9rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--good-ink);
 }
-.cm-row.is-done .cm-flag {
-  color: var(--yellow);
+.cm-pct[hidden] {
+  display: block;
+  visibility: hidden;
 }
 /* The road is six seats: five hairline gaps in the bar, one per $3,500. */
 .cm-track--seats::after {
@@ -4129,66 +4061,6 @@ a.win-band:focus-visible {
   box-shadow:
     0 0 0 2px var(--card),
     0 0 0 3.5px var(--live);
-}
-/* The key under the total: a chip in each data colour with its symbol. */
-.cm-key {
-  display: inline-grid;
-  place-items: center;
-  width: 1.7em;
-  height: 1.2em;
-  margin: 0 0.4em 0 0.1em;
-  border-radius: 999px;
-  vertical-align: -0.25em;
-  background: var(--gift);
-  color: var(--cream);
-}
-.cm-key--kind {
-  background: repeating-linear-gradient(
-    135deg,
-    var(--kind) 0 3px,
-    color-mix(in srgb, var(--kind) 72%, #000) 3px 6px
-  );
-}
-.cm-key .sym {
-  width: 0.85em;
-  height: 0.85em;
-}
-/* The percentage badge carries a ring: the share, drawn. */
-.ring {
-  flex: 0 0 auto;
-  width: 0.95rem;
-  height: 0.95rem;
-  margin: 0 0.25rem 0 -0.1rem;
-  transform: rotate(-90deg);
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2.6;
-}
-.ring .ring-bg {
-  opacity: 0.28;
-}
-/* Each record tile names its kind with a symbol in its mark's colour. */
-.cm-stats span {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.35rem;
-}
-.cm-stats span .sym {
-  width: 0.95rem;
-  height: 0.95rem;
-  margin-top: 0.05rem;
-  color: var(--win);
-}
-/* On the light tiles the bright yellow would vanish, so the medal takes the
-   site's gold ink; green and blue read on both. */
-.cm[data-theme="light"] .cm-stats span .sym {
-  color: var(--gold-ink);
-}
-.cm .cm-stats li.is-gift span .sym {
-  color: var(--live);
-}
-.cm .cm-stats li.is-court span .sym {
-  color: var(--kind);
 }
 
 /* What a gift covers: monthly first, every line a verified unit cost. */

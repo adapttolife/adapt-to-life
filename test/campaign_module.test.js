@@ -194,22 +194,27 @@ test("the math lives on /numbers, and every module links to it", () => {
       );
     assert.ok(mod.includes("maybe the country"), `${f}: the ambition`);
   }
-  // The record tiles carry the practice-night size where they appear, marked
-  // blue as court time (the money tile green, the wins yellow).
-  const home = read("public/index.html");
-  assert.ok(
-    home.includes(
-      '<li class="is-court"><b>10&ndash;15</b><span><i class="sym sym--courts" aria-hidden="true"></i>athletes, every week</span></li>',
-    ),
-  );
-  assert.ok(home.includes('<li class="is-gift"><b>$3,004</b>'));
-  // Every record tile names its kind with a symbol, so colour never works alone.
-  const stats = home.slice(
-    home.indexOf('<ul class="cm-stats"'),
-    home.indexOf("</ul>", home.indexOf('<ul class="cm-stats"')),
-  );
-  assert.equal((stats.match(/<li\b/g) || []).length, 6);
-  assert.equal((stats.match(/class="sym sym--/g) || []).length, 6);
+  // Alec, Nov 7: "all of this is too messy... Where to look and what to care
+  // about". The card keeps the total, two bars, the next goal and the gift:
+  // no record tiles (the record lives on the crew section and /pickleball),
+  // no gifts-plus-court-time line, and each percentage where its bar ends,
+  // never in a badge on the title line.
+  for (const { f, html } of carriers()) {
+    const mod = html.slice(
+      html.indexOf('<section class="cm"'),
+      html.indexOf("<!-- /campaign-module -->"),
+    );
+    assert.ok(!mod.includes("cm-stats"), `${f}: the record tiles are back`);
+    assert.ok(!mod.includes("data-cm-split"), `${f}: the gifts line is back`);
+    assert.ok(!/cm-badge[^"]*" data-part-pct/.test(mod), `${f}: a percentage badge`);
+    for (const k of ["year", "send-6"])
+      assert.ok(
+        new RegExp(
+          `</div><span class="cm-pct" data-part-pct="${k}" hidden></span></div>`,
+        ).test(mod),
+        `${f}: the ${k} percentage ends its bar`,
+      );
+  }
 });
 
 // Alec, Nov 7 2026: "don't say first priority"; the six seats are the six on

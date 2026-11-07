@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=0e4777c5">
+<link rel="stylesheet" href="/css/site.css?v=655ba0d3">
 <link rel="stylesheet" href="/css/page-header.css?v=beb972ef">
 <!-- band:vars --><style data-band-vars>:root{--pg-band-wide:url('/images/hero/panels/pg-band-2-wide.9ac73821.webp');--pg-band-tall:url('/images/hero/panels/pg-band-2-tall.f9278c2d.webp');--pg-give-wide:url('/images/hero/panels/pg-give-wide.b46beed5.webp');--pg-give-tall:url('/images/hero/panels/pg-give-tall.5cece3a5.webp');}</style>
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
@@ -91,19 +91,14 @@
   .nb-prog-fig{ margin-left:auto; font-weight:800; font-variant-numeric:tabular-nums; }
   .nb-track{ position:relative; display:flex; margin-top:0.5rem; height:10px; border-radius:999px; background:rgba(59,59,70,0.1); }
   .nb-track--lg{ height:14px; margin-top:0.8rem; background:rgba(249,247,242,0.14); }
-  .nb-track--locked{ margin-top:1rem; background:repeating-linear-gradient(90deg, rgba(59,59,70,0.14) 0 10px, transparent 10px 16px); }
   /* Symbols (site.css, "symbols"): the cost each part pays for in the house
      tile, a checkered flag where each bar ends (yellow once it gets there), a
      lock where the next goal waits, and the road's six seats. */
   .nb-lane{ display:flex; align-items:center; gap:0.55rem; margin-top:0.5rem; }
   .nb-lane .nb-track{ flex:1 1 auto; margin-top:0; }
-  .nb-total .nb-lane{ margin-top:0.8rem; }
-  .nb-flag, .nb-lock{ width:1rem; height:1rem; color:rgba(59,59,70,0.45); }
-  .nb-total .nb-flag{ color:rgba(249,247,242,0.5); }
-  .is-done .nb-flag{ color:var(--gold-ink); }
-  .nb-total .is-done .nb-flag{ color:var(--yellow); }
-  .nb-part--next .nb-lane{ margin-top:1rem; }
-  .nb-part--next .nb-track--locked{ margin-top:0; }
+  /* How much is covered, as plain text where the bar ends (the module's
+     rule): one number, one place, in the green of money in. */
+  .nb-pct{ flex:0 0 2.8rem; text-align:right; font-size:0.92rem; font-weight:800; font-variant-numeric:tabular-nums; color:var(--good-ink); }
   .nb-track--seats::after{ content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none; background:repeating-linear-gradient(90deg, transparent 0 calc(100% / 6 - 2px), var(--paper) calc(100% / 6 - 2px) calc(100% / 6)); }
   /* The six seats: the athletes from the crew page, by name. */
   .nb-crew{ list-style:none; margin:1rem 0 0; padding:0.9rem 0 0; border-top:1px dashed rgba(59,59,70,0.18); display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:0.5rem; text-align:center; }
@@ -115,8 +110,6 @@
   .nb-key{ display:inline-grid; place-items:center; width:1.7em; height:1.2em; margin-right:0.45em; border-radius:999px; vertical-align:-0.25em; background:var(--good); color:var(--cream); }
   .nb-key--kind{ background:repeating-linear-gradient(135deg, #3987e5 0 3px, color-mix(in srgb, #3987e5 72%, #000) 3px 6px); }
   .nb-key .sym{ width:0.85em; height:0.85em; }
-  .nb-legend .nb-left{ display:inline-flex; align-items:center; gap:0.4em; }
-  .nb-legend .nb-left .sym{ width:1.05em; height:1.05em; color:rgba(249,247,242,0.7); }
   .nb-fill{ display:block; height:100%; width:0; border-radius:999px; background:var(--good); transition:width 1.6s var(--ease); }
   .nb-fill--kind{ background:repeating-linear-gradient(135deg, var(--info) 0 3px, color-mix(in srgb, var(--info) 55%, transparent) 3px 6px); }
   .nb-total .nb-fill--kind{ background:repeating-linear-gradient(135deg, #3987e5 0 3px, color-mix(in srgb, #3987e5 55%, transparent) 3px 6px); }
@@ -245,7 +238,7 @@ fill="currentColor" stroke="none">
           <div class="nb-part">
           <div class="nb-part-top"><span class="nb-n">01</span><h3>Every week</h3><b class="nb-sum">$27,180<small> a year</small></b></div>
           <p class="nb-detail">Court time and memberships, so athletes can play every week and train to compete. Every new gift starts here.</p>
-          <div class="nb-prog" data-nb-row="year" hidden><div class="nb-prog-top"><span class="nb-prog-k">Covered so far</span><span class="tag tag--good" data-nb-pct="year"></span><span class="nb-prog-fig" data-nb-fig="year"></span></div><div class="nb-lane"><div class="nb-track"><span class="nb-fill nb-fill--kind" data-nb-kind="year"></span><span class="nb-fill" data-nb-fill="year"></span></div><i class="sym sym--finished nb-flag" aria-hidden="true"></i></div></div>
+          <div class="nb-prog" data-nb-row="year" hidden><div class="nb-prog-top"><span class="nb-prog-k">Covered so far</span><span class="nb-prog-fig" data-nb-fig="year"></span></div><div class="nb-lane"><div class="nb-track"><span class="nb-fill nb-fill--kind" data-nb-kind="year"></span><span class="nb-fill" data-nb-fill="year"></span></div><span class="nb-pct" data-nb-pct="year"></span></div></div>
           <ul class="nb-lines" aria-label="How we got $27,180">
             <li><span class="nb-k">Court time at ACE</span><span class="nb-calc">52 nights &times; $225</span><b>$11,700</b><small>A night is 10 to 15 athletes. A drop-in at ACE is $15, so a night for up to 15 is $225.</small></li>
             <li><span class="nb-k">Memberships</span><span class="nb-calc">10 athletes &times; $1,548</span><b>$15,480</b><small>A membership is $129 a month, or $1,548 a year, for unlimited sessions. It takes many sessions a week to compete in tournaments and build a ranking.</small></li>
@@ -257,7 +250,7 @@ fill="currentColor" stroke="none">
           <div class="nb-part">
           <div class="nb-part-top"><span class="nb-n">02</span><h3>The Road to the US Open</h3><b class="nb-sum">$21,000</b></div>
           <p class="nb-detail">Tournaments through the year to build rankings, then Naples. The US Open picks players by lottery, so nothing is guaranteed. Money raised for the road earlier, the popcorn drive included, stays on the road. <a href="/send-6">See the road</a></p>
-          <div class="nb-prog" data-nb-row="send-6" hidden><div class="nb-prog-top"><span class="nb-prog-k">Covered so far</span><span class="tag tag--good" data-nb-pct="send-6"></span><span class="nb-prog-fig" data-nb-fig="send-6"></span></div><div class="nb-lane"><div class="nb-track nb-track--seats"><span class="nb-fill nb-fill--kind" data-nb-kind="send-6"></span><span class="nb-fill" data-nb-fill="send-6"></span></div><i class="sym sym--finished nb-flag" aria-hidden="true"></i></div></div>
+          <div class="nb-prog" data-nb-row="send-6" hidden><div class="nb-prog-top"><span class="nb-prog-k">Covered so far</span><span class="nb-prog-fig" data-nb-fig="send-6"></span></div><div class="nb-lane"><div class="nb-track nb-track--seats"><span class="nb-fill nb-fill--kind" data-nb-kind="send-6"></span><span class="nb-fill" data-nb-fill="send-6"></span></div><span class="nb-pct" data-nb-pct="send-6"></span></div></div>
           <ul class="nb-lines" aria-label="How we got $21,000">
             <li><span class="nb-k">The US Open</span><span class="nb-calc">6 athletes &times; about $3,500</span><b>$21,000</b><small>What it has cost each athlete the last couple of years: entry fees, travel and an accessible room in Naples.</small></li>
           </ul>
@@ -266,14 +259,13 @@ fill="currentColor" stroke="none">
         </li>
         <li class="nb-stop nb-stop--finish">
           <span class="nb-station nb-station--finish" aria-hidden="true"><i class="sym sym--finished nb-station-flag" aria-hidden="true"></i></span>
-          <div class="nb-total"><p class="nb-total-top"><span>Every week + the road</span><b>$48,180</b></p><div class="nb-total-prog" data-nb-total hidden><div class="nb-lane"><div class="nb-track nb-track--lg"><span class="nb-fill nb-fill--kind" data-nb-kind="total"></span><span class="nb-fill" data-nb-fill="total"></span></div><i class="sym sym--finished nb-flag" aria-hidden="true"></i></div><p class="nb-legend" data-nb-legend></p></div></div>
+          <div class="nb-total"><p class="nb-total-top"><span>Every week + the road</span><b>$48,180</b></p><div class="nb-total-prog" data-nb-total hidden><div class="nb-track nb-track--lg"><span class="nb-fill nb-fill--kind" data-nb-kind="total"></span><span class="nb-fill" data-nb-fill="total"></span></div><p class="nb-legend" data-nb-legend></p></div></div>
         </li>
         <li class="nb-stop nb-stop--next">
           <span class="nb-station nb-station--next" aria-hidden="true"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="tournament" data-style="duotone"><g fill="currentColor"><path d="M200 48v63.1c0 39.7-31.75 72.6-71.45 72.9A72 72 0 0 1 56 112V48Z" opacity=".2"/><path d="M232 64h-24V48a8 8 0 0 0-8-8H56a8 8 0 0 0-8 8v16H24A16 16 0 0 0 8 80v16a40 40 0 0 0 40 40h3.65A80.13 80.13 0 0 0 120 191.61V216H96a8 8 0 0 0 0 16h64a8 8 0 0 0 0-16h-24v-24.42c31.94-3.23 58.44-25.64 68.08-55.58H208a40 40 0 0 0 40-40V80a16 16 0 0 0-16-16M48 120a24 24 0 0 1-24-24V80h24v32q0 4 .39 8Zm144-8.9c0 35.52-29 64.64-64 64.9a64 64 0 0 1-64-64V56h128ZM232 96a24 24 0 0 1-24 24h-.5a82 82 0 0 0 .5-8.9V80h24Z"/></g></svg></span>
           <div class="nb-part nb-part--next">
           <div class="nb-part-top"><span class="nb-n">03</span><h3>The Chicago Classic</h3><span class="nb-badge nb-badge--info"><i class="sym sym--goal" aria-hidden="true"></i>Next goal</span><b class="nb-sum nb-sum--tbd">Date to come</b></div>
           <p class="nb-detail">Our goal: free registration, transportation and hotels for every athlete. It joins the goal once it has a date and a budget. <a href="/chicago-classic">See the Classic</a></p>
-          <div class="nb-lane"><i class="sym sym--locked nb-lock" aria-hidden="true"></i><div class="nb-track nb-track--locked" aria-hidden="true"></div></div>
           </div>
         </li>
       </ol>
@@ -322,7 +314,7 @@ fill="currentColor" stroke="none">
   </section>
 
   <!-- WHERE IT STANDS — the live module closes the page -->
-  <!-- campaign-module {"id":"campaign","theme":"dark","athlete":"robby","stats":false,"numbers":false} -->
+  <!-- campaign-module {"id":"campaign","theme":"dark","athlete":"robby","numbers":false} -->
   <section class="cm" id="campaign" data-cm data-theme="dark" aria-labelledby="campaign-title">
       <div class="cm-bg" aria-hidden="true" style="--ghost:url(/images/pickleball/ghost/robby-gray.webp);--ghost-ar:462/640"></div>
       <div class="cm-wrap">
@@ -332,21 +324,20 @@ fill="currentColor" stroke="none">
           <p class="cm-lede">Building the best wheelchair pickleball in the Chicago area, maybe the country.</p>
         </div>
         <div class="cm-card">
-          <p class="cm-hero"><b data-cm-total>$48,180</b><span data-cm-sub>our goal for the year ahead</span><span class="cm-split" data-cm-split hidden></span></p>
+          <p class="cm-hero"><b data-cm-total>$48,180</b><span data-cm-sub>our goal for the year ahead</span></p>
           <div class="cm-rows">
             <div class="cm-row" data-part-row="year">
-              <div class="cm-row-top"><b><i class="sym sym--training" aria-hidden="true"></i>Every week</b><span class="cm-badge cm-badge--good" data-part-pct="year" hidden></span><span class="cm-fig" data-part-fig="year">$27,180 a year</span></div>
-              <div class="cm-lane"><div class="cm-track"><span class="cm-fill cm-fill--kind" data-part-kind="year"></span><span class="cm-fill" data-part-fill="year"></span><span class="cm-start" aria-hidden="true"></span></div><i class="sym sym--finished cm-flag" aria-hidden="true"></i></div>
+              <div class="cm-row-top"><b><i class="sym sym--training" aria-hidden="true"></i>Every week</b><span class="cm-fig" data-part-fig="year">$27,180 a year</span></div>
+              <div class="cm-lane"><div class="cm-track"><span class="cm-fill cm-fill--kind" data-part-kind="year"></span><span class="cm-fill" data-part-fill="year"></span><span class="cm-start" aria-hidden="true"></span></div><span class="cm-pct" data-part-pct="year" hidden></span></div>
               <p class="cm-note" data-part-note="year">Court time and memberships. Every new gift starts here.</p>
             </div>
             <div class="cm-row" data-part-row="send-6">
-              <div class="cm-row-top"><b><i class="sym sym--travel" aria-hidden="true"></i>The Road to the US Open</b><span class="cm-badge cm-badge--good" data-part-pct="send-6" hidden></span><span class="cm-fig" data-part-fig="send-6">$21,000</span></div>
-              <div class="cm-lane"><div class="cm-track cm-track--seats"><span class="cm-fill cm-fill--action" data-part-fill="send-6"></span><span class="cm-start" aria-hidden="true"></span></div><i class="sym sym--finished cm-flag" aria-hidden="true"></i></div>
+              <div class="cm-row-top"><b><i class="sym sym--travel" aria-hidden="true"></i>The Road to the US Open</b><span class="cm-fig" data-part-fig="send-6">$21,000</span></div>
+              <div class="cm-lane"><div class="cm-track cm-track--seats"><span class="cm-fill cm-fill--action" data-part-fill="send-6"></span><span class="cm-start" aria-hidden="true"></span></div><span class="cm-pct" data-part-pct="send-6" hidden></span></div>
               <p class="cm-note cm-note--crew"><span class="cm-faces" role="img" aria-label="The six seats: Juan, Brian, Bob, Robby, Ken and Amanda"><i class="face" style="--i:0" title="Juan"></i><i class="face" style="--i:1" title="Brian"></i><i class="face" style="--i:2" title="Bob"></i><i class="face" style="--i:3" title="Robby"></i><i class="face" style="--i:4" title="Ken"></i><i class="face" style="--i:5" title="Amanda"></i></span><span>Six athletes, about $3,500 each. <a href="/send-6">See the road</a></span></p>
             </div>
             <div class="cm-row cm-row--next">
               <div class="cm-row-top"><b><i class="sym sym--tournament" aria-hidden="true"></i>The Chicago Classic</b><span class="cm-badge cm-badge--info"><i class="sym sym--goal" aria-hidden="true"></i>Next goal</span><span class="cm-fig">Date to come</span></div>
-              <div class="cm-lane"><i class="sym sym--locked cm-lock" aria-hidden="true"></i><div class="cm-track cm-track--locked" aria-hidden="true"></div></div>
               <p class="cm-note">Our goal: free registration, transportation and hotels for every athlete.</p>
             </div>
           </div>
@@ -511,7 +502,7 @@ fill="currentColor" stroke="none">
     }
   })();
 </script>
-<script src="/js/campaigns.js?v=9139a3e8"></script>
+<script src="/js/campaigns.js?v=48edb7fa"></script>
 <script>window.ATLCampaigns.module();</script>
 <script src="/js/subscribe.js?v=7efaf550" defer></script>
 <script src="/js/turnstile-lazy.js?v=12e9b811" defer></script>

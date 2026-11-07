@@ -23,8 +23,6 @@
 //            null for none.
 //   give     false drops the monthly/one-time picker (the donate page has the
 //            real form right there). Default true.
-//   stats    false drops the six wins, for a page that already leads with
-//            the same record (the crew page). Default true.
 //   cta      {"href","label"} for the button. Default: Donate, carrying the
 //            picker's default gift into the Givebutter form.
 //   numbers  false drops the "See the numbers breakdown" button (on /numbers,
@@ -193,8 +191,8 @@ export function renderNumbers() {
         `<b class="nb-sum">${usd(p.goal)}${p.key === "year" ? "<small> a year</small>" : ""}</b></div>`,
       `    <p class="nb-detail">${p.detail || ""}${link}</p>`,
       `    <div class="nb-prog" data-nb-row="${p.key}" hidden>` +
-        `<div class="nb-prog-top"><span class="nb-prog-k">Covered so far</span><span class="tag tag--good" data-nb-pct="${p.key}"></span><span class="nb-prog-fig" data-nb-fig="${p.key}"></span></div>` +
-        `<div class="nb-lane"><div class="nb-track${road ? " nb-track--seats" : ""}"><span class="nb-fill nb-fill--kind" data-nb-kind="${p.key}"></span><span class="nb-fill" data-nb-fill="${p.key}"></span></div>${flag}</div>` +
+        `<div class="nb-prog-top"><span class="nb-prog-k">Covered so far</span><span class="nb-prog-fig" data-nb-fig="${p.key}"></span></div>` +
+        `<div class="nb-lane"><div class="nb-track${road ? " nb-track--seats" : ""}"><span class="nb-fill nb-fill--kind" data-nb-kind="${p.key}"></span><span class="nb-fill" data-nb-fill="${p.key}"></span></div><span class="nb-pct" data-nb-pct="${p.key}"></span></div>` +
         `</div>`,
       `    <ul class="nb-lines" aria-label="How we got ${usd(p.goal)}">`,
       mathLines(p),
@@ -209,7 +207,7 @@ export function renderNumbers() {
       `  <li class="nb-stop nb-stop--finish">`,
       `    <span class="nb-station nb-station--finish" aria-hidden="true">${flag.replace("nb-flag", "nb-station-flag")}</span>`,
       `    <div class="nb-total"><p class="nb-total-top"><span>${CAMPAIGN.parts.map((p) => esc(p.label === "The Road to the US Open" ? "the road" : p.label)).join(" + ")}</span><b>${usd(CAMPAIGN.goal)}</b></p>` +
-        `<div class="nb-total-prog" data-nb-total hidden><div class="nb-lane"><div class="nb-track nb-track--lg"><span class="nb-fill nb-fill--kind" data-nb-kind="total"></span><span class="nb-fill" data-nb-fill="total"></span></div>${flag}</div><p class="nb-legend" data-nb-legend></p></div></div>`,
+        `<div class="nb-total-prog" data-nb-total hidden><div class="nb-track nb-track--lg"><span class="nb-fill nb-fill--kind" data-nb-kind="total"></span><span class="nb-fill" data-nb-fill="total"></span></div><p class="nb-legend" data-nb-legend></p></div></div>`,
       `  </li>`,
     ].join("\n"),
   );
@@ -222,7 +220,6 @@ export function renderNumbers() {
         `    <div class="nb-part nb-part--next">`,
         `    <div class="nb-part-top"><span class="nb-n">${n2(CAMPAIGN.parts.length)}</span><h3>${esc(nx.label.replace(/^the /, "The "))}</h3><span class="nb-badge nb-badge--info"><i class="sym sym--goal" aria-hidden="true"></i>Next goal</span><b class="nb-sum nb-sum--tbd">Date to come</b></div>`,
         `    <p class="nb-detail">${nx.detail || ""}${nx.page ? ` <a href="${nx.page}">See the Classic</a>` : ""}</p>`,
-        `    <div class="nb-lane"><i class="sym sym--locked nb-lock" aria-hidden="true"></i><div class="nb-track nb-track--locked" aria-hidden="true"></div></div>`,
         `    </div>`,
         `  </li>`,
       ].join("\n"),
@@ -266,9 +263,6 @@ export function render(opts, where = "page") {
     html = html.replace('class="cm-bg"', 'class="cm-bg cm-bg--true"');
   if (!o.give) html = html.replace(/\n<!--give-->[\s\S]*?<!--\/give-->/, "");
   else html = html.replace(/\n<!--\/?give-->/g, "");
-  if (o.stats === false)
-    html = html.replace(/\n<!--stats-->[\s\S]*?<!--\/stats-->/, "");
-  else html = html.replace(/\n<!--\/?stats-->/g, "");
   // numbers: false drops the button to the breakdown (on /numbers itself).
   if (o.numbers === false)
     html = html.replace(/\n<!--numbers-->[\s\S]*?<!--\/numbers-->/, "");

@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=0e4777c5">
+<link rel="stylesheet" href="/css/site.css?v=655ba0d3">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <style>
   /* ==========================================================================
@@ -47,13 +47,8 @@
   .s6-meter-n{ font-family:var(--font-display); font-weight:900; font-style:italic; letter-spacing:-0.03em; font-size:clamp(2.3rem,5.6vw,3.3rem); line-height:1; color:var(--cream); font-variant-numeric:tabular-nums; }
   .s6-meter-of{ font-size:0.98rem; color:var(--cream-mute); }
   .s6-meter-track{ position:relative; display:block; height:12px; border-radius:999px; background:rgba(249,247,242,0.13); margin-top:1rem; overflow:hidden; }
-  /* Symbols (site.css): the bar is six seats, one athlete each (five hairline
-     gaps), and it ends at a checkered flag that turns yellow at the goal. */
+  /* The bar is six seats, one athlete each: five hairline gaps. */
   .s6-meter-track::after{ content:""; position:absolute; inset:0; pointer-events:none; background:repeating-linear-gradient(90deg, transparent 0 calc(100% / 6 - 2px), var(--night) calc(100% / 6 - 2px) calc(100% / 6)); }
-  .s6-lane{ display:flex; align-items:center; gap:0.65rem; margin-top:1rem; }
-  .s6-lane .s6-meter-track{ flex:1 1 auto; margin-top:0; }
-  .s6-flag{ width:1.15rem; height:1.15rem; color:rgba(249,247,242,0.5); }
-  .s6-meter.is-done .s6-flag{ color:var(--yellow); }
   /* The site's data colours (site.css, supporting colours): the bar is green
      because it is gifts, and the figure turns yellow once it is money raised,
      the same win colour as the module's total. The goal alone stays cream. */
@@ -237,7 +232,7 @@ fill="currentColor" stroke="none">
         <span class="s6-meter-n" id="s6Raised">$21,000</span>
         <span class="s6-meter-of" id="s6Of">to go</span>
       </div>
-      <span class="s6-lane"><span class="s6-meter-track"><span class="s6-meter-fill" id="s6Fill"></span></span><i class="sym sym--finished s6-flag" aria-hidden="true"></i></span>
+      <span class="s6-meter-track"><span class="s6-meter-fill" id="s6Fill"></span></span>
     </div>
 
     <p class="prose reveal" id="campaign-terms" style="margin-top:1rem; color:var(--cream-mute);">Every gift goes to the Hustle &amp; Heart Fund for Chicago Pickleball: Wheelie Big Dills, every week first, then the road to the US Open. Money already raised for Send 6, including the popcorn drive, stays on the road. <a href="/promise#campaign-gifts" style="color:inherit;">How Giving Works</a>.</p>
@@ -490,7 +485,7 @@ fill="currentColor" stroke="none">
   })();
 </script>
 
-<script src="/js/campaigns.js?v=9139a3e8"></script>
+<script src="/js/campaigns.js?v=48edb7fa"></script>
 <script>
 (function(){
   var C = window.ATLCampaigns;

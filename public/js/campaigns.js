@@ -739,28 +739,6 @@
     k.appendChild(sym(kind ? "courts" : "giving"));
     return k;
   }
-  /* A percentage drawn as a ring, for the badge beside the number. */
-  function ring(pct) {
-    var ns = "http://www.w3.org/2000/svg";
-    var svg = document.createElementNS(ns, "svg");
-    svg.setAttribute("class", "ring");
-    svg.setAttribute("viewBox", "0 0 16 16");
-    svg.setAttribute("aria-hidden", "true");
-    [
-      ["ring-bg", 100],
-      ["ring-fg", Math.max(0, Math.min(100, pct))],
-    ].forEach(function (c) {
-      var e = document.createElementNS(ns, "circle");
-      e.setAttribute("class", c[0]);
-      e.setAttribute("cx", "8");
-      e.setAttribute("cy", "8");
-      e.setAttribute("r", "6");
-      e.setAttribute("pathLength", "100");
-      e.setAttribute("stroke-dasharray", c[1].toFixed(1) + " 100");
-      svg.appendChild(e);
-    });
-    return svg;
-  }
 
   function numbersBars() {
     // The six faces paint once their row is near view (site.css, .face).
@@ -784,10 +762,7 @@
           n.textContent = money(pr) + " of " + money(pg);
         });
         each(document, '[data-nb-pct="' + k + '"]', function (n) {
-          var pct = Math.round((pr / pg) * 100);
-          n.textContent = "";
-          n.appendChild(ring(pct));
-          n.appendChild(document.createTextNode(pct + "% covered"));
+          n.textContent = Math.round((pr / pg) * 100) + "%";
         });
 
         each(document, '[data-nb-kind="' + k + '"]', function (n) {
@@ -844,10 +819,7 @@
         }
         var left = document.createElement("span");
         left.className = "nb-left";
-        left.appendChild(sym("finished"));
-        left.appendChild(
-          document.createTextNode(money(Math.max(0, goal - gifts - kind)) + " to go"),
-        );
+        left.textContent = money(Math.max(0, goal - gifts - kind)) + " to go";
         n.appendChild(left);
       });
     }, "wbd");
@@ -882,21 +854,6 @@
           each(m, "[data-cm-sub]", function (n) {
             n.textContent =
               (kind ? "toward our " : "raised toward our ") + money(d.goal) + " goal";
-          });
-        if (kind)
-          each(m, "[data-cm-split]", function (n) {
-            n.textContent = "";
-            n.appendChild(key(false, "cm-key"));
-            n.appendChild(
-              document.createTextNode(money(d.raised) + " in gifts, plus "),
-            );
-            n.appendChild(key(true, "cm-key"));
-            n.appendChild(
-              document.createTextNode(
-                money(kind) + " in court time from a partner club",
-              ),
-            );
-            n.hidden = false;
           });
         each(m, "[data-cm-total]", function (n) {
           n.textContent = "$0";
@@ -934,10 +891,7 @@
           });
           each(m, '[data-part-pct="' + k + '"]', function (n) {
             if (!pr) return;
-            var pct = Math.round((pr / pg) * 100);
-            n.textContent = "";
-            n.appendChild(ring(pct));
-            n.appendChild(document.createTextNode(pct + "%"));
+            n.textContent = Math.round((pr / pg) * 100) + "%";
             n.hidden = false;
           });
           each(m, '[data-part-fill="' + k + '"]', function (n) {

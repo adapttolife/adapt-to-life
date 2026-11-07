@@ -67,7 +67,17 @@ test("the module states the goal from campaigns.json and never a $0", () => {
     );
     assert.ok(mod.includes(`data-cm-total>${usd(wbd.goal)}<`), f);
     assert.ok(!/>\$0</.test(mod), `${f} prints $0`);
-    assert.ok(mod.includes("EIN 41-3213344"), f);
+    // Under Donate, only what a donor needs at that moment (Alec, Nov 7): the
+    // EIN is in every footer and on /donate, and a donor count belongs on
+    // /numbers, where both kinds of supporter can be shown honestly.
+    assert.ok(
+      mod.includes(
+        '<p class="cm-trust"><span>Tax-deductible</span><span>Secure checkout by Givebutter</span></p>',
+      ),
+      `${f}: the line under Donate`,
+    );
+    assert.ok(!mod.includes("EIN"), `${f}: the EIN is back in the card`);
+    assert.ok(!/donors/i.test(mod), `${f}: a donor count is back in the card`);
     // /numbers shows every bar above its card, so its card leaves them out.
     if (f === "numbers.html") {
       assert.ok(!mod.includes('class="cm-rows"'), "the bars repeat on /numbers");
@@ -302,4 +312,19 @@ test("the Donate link starts at the picker's default amount", () => {
   const email = read("src/newsletter-series.js");
   for (const m of email.matchAll(/\/donate\?amount=(\d+)/g))
     assert.equal(Number(m[1]), def, `an email asks for $${m[1]}`);
+});
+
+// /numbers says who gave, honestly: Givebutter's online donors (live) and the
+// popcorn drive's supporters (campaigns.json), side by side, never summed.
+test("/numbers names who gave, without counting anyone twice", () => {
+  const data = JSON.parse(read("public/data/campaigns.json"));
+  const popcorn = data.drives.find((d) => d.slug === "popcorn-2026-08");
+  assert.equal(popcorn.supporters, 83);
+  const nums = read("public/numbers.html");
+  assert.ok(
+    nums.includes(
+      '<p class="nb-people" data-nb-people hidden>The gifts came from <span data-nb-donors></span> online and 83 popcorn supporters.</p>',
+    ),
+  );
+  assert.ok(read("public/js/campaigns.js").includes('"[data-nb-people]"'));
 });

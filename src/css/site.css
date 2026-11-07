@@ -4093,12 +4093,22 @@ a.win-band:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
+/* The line under the amounts says what the Donate button will do, so it sits
+   close to it. Two lines are kept for it wherever a gift line can wrap (a
+   phone, and the narrow two-column card from 1000 to 1099px), so switching
+   amounts never moves the button; where every line fits on one, one. Measured
+   on all seven gift lines, Nov 7 2026. */
 .cm-impact {
   margin: 0.75rem 0 0;
   min-height: 2.7em;
   font-weight: 700;
   font-size: 0.95rem;
   line-height: 1.35;
+}
+@media (min-width: 560px) and (max-width: 999px), (min-width: 1100px) {
+  .cm-impact {
+    min-height: 1.35em;
+  }
 }
 
 /* The button: the site's pressable button, full width in the card. */

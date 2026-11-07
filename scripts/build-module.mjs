@@ -133,6 +133,16 @@ const flag = `<i class="sym sym--finished nb-flag" aria-hidden="true"></i>`;
 // in campaigns.json and pictured by scripts/build-seats.mjs. The road is one
 // pool, so a seat never shows as paid before the others: all six rise together.
 const ROAD = CAMPAIGN.parts.find((p) => p.key === "send-6");
+// Who gave, for /numbers: the drives that count their supporters (Double
+// Good does). Givebutter's online donors arrive live; the two stay apart.
+const DRIVES = JSON.parse(
+  readFileSync(join(PUB, "data/campaigns.json"), "utf8"),
+).drives;
+const COUNTED = DRIVES.filter((d) => typeof d.supporters === "number");
+const SUPPORTERS = COUNTED.reduce((n, d) => n + d.supporters, 0);
+const SUPPORTER_LABEL = COUNTED.every((d) => d.slug.startsWith("popcorn"))
+  ? "popcorn supporters"
+  : "supporters of our drives";
 const SEATS = (ROAD && ROAD.seats) || [];
 const roadMath = ROAD && (ROAD.math || [])[0];
 if (roadMath && SEATS.length !== roadMath.qty)
@@ -210,7 +220,11 @@ export function renderNumbers() {
       `  <li class="nb-stop nb-stop--finish">`,
       `    <span class="nb-station nb-station--finish" aria-hidden="true">${flag.replace("nb-flag", "nb-station-flag")}</span>`,
       `    <div class="nb-total"><p class="nb-total-top"><span>${CAMPAIGN.parts.map((p) => esc(p.label === "The Road to the US Open" ? "the road" : p.label)).join(" + ")}</span><b>${usd(CAMPAIGN.goal)}</b></p>` +
-        `<div class="nb-total-prog" data-nb-total hidden><div class="nb-track nb-track--lg"><span class="nb-fill nb-fill--kind" data-nb-kind="total"></span><span class="nb-fill" data-nb-fill="total"></span></div><p class="nb-legend" data-nb-legend></p></div></div>`,
+        `<div class="nb-total-prog" data-nb-total hidden><div class="nb-track nb-track--lg"><span class="nb-fill nb-fill--kind" data-nb-kind="total"></span><span class="nb-fill" data-nb-fill="total"></span></div><p class="nb-legend" data-nb-legend></p>` +
+        (SUPPORTERS
+          ? `<p class="nb-people" data-nb-people hidden>The gifts came from <span data-nb-donors></span> online and ${SUPPORTERS} ${SUPPORTER_LABEL}.</p>`
+          : "") +
+        `</div></div>`,
       `  </li>`,
     ].join("\n"),
   );

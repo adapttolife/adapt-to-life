@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=b64be42f">
+<link rel="stylesheet" href="/css/site.css?v=f3c06679">
 <link rel="stylesheet" href="/css/page-header.css?v=beb972ef">
 <!-- band:vars --><style data-band-vars>:root{--pg-band-wide:url('/images/hero/panels/pg-band-2-wide.9ac73821.webp');--pg-band-tall:url('/images/hero/panels/pg-band-2-tall.f9278c2d.webp');--pg-give-wide:url('/images/hero/panels/pg-give-wide.b46beed5.webp');--pg-give-tall:url('/images/hero/panels/pg-give-tall.5cece3a5.webp');}</style>
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
@@ -118,6 +118,7 @@
   /* Secured money is yellow, the same win colour as the module's total. */
   .nb-legend .nb-so{ font-family:var(--font-display); font-style:italic; font-weight:900; font-size:1.3rem; letter-spacing:-0.02em; color:var(--yellow); }
   .nb-legend .nb-left{ margin-left:auto; color:var(--cream); font-weight:800; }
+  .nb-people{ margin:0.6rem 0 0; font-size:0.88rem; line-height:1.45; color:#cfc9bd; }
   @media (prefers-reduced-motion: reduce){ .nb-fill{ transition:none; } }
   .nb-total b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(1.8rem,4vw,2.4rem); letter-spacing:-0.03em; font-variant-numeric:tabular-nums; color:#ff5c39; }
   .nb-foot{ max-width:52rem; margin:1.2rem 0 0; color:var(--ink-soft); line-height:1.5; }
@@ -259,7 +260,7 @@ fill="currentColor" stroke="none">
         </li>
         <li class="nb-stop nb-stop--finish">
           <span class="nb-station nb-station--finish" aria-hidden="true"><i class="sym sym--finished nb-station-flag" aria-hidden="true"></i></span>
-          <div class="nb-total"><p class="nb-total-top"><span>Every week + the road</span><b>$48,180</b></p><div class="nb-total-prog" data-nb-total hidden><div class="nb-track nb-track--lg"><span class="nb-fill nb-fill--kind" data-nb-kind="total"></span><span class="nb-fill" data-nb-fill="total"></span></div><p class="nb-legend" data-nb-legend></p></div></div>
+          <div class="nb-total"><p class="nb-total-top"><span>Every week + the road</span><b>$48,180</b></p><div class="nb-total-prog" data-nb-total hidden><div class="nb-track nb-track--lg"><span class="nb-fill nb-fill--kind" data-nb-kind="total"></span><span class="nb-fill" data-nb-fill="total"></span></div><p class="nb-legend" data-nb-legend></p><p class="nb-people" data-nb-people hidden>The gifts came from <span data-nb-donors></span> online and 83 popcorn supporters.</p></div></div>
         </li>
         <li class="nb-stop nb-stop--next">
           <span class="nb-station nb-station--next" aria-hidden="true"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="tournament" data-style="duotone"><g fill="currentColor"><path d="M200 48v63.1c0 39.7-31.75 72.6-71.45 72.9A72 72 0 0 1 56 112V48Z" opacity=".2"/><path d="M232 64h-24V48a8 8 0 0 0-8-8H56a8 8 0 0 0-8 8v16H24A16 16 0 0 0 8 80v16a40 40 0 0 0 40 40h3.65A80.13 80.13 0 0 0 120 191.61V216H96a8 8 0 0 0 0 16h64a8 8 0 0 0 0-16h-24v-24.42c31.94-3.23 58.44-25.64 68.08-55.58H208a40 40 0 0 0 40-40V80a16 16 0 0 0-16-16M48 120a24 24 0 0 1-24-24V80h24v32q0 4 .39 8Zm144-8.9c0 35.52-29 64.64-64 64.9a64 64 0 0 1-64-64V56h128ZM232 96a24 24 0 0 1-24 24h-.5a82 82 0 0 0 .5-8.9V80h24Z"/></g></svg></span>
@@ -338,7 +339,7 @@ fill="currentColor" stroke="none">
             <p class="cm-impact" data-impact aria-live="polite">$129 a month: unlimited sessions for one athlete to compete.</p>
           </div>
           <a class="cm-btn btn" href="/donate?amount=129&amp;frequency=monthly" data-give-link>Donate</a>
-          <p class="cm-trust"><span data-donors hidden></span><span>Tax-deductible</span><span>501(c)(3) &middot; EIN 41-3213344</span><span>Secure checkout by Givebutter</span></p>
+          <p class="cm-trust"><span>Tax-deductible</span><span>Secure checkout by Givebutter</span></p>
         </div>
       </div>
     </section>
@@ -486,7 +487,7 @@ fill="currentColor" stroke="none">
     }
   })();
 </script>
-<script src="/js/campaigns.js?v=c0e8b72e"></script>
+<script src="/js/campaigns.js?v=5f1e3af5"></script>
 <script>window.ATLCampaigns.module();</script>
 <script src="/js/subscribe.js?v=7efaf550" defer></script>
 <script src="/js/turnstile-lazy.js?v=12e9b811" defer></script>

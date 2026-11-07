@@ -799,6 +799,16 @@
           n.style.width = pctW(gifts, goal);
         });
       });
+      // Who gave: Givebutter's donors online, and the popcorn drive's
+      // supporters (stamped from campaigns.json), side by side and never
+      // added up, because some people did both.
+      if (d.donors)
+        each(document, "[data-nb-people]", function (n) {
+          each(n, "[data-nb-donors]", function (x) {
+            x.textContent = d.donors + (d.donors === 1 ? " donor" : " donors");
+          });
+          n.hidden = false;
+        });
       each(document, "[data-nb-legend]", function (n) {
         n.textContent = "";
         var so = document.createElement("span");
@@ -842,11 +852,6 @@
       if (!d || !d.raised) return;
       var parts = d.parts || {};
       Array.prototype.forEach.call(mods, function (m) {
-        if (d.donors)
-          each(m, "[data-donors]", function (n) {
-            n.textContent = "Join " + d.donors + " donors";
-            n.hidden = false;
-          });
         // Court time a partner club gives counts toward the goal beside the
         // gifts: one total, and a line under it that keeps the two apart.
         var kind = Number(d.inkind) || 0;

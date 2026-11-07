@@ -335,7 +335,9 @@ fill="currentColor" stroke="none">
       .hm-crew-badge{ display:block; flex:none; width:clamp(76px,8vw,112px); height:auto; filter:drop-shadow(0 12px 32px rgba(0,0,0,0.6)); }
       .hm-crew h2{ margin-top:0.45rem; color:var(--cream); }
       /* Each half of the title stays whole: one line when there is room, otherwise it breaks at the colon. */
-      .hm-crew-head h2 span{ display:inline-block; }
+      .hm-crew-head h2 span{ display:block; }
+      /* The place reads as a label over the name: smaller, so Wheelie Big Dills leads and the top line is never the longer one. */
+      .hm-crew-head h2 span:first-child{ font-size:0.78em; margin-bottom:0.08em; }
       .hm-crew .prose{ margin-top:1rem; color:var(--cream-mute); max-width:46ch; }
       .hm-crew .textlink{ margin-top:1.4rem; color:var(--orange); }
       .hm-crew .prose a{ color:var(--cream); text-decoration:underline; text-decoration-color:var(--orange); text-decoration-thickness:2px; text-underline-offset:4px; }

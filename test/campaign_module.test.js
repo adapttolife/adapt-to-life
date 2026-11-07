@@ -236,7 +236,11 @@ test("no First priority, six named seats, and the numbers as a route", () => {
   assert.equal((tiles.match(/class="s6-seat"/g) || []).length, 6);
   for (const n of names) assert.ok(tiles.includes(`>${n}<`), `${n} names a seat`);
   assert.ok(!road6.includes("Seat 2"), "no anonymous seats");
-  for (const f of readdirSync(join(ROOT, "public")).filter((x) => x.endsWith(".html")))
+  for (const f of readdirSync(join(ROOT, "public")).filter(
+    // the concept labs and hero labs are review-only, as in the other page tests
+    (x) =>
+      x.endsWith(".html") && !/^(hero-|campaign-concepts|review|photo-picks)/.test(x),
+  ))
     assert.ok(
       !read(`public/${f}`).includes("First priority"),
       `${f} says First priority`,

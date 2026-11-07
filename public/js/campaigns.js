@@ -539,34 +539,34 @@
 
   /* The campaign module (src/partials/campaign-module.html, stamped into
      pages by scripts/build-module.mjs). The markup ships complete with the
-     goal, so a page without data still reads true: "$34,500, our goal for the
+     goal, so a page without data still reads true: "$48,180, our goal for the
      year ahead". When the live total lands it counts up from $0 as the card
      comes into view, each part fills on its own, an empty part shows a pulse
      where the next gift lands, and the donor count joins the trust line.
      Never a $0 we cannot vouch for: no raised figure, no change. */
   var GIFTS = {
-    // Every line is a verified unit cost: $5 a night at ACE (15 for $75), $960
+    // Every line is a verified unit cost: $15 a night at ACE (15 for $225), $1,548
     // a year for a membership, about $3,500 for a US Open the last couple of
-    // years. Monthly figures are those over 12 months ($22 is about $5 a week).
+    // years. Monthly figures are those over 12 months ($65 is exactly $15 a week, every week).
     monthly: [
       {
-        a: 22,
-        t: "$22 a month keeps one athlete on court every week of the year.",
+        a: 65,
+        t: "$65 a month keeps one athlete on court every week of the year.",
       },
-      { a: 80, t: "$80 a month can keep one athlete training all year." },
+      { a: 129, t: "$129 a month can keep one athlete training all year." },
       {
-        a: 325,
-        t: "$325 a month covers a night at ACE every week for up to 15 athletes.",
+        a: 975,
+        t: "$975 a month covers a night at ACE every week for up to 15 athletes.",
       },
     ],
     once: [
-      { a: 5, t: "$5 puts one athlete on court for a night." },
-      { a: 75, t: "$75 covers up to 15 athletes for a night at ACE." },
-      { a: 960, t: "$960 can keep one athlete training all year." },
+      { a: 15, t: "$15 puts one athlete on court for a night." },
+      { a: 225, t: "$225 covers up to 15 athletes for a night at ACE." },
+      { a: 1548, t: "$1,548 can keep one athlete training all year." },
       { a: 3500, t: "$3,500 covers about what one athlete’s US Open costs." },
     ],
   };
-  var GIFT_DEFAULT = { monthly: 80, once: 75 };
+  var GIFT_DEFAULT = { monthly: 129, once: 225 };
 
   function reduced() {
     return !!(
@@ -684,7 +684,7 @@
         draw();
       });
     });
-    // The static buttons are monthly with $80 chosen; rebuilding them binds
+    // The static buttons are monthly with $129 chosen; rebuilding them binds
     // the clicks without changing what is on screen.
     draw();
   }

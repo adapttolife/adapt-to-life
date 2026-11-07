@@ -125,12 +125,12 @@ test("the numbers in the saved emails are still the site's numbers", () => {
   for (const part of wbd.parts) assert.ok(all.includes(usd(part.goal)), part.key);
   assert.ok(
     read("public/js/campaigns.js").includes(
-      "$80 a month can keep one athlete training all year.",
+      "$129 a month can keep one athlete training all year.",
     ),
   );
-  assert.ok(all.includes("$80 a month can keep one athlete training all year."));
+  assert.ok(all.includes("$129 a month can keep one athlete training all year."));
   const sponsorship = read("public/sponsorship.html");
-  for (const price of ["$75", "$960", "$9,600"]) {
+  for (const price of ["$225", "$1,548", "$15,480"]) {
     assert.ok(sponsorship.includes(price), `${price} on /sponsorship`);
     assert.ok(all.includes(price), `${price} in the emails`);
   }

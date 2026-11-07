@@ -77,19 +77,19 @@ test("the module states the goal from campaigns.json and never a $0", () => {
 
 test("every gift line is a verified unit cost", () => {
   const js = read("public/js/campaigns.js");
-  // $5 a night at ACE, up to 15 for $75; $960 a year for a membership; about
+  // $15 a night at ACE, up to 15 for $225; $129 a month ($1,548 a year) for a membership; about
   // $3,500 for a US Open; monthly lines are the same costs over 12 months.
-  assert.equal(5 * 15, 75);
-  assert.equal(80 * 12, 960);
-  assert.equal(325 * 12, 75 * 52);
-  assert.ok(Math.abs(22 * 12 - 5 * 52) <= 5, "$22 a month is about $5 a week");
+  assert.equal(15 * 15, 225);
+  assert.equal(129 * 12, 1548);
+  assert.equal(975 * 12, 225 * 52);
+  assert.equal(65 * 12, 15 * 52, "$65 a month is exactly $15 a week");
   for (const line of [
-    "$22 a month keeps one athlete on court every week of the year.",
-    "$80 a month can keep one athlete training all year.",
-    "$325 a month covers a night at ACE every week for up to 15 athletes.",
-    "$5 puts one athlete on court for a night.",
-    "$75 covers up to 15 athletes for a night at ACE.",
-    "$960 can keep one athlete training all year.",
+    "$65 a month keeps one athlete on court every week of the year.",
+    "$129 a month can keep one athlete training all year.",
+    "$975 a month covers a night at ACE every week for up to 15 athletes.",
+    "$15 puts one athlete on court for a night.",
+    "$225 covers up to 15 athletes for a night at ACE.",
+    "$1,548 can keep one athlete training all year.",
     "$3,500 covers about what one athlete’s US Open costs.",
   ])
     assert.ok(js.includes(line), line);
@@ -113,7 +113,7 @@ test("the math lives on /numbers, and every module links to it", () => {
   // fundraising - brings awareness to the reality of how expensive it is."
   // Then, seeing it inside the module: "Maybe we add a button that takes them
   // to a 'numbers breakdown' page? I feel like it's getting too messy."
-  // A practice night is 10 to 15 athletes; at $5 each at ACE, up to 15 is $75.
+  // A practice night is 10 to 15 athletes; at $15 each at ACE, up to 15 is $225.
   const wbd = JSON.parse(read("public/data/campaigns.json")).campaigns[0];
   const usd = (n) => "$" + n.toLocaleString("en-US");
   for (const p of wbd.parts) {
@@ -132,12 +132,12 @@ test("the math lives on /numbers, and every module links to it", () => {
   assert.deepEqual(
     year.map((l) => [l.qty, l.unit]),
     [
-      [52, 75],
-      [10, 960],
+      [52, 225],
+      [10, 1548],
     ],
-    "every week: 52 nights at $75, ten memberships at $960",
+    "every week: 52 nights at $225, ten memberships at $1,548",
   );
-  assert.equal(75, 5 * 15, "$75 is up to 15 athletes at $5 each");
+  assert.equal(225, 15 * 15, "$225 is up to 15 athletes at $15 each");
   assert.ok(/10 to 15 athletes/.test(year[0].note));
 
   // The breakdown page: generated from the same data, in the sitemap.

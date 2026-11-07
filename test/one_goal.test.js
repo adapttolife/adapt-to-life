@@ -37,16 +37,16 @@ const ENV = {
 
 test("one goal is every week plus the road", () => {
   assert.ok(CAMPAIGN_KEYS.includes("wbd"));
-  assert.equal(YEAR_GOAL, 13500);
+  assert.equal(YEAR_GOAL, 27180);
   assert.equal(ROAD_GOAL, 21000);
-  assert.equal(WBD_GOAL, 34500);
+  assert.equal(WBD_GOAL, 48180);
 });
 
 test("today: nothing new yet, so every week is empty and the road holds the Send 6 money", () =>
   withCampaign(1975, async () => {
     const w = await campaignPosition(ENV, "wbd");
     assert.equal(w.raised, 4979);
-    assert.equal(w.goal, 34500);
+    assert.equal(w.goal, 48180);
     assert.equal(w.parts.year.raised, 0);
     assert.equal(w.parts["send-6"].raised, 4979);
     assert.equal(w.donors, 23, "the donor count comes through for social proof");
@@ -62,11 +62,11 @@ test("new gifts fill every week first", () =>
   }));
 
 test("once every week is funded, gifts move to the road", () =>
-  withCampaign(1975 + 20000, async () => {
+  withCampaign(1975 + 30000, async () => {
     const w = await campaignPosition(ENV, "wbd");
-    assert.equal(w.parts.year.raised, 13500);
-    assert.equal(w.parts["send-6"].raised, 4979 + 6500);
-    assert.equal((await campaignPosition(ENV, "send-6")).raised, 4979 + 6500);
+    assert.equal(w.parts.year.raised, 27180);
+    assert.equal(w.parts["send-6"].raised, 4979 + 2820);
+    assert.equal((await campaignPosition(ENV, "send-6")).raised, 4979 + 2820);
   }));
 
 test("with Givebutter down the bar shows only what we hold ourselves", () =>
@@ -81,12 +81,12 @@ test("pages draw one bar with its parts, and no gift is steered to a fund", () =
   const camp = JSON.parse(read("public/data/campaigns.json")).campaigns;
   const wbd = camp[0];
   assert.equal(wbd.slug, "wheelie-big-dills");
-  assert.equal(wbd.goal, 34500);
+  assert.equal(wbd.goal, 48180);
   assert.equal(wbd.raised_key, "wbd");
   assert.deepEqual(
     wbd.parts.map((p) => [p.key, p.goal]),
     [
-      ["year", 13500],
+      ["year", 27180],
       ["send-6", 21000],
     ],
   );

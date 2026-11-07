@@ -868,13 +868,13 @@ ROLES.push(
 // 2026-10-29: the volunteer list is "a great opportunity to link some of the
 // tools that we use", which also helps search. ONLY tools this organization
 // actually runs (each is wired somewhere in this repo: Givebutter checkout,
-// Beehiiv lists, Buffer and Instagram, Google Workspace mail
+// the Resend newsletter, Buffer and Instagram, Google Workspace mail
 // and ledgers, Double Good drives), our own sites, and official references.
 // Do not add a tool here because a role "might" use it. `logo` names an
 // official mark in LOGOS (data/icons.mjs); a tool without one shows its name.
 export const TOOLS = {
   givebutter: { name: "Givebutter", href: "https://givebutter.com" },
-  beehiiv: { name: "Beehiiv", href: "https://www.beehiiv.com" },
+  resend: { name: "Resend", href: "https://resend.com" },
   buffer: { name: "Buffer", href: "https://buffer.com", logo: "buffer" },
   workspace: {
     name: "Google Workspace",
@@ -917,7 +917,7 @@ export const TOOLS = {
 
 export const ROLE_TOOLS = {
   "grant-writer": ["workspace", "fund"],
-  "fundraising-lead": ["givebutter", "doublegood", "beehiiv"],
+  "fundraising-lead": ["givebutter", "doublegood", "resend"],
   "sponsorship-and-partnership-lead": ["partners", "workspace"],
   "corporate-matching-champion": ["donate"],
   "planned-and-major-giving-advisor": ["giving", "donate"],
@@ -928,7 +928,7 @@ export const ROLE_TOOLS = {
   "insurance-and-risk": ["safesport", "events"],
   "grant-reviewer": ["fund", "apply"],
   "social-media-manager": ["instagram", "buffer", "social"],
-  "writer-or-editor": ["beehiiv", "workspace"],
+  "writer-or-editor": ["resend", "workspace"],
   "photographer-or-videographer": ["release", "instagram"],
   "graphic-designer": ["instagram", "shop"],
   "press-and-media": ["social", "events"],

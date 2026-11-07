@@ -563,27 +563,23 @@
   var GIFTS = {
     // Every line is a verified unit cost: $15 a night at ACE (15 for $225), $129
     // a month for a membership ($1,548 for 12 months), about $3,500 for a US
-    // Open the last couple of years. Monthly figures are those over 12 months
-    // ($65 is exactly $15 a week, every week). Alec, Nov 7: "$129 a month is
-    // [a] membership (then times it by 12)", so the monthly line says what the
-    // month buys; "Don't say ACE membership. Just say membership."; and
-    // "Let's shorten it up... We need to do better job at selling 129. 129 is
-    // unlimited sessions throughout the week - it takes many sessions every
-    // week to compete in tournaments". One line on a desktop card. Alec, Nov 7,
-    // on $65: "We want to get people to donate at the actual dollar, which is
-    // $15", so the drop-in lines show the $15 they are built from.
+    // Open the last couple of years. A month of nights is four nights, so the
+    // math needs no calculator: $60 is 4 x $15 and $900 is 4 x $225 (Alec,
+    // Nov 7: "How did you get 65? 15 x 4 is $60?"). The membership line sells
+    // the unlimited sessions, one line on a desktop card ("Let's shorten it
+    // up"), and no line names the club's membership ("Just say membership").
     monthly: [
       {
-        a: 65,
-        t: "$65 a month: one athlete at $15 a night, every week.",
+        a: 60,
+        t: "$60 a month: four nights at $15, for one athlete.",
       },
       {
         a: 129,
         t: "$129 a month: unlimited sessions for one athlete to compete.",
       },
       {
-        a: 975,
-        t: "$975 a month: up to 15 athletes at $15 a night, every week.",
+        a: 900,
+        t: "$900 a month: four nights at $225, for up to 15 athletes.",
       },
     ],
     once: [

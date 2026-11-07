@@ -78,15 +78,15 @@ test("the module states the goal from campaigns.json and never a $0", () => {
 test("every gift line is a verified unit cost", () => {
   const js = read("public/js/campaigns.js");
   // $15 a night at ACE, up to 15 for $225; $129 a month ($1,548 a year) for a membership; about
-  // $3,500 for a US Open; monthly lines are the same costs over 12 months.
+  // $3,500 for a US Open; a month of nights is four nights.
   assert.equal(15 * 15, 225);
   assert.equal(129 * 12, 1548);
-  assert.equal(975 * 12, 225 * 52);
-  assert.equal(65 * 12, 15 * 52, "$65 a month is exactly $15 a week");
+  assert.equal(900, 4 * 225, "$900 a month is four nights at $225");
+  assert.equal(60, 4 * 15, "$60 a month is four nights at $15");
   for (const line of [
-    "$65 a month: one athlete at $15 a night, every week.",
+    "$60 a month: four nights at $15, for one athlete.",
     "$129 a month: unlimited sessions for one athlete to compete.",
-    "$975 a month: up to 15 athletes at $15 a night, every week.",
+    "$900 a month: four nights at $225, for up to 15 athletes.",
     "$15 puts one athlete on court for a night.",
     "$225 covers up to 15 athletes for a night at ACE.",
     "$1,548 covers a year of unlimited sessions for one athlete.",

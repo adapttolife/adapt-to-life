@@ -226,7 +226,12 @@ test("the math lives on /numbers, and every module links to it", () => {
     assert.ok(!mod.includes("data-part-kind"), `${f}: the court-time stripe is back`);
     assert.ok(!mod.includes("got it started"), `${f}: the long note is back`);
     if (f === "numbers.html") continue;
-    assert.ok(mod.includes('<p class="cm-note">Court time and memberships.</p>'), f);
+    assert.ok(
+      mod.includes(
+        '<p class="cm-note">Court time and memberships for 10 athletes.</p>',
+      ),
+      f,
+    );
     for (const k of ["year", "send-6"])
       assert.ok(
         new RegExp(

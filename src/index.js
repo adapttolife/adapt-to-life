@@ -1,5 +1,10 @@
 import { safeNewsletterSubscribe } from "./newsletter.js";
 import {
+  betaTesterTopicGroups,
+  ResendTopicsError,
+  setContactTopics,
+} from "./resend_topics.js";
+import {
   startWelcome,
   runWelcomeSeries,
   validUnsubscribe,
@@ -8,6 +13,7 @@ import {
   normalizeEmail,
 } from "./newsletter-series.js";
 import { acceptForm, sweepForms } from "./forms.js";
+import { sendMail } from "./mail-transport.js";
 // Adapt To Life — Worker entry.
 // Serves the static site (env.ASSETS) and handles form submissions at /api/contact,
 // /api/apply and /api/volunteer through the durable form outbox (src/forms.js): a
@@ -552,14 +558,208 @@ async function localAsnmAdminCollection(request, env, url) {
   }
 }
 
-async function localAsnmAdminOperations(request, env, url) {
+export async function localAsnmAdminOperations(request, env, url) {
+  const featureMatch = url.pathname.match(
+    /^\/admin\/api\/asnm\/admin-data\/feature-toggles(?:\/([a-z0-9-]{1,80}))?$/i,
+  );
+  if (featureMatch) {
+    const featureId = featureMatch[1];
+    const timestamp = new Date().toISOString();
+    const featureIdFromName = (value) =>
+      String(value || "")
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 80);
+    const audienceIds = (value) => {
+      if (!Array.isArray(value)) return [];
+      return [
+        ...new Set(value.map((entry) => String(entry || "").trim()).filter(Boolean)),
+      ];
+    };
+
+    try {
+      if (request.method === "GET" && !featureId) {
+        const rows = await env.ASNM_DB.prepare(
+          `SELECT id, name, audience_json, created_at, updated_at
+           FROM feature_toggles
+           ORDER BY name COLLATE NOCASE`,
+        ).all();
+        const items = (rows.results || []).map((row) => {
+          let audienceIds = [];
+          try {
+            const parsed = JSON.parse(String(row.audience_json || "[]"));
+            audienceIds = Array.isArray(parsed) ? parsed : [];
+          } catch {
+            audienceIds = [];
+          }
+          return { ...row, audience_ids: audienceIds };
+        });
+        return json({ ok: true, items }, 200, ADMIN_CACHE);
+      }
+
+      if (request.method === "POST" && !featureId) {
+        const body = await request.json().catch(() => null);
+        const name = String(body?.name || "")
+          .trim()
+          .slice(0, 160);
+        const id = featureIdFromName(name);
+        const audiences = audienceIds(body?.audienceIds);
+        if (!name || !id) {
+          return json({ ok: false, error: "Enter a feature name." }, 422, ADMIN_CACHE);
+        }
+        if (!audiences.length) {
+          return json(
+            { ok: false, error: "Choose Everyone or at least one beta tester group." },
+            422,
+            ADMIN_CACHE,
+          );
+        }
+        await env.ASNM_DB.prepare(
+          `INSERT INTO feature_toggles (id, name, audience_json, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?)`,
+        )
+          .bind(id, name, JSON.stringify(audiences), timestamp, timestamp)
+          .run();
+        return json(
+          { ok: true, item: { id, name, audience_ids: audiences } },
+          201,
+          ADMIN_CACHE,
+        );
+      }
+
+      if (request.method === "PATCH" && featureId) {
+        const body = await request.json().catch(() => null);
+        const name = String(body?.name || "")
+          .trim()
+          .slice(0, 160);
+        const audiences = audienceIds(body?.audienceIds);
+        if (!name) {
+          return json({ ok: false, error: "Enter a feature name." }, 422, ADMIN_CACHE);
+        }
+        if (!audiences.length) {
+          return json(
+            { ok: false, error: "Choose Everyone or at least one beta tester group." },
+            422,
+            ADMIN_CACHE,
+          );
+        }
+        const result = await env.ASNM_DB.prepare(
+          `UPDATE feature_toggles
+           SET name = ?, audience_json = ?, updated_at = ?
+           WHERE id = ?`,
+        )
+          .bind(name, JSON.stringify(audiences), timestamp, featureId)
+          .run();
+        if (!Number(result.meta?.changes || 0)) {
+          return json(
+            { ok: false, error: "Feature toggle not found." },
+            404,
+            ADMIN_CACHE,
+          );
+        }
+        return json(
+          { ok: true, item: { id: featureId, name, audience_ids: audiences } },
+          200,
+          ADMIN_CACHE,
+        );
+      }
+
+      if (request.method === "DELETE" && featureId) {
+        const result = await env.ASNM_DB.prepare(
+          "DELETE FROM feature_toggles WHERE id = ?",
+        )
+          .bind(featureId)
+          .run();
+        if (!Number(result.meta?.changes || 0)) {
+          return json(
+            { ok: false, error: "Feature toggle not found." },
+            404,
+            ADMIN_CACHE,
+          );
+        }
+        return json({ ok: true }, 200, ADMIN_CACHE);
+      }
+
+      return json({ ok: false, error: "Method not allowed" }, 405, ADMIN_CACHE);
+    } catch (error) {
+      console.error("ASNM feature toggle request failed", error);
+      return json(
+        { ok: false, error: "Feature availability is temporarily unavailable." },
+        503,
+        ADMIN_CACHE,
+      );
+    }
+  }
+
   if (url.pathname === "/admin/api/asnm/admin-data/beta-testers") {
     try {
       if (request.method === "GET") {
         const rows = await env.ASNM_DB.prepare(
-          "SELECT email, enabled, created_at, updated_at FROM beta_testers ORDER BY email COLLATE NOCASE",
+          `SELECT email, name, organization, phone, enabled, created_at, updated_at
+           FROM beta_testers
+           ORDER BY email COLLATE NOCASE`,
         ).all();
-        return json({ ok: true, items: rows.results || [] }, 200, ADMIN_CACHE);
+        const items = rows.results || [];
+        if (!env.RESEND_API_KEY) {
+          return json(
+            {
+              ok: true,
+              items,
+              groups: [],
+              groupError: "Resend Topics are not configured.",
+            },
+            200,
+            ADMIN_CACHE,
+          );
+        }
+        try {
+          const topicData = await betaTesterTopicGroups(env, items);
+          const itemsWithTopics = items.map((tester) => ({
+            ...tester,
+            topic_ids: topicData.idsByEmail[String(tester.email).toLowerCase()] || [],
+          }));
+          return json(
+            { ok: true, items: itemsWithTopics, groups: topicData.groups },
+            200,
+            ADMIN_CACHE,
+          );
+        } catch (error) {
+          console.error("ASNM beta tester groups request failed", error);
+          return json(
+            {
+              ok: true,
+              items,
+              groups: [],
+              groupError: "Beta tester groups are temporarily unavailable.",
+            },
+            200,
+            ADMIN_CACHE,
+          );
+        }
+      }
+      if (request.method === "DELETE") {
+        const body = await request.json().catch(() => null);
+        const email = String(body?.email || "")
+          .trim()
+          .toLowerCase();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          return json(
+            { ok: false, error: "Enter a valid email address." },
+            422,
+            ADMIN_CACHE,
+          );
+        }
+        const result = await env.ASNM_DB.prepare(
+          "DELETE FROM beta_testers WHERE email = ? COLLATE NOCASE",
+        )
+          .bind(email)
+          .run();
+        if (!Number(result.meta?.changes || 0)) {
+          return json({ ok: false, error: "Beta tester not found." }, 404, ADMIN_CACHE);
+        }
+        return json({ ok: true }, 200, ADMIN_CACHE);
       }
       if (request.method === "POST") {
         const body = await request.json().catch(() => null);
@@ -578,16 +778,89 @@ async function localAsnmAdminOperations(request, env, url) {
             ? 0
             : 1;
         const timestamp = new Date().toISOString();
-        await env.ASNM_DB.prepare(
-          `INSERT INTO beta_testers (email, enabled, created_at, updated_at) VALUES (?, ?, ?, ?)
-           ON CONFLICT(email) DO UPDATE SET enabled = excluded.enabled, updated_at = excluded.updated_at`,
-        )
-          .bind(email, enabled, timestamp, timestamp)
-          .run();
+        const addingTester = Object.hasOwn(body || {}, "name");
+        if (addingTester) {
+          if (
+            Array.isArray(body?.topicIds) &&
+            body.topicIds.length &&
+            !env.RESEND_API_KEY
+          ) {
+            return json(
+              { ok: false, error: "Resend Topics are not configured." },
+              503,
+              ADMIN_CACHE,
+            );
+          }
+          const name = String(body?.name || "").trim();
+          const organization = String(body?.organization || "").trim();
+          const phone = String(body?.phone || "").trim();
+          if (!name) {
+            return json(
+              { ok: false, error: "Enter the beta tester's name." },
+              422,
+              ADMIN_CACHE,
+            );
+          }
+          if (name.length > 160 || organization.length > 240 || phone.length > 60) {
+            return json(
+              { ok: false, error: "One or more beta tester details are too long." },
+              422,
+              ADMIN_CACHE,
+            );
+          }
+          await env.ASNM_DB.prepare(
+            `INSERT INTO beta_testers (email, name, organization, phone, enabled, created_at, updated_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?)
+             ON CONFLICT(email) DO UPDATE SET
+               name = excluded.name,
+               organization = excluded.organization,
+               phone = excluded.phone,
+               enabled = excluded.enabled,
+               updated_at = excluded.updated_at`,
+          )
+            .bind(
+              email,
+              name,
+              organization || null,
+              phone || null,
+              enabled,
+              timestamp,
+              timestamp,
+            )
+            .run();
+          if (Array.isArray(body?.topicIds) && env.RESEND_API_KEY) {
+            await setContactTopics(env, email, body.topicIds);
+          }
+          if (enabled && body?.sendInvitation === true) {
+            const siteUrl = new URL(
+              "/",
+              env.ASNM_ADMIN_ORIGIN || "https://adaptivesportsnearme.com",
+            ).toString();
+            await sendBetaTesterInvitation(env, {
+              email,
+              name,
+              siteUrl,
+            });
+          }
+        } else {
+          await env.ASNM_DB.prepare(
+            `INSERT INTO beta_testers (email, enabled, created_at, updated_at) VALUES (?, ?, ?, ?)
+             ON CONFLICT(email) DO UPDATE SET enabled = excluded.enabled, updated_at = excluded.updated_at`,
+          )
+            .bind(email, enabled, timestamp, timestamp)
+            .run();
+        }
         return json({ ok: true }, 200, ADMIN_CACHE);
       }
     } catch (error) {
       console.error("ASNM beta tester request failed", error);
+      if (error instanceof ResendTopicsError) {
+        return json(
+          { ok: false, error: error.message },
+          error.status === 422 ? 422 : 503,
+          ADMIN_CACHE,
+        );
+      }
       return json(
         { ok: false, error: "Beta testers are temporarily unavailable." },
         503,
@@ -731,6 +1004,35 @@ async function localAsnmAdminOperations(request, env, url) {
   }
 
   return null;
+}
+
+export async function sendBetaTesterInvitation(env, { email, name, siteUrl }) {
+  const greeting = `Hi ${name},`;
+  const text =
+    `${greeting}\n\n` +
+    "You have been added to the Adaptive Sports Near Me beta. " +
+    `Visit the website to get started:\n\n${siteUrl}\n\n` +
+    "When the beta sign-in form asks for your email address, use:\n" +
+    `${email}\n\nWe will send a one-time sign-in link to that address.`;
+  const html =
+    `<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;` +
+    `font-size:16px;line-height:1.6;color:#1c1a15;max-width:560px">` +
+    `<p>${escapeHtml(greeting)}</p>` +
+    `<p>You have been added to the Adaptive Sports Near Me beta.</p>` +
+    `<p><a href="${escapeHtml(siteUrl)}">Visit Adaptive Sports Near Me</a></p>` +
+    `<p>When the beta sign-in form asks for your email address, use:</p>` +
+    `<p><strong>${escapeHtml(email)}</strong></p>` +
+    `<p>We will send a one-time sign-in link to that address.</p>` +
+    `<p style="margin-top:28px;color:#6b6b70;font-size:14px">` +
+    `Adapt To Life<br>501(c)(3) nonprofit &middot; EIN 41-3213344</p></div>`;
+  return sendMail(env, {
+    from: `Adapt To Life <${env.GMAIL_FROM || "hello@adapttolife.org"}>`,
+    to: email,
+    replyTo: env.GMAIL_FROM || "hello@adapttolife.org",
+    subject: "You are invited to the Adaptive Sports Near Me beta",
+    text,
+    html,
+  });
 }
 
 async function localAsnmAdminActivity(request, env, url, session) {

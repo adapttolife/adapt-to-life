@@ -828,18 +828,48 @@ export function Directory({ onFail }: { onFail: () => void }) {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [current, setCurrent] = useState(detailRoute);
-  const [operations, setOperations] = useState<"queue" | "beta" | null>(null);
+  const [operations, setOperations] = useState<"queue" | "beta" | "features" | null>(
+    null,
+  );
   const [queueItems, setQueueItems] = useState<Item[]>([]);
   const [selectedQueueItem, setSelectedQueueItem] = useState<Item | null>(null);
   const [betaTesters, setBetaTesters] = useState<Item[]>([]);
+  const [selectedBetaTester, setSelectedBetaTester] = useState<Item | null>(null);
+  const [betaGroups, setBetaGroups] = useState<Item[]>([]);
+  const [betaGroupError, setBetaGroupError] = useState("");
+  const [featureToggles, setFeatureToggles] = useState<Item[]>([]);
+  const [selectedFeatureToggle, setSelectedFeatureToggle] = useState<Item | null>(null);
 
   const go = (path: string) => {
     history.pushState(null, "", path);
     setCurrent(detailRoute());
   };
 
+  const loadBetaTesters = async () => {
+    const body = await request("/admin-data/beta-testers");
+    setBetaTesters(body.items || []);
+    setBetaGroups(body.groups || []);
+    setBetaGroupError(String(body.groupError || ""));
+    return body;
+  };
+
+  const loadFeatureToggles = async () => {
+    const body = await request("/admin-data/feature-toggles");
+    setFeatureToggles(body.items || []);
+    return body;
+  };
+
+  const featureAudienceOptions = [
+    { value: "everyone", label: "Everyone" },
+    ...betaGroups.map((group) => ({
+      value: String(group.id),
+      label: String(group.name),
+    })),
+  ];
+
   const chooseKind = (nextKind: Kind) => {
     if (nextKind === kind) return;
+    setOperations(null);
     setLoading(true);
     setQuery("");
     setKind(nextKind);
@@ -853,11 +883,26 @@ export function Directory({ onFail }: { onFail: () => void }) {
     setMessage(error instanceof Error ? error.message : fallback);
   };
 
+  const toast = message ? (
+    <div className="directory-toast" role="status">
+      <span>{message}</span>
+      <button aria-label="Dismiss message" onClick={() => setMessage("")} type="button">
+        Close
+      </button>
+    </div>
+  ) : null;
+
   useEffect(() => {
     const onPopState = () => setCurrent(detailRoute());
     addEventListener("popstate", onPopState);
     return () => removeEventListener("popstate", onPopState);
   }, []);
+
+  useEffect(() => {
+    if (!message) return;
+    const timeout = setTimeout(() => setMessage(""), 4500);
+    return () => clearTimeout(timeout);
+  }, [message]);
 
   useEffect(() => {
     if (current) return;
@@ -888,21 +933,23 @@ export function Directory({ onFail }: { onFail: () => void }) {
 
   useEffect(() => {
     if (!operations) return;
-    const path =
-      operations === "queue" ? "/admin-data/queue" : "/admin-data/beta-testers";
-    request(path)
+    const requestForOperation =
+      operations === "queue"
+        ? request("/admin-data/queue")
+        : operations === "beta"
+          ? loadBetaTesters()
+          : Promise.all([loadFeatureToggles(), loadBetaTesters()]);
+    requestForOperation
       .then((body) => {
         if (operations === "queue") setQueueItems(body.items || []);
-        else setBetaTesters(body.items || []);
       })
       .catch((error) => handleError(error, "Could not load this section."));
   }, [operations]);
 
   useEffect(() => {
-    Promise.all([request("/admin-data/queue"), request("/admin-data/beta-testers")])
-      .then(([queue, beta]) => {
+    Promise.all([request("/admin-data/queue"), loadBetaTesters(), loadFeatureToggles()])
+      .then(([queue]) => {
         setQueueItems(queue.items || []);
-        setBetaTesters(beta.items || []);
       })
       .catch(() => {});
   }, []);
@@ -1075,18 +1122,66 @@ export function Directory({ onFail }: { onFail: () => void }) {
   const saveBetaTester = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
-    const email = String(new FormData(form).get("email") || "");
+    const data = new FormData(form);
     try {
       await request("/admin-data/beta-testers", {
         method: "POST",
-        body: JSON.stringify({ email, enabled: true }),
+        body: JSON.stringify({
+          email: String(data.get("email") || ""),
+          name: String(data.get("name") || ""),
+          organization: String(data.get("organization") || ""),
+          phone: String(data.get("phone") || ""),
+          enabled: true,
+          sendInvitation: true,
+          topicIds: data.getAll("topic_ids").map(String),
+        }),
       });
       form.reset();
-      const body = await request("/admin-data/beta-testers");
-      setBetaTesters(body.items || []);
-      setMessage("Beta tester saved.");
+      await loadBetaTesters();
+      setMessage("Beta tester saved and invited by email.");
     } catch (error) {
       handleError(error, "Could not save that beta tester.");
+    }
+  };
+
+  const updateBetaTester = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!selectedBetaTester) return;
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    const topicIds = data.getAll("topic_ids").map(String);
+    try {
+      await request("/admin-data/beta-testers", {
+        method: "POST",
+        body: JSON.stringify({
+          email: String(selectedBetaTester.email || ""),
+          name: String(data.get("name") || ""),
+          organization: String(data.get("organization") || ""),
+          phone: String(data.get("phone") || ""),
+          enabled: data.get("enabled") === "on",
+          sendInvitation: false,
+          topicIds,
+        }),
+      });
+      const body = await loadBetaTesters();
+      const updated = (body.items || []).find(
+        (tester: Item) => String(tester.email) === String(selectedBetaTester.email),
+      );
+      const savedTester = {
+        ...(updated || selectedBetaTester),
+        topic_ids: topicIds,
+      };
+      setBetaTesters((testers) =>
+        testers.map((tester) =>
+          String(tester.email) === String(selectedBetaTester.email)
+            ? savedTester
+            : tester,
+        ),
+      );
+      setSelectedBetaTester(savedTester);
+      setMessage("Beta tester updated.");
+    } catch (error) {
+      handleError(error, "Could not update that beta tester.");
     }
   };
 
@@ -1094,12 +1189,113 @@ export function Directory({ onFail }: { onFail: () => void }) {
     try {
       await request("/admin-data/beta-testers", {
         method: "POST",
-        body: JSON.stringify({ email: tester.email, enabled: !Number(tester.enabled) }),
+        body: JSON.stringify({
+          email: String(tester.email || ""),
+          enabled: !Number(tester.enabled),
+        }),
       });
-      const body = await request("/admin-data/beta-testers");
-      setBetaTesters(body.items || []);
+      await loadBetaTesters();
+      setMessage(
+        Number(tester.enabled) ? "Beta tester disabled." : "Beta tester enabled.",
+      );
     } catch (error) {
       handleError(error, "Could not update that beta tester.");
+    }
+  };
+
+  const removeBetaTester = async (tester: Item) => {
+    const email = String(tester.email || "");
+    if (!confirm(`Remove beta access for ${email}?`)) return;
+    try {
+      await request("/admin-data/beta-testers", {
+        method: "DELETE",
+        body: JSON.stringify({ email }),
+      });
+      setBetaTesters((testers) =>
+        testers.filter((entry) => String(entry.email) !== email),
+      );
+      setMessage("Beta tester removed.");
+    } catch (error) {
+      handleError(error, "Could not remove that beta tester.");
+    }
+  };
+
+  const createFeatureToggle = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    try {
+      await request("/admin-data/feature-toggles", {
+        method: "POST",
+        body: JSON.stringify({
+          name: String(data.get("name") || ""),
+          audienceIds: data.getAll("audience_ids").map(String),
+        }),
+      });
+      form.reset();
+      await loadFeatureToggles();
+      setMessage("Feature toggle added.");
+    } catch (error) {
+      handleError(error, "Could not add that feature toggle.");
+    }
+  };
+
+  const updateFeatureToggle = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!selectedFeatureToggle) return;
+    const data = new FormData(event.currentTarget);
+    try {
+      const body = await request(
+        `/admin-data/feature-toggles/${selectedFeatureToggle.id}`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({
+            name: String(data.get("name") || ""),
+            audienceIds: data.getAll("audience_ids").map(String),
+          }),
+        },
+      );
+      const saved = body.item as Item;
+      setFeatureToggles((features) =>
+        features.map((feature) =>
+          String(feature.id) === String(saved.id) ? saved : feature,
+        ),
+      );
+      setSelectedFeatureToggle(saved);
+      setMessage("Feature toggle updated.");
+    } catch (error) {
+      handleError(error, "Could not update that feature toggle.");
+    }
+  };
+
+  const updateFeatureAudience = async (feature: Item, audienceIds: string[]) => {
+    try {
+      const body = await request(`/admin-data/feature-toggles/${feature.id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ name: String(feature.name || ""), audienceIds }),
+      });
+      const saved = body.item as Item;
+      setFeatureToggles((features) =>
+        features.map((entry) =>
+          String(entry.id) === String(saved.id) ? saved : entry,
+        ),
+      );
+      setMessage("Feature availability updated.");
+    } catch (error) {
+      handleError(error, "Could not update feature availability.");
+    }
+  };
+
+  const removeFeatureToggle = async (feature: Item) => {
+    if (!confirm(`Delete ${String(feature.name || "this feature toggle")}?`)) return;
+    try {
+      await request(`/admin-data/feature-toggles/${feature.id}`, { method: "DELETE" });
+      setFeatureToggles((features) =>
+        features.filter((entry) => String(entry.id) !== String(feature.id)),
+      );
+      setMessage("Feature toggle deleted.");
+    } catch (error) {
+      handleError(error, "Could not delete that feature toggle.");
     }
   };
 
@@ -1139,13 +1335,11 @@ export function Directory({ onFail }: { onFail: () => void }) {
                 </>
               ))}
             </dl>
-            <p className="directory-message" role="status">
-              {message}
-            </p>
             <button className="btn" onClick={acceptQueueItem} type="button">
               Accept and publish
             </button>
           </section>
+          {toast}
         </section>
       );
     return (
@@ -1179,11 +1373,89 @@ export function Directory({ onFail }: { onFail: () => void }) {
             <p>No submissions need review.</p>
           )}
         </div>
+        {toast}
       </section>
     );
   }
 
   if (operations === "beta") {
+    if (selectedBetaTester) {
+      return (
+        <section className="directory-page">
+          <button className="back-link" onClick={() => setSelectedBetaTester(null)}>
+            ← Beta testers
+          </button>
+          <h2>{String(selectedBetaTester.name || selectedBetaTester.email)}</h2>
+          <p className="sub">Update this beta tester's access and contact details.</p>
+          <form className="beta-tester-form" onSubmit={updateBetaTester}>
+            <label className="form-field">
+              <span>Email Address</span>
+              <input
+                readOnly
+                type="email"
+                value={String(selectedBetaTester.email || "")}
+              />
+            </label>
+            <label className="form-field">
+              <span>Name</span>
+              <input
+                defaultValue={String(selectedBetaTester.name || "")}
+                name="name"
+                placeholder="Full name"
+                required
+              />
+            </label>
+            <label className="form-field">
+              <span>Organization</span>
+              <input
+                defaultValue={String(selectedBetaTester.organization || "")}
+                name="organization"
+                placeholder="Optional"
+              />
+            </label>
+            <label className="form-field">
+              <span>Phone Number</span>
+              <input
+                defaultValue={String(selectedBetaTester.phone || "")}
+                name="phone"
+                placeholder="Optional"
+                type="tel"
+              />
+            </label>
+            <div className="form-field wide">
+              <span>Beta Tester Groups</span>
+              <SearchSelect
+                name="topic_ids"
+                multiple
+                value={
+                  Array.isArray(selectedBetaTester.topic_ids)
+                    ? selectedBetaTester.topic_ids.map(String)
+                    : []
+                }
+                options={betaGroups.map((group) => ({
+                  value: String(group.id),
+                  label: String(group.name),
+                }))}
+                placeholder="No beta tester groups"
+              />
+            </div>
+            <label className="switch-field beta-access-switch">
+              <span>Beta Access</span>
+              <input
+                defaultChecked={Boolean(Number(selectedBetaTester.enabled))}
+                name="enabled"
+                type="checkbox"
+              />
+              <i aria-hidden="true" />
+            </label>
+            <button className="btn" type="submit">
+              Save changes
+            </button>
+          </form>
+          {toast}
+        </section>
+      );
+    }
     return (
       <section className="directory-page">
         <button className="back-link" onClick={() => setOperations(null)}>
@@ -1196,33 +1468,260 @@ export function Directory({ onFail }: { onFail: () => void }) {
         </p>
         <form className="beta-tester-form" onSubmit={saveBetaTester}>
           <label className="form-field">
+            <span>Name</span>
+            <input name="name" placeholder="Full name" required />
+          </label>
+          <label className="form-field">
             <span>Email Address</span>
             <input name="email" type="email" placeholder="name@example.com" required />
           </label>
+          <label className="form-field">
+            <span>Organization</span>
+            <input name="organization" placeholder="Optional" />
+          </label>
+          <label className="form-field">
+            <span>Phone Number</span>
+            <input name="phone" type="tel" placeholder="Optional" />
+          </label>
+          <div className="form-field wide">
+            <span>Beta Tester Groups</span>
+            <SearchSelect
+              name="topic_ids"
+              multiple
+              value={[]}
+              options={betaGroups.map((group) => ({
+                value: String(group.id),
+                label: String(group.name),
+              }))}
+              placeholder="No beta tester groups"
+            />
+          </div>
           <button className="btn" type="submit">
-            Add beta tester
+            Add and invite beta tester
           </button>
         </form>
+        <section className="beta-groups" aria-labelledby="beta-groups-title">
+          <h3 id="beta-groups-title">Beta Tester Groups</h3>
+          {betaGroupError ? <p className="sub">{betaGroupError}</p> : null}
+          <div className="beta-group-grid">
+            {betaGroups.map((group) => {
+              const emails = Array.isArray(group.emails)
+                ? group.emails.map(String)
+                : [];
+              return (
+                <article className="beta-group" key={String(group.id)}>
+                  <h4>{String(group.name)}</h4>
+                  {emails.length ? (
+                    <ul>
+                      {emails.map((email) => (
+                        <li key={email}>{email}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>No beta testers are assigned.</p>
+                  )}
+                </article>
+              );
+            })}
+            <article className="beta-group beta-group--unassigned">
+              <h4>Unassigned</h4>
+              {betaTesters.filter(
+                (tester) =>
+                  !Array.isArray(tester.topic_ids) || !tester.topic_ids.length,
+              ).length ? (
+                <ul>
+                  {betaTesters
+                    .filter(
+                      (tester) =>
+                        !Array.isArray(tester.topic_ids) || !tester.topic_ids.length,
+                    )
+                    .map((tester) => (
+                      <li key={String(tester.email)}>{String(tester.email)}</li>
+                    ))}
+                </ul>
+              ) : (
+                <p>Every beta tester belongs to a group.</p>
+              )}
+            </article>
+          </div>
+        </section>
         <div className="directory-list">
           {betaTesters.map((tester) => (
             <div className="beta-tester" key={String(tester.email)}>
               <span>
-                <b>{String(tester.email)}</b>
-                <small>{Number(tester.enabled) ? "Enabled" : "Disabled"}</small>
+                <b>{String(tester.name || tester.email)}</b>
+                <small>
+                  {String(tester.email)}
+                  {tester.organization ? `; ${String(tester.organization)}` : ""}
+                  {tester.phone ? `; ${String(tester.phone)}` : ""}
+                  {`; ${Number(tester.enabled) ? "Enabled" : "Disabled"}`}
+                </small>
               </span>
-              <button
-                className="btn btn--line"
-                onClick={() => toggleBetaTester(tester)}
-                type="button"
-              >
-                {Number(tester.enabled) ? "Disable" : "Enable"}
-              </button>
+              <div className="beta-tester-actions">
+                <button
+                  className="btn btn--line"
+                  onClick={() => setSelectedBetaTester(tester)}
+                  type="button"
+                >
+                  Edit
+                </button>
+                <button
+                  className="btn btn--line"
+                  onClick={() => toggleBetaTester(tester)}
+                  type="button"
+                >
+                  {Number(tester.enabled) ? "Disable" : "Enable"}
+                </button>
+                <button
+                  className="btn btn--line"
+                  onClick={() => removeBetaTester(tester)}
+                  type="button"
+                >
+                  Remove
+                </button>
+              </div>
             </div>
           ))}
         </div>
-        <p className="directory-message" role="status">
-          {message}
+        {toast}
+      </section>
+    );
+  }
+
+  if (operations === "features") {
+    if (selectedFeatureToggle) {
+      const audiences = Array.isArray(selectedFeatureToggle.audience_ids)
+        ? selectedFeatureToggle.audience_ids.map(String)
+        : [];
+      return (
+        <section className="directory-page">
+          <button className="back-link" onClick={() => setSelectedFeatureToggle(null)}>
+            ← Feature availability
+          </button>
+          <h2>{String(selectedFeatureToggle.name || "Feature toggle")}</h2>
+          <p className="sub">
+            Choose who can use this Adaptive Sports Near Me feature.
+          </p>
+          <form className="feature-toggle-form" onSubmit={updateFeatureToggle}>
+            <label className="form-field wide">
+              <span>Feature Name</span>
+              <input
+                defaultValue={String(selectedFeatureToggle.name || "")}
+                name="name"
+                placeholder="Feature name"
+                required
+              />
+            </label>
+            <div className="form-field wide">
+              <span>Available To</span>
+              <SearchSelect
+                name="audience_ids"
+                multiple
+                value={audiences}
+                options={featureAudienceOptions}
+                placeholder="Choose everyone or beta tester groups"
+              />
+              <small>
+                Everyone enables the feature for all signed-in organization managers.
+              </small>
+            </div>
+            <button className="btn" type="submit">
+              Save changes
+            </button>
+          </form>
+          {toast}
+        </section>
+      );
+    }
+
+    return (
+      <section className="directory-page">
+        <button className="back-link" onClick={() => setOperations(null)}>
+          ← ASNM directory
+        </button>
+        <h2>Feature Availability</h2>
+        <p className="sub">
+          Control which beta tester groups can use Adaptive Sports Near Me features.
         </p>
+        <form className="feature-toggle-form" onSubmit={createFeatureToggle}>
+          <label className="form-field">
+            <span>Feature Name</span>
+            <input name="name" placeholder="Feature name" required />
+          </label>
+          <div className="form-field">
+            <span>Available To</span>
+            <SearchSelect
+              name="audience_ids"
+              multiple
+              value={[]}
+              options={featureAudienceOptions}
+              placeholder="Choose everyone or beta tester groups"
+            />
+          </div>
+          <button className="btn" type="submit">
+            Add feature toggle
+          </button>
+        </form>
+        <div className="feature-toggle-list">
+          {featureToggles.length ? (
+            featureToggles.map((feature) => {
+              const audiences = Array.isArray(feature.audience_ids)
+                ? feature.audience_ids.map(String)
+                : [];
+              return (
+                <form
+                  className="feature-toggle"
+                  key={String(feature.id)}
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    updateFeatureAudience(
+                      feature,
+                      new FormData(event.currentTarget)
+                        .getAll("audience_ids")
+                        .map(String),
+                    );
+                  }}
+                >
+                  <div>
+                    <b>{String(feature.name || "Feature toggle")}</b>
+                    <small>{String(feature.id)}</small>
+                  </div>
+                  <div className="feature-toggle-audience">
+                    <SearchSelect
+                      name="audience_ids"
+                      multiple
+                      value={audiences}
+                      options={featureAudienceOptions}
+                      placeholder="Choose availability"
+                    />
+                  </div>
+                  <div className="feature-toggle-actions">
+                    <button className="btn btn--line" type="submit">
+                      Save
+                    </button>
+                    <button
+                      className="btn btn--line"
+                      onClick={() => setSelectedFeatureToggle(feature)}
+                      type="button"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="btn btn--line"
+                      onClick={() => removeFeatureToggle(feature)}
+                      type="button"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </form>
+              );
+            })
+          ) : (
+            <p>No feature toggles have been added.</p>
+          )}
+        </div>
+        {toast}
       </section>
     );
   }
@@ -1834,9 +2333,7 @@ export function Directory({ onFail }: { onFail: () => void }) {
             </div>
           </form>
         )}
-        <p className="directory-message" role="status">
-          {message}
-        </p>
+        {toast}
         {current.kind === "organizations" && !creating && (
           <section className="activity-panel" aria-labelledby="activity-heading">
             <h3 id="activity-heading">Activity</h3>
@@ -1905,6 +2402,12 @@ export function Directory({ onFail }: { onFail: () => void }) {
         >
           Beta Testers ({betaTesters.length})
         </button>
+        <button
+          className={operations === "features" ? "on" : ""}
+          onClick={() => setOperations("features")}
+        >
+          Feature Availability ({featureToggles.length})
+        </button>
         {KINDS.map((entry) => (
           <button
             key={entry}
@@ -1936,9 +2439,7 @@ export function Directory({ onFail }: { onFail: () => void }) {
           placeholder="Type a name"
         />
       </label>
-      <p className="directory-message" role="status">
-        {message}
-      </p>
+      {toast}
       {loading ? (
         <div className="directory-loading" role="status">
           <i aria-hidden="true" />

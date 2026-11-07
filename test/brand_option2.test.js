@@ -7,7 +7,11 @@ import { join } from "node:path";
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const PUBLIC = join(ROOT, "public");
 const CORAL = "#FF5C39";
-const INK = "#1A1A1A";
+// Laura's black (Brand Standards, Canonical Working Reference: locked
+// 2026-09-09, "The correct hex code for the black is #3B3B46"). It is the ink in
+// brand/identity/atl-primary.svg. #1A1A1A was the stand-in until the Nov 2026
+// design refresh moved the site onto it.
+const INK = "#3B3B46";
 
 async function filesUnder(
   dir,
@@ -32,7 +36,7 @@ test("Option 2 is the canonical public brand palette", async () => {
   );
   assert.match(
     css,
-    /--ink:\s*#1A1A1A\b/i,
+    /--ink:\s*#3B3B46\b/i,
     "primary ink must match the vector PDF exactly",
   );
 

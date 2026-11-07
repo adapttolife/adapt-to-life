@@ -133,7 +133,7 @@
     if (d.page) {
       return { href: d.page, label: "See the drive", external: false };
     }
-    return { href: "/donate", label: "Give to the fund", external: false };
+    return { href: "/donate", label: "Donate", external: false };
   }
 
   /* ---- events: one card, everywhere ---------------------------------------
@@ -426,14 +426,21 @@
 
   /* The site thermometer. Falls back to the campaign's own goal and hides the
      raised figure rather than publishing a $0 that is not true. */
-  function raised(cb) {
+  function raised(cb, key) {
     if (typeof fetch !== "function") return cb(null);
-    fetch("/api/raised")
+    // One total per key: wbd (the one goal, with its parts), year, send-6 or
+    // classic. No key means the Road (send-6).
+    fetch("/api/raised" + (key ? "?c=" + encodeURIComponent(key) : ""))
       .then(function (r) {
         return r.json();
       })
       .then(function (d) {
-        cb({ raised: Number(d.raised) || 0, goal: Number(d.goal) || 0 });
+        cb({
+          raised: Number(d.raised) || 0,
+          goal: Number(d.goal) || 0,
+          parts: d.parts || null,
+          donors: Number(d.donors) || 0,
+        });
       })
       .catch(function (err) {
         console.error("/api/raised unavailable:", err);
@@ -441,81 +448,14 @@
       });
   }
 
-  /* The campaign band: one partial, four pages. Renders the active campaign
-     into `hostId`, or renders nothing at all if there is no campaign or the
-     data is unreachable. Nothing is the correct empty state here: the pages it
-     sits on are complete without it, and a band that cannot name a real goal
-     is worse than no band. */
-  function band(hostId, opts) {
-    var host = document.getElementById(hostId);
-    if (!host) return;
-    var lifted = (opts || {}).lifted;
-
-    load(function (store) {
-      // Release the reserved height only ONCE THE CONTENT IS IN, not on
-      // arrival of the data. Removing it first collapsed the box to nothing
-      // for the frame between the class going and the markup landing, so the
-      // page shifted DOWN and then back UP — measured on /donate as a section
-      // going 67px -> 0 -> 67 at about 1.5s, and CLS 0.247 on the page where
-      // somebody is entering a card. The reservation exists precisely to
-      // cover this gap; releasing it early gave the jump back.
-      var c = store && store.campaigns[0];
-      if (!c) {
-        host.classList.remove("camp-pending");
-        return;
-      }
-
-      var a = el("a", "camp-band" + (lifted ? " lifted" : ""));
-      a.href = c.page || "/send-6";
-
-      var card = el("div", "camp-band-card");
-      var left = el("div");
-      var eyebrow = el("span", "cb-eyebrow");
-      eyebrow.appendChild(el("span", "dot"));
-      eyebrow.appendChild(document.createTextNode("Raising now"));
-      left.appendChild(eyebrow);
-      left.appendChild(el("span", "cb-name", c.name));
-      if (c.blurb) left.appendChild(el("span", "cb-blurb", c.blurb));
-
-      var side = el("div", "cb-side");
-      var bar = el("span", "cb-bar");
-      var fill = el("span", "cb-fill");
-      bar.appendChild(fill);
-      var label = el("span", "cb-label", c.goal ? money(c.goal) + " goal" : "");
-      var cta = el("span", "cb-cta", "See the campaign");
-      side.appendChild(bar);
-      side.appendChild(label);
-      side.appendChild(cta);
-
-      card.appendChild(left);
-      card.appendChild(side);
-      a.appendChild(card);
-      host.appendChild(a);
-      host.classList.remove("camp-pending");
-
-      // The live figure lands last. If Givebutter is unreachable the goal
-      // stands on its own rather than publishing a $0 we cannot vouch for.
-      raised(function (d) {
-        if (!d || !d.goal) return;
-        var goal = d.goal || c.goal;
-        label.textContent = money(d.raised) + " of " + money(goal) + " raised";
-        var pct = Math.max(0, Math.min(100, (d.raised / goal) * 100));
-        requestAnimationFrame(function () {
-          setTimeout(function () {
-            fill.style.width = pct.toFixed(1) + "%";
-          }, 140);
-        });
-      });
-    });
-  }
-
-  /* The result band: the counterpart to band(). band() says what we are
-     raising NOW; this says what a finished drive actually brought in.
+  /* The result band: the counterpart to the campaign module. The module says
+     what we are raising NOW; this says what a finished drive actually brought
+     in.
 
      Why this is data-driven rather than three lines of hand-written HTML:
      the August popcorn drive's $3,004 already appears on /popcorn and
      /send-6, and it is the same number the thermometer adds via
-     OFFLINE_RAISED. A fourth hand-typed copy is a fourth thing to forget
+     SEND6_OFFLINE_RAISED. A fourth hand-typed copy is a fourth thing to forget
      when the next drive closes. Reads the most recently CLOSED drive that
      has a real `raised` figure, and renders nothing if there is not one —
      an org with no finished drive must not claim a win.
@@ -597,10 +537,243 @@
     });
   }
 
+  /* The campaign module (src/partials/campaign-module.html, stamped into
+     pages by scripts/build-module.mjs). The markup ships complete with the
+     goal, so a page without data still reads true: "$34,500, our goal for the
+     year ahead". When the live total lands it counts up from $0 as the card
+     comes into view, each part fills on its own, an empty part shows a pulse
+     where the next gift lands, and the donor count joins the trust line.
+     Never a $0 we cannot vouch for: no raised figure, no change. */
+  var GIFTS = {
+    // Every line is a verified unit cost: $5 a night at ACE (15 for $75), $960
+    // a year for a membership, about $3,500 for a US Open the last couple of
+    // years. Monthly figures are those over 12 months ($22 is about $5 a week).
+    monthly: [
+      {
+        a: 22,
+        t: "$22 a month keeps one athlete on court every week of the year.",
+      },
+      { a: 80, t: "$80 a month can keep one athlete training all year." },
+      {
+        a: 325,
+        t: "$325 a month covers a night at ACE every week for up to 15 athletes.",
+      },
+    ],
+    once: [
+      { a: 5, t: "$5 puts one athlete on court for a night." },
+      { a: 75, t: "$75 covers up to 15 athletes for a night at ACE." },
+      { a: 960, t: "$960 can keep one athlete training all year." },
+      { a: 3500, t: "$3,500 covers about what one athlete’s US Open costs." },
+    ],
+  };
+  var GIFT_DEFAULT = { monthly: 80, once: 75 };
+
+  function reduced() {
+    return !!(
+      global.matchMedia && global.matchMedia("(prefers-reduced-motion: reduce)").matches
+    );
+  }
+
+  function whenSeen(node, fn) {
+    if (!("IntersectionObserver" in global)) return fn();
+    var io = new IntersectionObserver(
+      function (entries) {
+        if (
+          entries.some(function (e) {
+            return e.isIntersecting;
+          })
+        ) {
+          io.disconnect();
+          fn();
+        }
+      },
+      { threshold: 0.35 },
+    );
+    io.observe(node);
+  }
+
+  // The faded athlete behind the module is decoration: paint it only when the
+  // module is within a screen of view, so a visit that never scrolls there
+  // never downloads it.
+  function near(node) {
+    if (!("IntersectionObserver" in global)) return node.classList.add("is-near");
+    var io = new IntersectionObserver(
+      function (entries) {
+        if (
+          entries.some(function (e) {
+            return e.isIntersecting;
+          })
+        ) {
+          io.disconnect();
+          node.classList.add("is-near");
+        }
+      },
+      { rootMargin: "200px 0px" },
+    );
+    io.observe(node);
+  }
+
+  function countUp(node, to) {
+    if (reduced() || typeof requestAnimationFrame !== "function") {
+      node.textContent = money(Math.round(to));
+      return;
+    }
+    var t0 = null;
+    var dur = 1400;
+    function step(t) {
+      if (t0 === null) t0 = t;
+      var p = Math.min(1, (t - t0) / dur);
+      node.textContent = money(Math.round(to * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  function each(root, sel, fn) {
+    Array.prototype.forEach.call(root.querySelectorAll(sel), fn);
+  }
+
+  function picker(card) {
+    var box = card.querySelector("[data-give]");
+    var link = card.querySelector("[data-give-link]");
+    if (!box || !link) return;
+    var amts = box.querySelector("[data-amts]");
+    var impact = box.querySelector("[data-impact]");
+    var freq = "monthly";
+    function choose(opt) {
+      Array.prototype.forEach.call(amts.children, function (b) {
+        b.setAttribute(
+          "aria-checked",
+          String(Number(b.getAttribute("data-a")) === opt.a),
+        );
+      });
+      impact.textContent = opt.t;
+      link.href =
+        "/donate?amount=" + opt.a + (freq === "monthly" ? "&frequency=monthly" : "");
+    }
+    function draw() {
+      amts.innerHTML = "";
+      amts.classList.toggle("is-3", GIFTS[freq].length === 3);
+      GIFTS[freq].forEach(function (opt) {
+        var label = "$" + opt.a.toLocaleString("en-US");
+        var b = el("button", null, label);
+        b.type = "button";
+        b.setAttribute("role", "radio");
+        b.setAttribute("data-a", String(opt.a));
+        b.setAttribute(
+          "aria-label",
+          label + (freq === "monthly" ? " a month" : " once"),
+        );
+        b.addEventListener("click", function () {
+          choose(opt);
+        });
+        amts.appendChild(b);
+      });
+      choose(
+        GIFTS[freq].filter(function (o) {
+          return o.a === GIFT_DEFAULT[freq];
+        })[0],
+      );
+    }
+    each(box, "[data-freq]", function (b) {
+      b.addEventListener("click", function () {
+        freq = b.getAttribute("data-freq");
+        each(box, "[data-freq]", function (x) {
+          x.setAttribute("aria-checked", String(x === b));
+        });
+        draw();
+      });
+    });
+    // The static buttons are monthly with $80 chosen; rebuilding them binds
+    // the clicks without changing what is on screen.
+    draw();
+  }
+
+  function module(root) {
+    var scope = root || document;
+    var mods = scope.querySelectorAll("[data-cm]");
+    if (!mods.length) return;
+    Array.prototype.forEach.call(mods, function (m) {
+      var card = m.querySelector(".cm-card");
+      if (card) picker(card);
+      var bg = m.querySelector(".cm-bg");
+      if (bg) near(bg);
+    });
+    raised(function (d) {
+      if (!d || !d.raised) return;
+      var parts = d.parts || {};
+      Array.prototype.forEach.call(mods, function (m) {
+        if (d.donors)
+          each(m, "[data-donors]", function (n) {
+            n.textContent = "Join " + d.donors + " donors";
+            n.hidden = false;
+          });
+        if (d.goal)
+          each(m, "[data-cm-sub]", function (n) {
+            n.textContent = "raised toward our " + money(d.goal) + " goal";
+          });
+        each(m, "[data-cm-total]", function (n) {
+          n.textContent = "$0";
+          whenSeen(n, function () {
+            countUp(n, d.raised);
+          });
+        });
+        Object.keys(parts).forEach(function (k) {
+          var p = parts[k] || {};
+          var pr = Number(p.raised) || 0;
+          var pg = Number(p.goal) || 0;
+          if (!pg) return;
+          each(m, '[data-part-fig="' + k + '"]', function (n) {
+            n.textContent = pr
+              ? money(pr) + " of " + money(pg)
+              : money(pg) + (k === "year" ? " a year" : "");
+          });
+          each(m, '[data-part-row="' + k + '"]', function (n) {
+            n.classList.toggle("is-empty", !pr);
+          });
+          each(m, '[data-part-pct="' + k + '"]', function (n) {
+            if (!pr) return;
+            n.textContent = Math.round((pr / pg) * 100) + "%";
+            n.hidden = false;
+          });
+          each(m, '[data-part-fill="' + k + '"]', function (n) {
+            whenSeen(n, function () {
+              n.style.width =
+                Math.max(0, Math.min(100, (pr / pg) * 100)).toFixed(1) + "%";
+            });
+          });
+        });
+      });
+    }, "wbd");
+  }
+
+  /* The Givebutter form on the off-white (see the matching block at the end
+     of site.css). The form's frame lives two shadow roots down; once it is
+     there and has a height, its .gb-card gets .gb-ready and the blend turns
+     on. No frame within 20 seconds, no change: the form stays white. */
+  function gbOffWhite() {
+    var cards = document.querySelectorAll(".gb-card");
+    Array.prototype.forEach.call(cards, function (card) {
+      var tries = 0;
+      (function check() {
+        var gb = card.querySelector("givebutter-giving-form");
+        var host =
+          gb && gb.shadowRoot && gb.shadowRoot.querySelector("givebutter-iframe");
+        var frame = host && host.shadowRoot && host.shadowRoot.querySelector("iframe");
+        if (frame && frame.getBoundingClientRect().height > 120) {
+          card.classList.add("gb-ready");
+          return;
+        }
+        if (++tries < 80) setTimeout(check, 250);
+      })();
+    });
+  }
+  gbOffWhite();
+
   global.ATLCampaigns = {
     load: load,
     raised: raised,
-    band: band,
+    module: module,
     result: result,
     localDate: localDate,
     today: today,

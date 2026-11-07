@@ -33,6 +33,17 @@ The site header, footer, favicon and social cards use single-color traces of the
 | `atl-logo-2026-ui.svg` | Lightweight trace for the site UI. |
 | `atl-logo-v2-option2-ui.svg` | The trace the OG card generator and `/images/brand/atl-logo-512.png` are built from. |
 
+## The Chicago Wheelie Big Dills (the crew we fund and support)
+
+The crew's own badge, added 2026-11-05 at Alec's request. It is the crew's identity, not Adapt To Life's mark: Adapt To Life funds and supports the crew and does not run it (insurance; see the funder, not operator rule). Never merge it into an Adapt To Life logo or lockup, and keep the Adapt To Life mark separate wherever both appear.
+
+| File | Use it for |
+|---|---|
+| `wheelie-big-dills/wheelie-big-dills-badge-original.png` | The badge exactly as Alec supplied it (1254 x 1254, black square corners). The master. |
+| `wheelie-big-dills/wheelie-big-dills-badge-transparent.png` | The same badge with the black corners removed, so the round badge sits on any background. Use this one for shirts, stickers, social posts and slides. |
+
+The website copy is `public/images/pickleball/wheelie-big-dills-badge.webp` (640 px, transparent), used on `/pickleball` and the sponsor page. Both PNGs are also in Drive, in the "The Wheelie Big Dills" folder.
+
 ## Icons and symbols (current, since 2026-10-29)
 
 One meaning, one picture, everywhere. Pages ask for a meaning (`giving`, `place`) and the symbol dictionary, `data/icons.mjs`, says which drawing that is. `npm run icons` pulls each drawing from its open-source package into `scripts/lib/icons.mjs`, and the tests fail if that file falls behind the dictionary.

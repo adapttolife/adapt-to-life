@@ -99,6 +99,13 @@ const PHOTOS = {
     pos: "18% 40%",
     zoom: "auto 165%",
   },
+  // Same frame for a split card: the photo panel is only the right half, so the
+  // face has to sit in it rather than at the far edge.
+  "cap-profile-split": {
+    file: "assets/photos/cap-profile.jpg",
+    pos: "62% 36%",
+    zoom: "auto 118%",
+  },
   // The one frame that stays in colour (see .card.athlete.color in card.html).
   // Chosen by Alec off the live card, 2026-09-10. He sits well right of centre
   // and side-on, so the type side stays empty wall at every zoom that keeps him
@@ -180,9 +187,9 @@ const CARDS = {
     photo: "chair-drive",
     size: 66,
     measure: "15ch",
-    out: "public/images/og/send-6-v3-athlete.jpg",
+    out: "public/images/og/send-6-v4-road.jpg",
     page: "send-6.html",
-    headline: "Send 6 to the <em>US Open</em> Spring 2027.",
+    headline: "The Road to the <em>US Open</em>.",
   },
   popcorn: {
     ...ATHLETE,
@@ -198,9 +205,9 @@ const CARDS = {
     photo: "paddle-portrait",
     size: 70,
     measure: "14ch",
-    out: "public/images/og/hustle-and-heart-v4-content.jpg",
+    out: "public/images/og/hustle-and-heart-v5-check.jpg",
     page: "hustle-and-heart.html",
-    headline: "Keep your game <em>going</em>.",
+    headline: "More than <em>a check</em>.",
   },
   // An athlete profile card is the page's h1 and nothing else (GATE 0), and for
   // a profile that is exactly right: the card is a poster with his name on it,
@@ -222,9 +229,60 @@ const CARDS = {
     photo: "brickhouse-hero",
     size: 66,
     measure: "11ch",
-    out: "public/images/og/brickhouse-v2-homecourt.jpg",
+    out: "public/images/og/brickhouse-v3-crewhome.jpg",
     page: "brickhouse.html",
-    headline: "Our home court <em>is Brick House</em>.",
+    headline: "The crew's home court <em>is Brick House</em>.",
+  },
+  // The Chicago Classic: same split treatment, Juan with his paddle up.
+  "chicago-classic": {
+    variant: "split",
+    photo: "paddle-raise",
+    size: 72,
+    measure: "9ch",
+    out: "public/images/og/chicago-classic-v1-date.jpg",
+    page: "chicago-classic.html",
+    headline: "The Chicago <em>Classic</em>.",
+  },
+  // Partner pages: the same split treatment.
+  picklr: {
+    variant: "split",
+    photo: "court-swing",
+    size: 72,
+    measure: "9ch",
+    out: "public/images/og/picklr-v1-partner.jpg",
+    page: "picklr.html",
+    headline: "Open play, <em>open doors</em>.",
+  },
+  "chicago-adaptive-sports": {
+    variant: "split",
+    photo: "juan-portrait",
+    size: 76,
+    measure: "8ch",
+    out: "public/images/og/chicago-adaptive-sports-v1-partner.jpg",
+    page: "chicago-adaptive-sports.html",
+    headline: "Push. Play. <em>Persist</em>.",
+  },
+  // AMP Adaptive Sports, partner nonprofit (Nov 6 2026). Karen on the water
+  // at Lauderdale Lakes, from the same master the /karen card uses; the line
+  // is AMP's own, from their gear.
+  amp: {
+    variant: "split",
+    photo: "karen",
+    size: 76,
+    measure: "8ch",
+    out: "public/images/og/amp-v1-partner.jpg",
+    page: "amp.html",
+    headline: "Active. Mobile. <em>Proud</em>.",
+  },
+  // Partner club card, same split treatment as Brick House.
+  ace: {
+    variant: "split",
+    photo: "cap-profile-split",
+    size: 66,
+    measure: "11ch",
+    out: "public/images/og/ace-v3-partner.jpg",
+    page: "ace.html",
+    headline: "Something Chicago <em>hasn't seen</em>.",
   },
   volunteer: {
     ...ATHLETE,

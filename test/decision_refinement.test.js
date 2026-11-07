@@ -8,10 +8,12 @@ test("campaign fallback is prospective and existing gift terms survive", () => {
   assert.ok(p.includes("Gifts already received keep their original terms."));
   assert.ok(p.includes("before you give"));
   assert.ok(!p.includes("the money moves to"));
-  assert.ok(s.includes("For new gifts:"));
-  assert.ok(s.includes("remaining campaign funds from those gifts"));
+  // Nov 5 2026: one fund. The page says where a gift goes before the button,
+  // and money already raised for Send 6 keeps its terms.
+  assert.ok(s.includes("Every gift goes to the Hustle &amp; Heart Fund"));
+  assert.ok(s.includes("stays on the road"));
   assert.ok(
-    s.indexOf('id="campaign-terms"') < s.indexOf('<a class="btn" href="/donate">'),
+    s.indexOf('id="campaign-terms"') < s.indexOf('<a class="btn" href="#give">'),
   );
   for (const f of ["public/donate.html", "public/hustle-and-heart.html"])
     assert.ok(read(f).includes('href="/promise#campaign-gifts"'));

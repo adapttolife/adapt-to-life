@@ -18,78 +18,71 @@ import { recordIntake } from "./intake.js";
 // the same object). Editing the wording here changes both, and bumping VERSION
 // records exactly which text each signer agreed to (also changes doc_sha256).
 // ---------------------------------------------------------------------------
-const VERSION = "media-release-2026-06-27-v3";
+const VERSION = "media-release-2026-11-05-v4";
 
 // ONE universal release for the whole organization. Adapt To Life NFP is the legal
 // entity; Adaptive Sports Near Me and everything else sit underneath it, so a single
-// signed release covers all current and future projects. Drafted for multi-state use:
-// written consent (a defense to right-of-publicity claims everywhere), an irrevocable
-// grant supported by consideration, guardian authority for minors, ESIGN/UETA
-// electronic-records consent, binding-effect + Illinois governing law with a savings
-// clause. Kept as lean as the legal coverage allows. NOT legal advice; have IL counsel
-// review before production. Bumping VERSION re-stamps every PDF and changes doc_sha256.
+// signed release covers all current and future projects.
+// v4 (Nov 2026, Alec: "less is more, keep it simple"): plain language, eight short
+// sections. It keeps written consent (the right-of-publicity defense), disability
+// identification, guardian authority for minors, ESIGN/UETA consent, a release of
+// claims, Illinois law with a savings clause, and a way to stop future use. It no
+// longer says Adapt To Life runs "programs and activities" (funder, not operator).
+// NOT legal advice. Bumping VERSION re-stamps every PDF and changes doc_sha256.
 const DOC = {
   org: "Adapt To Life NFP",
   domains: "adapttolife.org  ·  adaptivesportsnearme.com",
-  title: "Photo, Video, and Media Release",
+  title: "Photo and Video Release",
   version: VERSION,
   intro:
-    "By signing below, you give Adapt To Life NFP permission to take and use photos, video, and recordings of you (or your child) from our programs and activities. Please read it. It explains how the materials may be used, your consent to sign electronically, and how to withdraw permission.",
+    "This lets Adapt To Life share photos and videos of you, or your child, to tell the story of adaptive sports. Please read it before you sign.",
   sections: [
     {
-      h: "Who this is with",
+      h: "What you are agreeing to",
       p: [
-        "Adapt To Life NFP is an Illinois not-for-profit corporation, tax-exempt under Section 501(c)(3) of the Internal Revenue Code (EIN 41-3213344). This release covers Adapt To Life NFP and all of its programs, projects, and initiatives, including Adaptive Sports Near Me (adaptivesportsnearme.com), now and in the future, along with its successors, assigns, and anyone it authorizes such as staff, volunteers, contractors, partners, and sponsors.",
-        'In this release, "Materials" means photographs, video, film, and audio recordings of the participant, together with the participant\'s name, image, likeness, and voice.',
+        "You give Adapt To Life NFP, an Illinois 501(c)(3) nonprofit (EIN 41-3213344), permission to photograph, film and record the participant, and to use those photos, videos and recordings, with the participant's name and voice, on its websites, social media, print, email and fundraising. This includes Adaptive Sports Near Me and anyone Adapt To Life authorizes, such as volunteers, partners and sponsors.",
       ],
     },
     {
-      h: "Permission to record and use",
+      h: "No payment",
       p: [
-        "In consideration of the opportunity to take part in Adapt To Life NFP's programs and to support its charitable mission, I irrevocably grant Adapt To Life NFP and those it authorizes the right to photograph, film, and record the participant, and to use, edit, reproduce, publish, distribute, and display the Materials for any lawful purpose connected to its mission. This includes its websites, social media, print, email, fundraising, and promotional and educational materials, in any media now known or later developed, worldwide, and for as long as Adapt To Life NFP finds them useful.",
-        "This is my written consent under any applicable right of publicity and privacy laws. Adapt To Life NFP is not required to use the Materials.",
+        "You will not be paid for this release or for any use of the photos and videos. Adapt To Life owns them and does not have to use them.",
       ],
     },
     {
-      h: "Ownership and no payment",
+      h: "Adaptive sports",
       p: [
-        "All Materials are owned by Adapt To Life NFP. I have no right to inspect or approve how they are used, and I will not be paid for this release or for any use of the Materials.",
+        "The photos and videos may show the participant as a person with a disability or as an adaptive athlete, and you are OK with that.",
       ],
     },
     {
-      h: "Images from adaptive sports programs",
+      h: "No claims",
       p: [
-        "I understand the Materials may identify the participant as a person with a disability or as someone who takes part in adaptive sports programs, and I consent to their use on that basis.",
+        "You will not bring a claim against Adapt To Life, its volunteers, or anyone it authorizes over the use of these photos and videos, including claims about privacy, publicity, or how they are edited.",
       ],
     },
     {
-      h: "Release of claims",
+      h: "Signing for a child",
       p: [
-        "I release Adapt To Life NFP and its directors, officers, employees, volunteers, and those it authorizes from any claim arising out of the authorized recording, use, or publication of the Materials. This includes any claim for invasion of privacy, right of publicity, defamation, false light, or emotional distress, and any claim based on how the Materials are edited or used.",
+        "If the participant is under 18, you confirm you are their parent or legal guardian and can sign for them.",
       ],
     },
     {
-      h: "If I am signing for a minor",
+      h: "Changing your mind",
       p: [
-        "If the participant is under 18, I confirm that I am the participant's parent or legal guardian, that I have authority to grant these rights on the participant's behalf, and that I am signing for the participant. I understand a minor cannot grant these rights alone. This release binds the participant, me, and our heirs.",
+        "You can ask us to stop using the participant's image in anything new by emailing hello@adapttolife.org. Anything already shared may keep circulating.",
       ],
     },
     {
-      h: "Electronic signature and records",
+      h: "Signing electronically",
       p: [
-        "I agree to do business electronically and to sign this release electronically. My electronic signature has the same legal effect as a handwritten one. Adapt To Life NFP will keep an electronic record of this signed release, and I may request a paper copy by emailing hello@adapttolife.org.",
+        "You agree to sign electronically, and your electronic signature counts the same as a handwritten one. We keep a copy, and you can ask for one at hello@adapttolife.org.",
       ],
     },
     {
-      h: "Withdrawing permission",
+      h: "The fine print",
       p: [
-        "Although this grant is irrevocable, I may ask Adapt To Life NFP to stop future use by writing to hello@adapttolife.org. It will make reasonable efforts to stop using the participant's image in new Materials, but Materials already shared or published may continue to circulate.",
-      ],
-    },
-    {
-      h: "General",
-      p: [
-        "This release is binding on me, the participant, and our heirs, and benefits Adapt To Life NFP and its successors and assigns. It is governed by the laws of the State of Illinois, except where the law of the participant's home state must apply, in which case it will be enforced to the fullest extent that law allows. If any part is unenforceable, the rest stays in effect. This is the entire agreement on this subject.",
+        "Illinois law applies. If any part cannot be enforced, the rest still applies. This release binds you, the participant, and your heirs.",
       ],
     },
   ],
@@ -565,7 +558,7 @@ async function buildPdf(d) {
     para(`Signed by: ${d.name}`, { size: 10.5, gap: 2 });
   }
   para(`Email: ${d.email}`, { size: 10.5, gap: 2 });
-  if (d.program) para(`Program or event: ${d.program}`, { size: 10.5, gap: 2 });
+  if (d.program) para(`Event: ${d.program}`, { size: 10.5, gap: 2 });
   para(`Date: ${new Date(d.signedAt).toUTCString()}`, { size: 10.5, gap: 0 });
 
   // Certificate page
@@ -589,7 +582,7 @@ async function buildPdf(d) {
     row("On behalf of (minor)", d.minorName);
     row("Relationship", d.relationship);
   }
-  if (d.program) row("Program or event", d.program);
+  if (d.program) row("Event", d.program);
   row("Signature method", d.signatureType === "typed" ? "Typed" : "Hand-drawn");
   row("Signed at (UTC)", d.signedAt);
   row("Consent", "Affirmatively agreed; consented to electronic records and signature");

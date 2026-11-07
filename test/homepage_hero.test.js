@@ -70,3 +70,28 @@ test("every panel the hero references exists, and is fingerprinted", () => {
     );
   }
 });
+
+test("no wall panel is cut from a frame showing GLASA's shirts", () => {
+  // GLASA is never named on this site, and that includes what people are
+  // wearing. Until Nov 6 2026 the wall's "profile" panel was JLA_5989, a man in
+  // a "Great Lakes Games" shirt (GLASA's event), visible on desktop. It is
+  // JLA_6011 now (Alec approved the swap). These frames from the same ACE shoot
+  // show the Great Lakes Games shirt or GLASA's staff shirt; none of them may
+  // become a homepage panel.
+  const GLASA_SHIRTS = new Set([
+    "JLA_5989.jpg",
+    "JLA_5990.jpg",
+    "JLA_5991.jpg",
+    "JLA_6136.jpg",
+    "JLA_6192.jpg",
+    "JLA_6193.jpg",
+  ]);
+  const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), "utf8");
+  const panels = JSON.parse(read("public/images/hero/panels/panels.json"));
+  const hashes = JSON.parse(read("public/images/hero/panels/hashes.json"));
+  for (const [name, p] of Object.entries(panels)) {
+    assert.ok(!GLASA_SHIRTS.has(p.src), `panel "${name}" is cut from ${p.src}`);
+  }
+  assert.equal(panels.profile.src, "JLA_6011.jpg");
+  assert.ok(html.includes(`/images/hero/panels/${hashes["profile.webp"]}`));
+});

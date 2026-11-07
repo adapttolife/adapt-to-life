@@ -1,19 +1,80 @@
 {
-  "_comment": "Spec 115 \u2014 the campaign layer's single source. A CAMPAIGN is what we are raising for and who it reaches; it gets a page. A DRIVE is a dated way we raise it; it feeds exactly one campaign and is a row on that campaign's page until it earns its own page (as popcorn did). Adding a drive is appending one object here. Set published:false to keep a verified record on file without publishing it. Dates are ISO (YYYY-MM-DD) and read as LOCAL dates. raised stays null until a number is real.",
+  "_comment": "Spec 115 — the campaign layer's single source. A CAMPAIGN is what we are raising for and who it reaches; it gets a page. A DRIVE is a dated way we raise it; it feeds exactly one campaign and is a row on that campaign's page until it earns its own page (as popcorn did). Adding a drive is appending one object here. Set published:false to keep a verified record on file without publishing it. Dates are ISO (YYYY-MM-DD) and read as LOCAL dates. raised stays null until a number is real.",
   "campaigns": [
     {
+      "slug": "wheelie-big-dills",
+      "name": "The Chicago Wheelie Big Dills",
+      "page": "/pickleball#support",
+      "published": true,
+      "beneficiary": "The crew, all year",
+      "when": "Year-round",
+      "blurb": "One goal for the year ahead: every week first, then the road to the US Open.",
+      "goal": 34500,
+      "raised": null,
+      "raised_source": "api",
+      "raised_key": "wbd",
+      "parts": [
+        {
+          "key": "year",
+          "label": "Every week",
+          "goal": 13500,
+          "detail": "Court time and memberships, so athletes can play every week and train to compete. Every new gift starts here.",
+          "math": [
+            { "label": "Court time at ACE", "qty": 52, "of": "nights", "unit": 75, "note": "A night is 10 to 15 athletes. At $5 each, up to 15 is $75." },
+            { "label": "Memberships", "qty": 10, "of": "athletes", "unit": 960, "note": "A year of unlimited play at ACE, so an athlete can train to compete. Under $3 a day." }
+          ]
+        },
+        {
+          "key": "send-6",
+          "label": "The Road to the US Open",
+          "goal": 21000,
+          "page": "/send-6",
+          "detail": "Tournaments through the year to build rankings, then Naples. The US Open picks players by lottery, so nothing is guaranteed.",
+          "math": [
+            { "label": "The US Open", "qty": 6, "of": "athletes", "unit": 3500, "about": true, "note": "What it has cost each athlete the last couple of years: entry fees, travel and an accessible room in Naples." }
+          ]
+        }
+      ],
+      "next": {
+        "label": "the Chicago Classic",
+        "page": "/chicago-classic",
+        "detail": "Our goal: free registration, transportation and hotels for every athlete. It joins the goal once it has a date and a budget."
+      },
+      "cta_label": "Donate",
+      "cta_url": "/donate",
+      "_note": "One goal, one bar (Alec, Nov 5). Every week ($13,500: a year of nights at ACE, $3,900, plus ten athletes training, $9,600) fills first, then the Road ($21,000). The Classic joins the goal when it has a date and a budget."
+    },
+    {
       "slug": "send-6-us-open",
-      "name": "Send 6 to the US Open Spring 2027",
+      "name": "The Road to the US Open",
       "page": "/send-6",
       "published": true,
-      "beneficiary": "Six adaptive pickleball athletes",
+      "beneficiary": "Six wheelchair pickleball athletes",
       "when": "Spring 2027, Naples, Florida",
-      "blurb": "Help six adaptive pickleball athletes prepare for the US Open in Naples. Our $21,000 target supports equipment, training, and travel.",
+      "blurb": "Six athletes, about $3,500 each: roughly what the US Open has cost the last couple of years. Entry is a lottery, so the road matters.",
       "goal": 21000,
       "raised": null,
       "raised_source": "api",
-      "cta_label": "See the campaign",
-      "cta_url": "/send-6"
+      "cta_label": "See the road",
+      "cta_url": "/send-6",
+      "raised_key": "send-6",
+      "part_of": "wheelie-big-dills",
+      "_note": "The second part of the one goal. Starts with the Send 6 set-aside, then fills once every week is funded."
+    },
+    {
+      "slug": "chicago-classic",
+      "name": "The Chicago Classic",
+      "page": "/chicago-classic",
+      "published": false,
+      "beneficiary": "Every athlete who plays it",
+      "when": "Date and court to come",
+      "blurb": "Our goal: free registration, transportation and hotels for every athlete.",
+      "goal": null,
+      "raised": null,
+      "raised_source": "none",
+      "cta_label": "See the Classic",
+      "cta_url": "/chicago-classic",
+      "_note": "Not raising yet (Alec, Nov 5): the page states the goal; no form, no band."
     }
   ],
   "drives": [

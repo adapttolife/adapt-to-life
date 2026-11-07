@@ -59,7 +59,7 @@ export const SHARED = {
     [
       "Flexible contributions",
       "time",
-      "Two hours on a Tuesday night is a real contribution. For events and coaching, we agree on a time together.",
+      "Two hours in an evening is a real contribution. For events and coaching, we agree on a time together.",
     ],
     [
       "You hear back either way",
@@ -224,7 +224,7 @@ export const ROLES = [
     ],
     first: [
       "Ask benefits or HR whether your employer matches. Most people do not know.",
-      "Submit us. You need our legal name and EIN, both on our ways to give page.",
+      "Submit us. You need our legal name and EIN, both on our donate page.",
       "Tell us it is done so we can watch for it.",
     ],
     helps: ["You work somewhere large enough that a program probably already exists."],
@@ -245,11 +245,11 @@ export const ROLES = [
     why: "Help us prepare for larger and planned gifts, with clear processes, appropriate advice, and commitments the organization can honor.",
     own: [
       "Being the person we can put on the phone with a donor's advisor, attorney or broker.",
-      "Sanity-checking our published bequest language.",
+      "Drafting bequest language we can publish.",
       "Telling us when a gift structure is a bad idea for us.",
     ],
     first: [
-      "Read our ways to give page as a donor's advisor would, and mark what is missing.",
+      "Read our donate page as a donor's advisor would, and mark what is missing.",
       "Tell us which gift types we should be ready to accept, and which to decline for now.",
     ],
     helps: [
@@ -381,7 +381,7 @@ ROLES.push(
     slug: "insurance-and-risk",
     lane: "clean",
     name: "Insurance and risk",
-    card: "Coverage for clinics, tournaments, volunteers, and the athletes we put on a court.",
+    card: "Coverage for our volunteers and the events we present, and the standards we ask of the programs we fund.",
     time: "As it comes up",
     where: "Remote",
     withWhom: "Alec, our founder and executive director",
@@ -496,7 +496,7 @@ ROLES.push(
     slug: "photographer-or-videographer",
     lane: "tell",
     name: "Photographer or videographer",
-    card: "Shoot our clinics and tournaments.",
+    card: "Shoot the clinics and tournaments we fund and support.",
     time: "A day at a time",
     where: "In person, at events",
     withWhom: "Alec, our founder and executive director",
@@ -644,7 +644,7 @@ ROLES.push(
     card: "Setup, registration, scorekeeping, teardown.",
     time: "A day at a time",
     where: "In person",
-    withWhom: "Whoever is running the event, usually Alec",
+    withWhom: "The event's host, with Alec as your contact",
     why: "Help the day run smoothly, from registration to packing up. Agree the shift and tasks with us so everyone knows where they are needed.",
     own: [
       "Setup and teardown, the least fun and most necessary part.",
@@ -678,7 +678,7 @@ ROLES.push(
       "Assessing donated gear honestly, including what is not safe to put anybody in.",
     ],
     first: [
-      "Look at what we and our partner programs have sitting unused, and tell us what is salvageable.",
+      "Look at what we and the programs we support have sitting unused, and tell us what is salvageable.",
       "Agree a suitable assessment or repair within your qualifications.",
     ],
     helps: [
@@ -843,7 +843,7 @@ ROLES.push(
     why: "Help guide the organization as it grows. Bring judgment and relevant experience, and understand the responsibilities before taking a seat.",
     own: [
       "Governance. The decisions that are genuinely the board's, including money and risk.",
-      "Holding us to our own promises, starting with one hundred percent reaching the athlete.",
+      "Holding us to our own promises, starting with How Giving Works.",
       "Opening doors, which every board member does anyway.",
     ],
     first: [

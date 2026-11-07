@@ -29,7 +29,7 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  background: #000;
+  background: var(--photo-black);
   min-height: clamp(580px, 88svh, 900px);
   display: flex;
   flex-direction: column;
@@ -56,7 +56,7 @@
       rgba(255, 150, 90, 0.34) 0%,
       rgba(255, 92, 57, 0) 72%
     ),
-    linear-gradient(180deg, #000 0%, #030304 42%, #120b08 100%);
+    linear-gradient(180deg, #000 0%, #030304 42%, #0f0e0d 100%);
 }
 
 /* ---- the wall ------------------------------------------------------------ */
@@ -141,9 +141,9 @@
     ),
     linear-gradient(
       180deg,
-      rgba(8, 8, 10, 0.55) 0%,
-      rgba(8, 8, 10, 0.28) 46%,
-      rgba(10, 8, 8, 0.6) 100%
+      rgba(15, 14, 13, 0.55) 0%,
+      rgba(15, 14, 13, 0.28) 46%,
+      rgba(15, 14, 13, 0.6) 100%
     );
 }
 .mw-haze.h2 {
@@ -156,9 +156,9 @@
     ),
     linear-gradient(
       180deg,
-      rgba(8, 8, 10, 0.3) 0%,
-      rgba(8, 8, 10, 0.06) 44%,
-      rgba(10, 8, 8, 0.34) 100%
+      rgba(15, 14, 13, 0.3) 0%,
+      rgba(15, 14, 13, 0.06) 44%,
+      rgba(15, 14, 13, 0.34) 100%
     );
 }
 
@@ -175,11 +175,11 @@
   pointer-events: none;
   background: radial-gradient(
     118% 86% at 6% 6%,
-    rgba(6, 6, 8, 0.95) 0%,
-    rgba(6, 6, 8, 0.84) 26%,
-    rgba(6, 6, 8, 0.46) 44%,
-    rgba(6, 6, 8, 0.12) 64%,
-    rgba(6, 6, 8, 0) 80%
+    rgba(15, 14, 13, 0.95) 0%,
+    rgba(15, 14, 13, 0.84) 26%,
+    rgba(15, 14, 13, 0.46) 44%,
+    rgba(15, 14, 13, 0.12) 64%,
+    rgba(15, 14, 13, 0) 80%
   );
 }
 
@@ -262,7 +262,7 @@
   padding-bottom: 2px;
 }
 .mw-copy .mw-quiet:hover {
-  color: #fff;
+  color: var(--cream); /* off-white, never pure white */
   border-bottom-color: var(--orange-hot);
 }
 
@@ -303,14 +303,14 @@
   }
 }
 .mw-drive-in b {
-  color: #fff;
+  color: var(--cream); /* off-white, never pure white */
   font-weight: 600;
 }
 .mw-drive-in .mw-bar {
   width: 120px;
   height: 3px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(249, 247, 242, 0.16);
   overflow: hidden;
 }
 .mw-drive-in .mw-bar i {
@@ -323,7 +323,7 @@
   transition: width 1.1s cubic-bezier(0.22, 0.9, 0.28, 1) 0.5s;
 }
 .mw-drive-in a {
-  color: #fff;
+  color: var(--cream); /* off-white, never pure white */
   border-bottom: 1.5px solid var(--orange);
   padding-bottom: 1px;
 }
@@ -416,10 +416,10 @@
 .hero-banner .mw-haze.h1 {
   background: linear-gradient(
     180deg,
-    rgba(8, 8, 10, 0.86) 0%,
-    rgba(8, 8, 10, 0.3) 34%,
-    rgba(8, 8, 10, 0.1) 62%,
-    rgba(12, 8, 7, 0.72) 100%
+    rgba(15, 14, 13, 0.86) 0%,
+    rgba(15, 14, 13, 0.3) 34%,
+    rgba(15, 14, 13, 0.1) 62%,
+    rgba(15, 14, 13, 0.72) 100%
   );
 }
 .hero-banner .mw-haze.h2 {
@@ -431,9 +431,9 @@
     ),
     linear-gradient(
       180deg,
-      rgba(8, 8, 10, 0.72) 0%,
-      rgba(8, 8, 10, 0.1) 40%,
-      rgba(8, 8, 10, 0) 70%
+      rgba(15, 14, 13, 0.72) 0%,
+      rgba(15, 14, 13, 0.1) 40%,
+      rgba(15, 14, 13, 0) 70%
     );
 }
 /* The type lives in the bottom third — where a team banner actually puts it —
@@ -443,14 +443,14 @@
   background:
     linear-gradient(
       0deg,
-      rgba(6, 6, 8, 0.97) 0%,
-      rgba(6, 6, 8, 0.94) 26%,
-      rgba(6, 6, 8, 0.72) 42%,
-      rgba(6, 6, 8, 0.3) 56%,
-      rgba(6, 6, 8, 0.04) 72%,
-      rgba(6, 6, 8, 0) 84%
+      rgba(15, 14, 13, 0.97) 0%,
+      rgba(15, 14, 13, 0.94) 26%,
+      rgba(15, 14, 13, 0.72) 42%,
+      rgba(15, 14, 13, 0.3) 56%,
+      rgba(15, 14, 13, 0.04) 72%,
+      rgba(15, 14, 13, 0) 84%
     ),
-    linear-gradient(180deg, rgba(6, 6, 8, 0.55) 0%, rgba(6, 6, 8, 0) 26%);
+    linear-gradient(180deg, rgba(15, 14, 13, 0.55) 0%, rgba(15, 14, 13, 0) 26%);
 }
 .hero-banner .mw-copy {
   text-align: center;
@@ -487,11 +487,11 @@
   .mw-scrim {
     background: linear-gradient(
       94deg,
-      rgba(6, 6, 8, 0.96) 0%,
-      rgba(6, 6, 8, 0.9) 28%,
-      rgba(6, 6, 8, 0.62) 46%,
-      rgba(6, 6, 8, 0.18) 60%,
-      rgba(6, 6, 8, 0) 74%
+      rgba(15, 14, 13, 0.96) 0%,
+      rgba(15, 14, 13, 0.9) 28%,
+      rgba(15, 14, 13, 0.62) 46%,
+      rgba(15, 14, 13, 0.18) 60%,
+      rgba(15, 14, 13, 0) 74%
     );
   }
 }
@@ -577,7 +577,7 @@
   .mw-copy .display {
     margin: 0;
     max-width: none;
-    background: #000;
+    background: var(--photo-black);
     padding: clamp(1.6rem, 6vw, 2.4rem) clamp(1.2rem, 5vw, 2rem)
       clamp(1.5rem, 5vw, 2.2rem);
     font-family: var(--font-body);
@@ -586,7 +586,7 @@
     font-size: clamp(2rem, 8.6vw, 3.2rem);
     line-height: 1.02;
     letter-spacing: -0.035em;
-    color: #fff;
+    color: var(--cream); /* off-white, never pure white */
   }
   /* The em carries `style="color:var(--orange)"` inline. Desktop sets it as a
      serif italic in orange; here we keep the orange and drop only the italic,

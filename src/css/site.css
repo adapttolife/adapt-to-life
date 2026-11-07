@@ -1084,7 +1084,7 @@ em.italic[style*="--orange"] {
 .dark,
 .on-dark,
 .footer,
-.cm[data-theme="light"] .cm-card {
+.cm .cm-card {
   --good-ink: #4cc38a;
   --good-dot: #4cc38a;
   --info-ink: #86b6ef;
@@ -3402,15 +3402,19 @@ a.win-band:focus-visible {
   --hair: var(--hairline-dark);
   --raised: rgba(249, 247, 242, 0.04);
   --em: var(--orange);
-  --data: var(--ink);
+  /* The money card is Night on every page (Alec, Nov 7 2026: option D, the
+     total in yellow on a Night card). On the Night section it is the raised
+     step with a hairline, like the stat tiles beside it. */
+  --data: var(--cream);
   --gift: #008300;
-  --kind: #2a78d6;
-  --card: var(--paper);
-  --card-text: var(--ink);
-  --card-muted: #6a675e; /* the site's warm muted */
-  --card-hair: rgba(59, 59, 70, 0.12);
-  --track: rgba(59, 59, 70, 0.1);
-  --hero: var(--orange-ink);
+  --kind: #3987e5;
+  --card: var(--night-raised);
+  --card-text: var(--cream);
+  --card-muted: #cfc9bd;
+  --card-hair: rgba(249, 247, 242, 0.1);
+  --track: rgba(249, 247, 242, 0.14);
+  /* Yellow means a win: money already secured reads at 10.7:1 on Night. */
+  --hero: var(--yellow);
   --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 24px 48px -24px rgba(0, 0, 0, 0.6);
   --ghost-o: 0.18;
   --ghost-blend: screen;
@@ -3443,7 +3447,7 @@ a.win-band:focus-visible {
   --card-muted: #cfc9bd;
   --card-hair: rgba(249, 247, 242, 0.1);
   --track: rgba(249, 247, 242, 0.14);
-  --hero: var(--orange);
+  --hero: var(--yellow);
   --card-shadow:
     0 1px 2px rgba(59, 59, 70, 0.1), 0 24px 48px -24px rgba(23, 21, 19, 0.55);
   --ghost-o: 0.15;
@@ -3711,11 +3715,11 @@ a.win-band:focus-visible {
   background: color-mix(in srgb, var(--action) 14%, transparent);
   color: var(--orange-ink);
 }
-.cm[data-theme="light"] .cm-badge--accent {
+.cm .cm-badge--accent {
   color: var(--orange-hot);
   background: color-mix(in srgb, var(--accent) 20%, transparent);
 }
-.cm[data-theme="light"] .cm-badge--action {
+.cm .cm-badge--action {
   color: var(--orange-hot);
   background: color-mix(in srgb, var(--action) 20%, transparent);
 }
@@ -3731,12 +3735,6 @@ a.win-band:focus-visible {
 .cm-badge--info {
   background: color-mix(in srgb, var(--info) calc(var(--tag-tint) + 4%), transparent);
   color: var(--info-ink);
-}
-/* On the off-white money card (dark theme) the quiet chip and the switch track
-   are the page off-white, not a grey mix: two light tones, never a third. */
-.cm[data-theme="dark"] .cm-badge--quiet,
-.cm[data-theme="dark"] .cm-seg {
-  background: var(--canvas);
 }
 .cm-track {
   position: relative;
@@ -3905,7 +3903,7 @@ a.win-band:focus-visible {
     0 1px 2px rgba(0, 0, 0, 0.12),
     inset 0 0 0 1px var(--card-hair);
 }
-.cm[data-theme="light"] .cm-seg button[aria-checked="true"] {
+.cm .cm-seg button[aria-checked="true"] {
   background: rgba(249, 247, 242, 0.14);
 }
 .cm-amts {
@@ -3942,7 +3940,7 @@ a.win-band:focus-visible {
   background: color-mix(in srgb, var(--action) 10%, transparent);
   box-shadow: inset 0 0 0 1px var(--action-ink);
 }
-.cm[data-theme="light"] .cm-amts button[aria-checked="true"] {
+.cm .cm-amts button[aria-checked="true"] {
   border-color: var(--action);
   box-shadow: inset 0 0 0 1px var(--action);
   background: color-mix(in srgb, var(--action) 16%, transparent);

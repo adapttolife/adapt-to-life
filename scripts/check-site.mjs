@@ -745,7 +745,13 @@ const BUDGET = {
   // requests the workers.dev review link never loads, so 44 (42 on review
   // plus two) was set two short. 47 is the live 45 plus two. Own bytes on
   // the live site: 617KB, inside 635.
-  "/": { own: 635, total: 900, reqs: 47, hosts: 4, cls: 0.1 },
+  // Re-ruled by Alec, 2026-11-07: "Idc about the page size limit - stop being
+  // too rigid." The caps stay only as accident detectors (a 5MB image, a
+  // third-party script that doubles), so they sit well above what the pages
+  // weigh now: home measured 643KB own on the live site that day (Ryan's
+  // faded figure and the six seat faces, both Alec's calls), /donate 251KB.
+  // Nothing he chooses gets trimmed to fit a cap; the cap moves.
+  "/": { own: 800, total: 1100, reqs: 60, hosts: 4, cls: 0.1 },
   // cls:null, still — but for a smaller and better-understood reason than
   // before. The Givebutter cause IS fixed: reserving the panel's height took
   // MOBILE from 0.12-0.76 down to a flat 0 across five runs in every condition
@@ -834,7 +840,7 @@ const BUDGET = {
   // (Alec: "They are partners"), and its logo tile is 7KB. Measured 228;
   // plus 4% is 237. (The homepage's new 7KB logo fits inside 635: 617KB,
   // 43 requests.)
-  "/donate": { own: 237, total: 9000, reqs: 108, hosts: 21, cls: null },
+  "/donate": { own: 320, total: 9000, reqs: 120, hosts: 21, cls: null },
 };
 
 // MEASURE ONE PAGE, ONCE. This was the body of the loop below until the loop

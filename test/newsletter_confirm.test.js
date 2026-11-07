@@ -55,7 +55,7 @@ test("adds a new newsletter signup to the configured Resend segment", async () =
         await safeNewsletterSubscribe(env, " Person@example.com ", "footer", {
           name: "Taylor",
         }),
-        { ok: true },
+        { ok: true, contactId: "contact-test" },
       );
     },
   );
@@ -105,4 +105,60 @@ test("requires the Resend API key and segment ID", async () => {
     ).status,
     503,
   );
+});
+
+test("a signup that failed part way is retried, not reported as already on the list", async () => {
+  // Nov 7 2026: a claim left at needs-review used to return existing for ever.
+  const writes = [];
+  let claimTaken = false;
+  const db = {
+    prepare(sql) {
+      return {
+        bind(...values) {
+          return {
+            async first() {
+              if (sql.startsWith("INSERT OR IGNORE")) return null; // claim exists
+              if (
+                sql.includes(
+                  "state='creating' WHERE claim_key=? AND state='needs-review'",
+                )
+              ) {
+                claimTaken = true;
+                return { claim_key: "claim" };
+              }
+              return null;
+            },
+            async run() {
+              writes.push({ sql, values });
+              return {};
+            },
+          };
+        },
+      };
+    },
+  };
+  const env = {
+    AGENT_MAIL_DB: db,
+    RESEND_API_KEY: "re_test",
+    RESEND_SEGMENT_ID: "segment-test",
+  };
+  let posted = 0;
+  await withFetch(
+    async () => {
+      posted++;
+      return Response.json({ object: "contact", id: "contact-retry" });
+    },
+    async () => {
+      assert.deepEqual(
+        await safeNewsletterSubscribe(env, "again@example.com", "footer"),
+        {
+          ok: true,
+          contactId: "contact-retry",
+        },
+      );
+    },
+  );
+  assert.ok(claimTaken, "the needs-review claim was taken back");
+  assert.equal(posted, 1, "Resend was asked again");
+  assert.ok(writes.some(({ sql }) => sql.includes("state='resend-subscribed'")));
 });

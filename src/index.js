@@ -1656,7 +1656,7 @@ function after(ctx, promise) {
    after(), so notification never sits on the response path.
 
    Deliberately swallows its own failures: for every form here the primary store
-   is elsewhere (the D1 form outbox, beehiiv, Drive, Givebutter) and the submission has
+   is elsewhere (the D1 form outbox, Resend, Drive, Givebutter) and the submission has
    already succeeded by the time this runs. An intake hiccup must never turn a
    saved submission into a failed one — and it cannot lose anything either, because
    an unnotified row is picked up by the sweep cron. */
@@ -1664,8 +1664,47 @@ async function tellAlec(env, entry) {
   try {
     const rec = await recordIntake(env, entry);
     if (rec.ok) await notifyIntake(env, rec.id);
+    else
+      console.error("intake NOT recorded (submission itself already saved):", {
+        site: entry.site,
+        kind: entry.kind,
+        reason: rec.error,
+      });
   } catch (err) {
     console.error("intake failed (submission itself already saved):", err);
+  }
+}
+
+/** A newsletter signup's intake row, written before the response. Returns
+    whether it was recorded; never throws, because the person is already on the
+    Resend list and failing their signup now would only confuse them. */
+export async function recordNewsletterIntake(env, ctx, email, source) {
+  try {
+    const rec = await recordIntake(env, {
+      site: INTAKE_SITE,
+      kind: "newsletter",
+      email,
+      summary: `New newsletter signup: ${email}`,
+      source,
+      payload: { consent: "Explicit newsletter signup; not inferred from other forms" },
+    });
+    if (!rec.ok) {
+      console.error(
+        "newsletter signup is on the Resend list but its intake row was NOT recorded; the CRM will not see it",
+        { site: INTAKE_SITE, reason: rec.error },
+      );
+      return false;
+    }
+    after(
+      ctx,
+      notifyIntake(env, rec.id).catch((err) =>
+        console.error("newsletter intake notify failed (row saved, sweep retries):", err?.message || err),
+      ),
+    );
+    return true;
+  } catch (err) {
+    console.error("newsletter intake failed:", err?.message || err);
+    return false;
   }
 }
 
@@ -1957,17 +1996,15 @@ async function handleSubscribe(request, env, ctx) {
         console.error("welcome series could not start:", err?.message || err),
       ),
     );
-  after(
-    ctx,
-    tellAlec(env, {
-      site: INTAKE_SITE,
-      kind: "newsletter",
-      email,
-      summary: `New newsletter signup: ${email}`,
-      source,
-      payload: { consent: "Explicit newsletter signup; not inferred from other forms" },
-    }),
-  );
+  // The intake row is how a signup reaches the CRM (Intake Register). Resend
+  // holds the list, so a signup whose row was never written is on the list
+  // but invisible to the CRM, and the sweep cron cannot recover a row that
+  // does not exist. So the row is written here, awaited, before the response,
+  // and a failure is logged by name instead of disappearing inside after().
+  // (2026-11-07: the one Resend-era signup with no intake row came from a
+  // review-only route that skipped this handler; this makes the write
+  // impossible to defer or swallow here.)
+  await recordNewsletterIntake(env, ctx, email, source);
   return json({ ok: true, ...(result.existing ? { existing: true } : {}) });
 }
 

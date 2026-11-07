@@ -43,7 +43,7 @@ function line(k, v) {
  *
  * Throws nothing: a caller that cannot reach D1 gets { ok:false } and decides
  * whether that is fatal for its form. For forms whose primary store is elsewhere
- * (beehiiv, Airtable, ClickUp) intake is a mirror and a failure here must not
+ * (Resend, ClickUp) intake is a mirror and a failure here must not
  * fail the submission; for forms where intake IS the store, it must.
  */
 export async function recordIntake(env, entry) {

@@ -21,7 +21,7 @@
           "detail": "Court time and memberships, so athletes can play every week and train to compete. Every new gift starts here.",
           "math": [
             { "label": "Court time at ACE", "qty": 52, "of": "nights", "unit": 225, "note": "A night is 10 to 15 athletes. A drop in at ACE is $15, so up to 15 is $225." },
-            { "label": "Memberships", "qty": 10, "of": "athletes", "unit": 1548, "note": "A premium membership, $129 a month: a year of unlimited play, so an athlete can train to compete." }
+            { "label": "Memberships", "qty": 10, "of": "athletes", "unit": 1548, "note": "A membership is $129 a month for unlimited sessions. It takes many sessions a week to compete in tournaments and build a ranking." }
           ]
         },
         {

@@ -82,6 +82,7 @@
   }
   .nb-total{ max-width:none; margin:0; padding:1.1rem clamp(1.2rem,3vw,1.8rem); border-radius:var(--r-xl); background:var(--slate); color:var(--cream); font-weight:800; }
   .nb-total-top{ display:flex; justify-content:space-between; align-items:baseline; gap:1rem; margin:0; }
+  .nb-total-top > span{ line-height:1.25; }
   /* Covered so far, in the module's colours: green gifts, blue striped court
      time (colour plus texture), a 2px gap between them, and the dotted track
      for a goal that has not started. */
@@ -107,20 +108,29 @@
   .nb-crew span{ font-family:var(--font-display); font-style:italic; font-weight:800; font-size:0.92rem; line-height:1.1; color:var(--ink); }
   .nb-crew a{ color:inherit; text-decoration:none; border-bottom:2px solid var(--orange); }
   @media (max-width:420px){ .nb-crew{ grid-template-columns:repeat(3,minmax(0,1fr)); row-gap:0.8rem; } }
-  .nb-key{ display:inline-grid; place-items:center; width:1.7em; height:1.2em; margin-right:0.45em; border-radius:999px; vertical-align:-0.25em; background:var(--good); color:var(--cream); }
-  .nb-key--kind{ background:repeating-linear-gradient(135deg, #3987e5 0 3px, color-mix(in srgb, #3987e5 72%, #000) 3px 6px); }
-  .nb-key .sym{ width:0.85em; height:0.85em; }
   .nb-fill{ display:block; height:100%; width:0; border-radius:999px; background:var(--good); transition:width 1.6s var(--ease); }
   .nb-fill--kind{ background:repeating-linear-gradient(135deg, var(--info) 0 3px, color-mix(in srgb, var(--info) 55%, transparent) 3px 6px); }
   .nb-total .nb-fill--kind{ background:repeating-linear-gradient(135deg, #3987e5 0 3px, color-mix(in srgb, #3987e5 55%, transparent) 3px 6px); }
   .has-gifts .nb-fill--kind{ margin-right:2px; }
-  .nb-legend{ display:flex; flex-wrap:wrap; align-items:baseline; gap:0.35rem 1.2rem; margin:0.7rem 0 0; font-size:0.92rem; font-weight:600; color:#cfc9bd; }
+  /* Under the bar, a ledger in the bar's order: each part with a swatch cut
+     from its segment, then so far and to go under a rule. Every amount in one
+     right-hand column, so it adds up without a calculator. */
+  .nb-ledger{ list-style:none; margin:0.85rem 0 0; padding:0; font-size:0.95rem; line-height:1.35; }
+  .nb-ledger li{ display:grid; grid-template-columns:1.3rem minmax(0,1fr) auto; column-gap:0.6rem; align-items:baseline; padding:0.28rem 0; }
+  .nb-ledger li[hidden]{ display:none; }
+  .nb-swatch{ align-self:start; height:0.55rem; margin-top:calc((1.35em - 0.55rem) / 2); border-radius:999px; background:var(--good); }
+  .nb-swatch--kind{ background:repeating-linear-gradient(135deg, #3987e5 0 3px, color-mix(in srgb, #3987e5 55%, transparent) 3px 6px); }
+  .nb-ledger-k{ font-weight:600; color:var(--cream); }
+  .nb-ledger-v{ font-weight:800; font-variant-numeric:tabular-nums; text-align:right; color:var(--cream); }
+  .nb-ledger small{ display:block; margin-top:0.1rem; font-size:0.84rem; font-weight:500; line-height:1.4; color:#cfc9bd; }
+  .nb-ledger small[hidden]{ display:none; }
+  .nb-ledger-sum .nb-ledger-k{ grid-column:1 / 3; font-weight:800; }
+  .nb-ledger .nb-ledger-so{ margin-top:0.4rem; border-top:1px solid rgba(249,247,242,0.18); padding-top:0.6rem; }
   /* Secured money is yellow, the same win colour as the module's total. */
-  .nb-legend .nb-so{ font-family:var(--font-display); font-style:italic; font-weight:900; font-size:1.3rem; letter-spacing:-0.02em; color:var(--yellow); }
-  .nb-legend .nb-left{ margin-left:auto; color:var(--cream); font-weight:800; }
-  .nb-people{ margin:0.6rem 0 0; font-size:0.88rem; line-height:1.45; color:#cfc9bd; }
+  .nb-ledger-so .nb-ledger-v{ color:var(--yellow); }
+  .nb-ledger-sum:last-child .nb-ledger-k{ font-weight:600; color:#cfc9bd; }
   @media (prefers-reduced-motion: reduce){ .nb-fill{ transition:none; } }
-  .nb-total b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(1.8rem,4vw,2.4rem); letter-spacing:-0.03em; font-variant-numeric:tabular-nums; color:#ff5c39; }
+  .nb-total-top b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(1.8rem,4vw,2.4rem); letter-spacing:-0.03em; font-variant-numeric:tabular-nums; color:#ff5c39; }
   .nb-foot{ max-width:52rem; margin:1.2rem 0 0; color:var(--ink-soft); line-height:1.5; }
   .nb-prices{ max-width:52rem; margin-top:1.4rem; }
   .nb-chair .nb-money{ color:#ff5c39; }
@@ -267,7 +277,7 @@ fill="currentColor" stroke="none">
         </li>
         <li class="nb-stop nb-stop--finish">
           <span class="nb-station nb-station--finish" aria-hidden="true"><i class="sym sym--finished nb-station-flag" aria-hidden="true"></i></span>
-          <div class="nb-total"><p class="nb-total-top"><span>Every week + the road</span><b>$48,180</b></p><div class="nb-total-prog" data-nb-total hidden><div class="nb-track nb-track--lg"><span class="nb-fill nb-fill--kind" data-nb-kind="total"></span><span class="nb-fill" data-nb-fill="total"></span></div><p class="nb-legend" data-nb-legend></p><p class="nb-people" data-nb-people hidden>The gifts came from <span data-nb-donors></span> online and 83 popcorn supporters.</p></div></div>
+          <div class="nb-total"><p class="nb-total-top"><span>Every week + the road</span><b>$48,180</b></p><div class="nb-total-prog" data-nb-total hidden><div class="nb-track nb-track--lg"><span class="nb-fill nb-fill--kind" data-nb-kind="total"></span><span class="nb-fill" data-nb-fill="total"></span></div><ul class="nb-ledger"><li data-nb-part="kind" hidden><i class="nb-swatch nb-swatch--kind" aria-hidden="true"></i><span class="nb-ledger-k">Court time<small>From a partner club</small></span><span class="nb-ledger-v" data-nb-sum="kind"></span></li><li><i class="nb-swatch" aria-hidden="true"></i><span class="nb-ledger-k">Gifts<small class="nb-people" data-nb-people hidden>From <span data-nb-donors></span> online and 83 popcorn supporters</small></span><span class="nb-ledger-v" data-nb-sum="gifts"></span></li><li class="nb-ledger-sum nb-ledger-so"><span class="nb-ledger-k">So far</span><span class="nb-ledger-v" data-nb-sum="so"></span></li><li class="nb-ledger-sum"><span class="nb-ledger-k">To go</span><span class="nb-ledger-v" data-nb-sum="left"></span></li></ul></div></div>
         </li>
         <li class="nb-stop nb-stop--next">
           <span class="nb-station nb-station--next" aria-hidden="true"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="tournament" data-style="duotone"><g fill="currentColor"><path d="M200 48v63.1c0 39.7-31.75 72.6-71.45 72.9A72 72 0 0 1 56 112V48Z" opacity=".2"/><path d="M232 64h-24V48a8 8 0 0 0-8-8H56a8 8 0 0 0-8 8v16H24A16 16 0 0 0 8 80v16a40 40 0 0 0 40 40h3.65A80.13 80.13 0 0 0 120 191.61V216H96a8 8 0 0 0 0 16h64a8 8 0 0 0 0-16h-24v-24.42c31.94-3.23 58.44-25.64 68.08-55.58H208a40 40 0 0 0 40-40V80a16 16 0 0 0-16-16M48 120a24 24 0 0 1-24-24V80h24v32q0 4 .39 8Zm144-8.9c0 35.52-29 64.64-64 64.9a64 64 0 0 1-64-64V56h128ZM232 96a24 24 0 0 1-24 24h-.5a82 82 0 0 0 .5-8.9V80h24Z"/></g></svg></span>
@@ -497,7 +507,7 @@ fill="currentColor" stroke="none">
     }
   })();
 </script>
-<script src="/js/campaigns.js?v=1ebb50c5"></script>
+<script src="/js/campaigns.js?v=0cb1b850"></script>
 <script>window.ATLCampaigns.module();</script>
 <script src="/js/subscribe.js?v=7efaf550" defer></script>
 <script src="/js/turnstile-lazy.js?v=12e9b811" defer></script>

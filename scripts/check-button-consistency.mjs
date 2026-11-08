@@ -31,7 +31,7 @@ try {
       );
       if (path === "/") await p.locator(".cb-cta").waitFor();
       const controls = await p
-        .locator(".nav-cta,.btn,.cb-cta,.home-welcome .textlink,.fund-secondary")
+        .locator(".nav-cta,.btn,.cb-cta,.fund-secondary")
         .evaluateAll((xs) =>
           xs
             .filter(
@@ -60,7 +60,7 @@ try {
           `${path} ${width}: non-pill ${JSON.stringify(c)}`,
         );
       if (path === "/" || path === "/hustle-and-heart") {
-        const selector = path === "/" ? ".home-welcome" : ".give-moment";
+        const selector = path === "/" ? ".mw-slab" : ".give-moment";
         await p.locator(selector).scrollIntoViewIfNeeded();
         await p.evaluate(
           (sel) =>

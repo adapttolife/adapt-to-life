@@ -22,7 +22,7 @@ try {
     assert.equal(response.status(), 200);
     await page.locator("#homeBand .camp-band").waitFor();
     for (const section of await page
-      .locator("main > section:visible, main > div.home-welcome")
+      .locator("main > section:visible")
       .all())
       await section.scrollIntoViewIfNeeded();
     await page.evaluate(async () => {
@@ -42,7 +42,7 @@ try {
       brokenImages: [...document.querySelectorAll("main img[src]")]
         .filter((x) => x.getClientRects().length && (!x.complete || !x.naturalWidth))
         .map((x) => x.src),
-      welcomeLinks: [...document.querySelectorAll(".home-welcome a")].map((a) => ({
+      welcomeLinks: [...document.querySelectorAll(".mw-mission a")].map((a) => ({
         href: a.getAttribute("href"),
         height: a.getBoundingClientRect().height,
         width: a.getBoundingClientRect().width,
@@ -88,7 +88,7 @@ try {
       .locator("#participation")
       .screenshot({ path: `${out}/story-${width}.png` });
     await page
-      .locator(".home-welcome")
+      .locator(".mw-slab")
       .screenshot({ path: `${out}/welcome-${width}.png` });
     for (const href of ["/adaptive-sports-near-me", "/donate", "/volunteer"]) {
       const menu = page.locator("#menuBtn");

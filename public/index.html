@@ -103,8 +103,17 @@
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <style>
   /* Homepage-only composition. No new fonts, image crops, or shared overrides. */
-  .home-welcome{ padding:1.5rem 0 2rem; text-align:center; }
-  .home-welcome .lead{ max-width:42ch; margin-inline:auto; }
+  /* The mission sits with the headline as one unit (Alec, 2026-11-08). */
+  .mw-mission{ margin:1.6rem 0 0; max-width:30ch; font-family:var(--font-body); font-weight:500; font-size:clamp(1.15rem,0.5vw + 1rem,1.4rem); line-height:1.45; color:var(--cream-mute); text-wrap:pretty; }
+  .mw-mission b{ color:var(--cream); font-weight:700; }
+  @media (min-width:901px){ .mw-slab{ width:fit-content; max-width:100%; } }
+  @media (max-width:900px){
+    /* The slab now holds both lines; the band between photo rows grows to fit. */
+    .mw-wall{ row-gap:clamp(12.5rem,27vh,14.5rem); }
+    .mw-slab{ background:var(--photo-black); padding:clamp(1.6rem,6vw,2.4rem) clamp(1.2rem,5vw,2rem) clamp(1.4rem,5vw,2rem); }
+    .mw-copy .mw-slab .display{ background:none; padding:0; }
+    .mw-mission{ margin-top:0.9rem; padding-top:0.9rem; border-top:1px solid rgba(249,247,242,0.14); max-width:34ch; font-size:clamp(1rem,4.1vw,1.3rem); line-height:1.4; }
+  }
   #participation{ padding-block:clamp(2.5rem,5vw,4rem); }
   .home-story{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(2rem,6vw,6rem); align-items:start; }
   .home-story h2{ margin-top:0.8rem; max-width:18ch; text-wrap:balance; }
@@ -242,7 +251,12 @@ fill="currentColor" stroke="none">
     </div>
     <div class="mw-scrim"></div>
     <div class="wrap mw-copy">
-      <h1 class="serif display mw-rise" style="--d:180ms;">Your place in <em class="italic" style="color:var(--orange)">adaptive sports.</em></h1>
+      <div class="mw-slab">
+        <h1 class="serif display mw-rise" style="--d:180ms;">Your place in <em class="italic" style="color:var(--orange)">adaptive sports.</em></h1>
+        <!-- The mission finishes the headline: the promise, then how we keep it.
+             Alec chose this (option D on /review-mission), 2026-11-08. -->
+        <p class="mw-mission mw-rise" style="--d:300ms;">We <b>expand access</b> to adaptive sports so athletes can <b>find their place.</b></p>
+      </div>
     </div>
     <div class="mw-grain"></div>
     <div class="mw-vig"></div>
@@ -265,7 +279,7 @@ fill="currentColor" stroke="none">
   .mw-p.p-seated{ left:87%; top:70%; width:13%; aspect-ratio:390/520; }
   .mw-p.p-grin{ left:76%; top:50%; width:12%; aspect-ratio:390/520; }
   .mw-p.p-lanyard{ left:88%; top:14%; width:11%; aspect-ratio:300/400; }
-  .mw-p.p-net{ left:17%; top:48%; width:17%; aspect-ratio:820/547; }
+  .mw-p.p-net{ left:17%; top:53%; width:17%; aspect-ratio:820/547; }
   .mw-p.p-smile-close{ left:82%; top:4%; width:16%; aspect-ratio:615/820; }
   .mw-p.p-dink{ left:57%; top:10%; width:19%; aspect-ratio:615/820; }
   .mw-p.p-brian{ left:41%; top:55%; width:16%; aspect-ratio:656/820; }
@@ -288,14 +302,6 @@ fill="currentColor" stroke="none">
     .mw-p.p-forehand img{ filter:grayscale(1) brightness(1) contrast(1.04); }
   }
 </style>
-
-  <!-- Keep the accepted photo crops and headline clear. The mission sits
-       below the mosaic; the story continues without an audience-selection gate. -->
-  <div class="home-welcome dark">
-    <div class="wrap">
-      <p class="lead">We expand access to adaptive sports so athletes can find their place.</p>
-    </div>
-  </div>
 
   <!-- A lived reason for the work, not an inventory of programs. -->
   <section class="band" id="participation" aria-labelledby="participationTitle">
@@ -369,7 +375,6 @@ fill="currentColor" stroke="none">
       .hm-crew .textlink{ margin-top:1.4rem; color:var(--orange); font-size:clamp(0.98rem,1.2vw,1.08rem); }
       .hm-crew .prose a{ color:var(--cream); text-decoration:underline; text-decoration-color:var(--orange); text-decoration-thickness:2px; text-underline-offset:4px; }
       .hm-crew-proof{ list-style:none; margin:0; padding:0; display:grid; gap:0.95rem; }
-      .home-welcome{ background-color:var(--photo-black); background-image:none; }
       .hm-crew-proof li{ display:grid; grid-template-columns:5.2rem 1fr; align-items:baseline; gap:1rem; padding-bottom:0.95rem; border-bottom:1px solid rgba(249,247,242,0.12); }
       /* Every label starts just past the widest number, so 3 and 6 sit next to their words instead of across a gap. */
       @supports (grid-template-columns:subgrid){

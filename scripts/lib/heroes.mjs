@@ -196,8 +196,8 @@ export const MOSAIC_GRID = [
   // 2026-11-08, Alec circled `dink` on the desktop wall (the man in the cap
   // and "Different Body, Same Drive" shirt, ball at his paddle) and asked for
   // it as the LOWER-LEFT phone cell. It takes brian's slot; brian stays on the
-  // desktop wall. A whole chair and a ball in play in that cell, next to
-  // forehand's chair on the right.
+  // desktop wall. A chair and a ball in play in that cell, next to forehand's
+  // chair on the right.
   "net",
   "whitecap",
   "dink",
@@ -226,11 +226,17 @@ const MOSAIC_GRID_LIT = new Set(["net", "whitecap", "dink", "forehand"]);
 // from a matte of each finished panel — the top of the subject plus a little
 // headroom — so the window lands on the face rather than the torso.
 const MOSAIC_GRID_POS = {
-  // dink's old 5 was measured for the 3:2 cells of an earlier grid. Today's
-  // cells are near-square, so a 615x820 portrait scales by width and shows
-  // 75-80% of its height: 5 would keep the cap and cut his wheels. 40 frames
-  // cap to casters at 320 through 820 (measured 2026-11-08, no lift needed).
-  dink: 40,
+  // dink, 2026-11-08. Measure at a REAL phone height: with the browser bars
+  // showing (svh ~674 on Alec's iPhone in Brave) the cell is ~195x146, wider
+  // than tall, so this 615x820 portrait scales by width and shows only ~56%
+  // of its height. Cap to casters cannot fit there. A 390x844 test viewport
+  // has no browser bars, gives a near-square cell, and hides the problem:
+  // 40 looked whole at 844 and cut his cap on Alec's phone ("his hat or head
+  // is just slightly cropped... move him down just a little"). 25 is the
+  // smallest move that clears the cap (~5px of air at 195x146, 30 still
+  // touches); the ball stays in and the bottom of his wheels is what goes.
+  // Zooming out is not available: the file already fills the cell's width.
+  dink: 25,
   "smile-close": 7,
   brian: 19,
   forehand: 0,
@@ -339,8 +345,9 @@ const MOSAIC_GRID_POS = {
 // lowering forehand is the one move that hides the wheel. Measured after: eye
 // lines ~20px apart at 390 — level to the eye, and both chairs visible.
 // 2026-11-08: brian left the grid (dink took the lower-left cell), so his 14
-// went with him. dink needs no lift: the square cell gives him real vertical
-// slack and MOSAIC_GRID_POS places him without any zoom.
+// went with him. dink needs no lift: every phone cell is wider in ratio than
+// his 3:4 file, so he has vertical slack and MOSAIC_GRID_POS places him
+// without any zoom.
 const MOSAIC_GRID_LIFT = { whitecap: 42, forehand: 0 };
 
 const BANNER_PHONE = {

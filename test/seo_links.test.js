@@ -106,3 +106,13 @@ test("Karen, Tim, About and Donate carry structured data", () => {
     assert.ok(graph.some((n) => n["@type"] === "BreadcrumbList"), `${f}: breadcrumb`);
   }
 });
+
+test("Karen's page is built from data/karen.mjs and links her press", () => {
+  execFileSync(process.execPath, ["scripts/build-karen.mjs", "--check"], { cwd: root, stdio: "pipe" });
+  const html = read("karen.html");
+  const person = ldBlocks(html).flatMap((j) => j["@graph"] || [j]).find((n) => n["@type"] === "Person");
+  assert.ok(person.subjectOf.length >= 8, "press in structured data");
+  for (const s of person.subjectOf) assert.ok(html.includes(s.url.replace(/&/g, "&amp;")) || html.includes(s.url), `${s.url} not linked`);
+  assert.ok(html.includes("karen-v1-water.jpg"), "Karen's own share card");
+  assert.ok(!/glasa|great lakes games/i.test(html));
+});

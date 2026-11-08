@@ -55,7 +55,7 @@ test("homepage tells participation story without the two-program comparison pane
   assert.ok(html.indexOf('id="campaign"') < html.indexOf('id="next-step"'));
   assert.ok(!html.includes('id="homeResult"'));
   assert.ok(html.includes("C.module();"));
-  const welcome = html.split('class="home-welcome dark"')[1].split("</div>")[0];
+  const welcome = html.split('class="mw-mission')[1].split("</p>")[0];
   assert.ok(
     !welcome.includes("<a "),
     "mission does not branch into audience selection",
@@ -78,8 +78,9 @@ test("homepage tells participation story without the two-program comparison pane
   assert.ok(html.includes("Help the next athlete find their place."));
   assert.ok(html.includes("We build more ways into adaptive sports."));
   assert.ok(html.includes("What we build will keep evolving with the community."));
+  // The mission may carry emphasis tags; the words are what is guarded.
   assert.ok(
-    html.includes(
+    html.replace(/<\/?b>/g, "").includes(
       "We expand access to adaptive sports so athletes can find their place.",
     ),
   );

@@ -86,7 +86,7 @@ test("the welcome is built on Alec's own published words and the site's facts", 
     ),
   );
   assert.ok(
-    read("public/index.html").includes(
+    read("public/index.html").replace(/<\/?b>/g, "").includes(
       "We expand access to adaptive sports so athletes can find their place.",
     ),
   );

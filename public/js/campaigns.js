@@ -593,6 +593,7 @@
     ],
     once: [
       { a: 15, t: "One night on court for one athlete." },
+      { a: 60, t: "Four nights on court for one athlete." },
       { a: 225, t: "One night on court for up to 15 athletes." },
       {
         a: 1548,
@@ -601,7 +602,9 @@
       { a: 3500, t: "About one athlete’s US Open: entry, travel and a room." },
     ],
   };
-  var GIFT_DEFAULT = { monthly: 129, once: 225 };
+  // $60 a month is selected first, the gift closest to what people give (Alec, Nov 8 2026:
+  // "select $60 a month instead of $129, and add a one time $60 button").
+  var GIFT_DEFAULT = { monthly: 60, once: 225 };
 
   function reduced() {
     return !!(

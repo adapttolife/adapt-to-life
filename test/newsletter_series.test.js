@@ -125,13 +125,14 @@ test("the numbers in the saved emails are still the site's numbers", () => {
   for (const part of wbd.parts) assert.ok(all.includes(usd(part.goal)), part.key);
   // The picker's line has no amount (the button shows it); the email stands
   // alone, so it says the amount and the same thing.
+  // The ask leads with the picker's default, $60 a month (Alec, Nov 8 2026).
   assert.ok(
     read("public/js/campaigns.js").includes(
-      "Unlimited sessions every month for one athlete to compete.",
+      "Four nights on court every month for one athlete.",
     ),
   );
   assert.ok(
-    all.includes("$129 a month gives one athlete unlimited sessions to compete."),
+    all.includes("$60 a month puts one athlete on court four nights every month."),
   );
   const sponsorship = read("public/sponsorship.html");
   for (const price of ["$225", "$1,548", "$15,480"]) {

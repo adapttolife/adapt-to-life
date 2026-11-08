@@ -165,17 +165,4 @@ export const GUIDES = {
   },
 };
 
-// /links: the one link for the Instagram bio and the Facebook Page website
-// field (Rose, Nov 8 2026: 32 posts in 90 days earned 7 link clicks, so links
-// have to be built on purpose). Every button carries utm tags, which
-// public/js/attribution.js carries through to a Givebutter gift, so a bio tap
-// that becomes a donation is counted. Put the page the newest post pushes on
-// top. Noindex: it is a hub for social, not a search result.
-export const LINKS = [
-  ["/events/monster-smash-2026", "Six medals at Monster Smash", "The story, the medals, the cards we posted"],
-  ["/events/app-vlasic-classic-2026", "The APP Tour's first wheelchair division", "How Juan got the APP to say yes"],
-  ["/bread-and-butter", "Juan's Bread & Butter code", "JuanitoLoco takes 10% off. The commission comes to the fund."],
-  ["/juan", "Juan Ortiz, on CBS News Chicago", "His story, his press, his road to the US Open"],
-  ["/ace", "ACE Pickleball Club, Des Plaines", "Our partner club"],
-  ["/sponsor-adaptive-athletes", "Sponsor an athlete", "Court time, training and tournaments"],
-];
+// /links moved to data/links.mjs and scripts/lib/links-page.mjs (Nov 8 2026).

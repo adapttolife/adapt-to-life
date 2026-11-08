@@ -217,6 +217,7 @@ export const MEANINGS = {
   time: { src: "ph", icon: "clock", means: "How much time something takes", css: true },
   place: { src: "ph", icon: "map-pin", means: "A city or venue", css: true },
   arrow: { src: "ph", icon: "arrow-right", means: "Go to a page on this site" },
+  share: { src: "ph", icon: "export", means: "Share this page or person with someone (the phone share sheet)" },
   external: { src: "ph", icon: "arrow-up-right", means: "Opens another site" },
   back: {
     src: "ph",

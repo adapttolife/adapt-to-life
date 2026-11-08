@@ -10,7 +10,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { QUOTES, ROLES, PRESS, PHOTOS } from "../data/karen.mjs";
+import { QUOTES, ROLES, PRESS, PHOTOS, RADIO } from "../data/karen.mjs";
 import { icon } from "./lib/icons.mjs";
 import { esc, text } from "./lib/page-shell.mjs";
 
@@ -39,7 +39,7 @@ const BODY = `<!-- karen:start -->
           <span class="eyebrow orange reveal">Board Member</span>
           <h1 class="serif display reveal">Karen Atkinson</h1>
           <hr class="tick orange reveal">
-          <p class="lead sub reveal">Retired Army captain. Twenty years in the Army Reserve, from hospital administrator to JAG officer. Since a 2014 car accident and a spinal cord injury, she has golfed standing up, skied, sailed and learned to dive, and she brings other veterans along.</p>
+          <p class="lead sub reveal">Retired Army captain. 24 years in the Army Reserve, from hospital administrator to JAG officer. Since a 2014 car accident and a spinal cord injury, she has golfed standing up, skied, sailed and learned to dive, and she brings other veterans along.</p>
           <ul class="kr-chips reveal">
             <li>Move United Warfighter Ambassador</li>
             <li>First Chair, Stand Up and Play Foundation</li>
@@ -80,13 +80,13 @@ ${PHOTOS.map(
       <ol class="kr-steps">
         <li class="kr-step reveal">
           <span class="kr-era">The officer</span>
-          <div><h3>Twenty years in uniform</h3>
+          <div><h3>24 years in uniform</h3>
           <p>Karen joined the Army Reserve at 17, while she was still in high school. The Army took her through college and law school: first as a hospital administrator, then as a JAG officer helping Guard and Reserve soldiers get their lives in order before they deployed. She deployed herself during Desert Storm, working in a hospital caring for soldiers. She retired as a captain.</p></div>
         </li>
         <li class="kr-step reveal">
           <span class="kr-era">2014</span>
           <div><h3>The accident</h3>
-          <p>After she retired, a driver swerved into her lane. Her car hit gravel on the shoulder and rolled. The crash left her with a spinal cord injury, and today she uses a wheelchair. Winters in Iowa got harder, so she moved to Florida, and found the water.</p></div>
+          <p>After she retired, a driver swerved into her lane. Her car hit gravel on the shoulder and rolled. The crash left her with a spinal cord injury, and today she uses a wheelchair. Because she was hurt after she retired, no veteran community came to find her. She spent six years finding her way on her own. Winters in Iowa got harder, so she moved to Florida, and found the water.</p></div>
         </li>
         <li class="kr-step reveal">
           <span class="kr-era">The water</span>
@@ -113,6 +113,18 @@ ${PHOTOS.map(
       <ul class="kr-quotes">
 ${rest.map((q) => `        <li class="reveal"><blockquote>&ldquo;${q.q}&rdquo;<cite>${q.by}</cite></blockquote></li>`).join("\n")}
       </ul>
+    </div>
+  </section>
+
+  <section class="band kr-radio">
+    <div class="wrap">
+      <span class="eyebrow orange reveal">On the air</span>
+      <h2 class="serif h2 reveal" style="margin-top:0.8rem;">With Ann Liguori on Sports Innerview.</h2>
+      <p class="prose reveal" style="margin-top:0.8rem; max-width:60ch;">Karen sat down with Ann Liguori for <a class="textlink" href="${RADIO.url}" target="_blank" rel="noopener" style="font:inherit;letter-spacing:inherit;">a 27-minute interview</a> on WLIW 88.3 FM in September 2024.</p>
+      <ol class="kr-radio-list">
+${[...RADIO.quotes].sort((a, b) => a.t.localeCompare(b.t)).map((r) => `        <li class="reveal"><span class="kr-time">${r.t}</span><blockquote>&ldquo;${r.q}&rdquo;</blockquote></li>`).join("\n")}
+      </ol>
+      <a class="btn ghost reveal" href="${RADIO.url}" target="_blank" rel="noopener" style="margin-top:1.6rem;">Listen to the interview ${EXT}</a>
     </div>
   </section>
 
@@ -192,6 +204,11 @@ const STYLE = `<style id="karen-style">
   @media (max-width:760px){ .kr-quotes{ grid-template-columns:1fr; } }
   .kr-quotes blockquote{ margin:0; padding-left:1.1rem; border-left:3px solid var(--orange); font-size:clamp(1.15rem,1.9vw,1.4rem); font-weight:600; line-height:1.45; color:var(--cream); }
   .kr-quotes cite{ color:var(--orange); }
+  .kr-radio-list{ list-style:none; padding:0; margin:clamp(1.6rem,3vw,2.2rem) 0 0; max-width:54rem; display:grid; gap:0; }
+  .kr-radio-list li{ display:grid; grid-template-columns:4.5rem minmax(0,1fr); gap:1rem; padding:1.1rem 0; border-top:1px solid var(--hairline); }
+  .kr-radio-list li:last-child{ border-bottom:1px solid var(--hairline); }
+  .kr-time{ padding-top:0.25rem; font-family:var(--font-label); font-weight:800; font-size:0.8rem; letter-spacing:0.08em; color:var(--orange-ink); }
+  .kr-radio-list blockquote{ margin:0; font-size:clamp(1.08rem,1.7vw,1.28rem); font-weight:600; line-height:1.5; color:var(--ink); }
   .kr-roles, .kr-press{ list-style:none; padding:0; margin:clamp(1.6rem,3vw,2.2rem) 0 0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(0.9rem,2vw,1.3rem); }
   @media (max-width:760px){ .kr-roles, .kr-press{ grid-template-columns:1fr; } }
   .kr-roles > li, .kr-press > li{ display:flex; flex-direction:column; }

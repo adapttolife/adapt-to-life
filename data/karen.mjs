@@ -96,7 +96,7 @@ export const PRESS = [
   {
     kind: "TV", src: "29 News WVIR, via Wintergreen Adaptive Sports", date: "February 8, 2025", iso: "2025-02-08",
     t: "Wounded Warrior Weekend at Wintergreen",
-    n: "Karen, a 20-year Army veteran, is the segment&rsquo;s main interview, on the slopes and off.",
+    n: "Karen is the segment&rsquo;s main interview, on the slopes and off.",
     url: "https://facebook.com/wintergreenadaptivesports/videos/1682146392364891/", type: "VideoObject",
   },
   {
@@ -149,3 +149,18 @@ export const PHOTOS = [
     credit: ["Maine Adaptive Sports &amp; Recreation", "https://www.facebook.com/photo.php?fbid=1511673764293949&set=a.636561731805161&type=3"],
   },
 ];
+
+// Sports Innerview with Ann Liguori, episode 323 (aired Sep 28 2024). Lines
+// checked word for word against the audio (faster-whisper medium.en on each
+// passage, Nov 8 2026); filler words ("you know", "um") dropped. Times are
+// minutes:seconds into the episode.
+export const RADIO = {
+  url: "https://audioboom.com/posts/8584031-sports-innerview-09-28-2024-karen-atkinson",
+  quotes: [
+    { t: "14:20", q: "I had to do the work to discover what&rsquo;s available. Nobody brought it to me. I had to find it. And so for me, my passion now is to make sure that nobody else has those six years." },
+    { t: "15:40", q: "I get to be a participant. I get to hit that ball. Not very well, but I can hit that ball. And that to me is everything. I am now an equal part of this foursome." },
+    { t: "20:25", q: "Anthony reached over and hit the button and I stood up to salute the flag for the first time in 10 years." },
+    { t: "17:35", q: "You don&rsquo;t have to be really good at wheelchair pickleball. You just have to show up and meet the other people, the other veterans who you didn&rsquo;t know are going through the same thing that you&rsquo;re going through every day." },
+    { t: "23:05", q: "Just ask them what they need. Don&rsquo;t say no. Ask them what they need. &hellip; What can we do for you? How can we help you?" },
+  ],
+};

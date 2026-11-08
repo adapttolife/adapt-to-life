@@ -16,17 +16,17 @@
 
 export const QUOTES = [
   // 29 News WVIR, Wounded Warrior Weekend, posted by Wintergreen Adaptive Sports, Feb 8 2025
-  { q: "Programs like these change my life. Normally, my life ends at the pavement.", by: "29 News WVIR, February 2025", big: true },
+  { q: "Programs like these change my life. Normally, my life ends at the pavement.", by: "29 News WVIR, February 2025", url: "https://facebook.com/wintergreenadaptivesports/videos/1682146392364891/", big: true },
   // Bay News 9, Apr 30 2025
-  { q: "I&rsquo;m not just somebody that&rsquo;s sitting on the sidelines. I&rsquo;m a participant.", by: "Bay News 9, April 2025" },
+  { q: "I&rsquo;m not just somebody that&rsquo;s sitting on the sidelines. I&rsquo;m a participant.", by: "Bay News 9, April 2025", url: "https://baynews9.com/fl/tampa/news/2025/04/30/veterans-foundation-stand-up-play" },
   // WINK News, Nov 10 2024
-  { q: "From a sitting position to a standing position, it is only about 18 inches. It changes the world.", by: "WINK News, November 2024" },
+  { q: "From a sitting position to a standing position, it is only about 18 inches. It changes the world.", by: "WINK News, November 2024", url: "https://www.winknews.com/news/lee/local-golf-and-country-club-finds-unique-way-to-honor-veterans/article_69eddb47-e16e-59ed-8fe9-da5eff8c0062.html" },
   // 29 News WVIR, Feb 2025
-  { q: "We don&rsquo;t have to explain PTSD to anybody. We don&rsquo;t have to explain why I&rsquo;m in a wheelchair.", by: "29 News WVIR, February 2025" },
+  { q: "We don&rsquo;t have to explain PTSD to anybody. We don&rsquo;t have to explain why I&rsquo;m in a wheelchair.", by: "29 News WVIR, February 2025", url: "https://facebook.com/wintergreenadaptivesports/videos/1682146392364891/" },
   // 29 News WVIR, Feb 2025 (a repeated "and" dropped, as speech is usually printed)
-  { q: "I am beyond grateful to have a purpose and friends.", by: "29 News WVIR, February 2025" },
+  { q: "I am beyond grateful to have a purpose and friends.", by: "29 News WVIR, February 2025", url: "https://facebook.com/wintergreenadaptivesports/videos/1682146392364891/" },
   // WSET, Feb 9 2025
-  { q: "I felt like I had a new chance at life. I feel like I&rsquo;m still alive.", by: "WSET, February 2025" },
+  { q: "I felt like I had a new chance at life. I feel like I&rsquo;m still alive.", by: "WSET, February 2025", url: "https://wset.com/news/local/adaptive-skiing-event-transforms-lives-offering-veterans-a-chance-to-reclaim-their-joy-wintergreen-wounded-warriors-weekend-february-2025" },
 ];
 
 // Her roles, each linked to the organization's own page about it.
@@ -134,7 +134,7 @@ export const PRESS = [
 
 // Photos on the page. Both belong to the organizations that posted them,
 // found by Rose and confirmed as Karen (her bib; her own note about the blue
-// jacket). Credited and linked. Ask the owner before reuse beyond this page.
+// jacket). Credited and linked. Alec, Nov 8 2026: "We have photos permissions, use photos."
 export const PHOTOS = [
   {
     src: "/images/karen/ski-spectacular.webp", w: 1400, h: 934,

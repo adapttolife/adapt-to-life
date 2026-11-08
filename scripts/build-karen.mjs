@@ -107,11 +107,12 @@ ${PHOTOS.map(
     </div>
   </section>
 
-  <section class="dark band-lg">
+  <section class="dark band kr-tv">
     <div class="wrap">
-      <span class="eyebrow orange reveal">In her words</span>
+      <span class="eyebrow orange reveal">On TV</span>
+      <h2 class="serif h2 reveal" style="margin-top:0.8rem; color:var(--cream);">On camera, from Florida to the Blue Ridge.</h2>
       <ul class="kr-quotes">
-${rest.map((q) => `        <li class="reveal"><blockquote>&ldquo;${q.q}&rdquo;<cite>${q.by}</cite></blockquote></li>`).join("\n")}
+${rest.map((q) => `        <li class="reveal"><blockquote>&ldquo;${q.q}&rdquo;</blockquote><a class="kr-src" href="${esc(q.url)}" target="_blank" rel="noopener">${q.by} ${EXT}</a></li>`).join("\n")}
       </ul>
     </div>
   </section>
@@ -202,7 +203,12 @@ const STYLE = `<style id="karen-style">
   .kr-step a{ color:var(--orange-ink); font-weight:700; }
   .kr-quotes{ list-style:none; padding:0; margin:1.4rem 0 0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(1.2rem,3vw,2.4rem); }
   @media (max-width:760px){ .kr-quotes{ grid-template-columns:1fr; } }
-  .kr-quotes blockquote{ margin:0; padding-left:1.1rem; border-left:3px solid var(--orange); font-size:clamp(1.15rem,1.9vw,1.4rem); font-weight:600; line-height:1.45; color:var(--cream); }
+  .kr-quotes{ margin-top:clamp(1.6rem,3vw,2.2rem); }
+  .kr-quotes li{ padding-left:1.1rem; border-left:3px solid var(--orange); }
+  .kr-src{ display:inline-flex; align-items:center; gap:0.3rem; margin-top:0.8rem; font-family:var(--font-label); font-weight:800; font-size:0.72rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--orange); text-decoration:none; }
+  .kr-src:hover{ color:var(--cream); }
+  .kr-src .arrow svg{ width:0.9em; height:0.9em; }
+  .kr-quotes blockquote{ margin:0; font-size:clamp(1.15rem,1.9vw,1.4rem); font-weight:600; line-height:1.45; color:var(--cream); }
   .kr-quotes cite{ color:var(--orange); }
   .kr-radio-list{ list-style:none; padding:0; margin:clamp(1.6rem,3vw,2.2rem) 0 0; max-width:54rem; display:grid; gap:0; }
   .kr-radio-list li{ display:grid; grid-template-columns:4.5rem minmax(0,1fr); gap:1rem; padding:1.1rem 0; border-top:1px solid var(--hairline); }

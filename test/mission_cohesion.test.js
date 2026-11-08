@@ -5,7 +5,7 @@ const read = (p) => readFileSync(new URL("../" + p, import.meta.url), "utf8");
 test("homepage defines one enduring mission before current work", () => {
   const h = read("public/index.html");
   assert.ok(
-    h.includes("We expand access to adaptive sports so athletes can find their place."),
+    h.replace(/<\/?b>/g, "").includes("We expand access to adaptive sports so athletes can find their place."),
   );
   assert.ok(h.includes("We build more ways into adaptive sports."));
   const bridge = h.split('id="next-step"')[1].split("</section>")[0];

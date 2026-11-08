@@ -57,7 +57,8 @@ for (const [width, height, tag] of VIEWPORTS) {
   await page.waitForTimeout(1200); // the wall fades in; measure it settled
 
   const cells = await page.evaluate((vh) => {
-    const slab = document.querySelector(".mw-copy .display").getBoundingClientRect();
+    // The homepage slab holds the headline and the mission (2026-11-08).
+    const slab = (document.querySelector(".mw-copy .mw-slab") || document.querySelector(".mw-copy .display")).getBoundingClientRect();
     return [...document.querySelectorAll(".mw-p")]
       .filter((el) => getComputedStyle(el).display !== "none")
       .map((el, i) => {

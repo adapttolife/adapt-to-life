@@ -31,6 +31,7 @@ const PER_PAGE = {
   "picklr.html": "picklr",
   "chicago-adaptive-sports.html": "chicago-adaptive-sports",
   "amp.html": "amp",
+  "bread-and-butter.html": "bread-and-butter",
 };
 
 // ALT DESCRIBES THE PHOTOGRAPH AGAIN, because from 2026-09-09 the cards ARE
@@ -63,6 +64,8 @@ const ALT = {
   ace: "Something Chicago hasn't seen. Adapt To Life. A wheelchair pickleball player in a white cap leans on the rail with his paddle.",
   pickleball:
     "Chicago Pickleball: Wheelie Big Dills. Adapt To Life. Juan Ortiz, a wheelchair pickleball player in glasses, tosses the ball to serve from his sport wheelchair.",
+  "bread-and-butter":
+    "Play Juan's paddle. Help get him to Naples. Adapt To Life. Juan Ortiz in his sport wheelchair, paddle up, on a dark indoor court.",
   juan: "Juan Ortiz. Adapt To Life. Juan, a wheelchair pickleball player in glasses, tosses the ball to serve from his sport wheelchair.",
 };
 
@@ -78,6 +81,7 @@ const ALT = {
 const FILE = {
   _default: "home-v4-color.jpg",
   juan: "juan-v2-serve.jpg",
+  "bread-and-butter": "bread-and-butter-v1-paddle.jpg",
   brickhouse: "brickhouse-v3-crewhome.jpg",
   pickleball: "pickleball-v5-name.jpg",
   ace: "ace-v3-partner.jpg",

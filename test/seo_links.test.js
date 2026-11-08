@@ -84,3 +84,25 @@ test("the APP Tour is linked on /events and its story, by its own site", () => {
   assert.ok(read("events.html").includes('href="https://www.theapp.global/"'));
   assert.ok(read("events/app-vlasic-classic-2026.html").includes('href="https://www.theapp.global/"'));
 });
+
+test("sponsor and donor guides are built, in the sitemap, and linked from the site", () => {
+  execFileSync(process.execPath, ["scripts/build-guides.mjs", "--check"], { cwd: root, stdio: "pipe" });
+  const sitemap = read("sitemap.xml");
+  for (const slug of ["sport-wheelchair-cost", "sponsor-adaptive-athletes", "corporate-matching"]) {
+    assert.ok(sitemap.includes(`https://adapttolife.org/${slug}</loc>`), `${slug} not in sitemap`);
+    const html = read(`${slug}.html`);
+    assert.ok(html.includes("adaptivesportsnearme.com") || slug !== "sport-wheelchair-cost", "athletes go to ASNM");
+    const inbound = pages.filter((f) => f !== `${slug}.html` && read(f).includes(`href="/${slug}"`));
+    assert.ok(inbound.length >= 2, `${slug} has ${inbound.length} inbound links`);
+  }
+  assert.ok(read("sport-wheelchair-cost.html").includes("$4,000 to $6,000"));
+});
+
+test("Karen, Tim, About and Donate carry structured data", () => {
+  const want = { "karen.html": "Person", "tim.html": "Person", "about.html": "AboutPage", "donate.html": "WebPage" };
+  for (const [f, type] of Object.entries(want)) {
+    const graph = ldBlocks(read(f)).flatMap((j) => j["@graph"] || [j]);
+    assert.ok(graph.some((n) => n["@type"] === type), `${f}: ${type}`);
+    assert.ok(graph.some((n) => n["@type"] === "BreadcrumbList"), `${f}: breadcrumb`);
+  }
+});

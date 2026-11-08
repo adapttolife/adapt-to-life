@@ -88,6 +88,10 @@ const STYLE = `<style>
   .es-story h2:first-child{ margin-top:0; }
   .es-story p{ margin-top:1rem; font-size:1.06rem; line-height:1.65; color:var(--ink-soft); }
   .es-story a{ color:var(--orange-ink); font-weight:700; text-decoration:underline; text-underline-offset:3px; }
+  .es-photo{ margin:1.6rem 0 0; max-width:22rem; }
+  .es-photo img{ width:100%; height:auto; display:block; border-radius:16px; box-shadow:0 24px 50px -28px rgba(0,0,0,0.55); }
+  .es-photo figcaption{ margin-top:0.6rem; font-size:0.88rem; color:var(--muted); }
+  .es-photo figcaption a{ font-weight:600; }
   .es-q{ margin:1.5rem 0 0; padding-left:1.2rem; border-left:3px solid var(--orange); font-size:1.15rem; font-weight:600; line-height:1.5; color:var(--ink); }
   .es-q cite{ display:block; margin-top:0.6rem; font-style:normal; font-family:var(--font-label); font-size:0.72rem; font-weight:800; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); }
   .es-list{ margin:1rem 0 0; padding-left:1.2rem; display:grid; gap:0.4rem; color:var(--ink-soft); font-size:1.04rem; }
@@ -96,6 +100,11 @@ const STYLE = `<style>
   .es-person img{ width:auto; height:clamp(150px,18vw,210px); object-fit:contain; filter:drop-shadow(0 18px 24px rgba(0,0,0,0.5)); }
   .es-person b{ display:block; margin-top:0.7rem; font-family:var(--font-display); font-weight:900; font-size:1.2rem; color:var(--cream); }
   .es-person .tag{ margin-top:0.45rem; }
+  .es-gallery{ list-style:none; padding:0; margin:clamp(1.8rem,3vw,2.4rem) 0 0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:clamp(0.7rem,1.6vw,1.1rem); }
+  @media (max-width:900px){ .es-gallery{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  .es-gallery figure{ margin:0; }
+  .es-gallery img{ width:100%; height:auto; display:block; border-radius:14px; box-shadow:0 20px 40px -24px rgba(0,0,0,0.7); }
+  .es-gallery figcaption{ margin-top:0.55rem; font-size:0.86rem; color:var(--cream-mute); }
   .es-links{ list-style:none; padding:0; margin:clamp(1.8rem,3vw,2.4rem) 0 0; display:grid; grid-template-columns:repeat(auto-fill,minmax(16rem,1fr)); gap:clamp(0.8rem,2vw,1.2rem); }
   .es-links > li{ display:flex; }
   .es-link{ width:100%; display:flex; flex-direction:column; padding:1.1rem 1.2rem; background:var(--paper); border:1px solid var(--hairline); border-radius:16px; color:inherit; text-decoration:none; transition:transform .3s ease, border-color .3s ease; }
@@ -147,6 +156,7 @@ async function page(slug, s) {
     eventStatus: "https://schema.org/EventScheduled",
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
     url,
+    image: `${SITE}/images/og/${s.og.file}`,
     location: {
       "@type": "Place",
       name: d.venue || d.city,
@@ -182,7 +192,7 @@ async function page(slug, s) {
         publisher: { "@id": SITE + "/#org" },
         mainEntityOfPage: url,
         about: { "@id": url + "#event" },
-        image: `${SITE}/images/og/juan-v2-serve.jpg`,
+        image: [`${SITE}/images/og/${s.og.file}`, ...(s.photo ? [SITE + s.photo.src] : []), ...(s.gallery ? [`${SITE}${s.gallery.dir}/${s.gallery.items[0][0]}.webp`] : [])],
         ...([...(s.people || []), ...(s.mentions || [])].includes("juan") ? { mentions: { "@id": SITE + "/juan#person" } } : {}),
       },
       {
@@ -196,8 +206,9 @@ async function page(slug, s) {
     ],
   };
   const desc = esc(text(s.description));
-  const og = `${SITE}/images/og/juan-v2-serve.jpg`;
-  const ogAlt = "Juan Ortiz. Adapt To Life. Juan, a wheelchair pickleball player in glasses, tosses the ball to serve from his sport wheelchair.";
+  const og = `${SITE}/images/og/${s.og.file}`;
+  const ogAlt = s.og.alt;
+  if (!existsSync(join(ROOT, "public/images/og", s.og.file))) throw new Error(`${slug}: card ${s.og.file} missing (run make-og.mjs ${slug})`);
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -252,7 +263,12 @@ ${HEADER}
   <section class="band">
     <div class="wrap es-grid">
       <article class="es-story">
-${s.body.trim()}
+${s.body.trim().replace(
+  "{{photo}}",
+  s.photo
+    ? `<figure class="es-photo"><img src="${s.photo.src}" alt="${esc(s.photo.alt)}" width="${s.photo.w}" height="${s.photo.h}" loading="lazy" decoding="async"><figcaption>${s.photo.caption} <a href="${s.photo.credit[1]}" target="_blank" rel="noopener">${s.photo.credit[0]}</a></figcaption></figure>`
+    : "",
+)}
       </article>
       <aside class="es-facts" aria-label="Event details">
         <dl>
@@ -270,6 +286,27 @@ ${
       <h2 class="serif h2" style="margin-top:0.7rem; color:var(--cream);">${s.medals ? "Who brought them home." : "On court."}</h2>
       <ul class="es-people">
 ${people.join("\n")}
+      </ul>
+      <p style="margin-top:1.6rem;"><a class="textlink" href="/pickleball" style="color:var(--orange);">Meet Chicago Pickleball: Wheelie Big Dills ${ARROW}</a></p>
+    </div>
+  </section>
+`
+    : ""
+}
+${
+  s.gallery
+    ? `
+  <section class="dark band">
+    <div class="wrap">
+      <span class="eyebrow orange">The results</span>
+      <h2 class="serif h2" style="margin-top:0.7rem; color:var(--cream);">The cards we posted.</h2>
+      <ul class="es-gallery">
+${s.gallery.items
+  .map(
+    ([f, alt], i) =>
+      `        <li><figure><img src="${s.gallery.dir}/${f}.webp" alt="${esc(alt)}" width="${s.gallery.w}" height="${s.gallery.h}" loading="${i < 2 ? "eager" : "lazy"}" decoding="async"><figcaption>${alt.split(". ")[0]}</figcaption></figure></li>`,
+  )
+  .join("\n")}
       </ul>
       <p style="margin-top:1.6rem;"><a class="textlink" href="/pickleball" style="color:var(--orange);">Meet Chicago Pickleball: Wheelie Big Dills ${ARROW}</a></p>
     </div>

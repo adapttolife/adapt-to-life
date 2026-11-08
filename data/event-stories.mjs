@@ -14,7 +14,8 @@
 //     "Athletes we support", never "our athletes" or "our tournament".
 //   - Outside links: full names, rel="noopener". Hosts and venues get their
 //     own site plus the official listing, so search engines can connect us.
-//   - Never name GLASA. Photos: only the approved crew cutouts.
+//   - Never name GLASA. Look at every photo before it ships: no GLASA or
+//     "Great Lakes Games" shirts (a grep cannot see a shirt).
 //
 // Adding an event: add its row to campaigns.json, add a story here, set the
 // row's page to /events/<slug>, run `npm run events`, and add the URL to
@@ -46,6 +47,7 @@ export const STORIES = {
       <h2 class="serif h2">Sunday, August 9</h2>
       <p>Five full teams signed up, more than any other amateur bracket at the tournament. Athletes we support from <a href="/pickleball">Chicago Pickleball: Wheelie Big Dills</a> were among them.</p>
       <p>Then the weather turned. Lightning stopped play on the outdoor courts, so the tournament moved the bracket indoors, and the athletes finished it.</p>
+      {{photo}}
 
       <h2 class="serif h2">The bigger week</h2>
       <p>The tournament ran five days, starting August 5. Across the week, the APP says, it raised $25,000 for <a href="https://www.shrinerschildrens.org/en" target="_blank" rel="noopener">Shriners Children&rsquo;s</a>, the APP&rsquo;s official charity partner, and highlights were set to air on CBS Sports Network. The full results are in the <a href="https://theapp.global/news/2026-chicago-recap" target="_blank" rel="noopener">APP&rsquo;s own recap</a>.</p>
@@ -61,6 +63,13 @@ export const STORIES = {
       ["APP Tour on Instagram", "@officialapptour", "https://www.instagram.com/officialapptour/"],
     ],
     mentions: ["juan"],
+    // Frame from our reel of the bracket (instagram.com/reel/Db3q5eZN7Wf,
+    // Aug 10 2026), found by Rose. The caption names no one, so neither do we.
+    photo: { src: "/images/events/app-vlasic-classic-2026/court-29.webp", w: 720, h: 1280,
+      alt: "Two wheelchair pickleball players at the net on APP court 29, indoors, one reaching high for an overhead",
+      caption: "The wheelchair bracket on APP court 29.",
+      credit: ["Adapt To Life on Instagram", "https://www.instagram.com/reel/Db3q5eZN7Wf/"] },
+    og: { file: "event-app-vlasic-classic-2026-v1-card.jpg", alt: "The APP Tour's first wheelchair division. Adapt To Life. Juan Ortiz serves from his sport wheelchair." },
     next: { href: "/chicago-classic", label: "The Chicago Classic" },
   },
 
@@ -68,14 +77,16 @@ export const STORIES = {
     title: "Monster Smash 2026: Six Wheelchair Pickleball Medals in Cincinnati",
     h1: "Six medals at <em class=\"italic\" style=\"color:var(--orange)\">Monster Smash.</em>",
     description:
-      "Wheelchair pickleball athletes we support won six medals at Monster Smash 2026 at The Pickle Lodge in Cincinnati, a Halloween tournament weekend that was free for athletes.",
+      "Six wheelchair pickleball athletes we support won six medals at Monster Smash 2026 at The Pickle Lodge in Cincinnati, a Halloween tournament weekend that was free for athletes.",
     lead:
       "A Halloween tournament weekend at The Pickle Lodge in Cincinnati. The host made it free for wheelchair athletes, and the athletes we support came home with six medals.",
     published: "2026-11-08",
     // Facts: campaigns.json (dates, venue, address, from the official
     // listing), /chicago-classic (free for athletes, travel and food help,
     // six medals, 38,000+ views), /pickleball (each athlete's medal), /ace
-    // (spotlights co-branded with the host club), /social (the reel).
+    // (spotlights co-branded with the host club), /social (the reel), and the
+    // results cards in Drive, Social Media > ATL Monster Smash carousel >
+    // "RESULTS - Monster Smash (post these)" (names, partners, 2-2-2 split).
     facts: [
       ["Brackets", "Wheelchair singles and doubles"],
       ["Entry", "Free for wheelchair athletes, thanks to The Pickle Lodge"],
@@ -83,15 +94,17 @@ export const STORIES = {
     body: `
       <h2 class="serif h2">A host that went all in</h2>
       <p><a href="https://thepicklelodge.com/" target="_blank" rel="noopener">The Pickle Lodge</a> hosts Monster Smash, a Halloween tournament weekend at Lunken Landing in Cincinnati. In 2026 it made the tournament free for wheelchair athletes and helped them with travel and food. Athletes we support from <a href="/pickleball">Chicago Pickleball: Wheelie Big Dills</a> made the trip from Chicago.</p>
+      {{photo}}
 
       <h2 class="serif h2">The medals</h2>
-      <p>They came home with six medals:</p>
+      <p>Six athletes we support made the trip, and they came home with six medals: two gold, two silver and two bronze.</p>
       <ul class="es-list">
-        <li><b>Juan</b>: singles gold</li>
-        <li><b>Bob</b>: doubles gold</li>
-        <li><b>Robby</b>: singles bronze, and doubles silver with Ken</li>
-        <li><b>Ken</b>: doubles silver, with Robby</li>
-        <li><b>Amanda</b>: doubles bronze</li>
+        <li><b>Juan Ortiz</b>: singles gold</li>
+        <li><b>Bob Swanson</b>: doubles gold, with Kenneth Holman</li>
+        <li><b>Robby Wolf</b>: singles bronze, and doubles silver with Ken Carwell</li>
+        <li><b>Ken Carwell</b>: doubles silver, with Robby Wolf</li>
+        <li><b>Amanda Tworek</b>: doubles bronze, with Kasey Stelter</li>
+        <li><b>Brian Liss</b>: competed in Cincinnati</li>
       </ul>
 
       <h2 class="serif h2">More than 38,000 views</h2>
@@ -106,8 +119,29 @@ export const STORIES = {
       ["Monster Smash Facebook group", "Players' group for the tournament.", "https://www.facebook.com/groups/441240107886329/"],
       ["Our Monster Smash reel", "The crew at The Pickle Lodge, October 24.", "https://www.instagram.com/reel/De4NJ9TNJGR/"],
     ],
-    people: ["juan", "bob", "robby", "ken", "amanda"],
-    medals: { juan: "Singles gold", bob: "Doubles gold", robby: "Singles bronze, doubles silver", ken: "Doubles silver", amanda: "Doubles bronze" },
+    // Frame from our arrival reel (instagram.com/reel/De4NJ9TNJGR, Oct 24
+    // 2026), found by Rose: the crew in Adapt To Life shirts at the Lodge.
+    photo: { src: "/images/events/monster-smash-2026/crew-lodge.webp", w: 720, h: 1280,
+      alt: "Athletes in sport wheelchairs and grey Adapt To Life shirts fist-bump inside The Pickle Lodge",
+      caption: "The crew arrives at The Pickle Lodge.",
+      credit: ["Adapt To Life on Instagram", "https://www.instagram.com/reel/De4NJ9TNJGR/"] },
+    // The results cards we posted, co-branded with The Pickle Lodge.
+    gallery: {
+      dir: "/images/events/monster-smash-2026",
+      w: 720,
+      h: 900,
+      items: [
+        ["0-cover", "Six athletes, six medals: 2 gold, 2 silver, 2 bronze. Monster Smash results card with The Pickle Lodge and Adapt To Life logos."],
+        ["2-juan", "Juan Ortiz, gold, singles."],
+        ["4-bob", "Bob Swanson, gold, doubles with Kenneth Holman."],
+        ["5b-robby-silver", "Robby Wolf, silver, doubles with Ken Carwell."],
+        ["6-ken", "Ken Carwell, silver, doubles with Robby Wolf."],
+        ["5a-robby-bronze", "Robby Wolf, bronze, singles."],
+        ["1-amanda", "Amanda Tworek, bronze, doubles with Kasey Stelter."],
+        ["3-brian", "Brian Liss, competed in Cincinnati."],
+      ],
+    },
+    og: { file: "event-monster-smash-2026-v1-card.jpg", alt: "Six medals at Monster Smash. Adapt To Life. A wheelchair pickleball player reaches wide mid-swing." },
     next: { href: "/chicago-classic", label: "The Chicago Classic" },
   },
 };

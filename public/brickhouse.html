@@ -248,8 +248,71 @@
   @media (prefers-reduced-motion: reduce){ .bh-wall.in .bk, .bh-wall.in .bk.next{ animation:none; } }
   .bh-sign{ margin-top:clamp(2.5rem,5vw,3.5rem); font-family:var(--font-display); font-weight:800; font-style:italic; font-size:clamp(1.5rem,3vw,2.2rem); letter-spacing:-0.02em; color:#ff5c39; }
   .bh-road .bh-more .arrow{ display:inline-block; margin-top:0; max-width:none; color:inherit; }
+  .partner-links{ margin-top:1.2rem; display:flex; flex-wrap:wrap; gap:0.4rem 1.1rem; font-family:var(--font-label); font-size:0.74rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--cream-faint); }
+  .partner-links a{ color:var(--cream); text-decoration:none; border-bottom:1px solid rgba(255,92,57,0.6); display:inline-flex; align-items:center; gap:0.25rem; }
+  .partner-links a:hover{ color:var(--orange); }
+  .partner-links .arrow svg{ width:0.85em; height:0.85em; }
 </style>
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://adapttolife.org/"},{"@type":"ListItem","position":2,"name":"Partners","item":"https://adapttolife.org/sponsorship"},{"@type":"ListItem","position":3,"name":"Brick House Pickleball","item":"https://adapttolife.org/brickhouse"}]},{"@type":"WebPage","@id":"https://adapttolife.org/brickhouse","url":"https://adapttolife.org/brickhouse","name":"Wheelchair Pickleball at Brick House Pickleball, Lake Forest | Adapt To Life","isPartOf":{"@id":"https://adapttolife.org/#website"},"publisher":{"@id":"https://adapttolife.org/#org"},"about":{"@type":"SportsActivityLocation","name":"Brick House Pickleball","url":"https://brickhousepb.com/","address":{"@type":"PostalAddress","streetAddress":"28457 Ballard Drive, Unit H","addressLocality":"Lake Forest","addressRegion":"IL","postalCode":"60045","addressCountry":"US"}}}]}</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://adapttolife.org/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Partners",
+          "item": "https://adapttolife.org/sponsorship"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Brick House Pickleball",
+          "item": "https://adapttolife.org/brickhouse"
+        }
+      ]
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://adapttolife.org/brickhouse",
+      "url": "https://adapttolife.org/brickhouse",
+      "name": "Wheelchair Pickleball at Brick House Pickleball, Lake Forest | Adapt To Life",
+      "isPartOf": {
+        "@id": "https://adapttolife.org/#website"
+      },
+      "publisher": {
+        "@id": "https://adapttolife.org/#org"
+      },
+      "about": {
+        "@type": "SportsActivityLocation",
+        "name": "Brick House Pickleball",
+        "url": "https://brickhousepb.com/",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "28457 Ballard Drive, Unit H",
+          "addressLocality": "Lake Forest",
+          "addressRegion": "IL",
+          "postalCode": "60045",
+          "addressCountry": "US"
+        },
+        "sameAs": [
+          "https://www.instagram.com/brickhousepb/",
+          "https://www.tiktok.com/@brickhousepb"
+        ],
+        "hasMap": "https://www.google.com/maps/search/?api=1&query=Brick+House+Pickleball+28457+Ballard+Drive+Unit+H+Lake+Forest+IL+60045"
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 
@@ -402,6 +465,7 @@ fill="currentColor" stroke="none">
           <a href="https://www.google.com/maps/search/?api=1&amp;query=Brick+House+Pickleball+28457+Ballard+Drive+Unit+H+Lake+Forest+IL+60045" class="btn" target="_blank" rel="noopener">Get directions</a>
           <a href="https://brickhousepb.com/" class="btn ghost" target="_blank" rel="noopener">Visit Brick House Pickleball</a>
         </div>
+        <p class="partner-links">Find Brick House Pickleball: <a href="https://www.instagram.com/brickhousepb/" target="_blank" rel="noopener">Instagram <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external" data-style="bold"><path fill="currentColor" d="M204 64v104a12 12 0 0 1-24 0V93L72.49 200.49a12 12 0 0 1-17-17L163 76H88a12 12 0 0 1 0-24h104a12 12 0 0 1 12 12"/></svg></span></a> <a href="https://www.tiktok.com/@brickhousepb" target="_blank" rel="noopener">TikTok <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external" data-style="bold"><path fill="currentColor" d="M204 64v104a12 12 0 0 1-24 0V93L72.49 200.49a12 12 0 0 1-17-17L163 76H88a12 12 0 0 1 0-24h104a12 12 0 0 1 12 12"/></svg></span></a></p>
       </div>
       <figure class="bh-film">
         <img src="/images/brickhouse/hero-bob.webp" alt="An athlete in a sport wheelchair and a Brick House Pickleball shirt rolls toward the camera on the Brick House courts, the net behind him" width="1200" height="2000" fetchpriority="high">

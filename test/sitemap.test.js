@@ -15,7 +15,11 @@ function pages(dir, prefix = "") {
     .filter((f) => f.endsWith(".html"))
     .map((f) => prefix + f.slice(0, -5));
 }
-const indexable = [...pages("./"), ...pages("volunteer/", "volunteer/")].filter(
+const indexable = [
+  ...pages("./"),
+  ...pages("volunteer/", "volunteer/"),
+  ...pages("events/", "events/"),
+].filter(
   (p) => !readFileSync(new URL(p + ".html", pub), "utf8").includes("noindex"),
 );
 

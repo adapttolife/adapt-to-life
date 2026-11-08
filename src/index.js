@@ -1308,6 +1308,7 @@ export default {
       "/hero-7",
       "/hero-9",
       "/campaign-concepts",
+      "/review-mission",
     ]);
     if (STAGING_ONLY.has(url.pathname.replace(/\.html$/, "")) && env.STAGING !== "1") {
       return Response.redirect(`${url.origin}/`, 302);

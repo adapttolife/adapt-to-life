@@ -14,7 +14,7 @@ const read = (p) => readFileSync(join(ROOT, p), "utf8");
 const MARK = /<!-- campaign-module (\{.*?\}) -->/g;
 const carriers = () =>
   readdirSync(join(ROOT, "public"))
-    .filter((f) => f.endsWith(".html"))
+    .filter((f) => f.endsWith(".html") && !/^review-/.test(f))
     .map((f) => ({ f, html: read(`public/${f}`) }))
     .filter(({ html }) => html.includes("<!-- campaign-module {"));
 

@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f0e0d">
+<meta name="color-scheme" content="light only">
+<title>Mission line review | Adapt To Life</title>
+<meta name="description" content="Adapt To Life is a 501(c)(3) in the Chicago area. We fund adaptive athletes and the clubs that make room for them, starting with wheelchair pickleball.">
+<link rel="canonical" href="https://adapttolife.org/">
+<!-- sameAs is the ONLY machine-readable way to say "these profiles and this
+     site are the same organisation". Without it a search engine has two
+     unconnected accounts and a website; with it they are one entity, which is
+     what puts the right links in a knowledge panel. Visible footer icons do
+     not do this job — they are just outbound links.
+     Homepage only, which is where Organization markup belongs; repeating it on
+     all 25 pages adds nothing and gives 25 places to drift.
+     Every value here is already published on this page or in its footer.
+
+     `logo` IS THE MARK, NOT A SHARE CARD. It had been pointing at
+     home-v2-option2.jpg, which is a 1200x630 share card with a headline across
+     it and, by 2026-09-10, two versions out of date. Google reads this field
+     for the knowledge panel, so what it was actually publishing as the
+     organisation's logo was last quarter's marketing copy. The file it points
+     at now is the mark alone, rendered from the brand SVG at the same size on
+     the canvas as the app icon so the brand reads identically everywhere:
+       sed 's/currentColor/#1A1A1A/g' brand/atl-logo-v2-option2-ui.svg \
+         | rsvg-convert -h 364 -b none \
+         | convert - -background '#F7F4EE' -gravity center -extent 512x512 \
+             -strip public/images/brand/atl-logo-512.png
+     Cream rather than transparent because a transparent mark in near-black
+     disappears on any dark surface that composites it, and Google surfaces
+     choose their own background. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "NGO",
+  "@id": "https://adapttolife.org/#org",
+  "name": "Adapt To Life",
+  "url": "https://adapttolife.org/",
+  "logo": "https://adapttolife.org/images/brand/atl-logo-512.png",
+  "description": "Adapt To Life expands access to adaptive sports so athletes can find their place.",
+  "email": "hello@adapttolife.org",
+  "taxID": "41-3213344",
+  "nonprofitStatus": "Nonprofit501c3",
+  "sameAs": [
+    "https://www.instagram.com/adapt_to_life_org/",
+    "https://www.facebook.com/profile.php?id=61592619668321"
+  ],
+  "founder": {
+    "@type": "Person",
+    "name": "Alec Tranel"
+  },
+  "areaServed": [
+    {
+      "@type": "City",
+      "name": "Chicago"
+    },
+    {
+      "@type": "State",
+      "name": "Illinois"
+    },
+    {
+      "@type": "State",
+      "name": "Wisconsin"
+    }
+  ],
+  "knowsAbout": [
+    "Adaptive sports",
+    "Wheelchair pickleball"
+  ]
+}
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","@id":"https://adapttolife.org/#website","name":"Adapt To Life","url":"https://adapttolife.org/","publisher":{"@id":"https://adapttolife.org/#org"}}</script>
+<link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-v2-option2-32.png">
+<link rel="apple-touch-icon" href="/images/apple-touch-icon-v2-option2.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Adapt To Life | Adaptive Sports Nonprofit in Chicago">
+<meta property="og:description" content="Adapt To Life is a 501(c)(3) in the Chicago area. We fund adaptive athletes and the clubs that make room for them, starting with wheelchair pickleball.">
+<meta property="og:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.">
+<meta property="og:url" content="https://adapttolife.org/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Adapt To Life | Adaptive Sports Nonprofit in Chicago">
+<meta name="twitter:description" content="Adapt To Life is a 501(c)(3) in the Chicago area. We fund adaptive athletes and the clubs that make room for them, starting with wheelchair pickleball.">
+<meta name="twitter:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
+<meta name="twitter:image:alt" content="Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.">
+<link rel="preload" href="/css/site.css?v=f3c06679" as="style">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/site.css?v=f3c06679">
+<link rel="stylesheet" href="/css/roll-band.css?v=1f3b1bd1">
+<!-- hero:sheet -->
+<link rel="stylesheet" href="/css/hero-mosaic.css?v=1abe1e15">
+<!-- Preload the LCP image only. This used to point at the mid-page photoband,
+     which downloaded a below-fold picture before the hero and, once the hero
+     became a photograph, kept fetching an image the page no longer uses at
+     all (60KB for nothing). The hero background is the LCP element now. -->
+<script src="/js/attribution.js?v=dd7f55f9" defer></script>
+<style>
+  /* Homepage-only composition. No new fonts, image crops, or shared overrides. */
+  .home-welcome{ padding:1.5rem 0 2rem; text-align:center; }
+  .home-welcome .lead{ max-width:42ch; margin-inline:auto; }
+  #participation{ padding-block:clamp(2.5rem,5vw,4rem); }
+  .home-story{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(2rem,6vw,6rem); align-items:start; }
+  .home-story h2{ margin-top:0.8rem; max-width:18ch; text-wrap:balance; }
+  .home-story-body{ padding-top:1.8rem; }
+  .home-story-body p + p{ margin-top:1.1rem; }
+  .home-story-body > a{ margin-top:1.4rem; }
+  #nextStepTitle{ text-wrap:balance; }
+  .home-closing-quote{ max-width:36ch; margin:0 auto; font-size:clamp(1.3rem,3vw,1.9rem); line-height:1.45; }
+  .home-closing-name{ margin-top:1.2rem; }
+  .home-closing-invite{ max-width:48ch; margin:1.8rem auto 0; color:var(--cream-mute); }
+  @media(max-width:760px){
+    .home-story{ grid-template-columns:1fr; gap:1.4rem; }
+    .home-story-body{ padding-top:0; }
+    .home-story h2{ max-width:20ch; }
+  }
+  /* On the calendar: dated proof the org is moving. Up to three event cards
+     (the shared .evc component); /events holds the full list. */
+  .home-events-head{ display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:0.8rem 2rem; }
+  .home-events-head .h2{ margin-top:0.7rem; }
+  .home-events-foot{ margin-top:1.4rem; font-size:0.95rem; color:var(--ink-soft); }
+
+</style>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  /* REVIEW ONLY: four treatments of the mission line. ?v=today|a|b|c|d */
+  .mv{display:none}
+  html[data-mv="today"] .mv-today,html[data-mv="a"] .mv-a,html[data-mv="b"] .mv-b,html[data-mv="c"] .mv-c{display:block}
+  .mD{display:none}
+  /* A: statement */
+  html[data-mv="a"] .home-welcome{padding:clamp(2.6rem,7vw,5rem) 0;text-align:left}
+  .mA-eye{display:flex;align-items:center;gap:.6rem;font:700 .8rem/1 var(--font-label);letter-spacing:.14em;text-transform:uppercase;color:var(--orange)}
+  .mA-eye i{display:block;width:1.6rem;height:2px;background:var(--orange)}
+  .mA-txt{margin:1rem 0 0;font:600 clamp(1.65rem,6.2vw,3rem)/1.14 var(--font-display);letter-spacing:-.025em;color:#8f897f;max-width:24ch;text-wrap:balance}
+  .mA-txt b{color:var(--cream);font-weight:800}
+  /* B: cause and effect */
+  html[data-mv="b"] .home-welcome{padding:clamp(2.4rem,6vw,4.5rem) 0 clamp(2.8rem,7vw,5rem)}
+  .mB-1{margin:0;font:500 clamp(1.15rem,4.4vw,1.6rem)/1.3 var(--font-body);color:var(--cream-mute)}
+  .mB-so{display:flex;flex-direction:column;align-items:center;margin:.8rem auto;gap:.5rem}
+  .mB-so::before,.mB-so::after{content:"";width:2px;height:1.4rem}
+  .mB-so::before{background:linear-gradient(rgba(255,92,57,.15),var(--orange))}
+  .mB-so::after{background:linear-gradient(var(--orange),rgba(255,92,57,.15))}
+  .mB-so span{font:700 .78rem/1 var(--font-label);letter-spacing:.16em;text-transform:uppercase;color:var(--orange)}
+  .mB-2{margin:0;font:800 clamp(2rem,8.4vw,3.6rem)/1.02 var(--font-display);letter-spacing:-.035em;color:var(--cream);text-wrap:balance}
+  .mB-2 em{font-style:normal;color:var(--orange)}
+  /* C: bridge card */
+  html[data-mv="c"] .home-welcome{padding:1.6rem 0 0;background:linear-gradient(var(--photo-black) 0 55%,var(--canvas) 55%);text-align:left}
+  .mC{background:var(--cream);border-radius:16px;padding:clamp(1.6rem,5vw,2.8rem) clamp(1.4rem,5vw,3rem);box-shadow:0 24px 50px -28px rgba(0,0,0,.6),0 0 0 1px rgba(23,21,19,.06);max-width:52rem;margin:0 auto;position:relative}
+  .mC::before{content:"";position:absolute;left:clamp(1.4rem,5vw,3rem);top:0;width:2.4rem;height:4px;background:var(--orange-ink);border-radius:0 0 3px 3px}
+  .mC-eye{font:700 .78rem/1 var(--font-label);letter-spacing:.14em;text-transform:uppercase;color:var(--orange-ink)}
+  .mC-txt{margin:.8rem 0 0;font:700 clamp(1.55rem,5.6vw,2.6rem)/1.12 var(--font-display);letter-spacing:-.025em;color:var(--ink);text-wrap:balance}
+  .mC-txt em{font-style:normal;color:var(--orange-display)}
+  html[data-mv="c"] #participation{padding-top:clamp(2rem,4vw,3rem)}
+  /* D: one unit with the headline */
+  html[data-mv="d"] .home-welcome{display:none}
+  html[data-mv="d"] .mD{display:block;margin-top:.9rem;padding-top:.9rem;border-top:1px solid rgba(249,247,242,.14);font:500 clamp(1rem,4.1vw,1.3rem)/1.4 var(--font-body);letter-spacing:0;color:var(--cream-mute);max-width:34ch}
+  .mD b{color:var(--cream);font-weight:700}
+  @media (max-width:900px){html[data-mv="d"] .mw-wall{row-gap:clamp(11.5rem,26vh,14rem)}}
+  @media (min-width:901px){html[data-mv="d"] .mD{font-size:1.35rem;max-width:30ch;border:0;padding:0;margin-top:1.6rem}}
+  /* switcher */
+  .mvbar{position:fixed;left:50%;bottom:max(14px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:9999;display:flex;gap:4px;padding:5px;border-radius:999px;background:rgba(15,14,13,.92);box-shadow:0 0 0 1px rgba(249,247,242,.16),0 12px 30px -10px rgba(0,0,0,.8);backdrop-filter:blur(8px);font:700 .95rem/1 var(--font-body)}
+  .mvbar a{display:grid;place-items:center;min-width:44px;height:44px;padding:0 .8rem;border-radius:999px;color:var(--cream-mute);text-decoration:none}
+  .mvbar a[aria-current="true"]{background:var(--orange);color:#0f0e0d}
+</style>
+<script>
+  (function(){var v=(new URLSearchParams(location.search).get('v')||'d').toLowerCase();if(!/^(today|a|b|c|d)$/.test(v))v='d';document.documentElement.setAttribute('data-mv',v);})();
+</script>
+</head>
+<body>
+
+<header class="nav over-dark" id="nav">
+  <div class="wrap nav-inner">
+    <a href="/" class="brand"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500.000000 457.000000" class="brand-logo" aria-hidden="true" focusable="false"><g transform="translate(0.000000,457.000000) scale(0.100000,-0.100000)"
+fill="currentColor" stroke="none">
+<path d="M2059 4548 c-14 -13 -99 -185 -198 -403 -96 -209 -238 -519 -316
+-690 -202 -440 -304 -662 -333 -725 -29 -65 -163 -358 -237 -520 -29 -63 -139
+-304 -245 -535 -291 -637 -404 -882 -445 -970 -20 -44 -56 -123 -80 -175 -53
+-118 -172 -375 -191 -414 -53 -108 -28 -116 371 -116 356 0 369 2 394 57 11
+23 190 440 524 1217 72 168 77 206 52 406 -69 554 79 859 585 1205 111 76 137
+101 165 155 20 40 233 517 330 742 23 53 45 90 56 93 20 7 59 -10 59 -26 0 -9
+208 -480 215 -488 3 -2 35 25 72 59 169 156 360 182 566 79 51 -27 51 -24 -54
+206 -134 293 -232 511 -306 675 -93 210 -35 190 -539 190 -421 0 -421 0 -445
+-22z"/>
+<path d="M3060 3404 c-127 -44 -200 -148 -200 -284 0 -358 507 -412 590 -62
+52 220 -174 420 -390 346z"/>
+<path d="M2334 2885 c-396 -102 -739 -406 -825 -732 -32 -119 -37 -419 -7
+-373 2 3 32 61 67 130 180 354 428 530 745 530 135 0 133 2 115 -107 -53 -333
+27 -498 243 -498 106 0 119 9 95 60 -36 75 -15 139 134 406 128 229 134 355
+26 476 -106 117 -372 166 -593 108z"/>
+<path fill="#FF5C39" d="M2242 2133 c-193 -421 -156 -742 101 -859 127 -58 282 -41 606 66
+403 134 502 93 711 -292 386 -708 698 -982 1176 -1030 158 -17 167 -8 53 50
+-349 178 -546 441 -794 1062 -293 734 -505 846 -1178 623 -249 -82 -337 -90
+-440 -40 -116 58 -187 202 -190 389 -2 116 -5 118 -45 31z"/>
+<path d="M1893 1869 c-616 -376 -623 -1289 -11 -1695 117 -78 206 -113 411
+-163 57 -13 236 -15 286 -2 20 6 68 17 106 26 399 93 694 425 771 869 45 256
+-59 389 -280 362 -87 -11 -104 -30 -80 -92 46 -119 16 -335 -66 -474 -199
+-338 -665 -446 -974 -226 -323 230 -382 720 -118 982 42 42 42 42 42 186 0 96
+5 163 15 201 25 97 17 99 -102 26z"/>
+</g></svg>Adapt To Life</a>
+    <nav class="nav-links">
+      <div class="nav-group">
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navOurWork">Our Work<svg class="caret" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="caret" data-style="bold"><path fill="currentColor" d="m216.49 104.49l-80 80a12 12 0 0 1-17 0l-80-80a12 12 0 0 1 17-17L128 159l71.51-71.52a12 12 0 0 1 17 17Z"/></svg></button>
+        <div class="nav-panel" id="navOurWork">
+          <a href="/hustle-and-heart"><span class="np-t">Hustle &amp; Heart Fund</span><span class="np-d">Support for equipment, training, and travel</span></a>
+          <a href="/adaptive-sports-near-me"><span class="np-t">Adaptive Sports Near Me</span><span class="np-d"><span class="tag tag--info">In beta</span> Find adaptive programs by sport and location</span></a>
+          <a href="/adapt-body-shop"><span class="np-t">Adapt Body Shop</span><span class="np-d"><span class="tag tag--neutral">Coming soon</span> Gear for the community</span></a>
+        </div>
+      </div>
+      <div class="nav-group">
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navJoin">Get Involved<svg class="caret" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="caret" data-style="bold"><path fill="currentColor" d="m216.49 104.49l-80 80a12 12 0 0 1-17 0l-80-80a12 12 0 0 1 17-17L128 159l71.51-71.52a12 12 0 0 1 17 17Z"/></svg></button>
+        <div class="nav-panel" id="navJoin">
+          <a href="/volunteer"><span class="np-t">Volunteer</span><span class="np-d">Roles to fill, and our ambassador program</span></a>
+          <a href="/sponsorship"><span class="np-t">Partners</span><span class="np-d">Our partners, and how to join them</span></a>
+          <a href="/events"><span class="np-t">Events</span><span class="np-d">Tournaments, fundraisers, and gatherings</span></a>
+        </div>
+      </div>
+      <div class="nav-group">
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navAbout">About<svg class="caret" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="caret" data-style="bold"><path fill="currentColor" d="m216.49 104.49l-80 80a12 12 0 0 1-17 0l-80-80a12 12 0 0 1 17-17L128 159l71.51-71.52a12 12 0 0 1 17 17Z"/></svg></button>
+        <div class="nav-panel" id="navAbout">
+          <a href="/promise"><span class="np-t">How Giving Works</span><span class="np-d">How gifts support athletes and the work around them</span></a>
+          <a href="/about"><span class="np-t">Our Story</span><span class="np-d">The people who built this, and why</span></a>
+        </div>
+      </div>
+      <a class="lk featured" href="/apply">Apply for support</a>
+      <a class="nav-cta" href="/donate">Donate</a>
+    </nav>
+    <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="mobile-menu">
+    <div class="wrap mwrap">
+      <span class="m-group">Our Work</span>
+      <a class="m-sub" href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
+      <a class="m-sub" href="/adaptive-sports-near-me">Adaptive Sports Near Me <span class="tag tag--info">In beta</span></a>
+      <a class="m-sub" href="/adapt-body-shop">Adapt Body Shop <span class="tag tag--neutral">Coming soon</span></a>
+      <span class="m-group">Get Involved</span>
+      <a class="m-sub" href="/volunteer">Volunteer</a>
+      <a class="m-sub" href="/sponsorship">Partners</a>
+      <a class="m-sub" href="/events">Events</a>
+      <span class="m-group">About</span>
+      <a class="m-sub" href="/promise">How Giving Works</a>
+      <a class="m-sub" href="/about">Our Story</a>
+      <a class="featured" href="/apply">Apply for support</a>
+      <a class="m-cta" href="/donate">Donate <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- 1 · HERO — the mosaic -->
+  <section class="hero-wall-photo dark hero-var" id="heroStage" data-variant="1">
+    <div class="mw-sky"></div>
+    <div class="mw-wall" aria-hidden="true">
+      <figure class="mw-p p-serve d1" style="--r:-0.7deg; --d:60ms;"><img src="/images/hero/panels/serve.ba27fa95.webp" width="560" height="420" alt="" loading="lazy" decoding="async"></figure>
+      <figure class="mw-p p-rally d1" style="--r:0.6deg; --d:105ms;"><img src="/images/hero/panels/rally.5e99ca38.webp" width="560" height="373" alt="" loading="lazy" decoding="async"></figure>
+      <figure class="mw-p p-court d1" style="--r:-0.5deg; --d:150ms;"><img src="/images/hero/panels/court.78500514.webp" width="560" height="373" alt="" loading="lazy" decoding="async"></figure>
+      <figure class="mw-p p-shout d1" style="--r:0.9deg; --d:195ms;"><img src="/images/hero/panels/shout.69d79121.webp" width="420" height="560" alt="" loading="lazy" decoding="async"></figure>
+      <figure class="mw-p p-close-dink d1" style="--r:-0.8deg; --d:240ms;"><img src="/images/hero/panels/close-dink.1ab84d80.webp" width="420" height="560" alt="" loading="lazy" decoding="async"></figure>
+      <figure class="mw-p p-paddle d1" style="--r:0.7deg; --d:285ms;"><img src="/images/hero/panels/paddle.bace1a2a.webp" width="420" height="560" alt="" loading="lazy" decoding="async"></figure>
+      <figure class="mw-p p-lobby d1" style="--r:-0.6deg; --d:330ms;"><img src="/images/hero/panels/lobby.e9a4a6e6.webp" width="420" height="560" alt="" loading="lazy" decoding="async"></figure>
+      <figure class="mw-p p-bench d1" style="--r:0.5deg; --d:375ms;"><img src="/images/hero/panels/bench.ad362e29.webp" width="420" height="560" alt="" loading="lazy" decoding="async"></figure>
+      <figure class="mw-p p-profile d1" style="--r:-0.8deg; --d:420ms;"><img src="/images/hero/panels/profile.24c700a2.webp" width="315" height="420" alt="" loading="lazy" decoding="async"></figure>
+      <div class="mw-haze h1"></div>
+      <figure class="mw-p p-toss d2" style="--r:0.5deg; --d:465ms;"><img src="/images/hero/panels/toss.431d48c5.webp" width="390" height="520" alt="" loading="lazy" decoding="async"></figure>
+      <figure class="mw-p p-whitecap d2" style="--r:-0.9deg; --d:510ms;"><img src="/images/hero/panels/whitecap.83a4b02e.webp" width="615" height="820" alt="" fetchpriority="high" decoding="async"></figure>
+      <figure class="mw-p p-laugh d2" style="--r:0.8deg; --d:555ms;"><img src="/images/hero/panels/laugh.e088f833.webp" width="390" height="520" alt="" loading="lazy" decoding="async"></figure>
+      <figure class="mw-p p-reach d2" style="--r:-0.6deg; --d:600ms;"><img src="/images/hero/panels/reach.28cf12a7.webp" width="390" height="520" alt="" loading="lazy" decoding="async"></figure>
+      <figure class="mw-p p-swing d2" style="--r:0.9deg; --d:645ms;"><img src="/images/hero/panels/swing.8629e07e.webp" width="390" height="520" alt="" loading="lazy" decoding="async"></figure>
+      <figure class="mw-p p-seated d2" style="--r:0.6deg; --d:690ms;"><img src="/images/hero/panels/seated.5a7a13b8.webp" width="390" height="520" alt="" loading="lazy" decoding="async"></figure>
+      <figure class="mw-p p-grin d2" style="--r:-0.5deg; --d:735ms;"><img src="/images/hero/panels/grin.b93dbec4.webp" width="390" height="520" alt="" loading="lazy" decoding="async"></figure>
+      <figure class="mw-p p-lanyard d2" style="--r:0.6deg; --d:780ms;"><img src="/images/hero/panels/lanyard.1fe5d442.webp" width="300" height="400" alt="" loading="lazy" decoding="async"></figure>
+      <div class="mw-haze h2"></div>
+      <figure class="mw-p p-net d3" style="--r:-0.7deg; --d:825ms;"><img src="/images/hero/panels/net.98d55d48.webp" width="820" height="547" alt="" fetchpriority="high" decoding="async"></figure>
+      <figure class="mw-p p-smile-close d3" style="--r:0.7deg; --d:870ms;"><img src="/images/hero/panels/smile-close.af71b3b5.webp" width="615" height="820" alt="" fetchpriority="high" decoding="async"></figure>
+      <figure class="mw-p p-dink d3" style="--r:-0.6deg; --d:915ms;"><img src="/images/hero/panels/dink.96f84cd1.webp" width="615" height="820" alt="" fetchpriority="high" decoding="async"></figure>
+      <figure class="mw-p p-brian d3" style="--r:0.5deg; --d:960ms;"><img src="/images/hero/panels/brian.cb2df1f1.webp" width="656" height="820" alt="" fetchpriority="high" decoding="async"></figure>
+      <figure class="mw-p p-forehand d3" style="--r:-0.4deg; --d:1005ms;"><img src="/images/hero/panels/forehand.b3f6b821.webp" width="820" height="547" alt="" fetchpriority="high" decoding="async"></figure>
+    </div>
+    <div class="mw-scrim"></div>
+    <div class="wrap mw-copy">
+      <h1 class="serif display mw-rise" style="--d:180ms;">Your place in <em class="italic" style="color:var(--orange)">adaptive sports.</em><span class="mD">We <b>expand access</b> to adaptive sports so athletes can <b>find their place.</b></span></h1>
+    </div>
+    <div class="mw-grain"></div>
+    <div class="mw-vig"></div>
+  </section>
+<style>
+  .mw-p.p-serve{ left:2%; top:58%; width:15%; aspect-ratio:560/420; }
+  .mw-p.p-rally{ left:19%; top:76%; width:16%; aspect-ratio:560/373; }
+  .mw-p.p-court{ left:76%; top:26%; width:15%; aspect-ratio:560/373; }
+  .mw-p.p-shout{ left:51%; top:22%; width:10%; aspect-ratio:420/560; }
+  .mw-p.p-close-dink{ left:66%; top:36%; width:11%; aspect-ratio:420/560; }
+  .mw-p.p-paddle{ left:62%; top:80%; width:11%; aspect-ratio:420/560; }
+  .mw-p.p-lobby{ left:34%; top:64%; width:11%; aspect-ratio:420/560; }
+  .mw-p.p-bench{ left:27%; top:30%; width:14%; aspect-ratio:420/560; }
+  .mw-p.p-profile{ left:47%; top:38%; width:10%; aspect-ratio:315/420; }
+  .mw-p.p-toss{ left:69%; top:0%; width:17%; aspect-ratio:390/520; }
+  .mw-p.p-whitecap{ left:44%; top:4%; width:12%; aspect-ratio:615/820; }
+  .mw-p.p-laugh{ left:5%; top:74%; width:13%; aspect-ratio:390/520; }
+  .mw-p.p-reach{ left:90%; top:40%; width:14%; aspect-ratio:390/520; }
+  .mw-p.p-swing{ left:54%; top:56%; width:11%; aspect-ratio:390/520; }
+  .mw-p.p-seated{ left:87%; top:70%; width:13%; aspect-ratio:390/520; }
+  .mw-p.p-grin{ left:76%; top:50%; width:12%; aspect-ratio:390/520; }
+  .mw-p.p-lanyard{ left:88%; top:14%; width:11%; aspect-ratio:300/400; }
+  .mw-p.p-net{ left:17%; top:48%; width:17%; aspect-ratio:820/547; }
+  .mw-p.p-smile-close{ left:82%; top:4%; width:16%; aspect-ratio:615/820; }
+  .mw-p.p-dink{ left:57%; top:10%; width:19%; aspect-ratio:615/820; }
+  .mw-p.p-brian{ left:41%; top:55%; width:16%; aspect-ratio:656/820; }
+  .mw-p.p-forehand{ left:62%; top:64%; width:27%; aspect-ratio:820/547; }
+  @media (max-width:900px){
+    .mw-p{ display:none; }
+    .mw-p.p-net{ display:block; order:0; position:static; left:auto; top:auto; right:auto; bottom:auto; width:auto; height:100%; aspect-ratio:auto; transform:none; border-radius:0; box-shadow:none; }
+    .mw-p.p-net img{ object-position:38% 0%; }
+    .mw-p.p-whitecap{ display:block; order:1; position:static; left:auto; top:auto; right:auto; bottom:auto; width:auto; height:100%; aspect-ratio:auto; transform:none; border-radius:0; box-shadow:none; }
+    .mw-p.p-whitecap img{ object-position:50% 50%; }
+    .mw-p.p-whitecap img{ height:142%; position:relative; top:-42%; }
+    .mw-p.p-brian{ display:block; order:2; position:static; left:auto; top:auto; right:auto; bottom:auto; width:auto; height:100%; aspect-ratio:auto; transform:none; border-radius:0; box-shadow:none; }
+    .mw-p.p-brian img{ object-position:50% 19%; }
+    .mw-p.p-brian img{ height:114%; position:relative; top:-14%; }
+    .mw-p.p-forehand{ display:block; order:3; position:static; left:auto; top:auto; right:auto; bottom:auto; width:auto; height:100%; aspect-ratio:auto; transform:none; border-radius:0; box-shadow:none; }
+    .mw-p.p-forehand img{ object-position:50% 0%; }
+    .mw-p.p-net img{ filter:grayscale(1) brightness(1) contrast(1.04); }
+    .mw-p.p-whitecap img{ filter:grayscale(1) brightness(1) contrast(1.04); }
+    .mw-p.p-brian img{ filter:grayscale(1) brightness(1) contrast(1.04); }
+    .mw-p.p-forehand img{ filter:grayscale(1) brightness(1) contrast(1.04); }
+  }
+</style>
+
+  <!-- Keep the accepted photo crops and headline clear. The mission sits
+       below the mosaic; the story continues without an audience-selection gate. -->
+  <div class="home-welcome dark">
+    <div class="wrap mv mv-today">
+      <p class="lead">We expand access to adaptive sports so athletes can find their place.</p>
+    </div>
+    <div class="wrap mv mv-a"><span class="mA-eye"><i></i>Our mission</span><p class="mA-txt">We <b>expand access</b> to adaptive sports so athletes can <b>find their place.</b></p></div>
+    <div class="wrap mv mv-b"><p class="mB-1">We expand access to adaptive sports</p><div class="mB-so"><span>so</span></div><p class="mB-2">athletes can find <em>their place.</em></p></div>
+    <div class="wrap mv mv-c"><div class="mC"><span class="mC-eye">Our mission</span><p class="mC-txt">We expand access to adaptive sports so athletes can <em>find their place.</em></p></div></div>
+  </div>
+
+  <!-- A lived reason for the work, not an inventory of programs. -->
+  <section class="band" id="participation" aria-labelledby="participationTitle">
+    <div class="wrap home-story">
+      <div class="reveal">
+        <span class="eyebrow orange">Why we&rsquo;re here</span>
+        <h2 id="participationTitle" class="serif h2">A chance to play should not come down to luck.</h2>
+      </div>
+      <div class="home-story-body reveal">
+        <p class="prose">A brochure introduced our founder, Alec, to adaptive sports when he was six. Sport gave him somewhere to belong and something to work toward. He went on to become a coach in the community that helped raise him.</p>
+        <p class="prose">That first introduction should not depend on luck. Neither should having the support to keep playing. Adapt To Life is built by people who know what that opportunity can mean.</p>
+        <a href="/about" class="textlink">How it started <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- MEET JUAN: people are the proof. One athlete, his words, his page. -->
+  <section class="hm-juan dark" aria-labelledby="hmJuanTitle">
+    <style>
+      .hm-juan{ position:relative; isolation:isolate; overflow:hidden; padding:clamp(3.5rem,8vw,6rem) 0 clamp(2rem,4vw,3rem); }
+      .hm-juan::before{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 45% 60% at 25% 50%, rgba(255,92,57,0.2) 0%, transparent 70%); }
+      .hm-juan-grid{ display:grid; grid-template-columns:minmax(0,0.9fr) minmax(0,1.1fr); gap:clamp(2rem,5vw,4.5rem); align-items:center; }
+      @media (max-width:820px){ .hm-juan-grid{ grid-template-columns:1fr; } }
+      .hm-juan figure{ margin:0; border-radius:20px; overflow:hidden; aspect-ratio:1/1; transform:rotate(-1.2deg); box-shadow:0 0 0 1px rgba(249,247,242,0.08), 0 28px 60px -24px rgba(0,0,0,0.85), 0 0 64px -18px rgb(var(--accent-rgb) / 0.42); }
+      @media (max-width:820px){ .hm-juan figure{ transform:none; aspect-ratio:4/3.4; } }
+      .hm-juan figure img{ width:100%; height:100%; object-fit:cover; object-position:45% 35%; }
+      .hm-juan blockquote{ margin:0.9rem 0 0; font-family:var(--font-display); font-weight:800; font-size:clamp(1.7rem,3.8vw,3rem); line-height:1.08; letter-spacing:-0.025em; color:var(--cream); max-width:18ch; }
+      .hm-juan blockquote em{ color:#ff5c39; }
+      .hm-juan .who{ margin-top:1.4rem; font-weight:700; color:var(--cream); }
+      .hm-juan .who span{ display:block; margin-top:0.3rem; font-weight:400; color:var(--cream-mute); max-width:42ch; }
+      .hm-juan .textlink{ margin-top:1.5rem; color:var(--orange); font-size:clamp(0.98rem,1.2vw,1.08rem); }
+    </style>
+    <div class="wrap hm-juan-grid">
+      <figure class="reveal"><img src="/images/athletes/juan-serve-960.webp" srcset="/images/athletes/juan-serve-960.webp 960w, /images/athletes/juan-serve.webp 1500w" sizes="(min-width: 1000px) 460px, 92vw" alt="Juan Ortiz tosses the ball to serve from his sport wheelchair" width="1500" height="1474" loading="lazy" decoding="async"></figure>
+      <div class="reveal">
+        <span class="eyebrow orange" id="hmJuanTitle">Meet our first ambassador</span>
+        <blockquote>&ldquo;The first sport I&rsquo;ve ever found where <em>the wheelchair vanishes.</em>&rdquo;</blockquote>
+        <p class="who">Juan Ortiz<span>Paralyzed at 14. Hall of Famer in wheelchair softball. Now building wheelchair pickleball in Chicago, and chasing his first US Open.</span></p>
+        <a href="/juan" class="textlink">Read Juan&rsquo;s story <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE CREW: right after the ambassador, so the page reads who, then where. -->
+  <section class="hm-crew dark" aria-labelledby="hmCrewTitle">
+    <style>
+      .hm-crew{ position:relative; isolation:isolate; overflow:hidden; padding:clamp(3.5rem,8vw,6rem) 0; }
+      .hm-juan + .hm-crew{ padding-top:0; }
+      /* The seam: one hairline, inside the gutters, instead of an empty gap, so who (Juan) and where (his crew) read as one story. */
+      .hm-juan + .hm-crew .hm-crew-grid{ position:relative; padding-top:clamp(1.75rem,3.6vw,2.75rem); }
+      .hm-juan + .hm-crew .hm-crew-grid::before{ content:""; position:absolute; top:0; left:var(--gutter); right:var(--gutter); height:1px; background:rgba(249,247,242,0.12); }
+      /* The shared .dark glows sit at the edges and would cut a line between the two; each keeps its own glow instead. */
+      .hm-juan, .hm-juan + .hm-crew{ background-image:none; }
+      /* Right after Juan, the glow starts below the seam so the two sections read as one. */
+      .hm-juan + .hm-crew::before{ background:radial-gradient(ellipse 50% 60% at 85% 58%, rgba(255,92,57,0.18) 0%, transparent 70%); }
+      .hm-crew::before{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 50% 70% at 85% 40%, rgba(255,92,57,0.18) 0%, transparent 70%); }
+      .hm-crew-grid{ display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,0.85fr); gap:clamp(2rem,5vw,4.5rem); align-items:center; }
+      @media (max-width:820px){ .hm-crew-grid{ grid-template-columns:1fr; } }
+      /* The badge sits beside the name, the way a crest sits beside a team name, instead of alone on a row of its own. */
+      .hm-crew-head{ display:flex; align-items:center; gap:clamp(0.9rem,2vw,1.4rem); }
+      .hm-crew-badge{ display:block; flex:none; width:clamp(76px,8vw,112px); height:auto; filter:drop-shadow(0 12px 32px rgba(0,0,0,0.6)); }
+      .hm-crew h2{ margin-top:0.45rem; color:var(--cream); }
+      /* Each half of the title stays whole: one line when there is room, otherwise it breaks at the colon. */
+      .hm-crew-head h2 span{ display:block; }
+      /* The place reads as a label over the name: smaller, so Wheelie Big Dills leads and the top line is never the longer one. */
+      .hm-crew-head h2{ margin-top:0; }
+      .hm-crew-head h2 span:first-child{ font-size:0.6em; font-weight:600; letter-spacing:-0.01em; color:var(--cream-mute); margin-bottom:0.15em; }
+      .hm-crew-head h2 span:last-child{ font-size:1.15em; line-height:1; }
+      @media (max-width:359px){ .hm-crew-head h2 span:last-child{ font-size:1em; } }
+      .hm-crew .prose{ margin-top:1rem; color:var(--cream-mute); max-width:46ch; }
+      .hm-crew .textlink{ margin-top:1.4rem; color:var(--orange); font-size:clamp(0.98rem,1.2vw,1.08rem); }
+      .hm-crew .prose a{ color:var(--cream); text-decoration:underline; text-decoration-color:var(--orange); text-decoration-thickness:2px; text-underline-offset:4px; }
+      .hm-crew-proof{ list-style:none; margin:0; padding:0; display:grid; gap:0.95rem; }
+      .home-welcome{ background-color:var(--photo-black); background-image:none; }
+      .hm-crew-proof li{ display:grid; grid-template-columns:5.2rem 1fr; align-items:baseline; gap:1rem; padding-bottom:0.95rem; border-bottom:1px solid rgba(249,247,242,0.12); }
+      /* Every label starts just past the widest number, so 3 and 6 sit next to their words instead of across a gap. */
+      @supports (grid-template-columns:subgrid){
+        .hm-crew-proof{ grid-template-columns:max-content minmax(0,1fr); }
+        .hm-crew-proof li{ grid-column:1 / -1; grid-template-columns:subgrid; gap:0 clamp(1rem,2vw,1.4rem); }
+      }
+      .hm-crew-proof b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(2.4rem,4.6vw,3.2rem); line-height:0.9; letter-spacing:-0.04em; color:var(--yellow); }
+      .hm-crew-proof span{ color:var(--cream); font-weight:600; line-height:1.4; }
+    </style>
+    <style>
+      /* What a gift can do, smallest first, right before the ask. */
+      .gift-ladder{ list-style:none; margin:clamp(1.6rem,3.4vw,2.4rem) auto 0; padding:0; max-width:980px; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:clamp(0.8rem,2vw,1.4rem); text-align:left; }
+      .gift-ladder li{ padding:1.1rem 1.1rem 1.2rem; border-radius:16px; background:rgba(249,247,242,0.05); box-shadow:inset 0 0 0 1px rgba(249,247,242,0.12); }
+      .gift-ladder b{ display:block; font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(1.9rem,3.4vw,2.5rem); line-height:1; letter-spacing:-0.03em; color:#ff5c39; }
+      .gift-ladder span{ display:block; margin-top:0.5rem; color:var(--cream); line-height:1.4; font-weight:600; }
+      .gift-ladder-link{ display:block; color:inherit; text-decoration:none; }
+      .gift-ladder-link span{ text-decoration:underline; text-decoration-color:var(--orange); text-underline-offset:3px; }
+      @media (max-width:760px){ .gift-ladder{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    </style>
+    <div class="wrap hm-crew-grid">
+      <div class="reveal">
+        <div class="hm-crew-head">
+          <img class="hm-crew-badge" src="/images/pickleball/wheelie-big-dills-badge.webp" alt="The Wheelie Big Dills badge: a pickle in a wheelchair swinging a Chicago flag paddle, Wheelchair Pickleball, Chicago, IL, est. 2024" width="320" height="319" loading="lazy" decoding="async">
+          <div>
+            <h2 id="hmCrewTitle" class="serif h2"><span>Chicago Pickleball:</span> <span>Wheelie Big Dills</span></h2>
+          </div>
+        </div>
+        <p class="prose">This is the crew Juan plays with: wheelchair pickleball players growing the sport across the Chicago area. We&rsquo;re proud to fund and support them through the <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a>, and with Juan we help the clubs where they play build adaptive programs, from open play to memberships for athletes training to compete.</p>
+        <a href="/pickleball" class="textlink">Meet the crew <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
+      </div>
+      <ul class="hm-crew-proof reveal" aria-label="The crew's record">
+        <li><b>3</b><span>straight US Opens for Robby and Brian</span></li>
+        <li><b>6</b><span>medals at Monster Smash, October 2026</span></li>
+        <li><b>1st</b><span>wheelchair division on the APP Tour, after Juan asked for one</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- PARTNERS: shown, not claimed. Each logo opens that partner's page.
+       Equal cells with hairlines between them, in two rows: the nonprofits,
+       then the pickleball clubs. Each logo is sized for equal visual weight,
+       not equal height, and each whole cell is the tap target. -->
+  <section class="hm-partners" aria-labelledby="hmPartnersTitle">
+    <style>
+      .hm-partners{ padding:clamp(2.2rem,5vw,3.4rem) 0; background:var(--canvas); border-bottom:1px solid var(--hairline); }
+      .hm-partners .wrap{ text-align:center; }
+      /* Two rows, Alec's order (Nov 6 2026): the two nonprofit partners on
+         top, the three pickleball clubs under them. One list on a six-column
+         grid, every logo two columns wide, so the cells are equal and the
+         top pair sits centred over the clubs. A new partner means a new row
+         rule here; test/partners.test.js keeps the order in step with
+         /sponsorship. */
+      .hm-partners ul{ list-style:none; margin:clamp(1.1rem,2.4vw,1.5rem) auto 0; padding:0; display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); max-width:720px; }
+      .hm-partners li{ display:flex; grid-column:span 2; }
+      .hm-partners li:nth-child(1){ grid-column:2 / span 2; }
+      .hm-partners li:nth-child(2){ grid-column:4 / span 2; border-left:1px solid var(--hairline); }
+      .hm-partners li:nth-child(n+3){ border-top:1px solid var(--hairline); }
+      .hm-partners li:nth-child(n+4){ border-left:1px solid var(--hairline); }
+      .hm-partners a{ flex:1; display:flex; align-items:center; justify-content:center; gap:0.6rem; min-height:88px; padding:0.6rem 0.7rem; opacity:0.9; transition:opacity .2s ease, transform .2s ease; color:var(--ink); text-decoration:none; }
+      .hm-partners a:hover{ opacity:1; transform:translateY(-2px); }
+      .hm-partners img{ height:clamp(36px,3.4vw,44px); width:auto; }
+      .hm-partners img.is-word{ height:clamp(21px,2vw,26px); }
+      .hm-partners img.is-bh{ height:clamp(50px,4.6vw,60px); }
+      .hm-partners img.is-cas{ height:clamp(30px,2.8vw,36px); }
+      .hm-partners img.is-amp{ height:clamp(38px,3.6vw,46px); }
+      /* The name sits under the star, the way Brick House's sits under its
+         paddle, so every cell fits at a third of the strip. */
+      .hm-partners a[href="/chicago-adaptive-sports"]{ flex-direction:column; gap:0.3rem; }
+      .hm-partners .hm-p-name{ font-family:var(--font-display); font-weight:800; font-size:0.85rem; line-height:1.05; text-align:center; white-space:nowrap; }
+      @media (max-width:640px){
+        .hm-partners a{ min-height:80px; padding:0.5rem 0.35rem; gap:0.4rem; }
+        .hm-partners img{ height:32px; }
+        .hm-partners img.is-word{ height:19px; }
+        .hm-partners img.is-bh{ height:46px; }
+        .hm-partners img.is-cas{ height:28px; }
+        .hm-partners img.is-amp{ height:34px; }
+        .hm-partners .hm-p-name{ font-size:0.75rem; }
+      }
+      @media (max-width:340px){
+        .hm-partners img.is-word{ height:17px; }
+        .hm-partners .hm-p-name{ font-size:0.7rem; }
+      }
+    </style>
+    <div class="wrap reveal">
+      <span class="eyebrow orange" id="hmPartnersTitle">Our partners</span>
+      <ul>
+        <li><a href="/chicago-adaptive-sports"><img class="is-cas" src="/images/partners/cas-mark.png" alt="" width="240" height="193" loading="lazy"><span class="hm-p-name">Chicago<br>Adaptive Sports</span></a></li>
+        <li><a href="/amp"><img class="is-amp" src="/images/partners/amp-logo.png" alt="AMP Adaptive Sports" width="340" height="159" loading="lazy"></a></li>
+        <li><a href="/ace"><img src="/images/ace/ace-logo.png" alt="ACE Pickleball Club" width="280" height="132" loading="lazy"></a></li>
+        <li><a href="/brickhouse"><img class="is-bh" src="/images/brickhouse/brick-house-logo-orange-black.svg" alt="Brick House Pickleball" width="372" height="265" loading="lazy"></a></li>
+        <li><a href="/picklr"><img class="is-word" src="/images/partners/picklr-wordmark-black.png" alt="The Picklr" width="280" height="65" loading="lazy"></a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Current work follows the reason for giving: what the crew has done,
+       then the one goal, then a gift you can size. Generated by
+       scripts/build-module.mjs; the live numbers come from /api/raised. -->
+  <!-- campaign-module {"id":"campaign","theme":"dark","athlete":"ryan","mirror":false} -->
+  <section class="cm" id="campaign" data-cm data-theme="dark" aria-labelledby="campaign-title">
+      <div class="cm-bg cm-bg--true" aria-hidden="true" style="--ghost:url(/images/pickleball/ghost/ryan-gray.webp);--ghost-ar:599/640"></div>
+      <div class="cm-wrap">
+        <div class="cm-head">
+          <p class="cm-status"><span class="cm-dot" aria-hidden="true"></span>Raising now<span class="cm-status-sep" aria-hidden="true"></span>Chicago Pickleball: Wheelie Big Dills</p>
+          <h2 class="cm-h" id="campaign-title">Every week on court. <em>Next stop, Naples.</em></h2>
+          <p class="cm-lede">Building the best wheelchair pickleball in the Chicago area, maybe the country.</p>
+        </div>
+        <div class="cm-card">
+          <p class="cm-hero"><b data-cm-total>$48,180</b><span data-cm-sub>our goal for the year ahead</span></p>
+          <div class="cm-rows">
+            <div class="cm-row" data-part-row="year">
+              <div class="cm-row-top"><b><i class="sym sym--training" aria-hidden="true"></i>Every week</b><span class="cm-fig" data-part-fig="year">$27,180 a year</span></div>
+              <div class="cm-lane"><div class="cm-track"><span class="cm-fill" data-part-fill="year"></span><span class="cm-start" aria-hidden="true"></span></div><span class="cm-pct" data-part-pct="year" hidden></span></div>
+              <p class="cm-note">A year of court time and memberships for 10 athletes.</p>
+            </div>
+            <div class="cm-row" data-part-row="send-6">
+              <div class="cm-row-top"><b><i class="sym sym--travel" aria-hidden="true"></i>The Road to the US Open</b><span class="cm-fig" data-part-fig="send-6">$21,000</span></div>
+              <div class="cm-lane"><div class="cm-track cm-track--seats"><span class="cm-fill cm-fill--action" data-part-fill="send-6"></span><span class="cm-start" aria-hidden="true"></span></div><span class="cm-pct" data-part-pct="send-6" hidden></span></div>
+              <p class="cm-note cm-note--crew"><span class="cm-faces" role="img" aria-label="The six seats: Juan, Brian, Bob, Robby, Ken and Amanda"><i class="face" style="--i:0" title="Juan"></i><i class="face" style="--i:1" title="Brian"></i><i class="face" style="--i:2" title="Bob"></i><i class="face" style="--i:3" title="Robby"></i><i class="face" style="--i:4" title="Ken"></i><i class="face" style="--i:5" title="Amanda"></i></span><span>Six athletes, about $3,500 each, for the 2027 US Open. <a href="/send-6">See the road</a></span></p>
+            </div>
+          </div>
+          <a class="cm-more" href="/numbers">See the numbers breakdown <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
+          <div class="cm-give" data-give>
+            <div class="cm-seg" role="radiogroup" aria-label="How often">
+              <button type="button" role="radio" aria-checked="true" data-freq="monthly">Monthly</button>
+              <button type="button" role="radio" aria-checked="false" data-freq="once">One time</button>
+            </div>
+            <div class="cm-amts is-3" role="radiogroup" aria-label="Amount" data-amts>
+              <button type="button" role="radio" aria-checked="false" data-a="60" aria-label="$60 a month">$60</button>
+              <button type="button" role="radio" aria-checked="true" data-a="129" aria-label="$129 a month">$129</button>
+              <button type="button" role="radio" aria-checked="false" data-a="900" aria-label="$900 a month">$900</button>
+            </div>
+            <p class="cm-impact" data-impact aria-live="polite">Unlimited sessions every month for one athlete to compete.</p>
+          </div>
+          <a class="cm-btn btn" href="/donate?amount=129&amp;frequency=monthly" data-give-link>Donate</a>
+          <p class="cm-trust"><span>Tax-deductible</span><span>Secure checkout by Givebutter</span></p>
+        </div>
+      </div>
+    </section>
+  <!-- /campaign-module -->
+
+
+  <!-- 4 · ON THE CALENDAR — dated proof the org is moving. Whole section
+         removes itself when nothing is coming up, rather than sitting empty. -->
+  <section class="band tint" id="homeCalendarSection" hidden aria-labelledby="homeEventsTitle">
+    <div class="wrap">
+      <div class="home-events-head reveal">
+        <div>
+          <span class="eyebrow orange">On the calendar</span>
+          <h2 id="homeEventsTitle" class="serif h2">Come find us.</h2>
+        </div>
+        <a class="textlink" href="/events">See all events <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
+      </div>
+      <div class="evc-list" id="homeCalendar"></div>
+      <p class="home-events-foot reveal">New dates go up as they are set. <a class="textlink" href="/subscribe" style="font:inherit;letter-spacing:inherit;">Get them by email</a></p>
+    </div>
+  </section>
+
+  <!-- 5 · TIM — dark cinematic band, gold reverence (photo-ready) -->
+  <section class="dark band-lg">
+    <div class="wrap reading">
+      <span class="eyebrow gold reveal">Why &ldquo;Hustle &amp; Heart&rdquo;</span>
+      <h2 class="serif statement italic reveal" style="margin-top:1rem;">Hustle &amp; Heart is how Tim played.</h2>
+      <hr class="tick gold reveal">
+      <p class="prose reveal">Tim Gruensfelder brought everything he had to the basketball court. The Hustle &amp; Heart Fund carries his name and helps other athletes get their chance to play.</p>
+      <a href="/tim" class="textlink reveal" style="margin-top:1.6rem;">Read Tim&rsquo;s story <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
+    </div>
+  </section>
+
+  <!-- The current campaign and Tim's story make the work tangible first.
+       The broader mission and its future now form one chapter, not two menus. -->
+  <section class="steward band" id="next-step" aria-labelledby="nextStepTitle">
+    <div class="wrap narrow">
+      <span class="eyebrow orange reveal">The work keeps growing</span>
+      <h2 id="nextStepTitle" class="serif h2 reveal" style="margin-top:0.8rem;">We build more ways into adaptive sports.</h2>
+      <p class="prose reveal" style="margin-top:1.2rem;">The community is already here. We help clubs, organizations and coaches build and manage adaptive sports programs, and we fund the athletes who play in them. What we build will keep evolving with the community. The mission stays the same.</p>
+      <h3 class="serif h3 reveal" style="margin-top:2rem;">The more we grow, the more we give.</h3>
+      <p class="prose reveal" style="margin-top:1rem;">We are developing revenue and partnerships that help us keep building useful resources and supporting athletes, beyond the next fundraiser.</p>
+      <p class="prose reveal" style="margin-top:1rem;">Our upcoming store, <a href="/adapt-body-shop" class="textlink" style="font:inherit;letter-spacing:inherit;">Adapt Body Shop</a>, is part of that work. Gear for the community, and another way to help sustain what we&rsquo;re building.</p>
+      <p class="reveal" style="margin-top:1.4rem;"><a href="/about#our-work" class="textlink">How we&rsquo;re building it <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a></p>
+    </div>
+  </section>
+
+  <!-- Close the brochure story on people. Preserve the accepted rolling
+       photographs, deferred loading, and accessible motion control. -->
+  <section class="closing roll-band dark">
+    <div class="wrap center rb-copy rb-top">
+      <span class="eyebrow orange reveal">Your turn</span>
+      <h2 class="serif display reveal">Help the next athlete find their place.</h2>
+    </div>
+
+    <div class="rb-stage">
+    <div class="rb-track" aria-hidden="true">
+      <div class="rb-run">
+        <img data-src="/images/hero/panels/roll-strip-home.68889c4b.webp" width="1568" height="430" alt="" decoding="async">
+        <img data-src="/images/hero/panels/roll-strip-home.68889c4b.webp" width="1568" height="430" alt="" decoding="async">
+        <img data-src="/images/hero/panels/roll-strip-home.68889c4b.webp" width="1568" height="430" alt="" decoding="async">
+        <img data-src="/images/hero/panels/roll-strip-home.68889c4b.webp" width="1568" height="430" alt="" decoding="async">
+        <img data-src="/images/hero/panels/roll-strip-home.68889c4b.webp" width="1568" height="430" alt="" decoding="async">
+        <img data-src="/images/hero/panels/roll-strip-home.68889c4b.webp" width="1568" height="430" alt="" decoding="async">
+      </div>
+    </div>
+    <!-- Sibling of .rb-track inside .rb-stage, never a CHILD of the track:
+         that track is aria-hidden="true" because the strip is decoration, and a
+         control inside it would be invisible to exactly the assistive
+         technology WCAG 2.2.2 exists for. The .rb-stage wrapper exists so the
+         button can sit ON the strip it controls rather than at the foot of the
+         whole section, which is where it landed when .roll-band was the
+         positioning context. -->
+    <button type="button" class="rb-pause" data-rb-pause aria-label="Pause the moving photo strip">
+      <svg class="rb-i-pause" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="pause" data-style="fill"><path fill="currentColor" d="M216 48v160a16 16 0 0 1-16 16h-40a16 16 0 0 1-16-16V48a16 16 0 0 1 16-16h40a16 16 0 0 1 16 16M96 32H56a16 16 0 0 0-16 16v160a16 16 0 0 0 16 16h40a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16"/></svg>
+      <svg class="rb-i-play" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="resume" data-style="fill"><path fill="currentColor" d="M240 128a15.74 15.74 0 0 1-7.6 13.51L88.32 229.65a16 16 0 0 1-16.2.3A15.86 15.86 0 0 1 64 216.13V39.87a15.86 15.86 0 0 1 8.12-13.82a16 16 0 0 1 16.2.3l144.08 88.14A15.74 15.74 0 0 1 240 128"/></svg>
+    </button>
+    </div>
+    <div class="rb-glow"></div>
+    <script>
+      /* Deferred on purpose: this sits below the fold at the end of a long
+         page, and the homepage's own-bytes budget should not carry decoration
+         nobody has scrolled to. Anyone who does reach it still downloads the
+         strip — it was made conditional, not free. */
+      (function () {
+        var t = document.currentScript.closest('.roll-band');
+        var band = t;
+        var btn = band.querySelector('[data-rb-pause]');
+        if (btn) {
+          btn.addEventListener('click', function () {
+            var paused = band.classList.toggle('is-paused');
+            /* The accessible NAME changes, not aria-pressed. For a play/pause
+               the name is what a screen reader announces on focus, and
+               "Play the moving photo strip" says what the button will DO —
+               which is the thing a listener needs before activating it. */
+            btn.setAttribute('aria-label',
+              (paused ? 'Play' : 'Pause') + ' the moving photo strip');
+          });
+        }
+        var imgs = t.querySelectorAll('img[data-src]');
+        var load = function () {
+          imgs.forEach(function (i) { i.src = i.dataset.src; i.removeAttribute('data-src'); });
+        };
+        if (!('IntersectionObserver' in window)) return load();
+        var io = new IntersectionObserver(function (es) {
+          if (es.some(function (e) { return e.isIntersecting; })) { load(); io.disconnect(); }
+        }, { rootMargin: '200px' });
+        io.observe(t);
+      })();
+    </script>
+
+    <div class="wrap center rb-copy rb-bottom">
+      <blockquote class="home-closing-quote reveal">I got into this because someone handed me a brochure when I was six. Now it&rsquo;s our turn to be that for the next athlete.</blockquote>
+      <div class="home-closing-name reveal">
+        <span class="qname">Alec Tranel</span>
+        <span class="qrole">Founder &amp; Executive Director</span>
+      </div>
+      <p class="home-closing-invite reveal">Your gift helps more athletes find their place and keep playing.</p>
+      <ul class="gift-ladder reveal" aria-label="What your gift can do">
+        <li><b>$15</b><span>One night on court for one athlete.</span></li>
+        <li><b>$225</b><span>One night on court for up to 15 athletes.</span></li>
+        <li><b>$1,548</b><span>A year of unlimited sessions for one athlete.</span></li>
+        <li><a class="gift-ladder-link" href="/send-6"><b>$3,500</b><span>About one athlete&rsquo;s US Open: entry, travel and a room.</span></a></li>
+      </ul>
+      <div class="actions reveal">
+        <a href="/donate" class="btn">Donate</a>
+      </div>
+      <p class="home-closing-invite reveal">Your time, skills, and introductions can help too. <a href="/volunteer" class="textlink" style="font:inherit;letter-spacing:inherit;">Find your role</a>.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="brandcol">
+        <a href="/" class="brand"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500.000000 457.000000" class="brand-logo" aria-hidden="true" focusable="false"><g transform="translate(0.000000,457.000000) scale(0.100000,-0.100000)"
+fill="currentColor" stroke="none">
+<path d="M2059 4548 c-14 -13 -99 -185 -198 -403 -96 -209 -238 -519 -316
+-690 -202 -440 -304 -662 -333 -725 -29 -65 -163 -358 -237 -520 -29 -63 -139
+-304 -245 -535 -291 -637 -404 -882 -445 -970 -20 -44 -56 -123 -80 -175 -53
+-118 -172 -375 -191 -414 -53 -108 -28 -116 371 -116 356 0 369 2 394 57 11
+23 190 440 524 1217 72 168 77 206 52 406 -69 554 79 859 585 1205 111 76 137
+101 165 155 20 40 233 517 330 742 23 53 45 90 56 93 20 7 59 -10 59 -26 0 -9
+208 -480 215 -488 3 -2 35 25 72 59 169 156 360 182 566 79 51 -27 51 -24 -54
+206 -134 293 -232 511 -306 675 -93 210 -35 190 -539 190 -421 0 -421 0 -445
+-22z"/>
+<path d="M3060 3404 c-127 -44 -200 -148 -200 -284 0 -358 507 -412 590 -62
+52 220 -174 420 -390 346z"/>
+<path d="M2334 2885 c-396 -102 -739 -406 -825 -732 -32 -119 -37 -419 -7
+-373 2 3 32 61 67 130 180 354 428 530 745 530 135 0 133 2 115 -107 -53 -333
+27 -498 243 -498 106 0 119 9 95 60 -36 75 -15 139 134 406 128 229 134 355
+26 476 -106 117 -372 166 -593 108z"/>
+<path fill="#FF5C39" d="M2242 2133 c-193 -421 -156 -742 101 -859 127 -58 282 -41 606 66
+403 134 502 93 711 -292 386 -708 698 -982 1176 -1030 158 -17 167 -8 53 50
+-349 178 -546 441 -794 1062 -293 734 -505 846 -1178 623 -249 -82 -337 -90
+-440 -40 -116 58 -187 202 -190 389 -2 116 -5 118 -45 31z"/>
+<path d="M1893 1869 c-616 -376 -623 -1289 -11 -1695 117 -78 206 -113 411
+-163 57 -13 236 -15 286 -2 20 6 68 17 106 26 399 93 694 425 771 869 45 256
+-59 389 -280 362 -87 -11 -104 -30 -80 -92 46 -119 16 -335 -66 -474 -199
+-338 -665 -446 -974 -226 -323 230 -382 720 -118 982 42 42 42 42 42 186 0 96
+5 163 15 201 25 97 17 99 -102 26z"/>
+</g></svg>Adapt To Life</a>
+        <p class="tagline">Your place in adaptive sports.</p>
+        <form class="foot-sub js-subscribe" data-source="footer" novalidate>
+          <label class="foot-sub-label" for="footEm">Follow the work</label>
+          <div class="foot-sub-row">
+            <input class="foot-sub-input" id="footEm" name="em" type="email" autocomplete="email" placeholder="you@example.com" aria-label="Your email">
+            <button class="foot-sub-btn" type="submit" aria-label="Join the list"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></button>
+          </div>
+          <input type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only"></div>
+          <p class="foot-sub-msg" role="status" aria-live="polite"></p>
+        </form>
+        <div class="foot-follow">
+          <span class="foot-sub-label">Follow us</span>
+          <div class="social">
+        <a href="https://www.instagram.com/adapt_to_life_org/" aria-label="Adapt To Life on Instagram" target="_blank" rel="me noopener noreferrer"><svg class="ix-svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false" data-logo="instagram"><path fill="currentColor" d="M7.03.084c-1.277.06-2.149.264-2.91.563a5.9 5.9 0 0 0-2.124 1.388a5.9 5.9 0 0 0-1.38 2.127C.321 4.926.12 5.8.064 7.076s-.069 1.688-.063 4.947s.021 3.667.083 4.947c.061 1.277.264 2.149.563 2.911c.308.789.72 1.457 1.388 2.123a5.9 5.9 0 0 0 2.129 1.38c.763.295 1.636.496 2.913.552c1.278.056 1.689.069 4.947.063s3.668-.021 4.947-.082c1.28-.06 2.147-.265 2.91-.563a5.9 5.9 0 0 0 2.123-1.388a5.9 5.9 0 0 0 1.38-2.129c.295-.763.496-1.636.551-2.912c.056-1.28.07-1.69.063-4.948c-.006-3.258-.02-3.667-.081-4.947c-.06-1.28-.264-2.148-.564-2.911a5.9 5.9 0 0 0-1.387-2.123a5.9 5.9 0 0 0-2.128-1.38c-.764-.294-1.636-.496-2.914-.55C15.647.009 15.236-.006 11.977 0S8.31.021 7.03.084m.14 21.693c-1.17-.05-1.805-.245-2.228-.408a3.7 3.7 0 0 1-1.382-.895a3.7 3.7 0 0 1-.9-1.378c-.165-.423-.363-1.058-.417-2.228c-.06-1.264-.072-1.644-.08-4.848c-.006-3.204.006-3.583.061-4.848c.05-1.169.246-1.805.408-2.228c.216-.561.477-.96.895-1.382a3.7 3.7 0 0 1 1.379-.9c.423-.165 1.057-.361 2.227-.417c1.265-.06 1.644-.072 4.848-.08c3.203-.006 3.583.006 4.85.062c1.168.05 1.804.244 2.227.408c.56.216.96.475 1.382.895s.681.817.9 1.378c.165.422.362 1.056.417 2.227c.06 1.265.074 1.645.08 4.848c.005 3.203-.006 3.583-.061 4.848c-.051 1.17-.245 1.805-.408 2.23c-.216.56-.477.96-.896 1.38a3.7 3.7 0 0 1-1.378.9c-.422.165-1.058.362-2.226.418c-1.266.06-1.645.072-4.85.079s-3.582-.006-4.848-.06m9.783-16.192a1.44 1.44 0 1 0 1.437-1.442a1.44 1.44 0 0 0-1.437 1.442M5.839 12.012a6.161 6.161 0 1 0 12.323-.024a6.162 6.162 0 0 0-12.323.024M8 12.008A4 4 0 1 1 12.008 16A4 4 0 0 1 8 12.008"/></svg></a>
+        <a href="https://www.facebook.com/profile.php?id=61592619668321" aria-label="Adapt To Life on Facebook" target="_blank" rel="me noopener noreferrer"><svg class="ix-svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false" data-logo="facebook"><path fill="currentColor" d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978c.401 0 .955.042 1.468.103a9 9 0 0 1 1.141.195v3.325a9 9 0 0 0-.653-.036a27 27 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.7 1.7 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103l-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647"/></svg></a>
+      </div>
+        </div>
+        <p class="legal">Adapt To Life is a recognized 501(c)(3) nonprofit organization. Donations are tax deductible to the extent allowed by law. EIN 41-3213344.</p>
+      </div>
+      <div class="col">
+        <h2>Organization</h2>
+        <a href="/about">Our Story</a>
+        <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a>
+        <a href="/tim">Tim&rsquo;s Story</a>
+        <a href="/karen">Karen&rsquo;s Story</a>
+        <a href="/juan">Juan&rsquo;s Story</a>
+        <a href="/adaptive-sports-near-me">Adaptive Sports Near Me <span class="tag tag--info">In beta</span></a>
+        <a href="/adapt-body-shop">Adapt Body Shop <span class="tag tag--neutral">Coming soon</span></a>
+                <a href="/roadmap">Roadmap</a>
+      </div>
+      <div class="col">
+        <h2>Get involved</h2>
+        <a href="/donate">Donate</a>
+        <a href="/promise">How Giving Works</a>
+        <a href="/volunteer">Volunteer</a>
+        <a href="/ambassadors">Ambassadors</a>
+        <a href="/sponsorship">Become a partner</a>
+        <a href="/events">Events</a>
+        <a href="/social">Social</a>
+        <a href="/apply">Apply for support</a>
+        <a href="https://sign.adapttolife.org/waiver?source=atl">Photo and media release</a>
+        <a href="/subscribe">Join the list</a>
+        <a href="/contact">Contact</a>
+        <a href="mailto:hello@adapttolife.org">hello@adapttolife.org</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Adapt To Life</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var toggles = document.querySelectorAll('.nav-toggle');
+    function closeAll(except){
+      toggles.forEach(function(t){
+        if (t === except) return;
+        t.setAttribute('aria-expanded','false');
+        var pnl = document.getElementById(t.getAttribute('aria-controls'));
+        if (pnl) pnl.classList.remove('open');
+      });
+    }
+    toggles.forEach(function(t){
+      var panel = document.getElementById(t.getAttribute('aria-controls'));
+      t.addEventListener('click', function(e){
+        e.stopPropagation();
+        var open = t.getAttribute('aria-expanded') === 'true';
+        closeAll(t);
+        t.setAttribute('aria-expanded', open ? 'false' : 'true');
+        if (panel) panel.classList.toggle('open', !open);
+      });
+    });
+    document.addEventListener('click', function(){ closeAll(null); });
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape') closeAll(null);
+    });
+  })();
+  (function(){
+    var nav = document.getElementById('nav');
+    var menuBtn = document.getElementById('menuBtn');
+    menuBtn.addEventListener('click', function(){
+      var open = nav.classList.toggle('open');
+      menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    nav.querySelectorAll('.mobile-menu a').forEach(function(a){
+      a.addEventListener('click', function(){ nav.classList.remove('open'); menuBtn.setAttribute('aria-expanded','false'); });
+    });
+    var onScroll = function(){ if(window.scrollY > 8){ nav.classList.add('scrolled'); } else { nav.classList.remove('scrolled'); } };
+    window.addEventListener('scroll', onScroll, { passive:true });
+    onScroll();
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var reveals = document.querySelectorAll('.reveal');
+    if(reduce || !('IntersectionObserver' in window)){
+      reveals.forEach(function(el){ el.classList.add('in'); });
+    } else {
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+      }, { threshold:0.12, rootMargin:'0px 0px -8% 0px' });
+      reveals.forEach(function(el){ io.observe(el); });
+      window.addEventListener('load', function(){
+        document.querySelectorAll('.hero .reveal').forEach(function(el, i){
+          setTimeout(function(){ el.classList.add('in'); }, 60 + i*70);
+        });
+      });
+    }
+  })();
+</script>
+
+<script src="/js/add-to-calendar.js?v=1865647d"></script>
+<script src="/js/campaigns.js?v=b0edfa74"></script>
+<script>
+(function(){
+  var C = window.ATLCampaigns;
+
+  // The campaign module follows the participation story: live total, the
+  // parts of the goal, the gift picker.
+  C.module();
+
+  // On the calendar: at most three, soonest first. The whole section stays
+  // hidden unless there is something real and upcoming to put in it.
+  C.load(function(store){
+    if (!store) return;
+    var host = document.getElementById('homeCalendar');
+    var section = document.getElementById('homeCalendarSection');
+    if (!host || !section) return;
+
+    var upcoming = store.drives
+      .filter(function(d){ return C.driveStatus(d) !== 'past'; })
+      .sort(function(a,b){ return (C.driveOpens(a) || 0) - (C.driveOpens(b) || 0); })
+      .slice(0, 3);
+    if (!upcoming.length) return;
+
+    upcoming.forEach(function(d){ host.appendChild(C.eventCard(d)); });
+    section.hidden = false;
+  });
+})();
+</script>
+
+<script src="/js/subscribe.js?v=7efaf550" defer></script>
+<script src="/js/turnstile-lazy.js?v=12e9b811" defer></script>
+<script>
+  // Warm the Givebutter widget script when a donor aims at /donate.
+  // Prefetch only — do not load the full widget on the homepage.
+  (function(){
+    var href = "https://widgets.givebutter.com/latest.umd.cjs?acct=7FsgcjXFnW6fabQn";
+    var done = false;
+    function warm(){
+      if (done) return;
+      done = true;
+      var l = document.createElement("link");
+      l.rel = "prefetch";
+      l.as = "script";
+      l.href = href;
+      document.head.appendChild(l);
+    }
+    document.querySelectorAll('a[href="/donate"]').forEach(function(a){
+      a.addEventListener("pointerenter", warm, { passive:true });
+      a.addEventListener("focus", warm);
+    });
+  })();
+</script>
+
+<!-- hero:script -->
+<script>
+(function(){
+  var stage = document.getElementById('heroStage');
+  if(!stage) return;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // entrance — one frame after paint so the transition actually runs
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ stage.classList.add('lit'); }); });
+
+  // No parallax. It moved nineteen panels a few pixels against the pointer, and
+  // a brush of the trackpad reads as the whole wall twitching. Alec: the
+  // desktop images shake every couple of seconds, and he does not like it.
+  // Removing it also drops a requestAnimationFrame loop, two window listeners
+  // and will-change:transform on nineteen composited layers, which is the
+  // cheapest thing on this page to give back.
+
+  // Feel first, then the reason for the work, then the current campaign.
+  // No duplicate campaign strip in the hero.
+})();
+</script>
+<!-- /hero:script -->
+<nav class="mvbar" aria-label="Mission line options">
+  <a href="?v=today">Today</a><a href="?v=a">A</a><a href="?v=b">B</a><a href="?v=c">C</a><a href="?v=d">D</a>
+</nav>
+<script>(function(){var v=document.documentElement.getAttribute('data-mv');document.querySelectorAll('.mvbar a').forEach(function(a){if(a.getAttribute('href')==='?v='+v)a.setAttribute('aria-current','true');});})();</script>
+</body>
+</html>

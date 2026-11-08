@@ -138,6 +138,50 @@
   /* How often, under every amount, as on /numbers. */
   .gift-groups .gift-list b small{ display:block; margin-top:0.35rem; font-family:var(--font-label); font-style:normal; font-size:0.64rem; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); }
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://adapttolife.org/donate#page",
+      "url": "https://adapttolife.org/donate",
+      "name": "Donate to Adaptive Athletes | Adapt To Life",
+      "isPartOf": {
+        "@id": "https://adapttolife.org/#website"
+      },
+      "about": {
+        "@id": "https://adapttolife.org/#org"
+      },
+      "potentialAction": {
+        "@type": "DonateAction",
+        "name": "Donate to Adapt To Life",
+        "target": "https://adapttolife.org/donate",
+        "recipient": {
+          "@id": "https://adapttolife.org/#org"
+        }
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://adapttolife.org/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Donate",
+          "item": "https://adapttolife.org/donate"
+        }
+      ]
+    }
+  ]
+}
+</script>
 </head>
 <body>
 
@@ -338,17 +382,17 @@ fill="currentColor" stroke="none">
           </li>
           <li class="gm-way">
             <h3 class="gm-t">A sport chair</h3>
-            <p class="gm-d">A sport chair runs $4,000 to $6,000, and insurance doesn&rsquo;t cover it. We raise for one athlete at a time.</p>
+            <p class="gm-d">A sport chair runs $4,000 to $6,000, and insurance doesn&rsquo;t cover it. We raise for one athlete at a time. <a class="textlink" href="/sport-wheelchair-cost" style="font:inherit;letter-spacing:inherit;">What a sport chair costs</a></p>
             <a class="textlink gm-go" href="/contact?rsn=donor">Talk to us <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
           </li>
           <li class="gm-way">
             <h3 class="gm-t">Through your business</h3>
-            <p class="gm-d">Sponsor a home court: a night at ACE for $225, an athlete&rsquo;s membership for a year at $1,548, or the whole Train to Compete program for $15,480. It&rsquo;s the <a class="textlink" href="/sponsorship#clubs" style="font:inherit;letter-spacing:inherit;">Home Court Model</a> at work.</p>
+            <p class="gm-d">Sponsor a home court: a night of court time for $225, an athlete&rsquo;s membership for a year at $1,548, or the whole Train to Compete program for $15,480. It&rsquo;s the <a class="textlink" href="/sponsorship#clubs" style="font:inherit;letter-spacing:inherit;">Home Court Model</a> at work.</p>
             <a class="textlink gm-go" href="/sponsorship#tiers">See sponsorship <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
           </li>
           <li class="gm-way">
             <h3 class="gm-t">Stock, DAF, or employer match</h3>
-            <p class="gm-d">Talk to us before you arrange it, so we can confirm the process for your gift.</p>
+            <p class="gm-d">Talk to us before you arrange it, so we can confirm the process for your gift. <a class="textlink" href="/corporate-matching" style="font:inherit;letter-spacing:inherit;">How employer matching works</a></p>
             <a class="textlink gm-go" href="/contact?rsn=donor">Talk to us <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
           </li>
         </ul>
@@ -639,7 +683,7 @@ fill="currentColor" stroke="none">
 
 <!-- Donation form is the embedded Givebutter giving form above; no custom JS needed. -->
 
-<script src="/js/campaigns.js?v=0cb1b850"></script>
+<script src="/js/campaigns.js?v=b0edfa74"></script>
 <script>window.ATLCampaigns.module();</script>
 <script src="/js/subscribe.js?v=7efaf550" defer></script>
 <script src="/js/turnstile-lazy.js?v=12e9b811" defer></script>

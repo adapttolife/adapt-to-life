@@ -20,7 +20,7 @@
           "goal": 27180,
           "detail": "A year of court time and memberships for 10 athletes, so they can play every week and train to compete. Every new gift starts here.",
           "math": [
-            { "label": "Court time at ACE", "qty": 52, "of": "nights", "unit": 225, "note": "One night a week for a year. A night is 10 to 15 athletes, and a drop-in at ACE is $15, so a night for up to 15 is $225." },
+            { "label": "Court time", "qty": 52, "of": "nights", "unit": 225, "note": "One night a week for a year. A night is 10 to 15 athletes, and a drop-in is $15, so a night for up to 15 is $225." },
             { "label": "Memberships", "qty": 10, "of": "athletes", "unit": 1548, "note": "A membership is $129 a month, or $1,548 a year, for unlimited sessions. It takes many sessions a week to compete in tournaments and build a ranking." }
           ]
         },
@@ -111,6 +111,7 @@
     {
       "_note": "Spec 115 D1 resolved 2026-07-25: ATL has athletes in this bracket, so it is published. It carries NO campaign field on purpose. We only compete here; APP hosts it and Shriners Children's benefits, so it raises nothing for us and must never appear under a campaign's 'what is feeding this'. It is on the calendar because our athletes are there.",
       "slug": "app-vlasic-classic-2026",
+      "page": "/events/app-vlasic-classic-2026",
       "name": "APP Vlasic Classic Chicago",
       "type": "tournament",
       "relationship": "we_compete",
@@ -126,6 +127,7 @@
       "state": "IL",
       "register_by": "2026-07-29",
       "host": "APP Tour",
+      "host_url": "https://www.theapp.global/",
       "beneficiary": "Shriners Children's",
       "cta_label": "Tournament details",
       "cta_url": "https://app.pickleballden.com/external-tournament/1359608"
@@ -133,6 +135,7 @@
     {
       "_note": "A tournament our athletes play in. The Pickle Lodge hosts it and it raises nothing for us, so it has no campaign field and QR campaign-follow ignores it. Dates, venue and address from the official listing (pickleballtournaments.com/tournaments/monster-smash-2026, read 2026-10-02). Eastern time.",
       "slug": "monster-smash-2026",
+      "page": "/events/monster-smash-2026",
       "name": "Monster Smash",
       "type": "tournament",
       "relationship": "we_compete",
@@ -147,6 +150,7 @@
       "city": "Cincinnati",
       "state": "OH",
       "host": "The Pickle Lodge",
+      "host_url": "https://thepicklelodge.com/",
       "cta_label": "Tournament details",
       "cta_url": "https://pickleballtournaments.com/tournaments/monster-smash-2026",
       "group_url": "https://www.facebook.com/groups/441240107886329/",

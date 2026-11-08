@@ -32,6 +32,13 @@ const PER_PAGE = {
   "chicago-adaptive-sports.html": "chicago-adaptive-sports",
   "amp.html": "amp",
   "sponsor-the-crew.html": "sponsor",
+  "bread-and-butter.html": "bread-and-butter",
+  "karen.html": "karen",
+  // Guides are written by scripts/build-guides.mjs with their own cards;
+  // listed here so this script keeps them instead of resetting to _default.
+  "sport-wheelchair-cost.html": "guide-sport-wheelchair-cost",
+  "sponsor-adaptive-athletes.html": "guide-sponsor-adaptive-athletes",
+  "corporate-matching.html": "guide-corporate-matching",
 };
 
 // ALT DESCRIBES THE PHOTOGRAPH AGAIN, because from 2026-09-09 the cards ARE
@@ -65,6 +72,12 @@ const ALT = {
   sponsor: "Build it with us. Sponsor the Chicago Wheelie Big Dills, Adapt To Life.",
   pickleball:
     "Chicago Pickleball: Wheelie Big Dills. Adapt To Life. Juan Ortiz, a wheelchair pickleball player in glasses, tosses the ball to serve from his sport wheelchair.",
+  "guide-sport-wheelchair-cost": "What a sport wheelchair really costs. Adapt To Life. A wheelchair pickleball athlete on an indoor court.",
+  "guide-sponsor-adaptive-athletes": "Sponsor an athlete in Chicago. Adapt To Life. A wheelchair pickleball athlete on an indoor court.",
+  "guide-corporate-matching": "Double your gift with an employer match. Adapt To Life. A wheelchair pickleball athlete on an indoor court.",
+  karen: "Karen Atkinson. Adapt To Life. Karen water skiing in a sit-ski, spray behind her.",
+  "bread-and-butter":
+    "Play Juan's paddle. Help get him to Naples. Adapt To Life. Juan Ortiz in his sport wheelchair, paddle up, on a dark indoor court.",
   juan: "Juan Ortiz. Adapt To Life. Juan, a wheelchair pickleball player in glasses, tosses the ball to serve from his sport wheelchair.",
 };
 
@@ -80,6 +93,11 @@ const ALT = {
 const FILE = {
   _default: "home-v4-color.jpg",
   juan: "juan-v2-serve.jpg",
+  "bread-and-butter": "bread-and-butter-v1-paddle.jpg",
+  karen: "karen-v1-water.jpg",
+  "guide-sport-wheelchair-cost": "guide-sport-wheelchair-cost-v1-card.jpg",
+  "guide-sponsor-adaptive-athletes": "guide-sponsor-adaptive-athletes-v1-card.jpg",
+  "guide-corporate-matching": "guide-corporate-matching-v1-card.jpg",
   brickhouse: "brickhouse-v3-crewhome.jpg",
   pickleball: "pickleball-v5-name.jpg",
   ace: "ace-v3-partner.jpg",

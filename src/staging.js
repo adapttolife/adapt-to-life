@@ -7,8 +7,8 @@ import application from "./index.js";
 // directly from the request:
 // - /api/givebutter-webhook: a replayed signed payload would write a real donor
 //   row and send a real thank-you. Givebutter only posts to production.
-// - /api/subscribe: creates a real Beehiiv subscriber and triggers Beehiiv's
-//   welcome email to that address.
+// - /api/subscribe: adds a real contact to the Resend segment and starts the
+//   welcome series to that address.
 // - /api/waiver: signing writes a real release into the production waiver
 //   record and uploads it to the production Google Shared Drive archive.
 const PRODUCTION_ONLY = new Set([

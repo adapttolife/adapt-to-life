@@ -221,6 +221,76 @@ const CARDS = {
     page: "juan.html",
     headline: "Juan <em>Ortiz</em>",
   },
+  // Karen's profile (Nov 8 2026): her name, on the AMP water-skiing frame.
+  karen: {
+    ...ATHLETE,
+    photo: "karen",
+    size: 104,
+    measure: "8ch",
+    out: "public/images/og/karen-v1-water.jpg",
+    page: "karen.html",
+    headline: "Karen <em>Atkinson</em>",
+  },
+  // Juan's Bread & Butter page (Nov 8 2026): Juan with his paddle up, so the
+  // card is about the paddle without carrying the brand's own art.
+  "bread-and-butter": {
+    ...ATHLETE,
+    photo: "paddle-raise",
+    size: 64,
+    measure: "14ch",
+    out: "public/images/og/bread-and-butter-v1-paddle.jpg",
+    page: "bread-and-butter.html",
+    headline: "Play Juan&rsquo;s paddle. <em>Help get him to Naples.</em>",
+  },
+  // Guides (scripts/build-guides.mjs): each card is the guide's h1.
+  "sport-wheelchair-cost": {
+    ...ATHLETE,
+    photo: "chair-drive",
+    size: 64,
+    measure: "13ch",
+    out: "public/images/og/guide-sport-wheelchair-cost-v1-card.jpg",
+    page: "sport-wheelchair-cost.html",
+    headline: "What a sport wheelchair <em>really costs.</em>",
+  },
+  "sponsor-adaptive-athletes": {
+    ...ATHLETE,
+    photo: "cap-profile",
+    size: 70,
+    measure: "12ch",
+    out: "public/images/og/guide-sponsor-adaptive-athletes-v1-card.jpg",
+    page: "sponsor-adaptive-athletes.html",
+    headline: "Sponsor an athlete <em>in Chicago.</em>",
+  },
+  "corporate-matching": {
+    ...ATHLETE,
+    photo: "paddle-portrait",
+    size: 64,
+    measure: "13ch",
+    out: "public/images/og/guide-corporate-matching-v1-card.jpg",
+    page: "corporate-matching.html",
+    headline: "Double your gift with <em>an employer match.</em>",
+  },
+  // Event stories (scripts/build-event-pages.mjs reads these paths from
+  // data/event-stories.mjs). Amanda mid-swing for Monster Smash, where she
+  // medaled; Juan serving for the division he asked for.
+  "monster-smash-2026": {
+    ...ATHLETE,
+    photo: "court-swing",
+    size: 72,
+    measure: "12ch",
+    out: "public/images/og/event-monster-smash-2026-v1-card.jpg",
+    page: "events/monster-smash-2026.html",
+    headline: "Six medals at <em>Monster Smash.</em>",
+  },
+  "app-vlasic-classic-2026": {
+    ...ATHLETE,
+    photo: "juan-serve",
+    size: 66,
+    measure: "13ch",
+    out: "public/images/og/event-app-vlasic-classic-2026-v1-card.jpg",
+    page: "events/app-vlasic-classic-2026.html",
+    headline: "The APP Tour&rsquo;s first <em>wheelchair division.</em>",
+  },
   // Home court card. Split, not athlete: see "brickhouse-hero" above.
   // Same photograph and split treatment. v2 because the headline changed after
   // the reopening, and an old URL would keep serving the old line.

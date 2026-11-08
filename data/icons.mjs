@@ -246,7 +246,7 @@ export const MEANINGS = {
 };
 
 // Logos for the "Works in" tool chips and social links. Only tools Simple
-// Icons draws officially; a tool without one (Givebutter, Beehiiv, Double
+// Icons draws officially; a tool without one (Givebutter, Resend, Double
 // Good) shows its name alone rather than a made-up mark.
 export const LOGOS = {
   instagram: { src: "brand", icon: "instagram", means: "Instagram" },

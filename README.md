@@ -46,7 +46,7 @@ The receipt emails promise every sender they will hear back, so an intake record
 nobody has followed up is a broken promise, not a backlog.
 
 
-_Roadmap: Beehiiv (newsletter / "Join the list") and Givebutter (donations) are not wired yet._
+The newsletter ("Join the list", `POST /api/subscribe`) adds the person to the Adapt To Life segment in Resend, records a shared intake row (so the signup reaches the CRM Intake Register) and starts the welcome series (`src/newsletter-series.js`). Beehiiv was dropped on 2026-11-07.
 
 ## Editing content
 

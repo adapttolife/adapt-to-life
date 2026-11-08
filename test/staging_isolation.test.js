@@ -179,7 +179,7 @@ test("staging receipt preview renders from the capturing stub and never reaches 
   assert.deepEqual(mailHosts, []);
 });
 
-// Routes that reach Beehiiv or another outside system straight from the request.
+// Routes that reach Resend or another outside system straight from the request.
 // Staging must answer 404 before the app runs, so neither the shared databases
 // nor any outside service is touched. Bodies are valid for the real handlers, so
 // without the staging gate each request gets past validation and reaches its
@@ -211,7 +211,8 @@ function gatedEnv(dbCalls) {
   return {
     ...staging.vars,
     ...SHARED_SECRETS,
-    BEEHIIV_API_KEY: "test-beehiiv-key",
+    RESEND_API_KEY: "test-resend-key",
+    RESEND_SEGMENT_ID: "test-segment",
     GOOGLE_SA_JSON: "{}",
     WAIVERS_DB: recordingDb(dbCalls),
     AGENT_MAIL_DB: recordingDb(dbCalls),
@@ -266,9 +267,9 @@ for (const route of ["/api/subscribe", "/api/waiver"]) {
     );
     assert.deepEqual(dbCalls, [], "no shared database call");
     assert.deepEqual(
-      fetchCalls.filter((u) => u.includes("beehiiv")),
+      fetchCalls.filter((u) => u.includes("resend.com")),
       [],
-      "no Beehiiv call",
+      "no Resend call",
     );
     assert.deepEqual(fetchCalls, [], "no outside call of any kind");
     for (const [label, status] of statuses) assert.equal(status, 404, label);

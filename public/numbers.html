@@ -67,6 +67,16 @@
   .nb-sum{ margin-left:auto; font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(1.5rem,3.4vw,2rem); letter-spacing:-0.03em; font-variant-numeric:tabular-nums; color:var(--orange-ink); }
   .nb-sum small{ font-size:0.5em; font-style:normal; font-weight:700; letter-spacing:0; color:var(--muted); }
   .nb-sum--tbd{ font-family:inherit; font-size:1rem; font-style:normal; font-weight:700; letter-spacing:0; color:var(--muted); }
+  /* On a phone a long title pushed the amount onto a line of its own,
+     floating at the right (Alec, Nov 7: "this looks horrible"). There the
+     number sits beside the title and the amount goes directly under the
+     title, on the same left edge. */
+  @media (max-width:640px){
+    .nb-part-top{ display:grid; grid-template-columns:auto minmax(0,1fr); align-items:baseline; gap:0.2rem 0.7rem; }
+    .nb-part-top > :not(.nb-n){ grid-column:2; justify-self:start; }
+    .nb-sum{ margin-left:0; font-size:1.6rem; }
+    .nb-sum.nb-sum--tbd{ font-size:1rem; }
+  }
   .nb-detail{ margin:0.6rem 0 0; max-width:44rem; color:var(--ink-soft); line-height:1.5; }
   .nb-detail a{ color:var(--ink); font-weight:700; text-decoration:underline; text-underline-offset:2px; text-decoration-color:rgba(59,59,70,0.35); }
   .nb-lines{ list-style:none; margin:1rem 0 0; padding:0; }
@@ -132,7 +142,6 @@
   @media (prefers-reduced-motion: reduce){ .nb-fill{ transition:none; } }
   .nb-total-top b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(1.8rem,4vw,2.4rem); letter-spacing:-0.03em; font-variant-numeric:tabular-nums; color:#ff5c39; }
   .nb-foot{ max-width:52rem; margin:1.2rem 0 0; color:var(--ink-soft); line-height:1.5; }
-  .nb-prices{ max-width:52rem; margin-top:1.4rem; }
   .nb-chair .nb-money{ color:#ff5c39; }
   .nb-gifts{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(1rem,3vw,2.4rem); max-width:56rem; margin-top:clamp(1.6rem,3vw,2.2rem); }
   @media (max-width:760px){ .nb-gifts{ grid-template-columns:1fr; } }
@@ -258,7 +267,7 @@ fill="currentColor" stroke="none">
           <p class="nb-detail">A year of court time and memberships for 10 athletes, so they can play every week and train to compete. Every new gift starts here.</p>
           <div class="nb-prog" data-nb-row="year" hidden><div class="nb-prog-top"><span class="nb-prog-k">Covered so far</span><span class="nb-prog-fig" data-nb-fig="year"></span></div><div class="nb-lane"><div class="nb-track"><span class="nb-fill nb-fill--kind" data-nb-kind="year"></span><span class="nb-fill" data-nb-fill="year"></span></div><span class="nb-pct" data-nb-pct="year"></span></div></div>
           <ul class="nb-lines" aria-label="How we got $27,180">
-            <li><span class="nb-k">Court time at ACE</span><span class="nb-calc">52 nights &times; $225</span><b>$11,700</b><small>One night a week for a year. A night is 10 to 15 athletes, and a drop-in at ACE is $15, so a night for up to 15 is $225.</small></li>
+            <li><span class="nb-k">Court time</span><span class="nb-calc">52 nights &times; $225</span><b>$11,700</b><small>One night a week for a year. A night is 10 to 15 athletes, and a drop-in is $15, so a night for up to 15 is $225.</small></li>
             <li><span class="nb-k">Memberships</span><span class="nb-calc">10 athletes &times; $1,548</span><b>$15,480</b><small>A membership is $129 a month, or $1,548 a year, for unlimited sessions. It takes many sessions a week to compete in tournaments and build a ranking.</small></li>
           </ul>
           </div>
@@ -288,7 +297,6 @@ fill="currentColor" stroke="none">
         </li>
       </ol>
       <!-- /campaign-numbers -->
-      <p class="prose nb-prices reveal">These are ACE&rsquo;s regular prices. We plan at regular rates, so the program doesn&rsquo;t depend on a discount. When a club gives more, it helps more athletes get on court. <a class="textlink" href="/sponsorship#clubs" style="font:inherit;letter-spacing:inherit;">How we partner</a></p>
       <p class="nb-foot">Every gift goes to the Hustle &amp; Heart Fund, and we pay clubs and vendors directly. <a class="textlink" href="/promise">How Giving Works</a></p>
     </div>
   </section>
@@ -507,7 +515,7 @@ fill="currentColor" stroke="none">
     }
   })();
 </script>
-<script src="/js/campaigns.js?v=0cb1b850"></script>
+<script src="/js/campaigns.js?v=b0edfa74"></script>
 <script>window.ATLCampaigns.module();</script>
 <script src="/js/subscribe.js?v=7efaf550" defer></script>
 <script src="/js/turnstile-lazy.js?v=12e9b811" defer></script>

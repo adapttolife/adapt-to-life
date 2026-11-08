@@ -195,7 +195,9 @@ function linksPage() {
   const title = "Links | Adapt To Life";
   const desc = "Stories, athletes and ways to give from Adapt To Life.";
   const og = `${SITE}/images/og/home-v4-color.jpg`;
-  const ogAlt = "Your place in adaptive sports. Adapt To Life.";
+  // the same alt scripts/wire-og.mjs gives the default card, so it leaves this page alone
+  const ogAlt =
+    "Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.";
   const utm = (path, i) =>
     `${path}${path.includes("?") ? "&amp;" : "?"}utm_source=link-in-bio&amp;utm_medium=social&amp;utm_campaign=bio&amp;utm_content=${i}`;
   return `<!DOCTYPE html>

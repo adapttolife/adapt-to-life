@@ -221,6 +221,16 @@ const CARDS = {
     page: "juan.html",
     headline: "Juan <em>Ortiz</em>",
   },
+  // Karen's profile (Nov 8 2026): her name, on the AMP water-skiing frame.
+  karen: {
+    ...ATHLETE,
+    photo: "karen",
+    size: 104,
+    measure: "8ch",
+    out: "public/images/og/karen-v1-water.jpg",
+    page: "karen.html",
+    headline: "Karen <em>Atkinson</em>",
+  },
   // Juan's Bread & Butter page (Nov 8 2026): Juan with his paddle up, so the
   // card is about the paddle without carrying the brand's own art.
   "bread-and-butter": {

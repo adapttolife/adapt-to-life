@@ -32,7 +32,8 @@
     "icons": "node scripts/build-icons.mjs",
     "module": "node scripts/build-module.mjs",
     "events": "node scripts/build-events.mjs && node scripts/build-event-pages.mjs",
-    "guides": "node scripts/build-guides.mjs"
+    "guides": "node scripts/build-guides.mjs",
+    "karen": "node scripts/build-karen.mjs"
   },
   "repository": {
     "type": "git",

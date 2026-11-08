@@ -103,6 +103,7 @@ test("every gift line is a verified unit cost", () => {
     "Unlimited sessions every month for one athlete to compete.",
     "Four nights on court every month for up to 15 athletes.",
     "One night on court for one athlete.",
+    "Four nights on court for one athlete.",
     "One night on court for up to 15 athletes.",
     "A year of unlimited sessions for one athlete.",
     "About one athlete’s US Open: entry, travel and a room.",
@@ -375,7 +376,7 @@ test("/donate says what a gift does; /numbers shows how we got it", () => {
   );
   assert.deepEqual(
     once.map((g) => g.a),
-    [15, 225, 1548, 3500],
+    [15, 60, 225, 1548, 3500],
   );
   const money = (n) => "$" + n.toLocaleString("en-US");
   const plain = (h) =>

@@ -107,12 +107,40 @@
   .mw-mission{ margin:1.6rem 0 0; max-width:30ch; font-family:var(--font-body); font-weight:500; font-size:clamp(1.15rem,0.5vw + 1rem,1.4rem); line-height:1.45; color:var(--cream-mute); text-wrap:pretty; }
   .mw-mission b{ color:var(--cream); font-weight:700; }
   @media (min-width:901px){ .mw-slab{ width:fit-content; max-width:100%; } }
+  /* Three facts and one way in under the mission (Alec, 2026-11-08). */
+  .mw-facts{ list-style:none; margin:1.3rem 0 0; padding:0; display:grid; gap:0.5rem; }
+  .mw-facts a{ display:inline-grid; grid-template-columns:auto minmax(0,1fr); align-items:baseline; gap:0.55rem; color:var(--cream-mute); font-weight:500; font-size:clamp(1rem,0.3vw + 0.92rem,1.12rem); line-height:1.35; text-decoration:none; }
+  .mw-facts a > span{ border-bottom:1px solid rgba(249,247,242,0.18); padding-bottom:1px; transition:border-color .18s var(--ease), color .18s var(--ease); }
+  .mw-facts a:hover > span, .mw-facts a:focus-visible > span{ color:var(--cream); border-bottom-color:var(--yellow); }
+  .mw-facts a:focus-visible{ outline:2px solid var(--cream); outline-offset:3px; border-radius:4px; }
+  .mw-facts b{ color:var(--yellow); font-weight:800; }
+  .mw-facts .sym{ color:var(--yellow); width:1.05em; height:1.05em; vertical-align:-0.15em; }
+  .mw-copy .mw-slab .actions{ margin-top:1.5rem; }
+  @media (min-width:901px){
+    /* The facts lengthen the copy, so it starts a little higher and runs a
+       little tighter, and the front net panel below it sits lower (Nov 8). */
+    .hero-wall-photo{ padding-top:clamp(5.75rem,12vh,9rem); }
+    .mw-facts{ margin-top:1.1rem; gap:0.4rem; }
+    .mw-copy .mw-slab .actions{ margin-top:1.25rem; }
+  }
+  .mw-meet .arrow{ display:inline-flex; width:1em; height:1em; }
+  .mw-meet .arrow svg{ width:100%; height:100%; }
   @media (max-width:900px){
     /* The slab now holds both lines; the band between photo rows grows to fit. */
     .mw-wall{ row-gap:clamp(12.5rem,27vh,14.5rem); }
     .mw-slab{ background:var(--photo-black); padding:clamp(1.6rem,6vw,2.4rem) clamp(1.2rem,5vw,2rem) clamp(1.4rem,5vw,2rem); }
     .mw-copy .mw-slab .display{ background:none; padding:0; }
     .mw-mission{ margin-top:0.9rem; padding-top:0.9rem; border-top:1px solid rgba(249,247,242,0.14); max-width:34ch; font-size:clamp(1rem,4.1vw,1.3rem); line-height:1.4; }
+    /* The slab carries the facts and the button too, so the band grows to fit
+       it and the hero takes the screen, keeping the four photos near square. */
+    .mw-wall{ row-gap:clamp(22.5rem,47vh,25rem); }
+    .mw-facts{ margin-top:0.85rem; gap:0.3rem; }
+    .mw-facts a{ font-size:clamp(0.92rem,3.6vw,1.05rem); gap:0.45rem; }
+    .mw-copy .mw-slab .actions{ margin-top:0.95rem; }
+    .mw-meet{ padding:0.7rem 1.25rem; font-size:0.95rem; }
+  }
+  @media (max-width:640px){
+    .hero-wall-photo{ min-height:calc(100svh - 4.4rem); }
   }
   #participation{ padding-block:clamp(2.5rem,5vw,4rem); }
   .home-story{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(2rem,6vw,6rem); align-items:start; }
@@ -256,6 +284,19 @@ fill="currentColor" stroke="none">
         <!-- The mission finishes the headline: the promise, then how we keep it.
              Alec chose this (option D on /review-mission), 2026-11-08. -->
         <p class="mw-mission mw-rise" style="--d:300ms;">We <b>expand access</b> to adaptive sports so athletes can <b>find their place.</b></p>
+        <!-- The record, each fact opening its story, then one way in. Alec,
+             2026-11-08: "add three linked facts and a 'Meet the athletes'
+             button to the first screen." Yellow is a win (medal symbol). -->
+        <div class="mw-proof">
+        <ul class="mw-facts mw-rise" style="--d:380ms;" aria-label="What the athletes we fund have done">
+          <li><a href="/events/monster-smash-2026"><i class="sym sym--win" aria-hidden="true"></i><span><b>6 medals</b> at Monster Smash</span></a></li>
+          <li><a href="/send-6"><i class="sym sym--win" aria-hidden="true"></i><span><b>3 straight US Opens</b> for Robby and Brian</span></a></li>
+          <li><a href="/events/app-vlasic-classic-2026"><i class="sym sym--win" aria-hidden="true"></i><span>The APP Tour&rsquo;s <b>first wheelchair division</b></span></a></li>
+        </ul>
+        <div class="actions mw-rise" style="--d:460ms;">
+          <a class="btn ghost mw-meet" href="/pickleball#crew">Meet the athletes <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
+        </div>
+        </div>
       </div>
     </div>
     <div class="mw-grain"></div>
@@ -279,7 +320,7 @@ fill="currentColor" stroke="none">
   .mw-p.p-seated{ left:87%; top:70%; width:13%; aspect-ratio:390/520; }
   .mw-p.p-grin{ left:76%; top:50%; width:12%; aspect-ratio:390/520; }
   .mw-p.p-lanyard{ left:88%; top:14%; width:11%; aspect-ratio:300/400; }
-  .mw-p.p-net{ left:17%; top:53%; width:17%; aspect-ratio:820/547; }
+  .mw-p.p-net{ left:17%; top:77%; width:17%; aspect-ratio:820/547; }
   .mw-p.p-smile-close{ left:82%; top:4%; width:16%; aspect-ratio:615/820; }
   .mw-p.p-dink{ left:57%; top:10%; width:19%; aspect-ratio:615/820; }
   .mw-p.p-brian{ left:41%; top:55%; width:16%; aspect-ratio:656/820; }
@@ -503,13 +544,13 @@ fill="currentColor" stroke="none">
               <button type="button" role="radio" aria-checked="false" data-freq="once">One time</button>
             </div>
             <div class="cm-amts is-3" role="radiogroup" aria-label="Amount" data-amts>
-              <button type="button" role="radio" aria-checked="false" data-a="60" aria-label="$60 a month">$60</button>
-              <button type="button" role="radio" aria-checked="true" data-a="129" aria-label="$129 a month">$129</button>
+              <button type="button" role="radio" aria-checked="true" data-a="60" aria-label="$60 a month">$60</button>
+              <button type="button" role="radio" aria-checked="false" data-a="129" aria-label="$129 a month">$129</button>
               <button type="button" role="radio" aria-checked="false" data-a="900" aria-label="$900 a month">$900</button>
             </div>
-            <p class="cm-impact" data-impact aria-live="polite">Unlimited sessions every month for one athlete to compete.</p>
+            <p class="cm-impact" data-impact aria-live="polite">Four nights on court every month for one athlete.</p>
           </div>
-          <a class="cm-btn btn" href="/donate?amount=129&amp;frequency=monthly" data-give-link>Donate</a>
+          <a class="cm-btn btn" href="/donate?amount=60&amp;frequency=monthly" data-give-link>Donate</a>
           <p class="cm-trust"><span>Tax-deductible</span><span>Secure checkout by Givebutter</span></p>
         </div>
       </div>
@@ -786,7 +827,7 @@ fill="currentColor" stroke="none">
 </script>
 
 <script src="/js/add-to-calendar.js?v=1865647d"></script>
-<script src="/js/campaigns.js?v=b0edfa74"></script>
+<script src="/js/campaigns.js?v=31dc9ab5"></script>
 <script>
 (function(){
   var C = window.ATLCampaigns;

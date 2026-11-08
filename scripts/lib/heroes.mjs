@@ -113,7 +113,7 @@ const MOSAIC = [
   // accent word at y308-404, so the headline contrast is untouched (3.18:1,
   // identical to before). That clearance is the constraint on moving it further
   // up — the accent has only 0.18 over its floor at 1920.
-  { n: "net", x: 17, y: 48, w: 17, d: 3, r: -0.7, m: "m" },
+  { n: "net", x: 17, y: 77, w: 17, d: 3, r: -0.7, m: "m" }, // y 48 -> 53 (mission line, Nov 8) -> 77 (facts + button, Nov 8)
   { n: "smile-close", x: 82, y: 4, w: 16, d: 3, r: 0.7, m: "s" },
   { n: "dink", x: 57, y: 10, w: 19, d: 3, r: -0.6, m: "" },
   { n: "brian", x: 41, y: 55, w: 16, d: 3, r: 0.5, m: "s" },

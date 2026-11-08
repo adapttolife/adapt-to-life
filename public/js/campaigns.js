@@ -131,7 +131,12 @@
       };
     }
     if (d.page) {
-      return { href: d.page, label: "See the drive", external: false };
+      // A past tournament or event links to its story page (/events/<slug>).
+      return {
+        href: d.page,
+        label: d.type === "fundraiser" ? "See the drive" : "Read the story",
+        external: false,
+      };
     }
     return { href: "/donate", label: "Donate", external: false };
   }

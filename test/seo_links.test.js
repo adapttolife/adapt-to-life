@@ -8,7 +8,9 @@ import { execFileSync } from "node:child_process";
 const root = new URL("../", import.meta.url);
 const pub = new URL("public/", root);
 const read = (f) => readFileSync(new URL(f, pub), "utf8");
-const pages = readdirSync(pub).filter((f) => f.endsWith(".html"));
+const pages = readdirSync(pub)
+  .filter((f) => f.endsWith(".html"))
+  .concat(readdirSync(new URL("events/", pub)).map((f) => "events/" + f));
 const ldBlocks = (html) =>
   [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) =>
     JSON.parse(m[1]),
@@ -59,4 +61,26 @@ test("Juan's page names his outside coverage in structured data", () => {
     .find((n) => n["@type"] === "Person");
   assert.equal(person["@id"], "https://adapttolife.org/juan#person");
   assert.ok(person.subjectOf.length >= 2);
+});
+
+test("every event story page is built, linked from its event, and links its host", () => {
+  execFileSync(process.execPath, ["scripts/build-event-pages.mjs", "--check"], { cwd: root, stdio: "pipe" });
+  const data = JSON.parse(read("data/campaigns.json"));
+  const events = read("events.html");
+  for (const d of data.drives.filter((x) => x.page && x.page.startsWith("/events/"))) {
+    const html = read(d.page.slice(1) + ".html");
+    assert.ok(events.includes(`href="${d.page}"`), `/events does not link ${d.page}`);
+    if (d.host_url) {
+      assert.ok(html.includes(`href="${d.host_url}"`), `${d.page} does not link its host`);
+      assert.ok(events.includes(`href="${d.host_url}"`), `/events does not link ${d.host}`);
+    }
+    const graph = ldBlocks(html).flatMap((j) => j["@graph"] || [j]);
+    assert.ok(graph.some((n) => /Event$/.test(n["@type"]) && n.startDate && n.location), `${d.page}: Event`);
+    assert.ok(graph.some((n) => n["@type"] === "Article"), `${d.page}: Article`);
+  }
+});
+
+test("the APP Tour is linked on /events and its story, by its own site", () => {
+  assert.ok(read("events.html").includes('href="https://www.theapp.global/"'));
+  assert.ok(read("events/app-vlasic-classic-2026.html").includes('href="https://www.theapp.global/"'));
 });

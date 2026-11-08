@@ -56,6 +56,9 @@
   .ev-row .ev-when{ font-family:var(--font-display); font-weight:800; font-size:1.15rem; letter-spacing:-0.01em; color:var(--orange-ink); line-height:1.15; }
   .ev-row .ev-name{ font-family:var(--font-display); font-weight:800; font-size:1.2rem; letter-spacing:-0.01em; color:var(--ink); }
   .ev-row .ev-meta{ margin-top:0.25rem; color:var(--muted); font-size:0.92rem; }
+  .ev-row .ev-host{ color:var(--orange-ink); font-weight:700; text-decoration:underline; text-underline-offset:2px; }
+  .ev-row .ev-name a{ color:inherit; text-decoration:none; }
+  .ev-row .ev-name a:hover{ color:var(--orange-ink); }
   .ev-row .ev-res{ display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.45rem; }
   .ev-row .ev-res .tag{ white-space:normal; }
   .ev-row .ev-go{ font-weight:700; color:var(--orange-ink); white-space:nowrap; border-bottom:2px solid currentColor; padding-bottom:2px; }
@@ -112,7 +115,7 @@
       "startDate": "2026-08-05",
       "endDate": "2026-08-09",
       "eventStatus": "https://schema.org/EventScheduled",
-      "url": "https://app.pickleballden.com/external-tournament/1359608",
+      "url": "https://adapttolife.org/events/app-vlasic-classic-2026",
       "description": "Our athletes play the Wheelchair Open Doubles bracket on Sunday the 9th. Free to watch, and the best look you will get at what the fund pays for.",
       "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
       "location": {
@@ -127,7 +130,8 @@
       },
       "organizer": {
         "@type": "Organization",
-        "name": "APP Tour"
+        "name": "APP Tour",
+        "url": "https://www.theapp.global/"
       },
       "performer": {
         "@type": "SportsTeam",
@@ -159,7 +163,7 @@
       "startDate": "2026-10-23",
       "endDate": "2026-10-25",
       "eventStatus": "https://schema.org/EventScheduled",
-      "url": "https://pickleballtournaments.com/tournaments/monster-smash-2026",
+      "url": "https://adapttolife.org/events/monster-smash-2026",
       "description": "A Halloween tournament weekend in Cincinnati. Our athletes are in the wheelchair brackets.",
       "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
       "location": {
@@ -176,7 +180,8 @@
       },
       "organizer": {
         "@type": "Organization",
-        "name": "The Pickle Lodge"
+        "name": "The Pickle Lodge",
+        "url": "https://thepicklelodge.com/"
       },
       "performer": {
         "@type": "SportsTeam",
@@ -307,9 +312,9 @@ fill="currentColor" stroke="none">
            script below clears it and draws the past rows live. -->
       <ul class="ev-list" id="evPast">
 <!-- events:list -->
-        <li class="ev-row"><p class="ev-when">Oct 23&ndash;25, 2026</p><div><p class="ev-name"><a href="https://pickleballtournaments.com/tournaments/monster-smash-2026" rel="noopener" target="_blank">Monster Smash</a></p><p class="ev-res"><span class="tag tag--win">6 medals</span></p><p class="ev-meta">Tournament &middot; The Pickle Lodge at Lunken Landing &middot; Cincinnati, OH</p></div><span></span></li>
-        <li class="ev-row"><p class="ev-when">Aug 6&ndash;13, 2026</p><div><p class="ev-name"><a href="/popcorn">August popcorn drive</a></p><p class="ev-res"><span class="tag tag--good">$3,004 raised</span></p><p class="ev-meta">Fundraiser</p></div><span></span></li>
-        <li class="ev-row"><p class="ev-when">Aug 5&ndash;9, 2026</p><div><p class="ev-name"><a href="https://app.pickleballden.com/external-tournament/1359608" rel="noopener" target="_blank">APP Vlasic Classic Chicago</a></p><p class="ev-res"><span class="tag tag--win">First APP wheelchair division</span></p><p class="ev-meta">Tournament &middot; Danny Cunniff Park &middot; Highland Park, IL</p></div><span></span></li>
+        <li class="ev-row"><p class="ev-when">Oct 23&ndash;25, 2026</p><div><p class="ev-name"><a href="/events/monster-smash-2026">Monster Smash</a></p><p class="ev-res"><span class="tag tag--win">6 medals</span></p><p class="ev-meta">Tournament &middot; The Pickle Lodge at Lunken Landing &middot; Cincinnati, OH &middot; Hosted by <a class="ev-host" href="https://thepicklelodge.com/" rel="noopener" target="_blank">The Pickle Lodge</a></p></div><a class="ev-go" href="/events/monster-smash-2026">Read the story</a></li>
+        <li class="ev-row"><p class="ev-when">Aug 6&ndash;13, 2026</p><div><p class="ev-name"><a href="/popcorn">August popcorn drive</a></p><p class="ev-res"><span class="tag tag--good">$3,004 raised</span></p><p class="ev-meta">Fundraiser</p></div><a class="ev-go" href="/popcorn">See the drive</a></li>
+        <li class="ev-row"><p class="ev-when">Aug 5&ndash;9, 2026</p><div><p class="ev-name"><a href="/events/app-vlasic-classic-2026">APP Vlasic Classic Chicago</a></p><p class="ev-res"><span class="tag tag--win">First APP wheelchair division</span></p><p class="ev-meta">Tournament &middot; Danny Cunniff Park &middot; Highland Park, IL &middot; Hosted by <a class="ev-host" href="https://www.theapp.global/" rel="noopener" target="_blank">APP Tour</a></p></div><a class="ev-go" href="/events/app-vlasic-classic-2026">Read the story</a></li>
 <!-- /events:list -->
       </ul>
     </div>
@@ -468,7 +473,7 @@ fill="currentColor" stroke="none">
   })();
 </script>
 <script src="/js/add-to-calendar.js?v=1865647d"></script>
-<script src="/js/campaigns.js?v=0cb1b850"></script>
+<script src="/js/campaigns.js?v=b0edfa74"></script>
 <script>
 (function(){
   var C = window.ATLCampaigns;
@@ -503,7 +508,15 @@ fill="currentColor" stroke="none">
       }
       mid.appendChild(res);
     }
-    mid.appendChild(C.el('p', 'ev-meta', [label(d), place(d)].filter(Boolean).join(' · ')));
+    var meta = C.el('p', 'ev-meta', [label(d), place(d)].filter(Boolean).join(' · '));
+    // The host gets its own link: it is who ran the event, and the link
+    // connects their site to ours (Alec, Nov 8 2026).
+    if (d.host && d.host_url){
+      meta.appendChild(document.createTextNode(' · Hosted by '));
+      var h = C.el('a', 'ev-host', d.host); h.href = d.host_url; h.target = '_blank'; h.rel = 'noopener';
+      meta.appendChild(h);
+    }
+    mid.appendChild(meta);
     li.appendChild(mid);
     if (!past || d.page) li.appendChild(link(d)); else li.appendChild(C.el('span'));
     return li;

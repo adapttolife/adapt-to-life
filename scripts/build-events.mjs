@@ -58,6 +58,7 @@ function event(d) {
   e.organizer = d.host
     ? { "@type": "Organization", name: d.host }
     : { "@id": SITE + "/#org" };
+  if (d.host && d.host_url) e.organizer.url = d.host_url;
   // Athletes we fund play these; Adapt To Life does not run them.
   if (d.relationship === "we_compete")
     e.performer = { "@type": "SportsTeam", name: "Chicago Pickleball: Wheelie Big Dills", url: SITE + "/pickleball" };
@@ -109,7 +110,9 @@ function row(d) {
       : esc(d.name);
   return `        <li class="ev-row"><p class="ev-when">${when(d)}</p><div><p class="ev-name">${name}</p>${
     res.length ? `<p class="ev-res">${res.join("")}</p>` : ""
-  }<p class="ev-meta">${[label(d), place(d)].filter(Boolean).join(" &middot; ")}</p></div><span></span></li>`;
+  }<p class="ev-meta">${[label(d), place(d)].filter(Boolean).join(" &middot; ")}${
+    d.host && d.host_url ? ` &middot; Hosted by <a class="ev-host" href="${esc(d.host_url)}" rel="noopener" target="_blank">${esc(d.host)}</a>` : ""
+  }</p></div>${d.page ? `<a class="ev-go" href="${esc(d.page)}">${d.type === "fundraiser" ? "See the drive" : "Read the story"}</a>` : "<span></span>"}</li>`;
 }
 const rows = [...drives].sort((a, b) => start(b).localeCompare(start(a))).map(row).join("\n");
 

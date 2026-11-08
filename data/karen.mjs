@@ -7,8 +7,9 @@
 //
 // Left out on purpose, until Karen confirms:
 //   - the Steamboat STARS winter post (Aug 24 2026): it names no one;
-//   - Move United's Hartford Ski Spectacular carousel (Dec 10 2024): her
-//     frames are unverified;
+//   - frames 1 and 2 of Maine Adaptive's 2025 carousel: a woman in Karen's
+//     white jacket and blue helmet, but no name on the post (ask Karen);
+//   - the Hookin' Veterans video: no public post names her (ask Karen);
 //   - the 2019 US Sailing Independence Cup result: it lists a Karen Atkinson
 //     of Arlington Heights, Illinois.
 // Never name GLASA. ATL funds and supports and never runs programs.
@@ -22,6 +23,8 @@ export const QUOTES = [
   { q: "From a sitting position to a standing position, it is only about 18 inches. It changes the world.", by: "WINK News, November 2024" },
   // 29 News WVIR, Feb 2025
   { q: "We don&rsquo;t have to explain PTSD to anybody. We don&rsquo;t have to explain why I&rsquo;m in a wheelchair.", by: "29 News WVIR, February 2025" },
+  // 29 News WVIR, Feb 2025 (a repeated "and" dropped, as speech is usually printed)
+  { q: "I am beyond grateful to have a purpose and friends.", by: "29 News WVIR, February 2025" },
   // WSET, Feb 9 2025
   { q: "I felt like I had a new chance at life. I feel like I&rsquo;m still alive.", by: "WSET, February 2025" },
 ];
@@ -73,6 +76,12 @@ export const PRESS = [
     url: "https://facebook.com/reel/25714419898197224/",
   },
   {
+    kind: "Photo", src: "Move United", date: "December 10, 2024", iso: "2024-12-10",
+    t: "The Hartford Ski Spectacular in Breckenridge",
+    n: "Karen, with her name on her bib, laughing between runs.",
+    url: "https://facebook.com/100064317086209/posts/pfbid02bPc5qY5td3yw19D9YS8TSG3DfJ8SD1DQycGxvk5VKd6h9QhFGEodbtLNvo2bvQQgl",
+  },
+  {
     kind: "TV", src: "Bay News 9", date: "April 30, 2025", iso: "2025-04-30",
     t: "Nonprofit helps injured veterans and first responders get mobile again",
     n: "Karen golfs standing up in a VertaCat from the Stand Up and Play Foundation.",
@@ -120,5 +129,23 @@ export const PRESS = [
     t: "Sailfishing for Veterans",
     n: "An offshore fishing trip out of Palm Beach for injured veterans.",
     url: "https://www.youtube.com/watch?v=kKw8KPFdIOc", type: "VideoObject",
+  },
+];
+
+// Photos on the page. Both belong to the organizations that posted them,
+// found by Rose and confirmed as Karen (her bib; her own note about the blue
+// jacket). Credited and linked. Ask the owner before reuse beyond this page.
+export const PHOTOS = [
+  {
+    src: "/images/karen/ski-spectacular.webp", w: 1400, h: 934,
+    alt: "Karen Atkinson laughing in a sit ski at The Hartford Ski Spectacular, her name written on her blue bib, an instructor beside her",
+    cap: "The Hartford Ski Spectacular, Breckenridge, December 2024.",
+    credit: ["Move United", "https://facebook.com/100064317086209/posts/pfbid02bPc5qY5td3yw19D9YS8TSG3DfJ8SD1DQycGxvk5VKd6h9QhFGEodbtLNvo2bvQQgl"],
+  },
+  {
+    src: "/images/karen/sunday-river-sit-ski.webp", w: 1400, h: 1174,
+    alt: "Karen Atkinson in a blue jacket on a sit ski at Sunday River, with Maine Adaptive instructors around her",
+    cap: "Veterans No Boundaries at Sunday River, Maine, January 2026.",
+    credit: ["Maine Adaptive Sports &amp; Recreation", "https://www.facebook.com/photo.php?fbid=1511673764293949&set=a.636561731805161&type=3"],
   },
 ];

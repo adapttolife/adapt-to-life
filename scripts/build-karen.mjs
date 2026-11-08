@@ -10,7 +10,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { QUOTES, ROLES, PRESS } from "../data/karen.mjs";
+import { QUOTES, ROLES, PRESS, PHOTOS } from "../data/karen.mjs";
 import { icon } from "./lib/icons.mjs";
 import { esc, text } from "./lib/page-shell.mjs";
 
@@ -63,6 +63,16 @@ const BODY = `<!-- karen:start -->
     </div>
   </section>
 
+  <section class="dark band kr-photos">
+    <div class="wrap">
+      <div class="kr-ph-grid">
+${PHOTOS.map(
+  (p, i) => `        <figure class="reveal"><img src="${p.src}" alt="${esc(p.alt)}" width="${p.w}" height="${p.h}" loading="${i ? "lazy" : "eager"}" decoding="async"><figcaption>${p.cap} Photo: <a href="${esc(p.credit[1])}" target="_blank" rel="noopener">${p.credit[0]}</a></figcaption></figure>`,
+).join("\n")}
+      </div>
+    </div>
+  </section>
+
   <section class="band">
     <div class="wrap">
       <span class="eyebrow orange reveal">Her story</span>
@@ -91,7 +101,7 @@ const BODY = `<!-- karen:start -->
         <li class="kr-step reveal">
           <span class="kr-era">The snow</span>
           <div><h3>Bringing veterans along</h3>
-          <p>As a Move United Warfighter Ambassador she skis at camps built for veterans: Wounded Warriors Weekend with <a href="https://www.wintergreenadaptivesports.org/" target="_blank" rel="noopener">Wintergreen Adaptive Sports</a> in Virginia, and Veterans No Boundaries with <a href="https://maineadaptive.org/" target="_blank" rel="noopener">Maine Adaptive</a> at Sunday River. She also started <a href="https://www.facebook.com/groups/993458888598514" target="_blank" rel="noopener">Vet Going</a>, a Facebook group where veterans share adventure therapy they can try.</p></div>
+          <p>As a Move United Warfighter Ambassador she skis at camps and clinics built for veterans: The Hartford Ski Spectacular in Breckenridge, Wounded Warriors Weekend with <a href="https://www.wintergreenadaptivesports.org/" target="_blank" rel="noopener">Wintergreen Adaptive Sports</a> in Virginia, and Veterans No Boundaries with <a href="https://maineadaptive.org/" target="_blank" rel="noopener">Maine Adaptive</a> at Sunday River. She also started <a href="https://www.facebook.com/groups/993458888598514" target="_blank" rel="noopener">Vet Going</a>, a Facebook group where veterans share adventure therapy they can try.</p></div>
         </li>
       </ol>
     </div>
@@ -164,6 +174,12 @@ const STYLE = `<style id="karen-style">
   .kr-acts{ display:flex; flex-wrap:wrap; gap:0.9rem 1rem; margin-top:1.8rem; }
   .kr-bigq{ margin:0; font-family:var(--font-display); font-weight:900; font-size:clamp(1.9rem,4.2vw,3.2rem); line-height:1.08; letter-spacing:-0.02em; color:var(--ink); }
   .kr-bigq cite, .kr-quotes cite{ display:block; margin-top:1.1rem; font-style:normal; font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--orange-ink); }
+  .kr-ph-grid{ display:grid; grid-template-columns:1.25fr 1fr; gap:clamp(0.8rem,2vw,1.4rem); align-items:start; }
+  @media (max-width:760px){ .kr-ph-grid{ grid-template-columns:1fr; } }
+  .kr-ph-grid figure{ margin:0; }
+  .kr-ph-grid img{ width:100%; height:auto; display:block; border-radius:18px; box-shadow:0 30px 60px -30px rgba(0,0,0,0.7); }
+  .kr-ph-grid figcaption{ margin-top:0.6rem; font-size:0.86rem; color:var(--cream-mute); }
+  .kr-ph-grid figcaption a{ color:var(--cream); font-weight:700; }
   .kr-steps{ list-style:none; padding:0; margin:clamp(1.8rem,3.5vw,2.6rem) 0 0; max-width:54rem; display:grid; gap:0; }
   .kr-step{ display:grid; grid-template-columns:11rem minmax(0,1fr); gap:0 clamp(1rem,3vw,2.4rem); padding:clamp(1.2rem,2.4vw,1.7rem) 0; border-top:1px solid var(--hairline); }
   .kr-step:last-child{ border-bottom:1px solid var(--hairline); }
@@ -202,7 +218,7 @@ const ld = {
       name: "Karen Atkinson",
       honorificPrefix: "Captain",
       url: URL,
-      image: [SITE + "/images/karen.jpg", SITE + "/images/karen-waterskiing.jpg"],
+      image: [SITE + "/images/karen.jpg", SITE + "/images/karen-waterskiing.jpg", ...PHOTOS.map((p) => SITE + p.src)],
       description: text(DESC),
       jobTitle: "Board Member",
       worksFor: { "@id": SITE + "/#org" },

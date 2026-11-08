@@ -3,6 +3,7 @@
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { MOSAIC_GRID } from "./lib/heroes.mjs";
 const [base, out, reference] = process.argv.slice(2);
 mkdirSync(out, { recursive: true });
 const browser = await chromium.launch({
@@ -64,10 +65,12 @@ try {
       };
     });
     assert.equal(state.panels.length, width <= 900 ? 4 : 22);
+    // The phone order comes from MOSAIC_GRID, not a second hand-kept list, so
+    // changing a phone cell is one edit in lib/heroes.mjs, not two.
     if (width <= 900)
       assert.deepEqual(
         state.panels.map((p) => p.class.match(/p-(\S+)/)[1]),
-        ["net", "whitecap", "brian", "forehand"],
+        MOSAIC_GRID,
       );
     results.push({ width, height, ...state });
     await page.locator("#heroStage").screenshot({ path: `${out}/hero-${width}.png` });

@@ -101,6 +101,12 @@ Drawn from `@iconify-json/simple-icons@1.2.101`, `@iconify-json/material-symbols
 | <img src="svg/pause.svg" width="24" height="24" alt="pause regular"> <img src="svg/pause-duotone.svg" width="24" height="24" alt="pause duotone"> <img src="svg/pause-bold.svg" width="24" height="24" alt="pause bold"> <img src="svg/pause-fill.svg" width="24" height="24" alt="pause fill"> | `pause` | Pause moving pictures | Phosphor `pause` | [regular](svg/pause.svg) · [duotone](svg/pause-duotone.svg) · [bold](svg/pause-bold.svg) · [fill](svg/pause-fill.svg) |
 | <img src="svg/resume.svg" width="24" height="24" alt="resume regular"> <img src="svg/resume-duotone.svg" width="24" height="24" alt="resume duotone"> <img src="svg/resume-bold.svg" width="24" height="24" alt="resume bold"> <img src="svg/resume-fill.svg" width="24" height="24" alt="resume fill"> | `resume` | Resume moving pictures (not a video: that is play) | Phosphor `play` | [regular](svg/resume.svg) · [duotone](svg/resume-duotone.svg) · [bold](svg/resume-bold.svg) · [fill](svg/resume-fill.svg) |
 
+## Other
+
+| Preview | Meaning | What it means | Drawn from | Files |
+|---|---|---|---|---|
+| <img src="svg/share.svg" width="24" height="24" alt="share regular"> <img src="svg/share-duotone.svg" width="24" height="24" alt="share duotone"> <img src="svg/share-bold.svg" width="24" height="24" alt="share bold"> <img src="svg/share-fill.svg" width="24" height="24" alt="share fill"> | `share` | Share this page or person with someone (the phone share sheet) | Phosphor `export` | [regular](svg/share.svg) · [duotone](svg/share-duotone.svg) · [bold](svg/share-bold.svg) · [fill](svg/share-fill.svg) |
+
 ## Logos
 
 Logos mean a tool or platform, never a concept.

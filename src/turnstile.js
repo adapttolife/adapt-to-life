@@ -29,6 +29,14 @@ export async function verifyTurnstile(env, token, ip) {
       },
     );
     const out = await res.json();
+    // Outcome only: never the token, secret, IP, email, or request body.
+    console.log(
+      "turnstile siteverify",
+      JSON.stringify({
+        success: !!out.success,
+        "error-codes": Array.isArray(out["error-codes"]) ? out["error-codes"] : [],
+      }),
+    );
     return !!out.success;
   } catch (err) {
     console.error("turnstile verify failed:", err);

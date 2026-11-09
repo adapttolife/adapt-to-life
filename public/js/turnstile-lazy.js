@@ -100,12 +100,20 @@
       load();
       f.__tsPending = true;
       var started = Date.now();
+      // A form can ask for a longer wait (the apply form does: a visible widget
+      // that may need a tap). The page's own submit handler still refuses to
+      // post an empty token, so a timeout ends in a clear message, not a 403.
+      var waitMs = parseInt(f.getAttribute("data-ts-wait-ms"), 10) || WAIT_MS;
+      try {
+        f.dispatchEvent(new CustomEvent("turnstile:waiting"));
+      } catch (_) {}
 
       (function poll() {
-        // Release on a token, or give up after WAIT_MS and submit anyway so the
-        // server decides. A rejected submit shows the form's own error; a submit
-        // silently swallowed here would not.
-        if (tokenOf(f) || Date.now() - started > WAIT_MS) {
+        // Release on a token, or give up after the wait and submit anyway so the
+        // page decides (apply refuses an empty token itself; the other forms
+        // let the server refuse). A rejected submit shows the form's own error;
+        // a submit silently swallowed here would not.
+        if (tokenOf(f) || Date.now() - started > waitMs) {
           f.__tsPending = false;
           f.__tsReleased = true;
           if (f.requestSubmit) f.requestSubmit();

@@ -158,7 +158,7 @@ fill="currentColor" stroke="none">
           </div>
         </div>
         <div class="contact-form-wrap reveal">
-          <form id="applyForm" class="contact-form" novalidate>
+          <form id="applyForm" class="contact-form" data-ts-wait-ms="20000" novalidate>
             <div class="field-row">
               <div class="field"><label for="fn">First name</label><input id="fn" name="fn" type="text" autocomplete="given-name"></div>
               <div class="field"><label for="ln">Last name</label><input id="ln" name="ln" type="text" autocomplete="family-name"></div>
@@ -173,7 +173,7 @@ fill="currentColor" stroke="none">
             <div class="field"><label for="cost">Cost, or what you already paid (optional)</label><input id="cost" name="cost" type="text" placeholder="e.g. $3,000 for a racing chair"></div>
             <div class="field"><label for="about">Tell us about you</label><textarea id="about" name="about" rows="4" placeholder="Your story, your sport, what you're working toward."></textarea></div>
             <input type="text" name="company" id="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
-            <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" data-appearance="interaction-only" style="margin-bottom:1rem;"></div>
+            <div class="cf-turnstile" data-sitekey="0x4AAAAAADrOxscajsf1zBC2" style="margin-bottom:1rem;"></div>
             <button type="submit" class="btn">Submit application</button>
             <p class="form-status" id="formStatus" role="status" aria-live="polite" style="margin-top:.9rem;font-weight:600"></p>
             <p class="form-note">Use an email address you check. We will send an application confirmation and follow up there.</p>
@@ -364,12 +364,16 @@ fill="currentColor" stroke="none">
       statusEl.textContent = msg;
       statusEl.style.color = ok ? 'var(--ok)' : 'var(--err)';
     }
+    f.addEventListener('turnstile:waiting', function(){ setStatus('Finishing the security check…', true); });
     f.addEventListener('submit', function(e){
       e.preventDefault();
       if(v('company')) return; // honeypot: silently drop bots
       if(!v('em')){ setStatus('Please enter your email so we can reach you.', false); return; }
       if(!v('fn') && !v('ln')){ setStatus('Please add your name.', false); return; }
       var tk=f.querySelector('[name="cf-turnstile-response"]');
+      // No token yet means the security check has not finished. Posting would
+      // only earn a bare 403, so hold the application here instead.
+      if(!tk || !tk.value){ setStatus('The security check is still finishing. Please wait a few seconds, then press Submit application again. If this keeps happening, reload the page.', false); return; }
       var payload = { fn:v('fn'), ln:v('ln'), em:v('em'), phone:v('phone'), sport:v('sport'), location:v('location'), need:v('need'), cost:v('cost'), about:v('about'), cf_token: tk?tk.value:'' };
       if (btn && btn.disabled) return;
       window.ATLFormSubmission(f, payload);
@@ -398,6 +402,6 @@ fill="currentColor" stroke="none">
 
 <script src="/js/subscribe.js?v=7efaf550" defer></script>
 <script src="/js/form-submission.js?v=8dbf21a7" defer></script>
-<script src="/js/turnstile-lazy.js?v=12e9b811" defer></script>
+<script src="/js/turnstile-lazy.js?v=b44abebb" defer></script>
 </body>
 </html>

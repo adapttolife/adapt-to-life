@@ -114,3 +114,94 @@ test("rate limit: GET traffic is never counted", async () => {
   assert.notEqual(res.status, 429);
   assert.equal(calls, 0);
 });
+
+// A D1 stub that fails the test if anything tries to write.
+function untouchableDb() {
+  const boom = (what) => () => {
+    throw new Error(`form_submissions must not be touched: ${what}`);
+  };
+  return { prepare: boom("prepare"), batch: boom("batch"), exec: boom("exec") };
+}
+
+function applyJson(body) {
+  return new Request("https://adapttolife.org/api/apply", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "CF-Connecting-IP": "7.7.7.7" },
+    body: JSON.stringify(body),
+  });
+}
+
+const APPLICANT = { fn: "Test", ln: "Applicant", em: "person@example.com", sport: "Pickleball" };
+
+test("apply: missing or empty token -> 403 and zero D1 writes", async (t) => {
+  const real = globalThis.fetch;
+  let outbound = 0;
+  globalThis.fetch = async () => {
+    outbound++;
+    return new Response("{}");
+  };
+  t.after(() => {
+    globalThis.fetch = real;
+  });
+  const w = await worker();
+  for (const body of [APPLICANT, { ...APPLICANT, cf_token: "" }]) {
+    const res = await w.fetch(
+      applyJson(body),
+      baseEnv({ WAIVERS_DB: untouchableDb(), INTAKE: untouchableDb() }),
+      { waitUntil() {} },
+    );
+    assert.equal(res.status, 403);
+    assert.match((await res.json()).error, /Verification failed/);
+  }
+  assert.equal(outbound, 0, "no siteverify call without a token");
+});
+
+test("apply: a token siteverify accepts gets past the gate and is stored", async (t) => {
+  const real = globalThis.fetch;
+  const verified = [];
+  globalThis.fetch = async (url, init) => {
+    if (String(url).includes("/turnstile/v0/siteverify")) {
+      verified.push(JSON.parse(init.body).response);
+      return new Response(JSON.stringify({ success: true, "error-codes": [] }));
+    }
+    throw new Error("unexpected outbound fetch: " + url);
+  };
+  t.after(() => {
+    globalThis.fetch = real;
+  });
+  const writes = [];
+  let stored = null;
+  const db = {
+    prepare(sql) {
+      return {
+        bind(...args) {
+          return {
+            sql,
+            args,
+            async first() {
+              return stored;
+            },
+          };
+        },
+      };
+    },
+    async batch(stmts) {
+      for (const s of stmts) {
+        writes.push(s.sql);
+        if (/INTO form_submissions/.test(s.sql))
+          stored = { kind: s.args[1], payload: s.args[2] };
+      }
+    },
+  };
+  const w = await worker();
+  const res = await w.fetch(
+    applyJson({ ...APPLICANT, cf_token: "good-token" }),
+    baseEnv({ WAIVERS_DB: db, INTAKE: {} }),
+    { waitUntil() {} }, // dispatch (receipt, intake) is not exercised here
+  );
+  assert.equal(res.status, 200);
+  assert.equal((await res.json()).ok, true);
+  assert.deepEqual(verified, ["good-token"]);
+  assert.ok(writes.some((sql) => /INTO form_submissions/.test(sql)));
+  assert.equal(stored.kind, "apply");
+});

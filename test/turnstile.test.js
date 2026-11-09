@@ -121,3 +121,27 @@ test("rate limit: a missing binding or a limiter error never blocks a person", a
     false,
   );
 });
+
+test("turnstile: logs only success and error-codes, never the token, secret or ip", async (t) => {
+  const lines = [];
+  const realLog = console.log;
+  console.log = (...a) => lines.push(a.join(" "));
+  t.after(() => {
+    console.log = realLog;
+  });
+  stubFetch(t, async () =>
+    new Response(
+      JSON.stringify({ success: false, "error-codes": ["timeout-or-duplicate"], hostname: "x" }),
+    ),
+  );
+  assert.equal(
+    await verifyTurnstile({ TURNSTILE_SECRET_KEY: "sekret-value" }, "tok-value", "9.9.9.9"),
+    false,
+    "siteverify still decides",
+  );
+  const logged = lines.join("\n");
+  assert.match(logged, /"success":false/);
+  assert.match(logged, /timeout-or-duplicate/);
+  for (const secret of ["tok-value", "sekret-value", "9.9.9.9", "hostname"])
+    assert.ok(!logged.includes(secret), `log must not contain ${secret}`);
+});

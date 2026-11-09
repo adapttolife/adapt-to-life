@@ -50,10 +50,12 @@
     // executes (assets otherwise serve before the Worker and bypass the gate).
     // /admin/* also runs through the Worker for authentication and app routing.
     // Staging runs every request through the Worker and checks admin page auth.
+    // /videos/* runs through the Worker so iPhone Safari gets the byte ranges
+    // it needs to play a video (src/video_range.js).
     "run_worker_first": ["/review", "/review.html", "/photo-picks", "/photo-picks.html",
       "/hero-review", "/hero-review.html", "/hero-1", "/hero-1.html", "/hero-2", "/hero-2.html", "/hero-3", "/hero-3.html",
         "/hero-4", "/hero-4.html", "/hero-5", "/hero-5.html", "/hero-6", "/hero-6.html", "/hero-7", "/hero-7.html", "/hero-9", "/hero-9.html",
-      "/admin/*"]
+      "/admin/*", "/videos/*"]
   },
   "observability": {
     "issues": { "enabled": true },

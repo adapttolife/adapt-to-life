@@ -1,3 +1,4 @@
+import { isVideoRequest, serveVideo } from "./video_range.js";
 import { safeNewsletterSubscribe } from "./newsletter.js";
 import {
   betaTesterTopicGroups,
@@ -1257,6 +1258,10 @@ async function proxyAsnmAdmin(request, env, url, session) {
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+
+    // Site video needs byte ranges for iPhone Safari; see src/video_range.js.
+    // Production routes /videos/* through the Worker (run_worker_first).
+    if (isVideoRequest(request, url)) return serveVideo(request, env);
 
     // Signing hub: sign.adapttolife.org is the one place to sign the universal release.
     // Both site footers link here (?source=atl|asnm). Bare visits land on the release.

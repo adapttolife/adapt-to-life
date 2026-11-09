@@ -198,10 +198,16 @@ export const MOSAIC_GRID = [
   // it as the LOWER-LEFT phone cell. It takes brian's slot; brian stays on the
   // desktop wall. A chair and a ball in play in that cell, next to forehand's
   // chair on the right.
-  "net",
-  "whitecap",
+  //
+  // 2026-11-09, Alec circled the bottom row on his phone (dink | forehand, the
+  // two athletes in chairs) and asked for it on TOP, with the caps row (net |
+  // whitecap) moving below the slab. Rows swap whole; left/right inside each
+  // row is unchanged, and the crops below travel with their panels. Cells 0-1
+  // are the row above the slab, cells 2-3 the row below it.
   "dink",
   "forehand",
+  "net",
+  "whitecap",
 ];
 // All four must be FRONT-plane panels: depth is baked into the files now, so a
 // "lit" cell drawn from a pre-darkened mid or back file would still be dim.

@@ -1037,6 +1037,7 @@
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 8px;
+  min-width: fit-content;
 }
 
 .beta-tester-actions .btn {

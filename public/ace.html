@@ -214,6 +214,8 @@
   .ace-story b{ display:block; font-family:var(--font-display); font-weight:800; font-size:clamp(1.1rem,1.8vw,1.3rem); letter-spacing:-0.01em; }
   .ace-story li.lit b{ color:var(--orange-ink); }
   .ace-story span{ display:block; margin-top:0.4rem; max-width:26ch; }
+  .ace-story-3{ grid-template-columns:repeat(3,1fr); }
+  .ace-together-note{ margin-top:clamp(2rem,4vw,2.8rem); max-width:62ch; }
   @media (max-width:760px){
     .ace-story{ grid-template-columns:1fr; gap:1.4rem; padding-left:1.8rem; }
     .ace-story::before{ left:7px; right:auto; top:0; bottom:0; width:2px; height:auto; background:linear-gradient(180deg, rgb(var(--accent-rgb) / 0.3), var(--orange)); }
@@ -506,7 +508,7 @@ fill="currentColor" stroke="none">
           <img src="/images/ace/ace-logo-white.png" alt="ACE Pickleball Club" class="ace-logo" width="760" height="105">
         </div>
         <h1 class="serif display">Something Chicago <em class="italic" style="color:var(--orange)">hasn&rsquo;t seen.</em></h1>
-        <p class="lead sub"><a href="https://www.acepickleballclub.com/desplaines-il" target="_blank" rel="noopener">ACE Pickleball Club</a> is our partner club in Des Plaines. Court time we fund, Train to Compete memberships and Try Adaptive Night all happen here, and more is coming.</p>
+        <p class="lead sub"><a href="https://www.acepickleballclub.com/desplaines-il" target="_blank" rel="noopener">ACE Pickleball Club</a> is our partner club in Des Plaines. The crew plays here every week, and Train to Compete, Try Adaptive Night and more are on the way.</p>
         <div class="actions">
           <a href="#events" class="btn">See what&rsquo;s happening</a>
           <a href="/sponsorship#tiers" class="btn ghost">Ways to sponsor</a>
@@ -604,9 +606,9 @@ fill="currentColor" stroke="none">
           <p>Every athlete plays free. $15 covers one athlete for a night, and $225 covers a night for up to 15. <a class="ace-pick-link" href="/sponsorship#tiers">Sponsor a night</a></p>
         </article>
         <article class="ace-pick">
-          <p class="ace-pick-tag"><span class="tag tag--good"><i class="sym sym--recurring" aria-hidden="true"></i>All year</span></p>
+          <p class="ace-pick-tag"><span class="tag tag--info"><i class="sym sym--event" aria-hidden="true"></i>Next</span></p>
           <h3>Train to Compete</h3>
-          <p>Unlimited memberships for athletes who train to compete. $1,548 sponsors one athlete for a year (12&nbsp;months at $129), and $15,480 sponsors ten. <a class="ace-pick-link" href="/sponsorship#tiers">Sponsor an athlete</a></p>
+          <p>Memberships for athletes who train to compete, funded by member fundraisers, sponsors and partners. $1,548 covers a year of unlimited sessions for one athlete. <a class="ace-pick-link" href="/sponsorship#tiers">Sponsor an athlete</a></p>
         </article>
         <article class="ace-pick">
           <p class="ace-pick-tag"><span class="tag tag--info"><i class="sym sym--event" aria-hidden="true"></i>Coming up</span></p>
@@ -624,6 +626,24 @@ fill="currentColor" stroke="none">
           <p>New events go up here as they are set. <a class="ace-pick-link" href="/subscribe">Get updates</a></p>
         </article>
       </div>
+    </div>
+  </section>
+
+  <!-- 4b. HOW WE GROW TOGETHER: ACE's gift shrinks as the community steps in -->
+  <section class="band" id="together">
+    <div class="wrap">
+      <div class="ace-head" data-m="stagger">
+        <hr class="tick orange">
+        <span class="eyebrow orange">How we grow together</span>
+        <h2 class="serif statement">Built to last. <em class="italic" style="color:var(--orange)">For ACE too.</em></h2>
+        <p class="prose">ACE gives a portion of every drop-in back to the athletes. We don't want our growth to cost the club, so the plan is for the community to take that over.</p>
+      </div>
+      <ol class="ace-story ace-story-3" data-m="seq">
+        <li class="lit"><b>Open the door</b><span>ACE makes room on its courts and gives a portion of every drop-in back.</span></li>
+        <li><b>Fill the gap</b><span>Member fundraisers, sponsors and partners fund court time and memberships.</span></li>
+        <li><b>Paid in full</b><span>ACE is paid its regular price, and the crew keeps bringing new players in.</span></li>
+      </ol>
+      <p class="prose ace-together-note" data-m="up">Clubs work hard to grow. An adaptive crew can help: new faces at open play, families who come to watch, and members who stay. That is the model we are building with ACE, for any club that wants a crew of its own. <a class="textlink" href="/sponsorship#clubs" style="font:inherit;letter-spacing:inherit;">The Home Court Model</a></p>
     </div>
   </section>
 

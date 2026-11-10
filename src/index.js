@@ -822,6 +822,30 @@ export async function localAsnmAdminOperations(request, env, url) {
             : 1;
         const timestamp = new Date().toISOString();
         const addingTester = Object.hasOwn(body || {}, "name");
+        const changingTopics = Array.isArray(body?.topicIds);
+        if (!addingTester && changingTopics) {
+          if (!env.RESEND_API_KEY) {
+            return json(
+              { ok: false, error: "Resend Topics are not configured." },
+              503,
+              ADMIN_CACHE,
+            );
+          }
+          const tester = await env.ASNM_DB.prepare(
+            "SELECT email FROM beta_testers WHERE email = ? COLLATE NOCASE",
+          )
+            .bind(email)
+            .first();
+          if (!tester) {
+            return json(
+              { ok: false, error: "Beta tester not found." },
+              404,
+              ADMIN_CACHE,
+            );
+          }
+          await setContactTopics(env, email, body.topicIds);
+          return json({ ok: true }, 200, ADMIN_CACHE);
+        }
         if (addingTester) {
           if (
             Array.isArray(body?.topicIds) &&

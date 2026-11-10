@@ -882,6 +882,10 @@ export function Directory({ onFail }: { onFail: () => void }) {
   const [selectedQueueItem, setSelectedQueueItem] = useState<Item | null>(null);
   const [betaTesters, setBetaTesters] = useState<Item[]>([]);
   const [selectedBetaTester, setSelectedBetaTester] = useState<Item | null>(null);
+  const [selectedBetaTesterEmails, setSelectedBetaTesterEmails] = useState<Set<string>>(
+    new Set(),
+  );
+  const [betaSelectionAnchor, setBetaSelectionAnchor] = useState<string | null>(null);
   const [betaGroups, setBetaGroups] = useState<Item[]>([]);
   const [betaGroupError, setBetaGroupError] = useState("");
   const [featureToggles, setFeatureToggles] = useState<Item[]>([]);
@@ -1288,6 +1292,124 @@ export function Directory({ onFail }: { onFail: () => void }) {
     }
   };
 
+  const selectBetaTester = (email: string, shiftKey: boolean) => {
+    const emails = betaTesters.map((tester) => String(tester.email));
+    setSelectedBetaTesterEmails((current) => {
+      const next = new Set(current);
+      const start = betaSelectionAnchor ? emails.indexOf(betaSelectionAnchor) : -1;
+      const end = emails.indexOf(email);
+      if (shiftKey && start >= 0 && end >= 0) {
+        for (const entry of emails.slice(
+          Math.min(start, end),
+          Math.max(start, end) + 1,
+        )) {
+          next.add(entry);
+        }
+      } else if (next.has(email)) {
+        next.delete(email);
+      } else {
+        next.add(email);
+      }
+      return next;
+    });
+    setBetaSelectionAnchor(email);
+  };
+
+  const applyBulkBetaAction = async (
+    action: "enable" | "disable" | "add-group" | "remove-group" | "remove",
+    topicIds: string[] = [],
+  ) => {
+    const targets = betaTesters.filter((tester) =>
+      selectedBetaTesterEmails.has(String(tester.email)),
+    );
+    if (!targets.length) return;
+    if (
+      action === "remove" &&
+      !confirm(`Remove beta access for ${targets.length} testers?`)
+    ) {
+      return;
+    }
+    if (["add-group", "remove-group"].includes(action) && !topicIds.length) {
+      setMessage("Choose at least one beta tester group.");
+      return;
+    }
+    if (["add-group", "remove-group"].includes(action) && betaGroupError) {
+      setMessage(betaGroupError);
+      return;
+    }
+    const topicUpdates = new Map<string, string[]>();
+    try {
+      await Promise.all(
+        targets.map((tester) => {
+          const email = String(tester.email);
+          if (action === "remove") {
+            return request("/admin-data/beta-testers", {
+              method: "DELETE",
+              body: JSON.stringify({ email }),
+            });
+          }
+          if (action === "enable" || action === "disable") {
+            return request("/admin-data/beta-testers", {
+              method: "POST",
+              body: JSON.stringify({ email, enabled: action === "enable" }),
+            });
+          }
+          const currentTopics = Array.isArray(tester.topic_ids)
+            ? tester.topic_ids.map(String)
+            : [];
+          const nextTopics =
+            action === "add-group"
+              ? [...new Set([...currentTopics, ...topicIds])]
+              : currentTopics.filter((id) => !topicIds.includes(id));
+          topicUpdates.set(email, nextTopics);
+          return request("/admin-data/beta-testers", {
+            method: "POST",
+            body: JSON.stringify({ email, topicIds: nextTopics }),
+          });
+        }),
+      );
+      setBetaTesters((testers) => {
+        if (action === "remove") {
+          return testers.filter(
+            (tester) => !selectedBetaTesterEmails.has(String(tester.email)),
+          );
+        }
+        return testers.map((tester) => {
+          const email = String(tester.email);
+          if (!selectedBetaTesterEmails.has(email)) return tester;
+          if (action === "enable" || action === "disable") {
+            return { ...tester, enabled: action === "enable" ? 1 : 0 };
+          }
+          const nextTopics = topicUpdates.get(email);
+          return nextTopics ? { ...tester, topic_ids: nextTopics } : tester;
+        });
+      });
+      setSelectedBetaTesterEmails(new Set());
+      setBetaSelectionAnchor(null);
+      setMessage(
+        action === "remove"
+          ? "Beta testers removed."
+          : action === "add-group"
+            ? "Beta tester groups added."
+            : action === "remove-group"
+              ? "Beta tester groups removed."
+              : `Beta testers ${action}d.`,
+      );
+    } catch (error) {
+      handleError(error, "Could not update the selected beta testers.");
+    }
+  };
+
+  const applyBulkBetaGroups = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const submitter = (event.nativeEvent as SubmitEvent)
+      .submitter as HTMLButtonElement | null;
+    const action = String(submitter?.value || "");
+    if (action !== "add-group" && action !== "remove-group") return;
+    void applyBulkBetaAction(action, data.getAll("topic_ids").map(String));
+  };
+
   const createFeatureToggle = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
@@ -1643,9 +1765,14 @@ export function Directory({ onFail }: { onFail: () => void }) {
           {betaGroupError ? <p className="sub">{betaGroupError}</p> : null}
           <div className="beta-group-grid">
             {betaGroups.map((group) => {
-              const emails = Array.isArray(group.emails)
-                ? group.emails.map(String)
-                : [];
+              const groupId = String(group.id);
+              const emails = betaTesters
+                .filter(
+                  (tester) =>
+                    Array.isArray(tester.topic_ids) &&
+                    tester.topic_ids.map(String).includes(groupId),
+                )
+                .map((tester) => String(tester.email));
               return (
                 <article className="beta-group" key={String(group.id)}>
                   <h4>{String(group.name)}</h4>
@@ -1683,9 +1810,80 @@ export function Directory({ onFail }: { onFail: () => void }) {
             </article>
           </div>
         </section>
+        {selectedBetaTesterEmails.size ? (
+          <section className="beta-bulk" aria-label="Bulk beta tester actions">
+            <p>{selectedBetaTesterEmails.size} beta testers selected</p>
+            <div className="beta-bulk-actions">
+              <button
+                className="btn btn--line"
+                onClick={() => void applyBulkBetaAction("enable")}
+                type="button"
+              >
+                Enable
+              </button>
+              <button
+                className="btn btn--line"
+                onClick={() => void applyBulkBetaAction("disable")}
+                type="button"
+              >
+                Disable
+              </button>
+              <button
+                className="btn btn--line"
+                onClick={() => void applyBulkBetaAction("remove")}
+                type="button"
+              >
+                Remove
+              </button>
+            </div>
+            <form className="beta-bulk-groups" onSubmit={applyBulkBetaGroups}>
+              <SearchSelect
+                name="topic_ids"
+                multiple
+                value={[]}
+                options={betaGroups.map((group) => ({
+                  value: String(group.id),
+                  label: String(group.name),
+                }))}
+                placeholder="Choose beta tester groups"
+              />
+              <button
+                className="btn btn--line"
+                name="group_action"
+                type="submit"
+                value="add-group"
+              >
+                Add to group
+              </button>
+              <button
+                className="btn btn--line"
+                name="group_action"
+                type="submit"
+                value="remove-group"
+              >
+                Remove from group
+              </button>
+            </form>
+          </section>
+        ) : null}
         <div className="directory-list">
           {betaTesters.map((tester) => (
-            <div className="beta-tester" key={String(tester.email)}>
+            <div
+              className={`beta-tester${selectedBetaTesterEmails.has(String(tester.email)) ? " is-selected" : ""}`}
+              key={String(tester.email)}
+            >
+              <label className="beta-tester-select">
+                <input
+                  aria-label={`Select ${String(tester.name || tester.email)}`}
+                  checked={selectedBetaTesterEmails.has(String(tester.email))}
+                  onChange={() => {}}
+                  onClick={(event) =>
+                    selectBetaTester(String(tester.email), event.shiftKey)
+                  }
+                  type="checkbox"
+                />
+                <span aria-hidden="true" />
+              </label>
               <span>
                 <b>{String(tester.name || tester.email)}</b>
                 <small>

@@ -81,6 +81,16 @@ export default function App() {
     setRoute(id);
   }, []);
   const onFail = useCallback(() => setLapsed(true), []);
+  const onSignOut = useCallback(async () => {
+    try {
+      await api.signOut();
+    } catch (error) {
+      console.error("Could not sign out of the admin dashboard.", error);
+      return;
+    }
+    setYou(null);
+    setLapsed(true);
+  }, []);
 
   if (checking) return <div className="lapsed">Checking your session…</div>;
   if (lapsed) return <Login />;
@@ -98,6 +108,7 @@ export default function App() {
     <Shell
       route={route}
       onRoute={go}
+      onSignOut={onSignOut}
       you={you}
       title={current.title}
       subtitle={current.sub}

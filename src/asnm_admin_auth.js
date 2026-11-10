@@ -65,6 +65,23 @@ export async function readAdminSession(request, db, secret) {
   return email ? { id, email, cookie: `${COOKIE}=${id}.${supplied}` } : null;
 }
 
+export async function revokeAdminSession(request, db, secret) {
+  const session = await readAdminSession(request, db, secret);
+  if (!session) return false;
+  await db
+    .prepare(
+      "UPDATE admin_sessions SET revoked_at = ? WHERE id = ? AND revoked_at IS NULL",
+    )
+    .bind(now(), session.id)
+    .run();
+  return true;
+}
+
+export function clearAdminSessionCookie({ secure = true } = {}) {
+  const secureAttribute = secure ? "; Secure" : "";
+  return `${COOKIE}=; HttpOnly${secureAttribute}; SameSite=Strict; Path=/; Max-Age=0`;
+}
+
 export async function requestLogin(db, email) {
   const raw = token();
   await db

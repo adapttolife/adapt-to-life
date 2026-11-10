@@ -279,3 +279,16 @@ test("a drag that starts inside the sheet cannot dismiss it", () => {
     "dismissal requires the gesture to begin AND end on the backdrop",
   );
 });
+
+test("every checkout button on /sponsorship charges the price it shows", () => {
+  // Nov 10 2026: the Night and Athlete buttons still charged $75 and $960 (the
+  // old discounted math) under cards showing $225 and $1,548.
+  const html = readFileSync(new URL("../public/sponsorship.html", import.meta.url), "utf8");
+  const tags = html.match(/<a [^>]*data-sponsor-amount="[^"]*"[^>]*>/g) || [];
+  assert.ok(tags.length >= 4);
+  for (const t of tags) {
+    const amount = /data-sponsor-amount="([^"]*)"/.exec(t)[1];
+    const price = /data-sponsor-price="\$([\d,]+)/.exec(t)[1].replace(/,/g, "");
+    assert.equal(amount, price, t.slice(0, 120));
+  }
+});

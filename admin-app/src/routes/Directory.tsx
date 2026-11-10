@@ -4,6 +4,53 @@ const KINDS = ["organizations", "programs", "events", "grants", "blog"] as const
 
 type Kind = (typeof KINDS)[number];
 type Item = Record<string, unknown> & { id: string; name?: string; title?: string };
+
+function checkupPayload(item: Item) {
+  const payload = (item.payload || {}) as Record<string, unknown>;
+  let checkup = payload.checkup;
+  if (typeof checkup === "string") {
+    try {
+      checkup = JSON.parse(checkup);
+    } catch {
+      checkup = undefined;
+    }
+  }
+  return checkup && typeof checkup === "object"
+    ? (checkup as Record<string, unknown>)
+    : undefined;
+}
+
+function listingChangeFields(item: Item) {
+  const payload = (item.payload || {}) as Record<string, unknown>;
+  const checkup = checkupPayload(item);
+  if (!checkup) return [];
+  if (checkup.verdict === "stopped") return ["visibility"];
+  const facts = (checkup.facts || {}) as Record<string, { status?: string }>;
+  const names: Record<string, string> = {
+    website: "website URL",
+    place: "place",
+    who: "ages",
+    cost: "cost",
+  };
+  const fields = Object.entries(facts)
+    .filter(([, value]) => value?.status === "change")
+    .map(([key]) => names[key] || key);
+  if (payload.sports && typeof payload.sports === "object") fields.push("sports");
+  if (Array.isArray(payload.yearly) && payload.yearly.length)
+    fields.push("yearly events");
+  return [...new Set(fields)];
+}
+
+function isBulkConfirmation(item: Item) {
+  const payload = (item.payload || {}) as Record<string, unknown>;
+  const checkup = checkupPayload(item);
+  return (
+    item.kind === "listing_update" &&
+    payload.relation === "run" &&
+    checkup?.verdict === "all_right" &&
+    listingChangeFields(item).length === 0
+  );
+}
 type Detail = {
   label: string;
   fields: string[];
@@ -1346,6 +1393,25 @@ export function Directory({ onFail }: { onFail: () => void }) {
     }
   };
 
+  const applyBulkConfirmations = async () => {
+    const confirmations = queueItems.filter(isBulkConfirmation);
+    if (!confirmations.length) return;
+    try {
+      await Promise.all(
+        confirmations.map((entry) =>
+          request(`/admin-data/queue/${entry.id}`, {
+            method: "POST",
+            body: JSON.stringify({ action: "bulk-confirmation" }),
+          }),
+        ),
+      );
+      setQueueItems((items) => items.filter((entry) => !isBulkConfirmation(entry)));
+      setMessage(`${confirmations.length} confirmations recorded.`);
+    } catch (error) {
+      handleError(error, "Could not apply the confirmations.");
+    }
+  };
+
   if (operations === "queue") {
     if (selectedQueueItem)
       return (
@@ -1357,6 +1423,14 @@ export function Directory({ onFail }: { onFail: () => void }) {
           <p className="sub">
             Review the submitted details before accepting and publishing.
           </p>
+          {listingChangeFields(selectedQueueItem).length ? (
+            <p className="sub">
+              {listingChangeFields(selectedQueueItem).length} change{" "}
+              {listingChangeFields(selectedQueueItem).length === 1 ? "field" : "fields"}
+              : {listingChangeFields(selectedQueueItem).join(", ")}. This submission
+              requires individual review.
+            </p>
+          ) : null}
           <section className="queue-editor">
             <dl>
               {Object.entries(
@@ -1364,7 +1438,11 @@ export function Directory({ onFail }: { onFail: () => void }) {
               ).map(([key, value]) => (
                 <>
                   <dt key={`${key}-term`}>{fieldLabel(key)}</dt>
-                  <dd key={`${key}-value`}>{String(value)}</dd>
+                  <dd key={`${key}-value`}>
+                    {value && typeof value === "object"
+                      ? JSON.stringify(value, null, 2)
+                      : String(value)}
+                  </dd>
                 </>
               ))}
             </dl>
@@ -1375,6 +1453,14 @@ export function Directory({ onFail }: { onFail: () => void }) {
           {toast}
         </section>
       );
+    const confirmationItems = queueItems.filter(isBulkConfirmation);
+    const changedItems = queueItems.filter(
+      (entry) => entry.kind === "listing_update" && listingChangeFields(entry).length,
+    );
+    const changeCount = changedItems.reduce(
+      (total, entry) => total + listingChangeFields(entry).length,
+      0,
+    );
     return (
       <section className="directory-page">
         <button className="back-link" onClick={() => setOperations(null)}>
@@ -1384,6 +1470,20 @@ export function Directory({ onFail }: { onFail: () => void }) {
         <p className="sub">
           New organization, program, event, and listing submissions awaiting review.
         </p>
+        {confirmationItems.length ? (
+          <section className="queue-bulk">
+            <p>
+              {confirmationItems.length}{" "}
+              {confirmationItems.length === 1 ? "item" : "items"}, {changeCount} change{" "}
+              {changeCount === 1 ? "field" : "fields"}. Changed listings, including
+              website URL or visibility updates, require individual review.
+            </p>
+            <button className="btn" onClick={applyBulkConfirmations} type="button">
+              Record {confirmationItems.length} still-right{" "}
+              {confirmationItems.length === 1 ? "confirmation" : "confirmations"}
+            </button>
+          </section>
+        ) : null}
         <div className="directory-list queue-grid">
           {queueItems.length ? (
             queueItems.map((entry) => (

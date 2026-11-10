@@ -1094,6 +1094,33 @@
   font: 12px/1.4 var(--mono, monospace);
 }
 
+.queue-bulk {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 18px 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.queue-bulk p {
+  margin: 0;
+}
+
+.queue-bulk .btn {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 640px) {
+  .queue-bulk {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
 .queue-editor {
   margin-top: 18px;
   padding: 18px;
@@ -1119,6 +1146,7 @@
   min-width: 0;
   margin: 0;
   overflow-wrap: anywhere;
+  white-space: pre-wrap;
 }
 
 .queue-editor .btn {

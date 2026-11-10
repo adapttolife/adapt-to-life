@@ -937,6 +937,22 @@ export async function localAsnmAdminOperations(request, env, url) {
       } catch {
         payload = {};
       }
+      let action = "accept";
+      try {
+        action = String((await request.json()).action || "accept");
+      } catch {}
+      if (
+        action === "bulk-confirmation" &&
+        !safeListingConfirmation(submission.kind, payload)
+      )
+        return json(
+          {
+            ok: false,
+            error: "This submission has changes and must be reviewed individually.",
+          },
+          422,
+          ADMIN_CACHE,
+        );
       const timestamp = new Date().toISOString();
       let recordId = null;
       if (["new_organization", "new_program"].includes(String(submission.kind))) {
@@ -1047,6 +1063,57 @@ export async function localAsnmAdminOperations(request, env, url) {
   }
 
   return null;
+}
+
+export function listingChangeFields(payload) {
+  let checkup = payload && payload.checkup;
+  if (typeof checkup === "string") {
+    try {
+      checkup = JSON.parse(checkup);
+    } catch {
+      checkup = null;
+    }
+  }
+  if (!checkup || typeof checkup !== "object") checkup = null;
+  if (!checkup) return [];
+  if (checkup.verdict === "stopped") return ["visibility"];
+  const facts = checkup.facts && typeof checkup.facts === "object" ? checkup.facts : {};
+  const names = {
+    website: "website_url",
+    place: "place",
+    who: "ages",
+    cost: "cost_note",
+  };
+  const fields = Object.entries(facts)
+    .filter(
+      ([, answer]) =>
+        answer && typeof answer === "object" && answer.status === "change",
+    )
+    .map(([key]) => names[key] || key);
+  if (payload && payload.sports && typeof payload.sports === "object")
+    fields.push("sports");
+  if (Array.isArray(payload && payload.yearly) && payload.yearly.length)
+    fields.push("yearly events");
+  return [...new Set(fields)];
+}
+
+export function safeListingConfirmation(kind, payload) {
+  let checkup = payload && payload.checkup;
+  if (typeof checkup === "string") {
+    try {
+      checkup = JSON.parse(checkup);
+    } catch {
+      checkup = null;
+    }
+  }
+  return (
+    kind === "listing_update" &&
+    payload &&
+    payload.relation === "run" &&
+    checkup &&
+    checkup.verdict === "all_right" &&
+    listingChangeFields(payload).length === 0
+  );
 }
 
 export async function sendBetaTesterInvitation(env, { email, name, siteUrl }) {
@@ -1703,7 +1770,10 @@ export async function recordNewsletterIntake(env, ctx, email, source) {
     after(
       ctx,
       notifyIntake(env, rec.id).catch((err) =>
-        console.error("newsletter intake notify failed (row saved, sweep retries):", err?.message || err),
+        console.error(
+          "newsletter intake notify failed (row saved, sweep retries):",
+          err?.message || err,
+        ),
       ),
     );
     return true;
@@ -2059,16 +2129,23 @@ async function handleRaised(request, env) {
   // bar asked for before the split, so cached pages stay right.
   const asked = new URL(request.url).searchParams.get("c") || "send-6";
   const key = CAMPAIGN_KEYS.includes(asked) ? asked : "send-6";
-  const { raised, inkind, online, offline, goal, parts, donors } = await campaignPosition(
-    env,
-    key,
-  );
+  const { raised, inkind, online, offline, goal, parts, donors } =
+    await campaignPosition(env, key);
   // donors: Givebutter's count of people who gave online (social proof on the
   // campaign module). Popcorn buyers are not in it, so the site says "donors",
   // never "supporters" or a total of everyone.
   // inkind (wbd only): court time a partner club gives toward every week,
   // kept apart from raised, which is gifts only.
-  const body = JSON.stringify({ key, raised, inkind, online, offline, goal, parts, donors });
+  const body = JSON.stringify({
+    key,
+    raised,
+    inkind,
+    online,
+    offline,
+    goal,
+    parts,
+    donors,
+  });
   return new Response(body, {
     headers: {
       "Content-Type": "application/json",

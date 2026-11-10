@@ -183,6 +183,9 @@
   .ace-pick-link{ display:block; margin-top:0.9rem; width:max-content; font-weight:700; color:#ff5c39; border-bottom:2px solid currentColor; padding-bottom:2px; }
   .ace-pick-more{ background:transparent; box-shadow:inset 0 0 0 2px rgba(249,247,242,0.18); border:0; }
   .ace-stats-two{ grid-template-columns:repeat(2,minmax(0,1fr)); max-width:820px; }
+  .ace-stats.ace-stats-three{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+  @media (max-width:860px){ .ace-stats.ace-stats-three{ grid-template-columns:1fr; } }
+  .ace-vision{ margin-top:clamp(2.4rem,5vw,3.6rem); max-width:30ch; font-family:var(--font-display); font-weight:800; font-size:clamp(1.5rem,2.8vw,2.2rem); line-height:1.15; letter-spacing:-0.02em; }
   @media (max-width:480px){ .ace-stats-two{ grid-template-columns:1fr; } }
   .ace-later{ display:block; margin-top:clamp(2.6rem,5vw,3.6rem); }
   .ace-later + .ace-groups{ margin-top:1.2rem; }
@@ -519,21 +522,21 @@ fill="currentColor" stroke="none">
     <span class="ace-cue" aria-hidden="true"></span>
   </section>
 
-  <!-- 2. WHERE WE START: the history we already share -->
+  <!-- 2. WHY ACE: what the club brings, and the vision we build on it -->
   <section class="band tint">
     <div class="wrap">
       <div class="ace-head" data-m="stagger">
         <hr class="tick orange">
-        <span class="eyebrow orange">How it started</span>
-        <h2 class="serif statement">ACE was with us <em class="italic" style="color:var(--orange)">early.</em></h2>
-        <p class="prose">It started with ACE making room for us.</p>
+        <span class="eyebrow orange">Why ACE</span>
+        <h2 class="serif statement">The courts. The community. <em class="italic" style="color:var(--orange)">The know-how.</em></h2>
+        <p class="prose">Adaptive pickleball grows where courts, people and experience already are. ACE has all three, and it was with us early: a table at its tournament in August, then the crew&rsquo;s first night in November.</p>
       </div>
-      <ol class="ace-story" data-m="seq">
-        <li><b>August 2026</b><span>ACE Des Plaines posted that it is proud to support adaptive pickleball.</span></li>
-        <li><b>August 22 and 23</b><span>ACE gave us an info table, and room for a sport chair, at its tournament.</span></li>
-        <li><b>The recap</b><span>Our video from that tournament drew about 3,000 views across Instagram and Facebook.</span></li>
-        <li class="lit"><b>November 2026</b><span>The first night for Chicago Pickleball: Wheelie Big Dills at ACE. Athletes mixed into open play with members, and some came back that weekend to practice.</span></li>
-      </ol>
+      <dl class="ace-stats ace-stats-three" data-m="seq">
+        <div><dt><span data-count="13">13</span> indoor courts</dt><dd>Cushioned courts, with room for the crew and open play on the same night.</dd></div>
+        <div><dt>Members who show up</dt><dd>Open play where athletes and members play side by side, from the very first night.</dd></div>
+        <div><dt>Events that run</dt><dd>A club that already hosts tournaments, the experience the Chicago Classic needs.</dd></div>
+      </dl>
+      <p class="ace-vision" data-m="up">Together, we&rsquo;re building adaptive pickleball in the Chicago area that is <em class="italic" style="color:var(--orange)">easier to start, easier to afford, and built to last.</em></p>
     </div>
   </section>
 

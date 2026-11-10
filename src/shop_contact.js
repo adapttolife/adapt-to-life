@@ -426,9 +426,9 @@ async function send(env, msg, label) {
 // message, and a sweep is a way to survive an outage without noticing it.
 //
 // Its own tab, not the curated People tab. That is the standing rule for this
-// sheet (scripts/beehiiv-crm-sync.py states it: automation proposes, a person
-// curates) — a shop question is not yet a relationship, and pouring machine
-// rows into the tab a human maintains by hand is how a CRM stops being trusted.
+// sheet (automation proposes, a person curates): a shop question is not yet a
+// relationship, and pouring machine rows into the tab a human maintains by
+// hand is how a CRM stops being trusted.
 // ---------------------------------------------------------------------------
 const CRM_HEADER = [
   "Date",

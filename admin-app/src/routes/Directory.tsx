@@ -1196,7 +1196,9 @@ export function Directory({ onFail }: { onFail: () => void }) {
           phone: String(data.get("phone") || ""),
           enabled: true,
           sendInvitation: true,
-          topicIds: data.getAll("topic_ids").map(String),
+          // While groups could not load, the picker is empty; omit topicIds
+          // so the save leaves Resend Topic memberships untouched.
+          ...(betaGroupError ? {} : { topicIds: data.getAll("topic_ids").map(String) }),
         }),
       });
       form.reset();
@@ -1212,6 +1214,7 @@ export function Directory({ onFail }: { onFail: () => void }) {
     if (!selectedBetaTester) return;
     const form = event.currentTarget;
     const data = new FormData(form);
+    const groupsLoaded = !betaGroupError;
     const topicIds = data.getAll("topic_ids").map(String);
     try {
       await request("/admin-data/beta-testers", {
@@ -1223,7 +1226,9 @@ export function Directory({ onFail }: { onFail: () => void }) {
           phone: String(data.get("phone") || ""),
           enabled: data.get("enabled") === "on",
           sendInvitation: false,
-          topicIds,
+          // An empty picker while groups are unavailable must not opt this
+          // tester out of every Topic.
+          ...(groupsLoaded ? { topicIds } : {}),
         }),
       });
       const body = await loadBetaTesters();
@@ -1232,7 +1237,7 @@ export function Directory({ onFail }: { onFail: () => void }) {
       );
       const savedTester = {
         ...(updated || selectedBetaTester),
-        topic_ids: topicIds,
+        ...(groupsLoaded ? { topic_ids: topicIds } : {}),
       };
       setBetaTesters((testers) =>
         testers.map((tester) =>

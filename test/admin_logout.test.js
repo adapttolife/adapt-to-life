@@ -73,5 +73,6 @@ test("admin sign out revokes the server session and clears the cookie", async ()
     response.headers.get("Set-Cookie"),
     clearAdminSessionCookie({ secure: false }),
   );
+  assert.match(issued.cookie, /Max-Age=432000/);
   assert.equal(await readAdminSession(request, db, secret), null);
 });

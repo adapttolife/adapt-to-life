@@ -1,7 +1,7 @@
 import { sendMail } from "./mail-transport.js";
 
 const COOKIE = "asnm_admin";
-const SESSION_SECONDS = 60 * 60 * 12;
+const SESSION_SECONDS = 60 * 60 * 24 * 5;
 const TOKEN_MINUTES = 15;
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 

@@ -31,18 +31,61 @@ function headers(env) {
   };
 }
 
-async function resend(env, path, options = {}) {
-  const response = await fetch(`${RESEND_API}${path}`, {
-    ...options,
-    headers: headers(env),
-    signal: AbortSignal.timeout(10000),
-  });
-  const body = await response.json().catch(() => null);
-  return { response, body };
+// Resend allows 10 requests per second per team. Every admin page load asks
+// for each beta tester's Topics, so requests are paced below that limit and a
+// 429 is retried after the delay Resend reports.
+const RESEND_MIN_INTERVAL_MS = 125;
+const RESEND_MAX_RETRIES = 3;
+const RESEND_MAX_RETRY_DELAY_MS = 5000;
+
+const realSleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+function createPacer(minIntervalMs, sleep) {
+  let nextStart = 0;
+  return async () => {
+    const now = Date.now();
+    const start = Math.max(now, nextStart);
+    nextStart = start + minIntervalMs;
+    if (start > now) await sleep(start - now);
+  };
 }
 
-export async function listResendTopics(env) {
-  const { response, body } = await resend(env, "/topics");
+const defaultPacer = createPacer(RESEND_MIN_INTERVAL_MS, realSleep);
+
+function retryDelayMs(response, attempt) {
+  for (const name of ["retry-after", "ratelimit-reset"]) {
+    const raw = response.headers.get(name);
+    if (raw == null || raw.trim() === "") continue;
+    const seconds = Number(raw);
+    if (Number.isFinite(seconds) && seconds >= 0) {
+      return Math.min(Math.max(seconds * 1000, 250), RESEND_MAX_RETRY_DELAY_MS);
+    }
+  }
+  return Math.min(500 * 2 ** attempt, RESEND_MAX_RETRY_DELAY_MS);
+}
+
+async function resend(env, path, options = {}, pacing = {}) {
+  const pace = pacing.pace || defaultPacer;
+  const sleep = pacing.sleep || realSleep;
+  for (let attempt = 0; ; attempt += 1) {
+    await pace();
+    const response = await fetch(`${RESEND_API}${path}`, {
+      ...options,
+      headers: headers(env),
+      signal: AbortSignal.timeout(10000),
+    });
+    if (response.status === 429 && attempt < RESEND_MAX_RETRIES) {
+      await response.body?.cancel();
+      await sleep(retryDelayMs(response, attempt));
+      continue;
+    }
+    const body = await response.json().catch(() => null);
+    return { response, body };
+  }
+}
+
+export async function listResendTopics(env, pacing) {
+  const { response, body } = await resend(env, "/topics", {}, pacing);
   if (!response.ok) throw errorFor(response, "load beta tester groups", body);
 
   return topicEntries(body)
@@ -50,10 +93,12 @@ export async function listResendTopics(env) {
     .map((topic) => ({ id: topic.id, name: String(topic.name || topic.id) }));
 }
 
-export async function topicsForContact(env, email) {
+export async function topicsForContact(env, email, pacing) {
   const { response, body } = await resend(
     env,
     `/contacts/${encodeURIComponent(email)}/topics`,
+    {},
+    pacing,
   );
   if (response.status === 404) return [];
   if (!response.ok) {
@@ -108,14 +153,33 @@ export async function setContactTopics(env, email, topicIds) {
   if (!response.ok) throw errorFor(response, "update beta tester groups", body);
 }
 
-export async function betaTesterTopicGroups(env, testers) {
-  const topics = await listResendTopics(env);
-  const memberships = await Promise.all(
-    testers.map(async (tester) => [
-      String(tester.email).toLowerCase(),
-      await topicsForContact(env, String(tester.email)),
-    ]),
-  );
+const MEMBERSHIP_CONCURRENCY = 4;
+
+async function mapWithConcurrency(items, limit, fn) {
+  const results = new Array(items.length);
+  let next = 0;
+  const worker = async () => {
+    while (next < items.length) {
+      const index = next;
+      next += 1;
+      results[index] = await fn(items[index]);
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+  return results;
+}
+
+export async function betaTesterTopicGroups(env, testers, pacing) {
+  const topics = await listResendTopics(env, pacing);
+  const emails = [
+    ...new Set(testers.map((tester) => String(tester.email).toLowerCase())),
+  ];
+  const memberships = topics.length
+    ? await mapWithConcurrency(emails, MEMBERSHIP_CONCURRENCY, async (email) => [
+        email,
+        await topicsForContact(env, email, pacing),
+      ])
+    : emails.map((email) => [email, []]);
   const idsByEmail = Object.fromEntries(memberships);
 
   return {

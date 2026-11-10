@@ -156,13 +156,18 @@ test("equipment stays out of the goal and the Road, and the chair number is Alec
   for (const html of [fund, crew, s6]) assert.ok(!html.includes("$5,300"));
 });
 
-test("the club's court time: $10 a night for 10 athletes, 52 nights, never named on a page", () => {
+test("the club's court time: $10 a night for 10 athletes, 52 nights, never named on a page except /ace", () => {
   // Alec, Nov 7 2026: the drop in is $15, we pay $5, the club gives $10. "Just
   // keep it average": 10 athletes a week for 52 weeks.
   assert.equal(YEAR_INKIND, 10 * 10 * 52);
   // The /numbers ledger says "a partner club", never the club's name.
   assert.ok(read("public/numbers.html").includes('<span class="nb-ledger-k">Court time<small>From a partner club</small></span>'));
-  for (const f of ["public/js/campaigns.js", "src/partials/campaign-module.html", "public/ace.html", "public/numbers.html"]) {
+  // Alec, Nov 10 2026: /ace is the one page that names ACE's $5, because it is
+  // the page for ACE itself. Sponsors still give at the full $15 there.
+  const ace = read("public/ace.html");
+  assert.ok(ace.includes("ACE charges us $5, giving the other $10 back to the athletes"));
+  assert.ok(ace.includes("Sponsors give at the full $15, so $225 covers a night"));
+  for (const f of ["public/js/campaigns.js", "src/partials/campaign-module.html", "public/numbers.html"]) {
     const t = read(f);
     assert.ok(!/\$10 (an|a|per) (athlete|person|drop)/i.test(t), f + " names the rate");
     assert.ok(!/\$5 (an|a|per) (athlete|person|drop)/i.test(t), f + " names what we pay");

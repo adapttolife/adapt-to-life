@@ -79,12 +79,12 @@
     .ace-kicker{ font-size:0.74rem; letter-spacing:0.18em; gap:0.7rem; }
     .ace-kicker::before{ width:1.6rem; }
   }
-  .bh-x{ --ball:#DFF23D; flex:none; width:clamp(40px,4vw,56px); height:auto; overflow:visible; filter:drop-shadow(0 0 8px rgba(223,242,61,0.22)); }
+  .bh-x{ --ball:#ED0973; flex:none; width:clamp(40px,4vw,56px); height:auto; overflow:visible; filter:drop-shadow(0 0 10px rgba(237,9,115,0.35)); }
   @media (max-width:520px){ .bh-x{ width:34px; } }
   .bh-x path{ fill:none; stroke-linecap:round; stroke-dasharray:1; stroke-dashoffset:0; }
   .bh-x-spray path{ stroke:var(--ball); stroke-width:16; opacity:0.6; }
   .bh-x-paint path{ stroke:var(--ball); stroke-width:11; }
-  .bh-x-shine path{ stroke:#FCFFE6; stroke-width:2.4; opacity:0.6; }
+  .bh-x-shine path{ stroke:#FFD6E8; stroke-width:2.4; opacity:0.6; }
   @keyframes bh-paint{ to{ stroke-dashoffset:0; } }
   @keyframes ace-rise{ from{ opacity:0; transform:translateY(18px); } to{ opacity:1; transform:none; } }
   @keyframes ace-lift{ from{ transform:translateY(26px); } to{ transform:none; } }
@@ -110,29 +110,37 @@
   @media (prefers-reduced-motion: reduce){ .ace-hero-photo img{ animation:none; } }
 
   /* ---- 2. Why ACE: one photograph, one big line, three pillars ---------- */
-  .ace-why{ position:relative; overflow-x:clip; background:var(--night); color:var(--cream); padding-bottom:var(--pad); }
+  .ace-why{ --ace-blue:#3EC3F1; --ace-pink:#ED0973; position:relative; overflow-x:clip; background:#000; color:var(--cream); padding-bottom:var(--pad); }
   .ace-why-photo{ position:relative; margin:0; }
   .ace-why-photo img{ display:block; width:100%; height:auto; aspect-ratio:4/5; object-fit:cover; object-position:62% 30%; }
-  .ace-why-photo::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, var(--night) 0%, rgba(23,21,19,0) 18%, rgba(23,21,19,0) 42%, rgba(23,21,19,0.82) 74%, var(--night) 100%); }
+  .ace-why-photo::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, #000 0%, rgba(0,0,0,0) 18%, rgba(0,0,0,0) 42%, rgba(0,0,0,0.82) 74%, #000 100%); }
   .ace-why-head{ position:relative; z-index:1; margin-top:clamp(-12rem,-34vw,-7rem); }
-  .ace-why-head .eyebrow{ color:var(--orange); }
+  .ace-why-head .eyebrow{ color:var(--ace-blue); }
   .ace-why-line{ margin-top:0.8rem; max-width:14ch; font-family:var(--font-display); font-weight:900; font-size:clamp(2.6rem,9.5vw,6.4rem); line-height:0.95; letter-spacing:-0.035em; color:var(--cream); text-shadow:0 6px 40px rgba(0,0,0,0.45); }
-  .ace-why-line em{ display:block; color:var(--orange); }
+  .ace-why-line em{ display:block; color:var(--ace-pink); }
+  /* ACE's own split stripe, blue into pink, with our orange at the end: ACE x ATL */
+  .ace-stripe{ display:flex; height:12px; margin:clamp(1.8rem,4vw,2.6rem) calc(-1 * var(--gutter)) 0; }
+  .ace-stripe i{ display:block; transform:skewX(-28deg); }
+  .ace-stripe i:nth-child(1){ flex:5; background:var(--ace-blue); margin-left:-12px; }
+  .ace-stripe i:nth-child(2){ flex:4; background:var(--ace-pink); margin-left:6px; }
+  .ace-stripe i:nth-child(3){ flex:1.2; background:var(--orange); margin:0 -12px 0 6px; }
   .ace-pillars{ display:grid; grid-template-columns:minmax(0,1fr); gap:clamp(1.8rem,4vw,2.4rem); margin:clamp(2.8rem,7vw,4.5rem) 0 0; }
-  .ace-pillars > div{ border-top:2px solid var(--orange); padding-top:1.1rem; }
-  .ace-pillars dt{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(2.8rem,8vw,4.6rem); line-height:0.9; letter-spacing:-0.04em; color:var(--orange); }
+  .ace-pillars > div{ --c:var(--ace-blue); border-top:3px solid var(--c); padding-top:1.1rem; }
+  .ace-pillars > div:nth-child(2){ --c:var(--ace-pink); }
+  .ace-pillars dt{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(2.8rem,8vw,4.6rem); line-height:0.9; letter-spacing:-0.04em; color:var(--c); }
   .ace-pillars dd{ margin:0.7rem 0 0; max-width:26ch; font-size:clamp(1.05rem,1.6vw,1.2rem); line-height:1.5; color:var(--cream-mute); }
   .ace-pillars dd b{ color:var(--cream); font-weight:700; }
   .ace-since{ margin-top:clamp(2.6rem,6vw,4rem); max-width:34ch; font-family:var(--font-display); font-weight:700; font-size:clamp(1.3rem,2.4vw,1.8rem); line-height:1.3; letter-spacing:-0.015em; color:var(--cream); }
   .ace-since em{ color:var(--orange); }
+  .ace-since{ color:var(--cream); }
   .ace-find{ margin-top:2.4rem; padding-top:1.1rem; border-top:1px solid rgba(249,247,242,0.14); font-size:0.88rem; line-height:1.9; color:var(--cream-mute); }
-  .ace-find a{ display:inline-flex; align-items:center; gap:0.2rem; margin-right:0.9rem; color:var(--cream); font-weight:600; border-bottom:1px solid rgb(var(--accent-rgb) / 0.6); }
-  .ace-find a:hover{ color:var(--orange); }
+  .ace-find a{ display:inline-flex; align-items:center; gap:0.2rem; margin-right:0.9rem; color:var(--cream); font-weight:600; border-bottom:1px solid var(--ace-blue); }
+  .ace-find a:hover{ color:var(--ace-blue); }
   .ace-find .arrow svg{ width:0.8em; height:0.8em; }
   .ace-find > span{ display:none; }
   @media (min-width:900px){
     .ace-why-photo img{ aspect-ratio:auto; height:min(88vh, 860px); object-position:60% 30%; }
-    .ace-why-photo::after{ background:linear-gradient(180deg, var(--night) 0%, rgba(23,21,19,0) 16%, rgba(23,21,19,0) 50%, rgba(23,21,19,0.85) 82%, var(--night) 100%), linear-gradient(90deg, rgba(23,21,19,0.75) 0%, rgba(23,21,19,0) 48%); }
+    .ace-why-photo::after{ background:linear-gradient(180deg, #000 0%, rgba(0,0,0,0) 16%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.85) 82%, #000 100%), linear-gradient(90deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0) 48%); }
     .ace-why-head{ margin-top:-15rem; }
     .ace-pillars{ grid-template-columns:repeat(3, minmax(0,1fr)); gap:clamp(2rem,4vw,3.5rem); }
   }
@@ -141,7 +149,7 @@
   .ace-grow{ background:var(--paper); overflow-x:clip; padding-top:48px; }
   .ace-mini{ display:flex; align-items:center; gap:0.55rem; height:30px; color:var(--night); }
   .ace-mini .bh-atl{ height:30px; width:auto; color:var(--night); filter:none; animation:none; }
-  .ace-mini-x{ font-family:var(--font-display); font-weight:800; font-size:1.1rem; line-height:1; color:var(--orange-ink); }
+  .ace-mini-x{ font-family:var(--font-display); font-weight:800; font-size:1.1rem; line-height:1; color:#C4075F; }
   .ace-mini img{ height:28px; width:auto; }
   .ace-grow-head .eyebrow{ display:block; margin-top:1.1rem; }
   .ace-grow-head .display{ max-width:11ch; margin-top:0.5rem; font-size:clamp(40px,11vw,88px); }
@@ -505,6 +513,7 @@ fill="currentColor" stroke="none">
         <span class="eyebrow orange">Why ACE</span>
         <h2 class="ace-why-line">Every athlete needs a home court. <em class="italic">ACE opened its doors.</em></h2>
       </div>
+      <div class="ace-stripe" aria-hidden="true"><i></i><i></i><i></i></div>
       <dl class="ace-pillars" data-m="up">
         <div><dt><span data-count="13" data-from="1" data-dur="600">13</span> courts</dt><dd>Indoor and cushioned, with <b>one reserved for the crew</b> every week.</dd></div>
         <div><dt>Members</dt><dd>Who <b>play side by side</b> with the athletes in open play.</dd></div>

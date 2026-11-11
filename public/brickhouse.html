@@ -88,10 +88,10 @@
     .bh-hero{ --fh:min(66svh, 600px); display:block; min-height:0; padding:0 0 clamp(2.6rem,7vh,3.4rem); }
     .bh-hero::before, .bh-hero::after{ display:none; }
     .bh-hero-grid{ display:flex; flex-direction:column; gap:0; }
-    .bh-film{ order:-1; width:auto; height:var(--fh); aspect-ratio:auto; margin:0 calc(-1 * var(--gutter)); border-radius:0; box-shadow:none; }
+    .bh-film{ order:-1; align-self:stretch; width:calc(100% + 2 * var(--gutter)); height:var(--fh); aspect-ratio:auto; margin:0 calc(-1 * var(--gutter)); border-radius:0; box-shadow:none; }
     .bh-film video{ object-position:50% 42%; }
     .bh-film::after{ box-shadow:none; background:
-        linear-gradient(to top, rgba(23,21,19,0.96) 0%, rgba(23,21,19,0.6) 26%, rgba(23,21,19,0) 52%),
+        linear-gradient(to top, var(--night) 0%, rgba(23,21,19,0.88) 12%, rgba(23,21,19,0.6) 28%, rgba(23,21,19,0) 52%),
         linear-gradient(to bottom, rgba(23,21,19,0.6) 0%, rgba(23,21,19,0) 20%); }
     .bh-hero-copy{ position:relative; z-index:1; margin-top:calc(var(--fh) * -0.24); }
     .bh-duo{ gap:0.8rem; margin-top:1rem; }
@@ -106,7 +106,7 @@
   /* 2. Why Brick House: their colours, one photo, one line, three pillars. */
   .bh-why{ position:relative; overflow-x:clip; background:var(--night); color:var(--cream); padding-bottom:var(--pad); }
   .bh-why-photo{ position:relative; margin:0; }
-  .bh-why-photo img{ display:block; width:100%; height:auto; aspect-ratio:4/5; object-fit:cover; object-position:34% 50%; }
+  .bh-why-photo img{ display:block; width:100%; height:auto; aspect-ratio:1/1; object-fit:cover; object-position:30% 50%; }
   .bh-why-photo::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, var(--night) 0%, rgba(23,21,19,0) 12%, rgba(23,21,19,0) 55%, rgba(23,21,19,0.82) 80%, var(--night) 100%); }
   .bh-why-head{ position:relative; z-index:1; margin-top:clamp(-11rem,-30vw,-7rem); }
   .bh-why-line{ margin-top:0.9rem; max-width:14ch; font-family:var(--font-display); font-weight:900; font-size:clamp(2.6rem,9.5vw,6.4rem); line-height:0.95; letter-spacing:-0.035em; color:var(--cream); text-shadow:0 6px 40px rgba(0,0,0,0.45); }
@@ -126,7 +126,7 @@
   .bh-pillars dt{ margin-top:1.1rem; font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(2.3rem,7vw,3.3rem); line-height:0.92; letter-spacing:-0.04em; color:var(--cream); }
   .bh-pillars dd{ margin:0.6rem 0 0; max-width:30ch; font-size:1.05rem; line-height:1.5; color:var(--cream); }
   .bh-pillars dd b{ font-weight:800; }
-  .bh-since{ margin-top:clamp(2.4rem,6vw,3.6rem); max-width:22ch; font-family:var(--font-display); font-weight:800; font-size:clamp(1.6rem,3vw,2.3rem); line-height:1.15; letter-spacing:-0.025em; color:var(--cream); }
+  .bh-since{ margin-top:clamp(2.4rem,6vw,3.6rem); max-width:24ch; font-family:var(--font-display); font-weight:800; font-size:clamp(1.6rem,3vw,2.3rem); line-height:1.15; letter-spacing:-0.025em; color:var(--cream); text-wrap:balance; }
   .bh-since em{ color:var(--bh-gold); }
   @media (min-width:900px){
     .bh-why-photo img{ aspect-ratio:21/9; max-height:min(88vh, 860px); object-position:50% 55%; }
@@ -185,7 +185,7 @@
   .bh-reel-grid{ display:grid; gap:clamp(1.6rem,4vw,2.4rem); padding-top:var(--pad); }
   .bh-reelband .bh-eyebrow{ color:var(--cream); }
   .bh-reelband .bh-eyebrow::before{ background:var(--bh-gold); }
-  .bh-poster{ position:relative; display:block; width:min(78vw, 340px); aspect-ratio:9/16; border-radius:6px; overflow:hidden; background:var(--night); box-shadow:0 0 0 1px rgba(249,247,242,0.22), 0 40px 80px -30px rgba(15,14,13,0.75); }
+  .bh-poster{ position:relative; display:block; width:min(64vw, 300px); aspect-ratio:9/16; border-radius:6px; overflow:hidden; background:var(--night); box-shadow:0 0 0 1px rgba(249,247,242,0.22), 0 40px 80px -30px rgba(15,14,13,0.75); }
   .bh-poster img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; transition:transform .5s var(--ease); }
   .bh-poster::after{ content:""; position:absolute; inset:0; background:linear-gradient(to top, rgba(23,21,19,0.45), rgba(23,21,19,0) 40%); }
   .bh-play{ position:absolute; z-index:1; left:50%; top:50%; width:56px; height:56px; transform:translate(-50%,-50%); color:var(--cream); filter:drop-shadow(0 6px 20px rgba(15,14,13,0.55)); transition:transform .2s var(--ease); }
@@ -225,7 +225,7 @@
   @keyframes bh-lay{ from{ opacity:0; transform:translateY(12px); } to{ opacity:1; transform:none; } }
   @media (prefers-reduced-motion: reduce){ .bh-wall.in .bk{ animation:none; } }
   .bh-find{ margin:2.2rem auto 0; max-width:40ch; padding-top:1.1rem; border-top:1px solid rgba(249,247,242,0.14); font-size:0.9rem; line-height:1.7; color:var(--cream-mute); }
-  .bh-find a{ display:inline-flex; align-items:center; gap:0.2rem; color:var(--cream); font-weight:600; border-bottom:1px solid var(--orange); }
+  .bh-find a{ display:inline-flex; margin-top:0.2rem; align-items:center; gap:0.2rem; color:var(--cream); font-weight:600; border-bottom:1px solid var(--orange); }
   .bh-find .arrow svg{ width:0.8em; height:0.8em; }
   .bh-model{ margin-top:1.2rem; }
   .bh-model .textlink{ color:var(--cream); }
@@ -544,14 +544,14 @@ fill="currentColor" stroke="none">
             <span class="bk n" style="--i:2"></span>
             <span class="bk ph" style="--i:3; --img:url('/images/brickhouse/bh-courts.webp'); --pos:50% 55%"></span>
             <span class="bk dk" style="--i:4"></span>
-            <span class="bk ph dk" style="--i:5; --img:url('/images/brickhouse/push.webp'); --pos:50% 35%"></span>
+            <span class="bk n dk" style="--i:5"></span>
           </div>
           <div class="bh-course">
             <span class="bk h n" style="--i:6"></span>
             <span class="bk" style="--i:7"></span>
             <span class="bk ph" style="--i:8; --img:url('/images/brickhouse/bh-across.webp'); --pos:50% 55%"></span>
             <span class="bk o" style="--i:9"></span>
-            <span class="bk n dk" style="--i:10"></span>
+            <span class="bk ph dk" style="--i:10; --img:url('/images/brickhouse/push.webp'); --pos:50% 35%"></span>
             <span class="bk dk" style="--i:11"></span>
             <span class="bk h" style="--i:12"></span>
           </div>
@@ -570,7 +570,7 @@ fill="currentColor" stroke="none">
         <div class="actions">
           <a href="/donate" class="btn">Donate</a>
         </div>
-        <p class="bh-find">28457 Ballard Drive, Unit H, Lake Forest, IL 60045 &middot; <a href="https://www.google.com/maps/search/?api=1&amp;query=Brick+House+Pickleball+28457+Ballard+Drive+Unit+H+Lake+Forest+IL+60045" target="_blank" rel="noopener">Directions <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external" data-style="bold"><path fill="currentColor" d="M204 64v104a12 12 0 0 1-24 0V93L72.49 200.49a12 12 0 0 1-17-17L163 76H88a12 12 0 0 1 0-24h104a12 12 0 0 1 12 12"/></svg></span></a></p>
+        <p class="bh-find">28457 Ballard Drive, Unit H, Lake Forest, IL 60045<br><a href="https://www.google.com/maps/search/?api=1&amp;query=Brick+House+Pickleball+28457+Ballard+Drive+Unit+H+Lake+Forest+IL+60045" target="_blank" rel="noopener">Directions <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external" data-style="bold"><path fill="currentColor" d="M204 64v104a12 12 0 0 1-24 0V93L72.49 200.49a12 12 0 0 1-17-17L163 76H88a12 12 0 0 1 0-24h104a12 12 0 0 1 12 12"/></svg></span></a></p>
         <p class="bh-model"><a class="textlink" href="/sponsorship#clubs">The Home Court Model <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a></p>
       </div>
     </div>

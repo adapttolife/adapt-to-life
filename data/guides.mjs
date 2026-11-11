@@ -82,7 +82,7 @@ export const GUIDES = {
     ],
     body: `
       <h2 class="serif h2">Who you&rsquo;d be sponsoring</h2>
-      <p><a href="/pickleball">Chicago Pickleball: Wheelie Big Dills</a> is a crew of wheelchair pickleball players in the Chicago area, and Adapt To Life is proud to fund and support them. Two of them have played three straight US Opens. At Monster Smash in October 2026 they brought home <a href="/events/monster-smash-2026">six medals</a>. Their first ambassador, <a href="/juan">Juan Ortiz</a>, asked the APP Tour for its <a href="/events/app-vlasic-classic-2026">first wheelchair division</a>, and got it.</p>
+      <p><a href="/pickleball">Chicago Pickleball: Wheelie Big Dills</a> is a crew of wheelchair pickleball players in the Chicago area, and Adapt To Life is proud to fund and support them. Brian Liss has won silver and bronze at the US Open, and Robby Wolf has played the last three. At Monster Smash in October 2026 they brought home <a href="/events/monster-smash-2026">six medals</a>. Their first ambassador, <a href="/juan">Juan Ortiz</a>, asked the APP Tour for its <a href="/events/app-vlasic-classic-2026">first wheelchair division</a>, and got it.</p>
 
       <h2 class="serif h2">What a sponsorship pays for</h2>
       <ul class="es-list">
@@ -97,7 +97,7 @@ export const GUIDES = {
 
       <h2 class="serif h2">What you get back</h2>
       <ul class="es-list">
-        <li><b>Reach:</b> about 334,000 views in 90 days across Instagram and Facebook. On Instagram, more than 9 in 10 views came from people who don&rsquo;t follow us yet.</li>
+        <li><b>Your name, seen by new people:</b> about 334,000 views in 90 days on Instagram and Facebook, and more than 9 in 10 Instagram views come from people who don&rsquo;t follow us yet.</li>
         <li><b>Content:</b> video and athlete spotlights with your name on them. Our Monster Smash spotlights drew more than 38,000 views.</li>
         <li><b>Proof, every month:</b> a short recap with attendance, views and results.</li>
       </ul>

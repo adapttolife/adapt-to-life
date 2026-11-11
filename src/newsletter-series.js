@@ -115,14 +115,14 @@ export const SAVED_FOR_LATER = [
   {
     key: "crew",
     day: 5,
-    subject: "Three straight US Opens",
+    subject: "Two US Open medals",
     preheader: "What the crew has done, and the ambassador behind it.",
     image: {
       src: "/images/email/welcome-juan-v1.jpg",
       alt: "Juan Ortiz celebrates on court in a Chicago Adaptive Sports shirt.",
     },
     paragraphs: [
-      "Robby and Brian have each played the US Open in Naples the last three years.",
+      "Brian Liss has won silver and bronze at the US Open in Naples. Robby Wolf has played the US Open in Naples the last three years.",
       "In October the crew brought home six medals from Monster Smash: two golds, two silvers and two bronzes in the wheelchair division.",
       "And when Juan Ortiz asked the APP Tour for a wheelchair division, they made one. Juan was paralyzed at 14, is a Hall of Famer in wheelchair softball and trains 16 hours a week. He is our first ambassador.",
       "Brian put it this way: “The chair didn’t fix me. It gave me options I didn’t have before.”",

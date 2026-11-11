@@ -205,12 +205,12 @@
   /* The record, said once */
   .pb-proof{ position:relative; isolation:isolate; overflow:hidden; padding:clamp(2.6rem,5vw,3.6rem) 0; }
   .pb-proof::before{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 60% 120% at 50% 0%, rgba(255,92,57,0.16) 0%, transparent 70%); }
-  .pb-proof-list{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(1.2rem,2.6vw,2rem); }
+  .pb-proof-list{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(1.2rem,2.6vw,2rem); }
   .pb-proof-list li{ border-top:3px solid var(--yellow); padding-top:1rem; }
   .pb-proof-num{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(2.6rem,5vw,3.8rem); line-height:0.95; letter-spacing:-0.04em; color:var(--yellow); }
   .pb-proof-label{ margin-top:0.35rem; font-family:var(--font-display); font-weight:800; font-size:clamp(1.05rem,1.6vw,1.2rem); color:var(--cream); letter-spacing:-0.01em; }
   .pb-proof-cap{ margin-top:0.45rem; color:var(--cream-mute); line-height:1.5; font-size:0.95rem; }
-  @media (max-width:900px){ .pb-proof-list{ grid-template-columns:1fr 1fr; } }
+  @media (max-width:900px){ .pb-proof-list{ grid-template-columns:1fr; } }
   @media (max-width:520px){ .pb-proof-list{ grid-template-columns:1fr; } }
   /* What we're building: three levels */
   .pb-levels{ list-style:none; margin:clamp(2rem,4vw,3rem) 0 0; padding:0; display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(1rem,2.2vw,1.4rem); }
@@ -513,24 +513,19 @@ fill="currentColor" stroke="none">
     <div class="wrap">
       <ul class="pb-proof-list" data-m="stagger">
         <li>
-          <p class="pb-proof-num"><span data-count="3">3</span></p>
-          <p class="pb-proof-label">straight US Opens</p>
-          <p class="pb-proof-cap">Robby and Brian have each played the US Open in Naples the last three years.</p>
-        </li>
-        <li>
           <p class="pb-proof-num"><span data-count="6">6</span></p>
           <p class="pb-proof-label">medals at Monster Smash</p>
           <p class="pb-proof-cap">Two golds, two silvers and two bronzes in the wheelchair division, October 2026.</p>
         </li>
         <li>
+          <p class="pb-proof-num"><span data-count="2">2</span></p>
+          <p class="pb-proof-label">US Open medals</p>
+          <p class="pb-proof-cap">Brian won silver and bronze at the US Open in Naples.</p>
+        </li>
+        <li>
           <p class="pb-proof-num">1st</p>
           <p class="pb-proof-label">wheelchair division on the APP Tour</p>
           <p class="pb-proof-cap">Juan asked the APP Vlasic Classic for one, and five full teams played it.</p>
-        </li>
-        <li>
-          <p class="pb-proof-num">334K</p>
-          <p class="pb-proof-label">views in 90 days</p>
-          <p class="pb-proof-cap">About 334,000 across Instagram and Facebook. On Instagram, more than 9 in 10 views came from people who don&rsquo;t follow us yet.</p>
         </li>
       </ul>
     </div>
@@ -556,7 +551,7 @@ fill="currentColor" stroke="none">
         <li class="pb-card" id="brian">
           <img src="/images/pickleball/brian.webp" alt="Brian reaching out to hit a forehand, the ball in front of him" width="952" height="900" loading="lazy">
           <h3>Brian</h3>
-          <p>Three straight US Opens. &ldquo;The chair didn&rsquo;t fix me. It gave me options I didn&rsquo;t have before.&rdquo;</p>
+          <p>US Open silver and bronze. Six medals in all, two of them gold. &ldquo;The chair didn&rsquo;t fix me. It gave me options I didn&rsquo;t have before.&rdquo;</p>
         </li>
         <li class="pb-card" id="bob">
           <img src="/images/pickleball/bob.webp" alt="Bob holding his paddle high with the ball on it" width="552" height="900" loading="lazy">

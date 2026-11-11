@@ -134,6 +134,11 @@ const PHOTOS = {
   // photo panel, where it is sharp and he stays clear of the type.
   "brickhouse-hero": { file: "assets/photos/brickhouse-hero.jpg", pos: "58% 30%" },
 
+  // /ace (Nov 10 2026, Alec): the fist bump at the net from the page's own
+  // side-by-side strip, in colour. JLA_6040, the camera JPEG pulled from the
+  // NEF on Drive, saved at 3600px.
+  "ace-fistbump": { file: "assets/photos/ace-fistbump.jpg", pos: "46% 0%" },
+
   // Brand artwork, not a photograph: the mark rendered as an object. Both files
   // arrived with a Gemini sparkle in the corner and are cropped to exclude it.
   black: { file: "assets/art/mark-black.jpg", pos: "50% 42%" },
@@ -361,12 +366,12 @@ const CARDS = {
   // Partner club card, same split treatment as Brick House.
   ace: {
     variant: "split",
-    photo: "cap-profile-split",
+    photo: "ace-fistbump",
     size: 66,
     measure: "11ch",
-    out: "public/images/og/ace-v3-partner.jpg",
+    out: "public/images/og/ace-v4-partner.jpg",
     page: "ace.html",
-    headline: "Something Chicago <em>hasn't seen</em>.",
+    headline: "Something Chicago <em>hasn&rsquo;t seen</em>.",
   },
   volunteer: {
     ...ATHLETE,

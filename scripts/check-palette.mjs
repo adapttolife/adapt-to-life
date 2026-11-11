@@ -75,6 +75,7 @@ const LIGHT_OK = new Set([
   "f9f7f2", // off-white
   "efe8dc", // Laura's beige, the page
   "fcffe6", // artwork, not a surface: the shine on the pickleball in the partner x mark
+  "ffd6e8", // artwork: the shine on ACE's pink x mark on /ace
 ]);
 const lumOf = (r, g, b) => {
   const f = (c) => ((c /= 255) <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
@@ -190,6 +191,12 @@ const SYSTEM = {
   black: "#000000", // shadows only
 };
 const ART = new Set([
+  // ACE Pickleball Club's own brand colours, on /ace only (Alec, Nov 10 2026:
+  // "use ACE's colour scheme and not just our colours... This is ACE and ATL").
+  "3ec3f1", // ACE sky blue
+  "ed0973", // ACE pink
+  "c4075f", // ACE pink, darkened for text on light
+  "ffd6e8", // the shine on ACE's pink x mark
   "dff23d", // the pickleball in the partner x mark
   "fcffe6", // its shine
   "d9904f", // the bronze medal

@@ -197,6 +197,9 @@ const ART = new Set([
   "ed0973", // ACE pink
   "c4075f", // ACE pink, darkened for text on light
   "ffd6e8", // the shine on ACE's pink x mark
+  // Brick House's own brand colours, on /brickhouse only (Alec, Nov 11 2026)
+  "3965b1", // Brick House blue
+  "d2a62a", // Brick House gold
   "dff23d", // the pickleball in the partner x mark
   "fcffe6", // its shine
   "d9904f", // the bronze medal

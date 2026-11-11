@@ -30,31 +30,32 @@
 <link rel="stylesheet" href="/css/site.css?v=f3c06679">
 <script src="/js/attribution.js?v=dd7f55f9" defer></script>
 <style>
-  /* Brick House partner page. Told in pictures: the partnership lockup over Bob in the Brick House shirt
-     on their court, their place (open 24/7/365), ours, the two side by side, a season
-     of training and the road it serves (the US Open), and a wall with room for the
-     next partner. Uses the site's own pieces (dark bands with the orange bloom, tick +
-     eyebrow, the italic orange accent, the closing) plus one motif of its own, the brick. */
+  /* Brick House partner page: "Home court". Five rooms, one big line in each:
+     the court moving (hero), Brick House in its own colours (why), the crew at
+     home (photos and medals), one reel filmed here, and one close. It shares
+     the partner page grammar (a full bleed photo, one huge line, a partner
+     stripe, three pillars) and tells the story of a place and its moments.
+     Brick House blue and gold are theirs; orange is ours, and it is always the
+     last brick. Gold is text only on night; on blue, every word is cream. */
+  .bh-hero, .bh-why, .bh-reelband, .bh-end{ --bh-blue:#3965B1; --bh-gold:#D2A62A; }
 
-  /* 1. Hero. The partnership, said with motion: the two marks as the
-     headline, Bob in the Brick House shirt on their courts (a slow push in), and
-     directions to the courts. */
-  .bh-hero{ position:relative; isolation:isolate; overflow:hidden; padding:clamp(2.5rem,6vh,4.5rem) 0 clamp(3.5rem,8vh,6rem); }
-  .bh-hero::before{ content:""; position:absolute; inset:-12px; z-index:-2; background:url('/images/brickhouse/court-wide.webp') 50% 40%/cover no-repeat; filter:blur(2px) saturate(0.9) brightness(0.75); }
+  /* Small tracked eyebrow behind a short gold rule: Brick House's own label. */
+  .bh-eyebrow{ display:flex; align-items:center; gap:0.8rem; margin:0; font-family:var(--font-label); font-weight:800; font-size:0.78rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--bh-gold); }
+  .bh-eyebrow::before{ content:""; flex:none; width:28px; height:2px; background:currentColor; }
+
+  /* 1. Hero: the court, moving. */
+  .bh-hero{ position:relative; isolation:isolate; overflow:hidden; min-height:min(100svh, 980px); display:flex; align-items:center; padding:clamp(7rem,14vh,9rem) 0 clamp(4rem,9vh,6rem); background:var(--night); }
+  .bh-hero::before{ content:""; position:absolute; inset:-12px; z-index:-2; background:url('/images/brickhouse/court-wide.webp') 50% 40%/cover no-repeat; filter:blur(3px) saturate(0.9) brightness(0.6); }
   .bh-hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:
-      radial-gradient(ellipse 45% 60% at 74% 50%, rgba(255,92,57,0.26) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 50% at 12% 20%, rgba(255,92,57,0.1) 0%, transparent 70%),
-      linear-gradient(90deg, rgba(23,21,19,0.96) 0%, rgba(23,21,19,0.86) 45%, rgba(23,21,19,0.5) 100%); }
+      radial-gradient(ellipse 40% 55% at 76% 50%, rgba(57,101,177,0.3) 0%, transparent 70%),
+      linear-gradient(90deg, rgba(23,21,19,0.97) 0%, rgba(23,21,19,0.88) 45%, rgba(23,21,19,0.55) 100%); }
   .bh-hero-grid{ display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,0.85fr); gap:clamp(2rem,5vw,4.5rem); align-items:center; }
-  .bh-kicker{ display:flex; align-items:center; gap:0.9rem; font-family:var(--font-label); font-weight:800; font-size:0.9rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--orange); }
-  .bh-kicker::before{ content:""; width:2.2rem; height:2px; background:var(--orange); box-shadow:0 0 12px var(--orange-glow); }
-  .bh-duo{ display:flex; align-items:center; gap:clamp(1.2rem,2.6vw,2rem); margin-top:clamp(1.2rem,2.4vw,1.8rem); }
-  .bh-atl{ height:clamp(84px,9vw,118px); width:auto; color:var(--cream); filter:drop-shadow(0 6px 24px rgba(0,0,0,0.5)); }
-  .bh-bhlogo{ height:clamp(84px,9vw,118px); width:auto; filter:drop-shadow(0 6px 24px rgba(0,0,0,0.5)); }
-  /* The ×: an optic yellow mark, painted like a court line. Overspray halo,
-     a hand curved paint stroke, a thin sheen on top, and a bloom. It paints
-     itself once on load; with reduced motion it is simply there. */
-  .bh-x{ --ball:#DFF23D; flex:none; width:clamp(54px,5.6vw,74px); height:auto; overflow:visible; filter:drop-shadow(0 0 8px rgba(223,242,61,0.22)); }
+  .bh-duo{ display:flex; align-items:center; gap:clamp(1.1rem,2.4vw,1.8rem); margin-top:clamp(1.3rem,2.4vw,1.8rem); }
+  .bh-atl{ height:clamp(72px,8vw,104px); width:auto; color:var(--cream); filter:drop-shadow(0 6px 24px rgba(0,0,0,0.5)); }
+  .bh-bhlogo{ height:clamp(72px,8vw,104px); width:auto; filter:drop-shadow(0 6px 24px rgba(0,0,0,0.5)); }
+  /* The x: an optic yellow mark, painted like a court line. It paints itself
+     once on load; with reduced motion it is simply there. */
+  .bh-x{ --ball:#DFF23D; flex:none; width:clamp(48px,5vw,66px); height:auto; overflow:visible; filter:drop-shadow(0 0 8px rgba(223,242,61,0.22)); }
   .bh-x path{ fill:none; stroke-linecap:round; stroke-dasharray:1; stroke-dashoffset:0; }
   .bh-x-spray path{ stroke:var(--ball); stroke-width:16; opacity:0.6; }
   .bh-x-paint path{ stroke:var(--ball); stroke-width:11; }
@@ -67,191 +68,174 @@
     .bh-x-shine path:last-child{ animation-delay:0.87s; }
   }
   @keyframes bh-paint{ to{ stroke-dashoffset:0; } }
-  .bh-hero .display{ max-width:16ch; margin-top:clamp(1.4rem,3vw,2.2rem); font-size:clamp(2.8rem,5.6vw,5.2rem); line-height:0.98; }
-  .bh-hero .sub{ max-width:38ch; margin-top:1.2rem; color:var(--cream-mute); }
-  .bh-hero .actions{ display:flex; flex-wrap:wrap; gap:0.9rem 1rem; margin-top:1.1rem; }
-  /* A label, not a button: orange words, the same glowing divider as the logo
-     pair, then the date. No fill, no pill. */
-  .bh-when{ margin-top:1.8rem; display:flex; align-items:center; gap:0.9rem; flex-wrap:wrap; font-family:var(--font-label); font-weight:800; font-size:0.9rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--cream); }
-  .bh-when span{ display:inline-flex; align-items:center; gap:0.9rem; color:var(--orange); }
-  .bh-when span::after{ content:""; width:2px; height:1.15em; background:var(--orange); border-radius:2px; box-shadow:0 0 12px 0 var(--orange-glow); }
-  /* The moving picture: a tall frame, tilted like a card on the wall. */
-  .bh-film{ position:relative; margin:0; justify-self:center; width:min(100%, 420px, calc((100svh - 160px) * 0.6)); aspect-ratio:9/15; border-radius:22px; overflow:hidden; transform:rotate(1.5deg);
-    box-shadow:0 0 0 1px rgba(249,247,242,0.08), 0 40px 90px -24px rgba(0,0,0,0.85), 0 0 110px -10px rgb(var(--accent-rgb) / 0.45); background:#141414; }
-  .bh-film img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 40%; display:block; transform-origin:50% 42%; animation:bh-push 16s ease-in-out infinite alternate; }
-  @keyframes bh-push{ from{ transform:scale(1); } to{ transform:scale(1.07); } }
-  @media (prefers-reduced-motion: reduce){ .bh-film img{ animation:none; } }
-  .bh-film::after{ content:""; position:absolute; inset:0; background:linear-gradient(0deg, rgba(59,59,70,0.35), transparent 30%); pointer-events:none; }
-  .bh-city, .bh-hours{ font-style:normal; }
-  .bh-dot{ font-weight:inherit; }
-  @media (max-width:480px){ .bh-hero .bh-when{ flex-wrap:wrap; row-gap:0.35rem; } .bh-hours{ flex-basis:100%; } .bh-dot{ display:none; } }
-  @media (max-width:480px){ .bh-city{ display:none; } }
-  @media (max-width:480px){ .bh-when{ flex-wrap:nowrap; gap:0.6rem; font-size:0.74rem; letter-spacing:0.11em; } .bh-when span{ gap:0.6rem; white-space:nowrap; } }
-  @media (max-width:900px){
-    /* Phones: a poster. The film runs edge to edge; the two marks sit on the
-       plain block wall above the player; the words follow below. */
-    .bh-hero{ padding:0 0 clamp(2.5rem,7vh,3.5rem); }
-    .bh-hero{ background:var(--night); }
-    .bh-hero::before{ display:none; }
-    .bh-hero::after{ background: radial-gradient(ellipse 90% 22% at 30% 88%, rgba(255,92,57,0.16) 0%, transparent 70%); }
-    .bh-hero-grid{ grid-template-columns:1fr; gap:0; }
-    .bh-hero-copy{ display:contents; }
-    .bh-film, .bh-kicker, .bh-duo{ grid-row:1; grid-column:1; }
-    .bh-film{ width:100vw; max-width:none; margin-inline:calc(50% - 50vw); aspect-ratio:auto; height:min(76svh, 660px); border-radius:0; transform:none; box-shadow:none; }
-    /* The photo starts below the lockup and fades up into the dark, so the
-       marks sit on black and never on his head. */
-    .bh-film img{ top:8.6rem; height:calc(100% - 8.6rem); object-position:50% 30%; animation:none; }
-    .bh-film{ background:var(--night); }
-    .bh-film::after{ background:linear-gradient(180deg, var(--night) 0%, var(--night) 8.6rem, rgba(23,21,19,0.55) calc(8.6rem + 3.5rem), transparent calc(8.6rem + 9rem), transparent 70%, rgba(23,21,19,0.9) 90%, var(--night) 100%); }
-    .bh-kicker, .bh-duo{ position:relative; z-index:2; align-self:start; justify-self:center; }
-    .bh-kicker{ margin-top:1.3rem; font-size:0.78rem; }
-    .bh-kicker::before{ width:1.4rem; }
-    .bh-kicker::after{ content:""; width:1.4rem; height:2px; background:var(--orange); box-shadow:0 0 12px var(--orange-glow); }
-    .bh-duo{ margin-top:3.3rem; }
-    .bh-atl, .bh-bhlogo{ height:76px; }
-    .bh-x{ width:50px; }
-    /* A date label, if one is present, rides on the bottom of the film, right
-       above the headline. */
-    .bh-hero .bh-when{ order:1; position:relative; z-index:2; margin-top:-3.4rem; }
-    .bh-hero .display{ order:2; margin-top:0.7rem; font-size:clamp(2.6rem,11vw,3.4rem); }
-    .bh-hero .sub{ order:3; margin-top:1rem; }
-    .bh-hero .actions{ order:4; }
-  }
-
-  .bh-bricks{ display:block; width:100%; height:48px; background:var(--canvas); }
-
-  /* 2 + 3. Theirs and ours, each a picture first. */
-  .bh-start-head{ max-width:40ch; }
-  .bh-start-head .tick{ margin:0 0 1rem; }
-  .bh-start-head .statement{ margin-top:0.7rem; }
-  .bh-start-head .prose{ margin-top:1rem; }
-  .bh-num{ font-family:var(--font-display); font-weight:900; font-style:italic; color:var(--orange); }
-  /* Their place: three tall frames from the first session on the new courts,
-     set at different heights like pictures hung on the block wall. */
-  .bh-place{ display:grid; grid-template-columns:1.25fr 1fr 1fr; gap:clamp(0.6rem,1.4vw,1rem); align-items:start; margin-top:clamp(2rem,4vw,3rem); }
-  .bh-place img{ width:100%; height:auto; object-fit:cover; border-radius:14px; display:block; }
-  .bh-place img:nth-child(1){ aspect-ratio:4/5.6; object-position:50% 40%; }
-  .bh-place img:nth-child(2){ aspect-ratio:3/4; object-position:62% 60%; margin-top:clamp(2rem,6vw,5rem); }
-  .bh-place img:nth-child(3){ aspect-ratio:3/4.4; object-position:50% 55%; margin-top:clamp(1rem,3vw,2.2rem); }
-  @media (max-width:700px){
-    .bh-place{ grid-template-columns:1fr 1fr; }
-    .bh-place img:nth-child(1){ grid-column:span 2; aspect-ratio:4/5; }
-    .bh-place img:nth-child(2){ margin-top:0; }
-    .bh-place img:nth-child(3){ margin-top:1.6rem; aspect-ratio:3/4; }
-  }
-  /* 3. Ours: who we are, many athletes and many moments, laid out like a spread. */
-  .bh-ours{ display:grid; grid-template-columns:repeat(6,1fr); grid-auto-rows:clamp(120px,14vw,190px); gap:clamp(0.5rem,1vw,0.8rem); margin-top:clamp(2rem,4vw,3rem);
-    grid-template-areas:"a a a b c c" "a a a b d d" "e e e f f f"; }
-  .bh-ours img{ width:100%; height:100%; object-fit:cover; border-radius:12px; display:block; }
-  .bh-ours img:nth-child(1){ grid-area:a; object-position:50% 50%; }
-  .bh-ours img:nth-child(2){ grid-area:b; object-position:50% 60%; }
-  .bh-ours img:nth-child(3){ grid-area:c; object-position:50% 40%; }
-  .bh-ours img:nth-child(4){ grid-area:d; object-position:50% 70%; }
-  .bh-ours img:nth-child(5){ grid-area:e; object-position:50% 40%; }
-  .bh-ours img:nth-child(6){ grid-area:f; object-position:50% 50%; }
-  @media (max-width:700px){
-    .bh-ours{ grid-template-columns:1fr 1fr; grid-auto-rows:clamp(130px,40vw,190px); grid-template-areas:"a a" "a a" "b c" "b d" "e f"; }
-  }
-  .bh-more{ display:inline-block; margin-top:1.2rem; font-weight:700; color:var(--orange-ink); border-bottom:2px solid currentColor; padding-bottom:2px; }
-
-  /* Side by side: their court and our athletes, one line across both. */
-  .bh-side{ position:relative; display:grid; grid-template-columns:1fr 1fr; min-height:clamp(380px,46vw,620px); background:var(--ink-warm); overflow:hidden; }
-  .bh-side img{ width:100%; height:100%; object-fit:cover; display:block; }
-  .bh-side img:first-child{ object-position:50% 32%; }
-  .bh-side img:nth-child(2){ object-position:45% 40%; }
-  .bh-side::after{ content:""; position:absolute; inset:0; background:radial-gradient(ellipse 60% 70% at 50% 55%, rgba(23,21,19,0.78) 0%, rgba(59,59,70,0.45) 55%, rgba(59,59,70,0.2) 100%); }
-  .bh-side .bh-seam{ position:absolute; left:50%; top:0; bottom:0; width:3px; transform:translateX(-50%); background:var(--orange); box-shadow:0 0 22px 0 var(--orange-glow); z-index:1; }
-  .bh-together{ position:absolute; z-index:2; left:50%; top:50%; transform:translate(-50%,-50%); width:min(92%, 30ch); margin:0; text-align:center; color:var(--cream); font-family:var(--font-display); font-weight:800; font-size:clamp(1.5rem,3.4vw,2.6rem); line-height:1.12; letter-spacing:-0.025em; text-shadow:0 2px 24px rgba(0,0,0,0.7); }
-  @media (max-width:700px){
-    .bh-side{ grid-template-columns:1fr; grid-template-rows:1fr 1fr; min-height:clamp(520px,150vw,700px); }
-    .bh-side .bh-seam{ left:0; right:0; top:50%; bottom:auto; width:auto; height:3px; transform:translateY(-50%); }
-    .bh-together{ width:min(90%, 26ch); padding:1rem 1.2rem; border-radius:14px; background:rgba(23,21,19,0.82); box-shadow:0 0 0 1px rgb(var(--accent-rgb) / 0.5); }
-  }
-
-  /* On the new courts: our athletes already playing at Brick House. A dark band with
-     the bloom; three staggered columns of tall frames, like a strip of film laid
-     down twice, so it reads as a day on court and not a grid of products. */
-  .bh-on{ position:relative; isolation:isolate; overflow:hidden; }
-  .bh-on::before{ content:""; position:absolute; inset:0; z-index:-1; background:
-      radial-gradient(ellipse 55% 45% at 78% 30%, rgba(255,92,57,0.2) 0%, transparent 70%),
-      radial-gradient(ellipse 45% 40% at 10% 85%, rgba(255,92,57,0.12) 0%, transparent 70%); }
-  .bh-on .bh-start-head .statement{ color:var(--cream); }
-  .bh-on .bh-start-head .prose{ color:var(--cream-mute); }
-  .bh-reel{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(0.6rem,1.6vw,1.2rem); margin-top:clamp(2.2rem,4.5vw,3.5rem); align-items:start; }
-  .bh-reel > div{ display:flex; flex-direction:column; gap:clamp(0.6rem,1.6vw,1.2rem); }
-  .bh-reel > div:nth-child(2){ margin-top:clamp(2.5rem,7vw,6rem); }
-  .bh-reel > div:nth-child(3){ margin-top:clamp(1.2rem,3.5vw,3rem); }
-  .bh-reel img{ display:block; width:100%; height:auto; object-fit:cover; border-radius:14px; box-shadow:0 0 0 1px rgba(249,247,242,0.06), 0 24px 50px -24px rgba(0,0,0,0.8); }
-  .bh-reel .tall{ aspect-ratio:9/14; }
-  .bh-reel .mid{ aspect-ratio:4/5; }
-  .bh-reel .lead-shot{ box-shadow:0 0 0 2px var(--orange), 0 0 60px -12px rgb(var(--accent-rgb) / 0.55); }
-  @media (max-width:700px){
-    .bh-reel{ grid-template-columns:1fr 1fr; }
-    .bh-reel > div:nth-child(2){ margin-top:2.2rem; }
-    .bh-reel > div:nth-child(3){ margin-top:0; grid-column:span 2; flex-direction:row; }
-    .bh-reel > div:nth-child(3) img{ width:calc(50% - 0.3rem); }
-    .bh-reel > div:nth-child(3) img:first-child{ margin-top:-2.2rem; }
-  }
-
-  /* The road to the US Open: four stops on one orange court line, the first lit. */
-  .bh-road{ margin-top:clamp(3rem,6vw,4.5rem); }
-  .bh-road ol{ list-style:none; margin:1.2rem 0 0; padding:0; display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(1rem,2.5vw,2rem); position:relative; }
-  .bh-road ol::before{ content:""; position:absolute; left:0; right:0; top:7px; height:2px; background:linear-gradient(90deg, var(--orange), rgb(var(--accent-rgb) / 0.25)); }
-  .bh-road li{ position:relative; padding-top:1.6rem; }
-  .bh-road li::before{ content:""; position:absolute; left:0; top:0; width:16px; height:16px; border-radius:50%; background:var(--ink-warm, #141414); box-shadow:inset 0 0 0 2px rgb(var(--accent-rgb) / 0.6); }
-  .bh-road li.lit::before{ background:var(--orange); box-shadow:0 0 18px 2px var(--orange-glow); }
-  .bh-road b{ display:block; font-family:var(--font-display); font-weight:800; font-size:clamp(1.1rem,1.8vw,1.35rem); color:var(--cream); letter-spacing:-0.01em; }
-  .bh-road li.lit b{ color:#ff5c39; }
-  .bh-road span{ display:block; margin-top:0.4rem; color:var(--cream-mute); max-width:24ch; }
-  .bh-road .bh-more{ color:#ff5c39; margin-top:1.8rem; }
-  @media (max-width:700px){
-    .bh-road ol{ grid-template-columns:1fr; gap:1.4rem; padding-left:1.8rem; }
-    .bh-road ol::before{ left:7px; right:auto; top:0; bottom:0; width:2px; height:auto; background:linear-gradient(180deg, var(--orange), rgb(var(--accent-rgb) / 0.25)); }
-    .bh-road li{ padding-top:0; }
-    .bh-road li::before{ left:-1.8rem; top:0.2rem; }
-  }
-
-  /* 4. Visit the courts: a faint wall in the mortar behind the facts. */
-  .bh-open{ position:relative; isolation:isolate; overflow:hidden; }
-  .bh-open::before{ content:""; position:absolute; inset:0; z-index:-1; opacity:0.5; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='48'%3E%3Cg fill='none' stroke='%23F9F7F2' stroke-opacity='0.06'%3E%3Cpath d='M0 .5h96M0 24.5h96M.5 0v24M48.5 0v24M24.5 24v24M72.5 24v24'/%3E%3C/g%3E%3C/svg%3E"); -webkit-mask-image:linear-gradient(180deg, transparent, #000 30%, #000 70%, transparent); mask-image:linear-gradient(180deg, transparent, #000 30%, #000 70%, transparent); }
-  .bh-event{ display:grid; grid-template-columns:1fr; gap:clamp(2rem,5vw,4.5rem); align-items:start; }
-  @media (max-width:820px){ .bh-event{ grid-template-columns:1fr; } }
-  .bh-date{ position:relative; border-left:4px solid var(--orange); padding-left:clamp(1rem,2.5vw,1.6rem); }
-  .bh-date::before{ content:""; position:absolute; z-index:-1; left:-30%; top:-20%; width:150%; height:140%; background:radial-gradient(ellipse at 40% 55%, rgba(255,92,57,0.22) 0%, transparent 65%); pointer-events:none; }
-  .bh-day{ margin-top:1rem; font-weight:700; font-size:1.2rem; color:var(--cream-mute); }
-  .bh-big{ font-family:var(--font-display); font-weight:900; font-size:clamp(4.2rem,12vw,8rem); line-height:0.88; letter-spacing:-0.05em; color:var(--orange); text-shadow:0 0 42px rgb(var(--accent-rgb) / 0.35); }
-  .bh-detail .prose{ margin-top:1.1rem; max-width:52ch; }
-  .bh-facts{ margin-top:1.8rem; border-top:1px solid rgba(249,247,242,0.14); }
-  .bh-facts > div{ display:grid; grid-template-columns:6rem 1fr; gap:1rem; padding:0.95rem 0; border-bottom:1px solid rgba(249,247,242,0.14); }
-  .bh-facts dt{ font-weight:700; color:var(--cream-faint); }
-  .bh-facts dd{ color:var(--cream); }
-  .bh-actions{ display:flex; flex-wrap:wrap; gap:0.9rem 1rem; margin-top:2rem; }
-
-  /* 5. Grow together: our athletes laid as a wall, with bricks still to lay. */
-  .bh-close{ text-align:center; }
-  .bh-close .tick{ margin:0 auto 1rem; }
-  .bh-close .display{ max-width:14ch; margin:0.9rem auto 0; }
-  .bh-close .prose{ max-width:46ch; margin:1.3rem auto 0; color:var(--cream-mute); }
-  .bh-close .bh-actions{ justify-content:center; margin-top:2.2rem; }
-  .bh-wall{ display:grid; grid-template-columns:repeat(12,1fr); gap:clamp(5px,0.6vw,8px); margin:clamp(2.5rem,5vw,3.5rem) auto 0; max-width:980px; }
-  .bk{ grid-column:span 2; aspect-ratio:1.7/1; border-radius:4px; }
-  .bk.half{ grid-column:span 1; aspect-ratio:auto; }
-  .bk.o{ background:var(--orange); box-shadow:inset 0 -6px 0 rgba(0,0,0,0.14); }
-  .bk.c{ background:var(--cream); box-shadow:inset 0 -6px 0 rgba(0,0,0,0.09); }
-  .bk.ph{ background:var(--night-raised) var(--img) var(--pos, 50% 30%)/cover no-repeat; filter:grayscale(1) contrast(1.1); }
-  .bk.ph.lit{ filter:none; box-shadow:0 0 0 2px var(--orange), 0 14px 34px -12px rgb(var(--accent-rgb) / 0.6); }
-  .bk.next{ border:2px dashed rgb(var(--accent-rgb) / 0.85); background:rgb(var(--accent-rgb) / 0.07); }
-  .bh-wall.in .bk{ animation:bh-lay 0.6s cubic-bezier(.2,.7,.2,1) both; animation-delay:calc(var(--i) * 45ms); }
-  .bh-wall.in .bk.next{ animation:bh-lay 0.6s cubic-bezier(.2,.7,.2,1) both, bh-wait 2.4s ease-in-out 1.6s infinite; animation-delay:calc(var(--i) * 45ms), calc(var(--i) * 45ms + 1.4s); }
-  @keyframes bh-lay{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:none; } }
-  @keyframes bh-wait{ 0%,100%{ border-color:rgb(var(--accent-rgb) / 0.85); } 50%{ border-color:rgb(var(--accent-rgb) / 0.35); } }
-  @media (prefers-reduced-motion: reduce){ .bh-wall.in .bk, .bh-wall.in .bk.next{ animation:none; } }
-  .bh-sign{ margin-top:clamp(2.5rem,5vw,3.5rem); font-family:var(--font-display); font-weight:800; font-style:italic; font-size:clamp(1.5rem,3vw,2.2rem); letter-spacing:-0.02em; color:#ff5c39; }
-  .bh-road .bh-more .arrow{ display:inline-block; margin-top:0; max-width:none; color:inherit; }
-  .partner-links{ margin-top:1.2rem; display:flex; flex-wrap:wrap; gap:0.4rem 1.1rem; font-family:var(--font-label); font-size:0.74rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--cream-faint); }
-  .partner-links a{ color:var(--cream); text-decoration:none; border-bottom:1px solid rgba(255,92,57,0.6); display:inline-flex; align-items:center; gap:0.25rem; }
-  .partner-links a:hover{ color:var(--orange); }
+  .bh-hero .display{ max-width:15ch; margin-top:clamp(1.4rem,3vw,2.2rem); font-size:clamp(2.8rem,5.4vw,5rem); line-height:0.96; text-shadow:0 4px 40px rgba(0,0,0,0.45); }
+  .bh-hero .sub{ max-width:36ch; margin-top:1.2rem; color:var(--cream-mute); }
+  .bh-hero .actions{ display:flex; flex-wrap:wrap; gap:0.8rem 1rem; margin-top:1.6rem; }
+  /* The film: Rose's rally on their blue courts, in a tall frame with a
+     Brick House blue edge. Muted, looping, and only moving when motion is on. */
+  .bh-film{ position:relative; margin:0; justify-self:center; width:min(100%, 390px, calc((100svh - 190px) * 0.5625)); aspect-ratio:9/16; border-radius:14px; overflow:hidden;
+    background:var(--night-raised) url('/videos/links/rally-brickhouse.9b9fb227.webp') 50% 50%/cover no-repeat;
+    box-shadow:0 0 0 1px rgba(249,247,242,0.08), 0 40px 90px -24px rgba(0,0,0,0.85), 0 0 120px -20px rgba(57,101,177,0.55); }
+  .bh-film video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
+  .bh-film::after{ content:""; position:absolute; inset:0; box-shadow:inset 6px 0 0 var(--bh-blue); pointer-events:none; }
+  .partner-links{ margin-top:1.3rem; display:flex; flex-wrap:wrap; gap:0.4rem 1.1rem; font-family:var(--font-label); font-size:0.74rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--cream-faint); }
+  .partner-links a{ color:var(--cream); text-decoration:none; border-bottom:1px solid var(--bh-gold); display:inline-flex; align-items:center; gap:0.25rem; }
+  .partner-links a:hover{ color:var(--bh-gold); }
   .partner-links .arrow svg{ width:0.85em; height:0.85em; }
+  @media (max-width:900px){
+    /* Phones: the film runs edge to edge under the nav and fades into night;
+       the words come up out of the bottom of it. */
+    .bh-hero{ --fh:min(66svh, 600px); display:block; min-height:0; padding:0 0 clamp(2.6rem,7vh,3.4rem); }
+    .bh-hero::before, .bh-hero::after{ display:none; }
+    .bh-hero-grid{ display:flex; flex-direction:column; gap:0; }
+    .bh-film{ order:-1; width:auto; height:var(--fh); aspect-ratio:auto; margin:0 calc(-1 * var(--gutter)); border-radius:0; box-shadow:none; }
+    .bh-film video{ object-position:50% 42%; }
+    .bh-film::after{ box-shadow:none; background:
+        linear-gradient(to top, rgba(23,21,19,0.96) 0%, rgba(23,21,19,0.6) 26%, rgba(23,21,19,0) 52%),
+        linear-gradient(to bottom, rgba(23,21,19,0.6) 0%, rgba(23,21,19,0) 20%); }
+    .bh-hero-copy{ position:relative; z-index:1; margin-top:calc(var(--fh) * -0.24); }
+    .bh-duo{ gap:0.8rem; margin-top:1rem; }
+    .bh-atl, .bh-bhlogo{ height:58px; }
+    .bh-x{ width:40px; }
+    .bh-hero .display{ margin-top:1.1rem; font-size:clamp(2.6rem,11.4vw,3.4rem); }
+    .bh-hero .sub{ margin-top:0.9rem; }
+    .bh-hero .actions{ flex-direction:column; align-items:stretch; margin-top:1.4rem; }
+    .bh-hero .actions .btn{ justify-content:center; }
+  }
+
+  /* 2. Why Brick House: their colours, one photo, one line, three pillars. */
+  .bh-why{ position:relative; overflow-x:clip; background:var(--night); color:var(--cream); padding-bottom:var(--pad); }
+  .bh-why-photo{ position:relative; margin:0; }
+  .bh-why-photo img{ display:block; width:100%; height:auto; aspect-ratio:4/5; object-fit:cover; object-position:34% 50%; }
+  .bh-why-photo::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, var(--night) 0%, rgba(23,21,19,0) 12%, rgba(23,21,19,0) 55%, rgba(23,21,19,0.82) 80%, var(--night) 100%); }
+  .bh-why-head{ position:relative; z-index:1; margin-top:clamp(-11rem,-30vw,-7rem); }
+  .bh-why-line{ margin-top:0.9rem; max-width:14ch; font-family:var(--font-display); font-weight:900; font-size:clamp(2.6rem,9.5vw,6.4rem); line-height:0.95; letter-spacing:-0.035em; color:var(--cream); text-shadow:0 6px 40px rgba(0,0,0,0.45); }
+  .bh-why-line em{ display:block; color:var(--bh-gold); }
+  /* The brick stripe: two courses laid in their blue, one gold brick, and our
+     orange as the last brick. The gaps show the night behind as mortar. */
+  .bh-stripe{ display:grid; gap:4px; margin:clamp(1.8rem,4vw,2.6rem) calc(-1 * var(--gutter)) 0; }
+  .bh-stripe > span{ display:flex; gap:4px; height:11px; }
+  .bh-stripe i{ flex:2 1 0; min-width:0; background:var(--bh-blue); border-radius:1px; }
+  .bh-stripe i.h{ flex:1 1 0; }
+  .bh-stripe i.g{ background:var(--bh-gold); }
+  .bh-stripe i.o{ background:var(--orange); box-shadow:0 0 14px -2px var(--orange-glow); }
+  .bh-stripe i.dk{ display:none; }
+  .bh-pillars{ display:grid; grid-template-columns:minmax(0,1fr); gap:0.75rem; margin:clamp(2rem,5vw,3rem) 0 0; }
+  .bh-pillars > div{ background:var(--bh-blue); color:var(--cream); border:1px solid rgba(249,247,242,0.22); border-radius:4px; padding:1.4rem 1.4rem 1.5rem; }
+  .bh-ico{ display:block; width:32px; height:32px; color:var(--cream); }
+  .bh-pillars dt{ margin-top:1.1rem; font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(2.3rem,7vw,3.3rem); line-height:0.92; letter-spacing:-0.04em; color:var(--cream); }
+  .bh-pillars dd{ margin:0.6rem 0 0; max-width:30ch; font-size:1.05rem; line-height:1.5; color:var(--cream); }
+  .bh-pillars dd b{ font-weight:800; }
+  .bh-since{ margin-top:clamp(2.4rem,6vw,3.6rem); max-width:22ch; font-family:var(--font-display); font-weight:800; font-size:clamp(1.6rem,3vw,2.3rem); line-height:1.15; letter-spacing:-0.025em; color:var(--cream); }
+  .bh-since em{ color:var(--bh-gold); }
+  @media (min-width:900px){
+    .bh-why-photo img{ aspect-ratio:21/9; max-height:min(88vh, 860px); object-position:50% 55%; }
+    .bh-why-photo::after{ background:linear-gradient(180deg, var(--night) 0%, rgba(23,21,19,0) 14%, rgba(23,21,19,0) 48%, rgba(23,21,19,0.85) 82%, var(--night) 100%), linear-gradient(90deg, rgba(23,21,19,0.7) 0%, rgba(23,21,19,0) 50%); }
+    .bh-why-head{ margin-top:-14rem; }
+    .bh-stripe i.dk{ display:block; }
+    .bh-pillars{ grid-template-columns:repeat(3, minmax(0,1fr)); gap:1rem; }
+    .bh-since{ margin-inline:auto; text-align:center; }
+  }
+
+  /* 3. The crew at home: a strip of frames from their court, then the medals. */
+  .bh-on{ background:var(--canvas); color:var(--night); overflow-x:clip; }
+  .bh-on .bh-eyebrow{ color:var(--orange-ink); }
+  .bh-on-head{ max-width:40ch; }
+  .bh-on-head .display{ margin-top:0.9rem; max-width:12ch; color:var(--night); font-size:clamp(2.8rem,10vw,5.2rem); line-height:0.95; }
+  .bh-on-head .prose{ margin-top:1.1rem; max-width:40ch; color:var(--ink-soft); }
+  .bh-strip{ list-style:none; display:flex; gap:10px; overflow-x:auto; scroll-snap-type:x mandatory; scroll-padding-inline:var(--gutter); margin:clamp(2rem,5vw,3rem) calc(-1 * var(--gutter)) 0; padding:0 var(--gutter) 0.4rem; scrollbar-width:none; overscroll-behavior-x:contain; }
+  .bh-strip::-webkit-scrollbar{ display:none; }
+  .bh-strip li{ flex:0 0 76vw; margin:0; scroll-snap-align:start; }
+  .bh-strip img{ display:block; width:100%; height:auto; aspect-ratio:3/4; object-fit:cover; border-radius:4px; background:var(--hairline); }
+  .bh-strip figure{ margin:0; }
+  .bh-strip figcaption{ margin-top:0.65rem; font-size:0.92rem; line-height:1.4; color:var(--ink-soft); }
+  .bh-strip figcaption b{ color:var(--night); }
+  .bh-on-foot{ margin-top:clamp(2.6rem,6vw,4rem); }
+  .bh-tally{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0.6rem; max-width:620px; }
+  .bh-tally li{ --m:var(--gold); display:grid; justify-items:start; align-content:start; padding:1rem 0.9rem 1.1rem; border-radius:var(--r-lg); background:var(--paper); box-shadow:inset 0 0 0 1px rgba(59,59,70,0.1), 0 18px 36px -28px rgba(23,21,19,0.5); border-top:3px solid var(--m); }
+  .bh-tally .s{ --m:var(--cream-faint); }
+  .bh-tally .b{ --m:#d9904f; }
+  .bh-medal{ width:2.1rem; height:auto; color:var(--m); }
+  .bh-tally b{ margin-top:0.5rem; font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(2.3rem,7vw,3.2rem); line-height:0.9; letter-spacing:-0.04em; color:var(--night); }
+  .bh-tally span{ margin-top:0.35rem; font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--ink); }
+  .bh-tally small{ margin-top:0.2rem; font-size:0.82rem; line-height:1.35; color:var(--muted); }
+  .bh-tally-cap{ margin-top:0.9rem; font-size:0.92rem; color:var(--ink-soft); }
+  .bh-next{ margin-top:clamp(1.8rem,4vw,2.4rem); font-family:var(--font-display); font-weight:800; font-size:clamp(1.4rem,3vw,1.9rem); line-height:1.2; letter-spacing:-0.02em; color:var(--night); }
+  .bh-more{ display:inline-flex; align-items:center; gap:0.35rem; margin-top:0.9rem; font-weight:700; color:var(--orange-ink); border-bottom:2px solid currentColor; padding-bottom:2px; }
+  .bh-more .arrow svg{ width:0.9em; height:0.9em; }
+  @media (min-width:900px){
+    .bh-strip{ display:grid; grid-template-columns:1.3fr repeat(4, minmax(0,1fr)); gap:clamp(0.7rem,1.4vw,1.1rem); overflow:visible; margin-inline:0; padding:0; align-items:start; }
+    .bh-strip li:nth-child(2){ margin-top:4.5rem; }
+    .bh-strip li:nth-child(3){ margin-top:1.8rem; }
+    .bh-strip li:nth-child(4){ margin-top:5.5rem; }
+    .bh-strip li:nth-child(5){ margin-top:2.6rem; }
+    .bh-strip li:first-child img{ aspect-ratio:3/4.4; box-shadow:0 0 0 2px var(--orange); }
+    .bh-on-foot{ display:grid; grid-template-columns:minmax(0,620px) minmax(0,1fr); gap:clamp(2rem,5vw,4rem); align-items:end; }
+    .bh-next{ margin-top:0; }
+  }
+
+  /* 4. The moment: one reel, filmed on their court. Cream words on their blue,
+     with Brick House's own faint rings behind. */
+  .bh-reelband{ position:relative; overflow-x:clip; color:var(--cream); padding-bottom:var(--pad); background-color:var(--bh-blue);
+    background-image:radial-gradient(circle at 85% 22%, transparent 0 38%, rgba(249,247,242,0.07) 38% 38.6%, transparent 38.6% 52%, rgba(249,247,242,0.07) 52% 52.6%, transparent 52.6%); }
+  .bh-reelband .bh-stripe{ margin:0; padding:4px 0; background:var(--night); }
+  .bh-reelband .bh-stripe i{ background:var(--bh-blue); }
+  .bh-reelband .bh-stripe i.g{ background:var(--bh-gold); }
+  .bh-reelband .bh-stripe i.o{ background:var(--orange); }
+  .bh-reel-grid{ display:grid; gap:clamp(1.6rem,4vw,2.4rem); padding-top:var(--pad); }
+  .bh-reelband .bh-eyebrow{ color:var(--cream); }
+  .bh-reelband .bh-eyebrow::before{ background:var(--bh-gold); }
+  .bh-poster{ position:relative; display:block; width:min(78vw, 340px); aspect-ratio:9/16; border-radius:6px; overflow:hidden; background:var(--night); box-shadow:0 0 0 1px rgba(249,247,242,0.22), 0 40px 80px -30px rgba(15,14,13,0.75); }
+  .bh-poster img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; transition:transform .5s var(--ease); }
+  .bh-poster::after{ content:""; position:absolute; inset:0; background:linear-gradient(to top, rgba(23,21,19,0.45), rgba(23,21,19,0) 40%); }
+  .bh-play{ position:absolute; z-index:1; left:50%; top:50%; width:56px; height:56px; transform:translate(-50%,-50%); color:var(--cream); filter:drop-shadow(0 6px 20px rgba(15,14,13,0.55)); transition:transform .2s var(--ease); }
+  .bh-poster:hover img{ transform:scale(1.03); }
+  .bh-poster:hover .bh-play{ transform:translate(-50%,-50%) scale(1.08); }
+  .bh-poster:focus-visible{ outline:2px solid var(--cream); outline-offset:4px; }
+  .bh-big{ margin-top:1.1rem; font-family:var(--font-display); font-weight:900; font-size:clamp(3.6rem,14vw,8rem); line-height:0.88; letter-spacing:-0.05em; color:var(--cream); font-variant-numeric:tabular-nums; }
+  .bh-big-line{ margin-top:0.7rem; max-width:20ch; font-family:var(--font-display); font-weight:700; font-size:clamp(1.4rem,3vw,2rem); line-height:1.2; letter-spacing:-0.02em; color:var(--cream); }
+  .bh-big-line em{ font-weight:800; }
+  .bh-date{ margin-top:1rem; font-size:0.92rem; color:var(--cream); }
+  .bh-watch{ display:inline-flex; align-items:center; gap:0.35rem; margin-top:1.4rem; font-weight:700; color:var(--cream); border-bottom:2px solid var(--bh-gold); padding-bottom:2px; }
+  .bh-watch .arrow svg{ width:0.85em; height:0.85em; }
+  @media (min-width:900px){
+    .bh-reel-grid{ grid-template-columns:minmax(0,40%) minmax(0,1fr); align-items:center; column-gap:clamp(2.5rem,6vw,5rem); }
+    .bh-reel-grid .bh-eyebrow{ grid-column:2; grid-row:1; align-self:end; }
+    .bh-poster{ grid-column:1; grid-row:1 / span 2; width:100%; max-width:380px; justify-self:end; }
+    .bh-reel-text{ grid-column:2; grid-row:2; align-self:start; }
+  }
+
+  /* 5. Close: their wall, the crew in it, and one brick of ours. */
+  .bh-end{ overflow-x:clip; }
+  .bh-close{ text-align:center; }
+  .bh-close .bh-eyebrow{ justify-content:center; margin-top:clamp(1.8rem,4vw,2.6rem); }
+  .bh-close .display{ max-width:13ch; margin:0.9rem auto 0; }
+  .bh-close .prose{ max-width:40ch; margin:1.2rem auto 0; color:var(--cream-mute); }
+  .bh-close .actions{ display:flex; justify-content:center; margin-top:2rem; }
+  .bh-close .actions .btn{ min-width:14rem; justify-content:center; }
+  .bh-wall{ display:grid; gap:6px; margin:0 calc(-1 * var(--gutter)); -webkit-mask-image:linear-gradient(180deg, #000 55%, transparent); mask-image:linear-gradient(180deg, #000 55%, transparent); }
+  .bh-course{ display:flex; gap:6px; height:clamp(44px, 11.2vw, 96px); }
+  .bk{ flex:2 1 0; min-width:0; border-radius:3px; background:var(--bh-blue); box-shadow:inset 0 -5px 0 rgba(15,14,13,0.18); }
+  .bk.h{ flex:1 1 0; }
+  .bk.n{ background:var(--night-raised); box-shadow:inset 0 -5px 0 rgba(0,0,0,0.25); }
+  .bk.ph{ background:var(--bh-blue) var(--img) var(--pos, 50% 35%)/cover no-repeat; background-blend-mode:luminosity; }
+  .bk.o{ background:var(--orange); box-shadow:inset 0 -5px 0 rgba(0,0,0,0.14), 0 0 40px -6px var(--orange-glow); }
+  .bk.dk{ display:none; }
+  .bh-wall.in .bk{ animation:bh-lay 0.6s cubic-bezier(.2,.7,.2,1) both; animation-delay:calc(var(--i) * 40ms); }
+  @keyframes bh-lay{ from{ opacity:0; transform:translateY(12px); } to{ opacity:1; transform:none; } }
+  @media (prefers-reduced-motion: reduce){ .bh-wall.in .bk{ animation:none; } }
+  .bh-find{ margin:2.2rem auto 0; max-width:40ch; padding-top:1.1rem; border-top:1px solid rgba(249,247,242,0.14); font-size:0.9rem; line-height:1.7; color:var(--cream-mute); }
+  .bh-find a{ display:inline-flex; align-items:center; gap:0.2rem; color:var(--cream); font-weight:600; border-bottom:1px solid var(--orange); }
+  .bh-find .arrow svg{ width:0.8em; height:0.8em; }
+  .bh-model{ margin-top:1.2rem; }
+  .bh-model .textlink{ color:var(--cream); }
+  @media (max-width:899px){
+    .bh-close .actions .btn{ width:100%; }
+  }
+  @media (min-width:900px){
+    .bh-wall{ margin:0 auto; max-width:1140px; }
+    .bk.dk{ display:block; }
+  }
 </style>
 <script type="application/ld+json">
 {
@@ -397,11 +381,11 @@ fill="currentColor" stroke="none">
 
 <main>
 
-  <!-- 1. ONE COURT: their court, our athlete on it -->
+  <!-- 1. THE COURT, MOVING: the two marks, the line, and their court in motion -->
   <section class="bh-hero dark">
     <div class="wrap bh-hero-grid">
       <div class="bh-hero-copy">
-        <p class="bh-kicker">Our partner club</p>
+        <p class="bh-eyebrow">Our partner club</p>
         <div class="bh-duo">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500.000000 457.000000" class="bh-atl" role="img" aria-label="Adapt To Life" focusable="false"><g transform="translate(0.000000,457.000000) scale(0.100000,-0.100000)"
 fill="currentColor" stroke="none">
@@ -460,159 +444,134 @@ fill="currentColor" stroke="none">
           <img src="/images/brickhouse/brick-house-logo-orange-black-reverse.svg" alt="Brick House Pickleball" class="bh-bhlogo" width="372" height="265">
         </div>
         <h1 class="serif display">The crew&rsquo;s home court <em class="italic" style="color:var(--orange)">is Brick House.</em></h1>
-        <p class="lead sub">Brick House Pickleball has a renovated facility in Lake Forest, and we are proud to call them our partner. It is where the athletes we support train, and where new players pick up a paddle for the first time.</p>
+        <p class="lead sub">Brick House Pickleball in Lake Forest is open around the clock. It&rsquo;s where Chicago Pickleball: Wheelie Big Dills trains.</p>
         <div class="actions">
           <a href="https://www.google.com/maps/search/?api=1&amp;query=Brick+House+Pickleball+28457+Ballard+Drive+Unit+H+Lake+Forest+IL+60045" class="btn" target="_blank" rel="noopener">Get directions</a>
           <a href="https://brickhousepb.com/" class="btn ghost" target="_blank" rel="noopener">Visit Brick House Pickleball</a>
         </div>
-        <p class="partner-links">Find Brick House Pickleball: <a href="https://www.instagram.com/brickhousepb/" target="_blank" rel="noopener">Instagram <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external" data-style="bold"><path fill="currentColor" d="M204 64v104a12 12 0 0 1-24 0V93L72.49 200.49a12 12 0 0 1-17-17L163 76H88a12 12 0 0 1 0-24h104a12 12 0 0 1 12 12"/></svg></span></a> <a href="https://www.tiktok.com/@brickhousepb" target="_blank" rel="noopener">TikTok <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external" data-style="bold"><path fill="currentColor" d="M204 64v104a12 12 0 0 1-24 0V93L72.49 200.49a12 12 0 0 1-17-17L163 76H88a12 12 0 0 1 0-24h104a12 12 0 0 1 12 12"/></svg></span></a></p>
+        <p class="partner-links">Find Brick House Pickleball: <a href="https://brickhousepb.com/" target="_blank" rel="noopener">Website <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external" data-style="bold"><path fill="currentColor" d="M204 64v104a12 12 0 0 1-24 0V93L72.49 200.49a12 12 0 0 1-17-17L163 76H88a12 12 0 0 1 0-24h104a12 12 0 0 1 12 12"/></svg></span></a> <a href="https://www.instagram.com/brickhousepb/" target="_blank" rel="noopener">Instagram <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external" data-style="bold"><path fill="currentColor" d="M204 64v104a12 12 0 0 1-24 0V93L72.49 200.49a12 12 0 0 1-17-17L163 76H88a12 12 0 0 1 0-24h104a12 12 0 0 1 12 12"/></svg></span></a> <a href="https://www.tiktok.com/@brickhousepb" target="_blank" rel="noopener">TikTok <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external" data-style="bold"><path fill="currentColor" d="M204 64v104a12 12 0 0 1-24 0V93L72.49 200.49a12 12 0 0 1-17-17L163 76H88a12 12 0 0 1 0-24h104a12 12 0 0 1 12 12"/></svg></span></a></p>
       </div>
       <figure class="bh-film">
-        <img src="/images/brickhouse/hero-bob.webp" alt="An athlete in a sport wheelchair and a Brick House Pickleball shirt rolls toward the camera on the Brick House courts, the net behind him" width="1200" height="2000" fetchpriority="high">
+        <video src="/videos/links/rally-brickhouse.44e69db0.mp4" poster="/videos/links/rally-brickhouse.9b9fb227.webp" muted loop playsinline preload="metadata" aria-hidden="true" tabindex="-1"></video>
       </figure>
     </div>
   </section>
 
-  <svg class="bh-bricks" aria-hidden="true" focusable="false"><defs><pattern id="bhb1" width="96" height="48" patternUnits="userSpaceOnUse"><rect x="2" y="2" width="44" height="20" rx="2" fill="#FF5C39"/><rect x="50" y="2" width="44" height="20" rx="2" fill="#3b3b46"/><rect x="-22" y="26" width="44" height="20" rx="2" fill="#3b3b46"/><rect x="26" y="26" width="44" height="20" rx="2" fill="#FF5C39"/><rect x="74" y="26" width="44" height="20" rx="2" fill="#3b3b46"/></pattern></defs><rect width="100%" height="100%" fill="url(#bhb1)"/></svg>
-
-  <!-- Visit the courts. The reopening date stays as a fact; the invite does not. -->
-  <section class="band dark bh-open" id="opening">
+  <!-- 2. WHY BRICK HOUSE: their colours, one photo, one line, three pillars -->
+  <section class="bh-why" id="why">
+    <figure class="bh-why-photo">
+      <img src="/images/brickhouse/court-wide.webp" alt="The blue courts at Brick House Pickleball, court numbers stencilled on the wall" loading="lazy" width="860" height="573">
+    </figure>
     <div class="wrap">
-      <div class="bh-event">
-        <div class="bh-detail">
-          <span class="eyebrow orange">Visit the courts</span>
-          <h2 class="serif h2">Open around the clock.</h2>
-          <p class="prose">Brick House reopened its renovated facility on October 25, 2026. The courts are open 24/7/365 under new ownership. Bring a friend who has never played. The crew is there every week.</p>
-          <dl class="bh-facts">
-            <div><dt>Where</dt><dd>Brick House Pickleball<br>28457 Ballard Drive, Unit H<br>Lake Forest, IL 60045</dd></div>
-            <div><dt>Hours</dt><dd>Open 24/7/365</dd></div>
-          </dl>
-          <div class="bh-actions">
-            <a href="https://www.google.com/maps/search/?api=1&amp;query=Brick+House+Pickleball+28457+Ballard+Drive+Unit+H+Lake+Forest+IL+60045" class="btn" target="_blank" rel="noopener">Get directions</a>
-          </div>
-        </div>
+      <div class="bh-why-head">
+        <p class="bh-eyebrow">Brick House Pickleball</p>
+        <h2 class="bh-why-line">Any hour of any day. <em class="italic">The court is open.</em></h2>
       </div>
+      <div class="bh-stripe" aria-hidden="true">
+        <span><i></i><i></i><i class="g"></i><i></i><i></i><i class="dk"></i><i class="dk"></i><i class="dk g"></i><i class="dk"></i><i></i></span>
+        <span><i class="h"></i><i></i><i></i><i></i><i class="dk"></i><i class="dk"></i><i class="dk"></i><i class="dk"></i><i></i><i class="o"></i></span>
+      </div>
+      <dl class="bh-pillars">
+        <div><svg class="bh-ico" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="time" data-style="duotone"><g fill="currentColor"><path d="M224 128a96 96 0 1 1-96-96a96 96 0 0 1 96 96" opacity=".2"/><path d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m0 192a88 88 0 1 1 88-88a88.1 88.1 0 0 1-88 88m64-88a8 8 0 0 1-8 8h-56a8 8 0 0 1-8-8V72a8 8 0 0 1 16 0v48h48a8 8 0 0 1 8 8"/></g></svg><dt>24/7/365</dt><dd>Open around the clock, every day of the year.</dd></div>
+        <div><svg class="bh-ico" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="building" data-style="duotone"><g fill="currentColor"><path d="M245.66 129L217 157.66a8 8 0 0 1-11.3 0L168.1 120l-28 28l-32-32l28-28L80 31.78a87.81 87.81 0 0 1 98.31 18l67.35 67.89a8 8 0 0 1 0 11.33" opacity=".2"/><path d="m251.34 112l-67.46-67.92a96.1 96.1 0 0 0-135.77 0l-.09.09L34.25 58.4a8 8 0 0 0 11.49 11.13l13.73-14.18a80 80 0 0 1 18.71-13.9L124.68 88l-96 96a16 16 0 0 0 0 22.63l20.69 20.69a16 16 0 0 0 22.63 0l96-96l14.34 14.34L200 163.3a16 16 0 0 0 22.63 0l28.69-28.69a16 16 0 0 0 .02-22.61M60.68 216L40 195.31l68-68L128.68 148Zm101.66-101.68L140 136.67L119.31 116l22.35-22.35a8 8 0 0 0 0-11.32L94.32 35a80 80 0 0 1 78.23 20.41l44.22 44.51L188 128.66l-14.34-14.34a8 8 0 0 0-11.32 0m49 37.66l-12-12L228 111.25l12 12Z"/></g></svg><dt>Reopened</dt><dd>Renovated, and under new ownership.</dd></div>
+        <div><svg class="bh-ico" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="coaching" data-style="duotone"><g fill="currentColor"><path d="M192 80v96h-88a32 32 0 1 0-32-32h-8V80Z" opacity=".2"/><path d="M216 40H40a16 16 0 0 0-16 16v144a16 16 0 0 0 16 16h13.39a8 8 0 0 0 7.23-4.57a48 48 0 0 1 86.76 0a8 8 0 0 0 7.23 4.57H216a16 16 0 0 0 16-16V56a16 16 0 0 0-16-16M80 144a24 24 0 1 1 24 24a24 24 0 0 1-24-24m136 56h-56.57a64.4 64.4 0 0 0-28.83-26.16a40 40 0 1 0-53.2 0A64.4 64.4 0 0 0 48.57 200H40V56h176ZM56 96V80a8 8 0 0 1 8-8h128a8 8 0 0 1 8 8v96a8 8 0 0 1-8 8h-16a8 8 0 0 1 0-16h8V88H72v8a8 8 0 0 1-16 0"/></g></svg><dt>Coaching</dt><dd>A weekly wheelchair pickleball night where our very own <b>Pete Petersen</b> coaches.</dd></div>
+      </dl>
+      <p class="bh-since">On October 25, 2026, Brick House reopened. <em class="italic">The crew was on court.</em></p>
     </div>
   </section>
 
-  <!-- 2. THEIR NEW START -->
-  <section class="band tint" id="story">
+  <!-- 3. THE CREW AT HOME: frames from their court, then the medals -->
+  <section class="band bh-on" id="crew">
     <div class="wrap">
-      <div class="bh-start-head">
-        <hr class="tick orange">
-        <span class="eyebrow orange">Brick House Pickleball</span>
-        <h2 class="serif statement">Open <em class="italic" style="color:var(--orange)">24/7/365.</em></h2>
-        <p class="prose">Newly renovated, under new ownership, and open around the clock in Lake Forest.</p>
+      <div class="bh-on-head">
+        <p class="bh-eyebrow">Brick House and Adapt To Life</p>
+        <h2 class="serif display">The medals start <em class="italic" style="color:var(--orange)">here.</em></h2>
+        <p class="prose">Chicago Pickleball: Wheelie Big Dills calls Brick House its home court. The crew trains here all four seasons.</p>
       </div>
-      <div class="bh-place">
-        <img src="/images/brickhouse/bh-space.webp" alt="A new net stretches across the blue court toward the Brick House banner and a row of lockers on the block wall" loading="lazy" width="1200" height="2133">
-        <img src="/images/brickhouse/bh-courts.webp" alt="The courts under a high white ceiling, a net post in front and a Brick House banner along the far wall" loading="lazy" width="1200" height="2360">
-        <img src="/images/brickhouse/bh-across.webp" alt="A player in a sport wheelchair waits at the baseline, the Brick House paddle mark on the wall beyond the net" loading="lazy" width="1200" height="2133">
-      </div>
-    </div>
-  </section>
-
-  <!-- 3. OURS: who Adapt To Life is, for people meeting us here first -->
-  <section class="band">
-    <div class="wrap">
-      <div class="bh-start-head">
-        <hr class="tick orange">
-        <span class="eyebrow orange">Adapt To Life</span>
-        <h2 class="serif statement">Who we are.</h2>
-        <p class="prose">Adapt To Life raises money for the equipment, training, and travel that keep adaptive athletes in the game.</p>
-        <a class="bh-more" href="/about">Meet Adapt To Life <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
-      </div>
-      <div class="bh-ours">
-        <img src="/images/athletes/pickleball1-4.webp" alt="A player in a sport wheelchair drives a forehand, the ball just off his paddle" loading="lazy" width="1500" height="999">
-        <img src="/images/athletes/wheelie-10.webp" alt="A young athlete rolls onto the court with friends close behind" loading="lazy" width="1129" height="1500">
-        <img src="/images/athletes/wheelie-51.webp" alt="Three friends crowd together for a photo at a night event" loading="lazy" width="1500" height="863">
-        <img src="/images/athletes/wheelie-133.webp" alt="A grinning athlete takes a selfie on an outdoor court" loading="lazy" width="1127" height="1500">
-        <img src="/images/athletes/wheelie-4.webp" alt="A player in a gray shirt swings at a ball up by his shoulder" loading="lazy" width="1500" height="1000">
-        <img src="/images/athletes/wheelie-26.webp" alt="A player scoops a low ball off the court" loading="lazy" width="1500" height="1000">
-      </div>
-    </div>
-  </section>
-
-  <!-- SIDE BY SIDE: their court, our athletes, one line across both -->
-  <section class="bh-side on-dark" aria-label="Their courts beside our athletes: the Brick House net and lockers, and Adapt To Life players meeting at the net">
-    <img src="/images/brickhouse/bh-lockers.webp" alt="" loading="lazy" width="1200" height="2133">
-    <img src="/images/athletes/wheelie-58.webp" alt="" loading="lazy" width="1500" height="1000">
-    <span class="bh-seam" aria-hidden="true"></span>
-    <p class="bh-together">Their courts. Our athletes. <em class="italic" style="color:var(--orange)">One home.</em></p>
-  </section>
-
-  <!-- ON THE NEW COURTS: our athletes already playing at Brick House -->
-  <section class="band dark bh-on">
-    <div class="wrap">
-      <div class="bh-start-head">
-        <hr class="tick orange">
-        <span class="eyebrow orange">Brick House and Adapt To Life</span>
-        <h2 class="serif statement">Every week. <em class="italic" style="color:var(--orange)">Every season.</em></h2>
-        <p class="prose">The athletes we support have trained at Brick House for years. A home court changes what is possible. More people get to try pickleball for the first time, and the athletes chasing bigger goals get the practice it takes to get really good.</p>
-      </div>
-      <div class="bh-reel">
+      <ul class="bh-strip" aria-label="The crew on court at Brick House">
+        <li><figure><img src="/images/brickhouse/on-banner.webp" alt="Juan smiling, rolling past the Brick House court barrier with a paddle" loading="lazy" width="1080" height="1920" style="object-position:50% 40%"><figcaption><b>Juan Ortiz</b>, our first ambassador.</figcaption></figure></li>
+        <li><figure><img src="/images/brickhouse/on-at-the-net.webp" alt="Three wheelchair athletes at the net under the Brick House banner" loading="lazy" width="1200" height="2133" style="object-position:50% 45%"><figcaption>Between points, under the Brick House banner.</figcaption></figure></li>
+        <li><figure><img src="/images/brickhouse/on-overhead.webp" alt="Brian reaching for an overhead" loading="lazy" width="1200" height="2133" style="object-position:50% 35%"><figcaption><b>Brian Liss</b>, going up for it.</figcaption></figure></li>
+        <li><figure><img src="/images/brickhouse/on-forehand.webp" alt="A wheelchair athlete swings a forehand on court two" loading="lazy" width="1200" height="2133" style="object-position:50% 50%"></figure></li>
+        <li><figure><img src="/images/brickhouse/ball.webp" alt="Bob in a Brick House Lake Forest shirt, ball in hand" loading="lazy" width="1100" height="1416" style="object-position:50% 30%"></figure></li>
+      </ul>
+      <div class="bh-on-foot">
         <div>
-          <img class="tall lead-shot" src="/images/brickhouse/on-at-the-net.webp" alt="Three players in sport wheelchairs talk at the net under the Brick House banner" loading="lazy" width="1200" height="2133">
-          <img class="mid" src="/images/brickhouse/on-forehand.webp" alt="A player in an olive shirt swings a forehand toward the net" loading="lazy" width="1200" height="2133">
+          <ul class="bh-tally" aria-label="Medals at Monster Smash: 2 gold, 2 silver, 2 bronze">
+            <li class="g"><svg class="bh-medal" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="win" data-style="fill"><path fill="currentColor" d="M216 96a88 88 0 1 0-144 67.83V240a8 8 0 0 0 11.58 7.16L128 225l44.43 22.21a8.1 8.1 0 0 0 3.57.79a8 8 0 0 0 8-8v-76.17A87.85 87.85 0 0 0 216 96M56 96a72 72 0 1 1 72 72a72.08 72.08 0 0 1-72-72m16 0a56 56 0 1 1 56 56a56.06 56.06 0 0 1-56-56"/></svg><b>2</b><span>Gold</span><small>Singles, doubles</small></li>
+            <li class="s"><svg class="bh-medal" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="win" data-style="fill"><path fill="currentColor" d="M216 96a88 88 0 1 0-144 67.83V240a8 8 0 0 0 11.58 7.16L128 225l44.43 22.21a8.1 8.1 0 0 0 3.57.79a8 8 0 0 0 8-8v-76.17A87.85 87.85 0 0 0 216 96M56 96a72 72 0 1 1 72 72a72.08 72.08 0 0 1-72-72m16 0a56 56 0 1 1 56 56a56.06 56.06 0 0 1-56-56"/></svg><b>2</b><span>Silver</span><small>Doubles</small></li>
+            <li class="b"><svg class="bh-medal" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="win" data-style="fill"><path fill="currentColor" d="M216 96a88 88 0 1 0-144 67.83V240a8 8 0 0 0 11.58 7.16L128 225l44.43 22.21a8.1 8.1 0 0 0 3.57.79a8 8 0 0 0 8-8v-76.17A87.85 87.85 0 0 0 216 96M56 96a72 72 0 1 1 72 72a72.08 72.08 0 0 1-72-72m16 0a56 56 0 1 1 56 56a56.06 56.06 0 0 1-56-56"/></svg><b>2</b><span>Bronze</span><small>Singles, doubles</small></li>
+          </ul>
+          <p class="bh-tally-cap">Monster Smash, Cincinnati, October 2026. Six athletes, six medals.</p>
         </div>
         <div>
-          <img class="mid" src="/images/brickhouse/on-smile.webp" alt="A player with long hair and a blue headband grins on his way across the court" loading="lazy" width="1200" height="2133">
-          <img class="tall" src="/images/brickhouse/on-banner.webp" alt="A player in a headband and glasses rolls past the Brick House Pickleball banner, paddle in his lap" loading="lazy" width="1080" height="1920">
+          <p class="bh-next">Next: the US Open in Naples, spring 2027.</p>
+          <a class="bh-more" href="/send-6">Help send six <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
         </div>
-        <div>
-          <img class="tall" src="/images/brickhouse/on-overhead.webp" alt="A player reaches high with his paddle for an overhead" loading="lazy" width="1200" height="2133">
-          <img class="mid" src="/images/brickhouse/on-rally.webp" alt="Two players trade shots, the ball in the air and a Brick House banner on the wall" loading="lazy" width="1200" height="2133">
-        </div>
-      </div>
-      <div class="bh-road">
-        <p class="eyebrow orange">What it takes to reach the US Open</p>
-        <ol>
-          <li class="lit"><b>Train every week</b><span>Court time and coaching, every season.</span></li>
-          <li><b>Travel to tournaments</b><span>Entry fees, flights, and a place to stay, to earn a ranking.</span></li>
-          <li><b>The US Open</b><span>Naples, spring 2027. Our goal is to send six.</span></li>
-        </ol>
-        <a class="bh-more" href="/send-6">Help send six <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
       </div>
     </div>
   </section>
 
+  <!-- 4. THE MOMENT: one reel, filmed on their court (the Brick House banner is in the frame) -->
+  <section class="bh-reelband" id="reel">
+    <div class="bh-stripe" aria-hidden="true">
+      <span><i></i><i></i><i class="g"></i><i></i><i></i><i class="dk"></i><i class="dk"></i><i class="dk g"></i><i class="dk"></i><i></i></span>
+      <span><i class="h"></i><i></i><i></i><i></i><i class="dk"></i><i class="dk"></i><i class="dk"></i><i class="dk"></i><i></i><i class="o"></i></span>
+    </div>
+    <div class="wrap bh-reel-grid">
+      <p class="bh-eyebrow">Filmed at Brick House</p>
+      <a class="bh-poster" href="https://www.instagram.com/reel/DeQFw1fNPb_/" target="_blank" rel="noopener" aria-label="Watch the reel on Instagram (opens in a new tab)">
+        <img src="/images/brickhouse/reel-rally.webp" alt="A wheelchair rally at Brick House, the Brick House banner on the wall behind the net" loading="lazy" width="720" height="1280">
+        <svg class="bh-play" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="play" data-style="fill"><path fill="currentColor" d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m40.55 110.58l-52 36A8 8 0 0 1 104 164V92a8 8 0 0 1 12.55-6.58l52 36a8 8 0 0 1 0 13.16"/></svg>
+      </a>
+      <div class="bh-reel-text">
+        <p class="bh-big">250,000+</p>
+        <p class="bh-big-line">views on one reel. <em class="italic">Another day of pickleball.</em></p>
+        <p class="bh-date">Posted October 8, 2026. 252,024 views by October 30.</p>
+        <a class="bh-watch" href="https://www.instagram.com/reel/DeQFw1fNPb_/" target="_blank" rel="noopener">Watch on Instagram <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external" data-style="bold"><path fill="currentColor" d="M204 64v104a12 12 0 0 1-24 0V93L72.49 200.49a12 12 0 0 1-17-17L163 76H88a12 12 0 0 1 0-24h104a12 12 0 0 1 12 12"/></svg></span></a>
+      </div>
+    </div>
+  </section>
 
-  <svg class="bh-bricks" aria-hidden="true" focusable="false"><defs><pattern id="bhb2" width="96" height="48" patternUnits="userSpaceOnUse"><rect x="2" y="2" width="44" height="20" rx="2" fill="#FF5C39"/><rect x="50" y="2" width="44" height="20" rx="2" fill="#3b3b46"/><rect x="-22" y="26" width="44" height="20" rx="2" fill="#3b3b46"/><rect x="26" y="26" width="44" height="20" rx="2" fill="#FF5C39"/><rect x="74" y="26" width="44" height="20" rx="2" fill="#3b3b46"/></pattern></defs><rect width="100%" height="100%" fill="url(#bhb2)"/></svg>
-
-  <!-- 5. GROW TOGETHER: our athletes laid as a wall, Brick House the newest brick, room left to build -->
-  <section class="closing dark band-lg">
+  <!-- 5. CLOSE: their wall, the crew in it, one brick of ours, one button -->
+  <section class="closing dark band-lg bh-end">
     <div class="wrap">
       <div class="bh-close">
-        <hr class="tick orange">
-        <span class="eyebrow orange">Our partners</span>
-        <h2 class="serif display">Thank you, <em class="italic" style="color:var(--orange)">Brick House.</em></h2>
-        <div class="bh-wall reveal" role="img" aria-label="A wall of Adapt To Life athletes with Brick House laid in among them">
-          <span class="bk ph" style="--i:0; --img:url('/images/athletes/wheelie-9-band.webp'); --pos:50% 50%"></span>
-          <span class="bk ph" style="--i:1; --img:url('/images/athletes/pickleball1-3.webp'); --pos:45% 40%"></span>
-          <span class="bk o" style="--i:2"></span>
-          <span class="bk c" style="--i:3"></span>
-          <span class="bk ph" style="--i:4; --img:url('/images/athletes/pickleball1-5.webp'); --pos:45% 45%"></span>
-          <span class="bk o" style="--i:5"></span>
-          <span class="bk half o" style="--i:6"></span>
-          <span class="bk o" style="--i:7"></span>
-          <span class="bk ph" style="--i:8; --img:url('/images/athletes/wheelie-138.webp'); --pos:45% 16%"></span>
-          <span class="bk ph lit" style="--i:9; --img:url('/images/brickhouse/brick-house-logo-orange-black.svg'); --pos:50% 50%; background-color:var(--cream); background-size:auto 78%"></span>
-          <span class="bk c" style="--i:10"></span>
-          <span class="bk o" style="--i:11"></span>
-          <span class="bk half c" style="--i:12"></span>
-          <span class="bk c" style="--i:13"></span>
-          <span class="bk c" style="--i:14"></span>
-          <span class="bk o" style="--i:15"></span>
-          <span class="bk o" style="--i:16"></span>
-          <span class="bk c" style="--i:17"></span>
-          <span class="bk o" style="--i:18"></span>
+        <div class="bh-wall reveal" role="img" aria-label="A wall of Brick House blue bricks with frames of the crew on court laid in, and one orange brick for Adapt To Life">
+          <div class="bh-course">
+            <span class="bk ph" style="--i:0; --img:url('/images/brickhouse/serve.webp'); --pos:50% 30%"></span>
+            <span class="bk" style="--i:1"></span>
+            <span class="bk n" style="--i:2"></span>
+            <span class="bk ph" style="--i:3; --img:url('/images/brickhouse/bh-courts.webp'); --pos:50% 55%"></span>
+            <span class="bk dk" style="--i:4"></span>
+            <span class="bk ph dk" style="--i:5; --img:url('/images/brickhouse/push.webp'); --pos:50% 35%"></span>
+          </div>
+          <div class="bh-course">
+            <span class="bk h n" style="--i:6"></span>
+            <span class="bk" style="--i:7"></span>
+            <span class="bk ph" style="--i:8; --img:url('/images/brickhouse/bh-across.webp'); --pos:50% 55%"></span>
+            <span class="bk o" style="--i:9"></span>
+            <span class="bk n dk" style="--i:10"></span>
+            <span class="bk dk" style="--i:11"></span>
+            <span class="bk h" style="--i:12"></span>
+          </div>
+          <div class="bh-course">
+            <span class="bk n" style="--i:13"></span>
+            <span class="bk ph" style="--i:14; --img:url('/images/brickhouse/on-rally.webp'); --pos:50% 40%"></span>
+            <span class="bk" style="--i:15"></span>
+            <span class="bk ph" style="--i:16; --img:url('/images/brickhouse/ready.webp'); --pos:50% 35%"></span>
+            <span class="bk n dk" style="--i:17"></span>
+            <span class="bk dk" style="--i:18"></span>
+          </div>
         </div>
-        <p class="prose">Brick House gave the crew a home. Partners who join them help with the rest: court time every week, equipment, training, and travel on the road to the US Open.</p>
-        <div class="bh-actions">
-          <a href="/sponsorship" class="btn">Become a partner</a>
-          <a href="/pickleball#support" class="btn ghost">See where it goes</a>
+        <p class="bh-eyebrow">Our partner club</p>
+        <h2 class="serif display">Their courts. Our athletes. <em class="italic" style="color:var(--orange)">One home.</em></h2>
+        <p class="prose">Gifts go to the Hustle &amp; Heart Fund: equipment, training and travel for the athletes we support.</p>
+        <div class="actions">
+          <a href="/donate" class="btn">Donate</a>
         </div>
-        <p class="bh-sign">The more we grow, the more we give.</p>
+        <p class="bh-find">28457 Ballard Drive, Unit H, Lake Forest, IL 60045 &middot; <a href="https://www.google.com/maps/search/?api=1&amp;query=Brick+House+Pickleball+28457+Ballard+Drive+Unit+H+Lake+Forest+IL+60045" target="_blank" rel="noopener">Directions <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external" data-style="bold"><path fill="currentColor" d="M204 64v104a12 12 0 0 1-24 0V93L72.49 200.49a12 12 0 0 1-17-17L163 76H88a12 12 0 0 1 0-24h104a12 12 0 0 1 12 12"/></svg></span></a></p>
+        <p class="bh-model"><a class="textlink" href="/sponsorship#clubs">The Home Court Model <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a></p>
       </div>
     </div>
   </section>
@@ -757,6 +716,16 @@ fill="currentColor" stroke="none">
         });
       });
     }
+  })();
+  (function(){
+    // The hero film plays only when motion is on, and only while it is on screen.
+    var v = document.querySelector('.bh-film video');
+    if (!v || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    v.muted = true;
+    var play = function(){ var p = v.play(); if (p && p.catch) p.catch(function(){}); };
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function(es){ es.forEach(function(e){ if (e.isIntersecting) play(); else v.pause(); }); }, { threshold:0.15 }).observe(v);
+    } else { play(); }
   })();
 </script>
 

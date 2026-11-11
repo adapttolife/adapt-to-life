@@ -62,7 +62,7 @@ const ALT = {
   // An athlete profile card is his name over his own face, so the alt is the
   // name and then the man, in that order.
   brickhouse:
-    "The crew's home court is Brick House. Adapt To Life. An athlete in a sport wheelchair and a Brick House Pickleball shirt rolls across the Brick House courts.",
+    "Brick House keeps the court open. Adapt To Life. An athlete in a sport wheelchair and a Brick House Pickleball shirt rolls across the Brick House courts.",
   picklr: "Open play, open doors. Adapt To Life. A player in a sport wheelchair stretches wide for a backhand.",
   "chicago-adaptive-sports": "Push. Play. Persist. Adapt To Life. Juan Ortiz in a Chicago Adaptive Sports shirt.",
   amp: "Active. Mobile. Proud. Adapt To Life. Karen Atkinson water skiing in a sit-ski, a jet ski behind her.",
@@ -96,7 +96,7 @@ const FILE = {
   "guide-sport-wheelchair-cost": "guide-sport-wheelchair-cost-v1-card.jpg",
   "guide-sponsor-adaptive-athletes": "guide-sponsor-adaptive-athletes-v1-card.jpg",
   "guide-corporate-matching": "guide-corporate-matching-v1-card.jpg",
-  brickhouse: "brickhouse-v3-crewhome.jpg",
+  brickhouse: "brickhouse-v4-open.jpg",
   pickleball: "pickleball-v5-name.jpg",
   ace: "ace-v4-partner.jpg",
   "chicago-classic": "chicago-classic-v1-date.jpg",

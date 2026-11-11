@@ -43,7 +43,7 @@ export const CREW = [
     img: "/images/pickleball/brian.webp",
     w: 952,
     h: 900,
-    fact: "Three straight US Opens.",
+    fact: "US Open silver and bronze.",
     href: "/pickleball#brian",
     cta: "See more",
     share: "/pickleball#brian",

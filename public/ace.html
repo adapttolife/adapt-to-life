@@ -65,7 +65,7 @@
        bottom 45%, so the fist bump stays clear above them. */
     .ace-hero{ --ph:min(80svh, 700px); display:block; min-height:0; padding:0 0 clamp(2.8rem,7vh,3.6rem); }
     .ace-hero-photo{ position:relative; inset:auto; left:auto; height:var(--ph); -webkit-mask-image:none; mask-image:none; }
-    .ace-hero-photo img{ object-position:42% 18%; animation:none; }
+    .ace-hero-photo img{ object-position:30% 20%; animation:none; }
     .ace-hero-photo::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(23,21,19,0.5) 0%, transparent 16%, transparent 44%, rgba(23,21,19,0.86) 60%, var(--night) 78%); }
     .ace-hero::after{ display:none; }
     .ace-hero .wrap{ margin-top:calc(var(--ph) * -0.45); position:relative; }
@@ -125,7 +125,7 @@
       linear-gradient(90deg, transparent 34%, rgb(23 21 19 / 0.12) 34%, rgb(23 21 19 / 0.12) calc(34% + 1px), transparent calc(34% + 1px), transparent 66%, rgb(23 21 19 / 0.12) 66%, rgb(23 21 19 / 0.12) calc(66% + 1px), transparent calc(66% + 1px)); }
   .ace-board i.lit{ background:var(--orange); border-color:var(--orange); display:grid; place-items:center; box-shadow:0 0 0 0 var(--orange-glow); }
   .ace-board i.lit .sym{ width:58%; height:72%; color:var(--night); }
-  .ace-board-cap{ margin-top:0.9rem; font-family:var(--font-label); font-weight:800; font-size:0.7rem; line-height:1.4; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-warm); }
+  .ace-board-cap{ margin-top:0.9rem; font-family:var(--font-label); font-weight:800; font-size:0.7rem; line-height:1.4; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-warm); text-wrap:balance; }
   .ace-why-text{ padding-top:clamp(2.4rem,6vw,3rem); }
   .ace-why-text .statement{ margin-top:0.7rem; }
   .ace-why-text .prose{ margin-top:1rem; max-width:40ch; }
@@ -135,12 +135,11 @@
   .ace-receipt li:last-child::before{ background:var(--orange); box-shadow:0 0 12px var(--orange-glow); }
   .ace-receipt b{ display:block; font-family:var(--font-label); font-weight:800; font-size:0.72rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--orange-ink); }
   .ace-receipt span{ display:block; margin-top:0.3rem; max-width:44ch; font-family:var(--font-display); font-weight:600; font-size:clamp(1.08rem,1.4vw,1.2rem); line-height:1.42; color:var(--ink); }
-  .ace-pq{ margin:2.6rem 0 0; }
-  .ace-pq p{ max-width:26ch; font-family:var(--font-display); font-style:italic; font-weight:800; font-size:clamp(1.55rem,3.4vw,2.15rem); line-height:1.15; letter-spacing:-0.025em; color:var(--night); text-indent:-0.3em; text-wrap:balance; }
-  .ace-pq footer{ margin-top:0.9rem; font-family:var(--font-label); font-weight:800; font-size:0.72rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--orange-ink); }
   .ace-find{ margin-top:2.4rem; padding-top:1.1rem; border-top:1px solid rgba(59,59,70,0.14); font-size:0.88rem; line-height:1.9; color:var(--muted); }
   .ace-find a{ display:inline-flex; align-items:center; gap:0.2rem; color:var(--ink); font-weight:600; border-bottom:1px solid rgb(var(--accent-rgb) / 0.6); line-height:1.3; }
   .ace-find a:hover{ color:var(--orange-ink); }
+  .ace-why h2, .ace-grow h2{ color:var(--night); }
+  .ace-o{ color:var(--orange); }
   .ace-find .arrow svg{ width:0.8em; height:0.8em; }
   .ace-find > span{ display:none; }
   .ace-find a{ margin-right:0.9rem; }
@@ -152,7 +151,7 @@
     /* The photo runs off the right edge of the viewport. */
     .ace-why-photo{ margin:0 calc(-1 * (var(--gutter) + max(0px, (100vw - var(--wrap)) / 2))) 0 0; }
     .ace-why-photo img{ aspect-ratio:5/4; object-position:50% 35%; border-radius:var(--r-lg) 0 0 var(--r-lg); }
-    .ace-courtcard{ width:min(100%, 31rem); margin:-80px 0 0 -48px; }
+    .ace-courtcard{ width:min(100%, 31rem); margin:-40px 0 0 -48px; }
     .ace-board{ grid-template-columns:repeat(7, minmax(0,1fr)); }
   }
 
@@ -184,19 +183,25 @@
   .ace-step ul li{ position:relative; padding-left:1.5rem; max-width:46ch; font-family:var(--font-display); font-weight:600; font-size:1.02rem; line-height:1.4; color:var(--ink); }
   .ace-step ul li::before{ content:""; position:absolute; left:0; top:0.66em; width:0.85rem; height:2px; background:var(--orange); box-shadow:0 0 10px -2px var(--orange-glow); }
   .ace-step-v > p.ace-idea{ margin-top:0.8rem; font-style:italic; font-size:0.98rem; color:rgb(23 21 19 / 0.75); }
-  .ace-pace{ margin-top:2.6rem; padding-left:28px; font-family:var(--font-display); font-style:italic; font-weight:800; font-size:1.5rem; line-height:1.1; letter-spacing:-0.025em; color:var(--night); }
-  .ace-ledger{ display:grid; grid-template-columns:minmax(0,1fr); margin-top:2.8rem; }
-  .ace-ledger > div{ padding:1.4rem 0; }
-  .ace-ledger > div + div{ border-top:1px solid rgba(59,59,70,0.16); }
-  .ace-ledger h3{ font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--orange-ink); }
-  .ace-ledger ul{ list-style:none; margin:0.7rem 0 0; padding:0; }
-  .ace-ledger li{ padding:0.35rem 0; font-size:1.05rem; color:var(--ink); }
+  .ace-pace{ position:relative; z-index:1; padding-left:28px; font-family:var(--font-display); font-style:italic; font-weight:800; font-size:clamp(2rem,8.6vw,2.4rem); line-height:1.02; letter-spacing:-0.035em; color:var(--night); text-wrap:balance; }
+  .ace-pace::before{ content:""; position:absolute; left:-7px; top:0.32em; width:16px; height:16px; border-radius:50%; background:var(--orange); box-shadow:0 0 0 5px rgb(var(--accent-rgb) / 0.2), 0 0 20px var(--orange-glow); }
+  .ace-stairs:not(.has-rail) .ace-pace{ border-left:2px solid rgb(var(--accent-rgb) / 0.6); }
+  .ace-stairs:not(.has-rail) .ace-pace::before{ left:-9px; }
+  .ace-ledger{ display:grid; grid-template-columns:minmax(0,1fr); gap:1rem; margin-top:3rem; }
+  .ace-ledger > div{ padding:1.4rem 1.3rem 1.5rem; background:var(--canvas); border:1px solid rgba(59,59,70,0.12); border-top:3px solid var(--night); border-radius:var(--r-lg); }
+  .ace-ledger > .for-ace{ border-top-color:var(--orange); box-shadow:0 22px 44px -32px rgba(23,21,19,0.45); }
+  .ace-ledger h3{ font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--ink-warm); }
+  .ace-ledger .for-ace h3{ color:var(--orange-ink); }
+  .ace-ledger ul{ list-style:none; margin:0.9rem 0 0; padding:0; display:grid; gap:0.7rem; }
+  .ace-ledger li{ position:relative; padding-left:1.7rem; font-family:var(--font-display); font-weight:600; font-size:1.1rem; line-height:1.3; color:var(--night); }
+  .ace-ledger .for-ace li{ font-size:1.2rem; }
+  .ace-ledger li::before{ content:""; position:absolute; left:0.1rem; top:0.22em; width:0.42rem; height:0.78rem; border:solid var(--orange); border-width:0 2.5px 2.5px 0; transform:rotate(45deg); }
+  .ace-ledger div:not(.for-ace) li::before{ border-color:var(--ink-warm); }
   .ace-model{ margin-top:1.6rem; }
   .ace-model .textlink{ display:inline; line-height:1.8; }
   @media (min-width:700px){
-    .ace-ledger{ grid-template-columns:repeat(2, minmax(0,1fr)); }
-    .ace-ledger > div:first-child{ padding-right:2.4rem; }
-    .ace-ledger > div + div{ border-top:0; border-left:1px solid rgba(59,59,70,0.16); padding-left:2.4rem; }
+    .ace-ledger{ grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); gap:1.2rem; align-items:start; }
+    .ace-ledger > div{ padding:1.8rem 2rem 2rem; }
   }
   @media (min-width:900px){
     .ace-grow{ padding-top:var(--pad); }
@@ -212,7 +217,7 @@
     .ace-step.s3 h3{ font-size:3.3rem; }
     .ace-step-v{ padding-top:2.1rem; }
     .ace-step-v > p:first-child{ margin-top:0; }
-    .ace-pace{ margin-left:16%; padding-left:36px; font-size:2rem; margin-top:3rem; }
+    .ace-pace{ margin-left:16%; padding-left:36px; font-size:clamp(2.6rem,3.6vw,3.4rem); }
   }
 
   /* ---- 4. Alec's note --------------------------------------------------- */
@@ -227,13 +232,17 @@
   .ace-sig{ display:block; font-family:var(--font-display); font-weight:800; font-style:italic; font-size:2.6rem; line-height:1; letter-spacing:-0.03em; color:var(--orange-ink); }
   .ace-sig-role{ display:block; margin-top:0.55rem; font-family:var(--font-label); font-weight:800; font-size:0.7rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted); }
   @media (min-width:700px){ .ace-letter-face{ left:2.4rem; margin-left:0; } .ace-letter{ padding-top:3.6rem; } }
+  @media (min-width:900px){ .ace-letter{ max-width:42rem; padding:4rem 3.4rem 2.8rem; } .ace-letter-face{ width:84px; height:84px; top:-42px; left:3.2rem; } .ace-letter p{ font-size:1.25rem; } .ace-letter .ace-letter-hi{ font-size:1.4rem; } }
   @media (prefers-reduced-motion: reduce){ .ace-letter{ transform:none; } }
 
   /* ---- 5. Close: athletes, then the menu board -------------------------- */
-  .ace-close{ overflow-x:clip; }
+  .ace-close{ overflow-x:clip; padding-bottom:calc(var(--pad-lg) + 1rem); }
   .ace-proof{ display:grid; grid-template-columns:minmax(0,1fr); gap:2rem; }
-  .ace-proof-photo{ margin:0; }
-  .ace-proof-photo img{ width:100%; height:auto; aspect-ratio:16/10; object-fit:cover; object-position:55% 40%; border-radius:var(--r-lg); }
+  .ace-proof-photo{ position:relative; margin:0; overflow:hidden; border-radius:var(--r-lg); }
+  .ace-proof-photo::after{ content:""; position:absolute; inset:0; background:linear-gradient(155deg, rgba(23,21,19,0.6) 0%, rgba(23,21,19,0) 34%); pointer-events:none; }
+  /* A phone video frame from Monster Smash: zoomed onto the fist bump and the
+     Adapt To Life shirts, so nothing else's branding is in frame. */
+  .ace-proof-photo img{ width:100%; height:auto; aspect-ratio:1/1; object-fit:cover; object-position:50% 50%; transform:scale(1.64); transform-origin:7% 70%; }
   .ace-proof-text .statement{ margin-top:0.7rem; }
   .ace-big{ margin-top:1.4rem; font-family:var(--font-display); font-weight:900; font-size:clamp(56px,16vw,120px); line-height:.88; letter-spacing:-0.05em; color:var(--orange); font-variant-numeric:tabular-nums; text-shadow:0 0 50px rgb(var(--accent-rgb) / 0.2); }
   .ace-big-cap{ margin-top:0.7rem; max-width:36ch; color:var(--cream-mute); }
@@ -253,11 +262,11 @@
   .ace-price{ font-family:var(--font-display); font-weight:900; font-size:1.75rem; line-height:1; letter-spacing:-0.02em; color:var(--orange); font-variant-numeric:tabular-nums; }
   .ace-dots{ min-width:1rem; margin-top:1.15rem; border-bottom:2px dotted var(--cream-faint); opacity:.7; }
   .ace-what{ display:block; color:var(--cream); line-height:1.4; }
-  .ace-what .textlink{ display:flex; width:max-content; margin-top:0.45rem; font-size:0.84rem; }
   .ace-menu-actions{ display:flex; flex-wrap:wrap; align-items:center; gap:1.1rem 1.6rem; margin-top:2rem; }
   .ace-run{ margin-top:1.6rem; font-size:0.92rem; color:var(--cream-mute); }
   .ace-run a{ color:var(--cream); border-bottom:1px solid var(--orange); }
   .ace-run a:hover{ color:var(--orange-hot); }
+  @media (max-width:699px){ .ace-row{ grid-template-columns:minmax(0,1fr); row-gap:0.4rem; } .ace-dots{ display:none; } }
   @media (max-width:620px){ .ace-menu-actions .btn{ width:100%; justify-content:center; } }
   @media (min-width:900px){
     .ace-proof{ grid-template-columns:minmax(0,5fr) minmax(0,7fr); gap:clamp(2.5rem,5vw,4.5rem); align-items:center; }
@@ -282,6 +291,8 @@
   .ace-motion .ace-stairs.is-in .ace-step{ opacity:1; transform:none; }
   .ace-motion .ace-stairs.is-in .s2{ transition-delay:.3s; }
   .ace-motion .ace-stairs.is-in .s3{ transition-delay:.6s; }
+  .ace-motion .ace-pace{ opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .7s cubic-bezier(.2,.7,.2,1); }
+  .ace-motion .ace-stairs.is-in .ace-pace{ opacity:1; transform:none; transition-delay:.9s; }
 </style>
 <style>.ace-hero .sub a{ color:inherit; text-decoration:underline; text-decoration-color:var(--orange); text-decoration-thickness:2px; text-underline-offset:4px; }</style>
 <script type="application/ld+json">
@@ -521,25 +532,21 @@ fill="currentColor" stroke="none">
           <div class="ace-board" aria-hidden="true">
             <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="lit"><span class="sym sym--participation"></span></i>
           </div>
-          <p class="ace-board-cap">1 court reserved for the crew, one night a week</p>
+          <p class="ace-board-cap">One court reserved for the crew, every week</p>
         </div>
       </div>
 
       <div class="ace-why-text">
         <div data-m="up">
           <span class="eyebrow orange">Why ACE</span>
-          <h2 class="serif statement">Thirteen courts. <em class="italic" style="color:var(--orange)">One open door.</em></h2>
-          <p class="prose">Adaptive pickleball grows where the courts, the people and the know-how already are. ACE has all three, and it was with us early.</p>
+          <h2 class="serif statement">Thirteen courts. <em class="italic ace-o">One open door.</em></h2>
+          <p class="prose">Adaptive pickleball grows where the courts, the people and the know-how already are. ACE has all three, and it backed adaptive pickleball early.</p>
         </div>
         <ol class="ace-receipt" data-m="up">
           <li><b>August</b><span>ACE posted that it&rsquo;s proud to support adaptive pickleball, then gave us a table and room for a sport chair at its tournament.</span></li>
-          <li><b>November</b><span>The Wheelie Big Dills&rsquo; first night at ACE: a reserved court, then open play with ACE members. CeCe set no cap.</span></li>
-          <li><b>That weekend</b><span>Several athletes came back to practice.</span></li>
+          <li><b>November</b><span>The Wheelie Big Dills&rsquo; first night at ACE: a reserved court, then open play with ACE members.</span></li>
+          <li><b>That weekend</b><span>A few athletes came back to practice.</span></li>
         </ol>
-        <blockquote class="ace-pq" data-m="up">
-          <p>&ldquo;A portion of money collected for drop-ins goes to the Adapt to Life Organization.&rdquo;</p>
-          <footer>From ACE&rsquo;s schedule</footer>
-        </blockquote>
         <p class="ace-find">Find ACE Pickleball Club: <a href="https://www.acepickleballclub.com/desplaines-il" target="_blank" rel="noopener">Website <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external" data-style="bold"><path fill="currentColor" d="M204 64v104a12 12 0 0 1-24 0V93L72.49 200.49a12 12 0 0 1-17-17L163 76H88a12 12 0 0 1 0-24h104a12 12 0 0 1 12 12"/></svg></span></a> <span aria-hidden="true">&middot;</span> <a href="https://www.instagram.com/acepickleballclub" target="_blank" rel="noopener">Instagram <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external" data-style="bold"><path fill="currentColor" d="M204 64v104a12 12 0 0 1-24 0V93L72.49 200.49a12 12 0 0 1-17-17L163 76H88a12 12 0 0 1 0-24h104a12 12 0 0 1 12 12"/></svg></span></a> <span aria-hidden="true">&middot;</span> <a href="https://www.facebook.com/acepickleballclub.hq" target="_blank" rel="noopener">Facebook <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external" data-style="bold"><path fill="currentColor" d="M204 64v104a12 12 0 0 1-24 0V93L72.49 200.49a12 12 0 0 1-17-17L163 76H88a12 12 0 0 1 0-24h104a12 12 0 0 1 12 12"/></svg></span></a> <span aria-hidden="true">&middot;</span> <a href="https://www.google.com/maps/search/?api=1&amp;query=ACE+Pickleball+Club+727+West+Golf+Road+Des+Plaines+IL+60016" target="_blank" rel="noopener">Directions <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="external" data-style="bold"><path fill="currentColor" d="M204 64v104a12 12 0 0 1-24 0V93L72.49 200.49a12 12 0 0 1-17-17L163 76H88a12 12 0 0 1 0-24h104a12 12 0 0 1 12 12"/></svg></span></a></p>
       </div>
     </div>
@@ -555,7 +562,7 @@ fill="currentColor" stroke="none">
           <img src="/images/ace/ace-logo.png" alt="" width="280" height="132">
         </p>
         <span class="eyebrow orange">How we grow together</span>
-        <h2 class="serif display">We grow when <em class="italic" style="color:var(--orange)">ACE grows.</em></h2>
+        <h2 class="serif display">We grow when <em class="italic ace-o">ACE grows.</em></h2>
         <p class="ace-pull">ACE already gives a portion of every drop-in back to the athletes. We want our growth to add to ACE, not cost it.</p>
       </div>
 
@@ -566,7 +573,7 @@ fill="currentColor" stroke="none">
             <h3>Open the door</h3>
           </div>
           <div class="ace-step-v">
-            <p>ACE makes room on its courts, and the athletes play on court time we fund, at no cost to them.</p>
+            <p>ACE makes room on its courts, and the athletes play on court time we fund.</p>
           </div>
         </li>
         <li class="ace-step s2">
@@ -577,7 +584,7 @@ fill="currentColor" stroke="none">
           <div class="ace-step-v">
             <p>Sponsors and partners join in.</p>
             <ul>
-              <li>A member fundraiser, planned with ACE</li>
+              <li>A member fundraiser with ACE</li>
               <li>Try Adaptive Night: ACE members play from sport chairs alongside the crew</li>
               <li>The Chicago Classic, a wheelchair pickleball tournament at ACE. Date to come.</li>
             </ul>
@@ -589,20 +596,19 @@ fill="currentColor" stroke="none">
             <h3>Full price</h3>
           </div>
           <div class="ace-step-v">
-            <p>ACE is paid its regular price, and drop-ins grow into members.</p>
+            <p>ACE reaches its regular price, and drop-ins grow into members.</p>
             <p class="ace-idea">An idea we&rsquo;re exploring with ACE: memberships for athletes training to compete.</p>
           </div>
         </li>
+        <li class="ace-pace">The club sets <em class="italic ace-o">the pace.</em></li>
       </ol>
 
-      <p class="ace-pace" data-m="up">The club sets <em class="italic" style="color:var(--orange)">the pace.</em></p>
-
       <div class="ace-ledger" data-m="up">
-        <div>
+        <div class="for-ace">
           <h3>For ACE</h3>
           <ul>
+            <li>Paid court time, working toward the club&rsquo;s regular price</li>
             <li>New faces at open play</li>
-            <li>Families and friends who come to watch</li>
             <li>Drop-ins who grow into members</li>
             <li>A story that sets the club apart</li>
           </ul>
@@ -617,7 +623,7 @@ fill="currentColor" stroke="none">
         </div>
       </div>
 
-      <p class="ace-model"><a class="textlink" href="/sponsorship#clubs">This builds on the Home Court Model, for any club that wants a crew of its own <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a></p>
+      <p class="ace-model"><a class="textlink" href="/sponsorship#clubs">This builds on the Home Court Model, a template other clubs can copy <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a></p>
     </div>
   </section>
 
@@ -629,7 +635,7 @@ fill="currentColor" stroke="none">
         <blockquote>
           <p class="ace-letter-hi">CeCe, and everyone at ACE,</p>
           <p>Thank you for an amazing first night, and for making the athletes feel at home. A few came back to practice that weekend, and they&rsquo;re falling in love with ACE.</p>
-          <p>Thank you for making room for us, on your courts and at your events, and for giving part of every drop-in back to the athletes. I want what we build here to work for ACE as much as for the athletes, and to be something other clubs can copy.</p>
+          <p>Thank you for making room for the athletes, on your courts and at your tournament, and for giving part of every drop-in back. I want what we build here to work for ACE as much as for the athletes, and to be something other clubs can copy.</p>
           <p>This is just the beginning.</p>
         </blockquote>
         <figcaption><span class="ace-sig">Alec</span><span class="ace-sig-role">Alec Tranel, Adapt To Life</span></figcaption>
@@ -642,11 +648,11 @@ fill="currentColor" stroke="none">
     <div class="wrap">
       <div class="ace-proof">
         <figure class="ace-proof-photo" data-m="up">
-          <img src="/images/ace/court-swing.webp" alt="A player in a sport wheelchair stretches wide for a backhand, eyes on the ball" loading="lazy" width="1800" height="1200">
+          <img src="/images/events/monster-smash-2026/crew-lodge.webp" alt="Athletes in sport wheelchairs and Adapt To Life shirts bump fists between matches at Monster Smash" loading="lazy" width="720" height="1280">
         </figure>
         <div class="ace-proof-text" data-m="up">
           <span class="eyebrow orange">Monster Smash, Cincinnati, October 2026</span>
-          <h2 class="serif statement">Athletes who <em class="italic" style="color:var(--orange)">compete.</em></h2>
+          <h2 class="serif statement">Athletes who <em class="italic ace-o">compete.</em></h2>
           <p class="ace-big"><span data-count="38000" data-from="0" data-dur="800">38,000</span>+</p>
           <p class="ace-big-cap">views across Instagram and Facebook for our co-branded athlete spotlights.</p>
           <ul class="ace-results" aria-label="Results at Monster Smash">
@@ -657,21 +663,21 @@ fill="currentColor" stroke="none">
             <li class="b"><b>Bronze</b> Doubles</li>
             <li class="c"><b>Competed</b> Singles and doubles</li>
           </ul>
-          <p class="prose">Two of the athletes we support have played the US Open each of the last three years. At ACE we&rsquo;d love to make spotlights the same way, with both names and ACE&rsquo;s OK on what we post.</p>
+          <p class="prose">Two of the athletes we support have played the US Open each of the last three years. At ACE we&rsquo;d love to make spotlights the same way: ACE&rsquo;s name beside ours, with ACE&rsquo;s OK before we post.</p>
         </div>
       </div>
 
       <div class="ace-menu">
         <div class="ace-menu-head" data-m="up">
-          <h2 class="serif statement">Put your name <em class="italic" style="color:var(--orange)">on the court.</em></h2>
+          <h2 class="serif statement">Put your name <em class="italic ace-o">on the court.</em></h2>
           <p class="ace-menu-note">Gifts go to the Hustle &amp; Heart Fund, and we pay the club directly.</p>
         </div>
         <div class="ace-menu-board" data-m="up">
           <ul class="ace-rows">
-            <li class="ace-row"><span class="ace-price">$15</span><span class="ace-dots" aria-hidden="true"></span><span class="ace-what">One athlete, one night <a class="textlink" href="/sponsorship#tiers">Sponsor a night</a></span></li>
-            <li class="ace-row"><span class="ace-price">$225</span><span class="ace-dots" aria-hidden="true"></span><span class="ace-what">A night for up to 15 athletes <a class="textlink" href="/sponsorship#tiers">Sponsor a night</a></span></li>
-            <li class="ace-row"><span class="ace-price">$500</span><span class="ace-dots" aria-hidden="true"></span><span class="ace-what">Teammate: your name on the Chicago Classic <a class="textlink" href="/sponsorship#tiers">Sponsor a tournament</a></span></li>
-            <li class="ace-row"><span class="ace-price">$1,548</span><span class="ace-dots" aria-hidden="true"></span><span class="ace-what">A year of unlimited sessions for one athlete, an idea we&rsquo;re exploring with ACE <a class="textlink" href="/sponsorship#tiers">Sponsor an athlete</a></span></li>
+            <li class="ace-row"><span class="ace-price">$15</span><span class="ace-dots" aria-hidden="true"></span><span class="ace-what">One night on court for one athlete.</span></li>
+            <li class="ace-row"><span class="ace-price">$225</span><span class="ace-dots" aria-hidden="true"></span><span class="ace-what">One night on court for up to 15 athletes.</span></li>
+            <li class="ace-row"><span class="ace-price">$500</span><span class="ace-dots" aria-hidden="true"></span><span class="ace-what">Teammate: your name on a tournament.</span></li>
+            <li class="ace-row"><span class="ace-price">$1,548</span><span class="ace-dots" aria-hidden="true"></span><span class="ace-what">A year of unlimited sessions for one athlete, an idea we&rsquo;re exploring with ACE.</span></li>
           </ul>
           <div class="ace-menu-actions">
             <a href="/donate" class="btn">Donate</a>
@@ -856,7 +862,8 @@ fill="currentColor" stroke="none">
         var y=s.offsetTop + parseFloat(dot.top) + parseFloat(dot.height)/2;
         pts.push([Math.round(x*10)/10, Math.round(y*10)/10]);
       }
-      var last=steps[steps.length-1], end=[pts[2][0], last.offsetTop+last.offsetHeight];
+      var last=steps[steps.length-1], pace=stairs.querySelector('.ace-pace'), end=[pts[2][0], last.offsetTop+last.offsetHeight];
+      if(pace){ var pd=getComputedStyle(pace,'::before'); end=[Math.round((pace.offsetLeft+parseFloat(pd.left)+parseFloat(pd.width)/2)*10)/10, Math.round((pace.offsetTop+parseFloat(pd.top)+parseFloat(pd.height)/2)*10)/10]; }
       svg.setAttribute('width',W); svg.setAttribute('height',H); svg.setAttribute('viewBox','0 0 '+W+' '+H);
       function seg(a,b){ return 'M'+a[0]+' '+a[1]+' L'+b[0]+' '+b[1]; }
       svg.querySelector('.ace-rail-a').setAttribute('d', seg(pts[0],pts[1]));

@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { localAsnmAdminOperations } from "../src/index.js";
+import {
+  listingChangeFields,
+  localAsnmAdminOperations,
+  safeListingConfirmation,
+} from "../src/index.js";
 
 function featureDatabase(calls, rows = []) {
   return {
@@ -64,4 +68,25 @@ test("ASNM feature toggle lists parse stored feature audiences", async () => {
 
   assert.equal(response.status, 200);
   assert.deepEqual((await response.json()).items[0].audience_ids, ["everyone"]);
+});
+
+test("ASNM bulk confirmations exclude listing changes", () => {
+  const unchanged = {
+    relation: "run",
+    checkup: JSON.stringify({ verdict: "all_right" }),
+  };
+  const changed = {
+    relation: "run",
+    checkup: JSON.stringify({
+      verdict: "all_right",
+      facts: {
+        website: { status: "change", value: "https://example.test" },
+      },
+    }),
+  };
+
+  assert.deepEqual(listingChangeFields(unchanged), []);
+  assert.equal(safeListingConfirmation("listing_update", unchanged), true);
+  assert.deepEqual(listingChangeFields(changed), ["website_url"]);
+  assert.equal(safeListingConfirmation("listing_update", changed), false);
 });

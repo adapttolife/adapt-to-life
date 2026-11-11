@@ -20,6 +20,23 @@ function betaTesterDb(calls) {
   };
 }
 
+function existingBetaTesterDb(calls) {
+  return {
+    prepare(sql) {
+      return {
+        bind(...values) {
+          return {
+            async first() {
+              calls.push({ sql, values, method: "first" });
+              return { email: values[0] };
+            },
+          };
+        },
+      };
+    },
+  };
+}
+
 test("adding an ASNM beta tester stores their details and sends an invitation", async () => {
   const calls = [];
   const messages = [];
@@ -132,6 +149,46 @@ test("editing an ASNM beta tester updates their details without another invitati
     0,
   ]);
   assert.deepEqual(messages, []);
+});
+
+test("changing beta tester groups does not overwrite the tester profile", async (t) => {
+  const calls = [];
+  const requests = [];
+  t.mock.method(globalThis, "fetch", async (url, options = {}) => {
+    requests.push({ url: String(url), options });
+    if (String(url).endsWith("/topics")) {
+      return new Response(
+        JSON.stringify({ data: [{ id: "topic-a", subscription: "opt_in" }] }),
+        {
+          status: 200,
+        },
+      );
+    }
+    return new Response(JSON.stringify({}), { status: 200 });
+  });
+
+  const response = await localAsnmAdminOperations(
+    new Request("https://adapttolife.org/admin/api/asnm/admin-data/beta-testers", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: "tester@example.test", topicIds: ["topic-b"] }),
+    }),
+    {
+      ASNM_DB: existingBetaTesterDb(calls),
+      RESEND_API_KEY: "test-key",
+    },
+    new URL("https://adapttolife.org/admin/api/asnm/admin-data/beta-testers"),
+  );
+
+  assert.equal(response.status, 200);
+  assert.equal(calls.length, 1);
+  assert.match(calls[0].sql, /SELECT email FROM beta_testers/i);
+  assert.equal(requests.length, 2);
+  assert.equal(requests[1].options.method, "PATCH");
+  assert.deepEqual(JSON.parse(String(requests[1].options.body)), [
+    { id: "topic-a", subscription: "opt_out" },
+    { id: "topic-b", subscription: "opt_in" },
+  ]);
 });
 
 test("removing an ASNM beta tester deletes their access record", async () => {

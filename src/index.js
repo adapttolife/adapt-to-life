@@ -44,8 +44,10 @@ import { handleQr } from "./qr.js";
 import { handleAdmin } from "./qr_admin.js";
 import {
   adminEmail,
+  clearAdminSessionCookie,
   consumeLogin,
   readAdminSession,
+  revokeAdminSession,
   requestLogin,
   sendAdminLink,
 } from "./asnm_admin_auth.js";
@@ -822,6 +824,30 @@ export async function localAsnmAdminOperations(request, env, url) {
             : 1;
         const timestamp = new Date().toISOString();
         const addingTester = Object.hasOwn(body || {}, "name");
+        const changingTopics = Array.isArray(body?.topicIds);
+        if (!addingTester && changingTopics) {
+          if (!env.RESEND_API_KEY) {
+            return json(
+              { ok: false, error: "Resend Topics are not configured." },
+              503,
+              ADMIN_CACHE,
+            );
+          }
+          const tester = await env.ASNM_DB.prepare(
+            "SELECT email FROM beta_testers WHERE email = ? COLLATE NOCASE",
+          )
+            .bind(email)
+            .first();
+          if (!tester) {
+            return json(
+              { ok: false, error: "Beta tester not found." },
+              404,
+              ADMIN_CACHE,
+            );
+          }
+          await setContactTopics(env, email, body.topicIds);
+          return json({ ok: true }, 200, ADMIN_CACHE);
+        }
         if (addingTester) {
           if (
             Array.isArray(body?.topicIds) &&
@@ -937,6 +963,22 @@ export async function localAsnmAdminOperations(request, env, url) {
       } catch {
         payload = {};
       }
+      let action = "accept";
+      try {
+        action = String((await request.json()).action || "accept");
+      } catch {}
+      if (
+        action === "bulk-confirmation" &&
+        !safeListingConfirmation(submission.kind, payload)
+      )
+        return json(
+          {
+            ok: false,
+            error: "This submission has changes and must be reviewed individually.",
+          },
+          422,
+          ADMIN_CACHE,
+        );
       const timestamp = new Date().toISOString();
       let recordId = null;
       if (["new_organization", "new_program"].includes(String(submission.kind))) {
@@ -1047,6 +1089,57 @@ export async function localAsnmAdminOperations(request, env, url) {
   }
 
   return null;
+}
+
+export function listingChangeFields(payload) {
+  let checkup = payload && payload.checkup;
+  if (typeof checkup === "string") {
+    try {
+      checkup = JSON.parse(checkup);
+    } catch {
+      checkup = null;
+    }
+  }
+  if (!checkup || typeof checkup !== "object") checkup = null;
+  if (!checkup) return [];
+  if (checkup.verdict === "stopped") return ["visibility"];
+  const facts = checkup.facts && typeof checkup.facts === "object" ? checkup.facts : {};
+  const names = {
+    website: "website_url",
+    place: "place",
+    who: "ages",
+    cost: "cost_note",
+  };
+  const fields = Object.entries(facts)
+    .filter(
+      ([, answer]) =>
+        answer && typeof answer === "object" && answer.status === "change",
+    )
+    .map(([key]) => names[key] || key);
+  if (payload && payload.sports && typeof payload.sports === "object")
+    fields.push("sports");
+  if (Array.isArray(payload && payload.yearly) && payload.yearly.length)
+    fields.push("yearly events");
+  return [...new Set(fields)];
+}
+
+export function safeListingConfirmation(kind, payload) {
+  let checkup = payload && payload.checkup;
+  if (typeof checkup === "string") {
+    try {
+      checkup = JSON.parse(checkup);
+    } catch {
+      checkup = null;
+    }
+  }
+  return (
+    kind === "listing_update" &&
+    payload &&
+    payload.relation === "run" &&
+    checkup &&
+    checkup.verdict === "all_right" &&
+    listingChangeFields(payload).length === 0
+  );
 }
 
 export async function sendBetaTesterInvitation(env, { email, name, siteUrl }) {
@@ -1235,6 +1328,25 @@ async function adminVerifyLink(request, env, url) {
       Location: new URL("/admin", origin).toString(),
       "Set-Cookie": session.cookie,
       "Cache-Control": "no-store",
+    },
+  });
+}
+
+async function adminLogout(request, env, url) {
+  if (!env.ASNM_DB || !adminSecret(env)) {
+    return json(
+      { ok: false, error: "Admin sign-in is not configured." },
+      503,
+      ADMIN_CACHE,
+    );
+  }
+  const revoked = await revokeAdminSession(request, env.ASNM_DB, adminSecret(env));
+  return new Response(JSON.stringify({ ok: revoked }), {
+    status: revoked ? 200 : 401,
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": ADMIN_CACHE,
+      "Set-Cookie": clearAdminSessionCookie({ secure: url.protocol === "https:" }),
     },
   });
 }
@@ -1449,6 +1561,8 @@ export default {
         return adminRequestLink(request, env, url);
       if (url.pathname === "/admin/auth/verify")
         return adminVerifyLink(request, env, url);
+      if (url.pathname === "/admin/auth/logout" && request.method === "POST")
+        return adminLogout(request, env, url);
       const session = await adminSession(request, env);
       if (url.pathname === "/admin/auth/session")
         return json(
@@ -1703,7 +1817,10 @@ export async function recordNewsletterIntake(env, ctx, email, source) {
     after(
       ctx,
       notifyIntake(env, rec.id).catch((err) =>
-        console.error("newsletter intake notify failed (row saved, sweep retries):", err?.message || err),
+        console.error(
+          "newsletter intake notify failed (row saved, sweep retries):",
+          err?.message || err,
+        ),
       ),
     );
     return true;
@@ -2059,16 +2176,23 @@ async function handleRaised(request, env) {
   // bar asked for before the split, so cached pages stay right.
   const asked = new URL(request.url).searchParams.get("c") || "send-6";
   const key = CAMPAIGN_KEYS.includes(asked) ? asked : "send-6";
-  const { raised, inkind, online, offline, goal, parts, donors } = await campaignPosition(
-    env,
-    key,
-  );
+  const { raised, inkind, online, offline, goal, parts, donors } =
+    await campaignPosition(env, key);
   // donors: Givebutter's count of people who gave online (social proof on the
   // campaign module). Popcorn buyers are not in it, so the site says "donors",
   // never "supporters" or a total of everyone.
   // inkind (wbd only): court time a partner club gives toward every week,
   // kept apart from raised, which is gifts only.
-  const body = JSON.stringify({ key, raised, inkind, online, offline, goal, parts, donors });
+  const body = JSON.stringify({
+    key,
+    raised,
+    inkind,
+    online,
+    offline,
+    goal,
+    parts,
+    donors,
+  });
   return new Response(body, {
     headers: {
       "Content-Type": "application/json",

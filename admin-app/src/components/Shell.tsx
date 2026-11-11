@@ -32,6 +32,7 @@ export const NAV: NavItem[] = [
 export function Shell({
   route,
   onRoute,
+  onSignOut,
   you,
   title,
   subtitle,
@@ -40,6 +41,7 @@ export function Shell({
 }: {
   route: string;
   onRoute: (id: string) => void;
+  onSignOut: () => void | Promise<void>;
   you: string | null;
   title: string;
   subtitle?: string;
@@ -74,6 +76,13 @@ export function Shell({
         </div>
         <div className="nav-foot">
           <div className="mono who">{you ?? "…"}</div>
+          <button
+            className="nav-sign-out"
+            onClick={() => void onSignOut()}
+            type="button"
+          >
+            Sign out
+          </button>
           <a href="/" className="nav-link">
             adapttolife.org ↗
           </a>

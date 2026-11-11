@@ -142,3 +142,129 @@ test("Topic update errors retain Resend's validation message", async () => {
     globalThis.fetch = originalFetch;
   }
 });
+
+test("beta tester groups stay under Resend's rate limit and retry a 429", async () => {
+  const originalFetch = globalThis.fetch;
+  const testers = Array.from({ length: 28 }, (_, index) => ({
+    email: `tester${index}@example.test`,
+  }));
+  let inFlight = 0;
+  let maxInFlight = 0;
+  let paced = 0;
+  let throttledOnce = false;
+  const sleeps = [];
+  globalThis.fetch = async (url) => {
+    const path = new URL(String(url)).pathname;
+    inFlight += 1;
+    maxInFlight = Math.max(maxInFlight, inFlight);
+    await new Promise((resolve) => setImmediate(resolve));
+    inFlight -= 1;
+    if (path === "/topics") {
+      return response({ data: [{ id: "topic-one", name: "Group 1" }] });
+    }
+    if (path === "/contacts/tester5%40example.test/topics" && !throttledOnce) {
+      throttledOnce = true;
+      return new Response(JSON.stringify({ message: "Too many requests" }), {
+        status: 429,
+        headers: { "Content-Type": "application/json", "retry-after": "1" },
+      });
+    }
+    if (path === "/contacts/tester3%40example.test/topics") {
+      return response({ data: [{ id: "topic-one", subscription: "opt_in" }] });
+    }
+    return response({ error: "Contact not found" }, 404);
+  };
+
+  try {
+    const result = await betaTesterTopicGroups({ RESEND_API_KEY: "test" }, testers, {
+      pace: async () => {
+        paced += 1;
+      },
+      sleep: async (ms) => {
+        sleeps.push(ms);
+      },
+    });
+    assert.ok(
+      maxInFlight <= 4,
+      `at most 4 Resend requests in flight, saw ${maxInFlight}`,
+    );
+    assert.equal(
+      paced,
+      1 + testers.length + 1,
+      "every request, including the retry, is paced",
+    );
+    assert.deepEqual(sleeps, [1000], "the 429 waits for Resend's retry-after");
+    assert.deepEqual(result.groups, [
+      { id: "topic-one", name: "Group 1", emails: ["tester3@example.test"] },
+    ]);
+    assert.equal(Object.keys(result.idsByEmail).length, testers.length);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("a persistent 429 still surfaces after bounded retries", async () => {
+  const originalFetch = globalThis.fetch;
+  let calls = 0;
+  const sleeps = [];
+  globalThis.fetch = async (url) => {
+    calls += 1;
+    if (new URL(String(url)).pathname === "/topics") {
+      return response({ data: [{ id: "topic-one", name: "Group 1" }] });
+    }
+    return new Response(JSON.stringify({ message: "Too many requests" }), {
+      status: 429,
+      headers: { "Content-Type": "application/json" },
+    });
+  };
+
+  try {
+    await assert.rejects(
+      () =>
+        betaTesterTopicGroups(
+          { RESEND_API_KEY: "test" },
+          [{ email: "tester@example.test" }],
+          {
+            pace: async () => {},
+            sleep: async (ms) => {
+              sleeps.push(ms);
+            },
+          },
+        ),
+      (error) => {
+        assert.ok(error instanceof ResendTopicsError);
+        assert.equal(error.status, 429);
+        return true;
+      },
+    );
+    assert.equal(calls, 1 + 4, "one Topics call plus the first try and three retries");
+    assert.deepEqual(
+      sleeps,
+      [500, 1000, 2000],
+      "no retry header falls back to backoff",
+    );
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("no Topics means no membership lookups", async () => {
+  const originalFetch = globalThis.fetch;
+  const paths = [];
+  globalThis.fetch = async (url) => {
+    paths.push(new URL(String(url)).pathname);
+    return response({ data: [] });
+  };
+  try {
+    const result = await betaTesterTopicGroups(
+      { RESEND_API_KEY: "test" },
+      [{ email: "a@example.test" }, { email: "b@example.test" }],
+      { pace: async () => {}, sleep: async () => {} },
+    );
+    assert.deepEqual(paths, ["/topics"]);
+    assert.deepEqual(result.groups, []);
+    assert.deepEqual(result.idsByEmail, { "a@example.test": [], "b@example.test": [] });
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});

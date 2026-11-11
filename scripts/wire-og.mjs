@@ -67,7 +67,7 @@ const ALT = {
   "chicago-adaptive-sports": "Push. Play. Persist. Adapt To Life. Juan Ortiz in a Chicago Adaptive Sports shirt.",
   amp: "Active. Mobile. Proud. Adapt To Life. Karen Atkinson water skiing in a sit-ski, a jet ski behind her.",
   "chicago-classic": "The Chicago Classic. Adapt To Life. Juan Ortiz in his sport wheelchair, paddle up, on a dark indoor court.",
-  ace: "Something Chicago hasn't seen. Adapt To Life. A wheelchair pickleball player in a white cap leans on the rail with his paddle.",
+  ace: "Something Chicago hasn't seen. Adapt To Life. A player in a sport wheelchair bumps fists with a player across the net.",
   pickleball:
     "Chicago Pickleball: Wheelie Big Dills. Adapt To Life. Juan Ortiz, a wheelchair pickleball player in glasses, tosses the ball to serve from his sport wheelchair.",
   "guide-sport-wheelchair-cost": "What a sport wheelchair really costs. Adapt To Life. A wheelchair pickleball athlete on an indoor court.",
@@ -98,7 +98,7 @@ const FILE = {
   "guide-corporate-matching": "guide-corporate-matching-v1-card.jpg",
   brickhouse: "brickhouse-v3-crewhome.jpg",
   pickleball: "pickleball-v5-name.jpg",
-  ace: "ace-v3-partner.jpg",
+  ace: "ace-v4-partner.jpg",
   "chicago-classic": "chicago-classic-v1-date.jpg",
   "send-6": "send-6-v4-road.jpg",
   picklr: "picklr-v1-partner.jpg",

@@ -48,12 +48,14 @@ test("every Givebutter form sits on an off-white card that the blend can use", (
     );
   }
   const css = read("src/css/site.css");
-  assert.ok(
-    css.includes(
-      ".gb-card.gb-ready givebutter-giving-form {\n  mix-blend-mode: multiply;",
-    ),
+  assert.match(
+    css,
+    /\.gb-card\.gb-ready givebutter-giving-form\s*\{\s*mix-blend-mode:\s*multiply;/,
   );
-  assert.ok(css.includes(".gb-card.gb-ready .gb-boot {\n  display: none;"));
+  assert.match(
+    css,
+    /\.gb-card\.gb-ready \.gb-boot\s*\{\s*display:\s*none;/,
+  );
   assert.ok(read("public/js/campaigns.js").includes('card.classList.add("gb-ready")'));
 });
 

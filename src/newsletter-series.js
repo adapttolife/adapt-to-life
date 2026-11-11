@@ -115,14 +115,14 @@ export const SAVED_FOR_LATER = [
   {
     key: "crew",
     day: 5,
-    subject: "From no wins to two US Open medals",
+    subject: "Two US Open medals in one year",
     preheader: "What the crew has done, and the ambassador behind it.",
     image: {
       src: "/images/email/welcome-juan-v1.jpg",
       alt: "Juan Ortiz celebrates on court in a Chicago Adaptive Sports shirt.",
     },
     paragraphs: [
-      "Brian Liss didn’t win a match at his first US Open. At his second, he came home with silver and bronze. Robby Wolf has played the US Open in Naples the last three years.",
+      "In one year, Brian Liss went from his first US Open to silver and bronze at his second. Robby Wolf has played the US Open in Naples the last three years.",
       "In October the crew brought home six medals from Monster Smash: two golds, two silvers and two bronzes in the wheelchair division.",
       "And when Juan Ortiz asked the APP Tour for a wheelchair division, they made one. Juan was paralyzed at 14, is a Hall of Famer in wheelchair softball and trains 16 hours a week. He is our first ambassador.",
       "Brian put it this way: “The chair didn’t fix me. It gave me options I didn’t have before.”",

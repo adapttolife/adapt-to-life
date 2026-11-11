@@ -43,7 +43,7 @@ export const CREW = [
     img: "/images/pickleball/brian.webp",
     w: 952,
     h: 900,
-    fact: "US Open silver and bronze, a year after going winless.",
+    fact: "Silver and bronze at his second US Open.",
     href: "/pickleball#brian",
     cta: "See more",
     share: "/pickleball#brian",

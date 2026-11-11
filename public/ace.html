@@ -221,14 +221,6 @@
   .ace-proof-text .statement{ margin-top:0.7rem; }
   .ace-big{ margin-top:1.4rem; font-family:var(--font-display); font-weight:900; font-size:clamp(56px,16vw,120px); line-height:.88; letter-spacing:-0.05em; color:var(--orange); font-variant-numeric:tabular-nums; text-shadow:0 0 50px rgb(var(--accent-rgb) / 0.2); }
   .ace-big-cap{ margin-top:0.7rem; max-width:36ch; color:var(--cream-mute); }
-  .ace-results{ list-style:none; margin:1.6rem 0 0; padding:1.05rem 0 0; border-top:1px solid rgba(249,247,242,0.14); display:flex; flex-wrap:wrap; gap:0.7rem 1.3rem; font-family:var(--font-label); font-weight:700; font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--cream-mute); }
-  .ace-results li{ display:inline-flex; align-items:center; gap:0.5rem; white-space:nowrap; }
-  .ace-results b{ font-weight:800; color:var(--cream); }
-  .ace-results li::before{ content:""; flex:none; width:0.62rem; height:0.62rem; border-radius:50%; background:var(--m); box-shadow:0 0 0 3px color-mix(in srgb, var(--m) 24%, transparent); }
-  .ace-results .g{ --m:var(--gold); }
-  .ace-results .s{ --m:var(--cream-mute); }
-  .ace-results .b{ --m:#d9904f; }
-  .ace-results .c::before{ background:transparent; box-shadow:inset 0 0 0 1.5px var(--cream-faint); }
   .ace-proof-text .prose{ margin-top:1.4rem; max-width:52ch; }
   .ace-menu{ display:grid; grid-template-columns:minmax(0,1fr); gap:2rem; margin-top:64px; padding-top:64px; border-top:1px solid rgba(249,247,242,0.14); }
   .ace-menu-note{ margin-top:1rem; max-width:34ch; color:var(--cream-mute); }
@@ -251,6 +243,17 @@
     .ace-price{ font-size:2rem; }
     .ace-dots{ margin-top:1.3rem; }
   }
+
+  .ace-tally{ list-style:none; margin:1.8rem 0 0; padding:0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(0.6rem,2vw,1rem); }
+  .ace-tally li{ --m:var(--gold); position:relative; display:grid; justify-items:start; padding:clamp(0.9rem,2.4vw,1.2rem); border-radius:var(--r-xl); background:linear-gradient(160deg, color-mix(in srgb, var(--m) 18%, transparent), color-mix(in srgb, var(--m) 4%, transparent) 70%); box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--m) 40%, transparent); }
+  .ace-tally .s{ --m:var(--cream-mute); }
+  .ace-tally .b{ --m:#d9904f; }
+  .ace-medal-svg{ width:clamp(2.2rem,7vw,3rem); height:auto; color:var(--m); filter:drop-shadow(0 4px 14px color-mix(in srgb, var(--m) 45%, transparent)); }
+  .ace-tally b{ margin-top:0.6rem; font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(2.4rem,7vw,3.4rem); line-height:0.9; letter-spacing:-0.04em; color:var(--cream); }
+  .ace-tally span{ margin-top:0.35rem; font-family:var(--font-label); font-weight:800; font-size:0.78rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--m); }
+  .ace-tally small{ margin-top:0.25rem; font-size:0.85rem; line-height:1.35; color:var(--cream-mute); }
+  .ace-tally-cap{ margin-top:0.9rem; font-size:0.92rem; color:var(--cream-mute); }
+  .ace-proof-next strong{ color:var(--cream); font-weight:700; }
 
   /* ---- Motion (html.ace-motion only) ------------------------------------ */
   .ace-motion [data-m="up"]{ opacity:0; transform:translateY(24px); transition:opacity .8s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1); }
@@ -596,15 +599,13 @@ fill="currentColor" stroke="none">
           <h2 class="serif statement">Athletes who <em class="italic ace-o">compete.</em></h2>
           <p class="ace-big"><span data-count="38000" data-from="0" data-dur="800">38,000</span>+</p>
           <p class="ace-big-cap">views across Instagram and Facebook for our co-branded athlete spotlights.</p>
-          <ul class="ace-results" aria-label="Results at Monster Smash">
-            <li class="g"><b>Gold</b> Singles</li>
-            <li class="g"><b>Gold</b> Doubles</li>
-            <li class="s"><b>Silver</b> Doubles</li>
-            <li class="b"><b>Bronze</b> Singles</li>
-            <li class="b"><b>Bronze</b> Doubles</li>
-            <li class="c"><b>Competed</b> Singles and doubles</li>
+          <ul class="ace-tally" aria-label="Medals at Monster Smash: 2 gold, 1 silver, 2 bronze">
+            <li class="g"><svg class="ace-medal-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="win" data-style="fill"><path fill="currentColor" d="M216 96a88 88 0 1 0-144 67.83V240a8 8 0 0 0 11.58 7.16L128 225l44.43 22.21a8.1 8.1 0 0 0 3.57.79a8 8 0 0 0 8-8v-76.17A87.85 87.85 0 0 0 216 96M56 96a72 72 0 1 1 72 72a72.08 72.08 0 0 1-72-72m16 0a56 56 0 1 1 56 56a56.06 56.06 0 0 1-56-56"/></svg><b>2</b><span>Gold</span><small>Singles, doubles</small></li>
+            <li class="s"><svg class="ace-medal-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="win" data-style="fill"><path fill="currentColor" d="M216 96a88 88 0 1 0-144 67.83V240a8 8 0 0 0 11.58 7.16L128 225l44.43 22.21a8.1 8.1 0 0 0 3.57.79a8 8 0 0 0 8-8v-76.17A87.85 87.85 0 0 0 216 96M56 96a72 72 0 1 1 72 72a72.08 72.08 0 0 1-72-72m16 0a56 56 0 1 1 56 56a56.06 56.06 0 0 1-56-56"/></svg><b>1</b><span>Silver</span><small>Doubles</small></li>
+            <li class="b"><svg class="ace-medal-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="win" data-style="fill"><path fill="currentColor" d="M216 96a88 88 0 1 0-144 67.83V240a8 8 0 0 0 11.58 7.16L128 225l44.43 22.21a8.1 8.1 0 0 0 3.57.79a8 8 0 0 0 8-8v-76.17A87.85 87.85 0 0 0 216 96M56 96a72 72 0 1 1 72 72a72.08 72.08 0 0 1-72-72m16 0a56 56 0 1 1 56 56a56.06 56.06 0 0 1-56-56"/></svg><b>2</b><span>Bronze</span><small>Singles, doubles</small></li>
           </ul>
-          <p class="prose">Two of the athletes we support have played the US Open each of the last three years. At ACE we&rsquo;d love to make spotlights the same way: ACE&rsquo;s name beside ours, with ACE&rsquo;s OK before we post.</p>
+          <p class="ace-tally-cap">Six athletes, in singles and doubles.</p>
+          <p class="prose ace-proof-next">Two athletes we support have played three straight US Opens. <strong>Next, we tell these stories at ACE, with ACE&rsquo;s name right beside ours.</strong></p>
         </div>
       </div>
 

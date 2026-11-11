@@ -44,8 +44,10 @@ import { handleQr } from "./qr.js";
 import { handleAdmin } from "./qr_admin.js";
 import {
   adminEmail,
+  clearAdminSessionCookie,
   consumeLogin,
   readAdminSession,
+  revokeAdminSession,
   requestLogin,
   sendAdminLink,
 } from "./asnm_admin_auth.js";
@@ -1330,6 +1332,25 @@ async function adminVerifyLink(request, env, url) {
   });
 }
 
+async function adminLogout(request, env, url) {
+  if (!env.ASNM_DB || !adminSecret(env)) {
+    return json(
+      { ok: false, error: "Admin sign-in is not configured." },
+      503,
+      ADMIN_CACHE,
+    );
+  }
+  const revoked = await revokeAdminSession(request, env.ASNM_DB, adminSecret(env));
+  return new Response(JSON.stringify({ ok: revoked }), {
+    status: revoked ? 200 : 401,
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": ADMIN_CACHE,
+      "Set-Cookie": clearAdminSessionCookie({ secure: url.protocol === "https:" }),
+    },
+  });
+}
+
 async function proxyAsnmAdmin(request, env, url, session) {
   const path = url.pathname.slice("/admin/api/asnm".length) || "/";
   const origin = env.ASNM_ADMIN_ORIGIN || "https://adaptivesportsnearme.com";
@@ -1540,6 +1561,8 @@ export default {
         return adminRequestLink(request, env, url);
       if (url.pathname === "/admin/auth/verify")
         return adminVerifyLink(request, env, url);
+      if (url.pathname === "/admin/auth/logout" && request.method === "POST")
+        return adminLogout(request, env, url);
       const session = await adminSession(request, env);
       if (url.pathname === "/admin/auth/session")
         return json(

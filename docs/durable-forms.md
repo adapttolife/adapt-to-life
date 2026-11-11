@@ -10,7 +10,7 @@ The existing `WAIVERS_DB` holds raw operational forms; full application stories,
 financial need and volunteered personal detail are not exported into the shared
 CRM. The shared `INTAKE` projection carries identity, form type, sponsor tier,
 source and tracking ID. No form is auto-subscribed to
-Beehiiv merely because it supplied an email address.
+the Resend newsletter segment merely because it supplied an email address.
 
 ## Owners and routing
 
@@ -19,7 +19,7 @@ Beehiiv merely because it supplied an email address.
 | Sponsorship conversation, general contact, Karen contact | `form_submissions` + `form_deliveries` in existing WAIVERS_DB | Separate submitter receipt and hello@ notification | Existing CRM `Form Submissions`, sponsor tier/source |
 | Grant application | Same operational D1, full private snapshot | Applicant receipt; identity-only internal intake notification | Shared CRM identity/tracking only, not the application narrative |
 | Volunteer board and role pages | Same operational D1 | Submitter receipt and internal intake notification | Shared CRM role list/tracking link, not the personal narrative |
-| Newsletter signup | Beehiiv plus existing suppression/welcome claim | Beehiiv owns ATL welcome; existing opt-outs are preserved | Publication audience, with explicit newsletter intent |
+| Newsletter signup | Adapt To Life segment in Resend plus the `newsletter_delivery_claims` row | One welcome email sent through Resend (`src/newsletter-series.js`); opt-outs live on the Resend contact and existing ones are preserved | Resend segment and a shared intake row (CRM Intake Register), with explicit newsletter intent |
 | Adapt Body Shop contact | Existing `shop_messages` D1 | Existing shop receipt + hello@ notification | Existing Shop Messages mirror; no duplicate shared-intake notification |
 | Waiver | `waivers` row + signed PDF bytes in `waiver_documents`, one D1 batch, before any success | Signing receipt; Drive archive retried by `runDriveBacklog` (`drive_status`) | Restricted signed-document Drive path; no new signature or fake waiver test |
 | Donation | Givebutter and existing donation D1 ledger | Existing signed-webhook/poll reconciliation | CRM Sheet Donations and Donor Reference (hourly projection); no invented payment test |

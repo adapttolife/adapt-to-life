@@ -20,6 +20,16 @@ async function get<T>(path: string): Promise<T> {
   return body as T;
 }
 
+async function post<T>(path: string): Promise<T> {
+  const r = await fetch(`/admin/api${path}`, { method: "POST" });
+  if (r.status === 401 || r.status === 403) throw new AuthLapsed("session expired");
+  const body = await r.json().catch(() => ({ error: "unreadable response" }));
+  if (!r.ok || (body as { ok?: boolean }).ok === false) {
+    throw new Error((body as { error?: string }).error || `HTTP ${r.status}`);
+  }
+  return body as T;
+}
+
 export interface Code {
   slug: string;
   dest: string;
@@ -69,6 +79,7 @@ export interface HistoryEvent {
 
 export const api = {
   session: () => get<{ email: string }>("/../auth/session"),
+  signOut: () => post<{ ok: true }>("/../auth/logout"),
   codes: () => get<{ you: string; codes: Code[] }>("/codes"),
   analytics: (days: number) => get<Analytics>(`/analytics?days=${days}`),
   history: () => get<{ events: HistoryEvent[] }>("/history"),

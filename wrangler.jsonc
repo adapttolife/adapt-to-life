@@ -33,7 +33,7 @@
   // and the homepage. It runs BEFORE the stamp like everything else that writes
   // into public/, and it cannot fail the build: if the directory's API is
   // unreachable it reuses the committed data/asnm-stats.json and says so.
-  "build": { "command": "npm run build:app && node scripts/build-css.mjs && node scripts/version-assets.mjs && npm test && node scripts/build-asnm.mjs && node scripts/stamp-build.mjs" },
+  "build": { "command": "npm run build:app && node scripts/build-css.mjs && node scripts/version-assets.mjs && npm run events && npm run guides && npm test && node scripts/build-asnm.mjs && node scripts/stamp-build.mjs" },
 
   // Live custom domains (apex + www). Cloudflare manages DNS + TLS for these.
   "routes": [

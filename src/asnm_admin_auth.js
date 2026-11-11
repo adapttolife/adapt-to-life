@@ -1,7 +1,7 @@
 import { sendMail } from "./mail-transport.js";
 
 const COOKIE = "asnm_admin";
-const SESSION_SECONDS = 60 * 60 * 12;
+const SESSION_SECONDS = 60 * 60 * 24 * 5;
 const TOKEN_MINUTES = 15;
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
@@ -63,6 +63,23 @@ export async function readAdminSession(request, db, secret) {
     .first();
   const email = adminEmail(row?.email);
   return email ? { id, email, cookie: `${COOKIE}=${id}.${supplied}` } : null;
+}
+
+export async function revokeAdminSession(request, db, secret) {
+  const session = await readAdminSession(request, db, secret);
+  if (!session) return false;
+  await db
+    .prepare(
+      "UPDATE admin_sessions SET revoked_at = ? WHERE id = ? AND revoked_at IS NULL",
+    )
+    .bind(now(), session.id)
+    .run();
+  return true;
+}
+
+export function clearAdminSessionCookie({ secure = true } = {}) {
+  const secureAttribute = secure ? "; Secure" : "";
+  return `${COOKIE}=; HttpOnly${secureAttribute}; SameSite=Strict; Path=/; Max-Age=0`;
 }
 
 export async function requestLogin(db, email) {

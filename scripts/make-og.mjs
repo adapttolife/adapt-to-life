@@ -296,7 +296,7 @@ const CARDS = {
     page: "events/app-vlasic-classic-2026.html",
     headline: "The APP Tour&rsquo;s first <em>wheelchair division.</em>",
   },
-  // Home court card. Split, not athlete: see "brickhouse-hero" above.
+  // Brick House card (Open Court wording, Nov 11 2026). Split, not athlete: see "brickhouse-hero" above.
   // Same photograph and split treatment. v2 because the headline changed after
   // the reopening, and an old URL would keep serving the old line.
   brickhouse: {
@@ -304,9 +304,9 @@ const CARDS = {
     photo: "brickhouse-hero",
     size: 66,
     measure: "11ch",
-    out: "public/images/og/brickhouse-v3-crewhome.jpg",
+    out: "public/images/og/brickhouse-v4-open.jpg",
     page: "brickhouse.html",
-    headline: "The crew's home court <em>is Brick House</em>.",
+    headline: "Brick House keeps <em>the court open.</em>",
   },
   // The Chicago Classic: same split treatment, Juan with his paddle up.
   "chicago-classic": {

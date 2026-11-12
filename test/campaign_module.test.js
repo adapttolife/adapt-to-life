@@ -12,9 +12,11 @@ const read = (p) => readFileSync(join(ROOT, p), "utf8");
 // can update and make the overall website." The campaign module goes
 // site-wide, generated from one partial so every page shows the same numbers.
 const MARK = /<!-- campaign-module (\{.*?\}) -->/g;
+// The header lab (hero-1 ... hero-9) is staging-only copies of the home page,
+// module and all, so it is not a page of its own here (as in the other tests).
 const carriers = () =>
   readdirSync(join(ROOT, "public"))
-    .filter((f) => f.endsWith(".html"))
+    .filter((f) => f.endsWith(".html") && !/^hero-\d/.test(f))
     .map((f) => ({ f, html: read(`public/${f}`) }))
     .filter(({ html }) => html.includes("<!-- campaign-module {"));
 

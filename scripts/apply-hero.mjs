@@ -42,6 +42,23 @@ let html = unversionHtml(readFileSync(FILE, "utf8"));
 const a = html.indexOf(HERO_START);
 const b = html.indexOf(HERO_END);
 if (a < 0 || b < 0) throw new Error("hero markers not found in index.html");
+// The live header can carry edits its stored variant lacks (Nov 2026: the
+// phone grid and the mission line were edited by hand). Overwriting would drop
+// them without a word, so refuse unless asked to.
+const live = html.slice(a, b);
+const liveKey = (live.match(/data-variant="(\d+)"/) || [])[1];
+if (
+  liveKey &&
+  VARIANTS[liveKey] &&
+  live !== VARIANTS[liveKey] &&
+  !process.argv.includes("--force")
+) {
+  console.error(
+    `index.html's header (variant ${liveKey}) has edits that scripts/lib/heroes.mjs lacks. ` +
+      "Copy them into the variant first, or pass --force to drop them.",
+  );
+  process.exit(1);
+}
 html = html.slice(0, a) + VARIANTS[key] + html.slice(b);
 
 // 2 · the stylesheet. Marked so re-running swaps it instead of stacking.

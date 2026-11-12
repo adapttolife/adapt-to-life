@@ -51,6 +51,10 @@ document it points to for the job at hand.
 - Content standard, claims and page roles: `docs/CONTENT.md`.
 - Money: `public/data/campaigns.json` (campaigns, goals, the road's stops), `src/fund.js` (how the
   bar fills), `docs/sponsor-letter.md` (named sponsorships).
+- No calculator needed: say what the money does, then one amount. Never make the reader add,
+  multiply or convert (no "at $15 each", no "$129 a month, or $1,548 a year", no "52 nights × $225",
+  no per-day figures). A simple contrast or an obvious relationship is fine. `npm test` guards the
+  worst patterns ("no page asks the reader to do math").
 - Standing copy rules: Adapt To Life funds and supports the crew and does not run it; the crew is
   "Chicago Pickleball: Wheelie Big Dills" at first mention on a page and "the Wheelie Big Dills"
   after; no absolutes in money or partner copy ("every week" is a campaign name); every money

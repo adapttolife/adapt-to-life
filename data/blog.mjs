@@ -68,8 +68,11 @@ export const AUTHORS = {
   },
 };
 
-// The face under the hub's header: the person behind the blog.
-export const EDITOR = "alec";
+// Authors appear on posts only. The blog page and the pages it collects carry
+// no author: they are the organization's own pages. Alec, Nov 12 2026: "I
+// don't think we need my name there ... Eventually Karen will write something
+// and we'll invite different ppl from the community ... Maybe for now we just
+// have nothing?"
 
 // One photograph per entry, the same shape everywhere (Alec, Nov 12 2026:
 // "Should we have pictures or icons? It feels sloppy"). Pictures, never icon
@@ -79,7 +82,9 @@ export const EDITOR = "alec";
 // a crop writes new files and drops the old ones. Look at every new photo
 // before it ships: no GLASA or "Great Lakes Games" shirts.
 const PHOTO = {
-  juan: { src: "assets/photos/juan-portrait.jpg", x: 1130, y: 0, w: 1800, h: 1200 },
+  // Juan serving, black and white (as on /juan). Alec, Nov 12 2026, on the
+  // tight portrait crop it replaced: "let's get a better picture for Juan".
+  juan: { src: "public/images/athletes/juan-serve.webp", x: 0, y: 130, w: 1500, h: 1000 },
   karen: { src: "public/images/karen-waterskiing.jpg", x: 226, y: 106, w: 1200, h: 800 },
   // Tim's own photo, as on /tim and the fund page. It shows another
   // organization's jersey; Alec kept it on Nov 5 ("the rule covers words we

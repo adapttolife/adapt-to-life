@@ -85,7 +85,9 @@ const PHOTO = {
   // Juan serving, black and white (as on /juan). Alec, Nov 12 2026, on the
   // tight portrait crop it replaced: "let's get a better picture for Juan".
   juan: { src: "public/images/athletes/juan-serve.webp", x: 0, y: 130, w: 1500, h: 1000 },
-  karen: { src: "public/images/karen-waterskiing.jpg", x: 226, y: 106, w: 1200, h: 800 },
+  // Karen's profile photo, as on /karen and /about. Alec, Nov 12 2026: "For
+  // Karen, use her profile image" (it replaced a water-skiing crop).
+  karen: { src: "public/images/karen.jpg", x: 0, y: 0, w: 900, h: 600 },
   // Tim's own photo, as on /tim and the fund page. It shows another
   // organization's jersey; Alec kept it on Nov 5 ("the rule covers words we
   // write, not this historical photo of the fund's namesake"). Full frame.
@@ -96,7 +98,11 @@ const PHOTO = {
   // (Amanda mid-swing, assets/photos/court-swing.jpg full frame, was the
   // other choice: she took bronze there and it is the event's share card.)
   smash: { src: "public/images/athletes/ryan-reach.webp", x: 0, y: 162, w: 960, h: 640 },
-  app: { src: "public/images/events/app-vlasic-classic-2026/court-29.webp", x: 0, y: 560, w: 720, h: 480 },
+  // A player mid-swing, ball in the air (ACE shoot), in place of the 720px
+  // reel frame from court 29. Alec, Nov 12 2026: "Let's update the APP
+  // image". The ACE shoot's group photos are out: one shows a Great Lakes
+  // Games shirt (see the no-GLASA rule).
+  app: { src: "public/images/athletes/wheelie-4.webp", x: 0, y: 0, w: 1500, h: 1000 },
   chair: { src: "public/images/athletes/juan-chair.webp", x: 0, y: 139, w: 1600, h: 1067 },
   sponsor: { src: "assets/photos/cap-profile.jpg", x: 0, y: 0, w: 3900, h: 2600 },
   matching: { src: "assets/photos/paddle-portrait.jpg", x: 0, y: 0, w: 3900, h: 2600 },

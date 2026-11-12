@@ -18,9 +18,12 @@ const dim = (f) => `width="${DIM[f][0]}" height="${DIM[f][1]}"`;
 
 const ROOT = new URL("../../public/", import.meta.url);
 
-// The hero region in index.html, from its comment marker to the campaign band.
+// The hero region in index.html, from its comment marker to its end marker.
+// The end used to be the "2 · CAMPAIGN BAND" comment; that section went in the
+// Sept 11 2026 homepage rebuild, so the lab silently stopped regenerating and
+// its pages kept the old homepage body. An explicit end marker cannot drift.
 export const HERO_START = "  <!-- 1 · HERO";
-export const HERO_END = "  <!-- 2 · CAMPAIGN BAND";
+export const HERO_END = "  <!-- /1 · HERO -->";
 
 /* --------------------------------------------------------------------------
    Shared pieces

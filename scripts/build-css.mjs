@@ -100,15 +100,32 @@ export function stripCss(css) {
   return out.replace(/\s+/g, " ").replace(/^\s+|\s+$/g, "") + "\n";
 }
 
+// Panel images are fingerprinted: scripts/build-hero-panels.py renames each to
+// name.<hash>.webp and lists it in hashes.json. A stylesheet that names a panel
+// by its plain name 404s; hero-spectrum.css did from the fingerprinting until
+// Nov 12 2026, which left headers 3, 4 and 7 in the lab without their photo.
+// So the build resolves plain panel names through the manifest, and refuses a
+// name the manifest does not know rather than ship a broken image.
+const PANEL_HASHES = join(ROOT, "public", "images", "hero", "panels", "hashes.json");
+export function resolvePanels(css, file, hashes) {
+  return css.replace(/\/images\/hero\/panels\/([a-z0-9-]+)\.webp/g, (m, stem) => {
+    const hashed = hashes[`${stem}.webp`];
+    if (!hashed)
+      throw new Error(`${file}: ${m} is not in images/hero/panels/hashes.json`);
+    return `/images/hero/panels/${hashed}`;
+  });
+}
+
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   mkdirSync(OUT, { recursive: true });
+  const panelHashes = JSON.parse(readFileSync(PANEL_HASHES, "utf8"));
   let before = 0,
     after = 0;
   for (const f of readdirSync(SRC)
     .filter((f) => f.endsWith(".css"))
     .sort()) {
     const src = readFileSync(join(SRC, f), "utf8");
-    const min = stripCss(src);
+    const min = stripCss(resolvePanels(src, f, panelHashes));
     writeFileSync(join(OUT, f), min);
     before += src.length;
     after += min.length;

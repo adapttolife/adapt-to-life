@@ -29,8 +29,14 @@ const a = src.indexOf(HERO_START);
 const b = src.indexOf(HERO_END);
 if (a < 0 || b < 0) throw new Error("hero markers not found in index.html");
 
+// The header that is on the homepage now (data-variant on the live section)
+// is shown exactly as it is live: it has been edited by hand since it was
+// chosen (the phone grid, the mission line), and its stored definition has not.
+const LIVE_REGION = src.slice(a, b);
+const LIVE_KEY = (LIVE_REGION.match(/data-variant="(\d+)"/) || [])[1];
+
 function switcher(active) {
-  const items = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+  const items = Object.keys(VARIANTS)
     .map(
       (k) =>
         `<a href="/hero-${k}" class="hv-chip${k === active ? " on" : ""}">${LABEL[k]}</a>`,
@@ -52,7 +58,8 @@ function switcher(active) {
 `;
 }
 
-for (const [key, hero] of Object.entries(VARIANTS)) {
+for (const [key, variant] of Object.entries(VARIANTS)) {
+  const hero = key === LIVE_KEY ? LIVE_REGION : variant;
   let out = src.slice(0, a) + hero + src.slice(b);
   out = out
     .replace(

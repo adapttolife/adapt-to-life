@@ -1316,6 +1316,108 @@ em.italic[style*="--orange"] {
   margin-top: 2rem;
 } /* gap and margin were missing here while .hero .actions had both, so closing    buttons touched each other on every page, and any closing without a    paragraph above them sat flush against the heading. */
 
+/* ---- more from the blog ------------------------------------------------- */
+/* The end of every page the blog collects (people pages, event stories,
+   guides, /numbers), written by scripts/lib/blog-index.mjs: three more to
+   read, the blog's own row look. Alec, Nov 12 2026, "Do 4, 5 and 6". */
+.more-blog {
+  padding-block: var(--pad-sm);
+  background: var(--canvas);
+}
+.more-blog-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.4rem 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid rgba(59, 59, 70, 0.14);
+}
+.more-blog-head h2 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(1.3rem, 2.6vw, 1.6rem);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.more-blog-head a {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--orange-ink);
+}
+.more-blog-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.more-blog-list a {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 112px;
+  grid-template-areas:
+    "s img"
+    "t img";
+  grid-template-rows: auto 1fr;
+  align-items: start;
+  column-gap: 1rem;
+  padding: 1.1rem 0;
+  border-bottom: 1px solid rgba(59, 59, 70, 0.14);
+  color: var(--ink);
+  text-decoration: none;
+}
+.more-blog-list img {
+  grid-area: img;
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  border-radius: var(--r-md);
+  background: var(--hairline);
+}
+.more-blog-s {
+  grid-area: s;
+  font-size: 0.86rem;
+  color: var(--muted);
+}
+.more-blog-t {
+  grid-area: t;
+  margin-top: 0.2rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.12rem;
+  line-height: 1.22;
+}
+.more-blog-list a:hover .more-blog-t {
+  color: var(--orange-ink);
+}
+.more-blog-list a:focus-visible {
+  outline: 2px solid var(--orange-ink);
+  outline-offset: 4px;
+  border-radius: var(--r-md);
+}
+@media (min-width: 760px) {
+  .more-blog-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.8rem;
+    padding-top: 1.5rem;
+  }
+  .more-blog-list a {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "img"
+      "s"
+      "t";
+    grid-template-rows: auto auto 1fr;
+    padding: 0;
+    border-bottom: 0;
+  }
+  .more-blog-s {
+    margin-top: 0.75rem;
+  }
+}
+
 /* ---- footer (dark) ------------------------------------------------------- */
 .footer {
   color: var(--cream);

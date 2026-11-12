@@ -9,6 +9,7 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { SECTIONS, AUTHORS, EDITOR, LISTED, POSTS } from "../data/blog.mjs";
+import { KEY, urlFor } from "../scripts/lib/indexnow.mjs";
 
 const root = new URL("../", import.meta.url);
 const pub = new URL("public/", root);
@@ -89,6 +90,8 @@ test("a post is signed by a person, with their face and bio", () => {
     const post = ld(html).find((n) => n["@type"] === "BlogPosting");
     assert.equal(post.author.name, a.name, `${slug}: structured data author`);
     assert.equal(post.author["@id"], `https://adapttolife.org${a.url}`, `${slug}: author @id`);
+    // A way to report a mistake, at the end of every post.
+    assert.ok(html.includes(`<a href="/contact?rsn=correction&amp;page=/blog/${slug}">Tell us</a>`), `${slug}: no "Spot a mistake?" line`);
     const anchor = a.url.split("#")[1];
     if (a.url.startsWith("/about#")) assert.ok(about.includes(`id="${anchor}"`), `${a.url} has no anchor on /about`);
   }
@@ -99,6 +102,37 @@ test("a post is signed by a person, with their face and bio", () => {
 // Alec, Nov 12 2026: "Blog should go under About in the top menu and footer
 // (cleanup footer also)". The footer's groups are the top menu's groups, Blog
 // sits under About in both, and the story pages live on /blog.
+// Alec, Nov 12 2026, "Do 4, 5 and 6": the pages the blog collects send readers
+// back into it, not only the footer.
+test("every page the blog collects ends with More from the blog", () => {
+  const hrefs = [...LISTED.map((l) => l.href), ...Object.keys(POSTS).map((s) => `/blog/${s}`)];
+  for (const l of LISTED) {
+    const html = read(l.href.slice(1) + ".html");
+    const more = html.match(/<section class="more-blog"[\s\S]*?<\/section>/);
+    assert.ok(more, `${l.href}: no "More from the blog"`);
+    assert.ok(html.indexOf(more[0]) < html.indexOf("</main>"), `${l.href}: "More from the blog" sits outside <main>`);
+    assert.ok(more[0].includes('href="/blog"'), `${l.href}: "More from the blog" has no link to /blog`);
+    const links = [...more[0].matchAll(/<li><a href="([^"]+)">/g)].map((m) => m[1]);
+    assert.equal(links.length, 3, `${l.href}: three to read next`);
+    for (const h of links) {
+      assert.notEqual(h, l.href, `${l.href} recommends itself`);
+      assert.ok(hrefs.includes(h), `${l.href} recommends ${h}, which the blog doesn't list`);
+    }
+    for (const [, src] of more[0].matchAll(/<img src="([^"]+)"/g))
+      assert.ok(existsSync(new URL(src.slice(1), pub)), `${l.href}: ${src} is missing`);
+  }
+});
+
+// Search engines hear about changed pages from each release (IndexNow).
+test("the IndexNow key is served and every release sends what changed", () => {
+  assert.match(KEY, /^[0-9a-f]{32}$/);
+  assert.equal(read(`${KEY}.txt`), KEY, "public/<key>.txt holds the key");
+  assert.equal(urlFor("public/index.html"), "https://adapttolife.org/");
+  assert.equal(urlFor("public/events/monster-smash-2026.html"), "https://adapttolife.org/events/monster-smash-2026");
+  const release = readFileSync(new URL("scripts/release.mjs", root), "utf8");
+  assert.ok(release.includes("ping(changedUrls(mainSha, mergeSha))"), "scripts/release.mjs pings IndexNow after a release");
+});
+
 test("the footer follows the top menu, with Blog under About", () => {
   const pages = readdirSync(pub).filter((f) => f.endsWith(".html"));
   for (const f of pages) {

@@ -61,6 +61,10 @@ export const AUTHORS = {
     url: "/about#alec",
     photo: { src: "public/images/founder.webp", x: 490, y: 76, w: 880, h: 880 }, // the /about portrait, head and shoulders (Alec: "zoom out more")
     bio: "In a wheelchair since he was six, Alec spent more than twenty years in adaptive sports as an athlete and a coach.", // /about
+    // His own profiles (Instagram, LinkedIn): shown in the "Written by" box and
+    // given to search engines as the same person (sameAs). Add them when he
+    // sends them; never guess a handle.
+    sameAs: [],
   },
 };
 

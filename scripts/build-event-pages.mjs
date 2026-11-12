@@ -18,6 +18,7 @@ import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 import { STORIES } from "../data/event-stories.mjs";
 import { icon } from "./lib/icons.mjs";
+import { moreFromBlog } from "./lib/blog-index.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SITE = "https://adapttolife.org";
@@ -340,6 +341,8 @@ ${s.links
       </div>
     </div>
   </section>
+
+  ${moreFromBlog(`/events/${slug}`)}
 </main>
 
 ${FOOTER}

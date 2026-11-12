@@ -33,8 +33,7 @@ import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
 import sharp from "sharp";
 import { SECTIONS, AUTHORS, EDITOR, LISTED, POSTS } from "../data/blog.mjs";
-import { STORIES } from "../data/event-stories.mjs";
-import { GUIDES } from "../data/guides.mjs";
+import { blogIndex, photoName, moreFromBlog, MORE_START, MORE_END } from "./lib/blog-index.mjs";
 import { icon } from "./lib/icons.mjs";
 import { pageShell, metaBlock, esc, text } from "./lib/page-shell.mjs";
 
@@ -56,7 +55,6 @@ const day = (iso) => {
 const rfc822 = (iso) => new Date(`${iso}T18:00:00Z`).toUTCString().replace("GMT", "+0000");
 const words = (html) => text(html).split(/\s+/).filter(Boolean).length;
 const minutes = (html) => Math.max(1, Math.round(words(html) / 230));
-const plainTitle = (h) => text(h).replace(/\.$/, "");
 
 // The main text of a page already on the site, for its reading time.
 function pageMain(href) {
@@ -65,7 +63,10 @@ function pageMain(href) {
   const html = readFileSync(file, "utf8");
   const main = html.match(/<main>([\s\S]*?)<\/main>/);
   if (!main) throw new Error(`${href} has no <main>`);
-  return main[1].replace(/<script[\s\S]*?<\/script>/g, "").replace(/<style[\s\S]*?<\/style>/g, "");
+  return main[1]
+    .replace(new RegExp(`${MORE_START}[\\s\\S]*?${MORE_END}`), "") // not the page's own words
+    .replace(/<script[\s\S]*?<\/script>/g, "")
+    .replace(/<style[\s\S]*?<\/style>/g, "");
 }
 
 // ---- photos -----------------------------------------------------------------
@@ -82,8 +83,7 @@ async function photoOf(key, spec, widths) {
   if (Math.abs(w / h - 1.5) > 0.01) throw new Error(`${key}: photo region ${w}x${h} is not 3:2`);
   const out = {};
   for (const width of widths.filter((wd, i) => i === 0 || wd <= w * 1.15)) {
-    const tag = createHash("sha256").update(JSON.stringify({ src, x, y, w, h, width, q: 72 })).digest("hex").slice(0, 8);
-    const name = `${key}-${width}.${tag}.webp`;
+    const name = photoName(key, spec, width);
     wanted.add(name);
     out[width] = `/images/blog/${name}`;
     if (existsSync(join(IMG_DIR, name))) continue;
@@ -119,6 +119,11 @@ async function avatarOf(key, spec) {
   }
   return `/images/blog/${name}`;
 }
+// "Instagram", "LinkedIn": the name of the site a profile link points to.
+const profileName = (u) => {
+  const host = new URL(u).hostname.replace(/^www\./, "");
+  return { "instagram.com": "Instagram", "linkedin.com": "LinkedIn", "x.com": "X", "twitter.com": "X", "facebook.com": "Facebook", "youtube.com": "YouTube", "tiktok.com": "TikTok" }[host] || host;
+};
 const PEOPLE = {};
 for (const [k, a] of Object.entries(AUTHORS)) PEOPLE[k] = { ...a, key: k, avatar: await avatarOf(k, a.photo) };
 if (!PEOPLE[EDITOR]) throw new Error(`EDITOR ${EDITOR} is not in AUTHORS`);
@@ -129,56 +134,16 @@ const authorOf = (slug, p) => {
 
 const COVER = [480, 800, 1200];
 const largest = (ph) => ph[1200] || ph[800] || ph[480];
-const keyOf = (href) => href.replace(/^\/(blog\/|events\/)?/, "").replace(/[^a-z0-9-]/g, "-");
 
 // ---- entries: everything the hub lists, newest first ----------------------
+// The list itself comes from scripts/lib/blog-index.mjs (shared with the
+// "More from the blog" sections); this adds reading times and photos.
 async function entries() {
-  const out = [];
-  for (const [slug, p] of Object.entries(POSTS)) {
-    if (!SECTIONS[p.section]) throw new Error(`${slug}: no section ${p.section}`);
-    out.push({
-      href: `/blog/${slug}`,
-      slug,
-      post: p,
-      section: p.section,
-      title: p.short || plainTitle(p.h1),
-      seoTitle: p.title,
-      dek: p.dek,
-      description: p.description,
-      published: p.published,
-      modified: p.modified || p.published,
-      showDate: true,
-      mins: minutes(p.body),
-      key: keyOf(`/blog/${slug}`),
-      spec: p.photo,
-      photo: await photoOf(keyOf(`/blog/${slug}`), p.photo, COVER),
-    });
+  const out = blogIndex();
+  for (const e of out) {
+    e.mins = minutes(e.post ? e.post.body : pageMain(e.href));
+    e.photo = await photoOf(e.key, e.spec, e.post ? COVER : [480]);
   }
-  for (const l of LISTED) {
-    if (!SECTIONS[l.section]) throw new Error(`${l.href}: no section ${l.section}`);
-    const story = l.story ? STORIES[l.story] : null;
-    const guide = l.guide ? GUIDES[l.guide] : null;
-    if (l.story && !story) throw new Error(`${l.href}: no story ${l.story} in data/event-stories.mjs`);
-    if (l.guide && !guide) throw new Error(`${l.href}: no guide ${l.guide} in data/guides.mjs`);
-    const src = story || guide;
-    out.push({
-      href: l.href,
-      section: l.section,
-      title: l.title || plainTitle(src.h1),
-      seoTitle: l.title || text(src.title),
-      dek: l.dek,
-      description: src ? text(src.description) : l.dek,
-      published: src ? src.published : l.published,
-      modified: src ? src.modified || src.published : l.published,
-      showDate: Boolean(src),
-      label: l.label,
-      mins: minutes(pageMain(l.href)),
-      key: keyOf(l.href),
-      spec: l.photo,
-      photo: await photoOf(keyOf(l.href), l.photo, [480]),
-    });
-  }
-  out.sort((a, b) => (a.published < b.published ? 1 : a.published > b.published ? -1 : 0));
   // The newest entry leads the hub on a cover, post or page.
   if (out[0] && !out[0].post) out[0].photo = await photoOf(out[0].key, out[0].spec, COVER);
   return out;
@@ -300,6 +265,8 @@ const STYLE = `<style>
   .bp-sources a .arrow svg{ width:0.8em; height:0.8em; }
   .bp-sources span{ display:block; margin-top:0.1rem; font-size:0.94rem; color:var(--muted); }
   .bp-note{ margin-top:1rem; font-size:0.9rem; line-height:1.5; color:var(--muted); }
+  .bp-fix{ margin-top:1.6rem; font-size:0.94rem; color:var(--muted); }
+  .bp-fix a{ font-weight:700; color:var(--orange-ink); }
   /* "Written by": the writer's face, who they are, then the email sign-up. */
   .bp-author{ margin-top:clamp(2.6rem,6vw,3.4rem); padding:clamp(1.4rem,3vw,1.9rem); background:var(--paper); border:1px solid var(--rule); border-radius:var(--r-xl); }
   .bp-author-top{ display:flex; align-items:center; gap:1rem; }
@@ -310,6 +277,8 @@ const STYLE = `<style>
   .bp-author-n a:hover{ text-decoration:underline; text-underline-offset:3px; }
   .bp-author-r{ margin-top:0.15rem; font-size:0.92rem; line-height:1.35; color:var(--ink-soft); }
   .bp-author-bio{ margin-top:1rem; font-size:1rem; line-height:1.6; color:var(--ink-soft); }
+  .bp-author-links{ margin-top:0.7rem; display:flex; flex-wrap:wrap; gap:0.3rem 1.2rem; }
+  .bp-author-links a{ display:inline-flex; align-items:center; min-height:44px; font-weight:700; font-size:0.95rem; color:var(--orange-ink); }
   .bp-author-sub{ margin-top:1.3rem; padding-top:1.2rem; border-top:1px solid var(--rule); }
   .bp-author-sub h3{ font-family:var(--font-display); font-weight:800; font-size:1.08rem; color:var(--ink); }
   .bp-author-sub .bp-sub{ margin-top:0.8rem; max-width:none; }
@@ -545,7 +514,16 @@ function post(e, all) {
   const a = authorOf(e.slug, p);
   // The same Person as on their bio page (@id), so search engines and AI
   // answers tie the post to a real, named writer.
-  const author = { "@type": "Person", "@id": SITE + a.url, name: a.name, url: SITE + a.url, jobTitle: a.jobTitle, image: SITE + a.avatar, worksFor: { "@id": SITE + "/#org" } };
+  const author = {
+    "@type": "Person",
+    "@id": SITE + a.url,
+    name: a.name,
+    url: SITE + a.url,
+    jobTitle: a.jobTitle,
+    image: SITE + a.avatar,
+    worksFor: { "@id": SITE + "/#org" },
+    ...(a.sameAs?.length ? { sameAs: a.sameAs } : {}),
+  };
   const others = all.filter((x) => x.href !== e.href);
   const related = [...others.filter((x) => x.section === e.section), ...others.filter((x) => x.section !== e.section)].slice(0, 3);
   const ld = {
@@ -649,7 +627,8 @@ ${p.sources
     </section>
 `
     : ""
-}    <section class="bp-author" id="author" aria-labelledby="authorName">
+}    <p class="bp-fix">Spot a mistake? <a href="/contact?rsn=correction&amp;page=${e.href}">Tell us</a>.</p>
+    <section class="bp-author" id="author" aria-labelledby="authorName">
       <div class="bp-author-top">
         <img class="bp-author-ph" src="${a.avatar}" alt="" width="72" height="72" loading="lazy" decoding="async">
         <div>
@@ -658,7 +637,11 @@ ${p.sources
           <p class="bp-author-r">${a.role}</p>
         </div>
       </div>
-      <p class="bp-author-bio">${a.bio}</p>
+      <p class="bp-author-bio">${a.bio}</p>${
+        a.sameAs?.length
+          ? `\n      <p class="bp-author-links">${a.sameAs.map((u) => `<a href="${esc(u)}" target="_blank" rel="me noopener">${profileName(u)}</a>`).join("")}</p>`
+          : ""
+      }
       <div class="bp-author-sub">
         <h3>Get the next post by email</h3>
         ${signup(`blog-${e.slug}`, "bpEm")}
@@ -777,6 +760,25 @@ for (const [rel, body] of outputs) {
   } else {
     writeFileSync(file, body);
     console.log(rel);
+  }
+}
+// "More from the blog" at the end of every page the blog collects. Event
+// stories and guides write it themselves (npm run events, npm run guides); the
+// other pages keep it between the markers, refreshed here.
+for (const e of all.filter((x) => !x.post)) {
+  const rel = `public${e.href}.html`;
+  const html = readFileSync(join(ROOT, rel), "utf8");
+  const at = html.indexOf(MORE_START);
+  const end = html.indexOf(MORE_END);
+  if (at < 0 || end < at) throw new Error(`${rel}: add ${MORE_START} and ${MORE_END} just before </main>; the blog keeps "More from the blog" there`);
+  const next = html.slice(0, at) + moreFromBlog(e.href) + html.slice(end + MORE_END.length);
+  if (next === html) continue;
+  if (check) {
+    console.error(`${rel}: "More from the blog" is stale: run npm run blog`);
+    stale++;
+  } else {
+    writeFileSync(join(ROOT, rel), next);
+    console.log(`${rel} (more from the blog)`);
   }
 }
 // Post pages whose post is gone (removed from POSTS): delete them, so an

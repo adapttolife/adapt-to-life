@@ -80,7 +80,7 @@ export function linksPage({ root, shell, metaBlock, esc, icon }) {
     ["/amp", "/images/partners/amp-logo-white.png", 340, 159, "AMP Adaptive Sports", ""],
     ["/ace", "/images/ace/ace-logo-white.png", 760, 105, "ACE Pickleball Club", ""],
     ["/brickhouse", "/images/brickhouse/brick-house-logo-orange-black-reverse.svg", 240, 171, "Brick House Pickleball", "is-bh"],
-    ["/picklr", "/images/partners/picklr-wordmark-white.png", 460, 107, "The Picklr", ""],
+    ["/picklr", "/images/partners/picklr-mount-prospect-white.png", 723, 236, "The Picklr Mount Prospect", ""],
   ]
     .map(
       ([href, src, w, h, name, cls]) =>

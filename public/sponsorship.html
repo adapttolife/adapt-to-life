@@ -135,6 +135,8 @@
   .partner::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 60% 70% at 85% 30%, rgba(255,92,57,0.18) 0%, transparent 70%); }
   .partner-photo{ display:block; min-height:clamp(320px,36vw,460px); }
   .partner-logo.is-word{ height:auto; width:min(100%, 210px); margin-bottom:0.4rem; }
+  /* A two-line lockup (The Picklr Mount Prospect): sized by width, to sit as tall as the marks beside it. */
+  .partner-logo.is-lockup{ height:auto; width:min(100%, 200px); }
   /* On phones the photo is a short 16:9 strip; a tall portrait sets
      --phone-crop on its img so the strip keeps the face. */
   .partner-photo img{ width:100%; height:100%; object-fit:cover; object-position:var(--crop, 50% 30%); transition:transform .6s ease; }
@@ -213,7 +215,7 @@
   .sp-clubs-foot{ margin-top:clamp(2rem,3.8vw,2.8rem); padding-top:clamp(1.6rem,3vw,2.2rem); border-top:1px solid rgba(249,247,242,0.12); display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1.2rem 2rem; }
   .sp-clubs-close{ margin:0; font-family:var(--font-display); font-weight:800; font-size:clamp(1.25rem,2vw,1.6rem); letter-spacing:-0.015em; color:var(--cream); }
   .sp-clubs-foot .actions{ margin:0; }
-  @media (max-width:700px){ .partner{ grid-template-columns:1fr; } .partner-photo{ min-height:0; aspect-ratio:16/9; } .partner-photo img{ object-position:var(--phone-crop, 50% 30%); } .partner-body{ padding:1.25rem 1.25rem 1.4rem; } .partner-logo{ height:48px; } .partner-kicker{ margin-top:1rem; } .partner-more{ margin-top:1.1rem; } .partner-when{ flex-wrap:nowrap; gap:0.6rem; font-size:0.72rem; letter-spacing:0.1em; } .partner-when span{ gap:0.6rem; white-space:nowrap; } }
+  @media (max-width:700px){ .partner{ grid-template-columns:1fr; } .partner-photo{ min-height:0; aspect-ratio:16/9; } .partner-photo img{ object-position:var(--phone-crop, 50% 30%); } .partner-body{ padding:1.25rem 1.25rem 1.4rem; } .partner-logo{ height:48px; } .partner-logo.is-lockup{ height:auto; width:150px; } .partner-kicker{ margin-top:1rem; } .partner-more{ margin-top:1.1rem; } .partner-when{ flex-wrap:nowrap; gap:0.6rem; font-size:0.72rem; letter-spacing:0.1em; } .partner-when span{ gap:0.6rem; white-space:nowrap; } }
   .bh-road .bh-price{ display:block; margin-top:0.6rem; font-style:normal; font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--orange-ink); }
   /* One price list: the per-athlete options sit above the levels, same sheet, same fund. */
   .sp-units-label{ margin-top:clamp(2rem,4vw,2.8rem); font-family:var(--font-label); font-weight:800; font-size:0.8rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--orange); }
@@ -400,7 +402,7 @@ fill="currentColor" stroke="none">
             <img src="/images/athletes/ryan-reach.webp" alt="" width="960" height="1200" loading="lazy" decoding="async" style="--crop:50% 40%; --phone-crop:50% 18%;">
           </a>
           <div class="partner-body">
-            <img class="partner-logo is-word" src="/images/partners/picklr-wordmark-white.png" alt="The Picklr" width="460" height="107">
+            <img class="partner-logo is-lockup" src="/images/partners/picklr-mount-prospect-white.png" alt="The Picklr Mount Prospect" width="723" height="236">
             <p class="partner-kicker">Our partner club</p>
             <h3 class="serif h3">The Picklr</h3>
             <p class="partner-line">Open play with the crew in Mount Prospect, alongside the club&rsquo;s own players. Clinics, tournaments and fundraisers are on the table.</p>

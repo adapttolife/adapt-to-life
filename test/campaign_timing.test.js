@@ -20,7 +20,10 @@ test("the road is the canonical campaign, and it keeps Spring 2027", async () =>
   const campaigns = JSON.parse(await text("public/data/campaigns.json"));
   const road = campaigns.campaigns.find((c) => c.slug === "send-6-us-open");
   assert.equal(road?.name, CAMPAIGN);
-  assert.equal(road?.when, "A season of tournaments, ending at the US Open in Naples, spring 2027");
+  assert.equal(
+    road?.when,
+    "A season of tournaments, ending at the US Open in Naples, spring 2027",
+  );
   assert.equal(road?.goal, 21000);
 });
 
@@ -44,7 +47,10 @@ test("campaign page and supporting cards name the road", async () => {
     "the US Open is a lottery; the page never promises a spot",
   );
   assert.ok(fund.includes(`>${CAMPAIGN}<`));
-  assert.ok(fund.includes('<a href="/road">See the road</a>'), "the module links the road");
+  assert.ok(
+    fund.includes('<a href="/road">See the road</a>'),
+    "the module links the road",
+  );
   assert.ok(
     popcorn.includes(`>${HISTORY}</a>`),
     "popcorn history names what it paid into",
@@ -67,7 +73,11 @@ test("social metadata and generated card source carry the road", async () => {
 test("one fund: every giving form is the Hustle & Heart Fund, and the Classic has none", async () => {
   const campaigns = JSON.parse(await text("public/data/campaigns.json")).campaigns;
   assert.equal(campaigns[0].slug, "wheelie-big-dills", "the one goal leads");
-  assert.equal(campaigns[0].goal, 48180, "every week plus the road, in one bar");
+  assert.equal(
+    campaigns[0].goal,
+    50000,
+    "one round goal: every week, the road, then the Classic",
+  );
   assert.equal(campaigns[0].raised_key, "wbd");
   for (const f of [
     "public/donate.html",

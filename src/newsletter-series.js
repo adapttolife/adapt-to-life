@@ -141,7 +141,7 @@ export const SAVED_FOR_LATER = [
     },
     paragraphs: [
       "Playing every week costs real money. A night of court time is $225 for up to 15 athletes. A year of unlimited play, so an athlete can train to compete, is $1,548. A sport chair runs $4,000 to $6,000, and insurance doesn’t cover it.",
-      "Our goal for the year ahead is $48,180: $27,180 to keep Chicago Pickleball: Wheelie Big Dills on court every week, then $21,000 for a season on the road to the US Open. Every new gift starts with the first line.",
+      "Our goal for the year ahead is $50,000: Chicago Pickleball: Wheelie Big Dills on court every week first, then a season on the road to the US Open, and the rest toward the Chicago Classic. Every new gift starts with the first line.",
       "Right now I cover our overhead myself while we build revenue so the work can stand on its own.",
     ],
     highlight: "$60 a month puts one athlete on court four nights every month.",

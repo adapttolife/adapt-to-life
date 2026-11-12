@@ -168,9 +168,13 @@ test("the math lives on /numbers, and every module links to it", () => {
       `${p.key}: the lines add up to the goal`,
     );
   }
-  assert.equal(
-    wbd.parts.reduce((t, p) => t + p.goal, 0),
-    wbd.goal,
+  // Alec, Nov 12 2026: "Just say 50k. 48,180 is a stupid number. Just round
+  // up." A round $50,000: every week and the road come first ($48,180
+  // between them), and gifts past them start the Chicago Classic.
+  assert.equal(wbd.goal, 50000);
+  assert.ok(
+    wbd.parts.reduce((t, p) => t + p.goal, 0) <= wbd.goal,
+    "the parts come first, inside the goal",
   );
   const year = wbd.parts.find((p) => p.key === "year").math;
   assert.deepEqual(
@@ -204,7 +208,11 @@ test("the math lives on /numbers, and every module links to it", () => {
     }
   }
   assert.ok(!list.includes("&times;"), "no multiplication on /numbers");
-  assert.ok(list.includes(`<span>Every week + the road</span><b>${usd(wbd.goal)}</b>`));
+  assert.ok(
+    list.includes(
+      `<span>Every week, the road, and the rest toward the Classic</span><b>${usd(wbd.goal)}</b>`,
+    ),
+  );
   assert.ok(nb.includes(`>${usd(wbd.goal)}, <em`), "the heading states the goal");
   assert.ok(
     list.includes("The US Open picks players by lottery, so nothing is guaranteed."),

@@ -8,7 +8,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { execFileSync } from "node:child_process";
-import { SECTIONS, AUTHORS, EDITOR, LISTED, POSTS } from "../data/blog.mjs";
+import { SECTIONS, AUTHORS, LISTED, POSTS } from "../data/blog.mjs";
 import { KEY, urlFor } from "../scripts/lib/indexnow.mjs";
 
 const root = new URL("../", import.meta.url);
@@ -95,8 +95,10 @@ test("a post is signed by a person, with their face and bio", () => {
     const anchor = a.url.split("#")[1];
     if (a.url.startsWith("/about#")) assert.ok(about.includes(`id="${anchor}"`), `${a.url} has no anchor on /about`);
   }
-  const ed = AUTHORS[EDITOR];
-  assert.ok(ed && hub.includes(`<a href="${ed.url}">${ed.name}</a>`), "the hub's header shows the person behind the blog");
+  // The blog page itself names no author (Alec, Nov 12 2026: "Maybe for now we
+  // just have nothing?"): authors sign their own posts.
+  const header = hub.slice(hub.indexOf('<header class="bp-col bp-head">'), hub.indexOf("</header>", hub.indexOf('<header class="bp-col bp-head">')));
+  for (const a of Object.values(AUTHORS)) assert.ok(!header.includes(a.name), `the blog's header names ${a.name}`);
 });
 
 // Alec, Nov 12 2026: "Blog should go under About in the top menu and footer

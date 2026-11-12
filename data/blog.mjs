@@ -68,8 +68,11 @@ export const AUTHORS = {
   },
 };
 
-// The face under the hub's header: the person behind the blog.
-export const EDITOR = "alec";
+// Authors appear on posts only. The blog page and the pages it collects carry
+// no author: they are the organization's own pages. Alec, Nov 12 2026: "I
+// don't think we need my name there ... Eventually Karen will write something
+// and we'll invite different ppl from the community ... Maybe for now we just
+// have nothing?"
 
 // One photograph per entry, the same shape everywhere (Alec, Nov 12 2026:
 // "Should we have pictures or icons? It feels sloppy"). Pictures, never icon

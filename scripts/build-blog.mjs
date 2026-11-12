@@ -18,8 +18,10 @@
 //
 // Posts are signed by a person, with their face (Alec, Nov 12 2026: "Should
 // the author be me? A person? Use my profile picture more? Give more
-// authenticity"): the byline, a "Written by" box at the end, the hub's header
-// and the structured data all name them.
+// authenticity"): the byline, a "Written by" box at the end and the structured
+// data all name them. The hub and the pages it collects carry no author (Alec,
+// Nov 12 2026: "Most of what we have is website content that we're packaging
+// into the blog ... Maybe for now we just have nothing?").
 //
 // Each post carries BlogPosting + BreadcrumbList structured data and the "In
 // short" summary up top: search engines and AI answers quote the first clear
@@ -32,7 +34,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
 import sharp from "sharp";
-import { SECTIONS, AUTHORS, EDITOR, LISTED, POSTS } from "../data/blog.mjs";
+import { SECTIONS, AUTHORS, LISTED, POSTS } from "../data/blog.mjs";
 import { blogIndex, photoName, moreFromBlog, MORE_START, MORE_END } from "./lib/blog-index.mjs";
 import { icon } from "./lib/icons.mjs";
 import { pageShell, metaBlock, esc, text } from "./lib/page-shell.mjs";
@@ -125,7 +127,6 @@ const profileName = (u) => {
 };
 const PEOPLE = {};
 for (const [k, a] of Object.entries(AUTHORS)) PEOPLE[k] = { ...a, key: k, avatar: await avatarOf(k, a.photo) };
-if (!PEOPLE[EDITOR]) throw new Error(`EDITOR ${EDITOR} is not in AUTHORS`);
 const authorOf = (slug, p) => {
   if (!PEOPLE[p.author]) throw new Error(`${slug}: author ${p.author} is not in AUTHORS (data/blog.mjs)`);
   return PEOPLE[p.author];
@@ -163,11 +164,6 @@ const STYLE = `<style>
   .bp-h1{ margin-top:0.55rem; font-family:var(--font-display); font-weight:800; font-size:clamp(2.35rem,6.2vw,3.7rem); line-height:1.02; letter-spacing:-0.025em; color:var(--ink); max-width:15ch; }
   .bp-h1 em, .bp-post-t em{ font-style:italic; color:var(--orange-display); }
   .bp-lede{ margin-top:1rem; font-size:clamp(1.08rem,2.2vw,1.22rem); line-height:1.55; color:var(--ink-soft); max-width:46ch; }
-  .bp-ed{ margin-top:1.3rem; display:flex; align-items:center; gap:0.75rem; }
-  .bp-ed p{ min-width:0; }
-  .bp-ed a{ display:block; font-weight:700; font-size:1rem; color:var(--ink); text-decoration:none; }
-  .bp-ed a:hover{ text-decoration:underline; text-underline-offset:3px; }
-  .bp-ed span{ display:block; margin-top:0.1rem; font-size:0.88rem; line-height:1.35; color:var(--muted); }
   .bp-sub{ margin-top:1.4rem; max-width:30rem; }
   .bp-sub-row{ display:flex; gap:0.5rem; }
   .bp-sub input[type=email]{ flex:1; min-width:0; min-height:48px; padding:0 1rem; border-radius:var(--r-lg); border:1px solid rgba(59,59,70,0.24); background:var(--paper); color:var(--ink); font:inherit; font-size:1rem; }
@@ -443,10 +439,6 @@ function hub(all) {
     <p class="bp-kicker">The Adapt To Life blog</p>
     <h1 class="bp-h1">Building adaptive sports, <em>in public.</em></h1>
     <p class="bp-lede">Stories from our community, and what we learn funding athletes on court, on the road and behind the scenes.</p>
-    <div class="bp-ed">
-      <img class="bp-avatar" src="${PEOPLE[EDITOR].avatar}" alt="" width="44" height="44">
-      <p><a href="${PEOPLE[EDITOR].url}">${PEOPLE[EDITOR].name}</a><span>${PEOPLE[EDITOR].role}</span></p>
-    </div>
     ${signup("blog", "bpEm")}
   </header>
 

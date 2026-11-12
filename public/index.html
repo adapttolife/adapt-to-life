@@ -390,12 +390,13 @@ fill="currentColor" stroke="none">
     </style>
     <style>
       /* What a gift can do, smallest first, right before the ask. */
-      .gift-ladder{ list-style:none; margin:clamp(1.6rem,3.4vw,2.4rem) auto 0; padding:0; max-width:980px; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:clamp(0.8rem,2vw,1.4rem); text-align:left; }
+      .gift-ladder{ list-style:none; margin:clamp(1.6rem,3.4vw,2.4rem) auto 0; padding:0; max-width:1100px; display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:clamp(0.8rem,2vw,1.4rem); text-align:left; }
       .gift-ladder li{ padding:1.1rem 1.1rem 1.2rem; border-radius:16px; background:rgba(249,247,242,0.05); box-shadow:inset 0 0 0 1px rgba(249,247,242,0.12); }
       .gift-ladder b{ display:block; font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(1.9rem,3.4vw,2.5rem); line-height:1; letter-spacing:-0.03em; color:#ff5c39; }
       .gift-ladder span{ display:block; margin-top:0.5rem; color:var(--cream); line-height:1.4; font-weight:600; }
       .gift-ladder-link{ display:block; color:inherit; text-decoration:none; }
       .gift-ladder-link span{ text-decoration:underline; text-decoration-color:var(--orange); text-underline-offset:3px; }
+      @media (max-width:980px){ .gift-ladder{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
       @media (max-width:760px){ .gift-ladder{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
     </style>
     <div class="wrap hm-crew-grid">
@@ -637,6 +638,7 @@ fill="currentColor" stroke="none">
       <ul class="gift-ladder reveal" aria-label="What your gift can do">
         <li><b>$15</b><span>One night on court for one athlete.</span></li>
         <li><b>$225</b><span>One night on court for up to 15 athletes.</span></li>
+        <li><a class="gift-ladder-link" href="/road"><b>$1,000</b><span>About one tournament trip for one athlete: entry, travel and a room.</span></a></li>
         <li><b>$1,548</b><span>A year of unlimited sessions for one athlete.</span></li>
         <li><a class="gift-ladder-link" href="/road"><b>$3,500</b><span>About one athlete&rsquo;s US Open: entry, travel and a room.</span></a></li>
       </ul>
@@ -791,7 +793,7 @@ fill="currentColor" stroke="none">
 </script>
 
 <script src="/js/add-to-calendar.js?v=1865647d"></script>
-<script src="/js/campaigns.js?v=1fc2464d"></script>
+<script src="/js/campaigns.js?v=fc113ff7"></script>
 <script>
 (function(){
   var C = window.ATLCampaigns;
@@ -866,6 +868,6 @@ fill="currentColor" stroke="none">
 })();
 </script>
 <!-- /hero:script -->
-<script src="/js/clips.js?v=ee55a4e9" defer></script>
+<script src="/js/clips.js?v=75cdb986" defer></script>
 </body>
 </html>

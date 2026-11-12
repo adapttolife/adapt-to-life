@@ -81,7 +81,9 @@ test("the cost story uses the same real numbers on every page", () => {
   // Open, the road's last stop, has cost about $3,500. The crew's Compete card
   // leads with the trip; the fund's Travel card keeps the US Open figure.
   assert.ok(crew.includes("<b>$1,000</b>") && crew.includes("about $3,500"));
-  assert.ok(fund.includes(">$3,500<span>"));
+  // Nov 12 2026 (Alec): "$1k is ... year round support to travel"; $3,500 is
+  // the US Open. The fund's Travel card leads with the trip.
+  assert.ok(fund.includes(">$1,000<span>") && fund.includes("about $3,500"));
   assert.ok(road.includes("about 21 tournament trips at about $1,000 each"));
   assert.ok(road.includes("one athlete&rsquo;s US Open has cost about $3,500"));
   assert.ok(crew.includes("It takes skill and a little luck to get to the US Open."));

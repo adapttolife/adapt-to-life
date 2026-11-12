@@ -402,7 +402,8 @@ test("/donate says what a gift does; /numbers shows how we got it", () => {
   );
   assert.deepEqual(
     once.map((g) => g.a),
-    [15, 60, 225, 1548, 3500],
+    // Nov 12 2026: about $1,000 is one athlete's tournament trip (Alec).
+    [15, 60, 225, 1000, 1548, 3500],
   );
   const money = (n) => "$" + n.toLocaleString("en-US");
   const plain = (h) =>

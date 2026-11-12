@@ -568,7 +568,9 @@
   var GIFTS = {
     // Every line is a verified unit cost: $15 a night at ACE (15 for $225), $129
     // a month for a membership ($1,548 for 12 months), about $3,500 for a US
-    // Open the last couple of years. A month of nights is four nights, so the
+    // Open the last couple of years, about $1,000 for one athlete's tournament
+    // trip (Alec, Nov 12 2026: "$1k is the fundraising campaign for ... year
+    // round support to travel"). A month of nights is four nights, so the
     // math needs no calculator: $60 is 4 x $15 and $900 is 4 x $225 (Alec,
     // Nov 7: "How did you get 65? 15 x 4 is $60?"). The membership line sells
     // the unlimited sessions, one line on a desktop card ("Let's shorten it
@@ -595,6 +597,10 @@
       { a: 15, t: "One night on court for one athlete." },
       { a: 60, t: "Four nights on court for one athlete." },
       { a: 225, t: "One night on court for up to 15 athletes." },
+      {
+        a: 1000,
+        t: "About one tournament trip for one athlete: entry, travel and a room.",
+      },
       {
         a: 1548,
         t: "A year of unlimited sessions for one athlete.",
@@ -691,7 +697,8 @@
     }
     function draw() {
       amts.innerHTML = "";
-      amts.classList.toggle("is-3", GIFTS[freq].length === 3);
+      // three across for three amounts, or two rows of three for six
+      amts.classList.toggle("is-3", GIFTS[freq].length % 3 === 0);
       GIFTS[freq].forEach(function (opt) {
         var label = "$" + opt.a.toLocaleString("en-US");
         var b = el("button", null, label);

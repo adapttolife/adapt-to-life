@@ -50,22 +50,30 @@
     setState(c.btn, false);
   }
 
-  var list = Array.prototype.map.call(clips, function (el) {
-    var c = { el: el, video: el.querySelector("video"), btn: el.querySelector(".clip-btn"), held: false, seen: false };
-    if (!c.video) return null;
-    setState(c.btn, false);
-    if (c.btn)
-      c.btn.addEventListener("click", function () {
-        if (c.video.paused) {
-          c.held = false;
-          play(c);
-        } else {
-          c.held = true;
-          pause(c);
-        }
-      });
-    return c;
-  }).filter(Boolean);
+  var list = Array.prototype.map
+    .call(clips, function (el) {
+      var c = {
+        el: el,
+        video: el.querySelector("video"),
+        btn: el.querySelector(".clip-btn"),
+        held: false,
+        seen: false,
+      };
+      if (!c.video) return null;
+      setState(c.btn, false);
+      if (c.btn)
+        c.btn.addEventListener("click", function () {
+          if (c.video.paused) {
+            c.held = false;
+            play(c);
+          } else {
+            c.held = true;
+            pause(c);
+          }
+        });
+      return c;
+    })
+    .filter(Boolean);
 
   if (still) return;
 

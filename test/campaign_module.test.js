@@ -124,6 +124,30 @@ test("the donate page's module points back to the form", () => {
   assert.ok(html.includes('id="givePanel"'));
 });
 
+// Alec, Nov 12 2026: "No calculator needed to understand anything throughout
+// the whole website ... If our audience doesn't understand it, they won't trust
+// us. If they don't trust us, they won't donate." No page multiplies dollars
+// or converts a price for the reader.
+test("no page asks the reader to do math", () => {
+  const pages = [
+    ...readdirSync(new URL("../public/", import.meta.url)).filter(
+      (f) => f.endsWith(".html") && !f.startsWith("hero-review"),
+    ),
+    ...readdirSync(new URL("../public/events/", import.meta.url))
+      .filter((f) => f.endsWith(".html"))
+      .map((f) => "events/" + f),
+  ];
+  for (const f of pages) {
+    const html = read("public/" + f);
+    assert.ok(!/(&times;|×)\s*(about )?\$/.test(html), `${f} multiplies dollars`);
+    assert.ok(!/ at \$[\d,]+ each/.test(html), `${f} prices "at $N each"`);
+    assert.ok(
+      !/\$129 a month, or \$1,548 a year/.test(html),
+      `${f} converts a membership`,
+    );
+  }
+});
+
 test("the math lives on /numbers, and every module links to it", () => {
   // Alec, Nov 6: "it's powerful to show how we got all of our numbers for our
   // fundraising - brings awareness to the reality of how expensive it is."
@@ -170,18 +194,16 @@ test("the math lives on /numbers, and every module links to it", () => {
     assert.ok(list.includes(`<h3>${p.label}</h3>`), p.label);
     for (const l of p.math) {
       assert.ok(list.includes(`<b>${usd(lineTotal(l))}</b>`), l.label);
-      if (l.amount != null) {
-        assert.ok(l.calc && list.includes(`<span class="nb-calc">${l.calc}</span>`), `${l.label} says it is a budget`);
-        continue;
-      }
+      // Alec, Nov 12 2026: "No calculator needed to understand anything
+      // throughout the whole website." Every line says what it is in words;
+      // qty and unit stay in the data only so the sums above are checked.
       assert.ok(
-        list.includes(
-          `${l.qty} ${l.of} &times; ${l.about ? "about " : ""}${usd(l.unit)}`,
-        ),
-        `${l.label} shows its multiplication`,
+        l.calc && list.includes(`<span class="nb-calc">${l.calc}</span>`),
+        `${l.label} says what it is in words`,
       );
     }
   }
+  assert.ok(!list.includes("&times;"), "no multiplication on /numbers");
   assert.ok(list.includes(`<span>Every week + the road</span><b>${usd(wbd.goal)}</b>`));
   assert.ok(nb.includes(`>${usd(wbd.goal)}, <em`), "the heading states the goal");
   assert.ok(
@@ -193,8 +215,8 @@ test("the math lives on /numbers, and every module links to it", () => {
   assert.ok(
     read("public/sitemap.xml").includes("<loc>https://adapttolife.org/numbers</loc>"),
   );
-  // The gift lines on /numbers show their arithmetic now; the test "/donate
-  // says what a gift does; /numbers shows how we got it" checks them.
+  // The gift lines on /numbers say what each gift does in words; the test
+  // "/donate says what a gift does; /numbers shows how we got it" checks them.
 
   // The module stays clean: no receipt, one button to the breakdown.
   for (const { f, html } of carriers()) {
@@ -271,7 +293,11 @@ test("no First priority, no six seats, and the numbers as a route", () => {
     .find((c) => c.slug === "wheelie-big-dills")
     .parts.find((p) => p.key === "send-6");
   assert.equal(road.seats, undefined, "the road has no seats");
-  for (const l of road.math) assert.ok(!("qty" in l && /athlete/.test(l.of || "")), "the road is not athletes x a price");
+  for (const l of road.math)
+    assert.ok(
+      !("qty" in l && /athlete/.test(l.of || "")),
+      "the road is not athletes x a price",
+    );
   const stops = road.stops;
   assert.ok(Array.isArray(stops) && stops.length >= 2, "the road lists its stops");
   const last = stops.at(-1);
@@ -279,7 +305,10 @@ test("no First priority, no six seats, and the numbers as a route", () => {
   assert.ok(last.finish);
   for (const st of stops.filter((x) => typeof x === "string")) {
     const d = data.drives.find((x) => x.slug === st);
-    assert.ok(d && d.relationship === "we_compete", `${st} is a tournament the crew played`);
+    assert.ok(
+      d && d.relationship === "we_compete",
+      `${st} is a tournament the crew played`,
+    );
   }
   const pages = readdirSync(join(ROOT, "public")).filter(
     // the concept labs and hero labs are review-only, as in the other page tests
@@ -302,7 +331,8 @@ test("no First priority, no six seats, and the numbers as a route", () => {
   for (const f of pages) {
     const html = read(`public/${f}`);
     assert.ok(!html.includes("First priority"), `${f} says First priority`);
-    for (const re of RETIRED) assert.ok(!re.test(html), `${f} still carries the retired six story: ${re}`);
+    for (const re of RETIRED)
+      assert.ok(!re.test(html), `${f} still carries the retired six story: ${re}`);
   }
   const road6 = read("public/road.html");
   const list = road6.slice(
@@ -368,8 +398,15 @@ test("/numbers: the finish card's ledger adds up top to bottom", () => {
   const order = ["kind", "gifts", "so", "left"].map((k) =>
     ledger.indexOf(`data-nb-sum="${k}"`),
   );
-  assert.ok(order.every((i, n) => i > 0 && (n === 0 || i > order[n - 1])), "bar order, then the sums");
-  assert.ok(ledger.includes('<i class="nb-swatch nb-swatch--kind" aria-hidden="true"></i><span class="nb-ledger-k">Court time<small>From a partner club</small></span>'));
+  assert.ok(
+    order.every((i, n) => i > 0 && (n === 0 || i > order[n - 1])),
+    "bar order, then the sums",
+  );
+  assert.ok(
+    ledger.includes(
+      '<i class="nb-swatch nb-swatch--kind" aria-hidden="true"></i><span class="nb-ledger-k">Court time<small>From a partner club</small></span>',
+    ),
+  );
   assert.ok(ledger.includes('<span class="nb-ledger-k">So far</span>'));
   assert.ok(ledger.includes('<span class="nb-ledger-k">To go</span>'));
   assert.ok(!/nb-legend|nb-key/.test(nums), "the old legend and its chips are gone");
@@ -449,7 +486,8 @@ test("/donate says what a gift does; /numbers shows how we got it", () => {
   assert.ok(impact.includes('href="/numbers#gifts"'), "/donate hands off to the math");
   assert.ok(!impact.includes("$4,000"), "the chair is a way to give, not a gift line");
 
-  // /numbers: the same amounts in the same order, each with its arithmetic.
+  // /numbers: the same amounts in the same order, each with what it does in
+  // words (Nov 12 2026: no calculator needed anywhere on the site).
   const nums = read("public/numbers.html");
   const gifts = nums.slice(
     nums.indexOf('id="gifts"'),
@@ -473,10 +511,10 @@ test("/donate says what a gift does; /numbers shows how we got it", () => {
   for (const { amount, often, calc } of rows) {
     if (often === "a month")
       assert.ok(calc.includes("a month"), `${calc} says a month`);
-    const m = calc.match(/^([\d,]+) [a-z]+(?: a month)? × \$([\d,]+)$/);
-    if (!m) continue; // "1 membership a month", "about one US Open"
-    const n = (x) => +x.replace(/,/g, "");
-    assert.equal(money(n(m[1]) * n(m[2])), amount, `${calc} is ${amount}`);
+    assert.ok(
+      !calc.includes("×") && !/\$/.test(calc),
+      `${amount}: "${calc}" needs no math`,
+    );
   }
   const whats = [...gifts.matchAll(/<span class="nb-gift-what">(.*?)<\/span>/g)].map(
     (m) => plain(m[1]),

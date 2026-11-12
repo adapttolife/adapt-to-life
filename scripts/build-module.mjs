@@ -80,8 +80,10 @@ const CAMPAIGN = JSON.parse(
   readFileSync(join(PUB, "data/campaigns.json"), "utf8"),
 ).campaigns.find((c) => c.slug === "wheelie-big-dills");
 const usd = (n) => "$" + Number(n).toLocaleString("en-US");
-// A math line is either arithmetic (qty x unit) or a budget (amount, with a
-// short calc text in place of the multiplication). The road is a budget since
+// A math line is either arithmetic (qty x unit) or a budget (amount). Either
+// way the page shows its short calc text in words, never the multiplication:
+// Alec, Nov 12 2026, "No calculator needed to understand anything throughout
+// the whole website." qty and unit stay so the sums below are still checked. The road is a budget since
 // Nov 11 2026: Alec retired "6 athletes x $3,500", and no per-trip cost is on
 // record, so the road is shown as what it is, the year's travel budget.
 const lineTotal = (l) => (l.amount != null ? l.amount : l.qty * l.unit);
@@ -112,8 +114,7 @@ const NUMBERS =
   /([ \t]*)<!-- campaign-numbers -->\n[\s\S]*?<!-- \/campaign-numbers -->/g;
 // The season's stops on the road (/road) opt in the same way:
 //   <!-- campaign-stops --> ... <!-- /campaign-stops -->
-const STOP_LIST =
-  /([ \t]*)<!-- campaign-stops -->\n[\s\S]*?<!-- \/campaign-stops -->/g;
+const STOP_LIST = /([ \t]*)<!-- campaign-stops -->\n[\s\S]*?<!-- \/campaign-stops -->/g;
 
 function mathLines(part) {
   return (part.math || [])
@@ -122,7 +123,7 @@ function mathLines(part) {
         `      <li><span class="nb-k">${esc(l.label)}</span>` +
         (l.amount != null
           ? `<span class="nb-calc">${esc(l.calc || "")}</span><b>${usd(l.amount)}</b>`
-          : `<span class="nb-calc">${l.qty} ${esc(l.of)} &times; ${l.about ? "about " : ""}${usd(l.unit)}</span>` +
+          : `<span class="nb-calc">${l.calc ? esc(l.calc) : `${l.qty} ${esc(l.of)} &times; ${l.about ? "about " : ""}${usd(l.unit)}`}</span>` +
             `<b>${usd(l.qty * l.unit)}</b>`) +
         (l.note ? `<small>${l.note}</small>` : "") +
         "</li>",
@@ -153,7 +154,20 @@ const SUPPORTERS = COUNTED.reduce((n, d) => n + d.supporters, 0);
 const SUPPORTER_LABEL = COUNTED.every((d) => d.slug.startsWith("popcorn"))
   ? "popcorn supporters"
   : "supporters of our drives";
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const MONTHS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 const monthYear = (iso) => {
   const [y, m] = String(iso).split("-").map(Number);
   return `${MONTHS[m - 1]} ${y}`;
@@ -168,7 +182,9 @@ export const STOPS = ((ROAD && ROAD.stops) || []).map((st) => {
     const d = DRIVES.find((x) => x.slug === slug);
     if (!d) throw new Error(`campaigns.json: road stop "${slug}" is not a drive`);
     if (d.relationship !== "we_compete")
-      throw new Error(`campaigns.json: road stop "${slug}" is not a tournament the crew played`);
+      throw new Error(
+        `campaigns.json: road stop "${slug}" is not a tournament the crew played`,
+      );
     return {
       name: d.name,
       place: [d.city, d.state].filter(Boolean).join(", "),
@@ -226,7 +242,7 @@ export function renderNumbers() {
         `<div class="nb-prog-top"><span class="nb-prog-k">Covered so far</span><span class="nb-prog-fig" data-nb-fig="${p.key}"></span></div>` +
         `<div class="nb-lane"><div class="nb-track"><span class="nb-fill nb-fill--kind" data-nb-kind="${p.key}"></span><span class="nb-fill" data-nb-fill="${p.key}"></span></div><span class="nb-pct" data-nb-pct="${p.key}"></span></div>` +
         `</div>`,
-      `    <ul class="nb-lines" aria-label="How we got ${usd(p.goal)}">`,
+      `    <ul class="nb-lines" aria-label="What ${usd(p.goal)} pays for">`,
       mathLines(p),
       `    </ul>`,
       ...(road && STOPS.length ? [`    ${nbStops()}`] : []),

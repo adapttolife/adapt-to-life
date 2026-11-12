@@ -20,8 +20,8 @@
           "goal": 27180,
           "detail": "A year of court time for 10 to 15 athletes a night, plus memberships for 10, so they can play every week and train to compete. Every new gift starts here.",
           "math": [
-            { "label": "Court time", "qty": 52, "of": "nights", "unit": 225, "note": "One night a week for a year. A night is 10 to 15 athletes, and a drop-in is $15, so a night for up to 15 is $225." },
-            { "label": "Memberships", "qty": 10, "of": "athletes", "unit": 1548, "note": "A membership is $129 a month, or $1,548 a year, for unlimited sessions. It takes many sessions a week to compete in tournaments and build a ranking." }
+            { "label": "Court time", "qty": 52, "of": "nights", "unit": 225, "calc": "a night every week, all year", "note": "A night on court is $225, for 10 to 15 athletes." },
+            { "label": "Memberships", "qty": 10, "of": "athletes", "unit": 1548, "calc": "ten athletes, all year", "note": "Unlimited sessions, because it takes many sessions a week to compete in tournaments and build a ranking." }
           ]
         },
         {
@@ -37,7 +37,7 @@
             { "name": "The US Open", "place": "Naples, FL", "when": "Spring 2027", "finish": true, "note": "The last stop", "line": "The last stop, for athletes whose names come up in the lottery." }
           ],
           "math": [
-            { "label": "Tournament trips", "qty": 21, "of": "trips", "unit": 1000, "about": true, "note": "A trip is one athlete at one tournament: entry fees, travel and an accessible room, at about $1,000. The road's budget is for the stops ahead." }
+            { "label": "Tournament trips", "qty": 21, "of": "trips", "unit": 1000, "about": true, "calc": "about 21 trips", "note": "A trip is one athlete at one tournament: entry fees, travel and an accessible room, at about $1,000. The road's budget is for the stops ahead." }
           ]
         }
       ],

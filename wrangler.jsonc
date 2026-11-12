@@ -112,6 +112,10 @@
     "SEND6_SET_ASIDE": "4979",
     // The part of Givebutter's online total already inside SEND6_SET_ASIDE.
     "SEND6_ONLINE_COUNTED": "1975",
+    // A Champion's named road sponsorship, in dollars, and the part of it paid
+    // through Givebutter. It sits on the road from the start (src/fund.js).
+    "ROAD_NAMED": "0",
+    "ROAD_NAMED_ONLINE": "0",
     "R2_ACCESS_KEY_ID": "d27b427aadef63a7ec1e05eaec108bc0",
     "MAIL_TRANSPORT": "gmail",
     "GMAIL_FROM": "hello@adapttolife.org",
@@ -175,6 +179,10 @@
         "SEND6_SET_ASIDE": "4979",
         // The part of Givebutter's online total already inside SEND6_SET_ASIDE.
         "SEND6_ONLINE_COUNTED": "1975",
+        // A Champion's named road sponsorship, in dollars, and the part of it paid
+        // through Givebutter. It sits on the road from the start (src/fund.js).
+        "ROAD_NAMED": "0",
+        "ROAD_NAMED_ONLINE": "0",
         "R2_ACCESS_KEY_ID": "d27b427aadef63a7ec1e05eaec108bc0",
         // "none" is not a supported transport, so mailConfigured() is false and
         // staging sends no mail of its own (src/mail-transport.js).

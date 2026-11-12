@@ -73,11 +73,42 @@ test("once every week is funded, gifts move to the road", () =>
     assert.equal((await campaignPosition(ENV, "send-6")).raised, 4979 + 8020);
   }));
 
+// Alec, Nov 12 2026, "yes to both": a sponsor whose name goes on a part pays
+// for that part. A Champion's money sits on the road from the start, like the
+// Send 6 set-aside, and gifts still fill every week first.
+test("a Champion's sponsorship sits on the road from the start", () =>
+  withCampaign(1975 + 5000, async () => {
+    const env = { ...ENV, ROAD_NAMED: "21000" };
+    const w = await campaignPosition(env, "wbd");
+    assert.equal(w.raised, 4979 + 21000 + 5000);
+    assert.equal(w.parts.year.raised, 5200 + 5000, "gifts still fill every week first");
+    assert.equal(w.parts["send-6"].raised, 21000, "the road is paid for");
+    assert.equal(
+      (await campaignPosition(env, "fund")).raised,
+      1975 + 5000 + 21000,
+      "a check or transfer counts in the fund total",
+    );
+  }));
+
+test("a Champion who pays through Givebutter is not counted twice", () =>
+  withCampaign(1975 + 21000 + 5000, async () => {
+    const env = { ...ENV, ROAD_NAMED: "21000", ROAD_NAMED_ONLINE: "21000" };
+    const w = await campaignPosition(env, "wbd");
+    assert.equal(w.raised, 4979 + 21000 + 5000);
+    assert.equal(w.parts.year.raised, 5200 + 5000);
+    assert.equal(w.parts["send-6"].raised, 21000);
+    assert.equal((await campaignPosition(env, "fund")).raised, 1975 + 21000 + 5000);
+  }));
+
 test("with Givebutter down the bar shows only what we hold ourselves", () =>
   withCampaign(null, async () => {
     const w = await campaignPosition(ENV, "wbd");
     assert.equal(w.raised, 4979);
-    assert.equal(w.parts.year.raised, 5200, "the club's court time does not depend on Givebutter");
+    assert.equal(
+      w.parts.year.raised,
+      5200,
+      "the club's court time does not depend on Givebutter",
+    );
     assert.equal(w.live, false);
   }));
 
@@ -135,9 +166,7 @@ test("pages draw one bar with its parts, and no gift is steered to a fund", () =
       `${f} steers a gift to a fund`,
     );
   assert.ok(
-    read("public/road.html").includes(
-      "every week first, then the road to the US Open",
-    ),
+    read("public/road.html").includes("every week first, then the road to the US Open"),
   );
 });
 
@@ -161,20 +190,37 @@ test("the club's court time: $10 a night for 10 athletes, 52 nights, never named
   // keep it average": 10 athletes a week for 52 weeks.
   assert.equal(YEAR_INKIND, 10 * 10 * 52);
   // The /numbers ledger says "a partner club", never the club's name.
-  assert.ok(read("public/numbers.html").includes('<span class="nb-ledger-k">Court time<small>From a partner club</small></span>'));
-  for (const f of ["public/js/campaigns.js", "src/partials/campaign-module.html", "public/ace.html", "public/numbers.html"]) {
+  assert.ok(
+    read("public/numbers.html").includes(
+      '<span class="nb-ledger-k">Court time<small>From a partner club</small></span>',
+    ),
+  );
+  for (const f of [
+    "public/js/campaigns.js",
+    "src/partials/campaign-module.html",
+    "public/ace.html",
+    "public/numbers.html",
+  ]) {
     const t = read(f);
     assert.ok(!/\$10 (an|a|per) (athlete|person|drop)/i.test(t), f + " names the rate");
-    assert.ok(!/\$5 (an|a|per) (athlete|person|drop)/i.test(t), f + " names what we pay");
+    assert.ok(
+      !/\$5 (an|a|per) (athlete|person|drop)/i.test(t),
+      f + " names what we pay",
+    );
   }
 });
 
 test("/api/raised?c=wbd hands the court time to the page beside the gifts", async () => {
   const { default: worker } = await import("../src/index.js");
   const real = globalThis.fetch;
-  globalThis.fetch = async () => new Response(JSON.stringify({ raised: 1975, donors: 23 }), { status: 200 });
+  globalThis.fetch = async () =>
+    new Response(JSON.stringify({ raised: 1975, donors: 23 }), { status: 200 });
   try {
-    const res = await worker.fetch(new Request("https://adapttolife.org/api/raised?c=wbd"), ENV, { waitUntil() {} });
+    const res = await worker.fetch(
+      new Request("https://adapttolife.org/api/raised?c=wbd"),
+      ENV,
+      { waitUntil() {} },
+    );
     const d = await res.json();
     assert.equal(d.raised, 4979, "gifts only");
     assert.equal(d.inkind, 5200, "court time, apart");

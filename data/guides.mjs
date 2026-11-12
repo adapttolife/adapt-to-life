@@ -106,7 +106,7 @@ export const GUIDES = {
       <p>Tell us what you&rsquo;d like to sponsor and we&rsquo;ll shape it with you. Individuals can give any amount to the fund with the Donate button below.</p>`,
     faq: [
       ["How much does it cost to sponsor an adaptive athlete?", "A night of court time for up to 15 athletes is $225. One athlete&rsquo;s club membership for a year, so they can train to compete, is $1,548. Partnership levels for businesses run from $1,000, about one tournament trip, to $21,000 for a season on The Road to the US Open, and a Founding Partner starts at $48,180, the whole year ahead."],
-      ["Where does sponsorship money go?", "Sponsorships go to the Hustle &amp; Heart Fund. Adapt To Life pays clubs and vendors directly or reimburses approved expenses."],
+      ["Where does sponsorship money go?", "Sponsorships go to the Hustle &amp; Heart Fund. A level that puts your name on a part, like court time or the road, pays for that part, and each part carries one sponsor&rsquo;s name at a time. Other sponsorships and gifts fill every week first, then the road to the US Open. Adapt To Life pays clubs and vendors directly or reimburses approved expenses."],
       ["Is a sponsorship tax deductible?", "Adapt To Life is a recognized 501(c)(3) nonprofit, EIN 41-3213344. Sponsorships may be tax deductible to the extent allowed by law. Some levels include benefits, so check with your tax advisor."],
       ["Do you run the program?", "No. The clubs host the play and the crew brings the players. Adapt To Life funds court time, memberships, equipment and travel."],
     ],

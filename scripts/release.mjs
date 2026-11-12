@@ -19,12 +19,15 @@
 //      10013), the build is retriggered once through the Cloudflare API; that
 //      needs CLOUDFLARE_API_TOKEN, which `cfrun` provides.
 //   5. Production passes check-layout.
+//   6. Search engines hear which pages changed (IndexNow, scripts/lib/
+//      indexnow.mjs). This one never stops a release.
 // Only then does it print LIVE. Any failure exits 1 and says where it stopped.
 //
 // Merging to main is a production deploy. Run this when the release is
 // approved; --dry-run is always safe.
 import { execFileSync } from "node:child_process";
 import { checkLayout } from "./check-layout.mjs";
+import { changedUrls, ping } from "./lib/indexnow.mjs";
 
 const REPO = "adapttolife/adapt-to-life";
 const STAGING = "https://staging-adapt-to-life.adapt-to-life.workers.dev";
@@ -295,6 +298,15 @@ async function main() {
 
   // 4 and 5. Production is that commit, and it passes.
   await verifyLive(mergeSha, st.digest);
+
+  // 6. Tell search engines which pages changed. Never stops the release.
+  try {
+    sh("git", ["fetch", "--quiet", "origin", "main"]);
+    const r = await ping(changedUrls(mainSha, mergeSha));
+    log(`IndexNow: ${r.sent} changed page(s) sent (${r.status})`);
+  } catch (e) {
+    log(`IndexNow skipped: ${e.message}`);
+  }
   console.log(
     `\nLIVE: #${pr.number} is on adapttolife.org as ${short(mergeSha)}, the same files staging passed, and every check passes.`,
   );

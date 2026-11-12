@@ -38,6 +38,8 @@ const PER_PAGE = {
   "sport-wheelchair-cost.html": "guide-sport-wheelchair-cost",
   "sponsor-adaptive-athletes.html": "guide-sponsor-adaptive-athletes",
   "corporate-matching.html": "guide-corporate-matching",
+  // The blog hub is written by scripts/build-blog.mjs with its own card.
+  "blog.html": "blog",
 };
 
 // ALT DESCRIBES THE PHOTOGRAPH AGAIN, because from 2026-09-09 the cards ARE
@@ -73,6 +75,7 @@ const ALT = {
   "guide-sport-wheelchair-cost": "What a sport wheelchair really costs. Adapt To Life. A wheelchair pickleball athlete on an indoor court.",
   "guide-sponsor-adaptive-athletes": "Sponsor an athlete in Chicago. Adapt To Life. A wheelchair pickleball athlete on an indoor court.",
   "guide-corporate-matching": "Double your gift with an employer match. Adapt To Life. A wheelchair pickleball athlete on an indoor court.",
+  blog: "Building adaptive sports, in public. Adapt To Life. A wheelchair pickleball athlete on an indoor court.",
   karen: "Karen Atkinson. Adapt To Life. Karen water skiing in a sit-ski, spray behind her.",
   "bread-and-butter":
     "Play Juan's paddle. Help his crew compete. Adapt To Life. Juan Ortiz in his sport wheelchair, paddle up, on a dark indoor court.",
@@ -96,6 +99,7 @@ const FILE = {
   "guide-sport-wheelchair-cost": "guide-sport-wheelchair-cost-v1-card.jpg",
   "guide-sponsor-adaptive-athletes": "guide-sponsor-adaptive-athletes-v1-card.jpg",
   "guide-corporate-matching": "guide-corporate-matching-v1-card.jpg",
+  blog: "blog-v1-card.jpg",
   brickhouse: "brickhouse-v4-open.jpg",
   pickleball: "pickleball-v5-name.jpg",
   ace: "ace-v4-partner.jpg",

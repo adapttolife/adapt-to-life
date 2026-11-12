@@ -63,6 +63,8 @@ Do not confuse less defensive copy with fewer safeguards. Preserve material dono
 | `/brickhouse` (and each future partner page) | One partner's story: who they are, what we do together, their events | Visit, attend, or explore partnering |
 | `/volunteer` | Ambassadors first (a band linking to `/ambassadors`), then roles and the terms of contributing | Explore a role or offer another idea |
 | `/ambassadors` | The program: who ambassadors are, the three ways in (athlete, coach or program builder, community connector), what we give and ask, one card per ambassador linking to their page | Raise your hand (`/contact?rsn=ambassador`) |
+| `/blog` | The hub for stories, tournament recaps, guides and building in public. It collects pages that live at their own URL (people pages, event stories, guides, `/numbers`) and the posts at `/blog/<slug>` | Read a story, or follow by email |
+| `/blog/<slug>` | One post: the short version first ("In short"), the story, its sources, and more to read. Facts carry their source; quotes are verbatim and approved | Follow by email, or the post's one relevant action |
 | `/juan` (and each future athlete or ambassador page) | One person's story in their own words, their role and their part of the road, and a share link | Give, or share |
 | `/volunteer/<role>` | A bounded contribution, time, suitability, scope, and interest form | Express interest, not automatic placement |
 | `/roadmap` | Current capability, ongoing work, and future direction | Follow or support the work |
@@ -100,7 +102,7 @@ Each group answers one question with at most three links: Our Work is what we do
 
 Descriptions must reflect what is available now. The directory is open, not opening soon. Adapt Body Shop is coming soon, not a live store: use `/adapt-body-shop` for its current explanation, including in mobile navigation and the footer. `How Giving Works` leads to `/promise`. `Photo and media release` describes the signing link accurately; do not call it a sports-liability waiver.
 
-The footer keeps the brand promise, useful routes, newsletter entry, social links, and legal disclosure. It does not need another mission essay.
+The footer keeps the brand promise, useful routes, newsletter entry, social links, and legal disclosure. It does not need another mission essay. People pages and stories are reached through `/blog` (Alec, Nov 12 2026: the footer was getting long), not one footer link each; `test/blog.test.js` enforces it.
 
 ## Claims and source ownership
 
@@ -123,6 +125,8 @@ The footer keeps the brand promise, useful routes, newsletter entry, social link
 ## Generated and connected content
 
 Add an event by appending one object to `public/data/campaigns.json` (`slug`, `name`, `type` of `fundraiser`, `tournament`, or `event`, `relationship`, `summary` in one or two sentences, `starts_at`/`ends_at`, optional `time_start`/`time_end` with `tz`, `venue`, `address`, `city`, `state`, and the action: `page` for an event with its own page, otherwise `cta_url` and `cta_label`; `group_url` for a community group). Then run `npm run calendar`. The home card, the `/events` card, Add to calendar, the Event JSON-LD, and `/cal/<slug>.ics` all come from that one object, and the home section shows the next three. Bump `calendar_sequence` when a published time changes. `test/calendar.test.js` fails if a calendar file is stale.
+
+Write blog posts in `data/blog.mjs` and run `npm run blog`, which writes the hub, each post, the RSS feed (`/blog/feed.xml`) and `/llms.txt`. A post states facts with their source beside them in a comment, opens with two or three "In short" points (search engines and AI answers quote the first clear answer), lists its sources, and follows every rule above: funder not operator, no calculator, no GLASA, no session days, Donate on money buttons. Never write a story for an athlete; collect their words, a voice note is enough, and get their OK. Every post is signed by a person, with their face (`AUTHORS` in `data/blog.mjs`; Alec, Nov 12 2026: "Give more authenticity"). A byline is a promise: the named person has read every word and stands behind it. Posts end with "Spot a mistake? Tell us" (`/contact?rsn=correction`). An existing page joins the blog as a `LISTED` entry and keeps its URL; it ends with "More from the blog" (three more to read, from `scripts/lib/blog-index.mjs`), which event stories and guides write themselves and other pages keep between `<!-- more-from-blog -->` markers. New posts need a share card (`node scripts/make-og.mjs blog-<slug>`) and a sitemap entry; `test/blog.test.js` checks both.
 
 Edit volunteer content in `data/volunteer-roles.mjs` and its existing generator. Run `npm run volunteer`; never hand-edit the generated role pages as a parallel source.
 

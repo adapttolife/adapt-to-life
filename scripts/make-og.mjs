@@ -278,6 +278,17 @@ const CARDS = {
     page: "corporate-matching.html",
     headline: "Double your gift with <em>an employer match.</em>",
   },
+  // The blog (scripts/build-blog.mjs reads the post card paths from
+  // data/blog.mjs): the hub, then one card per post, each its page's h1.
+  blog: {
+    ...ATHLETE,
+    photo: "paddle-portrait",
+    size: 66,
+    measure: "12ch",
+    out: "public/images/og/blog-v1-card.jpg",
+    page: "blog.html",
+    headline: "Building adaptive sports, <em>in public.</em>",
+  },
   // Event stories (scripts/build-event-pages.mjs reads these paths from
   // data/event-stories.mjs). Amanda mid-swing for Monster Smash, where she
   // medaled; Juan serving for the division he asked for.

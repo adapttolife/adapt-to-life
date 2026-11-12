@@ -14,6 +14,9 @@ const pages = [
   ...readdirSync(new URL("volunteer/", pub))
     .filter((f) => f.endsWith(".html"))
     .map((f) => "volunteer/" + f),
+  ...readdirSync(new URL("blog/", pub))
+    .filter((f) => f.endsWith(".html"))
+    .map((f) => "blog/" + f),
 ].filter((f) => !read(f).includes("noindex"));
 
 const desktop = (s) => (s.match(/<nav class="nav-links">[\s\S]*?<\/nav>/) || [""])[0];

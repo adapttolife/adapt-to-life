@@ -77,7 +77,7 @@ export const STORIES = {
     title: "Monster Smash 2026: Six Wheelchair Pickleball Medals in Cincinnati",
     h1: "Six medals at <em class=\"italic\" style=\"color:var(--orange)\">Monster Smash.</em>",
     description:
-      "Wheelchair pickleball athletes we support won six medals at Monster Smash 2026 at The Pickle Lodge in Cincinnati, a Halloween tournament weekend that was free for athletes.",
+      "Wheelchair pickleball athletes we support won six medals at Monster Smash 2026 at The Pickle Lodge in Cincinnati, a Halloween tournament weekend that was free for wheelchair athletes.",
     lead:
       "A Halloween tournament weekend at The Pickle Lodge in Cincinnati. The host made it free for wheelchair athletes, and the athletes we support came home with six medals.",
     published: "2026-11-08",

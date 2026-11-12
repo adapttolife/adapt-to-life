@@ -20,6 +20,9 @@ const PAGES = [
   ...readdirSync(join(ROOT, "public/volunteer"))
     .filter((f) => f.endsWith(".html"))
     .map((f) => `public/volunteer/${f}`),
+  ...readdirSync(join(ROOT, "public/blog"))
+    .filter((f) => f.endsWith(".html"))
+    .map((f) => `public/blog/${f}`),
 ];
 
 test("every image reserves its shape: width and height on every <img>", () => {

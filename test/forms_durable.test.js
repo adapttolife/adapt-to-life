@@ -20,7 +20,7 @@ const sub = {
   email: "offline@example.com",
   message: "Offline scenario",
   type: "Giving or sponsoring",
-  source: "Sponsorship page: Teammate ($500)",
+  source: "Sponsorship page: Teammate ($1,000)",
   tier: "Teammate",
   amount: 500,
 };
@@ -210,7 +210,7 @@ test("public sponsor request is validated and durable with tier/note, never mark
         em: "offline@example.com",
         rsn: "Giving or sponsoring",
         msg: "Keep this note",
-        source: "Sponsorship page: Teammate ($500)",
+        source: "Sponsorship page: Teammate ($1,000)",
         sponsor_tier: "Teammate",
         sponsor_amount: "500",
       }),

@@ -23,7 +23,7 @@ const sub = {
   email: "offline@example.com",
   message: "Original note\nsecond line <not HTML>",
   tier: "Teammate",
-  amount: 500,
+  amount: 1000,
   type: "Giving or sponsoring",
   source: "Sponsorship page",
 };
@@ -48,7 +48,7 @@ test("email can recover the sponsor note and tier without ClickUp or CRM", async
   const ack = mail.find((x) => x.to === sub.email);
   assert.equal(ack.bcc, "hello@adapttolife.org");
   assert(ack.text.includes(sub.message));
-  assert(ack.text.includes("Teammate ($500)"));
+  assert(ack.text.includes("Teammate ($1,000)"));
   assert(ack.text.includes("not a payment or commitment"));
   assert(ack.text.includes(a.id));
   assert(ack.html.includes(a.id));

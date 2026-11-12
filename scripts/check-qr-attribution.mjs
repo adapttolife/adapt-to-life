@@ -22,7 +22,7 @@ const page = await browser.newPage({
 console.log("1. scan /q/chair");
 await page.goto(`${ORIGIN}/q/chair`, { waitUntil: "domcontentloaded" });
 const landed = new URL(page.url());
-step(landed.pathname === "/send-6", `landed on ${landed.pathname}`);
+step(landed.pathname === "/road", `landed on ${landed.pathname}`);
 step(
   landed.searchParams.get("gba_source") === "qr-chair",
   "landing URL carries gba_source=qr-chair",

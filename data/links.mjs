@@ -43,7 +43,7 @@ export const CREW = [
     img: "/images/pickleball/brian.webp",
     w: 952,
     h: 900,
-    fact: "US Open silver and bronze.",
+    fact: "US Open silver and bronze. Six medals in all, two of them gold.",
     href: "/pickleball#brian",
     cta: "See more",
     share: "/pickleball#brian",
@@ -54,7 +54,7 @@ export const CREW = [
     img: "/images/pickleball/bob.webp",
     w: 552,
     h: 900,
-    fact: "Doubles gold at Monster Smash.",
+    fact: "Doubles gold at Monster Smash, with Kenneth Holman.",
     href: "/pickleball#bob",
     cta: "See more",
     share: "/pickleball#bob",
@@ -87,7 +87,7 @@ export const CREW = [
     img: "/images/pickleball/amanda.webp",
     w: 919,
     h: 900,
-    fact: "Doubles bronze at Monster Smash.",
+    fact: "Doubles bronze at Monster Smash, with Kasey Stelter.",
     href: "/pickleball#amanda",
     cta: "See more",
     share: "/pickleball#amanda",
@@ -111,7 +111,7 @@ export const STORIES = [
   ["/juan", "Juan Ortiz, on CBS News Chicago", "His story, his press, his road to the US Open", "/images/links/juan-face.3b2b05b6.webp"],
   ["/bread-and-butter", "Juan’s Bread & Butter code", "JuanitoLoco takes 10% off. The commission comes to the fund.", "/images/links/bnb-loco.a731e45d.webp"],
   ["/ace", "ACE Pickleball Club, Des Plaines", "Our partner club", "/images/links/ace-court.ed4a355f.webp"],
-  ["/sponsor-adaptive-athletes", "Sponsor an athlete", "Court time, training and tournaments", "/images/links/sponsor-swing.680e5b35.webp"],
+  ["/sponsor-adaptive-athletes", "Sponsor an athlete", "Court time, training and tournament travel", "/images/links/sponsor-swing.680e5b35.webp"],
 ];
 
 // /links?from=<key>: the section a post's link opens on. Rose's captions and

@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=f3c06679">
+<link rel="stylesheet" href="/css/site.css?v=4b81db86">
 <style>
   /* Events: the index. Every dated thing we take part in comes from
      /data/campaigns.json (the same file as the home calendar), so a date is
@@ -75,7 +75,7 @@
   .ev-works-list span{ display:block; margin-top:0.5rem; color:var(--cream-mute); line-height:1.5; }
   @media (max-width:760px){ .ev-works-list{ grid-template-columns:1fr; } }
 </style>
-<script src="/js/attribution.js?v=dd7f55f9" defer></script>
+<script src="/js/attribution.js?v=bd94ad92" defer></script>
 <link rel="preload" as="image" href="/videos/links/rally-brickhouse.9b9fb227.webp">
 <style>
   /* /links (scripts/lib/links-page.mjs, data/links.mjs): the bio link page.
@@ -142,7 +142,9 @@
   /* give */
   .lx-give{ padding-bottom:0.4rem; }
   .lx-giftcard{ margin-top:1.1rem; padding:1.1rem; border-radius:20px; background:var(--photo-black); border:1px solid rgba(249,247,242,0.1); }
-  .lx-faces{ display:block; width:100%; max-width:15rem; height:auto; }
+  /* the crew at The Pickle Lodge (a frame from the Monster Smash arrival reel),
+     cropped to a short strip so the picker stays close */
+  .lx-crewpic{ display:block; width:100%; height:auto; aspect-ratio:2/1; max-height:10rem; object-fit:cover; object-position:50% 48%; border-radius:14px; }
   .lx-road{ margin-top:0.55rem; font-size:0.9rem; color:var(--cream-mute); }
   .lx-seg{ display:inline-flex; margin-top:1rem; padding:3px; border-radius:999px; background:rgba(249,247,242,0.06); }
   .lx-seg button{ min-height:40px; padding:0 1rem; border:0; border-radius:999px; background:transparent; color:var(--cream-mute); font:inherit; font-weight:700; cursor:pointer; }
@@ -302,7 +304,7 @@ fill="currentColor" stroke="none">
   <section class="lx-sec lx-crew" id="crew" data-key="crew" aria-labelledby="lxCrewH">
     <p class="lx-from-note">From the post you just saw</p>
     <h2 id="lxCrewH">Meet the crew</h2>
-    <p>Six of the Wheelie Big Dills. Swipe, and share someone you’d cheer for.</p>
+    <p>A few of the athletes in Chicago Pickleball: Wheelie Big Dills. Swipe, and share someone you’d cheer for.</p>
     <ul class="lx-rail" role="list">
         <li class="lx-card">
           <a class="lx-card-media" href="/juan?utm_source=link-in-bio&amp;utm_medium=social&amp;utm_campaign=bio&amp;utm_content=crew-juan" tabindex="-1" aria-hidden="true"><img src="/images/pickleball/juan.webp" alt="" width="616" height="900" fetchpriority="low" decoding="async"></a>
@@ -319,7 +321,7 @@ fill="currentColor" stroke="none">
           <a class="lx-card-media" href="/pickleball?utm_source=link-in-bio&amp;utm_medium=social&amp;utm_campaign=bio&amp;utm_content=crew-brian#brian" tabindex="-1" aria-hidden="true"><img src="/images/pickleball/brian.webp" alt="" width="952" height="900" fetchpriority="low" decoding="async"></a>
           <div class="lx-card-body">
             <h3 class="lx-card-name">Brian</h3>
-            <p class="lx-card-fact">US Open silver and bronze.</p>
+            <p class="lx-card-fact">US Open silver and bronze. Six medals in all, two of them gold.</p>
             <div class="lx-card-row">
               <a class="lx-card-go" href="/pickleball?utm_source=link-in-bio&amp;utm_medium=social&amp;utm_campaign=bio&amp;utm_content=crew-brian#brian">See more <svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></a>
               <button type="button" class="lx-share" data-share-url="https://adapttolife.org/pickleball?utm_source=share&amp;utm_medium=referral&amp;utm_campaign=links-share&amp;utm_content=brian#brian" data-share-title="Brian | Adapt To Life" data-share-text="Meet Brian, one of the wheelchair pickleball athletes Adapt To Life funds in Chicago."><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="share" data-style="bold"><path fill="currentColor" d="M220 112v96a20 20 0 0 1-20 20H56a20 20 0 0 1-20-20v-96a20 20 0 0 1 20-20h20a12 12 0 0 1 0 24H60v88h136v-88h-16a12 12 0 0 1 0-24h20a20 20 0 0 1 20 20M96.49 72.49L116 53v83a12 12 0 0 0 24 0V53l19.51 19.52a12 12 0 1 0 17-17l-40-40a12 12 0 0 0-17 0l-40 40a12 12 0 1 0 17 17Z"/></svg><span class="lx-share-label">Share</span></button>
@@ -330,7 +332,7 @@ fill="currentColor" stroke="none">
           <a class="lx-card-media" href="/pickleball?utm_source=link-in-bio&amp;utm_medium=social&amp;utm_campaign=bio&amp;utm_content=crew-bob#bob" tabindex="-1" aria-hidden="true"><img src="/images/pickleball/bob.webp" alt="" width="552" height="900" loading="lazy" decoding="async"></a>
           <div class="lx-card-body">
             <h3 class="lx-card-name">Bob</h3>
-            <p class="lx-card-fact">Doubles gold at Monster Smash.</p>
+            <p class="lx-card-fact">Doubles gold at Monster Smash, with Kenneth Holman.</p>
             <div class="lx-card-row">
               <a class="lx-card-go" href="/pickleball?utm_source=link-in-bio&amp;utm_medium=social&amp;utm_campaign=bio&amp;utm_content=crew-bob#bob">See more <svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></a>
               <button type="button" class="lx-share" data-share-url="https://adapttolife.org/pickleball?utm_source=share&amp;utm_medium=referral&amp;utm_campaign=links-share&amp;utm_content=bob#bob" data-share-title="Bob | Adapt To Life" data-share-text="Meet Bob, one of the wheelchair pickleball athletes Adapt To Life funds in Chicago."><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="share" data-style="bold"><path fill="currentColor" d="M220 112v96a20 20 0 0 1-20 20H56a20 20 0 0 1-20-20v-96a20 20 0 0 1 20-20h20a12 12 0 0 1 0 24H60v88h136v-88h-16a12 12 0 0 1 0-24h20a20 20 0 0 1 20 20M96.49 72.49L116 53v83a12 12 0 0 0 24 0V53l19.51 19.52a12 12 0 1 0 17-17l-40-40a12 12 0 0 0-17 0l-40 40a12 12 0 1 0 17 17Z"/></svg><span class="lx-share-label">Share</span></button>
@@ -363,7 +365,7 @@ fill="currentColor" stroke="none">
           <a class="lx-card-media" href="/pickleball?utm_source=link-in-bio&amp;utm_medium=social&amp;utm_campaign=bio&amp;utm_content=crew-amanda#amanda" tabindex="-1" aria-hidden="true"><img src="/images/pickleball/amanda.webp" alt="" width="919" height="900" loading="lazy" decoding="async"></a>
           <div class="lx-card-body">
             <h3 class="lx-card-name">Amanda</h3>
-            <p class="lx-card-fact">Doubles bronze at Monster Smash.</p>
+            <p class="lx-card-fact">Doubles bronze at Monster Smash, with Kasey Stelter.</p>
             <div class="lx-card-row">
               <a class="lx-card-go" href="/pickleball?utm_source=link-in-bio&amp;utm_medium=social&amp;utm_campaign=bio&amp;utm_content=crew-amanda#amanda">See more <svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></a>
               <button type="button" class="lx-share" data-share-url="https://adapttolife.org/pickleball?utm_source=share&amp;utm_medium=referral&amp;utm_campaign=links-share&amp;utm_content=amanda#amanda" data-share-title="Amanda | Adapt To Life" data-share-text="Meet Amanda, one of the wheelchair pickleball athletes Adapt To Life funds in Chicago."><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="share" data-style="bold"><path fill="currentColor" d="M220 112v96a20 20 0 0 1-20 20H56a20 20 0 0 1-20-20v-96a20 20 0 0 1 20-20h20a12 12 0 0 1 0 24H60v88h136v-88h-16a12 12 0 0 1 0-24h20a20 20 0 0 1 20 20M96.49 72.49L116 53v83a12 12 0 0 0 24 0V53l19.51 19.52a12 12 0 1 0 17-17l-40-40a12 12 0 0 0-17 0l-40 40a12 12 0 1 0 17 17Z"/></svg><span class="lx-share-label">Share</span></button>
@@ -393,8 +395,8 @@ fill="currentColor" stroke="none">
     <p class="lx-from-note">From the post you just saw</p>
     <h2 id="lxGiveH">Put an athlete on the court</h2>
     <div class="lx-giftcard" data-lx-give>
-      <img class="lx-faces" src="/images/pickleball/seats/faces.webp" alt="Juan, Brian, Bob, Robby, Ken and Amanda" width="576" height="96" loading="lazy" decoding="async">
-      <p class="lx-road">Next stop, Naples: six athletes on the road to the 2027 US Open. <a class="lx-inline" href="/send-6?utm_source=link-in-bio&amp;utm_medium=social&amp;utm_campaign=bio&amp;utm_content=road">See the road</a></p>
+      <img class="lx-crewpic" src="/images/events/monster-smash-2026/crew-lodge.webp" alt="Athletes in sport wheelchairs and grey Adapt To Life shirts fist-bump inside The Pickle Lodge in Cincinnati" width="720" height="1280" loading="lazy" decoding="async">
+      <p class="lx-road">A season of tournament travel for the crew, through the 2027 US Open. <a class="lx-inline" href="/road?utm_source=link-in-bio&amp;utm_medium=social&amp;utm_campaign=bio&amp;utm_content=road">See the road</a></p>
       <div class="lx-seg" role="radiogroup" aria-label="How often">
         <button type="button" role="radio" aria-checked="true" data-freq-tab="monthly">Monthly</button>
         <button type="button" role="radio" aria-checked="false" data-freq-tab="once">One time</button>
@@ -438,7 +440,7 @@ fill="currentColor" stroke="none">
         <li><a class="lx-story" href="/juan?utm_source=link-in-bio&amp;utm_medium=social&amp;utm_campaign=bio&amp;utm_content=story-2"><img src="/images/links/juan-face.3b2b05b6.webp" alt="" width="240" height="240" loading="lazy" decoding="async"><span class="lx-story-text"><b>Juan Ortiz, on CBS News Chicago</b><span>His story, his press, his road to the US Open</span></span><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></a></li>
         <li><a class="lx-story" href="/bread-and-butter?utm_source=link-in-bio&amp;utm_medium=social&amp;utm_campaign=bio&amp;utm_content=story-3"><img src="/images/links/bnb-loco.a731e45d.webp" alt="" width="240" height="240" loading="lazy" decoding="async"><span class="lx-story-text"><b>Juan’s Bread &amp; Butter code</b><span>JuanitoLoco takes 10% off. The commission comes to the fund.</span></span><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></a></li>
         <li><a class="lx-story" href="/ace?utm_source=link-in-bio&amp;utm_medium=social&amp;utm_campaign=bio&amp;utm_content=story-4"><img src="/images/links/ace-court.ed4a355f.webp" alt="" width="240" height="240" loading="lazy" decoding="async"><span class="lx-story-text"><b>ACE Pickleball Club, Des Plaines</b><span>Our partner club</span></span><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></a></li>
-        <li><a class="lx-story" href="/sponsor-adaptive-athletes?utm_source=link-in-bio&amp;utm_medium=social&amp;utm_campaign=bio&amp;utm_content=story-5"><img src="/images/links/sponsor-swing.680e5b35.webp" alt="" width="240" height="240" loading="lazy" decoding="async"><span class="lx-story-text"><b>Sponsor an athlete</b><span>Court time, training and tournaments</span></span><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></a></li>
+        <li><a class="lx-story" href="/sponsor-adaptive-athletes?utm_source=link-in-bio&amp;utm_medium=social&amp;utm_campaign=bio&amp;utm_content=story-5"><img src="/images/links/sponsor-swing.680e5b35.webp" alt="" width="240" height="240" loading="lazy" decoding="async"><span class="lx-story-text"><b>Sponsor an athlete</b><span>Court time, training and tournament travel</span></span><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></a></li>
     </ul>
   </section>
 

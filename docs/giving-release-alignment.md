@@ -11,7 +11,7 @@ This is a release checklist and proposed external copy, not an activated policy 
 ## Staged changes
 
 - `/promise`: concise campaign-purpose rule, explicit protection for earlier gift terms, and both revenue projects in the sustainability story.
-- `/send-6`: prospective fallback before the primary donation link.
+- `/send-6` (now `/road`, Nov 11 2026): prospective fallback before the primary donation link. The road page states the gift order and donor terms in that place (`#campaign-terms`).
 - `/donate` and `/hustle-and-heart`: campaign-terms links at giving entry points; donor page identifies the formal entity as Adapt To Life NFP.
 - `/sponsorship`: simpler deliverable offer and individually agreed larger arrangements.
 - `src/givebutter_webhook.js`: both future thank-you bodies no longer make a blanket allocation-percentage promise. Event processing, payment handling and official receipt behavior are unchanged. No email has been sent by this revision.
@@ -32,13 +32,17 @@ Before an approved production release:
 
 ## Proposed Givebutter appeal copy (not published)
 
+_Note, Nov 11 2026 (not part of the copy): rewritten for The Road to the US Open. The earlier draft's Send 6 paragraphs (six athletes preparing for the US Open) are retired; do not publish them. The appeal copy follows._
+
 The Hustle & Heart Fund helps adaptive athletes with equipment, training, and travel. A chair, time with a coach, or help getting to an event can make it possible to keep playing.
 
 Named for how Tim Gruensfelder played, all hustle and all heart, the fund supports athletes and the programs that help them take part.
 
-Our current Send 6 campaign is raising $21,000 to help six athletes prepare for the US Open in Naples in spring 2027.
+Right now, your gift keeps Chicago Pickleball: Wheelie Big Dills on court every week, then on the road to the US Open.
 
-For new gifts to Send 6: if the campaign is fully funded or cannot go ahead, remaining campaign funds from those gifts will support the Hustle & Heart Fund. Gifts already received keep their original terms.
+Every week comes first: a year of court time for 10 to 15 athletes a night, plus memberships for 10. Then The Road to the US Open: $21,000 for a season of tournament travel, about 21 trips at about $1,000 each for entry fees, travel and accessible rooms. The last stop is the US Open in Naples in spring 2027, where players are picked by lottery. After that, the Chicago Classic.
+
+Gifts already received keep their original terms. Money raised for the road earlier, the popcorn drive included, keeps its terms and stays on the road.
 
 How Giving Works: https://adapttolife.org/promise
 

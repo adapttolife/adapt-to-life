@@ -51,7 +51,7 @@ const PAGES = [
   "/popcorn",
   "/promise",
   "/roadmap",
-  "/send-6",
+  "/road",
   "/juan",
   "/sponsorship",
   "/subscribe",

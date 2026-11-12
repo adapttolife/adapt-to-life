@@ -334,6 +334,7 @@ test("a successful gift is recorded and receives the ATL follow-up", async () =>
   assert.equal(msg.replyTo, "hello@adapttolife.org");
   assert.match(msg.subject, /thank you/i);
   // The Hustle & Heart Fund's gift line is the /donate lead, word for word.
+  // Nov 11 2026: "on the road to the US Open" replaced "helps send athletes".
   const line =
     "Right now, your gift keeps Chicago Pickleball: Wheelie Big Dills on court every week, then on the road to the US Open.";
   assert.ok(msg.text.includes(line));

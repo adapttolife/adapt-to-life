@@ -94,4 +94,17 @@ test("no wall panel is cut from a frame showing GLASA's shirts", () => {
   }
   assert.equal(panels.profile.src, "JLA_6011.jpg");
   assert.ok(html.includes(`/images/hero/panels/${hashes["profile.webp"]}`));
+
+  // The rolling closing strips are built from their own lists (STRIPS in
+  // scripts/build-hero-panels.py), not panels.json, so the check above never
+  // saw them. Until Nov 11 2026 column 7 of the homepage strip was JLA_5989,
+  // the Great Lakes Games shirt, live at the bottom of the front page.
+  const py = read("scripts/build-hero-panels.py");
+  const strips = py.match(/STRIPS = \{([\s\S]*?)\n    \}/);
+  assert.ok(strips, "STRIPS is defined in build-hero-panels.py");
+  const frames = strips[1].match(/JLA_\d+\.jpg/g) || [];
+  assert.equal(frames.length, 16, "two strips of eight frames");
+  for (const f of frames) assert.ok(!GLASA_SHIRTS.has(f), `a roll strip is cut from ${f}`);
+  for (const f of GLASA_SHIRTS) assert.ok(py.includes(`"${f}"`), `BANNED_FRAMES lists ${f}`);
+  assert.ok(html.includes(`/images/hero/panels/${hashes["roll-strip-home.webp"]}`));
 });

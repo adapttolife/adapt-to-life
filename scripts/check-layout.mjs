@@ -35,7 +35,7 @@ const CORE = [
   "/juan",
   "/ambassadors",
   "/volunteer",
-  "/send-6",
+  "/road",
   "/donate",
   "/about",
   "/adaptive-sports-near-me",

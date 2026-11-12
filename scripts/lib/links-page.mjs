@@ -166,7 +166,9 @@ ${shell.head.replace('<link rel="preconnect"', metaBlock({ title, desc, url, og,
   /* give */
   .lx-give{ padding-bottom:0.4rem; }
   .lx-giftcard{ margin-top:1.1rem; padding:1.1rem; border-radius:20px; background:var(--photo-black); border:1px solid rgba(249,247,242,0.1); }
-  .lx-faces{ display:block; width:100%; max-width:15rem; height:auto; }
+  /* the crew at The Pickle Lodge (a frame from the Monster Smash arrival reel),
+     cropped to a short strip so the picker stays close */
+  .lx-crewpic{ display:block; width:100%; height:auto; aspect-ratio:2/1; max-height:10rem; object-fit:cover; object-position:50% 48%; border-radius:14px; }
   .lx-road{ margin-top:0.55rem; font-size:0.9rem; color:var(--cream-mute); }
   .lx-seg{ display:inline-flex; margin-top:1rem; padding:3px; border-radius:999px; background:rgba(249,247,242,0.06); }
   .lx-seg button{ min-height:40px; padding:0 1rem; border:0; border-radius:999px; background:transparent; color:var(--cream-mute); font:inherit; font-weight:700; cursor:pointer; }
@@ -249,7 +251,7 @@ ${shell.header}
   <section class="lx-sec lx-crew" id="crew" data-key="crew" aria-labelledby="lxCrewH">
     <p class="lx-from-note">From the post you just saw</p>
     <h2 id="lxCrewH">Meet the crew</h2>
-    <p>Six of the Wheelie Big Dills. Swipe, and share someone you’d cheer for.</p>
+    <p>A few of the athletes in Chicago Pickleball: Wheelie Big Dills. Swipe, and share someone you’d cheer for.</p>
     <ul class="lx-rail" role="list">
 ${crewCards}
     </ul>
@@ -269,8 +271,8 @@ ${medalCards}
     <p class="lx-from-note">From the post you just saw</p>
     <h2 id="lxGiveH">Put an athlete on the court</h2>
     <div class="lx-giftcard" data-lx-give>
-      <img class="lx-faces" src="/images/pickleball/seats/faces.webp" alt="Juan, Brian, Bob, Robby, Ken and Amanda" width="576" height="96" loading="lazy" decoding="async">
-      <p class="lx-road">Next stop, Naples: six athletes on the road to the 2027 US Open. <a class="lx-inline" href="${utm("/send-6", "road")}">See the road</a></p>
+      <img class="lx-crewpic" src="/images/events/monster-smash-2026/crew-lodge.webp" alt="Athletes in sport wheelchairs and grey Adapt To Life shirts fist-bump inside The Pickle Lodge in Cincinnati" width="720" height="1280" loading="lazy" decoding="async">
+      <p class="lx-road">A season of tournament travel for the crew, through the 2027 US Open. <a class="lx-inline" href="${utm("/road", "road")}">See the road</a></p>
       <div class="lx-seg" role="radiogroup" aria-label="How often">
         <button type="button" role="radio" aria-checked="true" data-freq-tab="monthly">Monthly</button>
         <button type="button" role="radio" aria-checked="false" data-freq-tab="once">One time</button>

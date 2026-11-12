@@ -123,7 +123,7 @@ export const PAGE_TIERS = {
   "numbers.html": "md",
   "karen.html": "md",
   "popcorn.html": "md",
-  "send-6.html": "md",
+  "road.html": "md",
   "contact.html": "sm",
   "waiver.html": "sm",
   "subscribe.html": "sm",

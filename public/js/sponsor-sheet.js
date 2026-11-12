@@ -46,7 +46,8 @@
   // givebutter.com, because our own /donate is where the attribution chain
   // survives (see js/attribution.js) — and because the widget forwards `amount`
   // into its iframe, which is the whole reason this button can exist. Measured
-  // 2026-09-12: /donate?amount=500 opens with $500 already selected.
+  // 2026-09-12: /donate?amount=500 (then the Teammate price) opens with $500
+  // already selected.
   function donateHref(tier, amount) {
     var slug = tier.toLowerCase().replace(/[^a-z0-9]+/g, "-");
     return (

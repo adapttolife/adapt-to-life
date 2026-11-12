@@ -83,6 +83,13 @@ DIM_OVERRIDE = {"whitecap": 0.92}
 # problem is not a layout preference and should not be defended by a comment.
 WITHDRAWN = {"JLA_6122.jpg", "JLA_6123.jpg", "JLA_6127.jpg"}
 
+# Frames that show a Great Lakes Games shirt or a GLASA staff shirt (GLASA's
+# event). Alec: never GLASA on the site, photos included. Any panel, band or
+# roll strip built from one of these refuses to build. test/homepage_hero.test.js
+# holds the same list.
+BANNED_FRAMES = {"JLA_5989.jpg", "JLA_5990.jpg", "JLA_5991.jpg",
+                 "JLA_6136.jpg", "JLA_6192.jpg", "JLA_6193.jpg"}
+
 # whitecap goes UP, not down: he joined the four-cell phone grid on 2026-09-09
 # (Alec: "robby on the top right"), where a cell is 197x309 CSS at 3x = 591x927
 # device px. At the mid-plane 520 long edge he upscaled about 1.8x there —
@@ -579,9 +586,16 @@ def compose_roll():
         # homepage — eight the other strip does not use, drawn from the widened
         # rotation so the frames at the bottom of the front page are people you
         # have not already met at the top of it
+        # Column 7 was JLA_5989 until 2026-11-11: a readable "GREAT LAKES GAMES"
+        # shirt (GLASA's event), live in the homepage closing band. It is one of
+        # the banned frames (no-GLASA rule), so it is JLA_6071 now: a crew member
+        # smiling in a US Open Pickleball Championships shirt, no other text.
         "roll-strip-home": ["JLA_6131.jpg", "JLA_6091.jpg", "JLA_5967.jpg", "JLA_6146.jpg",
-                            "JLA_5953.jpg", "JLA_6236.jpg", "JLA_5989.jpg", "JLA_6168.jpg"],
+                            "JLA_5953.jpg", "JLA_6236.jpg", "JLA_6071.jpg", "JLA_6168.jpg"],
     }
+    banned = sorted(BANNED_FRAMES & {f for cols in STRIPS.values() for f in cols})
+    if banned:
+        raise SystemExit("REFUSING TO BUILD: banned frame(s) in a roll strip: " + ", ".join(banned))
     H, CW, GAP = 430, 168, 28
     PITCH = CW + GAP
     for name, COLS in STRIPS.items():
@@ -665,6 +679,12 @@ def fingerprint(only=None):
 def main():
     assert_no_withdrawn()
     os.makedirs(DST, exist_ok=True)
+    if "--roll-only" in sys.argv:
+        # Rebuild ONLY the two rolling closing strips (/donate and home), for a
+        # photo swap in STRIPS. The scoped fingerprint leaves the rest alone.
+        compose_roll()
+        fingerprint("roll-strip")
+        return
     if "--bands-only" in sys.argv:
         # Rebuild ONLY the interior page bands, for the common case of swapping
         # a photograph in BANDS. The full run re-encodes forty panels to produce

@@ -1388,11 +1388,18 @@ export default {
     // /give is the same kind of stale URL: adaptbodyshop.com/promise links to
     // it, and there was never a page there. The trailing-slash form is listed
     // too, so a slash does not 404 the same link. url.search keeps the query.
+    // /send-6 became /road on Nov 11 2026 (Alec retired "send six athletes":
+    // the road is the crew's tournaments through the year, ending at the US
+    // Open). Chair, sign and card QR codes, old shares and emails still point
+    // at /send-6, so it answers forever with the road.
     const MERGED = {
       "/ways-to-give": "/donate",
       "/ways-to-give.html": "/donate",
       "/give": "/donate",
       "/give/": "/donate",
+      "/send-6": "/road",
+      "/send-6.html": "/road",
+      "/send-6/": "/road",
     };
     if (MERGED[url.pathname]) {
       return Response.redirect(

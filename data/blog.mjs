@@ -85,7 +85,12 @@ const PHOTO = {
   // organization's jersey; Alec kept it on Nov 5 ("the rule covers words we
   // write, not this historical photo of the fund's namesake"). Full frame.
   tim: { src: "public/images/tim.webp", x: 11, y: 0, w: 1057, h: 705 },
-  smash: { src: "public/images/events/monster-smash-2026/crew-lodge.webp", x: 0, y: 440, w: 720, h: 480 },
+  // Ryan reaching low for the ball, in black and white (Brick House shoot).
+  // Alec, Nov 12 2026, replacing the 720px reel frame of the crew at the
+  // Lodge: "Can we pick a better picture?", then sent this frame as the one.
+  // (Amanda mid-swing, assets/photos/court-swing.jpg full frame, was the
+  // other choice: she took bronze there and it is the event's share card.)
+  smash: { src: "public/images/athletes/ryan-reach.webp", x: 0, y: 162, w: 960, h: 640 },
   app: { src: "public/images/events/app-vlasic-classic-2026/court-29.webp", x: 0, y: 560, w: 720, h: 480 },
   chair: { src: "public/images/athletes/juan-chair.webp", x: 0, y: 139, w: 1600, h: 1067 },
   sponsor: { src: "assets/photos/cap-profile.jpg", x: 0, y: 0, w: 3900, h: 2600 },

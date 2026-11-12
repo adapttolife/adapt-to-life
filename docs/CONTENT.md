@@ -117,6 +117,7 @@ The footer keeps the brand promise, useful routes, newsletter entry, social link
 - The directory is a starting point. Readers confirm schedules, eligibility, equipment, and accessibility with providers.
 - Adapt Body Shop contributes to the organization's longer term sustainability story. The store is forthcoming. Do not invent products already for sale, launch dates, a profit-transfer percentage, or purchase deductibility. Keep the directory free to browse; describe revenue development as a plan, not proof of current earnings.
 - Tax language, legal entity details, restricted gifts, and grant policy require evidence and the appropriate decision-maker. A staging copy edit is not authority to establish a new policy.
+- Named sponsorships (the owner's decision, Nov 12 2026): a level that puts a sponsor's name on a part pays for that part (Captain court time, Train to Compete ten memberships, Champion the road, Founding Partner the year ahead), and each part carries one sponsor's name at a time, held by the first to sign. If a part is already paid for, in full or in part, the money it doesn't need goes to the rest of the goal, and the sponsor hears where before giving. Other sponsorships and gifts fill every week first, then the road. The `/sponsorship` fine print owns the wording, `docs/sponsor-letter.md` is the record for each deal, and `ROAD_NAMED` in `src/fund.js` puts a Champion's money on the road.
 
 ## Generated and connected content
 
@@ -134,7 +135,7 @@ The separate adaptivesportsnearme.com directory and adaptbodyshop.com storefront
 
 ## Review and release
 
-Use the latest-main-based content branch and the standard staging environment. Do not create another preview stack or merge content into production without approval.
+Preview on the playground (see `AGENTS.md`), never by pushing a branch, creating another preview stack or deploying staging. When the change is going to ship, open one short-lived PR into `staging`; production changes only when the owner says "push live".
 
 Alec removed the persistent content-staging banner. Do not bring it back, add page-bottom padding for it, or replace it with another persistent alert. Keep write refusal, disabled payment widgets, and submission safeguards behind the scenes. The absence of a banner does not make staging production or make its totals live.
 

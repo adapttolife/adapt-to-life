@@ -65,7 +65,8 @@ an endorsement of your products, or an agreement to use them.
 
 **What you will hear from us**
 
-At the end of the [year / season], a short report: what your sponsorship paid for and what it cost.
+Each month, a short recap with attendance, views and results, as /sponsorship promises. At the end of
+the [year / season], what your sponsorship paid for and what it cost.
 
 **Tax**
 

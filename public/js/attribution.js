@@ -1,7 +1,7 @@
 // Spec 116 P6 — keep QR attribution alive from the scan to the gift.
 //
 // The chain broke here before this file existed. /q/chair redirects to
-// /send-6?utm_campaign=qr-chair..., the visitor reads the campaign, then taps
+// /road?utm_campaign=qr-chair..., the visitor reads the campaign, then taps
 // Donate — and every Donate link on the site is a bare href="/donate", so the
 // attribution died at that hop and Givebutter saw an unattributed gift. Scans
 // were counted, dollars were not, and "which surface actually works" had no

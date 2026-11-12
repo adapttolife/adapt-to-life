@@ -14,7 +14,7 @@ const core = [
   "karen",
   "promise",
   "roadmap",
-  "send-6",
+  "road",
   "popcorn",
   "subscribe",
   "tim",

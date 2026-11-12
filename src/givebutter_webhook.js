@@ -320,7 +320,7 @@ const HUSTLE_HEART_CAMPAIGN_ID = "683765";
 
 export function giftLine(gift) {
   return gift.campaignId === HUSTLE_HEART_CAMPAIGN_ID
-    ? "Right now, your gift keeps Chicago Pickleball: Wheelie Big Dills on court every week, then helps send athletes to the US Open."
+    ? "Right now, your gift keeps Chicago Pickleball: Wheelie Big Dills on court every week, then on the road to the US Open."
     : "Your gift helps adaptive athletes take part through equipment, training, and travel.";
 }
 

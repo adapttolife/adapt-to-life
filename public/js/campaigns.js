@@ -2,7 +2,7 @@
    Adapt To Life — the campaign layer (Spec 115).
 
    One data file (/data/campaigns.json), three consumers: /ways-to-give,
-   /send-6 and /popcorn. Two content types that never merge:
+   /road and /popcorn. Two content types that never merge:
 
      CAMPAIGN — what we are raising for and who it reaches. Has a goal and a
                 beneficiary. Gets a page.
@@ -475,7 +475,7 @@
 
      Why this is data-driven rather than three lines of hand-written HTML:
      the August popcorn drive's $3,004 already appears on /popcorn and
-     /send-6, and it is the same number the thermometer adds via
+     /road, and it is the same number the thermometer adds via
      SEND6_OFFLINE_RAISED. A fourth hand-typed copy is a fourth thing to forget
      when the next drive closes. Reads the most recently CLOSED drive that
      has a real `raised` figure, and renders nothing if there is not one —
@@ -743,8 +743,6 @@
     return i;
   }
   function numbersBars() {
-    // The six faces paint once their row is near view (site.css, .face).
-    Array.prototype.forEach.call(document.querySelectorAll(".nb-crew"), near);
     if (!document.querySelector("[data-nb-row], [data-nb-total]")) return;
     raised(function (d) {
       if (!d || !d.raised) return;
@@ -839,8 +837,6 @@
       if (card) picker(card);
       var bg = m.querySelector(".cm-bg");
       if (bg) near(bg);
-      var faces = m.querySelector(".cm-faces");
-      if (faces) near(faces);
     });
     raised(function (d) {
       if (!d || !d.raised) return;

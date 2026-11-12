@@ -27,8 +27,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=f3c06679">
-<script src="/js/attribution.js?v=dd7f55f9" defer></script>
+<link rel="stylesheet" href="/css/site.css?v=4b81db86">
+<script src="/js/attribution.js?v=bd94ad92" defer></script>
 <style>
   /* ==========================================================================
      Popcorn campaigns — a branded home for every Double Good pop-up store.
@@ -412,9 +412,9 @@ fill="currentColor" stroke="none">
 <section class="band tint" id="goes">
   <div class="wrap reading">
     <span class="eyebrow orange reveal">Where the support goes</span>
-    <h2 class="serif h2 reveal" style="margin-top:0.8rem;">Help six athletes get to the US Open.</h2>
-    <p class="prose reveal" style="margin-top:1rem;">The August popcorn drive raised $3,004 for <a class="textlink" href="/send-6">Send 6 to the US Open Spring 2027</a>, now the road to the US Open: tournaments through the year for six athletes, then Naples.</p>
-    <a class="textlink reveal" href="/send-6" style="margin-top:1.4rem;">See the campaign <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
+    <h2 class="serif h2 reveal" style="margin-top:0.8rem;">Popcorn for the road.</h2>
+    <p class="prose reveal" style="margin-top:1rem;">The August popcorn drive raised $3,004 for the US Open campaign that grew into <a class="textlink" href="/road">The Road to the US Open</a> for Chicago Pickleball: Wheelie Big Dills. That money keeps its terms and stays on the road.</p>
+    <a class="textlink reveal" href="/road" style="margin-top:1.4rem;">See the road <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
   </div>
 </section>
 
@@ -661,7 +661,7 @@ fill="currentColor" stroke="none">
 }
 </script>
 
-<script src="/js/campaigns.js?v=31dc9ab5"></script>
+<script src="/js/campaigns.js?v=1fc2464d"></script>
 <script>
 (function(){
   var data;
@@ -771,7 +771,7 @@ fill="currentColor" stroke="none">
       if (at < 0){ p.textContent = text; return p; }
       p.appendChild(document.createTextNode(text.slice(0, at)));
       var link = el('a','textlink', camp.name);
-      link.href = camp.page || '/send-6';
+      link.href = camp.page || '/road';
       p.appendChild(link);
       p.appendChild(document.createTextNode(text.slice(at + camp.name.length)));
       return p;
@@ -844,7 +844,7 @@ fill="currentColor" stroke="none">
           var feedsEl = el('p','pop-feeds');
           feedsEl.appendChild(document.createTextNode('Part of '));
           var feedsLink = el('a','textlink', feeds.name);
-          feedsLink.href = feeds.page || '/send-6';
+          feedsLink.href = feeds.page || '/road';
           feedsEl.appendChild(feedsLink);
           left.appendChild(feedsEl);
         }
@@ -890,7 +890,7 @@ fill="currentColor" stroke="none">
     var finalSub = document.getElementById('popFinalSub');
     if (finalSub){
       if (buyUrl){
-        finalSub.textContent = 'Every order sends half back to the Hustle & Heart Fund.';
+        finalSub.textContent = 'Half of every order comes back to the Hustle & Heart Fund.';
       } else if (current && status(current) === 'soon'){
         var when = fmt(localDate(current.opens));
         finalSub.innerHTML = 'The store opens ' + when + '. Until then your gift goes to the same place the popcorn money does. '

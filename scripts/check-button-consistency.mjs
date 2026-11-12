@@ -18,7 +18,7 @@ try {
       "/volunteer",
       "/about",
       "/adapt-body-shop",
-      "/send-6",
+      "/road",
       "/sponsorship",
     ]) {
       const p = await browser.newPage({

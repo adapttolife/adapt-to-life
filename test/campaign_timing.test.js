@@ -5,11 +5,12 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
-// Nov 5 2026 (Alec): sending six athletes to the US Open is packaged as The
-// Road to the US Open. Send 6 is the goal inside it; the popcorn drive's
-// history still names the campaign it paid into.
+// Nov 5 2026 (Alec): sending six athletes to the US Open was packaged as The
+// Road to the US Open. Nov 11 2026: the six-athlete story is retired; the road
+// is a season of tournament travel for the crew, and the popcorn drive's
+// history links the road it paid into, without the old name.
 const CAMPAIGN = "The Road to the US Open";
-const HISTORY = "Send 6 to the US Open Spring 2027";
+const HISTORY = "The Road to the US Open";
 
 async function text(path) {
   return readFile(join(ROOT, path), "utf8");
@@ -19,13 +20,13 @@ test("the road is the canonical campaign, and it keeps Spring 2027", async () =>
   const campaigns = JSON.parse(await text("public/data/campaigns.json"));
   const road = campaigns.campaigns.find((c) => c.slug === "send-6-us-open");
   assert.equal(road?.name, CAMPAIGN);
-  assert.equal(road?.when, "Spring 2027, Naples, Florida");
+  assert.equal(road?.when, "A season of tournaments, ending at the US Open in Naples, spring 2027");
   assert.equal(road?.goal, 21000);
 });
 
 test("campaign page and supporting cards name the road", async () => {
   const [page, fund, popcorn] = await Promise.all([
-    text("public/send-6.html"),
+    text("public/road.html"),
     text("public/hustle-and-heart.html"),
     text("public/popcorn.html"),
   ]);
@@ -43,7 +44,7 @@ test("campaign page and supporting cards name the road", async () => {
     "the US Open is a lottery; the page never promises a spot",
   );
   assert.ok(fund.includes(`>${CAMPAIGN}<`));
-  assert.ok(fund.includes('<a href="/send-6">See the road</a>'), "the module links the road");
+  assert.ok(fund.includes('<a href="/road">See the road</a>'), "the module links the road");
   assert.ok(
     popcorn.includes(`>${HISTORY}</a>`),
     "popcorn history names what it paid into",
@@ -55,7 +56,7 @@ test("social metadata and generated card source carry the road", async () => {
     text("scripts/wire-og.mjs"),
     text("scripts/make-og.mjs"),
   ]);
-  assert.match(wire, new RegExp(`"send-6":\\s*"${CAMPAIGN}\\. Adapt To Life\\.`));
+  assert.match(wire, new RegExp(`road:\\s*"${CAMPAIGN}\\. Adapt To Life\\.`));
   assert.ok(generator.includes(`The Road to the <em>US Open</em>.`));
 });
 
@@ -71,7 +72,7 @@ test("one fund: every giving form is the Hustle & Heart Fund, and the Classic ha
   for (const f of [
     "public/donate.html",
     "public/hustle-and-heart.html",
-    "public/send-6.html",
+    "public/road.html",
   ]) {
     const html = await text(f);
     const forms = [

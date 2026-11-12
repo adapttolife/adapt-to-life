@@ -18,7 +18,7 @@
           "key": "year",
           "label": "Every week",
           "goal": 27180,
-          "detail": "A year of court time and memberships for 10 athletes, so they can play every week and train to compete. Every new gift starts here.",
+          "detail": "A year of court time for 10 to 15 athletes a night, plus memberships for 10, so they can play every week and train to compete. Every new gift starts here.",
           "math": [
             { "label": "Court time", "qty": 52, "of": "nights", "unit": 225, "note": "One night a week for a year. A night is 10 to 15 athletes, and a drop-in is $15, so a night for up to 15 is $225." },
             { "label": "Memberships", "qty": 10, "of": "athletes", "unit": 1548, "note": "A membership is $129 a month, or $1,548 a year, for unlimited sessions. It takes many sessions a week to compete in tournaments and build a ranking." }
@@ -28,19 +28,16 @@
           "key": "send-6",
           "label": "The Road to the US Open",
           "goal": 21000,
-          "page": "/send-6",
-          "detail": "Tournaments through the year to build rankings, then Naples in spring 2027. The US Open picks players by lottery, so nothing is guaranteed. Money raised for the road earlier, the popcorn drive included, stays on the road.",
-          "_seats": "Alec, Nov 7 2026: the six seats are the six athletes on the crew page (Meet the crew, /pickleball). Same names, same order, same photos. Faces and figures are cut from public/images/pickleball/<slug>.webp by scripts/build-seats.mjs.",
-          "seats": [
-            { "name": "Juan", "slug": "juan", "page": "/juan" },
-            { "name": "Brian", "slug": "brian" },
-            { "name": "Bob", "slug": "bob" },
-            { "name": "Robby", "slug": "robby" },
-            { "name": "Ken", "slug": "ken" },
-            { "name": "Amanda", "slug": "amanda" }
+          "page": "/road",
+          "detail": "A season of tournament travel for the crew, ending at the US Open in Naples in spring 2027. The US Open picks players by lottery, so nothing is guaranteed. Money raised earlier for the US Open, the popcorn drive included, keeps its terms and stays on the road.",
+          "_road": "Alec, Nov 11 2026: retire 'send six athletes to the US Open'. The road is the crew's tournaments through the year, ending at the US Open, so the money reaches far more than six athletes. The six named seats are gone. The $21,000 stays, as the road's travel for the year: 21 trips at about $1,000 (Alec, Nov 11 2026: a trip costs 'about 1,000 dollars'). A trip is one athlete at one tournament, so the road counts trips, never seats or a head count. About $3,500 is still what one athlete's US Open has cost (a fact for /numbers and the $3,500 gift), never a seat. Stops: a drive slug is a tournament the crew played (never a claim the fund paid that trip); an object is one still ahead.",
+          "stops": [
+            { "drive": "app-vlasic-classic-2026", "line": "The first wheelchair division on the APP Tour. Juan asked for it, and five full teams played." },
+            { "drive": "monster-smash-2026", "line": "Six medals at The Pickle Lodge: two gold, two silver and two bronze, won by Juan, Bob, Robby, Ken and Amanda." },
+            { "name": "The US Open", "place": "Naples, FL", "when": "Spring 2027", "finish": true, "note": "The last stop", "line": "The last stop, for athletes whose names come up in the lottery." }
           ],
           "math": [
-            { "label": "The US Open", "qty": 6, "of": "athletes", "unit": 3500, "about": true, "note": "What it has cost each athlete the last couple of years: entry fees, travel and an accessible room in Naples." }
+            { "label": "Tournament trips", "qty": 21, "of": "trips", "unit": 1000, "about": true, "note": "A trip is one athlete at one tournament: entry fees, travel and an accessible room, at about $1,000. The road's budget is for the stops ahead." }
           ]
         }
       ],
@@ -56,19 +53,19 @@
     {
       "slug": "send-6-us-open",
       "name": "The Road to the US Open",
-      "page": "/send-6",
+      "page": "/road",
       "published": true,
-      "beneficiary": "Six wheelchair pickleball athletes",
-      "when": "Spring 2027, Naples, Florida",
-      "blurb": "Six athletes, about $3,500 each: roughly what the US Open has cost the last couple of years. Entry is a lottery, so the road matters.",
+      "beneficiary": "Chicago Pickleball: Wheelie Big Dills, on the road",
+      "when": "A season of tournaments, ending at the US Open in Naples, spring 2027",
+      "blurb": "A season of tournament travel for the crew: about 21 trips at about $1,000 each, for entry fees, travel and accessible rooms. The US Open picks players by lottery, so nothing is guaranteed.",
       "goal": 21000,
       "raised": null,
       "raised_source": "api",
       "cta_label": "See the road",
-      "cta_url": "/send-6",
+      "cta_url": "/road",
       "raised_key": "send-6",
       "part_of": "wheelie-big-dills",
-      "_note": "The second part of the one goal. Starts with the Send 6 set-aside, then fills once every week is funded."
+      "_note": "The second part of the one goal. Starts with the money set aside for the US Open before Nov 11 2026 (SEND6_SET_ASIDE, the popcorn drive included), then fills once every week is funded."
     },
     {
       "slug": "chicago-classic",
@@ -95,7 +92,8 @@
       "campaign": "send-6-us-open",
       "published": true,
       "page": "/popcorn",
-      "supports": "The August popcorn drive supports Send 6 to the US Open Spring 2027: equipment, training, and travel for six adaptive pickleball athletes.",
+      "supports": "The August popcorn drive raised money for the US Open campaign that grew into The Road to the US Open. That money keeps its terms and stays on the road.",
+      "_supports_original": "The appeal as it ran in August 2026 (kept for the record, never published again): The August popcorn drive supports Send 6 to the US Open Spring 2027: equipment, training, and travel for six adaptive pickleball athletes.",
       "summary": "Double Good handles orders and shipping. The fund receives 50% of popcorn sales toward the campaign.",
       "opens": "2026-08-06",
       "closes": "2026-08-13",

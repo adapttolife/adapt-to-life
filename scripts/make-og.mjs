@@ -187,13 +187,13 @@ const CARDS = {
     page: "donate.html",
     headline: "Put an athlete <em>in the game</em>.",
   },
-  "send-6": {
+  road: {
     ...ATHLETE,
     photo: "chair-drive",
     size: 66,
     measure: "15ch",
-    out: "public/images/og/send-6-v4-road.jpg",
-    page: "send-6.html",
+    out: "public/images/og/road-v5-season.jpg",
+    page: "road.html",
     headline: "The Road to the <em>US Open</em>.",
   },
   popcorn: {
@@ -238,14 +238,17 @@ const CARDS = {
   },
   // Juan's Bread & Butter page (Nov 8 2026): Juan with his paddle up, so the
   // card is about the paddle without carrying the brand's own art.
+  // v2 (Nov 11 2026): the page's h1 became "Help his crew compete." when the
+  // road became the crew's season of tournament travel, so the card moves to a
+  // new path and threads that scraped v1 fetch the new line.
   "bread-and-butter": {
     ...ATHLETE,
     photo: "paddle-raise",
     size: 64,
     measure: "14ch",
-    out: "public/images/og/bread-and-butter-v1-paddle.jpg",
+    out: "public/images/og/bread-and-butter-v2-crew.jpg",
     page: "bread-and-butter.html",
-    headline: "Play Juan&rsquo;s paddle. <em>Help get him to Naples.</em>",
+    headline: "Play Juan&rsquo;s paddle. <em>Help his crew compete.</em>",
   },
   // Guides (scripts/build-guides.mjs): each card is the guide's h1.
   "sport-wheelchair-cost": {
@@ -437,14 +440,6 @@ const CANDIDATES = {
     size: 76,
     measure: "13ch",
   },
-  "m2-send6-black": {
-    out: "m2-send6-black.jpg",
-    variant: "mono",
-    photo: "black",
-    headline: "Send 6 to the <em>US Open</em> Spring 2027.",
-    size: 68,
-    measure: "16ch",
-  },
   "m3-donate-black": {
     out: "m3-donate-black.jpg",
     variant: "mono",
@@ -493,14 +488,6 @@ const CANDIDATES = {
     headline: "Put an athlete <em>in the game</em>.",
     size: 76,
     measure: "13ch",
-  },
-  "a-send6-drive": {
-    out: "a-send6-drive.jpg",
-    variant: "athlete",
-    photo: "chair-drive",
-    headline: "Send 6 to the <em>US Open</em> Spring 2027.",
-    size: 66,
-    measure: "15ch",
   },
   "a-volunteer": {
     out: "a-volunteer.jpg",

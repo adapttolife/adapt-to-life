@@ -71,14 +71,19 @@ test("the cost story uses the same real numbers on every page", () => {
   // so the Road page leaves it out (two_bars.test.js checks that).
   const crew = read("public/pickleball.html"),
     fund = read("public/hustle-and-heart.html"),
-    road = read("public/send-6.html");
+    road = read("public/road.html");
   assert.ok(crew.includes("$4,000 to $6,000"));
   assert.ok(fund.includes("$4,000&ndash;$6,000"));
   for (const html of [crew, fund]) {
     assert.ok(html.includes("<b>$129</b>") || html.includes(">$1,548<span>") || html.includes("<b>$1,548</b>"));
-    assert.ok(html.includes("<b>$3,500</b>") || html.includes(">$3,500<span>"));
   }
-  assert.ok(road.includes("The target is $3,500 per athlete"));
+  // Nov 11 2026: a tournament trip is about $1,000 an athlete (Alec); the US
+  // Open, the road's last stop, has cost about $3,500. The crew's Compete card
+  // leads with the trip; the fund's Travel card keeps the US Open figure.
+  assert.ok(crew.includes("<b>$1,000</b>") && crew.includes("about $3,500"));
+  assert.ok(fund.includes(">$3,500<span>"));
+  assert.ok(road.includes("about 21 tournament trips at about $1,000 each"));
+  assert.ok(road.includes("one athlete&rsquo;s US Open has cost about $3,500"));
   assert.ok(crew.includes("It takes skill and a little luck to get to the US Open."));
   assert.ok(road.includes("It takes skill and a little luck to get to the US Open."));
   assert.ok(fund.includes("Who gets to compete should come down to skill"));

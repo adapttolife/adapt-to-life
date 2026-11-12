@@ -88,11 +88,11 @@
 <meta name="twitter:description" content="Adapt To Life is a 501(c)(3) in the Chicago area. We fund adaptive athletes and the clubs that make room for them, starting with wheelchair pickleball.">
 <meta name="twitter:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
 <meta name="twitter:image:alt" content="Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.">
-<link rel="preload" href="/css/site.css?v=f3c06679" as="style">
+<link rel="preload" href="/css/site.css?v=4b81db86" as="style">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=f3c06679">
+<link rel="stylesheet" href="/css/site.css?v=4b81db86">
 <link rel="stylesheet" href="/css/roll-band.css?v=1f3b1bd1">
 <!-- hero:sheet -->
 <link rel="stylesheet" href="/css/hero-mosaic.css?v=1abe1e15">
@@ -100,7 +100,7 @@
      which downloaded a below-fold picture before the hero and, once the hero
      became a photograph, kept fetching an image the page no longer uses at
      all (60KB for nothing). The hero background is the LCP element now. -->
-<script src="/js/attribution.js?v=dd7f55f9" defer></script>
+<script src="/js/attribution.js?v=bd94ad92" defer></script>
 <style>
   /* Homepage-only composition. No new fonts, image crops, or shared overrides. */
   /* The mission sits with the headline as one unit (Alec, 2026-11-08). */
@@ -357,8 +357,13 @@ fill="currentColor" stroke="none">
       /* Right after Juan, the glow starts below the seam so the two sections read as one. */
       .hm-juan + .hm-crew::before{ background:radial-gradient(ellipse 50% 60% at 85% 58%, rgba(255,92,57,0.18) 0%, transparent 70%); }
       .hm-crew::before{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 50% 70% at 85% 40%, rgba(255,92,57,0.18) 0%, transparent 70%); }
-      .hm-crew-grid{ display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,0.85fr); gap:clamp(2rem,5vw,4.5rem); align-items:center; }
-      @media (max-width:820px){ .hm-crew-grid{ grid-template-columns:1fr; } }
+      .hm-crew-grid{ display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,0.5fr) minmax(0,0.8fr); gap:clamp(1.6rem,4vw,3.6rem); align-items:center; }
+      /* The crew on video (Nov 11 2026: "leverage our images and our video to
+         show how big we're getting"): a practice night between the words and
+         the record. It plays only in view, never on reduced motion. */
+      .hm-crew-clip{ width:100%; max-width:280px; justify-self:center; }
+      @media (max-width:1000px){ .hm-crew-grid{ grid-template-columns:minmax(0,0.8fr) minmax(0,1.2fr); } .hm-crew-grid > :first-child{ grid-column:1 / -1; } }
+      @media (max-width:560px){ .hm-crew-grid{ grid-template-columns:1fr; } .hm-crew-clip{ max-width:240px; justify-self:start; } }
       /* The badge sits beside the name, the way a crest sits beside a team name, instead of alone on a row of its own. */
       .hm-crew-head{ display:flex; align-items:center; gap:clamp(0.9rem,2vw,1.4rem); }
       .hm-crew-badge{ display:block; flex:none; width:clamp(76px,8vw,112px); height:auto; filter:drop-shadow(0 12px 32px rgba(0,0,0,0.6)); }
@@ -401,9 +406,10 @@ fill="currentColor" stroke="none">
             <h2 id="hmCrewTitle" class="serif h2"><span>Chicago Pickleball:</span> <span>Wheelie Big Dills</span></h2>
           </div>
         </div>
-        <p class="prose">This is the crew Juan plays with: wheelchair pickleball players growing the sport across the Chicago area. We&rsquo;re proud to fund and support them through the <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a>, and with Juan we help the clubs where they play build adaptive programs, from open play to memberships for athletes training to compete.</p>
+        <p class="prose">This is the crew Juan plays with: 10 to 15 wheelchair pickleball players on court a night, growing the sport across the Chicago area. Through the <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a>, we help keep them on court every week, then on the road to the US Open.</p>
         <a href="/pickleball" class="textlink">Meet the crew <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
       </div>
+      <figure class="clip hm-crew-clip reveal" data-clip><video muted loop playsinline preload="none" poster="/videos/crew/full-house.298ca1a8.webp" data-src="/videos/crew/full-house.3c1fb1b0.mp4" width="720" height="1280" aria-hidden="true"></video><button type="button" class="clip-btn" data-state="paused" aria-label="Play the video"><svg data-when="playing" class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="pause" data-style="bold"><path fill="currentColor" d="M200 28h-40a20 20 0 0 0-20 20v160a20 20 0 0 0 20 20h40a20 20 0 0 0 20-20V48a20 20 0 0 0-20-20m-4 176h-32V52h32ZM96 28H56a20 20 0 0 0-20 20v160a20 20 0 0 0 20 20h40a20 20 0 0 0 20-20V48a20 20 0 0 0-20-20m-4 176H60V52h32Z"/></svg><svg data-when="paused" class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="resume" data-style="bold"><path fill="currentColor" d="M234.49 111.07L90.41 22.94A20 20 0 0 0 60 39.87v176.26a20 20 0 0 0 30.41 16.93l144.08-88.13a19.82 19.82 0 0 0 0-33.86M84 208.85V47.15L216.16 128Z"/></svg></button><figcaption class="clip-cap"><b>A practice night</b><span>Brick House, Lake Forest</span></figcaption></figure>
       <ul class="hm-crew-proof reveal" aria-label="The crew's record">
         <li><b>6</b><span>medals at Monster Smash, October 2026</span></li>
         <li><b>2</b><span>US Open medals for Brian: silver and bronze</span></li>
@@ -478,8 +484,8 @@ fill="currentColor" stroke="none">
       <div class="cm-wrap">
         <div class="cm-head">
           <p class="cm-status"><span class="cm-dot" aria-hidden="true"></span>Raising now<span class="cm-status-sep" aria-hidden="true"></span>Chicago Pickleball: Wheelie Big Dills</p>
-          <h2 class="cm-h" id="campaign-title">Every week on court. <em>Next stop, Naples.</em></h2>
-          <p class="cm-lede">Building the best wheelchair pickleball in the Chicago area, maybe the country.</p>
+          <h2 class="cm-h" id="campaign-title">Every week on court. <em>A season on the road.</em></h2>
+          <p class="cm-lede">What it takes to build the best wheelchair pickleball in the Chicago area, maybe the country.</p>
         </div>
         <div class="cm-card">
           <p class="cm-hero"><b data-cm-total>$48,180</b><span data-cm-sub>our goal for the year ahead</span></p>
@@ -487,12 +493,12 @@ fill="currentColor" stroke="none">
             <div class="cm-row" data-part-row="year">
               <div class="cm-row-top"><b><i class="sym sym--training" aria-hidden="true"></i>Every week</b><span class="cm-fig" data-part-fig="year">$27,180 a year</span></div>
               <div class="cm-lane"><div class="cm-track"><span class="cm-fill" data-part-fill="year"></span><span class="cm-start" aria-hidden="true"></span></div><span class="cm-pct" data-part-pct="year" hidden></span></div>
-              <p class="cm-note">A year of court time and memberships for 10 athletes.</p>
+              <p class="cm-note">A year of court time for 10 to 15 athletes a night, plus memberships for 10.</p>
             </div>
             <div class="cm-row" data-part-row="send-6">
               <div class="cm-row-top"><b><i class="sym sym--travel" aria-hidden="true"></i>The Road to the US Open</b><span class="cm-fig" data-part-fig="send-6">$21,000</span></div>
-              <div class="cm-lane"><div class="cm-track cm-track--seats"><span class="cm-fill cm-fill--action" data-part-fill="send-6"></span><span class="cm-start" aria-hidden="true"></span></div><span class="cm-pct" data-part-pct="send-6" hidden></span></div>
-              <p class="cm-note cm-note--crew"><span class="cm-faces" role="img" aria-label="The six seats: Juan, Brian, Bob, Robby, Ken and Amanda"><i class="face" style="--i:0" title="Juan"></i><i class="face" style="--i:1" title="Brian"></i><i class="face" style="--i:2" title="Bob"></i><i class="face" style="--i:3" title="Robby"></i><i class="face" style="--i:4" title="Ken"></i><i class="face" style="--i:5" title="Amanda"></i></span><span>Six athletes, about $3,500 each, for the 2027 US Open. <a href="/send-6">See the road</a></span></p>
+              <div class="cm-lane"><div class="cm-track"><span class="cm-fill cm-fill--action" data-part-fill="send-6"></span><span class="cm-start" aria-hidden="true"></span></div><span class="cm-pct" data-part-pct="send-6" hidden></span></div>
+              <p class="cm-note">A season of tournament travel for the crew, through the 2027 US Open. <a href="/road">See the road</a></p>
             </div>
           </div>
           <a class="cm-more" href="/numbers">See the numbers breakdown <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
@@ -632,7 +638,7 @@ fill="currentColor" stroke="none">
         <li><b>$15</b><span>One night on court for one athlete.</span></li>
         <li><b>$225</b><span>One night on court for up to 15 athletes.</span></li>
         <li><b>$1,548</b><span>A year of unlimited sessions for one athlete.</span></li>
-        <li><a class="gift-ladder-link" href="/send-6"><b>$3,500</b><span>About one athlete&rsquo;s US Open: entry, travel and a room.</span></a></li>
+        <li><a class="gift-ladder-link" href="/road"><b>$3,500</b><span>About one athlete&rsquo;s US Open: entry, travel and a room.</span></a></li>
       </ul>
       <div class="actions reveal">
         <a href="/donate" class="btn">Donate</a>
@@ -785,7 +791,7 @@ fill="currentColor" stroke="none">
 </script>
 
 <script src="/js/add-to-calendar.js?v=1865647d"></script>
-<script src="/js/campaigns.js?v=31dc9ab5"></script>
+<script src="/js/campaigns.js?v=1fc2464d"></script>
 <script>
 (function(){
   var C = window.ATLCampaigns;
@@ -860,5 +866,6 @@ fill="currentColor" stroke="none">
 })();
 </script>
 <!-- /hero:script -->
+<script src="/js/clips.js?v=ee55a4e9" defer></script>
 </body>
 </html>

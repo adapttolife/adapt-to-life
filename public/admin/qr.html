@@ -398,7 +398,7 @@
     document.getElementById('dlgFields').innerHTML =
         field('slug', 'Slug', '', 'Lowercase letters, numbers and hyphens. The code will print as <code>adapttolife.org/q/&lt;slug&gt;</code>.')
       + field('label', 'Label', '', 'What you call it. Shown only here.')
-      + field('dest', 'Points at', '/donate', 'A path on the site like <code>/send-6</code>, or a full https:// link for a vendor.')
+      + field('dest', 'Points at', '/donate', 'A path on the site like <code>/road</code>, or a full https:// link for a vendor.')
       + field('surface', 'Surface', 'print', 'The physical thing it goes on. This becomes the channel name in Givebutter.')
       + field('rule', 'Routing', '', '', 'select');
     document.getElementById('dlgSave').onclick = async function () {
@@ -425,7 +425,7 @@
     document.getElementById('dlgTitle').textContent = 'Change /q/' + c.slug;
     document.getElementById('dlgNote').innerHTML = 'Anything already printed keeps working. Only where it sends people changes, and it takes effect within a minute.';
     document.getElementById('dlgFields').innerHTML =
-        field('dest', 'Points at', c.dest, 'A path on the site like <code>/send-6</code>, or a full https:// link for a vendor.')
+        field('dest', 'Points at', c.dest, 'A path on the site like <code>/road</code>, or a full https:// link for a vendor.')
       + field('label', 'Label', c.label, '')
       + field('surface', 'Surface', c.surface, 'Becomes the channel name in Givebutter.')
       + field('rule', 'Routing', c.rule, 'Following the live drive means this code goes wherever the open drive is, and falls back to the destination above when none is open.', 'select');

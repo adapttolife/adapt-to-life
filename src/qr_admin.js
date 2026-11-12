@@ -107,7 +107,7 @@ export function validateDest(dest) {
   try {
     u = new URL(d);
   } catch {
-    return "destination must be a path like /send-6 or a full https:// URL";
+    return "destination must be a path like /road or a full https:// URL";
   }
   if (u.protocol !== "https:" && u.protocol !== "http:")
     return "only http(s) destinations are allowed";

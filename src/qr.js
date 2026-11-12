@@ -27,9 +27,9 @@
 // is unreachable, and the seed the migration copied into qr_codes. Keep it in
 // sync with the table only for codes that are physically in the world.
 const SEED = {
-  chair: { to: "/send-6", label: "Chair sticker", surface: "chair-sticker" },
-  sign: { to: "/send-6", label: "Event signage", surface: "signage" },
-  card: { to: "/send-6", label: "Hand card", surface: "hand-card" },
+  chair: { to: "/road", label: "Chair sticker", surface: "chair-sticker" },
+  sign: { to: "/road", label: "Event signage", surface: "signage" },
+  card: { to: "/road", label: "Hand card", surface: "hand-card" },
   popcorn: { to: "/popcorn", label: "Popcorn drive", surface: "print" },
 };
 

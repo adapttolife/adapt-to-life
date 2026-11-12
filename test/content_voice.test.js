@@ -28,7 +28,7 @@ test("the giving and story pages explain the approach rather than application co
     "index",
     "hustle-and-heart",
     "roadmap",
-    "send-6",
+    "road",
   ]) {
     const html = read(`public/${p}.html`);
     for (const obsolete of [

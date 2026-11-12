@@ -15,8 +15,8 @@
 // One goal, one bar (Alec, Nov 5 2026): "one campaign bar... puts together
 // all of the initiatives into one big number... Then it shows how much of
 // this pays for the year and how much of this pays for the U.S. Open." And
-// "When you donate, it goes to just one program": the Chicago Wheelie Big
-// Dills, through the one Givebutter campaign (the Hustle & Heart Fund). No
+// "When you donate, it goes to just one program": Chicago Pickleball:
+// Wheelie Big Dills, through the one Givebutter campaign (the Hustle & Heart Fund). No
 // donor picks a fund. "Our first priority is to raise money for the weekly
 // training, then the U.S. Open. After that, Chicago Classic."
 //
@@ -33,8 +33,10 @@
 //   year    Every week: court time every week and memberships to train all
 //           year. $27,180: a year of nights at ACE ($11,700, 52 x $225) and ten
 //           athletes training ($15,480, 10 x $1,548).
-//   send-6  The Road to the US Open. $21,000: six athletes at about $3,500,
-//           roughly what the US Open has cost the last couple of years.
+//   send-6  The Road to the US Open (the key keeps the retired Send 6 name).
+//           $21,000 for a season of tournament travel: about 21 trips at
+//           about $1,000 each (Nov 11 2026). A trip is one athlete at one tournament;
+//           the US Open in Naples, spring 2027, is the last stop.
 //   fund    The whole campaign. Grant receipts read this.
 //   classic The Chicago Classic: a goal we talk about, not yet in the total.
 export const CAMPAIGN_KEYS = ["fund", "wbd", "year", "send-6", "classic"];

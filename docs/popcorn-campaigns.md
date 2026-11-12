@@ -16,7 +16,7 @@ stores × each seller's reach*, and a Double Good storefront cannot ask anyone t
 `/popcorn` does. Every person sent straight to the vendor converts at most one order and is a seller
 you never got to ask. Traffic is not the lever here, sellers are.
 
-Every drive CTA on the site follows this: the home calendar, `/ways-to-give` and `/send-6` all send
+Every drive CTA on the site follows this: the home calendar, `/ways-to-give` and `/road` all send
 people to the drive's page, and the drive's page is where the store link lives.
 
 ## The one thing to understand about Double Good
@@ -35,7 +35,7 @@ A buyer who lands on the event link gets an app-download screen and leaves. The 
 ## Launching the next campaign
 
 Every drive on the site lives in **one** file, `public/data/campaigns.json` (Spec 115). `/popcorn`,
-`/send-6` and `/ways-to-give` all read it, so a drive is never described in two places and a date
+`/road` and `/ways-to-give` all read it, so a drive is never described in two places and a date
 changed once is changed everywhere. Append one object to `drives`:
 
 ```json
@@ -66,7 +66,8 @@ That is the whole job. Nothing else on any page needs touching.
   the drive appears on that campaign's page, the campaign card on `/ways-to-give` counts it, and
   `/popcorn` links the campaign straight from it. Get it wrong and the drive silently detaches from
   the story it belongs to. Omit it **only** for something that raises nothing for us, the way the
-  Vlasic Classic does.
+  Vlasic Classic does. The road's slug is still `send-6-us-open`: an identifier that kept its old
+  name when the Send 6 framing was retired on Nov 11 2026, not copy.
 - `supports` should name the campaign the way `campaigns.json` names it, because `/popcorn` turns
   that name into the link to the campaign page. Word it differently and the card falls back to a
   standalone "Part of <campaign>" line — still correct, just a second mention of a name the sentence
@@ -80,7 +81,7 @@ That is the whole job. Nothing else on any page needs touching.
 
 - **Picks the current campaign.** Open now wins; otherwise the next one opening. Every CTA on the page follows it.
 - **Derives status from the dates.** `opening soon` → `open now` → `closed`, with no deploy on the day a store opens or closes.
-- **Never shows a dead link.** With `store_url` set, the hero, the card, all twelve flavor bags, and both section CTAs go to the store. Without it, they go to `/donate` and read "Give to the fund," because the fund is open even when the store is not.
+- **Never shows a dead link.** With `store_url` set, the hero, the card, all twelve flavor bags, and both section CTAs go to the store. Without it, they go to `/donate` and read "Donate," because the fund is open even when the store is not.
 - **Hides what it does not have.** No `goal` means no goal bar. No `raised` means the bar shows the target only. No `join_url` hides the whole team section.
 - **Files closed campaigns** into the record list at the bottom. Set `raised` when the payout is known and it shows there.
 
@@ -95,10 +96,16 @@ That is the whole job. Nothing else on any page needs touching.
 
 ```
 Hustle & Heart Fund            the fund, open every day
-   └─ Send 6 to the US Open Spring 2027    the campaign, $21,000 (six athletes x ~$3,500), page at /send-6
+   └─ The Road to the US Open    the campaign, $21,000 for a season of tournament travel (about 21 trips x ~$1,000), page at /road
         └─ August popcorn drive    one drive, Aug 6-13, page at /popcorn
         └─ future drives, tournaments, monthly popcorn
 ```
+
+Until Nov 11 2026 the campaign was "Send 6 to the US Open Spring 2027": six athletes at about $3,500
+each, page at `/send-6`. Alec retired that framing that day. The road is the crew's tournaments
+through the season, ending at the US Open in Naples in spring 2027, and `/send-6` redirects to
+`/road`. The August drive raised its $3,004 under the old name; that money keeps its terms and stays
+on the road.
 
 A **drive** is a row on its campaign's page until it earns a page of its own, the way popcorn did.
 The hub at `/ways-to-give` lists the campaigns first and the dated drives under them.
@@ -107,7 +114,13 @@ Set the drive's `goal` to what **that drive** can realistically raise, not to th
 goal. A one-week popcorn store carrying a $21,000 bar reads as failure at $1,500. The $21,000 lives
 in the "where the money goes" section, where the drive visibly moves it.
 
-## Per-athlete cost basis (verified 2026-07-24)
+## Cost evidence (verified 2026-07-24)
+
+Gathered when the campaign was priced per athlete (Send 6, retired Nov 11 2026). It stays as evidence
+of what one athlete's season and US Open trip cost; it is no longer the road's math. Since Nov 11
+2026 the road budgets a season of tournament travel: about 21 trips at about $1,000 each (Alec's
+number), for entry fees, travel and accessible rooms. The US Open is the last stop, and one
+athlete's US Open has cost about $3,500 the last couple of years.
 
 | Category | About | Basis |
 |---|---|---|
@@ -140,6 +153,6 @@ carries here. Two surfaces, one message.
 There is never a click that does nothing.
 
 - **Store link set** → hero, card, all twelve bags, and the closing CTA open the store ("Buy popcorn").
-- **No store link** → all of them go to `/donate` ("Give to the fund"), because the fund is open even
+- **No store link** → all of them go to `/donate` ("Donate"), because the fund is open even
   when the store is not. Email capture is one secondary line under the closing CTA, never a button
   pretending to be a product.

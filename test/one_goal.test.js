@@ -135,14 +135,14 @@ test("pages draw one bar with its parts, and no gift is steered to a fund", () =
       `${f} steers a gift to a fund`,
     );
   assert.ok(
-    read("public/send-6.html").includes(
+    read("public/road.html").includes(
       "every week first, then the road to the US Open",
     ),
   );
 });
 
 test("equipment stays out of the goal and the Road, and the chair number is Alec's", () => {
-  const s6 = read("public/send-6.html"),
+  const s6 = read("public/road.html"),
     fund = read("public/hustle-and-heart.html"),
     crew = read("public/pickleball.html");
   assert.ok(

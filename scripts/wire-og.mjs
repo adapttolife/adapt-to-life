@@ -19,7 +19,7 @@ const BASE = "https://adapttolife.org";
 // page -> its own card. Anything not listed falls back to the default card.
 const PER_PAGE = {
   "donate.html": "donate",
-  "send-6.html": "send-6",
+  "road.html": "road",
   "popcorn.html": "popcorn",
   "hustle-and-heart.html": "hustle-and-heart",
   "volunteer.html": "volunteer",
@@ -51,7 +51,7 @@ const ALT = {
     "Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.",
   donate:
     "Put an athlete in the game. Adapt To Life. A wheelchair pickleball player swings, the ball in the air beside her.",
-  "send-6":
+  road:
     "The Road to the US Open. Adapt To Life. A wheelchair pickleball player drives across an indoor court.",
   popcorn:
     "Popcorn that helps athletes play. Adapt To Life. A wheelchair pickleball player drives across an indoor court.",
@@ -75,7 +75,7 @@ const ALT = {
   "guide-corporate-matching": "Double your gift with an employer match. Adapt To Life. A wheelchair pickleball athlete on an indoor court.",
   karen: "Karen Atkinson. Adapt To Life. Karen water skiing in a sit-ski, spray behind her.",
   "bread-and-butter":
-    "Play Juan's paddle. Help get him to Naples. Adapt To Life. Juan Ortiz in his sport wheelchair, paddle up, on a dark indoor court.",
+    "Play Juan's paddle. Help his crew compete. Adapt To Life. Juan Ortiz in his sport wheelchair, paddle up, on a dark indoor court.",
   juan: "Juan Ortiz. Adapt To Life. Juan, a wheelchair pickleball player in glasses, tosses the ball to serve from his sport wheelchair.",
 };
 
@@ -91,7 +91,7 @@ const ALT = {
 const FILE = {
   _default: "home-v4-color.jpg",
   juan: "juan-v2-serve.jpg",
-  "bread-and-butter": "bread-and-butter-v1-paddle.jpg",
+  "bread-and-butter": "bread-and-butter-v2-crew.jpg",
   karen: "karen-v1-water.jpg",
   "guide-sport-wheelchair-cost": "guide-sport-wheelchair-cost-v1-card.jpg",
   "guide-sponsor-adaptive-athletes": "guide-sponsor-adaptive-athletes-v1-card.jpg",
@@ -100,7 +100,7 @@ const FILE = {
   pickleball: "pickleball-v5-name.jpg",
   ace: "ace-v4-partner.jpg",
   "chicago-classic": "chicago-classic-v1-date.jpg",
-  "send-6": "send-6-v4-road.jpg",
+  road: "road-v5-season.jpg",
   picklr: "picklr-v1-partner.jpg",
   "chicago-adaptive-sports": "chicago-adaptive-sports-v1-partner.jpg",
   amp: "amp-v1-partner.jpg",

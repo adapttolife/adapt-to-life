@@ -74,15 +74,25 @@ test("once every week is funded, gifts move to the road", () =>
   }));
 
 // Alec, Nov 12 2026, "yes to both": a sponsor whose name goes on a part pays
-// for that part. A Champion's money sits on the road from the start, like the
-// Send 6 set-aside, and gifts still fill every week first.
-test("a Champion's sponsorship sits on the road from the start", () =>
+// for that part. The road already holds the Send 6 money, so a Champion covers
+// what it still needs; the rest goes to the rest of the goal, every week first,
+// as the sponsor is told before giving. The parts always add up to the total.
+const rowsAddUp = (w) =>
+  assert.equal(
+    w.parts.year.raised + w.parts["send-6"].raised,
+    w.raised + w.inkind,
+    "every dollar counted in the total shows in a row",
+  );
+
+test("a Champion pays for the road, and what the road doesn't need goes to every week", () =>
   withCampaign(1975 + 5000, async () => {
     const env = { ...ENV, ROAD_NAMED: "21000" };
     const w = await campaignPosition(env, "wbd");
     assert.equal(w.raised, 4979 + 21000 + 5000);
-    assert.equal(w.parts.year.raised, 5200 + 5000, "gifts still fill every week first");
     assert.equal(w.parts["send-6"].raised, 21000, "the road is paid for");
+    // The road needed $21,000 - $4,979 = $16,021; the other $4,979 joins the gifts.
+    assert.equal(w.parts.year.raised, 5200 + 5000 + 4979);
+    rowsAddUp(w);
     assert.equal(
       (await campaignPosition(env, "fund")).raised,
       1975 + 5000 + 21000,
@@ -95,9 +105,24 @@ test("a Champion who pays through Givebutter is not counted twice", () =>
     const env = { ...ENV, ROAD_NAMED: "21000", ROAD_NAMED_ONLINE: "21000" };
     const w = await campaignPosition(env, "wbd");
     assert.equal(w.raised, 4979 + 21000 + 5000);
-    assert.equal(w.parts.year.raised, 5200 + 5000);
     assert.equal(w.parts["send-6"].raised, 21000);
+    assert.equal(w.parts.year.raised, 5200 + 5000 + 4979);
+    rowsAddUp(w);
     assert.equal((await campaignPosition(env, "fund")).raised, 1975 + 21000 + 5000);
+  }));
+
+test("a smaller named road gift sits wholly on the road", () =>
+  withCampaign(1975 + 5000, async () => {
+    const w = await campaignPosition({ ...ENV, ROAD_NAMED: "10000" }, "wbd");
+    assert.equal(w.parts["send-6"].raised, 4979 + 10000);
+    assert.equal(w.parts.year.raised, 5200 + 5000);
+    rowsAddUp(w);
+  }));
+
+test("a dollar setting written with a comma still counts", () =>
+  withCampaign(1975, async () => {
+    const w = await campaignPosition({ ...ENV, ROAD_NAMED: "$10,000" }, "wbd");
+    assert.equal(w.parts["send-6"].raised, 4979 + 10000);
   }));
 
 test("with Givebutter down the bar shows only what we hold ourselves", () =>

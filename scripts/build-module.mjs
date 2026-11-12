@@ -80,11 +80,18 @@ const CAMPAIGN = JSON.parse(
   readFileSync(join(PUB, "data/campaigns.json"), "utf8"),
 ).campaigns.find((c) => c.slug === "wheelie-big-dills");
 const usd = (n) => "$" + Number(n).toLocaleString("en-US");
+// A math line is either arithmetic (qty x unit) or a budget (amount). Either
+// way the page shows its short calc text in words, never the multiplication:
+// Alec, Nov 12 2026, "No calculator needed to understand anything throughout
+// the whole website." qty and unit stay so the sums below are still checked. The road is a budget since
+// Nov 11 2026: Alec retired "6 athletes x $3,500", and no per-trip cost is on
+// record, so the road is shown as what it is, the year's travel budget.
+const lineTotal = (l) => (l.amount != null ? l.amount : l.qty * l.unit);
 {
   if (!CAMPAIGN) throw new Error("campaigns.json has no wheelie-big-dills campaign");
   let sum = 0;
   for (const p of CAMPAIGN.parts) {
-    const math = (p.math || []).reduce((t, l) => t + l.qty * l.unit, 0);
+    const math = (p.math || []).reduce((t, l) => t + lineTotal(l), 0);
     if (math !== p.goal)
       throw new Error(
         `campaigns.json: ${p.key} math adds to ${usd(math)}, goal is ${usd(p.goal)}`,
@@ -105,18 +112,19 @@ const usd = (n) => "$" + Number(n).toLocaleString("en-US");
 //   <!-- campaign-numbers --> ... <!-- /campaign-numbers -->
 const NUMBERS =
   /([ \t]*)<!-- campaign-numbers -->\n[\s\S]*?<!-- \/campaign-numbers -->/g;
-// The road's seat tiles (/send-6) opt in the same way:
-//   <!-- campaign-seats --> ... <!-- /campaign-seats -->
-const SEAT_TILES =
-  /([ \t]*)<!-- campaign-seats -->\n[\s\S]*?<!-- \/campaign-seats -->/g;
+// The season's stops on the road (/road) opt in the same way:
+//   <!-- campaign-stops --> ... <!-- /campaign-stops -->
+const STOP_LIST = /([ \t]*)<!-- campaign-stops -->\n[\s\S]*?<!-- \/campaign-stops -->/g;
 
 function mathLines(part) {
   return (part.math || [])
     .map(
       (l) =>
         `      <li><span class="nb-k">${esc(l.label)}</span>` +
-        `<span class="nb-calc">${l.qty} ${esc(l.of)} &times; ${l.about ? "about " : ""}${usd(l.unit)}</span>` +
-        `<b>${usd(l.qty * l.unit)}</b>` +
+        (l.amount != null
+          ? `<span class="nb-calc">${esc(l.calc || "")}</span><b>${usd(l.amount)}</b>`
+          : `<span class="nb-calc">${l.calc ? esc(l.calc) : `${l.qty} ${esc(l.of)} &times; ${l.about ? "about " : ""}${usd(l.unit)}`}</span>` +
+            `<b>${usd(l.qty * l.unit)}</b>`) +
         (l.note ? `<small>${l.note}</small>` : "") +
         "</li>",
     )
@@ -128,10 +136,13 @@ function mathLines(part) {
 // travel, the Classic is a tournament.
 const PART_SYMBOL = { year: "training", "send-6": "travel", next: "tournament" };
 const flag = `<i class="sym sym--finished nb-flag" aria-hidden="true"></i>`;
-// The road's six seats are six athletes from the crew page (Alec, Nov 7:
-// "it's the same as the six on meet the wheelie big dills crew page"), named
-// in campaigns.json and pictured by scripts/build-seats.mjs. The road is one
-// pool, so a seat never shows as paid before the others: all six rise together.
+// The road is the crew's tournaments through the year, ending at the US Open
+// (Alec, Nov 11 2026: "it's not sending six people to the U.S. Open, it's the
+// road to the U.S. Open"). It used to be six named seats; there are no seats
+// now, so nothing here counts athletes. Its stops (campaigns.json road.stops)
+// are the season's tournaments: a drive slug for one the crew played (where
+// the crew competed; never a claim that the fund paid for that trip), or an
+// object for one still ahead, the US Open last.
 const ROAD = CAMPAIGN.parts.find((p) => p.key === "send-6");
 // Who gave, for /numbers: the drives that count their supporters (Double
 // Good does). Givebutter's online donors arrive live; the two stay apart.
@@ -143,49 +154,73 @@ const SUPPORTERS = COUNTED.reduce((n, d) => n + d.supporters, 0);
 const SUPPORTER_LABEL = COUNTED.every((d) => d.slug.startsWith("popcorn"))
   ? "popcorn supporters"
   : "supporters of our drives";
-const SEATS = (ROAD && ROAD.seats) || [];
-const roadMath = ROAD && (ROAD.math || [])[0];
-if (roadMath && SEATS.length !== roadMath.qty)
-  throw new Error(
-    `campaigns.json: the road has ${SEATS.length} seats and ${roadMath.qty} athletes`,
-  );
-const andList = (names) =>
-  names.length > 1 ? `${names.slice(0, -1).join(", ")} and ${names.at(-1)}` : names[0];
-const SEAT_NAMES = andList(SEATS.map((s) => s.name));
-// One face from the strip (seats/faces.webp): --i picks it, the stylesheet
-// paints it once the row is near view.
-const face = (s, i, cls = "face") =>
-  `<i class="${cls}" style="--i:${i}" title="${esc(s.name)}"></i>`;
-export function renderFaces() {
-  return (
-    `<span class="cm-faces" role="img" aria-label="The six seats: ${esc(SEAT_NAMES)}">` +
-    SEATS.map((s, i) => face(s, i)).join("") +
-    `</span>`
-  );
-}
-const nbCrew = () =>
-  `<ul class="nb-crew" aria-label="The six seats">` +
-  SEATS.map(
-    (s, i) =>
-      `<li>${face(s, i)}<span>${s.page ? `<a href="${s.page}">${esc(s.name)}</a>` : esc(s.name)}</span></li>`,
-  ).join("") +
+const MONTHS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+const monthYear = (iso) => {
+  const [y, m] = String(iso).split("-").map(Number);
+  return `${MONTHS[m - 1]} ${y}`;
+};
+// Each stop as plain facts: name, place, when, the result if there is one,
+// its story page, and a line for /road. A stop names a drive in campaigns.json
+// ({ "drive": slug, "line": ... }: a tournament the crew played, relationship
+// we_compete), or it is a stop still ahead, the US Open last.
+export const STOPS = ((ROAD && ROAD.stops) || []).map((st) => {
+  const slug = typeof st === "string" ? st : st.drive;
+  if (slug) {
+    const d = DRIVES.find((x) => x.slug === slug);
+    if (!d) throw new Error(`campaigns.json: road stop "${slug}" is not a drive`);
+    if (d.relationship !== "we_compete")
+      throw new Error(
+        `campaigns.json: road stop "${slug}" is not a tournament the crew played`,
+      );
+    return {
+      name: d.name,
+      place: [d.city, d.state].filter(Boolean).join(", "),
+      when: monthYear(d.our_date || d.starts_at),
+      result: d.result || "",
+      page: d.page || "",
+      line: (typeof st === "object" && st.line) || "",
+      done: true,
+    };
+  }
+  return { result: "", page: "", line: "", done: false, ...st };
+});
+const stopItem = (st, cls, withLine = false) =>
+  // The last stop on /road is a dark card, so its tag takes the dark inks.
+  `<li class="${cls}${st.done ? " is-done" : st.finish ? ` is-finish${withLine ? " on-dark" : ""}` : " is-next"}">` +
+  `<span class="${cls}-when">${esc(st.when)}</span>` +
+  `<span class="${cls}-name">${st.page ? `<a href="${st.page}">${esc(st.name)}</a>` : esc(st.name)}</span>` +
+  `<span class="${cls}-place">${esc(st.place)}</span>` +
+  (withLine && st.line ? `<span class="${cls}-line">${esc(st.line)}</span>` : "") +
+  (st.result
+    ? `<span class="tag tag--win ${cls}-result">${esc(st.result)}</span>`
+    : st.finish
+      ? `<span class="tag tag--info ${cls}-result"><i class="sym sym--goal" aria-hidden="true"></i>${esc(st.note || "The last stop")}</span>`
+      : "") +
+  `</li>`;
+const nbStops = () =>
+  `<ul class="nb-stops" aria-label="This season on the road">` +
+  STOPS.map((st) => stopItem(st, "nb-st")).join("") +
   `</ul>`;
-
-// The seat tiles on /send-6: the athlete in the chair, the name, the share.
-// campaigns.js fills every tile to the road's level.
-export function renderSeats() {
-  return SEATS.map(
-    (s) =>
-      `<li class="s6-seat"><span class="s6-seat-fill"></span>` +
-      `<img class="s6-seat-img" src="/images/pickleball/seats/${s.slug}.webp" alt="" width="${seatSize(s.slug)[0]}" height="${seatSize(s.slug)[1]}" loading="lazy" decoding="async">` +
-      `<p class="s6-seat-n">${s.page ? `<a href="${s.page}">${esc(s.name)}</a>` : esc(s.name)}</p>` +
-      `<p class="s6-seat-amt">${usd(roadMath ? roadMath.unit : 0)}</p></li>`,
-  ).join("\n");
+// The stops on /road: the same facts, larger.
+export function renderStops() {
+  return STOPS.map((st) => stopItem(st, "rd-st", true)).join("\n");
 }
-const seatSize = (slug) => webpSize(join(PUB, `images/pickleball/seats/${slug}.webp`));
 
 // The numbers as one journey (Alec, Nov 7: "turning /numbers into a route
-// map, from every week to the road to the Classic"): a line through a station
+// map, from every week to the dashed leg to the Classic"): a line through a station
 // for each stop, in the order the money goes. Every week, then the road, then
 // the finish of this year's goal (the total), then the dashed leg to the next
 // goal, the Classic.
@@ -205,12 +240,12 @@ export function renderNumbers() {
       `    <p class="nb-detail">${p.detail || ""}${link}</p>`,
       `    <div class="nb-prog" data-nb-row="${p.key}" hidden>` +
         `<div class="nb-prog-top"><span class="nb-prog-k">Covered so far</span><span class="nb-prog-fig" data-nb-fig="${p.key}"></span></div>` +
-        `<div class="nb-lane"><div class="nb-track${road ? " nb-track--seats" : ""}"><span class="nb-fill nb-fill--kind" data-nb-kind="${p.key}"></span><span class="nb-fill" data-nb-fill="${p.key}"></span></div><span class="nb-pct" data-nb-pct="${p.key}"></span></div>` +
+        `<div class="nb-lane"><div class="nb-track"><span class="nb-fill nb-fill--kind" data-nb-kind="${p.key}"></span><span class="nb-fill" data-nb-fill="${p.key}"></span></div><span class="nb-pct" data-nb-pct="${p.key}"></span></div>` +
         `</div>`,
-      `    <ul class="nb-lines" aria-label="How we got ${usd(p.goal)}">`,
+      `    <ul class="nb-lines" aria-label="What ${usd(p.goal)} pays for">`,
       mathLines(p),
       `    </ul>`,
-      ...(road && SEATS.length ? [`    ${nbCrew()}`] : []),
+      ...(road && STOPS.length ? [`    ${nbStops()}`] : []),
       `    </div>`,
       `  </li>`,
     ].join("\n");
@@ -305,7 +340,6 @@ export function render(opts, where = "page") {
     ctaHref: esc(cta.href),
     ctaLabel: esc(cta.label),
     goal: usd(CAMPAIGN.goal),
-    faces: renderFaces(),
   };
   return html.replace(/\{\{(\w+)(?::([\w-]+))?\}\}/g, (m, k, key) => {
     if (key) {
@@ -344,17 +378,17 @@ export function stamp(page, name = "page") {
       .join("\n");
     return `${indent}<!-- campaign-numbers -->\n${body}\n${indent}<!-- /campaign-numbers -->`;
   });
-  const withSeats = withNumbers.replace(SEAT_TILES, (m, indent) => {
+  const withStops = withNumbers.replace(STOP_LIST, (m, indent) => {
     found++;
-    const body = smarten(renderSeats())
+    const body = smarten(renderStops())
       .split("\n")
       .map((l) => (l ? indent + l : l))
       .join("\n");
-    return `${indent}<!-- campaign-seats -->\n${body}\n${indent}<!-- /campaign-seats -->`;
+    return `${indent}<!-- campaign-stops -->\n${body}\n${indent}<!-- /campaign-stops -->`;
   });
   if (!found) return { html: page, found };
   // The look lives in site.css, so a page needs nothing more than the markup.
-  const html = withSeats.replace(
+  const html = withStops.replace(
     /\n<link rel="stylesheet" href="\/css\/campaign-module\.css[^"]*">/g,
     "",
   );

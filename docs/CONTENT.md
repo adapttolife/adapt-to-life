@@ -16,6 +16,8 @@ A first game, regular practice, and competition all belong in the story. Do not 
 
 The progression in funding copy is always **equipment, training, and travel**. It explains getting equipped, developing skills, and reaching the next opportunity. It is not an eligibility sequence or a promise that every grant covers all three.
 
+**The road (Alec, Nov 11 2026).** For Chicago Pickleball: Wheelie Big Dills, travel means The Road to the US Open (`/road`): a season of tournament travel for the crew, ending at the US Open in Naples in spring 2027. Its $21,000 is about 21 trips at about $1,000 each for entry fees, travel and accessible rooms; a trip is one athlete at one tournament. The US Open picks players by lottery, so write "if their names come up", never "when". Give the crew's scale as 10 to 15 athletes a night, never a head count of the crew. The road was first framed as Send 6, six athletes at about $3,500 each with six named seats; that framing was retired on Nov 11 2026, and `/send-6` now redirects to `/road`.
+
 ## Writing with the existing visuals
 
 Keep the accepted imagery, crops, layout system, typography, and brand palette. Let the photographs show the people and the sport. Let text add meaning, useful details, evidence, and a next step.
@@ -28,7 +30,7 @@ Keep the accepted imagery, crops, layout system, typography, and brand palette. 
 - Do not add decorative groups of three. Equipment, training, and travel is a deliberate content sequence, not a template for every sentence.
 - Avoid pity, savior framing, claims that everyone experiences disability the same way, and language that makes ordinary participation heroic.
 - Preserve direct quotes verbatim. Do not improve, paraphrase, or assign a quote to someone who did not say it.
-- Do not assume a photograph depicts a selected grant recipient or the final campaign roster.
+- Do not assume a photograph depicts a selected grant recipient or an athlete whose trip the road pays for.
 
 ## Keep the original voice, not the overcorrection
 
@@ -49,9 +51,9 @@ Do not confuse less defensive copy with fewer safeguards. Preserve material dono
 | `/apply` | Eligibility, review, limitations, payment methods, past-expense questions, and application | Apply for support |
 | `/donate` | Giving choices, checkout, and donor administration details | Give |
 | `/promise` | How giving works and the relationship between support and sustainability | Understand the terms before giving |
-| `/send-6` | The campaign goal, selection process, cost categories, and progress | Give toward the campaign |
+| `/road` (`/send-6` redirects here since Nov 11 2026) | The Road to the US Open: a season of tournament travel, its stops with the US Open last, what it pays for, the lottery, and progress. No selection process and no seats | Give (every week first, then the road) |
 | `/popcorn` | Drive status, vendor sales model, ordering, participation, and past results | Buy during a drive; otherwise give or subscribe |
-| `/events` | The index of every dated thing we take part in: upcoming (soonest featured) and past, each linking to its own page when it has one | Attend, or join the list for new dates |
+| `/events` | The index of every dated event, from our fundraisers to the tournaments the athletes we support play (the road's included): upcoming (soonest featured) and past, each linking to its own page when it has one | Attend, or join the list for new dates |
 | `/adaptive-sports-near-me` | Directory utility and the first step into a program | Browse the directory |
 | `/about` | People, origins, shared purpose, and current work at `#our-work` | Meet the community and explore the work |
 | `/adapt-body-shop` | Truthful coming-soon shop context within the same mission | Share an idea, get ATL updates, or find a role |
@@ -61,7 +63,7 @@ Do not confuse less defensive copy with fewer safeguards. Preserve material dono
 | `/brickhouse` (and each future partner page) | One partner's story: who they are, what we do together, their events | Visit, attend, or explore partnering |
 | `/volunteer` | Ambassadors first (a band linking to `/ambassadors`), then roles and the terms of contributing | Explore a role or offer another idea |
 | `/ambassadors` | The program: who ambassadors are, the three ways in (athlete, coach or program builder, community connector), what we give and ask, one card per ambassador linking to their page | Raise your hand (`/contact?rsn=ambassador`) |
-| `/juan` (and each future athlete or ambassador page) | One person's story in their own words, their seat or role, and a share link | Support their seat, or share |
+| `/juan` (and each future athlete or ambassador page) | One person's story in their own words, their role and their part of the road, and a share link | Give, or share |
 | `/volunteer/<role>` | A bounded contribution, time, suitability, scope, and interest form | Express interest, not automatic placement |
 | `/roadmap` | Current capability, ongoing work, and future direction | Follow or support the work |
 | `/contact` | Route the visitor to the right conversation | Contact |
@@ -84,7 +86,7 @@ Photographs belong to the hooks: the home page, landing pages, campaign and dona
 
 ## Partner pages
 
-Each partner gets its own page at a short root URL (`/brickhouse`), modeled on `/brickhouse`: the co-branded lockup, their place, our athletes there, and their events. The page owns the partner's story; `/sponsorship` carries one card per partner that links to it, and the nav lists Partners, not individual partners. Every partner page has its own share card (`public/images/og/<slug>-v<N>-<tag>.jpg`, usually the page's hero photo), a link back to `/sponsorship`, and a sitemap entry. `test/partners.test.js` enforces all four. Never publish deal terms, a partner's level, or background shared in conversation.
+Each partner gets its own page at a short root URL (`/brickhouse`), modeled on `/brickhouse`: the co-branded lockup, their place, the athletes we support there, and their events. The page owns the partner's story; `/sponsorship` carries one card per partner that links to it, and the nav lists Partners, not individual partners. Every partner page has its own share card (`public/images/og/<slug>-v<N>-<tag>.jpg`, usually the page's hero photo), a link back to `/sponsorship`, and a sitemap entry. `test/partners.test.js` enforces all four. Never publish deal terms, a partner's level, or background shared in conversation.
 
 ## People pages
 
@@ -105,16 +107,18 @@ The footer keeps the brand promise, useful routes, newsletter entry, social link
 - Explain approved support through direct vendor/program payments or reimbursement for approved expenses. Payment method can vary with the request and athlete's circumstances. Do not turn it into a vendor-only promise or treat reimbursement as inherently less trustworthy.
 - Prior expenses can be considered case by case, not automatically approved or automatically excluded. Keep detailed application guidance on `/apply`. Do not invent a fixed lookback period, a mandatory preapproval rule, or automatic reimbursement. Update the internal grant rubric whenever this public guidance changes.
 - Do not use a payment channel as proof of a donation percentage. Do not restore `every dollar reaches an athlete`, `0% overhead`, or exact donation equivalences without a verified allocation and fee policy.
-- A target is not a quote, a reconciled expense, a guaranteed award, or a confirmed roster. Describe the Send 6 budget as a fundraising target.
+- A target is not a quote, a reconciled expense, a guaranteed award, or a confirmed roster. Describe the road's budget as a fundraising target: about 21 trips at about $1,000 each, never $3,500 per athlete, six athletes, or a promise of a place at the US Open. One athlete's US Open (about $3,500 the last couple of years) appears only where the road's costs are explained and in the existing $3,500 gift line.
 - Do not invent a balancing expense to make illustrative line items equal a fundraising goal.
-- `/send-6` owns the campaign explanation. `/popcorn` links to it instead of maintaining another budget.
-- `/public/data/campaigns.json` owns campaign and drive names, dates, relationships, and shared card copy. It is also the events calendar: every entry has a `type` (`fundraiser`, `tournament`, or `event`), and adding an event is appending one object. Only fundraisers feed a campaign or steer QR campaign-follow codes. A big event gets its own page (like `/brickhouse`) and its entry links there with `page`. Keep campaign and drive distinct: no open popcorn drive does not mean the Send 6 campaign has ended.
+- No calculator needed (the owner, Nov 12 2026: "If our audience doesn't understand it, they won't trust us. If they don't trust us, they won't donate."). Say what the money does, then one amount. Never make the reader add, multiply or convert: no unit prices next to totals ("at $15 each"), no monthly and yearly figures side by side, no multiplication rows, no per-day figures, no sums in parentheses. `/numbers` labels each line in words. A simple contrast or an obvious relationship is fine (a trip about $1,000; a US Open about $3,500). The test "no page asks the reader to do math" guards the worst patterns.
+- `/road` owns the road's explanation (`/send-6` redirects there since Nov 11 2026). `/popcorn` links to it instead of maintaining another budget.
+- `/public/data/campaigns.json` owns campaign and drive names, dates, relationships, and shared card copy. It is also the events calendar: every entry has a `type` (`fundraiser`, `tournament`, or `event`), and adding an event is appending one object. Only fundraisers feed a campaign or steer QR campaign-follow codes. A big event gets its own page (like `/brickhouse`) and its entry links there with `page`. Keep campaign and drive distinct: no open popcorn drive does not mean The Road to the US Open has ended.
 - The public fundraising API is a displayed total, not independent financial reconciliation. Review-only snapshots must record their source and capture time.
 - Double Good's published model returns 50% of popcorn sales to the fundraiser. Vendor prices, minimums, shipping, and availability belong at vendor checkout; do not hard-code them without a current reason.
 - The directory's generated statistics come from its current API through `scripts/build-asnm.mjs`. Distinguish states from D.C. and do not describe the database as nationally complete or every listing as independently verified.
 - The directory is a starting point. Readers confirm schedules, eligibility, equipment, and accessibility with providers.
 - Adapt Body Shop contributes to the organization's longer term sustainability story. The store is forthcoming. Do not invent products already for sale, launch dates, a profit-transfer percentage, or purchase deductibility. Keep the directory free to browse; describe revenue development as a plan, not proof of current earnings.
 - Tax language, legal entity details, restricted gifts, and grant policy require evidence and the appropriate decision-maker. A staging copy edit is not authority to establish a new policy.
+- Named sponsorships (the owner's decision, Nov 12 2026): a level that puts a sponsor's name on a part pays for that part (Captain court time, Train to Compete ten memberships, Champion the road, Founding Partner the year ahead), and each part carries one sponsor's name at a time, held by the first to sign. If a part is already paid for, in full or in part, the money it doesn't need goes to the rest of the goal, and the sponsor hears where before giving. Other sponsorships and gifts fill every week first, then the road. The `/sponsorship` fine print owns the wording, `docs/sponsor-letter.md` is the record for each deal, and `ROAD_NAMED` in `src/fund.js` puts a Champion's money on the road.
 
 ## Generated and connected content
 
@@ -132,7 +136,7 @@ The separate adaptivesportsnearme.com directory and adaptbodyshop.com storefront
 
 ## Review and release
 
-Use the latest-main-based content branch and the standard staging environment. Do not create another preview stack or merge content into production without approval.
+Preview on the playground (see `AGENTS.md`), never by pushing a branch, creating another preview stack or deploying staging. When the change is going to ship, open one short-lived PR into `staging`; production changes only when the owner says "push live".
 
 Alec removed the persistent content-staging banner. Do not bring it back, add page-bottom padding for it, or replace it with another persistent alert. Keep write refusal, disabled payment widgets, and submission safeguards behind the scenes. The absence of a banner does not make staging production or make its totals live.
 

@@ -54,7 +54,7 @@ export const STORIES = {
       <p>Adapt To Life didn&rsquo;t host this tournament or raise money from it. We were there because the athletes we support were playing.</p>
 
       <h2 class="serif h2">What it started</h2>
-      <p>One bracket became a plan. Juan is now asking other tournament directors for wheelchair divisions, and Adapt To Life is raising money for the <a href="/chicago-classic">Chicago Classic</a>, a wheelchair pickleball tournament where we want registration, travel and hotels to be free for every athlete.</p>`,
+      <p>One bracket became a plan. Juan is now asking other tournament directors for wheelchair divisions, and the <a href="/chicago-classic">Chicago Classic</a>, a wheelchair pickleball tournament presented by Adapt To Life, is still to come: our goal is free registration, travel and hotels for every athlete. It joins our fundraising goal once it has a date and a budget.</p>`,
     links: [
       ["APP Tour", "The Association of Pickleball Players, the tour that hosted it.", "https://www.theapp.global/"],
       ["APP recap: 2026 Vlasic Classic Chicago", "Results and the week in full, from the APP.", "https://theapp.global/news/2026-chicago-recap"],
@@ -70,14 +70,14 @@ export const STORIES = {
       caption: "The wheelchair bracket on APP court 29.",
       credit: ["Adapt To Life on Instagram", "https://www.instagram.com/reel/Db3q5eZN7Wf/"] },
     og: { file: "event-app-vlasic-classic-2026-v1-card.jpg", alt: "The APP Tour's first wheelchair division. Adapt To Life. Juan Ortiz serves from his sport wheelchair." },
-    next: { href: "/chicago-classic", label: "The Chicago Classic" },
+    next: { href: "/road", label: "The Road to the US Open" },
   },
 
   "monster-smash-2026": {
     title: "Monster Smash 2026: Six Wheelchair Pickleball Medals in Cincinnati",
     h1: "Six medals at <em class=\"italic\" style=\"color:var(--orange)\">Monster Smash.</em>",
     description:
-      "Six wheelchair pickleball athletes we support won six medals at Monster Smash 2026 at The Pickle Lodge in Cincinnati, a Halloween tournament weekend that was free for athletes.",
+      "Wheelchair pickleball athletes we support won six medals at Monster Smash 2026 at The Pickle Lodge in Cincinnati, a Halloween tournament weekend that was free for athletes.",
     lead:
       "A Halloween tournament weekend at The Pickle Lodge in Cincinnati. The host made it free for wheelchair athletes, and the athletes we support came home with six medals.",
     published: "2026-11-08",
@@ -111,13 +111,13 @@ export const STORIES = {
       <p>We made a spotlight for each athlete, with The Pickle Lodge&rsquo;s name on it next to ours. Together they drew more than 38,000 views across Instagram and Facebook. We offer our partner clubs the same: the courts, the athletes, and both names on the posts. <a href="https://www.instagram.com/reel/De4NJ9TNJGR/" target="_blank" rel="noopener">Watch the reel</a>.</p>
 
       <h2 class="serif h2">The standard for Chicago</h2>
-      <p>Monster Smash showed what a tournament can do for wheelchair athletes when the host covers the cost. That is the standard we want the <a href="/chicago-classic">Chicago Classic</a> to meet: free registration, travel and hotels for every athlete. We&rsquo;re raising the money now, before the date is set.</p>`,
+      <p>Monster Smash showed what a tournament can do for wheelchair athletes when the host covers the cost. That is the standard we want the <a href="/chicago-classic">Chicago Classic</a> to meet: free registration, travel and hotels for every athlete. The Classic joins our fundraising goal once it has a date and a budget.</p>`,
     links: [
       ["The Pickle Lodge", "The host club at Lunken Landing, Cincinnati.", "https://thepicklelodge.com/"],
       ["Monster Smash 2026 listing", "The official tournament page, with brackets and results.", "https://pickleballtournaments.com/tournaments/monster-smash-2026"],
       ["The Pickle Lodge on Instagram", "@thepicklelodge", "https://www.instagram.com/thepicklelodge/"],
-      ["Monster Smash Facebook group", "Players' group for the tournament.", "https://www.facebook.com/groups/441240107886329/"],
-      ["Our Monster Smash reel", "The crew at The Pickle Lodge, October 24.", "https://www.instagram.com/reel/De4NJ9TNJGR/"],
+      ["Monster Smash Facebook group", "Players&rsquo; group for the tournament.", "https://www.facebook.com/groups/441240107886329/"],
+      ["Our Monster Smash reel", "Chicago Pickleball: Wheelie Big Dills at The Pickle Lodge, October 24.", "https://www.instagram.com/reel/De4NJ9TNJGR/"],
     ],
     // Frame from our arrival reel (instagram.com/reel/De4NJ9TNJGR, Oct 24
     // 2026), found by Rose: the crew in Adapt To Life shirts at the Lodge.
@@ -142,6 +142,6 @@ export const STORIES = {
       ],
     },
     og: { file: "event-monster-smash-2026-v1-card.jpg", alt: "Six medals at Monster Smash. Adapt To Life. A wheelchair pickleball player reaches wide mid-swing." },
-    next: { href: "/chicago-classic", label: "The Chicago Classic" },
+    next: { href: "/road", label: "The Road to the US Open" },
   },
 };

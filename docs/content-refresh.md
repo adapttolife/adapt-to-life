@@ -34,7 +34,7 @@ These entries describe completed draft scope, not production approval or financi
 | `/subscribe` | Content, navigation/footer, metadata |
 | `/tim` | Content, navigation/footer, metadata |
 | `/volunteer` | Content, navigation/footer, metadata |
-| `/send-6` | Content, navigation/footer, metadata |
+| `/send-6` (now `/road`, Nov 11 2026) | Content, navigation/footer, metadata |
 | `/popcorn` | Content, navigation/footer, metadata |
 | `/volunteer/grant-writer` | Role-specific copy and regenerated shared template |
 | `/volunteer/fundraising-lead` | Role-specific copy and regenerated shared template |
@@ -78,7 +78,7 @@ Alec asked us to keep the original live site's human voice rather than turn the 
 
 How Giving Works restores Safety is not overhead, names program-specific safeguards, and states the funding boundary clearly. Payment methods are brief; application qualifications remain on the application. The homepage, About, fund, sponsorship, campaign, popcorn, roadmap and contact copy lose repetitive qualifications and regain concrete examples. Volunteer culture and the shared application invitation are updated in their source model/generator and regenerated across all 26 roles. Role-specific qualifications, consent and legal disclosures remain.
 
-The application retains one clear funding limitation and a concise case-by-case past-expense answer. The campaign retains its target, cost variation and selection explanation without repeating award disclaimers. Existing donor terms and the legal release are not rewritten, and the archived old-content document is untouched. The editorial standard and regression tests capture this distinction so the next revision does not reintroduce the overcorrection.
+The application retains one clear funding limitation and a concise case-by-case past-expense answer. The campaign retains its target and cost variation without repeating award disclaimers; its selection explanation went with the Send 6 framing on Nov 11 2026. Existing donor terms and the legal release are not rewritten, and the archived old-content document is untouched. The editorial standard and regression tests capture this distinction so the next revision does not reintroduce the overcorrection.
 
 ## Confirmed decisions and remaining verification
 
@@ -90,7 +90,7 @@ The formal donor entity is now Adapt To Life NFP, matching the published IRS det
 
 See [giving-release-alignment.md](giving-release-alignment.md) for the staged changes, prepared Givebutter wording and controlled release sequence. Live Givebutter still contains the old percentage promise; it has not been silently edited. The future thank-you templates are aligned in this branch. Historical donor terms and private records remain intact. The failed remote Cloudflare build remains a separate unresolved check, not a staging deployment failure.
 
-The Send 6 target remains $21,000 for six athletes, or $3,500 per athlete. It is labelled as a target, not an exact trip price. The unexplained line-item total is not filled with an invented expense. The popcorn page links to the campaign rather than maintaining its own budget.
+The campaign target remains $21,000, labelled as a target, not an exact trip price. Since Nov 11 2026 it is The Road to the US Open on `/road`: a season of tournament travel for Chicago Pickleball: Wheelie Big Dills, about 21 trips at about $1,000 each, ending at the US Open in Naples in spring 2027, where players are picked by lottery. The Send 6 framing this review worked with ($21,000 for six athletes, or $3,500 per athlete, with a selection explanation) was retired that day, and `/send-6` redirects to `/road`. The unexplained line-item total is not filled with an invented expense. The popcorn page links to the road rather than maintaining its own budget.
 
 ## Review isolation
 

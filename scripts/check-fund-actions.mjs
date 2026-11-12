@@ -62,7 +62,7 @@ try {
     assert.ok(await p.locator('givebutter-giving-form[campaign="IXM5DR"]').isVisible());
     for (const [selector, path] of [
       [".fund-terms a", "/promise#campaign-gifts"],
-      [".thermo-link", "/send-6"],
+      [".thermo-link", "/road"],
     ]) {
       await p.locator(selector).click();
       await p.waitForURL(base + path);

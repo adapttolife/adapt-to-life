@@ -333,7 +333,7 @@ ${s.links
     <div class="wrap center">
       <span class="eyebrow orange">What&rsquo;s next</span>
       <h2 class="serif display">Help the next one happen.</h2>
-      <p class="lead sub" style="max-width:46ch; margin-inline:auto;">Every gift goes to the <a class="textlink" href="/hustle-and-heart" style="font:inherit;">Hustle &amp; Heart Fund</a>: court time, equipment and travel for the athletes we support.</p>
+      <p class="lead sub" style="max-width:46ch; margin-inline:auto;">Every gift goes to the <a class="textlink" href="/hustle-and-heart" style="font:inherit;">Hustle &amp; Heart Fund</a>. Right now, your gift keeps Chicago Pickleball: Wheelie Big Dills on court every week, then on the road to the US Open.</p>
       <div class="actions" style="justify-content:center;">
         <a href="/donate?utm_source=event-story&amp;utm_medium=web&amp;utm_campaign=${slug}" class="btn">Donate ${ARROW}</a>
         <a href="${s.next.href}" class="btn ghost">${s.next.label}</a>

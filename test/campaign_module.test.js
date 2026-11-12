@@ -124,6 +124,30 @@ test("the donate page's module points back to the form", () => {
   assert.ok(html.includes('id="givePanel"'));
 });
 
+// Alec, Nov 12 2026: "No calculator needed to understand anything throughout
+// the whole website ... If our audience doesn't understand it, they won't trust
+// us. If they don't trust us, they won't donate." No page multiplies dollars
+// or converts a price for the reader.
+test("no page asks the reader to do math", () => {
+  const pages = [
+    ...readdirSync(new URL("../public/", import.meta.url)).filter(
+      (f) => f.endsWith(".html") && !f.startsWith("hero-review"),
+    ),
+    ...readdirSync(new URL("../public/events/", import.meta.url))
+      .filter((f) => f.endsWith(".html"))
+      .map((f) => "events/" + f),
+  ];
+  for (const f of pages) {
+    const html = read("public/" + f);
+    assert.ok(!/(&times;|×)\s*(about )?\$/.test(html), `${f} multiplies dollars`);
+    assert.ok(!/ at \$[\d,]+ each/.test(html), `${f} prices "at $N each"`);
+    assert.ok(
+      !/\$129 a month, or \$1,548 a year/.test(html),
+      `${f} converts a membership`,
+    );
+  }
+});
+
 test("the math lives on /numbers, and every module links to it", () => {
   // Alec, Nov 6: "it's powerful to show how we got all of our numbers for our
   // fundraising - brings awareness to the reality of how expensive it is."
@@ -132,10 +156,14 @@ test("the math lives on /numbers, and every module links to it", () => {
   // A practice night is 10 to 15 athletes; at $15 each at ACE, up to 15 is $225.
   const wbd = JSON.parse(read("public/data/campaigns.json")).campaigns[0];
   const usd = (n) => "$" + n.toLocaleString("en-US");
+  // A line is arithmetic (qty x unit) or, since Nov 11 2026, a budget: the
+  // road is one line, its travel budget for the year, because Alec retired
+  // "6 athletes x $3,500" and no per-trip cost is on record.
+  const lineTotal = (l) => (l.amount != null ? l.amount : l.qty * l.unit);
   for (const p of wbd.parts) {
     assert.ok(p.math && p.math.length, `${p.key} has no math`);
     assert.equal(
-      p.math.reduce((t, l) => t + l.qty * l.unit, 0),
+      p.math.reduce((t, l) => t + lineTotal(l), 0),
       p.goal,
       `${p.key}: the lines add up to the goal`,
     );
@@ -165,15 +193,17 @@ test("the math lives on /numbers, and every module links to it", () => {
   for (const p of wbd.parts) {
     assert.ok(list.includes(`<h3>${p.label}</h3>`), p.label);
     for (const l of p.math) {
-      assert.ok(list.includes(`<b>${usd(l.qty * l.unit)}</b>`), l.label);
+      assert.ok(list.includes(`<b>${usd(lineTotal(l))}</b>`), l.label);
+      // Alec, Nov 12 2026: "No calculator needed to understand anything
+      // throughout the whole website." Every line says what it is in words;
+      // qty and unit stay in the data only so the sums above are checked.
       assert.ok(
-        list.includes(
-          `${l.qty} ${l.of} &times; ${l.about ? "about " : ""}${usd(l.unit)}`,
-        ),
-        `${l.label} shows its multiplication`,
+        l.calc && list.includes(`<span class="nb-calc">${l.calc}</span>`),
+        `${l.label} says what it is in words`,
       );
     }
   }
+  assert.ok(!list.includes("&times;"), "no multiplication on /numbers");
   assert.ok(list.includes(`<span>Every week + the road</span><b>${usd(wbd.goal)}</b>`));
   assert.ok(nb.includes(`>${usd(wbd.goal)}, <em`), "the heading states the goal");
   assert.ok(
@@ -185,8 +215,8 @@ test("the math lives on /numbers, and every module links to it", () => {
   assert.ok(
     read("public/sitemap.xml").includes("<loc>https://adapttolife.org/numbers</loc>"),
   );
-  // The gift lines on /numbers show their arithmetic now; the test "/donate
-  // says what a gift does; /numbers shows how we got it" checks them.
+  // The gift lines on /numbers say what each gift does in words; the test
+  // "/donate says what a gift does; /numbers shows how we got it" checks them.
 
   // The module stays clean: no receipt, one button to the breakdown.
   for (const { f, html } of carriers()) {
@@ -227,9 +257,18 @@ test("the math lives on /numbers, and every module links to it", () => {
     assert.ok(!mod.includes("data-part-kind"), `${f}: the court-time stripe is back`);
     assert.ok(!mod.includes("got it started"), `${f}: the long note is back`);
     if (f === "numbers.html") continue;
+    // Nov 11 2026: the notes say the crew's scale (10 to 15 athletes a night),
+    // so "10 athletes" stops reading as the size of the crew, and the road is
+    // a season of tournament travel, never six athletes.
     assert.ok(
       mod.includes(
-        '<p class="cm-note">A year of court time and memberships for 10 athletes.</p>',
+        '<p class="cm-note">A year of court time for 10 to 15 athletes a night, plus memberships for 10.</p>',
+      ),
+      f,
+    );
+    assert.ok(
+      mod.includes(
+        '<p class="cm-note">A season of tournament travel for the crew, through the 2027 US Open. <a href="/road">See the road</a></p>',
       ),
       f,
     );
@@ -243,47 +282,64 @@ test("the math lives on /numbers, and every module links to it", () => {
   }
 });
 
-// Alec, Nov 7 2026: "don't say first priority"; the six seats are the six on
-// the crew page, by name and photo; /numbers reads as one route.
-test("no First priority, six named seats, and the numbers as a route", () => {
+// Alec, Nov 7 2026: "don't say first priority". Alec, Nov 11 2026: retire
+// "sending six people to the U.S. Open"; the road is the crew's tournaments
+// through the year, so it has no seats, no head count and no price per head.
+// /numbers reads as one route, and the road's stops are the season's
+// tournaments, the US Open last.
+test("no First priority, no six seats, and the numbers as a route", () => {
   const data = JSON.parse(read("public/data/campaigns.json"));
   const road = data.campaigns
     .find((c) => c.slug === "wheelie-big-dills")
     .parts.find((p) => p.key === "send-6");
-  const names = road.seats.map((s) => s.name);
-  assert.deepEqual(names, ["Juan", "Brian", "Bob", "Robby", "Ken", "Amanda"]);
-  const crew = read("public/pickleball.html");
-  for (const s of road.seats) {
-    assert.ok(crew.includes(`<h3>${s.name}</h3>`), `${s.name} is on the crew page`);
+  assert.equal(road.seats, undefined, "the road has no seats");
+  for (const l of road.math)
     assert.ok(
-      existsSync(join(ROOT, `public/images/pickleball/seats/${s.slug}.webp`)),
-      `${s.name} has a seat picture`,
+      !("qty" in l && /athlete/.test(l.of || "")),
+      "the road is not athletes x a price",
+    );
+  const stops = road.stops;
+  assert.ok(Array.isArray(stops) && stops.length >= 2, "the road lists its stops");
+  const last = stops.at(-1);
+  assert.equal(last.name, "The US Open", "the US Open is the last stop");
+  assert.ok(last.finish);
+  for (const st of stops.filter((x) => typeof x === "string")) {
+    const d = data.drives.find((x) => x.slug === st);
+    assert.ok(
+      d && d.relationship === "we_compete",
+      `${st} is a tournament the crew played`,
     );
   }
-  assert.ok(existsSync(join(ROOT, "public/images/pickleball/seats/faces.webp")));
-  const road6 = read("public/send-6.html");
-  const tiles = road6.slice(
-    road6.indexOf("<!-- campaign-seats -->"),
-    road6.indexOf("<!-- /campaign-seats -->"),
-  );
-  assert.equal((tiles.match(/class="s6-seat"/g) || []).length, 6);
-  for (const n of names) assert.ok(tiles.includes(`>${n}<`), `${n} names a seat`);
-  assert.ok(!road6.includes("Seat 2"), "no anonymous seats");
-  for (const f of readdirSync(join(ROOT, "public")).filter(
+  const pages = readdirSync(join(ROOT, "public")).filter(
     // the concept labs and hero labs are review-only, as in the other page tests
     (x) =>
       x.endsWith(".html") && !/^(hero-|campaign-concepts|review|photo-picks)/.test(x),
-  ))
-    assert.ok(
-      !read(`public/${f}`).includes("First priority"),
-      `${f} says First priority`,
-    );
-  const home = read("public/index.html");
-  assert.ok(
-    home.includes(
-      `aria-label="The six seats: Juan, Brian, Bob, Robby, Ken and Amanda"`,
-    ),
   );
+  const RETIRED = [
+    /six seats/i,
+    /one seat each/i,
+    /first seat/i,
+    /first of six/i,
+    /send six/i,
+    /Send 6/,
+    /six athletes on the road/i,
+    /six athletes, about \$3,500/i,
+    /6 athletes &times;/,
+    /campaign-seats/,
+    /seats\/faces\.webp/,
+  ];
+  for (const f of pages) {
+    const html = read(`public/${f}`);
+    assert.ok(!html.includes("First priority"), `${f} says First priority`);
+    for (const re of RETIRED)
+      assert.ok(!re.test(html), `${f} still carries the retired six story: ${re}`);
+  }
+  const road6 = read("public/road.html");
+  const list = road6.slice(
+    road6.indexOf("<!-- campaign-stops -->"),
+    road6.indexOf("<!-- /campaign-stops -->"),
+  );
+  assert.ok(list.includes(">The US Open<"), "the road page lists the stops");
   const nums = read("public/numbers.html");
   const route = nums.slice(
     nums.indexOf('<ol class="nb-route"'),
@@ -342,8 +398,15 @@ test("/numbers: the finish card's ledger adds up top to bottom", () => {
   const order = ["kind", "gifts", "so", "left"].map((k) =>
     ledger.indexOf(`data-nb-sum="${k}"`),
   );
-  assert.ok(order.every((i, n) => i > 0 && (n === 0 || i > order[n - 1])), "bar order, then the sums");
-  assert.ok(ledger.includes('<i class="nb-swatch nb-swatch--kind" aria-hidden="true"></i><span class="nb-ledger-k">Court time<small>From a partner club</small></span>'));
+  assert.ok(
+    order.every((i, n) => i > 0 && (n === 0 || i > order[n - 1])),
+    "bar order, then the sums",
+  );
+  assert.ok(
+    ledger.includes(
+      '<i class="nb-swatch nb-swatch--kind" aria-hidden="true"></i><span class="nb-ledger-k">Court time<small>From a partner club</small></span>',
+    ),
+  );
   assert.ok(ledger.includes('<span class="nb-ledger-k">So far</span>'));
   assert.ok(ledger.includes('<span class="nb-ledger-k">To go</span>'));
   assert.ok(!/nb-legend|nb-key/.test(nums), "the old legend and its chips are gone");
@@ -376,7 +439,8 @@ test("/donate says what a gift does; /numbers shows how we got it", () => {
   );
   assert.deepEqual(
     once.map((g) => g.a),
-    [15, 60, 225, 1548, 3500],
+    // Nov 12 2026: about $1,000 is one athlete's tournament trip (Alec).
+    [15, 60, 225, 1000, 1548, 3500],
   );
   const money = (n) => "$" + n.toLocaleString("en-US");
   const plain = (h) =>
@@ -422,7 +486,8 @@ test("/donate says what a gift does; /numbers shows how we got it", () => {
   assert.ok(impact.includes('href="/numbers#gifts"'), "/donate hands off to the math");
   assert.ok(!impact.includes("$4,000"), "the chair is a way to give, not a gift line");
 
-  // /numbers: the same amounts in the same order, each with its arithmetic.
+  // /numbers: the same amounts in the same order, each with what it does in
+  // words (Nov 12 2026: no calculator needed anywhere on the site).
   const nums = read("public/numbers.html");
   const gifts = nums.slice(
     nums.indexOf('id="gifts"'),
@@ -446,10 +511,10 @@ test("/donate says what a gift does; /numbers shows how we got it", () => {
   for (const { amount, often, calc } of rows) {
     if (often === "a month")
       assert.ok(calc.includes("a month"), `${calc} says a month`);
-    const m = calc.match(/^([\d,]+) [a-z]+(?: a month)? × \$([\d,]+)$/);
-    if (!m) continue; // "1 membership a month", "about one US Open"
-    const n = (x) => +x.replace(/,/g, "");
-    assert.equal(money(n(m[1]) * n(m[2])), amount, `${calc} is ${amount}`);
+    assert.ok(
+      !calc.includes("×") && !/\$/.test(calc),
+      `${amount}: "${calc}" needs no math`,
+    );
   }
   const whats = [...gifts.matchAll(/<span class="nb-gift-what">(.*?)<\/span>/g)].map(
     (m) => plain(m[1]),

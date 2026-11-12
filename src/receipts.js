@@ -122,8 +122,12 @@ export async function sendContactReceipt(
       .trim()
       .split(/\s+/)[0] || "there";
   const subject = "We got your message";
+  // Same comma grouping as the sponsor sheet on the page: "Coach ($3,500)".
+  const dollars = amount
+    ? "$" + String(amount).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    : "";
   const sponsorship = tier
-    ? `Sponsorship interest: ${tier}${amount ? ` ($${amount})` : ""}. This is an inquiry, not a payment or commitment.`
+    ? `Sponsorship interest: ${tier}${dollars ? ` (${dollars})` : ""}. This is an inquiry, not a payment or commitment.`
     : "";
   const text =
     `Hi ${first},\n\n` +

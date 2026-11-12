@@ -135,7 +135,7 @@ async function go(path, rows, opts, headers) {
 
 const CHAIR = {
   slug: "chair",
-  dest: "/send-6",
+  dest: "/road",
   rule: null,
   label: "Chair sticker",
   surface: "chair-sticker",
@@ -146,7 +146,7 @@ const CHAIR = {
 
 test("repointing a code changes the destination with no code change", async () => {
   const before = await go("/q/chair", [CHAIR]);
-  assert.equal(before.loc.pathname, "/send-6");
+  assert.equal(before.loc.pathname, "/road");
 
   // The only thing that changed is the row. No deploy, no reprint.
   const after = await go("/q/chair", [{ ...CHAIR, dest: "/ways-to-give" }]);
@@ -165,7 +165,7 @@ test("a RETIRED code keeps redirecting — the sticker is still on the chair", a
   assert.equal(res.status, 302);
   assert.equal(
     loc.pathname,
-    "/send-6",
+    "/road",
     "retiring must not break codes already printed",
   );
   const scan = e.WAIVERS_DB.writes.find((w) => /qr_scans/.test(w.sql));
@@ -179,7 +179,7 @@ test("a RETIRED code keeps redirecting — the sticker is still on the chair", a
 test("D1 being down falls back to the seed map instead of failing the scan", async () => {
   const { res, loc } = await go("/q/chair", [], { failReads: true });
   assert.equal(res.status, 302);
-  assert.equal(loc.pathname, "/send-6");
+  assert.equal(loc.pathname, "/road");
 });
 
 test("the redirect is never cached — that is the entire point", async () => {
@@ -236,12 +236,12 @@ test("an existing query string on the destination survives", async () => {
 test("campaign-follow never follows an event or a tournament, only a fundraiser", () => {
   // Oct 25: only the grand opening is live. The code keeps its own destination.
   assert.equal(
-    resolveDest({ dest: "/send-6", rule: "campaign-follow" }, CAMPAIGNS, "2026-10-25"),
-    "/send-6",
+    resolveDest({ dest: "/road", rule: "campaign-follow" }, CAMPAIGNS, "2026-10-25"),
+    "/road",
   );
   // Aug 10: a tournament and the popcorn drive are both live. Popcorn wins.
   assert.equal(
-    resolveDest({ dest: "/send-6", rule: "campaign-follow" }, CAMPAIGNS, "2026-08-10"),
+    resolveDest({ dest: "/road", rule: "campaign-follow" }, CAMPAIGNS, "2026-08-10"),
     "/popcorn",
   );
   // An untyped entry is not assumed to be a fundraiser.
@@ -273,8 +273,8 @@ test("campaign-follow routes to the drive that is open today", () => {
 
 test("campaign-follow falls back to its own destination when no drive is open", () => {
   assert.equal(
-    resolveDest({ dest: "/send-6", rule: "campaign-follow" }, CAMPAIGNS, "2026-09-01"),
-    "/send-6",
+    resolveDest({ dest: "/road", rule: "campaign-follow" }, CAMPAIGNS, "2026-09-01"),
+    "/road",
   );
 });
 
@@ -364,7 +364,7 @@ test("a repoint is visible on the very next request, with no cache reset", async
     const r = await handleQr(req("/q/chair"), e, u, { waitUntil: (p) => p });
     return new URL(r.headers.get("Location")).pathname;
   };
-  assert.equal(await hit(), "/send-6");
+  assert.equal(await hit(), "/road");
   rows[0].dest = "/ways-to-give"; // the only thing that changed
   assert.equal(await hit(), "/ways-to-give", "a stale isolate cache would fail here");
 });
@@ -375,7 +375,7 @@ test("when D1 goes down mid-life, the last good answer is still served", async (
   const u = new URL("https://adapttolife.org/q/chair");
   await handleQr(req("/q/chair"), good, u, { waitUntil: (p) => p });
 
-  // Same isolate, D1 now refusing reads. The seed says /send-6; last-known-good
+  // Same isolate, D1 now refusing reads. The seed says /road; last-known-good
   // says /ways-to-give, and the more recent truth should win.
   const down = env([], { failReads: true });
   const r = await handleQr(req("/q/chair"), down, u, { waitUntil: (p) => p });
@@ -385,7 +385,7 @@ test("when D1 goes down mid-life, the last good answer is still served", async (
 // --- the admin write path: where a permanent mistake would be made ----------
 
 test("a destination cannot be turned into an open redirect", () => {
-  assert.equal(validateDest("/send-6"), null);
+  assert.equal(validateDest("/road"), null);
   assert.equal(validateDest("https://popup.doublegood.com/s/abc"), null);
   assert.ok(validateDest("javascript:alert(1)"), "javascript: must be refused");
   assert.ok(validateDest("//evil.example.com"), "protocol-relative must be refused");

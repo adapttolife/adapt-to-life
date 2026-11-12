@@ -15,8 +15,8 @@
 // One goal, one bar (Alec, Nov 5 2026): "one campaign bar... puts together
 // all of the initiatives into one big number... Then it shows how much of
 // this pays for the year and how much of this pays for the U.S. Open." And
-// "When you donate, it goes to just one program": the Chicago Wheelie Big
-// Dills, through the one Givebutter campaign (the Hustle & Heart Fund). No
+// "When you donate, it goes to just one program": Chicago Pickleball:
+// Wheelie Big Dills, through the one Givebutter campaign (the Hustle & Heart Fund). No
 // donor picks a fund. "Our first priority is to raise money for the weekly
 // training, then the U.S. Open. After that, Chicago Classic."
 //
@@ -28,13 +28,30 @@
 // counted twice. Equipment is raised per athlete and is not in the goal; the
 // Chicago Classic joins the goal once it has a date and a budget.
 //
+// Named sponsorships (Alec, Nov 12 2026: "yes to both"): if a sponsor's name
+// goes on a part, their money pays for that part, with one sponsor's name per
+// part at a time. Captain (court time) and Train to Compete (memberships) are
+// every week, which new money fills first anyway, so record them like any
+// offline gift (FUND_OFFLINE_RAISED). A Champion pays for the road, so its
+// money sits on the road from the start, like the Send 6 set-aside:
+//   ROAD_NAMED         named road sponsorships, in dollars
+//   ROAD_NAMED_ONLINE  the part of ROAD_NAMED paid through Givebutter, already
+//                      inside Givebutter's online total
+// Both default to 0 (no Champion yet). Set them in wrangler.jsonc when one signs.
+// The road may already be partly paid for (the Send 6 set-aside sits there), so
+// a named sponsorship covers only what the road still needs; the money it
+// doesn't need goes to the rest of the goal like a new gift (every week first),
+// as the sponsor is told before giving. The parts always add up to the total.
+//
 // Keys the site asks for with /api/raised?c=<key>:
 //   wbd     The one goal: every week + the road, with both parts.
 //   year    Every week: court time every week and memberships to train all
 //           year. $27,180: a year of nights at ACE ($11,700, 52 x $225) and ten
 //           athletes training ($15,480, 10 x $1,548).
-//   send-6  The Road to the US Open. $21,000: six athletes at about $3,500,
-//           roughly what the US Open has cost the last couple of years.
+//   send-6  The Road to the US Open (the key keeps the retired Send 6 name).
+//           $21,000 for a season of tournament travel: about 21 trips at
+//           about $1,000 each (Nov 11 2026). A trip is one athlete at one tournament;
+//           the US Open in Naples, spring 2027, is the last stop.
 //   fund    The whole campaign. Grant receipts read this.
 //   classic The Chicago Classic: a goal we talk about, not yet in the total.
 export const CAMPAIGN_KEYS = ["fund", "wbd", "year", "send-6", "classic"];
@@ -78,21 +95,33 @@ async function givebutter(env, id) {
   return { online, goal, donors, live };
 }
 
+// A dollar setting from wrangler.jsonc. "21,000" or "$21,000" reads as 21000
+// rather than silently turning into 0.
+function dollars(v) {
+  return Number(String(v ?? "").replace(/[$,\s]/g, "")) || 0;
+}
+
 // The one goal and its parts, filled in priority order.
 async function wbd(env) {
   const g = await givebutter(env, env.GIVEBUTTER_CAMPAIGN_ID || "683765");
-  const setAside = Number(env.SEND6_SET_ASIDE) || 0;
-  const counted = Number(env.SEND6_ONLINE_COUNTED) || 0;
-  const offline = Number(env.FUND_OFFLINE_RAISED) || 0;
-  const fresh = Math.max(0, g.online - counted) + offline;
+  const send6 = dollars(env.SEND6_SET_ASIDE);
+  const named = dollars(env.ROAD_NAMED);
+  const namedOnRoad = Math.min(named, Math.max(0, ROAD_GOAL - send6));
+  const setAside = send6 + namedOnRoad;
+  const counted = dollars(env.SEND6_ONLINE_COUNTED) + dollars(env.ROAD_NAMED_ONLINE);
+  const offline = dollars(env.FUND_OFFLINE_RAISED);
+  const fresh = Math.max(0, g.online - counted) + offline + (named - namedOnRoad);
   const inkind = Math.min(YEAR_INKIND, YEAR_GOAL);
   const yearCash = Math.min(fresh, YEAR_GOAL - inkind);
-  const road = Math.min(setAside + Math.max(0, fresh - (YEAR_GOAL - inkind)), ROAD_GOAL);
+  const road = Math.min(
+    setAside + Math.max(0, fresh - (YEAR_GOAL - inkind)),
+    ROAD_GOAL,
+  );
   return {
     raised: setAside + fresh,
     inkind,
     online: g.online,
-    offline: setAside - counted + offline,
+    offline: send6 + named - counted + offline,
     goal: WBD_GOAL,
     donors: g.donors,
     live: g.live,
@@ -106,7 +135,12 @@ async function wbd(env) {
 export async function campaignPosition(env, key = "send-6") {
   if (key === "fund") {
     const g = await givebutter(env, env.GIVEBUTTER_CAMPAIGN_ID || "683765");
-    const offline = Number(env.FUND_OFFLINE_RAISED) || 0;
+    // A named road sponsorship paid by check or transfer is fund money too.
+    const namedOffline = Math.max(
+      0,
+      dollars(env.ROAD_NAMED) - dollars(env.ROAD_NAMED_ONLINE),
+    );
+    const offline = dollars(env.FUND_OFFLINE_RAISED) + namedOffline;
     return {
       raised: g.online + offline,
       online: g.online,

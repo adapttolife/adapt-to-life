@@ -41,21 +41,21 @@ export const GUIDES = {
       <p>Once an athlete has a chair, they still need somewhere to play and a way to get there. Around Chicago, that looks like this:</p>
       <ul class="es-list">
         <li><b>Court time:</b> about $15 a night for a drop-in. $225 covers up to 15 athletes for a night.</li>
-        <li><b>Training:</b> $129 a month for a club membership, or $1,548 a year, for athletes who train to compete.</li>
-        <li><b>Tournaments:</b> entry fees and travel. Getting one athlete to the US Open has cost about $3,500 the last couple of years.</li>
+        <li><b>Training:</b> $129 a month for a club membership, for athletes who train to compete.</li>
+        <li><b>Tournaments:</b> entry fees, travel and accessible rooms. A tournament trip runs about $1,000 an athlete; one athlete&rsquo;s US Open has cost about $3,500 the last couple of years.</li>
       </ul>
       <p>See how the numbers add up for the athletes we support on <a href="/numbers">the numbers</a>.</p>
 
       <h2 class="serif h2">How donors close the gap</h2>
-      <p>Gifts to the <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a> pay for equipment, training and travel. We raise for one athlete at a time and pay the vendor directly. Ambassadors like Juan tell the fund where it will do the most.</p>
-      <p>Businesses can sponsor a night of court time, a year of training, or a whole program. <a href="/sponsor-adaptive-athletes">See how to sponsor an athlete</a>.</p>
+      <p>Gifts to the <a href="/hustle-and-heart">Hustle &amp; Heart Fund</a> pay for equipment, training and travel. We raise for equipment one athlete at a time, when an athlete needs it, and pay the vendor directly or reimburse an approved expense. Ambassadors like Juan tell the fund where it will do the most.</p>
+      <p>Businesses can sponsor a night of court time, a year of training, travel to tournaments, or a whole program. <a href="/sponsor-adaptive-athletes">See how to sponsor an athlete</a>.</p>
 
       <h2 class="serif h2">If you&rsquo;re an athlete looking for a chair</h2>
       <p>Grants and programs that help athletes get equipment are listed on <a href="${ASNM}/" target="_blank" rel="noopener">Adaptive Sports Near Me</a>, our free directory. You can also <a href="/apply">apply to the Hustle &amp; Heart Fund</a>.</p>`,
     faq: [
       ["How much does a sport wheelchair cost?", "A sport wheelchair runs $4,000 to $6,000."],
       ["Does insurance cover a sport wheelchair?", "No. Insurance doesn&rsquo;t cover a sport wheelchair, so athletes and families pay the full cost or rely on donors and grants."],
-      ["Can I donate toward a sport wheelchair?", "Yes. Gifts to the Hustle &amp; Heart Fund pay for equipment, training and travel for adaptive athletes. We raise for one athlete at a time and pay the vendor directly."],
+      ["Can I donate toward a sport wheelchair?", "Yes. Gifts to the Hustle &amp; Heart Fund pay for equipment, training and travel for adaptive athletes. We raise for equipment one athlete at a time, when an athlete needs it, and pay the vendor directly or reimburse an approved expense."],
       ["Is my gift tax deductible?", "Adapt To Life is a recognized 501(c)(3) nonprofit, EIN 41-3213344. Gifts are tax deductible to the extent allowed by law."],
     ],
     related: [
@@ -69,11 +69,11 @@ export const GUIDES = {
   "sponsor-adaptive-athletes": {
     title: "Sponsor Adaptive Athletes in Chicago",
     description:
-      "Sponsor a wheelchair pickleball athlete in Chicago: a night of court time for $225, a year of training for $1,548, or a whole program. What it pays for and what you get back.",
+      "Sponsor a wheelchair pickleball athlete in Chicago: a night of court time for $225, a year of training for $1,548, travel to tournaments, or a whole program. What it pays for and what you get back.",
     eyebrow: "Guide for sponsors",
     h1: "Sponsor an athlete <em class=\"italic\" style=\"color:var(--orange)\">in Chicago.</em>",
     lead:
-      "Sponsor court time, training or a tournament for wheelchair pickleball athletes in the Chicago area. Every dollar goes to the Hustle &amp; Heart Fund, and we pay the clubs and vendors directly.",
+      "Sponsor court time, training or travel to tournaments for wheelchair pickleball athletes in the Chicago area. Partner support goes to the Hustle &amp; Heart Fund, and we pay clubs and vendors directly or reimburse approved expenses.",
     published: "2026-11-08",
     stats: [
       ["$225", "a night of court time for up to 15 athletes"], // /sponsorship
@@ -86,14 +86,14 @@ export const GUIDES = {
 
       <h2 class="serif h2">What a sponsorship pays for</h2>
       <ul class="es-list">
-        <li><b>Sponsor a night, $225:</b> court time for up to 15 athletes, at $15 each.</li>
-        <li><b>Sponsor an athlete, $1,548 a year:</b> one athlete&rsquo;s unlimited club membership, $129 a month, so they can train to compete.</li>
-        <li><b>Train to Compete, presented by you, $15,480 a year:</b> ten athletes on unlimited memberships, with your name on the program.</li>
+        <li><b>Sponsor a night, $225:</b> one night on court for up to 15 athletes.</li>
+        <li><b>Sponsor an athlete, $1,548 a year:</b> a year of unlimited sessions for one athlete.</li>
+        <li><b>Train to Compete, presented by you, $15,480 a year:</b> a year of unlimited sessions for ten athletes, with your name on the program.</li>
       </ul>
-      <p>Businesses can also choose a partnership level, from Teammate at $500 to Champion at $25,000, including naming the <a href="/chicago-classic">Chicago Classic</a>. <a href="/sponsorship#tiers">See every level</a>.</p>
+      <p>Businesses can also choose a partnership level. Teammate, $1,000, is about one tournament trip. Champion, $21,000, is a season on The Road to the US Open. A Founding Partner, from $48,180, puts its name on the whole year ahead, with first call on naming the <a href="/chicago-classic">Chicago Classic</a> once it has a date. <a href="/sponsorship#tiers">See the levels</a>.</p>
 
       <h2 class="serif h2">Where the athletes play</h2>
-      <p>The athletes play at clubs we partner with: <a href="/ace">ACE Pickleball Club</a> in Des Plaines, <a href="/brickhouse">Brick House Pickleball</a> in Lake Forest and <a href="/picklr">The Picklr</a> in Mount Prospect. The clubs host the play. Where we fund court time, we pay the club&rsquo;s regular rates. We call it the Open Court Model.</p>
+      <p>The athletes play at clubs we partner with: <a href="/ace">ACE Pickleball Club</a> in Des Plaines, <a href="/brickhouse">Brick House Pickleball</a> in Lake Forest and <a href="/picklr">The Picklr</a> in Mount Prospect. The clubs host the play. Where we fund court time, funding is planned at the club&rsquo;s regular rates. We call it the Open Court Model.</p>
 
       <h2 class="serif h2">What you get back</h2>
       <ul class="es-list">
@@ -105,8 +105,8 @@ export const GUIDES = {
       <h2 class="serif h2">How to start</h2>
       <p>Tell us what you&rsquo;d like to sponsor and we&rsquo;ll shape it with you. Individuals can give any amount to the fund with the Donate button below.</p>`,
     faq: [
-      ["How much does it cost to sponsor an adaptive athlete?", "A night of court time for up to 15 athletes is $225. One athlete&rsquo;s club membership for a year, so they can train to compete, is $1,548. Partnership levels for businesses run from $500 to $25,000."],
-      ["Where does sponsorship money go?", "Every sponsorship goes to the Hustle &amp; Heart Fund. Adapt To Life pays the clubs and vendors directly."],
+      ["How much does it cost to sponsor an adaptive athlete?", "A night of court time for up to 15 athletes is $225. A year of training for one athlete is $1,548. Businesses can also choose a partnership level, starting at $1,000 for about one tournament trip."],
+      ["Where does sponsorship money go?", "Sponsorships go to the Hustle &amp; Heart Fund. A level that puts your name on a part, like court time or the road, pays for that part, and each part carries one sponsor&rsquo;s name at a time. If that part is already paid for, in full or in part, the money it doesn&rsquo;t need goes to the rest of the goal, and we tell you where before you give. Other sponsorships and gifts fill every week first, then the road to the US Open. Adapt To Life pays clubs and vendors directly or reimburses approved expenses."],
       ["Is a sponsorship tax deductible?", "Adapt To Life is a recognized 501(c)(3) nonprofit, EIN 41-3213344. Sponsorships may be tax deductible to the extent allowed by law. Some levels include benefits, so check with your tax advisor."],
       ["Do you run the program?", "No. The clubs host the play and the crew brings the players. Adapt To Life funds court time, memberships, equipment and travel."],
     ],

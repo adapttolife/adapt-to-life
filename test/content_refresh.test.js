@@ -19,7 +19,7 @@ const core = [
   "subscribe",
   "tim",
   "volunteer",
-  "send-6",
+  "road",
   "popcorn",
 ];
 const pages = [
@@ -100,15 +100,19 @@ test("fund categories follow equipment, training, travel without unsupported pri
 });
 
 test("campaign owns its target, and popcorn links instead of duplicating a budget", () => {
-  const campaign = read("public/send-6.html");
+  // Nov 11 2026: the road is a season of tournament travel, 21 trips at about
+  // $1,000 (Alec's number), never six athletes at $3,500.
+  const campaign = read("public/road.html");
   assert.ok(
     campaign.includes(
-      "The target is $3,500 per athlete; individual needs and costs will vary.",
+      "$21,000 for the season: about 21 tournament trips at about $1,000 each.",
     ),
   );
+  assert.ok(campaign.includes("Individual needs and costs will vary."));
   assert.ok(!/about \$(450|500|2,300)/.test(campaign));
   const popcorn = read("public/popcorn.html");
-  assert.ok(popcorn.includes('href="/send-6">Send 6 to the US Open Spring 2027</a>'));
+  assert.ok(popcorn.includes('href="/road">The Road to the US Open</a>'));
+  assert.ok(!popcorn.includes("Send 6"), "the retired name is gone from the popcorn page");
   assert.ok(!popcorn.includes('class="s6-cost-n"'));
   assert.ok(!popcorn.includes("roughly five hundred"));
   assert.ok(popcorn.includes("50% of popcorn sales"));

@@ -27,12 +27,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=f3c06679">
-<script src="/js/attribution.js?v=dd7f55f9" defer></script>
+<link rel="stylesheet" href="/css/site.css?v=4b81db86">
+<script src="/js/attribution.js?v=bd94ad92" defer></script>
 <script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches&&"IntersectionObserver" in window)document.documentElement.classList.add("ace-motion");</script>
 <style>
   /* The Chicago Classic. Built on the ACE partner page pieces (dark hero with
-     the two marks, tick + eyebrow, dark cards, closing), because ACE hosts it. */
+     the two marks, tick + eyebrow, dark cards, closing). Date and court are
+     still to come, so the page never says which club holds it. */
   /* 1. Hero: one photograph, edge to edge. The athlete sits right, the words
      sit left on the dark wall behind him; on phones the photo leads and the
      words follow on black. */
@@ -194,7 +195,7 @@
   @media (max-width:900px){ .cc-four{ grid-template-columns:1fr; } }
   .cc-hero .ace-hero-photo img{ object-position:72% 40%; }
   .cc-prices{ list-style:none; margin:clamp(1.8rem,3.6vw,2.6rem) 0 0; padding:0; display:grid; gap:0; max-width:900px; }
-  .cc-prices li{ display:grid; grid-template-columns:9rem 7rem 1fr; gap:1rem; align-items:baseline; padding:1.1rem 0; border-top:1px solid rgba(59,59,70,0.12); }
+  .cc-prices li{ display:grid; grid-template-columns:9rem 8rem 1fr; gap:1rem; align-items:baseline; padding:1.1rem 0; border-top:1px solid rgba(59,59,70,0.12); }
   .cc-prices li:last-child{ border-bottom:1px solid rgba(59,59,70,0.12); }
   .cc-prices b{ font-family:var(--font-display); font-weight:800; font-size:1.15rem; }
   .cc-price{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(1.3rem,2.2vw,1.6rem); color:var(--orange-ink); letter-spacing:-0.02em; }
@@ -460,7 +461,7 @@ fill="currentColor" stroke="none">
         <hr class="tick orange">
         <span class="eyebrow orange">The standard</span>
         <h2 class="serif statement">The goal: free registration, <em class="italic" style="color:var(--orange)">transportation and hotels.</em></h2>
-        <p class="prose">At <a class="textlink" href="https://pickleballtournaments.com/tournaments/monster-smash-2026" target="_blank" rel="noopener" style="font:inherit;letter-spacing:inherit;">Monster Smash</a> in Cincinnati, The Pickle Lodge made the tournament free for athletes and helped with travel and food. Athletes we support came home with six medals. That is the standard we want the Chicago Classic to meet, so we are raising the money now, before the date is set.</p>
+        <p class="prose">At <a class="textlink" href="https://pickleballtournaments.com/tournaments/monster-smash-2026" target="_blank" rel="noopener" style="font:inherit;letter-spacing:inherit;">Monster Smash</a> in Cincinnati, The Pickle Lodge made the tournament free for athletes and helped with travel and food. Athletes we support came home with six medals. That is the standard we want the Chicago Classic to meet. The Classic joins our fundraising goal once it has a date and a budget. Until then, gifts to the Hustle &amp; Heart Fund support Chicago Pickleball: Wheelie Big Dills, every week first, then the road to the US Open.</p>
       </div>
       <div class="cc-know" data-m="stagger">
         <div>
@@ -500,17 +501,17 @@ fill="currentColor" stroke="none">
         <article class="ace-pick">
           <p class="ace-pick-tag"><span class="tag tag--info"><i class="sym sym--goal" aria-hidden="true"></i>The goal</span></p>
           <h3>Free registration</h3>
-          <p>No athlete pays to enter. A Captain sponsorship would put your name on the whole tournament. <a class="ace-pick-link" href="#sponsor">Sponsor the Classic</a></p>
+          <p>Athletes enter free, if we raise the money. A Founding Partner gets first call on naming the whole tournament once it has a date. <a class="ace-pick-link" href="#sponsor">Sponsor the Classic</a></p>
         </article>
         <article class="ace-pick">
           <p class="ace-pick-tag"><span class="tag tag--info"><i class="sym sym--goal" aria-hidden="true"></i>The goal</span></p>
           <h3>Transportation</h3>
-          <p>Help getting to the tournament, for athletes who need it. <a class="ace-pick-link" href="#sponsor">Sponsor rides</a></p>
+          <p>Help getting to the tournament, for athletes who need it. <a class="ace-pick-link" href="/contact?rsn=sponsor">Sponsor rides</a></p>
         </article>
         <article class="ace-pick">
           <p class="ace-pick-tag"><span class="tag tag--info"><i class="sym sym--goal" aria-hidden="true"></i>The goal</span></p>
           <h3>Hotels</h3>
-          <p>A room for athletes traveling in, so distance is never the reason someone misses it. <a class="ace-pick-link" href="#sponsor">Sponsor hotels</a></p>
+          <p>A room for athletes traveling in, so distance isn&rsquo;t the reason someone misses it. <a class="ace-pick-link" href="/contact?rsn=sponsor">Sponsor hotels</a></p>
         </article>
         <article class="ace-pick">
           <p class="ace-pick-tag"><span class="tag tag--info"><i class="sym sym--goal" aria-hidden="true"></i>The goal</span></p>
@@ -528,17 +529,14 @@ fill="currentColor" stroke="none">
         <hr class="tick orange">
         <span class="eyebrow orange">Sponsor the Classic</span>
         <h2 class="serif statement">Put your name <em class="italic" style="color:var(--orange)">on the Classic.</em></h2>
-        <p class="prose">The same prices as every Adapt To Life sponsorship, and every one goes to the Hustle &amp; Heart Fund.</p>
+        <p class="prose">The Classic joins our goal once it has a date and a budget. Until then, a Founding Partner gets first call on naming it, and sponsorships go to the Hustle &amp; Heart Fund.</p>
       </div>
       <ul class="cc-prices" data-m="stagger">
-        <li><b>Teammate</b><span class="cc-price">$500</span><span>A fundraiser tournament with club members on the road to the Classic.</span></li>
-        <li><b>Coach</b><span class="cc-price">$2,500</span><span>Meals, rides or hotels for athletes at the Classic.</span></li>
-        <li><b>Captain</b><span class="cc-price">$10,000</span><span>Your name on the Chicago Classic, on court and in every post about it. Helps make it free for every athlete.</span></li>
-        <li><b>Champion</b><span class="cc-price">$25,000</span><span>Train to Compete and the Chicago Classic, with your name on both.</span></li>
+        <li><b>Founding Partner</b><span class="cc-price">$48,180+</span><span>Your name on the whole year ahead, with first call on naming the Chicago Classic, presented by Adapt To Life, once it has a date.</span></li>
       </ul>
       <div class="cc-actions" data-m="up">
         <a href="/sponsorship#tiers" class="btn">See all ways to sponsor</a>
-        <a href="/contact?rsn=sponsor&amp;tier=Captain" class="btn ghost">Talk to us</a>
+        <a href="/contact?rsn=sponsor&amp;tier=Founding%20Partner" class="btn ghost">Talk to us</a>
       </div>
     </div>
   </section>

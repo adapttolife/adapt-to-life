@@ -4,7 +4,7 @@
 // those scans produced $600, because they hand the visitor off at the redirect
 // and never see the donation. We own both ends, so this closes the loop:
 //
-//   /q/chair  →  /send-6?utm_campaign=qr-chair&gba_source=qr-chair
+//   /q/chair  →  /road?utm_campaign=qr-chair&gba_source=qr-chair
 //             →  /donate carrying the same params (public/js/attribution.js)
 //             →  Givebutter's widget forwards them into its iframe
 //             →  the transaction comes back carrying them

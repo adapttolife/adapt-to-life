@@ -3,16 +3,17 @@
  * WHY THIS EXISTS. Every tier button on /sponsorship used to be a link to
  * /contact. Tapping "Become a Teammate" threw away the page you were reading,
  * loaded a second one, and landed you on a five-field form whose only mention
- * of the $500 level you had just chosen was a sentence prefilled into a
+ * of the level you had just chosen was a sentence prefilled into a
  * textarea. The decision ("I'll sponsor at Teammate") and the act of saying so
  * were separated by a navigation, and a navigation is where intent goes to die.
  *
  * So the ask happens where the decision happened: a sheet over the card.
  *
- * TWO PATHS, BOTH VISIBLE AT ONCE (Alec, 2026-09-12). At $500 and $2,500 a
- * sponsor may simply want to pay; at $10,000 and up they want a conversation
- * first. The sheet therefore shows "Give $500 now" AND the short form together
- * on the low tiers, with no tab, toggle or second tap to reach either — and
+ * TWO PATHS, BOTH VISIBLE AT ONCE (Alec, 2026-09-12). On the lower tiers
+ * (Teammate $1,000 and Coach $3,500 since the Nov 12 2026 rework) a sponsor may
+ * simply want to pay; from Captain up they want a conversation first. The sheet
+ * therefore shows a "Donate $1,000" button AND the short form together on the low
+ * tiers, with no tab, toggle or second tap to reach either — and
  * drops the give-now button entirely on the tiers where a phone checkout would
  * be the wrong instrument.
  *

@@ -86,11 +86,11 @@ export const GUIDES = {
 
       <h2 class="serif h2">What a sponsorship pays for</h2>
       <ul class="es-list">
-        <li><b>Sponsor a night, $225:</b> court time for up to 15 athletes, at $15 each.</li>
-        <li><b>Sponsor an athlete, $1,548 a year:</b> one athlete&rsquo;s unlimited club membership, $129 a month, so they can train to compete.</li>
-        <li><b>Train to Compete, presented by you, $15,480 a year:</b> ten athletes on unlimited memberships, with your name on the program.</li>
+        <li><b>Sponsor a night, $225:</b> one night on court for up to 15 athletes, at $15 each.</li>
+        <li><b>Sponsor an athlete, $1,548 a year:</b> a year of unlimited sessions for one athlete, at $129 a month.</li>
+        <li><b>Train to Compete, presented by you, $15,480 a year:</b> a year of unlimited sessions for ten athletes, with your name on the program.</li>
       </ul>
-      <p>Businesses can also choose a partnership level, from Teammate at $500 to Champion at $25,000, including naming the <a href="/chicago-classic">Chicago Classic</a>. <a href="/sponsorship#tiers">See every level</a>.</p>
+      <p>Businesses can also choose a partnership level, from Teammate at $1,000, about one tournament trip, to Champion at $21,000, a season on The Road to the US Open. A Founding Partner puts its name on the whole year ahead, from $48,180, with first call on naming the <a href="/chicago-classic">Chicago Classic</a> once it has a date. <a href="/sponsorship#tiers">See the levels</a>.</p>
 
       <h2 class="serif h2">Where the athletes play</h2>
       <p>The athletes play at clubs we partner with: <a href="/ace">ACE Pickleball Club</a> in Des Plaines, <a href="/brickhouse">Brick House Pickleball</a> in Lake Forest and <a href="/picklr">The Picklr</a> in Mount Prospect. The clubs host the play. Where we fund court time, we pay the club&rsquo;s regular rates. We call it the Open Court Model.</p>
@@ -105,8 +105,8 @@ export const GUIDES = {
       <h2 class="serif h2">How to start</h2>
       <p>Tell us what you&rsquo;d like to sponsor and we&rsquo;ll shape it with you. Individuals can give any amount to the fund with the Donate button below.</p>`,
     faq: [
-      ["How much does it cost to sponsor an adaptive athlete?", "A night of court time for up to 15 athletes is $225. One athlete&rsquo;s club membership for a year, so they can train to compete, is $1,548. Partnership levels for businesses run from $500 to $25,000."],
-      ["Where does sponsorship money go?", "Every sponsorship goes to the Hustle &amp; Heart Fund. Adapt To Life pays clubs and vendors directly or reimburses approved expenses."],
+      ["How much does it cost to sponsor an adaptive athlete?", "A night of court time for up to 15 athletes is $225. One athlete&rsquo;s club membership for a year, so they can train to compete, is $1,548. Partnership levels for businesses run from $1,000, about one tournament trip, to $21,000 for a season on The Road to the US Open, and a Founding Partner starts at $48,180, the whole year ahead."],
+      ["Where does sponsorship money go?", "Sponsorships go to the Hustle &amp; Heart Fund. Adapt To Life pays clubs and vendors directly or reimburses approved expenses."],
       ["Is a sponsorship tax deductible?", "Adapt To Life is a recognized 501(c)(3) nonprofit, EIN 41-3213344. Sponsorships may be tax deductible to the extent allowed by law. Some levels include benefits, so check with your tax advisor."],
       ["Do you run the program?", "No. The clubs host the play and the crew brings the players. Adapt To Life funds court time, memberships, equipment and travel."],
     ],

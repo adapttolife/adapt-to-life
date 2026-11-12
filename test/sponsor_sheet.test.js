@@ -94,7 +94,7 @@ test("give-now is offered on the low tiers only, and its amount matches the pric
   assert.deepEqual(
     withAmount,
     ["Teammate", "Coach"],
-    "Alec's ruling 2026-09-12: pay-now on $500 and $2,500; $10,000 and up are a conversation",
+    "Alec's ruling 2026-09-12: pay-now on the low tiers ($1,000 and $3,500 now); $10,000 and up are a conversation",
   );
 });
 
@@ -103,8 +103,8 @@ test("Founding Partner opens the sheet too, and is conversation-only", () => {
   // so it is checked on its own rather than bent into the loop above.
   const m = html.match(/data-sponsor-tier="Founding Partner"[^>]*/);
   assert.ok(m, "the founding partner CTA opens the sheet");
-  assert.ok(!/data-sponsor-amount/.test(m[0]), "no phone checkout at $50,000");
-  assert.ok(m[0].includes('data-sponsor-price="$50,000+"'), "the sheet names a price");
+  assert.ok(!/data-sponsor-amount/.test(m[0]), "no phone checkout at $48,180");
+  assert.ok(m[0].includes('data-sponsor-price="$48,180+"'), "the sheet names a price");
   assert.ok(
     html.includes('href="/contact?rsn=sponsor&amp;tier=Founding%20Partner"'),
     "and keeps its no-JavaScript fallback",

@@ -86,9 +86,11 @@ test("the welcome is built on Alec's own published words and the site's facts", 
     ),
   );
   assert.ok(
-    read("public/index.html").replace(/<\/?b>/g, "").includes(
-      "We expand access to adaptive sports so athletes can find their place.",
-    ),
+    read("public/index.html")
+      .replace(/<\/?b>/g, "")
+      .includes(
+        "We expand access to adaptive sports so athletes can find their place.",
+      ),
   );
   assert.ok(
     text.includes(
@@ -122,7 +124,9 @@ test("the numbers in the saved emails are still the site's numbers", () => {
   );
   const usd = (n) => "$" + n.toLocaleString("en-US");
   assert.ok(all.includes(usd(wbd.goal)), "the goal");
-  for (const part of wbd.parts) assert.ok(all.includes(usd(part.goal)), part.key);
+  // Nov 12 2026: the emails say the round goal without stacking the parts (no
+  // calculator needed), and a retired total never comes back.
+  for (const old of ["$48,180", "$34,500"]) assert.ok(!all.includes(old), old);
   // The picker's line has no amount (the button shows it); the email stands
   // alone, so it says the amount and the same thing.
   // The ask leads with the picker's default, $60 a month (Alec, Nov 8 2026).

@@ -36,11 +36,15 @@ const ENV = {
   SEND6_ONLINE_COUNTED: "1975",
 };
 
-test("one goal is every week plus the road", () => {
+test("one round goal: every week, then the road, then the Classic", () => {
   assert.ok(CAMPAIGN_KEYS.includes("wbd"));
   assert.equal(YEAR_GOAL, 27180);
   assert.equal(ROAD_GOAL, 21000);
-  assert.equal(WBD_GOAL, 48180);
+  // Alec, Nov 12 2026: "Just say 50k. 48,180 is a stupid number. Just round
+  // up." A round $50,000: every week and the road come first ($48,180
+  // between them), and gifts past them start the Chicago Classic.
+  assert.equal(WBD_GOAL, 50000);
+  assert.ok(YEAR_GOAL + ROAD_GOAL <= WBD_GOAL);
 });
 
 test("today: every week starts with the club's court time, and the road holds the Send 6 money", () =>
@@ -48,7 +52,7 @@ test("today: every week starts with the club's court time, and the road holds th
     const w = await campaignPosition(ENV, "wbd");
     assert.equal(w.raised, 4979, "gifts only; court time is kept apart");
     assert.equal(w.inkind, 5200);
-    assert.equal(w.goal, 48180);
+    assert.equal(w.goal, 50000);
     assert.equal(w.parts.year.raised, 5200);
     assert.equal(w.parts.year.inkind, 5200);
     assert.equal(w.parts["send-6"].raised, 4979);
@@ -141,7 +145,7 @@ test("pages draw one bar with its parts, and no gift is steered to a fund", () =
   const camp = JSON.parse(read("public/data/campaigns.json")).campaigns;
   const wbd = camp[0];
   assert.equal(wbd.slug, "wheelie-big-dills");
-  assert.equal(wbd.goal, 48180);
+  assert.equal(wbd.goal, 50000);
   assert.equal(wbd.raised_key, "wbd");
   assert.deepEqual(
     wbd.parts.map((p) => [p.key, p.goal]),
@@ -150,9 +154,9 @@ test("pages draw one bar with its parts, and no gift is steered to a fund", () =
       ["send-6", 21000],
     ],
   );
-  assert.equal(
-    wbd.parts.reduce((t, p) => t + p.goal, 0),
-    wbd.goal,
+  assert.ok(
+    wbd.parts.reduce((t, p) => t + p.goal, 0) <= wbd.goal,
+    "the parts come first, inside the round goal",
   );
   assert.equal(
     camp.find((c) => c.slug === "send-6-us-open").part_of,

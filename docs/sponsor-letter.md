@@ -23,7 +23,7 @@ sets out what your sponsorship pays for and how we will thank you for it.
 **Your sponsorship**
 
 - Level: [Captain / Train to Compete / Champion / Founding Partner]
-- Amount: [$11,700 / $15,480 / $21,000 / $48,180 or more]
+- Amount: [$11,700 / $15,480 / $21,000 / $50,000 or more]
 - Term: [the year from (month, year) to (month, year) / the (2026-27) season, through the US Open in Naples in spring 2027]
 
 **What it pays for**
@@ -33,7 +33,7 @@ sets out what your sponsorship pays for and how we will thank you for it.
 - Captain: a year of court time for the crew, 52 nights for up to 15 athletes a night, priced at the partner club's regular rates.
 - Train to Compete: a year of unlimited sessions for ten athletes.
 - Champion: The Road to the US Open for the season: tournament entry fees, travel and accessible rooms, about 21 trips at about $1,000 each. The US Open, the last stop, picks players by lottery.
-- Founding Partner: the year ahead: court time, Train to Compete and the road [or: the parts still open, which are (list)].
+- Founding Partner: the year ahead: court time, Train to Compete and the road, with the rest toward the Chicago Classic [or: the parts still open, which are (list)].
 
 Your sponsorship goes to the Hustle & Heart Fund and is held for what it pays for. We pay clubs and
 vendors directly or reimburse approved expenses.

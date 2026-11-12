@@ -103,8 +103,8 @@ test("Founding Partner opens the sheet too, and is conversation-only", () => {
   // so it is checked on its own rather than bent into the loop above.
   const m = html.match(/data-sponsor-tier="Founding Partner"[^>]*/);
   assert.ok(m, "the founding partner CTA opens the sheet");
-  assert.ok(!/data-sponsor-amount/.test(m[0]), "no phone checkout at $48,180");
-  assert.ok(m[0].includes('data-sponsor-price="$48,180+"'), "the sheet names a price");
+  assert.ok(!/data-sponsor-amount/.test(m[0]), "no phone checkout at $50,000");
+  assert.ok(m[0].includes('data-sponsor-price="$50,000+"'), "the sheet names a price");
   assert.ok(
     html.includes('href="/contact?rsn=sponsor&amp;tier=Founding%20Partner"'),
     "and keeps its no-JavaScript fallback",
@@ -283,7 +283,10 @@ test("a drag that starts inside the sheet cannot dismiss it", () => {
 test("every checkout button on /sponsorship charges the price it shows", () => {
   // Nov 10 2026: the Night and Athlete buttons still charged $75 and $960 (the
   // old discounted math) under cards showing $225 and $1,548.
-  const html = readFileSync(new URL("../public/sponsorship.html", import.meta.url), "utf8");
+  const html = readFileSync(
+    new URL("../public/sponsorship.html", import.meta.url),
+    "utf8",
+  );
   const tags = html.match(/<a [^>]*data-sponsor-amount="[^"]*"[^>]*>/g) || [];
   assert.ok(tags.length >= 4);
   for (const t of tags) {

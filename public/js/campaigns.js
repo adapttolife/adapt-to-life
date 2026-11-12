@@ -560,7 +560,7 @@
 
   /* The campaign module (src/partials/campaign-module.html, stamped into
      pages by scripts/build-module.mjs). The markup ships complete with the
-     goal, so a page without data still reads true: "$48,180, our goal for the
+     goal, so a page without data still reads true: "$50,000, our goal for the
      year ahead". When the live total lands it counts up from $0 as the card
      comes into view, each part fills on its own, an empty part shows a pulse
      where the next gift lands, and the donor count joins the trust line.

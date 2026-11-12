@@ -26,7 +26,8 @@
 // on the road from the start. SEND6_ONLINE_COUNTED is the part of
 // Givebutter's online total already inside that set-aside, so it is never
 // counted twice. Equipment is raised per athlete and is not in the goal; the
-// Chicago Classic joins the goal once it has a date and a budget.
+// Chicago Classic gets its own budget once it has a date; until then, gifts past
+// the road go toward it (the goal is a round $50,000, see WBD_GOAL).
 //
 // Named sponsorships (Alec, Nov 12 2026: "yes to both"): if a sponsor's name
 // goes on a part, their money pays for that part, with one sponsor's name per
@@ -41,10 +42,12 @@
 // The road may already be partly paid for (the Send 6 set-aside sits there), so
 // a named sponsorship covers only what the road still needs; the money it
 // doesn't need goes to the rest of the goal like a new gift (every week first),
-// as the sponsor is told before giving. The parts always add up to the total.
+// as the sponsor is told before giving. Until the parts are full they add up to
+// the total; past them, the total keeps counting toward the Chicago Classic.
 //
 // Keys the site asks for with /api/raised?c=<key>:
-//   wbd     The one goal: every week + the road, with both parts.
+//   wbd     The one goal ($50,000): every week, then the road (both parts),
+//           then the rest toward the Chicago Classic.
 //   year    Every week: court time every week and memberships to train all
 //           year. $27,180: a year of nights at ACE ($11,700, 52 x $225) and ten
 //           athletes training ($15,480, 10 x $1,548).
@@ -57,7 +60,10 @@
 export const CAMPAIGN_KEYS = ["fund", "wbd", "year", "send-6", "classic"];
 export const YEAR_GOAL = 27180;
 export const ROAD_GOAL = 21000;
-export const WBD_GOAL = YEAR_GOAL + ROAD_GOAL;
+// Alec, Nov 12 2026: "Just say 50k. 48,180 is a stupid number. Just round up."
+// The goal is a round $50,000. Every week and the road come first; gifts past
+// them go toward the Chicago Classic.
+export const WBD_GOAL = 50000;
 // Court time a partner club gives toward every week (Alec, Nov 7 2026). The
 // club's drop in is $15 and we pay $5, so the club gives $10 an athlete a
 // night: the first gift toward every week. Counted conservatively at 10

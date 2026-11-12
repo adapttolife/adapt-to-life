@@ -98,9 +98,18 @@ const lineTotal = (l) => (l.amount != null ? l.amount : l.qty * l.unit);
       );
     sum += p.goal;
   }
-  if (sum !== CAMPAIGN.goal)
+  // Alec, Nov 12 2026: "Just say 50k. 48,180 is a stupid number. Just round
+  // up." The goal is a round $50,000: every week and the road come first, and
+  // gifts past them start the Chicago Classic. So the parts may come to less
+  // than the goal, never more.
+  if (sum > CAMPAIGN.goal)
     throw new Error(
-      `campaigns.json: parts add to ${usd(sum)}, goal is ${usd(CAMPAIGN.goal)}`,
+      `campaigns.json: parts add to ${usd(sum)}, more than the goal of ${usd(CAMPAIGN.goal)}`,
+    );
+  // A rounded goal sits just above its parts; a big gap is a typo.
+  if (CAMPAIGN.goal - sum >= 10000)
+    throw new Error(
+      `campaigns.json: the goal ${usd(CAMPAIGN.goal)} is ${usd(CAMPAIGN.goal - sum)} above its parts; a typo?`,
     );
 }
 
@@ -254,7 +263,7 @@ export function renderNumbers() {
     [
       `  <li class="nb-stop nb-stop--finish">`,
       `    <span class="nb-station nb-station--finish" aria-hidden="true">${flag.replace("nb-flag", "nb-station-flag")}</span>`,
-      `    <div class="nb-total"><p class="nb-total-top"><span>${CAMPAIGN.parts.map((p) => esc(p.label === "The Road to the US Open" ? "the road" : p.label)).join(" + ")}</span><b>${usd(CAMPAIGN.goal)}</b></p>` +
+      `    <div class="nb-total"><p class="nb-total-top"><span>Every week, the road, and the rest toward the Classic</span><b>${usd(CAMPAIGN.goal)}</b></p>` +
         // Under the bar, one small ledger in the bar's order: each part with a
         // swatch of its segment, then so far and to go under a rule. Every
         // amount sits in one right-hand column, so it adds up at a glance

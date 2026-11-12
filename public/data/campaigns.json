@@ -9,7 +9,7 @@
       "beneficiary": "The crew, all year",
       "when": "Year-round",
       "blurb": "One goal for the year ahead: every week first, then the road to the US Open.",
-      "goal": 48180,
+      "goal": 50000,
       "raised": null,
       "raised_source": "api",
       "raised_key": "wbd",
@@ -44,7 +44,7 @@
       "next": {
         "label": "the Chicago Classic",
         "page": "/chicago-classic",
-        "detail": "Our goal: free registration, transportation and hotels for every athlete. It joins the goal once it has a date and a budget."
+        "detail": "Our goal: free registration, transportation and hotels for every athlete. Gifts past the road go toward it, and it gets its own budget once it has a date."
       },
       "cta_label": "Donate",
       "cta_url": "/donate",

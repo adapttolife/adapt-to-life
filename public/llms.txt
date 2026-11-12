@@ -1,6 +1,6 @@
 # Adapt To Life
 
-> Adapt To Life is a Chicago-area adaptive sports nonprofit, a 501(c)(3) (EIN 41-3213344). We expand access to adaptive sports so athletes can find their place. We fund and support athletes and the programs they play in; clubs and partners host and run the play. Athletes looking for a place to play can search Adaptive Sports Near Me (https://adaptivesportsnearme.com).
+> Adapt To Life is a Chicago-area adaptive sports nonprofit, a 501(c)(3) (EIN 41-3213344). We expand access to adaptive sports so athletes can find their place. We fund and support athletes and the programs they play in; clubs and partners host and run the play. Adaptive Sports Near Me (https://adaptivesportsnearme.com), our free directory for finding a place to play, is in beta now: beta testers are using it before it opens to everyone.
 
 Our blog shares what it takes to build adaptive sports, in public: the people, the tournaments, what things cost, and what we learn.
 
@@ -17,7 +17,7 @@ Our blog shares what it takes to build adaptive sports, in public: the people, t
 - [Events](https://adapttolife.org/events): Tournaments and fundraisers, upcoming and past.
 - [Apply for support](https://adapttolife.org/apply): How athletes apply to the Hustle & Heart Fund.
 - [About](https://adapttolife.org/about): The people behind Adapt To Life, and why.
-- [Adaptive Sports Near Me](https://adapttolife.org/adaptive-sports-near-me): Our free directory of adaptive sports programs, grants and events, at adaptivesportsnearme.com.
+- [Adaptive Sports Near Me](https://adapttolife.org/adaptive-sports-near-me): Our free directory of adaptive sports programs, grants and events, at adaptivesportsnearme.com. It is in beta now: beta testers are using it before it opens to everyone.
 
 ## Blog
 
@@ -31,14 +31,14 @@ Our blog shares what it takes to build adaptive sports, in public: the people, t
 
 ### On the road
 
-- [Monster Smash 2026: Six Wheelchair Pickleball Medals in Cincinnati](https://adapttolife.org/events/monster-smash-2026): A Halloween tournament weekend at The Pickle Lodge in Cincinnati, free for wheelchair athletes. The athletes we support came home with six medals.
+- [Monster Smash 2026: Six Wheelchair Pickleball Medals in Cincinnati](https://adapttolife.org/events/monster-smash-2026): A Halloween tournament weekend at The Pickle Lodge in Cincinnati. The host made it free for wheelchair athletes, and the athletes we support came home with six medals.
 - [The APP Tour's First Wheelchair Division, Vlasic Classic Chicago 2026](https://adapttolife.org/events/app-vlasic-classic-2026): Juan Ortiz asked the APP Tour for a wheelchair division in Highland Park. Five full teams played the APP’s first.
 
 ### Guides
 
 - [How Much Does a Sport Wheelchair Cost? $4,000 to $6,000](https://adapttolife.org/sport-wheelchair-cost): A sport wheelchair runs $4,000 to $6,000, and insurance doesn’t cover it.
 - [Sponsor Adaptive Athletes in Chicago](https://adapttolife.org/sponsor-adaptive-athletes): What sponsoring a wheelchair pickleball athlete pays for, and what a sponsor gets back.
-- [Corporate Matching Gifts: Double Your Gift to Adapt To Life](https://adapttolife.org/corporate-matching): Many employers match gifts to nonprofits. Everything you need to get yours matched.
+- [Corporate Matching Gifts: Double Your Gift to Adapt To Life](https://adapttolife.org/corporate-matching): Many employers match gifts to 501(c)(3) nonprofits. How to get yours matched, with our legal name, EIN and IRS letter.
 
 ### Building in public
 

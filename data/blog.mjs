@@ -43,8 +43,8 @@
 export const SECTIONS = {
   stories: { name: "Stories", blurb: "Athletes, ambassadors and the people behind the fund." },
   road: { name: "On the road", blurb: "Where the athletes we support played, what happened, and who made it possible." },
-  guides: { name: "Guides", blurb: "Plain answers for sponsors, donors and anyone building a program." },
-  public: { name: "Building in public", blurb: "What worked, what didn’t, and what we changed." },
+  guides: { name: "Guides", blurb: "Plain answers for donors and sponsors." },
+  public: { name: "Building in public", blurb: "The numbers behind the work, in the open." },
 };
 
 // The people who write here (Alec, Nov 12 2026, looking at a post signed
@@ -129,7 +129,7 @@ export const LISTED = [
     href: "/events/monster-smash-2026",
     section: "road",
     story: "monster-smash-2026", // title, line and date come from data/event-stories.mjs
-    dek: "A Halloween tournament weekend at The Pickle Lodge in Cincinnati, free for wheelchair athletes. The athletes we support came home with six medals.",
+    dek: "A Halloween tournament weekend at The Pickle Lodge in Cincinnati. The host made it free for wheelchair athletes, and the athletes we support came home with six medals.",
     photo: PHOTO.smash,
   },
   {
@@ -157,7 +157,7 @@ export const LISTED = [
     href: "/corporate-matching",
     section: "guides",
     guide: "corporate-matching",
-    dek: "Many employers match gifts to nonprofits. Everything you need to get yours matched.",
+    dek: "Many employers match gifts to 501(c)(3) nonprofits. How to get yours matched, with our legal name, EIN and IRS letter.",
     photo: PHOTO.matching,
   },
   {

@@ -43,7 +43,6 @@ const check = process.argv.includes("--check");
 const shell = pageShell(ROOT);
 const ARROW = `<span class="arrow">${icon("arrow", "bold")}</span>`;
 const EXT = `<span class="arrow">${icon("external", "bold")}</span>`;
-const ASNM = "https://adaptivesportsnearme.com/?utm_source=blog&amp;utm_medium=web&amp;utm_campaign=blog";
 const FEED = "/blog/feed.xml";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -489,8 +488,8 @@ ${all.map((e) => item(e, { lead: e === lead })).join("\n")}
     </div>
     <div>
       <h2>Looking for a place to play?</h2>
-      <p>Adaptive Sports Near Me is our free directory of adaptive sports programs, grants and events.</p>
-      <a href="${ASNM}" target="_blank" rel="noopener">Find a program near you ${ARROW}</a>
+      <p>Adaptive Sports Near Me is our free directory of adaptive sports programs, grants and events. It&rsquo;s in beta now: beta testers are using it before it opens to everyone.</p>
+      <a href="/adaptive-sports-near-me">See the directory ${ARROW}</a>
     </div>
   </section>
 </div>
@@ -711,12 +710,12 @@ const KEY_PAGES = [
   ["/events", "Events", "Tournaments and fundraisers, upcoming and past."],
   ["/apply", "Apply for support", "How athletes apply to the Hustle & Heart Fund."],
   ["/about", "About", "The people behind Adapt To Life, and why."],
-  ["/adaptive-sports-near-me", "Adaptive Sports Near Me", "Our free directory of adaptive sports programs, grants and events, at adaptivesportsnearme.com."],
+  ["/adaptive-sports-near-me", "Adaptive Sports Near Me", "Our free directory of adaptive sports programs, grants and events, at adaptivesportsnearme.com. It is in beta now: beta testers are using it before it opens to everyone."],
 ];
 function llms(all) {
   return `# Adapt To Life
 
-> Adapt To Life is a Chicago-area adaptive sports nonprofit, a 501(c)(3) (EIN 41-3213344). We expand access to adaptive sports so athletes can find their place. We fund and support athletes and the programs they play in; clubs and partners host and run the play. Athletes looking for a place to play can search Adaptive Sports Near Me (https://adaptivesportsnearme.com).
+> Adapt To Life is a Chicago-area adaptive sports nonprofit, a 501(c)(3) (EIN 41-3213344). We expand access to adaptive sports so athletes can find their place. We fund and support athletes and the programs they play in; clubs and partners host and run the play. Adaptive Sports Near Me (https://adaptivesportsnearme.com), our free directory for finding a place to play, is in beta now: beta testers are using it before it opens to everyone.
 
 Our blog shares what it takes to build adaptive sports, in public: the people, the tournaments, what things cost, and what we learn.
 

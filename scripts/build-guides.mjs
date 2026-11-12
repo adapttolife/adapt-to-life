@@ -14,6 +14,7 @@ import { fileURLToPath } from "node:url";
 import { GUIDES } from "../data/guides.mjs";
 import { linksPage } from "./lib/links-page.mjs";
 import { icon } from "./lib/icons.mjs";
+import { moreFromBlog } from "./lib/blog-index.mjs";
 import { pageShell, metaBlock, esc, text } from "./lib/page-shell.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -179,6 +180,8 @@ ${g.faq.map(([q, a]) => `        <details><summary>${q}</summary><p>${a}</p></de
       </div>
     </div>
   </section>
+
+  ${moreFromBlog(`/${slug}`)}
 </main>
 
 ${shell.footer}

@@ -29,14 +29,16 @@ document it points to for the job at hand.
 
   ```sh
   npm run build:app && node scripts/build-css.mjs && node scripts/version-assets.mjs \
-    && npm run events && npm run guides && git status --porcelain
+    && npm run events && npm run guides && npm run blog && git status --porcelain
   ```
 
 - Money or policy copy (prices, where money goes, sponsor terms, tax lines) gets an independent
   second look before the owner sees it, and again before it goes live.
 - Generated pages are rebuilt from their sources, never hand-edited: guides and `/links`
-  (`npm run guides`), events (`npm run events`), volunteer roles (`npm run volunteer`), the
-  campaign module (`node scripts/build-module.mjs`).
+  (`npm run guides`), events (`npm run events`), the blog, its feed, `/llms.txt` and the
+  "More from the blog" section on every page the blog collects (`npm run blog`, from
+  `data/blog.mjs`), volunteer roles (`npm run volunteer`), the campaign
+  module (`node scripts/build-module.mjs`).
 
 ## Ship
 
@@ -45,6 +47,16 @@ document it points to for the job at hand.
   along untouched.
 - Changed an outside system ahead of the site (Givebutter, email, social)? Ship the matching site
   change in the same step, or say exactly what is out of sync and until when.
+
+## Measure
+
+- What people read: `cfrun npm run traffic` (Cloudflare Web Analytics, no cookies: top pages,
+  every page the blog lists, where visitors came from, countries; `-- --days 7` for a week).
+- Search engines hear about changed pages from each release: `scripts/release.mjs` sends them to
+  IndexNow (`scripts/lib/indexnow.mjs`, key file `public/<key>.txt`). To see or resend the list:
+  `node scripts/indexnow.mjs --since <ref> --dry-run`.
+- AI crawlers are allowed: Cloudflare's AI-bot block and its managed robots.txt are off for the
+  zone (Alec, Nov 12 2026), so `public/robots.txt` is what crawlers read.
 
 ## Where the rules live
 

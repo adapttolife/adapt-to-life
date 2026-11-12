@@ -138,6 +138,9 @@ test("no page asks the reader to do math", () => {
     ...readdirSync(new URL("../public/events/", import.meta.url))
       .filter((f) => f.endsWith(".html"))
       .map((f) => "events/" + f),
+    ...readdirSync(new URL("../public/blog/", import.meta.url))
+      .filter((f) => f.endsWith(".html"))
+      .map((f) => "blog/" + f),
   ];
   for (const f of pages) {
     const html = read("public/" + f);

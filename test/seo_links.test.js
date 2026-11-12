@@ -10,7 +10,8 @@ const pub = new URL("public/", root);
 const read = (f) => readFileSync(new URL(f, pub), "utf8");
 const pages = readdirSync(pub)
   .filter((f) => f.endsWith(".html"))
-  .concat(readdirSync(new URL("events/", pub)).map((f) => "events/" + f));
+  .concat(readdirSync(new URL("events/", pub)).map((f) => "events/" + f))
+  .concat(readdirSync(new URL("blog/", pub)).filter((f) => f.endsWith(".html")).map((f) => "blog/" + f));
 const ldBlocks = (html) =>
   [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) =>
     JSON.parse(m[1]),

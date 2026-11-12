@@ -1329,9 +1329,12 @@ em.italic[style*="--orange"] {
     transparent 56%
   );
 }
+/* The link columns follow the top menu's groups: Our Work, Get Involved,
+   About (Alec, Nov 12 2026: "Blog should go under About in the top menu and
+   footer (cleanup footer also)"). Our Work is a little wider for its tags. */
 .footer-top {
   display: grid;
-  grid-template-columns: 1.6fr 1fr 1fr;
+  grid-template-columns: 1.4fr 1.25fr 1fr 1fr;
   gap: 2.5rem;
 }
 .footer .brand {
@@ -1392,6 +1395,21 @@ em.italic[style*="--orange"] {
   border-top: 1px solid rgba(249, 247, 242, 0.12);
   font-size: 0.85rem;
   color: var(--cream-faint);
+}
+/* The email address and the photo release: useful, but not navigation. */
+.foot-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 1.4rem;
+}
+.footer-bottom a {
+  display: inline-block;
+  padding: 0.3rem 0;
+  color: var(--cream-faint);
+  transition: color 0.15s ease;
+}
+.footer-bottom a:hover {
+  color: var(--orange);
 }
 
 /* SOCIAL — the only outbound links in the footer, so they sit in the bottom bar
@@ -1746,11 +1764,15 @@ em.italic[style*="--orange"] {
     grid-template-columns: 1fr;
     gap: 2.2rem;
   }
+  /* Phones and tablets: the brand, then Our Work across (its names are the
+     long ones), then Get Involved and About side by side. Half the scroll
+     of one long list. */
   .footer-top {
     grid-template-columns: 1fr 1fr;
-    gap: 2rem;
+    gap: 2rem 1.25rem;
   }
-  .footer .brandcol {
+  .footer .brandcol,
+  .footer .col--work {
     grid-column: 1 / -1;
   }
 }
@@ -1788,11 +1810,6 @@ em.italic[style*="--orange"] {
   .closing .actions .btn {
     width: 100%;
     justify-content: center;
-  }
-}
-@media (max-width: 480px) {
-  .footer-top {
-    grid-template-columns: 1fr;
   }
 }
 @media (prefers-reduced-motion: reduce) {

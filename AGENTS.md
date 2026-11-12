@@ -29,14 +29,15 @@ document it points to for the job at hand.
 
   ```sh
   npm run build:app && node scripts/build-css.mjs && node scripts/version-assets.mjs \
-    && npm run events && npm run guides && git status --porcelain
+    && npm run events && npm run guides && npm run blog && git status --porcelain
   ```
 
 - Money or policy copy (prices, where money goes, sponsor terms, tax lines) gets an independent
   second look before the owner sees it, and again before it goes live.
 - Generated pages are rebuilt from their sources, never hand-edited: guides and `/links`
-  (`npm run guides`), events (`npm run events`), volunteer roles (`npm run volunteer`), the
-  campaign module (`node scripts/build-module.mjs`).
+  (`npm run guides`), events (`npm run events`), the blog, its feed and `/llms.txt`
+  (`npm run blog`, from `data/blog.mjs`), volunteer roles (`npm run volunteer`), the campaign
+  module (`node scripts/build-module.mjs`).
 
 ## Ship
 

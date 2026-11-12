@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>Adapt To Life blog</title>
+    <link>https://adapttolife.org/blog</link>
+    <atom:link href="https://adapttolife.org/blog/feed.xml" rel="self" type="application/rss+xml"/>
+    <description>Stories from the adaptive sports community, tournament recaps, guides, and the numbers behind the athletes Adapt To Life supports.</description>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 08 Nov 2026 18:00:00 +0000</lastBuildDate>
+    <item>
+      <title>Monster Smash 2026: Six Wheelchair Pickleball Medals in Cincinnati</title>
+      <link>https://adapttolife.org/events/monster-smash-2026</link>
+      <guid isPermaLink="true">https://adapttolife.org/events/monster-smash-2026</guid>
+      <pubDate>Sun, 08 Nov 2026 18:00:00 +0000</pubDate>
+      <dc:creator>Adapt To Life</dc:creator>
+      <category>On the road</category>
+      <description>Wheelchair pickleball athletes we support won six medals at Monster Smash 2026 at The Pickle Lodge in Cincinnati, a Halloween tournament weekend that was free for athletes.</description>
+    </item>
+    <item>
+      <title>The APP Tour's First Wheelchair Division, Vlasic Classic Chicago 2026</title>
+      <link>https://adapttolife.org/events/app-vlasic-classic-2026</link>
+      <guid isPermaLink="true">https://adapttolife.org/events/app-vlasic-classic-2026</guid>
+      <pubDate>Sun, 08 Nov 2026 18:00:00 +0000</pubDate>
+      <dc:creator>Adapt To Life</dc:creator>
+      <category>On the road</category>
+      <description>Juan Ortiz asked the APP Tour for a wheelchair division at the 2026 Vlasic Classic Chicago in Highland Park, and got the APP's first. Five full teams played it.</description>
+    </item>
+    <item>
+      <title>How Much Does a Sport Wheelchair Cost? $4,000 to $6,000</title>
+      <link>https://adapttolife.org/sport-wheelchair-cost</link>
+      <guid isPermaLink="true">https://adapttolife.org/sport-wheelchair-cost</guid>
+      <pubDate>Sun, 08 Nov 2026 18:00:00 +0000</pubDate>
+      <dc:creator>Adapt To Life</dc:creator>
+      <category>Guides</category>
+      <description>A sport wheelchair runs $4,000 to $6,000, and insurance doesn't cover it. What athletes need beyond an everyday chair, and how donors close the gap.</description>
+    </item>
+    <item>
+      <title>Sponsor Adaptive Athletes in Chicago</title>
+      <link>https://adapttolife.org/sponsor-adaptive-athletes</link>
+      <guid isPermaLink="true">https://adapttolife.org/sponsor-adaptive-athletes</guid>
+      <pubDate>Sun, 08 Nov 2026 18:00:00 +0000</pubDate>
+      <dc:creator>Adapt To Life</dc:creator>
+      <category>Guides</category>
+      <description>Sponsor a wheelchair pickleball athlete in Chicago: a night of court time for $225, a year of training for $1,548, travel to tournaments, or a whole program. What it pays for and what you get back.</description>
+    </item>
+    <item>
+      <title>Corporate Matching Gifts: Double Your Gift to Adapt To Life</title>
+      <link>https://adapttolife.org/corporate-matching</link>
+      <guid isPermaLink="true">https://adapttolife.org/corporate-matching</guid>
+      <pubDate>Sun, 08 Nov 2026 18:00:00 +0000</pubDate>
+      <dc:creator>Adapt To Life</dc:creator>
+      <category>Guides</category>
+      <description>Many employers match gifts to 501(c)(3) nonprofits. How to get your gift to Adapt To Life matched, with our legal name, EIN and IRS letter.</description>
+    </item>
+    <item>
+      <title>The numbers</title>
+      <link>https://adapttolife.org/numbers</link>
+      <guid isPermaLink="true">https://adapttolife.org/numbers</guid>
+      <pubDate>Fri, 06 Nov 2026 18:00:00 +0000</pubDate>
+      <dc:creator>Adapt To Life</dc:creator>
+      <category>Building in public</category>
+      <description>Every number in our goal for the year ahead, and what each one pays for.</description>
+    </item>
+    <item>
+      <title>Juan Ortiz</title>
+      <link>https://adapttolife.org/juan</link>
+      <guid isPermaLink="true">https://adapttolife.org/juan</guid>
+      <pubDate>Sat, 19 Sep 2026 18:00:00 +0000</pubDate>
+      <dc:creator>Adapt To Life</dc:creator>
+      <category>Stories</category>
+      <description>Paralyzed at 14, Hall of Famer in wheelchair softball, dad of three, and Adapt To Life’s first ambassador.</description>
+    </item>
+    <item>
+      <title>Karen Atkinson</title>
+      <link>https://adapttolife.org/karen</link>
+      <guid isPermaLink="true">https://adapttolife.org/karen</guid>
+      <pubDate>Thu, 25 Jun 2026 18:00:00 +0000</pubDate>
+      <dc:creator>Adapt To Life</dc:creator>
+      <category>Stories</category>
+      <description>A retired Army captain who golfs standing up, skis, sails and dives, and serves on our board.</description>
+    </item>
+    <item>
+      <title>Tim Gruensfelder</title>
+      <link>https://adapttolife.org/tim</link>
+      <guid isPermaLink="true">https://adapttolife.org/tim</guid>
+      <pubDate>Wed, 24 Jun 2026 18:00:00 +0000</pubDate>
+      <dc:creator>Adapt To Life</dc:creator>
+      <category>Stories</category>
+      <description>The wheelchair basketball athlete whose love of the game lives on through the Hustle &amp; Heart Fund.</description>
+    </item>
+  </channel>
+</rss>

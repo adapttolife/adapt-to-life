@@ -19,6 +19,7 @@ const indexable = [
   ...pages("./"),
   ...pages("volunteer/", "volunteer/"),
   ...pages("events/", "events/"),
+  ...pages("blog/", "blog/"),
 ].filter(
   (p) => !readFileSync(new URL(p + ".html", pub), "utf8").includes("noindex"),
 );

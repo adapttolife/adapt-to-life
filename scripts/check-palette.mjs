@@ -200,6 +200,11 @@ const ART = new Set([
   // Brick House's own brand colours, on /brickhouse only (Alec, Nov 11 2026)
   "3965b1", // Brick House blue
   "d2a62a", // Brick House gold
+  // The Picklr's own blue, on /picklr only (Alec, Nov 12 2026: "Update colors
+  // on their partner page to complement their colors better").
+  "0075e7", // Picklr blue, from their Mount Prospect logo
+  "3d96f5", // the same blue, lifted for words on night (6:1)
+  "0060c0", // the same blue, deepened for small words on the page (5:1)
   "dff23d", // the pickleball in the partner x mark
   "fcffe6", // its shine
   "d9904f", // the bronze medal

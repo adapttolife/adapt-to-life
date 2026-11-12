@@ -49,6 +49,15 @@ const CORE = [
 const NOISE = [/challenges\.cloudflare\.com/, /%c%d/, /Turnstile/i, /givebutter/i];
 const noise = (s) => NOISE.some((re) => re.test(s));
 
+// A playground preview (*.exulansis.io) is the static site behind a wall that
+// blocks every call to production on purpose. There is no /api/ there, so the
+// fundraising total 404s and the page shows its fallback, and Givebutter's own
+// script throws "Failed to fetch" when its calls are refused. Neither is a
+// fault in the page, and both work on the live site, so a preview check skips
+// them the way --local skips /api/ (Alec, Nov 12 2026: "Make sure these are
+// fixed accordingly"). Staging and production are checked in full.
+const isPreview = (base) => /(^|\.)exulansis\.io$/.test(new URL(base).hostname);
+
 // The repo pins a Playwright whose default Chromium may not be downloaded on a
 // given machine; fall back to the newest Chromium in the Playwright cache.
 function chromiumPath() {
@@ -135,8 +144,10 @@ async function checkPage(context, base, path, opts) {
   const page = await context.newPage();
   const problems = [];
   const origin = new URL(base).origin;
+  const preview = isPreview(base);
   page.on("pageerror", (e) => {
-    if (!noise(e.message)) problems.push(`script error: ${e.message.slice(0, 140)}`);
+    if (noise(e.message) || (preview && noise(e.stack || ""))) return;
+    problems.push(`script error: ${e.message.slice(0, 140)}`);
   });
   page.on("response", (r) => {
     const u = r.url();
@@ -144,7 +155,7 @@ async function checkPage(context, base, path, opts) {
       r.status() >= 400 &&
       u.startsWith(origin) &&
       !noise(u) &&
-      !(opts.local && u.includes("/api/"))
+      !((opts.local || preview) && u.includes("/api/"))
     )
       problems.push(`${r.status()} ${u.replace(origin, "")}`);
   });
@@ -267,6 +278,10 @@ export async function checkLayout(
 ) {
   const paths = pages || (all ? await sitemapPaths(base) : CORE);
   if (shots) mkdirSync(shots, { recursive: true });
+  if (isPreview(base))
+    log(
+      "playground preview: /api/ and Givebutter are walled off here, so they are skipped; staging and production check them",
+    );
   const failures = [];
   const t0 = Date.now();
   for (const p of PROFILES.filter((x) => !engines || engines.includes(x.engine))) {

@@ -19,8 +19,9 @@ document it points to for the job at hand.
   (`--selector` for just the part that changed). Repeat the link in every later message that asks
   for a look or a decision.
 - Layout check: `node scripts/check-layout.mjs <preview url> --engines chromium --pages /a,/b`.
-  On a playground preview, `/api/raised` 404s and "Failed to fetch" on pages with the Givebutter
-  widget are expected: previews are static and calls to production are blocked.
+  Previews are static and walled off from production, so the fundraising total shows its fallback
+  (`/api/raised` 404s) and the Givebutter form does not load there. The checker skips both on a
+  playground host; staging and production are checked in full.
 
 ## Before you hand it over
 

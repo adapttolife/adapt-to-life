@@ -29,6 +29,28 @@ export function previewAlias(branch) {
   return `${slug.slice(0, maxAliasLength - hash.length - 1).replace(/-+$/g, "")}-${hash}`;
 }
 
+// Only `staging` uploads: scripts/release.mjs follows its preview alias.
+// Every other branch is built and tested here and its pull request still gets
+// the "Workers Builds: adapt-to-life" check, but nothing is uploaded, because
+// previews go through the playground (Spec 206, three worlds). Until
+// 2026-11-13 the Cloudflare trigger was named "Validate non-production
+// branches (no upload/deploy)" yet uploaded every branch, with production
+// bindings, onto the production Worker under its own alias.
+export const UPLOADING_BRANCHES = new Set(["staging"]);
+
+export function wranglerArgs(branch, extra = []) {
+  const upload = UPLOADING_BRANCHES.has(branch) && !extra.includes("--dry-run");
+  return [
+    "versions",
+    "upload",
+    "--env",
+    "staging",
+    "--preview-alias",
+    previewAlias(branch),
+    ...(upload ? [] : ["--dry-run"]),
+  ];
+}
+
 export function uploadPreview() {
   const branch =
     process.env.WORKERS_CI_BRANCH ||
@@ -36,14 +58,16 @@ export function uploadPreview() {
       cwd: root,
       encoding: "utf8",
     }).trim();
-  const alias = previewAlias(branch);
   // Allow local verification, but never allow callers to override the Worker,
   // environment or alias selected here.
   const extra = process.argv.slice(2);
   if (extra.some((arg) => arg !== "--dry-run"))
     throw new Error("Only --dry-run is supported.");
+  const args = wranglerArgs(branch, extra);
   console.log(
-    `Uploading review version for branch ${branch} (preview alias: ${alias})`,
+    args.includes("--dry-run")
+      ? `Validating branch ${branch}: build and tests only, nothing uploaded (previews go through the playground)`
+      : `Uploading the ${branch} version (preview alias: ${previewAlias(branch)})`,
   );
   const result = spawnSync(
     process.execPath,
@@ -51,13 +75,7 @@ export function uploadPreview() {
       fileURLToPath(
         new URL("../node_modules/wrangler/bin/wrangler.js", import.meta.url),
       ),
-      "versions",
-      "upload",
-      "--env",
-      "staging",
-      "--preview-alias",
-      alias,
-      ...extra,
+      ...args,
     ],
     {
       cwd: root,

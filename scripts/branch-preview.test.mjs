@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { previewAlias } from "./branch-preview.mjs";
+import { previewAlias, wranglerArgs } from "./branch-preview.mjs";
 
 test("simple branches keep their expected stable URLs", () => {
   assert.equal(previewAlias("staging"), "staging");
@@ -38,4 +38,18 @@ test("normalization does not merge common distinct branch names", () => {
 test("missing branch information fails instead of overwriting another alias", () => {
   assert.throws(() => previewAlias(""));
   assert.throws(() => previewAlias("HEAD"));
+});
+
+test("only staging uploads; every other branch builds and tests without uploading", () => {
+  assert.deepEqual(wranglerArgs("staging"), [
+    "versions",
+    "upload",
+    "--env",
+    "staging",
+    "--preview-alias",
+    "staging",
+  ]);
+  for (const branch of ["picklr-mount-prospect-logo", "feature/x", "review", "main"])
+    assert.equal(wranglerArgs(branch).at(-1), "--dry-run", branch);
+  assert.equal(wranglerArgs("staging", ["--dry-run"]).at(-1), "--dry-run");
 });

@@ -124,12 +124,6 @@ export const PRESS = [
     n: "From Army officer to adaptive scuba diver, with her son Tanner as her dive buddy.",
     url: "https://divepirates.org/karen-atkinson/", type: "Article",
   },
-  {
-    kind: "Video", src: "Hookin&rsquo; Veterans", date: "", iso: "",
-    t: "Sailfishing for Veterans",
-    n: "An offshore fishing trip out of Palm Beach for injured veterans.",
-    url: "https://www.youtube.com/watch?v=kKw8KPFdIOc", type: "VideoObject",
-  },
 ];
 
 // Photos on the page. Both belong to the organizations that posted them,

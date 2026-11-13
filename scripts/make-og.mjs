@@ -250,6 +250,17 @@ const CARDS = {
     page: "bread-and-butter.html",
     headline: "Three Locos. <em>Four medals.</em>",
   },
+  // /selkirk: an unlisted page for one reader (noindex, not in the sitemap).
+  // A card still matters: the link gets pasted into a chat.
+  selkirk: {
+    ...ATHLETE,
+    photo: "court-swing",
+    size: 64,
+    measure: "13ch",
+    out: "public/images/og/selkirk-v1-together.jpg",
+    page: "selkirk.html",
+    headline: "Let&rsquo;s build the wheelchair game <em>together.</em>",
+  },
   // Guides (scripts/build-guides.mjs): each card is the guide's h1.
   "sport-wheelchair-cost": {
     ...ATHLETE,

@@ -79,7 +79,7 @@ export function linksPage({ root, shell, metaBlock, esc, icon }) {
     ["/chicago-adaptive-sports", "/images/partners/cas-mark.png", 240, 193, "Chicago Adaptive Sports", "is-cas"],
     ["/amp", "/images/partners/amp-logo-white.png", 340, 159, "AMP Adaptive Sports", ""],
     ["/ace", "/images/ace/ace-logo-white.png", 760, 105, "ACE Pickleball Club", ""],
-    ["/brickhouse", "/images/brickhouse/brick-house-logo-orange-black-reverse.svg", 240, 171, "Brick House Pickleball", "is-bh"],
+    ["/brickhouse", "/images/brickhouse/brick-house-logo-2026.png", 179, 125, "Brick House Pickleball", "is-bh"],
     ["/picklr", "/images/partners/picklr-mount-prospect-white.png", 723, 236, "The Picklr Mount Prospect", ""],
   ]
     .map(
@@ -221,7 +221,7 @@ ${shell.head.replace('<link rel="preconnect"', metaBlock({ title, desc, url, og,
   .lx-logos a{ display:grid; place-items:center; height:4.2rem; padding:0.6rem; border-radius:14px; background:var(--night-raised); }
   .lx-logos img{ max-width:100%; max-height:2.1rem; width:auto; height:auto; object-fit:contain; }
   .lx-logos .is-cas img{ max-height:2.6rem; }
-  .lx-logos .is-bh img{ max-height:2.8rem; }
+  .lx-logos .is-bh img{ max-height:2.8rem; filter:drop-shadow(0 0 0.6px rgba(249,247,242,0.95)) drop-shadow(0 0 2px rgba(249,247,242,0.9)) drop-shadow(0 0 9px rgba(249,247,242,0.55)); }
   .lx-sponsor{ margin-top:1.1rem; color:var(--cream-mute); }
   .lx-sponsor a{ color:var(--cream); font-weight:700; }
 

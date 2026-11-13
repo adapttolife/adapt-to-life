@@ -59,6 +59,12 @@ to the US Open / the year ahead]. We will thank you with:
 - A spotlight on your partnership across our social channels, and your logo on the Wheelie Big Dills page (Captain and up)
 - Your logo on our donate page, and your name or logo on our supporters wall (every level)
 - Your logo beside our goal for the year ahead, and first call on naming the Chicago Classic, presented by Adapt To Life, once it has a date (Founding Partner)
+- Your name and logo on the thank you sign at our table when the crew is at a club event, a clinic or a tournament, where the host allows it (gear partners)
+
+[If the deal names one sponsor in a category, keep:] For the term, [Sponsor] is the only [paddle
+brand] Adapt To Life names as a crew sponsor. That covers our naming only: athletes keep their own
+sponsorships and gear, and clubs and tournaments keep theirs. Any film or other work with an athlete
+is between [Sponsor] and the athlete, with the athlete's OK.
 
 Recognition is a thank-you: your name, your logo and a link to your website. It is not advertising,
 an endorsement of your products, or an agreement to use them.
@@ -95,5 +101,8 @@ ______________________________
   open. Reword or pause the lines that sell the same part to others: the night and athlete units,
   Teammate and Coach for the road, "Put your name on the court." on /ace, and "Kept going by night
   sponsors" and "tournament sponsors" on /pickleball.
+- If the deal has a category clause (for example, the only paddle brand we name), no other brand in
+  that category can be named at any level for the term: Teammate, Coach, the night and athlete
+  units, and the supporters wall. Check before thanking a new sponsor in that category.
 - Put the logo everywhere the level promises it, and add the sponsor to the Givebutter sponsors
   campaign description if it lists sponsors by then.

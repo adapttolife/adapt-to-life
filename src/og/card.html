@@ -207,12 +207,13 @@
   .logo-row{ position:absolute; inset:0; z-index:2; display:flex; flex-direction:column;
     align-items:center; justify-content:center; gap:24px; padding:40px 64px; }
   .logo-row[hidden]{ display:none; }
-  .logo-row .lockup{ gap:30px; }
-  .logo-row .lockup svg{ height:178px; }
-  .logo-row .wordmark{ font-size:46px; }
+  /* Our side is the identity set's primary lockup, so ADAPT TO LIFE is the
+     designer's bold lettering at full size, not small tracked type (Alec:
+     "Why is adapt to life text so small?"). */
+  .logo-row .atl{ height:196px; width:auto; display:block; }
   .logo-row .x{ font-family:"Sofia Sans", system-ui, sans-serif; font-weight:300;
-    font-size:60px; line-height:1; color:var(--cream-faint); }
-  .logo-row img{ height:122px; width:auto; display:block; }
+    font-size:56px; line-height:1; color:var(--cream-faint); }
+  .logo-row .partner{ height:122px; width:auto; display:block; }
   .card.logos .inner{ display:none; }
 </style>
 </head>

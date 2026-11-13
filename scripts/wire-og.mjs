@@ -97,7 +97,7 @@ const FILE = {
   _default: "home-v4-color.jpg",
   juan: "juan-v2-serve.jpg",
   "bread-and-butter": "bread-and-butter-v4-medals.jpg",
-  selkirk: "selkirk-v3-stacked.jpg",
+  selkirk: "selkirk-v4-primary.jpg",
   karen: "karen-v1-water.jpg",
   "guide-sport-wheelchair-cost": "guide-sport-wheelchair-cost-v1-card.jpg",
   "guide-sponsor-adaptive-athletes": "guide-sponsor-adaptive-athletes-v1-card.jpg",

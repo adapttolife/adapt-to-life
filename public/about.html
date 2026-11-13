@@ -122,6 +122,84 @@
   ]
 }
 </script>
+<style>
+  .lu-founder{ display:grid; grid-template-columns:minmax(0,0.9fr) minmax(0,1.1fr); gap:clamp(1.6rem,4vw,3.6rem); align-items:center; }
+  @media (max-width:860px){ .lu-founder{ grid-template-columns:1fr; } }
+  .lu-founder-pic{ margin:0; border-radius:22px; overflow:hidden; aspect-ratio:4/5; box-shadow:0 30px 70px -38px rgba(15,14,13,0.6); }
+  .lu-founder-pic img{ width:100%; height:100%; object-fit:cover; object-position:42% 30%; }
+  @media (max-width:860px){ .lu-founder-pic{ aspect-ratio:4/3; } }
+  .lu-sofar-grid{ display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,0.75fr); gap:clamp(1.6rem,4vw,3.6rem); align-items:center; }
+  @media (max-width:860px){ .lu-sofar-grid{ grid-template-columns:1fr; } .lu-sofar-clip{ width:min(100%,300px); margin-inline:auto; } }
+  .lu-sofar-clip{ transform:rotate(2deg); }
+  .lu-line{ list-style:none; margin:clamp(1.6rem,3vw,2.2rem) 0 0; padding:0; display:grid; gap:0; }
+  .lu-line li{ display:grid; grid-template-columns:6.4rem minmax(0,1fr); gap:1rem; padding:0.85rem 0; border-top:1px solid rgba(249,247,242,0.12); }
+  .lu-line b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:1.15rem; color:var(--gold); }
+  .lu-line li.now b{ color:var(--orange); }
+  .lu-line span{ color:var(--cream); line-height:1.45; }
+  .lu-line .textlink{ color:var(--orange); }
+  /* The team, tighter: photo beside the words on a phone. */
+  @media (max-width:640px){
+    .progs .prog{ display:grid; grid-template-columns:96px minmax(0,1fr); column-gap:1rem; align-items:start; }
+    .progs .prog > div:first-child{ grid-row:span 4; margin-bottom:0 !important; aspect-ratio:4/5 !important; }
+    .progs .prog p{ font-size:0.95rem; }
+  }
+</style>
+
+<style>
+  /* ==========================================================================
+     Level-up kit (prototype, Nov 13 2026): the parts that made /bread-and-butter
+     and /selkirk land, shared. bb-* and sk-* are copied from those pages; lu-*
+     are new. If this ships, it moves into src/css/site.css once.
+     ========================================================================== */
+  .bb-hero{ position:relative; overflow:hidden; padding-top:clamp(5rem,11vh,7rem); padding-bottom:clamp(3rem,6vw,4.5rem); }
+  .bb-hero-glow{ position:absolute; inset:auto -20% -55% 30%; height:78%; background:radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,92,57,0.30) 0%, transparent 65%); pointer-events:none; }
+  .bb-hero-inner{ position:relative; display:grid; grid-template-columns:1.1fr 0.9fr; gap:clamp(1.5rem,4vw,3.5rem); align-items:center; }
+  .bb-hero-copy .display{ margin-top:1.4rem; max-width:15ch; }
+  .bb-hero-copy .sub{ max-width:50ch; }
+  .bb-hero .actions{ margin-top:1.6rem; display:flex; flex-wrap:wrap; gap:0.8rem; }
+  @media (max-width:880px){
+    .bb-hero{ padding-top:clamp(3.9rem,8vh,5.4rem); }
+    .bb-hero-inner{ grid-template-columns:1fr; }
+    .bb-hero-copy .display{ max-width:none; font-size:clamp(2.1rem,7.9vw,2.85rem); }
+  }
+  .bb-o{ color:var(--orange); }
+  .bb-trio{ position:relative; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(0.55rem,1.4vw,1rem); align-items:start; padding:clamp(0.4rem,1.6vw,1rem) 0 clamp(0.6rem,2vw,1.4rem); }
+  .bb-trio .clip{ border-radius:18px; box-shadow:0 34px 60px -26px rgba(0,0,0,0.75), inset 0 0 0 1px rgba(249,247,242,0.08); }
+  .bb-trio > .clip:nth-child(1){ transform:rotate(-4deg); margin-top:clamp(1rem,3vw,2rem); }
+  .bb-trio > .clip:nth-child(2){ z-index:1; }
+  .bb-trio > .clip:nth-child(3){ transform:rotate(4deg); margin-top:clamp(1rem,3vw,2rem); }
+  .bb-trio .clip-cap{ padding:2.2rem 0.65rem 0.7rem; }
+  .bb-trio .clip-cap b{ font-size:0.98rem; }
+  .bb-trio .clip-btn{ top:0.5rem; right:0.5rem; width:38px; height:38px; }
+  @media (max-width:880px){ .bb-trio{ order:-1; width:min(100%,460px); margin-inline:auto; } }
+  .sk-lede-2{ margin-top:0.9rem; font-weight:700; font-size:1.1rem; color:var(--cream); max-width:46ch; }
+  .sk-record{ padding:clamp(0.4rem,1vw,0.8rem) 0 clamp(3rem,6vw,4.5rem); }
+  .sk-stats{ list-style:none; margin:1.1rem 0 0; padding:0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:clamp(0.6rem,2vw,1rem); }
+  @media (max-width:980px){ .sk-stats{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  .sk-stats li{ display:grid; gap:0.35rem; align-content:start; padding:clamp(1rem,2.4vw,1.3rem); border-radius:22px; background:rgba(249,247,242,0.04); box-shadow:inset 0 0 0 1px rgba(249,247,242,0.1); }
+  .sk-stats b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(2.6rem,7vw,3.6rem); line-height:0.9; letter-spacing:-0.04em; color:var(--gold); }
+  .sk-stats li.o b{ color:var(--orange); }
+  .sk-stats span{ font-weight:800; color:var(--cream); line-height:1.25; }
+  .sk-stats small{ font-size:0.86rem; line-height:1.35; color:var(--cream-mute); }
+  .sk-family-inner{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(1.6rem,4vw,3.5rem); align-items:center; }
+  @media (max-width:880px){ .sk-family-inner{ grid-template-columns:1fr; } }
+  .sk-phone{ position:relative; display:block; justify-self:center; width:min(100%,290px); padding:10px; border-radius:40px; background:var(--night); box-shadow:0 40px 80px -36px rgba(15,14,13,0.6), inset 0 0 0 1px rgba(249,247,242,0.12); transform:rotate(2deg); text-decoration:none; transition:transform .35s cubic-bezier(.2,.7,.3,1); }
+  .sk-phone:hover{ transform:rotate(0deg) translateY(-4px); }
+  .sk-phone img{ display:block; width:100%; height:auto; border-radius:31px; }
+  .sk-phone-cap{ display:block; padding:0.75rem 0 0.35rem; text-align:center; font-family:var(--font-label); font-weight:800; font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--cream); }
+  .sk-reach-hero{ margin-top:clamp(1.8rem,3.4vw,2.4rem); display:grid; gap:0.4rem; padding:clamp(1.4rem,3.4vw,2.2rem); border-radius:24px; background:var(--night); color:var(--cream); box-shadow:0 30px 70px -38px rgba(0,0,0,0.6); }
+  .sk-reach-hero b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(3.6rem,15vw,8.5rem); line-height:0.9; letter-spacing:-0.05em; color:var(--orange); }
+  .sk-reach-hero span{ font-size:clamp(1.05rem,2.4vw,1.35rem); font-weight:700; line-height:1.35; max-width:30ch; }
+  .sk-reach-tiles{ list-style:none; margin:clamp(0.8rem,1.6vw,1rem) 0 0; padding:0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:clamp(0.6rem,2vw,1rem); }
+  @media (max-width:980px){ .sk-reach-tiles{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  .sk-reach-tiles li{ display:grid; gap:0.45rem; align-content:start; padding:clamp(1.1rem,2.6vw,1.5rem); border-radius:20px; background:var(--canvas); border:1px solid var(--hairline); }
+  .sk-reach-tiles b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(2.2rem,6vw,3rem); line-height:0.95; letter-spacing:-0.04em; color:var(--orange-ink); }
+  .sk-reach-tiles span{ color:var(--ink-soft); line-height:1.45; }
+  .bb-credit{ margin-top:0.8rem; font-size:0.86rem; color:var(--muted); }
+  .bb-logo{ display:block; width:min(220px,60%); height:auto; }
+  .lu-ig{ display:inline-flex; margin-top:1rem; color:var(--orange); }
+  .lu-rec-head{ margin:0; }
+</style>
 </head>
 <body>
 
@@ -217,8 +295,43 @@ fill="currentColor" stroke="none">
     </div>
   </section>
 
+
+  <!-- FOUNDER FIRST (prototype): the story leads, then the people, then the work. -->
+  <section class="band" id="alec" style="scroll-margin-top:40px;">
+    <div class="wrap lu-founder">
+      <figure class="lu-founder-pic reveal"><img src="/images/founder.webp" alt="Alec Tranel" width="2048" height="1328"></figure>
+      <div>
+        <span class="eyebrow orange reveal">The founder</span>
+        <h2 class="serif statement italic reveal" style="margin-top:1rem;">It started with a brochure.</h2>
+        <p class="prose reveal">Alec Tranel has been in a wheelchair since he was six; by eighteen, twenty-eight operations. A few months after his injury, a physical therapist handed him a brochure for adaptive sports he didn&rsquo;t know existed. A gym led to a coach who saw an athlete, not a kid in a chair. Alec spent more than twenty years in this community as an athlete and a coach, then came back to coach at the program that raised him.</p>
+        <blockquote class="pullquote reveal">I got lucky. Great coaches, the right equipment, someone who believed in me before I believed in myself. Not everyone gets that lucky. That&rsquo;s the whole reason we&rsquo;re here.</blockquote>
+        <p class="reveal" style="margin-top:1.2rem; font-weight:600;">Alec Tranel</p>
+        <span class="eyebrow reveal">Founder &amp; Executive Director</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="dark band-lg lu-sofar" aria-labelledby="luSofar">
+    <div class="wrap lu-sofar-grid">
+      <div>
+        <span class="eyebrow orange reveal">So far</span>
+        <h2 class="serif display reveal" id="luSofar" style="margin-top:1rem;">From one brochure <em class="italic bb-o">to a full house.</em></h2>
+        <ol class="lu-line reveal">
+          <li><b>At six</b><span>A physical therapist hands Alec a brochure for adaptive sports.</span></li>
+          <li><b>Then</b><span>An adaptive tennis coach calls the kid in the wheelchair Hot Shot. Today that coach, <a class="textlink" href="#team">Mike Carrico</a>, is on our board.</span></li>
+          <li><b>20+ years</b><span>As an athlete and a coach, then back to coach at the program that raised him.</span></li>
+          <li><b>2025</b><span>Our very own Pete Petersen plays hybrid doubles at the US Open in Naples.</span></li>
+          <li><b>Aug 2026</b><span>Juan Ortiz asks the APP Tour for a wheelchair division, and gets its first one.</span></li>
+          <li><b>Oct 2026</b><span>Six medals at Monster Smash for the crew we fund.</span></li>
+          <li class="now"><b>Now</b><span>10 to 15 athletes a night at three Open Court clubs, playing beside the clubs&rsquo; own members.</span></li>
+        </ol>
+      </div>
+      <figure class="clip lu-sofar-clip reveal" data-clip><video muted loop playsinline preload="none" poster="/videos/crew/full-house.298ca1a8.webp" data-src="/videos/crew/full-house.3c1fb1b0.mp4" width="720" height="1280" aria-hidden="true"></video><button type="button" class="clip-btn" data-state="paused" aria-label="Play the video"><svg data-when="playing" class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="pause" data-style="bold"><path fill="currentColor" d="M200 28h-40a20 20 0 0 0-20 20v160a20 20 0 0 0 20 20h40a20 20 0 0 0 20-20V48a20 20 0 0 0-20-20m-4 176h-32V52h32ZM96 28H56a20 20 0 0 0-20 20v160a20 20 0 0 0 20 20h40a20 20 0 0 0 20-20V48a20 20 0 0 0-20-20m-4 176H60V52h32Z"/></svg><svg data-when="paused" class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="resume" data-style="bold"><path fill="currentColor" d="M234.49 111.07L90.41 22.94A20 20 0 0 0 60 39.87v176.26a20 20 0 0 0 30.41 16.93l144.08-88.13a19.82 19.82 0 0 0 0-33.86M84 208.85V47.15L216.16 128Z"/></svg></button><figcaption class="clip-cap"><b>A full house</b><span>Brick House, Lake Forest</span></figcaption></figure>
+    </div>
+  </section>
+
   <!-- TEAM (light) -->
-  <section class="band tint">
+  <section class="band tint" id="team">
     <div class="wrap">
       <div class="reveal sec-head" style="max-width:52ch;">
         <span class="eyebrow orange">The team</span>
@@ -249,20 +362,6 @@ fill="currentColor" stroke="none">
     </div>
   </section>
 
-  <!-- FOUNDER (light, narrow) — recedes, speaks as steward. #alec is the
-       author link on the blog (scripts/build-blog.mjs). -->
-  <section class="band" id="alec" style="scroll-margin-top:40px;">
-    <div class="wrap narrow">
-      <div class="founder-portrait reveal"><img src="/images/founder.webp" alt="Alec Tranel" width="2048" height="1328"></div>
-      <span class="eyebrow orange reveal">The founder</span>
-      <h2 class="serif statement italic reveal" style="margin-top:1rem;">It started with a brochure.</h2>
-      <p class="prose reveal">Alec Tranel has been in a wheelchair since he was six; by eighteen, twenty-eight operations. A few months after his injury, a physical therapist handed him a brochure for adaptive sports he didn&rsquo;t know existed. A gym led to a coach who saw an athlete, not a kid in a chair. Alec spent more than twenty years in this community as an athlete and a coach, then came back to coach at the program that raised him.</p>
-      <blockquote class="pullquote reveal">I got lucky. Great coaches, the right equipment, someone who believed in me before I believed in myself. Not everyone gets that lucky. That&rsquo;s the whole reason we&rsquo;re here.</blockquote>
-      <p class="reveal" style="margin-top:1.2rem; font-weight:600;">Alec Tranel</p>
-      <span class="eyebrow reveal">Founder &amp; Executive Director</span>
-    </div>
-  </section>
-
   <!-- Current expressions of the mission, not its boundaries. -->
   <section class="band" id="our-work" aria-labelledby="ourWorkTitle">
     <span id="promise" aria-hidden="true"></span>
@@ -281,9 +380,8 @@ fill="currentColor" stroke="none">
       <div class="reveal" style="margin-top:2rem;">
         <span class="tag tag--neutral">Coming soon</span>
         <h3 class="serif h3" style="margin-top:0.5rem;"><a href="/adapt-body-shop" class="textlink" style="font:inherit;letter-spacing:inherit;">Adapt Body Shop</a></h3>
-        <p class="prose" style="margin-top:0.7rem;">Our upcoming store will focus on gear and apparel for the adaptive sports community. We are developing it to serve the people who play and help sustain the work around them.</p>
+        <p class="prose" style="margin-top:0.7rem;">Gear and apparel for the adaptive sports community, coming soon.</p>
       </div>
-      <p class="prose reveal" style="margin-top:2rem;">These are starting points, not the limits of the mission. What we build next should come from what the community needs.</p>
       <p class="reveal" style="margin-top:1.4rem;"><a class="textlink" href="/roadmap">Where we are headed <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a></p>
     </div>
   </section>
@@ -457,5 +555,6 @@ fill="currentColor" stroke="none">
 
 <script src="/js/subscribe.js?v=7efaf550" defer></script>
 <script src="/js/turnstile-lazy.js?v=b44abebb" defer></script>
+<script src="/js/clips.js?v=75cdb986" defer></script>
 </body>
 </html>

@@ -230,6 +230,71 @@
   .jn-news-go{ margin-top:auto; padding-top:0.9rem; font-family:var(--font-label); font-size:0.66rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--orange-ink); display:inline-flex; gap:0.3rem; align-items:center; }
   .jn-news-go .arrow svg{ width:0.9em; height:0.9em; }
 </style>
+<style>
+  .lu-duo{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(0.6rem,1.6vw,1rem); align-items:start; width:min(100%,480px); justify-self:center; }
+  .lu-duo .clip{ border-radius:18px; box-shadow:0 34px 60px -26px rgba(0,0,0,0.75), inset 0 0 0 1px rgba(249,247,242,0.08); }
+  .lu-duo .clip:nth-child(1){ transform:rotate(-3deg); }
+  .lu-duo .clip:nth-child(2){ transform:rotate(3deg); margin-top:clamp(1.4rem,4vw,2.6rem); }
+  .lu-duo .clip-cap b{ font-size:0.95rem; }
+  .lu-jn-rec{ padding-top:0; }
+  @media (max-width:880px){ .lu-duo{ margin:1.6rem auto 0; } }
+</style>
+
+<style>
+  /* ==========================================================================
+     Level-up kit (prototype, Nov 13 2026): the parts that made /bread-and-butter
+     and /selkirk land, shared. bb-* and sk-* are copied from those pages; lu-*
+     are new. If this ships, it moves into src/css/site.css once.
+     ========================================================================== */
+  .bb-hero{ position:relative; overflow:hidden; padding-top:clamp(5rem,11vh,7rem); padding-bottom:clamp(3rem,6vw,4.5rem); }
+  .bb-hero-glow{ position:absolute; inset:auto -20% -55% 30%; height:78%; background:radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,92,57,0.30) 0%, transparent 65%); pointer-events:none; }
+  .bb-hero-inner{ position:relative; display:grid; grid-template-columns:1.1fr 0.9fr; gap:clamp(1.5rem,4vw,3.5rem); align-items:center; }
+  .bb-hero-copy .display{ margin-top:1.4rem; max-width:15ch; }
+  .bb-hero-copy .sub{ max-width:50ch; }
+  .bb-hero .actions{ margin-top:1.6rem; display:flex; flex-wrap:wrap; gap:0.8rem; }
+  @media (max-width:880px){
+    .bb-hero{ padding-top:clamp(3.9rem,8vh,5.4rem); }
+    .bb-hero-inner{ grid-template-columns:1fr; }
+    .bb-hero-copy .display{ max-width:none; font-size:clamp(2.1rem,7.9vw,2.85rem); }
+  }
+  .bb-o{ color:var(--orange); }
+  .bb-trio{ position:relative; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(0.55rem,1.4vw,1rem); align-items:start; padding:clamp(0.4rem,1.6vw,1rem) 0 clamp(0.6rem,2vw,1.4rem); }
+  .bb-trio .clip{ border-radius:18px; box-shadow:0 34px 60px -26px rgba(0,0,0,0.75), inset 0 0 0 1px rgba(249,247,242,0.08); }
+  .bb-trio > .clip:nth-child(1){ transform:rotate(-4deg); margin-top:clamp(1rem,3vw,2rem); }
+  .bb-trio > .clip:nth-child(2){ z-index:1; }
+  .bb-trio > .clip:nth-child(3){ transform:rotate(4deg); margin-top:clamp(1rem,3vw,2rem); }
+  .bb-trio .clip-cap{ padding:2.2rem 0.65rem 0.7rem; }
+  .bb-trio .clip-cap b{ font-size:0.98rem; }
+  .bb-trio .clip-btn{ top:0.5rem; right:0.5rem; width:38px; height:38px; }
+  @media (max-width:880px){ .bb-trio{ order:-1; width:min(100%,460px); margin-inline:auto; } }
+  .sk-lede-2{ margin-top:0.9rem; font-weight:700; font-size:1.1rem; color:var(--cream); max-width:46ch; }
+  .sk-record{ padding:clamp(0.4rem,1vw,0.8rem) 0 clamp(3rem,6vw,4.5rem); }
+  .sk-stats{ list-style:none; margin:1.1rem 0 0; padding:0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:clamp(0.6rem,2vw,1rem); }
+  @media (max-width:980px){ .sk-stats{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  .sk-stats li{ display:grid; gap:0.35rem; align-content:start; padding:clamp(1rem,2.4vw,1.3rem); border-radius:22px; background:rgba(249,247,242,0.04); box-shadow:inset 0 0 0 1px rgba(249,247,242,0.1); }
+  .sk-stats b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(2.6rem,7vw,3.6rem); line-height:0.9; letter-spacing:-0.04em; color:var(--gold); }
+  .sk-stats li.o b{ color:var(--orange); }
+  .sk-stats span{ font-weight:800; color:var(--cream); line-height:1.25; }
+  .sk-stats small{ font-size:0.86rem; line-height:1.35; color:var(--cream-mute); }
+  .sk-family-inner{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(1.6rem,4vw,3.5rem); align-items:center; }
+  @media (max-width:880px){ .sk-family-inner{ grid-template-columns:1fr; } }
+  .sk-phone{ position:relative; display:block; justify-self:center; width:min(100%,290px); padding:10px; border-radius:40px; background:var(--night); box-shadow:0 40px 80px -36px rgba(15,14,13,0.6), inset 0 0 0 1px rgba(249,247,242,0.12); transform:rotate(2deg); text-decoration:none; transition:transform .35s cubic-bezier(.2,.7,.3,1); }
+  .sk-phone:hover{ transform:rotate(0deg) translateY(-4px); }
+  .sk-phone img{ display:block; width:100%; height:auto; border-radius:31px; }
+  .sk-phone-cap{ display:block; padding:0.75rem 0 0.35rem; text-align:center; font-family:var(--font-label); font-weight:800; font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--cream); }
+  .sk-reach-hero{ margin-top:clamp(1.8rem,3.4vw,2.4rem); display:grid; gap:0.4rem; padding:clamp(1.4rem,3.4vw,2.2rem); border-radius:24px; background:var(--night); color:var(--cream); box-shadow:0 30px 70px -38px rgba(0,0,0,0.6); }
+  .sk-reach-hero b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(3.6rem,15vw,8.5rem); line-height:0.9; letter-spacing:-0.05em; color:var(--orange); }
+  .sk-reach-hero span{ font-size:clamp(1.05rem,2.4vw,1.35rem); font-weight:700; line-height:1.35; max-width:30ch; }
+  .sk-reach-tiles{ list-style:none; margin:clamp(0.8rem,1.6vw,1rem) 0 0; padding:0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:clamp(0.6rem,2vw,1rem); }
+  @media (max-width:980px){ .sk-reach-tiles{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  .sk-reach-tiles li{ display:grid; gap:0.45rem; align-content:start; padding:clamp(1.1rem,2.6vw,1.5rem); border-radius:20px; background:var(--canvas); border:1px solid var(--hairline); }
+  .sk-reach-tiles b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(2.2rem,6vw,3rem); line-height:0.95; letter-spacing:-0.04em; color:var(--orange-ink); }
+  .sk-reach-tiles span{ color:var(--ink-soft); line-height:1.45; }
+  .bb-credit{ margin-top:0.8rem; font-size:0.86rem; color:var(--muted); }
+  .bb-logo{ display:block; width:min(220px,60%); height:auto; }
+  .lu-ig{ display:inline-flex; margin-top:1rem; color:var(--orange); }
+  .lu-rec-head{ margin:0; }
+</style>
 </head>
 <body>
 
@@ -329,7 +394,8 @@ fill="currentColor" stroke="none">
           <hr class="tick orange reveal">
           <p class="lead sub reveal">Paralyzed at 14. Hall of Famer in wheelchair softball. Dad of three. Now he is our first ambassador, building wheelchair pickleball in Chicago for everyone who comes after him, and chasing his first US Open.</p>
           <ul class="jn-chips reveal">
-            <li><i class="sym sym--win" aria-hidden="true"></i>Wheelchair Softball Hall of Fame</li>
+            <li><i class="sym sym--win" aria-hidden="true"></i>Monster Smash singles gold</li>
+            <li>Wheelchair Softball Hall of Fame</li>
             <li>University of Illinois basketball</li>
             <li>16 hours a week on court</li>
           </ul>
@@ -338,12 +404,23 @@ fill="currentColor" stroke="none">
             <a href="#story" class="btn ghost">Read his story</a>
           </div>
         </div>
-        <figure class="ath-figure reveal">
-          <img src="/images/hero/trace-juan.webp" width="752" height="1100" alt="Juan Ortiz turning into a forehand in his sport wheelchair" fetchpriority="high" decoding="async">
-        </figure>
+        <div class="lu-duo reveal"><figure class="clip " data-clip><video muted loop playsinline preload="none" poster="/videos/road/juan-gold.bb6b50eb.webp" data-src="/videos/road/juan-gold.111a9886.mp4" width="540" height="960" aria-hidden="true"></video><button type="button" class="clip-btn" data-state="paused" aria-label="Play the video"><svg data-when="playing" class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="pause" data-style="bold"><path fill="currentColor" d="M200 28h-40a20 20 0 0 0-20 20v160a20 20 0 0 0 20 20h40a20 20 0 0 0 20-20V48a20 20 0 0 0-20-20m-4 176h-32V52h32ZM96 28H56a20 20 0 0 0-20 20v160a20 20 0 0 0 20 20h40a20 20 0 0 0 20-20V48a20 20 0 0 0-20-20m-4 176H60V52h32Z"/></svg><svg data-when="paused" class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="resume" data-style="bold"><path fill="currentColor" d="M234.49 111.07L90.41 22.94A20 20 0 0 0 60 39.87v176.26a20 20 0 0 0 30.41 16.93l144.08-88.13a19.82 19.82 0 0 0 0-33.86M84 208.85V47.15L216.16 128Z"/></svg></button><figcaption class="clip-cap"><b>His gold</b><span>Monster Smash, October 2026</span></figcaption></figure><figure class="clip " data-clip><video muted loop playsinline preload="none" poster="/videos/road/app-court.0625e898.webp" data-src="/videos/road/app-court.ccb1dddd.mp4" width="540" height="960" aria-hidden="true"></video><button type="button" class="clip-btn" data-state="paused" aria-label="Play the video"><svg data-when="playing" class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="pause" data-style="bold"><path fill="currentColor" d="M200 28h-40a20 20 0 0 0-20 20v160a20 20 0 0 0 20 20h40a20 20 0 0 0 20-20V48a20 20 0 0 0-20-20m-4 176h-32V52h32ZM96 28H56a20 20 0 0 0-20 20v160a20 20 0 0 0 20 20h40a20 20 0 0 0 20-20V48a20 20 0 0 0-20-20m-4 176H60V52h32Z"/></svg><svg data-when="paused" class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="resume" data-style="bold"><path fill="currentColor" d="M234.49 111.07L90.41 22.94A20 20 0 0 0 60 39.87v176.26a20 20 0 0 0 30.41 16.93l144.08-88.13a19.82 19.82 0 0 0 0-33.86M84 208.85V47.15L216.16 128Z"/></svg></button><figcaption class="clip-cap"><b>The APP&rsquo;s first wheelchair division</b><span>Highland Park, August 2026</span></figcaption></figure></div>
       </div>
     </div>
   </section>
+  <section class="dark sk-record lu-jn-rec" aria-labelledby="luJnRec">
+    <div class="wrap">
+      <p class="eyebrow orange reveal" id="luJnRec">This year, on the record</p>
+      <ul class="sk-stats reveal">
+        <li><b>Gold</b><span>Singles at Monster Smash</span><small>Without losing a match, October 2026</small></li>
+        <li class="o"><b>1st</b><span>wheelchair division in APP Tour history</span><small>He asked the Vlasic Classic for one, and five full teams played</small></li>
+        <li><b>Free</b><span>adaptive pickleball at the Chicago Park District</span><small>He helped start the program this fall</small></li>
+        <li><b>16</b><span>hours a week on court</span><small>Still the sports dad for his three kids</small></li>
+      </ul>
+      <a class="textlink lu-ig" href="https://www.instagram.com/reel/De5I8l7tqFr/" rel="noopener" target="_blank">Watch his gold on Instagram</a>
+    </div>
+  </section>
+
 
   <!-- WHERE IT STARTED: his words, raw. -->
   <section class="jn-start band-lg dark" id="story">
@@ -730,5 +807,6 @@ fill="currentColor" stroke="none">
     });
   })();
 </script>
+<script src="/js/clips.js?v=75cdb986" defer></script>
 </body>
 </html>

@@ -65,7 +65,7 @@ export const CREW = [
     img: "/images/pickleball/robby.webp",
     w: 649,
     h: 900,
-    fact: "Three straight US Opens, plus singles bronze and doubles silver at Monster Smash.",
+    fact: "Two US Opens, plus singles bronze and doubles silver at Monster Smash.",
     href: "/pickleball#robby",
     cta: "See more",
     share: "/pickleball#robby",

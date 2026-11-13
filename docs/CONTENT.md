@@ -32,6 +32,16 @@ Keep the accepted imagery, crops, layout system, typography, and brand palette. 
 - Preserve direct quotes verbatim. Do not improve, paraphrase, or assign a quote to someone who did not say it.
 - Do not assume a photograph depicts a selected grant recipient or an athlete whose trip the road pays for.
 
+## Choose photos and video for the story
+
+Alec, Nov 13 2026: introduce the person in a photograph before showing videos; the Juan prototype overcorrected toward motion. Stronger use of video does not mean more video on every page.
+
+- People pages lead with a clear photograph and an introduction. On phones, show the person near their name, before a long biography or list of achievements.
+- Put a clip beside the scene or achievement it documents. A rally shows play; a celebration shows a moment. A clip of a division is not automatically a portrait of the person whose page it appears on.
+- Keep a photograph when it makes the person, place, or detail easier to see. Preserve the parts of an accepted page that already tell the story well.
+- Give motion one focus at a time on a profile. A montage can fit an event or partner story when the grouping adds meaning; it is not a template for every hero.
+- Check faces, chairs, paddles, captions, and controls at phone and desktop widths, throughout the clip. Preserve the full frame when a crop loses the subject. Posters and reduced-motion views must work as complete compositions too.
+
 ## Keep the original voice, not the overcorrection
 
 Start with the live/original wording and preserve what works: concrete scenes, conversational rhythm, and a clear point. The chair shop, the court time, and a coach's tank of gas explain more than abstract statements about responsible participation. Correct inaccuracies without replacing every sentence.

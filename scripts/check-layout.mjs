@@ -60,7 +60,7 @@ const isPreview = (base) => /(^|\.)exulansis\.io$/.test(new URL(base).hostname);
 
 // The repo pins a Playwright whose default Chromium may not be downloaded on a
 // given machine; fall back to the newest Chromium in the Playwright cache.
-function chromiumPath() {
+export function chromiumPath() {
   try {
     if (existsSync(chromium.executablePath())) return undefined;
   } catch {}

@@ -197,4 +197,48 @@ export const LISTED = [
 //     author: "alec", keyPoints: [...], body: `<h2>...</h2><p>...</p>`,
 //     sources: [[name, note, href]], og: { file, alt }, photo: { src, x, y, w, h, alt },
 //   },
-export const POSTS = {};
+export const POSTS = {
+  // Brian Liss (Alec, Nov 13 2026: "I know we don't have Brian page done yet
+  // but we can still 'set it up' and reference it here", from the Selkirk
+  // page; he and Juan "want to be apart of this"). Built only from words and
+  // facts already published with approval: his quote on /hustle-and-heart, his
+  // record on /pickleball (medals only, never his first year or a count of his
+  // US Opens: brian-liss-record). His own answers to five questions go in next.
+  "brian-liss": {
+    section: "stories",
+    title: "Brian Liss: US Open Silver and Bronze in Wheelchair Pickleball",
+    short: "Brian Liss",
+    h1: "&ldquo;The chair didn&rsquo;t fix me.&rdquo;",
+    description:
+      "Brian Liss has won silver and bronze at the US Open, and six medals in all, two of them gold. He plays with Chicago Pickleball: Wheelie Big Dills, the wheelchair pickleball crew Adapt To Life funds and supports.",
+    dek: "US Open silver and bronze, six medals in all, and a chair that gave him options.",
+    lead: "Brian Liss plays wheelchair pickleball with Chicago Pickleball: Wheelie Big Dills, a crew Adapt To Life funds and supports. He has won silver and bronze at the US Open.",
+    published: "2026-11-13",
+    author: "alec",
+    keyPoints: [
+      "Brian Liss has won silver and bronze at the US Open, and six medals in all, two of them gold.", // /pickleball (Brian's own count, Nov 11)
+      "He plays with Chicago Pickleball: Wheelie Big Dills, the wheelchair pickleball crew Adapt To Life funds and supports.",
+      "In his words: &ldquo;The chair didn&rsquo;t fix me. It gave me options I didn&rsquo;t have before.&rdquo;", // /hustle-and-heart
+    ],
+    stats: [
+      ["2", "US Open medals, silver and bronze"],
+      ["6", "medals in all, two of them gold"],
+    ],
+    body: `
+      <h2>In his words</h2>
+      <blockquote><p>&ldquo;Now I can play pickleball, keep up with my kid, and choose how I move. The chair didn&rsquo;t fix me. It gave me options I didn&rsquo;t have before.&rdquo;</p></blockquote>
+      <h2>The record</h2>
+      {{stats}}
+      <p>Brian plays with the Wheelie Big Dills at Open Court clubs across the Chicago area, beside the clubs&rsquo; own members.</p>
+      <h2>On the road</h2>
+      <p>The Road to the US Open is a season of tournament travel for the crew. Its last stop is the US Open in Naples in spring 2027, for athletes whose names come up in the lottery. <a href="/road">See the road</a>.</p>
+    `,
+    sources: [
+      ["Hustle &amp; Heart Fund", "Brian&rsquo;s words, as published on the fund page", "/hustle-and-heart"],
+      ["Chicago Pickleball: Wheelie Big Dills", "Brian&rsquo;s record, on the crew page", "/pickleball#brian"],
+      ["The Road to the US Open", "the season ahead", "/road"],
+    ],
+    og: { file: "blog-brian-liss-v1-card.jpg", alt: "The chair didn't fix me. Adapt To Life. Brian Liss smiling on an indoor court, paddle in hand." },
+    photo: { src: "public/images/athletes/brian-slk.webp", x: 150, y: 0, w: 1600, h: 1067, alt: "Brian Liss smiling on an indoor court, paddle in hand" },
+  },
+};

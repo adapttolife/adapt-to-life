@@ -221,7 +221,7 @@ ${shell.head.replace('<link rel="preconnect"', metaBlock({ title, desc, url, og,
   .lx-logos a{ display:grid; place-items:center; height:4.2rem; padding:0.6rem; border-radius:14px; background:var(--night-raised); }
   .lx-logos img{ max-width:100%; max-height:2.1rem; width:auto; height:auto; object-fit:contain; }
   .lx-logos .is-cas img{ max-height:2.6rem; }
-  .lx-logos .is-bh img{ max-height:2.8rem; background:var(--paper); padding:0.3em 0.45em; border-radius:10px; box-sizing:content-box; }
+  .lx-logos .is-bh img{ max-height:2.8rem; filter:drop-shadow(0 0 0.6px rgba(249,247,242,0.95)) drop-shadow(0 0 2px rgba(249,247,242,0.9)) drop-shadow(0 0 9px rgba(249,247,242,0.55)); }
   .lx-sponsor{ margin-top:1.1rem; color:var(--cream-mute); }
   .lx-sponsor a{ color:var(--cream); font-weight:700; }
 

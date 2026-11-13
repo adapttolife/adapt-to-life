@@ -4411,12 +4411,14 @@ a.win-band:focus-visible {
   }
 }
 
-/* A partner logo drawn for light backgrounds, shown on a dark band: on the
-   off-white card colour, never recoloured (Alec, Nov 11 and Nov 13 2026: use
-   the partner's real, latest logo, pulled from their own site). */
-.logo-chip {
-  background: var(--paper);
-  padding: 0.35em 0.55em;
-  border-radius: var(--r-lg);
-  box-sizing: content-box;
+/* A partner logo drawn for light backgrounds, shown on a dark band: the
+   real logo, transparent and never recoloured (Alec, Nov 11 and Nov 13 2026:
+   use the partner's latest logo from their own site; "I don't want the white
+   square around it ... add maybe a shadow or dark shade behind it so it can
+   be seen easier"). A soft light glow follows the logo's own shapes, so its
+   dark lettering reads on a dark band without a box. */
+.logo-glow {
+  filter: drop-shadow(0 0 0.6px rgba(249, 247, 242, 0.95))
+    drop-shadow(0 0 2px rgba(249, 247, 242, 0.9))
+    drop-shadow(0 0 9px rgba(249, 247, 242, 0.55));
 }

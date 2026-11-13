@@ -260,11 +260,12 @@ const CARDS = {
   // 2026: "Can the open graph image be ATL logo and Selkirk logo?"): the chat
   // preview prints "A proposal for Selkirk Sport" under it, so the card is the
   // two logos. Selkirk's light lockup is its own file from selkirk.com. v3
-  // stacks them, one per row, so both read in a chat thumbnail.
+  // stacks them, one per row, so both read in a chat thumbnail. v4 uses our
+  // primary lockup, so ADAPT TO LIFE is as bold as SELKIRK.
   selkirk: {
     variant: "logos",
     logos: { partner: "assets/logos/selkirk-primary-light.png", alt: "Selkirk" },
-    out: "public/images/og/selkirk-v3-stacked.jpg",
+    out: "public/images/og/selkirk-v4-primary.jpg",
     page: "selkirk.html",
   },
   // Guides (scripts/build-guides.mjs): each card is the guide's h1.
@@ -572,6 +573,18 @@ function mark(variant) {
   return logoSrc.replace(/currentColor/g, body);
 }
 
+// The identity set's primary lockup (the mark with ADAPT TO LIFE beside it),
+// reversed for a dark card: its near black becomes the palette's off-white.
+// Used where our name stands beside a partner's, so it must read as large.
+const primaryReversed =
+  "data:image/svg+xml;base64," +
+  Buffer.from(
+    readFileSync(join(ROOT, "brand/identity/atl-primary.svg"), "utf8").replace(
+      /#3b3b46/gi,
+      "#F9F7F2",
+    ),
+  ).toString("base64");
+
 function dataUri(rel) {
   const buf = readFileSync(join(ROOT, rel));
   const mime = rel.endsWith(".webp")
@@ -652,7 +665,7 @@ for (const name of todo) {
   }
 
   await page.evaluate(
-    async ({ card, markSvg, photoUri, pos, zoom, logoUri }) => {
+    async ({ card, markSvg, photoUri, pos, zoom, logoUri, atlUri }) => {
       const el = document.getElementById("card");
       el.className = `card${card.variant ? " " + card.variant : ""}`;
       document.getElementById("mark").innerHTML = markSvg;
@@ -679,12 +692,14 @@ for (const name of todo) {
       const row = document.getElementById("logos");
       if (logoUri) {
         row.innerHTML =
-          `<span class="lockup">${markSvg}<span class="wordmark">Adapt To Life</span></span>` +
+          `<img class="atl" alt="Adapt To Life">` +
           `<span class="x" aria-hidden="true">&times;</span>` +
-          `<img alt="${card.logos.alt}">`;
-        const img = row.querySelector("img");
+          `<img class="partner" alt="${card.logos.alt}">`;
+        const atl = row.querySelector("img.atl");
+        const img = row.querySelector("img.partner");
+        atl.src = atlUri;
         img.src = logoUri;
-        await img.decode();
+        await Promise.all([atl.decode(), img.decode()]);
         row.hidden = false;
         w.hidden = true;
         w.innerHTML = "";
@@ -700,6 +715,7 @@ for (const name of todo) {
       pos: card.pos || photo?.pos,
       zoom: card.zoom || photo?.zoom,
       logoUri: card.logos ? dataUri(card.logos.partner) : null,
+      atlUri: card.logos ? primaryReversed : null,
     },
   );
 
@@ -742,7 +758,7 @@ for (const name of todo) {
         clear = Math.round(seam - right);
       }
       const pb = photo.hidden ? null : photo.getBoundingClientRect();
-      const img = document.querySelector("#logos:not([hidden]) img");
+      const img = document.querySelector("#logos:not([hidden]) img.partner");
       const lb = img ? img.getBoundingClientRect() : null;
       return {
         logo: lb ? { w: lb.width, h: lb.height, nw: img.naturalWidth } : null,

@@ -315,8 +315,12 @@ ${storyRows}
   <section class="lx-sec lx-playsec" id="play" data-key="play" aria-labelledby="lxPlayH">
     <p class="lx-from-note">From the post you just saw</p>
     <h2 id="lxPlayH">Want to play?</h2>
-    <p>Adaptive Sports Near Me is our free directory of adaptive sports programs, grants and events.</p>
-    <a class="btn ghost lx-play-btn" href="https://adaptivesportsnearme.com/?utm_source=link-in-bio&amp;utm_medium=social&amp;utm_campaign=bio&amp;utm_content=play" target="_blank" rel="noopener">Find a program near you ${icon("external", "bold")}</a>
+    <!-- Adaptive Sports Near Me is in beta (approved testers sign in), so the
+         button goes to our page about it, not straight to the sign-in screen.
+         Alec, Nov 12 2026: "fix /links and the three guides so they say
+         Adaptive Sports Near Me is in beta". -->
+    <p>Adaptive Sports Near Me is our free directory of adaptive sports programs, grants and events. It&rsquo;s in beta now: beta testers are using it before it opens to everyone.</p>
+    <a class="btn ghost lx-play-btn" href="${utm("/adaptive-sports-near-me", "play")}">See the directory ${ARROW}</a>
     <details class="lx-rules">
       <summary>How wheelchair pickleball works ${ARROW}</summary>
       <ul>

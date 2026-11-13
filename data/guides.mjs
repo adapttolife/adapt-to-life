@@ -51,7 +51,7 @@ export const GUIDES = {
       <p>Businesses can sponsor a night of court time, a year of training, travel to tournaments, or a whole program. <a href="/sponsor-adaptive-athletes">See how to sponsor an athlete</a>.</p>
 
       <h2 class="serif h2">If you&rsquo;re an athlete looking for a chair</h2>
-      <p>Grants and programs that help athletes get equipment are listed on <a href="${ASNM}/" target="_blank" rel="noopener">Adaptive Sports Near Me</a>, our free directory. You can also <a href="/apply">apply to the Hustle &amp; Heart Fund</a>.</p>`,
+      <p>Grants and programs that help athletes get equipment are listed on <a href="${ASNM}/" target="_blank" rel="noopener">Adaptive Sports Near Me</a>, our free directory. It&rsquo;s in beta now: beta testers are using it before it opens to everyone. You can also <a href="/apply">apply to the Hustle &amp; Heart Fund</a>.</p>`,
     faq: [
       ["How much does a sport wheelchair cost?", "A sport wheelchair runs $4,000 to $6,000."],
       ["Does insurance cover a sport wheelchair?", "No. Insurance doesn&rsquo;t cover a sport wheelchair, so athletes and families pay the full cost or rely on donors and grants."],

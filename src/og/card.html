@@ -198,6 +198,20 @@
      4px in a chat thread: unreadable texture that costs the headline room.
      A card carries the mark, one sentence, and the domain. Nothing else. */
   .mid{ display:flex; flex-direction:column; }
+
+  /* LOGOS — a partner card (/selkirk, Nov 13 2026). The chat preview already
+     prints the page title under the card, so the card is just the two logos.
+     The partner's logo is its own published file, never recoloured. */
+  .logo-row{ position:absolute; inset:0; z-index:2; display:flex; align-items:center;
+    justify-content:center; gap:38px; padding:0 64px; }
+  .logo-row[hidden]{ display:none; }
+  .logo-row .lockup{ gap:20px; }
+  .logo-row .lockup svg{ height:110px; }
+  .logo-row .wordmark{ font-size:28px; }
+  .logo-row .x{ font-family:"Sofia Sans", system-ui, sans-serif; font-weight:300;
+    font-size:48px; line-height:1; color:var(--cream-faint); }
+  .logo-row img{ height:68px; width:auto; display:block; }
+  .card.logos .inner{ display:none; }
 </style>
 </head>
 <body>
@@ -207,6 +221,7 @@
   <div class="watermark" id="watermark"></div>
   <div class="atmos"></div>
   <div class="grain"></div>
+  <div class="logo-row" id="logos" hidden></div>
   <div class="inner">
     <div class="lockup">
       <span id="mark"></span>

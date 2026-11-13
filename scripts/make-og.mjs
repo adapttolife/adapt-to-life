@@ -45,6 +45,7 @@ const BUDGET_BYTES = 300 * 1024; // WhatsApp-class preview ceiling
 const MIN_SEAM_CLEAR = 24; // gap the type must leave before the photo
 const DSF = 2; // render scale; the card is supersampled from 2x
 const MAX_UPSCALE = 1.0; // no upscaling, ever: it cannot be undone later
+const MIN_LOGO_PX = 56; // a partner logo's height; 56/4 = 14px in a chat thread
 
 // Photos are the site's own, of real athletes. `pos` is the CSS
 // background-position that keeps the subject in frame after the 1.91:1 crop.
@@ -255,15 +256,15 @@ const CARDS = {
     headline: "Three Locos. <em>Four medals.</em>",
   },
   // /selkirk: an unlisted page for one reader (noindex, not in the sitemap).
-  // A card still matters: the link gets pasted into a chat.
+  // A card still matters: the link gets pasted into a chat. v2 (Alec, Nov 13
+  // 2026: "Can the open graph image be ATL logo and Selkirk logo?"): the chat
+  // preview prints "A proposal for Selkirk Sport" under it, so the card is the
+  // two logos. Selkirk's light lockup is its own file from selkirk.com.
   selkirk: {
-    ...ATHLETE,
-    photo: "court-swing",
-    size: 64,
-    measure: "13ch",
-    out: "public/images/og/selkirk-v1-together.jpg",
+    variant: "logos",
+    logos: { partner: "assets/logos/selkirk-primary-light.png", alt: "Selkirk" },
+    out: "public/images/og/selkirk-v2-logos.jpg",
     page: "selkirk.html",
-    headline: "Let&rsquo;s build the wheelchair game <em>together.</em>",
   },
   // Guides (scripts/build-guides.mjs): each card is the guide's h1.
   "sport-wheelchair-cost": {
@@ -572,7 +573,11 @@ function mark(variant) {
 
 function dataUri(rel) {
   const buf = readFileSync(join(ROOT, rel));
-  const mime = rel.endsWith(".webp") ? "image/webp" : "image/jpeg";
+  const mime = rel.endsWith(".webp")
+    ? "image/webp"
+    : rel.endsWith(".png")
+      ? "image/png"
+      : "image/jpeg";
   return `data:${mime};base64,${buf.toString("base64")}`;
 }
 
@@ -622,7 +627,8 @@ for (const name of todo) {
 
   // GATE 0 — the headline IS the page's h1. Without this the two drift the
   // first time the page is edited, and the drift is invisible on the site.
-  if (card.page) {
+  // A logos card has no headline (the chat preview prints the page title).
+  if (card.page && card.headline) {
     const pageHtml = readFileSync(join(ROOT, "public", card.page), "utf8");
     const h1 = pageHtml
       .match(/<h1[^>]*>([\s\S]*?)<\/h1>/)?.[1]
@@ -645,11 +651,11 @@ for (const name of todo) {
   }
 
   await page.evaluate(
-    ({ card, markSvg, photoUri, pos, zoom }) => {
+    async ({ card, markSvg, photoUri, pos, zoom, logoUri }) => {
       const el = document.getElementById("card");
       el.className = `card${card.variant ? " " + card.variant : ""}`;
       document.getElementById("mark").innerHTML = markSvg;
-      document.getElementById("headline").innerHTML = card.headline;
+      document.getElementById("headline").innerHTML = card.headline || "";
       el.style.setProperty("--size", `${card.size}px`);
       el.style.setProperty("--measure", card.measure);
       const p = document.getElementById("photo");
@@ -669,6 +675,22 @@ for (const name of todo) {
         w.hidden = false;
         w.innerHTML = markSvg;
       }
+      const row = document.getElementById("logos");
+      if (logoUri) {
+        row.innerHTML =
+          `<span class="lockup">${markSvg}<span class="wordmark">Adapt To Life</span></span>` +
+          `<span class="x" aria-hidden="true">&times;</span>` +
+          `<img alt="${card.logos.alt}">`;
+        const img = row.querySelector("img");
+        img.src = logoUri;
+        await img.decode();
+        row.hidden = false;
+        w.hidden = true;
+        w.innerHTML = "";
+      } else {
+        row.hidden = true;
+        row.innerHTML = "";
+      }
     },
     {
       card,
@@ -676,6 +698,7 @@ for (const name of todo) {
       photoUri: photo ? dataUri(photo.file) : null,
       pos: card.pos || photo?.pos,
       zoom: card.zoom || photo?.zoom,
+      logoUri: card.logos ? dataUri(card.logos.partner) : null,
     },
   );
 
@@ -687,7 +710,7 @@ for (const name of todo) {
       const h1 = document.getElementById("headline");
       const size = parseFloat(getComputedStyle(h1).fontSize);
       const over = [];
-      document.querySelectorAll(".inner *").forEach((el) => {
+      document.querySelectorAll(".inner *, #logos:not([hidden]) *").forEach((el) => {
         const r = el.getBoundingClientRect();
         if (
           r.width > 0 &&
@@ -718,7 +741,10 @@ for (const name of todo) {
         clear = Math.round(seam - right);
       }
       const pb = photo.hidden ? null : photo.getBoundingClientRect();
+      const img = document.querySelector("#logos:not([hidden]) img");
+      const lb = img ? img.getBoundingClientRect() : null;
       return {
+        logo: lb ? { w: lb.width, h: lb.height, nw: img.naturalWidth } : null,
         size,
         lines: Math.round(h1.getBoundingClientRect().height / (size * 1.02)),
         over,
@@ -762,7 +788,9 @@ for (const name of todo) {
   }
 
   const kb = Math.round(statSync(out).size / 1024);
-  const okSize = probe.size >= MIN_HEADLINE_PX;
+  const okSize = probe.logo
+    ? probe.logo.h >= MIN_LOGO_PX
+    : probe.size >= MIN_HEADLINE_PX;
   const okFrame = probe.over.length === 0;
   const okWeight = statSync(out).size <= BUDGET_BYTES;
   const okSeam = probe.clear === null || probe.clear >= MIN_SEAM_CLEAR;
@@ -776,11 +804,16 @@ for (const name of todo) {
         })
       : null;
   const okScale = scale === null || scale <= MAX_UPSCALE;
-  const ok = okSize && okFrame && okWeight && okSeam && okScale;
+  // The partner logo obeys the same no upscaling rule as a photo.
+  const logoScale = probe.logo ? (probe.logo.w * DSF) / probe.logo.nw : null;
+  const okLogo = logoScale === null || logoScale <= MAX_UPSCALE;
+  const ok = okSize && okFrame && okWeight && okSeam && okScale && okLogo;
   if (!ok) failed = true;
   console.log(
     `${ok ? "PASS" : "FAIL"} ${name.padEnd(18)} ${String(kb).padStart(3)}KB  ` +
-      `headline ${Math.round(probe.size)}px/${probe.lines} lines` +
+      (probe.logo
+        ? `logo ${Math.round(probe.logo.h)}px tall, ${logoScale <= 1 ? "sharp" : logoScale.toFixed(2) + "x upscaled"}`
+        : `headline ${Math.round(probe.size)}px/${probe.lines} lines`) +
       (probe.clear === null ? "" : `  seam clear ${probe.clear}px`) +
       (scale === null
         ? ""
@@ -788,7 +821,12 @@ for (const name of todo) {
       `  ${out}` +
       (okSize
         ? ""
-        : `  [headline < ${MIN_HEADLINE_PX}px: unreadable in a chat thread]`) +
+        : probe.logo
+          ? `  [logo < ${MIN_LOGO_PX}px tall: unreadable in a chat thread]`
+          : `  [headline < ${MIN_HEADLINE_PX}px: unreadable in a chat thread]`) +
+      (okLogo
+        ? ""
+        : `  [partner logo upscaled ${logoScale.toFixed(2)}x: needs a larger file]`) +
       (okFrame ? "" : `  [outside frame: ${probe.over.join("; ")}]`) +
       (okSeam ? "" : `  [type within ${MIN_SEAM_CLEAR}px of the photo seam]`) +
       (okScale

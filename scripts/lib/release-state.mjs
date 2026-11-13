@@ -15,7 +15,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 
 export const NAME = "adapt-to-life-release";
 // Exit codes. 75 is EX_TEMPFAIL: not a failure, "ask again".
@@ -133,14 +133,34 @@ export function isTransient(text) {
   );
 }
 
-// Start `script --run <args>` in its own process session (setsid): a closed
-// chat session, a tool timeout or Ctrl-C in the starting shell cannot kill it.
-// Its stdout and stderr go to the log. Returns { started: true, pid } or, when
-// a release is already running, { started: false, pid } so the caller can
-// follow that one instead of starting a second.
+// Variables the worker needs (tools, auth, state location). The Cloudflare
+// token arrives here from `cfrun`; systemd-run copies each one from this
+// process's environment by NAME, so no value ever appears on a command line.
+const PASS_ENV =
+  /^(PATH|HOME|USER|LOGNAME|SHELL|LANG|LC_[A-Z_]+|TZ|TMPDIR|XDG_[A-Z_]+|ATL_[A-Z_]+|CLOUDFLARE_[A-Z_]+|GH_[A-Z_]+|GITHUB_TOKEN|PLAYWRIGHT_[A-Z_]+|NODE_[A-Z_]+|SSH_AUTH_SOCK|GIT_[A-Z_]+)$/;
+const sleepSync = (ms) =>
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+
+// Start `script --run <args>` so that nothing about the chat that started it
+// can stop it. On this box each T3 Claude session is a systemd scope stopped
+// with KillMode=control-group, which SIGKILLs every process left in it, setsid
+// or not (journal, 2026-11-12 03:25 UTC), and Claude Code's TaskStop kills a
+// task's descendants. So the worker runs as its own transient user service
+// (`systemd-run --user`): outside the session's cgroup, and a child of
+// systemd, not of this command. Without a systemd user manager (CI, a laptop)
+// it falls back to a setsid child. Its stdout and stderr go to the log.
+// Returns { started: true, pid, how } or, when a release is already running,
+// { started: false, pid }.
 export function startDetached(
   p,
-  { script, args = [], env = process.env, cwd = process.cwd(), initial = {} },
+  {
+    script,
+    args = [],
+    env = process.env,
+    cwd = process.cwd(),
+    initial = {},
+    detach = env.ATL_RELEASE_DETACH || "auto",
+  },
 ) {
   fs.mkdirSync(p.dir, { recursive: true });
   const lock = acquireLock(p.lock);
@@ -157,6 +177,7 @@ export function startDetached(
       appendHistory(p.history, lost);
     } catch {}
   }
+  const unit = `atl-release-${Date.now()}-${process.pid}`;
   writeState(
     p.state,
     {
@@ -174,7 +195,51 @@ export function startDetached(
     },
     { replace: true },
   );
-  const logFd = fs.openSync(p.log, "w");
+  fs.writeFileSync(p.log, "");
+  if (detach !== "setsid") {
+    const names = Object.keys(env).filter((k) => PASS_ENV.test(k));
+    const r = spawnSync(
+      "systemd-run",
+      [
+        "--user",
+        "--collect",
+        "--quiet",
+        `--unit=${unit}`,
+        "-p",
+        `WorkingDirectory=${cwd}`,
+        "-p",
+        `StandardOutput=append:${p.log}`,
+        "-p",
+        `StandardError=append:${p.log}`,
+        ...names.map((k) => `--setenv=${k}`),
+        process.execPath,
+        script,
+        "--run",
+        ...args,
+      ],
+      { env, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], timeout: 15000 },
+    );
+    if (r.status === 0) {
+      writeState(p.state, { detach: "systemd", unit });
+      // The worker records its own pid (and takes the lock) when it starts.
+      for (let i = 0; i < 150 && !(readState(p.state) || {}).pid; i++) sleepSync(100);
+      return {
+        started: true,
+        pid: (readState(p.state) || {}).pid ?? null,
+        how: "systemd",
+        unit,
+      };
+    }
+    // Say why, so a weaker detach is never silent.
+    const why =
+      (r.error && r.error.code) ||
+      String(r.stderr || "")
+        .trim()
+        .split("\n")[0] ||
+      `exit ${r.status}`;
+    writeState(p.state, { detach_error: `systemd-run: ${why}` });
+  }
+  const logFd = fs.openSync(p.log, "a");
   let child;
   try {
     child = spawn(process.execPath, [script, "--run", ...args], {
@@ -188,8 +253,13 @@ export function startDetached(
   }
   child.unref();
   setLockPid(p.lock, child.pid);
-  writeState(p.state, { pid: child.pid });
-  return { started: true, pid: child.pid };
+  writeState(p.state, { pid: child.pid, detach: "setsid" });
+  return {
+    started: true,
+    pid: child.pid,
+    how: "setsid",
+    why: (readState(p.state) || {}).detach_error,
+  };
 }
 
 // Follow a release: stream its log and return the exit code for its result,

@@ -130,18 +130,32 @@ test("follow with no record says so and does not claim success", async () => {
   assert.match(out.text, /No release is running or recorded/);
 });
 
-test("a detached release keeps its own record and a second start follows it", async () => {
-  const p = tmp();
+const fakeWorker = (p) => {
+  // Stands in for `release.mjs --run`: takes the lock and records its pid as
+  // the real worker does, writes progress, then a result.
   const worker = path.join(p.dir, "worker.mjs");
-  // Stands in for `release.mjs --run`: writes progress, then a result.
   fs.writeFileSync(
     worker,
-    `import * as rs from ${JSON.stringify(new URL("./lib/release-state.mjs", import.meta.url).href)};
+    `import fs from "node:fs";
+     import * as rs from ${JSON.stringify(new URL("./lib/release-state.mjs", import.meta.url).href)};
      const p = rs.paths(${JSON.stringify(p.dir)});
-     rs.writeState(p.state, { pid: process.pid, step: "working" });
+     rs.setLockPid(p.lock, process.pid);
+     rs.writeState(p.state, { pid: process.pid, step: "working", cgroup: fs.readFileSync("/proc/self/cgroup", "utf8").trim() });
      console.log("worker says hello", process.argv.slice(2).join(" "));
      setTimeout(() => { console.log("LIVE: test"); rs.writeState(p.state, { status: "live" }); rs.releaseLock(p.lock); }, 300);`,
   );
+  return worker;
+};
+const lockGone = async (p) => {
+  // The worker writes its result, then lets go of the lock: allow a moment.
+  for (let i = 0; i < 100 && fs.existsSync(p.lock); i++)
+    await new Promise((r) => setTimeout(r, 20));
+  return !fs.existsSync(p.lock);
+};
+
+test("a detached release keeps its own record, and a second start does not adopt it", async () => {
+  const p = tmp();
+  const worker = fakeWorker(p);
   const env = {
     ...process.env,
     CLAUDE_CODE_SESSION_ID: "sess-1",
@@ -151,20 +165,58 @@ test("a detached release keeps its own record and a second start follows it", as
     script: worker,
     args: ["--dry-run"],
     env,
+    detach: "setsid",
     initial: { mode: "dry-run" },
   });
   assert.equal(first.started, true);
+  assert.equal(first.how, "setsid");
   const s = rs.readState(p.state);
   assert.equal(s.status, "running");
   assert.equal(s.session_id, "sess-1");
   assert.equal(s.thread_id, "thread-1");
   assert.equal(s.wait, rs.WAIT_CMD);
   assert.equal(s.mode, "dry-run");
-  const second = rs.startDetached(p, { script: worker, env });
-  assert.deepEqual(second, { started: false, pid: first.pid });
+  const second = rs.startDetached(p, { script: worker, env, detach: "setsid" });
+  assert.equal(second.started, false);
+  assert.equal(second.pid, first.pid);
   const out = sink();
   assert.equal(await rs.follow(p, { windowMs: 5000, out, every: 20 }), 0);
   assert.match(out.text, /worker says hello --run --dry-run/);
   assert.match(out.text, /LIVE: test/);
-  assert.ok(!fs.existsSync(p.lock));
+  assert.ok(await lockGone(p), "lock released");
 });
+
+const systemdUser = (() => {
+  const r = spawnSync("systemctl", ["--user", "is-system-running"], {
+    encoding: "utf8",
+  });
+  return /^(running|degraded)/.test(r.stdout || "");
+})();
+
+test(
+  "with a systemd user manager the release runs outside the starter's cgroup",
+  {
+    skip: systemdUser
+      ? false
+      : "no systemd user manager here (the Cloudflare build, CI)",
+  },
+  async () => {
+    const p = tmp();
+    const r = rs.startDetached(p, {
+      script: fakeWorker(p),
+      env: { ...process.env, ATL_RELEASE_DETACH: "" },
+    });
+    assert.equal(r.how, "systemd");
+    assert.match(r.unit, /^atl-release-\d+-\d+$/);
+    assert.ok(
+      Number.isInteger(r.pid) && r.pid !== process.pid,
+      "the worker recorded its own pid",
+    );
+    const mine = fs.readFileSync("/proc/self/cgroup", "utf8").trim();
+    const theirs = rs.readState(p.state).cgroup;
+    assert.notEqual(theirs, mine);
+    assert.match(theirs, new RegExp(`${r.unit}\\.service$`));
+    assert.equal(await rs.follow(p, { windowMs: 10000, out: sink(), every: 20 }), 0);
+    assert.ok(await lockGone(p), "lock released");
+  },
+);

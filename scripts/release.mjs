@@ -10,10 +10,11 @@
 //   --skip-checks                         # skip check-layout (the receipt says so)
 //   --follow-for=<seconds>                # how long to follow before handing back (540)
 //
-// The release runs in its own process session and keeps a record
-// (scripts/lib/release-state.mjs), and the command that started it follows it
-// in the foreground. Closing the chat, a tool timeout or Ctrl-C stops only the
-// following, never the release. Why: in one week of "push live" (2026-11-07 to
+// The release runs as its own systemd user unit, outside the chat session's
+// cgroup and process tree (a setsid child where there is no systemd user
+// manager), keeps a record (scripts/lib/release-state.mjs), and the command
+// that started it follows it in the foreground. Closing the chat, a tool
+// timeout, TaskStop or Ctrl-C stops only the following, never the release. Why: in one week of "push live" (2026-11-07 to
 // 11-12) four releases stalled the same way. The agent ran the release in the
 // background, ended its turn on "I'll confirm when it's live", and T3 dropped
 // the completion notice that should have woken it, so Alec had to ask. Now the
@@ -490,7 +491,7 @@ function status() {
       ? `LOST: the release (pid ${s.pid}) is no longer running and recorded no result. Run ${rs.WAIT_CMD} to mark it, then check the release PR and production.`
       : running
         ? `RUNNING: step "${s.step}", ${mins(s.started_at)} min so far. Follow it with: ${rs.WAIT_CMD}`
-        : `${s.status.toUpperCase()}: ${s.message || ""} (${s.mode}, ${mins(s.started_at, s.finished_at)} min, finished ${s.finished_at})`,
+        : `${/^[A-Z][A-Z ]*:/.test(s.message || "") ? s.message : `${s.status.toUpperCase()}: ${s.message || ""}`} (${s.mode}, ${mins(s.started_at, s.finished_at)} min, finished ${s.finished_at})`,
   );
   if (s.pr) console.log(`Release PR: https://github.com/${REPO}/pull/${s.pr}`);
   console.log(
@@ -510,19 +511,28 @@ async function startAndFollow() {
     initial: { mode, skip_checks: SKIP_CHECKS },
   });
   if (!r.started) {
+    // Never adopt another run's result: it may be a dry run, or a release of
+    // an older staging commit than the one this start was asked to ship.
     const s = rs.readState(P.state);
     console.log(
-      `A release is already running (pid ${r.pid}${s ? `, started ${s.started_at}, step "${s.step}"` : ""}). Following it instead of starting another.\n`,
+      `Not started: a ${(s && s.mode) || "release"} is already running (pid ${r.pid}${s ? `, started ${s.started_at}, step "${s.step}"` : ""}).\n` +
+        `Follow it with: ${rs.WAIT_CMD}\n` +
+        'When it has finished, run `cfrun npm run release` again; it says "Nothing to release" if everything on staging is already live.',
     );
-  } else {
-    console.log(
-      `Started the ${mode} in its own process (pid ${r.pid}). It keeps going if this command or the chat turn ends.\nLog: ${P.log}\n`,
-    );
+    return 1;
   }
+  console.log(
+    r.how === "systemd"
+      ? `Started the ${mode} as systemd user unit ${r.unit} (pid ${r.pid}). It keeps going if this command or the chat session ends.\nLog: ${P.log}\n`
+      : `Started the ${mode} as a detached process (pid ${r.pid}).${r.why ? ` WARNING: ${r.why}, so closing this chat session can still stop it: follow it to the end.` : ""}\nLog: ${P.log}\n`,
+  );
   return rs.follow(P, { windowMs: FOLLOW_MS });
 }
 
 if (RUN) {
+  // Under systemd the lock still holds the starter's pid: take it over.
+  rs.setLockPid(P.lock, process.pid);
+  rs.writeState(P.state, { pid: process.pid });
   // Backstop: an exit with no recorded result is recorded as stopped.
   process.on("exit", (code) => {
     const s = rs.readState(P.state);

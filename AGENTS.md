@@ -33,8 +33,6 @@ document it points to for the job at hand.
     && npm run events && npm run guides && npm run blog && git status --porcelain
   ```
 
-- Money or policy copy (prices, where money goes, sponsor terms, tax lines) gets an independent
-  second look before the owner sees it, and again before it goes live.
 - Generated pages are rebuilt from their sources, never hand-edited: guides and `/links`
   (`npm run guides`), events (`npm run events`), the blog, its feed, `/llms.txt` and the
   "More from the blog" section on every page the blog collects (`npm run blog`, from
@@ -43,9 +41,10 @@ document it points to for the job at hand.
 
 ## Ship
 
-- One short-lived PR into `staging` when the change is going to ship. Production releases run only
-  when the owner says "push live" (`npm run release`). Other contributors' staging commits ride
-  along untouched.
+- How a change ships, who releases, and what gets a second look: one page,
+  [SHIPPING.md](https://github.com/Tranel-Labs/agentos/blob/main/docs/SHIPPING.md). In short: one PR
+  into `staging`; `cfrun npm run release` in the foreground only on the owner's "push live"; money,
+  legal and checkout lines get one second look, on the final version.
 - Changed an outside system ahead of the site (Givebutter, email, social)? Ship the matching site
   change in the same step, or say exactly what is out of sync and until when.
 

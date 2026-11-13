@@ -5,22 +5,29 @@ const read = (p) => readFileSync(new URL("../" + p, import.meta.url), "utf8");
 test("homepage defines one enduring mission before current work", () => {
   const h = read("public/index.html");
   assert.ok(
-    h.replace(/<\/?b>/g, "").includes("We expand access to adaptive sports so athletes can find their place."),
+    h
+      .replace(/<\/?b>/g, "")
+      .includes(
+        "We expand access to adaptive sports so athletes can find their place.",
+      ),
   );
-  assert.ok(h.includes("We build more ways into adaptive sports."));
-  const bridge = h.split('id="next-step"')[1].split("</section>")[0];
-  const enduringPurpose = bridge.split("<h3")[0];
+  const mission = h.match(/<p class="mw-mission[^>]*>([\s\S]*?)<\/p>/);
+  assert.ok(mission, "the enduring mission accompanies the hero headline");
+  const enduringPurpose = mission[1];
   for (const name of [
     "Adaptive Sports Near Me",
     "Hustle &amp; Heart",
     "Adapt Body Shop",
   ])
     assert.ok(!enduringPurpose.includes(name));
-  assert.ok(
-    bridge.includes("Our upcoming store,"),
-    "future example stays explicitly forthcoming",
-  );
-  assert.ok(bridge.includes('href="/about#our-work"'));
+  assert.ok(h.indexOf(mission[0]) < h.indexOf('id="participation"'));
+  // The approved shorter homepage leaves initiative detail on About.
+  const work = read("public/about.html")
+    .split('id="our-work"')[1]
+    .split("</section>")[0];
+  assert.ok(work.includes("Coming soon"), "future work stays explicitly forthcoming");
+  assert.ok(work.includes('href="/adapt-body-shop"'));
+  assert.ok(work.includes("These are starting points, not the limits of the mission."));
   assert.ok(
     !h.includes(
       "supports equipment, training, and travel so more athletes can take part.",

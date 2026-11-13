@@ -69,6 +69,9 @@ export const STORIES = {
       alt: "Two wheelchair pickleball players at the net on APP court 29, indoors, one reaching high for an overhead",
       caption: "The wheelchair bracket on APP court 29.",
       credit: ["Adapt To Life on Instagram", "https://www.instagram.com/reel/Db3q5eZN7Wf/"] },
+    clips: [
+      { src: "/videos/road/app-court.ccb1dddd.mp4", poster: "/videos/road/app-court.0625e898.webp", b: "APP court 29", span: "The first wheelchair division" },
+    ],
     og: { file: "event-app-vlasic-classic-2026-v1-card.jpg", alt: "The APP Tour's first wheelchair division. Adapt To Life. Juan Ortiz serves from his sport wheelchair." },
     next: { href: "/road", label: "The Road to the US Open" },
   },
@@ -141,6 +144,11 @@ export const STORIES = {
         ["3-brian", "Brian Liss, competed in Cincinnati."],
       ],
     },
+    clips: [
+      { src: "/videos/road/juan-gold.111a9886.mp4", poster: "/videos/road/juan-gold.bb6b50eb.webp", b: "Juan&rsquo;s gold", span: "Singles" },
+      { src: "/videos/road/bob-gold.2f121ad7.mp4", poster: "/videos/road/bob-gold.f1e9f6fb.webp", b: "Bob&rsquo;s gold", span: "Doubles" },
+      { src: "/videos/road/amanda-bronze.c7643370.mp4", poster: "/videos/road/amanda-bronze.8ecd35d6.webp", b: "Amanda&rsquo;s bronze", span: "Doubles" },
+    ],
     og: { file: "event-monster-smash-2026-v1-card.jpg", alt: "Six medals at Monster Smash. Adapt To Life. A wheelchair pickleball player reaches wide mid-swing." },
     next: { href: "/road", label: "The Road to the US Open" },
   },

@@ -71,7 +71,7 @@ an endorsement of your products, or an agreement to use them.
 
 **What you will hear from us**
 
-Each month, a short recap with attendance, views and results, as /sponsorship promises. At the end of
+Each month, a short recap with attendance, views and results. At the end of
 the [year / season], what your sponsorship paid for and what it cost.
 
 **Tax**

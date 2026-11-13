@@ -201,16 +201,18 @@
 
   /* LOGOS — a partner card (/selkirk, Nov 13 2026). The chat preview already
      prints the page title under the card, so the card is just the two logos.
-     The partner's logo is its own published file, never recoloured. */
-  .logo-row{ position:absolute; inset:0; z-index:2; display:flex; align-items:center;
-    justify-content:center; gap:38px; padding:0 64px; }
+     The partner's logo is its own published file, never recoloured. Stacked,
+     not side by side (Alec: "Way too hard to read. Stack them on top of each
+     other"): one logo per row is what lets each be big enough for a thumbnail. */
+  .logo-row{ position:absolute; inset:0; z-index:2; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:24px; padding:40px 64px; }
   .logo-row[hidden]{ display:none; }
-  .logo-row .lockup{ gap:20px; }
-  .logo-row .lockup svg{ height:110px; }
-  .logo-row .wordmark{ font-size:28px; }
+  .logo-row .lockup{ gap:30px; }
+  .logo-row .lockup svg{ height:178px; }
+  .logo-row .wordmark{ font-size:46px; }
   .logo-row .x{ font-family:"Sofia Sans", system-ui, sans-serif; font-weight:300;
-    font-size:48px; line-height:1; color:var(--cream-faint); }
-  .logo-row img{ height:68px; width:auto; display:block; }
+    font-size:60px; line-height:1; color:var(--cream-faint); }
+  .logo-row img{ height:122px; width:auto; display:block; }
   .card.logos .inner{ display:none; }
 </style>
 </head>

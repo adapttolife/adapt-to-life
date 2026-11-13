@@ -40,7 +40,7 @@ Named for how Tim Gruensfelder played, all hustle and all heart, the fund suppor
 
 Right now, your gift keeps Chicago Pickleball: Wheelie Big Dills on court every week, then on the road to the US Open.
 
-Every week comes first: a year of court time for 10 to 15 athletes a night, plus memberships for 10. Then The Road to the US Open: $21,000 for a season of tournament travel, about 21 trips at about $1,000 each for entry fees, travel and accessible rooms. The last stop is the US Open in Naples in spring 2027, where players are picked by lottery. After that, the Chicago Classic.
+Every week comes first: a year of court time for 10 to 15 athletes a night, plus memberships for 10. Then The Road to the US Open: entry fees, travel and accessible rooms for a season of tournaments. About 21 tournament trips for the crew: $21,000 for the season. A trip is one athlete at one tournament. The last stop is the US Open in Naples in spring 2027, where players are picked by lottery. After that, the Chicago Classic.
 
 Gifts already received keep their original terms. Money raised for the road earlier, the popcorn drive included, keeps its terms and stays on the road.
 

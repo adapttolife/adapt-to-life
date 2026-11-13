@@ -220,3 +220,20 @@ test(
     assert.ok(await lockGone(p), "lock released");
   },
 );
+
+test("an unknown option starts nothing (a typo must never run a release)", () => {
+  const p = tmp();
+  for (const bad of [["--wiat"], ["--dry-rn"], ["--follow-for=abc"], ["release"]]) {
+    const r = spawnSync(
+      process.execPath,
+      [new URL("./release.mjs", import.meta.url).pathname, ...bad],
+      {
+        env: { ...process.env, ATL_RELEASE_STATE_DIR: p.dir },
+        encoding: "utf8",
+      },
+    );
+    assert.equal(r.status, 2, bad.join(" "));
+    assert.match(r.stderr, /Unknown option/);
+  }
+  assert.equal(rs.readState(p.state), null, "no release record was written");
+});

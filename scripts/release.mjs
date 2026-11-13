@@ -66,6 +66,18 @@ const RUN = args.has("--run"), // internal: the detached process doing the work
   DRY = args.has("--dry-run"),
   VERIFY_ONLY = args.has("--verify-live"),
   SKIP_CHECKS = args.has("--skip-checks");
+// Refuse anything else: before 2026-11-13 an unknown flag (a typo of
+// --dry-run, or --wait on an older copy of this script) silently ran a real
+// release.
+const KNOWN = /^--(run|wait|status|dry-run|verify-live|skip-checks|follow-for=\d+)$/;
+const unknown = argv.filter((a) => !KNOWN.test(a));
+if (unknown.length) {
+  console.error(
+    `Unknown option(s): ${unknown.join(" ")}. Nothing was started.\n` +
+      "Use: [--dry-run | --verify-live | --wait | --status] [--skip-checks] [--follow-for=<seconds>]",
+  );
+  process.exit(2);
+}
 const followArg = argv.find((a) => a.startsWith("--follow-for="));
 const FOLLOW_MS = (followArg ? Number(followArg.split("=")[1]) || 540 : 540) * 1000;
 const P = rs.paths();

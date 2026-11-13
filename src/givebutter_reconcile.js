@@ -1,4 +1,5 @@
 import { recordGift, recoverDonorEmails } from "./givebutter_webhook.js";
+import { givebutterFetch } from "./givebutter_fetch.js";
 
 const TRANSACTIONS_API = "https://api.givebutter.com/v1/transactions";
 const MAX_STABILIZATION_PASSES = 3;
@@ -43,6 +44,7 @@ export async function reconcileGivebutterTransactions(env, opts = {}) {
   }
 
   const fetcher = opts.fetch || fetch;
+  const sleep = opts.sleep;
   const providerAfter = new Date(cutoff.getTime() - 1).toISOString();
   const providerBefore = before.toISOString();
   const ensured = new Set();
@@ -54,6 +56,7 @@ export async function reconcileGivebutterTransactions(env, opts = {}) {
       const ids = await scanStableRange({
         env,
         fetcher,
+        sleep,
         cutoff,
         before,
         providerAfter,
@@ -79,6 +82,7 @@ export async function reconcileGivebutterTransactions(env, opts = {}) {
 async function scanStableRange({
   env,
   fetcher,
+  sleep,
   cutoff,
   before,
   providerAfter,
@@ -94,12 +98,16 @@ async function scanStableRange({
     url.searchParams.set("transactedAfter", providerAfter);
     url.searchParams.set("transactedBefore", providerBefore);
     url.searchParams.set("sortByDesc", "transacted_at");
-    const response = await fetcher(url, {
-      headers: {
-        Authorization: `Bearer ${env.GIVEBUTTER_API_KEY}`,
-        Accept: "application/json",
+    const response = await givebutterFetch(
+      url,
+      {
+        headers: {
+          Authorization: `Bearer ${env.GIVEBUTTER_API_KEY}`,
+          Accept: "application/json",
+        },
       },
-    });
+      { fetch: fetcher, sleep },
+    );
     if (!response.ok) throw new Error(`givebutter ${response.status}`);
     const body = await response.json();
     if (

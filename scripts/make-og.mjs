@@ -259,11 +259,12 @@ const CARDS = {
   // A card still matters: the link gets pasted into a chat. v2 (Alec, Nov 13
   // 2026: "Can the open graph image be ATL logo and Selkirk logo?"): the chat
   // preview prints "A proposal for Selkirk Sport" under it, so the card is the
-  // two logos. Selkirk's light lockup is its own file from selkirk.com.
+  // two logos. Selkirk's light lockup is its own file from selkirk.com. v3
+  // stacks them, one per row, so both read in a chat thumbnail.
   selkirk: {
     variant: "logos",
     logos: { partner: "assets/logos/selkirk-primary-light.png", alt: "Selkirk" },
-    out: "public/images/og/selkirk-v2-logos.jpg",
+    out: "public/images/og/selkirk-v3-stacked.jpg",
     page: "selkirk.html",
   },
   // Guides (scripts/build-guides.mjs): each card is the guide's h1.
@@ -804,8 +805,9 @@ for (const name of todo) {
         })
       : null;
   const okScale = scale === null || scale <= MAX_UPSCALE;
-  // The partner logo obeys the same no upscaling rule as a photo.
-  const logoScale = probe.logo ? (probe.logo.w * DSF) / probe.logo.nw : null;
+  // The partner logo obeys the same no upscaling rule as a photo, measured
+  // against the delivered 1200px card: a flat logo is drawn once into it.
+  const logoScale = probe.logo ? probe.logo.w / probe.logo.nw : null;
   const okLogo = logoScale === null || logoScale <= MAX_UPSCALE;
   const ok = okSize && okFrame && okWeight && okSeam && okScale && okLogo;
   if (!ok) failed = true;

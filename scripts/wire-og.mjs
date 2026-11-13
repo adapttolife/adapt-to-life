@@ -80,8 +80,7 @@ const ALT = {
   karen: "Karen Atkinson. Adapt To Life. Karen water skiing in a sit-ski, spray behind her.",
   "bread-and-butter":
     "Three Locos. Four medals. Adapt To Life. Juan Ortiz in his sport wheelchair, paddle up, on a dark indoor court.",
-  selkirk:
-    "Let's build the wheelchair game together. Adapt To Life. A wheelchair pickleball player mid swing on an indoor court.",
+  selkirk: "Adapt To Life and Selkirk. The two logos side by side on a dark background.",
   juan: "Juan Ortiz. Adapt To Life. Juan, a wheelchair pickleball player in glasses, tosses the ball to serve from his sport wheelchair.",
 };
 
@@ -98,7 +97,7 @@ const FILE = {
   _default: "home-v4-color.jpg",
   juan: "juan-v2-serve.jpg",
   "bread-and-butter": "bread-and-butter-v4-medals.jpg",
-  selkirk: "selkirk-v1-together.jpg",
+  selkirk: "selkirk-v2-logos.jpg",
   karen: "karen-v1-water.jpg",
   "guide-sport-wheelchair-cost": "guide-sport-wheelchair-cost-v1-card.jpg",
   "guide-sponsor-adaptive-athletes": "guide-sponsor-adaptive-athletes-v1-card.jpg",

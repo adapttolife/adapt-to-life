@@ -200,8 +200,11 @@
   ul.ticks li{ display:grid; grid-template-columns:1.1rem minmax(0,1fr); gap:0.6rem; }
   ul.ticks li::before{ content:""; width:0.55rem; height:0.55rem; border-radius:50%; background:var(--orange); margin-top:0.55rem; }
   .sk-build-list{ margin-top:clamp(1.6rem,3vw,2.2rem); max-width:62ch; }
-  .sk-reach-tiles{ list-style:none; margin:clamp(2rem,3.6vw,2.6rem) 0 0; padding:0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(0.6rem,2vw,1rem); }
-  @media (max-width:760px){ .sk-reach-tiles{ grid-template-columns:1fr; } }
+  .sk-reach-hero{ margin-top:clamp(1.8rem,3.4vw,2.4rem); display:grid; gap:0.4rem; padding:clamp(1.4rem,3.4vw,2.2rem); border-radius:24px; background:var(--night); color:var(--cream); box-shadow:0 30px 70px -38px rgba(0,0,0,0.6); }
+  .sk-reach-hero b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(3.6rem,15vw,8.5rem); line-height:0.9; letter-spacing:-0.05em; color:var(--orange); }
+  .sk-reach-hero span{ font-size:clamp(1.05rem,2.4vw,1.35rem); font-weight:700; line-height:1.35; max-width:30ch; }
+  .sk-reach-tiles{ list-style:none; margin:clamp(0.8rem,1.6vw,1rem) 0 0; padding:0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:clamp(0.6rem,2vw,1rem); }
+  @media (max-width:980px){ .sk-reach-tiles{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
   .sk-reach-tiles li{ display:grid; gap:0.45rem; align-content:start; padding:clamp(1.1rem,2.6vw,1.5rem); border-radius:20px; background:var(--canvas); border:1px solid var(--hairline); }
   .sk-reach-tiles b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(2.2rem,6vw,3rem); line-height:0.95; letter-spacing:-0.04em; color:var(--orange-ink); }
   .sk-reach-tiles span{ color:var(--ink-soft); line-height:1.45; }
@@ -412,14 +415,19 @@ fill="currentColor" stroke="none">
   <div class="wrap">
     <div class="sec-head">
       <span class="eyebrow reveal">Your name, seen by new people</span>
-      <h2 class="serif h2 reveal" id="skReachHead" style="margin-top:0.7rem;">A small account that travels far.</h2>
+      <h2 class="serif h2 reveal" id="skReachHead" style="margin-top:0.7rem;">Seen far beyond our own followers.</h2>
+    </div>
+    <div class="sk-reach-hero reveal">
+      <b>335,000+</b>
+      <span>views across Instagram and Facebook in the last 90 days</span>
     </div>
     <ul class="sk-reach-tiles reveal">
-      <li><b>169,540</b><span>Instagram views in the 90 days to November 11, from an account with 271 followers</span></li>
+      <li><b>256,000+</b><span>views on one reel, across Instagram and Facebook</span></li>
+      <li><b>15,000+</b><span>likes, comments, shares and other interactions across the two</span></li>
+      <li><b>34,000+</b><span>views across the two for our seven Monster Smash posts</span></li>
       <li><b>9 in 10</b><span>of our recent Instagram views came from people who don&rsquo;t follow us yet</span></li>
-      <li><b>34,000+</b><span>views across Instagram and Facebook for our seven Monster Smash posts</span></li>
     </ul>
-    <p class="bb-credit reveal">Most of those views came from one reel, which passed 250,000 views across Instagram and Facebook. Facebook drew about 168,000 views of its own.</p>
+    <p class="bb-credit reveal">Views and interactions are counted on each platform and added together, for the 90 days to November 11, 2026.</p>
   </div>
 </section>
 

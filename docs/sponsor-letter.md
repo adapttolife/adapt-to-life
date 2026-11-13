@@ -32,7 +32,7 @@ sets out what your sponsorship pays for and how we will thank you for it.
 
 - Captain: a year of court time for the crew, 52 nights for up to 15 athletes a night, priced at the partner club's regular rates.
 - Train to Compete: a year of unlimited sessions for ten athletes.
-- Champion: The Road to the US Open for the season: tournament entry fees, travel and accessible rooms, about 21 trips at about $1,000 each. The US Open, the last stop, picks players by lottery.
+- Champion: The Road to the US Open for the season, about 21 tournament trips for the crew: tournament entry fees, travel and accessible rooms. The US Open, the last stop, picks players by lottery.
 - Founding Partner: the year ahead: court time, Train to Compete and the road, with the rest toward the Chicago Classic [or: the parts still open, which are (list)].
 
 Your sponsorship goes to the Hustle & Heart Fund and is held for what it pays for. We pay clubs and

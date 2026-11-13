@@ -130,6 +130,14 @@ test("the donate page's module points back to the form", () => {
 // the whole website ... If our audience doesn't understand it, they won't trust
 // us. If they don't trust us, they won't donate." No page multiplies dollars
 // or converts a price for the reader.
+// A unit price beside a count makes the reader multiply: "at $15 each", "at
+// about $1,000 each", "at $225 a night". Nov 13 2026 (Alec): the old check,
+// / at \$[\d,]+ each/, missed "at about $1,000 each", which sat on /road. A
+// simple contrast stays fine: a trip about $1,000, one athlete's US Open
+// about $3,500.
+const UNIT_PRICE =
+  /\$[\d,]+(?:\.\d\d)?k?(?:\s|&nbsp;)+(?:each|apiece)\b(?!(?:\s|&nbsp;)+(?:month|year|week|day|time|season)\b)|\bat (?:about |around |roughly |nearly |almost |approximately |just over |just under |under |over )?\$[\d,]+(?:\.\d\d)?k?(?:\s|&nbsp;)+(?:a|an|per) (?:trip|tournament|stop|athlete|player|person|night|session|head|seat)\b/i;
+
 test("no page asks the reader to do math", () => {
   const pages = [
     ...readdirSync(new URL("../public/", import.meta.url)).filter(
@@ -145,11 +153,38 @@ test("no page asks the reader to do math", () => {
   for (const f of pages) {
     const html = read("public/" + f);
     assert.ok(!/(&times;|×)\s*(about )?\$/.test(html), `${f} multiplies dollars`);
-    assert.ok(!/ at \$[\d,]+ each/.test(html), `${f} prices "at $N each"`);
+    assert.ok(!UNIT_PRICE.test(html), `${f} prices per unit ("at about $N each")`);
     assert.ok(
       !/\$129 a month, or \$1,548 a year/.test(html),
       `${f} converts a membership`,
     );
+  }
+});
+
+test("the unit price guard catches the old /road line, not simple contrasts", () => {
+  // This line was live on /road until Nov 13 2026 and passed the old check.
+  assert.ok(
+    UNIT_PRICE.test(
+      "$21,000 for the season: about 21 tournament trips at about $1,000 each.",
+    ),
+  );
+  for (const bad of [
+    "ten athletes at $15 each",
+    "52 nights at $225 a night",
+    "21 trips at about $1,000 a tournament",
+    "21 trips at $1,000&nbsp;each",
+  ]) {
+    assert.ok(UNIT_PRICE.test(bad), bad);
+  }
+  // Simple contrasts and one amount per idea stay allowed.
+  for (const ok of [
+    "A tournament trip runs about $1,000 an athlete; one athlete&rsquo;s US Open has cost about $3,500 the last couple of years.",
+    "About 21 tournament trips for the crew: $21,000 for the season.",
+    "A night on court is $225, for 10 to 15 athletes.",
+    "Give $60 each month.",
+    "Monthly giving starts at $60 a month.",
+  ]) {
+    assert.ok(!UNIT_PRICE.test(ok), ok);
   }
 });
 

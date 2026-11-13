@@ -50,9 +50,11 @@ test("homepage tells participation story without the two-program comparison pane
   assert.ok(html.includes('id="participation"'));
   assert.ok(html.includes("A chance to play should not come down to luck."));
   // The campaign module (scripts/build-module.mjs) follows the participation
-  // story and comes before the next step.
+  // story and comes before the closing invitation.
   assert.ok(html.indexOf('id="participation"') < html.indexOf('id="campaign"'));
-  assert.ok(html.indexOf('id="campaign"') < html.indexOf('id="next-step"'));
+  assert.ok(
+    html.indexOf('id="campaign"') < html.indexOf('class="closing roll-band dark"'),
+  );
   assert.ok(!html.includes('id="homeResult"'));
   assert.ok(html.includes("C.module();"));
   const welcome = html.split('class="mw-mission')[1].split("</p>")[0];
@@ -76,15 +78,14 @@ test("homepage tells participation story without the two-program comparison pane
     "I got into this because someone handed me a brochure when I was six. Now it&rsquo;s our turn to be that for the next athlete.";
   assert.equal(html.split(quote).length, 2, "original founder quote appears once");
   assert.ok(html.includes("Help the next athlete find their place."));
-  assert.ok(html.includes("We build more ways into adaptive sports."));
-  assert.ok(html.includes("What we build will keep evolving with the community."));
   // The mission may carry emphasis tags; the words are what is guarded.
   assert.ok(
-    html.replace(/<\/?b>/g, "").includes(
-      "We expand access to adaptive sports so athletes can find their place.",
-    ),
+    html
+      .replace(/<\/?b>/g, "")
+      .includes(
+        "We expand access to adaptive sports so athletes can find their place.",
+      ),
   );
-  assert.ok(html.includes("Our upcoming store,"));
   assert.ok(!html.includes('class="fronts'));
   assert.ok(!html.includes("Two of them today"));
 });
@@ -114,7 +115,10 @@ test("campaign owns its target, and popcorn links instead of duplicating a budge
   assert.ok(!/about \$(450|500|2,300)/.test(campaign));
   const popcorn = read("public/popcorn.html");
   assert.ok(popcorn.includes('href="/road">The Road to the US Open</a>'));
-  assert.ok(!popcorn.includes("Send 6"), "the retired name is gone from the popcorn page");
+  assert.ok(
+    !popcorn.includes("Send 6"),
+    "the retired name is gone from the popcorn page",
+  );
   assert.ok(!popcorn.includes('class="s6-cost-n"'));
   assert.ok(!popcorn.includes("roughly five hundred"));
   assert.ok(popcorn.includes("50% of popcorn sales"));

@@ -152,11 +152,14 @@ const checked = (where) =>
 async function verifyLive(sha, stagingDigest) {
   log(`waiting for ${LIVE} to serve ${short(sha)}`);
   let retried = false;
-  await waitFor(
+  // Judge the files on the same response that showed the commit: during
+  // Cloudflare's rollout a second fetch can land on the old version (release
+  // #312 stopped on exactly that, 2026-11-13).
+  const live = await waitFor(
     `production to serve ${short(sha)}`,
     async () => {
       const s = await stamp(LIVE);
-      if (s && s.sha === sha) return true;
+      if (s && s.sha === sha) return s;
       if (!retried) {
         const run = checkRun(sha);
         if (run && run.status === "completed" && run.conclusion !== "success") {
@@ -174,7 +177,6 @@ async function verifyLive(sha, stagingDigest) {
     },
     { every: 15e3 },
   );
-  const live = await stamp(LIVE);
   if (live.dirty)
     fail(
       `production build.txt says -dirty: the build changed a tracked file (usually refreshed directory stats; commit them via staging)`,
@@ -212,7 +214,13 @@ async function main() {
   const stagingSha = sh("git", ["rev-parse", "origin/staging"]);
   const ahead = +sh("git", ["rev-list", "--count", "origin/main..origin/staging"]);
   if (!ahead) {
-    console.log("Nothing to release: main already has everything on staging.");
+    // Nothing new: confirm production anyway, so re-running after any
+    // interruption (a lost session, an API outage) still ends verified.
+    log("nothing new on staging; confirming production");
+    await verifyLive(mainSha, null);
+    console.log(
+      `\nLIVE: nothing new to release; adapttolife.org is main ${short(mainSha)} and ${checked("production")}.`,
+    );
     return;
   }
 

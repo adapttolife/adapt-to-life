@@ -100,14 +100,16 @@ test("fund categories follow equipment, training, travel without unsupported pri
 });
 
 test("campaign owns its target, and popcorn links instead of duplicating a budget", () => {
-  // Nov 11 2026: the road is a season of tournament travel, 21 trips at about
-  // $1,000 (Alec's number), never six athletes at $3,500.
+  // Nov 11 2026: the road is a season of tournament travel, about 21 trips
+  // (Alec's number), never six athletes at $3,500. Nov 13 2026 (Alec): no
+  // price per trip beside the count, so the reader never does the math.
   const campaign = read("public/road.html");
   assert.ok(
     campaign.includes(
-      "$21,000 for the season: about 21 tournament trips at about $1,000 each.",
+      "About 21 tournament trips for the crew: $21,000 for the season.",
     ),
   );
+  assert.ok(!campaign.includes("at about $1,000 each"));
   assert.ok(campaign.includes("Individual needs and costs will vary."));
   assert.ok(!/about \$(450|500|2,300)/.test(campaign));
   const popcorn = read("public/popcorn.html");

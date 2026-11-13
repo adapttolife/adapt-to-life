@@ -59,6 +59,12 @@ to the US Open / the year ahead]. We will thank you with:
 - A spotlight on your partnership across our social channels, and your logo on the Wheelie Big Dills page (Captain and up)
 - Your logo on our donate page, and your name or logo on our supporters wall (every level)
 - Your logo beside our goal for the year ahead, and first call on naming the Chicago Classic, presented by Adapt To Life, once it has a date (Founding Partner)
+- Your name and logo on the thank you sign at our table when the crew is at a club event, a clinic or a tournament, where the host allows it (gear partners)
+
+[If the deal names one sponsor in a category, keep:] For the term, [Sponsor] is the only [paddle
+brand] Adapt To Life names as a crew sponsor. That covers our naming only: athletes keep their own
+sponsorships and gear, and clubs and tournaments keep theirs. Any film or other work with an athlete
+is between [Sponsor] and the athlete, with the athlete's OK.
 
 Recognition is a thank-you: your name, your logo and a link to your website. It is not advertising,
 an endorsement of your products, or an agreement to use them.

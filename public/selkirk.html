@@ -199,7 +199,12 @@
   ul.ticks{ list-style:none; padding:0; margin:1.2rem 0 0; display:grid; gap:0.75rem; }
   ul.ticks li{ display:grid; grid-template-columns:1.1rem minmax(0,1fr); gap:0.6rem; }
   ul.ticks li::before{ content:""; width:0.55rem; height:0.55rem; border-radius:50%; background:var(--orange); margin-top:0.55rem; }
-  .sk-build-list{ margin-top:clamp(1.6rem,3vw,2.2rem); max-width:62ch; }
+  .sk-build-split{ display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,0.75fr); gap:clamp(1.4rem,4vw,3rem); align-items:start; margin-top:clamp(1.6rem,3vw,2.2rem); }
+  @media (max-width:820px){ .sk-build-split{ grid-template-columns:1fr; } }
+  .sk-build-list{ margin-top:0; max-width:62ch; }
+  .sk-pete{ margin:0; }
+  .sk-pete img{ display:block; width:100%; height:auto; border-radius:22px; box-shadow:0 30px 60px -34px rgba(15,14,13,0.55); }
+  .sk-pete figcaption{ margin-top:0.7rem; font-size:0.9rem; line-height:1.4; color:var(--ink-soft); }
   .sk-reach-hero{ margin-top:clamp(1.8rem,3.4vw,2.4rem); display:grid; gap:0.4rem; padding:clamp(1.4rem,3.4vw,2.2rem); border-radius:24px; background:var(--night); color:var(--cream); box-shadow:0 30px 70px -38px rgba(0,0,0,0.6); }
   .sk-reach-hero b{ font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(3.6rem,15vw,8.5rem); line-height:0.9; letter-spacing:-0.05em; color:var(--orange); }
   .sk-reach-hero span{ font-size:clamp(1.05rem,2.4vw,1.35rem); font-weight:700; line-height:1.35; max-width:30ch; }
@@ -401,12 +406,19 @@ fill="currentColor" stroke="none">
       <li><a href="/brickhouse"><img class="is-bh" src="/images/brickhouse/brick-house-logo-orange-black.svg" alt="Brick House Pickleball" width="372" height="265" loading="lazy" decoding="async"></a><span>Lake Forest</span></li>
       <li><a href="/picklr"><img src="/images/partners/picklr-mount-prospect.png" alt="The Picklr Mount Prospect" width="723" height="236" loading="lazy" decoding="async"></a><span>Mount Prospect</span></li>
     </ul>
-    <ul class="ticks sk-build-list">
+    <div class="sk-build-split">
+      <ul class="ticks sk-build-list">
       <li class="reveal"><span>10 to 15 athletes a night at three Open Court clubs, playing beside the clubs&rsquo; own members.</span></li>
+      <li class="reveal"><span>Our very own Pete Petersen, who played hybrid doubles at the US Open in 2025, coaches <a class="textlink" href="https://glasa.org" rel="noopener" target="_blank">GLASA</a>&rsquo;s weekly wheelchair pickleball night at Brick House.</span></li>
       <li class="reveal"><span>Clinics are scheduled with ACE, The Picklr and the Lincolnway Special Recreation Association.</span></li>
       <li class="reveal"><span>Coaching that helped the Wisconsin Adaptive Sports Association start pickleball, and a partnership with Chicago Adaptive Sports, where Juan serves on the board.</span></li>
       <li class="reveal"><span>Juan found the game at a Chicago Park District clinic in 2025. This fall he helped the Park District start a free adaptive pickleball program, four weeks at McFetridge Sports Center.</span></li>
     </ul>
+      <figure class="sk-pete reveal">
+        <img src="/images/selkirk/pete-us-open.webp" alt="Pete Petersen and a wheelchair athlete smiling at the US Open in Naples, holding up medals" width="582" height="660" loading="lazy" decoding="async">
+        <figcaption>Our very own Pete Petersen at the US Open in Naples, 2025.</figcaption>
+      </figure>
+    </div>
   </div>
 </section>
 

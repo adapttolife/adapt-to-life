@@ -4410,3 +4410,13 @@ a.win-band:focus-visible {
     grid-auto-columns: 58%;
   }
 }
+
+/* A partner logo drawn for light backgrounds, shown on a dark band: on the
+   off-white card colour, never recoloured (Alec, Nov 11 and Nov 13 2026: use
+   the partner's real, latest logo, pulled from their own site). */
+.logo-chip {
+  background: var(--paper);
+  padding: 0.35em 0.55em;
+  border-radius: var(--r-lg);
+  box-sizing: content-box;
+}

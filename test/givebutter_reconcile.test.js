@@ -428,12 +428,20 @@ test("the production schedule delegates donor work to the single reconciliation 
     fileURLToPath(new URL("../src/index.js", import.meta.url)),
     "utf8",
   );
-  assert.match(
-    source,
-    /import \{ reconcileDonorJourney \} from "\.\/givebutter_reconcile\.js"/,
+  // The cron runs the Givebutter jobs one after the other (src/givebutter_cron.js).
+  assert.match(source, /import \{ runGivebutterJobs \} from "\.\/givebutter_cron\.js"/);
+  assert.match(source, /ctx\.waitUntil\(\s*runGivebutterJobs\(env\)/);
+  assert.doesNotMatch(source, /recoverDonorEmails\(env\)/);
+  const cron = readFileSync(
+    fileURLToPath(new URL("../src/givebutter_cron.js", import.meta.url)),
+    "utf8",
   );
-  assert.match(source, /ctx\.waitUntil\(\s*reconcileDonorJourney\(env\)/);
-  assert.doesNotMatch(source, /ctx\.waitUntil\(\s*recoverDonorEmails\(env\)/);
+  assert.match(
+    cron,
+    /import \{ reconcileDonorJourney as defaultReconcile \} from "\.\/givebutter_reconcile\.js"/,
+  );
+  assert.match(cron, /await reconcileDonorJourney\(env\)/);
+  assert.doesNotMatch(cron, /recoverDonorEmails/);
 });
 
 test("production config pins the donor reconciliation activation boundary", () => {

@@ -1,12 +1,12 @@
 # Contributing
 
-ATL, ASNM and Adapt Body Shop's Hydrogen storefront use the same standing integration method, authorized by Alec and following Faisal's staging workflow. Agents consume the shared [GitHub discipline](https://github.com/Tranel-Labs/agentos/blob/main/skills/github-publication-review/SKILL.md), merged by Alec through [AgentOS #742](https://github.com/Tranel-Labs/agentos/pull/742). Merged source is not proof of every runtime's adoption. Do not create per-bot variants. Who releases (Alec, 2026-11-11): Faisal N reviews and releases Adaptive Sports Near Me only (its admin app and ASNM routes in this repo, and the adaptivesportsnearme repo). adapttolife.org releases happen on Alec's explicit "push live": merge the PR into staging, then run `npm run release` (scripts/release.mjs), which opens and merges the staging → main release PR. A green check alone is never release permission. Previews go to the playground (exulansis.io), never to a pushed branch.
+ATL, ASNM and Adapt Body Shop's Hydrogen storefront use the same standing integration method, authorized by Alec and following Faisal's staging workflow. Agents follow one page, [SHIPPING.md](https://github.com/Tranel-Labs/agentos/blob/main/docs/SHIPPING.md). Merged source is not proof of every runtime's adoption. Do not create per-bot variants. Who releases (Alec, 2026-11-11): Faisal N reviews and releases Adaptive Sports Near Me only (its admin app and ASNM routes in this repo, and the adaptivesportsnearme repo). adapttolife.org releases happen on Alec's explicit "push live": merge the PR into staging, then run `npm run release` (scripts/release.mjs), which opens and merges the staging → main release PR. A green check alone is never release permission. Previews go to the playground (exulansis.io), never to a pushed branch.
 
 1. Fetch origin and start every feature/fix branch from current `origin/staging`, not main.
 2. Open the feature/fix PR **into staging**. Keep one current review for a repair in this repository; link a companion in another repo when relevant.
 3. Preserve teammates' work. Verify staging ancestry, run the full test suite, and resolve conflicts before review.
 4. After staging review and acceptance, the release opens a separate **staging → main** PR (for adapttolife.org, `npm run release` on Alec's "push live"). Feature branches must not target main. Main changes can trigger production deployment and need explicit release approval.
-5. Never deploy production or write production databases merely to test a PR. Git staging and Wrangler staging are different objects; the current Wrangler staging Worker is frontend-only. Use isolated configurations for runtime/data checks.
+5. Never deploy production or write production databases merely to test a PR. Staging is a preview version of the production Worker and is bound to production's databases, so never test forms or data on it.
 
 ```sh
 git fetch origin

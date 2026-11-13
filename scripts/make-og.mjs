@@ -110,6 +110,10 @@ const PHOTOS = {
   // Chosen by Alec off the live card, 2026-09-10. He sits well right of centre
   // and side-on, so the type side stays empty wall at every zoom that keeps him
   // legible, and a gentler 138% is enough because he is already large in frame.
+  // Brian Liss with his paddle: JLA_6045 from the ACE shoot (the home hero's
+  // "big-brian" panel), master cut to 3900px from the 8256px original, for his
+  // blog post's card (Nov 13 2026).
+  "brian-slk": { file: "assets/photos/brian-slk.jpg", pos: "56% 40%" },
   "paddle-raise": {
     file: "assets/photos/paddle-raise.jpg",
     pos: "58% 40%",
@@ -250,6 +254,17 @@ const CARDS = {
     page: "bread-and-butter.html",
     headline: "Three Locos. <em>Four medals.</em>",
   },
+  // /selkirk: an unlisted page for one reader (noindex, not in the sitemap).
+  // A card still matters: the link gets pasted into a chat.
+  selkirk: {
+    ...ATHLETE,
+    photo: "court-swing",
+    size: 64,
+    measure: "13ch",
+    out: "public/images/og/selkirk-v1-together.jpg",
+    page: "selkirk.html",
+    headline: "Let&rsquo;s build the wheelchair game <em>together.</em>",
+  },
   // Guides (scripts/build-guides.mjs): each card is the guide's h1.
   "sport-wheelchair-cost": {
     ...ATHLETE,
@@ -288,6 +303,15 @@ const CARDS = {
     out: "public/images/og/blog-v1-card.jpg",
     page: "blog.html",
     headline: "Building adaptive sports, <em>in public.</em>",
+  },
+  "blog-brian-liss": {
+    ...ATHLETE,
+    photo: "brian-slk",
+    size: 72,
+    measure: "11ch",
+    out: "public/images/og/blog-brian-liss-v1-card.jpg",
+    page: "blog/brian-liss.html",
+    headline: "&ldquo;The chair didn&rsquo;t <em>fix me.</em>&rdquo;",
   },
   // Event stories (scripts/build-event-pages.mjs reads these paths from
   // data/event-stories.mjs). Amanda mid-swing for Monster Smash, where she

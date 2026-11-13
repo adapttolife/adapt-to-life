@@ -134,9 +134,10 @@ test("the donate page's module points back to the form", () => {
 // about $1,000 each", "at $225 a night". Nov 13 2026 (Alec): the old check,
 // / at \$[\d,]+ each/, missed "at about $1,000 each", which sat on /road. A
 // simple contrast stays fine: a trip about $1,000, one athlete's US Open
-// about $3,500.
+// about $3,500. A price tacked on after a description (", at about $1,000.")
+// counts too: the /numbers road note put one beside its count and total.
 const UNIT_PRICE =
-  /\$[\d,]+(?:\.\d\d)?k?(?:\s|&nbsp;)+(?:each|apiece)\b(?!(?:\s|&nbsp;)+(?:month|year|week|day|time|season)\b)|\bat (?:about |around |roughly |nearly |almost |approximately |just over |just under |under |over )?\$[\d,]+(?:\.\d\d)?k?(?:\s|&nbsp;)+(?:a|an|per) (?:trip|tournament|stop|athlete|player|person|night|session|head|seat)\b/i;
+  /\$[\d,]+(?:\.\d\d)?k?(?:\s|&nbsp;)+(?:each|apiece)\b(?!(?:\s|&nbsp;)+(?:month|year|week|day|time|season)\b)|\bat (?:about |around |roughly |nearly |almost |approximately |just over |just under |under |over )?\$[\d,]+(?:\.\d\d)?k?(?:\s|&nbsp;)+(?:a|an|per) (?:trip|tournament|stop|athlete|player|person|night|session|head|seat)\b|,(?:\s|&nbsp;)+at (?:about |around |roughly |nearly |almost |approximately )?\$[\d,]+(?:\.\d\d)?k?(?=[.;:!?)]|(?:\s|&nbsp;)*<)/i;
 
 test("no page asks the reader to do math", () => {
   const pages = [
@@ -161,7 +162,7 @@ test("no page asks the reader to do math", () => {
   }
 });
 
-test("the unit price guard catches the old /road line, not simple contrasts", () => {
+test("the unit price guard catches the old /road and /numbers lines, not simple contrasts", () => {
   // This line was live on /road until Nov 13 2026 and passed the old check.
   assert.ok(
     UNIT_PRICE.test(
@@ -173,6 +174,8 @@ test("the unit price guard catches the old /road line, not simple contrasts", ()
     "52 nights at $225 a night",
     "21 trips at about $1,000 a tournament",
     "21 trips at $1,000&nbsp;each",
+    // The /numbers road note until Nov 13 2026, beside "about 21 trips" and $21,000.
+    "A trip is one athlete at one tournament: entry fees, travel and an accessible room, at about $1,000.",
   ]) {
     assert.ok(UNIT_PRICE.test(bad), bad);
   }
@@ -183,6 +186,7 @@ test("the unit price guard catches the old /road line, not simple contrasts", ()
     "A night on court is $225, for 10 to 15 athletes.",
     "Give $60 each month.",
     "Monthly giving starts at $60 a month.",
+    "A trip is one athlete at one tournament: entry fees, travel and an accessible room.",
   ]) {
     assert.ok(!UNIT_PRICE.test(ok), ok);
   }

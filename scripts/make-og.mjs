@@ -246,9 +246,9 @@ const CARDS = {
     photo: "paddle-raise",
     size: 64,
     measure: "14ch",
-    out: "public/images/og/bread-and-butter-v2-crew.jpg",
+    out: "public/images/og/bread-and-butter-v4-medals.jpg",
     page: "bread-and-butter.html",
-    headline: "Play Juan&rsquo;s paddle. <em>Help his crew compete.</em>",
+    headline: "Three Locos. <em>Four medals.</em>",
   },
   // Guides (scripts/build-guides.mjs): each card is the guide's h1.
   "sport-wheelchair-cost": {

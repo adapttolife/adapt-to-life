@@ -101,5 +101,8 @@ ______________________________
   open. Reword or pause the lines that sell the same part to others: the night and athlete units,
   Teammate and Coach for the road, "Put your name on the court." on /ace, and "Kept going by night
   sponsors" and "tournament sponsors" on /pickleball.
+- If the deal has a category clause (for example, the only paddle brand we name), no other brand in
+  that category can be named at any level for the term: Teammate, Coach, the night and athlete
+  units, and the supporters wall. Check before thanking a new sponsor in that category.
 - Put the logo everywhere the level promises it, and add the sponsor to the Givebutter sponsors
   campaign description if it lists sponsors by then.

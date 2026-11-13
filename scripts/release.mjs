@@ -542,6 +542,17 @@ async function startAndFollow() {
 }
 
 if (RUN) {
+  // Only the worker its start launched may run. A worker that began after its
+  // starter had already recorded the run as lost, or a duplicate, exits here
+  // before it can touch git, GitHub or Cloudflare.
+  const mine = rs.readState(P.state);
+  const runId = process.env.ATL_RELEASE_RUN_ID;
+  if (!mine || mine.status !== "running" || (runId && mine.run_id !== runId)) {
+    console.error(
+      `Not running: the record is ${mine ? `${mine.status} (run ${mine.run_id})` : "missing"}, not run ${runId || "?"} in progress.`,
+    );
+    process.exit(0);
+  }
   // Under systemd the lock still holds the starter's pid: take it over.
   rs.setLockPid(P.lock, process.pid);
   rs.writeState(P.state, { pid: process.pid });

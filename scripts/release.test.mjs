@@ -176,6 +176,7 @@ test("a detached release keeps its own record, and a second start does not adopt
   assert.equal(s.thread_id, "thread-1");
   assert.equal(s.wait, rs.WAIT_CMD);
   assert.equal(s.mode, "dry-run");
+  assert.match(s.run_id, /^atl-release-\d+-\d+$/);
   const second = rs.startDetached(p, { script: worker, env, detach: "setsid" });
   assert.equal(second.started, false);
   assert.equal(second.pid, first.pid);
@@ -236,4 +237,36 @@ test("an unknown option starts nothing (a typo must never run a release)", () =>
     assert.match(r.stderr, /Unknown option/);
   }
   assert.equal(rs.readState(p.state), null, "no release record was written");
+});
+
+test("a worker that does not own the running record exits before doing anything", () => {
+  const p = tmp();
+  const script = new URL("./release.mjs", import.meta.url).pathname;
+  for (const [state, runId] of [
+    [{ status: "lost", run_id: "run-a" }, "run-a"], // its starter gave up on it
+    [{ status: "running", run_id: "run-b" }, "run-a"], // another run owns the record
+    [null, "run-a"], // no record at all
+  ]) {
+    fs.rmSync(p.state, { force: true });
+    if (state)
+      rs.writeState(
+        p.state,
+        { ...state, started_at: new Date().toISOString() },
+        { replace: true },
+      );
+    const before = fs.existsSync(p.state) ? fs.readFileSync(p.state, "utf8") : null;
+    const r = spawnSync(process.execPath, [script, "--run"], {
+      env: { ...process.env, ATL_RELEASE_STATE_DIR: p.dir, ATL_RELEASE_RUN_ID: runId },
+      encoding: "utf8",
+      timeout: 20000,
+    });
+    assert.equal(r.status, 0, JSON.stringify(state));
+    assert.match(r.stderr, /Not running/);
+    assert.equal(
+      fs.existsSync(p.state) ? fs.readFileSync(p.state, "utf8") : null,
+      before,
+      "record untouched",
+    );
+    assert.ok(!fs.existsSync(p.lock), "lock not taken");
+  }
 });

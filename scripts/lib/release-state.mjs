@@ -191,6 +191,7 @@ export function startDetached(
       log: p.log,
       wait: WAIT_CMD,
       status_cmd: STATUS_CMD,
+      run_id: unit,
       ...initial,
     },
     { replace: true },
@@ -205,6 +206,9 @@ export function startDetached(
         "--collect",
         "--quiet",
         `--unit=${unit}`,
+        // Type=exec: fail here, not silently, if the process cannot start.
+        "-p",
+        "Type=exec",
         "-p",
         `WorkingDirectory=${cwd}`,
         "-p",
@@ -212,6 +216,7 @@ export function startDetached(
         "-p",
         `StandardError=append:${p.log}`,
         ...names.map((k) => `--setenv=${k}`),
+        `--setenv=ATL_RELEASE_RUN_ID=${unit}`,
         process.execPath,
         script,
         "--run",
@@ -219,7 +224,18 @@ export function startDetached(
       ],
       { env, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], timeout: 15000 },
     );
-    if (r.status === 0) {
+    // A timeout can land after systemd already started the unit: never start
+    // a second worker beside it.
+    const started =
+      r.status === 0 ||
+      (r.error &&
+        r.error.code === "ETIMEDOUT" &&
+        /^(active|activating)/.test(
+          spawnSync("systemctl", ["--user", "is-active", `${unit}.service`], {
+            encoding: "utf8",
+          }).stdout || "",
+        ));
+    if (started) {
       writeState(p.state, { detach: "systemd", unit });
       // The worker records its own pid (and takes the lock) when it starts.
       for (let i = 0; i < 150 && !(readState(p.state) || {}).pid; i++) sleepSync(100);
@@ -245,7 +261,7 @@ export function startDetached(
     child = spawn(process.execPath, [script, "--run", ...args], {
       detached: true,
       stdio: ["ignore", logFd, logFd],
-      env,
+      env: { ...env, ATL_RELEASE_RUN_ID: unit },
       cwd,
     });
   } finally {

@@ -78,7 +78,7 @@ const ALT = {
   blog: "Building adaptive sports, in public. Adapt To Life. A wheelchair pickleball athlete on an indoor court.",
   karen: "Karen Atkinson. Adapt To Life. Karen water skiing in a sit-ski, spray behind her.",
   "bread-and-butter":
-    "Play Juan's paddle. Help his crew compete. Adapt To Life. Juan Ortiz in his sport wheelchair, paddle up, on a dark indoor court.",
+    "Two Locos. Three medals. Adapt To Life. Juan Ortiz in his sport wheelchair, paddle up, on a dark indoor court.",
   juan: "Juan Ortiz. Adapt To Life. Juan, a wheelchair pickleball player in glasses, tosses the ball to serve from his sport wheelchair.",
 };
 
@@ -94,7 +94,7 @@ const ALT = {
 const FILE = {
   _default: "home-v4-color.jpg",
   juan: "juan-v2-serve.jpg",
-  "bread-and-butter": "bread-and-butter-v2-crew.jpg",
+  "bread-and-butter": "bread-and-butter-v3-medals.jpg",
   karen: "karen-v1-water.jpg",
   "guide-sport-wheelchair-cost": "guide-sport-wheelchair-cost-v1-card.jpg",
   "guide-sponsor-adaptive-athletes": "guide-sponsor-adaptive-athletes-v1-card.jpg",

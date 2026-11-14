@@ -17,11 +17,12 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 import { STORIES } from "../data/event-stories.mjs";
+import { versionHtml } from "./version-assets.mjs";
 import { icon } from "./lib/icons.mjs";
 import { moreFromBlog } from "./lib/blog-index.mjs";
 
 const CLIP_BTN = '<button type="button" class="clip-btn" data-state="paused" aria-label="Play the video"><svg data-when="playing" class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="pause" data-style="bold"><path fill="currentColor" d="M200 28h-40a20 20 0 0 0-20 20v160a20 20 0 0 0 20 20h40a20 20 0 0 0 20-20V48a20 20 0 0 0-20-20m-4 176h-32V52h32ZM96 28H56a20 20 0 0 0-20 20v160a20 20 0 0 0 20 20h40a20 20 0 0 0 20-20V48a20 20 0 0 0-20-20m-4 176H60V52h32Z"/></svg><svg data-when="paused" class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="resume" data-style="bold"><path fill="currentColor" d="M234.49 111.07L90.41 22.94A20 20 0 0 0 60 39.87v176.26a20 20 0 0 0 30.41 16.93l144.08-88.13a19.82 19.82 0 0 0 0-33.86M84 208.85V47.15L216.16 128Z"/></svg></button>';
-const CLIPS_JS = '<script src="/js/clips.js?v=75cdb986" defer></script>';
+const CLIPS_JS = versionHtml('<script src="/js/clips.js" defer></script>');
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SITE = "https://adapttolife.org";
 const data = JSON.parse(readFileSync(join(ROOT, "public/data/campaigns.json"), "utf8"));

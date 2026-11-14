@@ -7,6 +7,7 @@
 // so /links never says a gift does something the picker does not.
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { versionHtml } from "../version-assets.mjs";
 import { HERO, CREW, MEDALS, STORIES, FROM } from "../../data/links.mjs";
 
 const SITE = "https://adapttolife.org";
@@ -118,13 +119,14 @@ ${shell.head.replace('<link rel="preconnect"', metaBlock({ title, desc, url, og,
   @media (min-width:720px){ .lx-hero{ height:46rem; } }
   .lx-vid{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
   .lx-shade{ position:absolute; inset:0; background:linear-gradient(180deg, rgba(15,14,13,0.55) 0%, rgba(15,14,13,0) 26%, rgba(15,14,13,0) 52%, rgba(15,14,13,0.9) 82%, var(--night) 100%); }
-  .lx-hero-copy{ position:absolute; left:0; right:0; bottom:0; padding:0 1.25rem 1.6rem; }
+  .lx-hero-copy{ z-index:3; pointer-events:none; position:absolute; left:0; right:0; bottom:0; padding:0 1.25rem 1.6rem; }
   .lx-kicker{ font-weight:800; font-size:0.78rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--orange); }
   .lx-h1{ margin-top:0.55rem; font-family:var(--font-display); font-weight:900; font-size:clamp(2.2rem,10vw,3rem); line-height:0.98; letter-spacing:-0.035em; color:var(--cream); text-wrap:balance; }
   .lx-down{ display:inline-flex; align-items:center; gap:0.5rem; margin-top:1.1rem; font-weight:700; color:var(--cream); text-decoration:none; padding:0.7rem 1.15rem; border-radius:999px; border:1px solid rgba(249,247,242,0.3); background:rgba(15,14,13,0.35); backdrop-filter:blur(6px); }
   .lx-down .ix-svg{ width:1.05em; height:1.05em; transform:rotate(90deg); }
   .lx-down:hover{ border-color:var(--orange); }
-  .lx-vidbtn{ position:absolute; top:0.9rem; right:0.9rem; width:44px; height:44px; display:grid; place-items:center; border-radius:999px; border:1px solid rgba(249,247,242,0.28); background:rgba(15,14,13,0.45); color:var(--cream); cursor:pointer; }
+  .lx-hero-copy a{ pointer-events:auto; }
+  .lx-vidbtn{ z-index:3; position:absolute; top:0.9rem; right:0.9rem; width:44px; height:44px; display:grid; place-items:center; border-radius:999px; border:1px solid rgba(249,247,242,0.28); background:rgba(15,14,13,0.45); color:var(--cream); cursor:pointer; }
   .lx-vidbtn .ix-svg{ width:18px; height:18px; }
   .lx-vidbtn [data-when]{ display:none; }
   .lx-vidbtn[data-state="playing"] [data-when="playing"], .lx-vidbtn[data-state="paused"] [data-when="paused"]{ display:block; }
@@ -432,6 +434,7 @@ ${shell.navJs}
 })();
 </script>
 
+${versionHtml('<script src="/js/clips.js" defer></script>')}
 ${shell.tail}
 </body>
 </html>

@@ -4332,11 +4332,22 @@ a.win-band:focus-visible {
   height: 100%;
   object-fit: cover;
 }
+/* A card links to its original post; the playback button stays independent. */
+.clip-link {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+}
+.clip-link:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: -4px;
+}
 .clip-btn {
   position: absolute;
   top: 0.7rem;
   right: 0.7rem;
-  z-index: 2;
+  z-index: 3;
   display: grid;
   place-items: center;
   width: 44px;

@@ -83,6 +83,9 @@ const MOSAIC = [
   // purely structural. Alec ruled that out for the main banner at any size, so
   // it is a real portrait now. Same job, no throwaway.
   { n: "bench", x: 27, y: 30, w: 14, d: 1, r: 0.5, m: "m" },
+  // Past the wall's left edge: dim frames only a wide screen shows (Nov 15 2026).
+  { n: "fence", x: -27, y: 40, w: 15, d: 1, r: 0.6, m: "m" },
+  { n: "drive", x: -17, y: 60, w: 15, d: 1, r: -0.5, m: "m" },
   { n: "profile", x: 47, y: 38, w: 10, d: 1, r: -0.8, m: "m" },
   // mid plane
   { n: "toss", x: 69, y: 0, w: 17, d: 2, r: 0.5, m: "m" },
@@ -95,7 +98,6 @@ const MOSAIC = [
   { n: "reach", x: 90, y: 40, w: 14, d: 2, r: -0.6, m: "s" },
   { n: "swing", x: 54, y: 56, w: 11, d: 2, r: 0.9, m: "m" },
   { n: "seated", x: 87, y: 70, w: 13, d: 2, r: 0.6, m: "m" },
-  { n: "grin", x: 76, y: 50, w: 12, d: 2, r: -0.5, m: "s" },
   { n: "lanyard", x: 88, y: 14, w: 11, d: 2, r: 0.6, m: "m" },
   // front plane — five photographs carry the whole header.
   //
@@ -120,7 +122,14 @@ const MOSAIC = [
   { n: "smile-close", x: 82, y: 4, w: 16, d: 3, r: 0.7, m: "s" },
   { n: "dink", x: 57, y: 10, w: 19, d: 3, r: -0.6, m: "" },
   { n: "brian", x: 41, y: 55, w: 16, d: 3, r: 0.5, m: "s" },
-  { n: "forehand", x: 62, y: 64, w: 27, d: 3, r: -0.4, m: "" },
+  { n: "forehand", x: 62, y: 69.7, w: 27, d: 3, r: -0.4, m: "" },
+  // The medal clip (Nov 15 2026, Alec circled it): it played in grin's old
+  // slot (x76 y50 d2), where forehand covered its bottom half, the half with
+  // the athletes. It moved up above forehand with open space all round, into
+  // the front plane, and forehand dropped to y69.7. These places assume the
+  // live wall's fixed shape (1.7 times as wide as the hero is tall, pinned
+  // right), which index.html sets on .mw-wall.
+  { n: "grin", x: 77, y: 42, w: 11.5, d: 3, r: -0.5, m: "s" },
 ];
 
 // E — THE BANNER. One row, bottom-aligned to a single baseline, heights

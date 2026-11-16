@@ -218,6 +218,23 @@
   .sk-crew{ grid-template-columns:repeat(2,minmax(0,1fr)); }
   @media (max-width:760px){ .sk-crew{ grid-template-columns:1fr; } }
   .sk-crew .bb-crew-card{ background:rgba(249,247,242,0.04); box-shadow:inset 0 0 0 1px rgba(249,247,242,0.1); }
+  /* /selkirk: Teach the wheelchair game (video series) */
+  .sk-teach-lead{ margin-top:1rem; max-width:60ch; }
+  .sk-series{ list-style:none; margin:clamp(1.8rem,3.4vw,2.4rem) 0 0; padding:0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+  @media (max-width:900px){ .sk-series{ grid-template-columns:1fr; } }
+  .sk-series > li{ background:var(--paper); border:1px solid var(--hairline); border-radius:22px; padding:clamp(1.2rem,2.8vw,1.6rem); display:grid; gap:0.55rem; align-content:start; }
+  .sk-series .sk-step-n{ display:block; }
+  .sk-series h3{ font-size:clamp(1.35rem,2.6vw,1.6rem); }
+  .sk-series .who{ color:var(--muted); font-size:0.95rem; }
+  .sk-series ol{ margin:0.3rem 0 0; padding-left:1.25rem; display:grid; gap:0.35rem; color:var(--ink-soft); }
+  .sk-series ol li::marker{ color:var(--orange-ink); font-weight:800; }
+  .sk-teach-why{ margin-top:clamp(1.6rem,3vw,2.2rem); display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(1rem,3vw,2rem); }
+  @media (max-width:760px){ .sk-teach-why{ grid-template-columns:1fr; } }
+  .sk-teach-why h4{ font-family:var(--font-label); font-weight:800; font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); margin:0 0 0.5rem; }
+  .sk-teach-why ul{ margin:0; padding-left:1.1rem; display:grid; gap:0.5rem; }
+  .sk-teach-why ul li::marker{ color:var(--orange); }
+  .sk-teach-ask{ margin-top:clamp(1.6rem,3vw,2.2rem); border:1px dashed rgba(255,92,57,0.6); border-radius:18px; background:rgba(255,92,57,0.06); padding:clamp(1.1rem,2.6vw,1.5rem); }
+  .sk-teach-ask .price{ display:block; font-family:var(--font-display); font-weight:900; font-size:1.35rem; color:var(--orange-ink); margin-bottom:0.25rem; }
   .sk-steps{ display:grid; gap:12px; margin-top:clamp(2rem,3.6vw,2.6rem); }
   .sk-step{ background:var(--paper); border:1px solid var(--hairline); border-radius:22px; padding:clamp(1.3rem,3vw,2rem); }
   .sk-step-n{ font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--orange-ink); }
@@ -476,6 +493,72 @@ fill="currentColor" stroke="none">
   </div>
 </section>
 
+<!-- ====================== TEACH THE GAME ======================= -->
+<section class="band sk-teach" id="teach" aria-labelledby="skTeachHead">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow reveal">Teach the wheelchair game</span>
+      <h2 class="serif h2 reveal" id="skTeachHead" style="margin-top:0.7rem;">The first place to learn wheelchair pickleball, <em class="italic bb-o">presented by Selkirk.</em></h2>
+      <p class="prose reveal sk-teach-lead">We&rsquo;re filming short teaching videos with the crew: how to play pickleball from a sport chair, taught by people who play it. Selkirk TV teaches every part of the standing game. We couldn&rsquo;t find a wheelchair course anywhere. Let&rsquo;s make the one everyone uses.</p>
+    </div>
+    <ul class="sk-series">
+      <li class="reveal">
+        <span class="sk-step-n">Series 1</span>
+        <h3 class="serif">Wheelchair Pickleball 101</h3>
+        <p class="who">For new players, and anyone who just got a sport chair.</p>
+        <ol>
+          <li>The chair: setup, straps and wheels</li>
+          <li>Pushing and turning with a paddle in hand</li>
+          <li>The two-bounce rule, and where to sit</li>
+          <li>Serve and return</li>
+          <li>Dinks and the kitchen from a chair</li>
+          <li>Your first game, and hybrid doubles</li>
+        </ol>
+      </li>
+      <li class="reveal">
+        <span class="sk-step-n">Series 2</span>
+        <h3 class="serif">Coaching the wheelchair game</h3>
+        <p class="who">For coaches, club pros and volunteers running a first adaptive night.</p>
+        <ol>
+          <li>Running a mixed court: chairs beside standing players</li>
+          <li>Feeding drills for chair movement</li>
+          <li>Adapting a lesson to a player&rsquo;s function</li>
+          <li>Chairs, transfers and safety on court</li>
+          <li>From first clinic to a tournament team</li>
+        </ol>
+      </li>
+      <li class="reveal">
+        <span class="sk-step-n">Series 3</span>
+        <h3 class="serif">Start a program</h3>
+        <p class="who">For clubs, park districts and adaptive groups.</p>
+        <ol>
+          <li>What a first adaptive night needs</li>
+          <li>Finding players, chairs and court time</li>
+          <li>Partnering with a local adaptive group</li>
+          <li>Adding a wheelchair division to a tournament</li>
+          <li>Getting listed on Adaptive Sports Near Me</li>
+        </ol>
+      </li>
+    </ul>
+    <div class="sk-teach-why">
+      <div class="reveal"><h4>Where they live</h4><ul>
+        <li>On Selkirk TV beside your other courses, if you want them there, and on our channels and YouTube.</li>
+        <li>Cut into reels for Instagram and Facebook, where 9 in 10 of our recent views came from people who don&rsquo;t follow us yet.</li>
+        <li>Shown at every clinic we run, and linked from every adaptive pickleball program on Adaptive Sports Near Me.</li>
+      </ul></div>
+      <div class="reveal"><h4>Why Selkirk</h4><ul>
+        <li>Pick It Up, from your PCI and the Medical University of South Carolina, trains coaches for Parkinson&rsquo;s clinics. The coaching series can be its wheelchair companion.</li>
+        <li>Your paddles in the hands of every player on screen, and your name on every episode.</li>
+        <li>Each new club that starts a program from these videos is a club that knows Selkirk.</li>
+      </ul></div>
+    </div>
+    <div class="sk-teach-ask reveal">
+      <span class="price">$12,000 for the first two series</span>
+      Wheelchair Pickleball 101 and Coaching the wheelchair game, presented by Selkirk: filming, editing and captions, with Juan, the crew and our coaches on camera. It can stand alone, or sit inside any step below. Start a program follows once the first two are out.
+    </div>
+  </div>
+</section>
+
 <!-- ============================ TIERS =========================== -->
 <section class="band tint sk-tiers" id="tiers" aria-labelledby="skTiersHead">
   <div class="wrap">
@@ -499,6 +582,7 @@ fill="currentColor" stroke="none">
             <li>A thank you across our social channels, and your name on our supporters wall.</li>
             <li>Your name and logo on the thank you sign at our table when the crew is at a club event, a clinic or a tournament, where the host allows it.</li>
             <li>Photos of your gear in use, in our own thank you posts.</li>
+            <li>Your paddles in the hands of the players in our teaching videos.</li>
             <li>A short recap every month through Naples, so step two is decided on real numbers.</li>
           </ul></div>
         </div>
@@ -528,6 +612,7 @@ fill="currentColor" stroke="none">
           <div><h4>Selkirk gets</h4><ul>
             <li>Everything in step two.</li>
             <li>Your logo beside our goal for the year ahead.</li>
+            <li>Your name on every teaching series we make that year.</li>
             <li>Room to plan several seasons together.</li>
           </ul></div>
         </div>

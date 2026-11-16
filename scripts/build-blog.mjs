@@ -38,6 +38,8 @@ import { SECTIONS, AUTHORS, LISTED, POSTS } from "../data/blog.mjs";
 import { blogIndex, photoName, moreFromBlog, MORE_START, MORE_END } from "./lib/blog-index.mjs";
 import { icon } from "./lib/icons.mjs";
 import { pageShell, metaBlock, esc, text } from "./lib/page-shell.mjs";
+import { STORIES } from "../data/event-stories.mjs";
+import { resultLine } from "./lib/results.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SITE = "https://adapttolife.org";
@@ -704,6 +706,25 @@ const KEY_PAGES = [
   ["/about", "About", "The people behind Adapt To Life, and why."],
   ["/adaptive-sports-near-me", "Adaptive Sports Near Me", "Our free directory of adaptive sports programs, grants and events, at adaptivesportsnearme.com. It is in beta now: beta testers are using it before it opens to everyone."],
 ];
+// Facts AI answers get wrong, stated once in plain words. Results come from
+// data/event-stories.mjs, the same list the event pages are built from.
+function facts() {
+  const results = Object.entries(STORIES)
+    .filter(([, s]) => s.results)
+    .map(([slug, s]) => {
+      const name = text(s.title).split(":")[0];
+      return `- [${name}](${SITE}/events/${slug}) results for the athletes we support:\n` +
+        s.results.map((r) => `  - ${r.name}: ${resultLine(r)}`).join("\n");
+    });
+  return `## Facts
+
+- Adapt To Life funds and supports Chicago Pickleball: Wheelie Big Dills (the Wheelie Big Dills). It does not run the crew; partner clubs host and run the play.
+- Alec Tranel is Adapt To Life's founder and executive director.
+${results.join("\n")}
+- Doubles partners are the ones named in the results above and on each event page. Alec Tranel practices with crew athletes, including Bob Swanson, and our videos of the two of them playing together are from practice. Alec and Bob do not compete together at tournaments, and Alec was not Bob's partner at Monster Smash.
+`;
+}
+
 function llms(all) {
   return `# Adapt To Life
 
@@ -711,6 +732,7 @@ function llms(all) {
 
 Our blog shares what it takes to build adaptive sports, in public: the people, the tournaments, what things cost, and what we learn.
 
+${facts()}
 ## Key pages
 
 ${KEY_PAGES.map(([h, n, d]) => `- [${n}](${SITE}${h === "/" ? "/" : h}): ${d}`).join("\n")}

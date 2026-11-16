@@ -218,6 +218,31 @@
   .sk-crew{ grid-template-columns:repeat(2,minmax(0,1fr)); }
   @media (max-width:760px){ .sk-crew{ grid-template-columns:1fr; } }
   .sk-crew .bb-crew-card{ background:rgba(249,247,242,0.04); box-shadow:inset 0 0 0 1px rgba(249,247,242,0.1); }
+  /* /selkirk: Teach the wheelchair game (video series) */
+  .sk-teach-lead{ margin-top:1rem; max-width:60ch; }
+  .sk-series{ list-style:none; margin:clamp(1.8rem,3.4vw,2.4rem) 0 0; padding:0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+  @media (max-width:900px){ .sk-series{ grid-template-columns:1fr; } }
+  .sk-series > li{ background:var(--paper); border:1px solid var(--hairline); border-radius:22px; padding:clamp(1.2rem,2.8vw,1.6rem); display:grid; gap:0.55rem; align-content:start; }
+  .sk-series .sk-step-n{ display:block; }
+  .sk-series h3{ font-size:clamp(1.35rem,2.6vw,1.6rem); }
+  .sk-series .who{ color:var(--muted); font-size:0.95rem; }
+  .sk-series ol{ margin:0.3rem 0 0; padding-left:1.25rem; display:grid; gap:0.35rem; color:var(--ink-soft); }
+  .sk-series ol li::marker{ color:var(--orange-ink); font-weight:800; }
+  .sk-teach-why{ margin-top:clamp(1.6rem,3vw,2.2rem); display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(1rem,3vw,2rem); }
+  @media (max-width:760px){ .sk-teach-why{ grid-template-columns:1fr; } }
+  .sk-teach-why h4{ font-family:var(--font-label); font-weight:800; font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); margin:0 0 0.5rem; }
+  .sk-teach-why ul{ margin:0; padding-left:1.1rem; display:grid; gap:0.5rem; }
+  .sk-teach-why ul li::marker{ color:var(--orange); }
+  .sk-teach-ask{ margin-top:clamp(1.6rem,3vw,2.2rem); border:1px dashed rgba(255,92,57,0.6); border-radius:18px; background:rgba(255,92,57,0.06); padding:clamp(1.1rem,2.6vw,1.5rem); }
+  .sk-teach-ask .price{ display:block; font-family:var(--font-display); font-weight:900; font-size:1.35rem; color:var(--orange-ink); margin-bottom:0.25rem; }
+  .sk-previews{ list-style:none; margin:clamp(1.6rem,3vw,2.2rem) 0 0; padding:0; display:grid; grid-template-columns:repeat(2,minmax(0,300px)); gap:clamp(0.8rem,2.4vw,1.4rem); justify-content:start; }
+  @media (max-width:560px){ .sk-previews{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.7rem; } }
+  .sk-previews figure{ margin:0; }
+  .sk-previews video{ display:block; width:100%; height:auto; aspect-ratio:9/16; border-radius:18px; background:var(--canvas); border:1px solid var(--hairline); }
+  .sk-previews figcaption{ margin-top:0.55rem; display:grid; gap:0.15rem; }
+  .sk-previews figcaption b{ font-family:var(--font-display); font-weight:900; font-size:1.02rem; line-height:1.2; }
+  .sk-previews figcaption span{ color:var(--muted); font-size:0.9rem; line-height:1.35; }
+  .sk-previews-note{ margin-top:0.9rem; color:var(--muted); font-size:0.92rem; max-width:62ch; }
   .sk-steps{ display:grid; gap:12px; margin-top:clamp(2rem,3.6vw,2.6rem); }
   .sk-step{ background:var(--paper); border:1px solid var(--hairline); border-radius:22px; padding:clamp(1.3rem,3vw,2rem); }
   .sk-step-n{ font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--orange-ink); }
@@ -476,6 +501,84 @@ fill="currentColor" stroke="none">
   </div>
 </section>
 
+<!-- ====================== TEACH THE GAME ======================= -->
+<section class="band sk-teach" id="teach" aria-labelledby="skTeachHead">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow reveal">Teach the wheelchair game</span>
+      <h2 class="serif h2 reveal" id="skTeachHead" style="margin-top:0.7rem;">Let&rsquo;s make the first place to learn wheelchair pickleball, <em class="italic bb-o">presented by Selkirk.</em></h2>
+      <p class="prose reveal sk-teach-lead">We&rsquo;ve made the first short illustrated lessons: wheelchair athletes drawn on a true-to-scale court, each shot slowed down and explained, with a narrated voiceover and captions for the phone. Selkirk TV teaches every part of the standing game. We couldn&rsquo;t find a wheelchair course anywhere. Let&rsquo;s make the one everyone uses.</p>
+    </div>
+    <span class="eyebrow reveal" style="display:block; margin-top:clamp(1.6rem,3vw,2.2rem);">Previews: the first two lessons</span>
+    <ul class="sk-previews">
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/return-of-serve.6aa61591.webp" width="720" height="1280" src="/videos/lessons/return-of-serve.7560fb38.mp4" aria-label="Lesson: return deep, cover the reply. 87 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Return deep. Cover the reply.</b><span>The return of serve · 87 seconds</span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/third-shot-drop.4264b189.webp" width="720" height="1280" src="/videos/lessons/third-shot-drop.5f88aaab.mp4" aria-label="Lesson: the third-shot drop. About two minutes, narrated, captions on screen."></video>
+        <figcaption><b>The third-shot drop: earn your way forward.</b><span>The third shot · under 2 minutes</span></figcaption>
+      </figure></li>
+    </ul>
+    <p class="sk-previews-note reveal">Tap to play, with sound. Captions are on screen, and the narration is a synthetic voice. Each lesson draws on USA Pickleball and on coaching from pros, Selkirk&rsquo;s own included, and the teaching guide behind each one notes what changes for the chair. A third, on reading the court from the first serve, is in the works.</p>
+    <ul class="sk-series">
+      <li class="reveal">
+        <span class="sk-step-n">Series 1</span>
+        <h3 class="serif">Wheelchair Pickleball 101</h3>
+        <p class="who">For new players, and anyone who just got a sport chair.</p>
+        <ol>
+          <li>The chair: setup, straps and wheels</li>
+          <li>Pushing and turning with a paddle in hand</li>
+          <li>The two-bounce rule, and where to sit</li>
+          <li>Serve and return</li>
+          <li>Dinks and the kitchen from a chair</li>
+          <li>Your first game, and hybrid doubles</li>
+        </ol>
+      </li>
+      <li class="reveal">
+        <span class="sk-step-n">Series 2</span>
+        <h3 class="serif">Coaching the wheelchair game</h3>
+        <p class="who">For coaches, club pros and volunteers running a first adaptive night.</p>
+        <ol>
+          <li>Running a mixed court: chairs beside standing players</li>
+          <li>Feeding drills for chair movement</li>
+          <li>Adapting a lesson to a player&rsquo;s function</li>
+          <li>Chairs, transfers and safety on court</li>
+          <li>From first clinic to a tournament team</li>
+        </ol>
+      </li>
+      <li class="reveal">
+        <span class="sk-step-n">Series 3</span>
+        <h3 class="serif">Start a program</h3>
+        <p class="who">For clubs, park districts and adaptive groups.</p>
+        <ol>
+          <li>What a first adaptive night needs</li>
+          <li>Finding players, chairs and court time</li>
+          <li>Partnering with a local adaptive group</li>
+          <li>Adding a wheelchair division to a tournament</li>
+          <li>Getting listed on Adaptive Sports Near Me</li>
+        </ol>
+      </li>
+    </ul>
+    <div class="sk-teach-why">
+      <div class="reveal"><h4>Where they live</h4><ul>
+        <li>On Selkirk TV beside your other courses, and on our own channels and YouTube.</li>
+        <li>Cut into reels for Instagram and Facebook. On Instagram, 9 in 10 of our recent views came from people who don&rsquo;t follow us yet.</li>
+        <li>Shown at every clinic we run, and linked from every adaptive pickleball program on Adaptive Sports Near Me.</li>
+      </ul></div>
+      <div class="reveal"><h4>Why Selkirk</h4><ul>
+        <li>Pick It Up, from your PCI and the Medical University of South Carolina, trains coaches for Parkinson&rsquo;s clinics. Our coaching series can grow into its wheelchair companion.</li>
+        <li>Selkirk paddles in the players&rsquo; hands, and your name on every episode, from the first 101 lesson on.</li>
+      </ul></div>
+    </div>
+    <div class="sk-teach-ask reveal">
+      <span class="price">Start with 101: $5,000</span>
+      Wheelchair Pickleball 101, with Selkirk: six illustrated lessons, narrated and captioned. Juan and our coaches, who play from the chair, will check each one before it goes out. Yours to put on Selkirk TV, and ours to share on our channels. The previews above show the style, so you can see the work before you say yes. Selkirk&rsquo;s name stays on these six lessons for as long as we show them. The coaching series and Start a program come next, and we&rsquo;d build those together (step three).
+      <p style="margin:0.8rem 0 0;"><a class="textlink" href="/docs/selkirk-teaching-series.pdf" download>Download the one-page summary (PDF)</a></p>
+    </div>
+  </div>
+</section>
+
 <!-- ============================ TIERS =========================== -->
 <section class="band tint sk-tiers" id="tiers" aria-labelledby="skTiersHead">
   <div class="wrap">
@@ -499,6 +602,7 @@ fill="currentColor" stroke="none">
             <li>A thank you across our social channels, and your name on our supporters wall.</li>
             <li>Your name and logo on the thank you sign at our table when the crew is at a club event, a clinic or a tournament, where the host allows it.</li>
             <li>Photos of your gear in use, in our own thank you posts.</li>
+            <li>Selkirk paddles in the players&rsquo; hands in our teaching lessons, once Wheelchair Pickleball 101 is yours.</li>
             <li>A short recap every month through Naples, so step two is decided on real numbers.</li>
           </ul></div>
         </div>
@@ -523,6 +627,7 @@ fill="currentColor" stroke="none">
           <div><h4>The whole year, and room to build</h4><ul>
             <li><span class="price">$50,000 and up</span>The year ahead: court time, Train to Compete and the road, with the rest toward the Chicago Classic.</li>
             <li>First call on naming the Chicago Classic, a wheelchair pickleball tournament presented by Adapt To Life, once it has a date.</li>
+            <li>An idea to build together: a wheelchair coaching certification with your PCI, grown from our coaching series, the way Pick It Up was built for Parkinson&rsquo;s clinics. Every certified coach can start a program, and every program gets listed on Adaptive Sports Near Me.</li>
             <li>Ideas to build together: a paddle that sends part of each sale to the Hustle &amp; Heart Fund, the way your Parkinson&rsquo;s Foundation paddles work, and adaptive nights at more clubs through your Advocates, with each program listed on Adaptive Sports Near Me.</li>
           </ul></div>
           <div><h4>Selkirk gets</h4><ul>
@@ -533,7 +638,7 @@ fill="currentColor" stroke="none">
         </div>
       </article>
     </div>
-    <p class="sk-fine">Sponsorships go to the Hustle &amp; Heart Fund. If your name goes on it, your money pays for it. Each part carries one sponsor&rsquo;s name at a time, for its year or season, held by the first sponsor to sign. If a part is already paid for, in full or in part, the money it doesn&rsquo;t need goes to the rest of the year&rsquo;s goal, and we tell you where before you give. Other sponsorships and gifts fill every week first, then the road to the US Open. Adapt To Life is a recognized 501(c)(3) nonprofit (EIN 41-3213344). Sponsorships may be tax deductible to the extent allowed by law, and we provide documentation for each partnership. Because some levels include benefits, check with your tax advisor on the deductible portion.</p>
+    <p class="sk-fine">Sponsorships go to the Hustle &amp; Heart Fund. If your name goes on it, your money pays for it. Each part carries one sponsor&rsquo;s name at a time, for its year or season, held by the first sponsor to sign. If a part is already paid for, in full or in part, the money it doesn&rsquo;t need goes to the rest of the year&rsquo;s goal, and we tell you where before you give. Other sponsorships and gifts fill every week first, then the road to the US Open. Wheelchair Pickleball 101 is paid for separately: the $5,000 pays for making the six lessons, and anything left goes to the Hustle &amp; Heart Fund. It includes a license for Selkirk to show the lessons on Selkirk TV, which has value, and our receipt will say so. Adapt To Life is a recognized 501(c)(3) nonprofit (EIN 41-3213344). Sponsorships may be tax deductible to the extent allowed by law, and we provide documentation for each partnership. Because some levels include benefits, check with your tax advisor on the deductible portion.</p>
   </div>
 </section>
 
@@ -545,6 +650,7 @@ fill="currentColor" stroke="none">
     <ul class="ticks">
       <li class="reveal"><span>Selkirk would be the only paddle brand Adapt To Life names as a crew sponsor for the term.</span></li>
       <li class="reveal"><span>Our posts thank you by name, logo and link. Anything more, like an athlete promoting a paddle, is between Selkirk and that athlete.</span></li>
+      <li class="reveal"><span>In our teaching lessons, the players use Selkirk paddles and each episode names Selkirk. That&rsquo;s a thank you for the sponsorship, not a review or endorsement by Adapt To Life or any athlete. &ldquo;Presented by&rdquo; on the series as a whole runs one year at a time, like every other part.</span></li>
       <li class="reveal"><span>Adapt To Life funds and supports the crew. Clubs host the play, and coaches and ambassadors lead it.</span></li>
       <li class="reveal"><span>A short recap every month with attendance, views and results, and at the end of the season or year, what your money paid for.</span></li>
       <li class="reveal"><span>The US Open picks players by lottery, so no one knows ahead of time how many names will come up. We raise for it all the same, and what Naples doesn&rsquo;t use stays on the road.</span></li>
@@ -557,7 +663,7 @@ fill="currentColor" stroke="none">
   <div class="wrap reading">
     <span class="eyebrow orange reveal">The ask</span>
     <h2 class="serif display reveal" style="margin-top:1rem;">Start this winter. <em class="italic bb-o">Grow from there.</em></h2>
-    <p class="lead sub reveal" style="color:var(--cream-mute);">We&rsquo;d like to start with step one this winter. If Selkirk wants its name on the road to Naples, it&rsquo;s open now. If you&rsquo;d rather watch this season play out first, let&rsquo;s talk about the next one after the US Open.</p>
+    <p class="lead sub reveal" style="color:var(--cream-mute);">We&rsquo;d like to start with step one this winter, and Wheelchair Pickleball 101 with it. If Selkirk wants its name on the road to Naples, it&rsquo;s open now. If you&rsquo;d rather watch this season play out first, let&rsquo;s talk about the next one after the US Open.</p>
     <p class="lead sub reveal" style="color:var(--cream);">Better yet, come play a game from a sport chair with the crew. We&rsquo;ll save you a chair.</p>
     <div class="actions reveal" style="display:flex; flex-wrap:wrap; gap:0.9rem 1rem; margin-top:2rem;">
       <a class="btn" href="mailto:hello@adapttolife.org?subject=Selkirk%20and%20the%20Wheelie%20Big%20Dills">Write to us <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>

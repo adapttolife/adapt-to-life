@@ -20,6 +20,7 @@ import { STORIES } from "../data/event-stories.mjs";
 import { versionHtml } from "./version-assets.mjs";
 import { icon } from "./lib/icons.mjs";
 import { moreFromBlog } from "./lib/blog-index.mjs";
+import { resultsList, competitors } from "./lib/results.mjs";
 
 const CLIP_BTN = '<button type="button" class="clip-btn" data-state="paused" aria-label="Play the video"><svg data-when="playing" class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="pause" data-style="bold"><path fill="currentColor" d="M200 28h-40a20 20 0 0 0-20 20v160a20 20 0 0 0 20 20h40a20 20 0 0 0 20-20V48a20 20 0 0 0-20-20m-4 176h-32V52h32ZM96 28H56a20 20 0 0 0-20 20v160a20 20 0 0 0 20 20h40a20 20 0 0 0 20-20V48a20 20 0 0 0-20-20m-4 176H60V52h32Z"/></svg><svg data-when="paused" class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="resume" data-style="bold"><path fill="currentColor" d="M234.49 111.07L90.41 22.94A20 20 0 0 0 60 39.87v176.26a20 20 0 0 0 30.41 16.93l144.08-88.13a19.82 19.82 0 0 0 0-33.86M84 208.85V47.15L216.16 128Z"/></svg></button>';
 const CLIPS_JS = versionHtml('<script src="/js/clips.js" defer></script>');
@@ -192,6 +193,7 @@ async function page(slug, s) {
       ? { performer: { "@type": "SportsTeam", name: "Chicago Pickleball: Wheelie Big Dills", url: SITE + "/pickleball" } }
       : {}),
     ...(d.type === "tournament" ? { sport: "Wheelchair pickleball" } : {}),
+    ...(s.results ? { competitor: competitors(s.results, `${d.name} ${(d.starts_at || d.opens || "").slice(0, 4)}`.trim()) } : {}),
     sameAs: s.links.map((l) => l[2]).filter((u) => !/instagram\.com\/reel|facebook\.com\/groups/.test(u)),
   };
   const ld = {
@@ -283,7 +285,7 @@ ${HEADER}
   <section class="band">
     <div class="wrap es-grid">
       <article class="es-story">
-${s.body.trim().replace(
+${s.body.trim().replace("{{results}}", s.results ? resultsList(s.results) : "").replace(
   "{{photo}}",
   s.photo
     ? `<figure class="es-photo"><img src="${s.photo.src}" alt="${esc(s.photo.alt)}" width="${s.photo.w}" height="${s.photo.h}" loading="lazy" decoding="async"><figcaption>${s.photo.caption} <a href="${s.photo.credit[1]}" target="_blank" rel="noopener">${s.photo.credit[0]}</a></figcaption></figure>`

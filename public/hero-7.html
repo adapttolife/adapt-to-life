@@ -75,19 +75,21 @@
 <link rel="icon" type="image/svg+xml" href="/images/favicon-v2-option2.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-v2-option2-32.png">
 <link rel="apple-touch-icon" href="/images/apple-touch-icon-v2-option2.png">
+<!-- A link preview shows the name alone (Alec, Nov 16 2026: "Just say Adapt To
+     Life"). The <title> above keeps the words people search for, for Google. -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="Adapt To Life | Adaptive Sports Nonprofit in Chicago">
+<meta property="og:title" content="Adapt To Life">
 <meta property="og:description" content="Adapt To Life is a 501(c)(3) in the Chicago area. We fund adaptive athletes and the clubs that make room for them, starting with wheelchair pickleball.">
-<meta property="og:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
+<meta property="og:image" content="https://adapttolife.org/images/og/home-v5-wall.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.">
+<meta property="og:image:alt" content="Adapt To Life. Your place in adaptive sports. A wall of black and white photographs of wheelchair pickleball players, smiling and playing on indoor courts.">
 <meta property="og:url" content="https://adapttolife.org/">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Adapt To Life | Adaptive Sports Nonprofit in Chicago">
+<meta name="twitter:title" content="Adapt To Life">
 <meta name="twitter:description" content="Adapt To Life is a 501(c)(3) in the Chicago area. We fund adaptive athletes and the clubs that make room for them, starting with wheelchair pickleball.">
-<meta name="twitter:image" content="https://adapttolife.org/images/og/home-v4-color.jpg">
-<meta name="twitter:image:alt" content="Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.">
+<meta name="twitter:image" content="https://adapttolife.org/images/og/home-v5-wall.jpg">
+<meta name="twitter:image:alt" content="Adapt To Life. Your place in adaptive sports. A wall of black and white photographs of wheelchair pickleball players, smiling and playing on indoor courts.">
 <link rel="preload" href="/css/site.css?v=3d6f4234" as="style">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -136,6 +138,33 @@
   .home-events-head{ display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:0.8rem 2rem; }
   .home-events-head .h2{ margin-top:0.7rem; }
   .home-events-foot{ margin-top:1.4rem; font-size:0.95rem; color:var(--ink-soft); }
+  /* Tim, faded in behind his section (Alec, Nov 16 2026: "a faded or ghost
+     image of Tim"). The only photograph of him we have, as on /tim, kept whole
+     and black and white. It is 1079px wide, so it stays soft and quiet: a
+     presence, not a picture to study. Wide screens: right of the text, his face
+     about 140px past the reading column, so no word sits on him. Narrower
+     screens: above the text, fading down into it. */
+  .home-tim{ position:relative; overflow:hidden; isolation:isolate; }
+  .home-tim > .wrap{ position:relative; z-index:1; }
+  /* The fade is two masks multiplied: an oval on his face and shoulders, and a
+     band that takes every edge of the frame to nothing, so no edge of the
+     photograph ever shows. */
+  .home-tim-ghost{ position:absolute; z-index:0; pointer-events:none; aspect-ratio:1079/705; opacity:0.28;
+    --oval:radial-gradient(ellipse 38% 58% at 50% 28%, #000 25%, transparent 100%);
+    --band:linear-gradient(180deg, transparent 0%, #000 12%, #000 38%, transparent 72%);
+    -webkit-mask-image:var(--oval), var(--band); -webkit-mask-composite:source-in;
+            mask-image:var(--oval), var(--band); mask-composite:intersect; }
+  .home-tim-ghost img{ display:block; width:100%; height:100%; object-fit:cover; filter:grayscale(1) contrast(1.02); }
+  @media (min-width:1101px){
+    /* his face sits about 140px past the end of the reading column */
+    .home-tim-ghost{ width:760px; top:50%; left:calc(50% + 460px - 760px * 0.49); transform:translateY(-50%); }
+  }
+  @media (max-width:1100px){
+    /* above the words: his face first, then the line about him */
+    .home-tim{ padding-top:calc(max(100vw, 560px) * 0.3); }
+    .home-tim-ghost{ width:max(100vw, 560px); top:0; left:50%; transform:translateX(-50%); opacity:0.32;
+      --band:linear-gradient(180deg, transparent 0%, #000 12%, #000 30%, transparent 52%); }
+  }
 
 </style>
 
@@ -544,8 +573,9 @@ fill="currentColor" stroke="none">
     </div>
   </section>
 
-  <!-- 5 · TIM — dark cinematic band, gold reverence (photo-ready) -->
-  <section class="dark band-lg">
+  <!-- 5 · TIM — dark cinematic band, gold reverence, Tim faded in behind (Nov 16 2026) -->
+  <section class="dark band-lg home-tim" id="tim">
+    <div class="home-tim-ghost" aria-hidden="true"><img src="/images/tim.webp" alt="" width="1079" height="705" loading="lazy" decoding="async"></div>
     <div class="wrap reading">
       <span class="eyebrow gold reveal">Why &ldquo;Hustle &amp; Heart&rdquo;</span>
       <h2 class="serif statement italic reveal" style="margin-top:1rem;">Hustle &amp; Heart is how Tim played.</h2>

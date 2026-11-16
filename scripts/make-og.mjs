@@ -155,6 +155,62 @@ const PHOTOS = {
   alec: { file: "public/images/alec-waterskiing.jpg", pos: "50% 36%" },
 };
 
+// ---- the home header's wall, at card size (Nov 16 2026) --------------------
+// Alec: the card should take "what we've done so well with the main header on
+// the landing page". So the home card is that header: the wall's own panel files
+// (public/images/hero/panels, already graded black and white and dimmed by
+// depth, so the card and the page are the same pictures) at the same places.
+//
+// The numbers are COPIED from the hero's inline <style> in public/index.html
+// rather than read from it. A card is a versioned picture: if the page's wall
+// changes, this card must not quietly change at the same URL. Change it here,
+// on a new filename, when the card should follow.
+//
+// The page's desktop video panels (whitecap, dink, smile-close, grin) show their
+// stills here: a share card does not move, and the stills are the faces.
+const HERO_PANELS = JSON.parse(
+  readFileSync(join(ROOT, "public/images/hero/panels/hashes.json"), "utf8"),
+);
+function heroPanel(name) {
+  const file = HERO_PANELS[`${name}.webp`];
+  if (!file) throw new Error(`hero panel not found: ${name}`);
+  return `public/images/hero/panels/${file}`;
+}
+const HOME_WALL = {
+  // On the page the wall is 1.7 times as wide as the hero is tall, pinned right.
+  // The card is 630 tall, so the same box is 1071 wide from x = 129.
+  box: { left: 129, top: 0, width: 1071, height: 630 },
+  // [panel, depth (1 back, 2 mid, 3 front), left %, top %, width %, rotation deg]
+  panels: [
+    ["serve", 1, 2, 58, 15, -0.7],
+    ["rally", 1, 19, 76, 16, 0.6],
+    ["court", 1, 76, 26, 15, -0.5],
+    ["shout", 1, 51, 22, 10, 0.9],
+    ["close-dink", 1, 66, 36, 11, -0.8],
+    ["paddle", 1, 62, 80, 11, 0.7],
+    ["lobby", 1, 34, 64, 11, -0.6],
+    ["bench", 1, 27, 30, 14, 0.5],
+    ["fence", 1, -27, 40, 15, 0.6],
+    ["drive", 1, -17, 60, 15, -0.5],
+    ["profile", 1, 47, 38, 10, -0.8],
+    ["toss", 2, 69, 0, 17, 0.5],
+    ["whitecap", 2, 44, 4, 12, -0.9],
+    ["laugh", 2, 5, 74, 13, 0.8],
+    ["reach", 2, 90, 40, 14, -0.6],
+    ["swing", 2, 54, 56, 11, 0.9],
+    ["seated", 2, 87, 70, 13, 0.6],
+    ["grin", 3, 77, 42, 11.5, -0.5],
+    ["lanyard", 2, 88, 14, 11, 0.6],
+    // The page has net at 53%; here the lockup sits above the headline, so the
+    // type block runs lower and net drops to clear the descenders of "sports."
+    ["net", 3, 17, 63, 17, -0.7],
+    ["smile-close", 3, 82, 4, 16, 0.7],
+    ["dink", 3, 57, 10, 19, -0.6],
+    ["brian", 3, 41, 55, 16, 0.5],
+    ["forehand", 3, 62, 69.7, 27, -0.4],
+  ],
+};
+
 // THE CARDS. `headline` takes one <em> for the italic orange accent.
 //
 // Every headline is the page's OWN h1, not new copy. A share card is the page's
@@ -174,16 +230,21 @@ const CARDS = {
   // the old picture to every platform and thread that already scraped it — the
   // most-shared link would be the last one to update. Same rule the v2 cards
   // followed; -v3-athlete is theirs.
-  // The home card alone runs the colour treatment, on its own -v4 path for the
-  // same cache reason the -v3 rename was made: a card that changes picture at
-  // an old URL keeps serving the old picture to every thread that scraped it.
+  // The home card moves on its own path for the same cache reason the -v3
+  // rename was made: a card that changes picture at an old URL keeps serving the
+  // old picture to every thread that scraped it. v4 (2026-09-10) was one colour
+  // photo; v5 (Nov 16 2026) is the home header as a card, with the primary
+  // lockup. The full stop sits inside the accent, as it does on the page.
   home: {
-    ...ATHLETE,
-    variant: "athlete color",
-    photo: "paddle-raise",
-    out: "public/images/og/home-v4-color.jpg",
+    variant: "wall",
+    wall: HOME_WALL,
+    size: 84,
+    measure: "11ch",
+    logo: 96,
+    gap: 44,
+    out: "public/images/og/home-v5-wall.jpg",
     page: "index.html",
-    headline: "Your place in <em>adaptive sports</em>.",
+    headline: "Your place in <em>adaptive sports.</em>",
   },
   donate: {
     ...ATHLETE,
@@ -607,6 +668,19 @@ function intrinsic(rel) {
   return { w, h };
 }
 
+// A wall's panels with their files inlined and their intrinsic sizes, which set
+// each panel's aspect ratio exactly as the page's markup does.
+function resolveWall(wall) {
+  return {
+    box: wall.box,
+    scrim: wall.scrim,
+    panels: wall.panels.map(([name, depth, left, top, width, r, pos]) => {
+      const file = heroPanel(name);
+      return { name, depth, left, top, width, r, pos, ...intrinsic(file), uri: dataUri(file) };
+    }),
+  };
+}
+
 // How much the crop stretches the source. The card renders at deviceScaleFactor
 // DSF, so the photo element's device-pixel box is its CSS box times DSF; the
 // two background-size modes we use resolve as below. >1 means upscaling, which
@@ -665,13 +739,59 @@ for (const name of todo) {
   }
 
   await page.evaluate(
-    async ({ card, markSvg, photoUri, pos, zoom, logoUri, atlUri }) => {
+    async ({ card, markSvg, photoUri, pos, zoom, logoUri, atlUri, wall }) => {
       const el = document.getElementById("card");
       el.className = `card${card.variant ? " " + card.variant : ""}`;
       document.getElementById("mark").innerHTML = markSvg;
       document.getElementById("headline").innerHTML = card.headline || "";
       el.style.setProperty("--size", `${card.size}px`);
       el.style.setProperty("--measure", card.measure);
+      for (const [prop, val] of [
+        ["--logo", card.logo && `${card.logo}px`],
+        ["--gap", card.gap && `${card.gap}px`],
+        ["--scrim", wall?.scrim],
+      ])
+        if (val) el.style.setProperty(prop, val);
+        else el.style.removeProperty(prop);
+
+      // The wall: built fresh per card, in the page's own layer order.
+      const stage = document.getElementById("wall");
+      stage.innerHTML = "";
+      const primary = document.getElementById("primary");
+      primary.removeAttribute("src");
+      if (wall) {
+        const layer = (cls) => {
+          const d = document.createElement("div");
+          d.className = cls;
+          return d;
+        };
+        const box = layer("w-box");
+        Object.assign(box.style, {
+          left: `${wall.box.left}px`,
+          top: `${wall.box.top}px`,
+          width: `${wall.box.width}px`,
+          height: `${wall.box.height}px`,
+        });
+        for (const p of wall.panels) {
+          const fig = document.createElement("figure");
+          fig.className = `w-p d${p.depth}`;
+          fig.dataset.name = p.name;
+          fig.style.cssText =
+            `left:${p.left}%; top:${p.top}%; width:${p.width}%;` +
+            ` aspect-ratio:${p.w}/${p.h}; --r:${p.r}deg;` +
+            (p.pos ? ` --pos:${p.pos};` : "");
+          const img = document.createElement("img");
+          img.alt = "";
+          img.src = p.uri;
+          fig.append(img);
+          box.append(fig);
+        }
+        box.append(layer("w-haze h1"), layer("w-haze h2"));
+        stage.append(layer("w-sky"), box, layer("w-scrim"), layer("w-grain"), layer("w-vig"));
+        await Promise.all([...box.querySelectorAll("img")].map((i) => i.decode()));
+        primary.src = atlUri;
+        await primary.decode();
+      }
       const p = document.getElementById("photo");
       const s = document.getElementById("scrim");
       const w = document.getElementById("watermark");
@@ -715,7 +835,8 @@ for (const name of todo) {
       pos: card.pos || photo?.pos,
       zoom: card.zoom || photo?.zoom,
       logoUri: card.logos ? dataUri(card.logos.partner) : null,
-      atlUri: card.logos ? primaryReversed : null,
+      atlUri: card.logos || card.wall ? primaryReversed : null,
+      wall: card.wall ? resolveWall(card.wall) : null,
     },
   );
 
@@ -760,7 +881,17 @@ for (const name of todo) {
       const pb = photo.hidden ? null : photo.getBoundingClientRect();
       const img = document.querySelector("#logos:not([hidden]) img.partner");
       const lb = img ? img.getBoundingClientRect() : null;
+      // Wall panels: the layout box (before rotation) against the file, as
+      // object-fit: cover scales it.
+      const wall = [...document.querySelectorAll("#wall .w-p")].map((f) => {
+        const i = f.querySelector("img");
+        return {
+          name: f.dataset.name,
+          scale: Math.max(f.offsetWidth / i.naturalWidth, f.offsetHeight / i.naturalHeight),
+        };
+      });
       return {
+        wall,
         logo: lb ? { w: lb.width, h: lb.height, nw: img.naturalWidth } : null,
         size,
         lines: Math.round(h1.getBoundingClientRect().height / (size * 1.02)),
@@ -825,7 +956,12 @@ for (const name of todo) {
   // against the delivered 1200px card: a flat logo is drawn once into it.
   const logoScale = probe.logo ? probe.logo.w / probe.logo.nw : null;
   const okLogo = logoScale === null || logoScale <= MAX_UPSCALE;
-  const ok = okSize && okFrame && okWeight && okSeam && okScale && okLogo;
+  // The same no upscaling rule for every panel of a wall, at render scale.
+  const soft = probe.wall
+    .map((p) => ({ ...p, scale: p.scale * DSF }))
+    .filter((p) => p.scale > MAX_UPSCALE);
+  const okWall = soft.length === 0;
+  const ok = okSize && okFrame && okWeight && okSeam && okScale && okLogo && okWall;
   if (!ok) failed = true;
   console.log(
     `${ok ? "PASS" : "FAIL"} ${name.padEnd(18)} ${String(kb).padStart(3)}KB  ` +
@@ -836,6 +972,10 @@ for (const name of todo) {
       (scale === null
         ? ""
         : `  photo ${scale <= 1 ? "sharp" : scale.toFixed(2) + "x upscaled"}`) +
+      (probe.wall.length ? `  wall of ${probe.wall.length}${okWall ? " sharp" : ""}` : "") +
+      (okWall
+        ? ""
+        : `  [wall panels upscaled: ${soft.map((p) => `${p.name} ${p.scale.toFixed(2)}x`).join(", ")}]`) +
       `  ${out}` +
       (okSize
         ? ""

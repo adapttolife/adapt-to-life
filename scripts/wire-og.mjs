@@ -50,8 +50,9 @@ const PER_PAGE = {
 // and then who is actually pictured, briefly. An organisation built around
 // disabled athletes does not ship an unlabelled — or a mislabelled — image.
 const ALT = {
+  // The home header as a card (v5, Nov 16 2026): the logo, the line, the wall.
   _default:
-    "Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.",
+    "Adapt To Life. Your place in adaptive sports. A wall of black and white photographs of wheelchair pickleball players, smiling and playing on indoor courts.",
   donate:
     "Put an athlete in the game. Adapt To Life. A wheelchair pickleball player swings, the ball in the air beside her.",
   road:
@@ -94,7 +95,7 @@ const ALT = {
 // picture to every thread that already scraped it — so the version lives beside
 // the card it belongs to and the next single-card change costs one line here.
 const FILE = {
-  _default: "home-v4-color.jpg",
+  _default: "home-v5-wall.jpg",
   juan: "juan-v2-serve.jpg",
   "bread-and-butter": "bread-and-butter-v4-medals.jpg",
   selkirk: "selkirk-v4-primary.jpg",

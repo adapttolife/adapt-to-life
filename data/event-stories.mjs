@@ -90,6 +90,19 @@ export const STORIES = {
     // (spotlights co-branded with the host club), /social (the reel), and the
     // results cards in Drive, Social Media > ATL Monster Smash carousel >
     // "RESULTS - Monster Smash (post these)" (names, partners, 2-2-2 split).
+    // Who won what, and with whom. One list: the page's medal list, its
+    // structured data and the Facts section of /llms.txt are all built from
+    // it, so AI search reads the same partners the results cards show.
+    // (Nov 16 2026: Google's AI said Alec partnered Bob at Monster Smash. He
+    // didn't: Bob's partner was Kenneth Holman. Alec practices with Bob.)
+    results: [
+      { slug: "juan", name: "Juan Ortiz", won: [{ draw: "singles", medal: "gold" }] },
+      { slug: "bob", name: "Bob Swanson", won: [{ draw: "doubles", medal: "gold", partner: "Kenneth Holman" }] },
+      { slug: "robby", name: "Robby Wolf", won: [{ draw: "singles", medal: "bronze" }, { draw: "doubles", medal: "silver", partner: "Ken Carwell" }] },
+      { slug: "ken", name: "Ken Carwell", won: [{ draw: "doubles", medal: "silver", partner: "Robby Wolf" }] },
+      { slug: "amanda", name: "Amanda Tworek", won: [{ draw: "doubles", medal: "bronze", partner: "Kasey Stelter" }] },
+      { slug: "brian", name: "Brian Liss", won: [], note: "competed in Cincinnati" },
+    ],
     facts: [
       ["Brackets", "Wheelchair singles and doubles"],
       ["Entry", "Free for wheelchair athletes, thanks to The Pickle Lodge"],
@@ -101,14 +114,7 @@ export const STORIES = {
 
       <h2 class="serif h2">The medals</h2>
       <p>Six athletes we support made the trip, and they came home with six medals: two gold, two silver and two bronze.</p>
-      <ul class="es-list">
-        <li><b>Juan Ortiz</b>: singles gold</li>
-        <li><b>Bob Swanson</b>: doubles gold, with Kenneth Holman</li>
-        <li><b>Robby Wolf</b>: singles bronze, and doubles silver with Ken Carwell</li>
-        <li><b>Ken Carwell</b>: doubles silver, with Robby Wolf</li>
-        <li><b>Amanda Tworek</b>: doubles bronze, with Kasey Stelter</li>
-        <li><b>Brian Liss</b>: competed in Cincinnati</li>
-      </ul>
+      {{results}}
 
       <h2 class="serif h2">More than 34,000 views</h2>
       <p>We made a spotlight for each athlete, with The Pickle Lodge&rsquo;s name on it next to ours. With the crew&rsquo;s arrival reel, our seven Monster Smash posts drew more than 34,000 views across Instagram and Facebook. We offer our partner clubs the same: the courts, the athletes, and both names on the posts. <a href="https://www.instagram.com/reel/De4NJ9TNJGR/" target="_blank" rel="noopener">Watch the reel</a>.</p>

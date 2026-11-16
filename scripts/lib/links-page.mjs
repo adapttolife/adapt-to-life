@@ -28,10 +28,10 @@ export function linksPage({ root, shell, metaBlock, esc, icon }) {
   const url = `${SITE}/links`;
   const title = "Links | Adapt To Life";
   const desc = "Meet the wheelchair athletes Adapt To Life funds in Chicago: the crew, the medals, the road to the US Open, and how to help.";
-  const og = `${SITE}/images/og/home-v4-color.jpg`;
+  const og = `${SITE}/images/og/home-v5-wall.jpg`;
   // the same alt scripts/wire-og.mjs gives the default card, so it leaves this page alone
   const ogAlt =
-    "Your place in adaptive sports. Adapt To Life. A wheelchair pickleball player in glasses turns his paddle up mid-rally on an indoor court.";
+    "Adapt To Life. Your place in adaptive sports. A wall of black and white photographs of wheelchair pickleball players, smiling and playing on indoor courts.";
   // Every link carries the bio tags; the page script renames the campaign to
   // bio-<from> when a post linked /links?from=<key>.
   const utm = (path, content) => {

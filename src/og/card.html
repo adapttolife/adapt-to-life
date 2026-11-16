@@ -215,10 +215,69 @@
     font-size:56px; line-height:1; color:var(--cream-faint); }
   .logo-row .partner{ height:122px; width:auto; display:block; }
   .card.logos .inner{ display:none; }
+
+  /* ---- wall: the home header, as a share card (Nov 16 2026) ----------------
+     Alec, looking at the home card in a text thread: "taking what we've done so
+     well with the main header on the landing page", and "We have a really good
+     logo." So this variant IS the header: the same black and white panels, laid
+     out by the same numbers as index.html (make-og.mjs copies them), with the
+     same three depths, the haze between them, the warm light from the lower
+     right and the dark corner the type sits in. The rules below are copied from
+     src/css/hero-mosaic.css (.mw-*) for the same reason the tokens at the top
+     are copied from site.css: this page renders with no site stylesheet.
+     The nav's small mark becomes the identity set's primary lockup, large: the
+     card is often the first time someone sees the name. */
+  .wall-stage{ position:absolute; inset:0; z-index:1; display:none; isolation:isolate; }
+  .card.wall .wall-stage{ display:block; }
+  .card.wall{ background:#0f0e0d; }
+  .card.wall .photo, .card.wall .scrim, .card.wall .watermark,
+  .card.wall .atmos, .card.wall .grain, .card.wall .foot{ display:none; }
+  .w-sky{ position:absolute; inset:0; z-index:0; background:
+    radial-gradient(110% 80% at 82% 104%, rgba(255,92,57,0.46) 0%, rgba(255,92,57,0.14) 34%, rgba(255,92,57,0) 64%),
+    radial-gradient(60% 44% at 88% 86%, rgba(255,150,90,0.34) 0%, rgba(255,92,57,0) 72%),
+    linear-gradient(180deg, #000 0%, #030304 42%, #0f0e0d 100%); }
+  /* The box the panel percentages are measured against. On the page it is the
+     hero (1.7 times as wide as it is tall, pinned right); here make-og.mjs
+     places it, so the whole wall can be scaled or slid as one picture. */
+  .w-box{ position:absolute; z-index:1; }
+  .w-p{ position:absolute; margin:0; overflow:hidden; border-radius:3px; transform:rotate(var(--r,0deg)); }
+  .w-p img{ width:100%; height:100%; object-fit:cover; object-position:var(--pos,50% 50%); display:block; }
+  .w-p.d3{ z-index:6; box-shadow:0 42px 80px -34px rgba(0,0,0,0.95), 0 8px 22px -12px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,150,110,0.16); }
+  .w-p.d3 img{ filter:contrast(1.06); }
+  .w-p.d2{ z-index:4; box-shadow:0 28px 56px -30px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,150,110,0.1); }
+  .w-p.d2 img{ filter:contrast(0.96); }
+  .w-p.d1{ z-index:2; box-shadow:0 18px 40px -26px rgba(0,0,0,0.85); }
+  .w-p.d1 img{ filter:contrast(0.92) blur(1.2px); }
+  .w-haze{ position:absolute; inset:0; }
+  .w-haze.h1{ z-index:3; background:
+    radial-gradient(90% 70% at 84% 96%, rgba(255,110,70,0.2) 0%, rgba(255,110,70,0) 62%),
+    linear-gradient(180deg, rgba(15,14,13,0.55) 0%, rgba(15,14,13,0.28) 46%, rgba(15,14,13,0.6) 100%); }
+  .w-haze.h2{ z-index:5; background:
+    radial-gradient(80% 60% at 86% 98%, rgba(255,120,80,0.16) 0%, rgba(255,120,80,0) 60%),
+    linear-gradient(180deg, rgba(15,14,13,0.3) 0%, rgba(15,14,13,0.06) 44%, rgba(15,14,13,0.34) 100%); }
+  /* The dark corner, from the page, sized by make-og.mjs (--scrim) because the
+     card's type block is taller than the page's: the lockup sits above the
+     headline instead of in a nav bar. */
+  .w-scrim{ position:absolute; inset:0; z-index:7; background:radial-gradient(
+    var(--scrim, 118% 86%) at 6% 6%,
+    rgba(15,14,13,0.95) 0%, rgba(15,14,13,0.84) 26%, rgba(15,14,13,0.46) 44%,
+    rgba(15,14,13,0.12) 64%, rgba(15,14,13,0) 80%); }
+  .w-grain{ position:absolute; inset:0; z-index:9; opacity:0.26; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .w-vig{ position:absolute; inset:0; z-index:9; background:radial-gradient(126% 104% at 52% 46%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.5) 100%); }
+
+  .primary{ display:none; height:var(--logo,100px); width:auto; }
+  .card.wall .lockup #mark, .card.wall .lockup .wordmark{ display:none; }
+  .card.wall .primary{ display:block; }
+  .card.wall .inner{ justify-content:flex-start; gap:var(--gap,48px); padding-top:56px; }
+  /* the page's own headline shadow (.mw-copy .display): an edge against a busy
+     photograph without dimming the photograph */
+  .card.wall h1{ letter-spacing:-0.04em; text-shadow:0 1px 2px rgba(0,0,0,0.55), 0 2px 16px rgba(0,0,0,0.5); }
 </style>
 </head>
 <body>
 <div class="card" id="card">
+  <div class="wall-stage" id="wall"></div>
   <div class="photo" id="photo"></div>
   <div class="scrim" id="scrim"></div>
   <div class="watermark" id="watermark"></div>
@@ -229,6 +288,7 @@
     <div class="lockup">
       <span id="mark"></span>
       <span class="wordmark">Adapt To Life</span>
+      <img class="primary" id="primary" alt="Adapt To Life">
     </div>
     <div class="mid">
       <h1 id="headline"></h1>

@@ -235,8 +235,8 @@
   .sk-teach-why ul li::marker{ color:var(--orange); }
   .sk-teach-ask{ margin-top:clamp(1.6rem,3vw,2.2rem); border:1px dashed rgba(255,92,57,0.6); border-radius:18px; background:rgba(255,92,57,0.06); padding:clamp(1.1rem,2.6vw,1.5rem); }
   .sk-teach-ask .price{ display:block; font-family:var(--font-display); font-weight:900; font-size:1.35rem; color:var(--orange-ink); margin-bottom:0.25rem; }
-  .sk-previews{ list-style:none; margin:clamp(1.6rem,3vw,2.2rem) 0 0; padding:0; display:grid; grid-template-columns:repeat(2,minmax(0,300px)); gap:clamp(0.8rem,2.4vw,1.4rem); justify-content:start; }
-  @media (max-width:560px){ .sk-previews{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.7rem; } }
+  .sk-previews{ list-style:none; margin:clamp(1.6rem,3vw,2.2rem) 0 0; padding:0; display:grid; grid-template-columns:repeat(3,minmax(0,260px)); gap:clamp(0.8rem,2.4vw,1.4rem); justify-content:start; }
+  @media (max-width:640px){ .sk-previews{ grid-template-columns:none; grid-auto-flow:column; grid-auto-columns:58%; gap:0.7rem; overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:0.4rem; margin-right:calc(-1 * var(--gutter, 1.25rem)); padding-right:var(--gutter, 1.25rem); } .sk-previews > li{ scroll-snap-align:start; } }
   .sk-previews figure{ margin:0; }
   .sk-previews video{ display:block; width:100%; height:auto; aspect-ratio:9/16; border-radius:18px; background:var(--canvas); border:1px solid var(--hairline); }
   .sk-previews figcaption{ margin-top:0.55rem; display:grid; gap:0.15rem; }
@@ -509,8 +509,12 @@ fill="currentColor" stroke="none">
       <h2 class="serif h2 reveal" id="skTeachHead" style="margin-top:0.7rem;">Let&rsquo;s make the first place to learn wheelchair pickleball, <em class="italic bb-o">presented by Selkirk.</em></h2>
       <p class="prose reveal sk-teach-lead">We&rsquo;ve made the first short illustrated lessons: wheelchair athletes drawn on a true-to-scale court, each shot slowed down and explained, with a narrated voiceover and captions for the phone. Selkirk TV teaches every part of the standing game. We couldn&rsquo;t find a wheelchair course anywhere. Let&rsquo;s make the one everyone uses.</p>
     </div>
-    <span class="eyebrow reveal" style="display:block; margin-top:clamp(1.6rem,3vw,2.2rem);">Previews: the first two lessons</span>
+    <span class="eyebrow reveal" style="display:block; margin-top:clamp(1.6rem,3vw,2.2rem);">Previews: the first three lessons</span>
     <ul class="sk-previews">
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/ocean-and-ponds.c161b80e.webp" width="720" height="1280" src="/videos/lessons/ocean-and-ponds.843f1340.mp4" aria-label="Lesson: Ocean and Ponds, see the court from the serve. 69 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Ocean and Ponds: see the court from the serve.</b><span>Reading the court · 69 seconds</span></figcaption>
+      </figure></li>
       <li class="reveal"><figure>
         <video controls playsinline preload="none" poster="/videos/lessons/return-of-serve.6aa61591.webp" width="720" height="1280" src="/videos/lessons/return-of-serve.7560fb38.mp4" aria-label="Lesson: return deep, cover the reply. 87 seconds, narrated, captions on screen."></video>
         <figcaption><b>Return deep. Cover the reply.</b><span>The return of serve · 87 seconds</span></figcaption>
@@ -520,7 +524,7 @@ fill="currentColor" stroke="none">
         <figcaption><b>The third-shot drop: earn your way forward.</b><span>The third shot · under 2 minutes</span></figcaption>
       </figure></li>
     </ul>
-    <p class="sk-previews-note reveal">Tap to play, with sound. Captions are on screen, and the narration is a synthetic voice. Each lesson draws on USA Pickleball and on coaching from pros, Selkirk&rsquo;s own included, and the teaching guide behind each one notes what changes for the chair. A third, on reading the court from the first serve, is in the works.</p>
+    <p class="sk-previews-note reveal">Tap to play, with sound. Captions are on screen, and the narration is a synthetic voice. Each lesson draws on USA Pickleball and on coaching from pros, Selkirk&rsquo;s own included, and the teaching guide behind each one notes what changes for the chair.</p>
     <ul class="sk-series">
       <li class="reveal">
         <span class="sk-step-n">Series 1</span>
@@ -574,7 +578,7 @@ fill="currentColor" stroke="none">
     <div class="sk-teach-ask reveal">
       <span class="price">Start with 101: $5,000</span>
       Wheelchair Pickleball 101, with Selkirk: six illustrated lessons, narrated and captioned. Juan and our coaches, who play from the chair, will check each one before it goes out. Yours to put on Selkirk TV, and ours to share on our channels. The previews above show the style, so you can see the work before you say yes. Selkirk&rsquo;s name stays on these six lessons for as long as we show them. The coaching series and Start a program come next, and we&rsquo;d build those together (step three).
-      <p style="margin:0.8rem 0 0;"><a class="textlink" href="/docs/selkirk-teaching-series.pdf" download>Download the one-page summary (PDF)</a></p>
+      <p style="margin:0.8rem 0 0;"><a class="textlink" href="/docs/selkirk-teaching-series-v2.pdf" download>Download the one-page summary (PDF)</a></p>
     </div>
   </div>
 </section>

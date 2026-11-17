@@ -183,17 +183,15 @@ function run(stage, update, onSettled) {
   return () => { stopped = true; cancelAnimationFrame(raf); raf = 0; };
 }
 
-// An SVG drawn into a canvas, for the court paint.
-async function rasterSVG(url, width) {
+// A logo, decoded and ready to paint. It is drawn straight from the SVG at the
+// size it lands on the court, so it stays sharp. The shape is fixed here, not
+// read from the file: some browsers report no natural size for an SVG.
+async function loadLogo(url, aspect) {
   const img = new Image();
   img.decoding = "async";
   img.src = url;
   await img.decode();
-  const h = Math.round((width * img.naturalHeight) / img.naturalWidth) || width;
-  const c = document.createElement("canvas");
-  c.width = width; c.height = h;
-  c.getContext("2d").drawImage(img, 0, 0, width, h);
-  return c;
+  return { img, aspect };
 }
 
 // A soft round sprite, for dust and the ball's tail.
@@ -212,47 +210,89 @@ function dotTexture(size = 64) {
   return tex;
 }
 
-// The court as one painted texture: canvas x is world x, canvas y is world z
-// (top = far). Portrait: the court stands upright, Adapt To Life in the far
-// half. Landscape: it lies across the screen with world -x up, so the near
-// half is on the left; Adapt To Life goes there and each lockup turns to read
-// upright.
-function courtTexture(atlC, selC, portrait) {
-  const W = MOBILE ? 1536 : 2048, H = Math.round((W * FL) / FW);
+// The floor: dark, with a soft sheen where the lights pool. Painted in world
+// units, so the court plane's margin matches the floor around it exactly.
+function paintFloor(g, k, X, Z, w, h) {
+  g.fillStyle = "#0e1216"; g.fillRect(0, 0, w, h);
+  const sheen = g.createRadialGradient(X(0), Z(0), 0, X(0), Z(0), 0.6 * FL * k);
+  sheen.addColorStop(0, "rgba(255,255,255,0.05)"); sheen.addColorStop(1, "rgba(255,255,255,0)");
+  g.fillStyle = sheen; g.fillRect(0, 0, w, h);
+}
+function floorTexture() {
+  const W = 512, H = Math.round((W * FL) / FW), k = W / FW;
+  const c = document.createElement("canvas");
+  c.width = W; c.height = H;
+  paintFloor(c.getContext("2d"), k, (x) => (x + FW / 2) * k, (z) => (z + FL / 2) * k, W, H);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+// Where the two names go, in metres on the court. Portrait: the court stands
+// upright, Adapt To Life in the far half. Landscape: it lies across the screen
+// with world -x up, so the near half is on the left; Adapt To Life goes there
+// and each lockup turns a quarter to read upright.
+//
+// Each name sits in the middle of its service half. Selkirk's lockup is long
+// and low and Adapt To Life's is stacked: at the same width Selkirk would carry
+// a third of the ink. So Selkirk runs wider and Adapt To Life stands taller,
+// and the two weigh about the same. Neither is stretched or rearranged.
+const MID = (CL / 2 + KITCHEN) / 2; // the middle of each service half
+const HALF = CL / 2 - KITCHEN; // a service half, kitchen line to baseline
+const CLEAR = 0.24; // the gap between a name and the end of the centre line
+const MIN_STUB = 0.25; // a shorter piece of centre line reads as a speck, so it goes
+function nameLayout(atl, sel, portrait) {
+  const place = (logo, w, cz) => {
+    const h = w / logo.aspect;
+    // How far the name runs along the centre line (world z): a turned name runs along it.
+    return { img: logo.img, w, h, cz, turn: !portrait, reach: (portrait ? h : w) / 2 };
+  };
+  return portrait
+    ? [place(atl, CW * 0.54, -MID), place(sel, CW * 0.84, MID)]
+    : [place(atl, HALF * 0.51, MID), place(sel, HALF * 0.77, -MID)];
+}
+
+// The court on its own plane: the court and a margin, painted finely enough
+// that the lines and names stay sharp on a big screen. Canvas x is world x,
+// canvas y is world z (top = far).
+const PAD = 0.5, SW = CW + 2 * PAD, SL = CL + 2 * PAD;
+function courtTexture(names) {
+  const W = MOBILE ? 1024 : 1920, H = Math.round((W * SL) / SW); // stays under 4096, the safe texture size
   const c = document.createElement("canvas");
   c.width = W; c.height = H;
   const g = c.getContext("2d");
-  const k = W / FW; // px per metre
-  const X = (x) => (x + FW / 2) * k, Z = (z) => (z + FL / 2) * k;
-  g.fillStyle = "#0e1216"; g.fillRect(0, 0, W, H);
-  // A soft sheen where the lights pool.
-  const sheen = g.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, H * 0.6);
-  sheen.addColorStop(0, "rgba(255,255,255,0.05)"); sheen.addColorStop(1, "rgba(255,255,255,0)");
-  g.fillStyle = sheen; g.fillRect(0, 0, W, H);
-  g.fillStyle = "#1b2f47"; g.fillRect(X(-CW / 2), Z(-CL / 2), CW * k, CL * k);
-  g.fillStyle = "#213a57"; g.fillRect(X(-CW / 2), Z(-KITCHEN), CW * k, KITCHEN * 2 * k);
-  g.fillStyle = "#f2efe8";
-  const line = (x0, z0, x1, z1) => g.fillRect(X(Math.min(x0, x1)) - (x0 === x1 ? (LINE * k) / 2 : 0), Z(Math.min(z0, z1)) - (z0 === z1 ? (LINE * k) / 2 : 0), Math.max(LINE * k, Math.abs(x1 - x0) * k), Math.max(LINE * k, Math.abs(z1 - z0) * k));
-  line(-CW / 2, -CL / 2, CW / 2, -CL / 2); line(-CW / 2, CL / 2, CW / 2, CL / 2); // baselines
-  line(-CW / 2, -CL / 2, -CW / 2, CL / 2); line(CW / 2, -CL / 2, CW / 2, CL / 2); // sidelines
-  line(-CW / 2, -KITCHEN, CW / 2, -KITCHEN); line(-CW / 2, KITCHEN, CW / 2, KITCHEN); // kitchen lines
-  line(0, -CL / 2, 0, -KITCHEN); line(0, KITCHEN, 0, CL / 2); // centre lines
-  const paint = (img, cx, cz, w) => {
-    const h = (w * img.height) / img.width;
+  const k = W / SW; // px per metre
+  const X = (x) => (x + SW / 2) * k, Z = (z) => (z + SL / 2) * k;
+  paintFloor(g, k, X, Z, W, H);
+  const rect = (x0, z0, x1, z1) => g.fillRect(X(x0), Z(z0), (x1 - x0) * k, (z1 - z0) * k);
+  g.fillStyle = "#1b2f47"; rect(-CW / 2, -CL / 2, CW / 2, CL / 2);
+  g.fillStyle = "#213a57"; rect(-CW / 2, -KITCHEN, CW / 2, KITCHEN);
+  const L = LINE / 2, ink = "#f2efe8";
+  g.fillStyle = ink;
+  for (const s of [-1, 1]) {
+    rect(-CW / 2 - L, s * CL / 2 - L, CW / 2 + L, s * CL / 2 + L); // baseline
+    rect(s * CW / 2 - L, -CL / 2 - L, s * CW / 2 + L, CL / 2 + L); // sideline
+    rect(-CW / 2, s * KITCHEN - L, CW / 2, s * KITCHEN + L); // kitchen line
+  }
+  // The centre lines, kitchen line to baseline. Each stops short of the name
+  // in its half, the way a court painter masks around a logo. The gap is the
+  // same in both halves, sized to the bigger name, so the court stays
+  // symmetrical; if the line left would only be a speck, it goes entirely.
+  const reach = Math.max(...names.map((n) => n.reach)) + CLEAR;
+  const stub = HALF / 2 - reach;
+  if (stub >= MIN_STUB) {
+    for (const s of [-1, 1]) {
+      rect(-L, s * MID - reach - stub, L, s * MID - reach);
+      rect(-L, s * MID + reach, L, s * MID + reach + stub);
+    }
+  }
+  for (const n of names) {
     g.save();
-    g.translate(X(cx), Z(cz));
-    if (!portrait) g.rotate(-Math.PI / 2);
+    g.translate(X(0), Z(n.cz));
+    if (n.turn) g.rotate(-Math.PI / 2);
     g.globalAlpha = 0.94;
-    g.drawImage(img, (-w * k) / 2, (-h * k) / 2, w * k, h * k);
+    g.drawImage(n.img, (-n.w * k) / 2, (-n.h * k) / 2, n.w * k, n.h * k);
     g.restore();
-  };
-  const mid = (CL / 2 + KITCHEN) / 2; // the middle of each service half
-  if (portrait) {
-    paint(atlC, 0, -mid, CW * 0.74);
-    paint(selC, 0, mid, CW * 0.86);
-  } else {
-    paint(atlC, 0, mid, (CL / 2 - KITCHEN) * 0.9);
-    paint(selC, 0, -mid, (CL / 2 - KITCHEN) * 0.94);
   }
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
@@ -277,26 +317,30 @@ async function main() {
   scene.background = new THREE.Color(0x040404);
   scene.fog = new THREE.Fog(0x040404, 18, 46);
 
-  const [atlC, selC] = await Promise.race([
+  const [atl, sel] = await Promise.race([
     Promise.all([
-      rasterSVG("/images/selkirk/stage/atl-primary-light.svg", 1400),
-      rasterSVG("/images/selkirk/stage/selkirk-lockup.svg", 2400),
+      loadLogo("/images/selkirk/stage/atl-primary-light.svg", 638.64 / 216),
+      loadLogo("/images/selkirk/stage/selkirk-lockup.svg", 9464 / 1248),
     ]),
     timeout(12000),
   ]);
 
-  // The floor and court.
-  const floorMat = new THREE.MeshStandardMaterial({ roughness: 0.92, metalness: 0.0, envMapIntensity: 0 });
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(FW, FL), floorMat);
+  // The floor, and the court on top of it.
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(FW, FL), new THREE.MeshStandardMaterial({ map: floorTexture(), roughness: 0.92, metalness: 0.0, envMapIntensity: 0 }));
   floor.rotation.x = -Math.PI / 2;
   scene.add(floor);
+  const courtMat = new THREE.MeshStandardMaterial({ roughness: 0.92, metalness: 0.0, envMapIntensity: 0, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -4 });
+  const court = new THREE.Mesh(new THREE.PlaneGeometry(SW, SL), courtMat);
+  court.rotation.x = -Math.PI / 2;
+  court.position.y = 0.002;
+  scene.add(court);
   let texPortrait = null;
   const retexture = () => {
     if (texPortrait === stage.portrait) return;
     texPortrait = stage.portrait;
-    const old = floorMat.map;
-    floorMat.map = courtTexture(atlC, selC, stage.portrait);
-    floorMat.needsUpdate = true;
+    const old = courtMat.map;
+    courtMat.map = courtTexture(nameLayout(atl, sel, stage.portrait));
+    courtMat.needsUpdate = true;
     old && old.dispose();
   };
   retexture();

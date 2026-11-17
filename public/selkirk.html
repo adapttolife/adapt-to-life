@@ -172,7 +172,7 @@
      (bb-*), with its own sections (sk-*).
      ========================================================================== */
   .sk-lede-2{ margin-top:0.9rem; font-weight:700; font-size:1.1rem; color:var(--cream); max-width:46ch; }
-  .sk-record{ padding:clamp(0.4rem,1vw,0.8rem) 0 clamp(3rem,6vw,4.5rem); }
+  .sk-record{ padding:clamp(3.4rem,7vw,5rem) 0 clamp(3rem,6vw,4.5rem); }
   .sk-stats{ list-style:none; margin:1.1rem 0 0; padding:0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:clamp(0.6rem,2vw,1rem); }
   @media (max-width:980px){ .sk-stats{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
   .sk-stats li{ display:grid; gap:0.35rem; align-content:start; padding:clamp(1rem,2.4vw,1.3rem); border-radius:22px; background:rgba(249,247,242,0.04); box-shadow:inset 0 0 0 1px rgba(249,247,242,0.1); }
@@ -219,6 +219,21 @@
   @media (max-width:760px){ .sk-crew{ grid-template-columns:1fr; } }
   .sk-crew .bb-crew-card{ background:rgba(249,247,242,0.04); box-shadow:inset 0 0 0 1px rgba(249,247,242,0.1); }
   .sk-record-lede{ margin-top:0.6rem; max-width:60ch; color:var(--cream-mute); }
+  /* The proposal at a glance: six parts you can tap, and where we'd start. */
+  .sk-glance-lead{ margin:1rem auto 0; max-width:60ch; }
+  .sk-index{ list-style:none; margin:clamp(1.8rem,3.4vw,2.4rem) 0 0; padding:0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+  @media (max-width:900px){ .sk-index{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  @media (max-width:560px){ .sk-index{ grid-template-columns:1fr; gap:8px; } }
+  .sk-index li{ display:flex; }
+  .sk-index a{ width:100%; display:grid; grid-template-columns:auto minmax(0,1fr); column-gap:0.9rem; row-gap:0.25rem; align-content:start; padding:clamp(1rem,2.4vw,1.3rem); border-radius:18px; background:var(--paper); border:1px solid var(--hairline); color:inherit; text-decoration:none; transition:transform .3s cubic-bezier(.2,.7,.3,1), border-color .3s ease, box-shadow .3s ease; }
+  .sk-index a:hover{ transform:translateY(-3px); border-color:rgba(255,92,57,0.45); box-shadow:0 20px 40px -28px rgba(59,59,70,0.45); }
+  .sk-index a:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:3px; }
+  .sk-index .n{ grid-row:span 2; font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(1.6rem,3.2vw,2rem); line-height:1; color:var(--orange-ink); }
+  .sk-index b{ font-family:var(--font-display); font-weight:900; font-size:1.1rem; line-height:1.2; }
+  .sk-index .d{ color:var(--ink-soft); font-size:0.94rem; line-height:1.45; }
+  .sk-glance-ask{ margin:clamp(1.4rem,3vw,2rem) auto 0; max-width:62ch; text-align:center; padding:1rem 1.2rem; border-radius:16px; background:rgba(255,92,57,0.08); border:1px dashed rgba(255,92,57,0.5); line-height:1.55; }
+  .sk-glance-ask b{ color:var(--orange-ink); }
+  @media (max-width:560px){ .sk-phone{ width:min(100%,240px); } }
   /* Play together: the idea, beside the first hybrid lesson. */
   .sk-tog-inner{ display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,0.75fr); gap:clamp(1.8rem,4.5vw,4rem); align-items:center; }
   @media (max-width:880px){ .sk-tog-inner{ grid-template-columns:1fr; } }
@@ -268,6 +283,7 @@
   .sk-ladder-head{ margin-top:clamp(2.2rem,4vw,3rem); font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); }
   .sk-ladder{ list-style:none; margin:0.9rem 0 0; padding:0; display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; counter-reset:step; }
   @media (max-width:980px){ .sk-ladder{ grid-template-columns:1fr; } }
+  @media (max-width:980px){ .sk-ladder{ gap:6px; } .sk-ladder li{ padding:0.8rem 0.95rem; } }
   .sk-ladder li{ counter-increment:step; display:grid; gap:0.35rem; align-content:start; padding:1rem 1.05rem; border-radius:18px; background:var(--paper); border:1px dashed var(--hairline); }
   .sk-ladder li.now{ border:1.5px solid var(--orange); background:rgba(255,92,57,0.06); }
   .sk-ladder b{ font-family:var(--font-display); font-weight:900; font-size:1.1rem; }
@@ -400,8 +416,8 @@ fill="currentColor" stroke="none">
       <p class="lead sub reveal" style="color:var(--cream-mute);">In pickleball, a player in a wheelchair and a standing player can share a court, and even a team. Adapt To Life has started making lessons for that game. We have a national champion coach, and a crew of wheelchair players who bring home medals.</p>
       <p class="sk-lede-2 reveal">We&rsquo;re not just asking for money. We&rsquo;d like a partnership that&rsquo;s good for both of us.</p>
       <div class="actions reveal">
-        <a class="btn" href="#together">Watch the first lessons</a>
-        <a class="btn ghost" href="#tiers">See how we&rsquo;d grow together</a>
+        <a class="btn" href="#glance">See it at a glance</a>
+        <a class="btn ghost" href="#together">Watch the first lesson</a>
       </div>
     </div>
     <div class="bb-trio reveal">
@@ -412,10 +428,31 @@ fill="currentColor" stroke="none">
   </div>
 </section>
 
-<!-- =========================== RECORD =========================== -->
-<section class="dark sk-record" aria-labelledby="skRecordHead">
+<!-- ========================== AT A GLANCE ======================== -->
+<section class="band sk-glance" id="glance" aria-labelledby="skGlanceHead">
   <div class="wrap">
-    <p class="eyebrow orange reveal" id="skRecordHead">What the crew has done</p>
+    <div class="sec-head">
+      <span class="eyebrow reveal">The proposal at a glance</span>
+      <h2 class="serif h2 reveal" id="skGlanceHead" style="margin-top:0.7rem;">One idea, <em class="italic bb-o">six parts.</em></h2>
+      <p class="prose reveal sk-glance-lead">Everything here builds toward one partnership: teaching the game wheelchair and standing players play together, with Selkirk&rsquo;s name on it. Tap any part to jump there.</p>
+    </div>
+    <ol class="sk-index reveal">
+      <li><a href="#record"><span class="n">01</span><b>Who we are</b><span class="d">A wheelchair crew with US Open medals, and three players who already play a paddle from your family.</span></a></li>
+      <li><a href="#together"><span class="n">02</span><b>The bigger game</b><span class="d">Most players who share a court with a chair are standing. Selkirk TV teaches them, but not this.</span></a></li>
+      <li><a href="#lessons"><span class="n">03</span><b>What we&rsquo;ve made</b><span class="d">Five lessons this month, and a national champion coach to sign the next ones.</span></a></li>
+      <li><a href="#library"><span class="n">04</span><b>What we&rsquo;d build with Selkirk</b><span class="d">A library for Selkirk TV and Selkirk Academy, and what each of us brings to it.</span></a></li>
+      <li><a href="#stories"><span class="n">05</span><b>Where your name goes</b><span class="d">Our athletes&rsquo; stories, our clubs, the tournaments we play, and an audience that&rsquo;s mostly new.</span></a></li>
+      <li><a href="#tiers"><span class="n">06</span><b>How we start</b><span class="d">Paddles and six lessons this winter, then one season at a time, on simple terms.</span></a></li>
+    </ol>
+    <p class="sk-glance-ask reveal"><b>Where we&rsquo;d start:</b> this winter, paddles for our athletes and new players, and $5,000 for six new Play Together lessons. Then we grow one season at a time.</p>
+  </div>
+</section>
+
+<!-- =========================== RECORD =========================== -->
+<section class="dark sk-record" id="record" aria-labelledby="skRecordHead">
+  <div class="wrap">
+    <span class="eyebrow orange reveal">01 &middot; Who we are</span>
+    <h2 class="serif h2 reveal" id="skRecordHead" style="margin-top:0.7rem; color:var(--cream);">What the crew has done.</h2>
     <p class="sk-record-lede reveal">Chicago Pickleball: Wheelie Big Dills is the wheelchair pickleball crew Adapt To Life funds and supports.</p>
     <ul class="sk-stats reveal">
       <li><b>6</b><span>medals at Monster Smash</span><small>Two gold, two silver and two bronze, October 2026</small></li>
@@ -448,7 +485,7 @@ fill="currentColor" stroke="none">
 <section class="dark band-lg sk-tog" id="together" aria-labelledby="skTogHead">
   <div class="wrap sk-tog-inner">
     <div class="sk-tog-copy">
-      <span class="eyebrow orange reveal">The bigger game</span>
+      <span class="eyebrow orange reveal">02 &middot; The bigger game</span>
       <h2 class="serif display reveal" id="skTogHead" style="margin-top:1rem;">The biggest audience for this game is <em class="italic bb-o">standing up.</em></h2>
       <p class="lead sub reveal" style="color:var(--cream-mute);">In hybrid doubles, each team has one player in a wheelchair and one standing. The US Open and the USA Pickleball National Championships both run hybrid divisions. Our own Pete Petersen and Alec Tranel won hybrid silver at the 2025 US Open, and every adaptive night at our clubs puts chairs on the courts beside the clubs&rsquo; own members.</p>
       <p class="lead sub reveal" style="color:var(--cream-mute);">Those standing players are Selkirk TV&rsquo;s audience. What Selkirk TV hasn&rsquo;t had is a lesson on playing with, and against, a player in a chair: where to stand, which balls to take, and how one shot sets up a partner. We looked through close to fifty of its courses and couldn&rsquo;t find one.</p>
@@ -466,7 +503,7 @@ fill="currentColor" stroke="none">
 <section class="band sk-lessons" id="lessons" aria-labelledby="skLessonsHead">
   <div class="wrap">
     <div class="sec-head">
-      <span class="eyebrow reveal">Already made</span>
+      <span class="eyebrow reveal">03 &middot; What we&rsquo;ve made</span>
       <h2 class="serif h2 reveal" id="skLessonsHead" style="margin-top:0.7rem;">Five lessons, made this month.</h2>
       <p class="prose reveal sk-lessons-lead">The hybrid lesson above, and four from the wheelchair game. Each one is short and made for a phone: the court drawn to scale, every shot slowed down and explained, with narration and captions built in.</p>
     </div>
@@ -519,7 +556,7 @@ fill="currentColor" stroke="none">
 <section class="band sk-library" id="library" aria-labelledby="skLibraryHead">
   <div class="wrap">
     <div class="sec-head">
-      <span class="eyebrow reveal">What we&rsquo;d build with Selkirk</span>
+      <span class="eyebrow reveal">04 &middot; What we&rsquo;d build with Selkirk</span>
       <h2 class="serif h2 reveal" id="skLibraryHead" style="margin-top:0.7rem;">A library for the whole game, <em class="italic bb-o">presented by Selkirk.</em></h2>
       <p class="prose reveal sk-library-lead">Selkirk TV and Selkirk Academy teach the standing game. We&rsquo;d like to add the game we play together, one series at a time, ready for your app, your camps and your coaches.</p>
     </div>
@@ -535,6 +572,7 @@ fill="currentColor" stroke="none">
           <li>Cover the ball and give your partner time</li>
           <li>Poach with a plan</li>
           <li>Make a plan before the point</li>
+          <li>Stay connected without crowding</li>
         </ol>
       </li>
       <li class="reveal">
@@ -603,10 +641,10 @@ fill="currentColor" stroke="none">
 </section>
 
 <!-- =========================== STORIES ========================== -->
-<section class="dark band-lg sk-stories" aria-labelledby="skStoriesHead">
+<section class="dark band-lg sk-stories" id="stories" aria-labelledby="skStoriesHead">
   <div class="wrap">
     <div class="sec-head">
-      <span class="eyebrow orange reveal">Stories worth telling</span>
+      <span class="eyebrow orange reveal">05 &middot; Where your name goes</span>
       <h2 class="serif h2 reveal" id="skStoriesHead" style="margin-top:0.7rem; color:var(--cream);">The kind your studio tells.</h2>
       <p class="prose reveal" style="margin-top:1rem; color:var(--cream-mute); max-width:56ch;">Selkirk Studios told Scott Rider&rsquo;s story in Still in Play. Here are two from the crew.</p>
     </div>
@@ -700,7 +738,7 @@ fill="currentColor" stroke="none">
 <section class="band tint sk-tiers" id="tiers" aria-labelledby="skTiersHead">
   <div class="wrap">
     <div class="sec-head">
-      <span class="eyebrow reveal">Grow together</span>
+      <span class="eyebrow reveal">06 &middot; How we start</span>
       <h2 class="serif h2 reveal" id="skTiersHead" style="margin-top:0.7rem;">Start with the lessons. Grow one season at a time.</h2>
     </div>
     <div class="sk-steps">
@@ -710,12 +748,12 @@ fill="currentColor" stroke="none">
         <p class="sk-step-when">This winter, through the US Open in April</p>
         <div class="sk-step-cols">
           <div><h4>Selkirk brings</h4><ul>
-            <li><span class="price">$5,000</span>The first six Play Together lessons, with a license to show them on Selkirk TV and at Selkirk Academy.</li>
+            <li><span class="price">$5,000</span>Six new Play Together lessons, with a license to show them on Selkirk TV and at Selkirk Academy.</li>
             <li>New paddles for the athletes we support.</li>
             <li>Growth Program paddles for new players at Open Court clubs.</li>
           </ul></div>
           <div><h4>We bring</h4><ul>
-            <li>Six Play Together lessons, each checked and signed by Ryan Anthony before it goes out, with Selkirk&rsquo;s name on every episode and Selkirk paddles in the players&rsquo; hands.</li>
+            <li>Six new Play Together lessons, each checked and signed by Ryan Anthony before it goes out, with Selkirk&rsquo;s name on every episode and Selkirk paddles in the players&rsquo; hands.</li>
             <li>A thank you across our social channels, and your name on our supporters wall.</li>
             <li>Your name and logo on the thank you sign at our table when the crew is at a club event, a clinic or a tournament, where the host allows it.</li>
             <li>Photos of your gear in use, in our own thank you posts.</li>
@@ -754,7 +792,7 @@ fill="currentColor" stroke="none">
         </div>
       </article>
     </div>
-    <p class="sk-fine">Sponsorships go to the Hustle &amp; Heart Fund. If your name goes on it, your money pays for it. Each part carries one sponsor&rsquo;s name at a time, for its year or season, held by the first sponsor to sign, except where a founding partner has first call. If a part is already paid for, in full or in part, the money it doesn&rsquo;t need goes to the rest of the year&rsquo;s goal, and we tell you where before you give. Other sponsorships and gifts fill every week first, then the road to the US Open. The lessons are paid for separately: the $5,000 in step one pays for making the first six Play Together lessons, and anything left goes to the Hustle &amp; Heart Fund. The $5,000 also includes a license for Selkirk to show the lessons on Selkirk TV and at Selkirk Academy, and our receipt will give a good faith estimate of its value. Adapt To Life is a recognized 501(c)(3) nonprofit (EIN 41-3213344). Sponsorships may be tax deductible to the extent allowed by law, and we provide documentation for each partnership. Because some levels include benefits, check with your tax advisor on the deductible portion.</p>
+    <p class="sk-fine">Sponsorships go to the Hustle &amp; Heart Fund. If your name goes on it, your money pays for it. Each part carries one sponsor&rsquo;s name at a time, for its year or season, held by the first sponsor to sign, except where a founding partner has first call. If a part is already paid for, in full or in part, the money it doesn&rsquo;t need goes to the rest of the year&rsquo;s goal, and we tell you where before you give. Other sponsorships and gifts fill every week first, then the road to the US Open. The lessons are paid for separately: the $5,000 in step one pays for making six new Play Together lessons, and anything left goes to the Hustle &amp; Heart Fund. The $5,000 also includes a license for Selkirk to show the lessons on Selkirk TV and at Selkirk Academy, and our receipt will give a good faith estimate of its value. Adapt To Life is a recognized 501(c)(3) nonprofit (EIN 41-3213344). Sponsorships may be tax deductible to the extent allowed by law, and we provide documentation for each partnership. Because some levels include benefits, check with your tax advisor on the deductible portion.</p>
   </div>
 </section>
 
@@ -780,13 +818,13 @@ fill="currentColor" stroke="none">
   <div class="wrap reading">
     <span class="eyebrow orange reveal">The ask</span>
     <h2 class="serif display reveal" style="margin-top:1rem;">Start this winter. <em class="italic bb-o">Build the rest together.</em></h2>
-    <p class="lead sub reveal" style="color:var(--cream-mute);">We&rsquo;d like to start with step one: paddles for the athletes we support, and the first six Play Together lessons, signed by Ryan. If Selkirk wants its name on the road to Naples, it&rsquo;s open now. If you&rsquo;d rather watch this season play out first, let&rsquo;s talk about the next one after the US Open.</p>
+    <p class="lead sub reveal" style="color:var(--cream-mute);">We&rsquo;d like to start with step one: paddles for our athletes and new players, and six new Play Together lessons, signed by Ryan. If Selkirk wants its name on the road to Naples, it&rsquo;s open now. If you&rsquo;d rather watch this season play out first, let&rsquo;s talk about the next one after the US Open.</p>
     <p class="lead sub reveal" style="color:var(--cream);">Better yet, come play a game from a sport chair with the crew. We&rsquo;ll save you a chair.</p>
     <div class="actions reveal" style="display:flex; flex-wrap:wrap; gap:0.9rem 1rem; margin-top:2rem;">
       <a class="btn" href="mailto:hello@adapttolife.org?subject=Selkirk%20and%20Adapt%20To%20Life">Write to us <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
       <a class="btn ghost" href="#together">Watch the hybrid lesson</a>
     </div>
-    <p class="sk-sign reveal"><b>Alec Tranel</b>, Founder and Executive Director, Adapt To Life<br><b>Juan Ortiz</b>, Adapt To Life ambassador, Chicago Pickleball: Wheelie Big Dills<br><b>Pete Petersen</b>, Adapt To Life coach<br><b>Ryan Anthony</b>, Adapt To Life coach</p>
+    <p class="sk-sign reveal"><b>Alec Tranel</b>, Founder and Executive Director, Adapt To Life<br><b>Juan Ortiz</b>, Adapt To Life ambassador, Chicago Pickleball: Wheelie Big Dills<br><b>Pete Petersen</b>, Adapt To Life Leadership, Coach<br><b>Ryan Anthony</b>, Adapt To Life Leadership, Coach</p>
   </div>
 </section>
 

@@ -105,6 +105,8 @@ Drawn from `@iconify-json/simple-icons@1.2.101`, `@iconify-json/material-symbols
 
 | Preview | Meaning | What it means | Drawn from | Files |
 |---|---|---|---|---|
+| <img src="svg/course.svg" width="24" height="24" alt="course regular"> <img src="svg/course-duotone.svg" width="24" height="24" alt="course duotone"> <img src="svg/course-bold.svg" width="24" height="24" alt="course bold"> <img src="svg/course-fill.svg" width="24" height="24" alt="course fill"> | `course` | A course: a series of lessons to watch, on an app or a channel | Phosphor `monitor-play` | [regular](svg/course.svg) · [duotone](svg/course-duotone.svg) · [bold](svg/course-bold.svg) · [fill](svg/course-fill.svg) |
+| <img src="svg/certified.svg" width="24" height="24" alt="certified regular"> <img src="svg/certified-duotone.svg" width="24" height="24" alt="certified duotone"> <img src="svg/certified-bold.svg" width="24" height="24" alt="certified bold"> <img src="svg/certified-fill.svg" width="24" height="24" alt="certified fill"> | `certified` | A certification: a coach or instructor certified to teach | Phosphor `certificate` | [regular](svg/certified.svg) · [duotone](svg/certified-duotone.svg) · [bold](svg/certified-bold.svg) · [fill](svg/certified-fill.svg) |
 | <img src="svg/share.svg" width="24" height="24" alt="share regular"> <img src="svg/share-duotone.svg" width="24" height="24" alt="share duotone"> <img src="svg/share-bold.svg" width="24" height="24" alt="share bold"> <img src="svg/share-fill.svg" width="24" height="24" alt="share fill"> | `share` | Share this page or person with someone (the phone share sheet) | Phosphor `export` | [regular](svg/share.svg) · [duotone](svg/share-duotone.svg) · [bold](svg/share-bold.svg) · [fill](svg/share-fill.svg) |
 
 ## Logos

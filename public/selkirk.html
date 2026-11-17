@@ -172,7 +172,7 @@
      (bb-*), with its own sections (sk-*).
      ========================================================================== */
   .sk-lede-2{ margin-top:0.9rem; font-weight:700; font-size:1.1rem; color:var(--cream); max-width:46ch; }
-  .sk-record{ padding:clamp(3.4rem,7vw,5rem) 0 clamp(3rem,6vw,4.5rem); }
+  .sk-record{ padding:clamp(1.4rem,3.5vw,2.4rem) 0 clamp(3rem,6vw,4.5rem); }
   .sk-stats{ list-style:none; margin:1.1rem 0 0; padding:0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:clamp(0.6rem,2vw,1rem); }
   @media (max-width:980px){ .sk-stats{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
   .sk-stats li{ display:grid; gap:0.35rem; align-content:start; padding:clamp(1rem,2.4vw,1.3rem); border-radius:22px; background:rgba(249,247,242,0.04); box-shadow:inset 0 0 0 1px rgba(249,247,242,0.1); }
@@ -219,20 +219,6 @@
   @media (max-width:760px){ .sk-crew{ grid-template-columns:1fr; } }
   .sk-crew .bb-crew-card{ background:rgba(249,247,242,0.04); box-shadow:inset 0 0 0 1px rgba(249,247,242,0.1); }
   .sk-record-lede{ margin-top:0.6rem; max-width:60ch; color:var(--cream-mute); }
-  /* The proposal at a glance: six parts you can tap, and where we'd start. */
-  .sk-glance-lead{ margin:1rem auto 0; max-width:60ch; }
-  .sk-index{ list-style:none; margin:clamp(1.8rem,3.4vw,2.4rem) 0 0; padding:0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
-  @media (max-width:900px){ .sk-index{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
-  @media (max-width:560px){ .sk-index{ grid-template-columns:1fr; gap:8px; } }
-  .sk-index li{ display:flex; }
-  .sk-index a{ width:100%; display:grid; grid-template-columns:auto minmax(0,1fr); column-gap:0.9rem; row-gap:0.25rem; align-content:start; padding:clamp(1rem,2.4vw,1.3rem); border-radius:18px; background:var(--paper); border:1px solid var(--hairline); color:inherit; text-decoration:none; transition:transform .3s cubic-bezier(.2,.7,.3,1), border-color .3s ease, box-shadow .3s ease; }
-  .sk-index a:hover{ transform:translateY(-3px); border-color:rgba(255,92,57,0.45); box-shadow:0 20px 40px -28px rgba(59,59,70,0.45); }
-  .sk-index a:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:3px; }
-  .sk-index .n{ grid-row:span 2; font-family:var(--font-display); font-weight:900; font-style:italic; font-size:clamp(1.6rem,3.2vw,2rem); line-height:1; color:var(--orange-ink); }
-  .sk-index b{ font-family:var(--font-display); font-weight:900; font-size:1.1rem; line-height:1.2; }
-  .sk-index .d{ color:var(--ink-soft); font-size:0.94rem; line-height:1.45; }
-  .sk-glance-ask{ margin:clamp(1.4rem,3vw,2rem) auto 0; max-width:62ch; text-align:center; padding:1rem 1.2rem; border-radius:16px; background:rgba(255,92,57,0.08); border:1px dashed rgba(255,92,57,0.5); line-height:1.55; }
-  .sk-glance-ask b{ color:var(--orange-ink); }
   @media (max-width:560px){ .sk-phone{ width:min(100%,240px); } }
   /* Play together: the idea, beside the first hybrid lesson. */
   .sk-tog-inner{ display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,0.75fr); gap:clamp(1.8rem,4.5vw,4rem); align-items:center; }
@@ -319,6 +305,45 @@
   .sk-fine{ margin-top:1.4rem; font-size:0.9rem; line-height:1.55; color:var(--ink-soft); max-width:80ch; }
   .sk-sign{ margin-top:2rem; color:var(--cream-mute); line-height:1.7; }
   .sk-sign b{ color:var(--cream); }
+  /* Contents: a rail beside the proposal on wide screens, a sheet behind a
+     button on phones. The page stays the same length; this only moves you. */
+  .sk-doc section[id]{ scroll-margin-top:70px; }
+  .sk-toc{ display:none; }
+  .sk-toc-top{ display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+  .sk-toc-for{ font-family:var(--font-label); font-weight:800; font-size:0.68rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--orange); }
+  .sk-toc-close{ display:none; font:inherit; font-size:1.5rem; line-height:1; width:40px; height:40px; border-radius:999px; border:1px solid rgba(249,247,242,0.18); background:transparent; color:var(--cream); cursor:pointer; }
+  .sk-toc-title{ margin-top:0.35rem; font-family:var(--font-display); font-weight:900; font-size:1.2rem; color:var(--cream); }
+  .sk-toc-parts{ list-style:none; margin:1.1rem 0 0; padding:0; display:grid; gap:0.15rem; }
+  .sk-toc .part > a{ display:grid; grid-template-columns:2.1rem minmax(0,1fr); align-items:baseline; padding:0.55rem 0.65rem; border-radius:12px; color:var(--cream-mute); text-decoration:none; font-weight:700; line-height:1.25; transition:background .2s ease, color .2s ease; }
+  .sk-toc .part > a .n{ font-family:var(--font-display); font-style:italic; font-weight:900; color:var(--cream-faint); }
+  .sk-toc .part > a:hover{ color:var(--cream); background:rgba(249,247,242,0.05); }
+  .sk-toc .part.active > a{ color:var(--cream); background:rgba(255,92,57,0.14); }
+  .sk-toc .part.active > a .n{ color:var(--orange); }
+  .sk-toc a:focus-visible, .sk-toc button:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:2px; }
+  .sk-toc .sub{ list-style:none; display:none; margin:0.15rem 0 0.45rem 2.75rem; padding:0; }
+  .sk-toc .part.active .sub{ display:grid; }
+  .sk-toc .sub a{ display:block; padding:0.32rem 0.6rem; font-size:0.88rem; line-height:1.3; color:var(--cream-mute); text-decoration:none; border-left:2px solid rgba(249,247,242,0.12); }
+  .sk-toc .sub a:hover{ color:var(--cream); }
+  .sk-toc .sub a.active{ color:var(--orange); border-left-color:var(--orange); }
+  .sk-toc-cta{ margin-top:1.4rem; align-self:flex-start; }
+  @media (min-width:1200px){
+    .sk-doc{ display:grid; grid-template-columns:260px minmax(0,1fr); }
+    .sk-toc{ display:flex; flex-direction:column; position:sticky; top:70px; align-self:start; height:calc(100vh - 70px); overflow-y:auto; padding:2rem 1.3rem 1.6rem 1.6rem; background:var(--night); color:var(--cream); border-right:1px solid rgba(249,247,242,0.08); }
+    .sk-toc-cta{ margin-top:auto; }
+    .sk-toc-btn, .sk-toc-veil{ display:none !important; }
+  }
+  @media (max-width:1199px){
+    .sk-toc.open{ display:flex; flex-direction:column; position:fixed; left:0; right:0; bottom:0; z-index:70; max-height:78vh; overflow-y:auto; padding:1.1rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom)); background:var(--night); color:var(--cream); border-radius:22px 22px 0 0; box-shadow:0 -24px 60px rgba(0,0,0,0.45); }
+    .sk-toc.open .sk-toc-close{ display:inline-flex; align-items:center; justify-content:center; }
+    .sk-toc.open .sub{ display:grid; }
+    .sk-toc-veil{ position:fixed; inset:0; z-index:65; background:rgba(15,14,13,0.55); }
+    .sk-toc-btn{ position:fixed; left:50%; bottom:calc(14px + env(safe-area-inset-bottom)); z-index:60; display:inline-flex; align-items:center; gap:0.55rem; max-width:calc(100% - 32px); padding:0.75rem 1.1rem; border-radius:999px; border:1.5px solid rgba(255,92,57,0.6); background:var(--night); color:var(--cream); box-shadow:0 16px 36px -12px rgba(0,0,0,0.6); font:inherit; font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.12em; text-transform:uppercase; white-space:nowrap; cursor:pointer; transform:translate(-50%, 160%); transition:transform .3s cubic-bezier(.2,.7,.3,1); }
+    .sk-toc-btn.show{ transform:translate(-50%, 0); }
+    .sk-toc-btn-n{ font-family:var(--font-display); font-style:italic; font-weight:900; font-size:0.95rem; letter-spacing:0; color:var(--orange); }
+    .sk-toc-btn svg{ width:0.9rem; height:0.9rem; flex:none; }
+    .sk-toc-caret{ transform:rotate(180deg); }
+  }
+  @media (prefers-reduced-motion: reduce){ .sk-toc-btn{ transition:none; } }
 </style>
 </head>
 <body>
@@ -404,6 +429,28 @@ fill="currentColor" stroke="none">
   </div>
 </header>
 
+<div class="sk-doc">
+<nav class="sk-toc" id="skToc" aria-label="Proposal contents">
+  <div class="sk-toc-top">
+    <span class="sk-toc-for">For Selkirk Sport</span>
+    <button type="button" class="sk-toc-close" aria-label="Close the contents">&times;</button>
+  </div>
+  <p class="sk-toc-title">The proposal</p>
+  <ol class="sk-toc-parts">
+    <li class="part" data-part="01"><a href="#record"><span class="n">01</span><span class="t">Who we are</span></a>
+      <ol class="sub"><li><a href="#record">The crew</a></li><li><a href="#family">Bread &amp; Butter</a></li></ol></li>
+    <li class="part" data-part="02"><a href="#together"><span class="n">02</span><span class="t">The bigger game</span></a></li>
+    <li class="part" data-part="03"><a href="#lessons"><span class="n">03</span><span class="t">What we&rsquo;ve made</span></a>
+      <ol class="sub"><li><a href="#lessons">Five lessons</a></li><li><a href="#coach">Ryan Anthony</a></li></ol></li>
+    <li class="part" data-part="04"><a href="#library"><span class="n">04</span><span class="t">What we&rsquo;d build</span></a>
+      <ol class="sub"><li><a href="#library">The library</a></li><li><a href="#both">What each of us brings</a></li></ol></li>
+    <li class="part" data-part="05"><a href="#stories"><span class="n">05</span><span class="t">Where your name goes</span></a>
+      <ol class="sub"><li><a href="#stories">Stories</a></li><li><a href="#clubs">Clubs</a></li><li><a href="#next">Tournaments</a></li><li><a href="#reach">Reach</a></li></ol></li>
+    <li class="part" data-part="06"><a href="#tiers"><span class="n">06</span><span class="t">How we start</span></a>
+      <ol class="sub"><li><a href="#tiers">The steps</a></li><li><a href="#terms">Terms</a></li><li><a href="#ask">The ask</a></li></ol></li>
+  </ol>
+  <a class="btn sk-toc-cta" href="mailto:hello@adapttolife.org?subject=Selkirk%20and%20Adapt%20To%20Life">Write to us</a>
+</nav>
 <main>
 
 <!-- ============================ HERO ============================ -->
@@ -416,8 +463,8 @@ fill="currentColor" stroke="none">
       <p class="lead sub reveal" style="color:var(--cream-mute);">In pickleball, a player in a wheelchair and a standing player can share a court, and even a team. Adapt To Life has started making lessons for that game. We have a national champion coach, and a crew of wheelchair players who bring home medals.</p>
       <p class="sk-lede-2 reveal">We&rsquo;re not just asking for money. We&rsquo;d like a partnership that&rsquo;s good for both of us.</p>
       <div class="actions reveal">
-        <a class="btn" href="#glance">See it at a glance</a>
-        <a class="btn ghost" href="#together">Watch the first lesson</a>
+        <a class="btn" href="#together">Watch the first lesson</a>
+        <a class="btn ghost" href="#tiers">See where we&rsquo;d start</a>
       </div>
     </div>
     <div class="bb-trio reveal">
@@ -428,28 +475,8 @@ fill="currentColor" stroke="none">
   </div>
 </section>
 
-<!-- ========================== AT A GLANCE ======================== -->
-<section class="band sk-glance" id="glance" aria-labelledby="skGlanceHead">
-  <div class="wrap">
-    <div class="sec-head">
-      <span class="eyebrow reveal">The proposal at a glance</span>
-      <h2 class="serif h2 reveal" id="skGlanceHead" style="margin-top:0.7rem;">One idea, <em class="italic bb-o">six parts.</em></h2>
-      <p class="prose reveal sk-glance-lead">Everything here builds toward one partnership: teaching the game wheelchair and standing players play together, with Selkirk&rsquo;s name on it. Tap any part to jump there.</p>
-    </div>
-    <ol class="sk-index reveal">
-      <li><a href="#record"><span class="n">01</span><b>Who we are</b><span class="d">A wheelchair crew with US Open medals, and three players who already play a paddle from your family.</span></a></li>
-      <li><a href="#together"><span class="n">02</span><b>The bigger game</b><span class="d">Most players who share a court with a chair are standing. Selkirk TV teaches them, but not this.</span></a></li>
-      <li><a href="#lessons"><span class="n">03</span><b>What we&rsquo;ve made</b><span class="d">Five lessons this month, and a national champion coach to sign the next ones.</span></a></li>
-      <li><a href="#library"><span class="n">04</span><b>What we&rsquo;d build with Selkirk</b><span class="d">A library for Selkirk TV and Selkirk Academy, and what each of us brings to it.</span></a></li>
-      <li><a href="#stories"><span class="n">05</span><b>Where your name goes</b><span class="d">Our athletes&rsquo; stories, our clubs, the tournaments we play, and an audience that&rsquo;s mostly new.</span></a></li>
-      <li><a href="#tiers"><span class="n">06</span><b>How we start</b><span class="d">Paddles and six lessons this winter, then one season at a time, on simple terms.</span></a></li>
-    </ol>
-    <p class="sk-glance-ask reveal"><b>Where we&rsquo;d start:</b> this winter, paddles for our athletes and new players, and $5,000 for six new Play Together lessons. Then we grow one season at a time.</p>
-  </div>
-</section>
-
 <!-- =========================== RECORD =========================== -->
-<section class="dark sk-record" id="record" aria-labelledby="skRecordHead">
+<section data-part="01" class="dark sk-record" id="record" aria-labelledby="skRecordHead">
   <div class="wrap">
     <span class="eyebrow orange reveal">01 &middot; Who we are</span>
     <h2 class="serif h2 reveal" id="skRecordHead" style="margin-top:0.7rem; color:var(--cream);">What the crew has done.</h2>
@@ -464,7 +491,7 @@ fill="currentColor" stroke="none">
 </section>
 
 <!-- ======================= ALREADY FAMILY ====================== -->
-<section class="band sk-family" id="family">
+<section data-part="01" class="band sk-family" id="family">
   <div class="wrap sk-family-inner">
     <div class="sk-family-copy">
       <img class="bb-logo reveal" src="/images/bnb/bnb-logo.webp" alt="Bread &amp; Butter Pickleball Co." width="400" height="154" loading="lazy" decoding="async">
@@ -482,7 +509,7 @@ fill="currentColor" stroke="none">
 </section>
 
 <!-- ======================== PLAY TOGETHER ======================= -->
-<section class="dark band-lg sk-tog" id="together" aria-labelledby="skTogHead">
+<section data-part="02" class="dark band-lg sk-tog" id="together" aria-labelledby="skTogHead">
   <div class="wrap sk-tog-inner">
     <div class="sk-tog-copy">
       <span class="eyebrow orange reveal">02 &middot; The bigger game</span>
@@ -500,7 +527,7 @@ fill="currentColor" stroke="none">
 </section>
 
 <!-- =========================== LESSONS ========================== -->
-<section class="band sk-lessons" id="lessons" aria-labelledby="skLessonsHead">
+<section data-part="03" class="band sk-lessons" id="lessons" aria-labelledby="skLessonsHead">
   <div class="wrap">
     <div class="sec-head">
       <span class="eyebrow reveal">03 &middot; What we&rsquo;ve made</span>
@@ -530,7 +557,7 @@ fill="currentColor" stroke="none">
 </section>
 
 <!-- ============================ COACH =========================== -->
-<section class="dark band-lg sk-coach" id="coach" aria-labelledby="skCoachHead">
+<section data-part="03" class="dark band-lg sk-coach" id="coach" aria-labelledby="skCoachHead">
   <div class="wrap sk-coach-inner">
     <figure class="sk-coach-photo reveal">
       <img src="/images/selkirk/ryan-anthony.8a429185.webp" alt="Ryan Anthony in his sport wheelchair, a ball in his hand" width="640" height="786" loading="lazy" decoding="async">
@@ -553,7 +580,7 @@ fill="currentColor" stroke="none">
 </section>
 
 <!-- =========================== LIBRARY ========================== -->
-<section class="band sk-library" id="library" aria-labelledby="skLibraryHead">
+<section data-part="04" class="band sk-library" id="library" aria-labelledby="skLibraryHead">
   <div class="wrap">
     <div class="sec-head">
       <span class="eyebrow reveal">04 &middot; What we&rsquo;d build with Selkirk</span>
@@ -614,7 +641,7 @@ fill="currentColor" stroke="none">
 </section>
 
 <!-- ============================ BOTH WAYS ======================= -->
-<section class="band tint sk-both-sec" id="both" aria-labelledby="skBothHead">
+<section data-part="04" class="band tint sk-both-sec" id="both" aria-labelledby="skBothHead">
   <div class="wrap">
     <div class="sec-head">
       <span class="eyebrow reveal">Both ways</span>
@@ -641,7 +668,7 @@ fill="currentColor" stroke="none">
 </section>
 
 <!-- =========================== STORIES ========================== -->
-<section class="dark band-lg sk-stories" id="stories" aria-labelledby="skStoriesHead">
+<section data-part="05" class="dark band-lg sk-stories" id="stories" aria-labelledby="skStoriesHead">
   <div class="wrap">
     <div class="sec-head">
       <span class="eyebrow orange reveal">05 &middot; Where your name goes</span>
@@ -671,7 +698,7 @@ fill="currentColor" stroke="none">
 </section>
 
 <!-- ====================== WHERE WE BUILD IT ===================== -->
-<section class="band tint sk-build" aria-labelledby="skBuildHead">
+<section data-part="05" class="band tint sk-build" aria-labelledby="skBuildHead" id="clubs">
   <div class="wrap">
     <div class="sec-head">
       <span class="eyebrow reveal">Where the crew plays and builds</span>
@@ -700,7 +727,7 @@ fill="currentColor" stroke="none">
 </section>
 
 <!-- ======================== THE NEXT ONE ======================== -->
-<section class="dark band-lg sk-next" id="next">
+<section data-part="05" class="dark band-lg sk-next" id="next">
   <div class="wrap sk-next-inner">
     <figure class="clip sk-next-clip reveal" data-clip><video muted loop playsinline preload="none" poster="/videos/road/app-court.0625e898.webp" data-src="/videos/road/app-court.ccb1dddd.mp4" width="540" height="960" aria-hidden="true"></video><button type="button" class="clip-btn" data-state="paused" aria-label="Play the video"><svg data-when="playing" class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="pause" data-style="bold"><path fill="currentColor" d="M200 28h-40a20 20 0 0 0-20 20v160a20 20 0 0 0 20 20h40a20 20 0 0 0 20-20V48a20 20 0 0 0-20-20m-4 176h-32V52h32ZM96 28H56a20 20 0 0 0-20 20v160a20 20 0 0 0 20 20h40a20 20 0 0 0 20-20V48a20 20 0 0 0-20-20m-4 176H60V52h32Z"/></svg><svg data-when="paused" class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="resume" data-style="bold"><path fill="currentColor" d="M234.49 111.07L90.41 22.94A20 20 0 0 0 60 39.87v176.26a20 20 0 0 0 30.41 16.93l144.08-88.13a19.82 19.82 0 0 0 0-33.86M84 208.85V47.15L216.16 128Z"/></svg></button><figcaption class="clip-cap"><b>APP court 29</b><span>Highland Park, August 2026</span></figcaption></figure>
     <div class="sk-next-copy">
@@ -714,7 +741,7 @@ fill="currentColor" stroke="none">
 </section>
 
 <!-- ============================ REACH =========================== -->
-<section class="band sk-reach" aria-labelledby="skReachHead">
+<section data-part="05" class="band sk-reach" aria-labelledby="skReachHead" id="reach">
   <div class="wrap">
     <div class="sec-head">
       <span class="eyebrow reveal">Your name, seen by new people</span>
@@ -735,7 +762,7 @@ fill="currentColor" stroke="none">
 </section>
 
 <!-- ============================ TIERS =========================== -->
-<section class="band tint sk-tiers" id="tiers" aria-labelledby="skTiersHead">
+<section data-part="06" class="band tint sk-tiers" id="tiers" aria-labelledby="skTiersHead">
   <div class="wrap">
     <div class="sec-head">
       <span class="eyebrow reveal">06 &middot; How we start</span>
@@ -797,7 +824,7 @@ fill="currentColor" stroke="none">
 </section>
 
 <!-- ============================ TERMS =========================== -->
-<section class="band sk-terms" aria-labelledby="skTermsHead">
+<section data-part="06" class="band sk-terms" aria-labelledby="skTermsHead" id="terms">
   <div class="wrap reading">
     <span class="eyebrow reveal">How it works</span>
     <h2 class="serif h2 reveal" id="skTermsHead" style="margin-top:0.7rem;">Simple terms, kept in writing.</h2>
@@ -814,7 +841,7 @@ fill="currentColor" stroke="none">
 </section>
 
 <!-- ============================ CLOSE =========================== -->
-<section class="dark band-lg sk-close">
+<section data-part="06" class="dark band-lg sk-close" id="ask">
   <div class="wrap reading">
     <span class="eyebrow orange reveal">The ask</span>
     <h2 class="serif display reveal" style="margin-top:1rem;">Start this winter. <em class="italic bb-o">Build the rest together.</em></h2>
@@ -829,6 +856,9 @@ fill="currentColor" stroke="none">
 </section>
 
 </main>
+</div>
+<button type="button" class="sk-toc-btn" id="skTocBtn" aria-controls="skToc" aria-expanded="false"><span class="sk-toc-btn-n" id="skTocNum">01</span><span id="skTocCur">Contents</span><svg class="sk-toc-caret" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="caret" data-style="bold"><path fill="currentColor" d="m216.49 104.49l-80 80a12 12 0 0 1-17 0l-80-80a12 12 0 0 1 17-17L128 159l71.51-71.52a12 12 0 0 1 17 17Z"/></svg></button>
+<div class="sk-toc-veil" id="skTocVeil" hidden></div>
 
 <footer class="footer">
   <div class="wrap">
@@ -980,6 +1010,70 @@ fill="currentColor" stroke="none">
       if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(code).then(done, function(){});
       else { var r = document.createRange(); r.selectNodeContents(document.getElementById('bbCode')); var s = getSelection(); s.removeAllRanges(); s.addRange(r); }
     });
+  })();
+</script>
+
+<script>
+  /* Contents: highlight the part on screen; on phones, a button opens the list. */
+  (function(){
+    var toc = document.getElementById('skToc');
+    if (!toc) return;
+    var btn = document.getElementById('skTocBtn');
+    var veil = document.getElementById('skTocVeil');
+    var num = document.getElementById('skTocNum');
+    var cur = document.getElementById('skTocCur');
+    var sections = Array.prototype.slice.call(document.querySelectorAll('main section[data-part]'));
+    var parts = Array.prototype.slice.call(toc.querySelectorAll('.part'));
+    var subs = Array.prototype.slice.call(toc.querySelectorAll('.sub a'));
+    var footer = document.querySelector('footer.footer');
+    var footerIn = false, current = null, ticking = false;
+    function setOpen(open){
+      toc.classList.toggle('open', open);
+      veil.hidden = !open;
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open){
+        var a = toc.querySelector('.part.active > a') || toc.querySelector('.part > a');
+        if (a) a.focus();
+      }
+    }
+    btn.addEventListener('click', function(){ setOpen(!toc.classList.contains('open')); });
+    veil.addEventListener('click', function(){ setOpen(false); });
+    toc.querySelector('.sk-toc-close').addEventListener('click', function(){ setOpen(false); btn.focus(); });
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape' && toc.classList.contains('open')){ setOpen(false); btn.focus(); }
+    });
+    toc.addEventListener('click', function(e){
+      var a = e.target.closest('a[href^="#"]');
+      if (a && toc.classList.contains('open')) setOpen(false);
+    });
+    function update(){
+      ticking = false;
+      var line = window.innerHeight * 0.35, active = null;
+      for (var i = 0; i < sections.length; i++){
+        if (sections[i].getBoundingClientRect().top <= line) active = sections[i]; else break;
+      }
+      var part = active ? active.getAttribute('data-part') : null;
+      if (part !== current){
+        current = part;
+        parts.forEach(function(li){
+          var on = li.getAttribute('data-part') === part;
+          var a = li.firstElementChild;
+          li.classList.toggle('active', on);
+          if (on){ a.setAttribute('aria-current', 'location'); num.textContent = part; cur.textContent = li.querySelector('.t').textContent; }
+          else a.removeAttribute('aria-current');
+        });
+      }
+      var id = active ? '#' + active.id : '';
+      subs.forEach(function(a){ a.classList.toggle('active', a.getAttribute('href') === id); });
+      btn.classList.toggle('show', !!part && !footerIn);
+    }
+    function onScroll(){ if (!ticking){ ticking = true; requestAnimationFrame(update); } }
+    if ('IntersectionObserver' in window && footer){
+      new IntersectionObserver(function(entries){ footerIn = entries[0].isIntersecting; update(); }).observe(footer);
+    }
+    window.addEventListener('scroll', onScroll, { passive:true });
+    window.addEventListener('resize', onScroll);
+    update();
   })();
 </script>
 

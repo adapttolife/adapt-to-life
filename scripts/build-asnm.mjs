@@ -39,6 +39,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { applyIcons } from "./lib/apply-icons.mjs";
+import { icon } from "./lib/icons.mjs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
@@ -112,7 +113,7 @@ const chip = (label, count) =>
 const block = `<!-- asnm:stats -->
   <section class="band dark dir-stats">
     <div class="wrap">
-      <span class="eyebrow orange reveal">In the directory now</span>
+      <span class="eyebrow orange reveal">${icon("place", "regular", "ico-in")}In the directory now</span>
       <p class="dir-count reveal">In beta. <b>${n(stats.programs)}</b> adaptive sports programs are in, across <b>${n(stats.byState.filter((s) => s.state !== "DC").length)}</b> states${stats.byState.some((s) => s.state === "DC") ? " and D.C." : ""}, gathered from <b>${n(stats.sources)}</b> sources.</p>
 
       <a class="dir-shot reveal" href="${SITE}" target="_blank" rel="noopener" aria-label="Beta tester sign in at adaptivesportsnearme.com">

@@ -28,13 +28,14 @@ const STYLE = `<style>
   .gd-hero{ position:relative; isolation:isolate; overflow:hidden; padding:clamp(4.5rem,11vh,7rem) 0 clamp(3rem,7vh,4.5rem); }
   .gd-hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 55% 70% at 85% 30%, rgba(255,92,57,0.20) 0%, transparent 70%); }
   .gd-kicker{ display:flex; align-items:center; gap:0.9rem; font-family:var(--font-label); font-weight:800; font-size:0.8rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--orange); }
-  .gd-kicker::before{ content:""; width:2.2rem; height:2px; background:var(--orange); }
+  .gd-kicker .ico-in{ width:1.5em; height:1.5em; margin:0; color:var(--orange); }
   .gd-hero .display{ margin-top:1.1rem; max-width:16ch; font-size:clamp(2.6rem,5.6vw,4.8rem); line-height:0.98; }
   .gd-hero .sub{ margin-top:1.2rem; max-width:54ch; color:var(--cream-mute); }
   .gd-stats{ list-style:none; padding:0; margin:clamp(2rem,4vw,2.8rem) 0 0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(0.8rem,2vw,1.4rem); }
   @media (max-width:760px){ .gd-stats{ grid-template-columns:1fr; } }
   .gd-stats li{ padding:1.1rem 1.2rem; border:1px solid rgba(247,244,238,0.14); border-radius:16px; }
   .gd-stats b{ display:block; font-family:var(--font-display); font-weight:900; font-size:clamp(1.7rem,3vw,2.3rem); line-height:1; color:var(--orange); letter-spacing:-0.02em; }
+  .gd-stat-ic{ display:block; width:1.6rem; height:1.6rem; margin-bottom:0.6rem; color:var(--cream-mute); }
   .gd-stats span{ display:block; margin-top:0.45rem; color:var(--cream-mute); font-size:0.95rem; }
   .gd-hero .actions{ margin-top:1.8rem; display:flex; flex-wrap:wrap; gap:0.8rem; }
   .gd-grid{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,18rem); gap:clamp(2rem,5vw,4rem); align-items:start; }
@@ -132,11 +133,11 @@ ${shell.header}
      then run npm run guides. -->
   <section class="gd-hero dark">
     <div class="wrap">
-      <p class="gd-kicker">${g.eyebrow}</p>
+      <p class="gd-kicker">${icon(g.eyebrowIcon, "regular", "ico-in")}${g.eyebrow}</p>
       <h1 class="serif display">${g.h1}</h1>
       <p class="lead sub">${g.lead}</p>
       <ul class="gd-stats">
-${g.stats.map(([n, l]) => `        <li><b>${n}</b><span>${l}</span></li>`).join("\n")}
+${g.stats.map(([n, l, m]) => `        <li>${icon(m, "regular", "gd-stat-ic")}<b>${n}</b><span>${l}</span></li>`).join("\n")}
       </ul>
       <div class="actions">
         <a href="/donate?utm_source=guide&amp;utm_medium=web&amp;utm_campaign=${slug}" class="btn">Donate ${ARROW}</a>
@@ -161,7 +162,7 @@ ${g.related.map(([h, l]) => `          <li><a href="${h}">${l}</a></li>`).join("
 
   <section class="band tint">
     <div class="wrap">
-      <span class="eyebrow">Questions</span>
+      <span class="eyebrow">${icon("questions", "regular", "ico-in")}Questions</span>
       <h2 class="serif h2" style="margin-top:0.7rem;">The short answers.</h2>
       <div class="gd-faq">
 ${g.faq.map(([q, a]) => `        <details><summary>${q}</summary><p>${a}</p></details>`).join("\n")}
@@ -171,7 +172,7 @@ ${g.faq.map(([q, a]) => `        <details><summary>${q}</summary><p>${a}</p></de
 
   <section class="closing dark band-lg">
     <div class="wrap center">
-      <span class="eyebrow orange">Help an athlete play</span>
+      <span class="eyebrow orange">${icon("giving", "regular", "ico-in")}Help an athlete play</span>
       <h2 class="serif display">Every gift goes to the fund.</h2>
       <p class="lead sub" style="max-width:46ch; margin-inline:auto;">The <a class="textlink" href="/hustle-and-heart" style="font:inherit;">Hustle &amp; Heart Fund</a> pays for equipment, training and travel for the athletes we support.</p>
       <div class="actions" style="justify-content:center;">

@@ -36,7 +36,7 @@ const BODY = `<!-- karen:start -->
     <div class="wrap">
       <div class="h2col">
         <div class="h2col-text">
-          <span class="eyebrow orange reveal">Board Member</span>
+          <span class="eyebrow orange reveal">${icon("role", "regular", "ico-in")}Board Member</span>
           <h1 class="serif display reveal">Karen Atkinson</h1>
           <hr class="tick orange reveal">
           <p class="lead sub reveal">Retired Army captain. 24 years in the Army Reserve, from hospital administrator to JAG officer. Since a 2014 car accident and a spinal cord injury, she has golfed standing up, skied, sailed and learned to dive, and she brings other veterans along.</p>
@@ -75,7 +75,7 @@ ${PHOTOS.map(
 
   <section class="band">
     <div class="wrap">
-      <span class="eyebrow orange reveal">Her story</span>
+      <span class="eyebrow orange reveal">${icon("story", "regular", "ico-in")}Her story</span>
       <h2 class="serif statement reveal" style="margin-top:0.8rem;">Off the pavement.</h2>
       <ol class="kr-steps">
         <li class="kr-step reveal">
@@ -109,7 +109,7 @@ ${PHOTOS.map(
 
   <section class="dark band kr-tv">
     <div class="wrap">
-      <span class="eyebrow orange reveal">On TV</span>
+      <span class="eyebrow orange reveal">${icon("play", "regular", "ico-in")}On TV</span>
       <h2 class="serif h2 reveal" style="margin-top:0.8rem; color:var(--cream);">On camera, from Florida to the Blue Ridge.</h2>
       <ul class="kr-quotes">
 ${rest.map((q) => `        <li class="reveal"><blockquote>&ldquo;${q.q}&rdquo;</blockquote><a class="kr-src" href="${esc(q.url)}" target="_blank" rel="noopener">${q.by} ${EXT}</a></li>`).join("\n")}
@@ -119,7 +119,7 @@ ${rest.map((q) => `        <li class="reveal"><blockquote>&ldquo;${q.q}&rdquo;</
 
   <section class="band kr-radio">
     <div class="wrap">
-      <span class="eyebrow orange reveal">On the air</span>
+      <span class="eyebrow orange reveal">${icon("stories", "regular", "ico-in")}On the air</span>
       <h2 class="serif h2 reveal" style="margin-top:0.8rem;">With Ann Liguori on Sports Innerview.</h2>
       <p class="prose reveal" style="margin-top:0.8rem; max-width:60ch;">Karen sat down with Ann Liguori for <a class="textlink" href="${RADIO.url}" target="_blank" rel="noopener" style="font:inherit;letter-spacing:inherit;">a 27-minute interview</a> on WLIW 88.3 FM in September 2024.</p>
       <ol class="kr-radio-list">
@@ -131,7 +131,7 @@ ${[...RADIO.quotes].sort((a, b) => a.t.localeCompare(b.t)).map((r) => `        <
 
   <section class="band tint">
     <div class="wrap">
-      <span class="eyebrow orange reveal">Where she serves</span>
+      <span class="eyebrow orange reveal">${icon("community", "regular", "ico-in")}Where she serves</span>
       <h2 class="serif h2 reveal" style="margin-top:0.8rem;">Where Karen serves.</h2>
       <ul class="kr-roles">
 ${ROLES.map(
@@ -148,7 +148,7 @@ ${ROLES.map(
 
   <section class="band" id="press">
     <div class="wrap">
-      <span class="eyebrow orange reveal">In the news and on air</span>
+      <span class="eyebrow orange reveal">${icon("stories", "regular", "ico-in")}In the news and on air</span>
       <h2 class="serif h2 reveal" style="margin-top:0.8rem;">Karen in the news.</h2>
       <ul class="kr-press">
 ${PRESS.map(
@@ -169,7 +169,7 @@ ${PRESS.map(
 
   <section class="dark band-lg">
     <div class="wrap reading center">
-      <span class="eyebrow orange reveal">What she&rsquo;s building</span>
+      <span class="eyebrow orange reveal">${icon("building", "regular", "ico-in")}What she&rsquo;s building</span>
       <h2 class="serif display reveal" style="margin-top:1rem;">Helping people find their sport.</h2>
       <p class="lead sub reveal" style="margin-top:1.2rem;">Karen helps connect people with programs through Adaptive Sports Near Me. The free directory gives athletes, families, and referral partners somewhere to begin. It is in beta now, and Karen is signing up the testers.</p>
       <div class="actions reveal" style="display:flex; flex-wrap:wrap; justify-content:center; gap:0.9rem; margin-top:2.2rem;">

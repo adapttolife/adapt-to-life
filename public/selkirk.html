@@ -29,6 +29,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css?v=b0822468">
 <script src="/js/attribution.js?v=bd94ad92" defer></script>
+<script type="importmap">{"imports":{"three":"/js/vendor/three-0.170.0/three.module.min.js","three/addons/":"/js/vendor/three-0.170.0/addons/"}}</script>
+<link rel="modulepreload" href="/js/vendor/three-0.170.0/three.module.min.js">
+<script type="module" src="/js/selkirk-stage.js?v=9f786eb7"></script>
 <style>
   /* ==========================================================================
      /bread-and-butter: Juan's code, built like /popcorn: the brand's products
@@ -380,7 +383,32 @@
   .sk-reach-ic{ width:1.6rem; height:1.6rem; color:var(--orange-ink); }
   .sk-step-when .sym{ margin-right:0.4em; color:var(--orange-ink); }
   .sk-price-ic{ width:1.1em; height:1.1em; margin-right:0.35em; vertical-align:-0.15em; }
+  /* ---- The title sequence: a full-screen court under the header, then the proposal.
+     The canvas fades in once it draws; the copy shows when the sequence settles;
+     the flat lockup (poster) stands in when 3D can't run. js/selkirk-stage.js */
+  .sk-stage{ position:relative; height:calc(100svh - 70px); min-height:520px; max-height:1000px; background:var(--photo-black); overflow:hidden; isolation:isolate; color:var(--cream); }
+  .sk-stage canvas{ position:absolute; inset:0; width:100%; height:100%; display:block; opacity:0; transition:opacity .8s ease; touch-action:pan-y; }
+  .sk-stage.is-live canvas{ opacity:1; }
+  .sk-stage.is-capture canvas{ transition:none; }
+  .sk-stage.is-fallback canvas{ display:none; }
+  .sk-stage-poster{ position:absolute; inset:0; display:grid; place-items:center; align-content:center; gap:clamp(1rem,3vh,1.6rem); padding:0 8vw; opacity:0; transition:opacity .8s ease; }
+  .sk-stage-poster img{ display:block; height:auto; }
+  .sk-stage-poster .p-atl{ width:min(62vw,420px); }
+  .sk-stage-poster .p-sel{ width:min(84vw,640px); }
+  .sk-stage-poster .p-x{ font:300 1.6rem/1 var(--font-label); color:var(--cream-mute); }
+  .sk-stage.is-fallback .sk-stage-poster{ opacity:1; }
+  .sk-stage-copy{ position:absolute; left:0; right:0; bottom:clamp(1.2rem,4.5vh,2.6rem); display:grid; justify-items:center; gap:1rem; text-align:center; padding:0 1rem; opacity:0; transform:translateY(12px); transition:opacity 1s ease, transform 1s cubic-bezier(.2,.7,.2,1); pointer-events:none; }
+  .sk-stage.is-settled .sk-stage-copy, .sk-stage.is-fallback .sk-stage-copy{ opacity:1; transform:none; pointer-events:auto; }
+  .sk-stage-kicker{ margin:0; font-family:var(--font-label); font-weight:700; font-size:0.72rem; letter-spacing:0.32em; text-transform:uppercase; color:var(--cream-mute); }
+  .sk-stage-cue{ display:inline-grid; justify-items:center; gap:0.3rem; color:var(--cream-faint); font-family:var(--font-label); font-weight:700; font-size:0.62rem; letter-spacing:0.3em; text-transform:uppercase; text-decoration:none; padding:0.4rem 0.8rem; }
+  .sk-stage-cue svg{ width:1.2rem; height:1.2rem; color:var(--orange); animation:skCue 1.8s ease-in-out infinite; }
+  .sk-stage-cue:hover, .sk-stage-cue:focus-visible{ color:var(--cream); }
+  .sk-stage-cue:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:2px; border-radius:8px; }
+  @keyframes skCue{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(5px); } }
+  @media (prefers-reduced-motion: reduce){ .sk-stage-cue svg{ animation:none; } }
+  @media (min-width:900px){ .sk-stage-poster{ grid-auto-flow:column; } .sk-stage-poster .p-atl{ width:min(30vw,420px); } .sk-stage-poster .p-sel{ width:min(40vw,600px); } }
 </style>
+<noscript><style>.sk-stage-poster,.sk-stage-copy{ opacity:1 !important; transform:none !important; }</style></noscript>
 </head>
 <body>
 
@@ -465,6 +493,25 @@ fill="currentColor" stroke="none">
   </div>
 </header>
 
+<!-- ======================= TITLE SEQUENCE ======================= -->
+<section class="sk-stage" data-stage aria-label="Adapt To Life and Selkirk Sport">
+  <canvas aria-hidden="true"></canvas>
+  <div class="sk-stage-poster" aria-hidden="true">
+    <img class="p-atl" src="/images/selkirk/stage/atl-primary-light.svg" alt="" width="638" height="216">
+    <span class="p-x">&times;</span>
+    <img class="p-sel" src="/images/selkirk/stage/selkirk-lockup.svg" alt="" width="946" height="125">
+  </div>
+  <div class="sk-stage-copy">
+    <p class="sk-stage-kicker">Adapt To Life &times; Selkirk Sport</p>
+    <a class="sk-stage-cue" href="#skStart"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="caret" data-style="bold"><path fill="currentColor" d="m216.49 104.49l-80 80a12 12 0 0 1-17 0l-80-80a12 12 0 0 1 17-17L128 159l71.51-71.52a12 12 0 0 1 17 17Z"/></svg><span>Scroll</span></a>
+  </div>
+</section>
+<script>
+  // If the title sequence hasn't started within 8 seconds (a slow or blocked
+  // script), show the flat lockup instead of an empty dark screen.
+  setTimeout(function () { var s = document.querySelector("[data-stage]"); if (s && !s.dataset.started) s.classList.add("is-fallback"); }, 8000);
+</script>
+
 <div class="sk-doc">
 <nav class="sk-toc" id="skToc" aria-label="Proposal contents">
   <div class="sk-toc-top">
@@ -490,7 +537,7 @@ fill="currentColor" stroke="none">
 <main>
 
 <!-- ============================ HERO ============================ -->
-<section class="dark bb-hero sk-hero">
+<section class="dark bb-hero sk-hero" id="skStart">
   <div class="bb-hero-glow" aria-hidden="true"></div>
   <div class="wrap bb-hero-inner">
     <div class="bb-hero-copy">

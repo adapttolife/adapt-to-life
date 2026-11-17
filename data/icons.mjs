@@ -172,6 +172,18 @@ export const MEANINGS = {
     icon: "chalkboard-teacher",
     means: "Coaching and building a program",
   },
+  // Teaching: the lessons, the courses they grow into, and the coaches who
+  // sign them (/selkirk).
+  course: {
+    src: "ph",
+    icon: "monitor-play",
+    means: "A course: a series of lessons to watch, on an app or a channel",
+  },
+  certified: {
+    src: "ph",
+    icon: "certificate",
+    means: "A certification: a coach or instructor certified to teach",
+  },
   scope: { src: "ph", icon: "list-checks", means: "A defined scope of work" },
   reply: { src: "ph", icon: "envelope-simple", means: "We reply; you hear back" },
   search: { src: "ph", icon: "magnifying-glass", means: "Search or look something up" },

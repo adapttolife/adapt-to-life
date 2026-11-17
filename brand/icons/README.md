@@ -68,6 +68,22 @@ Drawn from `@iconify-json/simple-icons@1.2.101`, `@iconify-json/material-symbols
 | <img src="svg/search.svg" width="24" height="24" alt="search regular"> <img src="svg/search-duotone.svg" width="24" height="24" alt="search duotone"> <img src="svg/search-bold.svg" width="24" height="24" alt="search bold"> <img src="svg/search-fill.svg" width="24" height="24" alt="search fill"> | `search` | Search or look something up | Phosphor `magnifying-glass` | [regular](svg/search.svg) · [duotone](svg/search-duotone.svg) · [bold](svg/search-bold.svg) · [fill](svg/search-fill.svg) |
 | <img src="svg/open.svg" width="24" height="24" alt="open regular"> <img src="svg/open-duotone.svg" width="24" height="24" alt="open duotone"> <img src="svg/open-bold.svg" width="24" height="24" alt="open bold"> <img src="svg/open-fill.svg" width="24" height="24" alt="open fill"> | `open` | Open to everyone: no account, no fee | Phosphor `lock-simple-open` | [regular](svg/open.svg) · [duotone](svg/open-duotone.svg) · [bold](svg/open-bold.svg) · [fill](svg/open-fill.svg) |
 
+## Teaching
+
+| Preview | Meaning | What it means | Drawn from | Files |
+|---|---|---|---|---|
+| <img src="svg/course.svg" width="24" height="24" alt="course regular"> <img src="svg/course-duotone.svg" width="24" height="24" alt="course duotone"> <img src="svg/course-bold.svg" width="24" height="24" alt="course bold"> <img src="svg/course-fill.svg" width="24" height="24" alt="course fill"> | `course` | A course: a series of lessons to watch, on an app or a channel | Phosphor `monitor-play` | [regular](svg/course.svg) · [duotone](svg/course-duotone.svg) · [bold](svg/course-bold.svg) · [fill](svg/course-fill.svg) |
+| <img src="svg/certified.svg" width="24" height="24" alt="certified regular"> <img src="svg/certified-duotone.svg" width="24" height="24" alt="certified duotone"> <img src="svg/certified-bold.svg" width="24" height="24" alt="certified bold"> <img src="svg/certified-fill.svg" width="24" height="24" alt="certified fill"> | `certified` | A certification: a coach or instructor certified to teach | Phosphor `certificate` | [regular](svg/certified.svg) · [duotone](svg/certified-duotone.svg) · [bold](svg/certified-bold.svg) · [fill](svg/certified-fill.svg) |
+
+## Section labels
+
+| Preview | Meaning | What it means | Drawn from | Files |
+|---|---|---|---|---|
+| <img src="svg/story.svg" width="24" height="24" alt="story regular"> <img src="svg/story-duotone.svg" width="24" height="24" alt="story duotone"> <img src="svg/story-bold.svg" width="24" height="24" alt="story bold"> <img src="svg/story-fill.svg" width="24" height="24" alt="story fill"> | `story` | A story: how something started, or a person's own story | Phosphor `book-bookmark` | [regular](svg/story.svg) · [duotone](svg/story-duotone.svg) · [bold](svg/story-bold.svg) · [fill](svg/story-fill.svg) |
+| <img src="svg/role.svg" width="24" height="24" alt="role regular"> <img src="svg/role-duotone.svg" width="24" height="24" alt="role duotone"> <img src="svg/role-bold.svg" width="24" height="24" alt="role bold"> <img src="svg/role-fill.svg" width="24" height="24" alt="role fill"> | `role` | A role on the team: a founder, a board member, an ambassador | Phosphor `identification-badge` | [regular](svg/role.svg) · [duotone](svg/role-duotone.svg) · [bold](svg/role-bold.svg) · [fill](svg/role-fill.svg) |
+| <img src="svg/questions.svg" width="24" height="24" alt="questions regular"> <img src="svg/questions-duotone.svg" width="24" height="24" alt="questions duotone"> <img src="svg/questions-bold.svg" width="24" height="24" alt="questions bold"> <img src="svg/questions-fill.svg" width="24" height="24" alt="questions fill"> | `questions` | Questions and answers | Phosphor `question` | [regular](svg/questions.svg) · [duotone](svg/questions-duotone.svg) · [bold](svg/questions-bold.svg) · [fill](svg/questions-fill.svg) |
+| <img src="svg/web.svg" width="24" height="24" alt="web regular"> <img src="svg/web-duotone.svg" width="24" height="24" alt="web duotone"> <img src="svg/web-bold.svg" width="24" height="24" alt="web bold"> <img src="svg/web-fill.svg" width="24" height="24" alt="web fill"> | `web` | Around the web: other sites about it | Phosphor `globe-simple` | [regular](svg/web.svg) · [duotone](svg/web-duotone.svg) · [bold](svg/web-bold.svg) · [fill](svg/web-fill.svg) |
+
 ## Progress and results
 
 | Preview | Meaning | What it means | Drawn from | Files |
@@ -105,8 +121,6 @@ Drawn from `@iconify-json/simple-icons@1.2.101`, `@iconify-json/material-symbols
 
 | Preview | Meaning | What it means | Drawn from | Files |
 |---|---|---|---|---|
-| <img src="svg/course.svg" width="24" height="24" alt="course regular"> <img src="svg/course-duotone.svg" width="24" height="24" alt="course duotone"> <img src="svg/course-bold.svg" width="24" height="24" alt="course bold"> <img src="svg/course-fill.svg" width="24" height="24" alt="course fill"> | `course` | A course: a series of lessons to watch, on an app or a channel | Phosphor `monitor-play` | [regular](svg/course.svg) · [duotone](svg/course-duotone.svg) · [bold](svg/course-bold.svg) · [fill](svg/course-fill.svg) |
-| <img src="svg/certified.svg" width="24" height="24" alt="certified regular"> <img src="svg/certified-duotone.svg" width="24" height="24" alt="certified duotone"> <img src="svg/certified-bold.svg" width="24" height="24" alt="certified bold"> <img src="svg/certified-fill.svg" width="24" height="24" alt="certified fill"> | `certified` | A certification: a coach or instructor certified to teach | Phosphor `certificate` | [regular](svg/certified.svg) · [duotone](svg/certified-duotone.svg) · [bold](svg/certified-bold.svg) · [fill](svg/certified-fill.svg) |
 | <img src="svg/share.svg" width="24" height="24" alt="share regular"> <img src="svg/share-duotone.svg" width="24" height="24" alt="share duotone"> <img src="svg/share-bold.svg" width="24" height="24" alt="share bold"> <img src="svg/share-fill.svg" width="24" height="24" alt="share fill"> | `share` | Share this page or person with someone (the phone share sheet) | Phosphor `export` | [regular](svg/share.svg) · [duotone](svg/share-duotone.svg) · [bold](svg/share-bold.svg) · [fill](svg/share-fill.svg) |
 
 ## Logos

@@ -21,14 +21,15 @@ export const GUIDES = {
     description:
       "A sport wheelchair runs $4,000 to $6,000, and insurance doesn't cover it. What athletes need beyond an everyday chair, and how donors close the gap.",
     eyebrow: "Guide for donors",
+    eyebrowIcon: "giving",
     h1: "What a sport wheelchair <em class=\"italic\" style=\"color:var(--orange)\">really costs.</em>",
     lead:
       "A sport wheelchair runs $4,000 to $6,000, and insurance doesn&rsquo;t cover it. For most athletes, that price is the first thing between them and the game.",
     published: "2026-11-08",
     stats: [
-      ["$4,000&ndash;$6,000", "for one sport wheelchair"], // /donate, /pickleball
-      ["$0", "from insurance toward it"], // /donate: "insurance doesn't cover it"
-      ["$129", "a month for a club membership to train"], // /sponsorship
+      ["$4,000&ndash;$6,000", "for one sport wheelchair", "equipment"], // /donate, /pickleball
+      ["$0", "from insurance toward it", "funding"], // /donate: "insurance doesn't cover it"
+      ["$129", "a month for a club membership to train", "training"], // /sponsorship
     ],
     body: `
       <h2 class="serif h2">Why an everyday wheelchair isn&rsquo;t enough</h2>
@@ -71,14 +72,15 @@ export const GUIDES = {
     description:
       "Sponsor a wheelchair pickleball athlete in Chicago: a night of court time for $225, a year of training for $1,548, travel to tournaments, or a whole program. What it pays for and what you get back.",
     eyebrow: "Guide for sponsors",
+    eyebrowIcon: "business",
     h1: "Sponsor an athlete <em class=\"italic\" style=\"color:var(--orange)\">in Chicago.</em>",
     lead:
       "Sponsor court time, training or travel to tournaments for wheelchair pickleball athletes in the Chicago area. Partner support goes to the Hustle &amp; Heart Fund, and we pay clubs and vendors directly or reimburse approved expenses.",
     published: "2026-11-08",
     stats: [
-      ["$225", "a night of court time for up to 15 athletes"], // /sponsorship
-      ["$1,548", "a year of training for one athlete"], // /sponsorship
-      ["334,000", "views in 90 days across Instagram and Facebook"], // /sponsorship
+      ["$225", "a night of court time for up to 15 athletes", "courts"], // /sponsorship
+      ["$1,548", "a year of training for one athlete", "training"], // /sponsorship
+      ["334,000", "views in 90 days across Instagram and Facebook", "stories"], // /sponsorship
     ],
     body: `
       <h2 class="serif h2">Who you&rsquo;d be sponsoring</h2>
@@ -124,14 +126,15 @@ export const GUIDES = {
     description:
       "Many employers match gifts to 501(c)(3) nonprofits. How to get your gift to Adapt To Life matched, with our legal name, EIN and IRS letter.",
     eyebrow: "Guide for donors",
+    eyebrowIcon: "giving",
     h1: "Double your gift with <em class=\"italic\" style=\"color:var(--orange)\">an employer match.</em>",
     lead:
       "Many employers match their employees&rsquo; gifts to 501(c)(3) nonprofits. If yours does, the same gift to adaptive athletes can go twice as far.",
     published: "2026-11-08",
     stats: [
-      ["Adapt To Life NFP", "our legal name"], // /donate
-      ["41-3213344", "our EIN"], // /donate, footer
-      ["501(c)(3)", "recognized by the IRS"], // /donate determination letter
+      ["Adapt To Life NFP", "our legal name", "business"], // /donate
+      ["41-3213344", "our EIN", "receipt"], // /donate, footer
+      ["501(c)(3)", "recognized by the IRS", "operations"], // /donate determination letter
     ],
     body: `
       <h2 class="serif h2">How it works</h2>

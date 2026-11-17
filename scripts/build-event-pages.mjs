@@ -304,7 +304,7 @@ ${
     ? `
   <section class="dark band">
     <div class="wrap">
-      <span class="eyebrow orange">Athletes we support</span>
+      <span class="eyebrow orange">${icon("participation", "regular", "ico-in")}Athletes we support</span>
       <h2 class="serif h2" style="margin-top:0.7rem; color:var(--cream);">${s.medals ? "Who brought them home." : "On court."}</h2>
       <ul class="es-people">
 ${people.join("\n")}
@@ -320,7 +320,7 @@ ${
     ? `
   <section class="dark band">
     <div class="wrap">
-      <span class="eyebrow orange">The results</span>
+      <span class="eyebrow orange">${icon("tournament", "regular", "ico-in")}The results</span>
       <h2 class="serif h2" style="margin-top:0.7rem; color:var(--cream);">The cards we posted.</h2>
       <ul class="es-gallery">
 ${s.gallery.items
@@ -338,7 +338,7 @@ ${s.gallery.items
 }
   <section class="band tint">
     <div class="wrap">
-      <span class="eyebrow">Around the web</span>
+      <span class="eyebrow">${icon("web", "regular", "ico-in")}Around the web</span>
       <h2 class="serif h2" style="margin-top:0.7rem;">The host, the listing, and more.</h2>
       <ul class="es-links">
 ${s.links
@@ -353,7 +353,7 @@ ${s.links
 
   <section class="closing dark band-lg">
     <div class="wrap center">
-      <span class="eyebrow orange">What&rsquo;s next</span>
+      <span class="eyebrow orange">${icon("goal", "regular", "ico-in")}What&rsquo;s next</span>
       <h2 class="serif display">Help the next one happen.</h2>
       <p class="lead sub" style="max-width:46ch; margin-inline:auto;">Every gift goes to the <a class="textlink" href="/hustle-and-heart" style="font:inherit;">Hustle &amp; Heart Fund</a>. Right now, your gift keeps Chicago Pickleball: Wheelie Big Dills on court every week, then on the road to the US Open.</p>
       <div class="actions" style="justify-content:center;">

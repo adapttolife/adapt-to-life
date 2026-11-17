@@ -205,7 +205,7 @@ ${roles.map(card).join("\n")}
 
   <section class="hero dark ${PAGE_HEADER_CLASS} ${TIER_CLASS("volunteer.html")}">
     <div class="wrap">
-      <span class="eyebrow orange reveal">Volunteer</span>
+      <span class="eyebrow orange reveal">${icon("community", "regular", "ico-in")}Volunteer</span>
       <h1 class="serif display reveal">Your place on <em class="italic" style="color:var(--orange)">this team</em>.</h1>
       <p class="lead sub reveal">Bring a skill, an introduction, or a few hours a month. There is useful work to do here.</p>
       <div class="actions reveal">
@@ -230,7 +230,7 @@ ${roles.map(card).join("\n")}
     </style>
     <div class="wrap vol-amb-grid">
       <div class="reveal">
-        <span class="eyebrow orange">Ambassadors</span>
+        <span class="eyebrow orange">${icon("role", "regular", "ico-in")}Ambassadors</span>
         <h2 class="serif h2">Bring the next athlete <em class="italic" style="color:var(--orange)">into the game.</em></h2>
         <p>Ambassadors are athletes, coaches, and connectors who grow adaptive sports where they live. Juan Ortiz is our first.</p>
         <a class="textlink" href="/ambassadors">Meet our ambassadors <span class="arrow">&rarr;</span></a>
@@ -242,7 +242,7 @@ ${roles.map(card).join("\n")}
   <section class="band tint">
     <div class="wrap">
       <div class="reveal sec-head">
-        <span class="eyebrow orange">Before you scroll</span>
+        <span class="eyebrow orange">${icon("scope", "regular", "ico-in")}Before you scroll</span>
         <h2 class="serif h2" style="margin-top:0.8rem;">What you would be joining.</h2>
       </div>
       <div class="terms">
@@ -260,7 +260,7 @@ ${lanes}
 
   <section class="band tint">
     <div class="wrap reading center">
-      <span class="eyebrow orange reveal">Not on the list</span>
+      <span class="eyebrow orange reveal">${icon("search", "regular", "ico-in")}Not on the list</span>
       <h2 class="serif h3 reveal" style="margin-top:0.7rem;">We wrote down what we know we need.</h2>
       <p class="prose reveal" style="margin-top:1rem;">Not the same as everything we need. Tell us below if you have something we did not think to ask for.</p>
     </div>
@@ -290,7 +290,7 @@ ${lanes}
   <section class="band band-lg to-form" id="signup">
     <div class="wrap">
       <div class="reveal sec-head">
-        <span class="eyebrow orange">Nothing fit</span>
+        <span class="eyebrow orange">${icon("reply", "regular", "ico-in")}Nothing fit</span>
         <h2 class="serif h2" style="margin-top:0.8rem;">Then tell us in your own words.</h2>
         <p class="lane-blurb">If a role above is you, open it and apply there. This form is for everything else.</p>
       </div>
@@ -432,7 +432,7 @@ function rolePage(r) {
   <section class="hero dark jd-hero">
     <div class="wrap">
       <a class="jd-back reveal" href="/volunteer">&larr; All volunteer roles</a>
-      <span class="eyebrow orange reveal">${lane.name}</span>
+      <span class="eyebrow orange reveal">${icon(lane.icon, "regular", "ico-in")}${lane.name}</span>
       <h1 class="serif jd-title reveal">${esc(r.name)}</h1>
       <p class="lead sub reveal">${esc(r.card)}</p>
       <div class="jd-chips reveal">
@@ -478,7 +478,7 @@ ${sec("Not this", "          " + ul(r.isNot, "jd-no"))}
     <div class="wrap">
       <div class="jd-apply-grid">
         <div class="jd-apply-copy">
-          <span class="eyebrow orange reveal">Apply</span>
+          <span class="eyebrow orange reveal">${icon("apply", "regular", "ico-in")}Apply</span>
           <h2 class="serif h2 reveal" style="margin-top:0.7rem;">${esc(r.name)}.</h2>
           <p class="lead sub reveal">${esc(SHARED.apply)}</p>
         </div>

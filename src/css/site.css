@@ -2868,6 +2868,85 @@ a.win-band:focus-visible {
 .dark .ico-in {
   color: var(--orange);
 }
+.on-dark .ico-in {
+  color: var(--orange);
+}
+
+/* A section label carries its section's symbol (regular), a step larger than
+   an inline icon so it holds its own beside the spaced capitals. A gold label
+   keeps its symbol gold. */
+.eyebrow .ico-in {
+  width: 1.5em;
+  height: 1.5em;
+  vertical-align: -0.45em;
+  margin-right: 0.55em;
+}
+.eyebrow.gold .ico-in {
+  color: inherit;
+}
+
+/* Medals in their colors: the win symbol, filled, gold by default, .s silver,
+   .b bronze. A row of them (.medals) overlaps a little, like a handful. */
+.medal {
+  --m: var(--gold);
+  flex: none;
+  width: 1.35rem;
+  height: 1.35rem;
+  color: var(--m);
+  filter: drop-shadow(0 3px 8px color-mix(in srgb, var(--m) 40%, transparent));
+}
+.medal.s {
+  --m: var(--cream-faint);
+}
+:is(.dark, .on-dark) .medal.s {
+  --m: var(--cream-mute);
+}
+.medal.b {
+  --m: #d9904f;
+}
+.medals {
+  display: inline-flex;
+  align-items: center;
+}
+.medals .medal + .medal {
+  margin-left: -0.2rem;
+}
+
+/* A number tile's symbol row, above the number: medals when it counts medals,
+   the meaning's symbol (duotone) otherwise, the platforms' logos for reach. */
+.stat-ic-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 1.7rem;
+}
+.stat-ic-row.medals {
+  gap: 0;
+}
+.stat-ic {
+  flex: none;
+  width: 1.7rem;
+  height: 1.7rem;
+  color: var(--orange-ink);
+}
+:is(.dark, .on-dark) .stat-ic {
+  color: var(--cream-mute);
+}
+:is(.dark, .on-dark) .stat-ic.o {
+  color: var(--orange);
+}
+.stat-logos {
+  display: flex;
+  gap: 0.6rem;
+}
+.stat-logo {
+  width: 1.4rem;
+  height: 1.4rem;
+  color: var(--muted);
+}
+:is(.dark, .on-dark) .stat-logo {
+  color: var(--cream-mute);
+}
 
 /* The jump bar: a long index says up front what is in it and how much, so a
    reader can go straight to their part instead of scrolling to find it. */

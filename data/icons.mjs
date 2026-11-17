@@ -193,6 +193,25 @@ export const MEANINGS = {
     means: "Open to everyone: no account, no fee",
   },
 
+  // Section labels: the small label over a heading carries the section's
+  // symbol on every page. These four say what no meaning above does.
+  story: {
+    src: "ph",
+    icon: "book-bookmark",
+    means: "A story: how something started, or a person's own story",
+  },
+  role: {
+    src: "ph",
+    icon: "identification-badge",
+    means: "A role on the team: a founder, a board member, an ambassador",
+  },
+  questions: { src: "ph", icon: "question", means: "Questions and answers" },
+  web: {
+    src: "ph",
+    icon: "globe-simple",
+    means: "Around the web: other sites about it",
+  },
+
   // Progress and results: the symbols that ride with the site's data colours
   // (green money in, blue court time and next, yellow wins, grey not yet), so
   // a status never relies on colour alone. Drawn by the stylesheet (.sym).

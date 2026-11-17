@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css?v=3d6f4234">
+<link rel="stylesheet" href="/css/site.css?v=b0822468">
 <style>
   /* Events: the index. Every dated thing we take part in comes from
      /data/campaigns.json (the same file as the home calendar), so a date is
@@ -162,13 +162,14 @@
   .gd-hero{ position:relative; isolation:isolate; overflow:hidden; padding:clamp(4.5rem,11vh,7rem) 0 clamp(3rem,7vh,4.5rem); }
   .gd-hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 55% 70% at 85% 30%, rgba(255,92,57,0.20) 0%, transparent 70%); }
   .gd-kicker{ display:flex; align-items:center; gap:0.9rem; font-family:var(--font-label); font-weight:800; font-size:0.8rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--orange); }
-  .gd-kicker::before{ content:""; width:2.2rem; height:2px; background:var(--orange); }
+  .gd-kicker .ico-in{ width:1.5em; height:1.5em; margin:0; color:var(--orange); }
   .gd-hero .display{ margin-top:1.1rem; max-width:16ch; font-size:clamp(2.6rem,5.6vw,4.8rem); line-height:0.98; }
   .gd-hero .sub{ margin-top:1.2rem; max-width:54ch; color:var(--cream-mute); }
   .gd-stats{ list-style:none; padding:0; margin:clamp(2rem,4vw,2.8rem) 0 0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(0.8rem,2vw,1.4rem); }
   @media (max-width:760px){ .gd-stats{ grid-template-columns:1fr; } }
   .gd-stats li{ padding:1.1rem 1.2rem; border:1px solid rgba(247,244,238,0.14); border-radius:16px; }
   .gd-stats b{ display:block; font-family:var(--font-display); font-weight:900; font-size:clamp(1.7rem,3vw,2.3rem); line-height:1; color:var(--orange); letter-spacing:-0.02em; }
+  .gd-stat-ic{ display:block; width:1.6rem; height:1.6rem; margin-bottom:0.6rem; color:var(--cream-mute); }
   .gd-stats span{ display:block; margin-top:0.45rem; color:var(--cream-mute); font-size:0.95rem; }
   .gd-hero .actions{ margin-top:1.8rem; display:flex; flex-wrap:wrap; gap:0.8rem; }
   .gd-grid{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,18rem); gap:clamp(2rem,5vw,4rem); align-items:start; }
@@ -280,13 +281,13 @@ fill="currentColor" stroke="none">
      then run npm run guides. -->
   <section class="gd-hero dark">
     <div class="wrap">
-      <p class="gd-kicker">Guide for donors</p>
+      <p class="gd-kicker"><svg class="ico-in" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="giving" data-style="regular"><path fill="currentColor" d="M230.33 141.06a24.34 24.34 0 0 0-18.61-4.77C230.5 117.33 240 98.48 240 80c0-26.47-21.29-48-47.46-48A47.58 47.58 0 0 0 156 48.75A47.58 47.58 0 0 0 119.46 32C93.29 32 72 53.53 72 80c0 11 3.24 21.69 10.06 33a31.87 31.87 0 0 0-14.75 8.4L44.69 144H16a16 16 0 0 0-16 16v40a16 16 0 0 0 16 16h104a8 8 0 0 0 1.94-.24l64-16a7 7 0 0 0 1.19-.4L226 182.82l.44-.2a24.6 24.6 0 0 0 3.93-41.56ZM119.46 48a31.15 31.15 0 0 1 29.14 19a8 8 0 0 0 14.8 0a31.15 31.15 0 0 1 29.14-19C209.59 48 224 62.65 224 80c0 19.51-15.79 41.58-45.66 63.9l-11.09 2.55A28 28 0 0 0 140 112h-39.32C92.05 100.36 88 90.12 88 80c0-17.35 14.41-32 31.46-32M16 160h24v40H16Zm203.43 8.21l-38 16.18L119 200H56v-44.69l22.63-22.62A15.86 15.86 0 0 1 89.94 128H140a12 12 0 0 1 0 24h-28a8 8 0 0 0 0 16h32a8.3 8.3 0 0 0 1.79-.2l67-15.41l.31-.08a8.6 8.6 0 0 1 6.3 15.9Z"/></svg>Guide for donors</p>
       <h1 class="serif display">What a sport wheelchair <em class="italic" style="color:var(--orange)">really costs.</em></h1>
       <p class="lead sub">A sport wheelchair runs $4,000 to $6,000, and insurance doesn&rsquo;t cover it. For most athletes, that price is the first thing between them and the game.</p>
       <ul class="gd-stats">
-        <li><b>$4,000&ndash;$6,000</b><span>for one sport wheelchair</span></li>
-        <li><b>$0</b><span>from insurance toward it</span></li>
-        <li><b>$129</b><span>a month for a club membership to train</span></li>
+        <li><svg class="gd-stat-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="equipment" data-style="regular"><path fill="currentColor" d="M224 64h-48v-8a24 24 0 0 0-24-24h-48a24 24 0 0 0-24 24v8H32a16 16 0 0 0-16 16v112a16 16 0 0 0 16 16h192a16 16 0 0 0 16-16V80a16 16 0 0 0-16-16M96 56a8 8 0 0 1 8-8h48a8 8 0 0 1 8 8v8H96Zm128 24v32h-32v-8a8 8 0 0 0-16 0v8H80v-8a8 8 0 0 0-16 0v8H32V80Zm0 112H32v-64h32v8a8 8 0 0 0 16 0v-8h96v8a8 8 0 0 0 16 0v-8h32z"/></svg><b>$4,000&ndash;$6,000</b><span>for one sport wheelchair</span></li>
+        <li><svg class="gd-stat-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="funding" data-style="regular"><path fill="currentColor" d="M230.33 141.06a24.43 24.43 0 0 0-21.24-4.23l-41.84 9.62A28 28 0 0 0 140 112H89.94a31.82 31.82 0 0 0-22.63 9.37L44.69 144H16a16 16 0 0 0-16 16v40a16 16 0 0 0 16 16h104a8 8 0 0 0 1.94-.24l64-16a7 7 0 0 0 1.19-.4L226 182.82l.44-.2a24.6 24.6 0 0 0 3.93-41.56ZM16 160h24v40H16Zm203.43 8.21l-38 16.18L119 200H56v-44.69l22.63-22.62A15.86 15.86 0 0 1 89.94 128H140a12 12 0 0 1 0 24h-28a8 8 0 0 0 0 16h32a8.3 8.3 0 0 0 1.79-.2l67-15.41l.31-.08a8.6 8.6 0 0 1 6.3 15.9ZM164 96a36 36 0 0 0 5.9-.48a36 36 0 1 0 28.22-47A36 36 0 1 0 164 96m60-12a20 20 0 1 1-20-20a20 20 0 0 1 20 20m-60-44a20 20 0 0 1 19.25 14.61a36 36 0 0 0-15 24.93A20.4 20.4 0 0 1 164 80a20 20 0 0 1 0-40"/></svg><b>$0</b><span>from insurance toward it</span></li>
+        <li><svg class="gd-stat-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="training" data-style="regular"><path fill="currentColor" d="M221.87 83.16A104.1 104.1 0 1 1 195.67 49l22.67-22.68a8 8 0 0 1 11.32 11.32l-96 96a8 8 0 0 1-11.32-11.32l27.72-27.72a40 40 0 1 0 17.87 31.09a8 8 0 1 1 16-.9a56 56 0 1 1-22.38-41.65l22.75-22.75a87.88 87.88 0 1 0 23.13 29.67a8 8 0 0 1 14.44-6.9"/></svg><b>$129</b><span>a month for a club membership to train</span></li>
       </ul>
       <div class="actions">
         <a href="/donate?utm_source=guide&amp;utm_medium=web&amp;utm_campaign=sport-wheelchair-cost" class="btn">Donate <span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></a>
@@ -333,7 +334,7 @@ fill="currentColor" stroke="none">
 
   <section class="band tint">
     <div class="wrap">
-      <span class="eyebrow">Questions</span>
+      <span class="eyebrow"><svg class="ico-in" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="questions" data-style="regular"><path fill="currentColor" d="M140 180a12 12 0 1 1-12-12a12 12 0 0 1 12 12M128 72c-22.06 0-40 16.15-40 36v4a8 8 0 0 0 16 0v-4c0-11 10.77-20 24-20s24 9 24 20s-10.77 20-24 20a8 8 0 0 0-8 8v8a8 8 0 0 0 16 0v-.72c18.24-3.35 32-17.9 32-35.28c0-19.85-17.94-36-40-36m104 56A104 104 0 1 1 128 24a104.11 104.11 0 0 1 104 104m-16 0a88 88 0 1 0-88 88a88.1 88.1 0 0 0 88-88"/></svg>Questions</span>
       <h2 class="serif h2" style="margin-top:0.7rem;">The short answers.</h2>
       <div class="gd-faq">
         <details><summary>How much does a sport wheelchair cost?</summary><p>A sport wheelchair runs $4,000 to $6,000.</p></details>
@@ -346,7 +347,7 @@ fill="currentColor" stroke="none">
 
   <section class="closing dark band-lg">
     <div class="wrap center">
-      <span class="eyebrow orange">Help an athlete play</span>
+      <span class="eyebrow orange"><svg class="ico-in" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="giving" data-style="regular"><path fill="currentColor" d="M230.33 141.06a24.34 24.34 0 0 0-18.61-4.77C230.5 117.33 240 98.48 240 80c0-26.47-21.29-48-47.46-48A47.58 47.58 0 0 0 156 48.75A47.58 47.58 0 0 0 119.46 32C93.29 32 72 53.53 72 80c0 11 3.24 21.69 10.06 33a31.87 31.87 0 0 0-14.75 8.4L44.69 144H16a16 16 0 0 0-16 16v40a16 16 0 0 0 16 16h104a8 8 0 0 0 1.94-.24l64-16a7 7 0 0 0 1.19-.4L226 182.82l.44-.2a24.6 24.6 0 0 0 3.93-41.56ZM119.46 48a31.15 31.15 0 0 1 29.14 19a8 8 0 0 0 14.8 0a31.15 31.15 0 0 1 29.14-19C209.59 48 224 62.65 224 80c0 19.51-15.79 41.58-45.66 63.9l-11.09 2.55A28 28 0 0 0 140 112h-39.32C92.05 100.36 88 90.12 88 80c0-17.35 14.41-32 31.46-32M16 160h24v40H16Zm203.43 8.21l-38 16.18L119 200H56v-44.69l22.63-22.62A15.86 15.86 0 0 1 89.94 128H140a12 12 0 0 1 0 24h-28a8 8 0 0 0 0 16h32a8.3 8.3 0 0 0 1.79-.2l67-15.41l.31-.08a8.6 8.6 0 0 1 6.3 15.9Z"/></svg>Help an athlete play</span>
       <h2 class="serif display">Every gift goes to the fund.</h2>
       <p class="lead sub" style="max-width:46ch; margin-inline:auto;">The <a class="textlink" href="/hustle-and-heart" style="font:inherit;">Hustle &amp; Heart Fund</a> pays for equipment, training and travel for the athletes we support.</p>
       <div class="actions" style="justify-content:center;">

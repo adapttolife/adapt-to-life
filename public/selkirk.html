@@ -31,7 +31,7 @@
 <script src="/js/attribution.js?v=bd94ad92" defer></script>
 <script type="importmap">{"imports":{"three":"/js/vendor/three-0.170.0/three.module.min.js"}}</script>
 <link rel="modulepreload" href="/js/vendor/three-0.170.0/three.module.min.js">
-<script type="module" src="/js/selkirk-stage.js?v=6a0f5081"></script>
+<script type="module" src="/js/selkirk-stage.js?v=b4c01fba"></script>
 <style>
   /* ==========================================================================
      /bread-and-butter: Juan's code, built like /popcorn: the brand's products
@@ -427,11 +427,8 @@
   .sk-serve.is-fallback::after, .sk-serve.is-fallback canvas{ display:none; }
   .sk-serve.is-fallback .sk-serve-line{ position:static; text-shadow:none; }
   @media (min-width:900px){ .sk-serve{ height:min(64vh, 700px); } }
-  .sk-stage-acts{ display:flex; align-items:center; justify-content:center; gap:1rem; }
-  .sk-stage-replay{ font-family:var(--font-label); font-weight:700; font-size:0.62rem; letter-spacing:0.3em; text-transform:uppercase; color:var(--cream-mute); background:none; border:1px solid rgba(249,247,242,0.28); border-radius:999px; padding:0.8rem 0.95rem 0.8rem 1.25rem; cursor:pointer; transition:color .2s ease, border-color .2s ease; }
-  .sk-stage-replay:hover, .sk-stage-replay:focus-visible{ color:var(--cream); border-color:rgba(249,247,242,0.6); }
-  .sk-stage-replay:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:2px; }
-  .sk-stage-replay[aria-busy="true"]{ opacity:.55; cursor:progress; }
+  /* Once a scene has settled, a tap or click on it plays it again, with sound. */
+  .sk-stage.is-live.is-settled, .sk-serve.is-live.is-settled{ cursor:pointer; }
   @keyframes skCue{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(5px); } }
   @media (prefers-reduced-motion: reduce){ .sk-stage-cue svg{ animation:none; } }
   @media (min-width:900px){ .sk-stage-poster{ grid-auto-flow:column; } .sk-stage-poster .p-atl{ width:min(30vw,420px); } .sk-stage-poster .p-sel{ width:min(40vw,600px); } }
@@ -522,7 +519,7 @@ fill="currentColor" stroke="none">
 </header>
 
 <!-- ======================= TITLE SEQUENCE ======================= -->
-<section class="sk-stage" data-stage aria-label="Adapt To Life and Selkirk Sport">
+<section class="sk-stage" data-stage data-sound="/audio/selkirk-stage.e3c49299.m4a" aria-label="Adapt To Life and Selkirk Sport">
   <canvas aria-hidden="true"></canvas>
   <div class="sk-stage-poster" aria-hidden="true">
     <img class="p-atl" src="/images/selkirk/stage/atl-primary-light.svg" alt="" width="638" height="216">
@@ -531,10 +528,7 @@ fill="currentColor" stroke="none">
   </div>
   <div class="sk-stage-copy">
     <p class="sk-stage-kicker">Adapt To Life &times; Selkirk Sport</p>
-    <div class="sk-stage-acts">
-    <button type="button" class="sk-stage-replay" data-sound="/audio/selkirk-stage.c817664e.m4a" hidden>Replay with sound</button>
     <a class="sk-stage-cue" href="#skStart"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="caret" data-style="bold"><path fill="currentColor" d="m216.49 104.49l-80 80a12 12 0 0 1-17 0l-80-80a12 12 0 0 1 17-17L128 159l71.51-71.52a12 12 0 0 1 17 17Z"/></svg><span>Scroll</span></a>
-    </div>
   </div>
 </section>
 <script>
@@ -955,7 +949,7 @@ fill="currentColor" stroke="none">
 
 <!-- ============================ CLOSE =========================== -->
 <section data-part="05" class="dark band-lg sk-close" id="ask">
-  <div class="sk-serve" data-serve>
+  <div class="sk-serve" data-serve data-sound="/audio/selkirk-close.e81d5bd2.m4a">
     <canvas aria-hidden="true"></canvas>
     <p class="sk-serve-line serif">Your <em class="italic bb-o">serve.</em></p>
   </div>
@@ -968,7 +962,7 @@ fill="currentColor" stroke="none">
       <a class="btn" href="mailto:hello@adapttolife.org?subject=Selkirk%20and%20Adapt%20To%20Life"><svg class="sk-btn-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="reply" data-style="bold"><path fill="currentColor" d="M224 44H32a12 12 0 0 0-12 12v136a20 20 0 0 0 20 20h176a20 20 0 0 0 20-20V56a12 12 0 0 0-12-12m-30.85 24L128 127.72L62.85 68ZM44 188V83.28l75.89 69.57a12 12 0 0 0 16.22 0L212 83.28V188Z"/></svg>Write to us</a>
       <a class="btn ghost" href="#together"><svg class="sk-btn-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="play" data-style="bold"><path fill="currentColor" d="M176 128a12 12 0 0 1-5.17 9.87l-52 36A12 12 0 0 1 100 164V92a12 12 0 0 1 18.83-9.87l52 36A12 12 0 0 1 176 128m60 0A108 108 0 1 1 128 20a108.12 108.12 0 0 1 108 108m-24 0a84 84 0 1 0-84 84a84.09 84.09 0 0 0 84-84"/></svg>Watch the hybrid lesson</a>
     </div>
-    <p class="sk-sign reveal"><b>Alec Tranel</b>, Founder and Executive Director, Adapt To Life<br><b>Juan Ortiz</b>, Adapt To Life ambassador, Chicago Pickleball: Wheelie Big Dills<br><b>Pete Petersen</b>, Adapt To Life Leadership, Coach<br><b>Ryan Anthony</b>, Adapt To Life Leadership, Coach</p>
+    <p class="sk-sign reveal"><b>Alec Tranel</b>, Founder and Executive Director, Adapt To Life<br><b>Juan Ortiz</b>, Adapt To Life Ambassador, Chicago Pickleball: Wheelie Big Dills<br><b>Pete Petersen</b>, Adapt To Life Leadership, Coach<br><b>Ryan Anthony</b>, Adapt To Life Leadership, Coach</p>
   </div>
 </section>
 

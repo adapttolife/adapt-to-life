@@ -322,11 +322,13 @@ const CARDS = {
   // preview prints "A proposal for Selkirk Sport" under it, so the card is the
   // two logos. Selkirk's light lockup is its own file from selkirk.com. v3
   // stacks them, one per row, so both read in a chat thumbnail. v4 uses our
-  // primary lockup, so ADAPT TO LIFE is as bold as SELKIRK.
+  // primary lockup, so ADAPT TO LIFE is as bold as SELKIRK. v5 (Alec, Nov 18
+  // 2026: "What if we add a yellow glowing X"): the x between them is the
+  // optic yellow partner mark the page uses, glowing.
   selkirk: {
     variant: "logos",
     logos: { partner: "assets/logos/selkirk-primary-light.png", alt: "Selkirk" },
-    out: "public/images/og/selkirk-v4-primary.jpg",
+    out: "public/images/og/selkirk-v5-x.jpg",
     page: "selkirk.html",
   },
   // Guides (scripts/build-guides.mjs): each card is the guide's h1.
@@ -813,7 +815,7 @@ for (const name of todo) {
       if (logoUri) {
         row.innerHTML =
           `<img class="atl" alt="Adapt To Life">` +
-          `<span class="x" aria-hidden="true">&times;</span>` +
+          `<svg class="x" viewBox="0 0 100 100" aria-hidden="true"><path d="M17 15 Q48 46 84 86"/><path d="M83 14 Q52 47 15 85"/></svg>` +
           `<img class="partner" alt="${card.logos.alt}">`;
         const atl = row.querySelector("img.atl");
         const img = row.querySelector("img.partner");

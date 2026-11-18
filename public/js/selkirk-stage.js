@@ -165,9 +165,12 @@ function run(root, stage, update, onSettled, { duration = DURATION, still = STIL
   const DURATION = duration, STILL = still;
   const render = (t) => { update(t); stage.draw(); };
   if (CAPTURE) {
-    // Frame exact: the copy under the court follows t too, not the clock.
+    // Frame exact: the copy under the court follows t too, not the clock, and
+    // so do the CSS animations inside it (the x painting itself, the ball
+    // dropping into the full stop), which run from the moment it settles.
     const copy = root.querySelector(copySel);
-    root.classList.add("is-live", "is-capture");
+    root.classList.add("is-live", "is-capture", "is-settled");
+    if (copy) { copy.style.transition = "none"; copy.style.opacity = "0"; }
     window[key] = {
       duration: DURATION,
       seek(t) {
@@ -177,6 +180,7 @@ function run(root, stage, update, onSettled, { duration = DURATION, still = STIL
           copy.style.transition = "none";
           copy.style.opacity = String(k);
           copy.style.transform = `translateY(${(1 - k) * 12}px)`;
+          for (const a of copy.getAnimations({ subtree: true })) { a.pause(); a.currentTime = Math.max(0, t - DURATION) * 1000; }
         }
         return true;
       },
@@ -828,11 +832,27 @@ function withSound(root, stage, ctl, joinUntil) {
   audio.preload = "auto";
   try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch (e) { /* older browsers */ }
   let state = "idle", onScreen = true; // state: idle, trying, on or done
+  // Where a page may set the volume (not on iPhone, where the buttons own it),
+  // the sound follows the scene: it eases in when it joins partway through,
+  // and fades as the scene scrolls off instead of stopping dead.
+  const canFade = (() => { try { const a = new Audio(); a.volume = 0.5; return a.volume === 0.5; } catch (e) { return false; } })();
+  let seen = 1, rise = 1, riseRaf = 0;
+  const level = () => { if (canFade) audio.volume = clamp01(smooth01(seen / 0.55) * rise); };
+  const easeIn = () => {
+    cancelAnimationFrame(riseRaf);
+    const t0 = performance.now();
+    const step = (now) => { rise = clamp01((now - t0) / 400); level(); if (rise < 1) riseRaf = requestAnimationFrame(step); };
+    riseRaf = requestAnimationFrame(step);
+  };
   const start = (at) => {
     if (state === "trying" || state === "on") return;
     state = "trying";
     audio.currentTime = Math.max(0, at);
-    audio.play().then(() => { state = "on"; ctl.lock(() => audio.currentTime); }, () => { state = "idle"; });
+    const partway = canFade && at > 0.3;
+    cancelAnimationFrame(riseRaf);
+    rise = partway ? 0 : 1;
+    level();
+    audio.play().then(() => { state = "on"; ctl.lock(() => audio.currentTime); if (partway) easeIn(); }, () => { state = "idle"; });
   };
   const join = () => { if (state === "idle" && onScreen && ctl.running() && ctl.now() < joinUntil) start(ctl.now() + 0.1); };
   const events = ["pointerup", "touchend", "click", "keydown"];
@@ -851,7 +871,14 @@ function withSound(root, stage, ctl, joinUntil) {
   // hidden, the phone takes a call), the picture carries on by its own clock.
   audio.addEventListener("pause", () => ctl.lock(null));
   const quiet = () => { if (!audio.paused) audio.pause(); if (state === "on") state = "done"; };
-  new IntersectionObserver(([e]) => { onScreen = e.isIntersecting; if (!onScreen) quiet(); }).observe(root);
+  const steps = Array.from({ length: 21 }, (_, i) => i / 20);
+  new IntersectionObserver((entries) => {
+    const e = entries[entries.length - 1]; // several can queue up: the newest is where the scene is now
+    onScreen = e.isIntersecting;
+    seen = onScreen ? e.intersectionRatio : 0;
+    level();
+    if (!onScreen) quiet();
+  }, { threshold: steps }).observe(root);
   document.addEventListener("visibilitychange", () => { if (document.hidden) quiet(); });
 }
 

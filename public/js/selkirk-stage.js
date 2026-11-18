@@ -158,8 +158,9 @@ function createStage(root, { fov, exposure }) {
 }
 
 // Running: live, one still, or seekable for recordings. Returns stop(), and
-// replay(clock) when it runs live: from the top again, on the soundtrack's
-// clock when one is given, so picture and sound stay locked.
+// when it runs live: now() and running(); lock(clock) to run on a soundtrack's
+// clock from here on, so picture and sound stay locked (null: its own again);
+// and replay(clock) to play from the top.
 function run(root, stage, update, onSettled, { duration = DURATION, still = STILL, copy: copySel = ".sk-stage-copy", key = "__stage" } = {}) {
   const DURATION = duration, STILL = still;
   const render = (t) => { update(t); stage.draw(); };
@@ -216,6 +217,9 @@ function run(root, stage, update, onSettled, { duration = DURATION, still = STIL
   raf = requestAnimationFrame(frame);
   return {
     stop() { stopped = true; cancelAnimationFrame(raf); raf = 0; },
+    now: () => t,
+    running: () => !stopped,
+    lock(c) { clock = c || null; prev = performance.now(); },
     replay(soundClock) {
       t = 0; clock = soundClock || null; settled = false; stopped = false;
       root.classList.remove("is-settled");
@@ -807,6 +811,50 @@ function buildArena(stage, atl, sel, { layout = "auto", sharp = false } = {}) {
   return arena;
 }
 
+// Sound, on by default. Each scene has its soundtrack, and it starts with the
+// picture wherever the browser lets a page play sound by itself. Where it
+// doesn't (phones, and most browsers until the visitor has tapped or clicked
+// once), it starts the moment the visitor first taps, clicks or presses a key
+// with the scene on screen, joining the picture where it is, as long as there
+// is still something to hear (until joinUntil). After that, a tap on the scene
+// plays it again from the top, with sound. The picture then runs on the soundtrack's
+// clock, so the two stay locked. It plays through a media element, so a phone
+// on silent still plays it; it stops when the scene leaves the screen, and it
+// is off with the motion when reduced motion is asked for.
+function withSound(root, stage, ctl, joinUntil) {
+  const url = root.dataset.sound;
+  if (!url || !ctl.replay) return; // reduced motion, or a recording
+  const audio = new Audio(url);
+  audio.preload = "auto";
+  try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch (e) { /* older browsers */ }
+  let state = "idle", onScreen = true; // state: idle, trying, on or done
+  const start = (at) => {
+    if (state === "trying" || state === "on") return;
+    state = "trying";
+    audio.currentTime = Math.max(0, at);
+    audio.play().then(() => { state = "on"; ctl.lock(() => audio.currentTime); }, () => { state = "idle"; });
+  };
+  const join = () => { if (state === "idle" && onScreen && ctl.running() && ctl.now() < joinUntil) start(ctl.now() + 0.1); };
+  const events = ["pointerup", "touchend", "click", "keydown"];
+  const first = () => { join(); if (state !== "idle") events.forEach((e) => document.removeEventListener(e, first, true)); };
+  events.forEach((e) => document.addEventListener(e, first, { capture: true, passive: true }));
+  join();
+  root.addEventListener("click", (e) => {
+    if (state === "trying" || state === "on" || e.target.closest("a, button")) return;
+    if (ctl.running() && ctl.now() < joinUntil) return; // the first tap joins it instead
+    audio.pause();
+    state = "idle";
+    ctl.replay(null);
+    start(0);
+  });
+  // If the sound stops (it ends, the scene leaves the screen, the tab is
+  // hidden, the phone takes a call), the picture carries on by its own clock.
+  audio.addEventListener("pause", () => ctl.lock(null));
+  const quiet = () => { if (!audio.paused) audio.pause(); if (state === "on") state = "done"; };
+  new IntersectionObserver(([e]) => { onScreen = e.isIntersecting; if (!onScreen) quiet(); }).observe(root);
+  document.addEventListener("visibilitychange", () => { if (document.hidden) quiet(); });
+}
+
 // The opening ------------------------------------------------------------------
 async function opening(root) {
   // The page shows the still lockup if this never started in time.
@@ -952,32 +1000,7 @@ async function opening(root) {
   // A phone can drop the 3D context (low memory, long in the background): show the still.
   stage.canvas.addEventListener("webglcontextlost", (e) => { e.preventDefault(); ctl.stop(); fail(); });
 
-  // Replay with sound. The soundtrack (13 s, about 160 KB) loads only when
-  // asked for. It plays through a media element, so a phone on silent still
-  // plays it, and the picture runs on its clock. If it can't start within a
-  // few seconds, the sequence plays again without it.
-  const replayBtn = root.querySelector(".sk-stage-replay");
-  if (replayBtn && ctl.replay) {
-    replayBtn.hidden = false;
-    let audio = null;
-    replayBtn.addEventListener("click", () => {
-      if (replayBtn.getAttribute("aria-busy") === "true") return;
-      replayBtn.setAttribute("aria-busy", "true");
-      if (!audio) { audio = new Audio(replayBtn.dataset.sound); audio.preload = "auto"; }
-      try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch (e) { /* older browsers */ }
-      let begun = false;
-      const begin = (withSound) => {
-        if (begun) return;
-        begun = true;
-        replayBtn.removeAttribute("aria-busy");
-        ctl.replay(withSound ? () => audio.currentTime : null);
-      };
-      audio.currentTime = 0;
-      audio.addEventListener("playing", () => begin(true), { once: true });
-      audio.play().catch(() => begin(false));
-      setTimeout(() => { if (!begun) { audio.pause(); begin(false); } }, 3000);
-    });
-  }
+  withSound(root, stage, ctl, 5.6); // after the boom there is nothing left to join
   setTimeout(() => root.classList.add("is-live"), 50);
 }
 
@@ -1107,6 +1130,7 @@ async function closing(root) {
 
   const ctl = run(root, stage, update, settle, { duration: SERVE_LINE, still: SERVE_STILL, copy: ".sk-serve-line", key: "__serve" });
   stage.canvas.addEventListener("webglcontextlost", (e) => { e.preventDefault(); ctl.stop(); fail(); });
+  withSound(root, stage, ctl, SERVE_LINE + 0.15);
   setTimeout(() => root.classList.add("is-live"), 50);
 }
 

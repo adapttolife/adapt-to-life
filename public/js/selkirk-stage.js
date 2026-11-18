@@ -5,6 +5,10 @@
 // cranes up and over to land straight above the court, both names painted on
 // it, one on each side of the net.
 //
+// The same court closes the proposal: at the ask it lights up again, and the
+// last ball of the point drops over the net into Selkirk's half, hops, and
+// rolls to a stop on Selkirk's emblem. Your serve. (closing(), at the end.)
+//
 // update(t) draws the frame at time t (seconds), so the same code runs live,
 // as one still frame for reduced motion, and frame by frame for recordings
 // (?capture: window.__stage.seek(t) draws one exact frame).
@@ -25,7 +29,6 @@
 // version, so a newer three.js goes in a new folder, never over this one.
 import * as THREE from "three";
 
-const root = document.querySelector("[data-stage]");
 const CAPTURE = new URLSearchParams(location.search).has("capture");
 const REDUCED = !CAPTURE && matchMedia("(prefers-reduced-motion: reduce)").matches;
 const MOBILE = matchMedia("(max-width: 760px)").matches;
@@ -105,7 +108,7 @@ const LENS_GLSL = /* glsl */ `
 const f = (x) => x.toFixed(4); // a number written into a shader
 
 // The stage: renderer and camera, sized to the section.
-function createStage({ fov, exposure }) {
+function createStage(root, { fov, exposure }) {
   const canvas = root.querySelector("canvas");
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance", preserveDrawingBuffer: CAPTURE });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -157,13 +160,14 @@ function createStage({ fov, exposure }) {
 // Running: live, one still, or seekable for recordings. Returns stop(), and
 // replay(clock) when it runs live: from the top again, on the soundtrack's
 // clock when one is given, so picture and sound stay locked.
-function run(stage, update, onSettled) {
+function run(root, stage, update, onSettled, { duration = DURATION, still = STILL, copy: copySel = ".sk-stage-copy", key = "__stage" } = {}) {
+  const DURATION = duration, STILL = still;
   const render = (t) => { update(t); stage.draw(); };
   if (CAPTURE) {
     // Frame exact: the copy under the court follows t too, not the clock.
-    const copy = root.querySelector(".sk-stage-copy");
+    const copy = root.querySelector(copySel);
     root.classList.add("is-live", "is-capture");
-    window.__stage = {
+    window[key] = {
       duration: DURATION,
       seek(t) {
         render(t);
@@ -176,7 +180,7 @@ function run(stage, update, onSettled) {
         return true;
       },
     };
-    window.__stageReady = true;
+    window[key + "Ready"] = true;
     return { stop() {} };
   }
   if (REDUCED) {
@@ -300,9 +304,9 @@ function courtLines(names) {
 // lands, with a few pixels of court colour round it so it meets the court
 // without a seam. Returns the texture and the map from the court (x, z) to it.
 const COURT = "#1b2f47";
-function nameTexture(n, anisotropy) {
+function nameTexture(n, anisotropy, sharp = false) {
   const PAD = 8, MAX = 4096;
-  const k = Math.min(MOBILE ? 400 : 780, (MAX - 2 * PAD) / n.w); // pixels per metre
+  const k = Math.min(sharp ? 800 : MOBILE ? 400 : 780, (MAX - 2 * PAD) / n.w); // pixels per metre
   const c = document.createElement("canvas");
   c.width = Math.round(n.w * k) + 2 * PAD;
   c.height = Math.round(n.h * k) + 2 * PAD;
@@ -636,30 +640,30 @@ function servePath() {
   return { flights, start: flights[0].t, hit: th, land: th + FLIGHT };
 }
 
-const settle = () => root.classList.add("is-settled");
-const fail = (err) => {
+
+const settleOn = (root) => () => root.classList.add("is-settled");
+const failOn = (root) => (err) => {
   root.classList.add("is-fallback");
   if (err) console.warn("selkirk stage:", err);
 };
 const timeout = (ms) => new Promise((_, reject) => setTimeout(() => reject(new Error("timed out")), ms));
+// Both lockups, decoded once for both scenes.
+let logosOnce = null;
+const logos = () => (logosOnce ||= Promise.race([
+  Promise.all([
+    loadLogo("/images/selkirk/stage/atl-primary-light.svg", 638.64 / 216),
+    loadLogo("/images/selkirk/stage/selkirk-lockup.svg", 9464 / 1248),
+  ]),
+  timeout(12000),
+]));
 
-async function main() {
-  // The page shows the still lockup if this never started in time.
-  if (!root || root.classList.contains("is-fallback")) return;
-  root.dataset.started = "1";
-
-  const stage = createStage({ fov: 38, exposure: 1.1 });
+// The arena: the floor and the court with both names, the net, four floodlight
+// towers and the ball. The opening and the closing each build their own.
+// layout "portrait" keeps the names as they lie on a phone whatever the screen
+// shape; sharp paints Selkirk's name finer, for a camera that comes close to it.
+function buildArena(stage, atl, sel, { layout = "auto", sharp = false } = {}) {
   const { scene, camera, renderer, lens } = stage;
-  scene.fog = new THREE.Fog(0x040404, 18, 46);
   const anisotropy = Math.min(16, renderer.capabilities.getMaxAnisotropy());
-
-  const [atl, sel] = await Promise.race([
-    Promise.all([
-      loadLogo("/images/selkirk/stage/atl-primary-light.svg", 638.64 / 216),
-      loadLogo("/images/selkirk/stage/selkirk-lockup.svg", 9464 / 1248),
-    ]),
-    timeout(12000),
-  ]);
 
   // The floor and the court, with the names.
   const groundMat = groundMaterial(lens);
@@ -668,23 +672,27 @@ async function main() {
   const ground = new THREE.Mesh(new THREE.PlaneGeometry(FW, FL), groundMat);
   ground.rotation.x = -Math.PI / 2;
   scene.add(ground);
-  // The end the serve comes from: Selkirk's half, so its name is the first thing the light finds.
-  let S = 1, layoutPortrait = null;
+  // S: the end the serve comes from in the opening. It is Selkirk's half, so
+  // its name is the first thing the light finds.
+  const arena = { S: 1, names: null, gu };
+  let layoutPortrait = null;
   const relayout = () => {
-    if (layoutPortrait === stage.portrait) return;
-    layoutPortrait = stage.portrait;
-    const names = nameLayout(atl, sel, stage.portrait);
+    const portrait = layout === "portrait" || stage.portrait;
+    if (layoutPortrait === portrait) return;
+    layoutPortrait = portrait;
+    const names = nameLayout(atl, sel, portrait);
     const lines = courtLines(names);
     gu.uLines.value.forEach((v, i) => (lines[i] ? v.set(...lines[i]) : v.set(0, 0, 0, 0)));
-    for (const [n, key] of [[names[0], "A"], [names[1], "B"]]) {
-      const { tex, map } = nameTexture(n, anisotropy);
+    for (const [n, key, fine] of [[names[0], "A", false], [names[1], "B", sharp]]) {
+      const { tex, map } = nameTexture(n, anisotropy, fine);
       const old = gu["uName" + key].value;
       gu["uName" + key].value = tex;
       gu["uMap" + key].value[0].copy(map[0]);
       gu["uMap" + key].value[1].copy(map[1]);
       old && old.dispose();
     }
-    S = Math.sign(names[1].cz);
+    arena.S = Math.sign(names[1].cz);
+    arena.names = names;
   };
   relayout();
   stage.onResize = relayout;
@@ -762,14 +770,61 @@ async function main() {
     scene.add(cone);
     return { sx, sz, spot, face, glow, cone, pole };
   });
-  // The order the lamps strike: the one behind the camera first, as the ball
-  // bounces; then the one straight ahead, so it comes on in frame, soft behind
-  // the hanging ball; then the other two.
-  const strikeOrder = (L) => (L.sz === S ? (L.sx === 1 ? 0 : 2) : (L.sx === 1 ? 3 : 1));
 
   // The ball. Its shadows are the court's work: each lamp throws its own.
   const ball = new THREE.Mesh(new THREE.SphereGeometry(BALL_R, 64, 48), ballMaterial());
   scene.add(ball);
+
+  Object.assign(arena, {
+    ball,
+    // Each lamp strikes at the time onAt(lamp) gives: a clean strike, no flicker.
+    light(t, onAt) {
+      let lit = 0;
+      for (const L of towers) {
+        const on = smooth01((t - onAt(L)) / 0.08);
+        lit += on;
+        L.spot.intensity = on * 55;
+        L.face.material.uniforms.uOn.value = on;
+        L.glow.material.opacity = on * 0.4;
+        L.cone.material.uniforms.uOn.value = on;
+      }
+      bounce.intensity = 0.9 * (lit / 4);
+      ball.material.emissiveIntensity = 0.2 * (lit / 4);
+    },
+    // Where the ball is, for its shadows on the court.
+    ballShadow(shown) { gu.uBall.value.set(ball.position.x, ball.position.y, ball.position.z, shown ? 1 : 0); },
+    // The poles turn to face the camera.
+    facePoles(pos) { for (const L of towers) L.pole.rotation.y = Math.atan2(pos.x - L.pole.position.x, pos.z - L.pole.position.z); },
+    // The lens: its opening (metres) and what it is focused on.
+    focus(aperture, distance) {
+      lens.uAperture.value = aperture;
+      lens.uFocus.value = Math.max(0.3, distance);
+      const sharp = aperture < 0.0012;
+      netMat.userData.u.uLens.value = sharp ? 0 : 1;
+      solid.visible = sharp;
+    },
+  });
+  return arena;
+}
+
+// The opening ------------------------------------------------------------------
+async function opening(root) {
+  // The page shows the still lockup if this never started in time.
+  if (!root || root.classList.contains("is-fallback")) return;
+  root.dataset.started = "1";
+  const settle = settleOn(root), fail = failOn(root);
+
+  const stage = createStage(root, { fov: 38, exposure: 1.1 });
+  const { scene, camera } = stage;
+  scene.fog = new THREE.Fog(0x040404, 18, 46);
+  const [atl, sel] = await logos();
+  const arena = buildArena(stage, atl, sel);
+  const { ball } = arena;
+  // The order the lamps strike: the one behind the camera first, as the ball
+  // bounces; then the one straight ahead, so it comes on in frame, soft behind
+  // the hanging ball; then the other two.
+  const strikeOrder = (L) => (L.sz === arena.S ? (L.sx === 1 ? 0 : 2) : (L.sx === 1 ? 3 : 1));
+
   const serve = servePath();
   const ballPos = new THREE.Vector3();
   // Where the ball is at ball time b (+z server); false once it has bounced away.
@@ -791,7 +846,7 @@ async function main() {
   const spinAt = (b, q) => {
     q.setFromAxisAngle(TUMBLE, 1.2 * (Math.min(b, serve.hit) - serve.start));
     if (b > serve.hit) {
-      axis.set(hitV[2] * S, 0, -hitV[0]).normalize();
+      axis.set(hitV[2] * arena.S, 0, -hitV[0]).normalize();
       q.premultiply(qb.setFromAxisAngle(axis, 2 * Math.PI * 6 * (b - serve.hit)));
     }
     return q;
@@ -800,7 +855,7 @@ async function main() {
   // to end, so the camera stays on the +x side of the court, where a name
   // turned for landscape reads the right way up (the server then serves from
   // their left-hand box, which they do on an odd score).
-  const toStage = (v) => v.set(v.x, v.y, v.z * S);
+  const toStage = (v) => v.set(v.x, v.y, v.z * arena.S);
 
   // Camera: low behind the server's baseline, a metre from the drop, watching
   // the ball. Then a crane up and over that lands straight above the court,
@@ -834,18 +889,7 @@ async function main() {
   const hang = new THREE.Vector3(), chase = new THREE.Vector3(), start = new THREE.Vector3();
 
   const update = (t) => {
-    // Lights snap on one by one: a clean strike, no flicker.
-    let lit = 0;
-    for (const L of towers) {
-      const on = smooth01((t - LIGHT_ON[strikeOrder(L)]) / 0.08);
-      lit += on;
-      L.spot.intensity = on * 55;
-      L.face.material.uniforms.uOn.value = on;
-      L.glow.material.opacity = on * 0.4;
-      L.cone.material.uniforms.uOn.value = on;
-    }
-    bounce.intensity = 0.9 * (lit / 4);
-    ball.material.emissiveIntensity = 0.2 * (lit / 4);
+    arena.light(t, (L) => LIGHT_ON[strikeOrder(L)]);
 
     // The ball.
     const b = ballClock(t);
@@ -855,7 +899,7 @@ async function main() {
       ball.position.copy(toStage(ballPos));
       spinAt(b, ball.quaternion);
     }
-    gu.uBall.value.set(ball.position.x, ball.position.y, ball.position.z, shown ? 1 : 0);
+    arena.ballShadow(shown);
 
     // The crane: from beside the drop, out and up, then over the court.
     const end = endFor();
@@ -893,24 +937,18 @@ async function main() {
     // the court stays clear from overhead.
     scene.fog.near = Math.max(18, pos.y * 0.75);
     scene.fog.far = Math.max(46, pos.y * 2.0);
-
-    for (const L of towers) L.pole.rotation.y = Math.atan2(pos.x - L.pole.position.x, pos.z - L.pole.position.z);
+    arena.facePoles(pos);
 
     // The lens: wide open on the ball for the close up, its focus following
     // the ball once it is served, shutting down as the camera rises, so the
     // whole court comes up sharp.
-    const A = APERTURE * (1 - smooth01(seg(t, T_HIT + 0.3, T_HIT + 1.4)));
-    lens.uAperture.value = A;
-    lens.uFocus.value = Math.max(0.3, pos.distanceTo(shown ? ball.position : hang));
-    const sharp = A < 0.0012;
-    netMat.userData.u.uLens.value = sharp ? 0 : 1;
-    solid.visible = sharp;
+    arena.focus(APERTURE * (1 - smooth01(seg(t, T_HIT + 0.3, T_HIT + 1.4))), pos.distanceTo(shown ? ball.position : hang));
 
     stage.film.uBars.value = 1 - ease.inOutCubic(seg(t, 4.9, 6.2));
     stage.film.uFade.value = ease.outCubic(seg(t, 0, 0.5));
   };
 
-  const ctl = run(stage, update, settle);
+  const ctl = run(root, stage, update, settle);
   // A phone can drop the 3D context (low memory, long in the background): show the still.
   stage.canvas.addEventListener("webglcontextlost", (e) => { e.preventDefault(); ctl.stop(); fail(); });
 
@@ -943,4 +981,149 @@ async function main() {
   setTimeout(() => root.classList.add("is-live"), 50);
 }
 
-main().catch(fail);
+// The closing --------------------------------------------------------------------
+// At the ask, the same court lights up again, nearest lamps first. The last
+// ball of the point comes down out of the dark just over the net, hops toward
+// Selkirk's baseline and rolls to a stop on Selkirk's emblem, as the camera
+// comes down to meet it. Then one line: Your serve.
+const SERVE_ON = [0.35, 0.6, 0.85, 1.1]; // the lamps, nearest the camera first
+const SERVE_BALL = 1.0; // the ball comes into the top of the frame
+const SERVE_LINE = 5.15; // "Your serve." comes in
+const SERVE_STILL = 9.5; // the slow push ends; drawing stops
+// Selkirk's emblem inside its lockup, as shares of the lockup: its centre, and
+// where the wordmark begins (measured from the SVG).
+const EMBLEM = { cx: 0.122, cy: 0.413, wordmark: 0.265 };
+
+// The ball's last flight, worked out backwards from where it stops so it always
+// ends there. It comes in at the top of a high, soft arc at t0 (screen time),
+// lands just over the net, hops three times and rolls. at(t) puts it in place
+// and returns how far it has travelled along the court, for its spin.
+function restPath(stop, t0) {
+  const dir = new THREE.Vector3(-0.26, 0, 1).normalize(); // toward Selkirk's baseline, drifting left
+  const U = 3.0, V = 8.3; // as it lands: speed along the court, and down (m/s)
+  const KEEP = 0.5; // what a bounce gives back of the speed down
+  const GRIP = [0.75, 0.8, 0.85]; // what each bounce keeps of the speed along
+  const ROLL = 0.9; // how quickly it slows once it rolls (m/s²)
+  const hops = [];
+  let u = U, v = V;
+  for (const g of GRIP) { u *= g; v *= KEEP; hops.push({ u, v, f: (2 * v) / G }); }
+  const ur = u * 0.9, tr = ur / ROLL, dr = (ur * ur) / (2 * ROLL);
+  const land = stop.clone().addScaledVector(dir, -(hops.reduce((a, h) => a + h.u * h.f, 0) + dr));
+  const fall = V / G; // from the top of its arc to the court
+  let t = t0 + fall, s = U * fall;
+  const legs = [{ t: t0, end: t, p: land.clone().addScaledVector(dir, -U * fall), s: 0, u: U, v: 0, y0: BALL_R + (V * V) / (2 * G) }];
+  let p = land.clone();
+  for (const h of hops) {
+    legs.push({ t, end: t + h.f, p: p.clone(), s, u: h.u, v: h.v, y0: BALL_R });
+    p.addScaledVector(dir, h.u * h.f); s += h.u * h.f; t += h.f;
+  }
+  const roll = { t, p: p.clone(), s };
+  return {
+    dir, start: t0, stop: t + tr,
+    at(time, out) {
+      if (time >= roll.t) {
+        const d = Math.min(time - roll.t, tr), x = ur * d - 0.5 * ROLL * d * d;
+        out.copy(roll.p).addScaledVector(dir, x).setY(BALL_R);
+        return roll.s + x;
+      }
+      let L = legs[0];
+      for (const g of legs) if (time >= g.t) L = g;
+      const d = Math.max(0, time - L.t);
+      out.copy(L.p).addScaledVector(dir, L.u * d).setY(L.y0 + L.v * d - 0.5 * G * d * d);
+      return L.s + L.u * d;
+    },
+  };
+}
+
+async function closing(root) {
+  if (!root || root.classList.contains("is-fallback")) return;
+  root.dataset.started = "1";
+  const settle = settleOn(root), fail = failOn(root);
+  const stage = createStage(root, { fov: 38, exposure: 1.1 });
+  const { scene, camera } = stage;
+  scene.fog = new THREE.Fog(0x040404, 18, 46);
+  stage.film.uBars.value = 0;
+  const [atl, sel] = await logos();
+  // The court as it lies on a phone, whatever the screen: from Selkirk's end,
+  // where the camera is, both names read the right way up.
+  const arena = buildArena(stage, atl, sel, { layout: "portrait", sharp: true });
+  const { ball } = arena;
+  const sk = arena.names[1];
+  const stop = new THREE.Vector3(-sk.w / 2 + EMBLEM.cx * sk.w, BALL_R, sk.cz - sk.h / 2 + EMBLEM.cy * sk.h);
+  const path = restPath(stop, SERVE_BALL);
+  const roll = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), path.dir); // the axis it rolls about
+  const strike = (L) => SERVE_ON[(L.sz === 1 ? 0 : 2) + (L.sx === 1 ? 0 : 1)];
+
+  // Camera: high behind Selkirk's baseline looking down the court, then down
+  // to meet the ball. Where it ends depends on the frame. A wide frame takes in
+  // Selkirk's whole name with the ball on its emblem and the net beyond; a tall
+  // phone frame comes in close on the emblem and the ball, just short of the
+  // wordmark.
+  const START_POS = new THREE.Vector3(0, 6, 12.5), START_LOOK = new THREE.Vector3(0, 0, 2.5);
+  const closeLook = new THREE.Vector3(stop.x - 0.02, 0, stop.z);
+  const wideLook = new THREE.Vector3(-0.45, 0, sk.cz - 0.6);
+  const closeWidth = 2 * Math.min(stop.x + sk.w / 2, -sk.w / 2 + EMBLEM.wordmark * sk.w - stop.x) + 0.08;
+  const endFor = () => {
+    const tan = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+    const k = smooth01((camera.aspect - 0.95) / 0.65); // 0 on a phone, 1 on a wide screen
+    const look = closeLook.clone().lerp(wideLook, k);
+    const width = THREE.MathUtils.lerp(closeWidth * 1.08, 7.4, k); // what spans the frame at the ball
+    const elev = THREE.MathUtils.degToRad(THREE.MathUtils.lerp(52, 28, k));
+    const d = width / 2 / (tan * camera.aspect);
+    return { k, look, pos: look.clone().add(new THREE.Vector3(0, Math.sin(elev) * d, Math.cos(elev) * d)) };
+  };
+  const at = new THREE.Vector3(), look = new THREE.Vector3(), pos = new THREE.Vector3();
+
+  const update = (t) => {
+    arena.light(t, strike);
+    // The ball, from the top of its arc on.
+    const shown = t >= path.start;
+    ball.visible = shown;
+    const s = path.at(Math.max(t, path.start), at);
+    ball.position.copy(at);
+    ball.quaternion.setFromAxisAngle(roll, s / BALL_R);
+    arena.ballShadow(shown);
+
+    const end = endFor();
+    const c = ease.inOutCubic(seg(t, 1.4, path.stop + 0.05));
+    pos.lerpVectors(START_POS, end.pos, c);
+    pos.y += Math.sin(Math.PI * c) * 0.5; // a gentle arc rather than a straight line
+    // Keep the ball well in frame on its way in, easing onto it as it stops.
+    const follow = 0.45 * (1 - smooth01(seg(t, path.stop - 0.8, path.stop + 0.2))) * smooth01(seg(t, path.start + 0.6, path.start + 1.2));
+    look.lerpVectors(START_LOOK, end.look, ease.inOutSine(seg(t, 1.3, path.stop))).addScaledVector(at.clone().sub(stop).setY(0), follow);
+    // Once it has stopped, a slow push in.
+    pos.lerp(look, 0.04 * ease.inOutSine(seg(t, path.stop + 0.2, SERVE_STILL)));
+    camera.up.set(0, 1, 0);
+    camera.position.copy(pos);
+    camera.lookAt(look);
+    scene.fog.near = Math.max(18, pos.y * 0.75);
+    scene.fog.far = Math.max(46, pos.y * 2.0);
+    arena.facePoles(pos);
+    // The lens opens as the camera comes close, so the far court softens
+    // behind the ball while the emblem stays sharp.
+    arena.focus(THREE.MathUtils.lerp(0.03, 0.012, end.k) * ease.inOutSine(seg(t, path.stop - 1.6, path.stop + 0.3)), pos.distanceTo(ball.position));
+    stage.film.uFade.value = ease.outCubic(seg(t, 0, 0.5));
+  };
+
+  const ctl = run(root, stage, update, settle, { duration: SERVE_LINE, still: SERVE_STILL, copy: ".sk-serve-line", key: "__serve" });
+  stage.canvas.addEventListener("webglcontextlost", (e) => { e.preventDefault(); ctl.stop(); fail(); });
+  setTimeout(() => root.classList.add("is-live"), 50);
+}
+
+// Start --------------------------------------------------------------------------
+// The opening runs at once. The closing is built only when its band is well on
+// screen, so nobody who stops reading earlier pays for it, and it plays as it
+// comes into view.
+const stageRoot = document.querySelector("[data-stage]");
+if (stageRoot) opening(stageRoot).catch(failOn(stageRoot));
+const serveRoot = document.querySelector("[data-serve]");
+if (serveRoot) {
+  const go = () => closing(serveRoot).catch(failOn(serveRoot));
+  if (CAPTURE || !("IntersectionObserver" in window)) go();
+  else {
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) { io.disconnect(); go(); }
+    }, { threshold: 0.4 });
+    io.observe(serveRoot);
+  }
+}

@@ -31,7 +31,7 @@
 <script src="/js/attribution.js?v=bd94ad92" defer></script>
 <script type="importmap">{"imports":{"three":"/js/vendor/three-0.170.0/three.module.min.js"}}</script>
 <link rel="modulepreload" href="/js/vendor/three-0.170.0/three.module.min.js">
-<script type="module" src="/js/selkirk-stage.js?v=8ed40002"></script>
+<script type="module" src="/js/selkirk-stage.js?v=6a0f5081"></script>
 <style>
   /* ==========================================================================
      /bread-and-butter: Juan's code, built like /popcorn: the brand's products
@@ -413,6 +413,20 @@
   .sk-stage-cue svg{ width:1.2rem; height:1.2rem; color:var(--orange); animation:skCue 1.8s ease-in-out infinite; }
   .sk-stage-cue:hover, .sk-stage-cue:focus-visible{ color:var(--cream); }
   .sk-stage-cue:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:2px; border-radius:8px; }
+  /* ---- The closing: at the ask the court lights up again and the last ball
+     rolls to a stop on Selkirk's emblem, then "Your serve." js/selkirk-stage.js
+     builds it once the band is well on screen. Without 3D, the line stands alone. */
+  .sk-serve{ position:relative; margin:calc(-1 * var(--pad-lg)) 0 clamp(2.2rem,5vw,3.6rem); height:min(125vw, 74svh); min-height:420px; max-height:760px; overflow:hidden; background:var(--photo-black); isolation:isolate; }
+  .sk-serve::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:38%; background:linear-gradient(to bottom, rgba(23,21,19,0), rgba(23,21,19,0.82) 62%, var(--night)); pointer-events:none; }
+  .sk-serve canvas{ position:absolute; inset:0; width:100%; height:100%; display:block; opacity:0; transition:opacity .8s ease; }
+  .sk-serve.is-live canvas{ opacity:1; }
+  .sk-serve.is-capture canvas{ transition:none; }
+  .sk-serve-line{ position:absolute; z-index:1; left:0; right:0; bottom:clamp(0.6rem,3vh,1.8rem); margin:0; padding:0 1rem; text-align:center; font-family:var(--font-display); font-weight:900; font-size:clamp(2.6rem,11vw,5.2rem); line-height:1; letter-spacing:-0.02em; color:var(--cream); text-shadow:0 2px 28px rgba(0,0,0,0.6); opacity:0; transform:translateY(14px); transition:opacity 1s ease, transform 1s cubic-bezier(.2,.7,.2,1); }
+  .sk-serve.is-settled .sk-serve-line, .sk-serve.is-fallback .sk-serve-line{ opacity:1; transform:none; }
+  .sk-serve.is-fallback{ height:auto; min-height:0; padding-top:var(--pad-lg); background:none; }
+  .sk-serve.is-fallback::after, .sk-serve.is-fallback canvas{ display:none; }
+  .sk-serve.is-fallback .sk-serve-line{ position:static; text-shadow:none; }
+  @media (min-width:900px){ .sk-serve{ height:min(64vh, 700px); } }
   .sk-stage-acts{ display:flex; align-items:center; justify-content:center; gap:1rem; }
   .sk-stage-replay{ font-family:var(--font-label); font-weight:700; font-size:0.62rem; letter-spacing:0.3em; text-transform:uppercase; color:var(--cream-mute); background:none; border:1px solid rgba(249,247,242,0.28); border-radius:999px; padding:0.8rem 0.95rem 0.8rem 1.25rem; cursor:pointer; transition:color .2s ease, border-color .2s ease; }
   .sk-stage-replay:hover, .sk-stage-replay:focus-visible{ color:var(--cream); border-color:rgba(249,247,242,0.6); }
@@ -941,6 +955,10 @@ fill="currentColor" stroke="none">
 
 <!-- ============================ CLOSE =========================== -->
 <section data-part="05" class="dark band-lg sk-close" id="ask">
+  <div class="sk-serve" data-serve>
+    <canvas aria-hidden="true"></canvas>
+    <p class="sk-serve-line serif">Your <em class="italic bb-o">serve.</em></p>
+  </div>
   <div class="wrap reading">
     <span class="eyebrow orange reveal">The ask</span>
     <h2 class="serif display reveal" style="margin-top:1rem;">Start this winter. <em class="italic bb-o">Build the rest together.</em></h2>

@@ -100,8 +100,10 @@ test("no page carries a retired icon", () => {
 });
 
 // Brand marks and decorative art drawn for one page are not icons; everything
-// else on a public page is a dictionary icon or logo.
-const NOT_ICONS = /class="(brand-logo|bh-atl|bh-x|bh-bricks)"/;
+// else on a public page is a dictionary icon or logo. The optic yellow partner
+// x (bh-x on /brickhouse, sk-x on /selkirk) and the pickleball that stands in
+// for the full stop in "Your serve." (sk-ball) are art, not icons.
+const NOT_ICONS = /class="(brand-logo|bh-atl|bh-x|bh-bricks|sk-x|sk-x p-x|sk-ball)"/;
 test("no public page draws its own icon", () => {
   for (const f of pages()) {
     const html = readFileSync(new URL(f, pub), "utf8");

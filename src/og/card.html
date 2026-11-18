@@ -211,8 +211,12 @@
      designer's bold lettering at full size, not small tracked type (Alec:
      "Why is adapt to life text so small?"). */
   .logo-row .atl{ height:196px; width:auto; display:block; }
-  .logo-row .x{ font-family:"Sofia Sans", system-ui, sans-serif; font-weight:300;
-    font-size:56px; line-height:1; color:var(--cream-faint); }
+  /* The x is the partner mark /selkirk and /brickhouse use: optic yellow, the
+     ball's own colour, glowing like a lit court line (Alec, Nov 18 2026: "What
+     if we add a yellow glowing X"). */
+  .logo-row .x{ width:68px; height:68px; display:block; overflow:visible;
+    filter:drop-shadow(0 0 4px rgba(223,242,61,0.55)) drop-shadow(0 0 16px rgba(223,242,61,0.35)); }
+  .logo-row .x path{ fill:none; stroke:#DFF23D; stroke-width:12; stroke-linecap:round; }
   .logo-row .partner{ height:122px; width:auto; display:block; }
   .card.logos .inner{ display:none; }
 

@@ -14,16 +14,16 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="A proposal for Selkirk Sport | Adapt To Life">
 <meta property="og:description" content="A partnership proposal for Selkirk Sport from Adapt To Life: lessons for the game wheelchair and standing players play together, a national champion coach, and the crew behind them.">
-<meta property="og:image" content="https://adapttolife.org/images/og/selkirk-v4-primary.jpg">
+<meta property="og:image" content="https://adapttolife.org/images/og/selkirk-v5-x.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Adapt To Life and Selkirk. The two logos, one above the other, on a dark background.">
+<meta property="og:image:alt" content="Adapt To Life and Selkirk. The two logos, one above the other, with a yellow X between them, on a dark background.">
 <meta property="og:url" content="https://adapttolife.org/selkirk">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="A proposal for Selkirk Sport | Adapt To Life">
 <meta name="twitter:description" content="A partnership proposal for Selkirk Sport from Adapt To Life: lessons for the game wheelchair and standing players play together, a national champion coach, and the crew behind them.">
-<meta name="twitter:image" content="https://adapttolife.org/images/og/selkirk-v4-primary.jpg">
-<meta name="twitter:image:alt" content="Adapt To Life and Selkirk. The two logos, one above the other, on a dark background.">
+<meta name="twitter:image" content="https://adapttolife.org/images/og/selkirk-v5-x.jpg">
+<meta name="twitter:image:alt" content="Adapt To Life and Selkirk. The two logos, one above the other, with a yellow X between them, on a dark background.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
@@ -31,7 +31,7 @@
 <script src="/js/attribution.js?v=bd94ad92" defer></script>
 <script type="importmap">{"imports":{"three":"/js/vendor/three-0.170.0/three.module.min.js"}}</script>
 <link rel="modulepreload" href="/js/vendor/three-0.170.0/three.module.min.js">
-<script type="module" src="/js/selkirk-stage.js?v=b4c01fba"></script>
+<script type="module" src="/js/selkirk-stage.js?v=1b3cbf8e"></script>
 <style>
   /* ==========================================================================
      /bread-and-butter: Juan's code, built like /popcorn: the brand's products
@@ -307,8 +307,12 @@
   .sk-together-dark{ margin-top:1.2rem; color:var(--cream-mute); background:rgba(255,92,57,0.10); }
   .sk-together-dark b{ color:var(--orange); }
   .sk-fine{ margin-top:1.4rem; font-size:0.9rem; line-height:1.55; color:var(--ink-soft); max-width:80ch; }
-  .sk-sign{ margin-top:2rem; color:var(--cream-mute); line-height:1.7; }
+  .sk-sign{ margin-top:2rem; color:var(--cream-mute); line-height:1.55; }
   .sk-sign b{ color:var(--cream); }
+  /* One signer to a line. A title that wraps hangs under the name, so it never
+     runs into the next signer. */
+  .sk-sign span{ display:block; padding-left:1.1em; text-indent:-1.1em; }
+  .sk-sign span + span{ margin-top:0.5rem; }
   /* Contents: a rail beside the proposal on wide screens, a sheet behind a
      button on phones. The page stays the same length; this only moves you. */
   .sk-doc section[id]{ scroll-margin-top:70px; }
@@ -336,6 +340,8 @@
     .sk-toc{ display:flex; flex-direction:column; position:sticky; top:70px; align-self:start; height:calc(100vh - 70px); overflow-y:auto; padding:2rem 1.3rem 1.6rem 1.6rem; background:var(--night); color:var(--cream); border-right:1px solid rgba(249,247,242,0.08); }
     .sk-toc-cta{ margin-top:auto; }
     .sk-toc-btn, .sk-toc-veil{ display:none !important; }
+    /* The rail's edge fills down in orange as you read (--read, 0 to 1). */
+    .sk-toc{ background:linear-gradient(rgba(255,92,57,0.75), rgba(255,92,57,0.75)) right top / 2px calc(var(--read, 0) * 100%) no-repeat, var(--night); }
   }
   @media (max-width:1199px){
     .sk-toc.open{ display:flex; flex-direction:column; position:fixed; left:0; right:0; bottom:0; z-index:70; max-height:90vh; overflow-y:auto; padding:1.1rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom)); background:var(--night); color:var(--cream); border-radius:22px 22px 0 0; box-shadow:0 -24px 60px rgba(0,0,0,0.45); }
@@ -353,11 +359,24 @@
     .sk-toc-veil{ position:fixed; inset:0; z-index:65; background:rgba(15,14,13,0.55); }
     .sk-toc-btn{ position:fixed; left:50%; bottom:calc(14px + env(safe-area-inset-bottom)); z-index:60; display:inline-flex; align-items:center; gap:0.55rem; max-width:calc(100% - 32px); padding:0.75rem 1.1rem; border-radius:999px; border:1.5px solid rgba(255,92,57,0.6); background:var(--night); color:var(--cream); box-shadow:0 16px 36px -12px rgba(0,0,0,0.6); font:inherit; font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.12em; text-transform:uppercase; white-space:nowrap; cursor:pointer; transform:translate(-50%, 160%); transition:transform .3s cubic-bezier(.2,.7,.3,1); }
     .sk-toc-btn.show{ transform:translate(-50%, 0); }
+    /* The pill fills from the left as you read, so it doubles as a progress bar. */
+    .sk-toc-btn{ background:linear-gradient(90deg, rgba(255,92,57,0.2) calc(var(--read, 0) * 100%), rgba(255,92,57,0) 0) var(--night); }
     .sk-toc-btn-ic{ display:inline-flex; }
     .sk-toc-btn .sk-toc-btn-ic svg{ width:1.15rem; height:1.15rem; color:var(--orange); }
     .sk-toc-btn svg{ width:0.9rem; height:0.9rem; flex:none; }
     .sk-toc-caret{ transform:rotate(180deg); }
   }
+  /* The sheet rises from the bottom edge and slides back down, like a phone's own sheets. */
+  @media (max-width:1199px) and (prefers-reduced-motion: no-preference){
+    .sk-toc.open{ animation:skSheetIn .38s cubic-bezier(.2,.85,.25,1) both; }
+    .sk-toc.open.closing{ animation:skSheetOut .24s cubic-bezier(.5,0,.9,.4) both; }
+    .sk-toc-veil:not([hidden]){ animation:skVeilIn .3s ease both; }
+    .sk-toc-veil.closing{ animation:skVeilOut .24s ease both; }
+  }
+  @keyframes skSheetIn{ from{ transform:translateY(100%); } to{ transform:none; } }
+  @keyframes skSheetOut{ from{ transform:none; } to{ transform:translateY(100%); } }
+  @keyframes skVeilIn{ from{ opacity:0; } }
+  @keyframes skVeilOut{ to{ opacity:0; } }
   @media (prefers-reduced-motion: reduce){ .sk-toc-btn{ transition:none; } }
   /* Icons, all from the site's dictionary (data/icons.mjs): one meaning, one
      picture. Each part keeps one symbol, in the contents and on its eyebrow;
@@ -404,11 +423,22 @@
   .sk-stage-poster img{ display:block; height:auto; }
   .sk-stage-poster .p-atl{ width:min(62vw,420px); }
   .sk-stage-poster .p-sel{ width:min(84vw,640px); }
-  .sk-stage-poster .p-x{ font:300 1.6rem/1 var(--font-label); color:var(--cream-mute); }
+  .sk-stage-poster .p-x{ width:clamp(40px,10vw,56px); height:clamp(40px,10vw,56px); margin:0; vertical-align:0; }
   .sk-stage.is-fallback .sk-stage-poster{ opacity:1; }
   .sk-stage-copy{ position:absolute; left:0; right:0; bottom:clamp(1.2rem,4.5vh,2.6rem); display:grid; justify-items:center; gap:1rem; text-align:center; padding:0 1rem; opacity:0; transform:translateY(12px); transition:opacity 1s ease, transform 1s cubic-bezier(.2,.7,.2,1); pointer-events:none; }
   .sk-stage.is-settled .sk-stage-copy, .sk-stage.is-fallback .sk-stage-copy{ opacity:1; transform:none; pointer-events:auto; }
   .sk-stage-kicker{ margin:0; font-family:var(--font-label); font-weight:700; font-size:0.72rem; letter-spacing:0.32em; text-transform:uppercase; color:var(--cream-mute); }
+  /* The x between the names is the partner mark from /brickhouse: optic yellow,
+     the ball's own colour, glowing like a lit court line. It paints itself in
+     two strokes as the line comes in, then holds. Its right margin matches the
+     letter spacing the last letter before it carries, so it sits centred. */
+  .sk-x{ display:inline-block; width:1.4em; height:1.4em; margin:0 0.32em 0 0; vertical-align:-0.36em; overflow:visible; filter:drop-shadow(0 0 2px rgba(223,242,61,0.55)) drop-shadow(0 0 8px rgba(223,242,61,0.35)); }
+  .sk-x path{ fill:none; stroke:#DFF23D; stroke-width:12; stroke-linecap:round; stroke-dasharray:1; stroke-dashoffset:0; }
+  @media (prefers-reduced-motion: no-preference){
+    .sk-stage.is-settled .sk-x path, .sk-stage.is-fallback .sk-x path{ animation:skPaint .36s cubic-bezier(.6,.05,.3,1) .5s both; }
+    .sk-stage.is-settled .sk-x path + path, .sk-stage.is-fallback .sk-x path + path{ animation-delay:.8s; }
+  }
+  @keyframes skPaint{ from{ stroke-dashoffset:1; } to{ stroke-dashoffset:0; } }
   .sk-stage-cue{ display:inline-grid; justify-items:center; gap:0.3rem; color:var(--cream-faint); font-family:var(--font-label); font-weight:700; font-size:0.62rem; letter-spacing:0.3em; text-transform:uppercase; text-decoration:none; padding:0.4rem 0.8rem; }
   .sk-stage-cue svg{ width:1.2rem; height:1.2rem; color:var(--orange); animation:skCue 1.8s ease-in-out infinite; }
   .sk-stage-cue:hover, .sk-stage-cue:focus-visible{ color:var(--cream); }
@@ -423,6 +453,32 @@
   .sk-serve.is-capture canvas{ transition:none; }
   .sk-serve-line{ position:absolute; z-index:1; left:0; right:0; bottom:clamp(0.6rem,3vh,1.8rem); margin:0; padding:0 1rem; text-align:center; font-family:var(--font-display); font-weight:900; font-size:clamp(2.6rem,11vw,5.2rem); line-height:1; letter-spacing:-0.02em; color:var(--cream); text-shadow:0 2px 28px rgba(0,0,0,0.6); opacity:0; transform:translateY(14px); transition:opacity 1s ease, transform 1s cubic-bezier(.2,.7,.2,1); }
   .sk-serve.is-settled .sk-serve-line, .sk-serve.is-fallback .sk-serve-line{ opacity:1; transform:none; }
+  /* The full stop is the ball: the same optic yellow, with its holes, standing
+     on the baseline where the period was. The period stays in the text, unseen,
+     for screen readers and copying. When the line comes in, the ball drops into
+     place and bounces twice to rest. */
+  .sk-serve-line em{ white-space:nowrap; }
+  .sk-stop{ position:relative; }
+  .sk-stop-t{ position:absolute; left:0; bottom:0; color:transparent; text-shadow:none; }
+  .sk-ball{ display:inline-block; width:0.26em; height:0.26em; margin:0 0 0 0.035em; vertical-align:-0.012em; overflow:visible; filter:drop-shadow(0 0.03em 0.04em rgba(0,0,0,0.45)); }
+  .sk-ball .body{ fill:#DFF23D; }
+  .sk-ball .holes{ fill:rgba(0,0,0,0.3); }
+  .sk-ball .lit0{ stop-color:#FCFFE6; stop-opacity:0.8; }
+  .sk-ball .lit1{ stop-color:#FCFFE6; stop-opacity:0; }
+  .sk-ball .sh0{ stop-color:#000000; stop-opacity:0; }
+  .sk-ball .sh1{ stop-color:#000000; stop-opacity:0.42; }
+  @media (prefers-reduced-motion: no-preference){
+    .sk-serve.is-settled .sk-ball{ animation:skDrop 1s .55s both; }
+  }
+  @keyframes skDrop{
+    0%{ transform:translateY(-1.15em); opacity:0; animation-timing-function:cubic-bezier(.55,0,1,.45); }
+    12%{ opacity:1; }
+    44%{ transform:translateY(0); animation-timing-function:cubic-bezier(0,.55,.45,1); }
+    64%{ transform:translateY(-0.24em); animation-timing-function:cubic-bezier(.55,0,1,.45); }
+    82%{ transform:translateY(0); animation-timing-function:cubic-bezier(0,.55,.45,1); }
+    91%{ transform:translateY(-0.05em); animation-timing-function:cubic-bezier(.55,0,1,.45); }
+    100%{ transform:translateY(0); }
+  }
   .sk-serve.is-fallback{ height:auto; min-height:0; padding-top:var(--pad-lg); background:none; }
   .sk-serve.is-fallback::after, .sk-serve.is-fallback canvas{ display:none; }
   .sk-serve.is-fallback .sk-serve-line{ position:static; text-shadow:none; }
@@ -523,11 +579,11 @@ fill="currentColor" stroke="none">
   <canvas aria-hidden="true"></canvas>
   <div class="sk-stage-poster" aria-hidden="true">
     <img class="p-atl" src="/images/selkirk/stage/atl-primary-light.svg" alt="" width="638" height="216">
-    <span class="p-x">&times;</span>
+    <svg class="sk-x p-x" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path pathLength="1" d="M17 15 Q48 46 84 86"/><path pathLength="1" d="M83 14 Q52 47 15 85"/></svg>
     <img class="p-sel" src="/images/selkirk/stage/selkirk-lockup.svg" alt="" width="946" height="125">
   </div>
   <div class="sk-stage-copy">
-    <p class="sk-stage-kicker">Adapt To Life &times; Selkirk Sport</p>
+    <p class="sk-stage-kicker">Adapt To Life <svg class="sk-x" viewBox="0 0 100 100" role="img" aria-label="and" focusable="false"><path pathLength="1" d="M17 15 Q48 46 84 86"/><path pathLength="1" d="M83 14 Q52 47 15 85"/></svg> Selkirk Sport</p>
     <a class="sk-stage-cue" href="#skStart"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="caret" data-style="bold"><path fill="currentColor" d="m216.49 104.49l-80 80a12 12 0 0 1-17 0l-80-80a12 12 0 0 1 17-17L128 159l71.51-71.52a12 12 0 0 1 17 17Z"/></svg><span>Scroll</span></a>
   </div>
 </section>
@@ -951,7 +1007,7 @@ fill="currentColor" stroke="none">
 <section data-part="05" class="dark band-lg sk-close" id="ask">
   <div class="sk-serve" data-serve data-sound="/audio/selkirk-close.e81d5bd2.m4a">
     <canvas aria-hidden="true"></canvas>
-    <p class="sk-serve-line serif">Your <em class="italic bb-o">serve.</em></p>
+    <p class="sk-serve-line serif">Your <em class="italic bb-o">serve<span class="sk-stop"><svg class="sk-ball" viewBox="-50 -50 100 100" aria-hidden="true" focusable="false"><defs><radialGradient id="skBallLit" cx="-17" cy="-21" r="46" gradientUnits="userSpaceOnUse"><stop offset="0" class="lit0"/><stop offset="1" class="lit1"/></radialGradient><radialGradient id="skBallShade" cx="-14" cy="-16" r="72" gradientUnits="userSpaceOnUse"><stop offset=".52" class="sh0"/><stop offset="1" class="sh1"/></radialGradient></defs><circle r="50" class="body"/><g class="holes"><ellipse cx="-6.6" cy="40.9" rx="2.7" ry="4.8" transform="rotate(99.1 -6.6 40.9)"/><ellipse cx="-31.1" cy="26.9" rx="2.7" ry="4.8" transform="rotate(139.1 -31.1 26.9)"/><ellipse cx="-2.5" cy="23.3" rx="4.2" ry="4.8" transform="rotate(96.1 -2.5 23.3)"/><ellipse cx="17.5" cy="44.8" rx="1.2" ry="4.8" transform="rotate(68.6 17.5 44.8)"/><ellipse cx="-26.8" cy="4.9" rx="4" ry="4.8" transform="rotate(169.7 -26.8 4.9)"/><ellipse cx="22.8" cy="22.1" rx="3.7" ry="4.8" transform="rotate(44.1 22.8 22.1)"/><ellipse cx="-48" cy="4.4" rx="1.2" ry="4.8" transform="rotate(174.8 -48 4.4)"/><ellipse cx="-2.7" cy="-5.1" rx="4.8" ry="4.8" transform="rotate(-118.3 -2.7 -5.1)"/><ellipse cx="38.6" cy="27.3" rx="1.5" ry="4.8" transform="rotate(35.3 38.6 27.3)"/><ellipse cx="-37.2" cy="-16.5" rx="2.8" ry="4.8" transform="rotate(-156.1 -37.2 -16.5)"/><ellipse cx="25.7" cy="-4.1" rx="4.1" ry="4.8" transform="rotate(-9 25.7 -4.1)"/><ellipse cx="-11.6" cy="-27.8" rx="3.8" ry="4.8" transform="rotate(-112.7 -11.6 -27.8)"/><ellipse cx="45.4" cy="2.4" rx="2" ry="4.8" transform="rotate(3.1 45.4 2.4)"/><ellipse cx="18.4" cy="-28.5" rx="3.5" ry="4.8" transform="rotate(-57.1 18.4 -28.5)"/><ellipse cx="-17.7" cy="-42.5" rx="1.8" ry="4.8" transform="rotate(-112.6 -17.7 -42.5)"/><ellipse cx="40.1" cy="-23.3" rx="1.7" ry="4.8" transform="rotate(-30.1 40.1 -23.3)"/><ellipse cx="9.8" cy="-45.5" rx="1.7" ry="4.8" transform="rotate(-77.8 9.8 -45.5)"/></g><circle r="50" fill="url(#skBallLit)"/><circle r="50" fill="url(#skBallShade)"/></svg><span class="sk-stop-t">.</span></span></em></p>
   </div>
   <div class="wrap reading">
     <span class="eyebrow orange reveal">The ask</span>
@@ -962,7 +1018,7 @@ fill="currentColor" stroke="none">
       <a class="btn" href="mailto:hello@adapttolife.org?subject=Selkirk%20and%20Adapt%20To%20Life"><svg class="sk-btn-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="reply" data-style="bold"><path fill="currentColor" d="M224 44H32a12 12 0 0 0-12 12v136a20 20 0 0 0 20 20h176a20 20 0 0 0 20-20V56a12 12 0 0 0-12-12m-30.85 24L128 127.72L62.85 68ZM44 188V83.28l75.89 69.57a12 12 0 0 0 16.22 0L212 83.28V188Z"/></svg>Write to us</a>
       <a class="btn ghost" href="#together"><svg class="sk-btn-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="play" data-style="bold"><path fill="currentColor" d="M176 128a12 12 0 0 1-5.17 9.87l-52 36A12 12 0 0 1 100 164V92a12 12 0 0 1 18.83-9.87l52 36A12 12 0 0 1 176 128m60 0A108 108 0 1 1 128 20a108.12 108.12 0 0 1 108 108m-24 0a84 84 0 1 0-84 84a84.09 84.09 0 0 0 84-84"/></svg>Watch the hybrid lesson</a>
     </div>
-    <p class="sk-sign reveal"><b>Juan Ortiz</b>, Adapt To Life Ambassador, Chicago Pickleball: Wheelie Big Dills<br><b>Pete Petersen</b>, Adapt To Life Leadership, Coach<br><b>Ryan Anthony</b>, Adapt To Life Leadership, Coach<br><b>Alec Tranel</b>, Founder and Executive Director, Adapt To Life</p>
+    <p class="sk-sign reveal"><span><b>Juan Ortiz</b>, Adapt To Life Ambassador, Chicago Pickleball: Wheelie Big Dills</span><span><b>Pete Petersen</b>, Adapt To Life Leadership, Coach</span><span><b>Ryan Anthony</b>, Adapt To Life Leadership, Coach</span><span><b>Alec Tranel</b>, Founder and Executive Director, Adapt To Life</span></p>
   </div>
 </section>
 
@@ -1138,16 +1194,29 @@ fill="currentColor" stroke="none">
     var subs = Array.prototype.slice.call(toc.querySelectorAll('.sub a'));
     var footer = document.querySelector('footer.footer');
     var footerIn = false, current = null, ticking = false;
+    var start = document.getElementById('skStart'), end = document.getElementById('ask'), lastRead = '';
+    var calm = window.matchMedia('(prefers-reduced-motion: reduce)'), closing = 0;
+    function shut(){ toc.classList.remove('open', 'closing'); veil.classList.remove('closing'); veil.hidden = true; }
     function setOpen(open){
-      toc.classList.toggle('open', open);
-      veil.hidden = !open;
+      clearTimeout(closing);
+      toc.classList.remove('closing');
+      veil.classList.remove('closing');
       btn.setAttribute('aria-expanded', open ? 'true' : 'false');
       if (open){
+        toc.classList.add('open');
+        veil.hidden = false;
         var a = toc.querySelector('.part.active > a') || toc.querySelector('.part > a');
-        if (a) a.focus();
+        if (a) a.focus({ preventScroll:true });
+        return;
       }
+      if (!toc.classList.contains('open')) return;
+      // The sheet slides back down first; at once with reduced motion.
+      if (calm.matches || window.innerWidth >= 1200){ shut(); return; }
+      toc.classList.add('closing');
+      veil.classList.add('closing');
+      closing = setTimeout(shut, 250);
     }
-    btn.addEventListener('click', function(){ setOpen(!toc.classList.contains('open')); });
+    btn.addEventListener('click', function(){ setOpen(!toc.classList.contains('open') || toc.classList.contains('closing')); });
     veil.addEventListener('click', function(){ setOpen(false); });
     toc.querySelector('.sk-toc-close').addEventListener('click', function(){ setOpen(false); btn.focus(); });
     document.addEventListener('keydown', function(e){
@@ -1177,6 +1246,12 @@ fill="currentColor" stroke="none">
       var id = active ? '#' + active.id : '';
       subs.forEach(function(a){ a.classList.toggle('active', a.getAttribute('href') === id); });
       btn.classList.toggle('show', !!part && !footerIn);
+      // How far through the proposal you are, 0 to 1: the pill and the rail fill with it.
+      if (start && end){
+        var top = start.getBoundingClientRect().top, span = end.getBoundingClientRect().bottom - top - window.innerHeight;
+        var read = (span > 0 ? Math.min(1, Math.max(0, -top / span)) : 1).toFixed(3);
+        if (read !== lastRead){ lastRead = read; toc.style.setProperty('--read', read); btn.style.setProperty('--read', read); }
+      }
     }
     function onScroll(){ if (!ticking){ ticking = true; requestAnimationFrame(update); } }
     if ('IntersectionObserver' in window && footer){

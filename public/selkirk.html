@@ -31,7 +31,7 @@
 <script src="/js/attribution.js?v=bd94ad92" defer></script>
 <script type="importmap">{"imports":{"three":"/js/vendor/three-0.170.0/three.module.min.js"}}</script>
 <link rel="modulepreload" href="/js/vendor/three-0.170.0/three.module.min.js">
-<script type="module" src="/js/selkirk-stage.js?v=6b502781"></script>
+<script type="module" src="/js/selkirk-stage.js?v=8ed40002"></script>
 <style>
   /* ==========================================================================
      /bread-and-butter: Juan's code, built like /popcorn: the brand's products
@@ -404,6 +404,11 @@
   .sk-stage-cue svg{ width:1.2rem; height:1.2rem; color:var(--orange); animation:skCue 1.8s ease-in-out infinite; }
   .sk-stage-cue:hover, .sk-stage-cue:focus-visible{ color:var(--cream); }
   .sk-stage-cue:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:2px; border-radius:8px; }
+  .sk-stage-acts{ display:flex; align-items:center; justify-content:center; gap:1rem; }
+  .sk-stage-replay{ font-family:var(--font-label); font-weight:700; font-size:0.62rem; letter-spacing:0.3em; text-transform:uppercase; color:var(--cream-mute); background:none; border:1px solid rgba(249,247,242,0.28); border-radius:999px; padding:0.8rem 0.95rem 0.8rem 1.25rem; cursor:pointer; transition:color .2s ease, border-color .2s ease; }
+  .sk-stage-replay:hover, .sk-stage-replay:focus-visible{ color:var(--cream); border-color:rgba(249,247,242,0.6); }
+  .sk-stage-replay:focus-visible{ outline:2px solid var(--orange-hot); outline-offset:2px; }
+  .sk-stage-replay[aria-busy="true"]{ opacity:.55; cursor:progress; }
   @keyframes skCue{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(5px); } }
   @media (prefers-reduced-motion: reduce){ .sk-stage-cue svg{ animation:none; } }
   @media (min-width:900px){ .sk-stage-poster{ grid-auto-flow:column; } .sk-stage-poster .p-atl{ width:min(30vw,420px); } .sk-stage-poster .p-sel{ width:min(40vw,600px); } }
@@ -503,7 +508,10 @@ fill="currentColor" stroke="none">
   </div>
   <div class="sk-stage-copy">
     <p class="sk-stage-kicker">Adapt To Life &times; Selkirk Sport</p>
+    <div class="sk-stage-acts">
+    <button type="button" class="sk-stage-replay" data-sound="/audio/selkirk-stage.c817664e.m4a" hidden>Replay with sound</button>
     <a class="sk-stage-cue" href="#skStart"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="caret" data-style="bold"><path fill="currentColor" d="m216.49 104.49l-80 80a12 12 0 0 1-17 0l-80-80a12 12 0 0 1 17-17L128 159l71.51-71.52a12 12 0 0 1 17 17Z"/></svg><span>Scroll</span></a>
+    </div>
   </div>
 </section>
 <script>

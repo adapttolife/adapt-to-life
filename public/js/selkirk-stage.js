@@ -1,18 +1,24 @@
 // The /selkirk title sequence, "Center Court". A dark arena and a pickleball:
-// it drops beside the lens and bounces as the first floodlight snaps on, hangs
-// in the light, and is served across the net while the camera cranes up and
-// over to land straight above the court, both names painted on it, one on each
-// side of the net.
+// it drops beside the lens and bounces as the first floodlight snaps on, then
+// hangs in slow motion while the floodlight straight ahead comes on, soft,
+// behind it. It is served across the net, the focus follows it, and the camera
+// cranes up and over to land straight above the court, both names painted on
+// it, one on each side of the net.
 //
 // update(t) draws the frame at time t (seconds), so the same code runs live,
 // as one still frame for reduced motion, and frame by frame for recordings
 // (?capture: window.__stage.seek(t) draws one exact frame).
 //
-// Built for clarity and a light load. Everything is drawn in one pass straight
-// to the screen with the GPU's own antialiasing: no grain, no glow passes. The
-// court lines are worked out per pixel, so they stay sharp up close and never
-// shimmer far away, and the names are drawn from their SVGs at the size they
-// land. Once the sequence has settled, drawing stops.
+// Built like a film camera under real light, for clarity and a light load.
+// Everything is drawn in one pass straight to the screen with the GPU's own
+// antialiasing: no grain, no glow passes. The lens is worked out per surface
+// rather than blurred afterwards: the court, the net and the lamps each soften
+// by as much as a real lens would at their distance, so the ball stays razor
+// sharp while the focus follows it. The court lines are worked out per pixel,
+// so they stay sharp up close and never shimmer far away; the names are drawn
+// from their SVGs at the size they land; and each lamp lays its own soft
+// shadows of the ball, the net and the posts on the court. Once the sequence
+// has settled, drawing stops.
 //
 // three.js is vendored in /js/vendor/three-0.170.0 (MIT, see its LICENSE) and
 // reached through the import map in selkirk.html. The folder name carries the
@@ -29,7 +35,13 @@ const STILL = 13; // the slow push ends here; nothing moves after it, so drawing
 // A pickleball court in metres: 6.1 wide, 13.41 long, kitchen 2.13 from the net.
 const CW = 6.1, CL = 13.41, KITCHEN = 2.13, LINE = 0.06;
 const FW = 15, FL = 24; // the floor around it
-const LIGHT_ON = [1.0, 1.45, 1.9, 2.3]; // nearest the camera first
+const LIGHT_ON = [1.0, 1.45, 1.9, 2.3]; // in the order the lamps strike (see strikeOrder)
+// The net in metres: the mesh, the tape along its top, and the posts just outside the sidelines.
+const NET = { half: CW / 2 + 0.15, meshLo: 0.06, tapeLo: 0.85, tapeHi: 0.91, postX: CW / 2 + 0.2, postR: 0.035, postH: 0.92 };
+// A floodlight's face in metres, and how wide it is as a light (that sets how soft its shadows are).
+const LAMP = { w: 1.1, h: 0.5, size: 0.8 };
+// The lens wide open for the close up: the width of its opening in metres, about f/1.5.
+const APERTURE = 0.03;
 
 // Timing ----------------------------------------------------------------------
 const clamp01 = (x) => Math.min(1, Math.max(0, x));
@@ -82,6 +94,16 @@ const FilmShader = {
     }`,
 };
 
+// The lens, shared by every surface that softens with it. blurPx is a thin
+// lens: nothing in the plane of focus, more in front of it and behind it, and
+// nothing at all once the aperture shuts.
+const LENS_GLSL = /* glsl */ `
+  uniform float uFocus, uAperture, uPxPerRad;
+  float blurPx(float d) { return 0.5 * uAperture * abs(1.0 / uFocus - 1.0 / max(d, 0.05)) * uPxPerRad; }
+  // How much of the window [x - hw, x + hw] lies inside [a, b].
+  float span(float x, float a, float b, float hw) { return clamp((min(b, x + hw) - max(a, x - hw)) / (2.0 * hw), 0.0, 1.0); }`;
+const f = (x) => x.toFixed(4); // a number written into a shader
+
 // The stage: renderer and camera, sized to the section.
 function createStage({ fov, exposure }) {
   const canvas = root.querySelector("canvas");
@@ -103,9 +125,11 @@ function createStage({ fov, exposure }) {
   film.frustumCulled = false;
   filmScene.add(film);
   const filmCam = new THREE.Camera();
+  // Focus distance and aperture in metres; pixels per radian across the frame.
+  const lens = { uFocus: { value: 1 }, uAperture: { value: 0 }, uPxPerRad: { value: 1000 } };
 
   const stage = {
-    canvas, renderer, scene, camera, film: film.material.uniforms, width: 1, height: 1, portrait: false, onResize: null,
+    canvas, renderer, scene, camera, lens, film: film.material.uniforms, width: 1, height: 1, portrait: false, onResize: null,
     draw() {
       renderer.clear();
       renderer.render(scene, camera);
@@ -121,6 +145,7 @@ function createStage({ fov, exposure }) {
     stage.film.uRes.value.set(w * pr, h * pr);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
+    lens.uPxPerRad.value = (h * pr) / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)));
     stage.onResize && stage.onResize();
     stage.afterResize && stage.afterResize(); // resizing clears the canvas
   };
@@ -129,7 +154,9 @@ function createStage({ fov, exposure }) {
   return stage;
 }
 
-// Running: live, one still, or seekable for recordings. Returns stop().
+// Running: live, one still, or seekable for recordings. Returns stop(), and
+// replay(clock) when it runs live: from the top again, on the soundtrack's
+// clock when one is given, so picture and sound stay locked.
 function run(stage, update, onSettled) {
   const render = (t) => { update(t); stage.draw(); };
   if (CAPTURE) {
@@ -150,26 +177,27 @@ function run(stage, update, onSettled) {
       },
     };
     window.__stageReady = true;
-    return () => {};
+    return { stop() {} };
   }
   if (REDUCED) {
     // One still of the final frame, drawn again whenever the stage resizes.
     stage.afterResize = () => render(DURATION + 2);
     stage.afterResize();
     onSettled();
-    return () => {};
+    return { stop() {} };
   }
-  let t = 0, prev = performance.now(), settled = false, visible = true, raf = 0, stopped = false;
+  let t = 0, prev = performance.now(), settled = false, visible = true, raf = 0, stopped = false, clock = null;
   const frame = (now) => {
     raf = 0;
     const dt = Math.min(0.05, (now - prev) / 1000);
     prev = now;
-    t = Math.min(STILL, t + dt);
+    t = Math.min(STILL, clock ? clock() : t + dt);
     render(t);
     if (!settled && t >= DURATION) { settled = true; onSettled(); }
     if (t >= STILL) {
       // The last frame is up and nothing moves now: stop drawing. A resize redraws it.
       stopped = true;
+      clock = null;
       stage.afterResize = () => render(STILL);
       return;
     }
@@ -182,7 +210,15 @@ function run(stage, update, onSettled) {
   new IntersectionObserver(([e]) => { visible = e.isIntersecting; wake(); }).observe(root);
   document.addEventListener("visibilitychange", wake);
   raf = requestAnimationFrame(frame);
-  return () => { stopped = true; cancelAnimationFrame(raf); raf = 0; };
+  return {
+    stop() { stopped = true; cancelAnimationFrame(raf); raf = 0; },
+    replay(soundClock) {
+      t = 0; clock = soundClock || null; settled = false; stopped = false;
+      root.classList.remove("is-settled");
+      prev = performance.now();
+      if (!raf) raf = requestAnimationFrame(frame);
+    },
+  };
 }
 
 // A logo, decoded and ready to paint. It is drawn straight from the SVG at the
@@ -196,7 +232,7 @@ async function loadLogo(url, aspect) {
   return { img, aspect };
 }
 
-// A soft round sprite: the ball's shadow, the glow round a lamp.
+// A soft round sprite: the glow round a lamp.
 function softDot(size = 128) {
   const c = document.createElement("canvas");
   c.width = c.height = size;
@@ -288,9 +324,16 @@ function nameTexture(n, anisotropy) {
 
 // The floor and the court, one plane, coloured per pixel. Each line's colour is
 // how much of the pixel it covers, so the edges are clean up close and the
-// lines fade evenly far away instead of breaking up.
-function groundMaterial() {
-  const mat = new THREE.MeshStandardMaterial({ roughness: 0.92, metalness: 0.0, envMapIntensity: 0, dithering: true });
+// lines fade evenly far away instead of breaking up. The lens widens that same
+// window, so a line out of focus softens exactly as much as the lens says.
+//
+// Each lamp's light is cut by what stands between it and the floor: the net's
+// tape, mesh and posts, and the ball, all worked out exactly, with edges as
+// soft as a lamp that size makes them. The court has a satin finish and the
+// paint a little more, so the lamps glance off them as the camera moves.
+const SPOT_INFO = "getSpotLightInfo( spotLight, geometryPosition, directLight );";
+function groundMaterial(lens) {
+  const mat = new THREE.MeshStandardMaterial({ roughness: 0.8, metalness: 0.0, envMapIntensity: 0, dithering: true });
   const u = {
     uFloor: { value: new THREE.Vector3(14 / 255, 18 / 255, 22 / 255) }, // #0e1216, sRGB: the sheen mixes there
     uSheenR: { value: 0.6 * FL },
@@ -302,9 +345,12 @@ function groundMaterial() {
     uLines: { value: Array.from({ length: LINE_SLOTS }, () => new THREE.Vector4()) },
     uNameA: { value: null }, uMapA: { value: [new THREE.Vector3(), new THREE.Vector3()] },
     uNameB: { value: null }, uMapB: { value: [new THREE.Vector3(), new THREE.Vector3()] },
+    uBall: { value: new THREE.Vector4(0, -10, 0, 0) }, // centre, and 1 while it is in play
+    uCamWorld: { value: new THREE.Matrix4() }, // set to the camera's own matrix in main
   };
+  if (!THREE.ShaderChunk.lights_fragment_begin.includes(SPOT_INFO)) console.warn("selkirk stage: the court will draw without shadows");
   mat.onBeforeCompile = (sh) => {
-    Object.assign(sh.uniforms, u);
+    Object.assign(sh.uniforms, u, lens);
     sh.vertexShader = sh.vertexShader
       .replace("#include <common>", "#include <common>\nvarying vec2 vGround;")
       .replace("#include <begin_vertex>", "#include <begin_vertex>\nvGround = vec2(position.x, -position.y);");
@@ -316,33 +362,191 @@ function groundMaterial() {
         uniform vec4 uCourtRect, uKitchenRect, uLines[${LINE_SLOTS}];
         uniform sampler2D uNameA, uNameB;
         uniform vec3 uMapA[2], uMapB[2];
+        uniform vec4 uBall;
+        uniform mat4 uCamWorld;
+        ${LENS_GLSL}
+        float gCourt, gLine; // how much of this pixel is court, and line paint
         // How much of the pixel (centre p, half size hw) the rectangle r covers.
         float cover(vec2 p, vec2 hw, vec4 r) {
           vec2 lo = max(r.xy, p - hw), hi = min(r.zw, p + hw);
           vec2 c = clamp((hi - lo) / (2.0 * hw), 0.0, 1.0);
           return c.x * c.y;
         }
-        vec3 paintName(vec3 col, sampler2D tex, vec3 m0, vec3 m1, vec2 p) {
+        vec3 paintName(vec3 col, sampler2D tex, vec3 m0, vec3 m1, vec2 p, float k) {
           vec2 uv = vec2(dot(m0, vec3(p, 1.0)), dot(m1, vec3(p, 1.0)));
-          vec3 s = texture2D(tex, uv).rgb;
-          return mix(col, s, cover(uv, max(fwidth(uv) * 0.5, vec2(1e-6)), vec4(0.0, 0.0, 1.0, 1.0)));
+          vec2 gx = dFdx(uv) * k, gy = dFdy(uv) * k;
+          vec3 s = textureGrad(tex, uv, gx, gy).rgb;
+          return mix(col, s, cover(uv, max((abs(gx) + abs(gy)) * 0.5, vec2(1e-6)), vec4(0.0, 0.0, 1.0, 1.0)));
         }
         vec3 groundColor(vec2 p) {
-          vec2 hw = max(fwidth(p) * 0.5, vec2(1e-6));
+          // The pixel's footprint on the floor, widened by however far the lens blurs here.
+          float k = 1.0 + blurPx(distance(cameraPosition, vec3(p.x, 0.0, p.y)));
+          vec2 hw = max(fwidth(p) * 0.5 * k, vec2(1e-6));
           // The floor, with a soft sheen where the lights pool.
           vec3 col = sRGBTransferEOTF(vec4(mix(uFloor, vec3(1.0), 0.05 * max(0.0, 1.0 - length(p) / uSheenR)), 1.0)).rgb;
-          col = mix(col, uCourt, cover(p, hw, uCourtRect));
+          gCourt = cover(p, hw, uCourtRect);
+          col = mix(col, uCourt, gCourt);
           col = mix(col, uKitchen, cover(p, hw, uKitchenRect));
-          col = paintName(col, uNameA, uMapA[0], uMapA[1], p);
-          col = paintName(col, uNameB, uMapB[0], uMapB[1], p);
-          for (int i = 0; i < ${LINE_SLOTS}; i++) col = mix(col, uInk, cover(p, hw, uLines[i]));
+          col = paintName(col, uNameA, uMapA[0], uMapA[1], p, k);
+          col = paintName(col, uNameB, uMapB[0], uMapB[1], p, k);
+          gLine = 0.0;
+          for (int i = 0; i < ${LINE_SLOTS}; i++) {
+            float c = cover(p, hw, uLines[i]);
+            col = mix(col, uInk, c);
+            gLine = max(gLine, c);
+          }
           return col;
+        }
+        // How much of the lamp at L reaches this point of the floor, 0 to 1.
+        float lampReach(vec3 L) {
+          vec3 p = vec3(vGround.x, 0.0, vGround.y);
+          // The net: where the line from here to the lamp crosses the net's plane
+          // (z = 0), and whether the tape, the mesh or a post is there. The
+          // shadow's edge softens with distance from the net, as a wide lamp's does.
+          float across = step(p.z * L.z, 0.0);
+          float den = p.z - L.z;
+          float s = clamp(p.z / (abs(den) < 1e-3 ? 1e-3 : den), 0.0, 1.0) * across;
+          float h = s * L.y, x = mix(p.x, L.x, s);
+          float pen = ${f(LAMP.size)} * s;
+          float wh = 0.5 * (pen + fwidth(h)) + 1e-4, wx = 0.5 * (pen + fwidth(x)) + 1e-4;
+          float wide = span(x, -${f(NET.half)}, ${f(NET.half)}, wx);
+          float keep = 1.0 - span(h, ${f(NET.tapeLo)}, ${f(NET.tapeHi)}, wh) * wide;
+          keep *= 1.0 - 0.32 * span(h, 0.0, ${f(NET.tapeLo)}, wh) * wide;
+          float posts = span(x, ${f(NET.postX - NET.postR)}, ${f(NET.postX + NET.postR)}, wx) + span(x, -${f(NET.postX + NET.postR)}, -${f(NET.postX - NET.postR)}, wx);
+          keep *= 1.0 - posts * span(h, 0.0, ${f(NET.postH)}, wh);
+          keep = mix(1.0, keep, across);
+          // The ball: how much of the lamp's disc it hides, seen from here.
+          vec3 toL = L - p;
+          float dl = length(toL);
+          vec3 dir = toL / dl, vb = uBall.xyz - p;
+          float tb = dot(vb, dir);
+          float tc = max(tb, 1e-3);
+          float th = length(vb - tb * dir) / tc; // the angle between the ball and the lamp
+          float rb = ${f(BALL_R)} / tc, rl = ${f(LAMP.size * 0.5)} / dl;
+          float hide = min(1.0, (rb * rb) / (rl * rl)) * (1.0 - smoothstep(abs(rl - rb), rl + rb, th));
+          return keep * (1.0 - hide * uBall.w * step(0.0, tb));
         }`)
-      .replace("#include <map_fragment>", "#include <map_fragment>\ndiffuseColor.rgb = groundColor(vGround);");
+      .replace("#include <map_fragment>", "#include <map_fragment>\ndiffuseColor.rgb = groundColor(vGround);")
+      .replace("#include <roughnessmap_fragment>", "#include <roughnessmap_fragment>\nroughnessFactor = mix(mix(0.92, 0.78, gCourt), 0.62, gLine);")
+      .replace("#include <lights_fragment_begin>", THREE.ShaderChunk.lights_fragment_begin.replace(
+        SPOT_INFO, SPOT_INFO + "\n\t\tdirectLight.color *= lampReach( ( uCamWorld * vec4( spotLight.position, 1.0 ) ).xyz );"));
   };
   mat.userData.u = u;
   return mat;
 }
+
+// The net, as a card standing on the centre line: the mesh in a 4 cm grid
+// worked out per pixel (so it never shimmers), and, while the lens is open,
+// the tape and the posts too, softened by the lens. Once it shuts the solid
+// tape and posts take over; at that point the two look the same.
+function netMaterial(lens) {
+  const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1, metalness: 0, envMapIntensity: 0, transparent: true, depthWrite: false, side: THREE.DoubleSide });
+  const u = {
+    uLens: { value: 1 }, // 1: the card draws the tape and posts as well
+    uCord: { value: new THREE.Color(0x0b0d10) },
+    uTape: { value: new THREE.Color(0xf2efe8) },
+    uPost: { value: new THREE.Color(0x2a2e33) },
+  };
+  mat.onBeforeCompile = (sh) => {
+    Object.assign(sh.uniforms, u, lens);
+    sh.vertexShader = sh.vertexShader
+      .replace("#include <common>", "#include <common>\nvarying vec2 vCard;")
+      .replace("#include <begin_vertex>", "#include <begin_vertex>\nvCard = position.xy;");
+    sh.fragmentShader = sh.fragmentShader
+      .replace("#include <common>", /* glsl */ `#include <common>
+        varying vec2 vCard;
+        uniform float uLens;
+        uniform vec3 uCord, uTape, uPost;
+        ${LENS_GLSL}
+        float netRough;
+        // The share of [x - hw, x + hw] covered by cords c wide every P.
+        float cords(float x, float hw, float c, float P) {
+          float lo = x - hw, hi = x + hw;
+          float a = floor(lo / P) * c + min(fract(lo / P) * P, c);
+          float b = floor(hi / P) * c + min(fract(hi / P) * P, c);
+          return (b - a) / (2.0 * hw);
+        }`)
+      .replace("#include <color_fragment>", /* glsl */ `#include <color_fragment>
+        {
+          vec2 q = vCard;
+          vec2 hw = max(fwidth(q) * 0.5 * (1.0 + blurPx(length(vViewPosition))), vec2(1e-6));
+          float wide = span(q.x, -${f(NET.half)}, ${f(NET.half)}, hw.x);
+          float cx = cords(q.x, hw.x, 0.004, 0.04), cy = cords(q.y, hw.y, 0.004, 0.04);
+          float a = wide * span(q.y, ${f(NET.meshLo)}, ${f(NET.tapeLo)}, hw.y) * (0.16 + 0.84 * (1.0 - (1.0 - cx) * (1.0 - cy)));
+          vec3 col = uCord;
+          float tape = uLens * wide * span(q.y, ${f(NET.tapeLo)}, ${f(NET.tapeHi)}, hw.y);
+          float posts = uLens * span(q.y, 0.0, ${f(NET.postH)}, hw.y) * (span(q.x, ${f(NET.postX - NET.postR)}, ${f(NET.postX + NET.postR)}, hw.x) + span(q.x, -${f(NET.postX + NET.postR)}, -${f(NET.postX - NET.postR)}, hw.x));
+          col = mix(col, uPost, posts); a += posts * (1.0 - a);
+          col = mix(col, uTape, tape); a += tape * (1.0 - a);
+          diffuseColor = vec4(col, a);
+          netRough = mix(1.0, 0.6, tape);
+        }`)
+      .replace("#include <roughnessmap_fragment>", "#include <roughnessmap_fragment>\nroughnessFactor = netRough;");
+  };
+  mat.userData.u = u;
+  return mat;
+}
+
+// A floodlight's face: rows of LED panels in a frame. The lens softens it like
+// everything else, so out of focus it becomes a soft, rounded block of light,
+// as a real lamp does; the light it spreads is the same, so it dims as it grows.
+function lampMaterial(lens) {
+  return new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false,
+    uniforms: { ...lens, uOn: { value: 0 } },
+    vertexShader: /* glsl */ `
+      varying vec2 vQ; varying float vD;
+      void main() { vQ = position.xy; vec4 mv = modelViewMatrix * vec4(position, 1.0); vD = -mv.z; gl_Position = projectionMatrix * mv; }`,
+    fragmentShader: /* glsl */ `
+      #include <common>
+      uniform float uOn;
+      varying vec2 vQ; varying float vD;
+      ${LENS_GLSL}
+      float box(vec2 p, vec2 b, float r) { vec2 q = abs(p) - b + r; return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r; }
+      // The share of [x - hw, x + hw] lit by panels P wide with gaps g between.
+      float panels(float x, float hw, float g, float P) {
+        float lo = x - hw, hi = x + hw;
+        float a = floor(lo / P) * (P - g) + max(fract(lo / P) * P - g, 0.0);
+        float b = floor(hi / P) * (P - g) + max(fract(hi / P) * P - g, 0.0);
+        return (b - a) / (2.0 * hw);
+      }
+      void main() {
+        vec2 fw = fwidth(vQ);
+        // The lens's blur here in metres, and a little more: a lamp this bright
+        // flares past its own edge in the glass.
+        float blur = 1.8 * blurPx(vD) * max(fw.x, fw.y);
+        float w = 0.5 * max(fw.x, fw.y) + blur;
+        vec2 hs = vec2(${f(LAMP.w / 2 - 0.1)}, ${f(LAMP.h / 2 - 0.07)}); // the lit face, inside its frame
+        float face = 1.0 - smoothstep(-w, w, box(vQ, hs, 0.06));
+        float leds = panels(vQ.x + hs.x, w, 0.02, ${f((LAMP.w - 0.2) / 6)}) * panels(vQ.y + hs.y, w, 0.02, ${f((LAMP.h - 0.14) / 2)});
+        float spread = (hs.x * hs.y) / ((hs.x + blur) * (hs.y + blur));
+        float I = uOn * face * mix(0.3, 1.0, leds) * spread * 7.0;
+        gl_FragColor = vec4(vec3(1.0, 0.95, 0.88) * I, 1.0);
+        #include <tonemapping_fragment>
+        #include <colorspace_fragment>
+      }`,
+  });
+}
+
+// A tower's pole: a card that turns to face the camera, its edges softened by
+// the lens like the net's, so it never cuts a hard line through a soft lamp.
+function poleMaterial(lens) {
+  const mat = new THREE.MeshBasicMaterial({ color: 0x07080a, transparent: true, depthWrite: false });
+  mat.onBeforeCompile = (sh) => {
+    Object.assign(sh.uniforms, lens);
+    sh.vertexShader = sh.vertexShader
+      .replace("#include <common>", "#include <common>\nvarying vec2 vQ;\nvarying float vD;")
+      .replace("#include <begin_vertex>", "#include <begin_vertex>\nvQ = position.xy;")
+      .replace("#include <project_vertex>", "#include <project_vertex>\nvD = -mvPosition.z;");
+    sh.fragmentShader = sh.fragmentShader
+      .replace("#include <common>", `#include <common>\nvarying vec2 vQ;\nvarying float vD;\n${LENS_GLSL}`)
+      .replace("#include <color_fragment>", /* glsl */ `#include <color_fragment>
+        float r = mix(0.08, 0.06, clamp(vQ.y / ${f(POLE_H)} + 0.5, 0.0, 1.0)); // it tapers as it rises
+        diffuseColor.a *= span(vQ.x, -r, r, max(fwidth(vQ.x) * 0.5 * (1.0 + blurPx(vD)), 1e-5));`);
+  };
+  return mat;
+}
+const POLE_H = 8.15; // up to just under the lamp head
 
 // The ball ---------------------------------------------------------------------
 // A real outdoor pickleball: 74 mm across, 40 round holes about 7 mm wide,
@@ -445,7 +649,7 @@ async function main() {
   root.dataset.started = "1";
 
   const stage = createStage({ fov: 38, exposure: 1.1 });
-  const { scene, camera, renderer } = stage;
+  const { scene, camera, renderer, lens } = stage;
   scene.fog = new THREE.Fog(0x040404, 18, 46);
   const anisotropy = Math.min(16, renderer.capabilities.getMaxAnisotropy());
 
@@ -458,7 +662,9 @@ async function main() {
   ]);
 
   // The floor and the court, with the names.
-  const groundMat = groundMaterial();
+  const groundMat = groundMaterial(lens);
+  const gu = groundMat.userData.u;
+  gu.uCamWorld.value = camera.matrixWorld;
   const ground = new THREE.Mesh(new THREE.PlaneGeometry(FW, FL), groundMat);
   ground.rotation.x = -Math.PI / 2;
   scene.add(ground);
@@ -468,14 +674,14 @@ async function main() {
     if (layoutPortrait === stage.portrait) return;
     layoutPortrait = stage.portrait;
     const names = nameLayout(atl, sel, stage.portrait);
-    const u = groundMat.userData.u, lines = courtLines(names);
-    u.uLines.value.forEach((v, i) => (lines[i] ? v.set(...lines[i]) : v.set(0, 0, 0, 0)));
+    const lines = courtLines(names);
+    gu.uLines.value.forEach((v, i) => (lines[i] ? v.set(...lines[i]) : v.set(0, 0, 0, 0)));
     for (const [n, key] of [[names[0], "A"], [names[1], "B"]]) {
       const { tex, map } = nameTexture(n, anisotropy);
-      const old = u["uName" + key].value;
-      u["uName" + key].value = tex;
-      u["uMap" + key].value[0].copy(map[0]);
-      u["uMap" + key].value[1].copy(map[1]);
+      const old = gu["uName" + key].value;
+      gu["uName" + key].value = tex;
+      gu["uMap" + key].value[0].copy(map[0]);
+      gu["uMap" + key].value[1].copy(map[1]);
       old && old.dispose();
     }
     S = Math.sign(names[1].cz);
@@ -483,39 +689,25 @@ async function main() {
   relayout();
   stage.onResize = relayout;
 
-  // The net: posts, a dark mesh, the white tape.
-  const net = new THREE.Group();
-  const netMesh = new THREE.Mesh(new THREE.PlaneGeometry(CW + 0.3, 0.8), new THREE.MeshStandardMaterial({ color: 0x0b0d10, transparent: true, opacity: 0.72, roughness: 1, side: THREE.DoubleSide }));
-  netMesh.position.y = 0.46;
-  const tape = new THREE.Mesh(new THREE.BoxGeometry(CW + 0.3, 0.06, 0.05), new THREE.MeshStandardMaterial({ color: 0xf2efe8, roughness: 0.6 }));
-  tape.position.y = 0.88;
-  net.add(netMesh, tape);
-  for (const x of [-(CW / 2 + 0.2), CW / 2 + 0.2]) {
-    const post = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.92, 16), new THREE.MeshStandardMaterial({ color: 0x2a2e33, metalness: 0.6, roughness: 0.4 }));
-    post.position.set(x, 0.46, 0);
-    net.add(post);
+  // The net: the card (mesh, and the soft tape and posts while the lens is
+  // open), then the solid tape and posts for when it shuts.
+  const netMat = netMaterial(lens);
+  // The card's own coordinates are metres from the middle of the net at floor
+  // level, with room round the net for the lens to spread it.
+  const cardGeo = new THREE.PlaneGeometry(2 * NET.postX + 0.8, NET.postH + 0.8);
+  cardGeo.translate(0, NET.postH / 2, 0);
+  const card = new THREE.Mesh(cardGeo, netMat);
+  scene.add(card);
+  const solid = new THREE.Group();
+  const tape = new THREE.Mesh(new THREE.BoxGeometry(2 * NET.half, NET.tapeHi - NET.tapeLo, 0.05), new THREE.MeshStandardMaterial({ color: 0xf2efe8, roughness: 0.6 }));
+  tape.position.y = (NET.tapeLo + NET.tapeHi) / 2;
+  solid.add(tape);
+  for (const x of [-NET.postX, NET.postX]) {
+    const post = new THREE.Mesh(new THREE.CylinderGeometry(NET.postR, NET.postR, NET.postH, 16), new THREE.MeshStandardMaterial({ color: 0x2a2e33, metalness: 0.6, roughness: 0.4 }));
+    post.position.set(x, NET.postH / 2, 0);
+    solid.add(post);
   }
-  scene.add(net);
-  // The net's soft shadow on the court, so it still reads as a net from straight above.
-  const shadowTex = (() => {
-    const c = document.createElement("canvas");
-    c.width = 128; c.height = 64;
-    const g = c.getContext("2d");
-    const img = g.createImageData(128, 64);
-    for (let y = 0; y < 64; y++) for (let x = 0; x < 128; x++) {
-      const v = Math.abs(y / 63 - 0.5) * 2, u = Math.abs(x / 127 - 0.5) * 2;
-      const a = Math.exp(-v * v * 5) * (1 - Math.max(0, (u - 0.9) / 0.1));
-      img.data.set([0, 0, 0, Math.round(a * 255)], (y * 128 + x) * 4);
-    }
-    g.putImageData(img, 0, 0);
-    const t = new THREE.CanvasTexture(c);
-    t.colorSpace = THREE.SRGBColorSpace;
-    return t;
-  })();
-  const netShadow = new THREE.Mesh(new THREE.PlaneGeometry(CW + 0.5, 0.9), new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, opacity: 0.55, depthWrite: false }));
-  netShadow.rotation.x = -Math.PI / 2;
-  netShadow.position.y = 0.004;
-  scene.add(netShadow);
+  scene.add(solid);
 
   scene.add(new THREE.AmbientLight(0xffffff, 0.015));
   // Light bounced off the court: a little navy on the underside of the ball.
@@ -523,23 +715,25 @@ async function main() {
   scene.add(bounce);
   // Four floodlight towers, one at each corner.
   const dot = softDot();
+  const poleGeo = new THREE.PlaneGeometry(1.6, POLE_H), poleMat = poleMaterial(lens);
   const towers = [[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sz]) => {
     const pos = new THREE.Vector3(sx * (CW / 2 + 3.2), 8.5, sz * (CL / 2 + 2.2));
     const target = new THREE.Vector3(sx * 0.6, 0, sz * 2.4);
     const spot = new THREE.SpotLight(0xfff1e0, 0, 40, 0.62, 0.55, 1.4);
     spot.position.copy(pos); spot.target.position.copy(target);
     scene.add(spot, spot.target);
-    // The lamp head: a bright panel with a soft glow round it.
-    const lamp = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.5, 0.12), new THREE.MeshBasicMaterial({ color: 0x000000 }));
-    lamp.position.copy(pos);
-    lamp.lookAt(target);
-    scene.add(lamp);
+    // The lamp head: its lit face, turned to the court. The housing behind it
+    // is lost in the dark, so it isn't drawn.
+    const face = new THREE.Mesh(new THREE.PlaneGeometry(LAMP.w + 1.4, LAMP.h + 1.4), lampMaterial(lens));
+    face.position.copy(pos);
+    face.lookAt(target);
+    scene.add(face);
     const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: dot, color: 0xfff1e0, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }));
     glow.position.copy(pos);
     glow.scale.setScalar(3.4);
     scene.add(glow);
-    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.08, 8.5, 12), new THREE.MeshStandardMaterial({ color: 0x15181b, roughness: 0.8 }));
-    pole.position.set(pos.x, 4.25, pos.z);
+    const pole = new THREE.Mesh(poleGeo, poleMat);
+    pole.position.set(pos.x, POLE_H / 2, pos.z);
     scene.add(pole);
     // The beam: an additive cone, brightest at the lamp.
     const dir = new THREE.Vector3().subVectors(pos, target);
@@ -566,15 +760,16 @@ async function main() {
     cone.position.copy(pos).add(target).multiplyScalar(0.5);
     cone.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.clone().normalize());
     scene.add(cone);
-    return { sx, sz, spot, lamp, glow, cone };
+    return { sx, sz, spot, face, glow, cone, pole };
   });
+  // The order the lamps strike: the one behind the camera first, as the ball
+  // bounces; then the one straight ahead, so it comes on in frame, soft behind
+  // the hanging ball; then the other two.
+  const strikeOrder = (L) => (L.sz === S ? (L.sx === 1 ? 0 : 2) : (L.sx === 1 ? 3 : 1));
 
-  // The ball and its soft shadow.
+  // The ball. Its shadows are the court's work: each lamp throws its own.
   const ball = new THREE.Mesh(new THREE.SphereGeometry(BALL_R, 64, 48), ballMaterial());
   scene.add(ball);
-  const shadow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: dot, color: 0x000000, transparent: true, opacity: 0, depthWrite: false }));
-  shadow.rotation.x = -Math.PI / 2;
-  scene.add(shadow);
   const serve = servePath();
   const ballPos = new THREE.Vector3();
   // Where the ball is at ball time b (+z server); false once it has bounced away.
@@ -639,15 +834,14 @@ async function main() {
   const hang = new THREE.Vector3(), chase = new THREE.Vector3(), start = new THREE.Vector3();
 
   const update = (t) => {
-    // Lights snap on one by one, nearest the camera first: a clean strike, no flicker.
+    // Lights snap on one by one: a clean strike, no flicker.
     let lit = 0;
     for (const L of towers) {
-      const order = (L.sz === S ? 0 : 2) + (L.sx === 1 ? 0 : 1);
-      const on = smooth01((t - LIGHT_ON[order]) / 0.08);
+      const on = smooth01((t - LIGHT_ON[strikeOrder(L)]) / 0.08);
       lit += on;
       L.spot.intensity = on * 55;
-      L.lamp.material.color.setScalar(on * 3);
-      L.glow.material.opacity = on * 0.5;
+      L.face.material.uniforms.uOn.value = on;
+      L.glow.material.opacity = on * 0.4;
       L.cone.material.uniforms.uOn.value = on;
     }
     bounce.intensity = 0.9 * (lit / 4);
@@ -656,15 +850,12 @@ async function main() {
     // The ball.
     const b = ballClock(t);
     const shown = b >= serve.start && ballAt(b);
-    ball.visible = shadow.visible = shown;
+    ball.visible = shown;
     if (shown) {
       ball.position.copy(toStage(ballPos));
       spinAt(b, ball.quaternion);
-      const y = ballPos.y - BALL_R;
-      shadow.position.set(ballPos.x, 0.006, ballPos.z);
-      shadow.scale.setScalar(BALL_R * 3.2 * (1 + y * 0.9));
-      shadow.material.opacity = 0.62 * Math.max(0, 1 - y / 2.2);
     }
+    gu.uBall.value.set(ball.position.x, ball.position.y, ball.position.z, shown ? 1 : 0);
 
     // The crane: from beside the drop, out and up, then over the court.
     const end = endFor();
@@ -674,10 +865,12 @@ async function main() {
     const c = ease.inOutCubic(seg(t, 1.7, 5.5));
     // A quadratic curve through a point out to the side, so it sweeps rather than slides.
     const pos = start.clone().multiplyScalar((1 - c) * (1 - c)).addScaledVector(midPos, 2 * (1 - c) * c).addScaledVector(end.pos, c * c);
-    // The aim: on the ball as it drops and hangs (riding a little with it), then
-    // after it as it is served, until it lands; then over to the court.
+    // The aim: on the ball as it drops; then, as it rises into the light,
+    // tilting up with it, so the lamp straight ahead comes into the top of the
+    // frame; then after it as it is served, until it lands; then over to the court.
     const by = b >= serve.start && b < serve.hit ? (ballAt(b), ballPos.y) : 0.3;
-    hang.set(DROP.x, 0.3 + 0.3 * Math.min(0.25, Math.max(-0.2, by - 0.3)), DROP.z);
+    const low = 0.3 + 0.3 * Math.min(0.25, Math.max(-0.2, by - 0.3));
+    hang.set(DROP.x, low + (0.52 - low) * ease.inOutSine(seg(t, T_BOUNCE + 0.1, T_BOUNCE + 0.75)), DROP.z);
     toStage(hang);
     // Chase the ball low, so the court it is flying over fills the frame.
     ballAt(Math.min(Math.max(b, serve.hit), serve.land));
@@ -701,13 +894,52 @@ async function main() {
     scene.fog.near = Math.max(18, pos.y * 0.75);
     scene.fog.far = Math.max(46, pos.y * 2.0);
 
+    for (const L of towers) L.pole.rotation.y = Math.atan2(pos.x - L.pole.position.x, pos.z - L.pole.position.z);
+
+    // The lens: wide open on the ball for the close up, its focus following
+    // the ball once it is served, shutting down as the camera rises, so the
+    // whole court comes up sharp.
+    const A = APERTURE * (1 - smooth01(seg(t, T_HIT + 0.3, T_HIT + 1.4)));
+    lens.uAperture.value = A;
+    lens.uFocus.value = Math.max(0.3, pos.distanceTo(shown ? ball.position : hang));
+    const sharp = A < 0.0012;
+    netMat.userData.u.uLens.value = sharp ? 0 : 1;
+    solid.visible = sharp;
+
     stage.film.uBars.value = 1 - ease.inOutCubic(seg(t, 4.9, 6.2));
     stage.film.uFade.value = ease.outCubic(seg(t, 0, 0.5));
   };
 
-  const stop = run(stage, update, settle);
+  const ctl = run(stage, update, settle);
   // A phone can drop the 3D context (low memory, long in the background): show the still.
-  stage.canvas.addEventListener("webglcontextlost", (e) => { e.preventDefault(); stop(); fail(); });
+  stage.canvas.addEventListener("webglcontextlost", (e) => { e.preventDefault(); ctl.stop(); fail(); });
+
+  // Replay with sound. The soundtrack (13 s, about 160 KB) loads only when
+  // asked for. It plays through a media element, so a phone on silent still
+  // plays it, and the picture runs on its clock. If it can't start within a
+  // few seconds, the sequence plays again without it.
+  const replayBtn = root.querySelector(".sk-stage-replay");
+  if (replayBtn && ctl.replay) {
+    replayBtn.hidden = false;
+    let audio = null;
+    replayBtn.addEventListener("click", () => {
+      if (replayBtn.getAttribute("aria-busy") === "true") return;
+      replayBtn.setAttribute("aria-busy", "true");
+      if (!audio) { audio = new Audio(replayBtn.dataset.sound); audio.preload = "auto"; }
+      try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch (e) { /* older browsers */ }
+      let begun = false;
+      const begin = (withSound) => {
+        if (begun) return;
+        begun = true;
+        replayBtn.removeAttribute("aria-busy");
+        ctl.replay(withSound ? () => audio.currentTime : null);
+      };
+      audio.currentTime = 0;
+      audio.addEventListener("playing", () => begin(true), { once: true });
+      audio.play().catch(() => begin(false));
+      setTimeout(() => { if (!begun) { audio.pause(); begin(false); } }, 3000);
+    });
+  }
   setTimeout(() => root.classList.add("is-live"), 50);
 }
 

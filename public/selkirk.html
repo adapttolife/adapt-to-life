@@ -317,8 +317,8 @@
   .sk-toc-for{ font-family:var(--font-label); font-weight:800; font-size:0.68rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--orange); }
   .sk-toc-close{ display:none; font:inherit; font-size:1.5rem; line-height:1; width:40px; height:40px; border-radius:999px; border:1px solid rgba(249,247,242,0.18); background:transparent; color:var(--cream); cursor:pointer; }
   .sk-toc-title{ margin-top:0.35rem; font-family:var(--font-display); font-weight:900; font-size:1.2rem; color:var(--cream); }
-  .sk-toc-parts{ list-style:none; margin:1.1rem 0 0; padding:0; display:grid; gap:0.15rem; }
-  .sk-toc .part > a{ display:grid; grid-template-columns:1.25rem minmax(0,1fr); column-gap:0.75rem; align-items:center; padding:0.55rem 0.65rem; border-radius:12px; color:var(--cream-mute); text-decoration:none; font-weight:700; line-height:1.25; transition:background .2s ease, color .2s ease; }
+  .sk-toc-parts{ list-style:none; margin:0.9rem 0 0; padding:0; display:grid; gap:0.3rem; }
+  .sk-toc .part > a{ display:grid; grid-template-columns:1.25rem minmax(0,1fr); column-gap:0.75rem; align-items:center; padding:0.45rem 0.65rem; border-radius:12px; color:var(--cream-mute); text-decoration:none; font-weight:700; line-height:1.25; transition:background .2s ease, color .2s ease; }
   .sk-toc-ic{ width:1.25rem; height:1.25rem; color:var(--cream-faint); transition:color .2s ease; }
   .sk-toc .part > a:hover .sk-toc-ic{ color:var(--cream-mute); }
   .sk-toc .part > a:hover{ color:var(--cream); background:rgba(249,247,242,0.05); }
@@ -330,7 +330,7 @@
   .sk-toc .sub a{ display:block; padding:0.32rem 0.6rem; font-size:0.88rem; line-height:1.3; color:var(--cream-mute); text-decoration:none; border-left:2px solid rgba(249,247,242,0.12); }
   .sk-toc .sub a:hover{ color:var(--cream); }
   .sk-toc .sub a.active{ color:var(--orange); border-left-color:var(--orange); }
-  .sk-toc-cta{ margin-top:1.4rem; align-self:flex-start; }
+  .sk-toc-cta{ margin-top:0.9rem; align-self:flex-start; }
   @media (min-width:1200px){
     .sk-doc{ display:grid; grid-template-columns:260px minmax(0,1fr); }
     .sk-toc{ display:flex; flex-direction:column; position:sticky; top:70px; align-self:start; height:calc(100vh - 70px); overflow-y:auto; padding:2rem 1.3rem 1.6rem 1.6rem; background:var(--night); color:var(--cream); border-right:1px solid rgba(249,247,242,0.08); }
@@ -338,9 +338,18 @@
     .sk-toc-btn, .sk-toc-veil{ display:none !important; }
   }
   @media (max-width:1199px){
-    .sk-toc.open{ display:flex; flex-direction:column; position:fixed; left:0; right:0; bottom:0; z-index:70; max-height:78vh; overflow-y:auto; padding:1.1rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom)); background:var(--night); color:var(--cream); border-radius:22px 22px 0 0; box-shadow:0 -24px 60px rgba(0,0,0,0.45); }
+    .sk-toc.open{ display:flex; flex-direction:column; position:fixed; left:0; right:0; bottom:0; z-index:70; max-height:90vh; overflow-y:auto; padding:1.1rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom)); background:var(--night); color:var(--cream); border-radius:22px 22px 0 0; box-shadow:0 -24px 60px rgba(0,0,0,0.45); }
     .sk-toc.open .sk-toc-close{ display:inline-flex; align-items:center; justify-content:center; }
-    .sk-toc.open .sub{ display:grid; }
+    /* On the sheet every part shows its sections on a line beneath it, with a
+       dot between them. Each dot sits just before its link, and the one that
+       starts a line falls outside the list's edge, so a wrapped line never
+       starts with a dot. */
+    .sk-toc.open .part .sub{ display:flex; flex-wrap:wrap; align-items:center; column-gap:1.1rem; overflow:hidden; margin:0 0 0.15rem 2.45rem; padding:2px 0 2px 3px; }
+    .sk-toc.open .sub li{ display:flex; align-items:center; margin-left:-1.1rem; }
+    .sk-toc.open .sub li::before{ content:"\00B7"; content:"\00B7" / ""; flex:none; width:1.1rem; text-align:center; color:var(--cream-faint); }
+    .sk-toc.open .sub a{ padding:0.35rem 0; border-left:0; color:var(--cream-faint); }
+    .sk-toc.open .sub a:hover{ color:var(--cream); }
+    .sk-toc.open .sub a.active{ color:var(--orange); }
     .sk-toc-veil{ position:fixed; inset:0; z-index:65; background:rgba(15,14,13,0.55); }
     .sk-toc-btn{ position:fixed; left:50%; bottom:calc(14px + env(safe-area-inset-bottom)); z-index:60; display:inline-flex; align-items:center; gap:0.55rem; max-width:calc(100% - 32px); padding:0.75rem 1.1rem; border-radius:999px; border:1.5px solid rgba(255,92,57,0.6); background:var(--night); color:var(--cream); box-shadow:0 16px 36px -12px rgba(0,0,0,0.6); font:inherit; font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.12em; text-transform:uppercase; white-space:nowrap; cursor:pointer; transform:translate(-50%, 160%); transition:transform .3s cubic-bezier(.2,.7,.3,1); }
     .sk-toc-btn.show{ transform:translate(-50%, 0); }
@@ -530,14 +539,13 @@ fill="currentColor" stroke="none">
   <ol class="sk-toc-parts">
     <li class="part" data-part="01"><a href="#record"><svg class="sk-toc-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="participation" data-style="duotone"><g fill="currentColor"><path d="M200 48a24 24 0 1 1-24-24a24 24 0 0 1 24 24" opacity=".2"/><path d="M176 80a32 32 0 1 0-32-32a32 32 0 0 0 32 32m0-48a16 16 0 1 1-16 16a16 16 0 0 1 16-16m-8 136a64 64 0 1 1-64-64a8 8 0 0 1 0 16a48 48 0 1 0 48 48a8 8 0 0 1 16 0m38.19-37.07a8 8 0 0 1 1.65 6.64l-16 80A8 8 0 0 1 184 224a7.8 7.8 0 0 1-1.58-.16a8 8 0 0 1-6.27-9.41L190.24 144H128a8 8 0 0 1-6.94-12l20.06-34.9a80.09 80.09 0 0 0-88 9.17A8 8 0 1 1 42.91 94a96 96 0 0 1 113.46-6.42a8 8 0 0 1 2.57 10.69L141.82 128H200a8 8 0 0 1 6.19 2.93"/></g></svg><span class="t">Who we are</span></a>
       <ol class="sub"><li><a href="#record">The crew</a></li><li><a href="#family">Bread &amp; Butter</a></li></ol></li>
-    <li class="part" data-part="02"><a href="#together"><svg class="sk-toc-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="community" data-style="duotone"><g fill="currentColor"><path d="M168 144a40 40 0 1 1-40-40a40 40 0 0 1 40 40M64 56a32 32 0 1 0 32 32a32 32 0 0 0-32-32m128 0a32 32 0 1 0 32 32a32 32 0 0 0-32-32" opacity=".2"/><path d="M244.8 150.4a8 8 0 0 1-11.2-1.6A51.6 51.6 0 0 0 192 128a8 8 0 0 1 0-16a24 24 0 1 0-23.24-30a8 8 0 1 1-15.5-4A40 40 0 1 1 219 117.51a67.94 67.94 0 0 1 27.43 21.68a8 8 0 0 1-1.63 11.21M190.92 212a8 8 0 1 1-13.85 8a57 57 0 0 0-98.15 0a8 8 0 1 1-13.84-8a72.06 72.06 0 0 1 33.74-29.92a48 48 0 1 1 58.36 0A72.06 72.06 0 0 1 190.92 212M128 176a32 32 0 1 0-32-32a32 32 0 0 0 32 32m-56-56a8 8 0 0 0-8-8a24 24 0 1 1 23.24-30a8 8 0 1 0 15.5-4A40 40 0 1 0 37 117.51a67.94 67.94 0 0 0-27.4 21.68a8 8 0 1 0 12.8 9.61A51.6 51.6 0 0 1 64 128a8 8 0 0 0 8-8"/></g></svg><span class="t">The bigger game</span></a></li>
-    <li class="part" data-part="03"><a href="#lessons"><svg class="sk-toc-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="play" data-style="duotone"><g fill="currentColor"><path d="M128 32a96 96 0 1 0 96 96a96 96 0 0 0-96-96m-20 136V88l64 40Z" opacity=".2"/><path d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m0 192a88 88 0 1 1 88-88a88.1 88.1 0 0 1-88 88m48.24-94.78l-64-40A8 8 0 0 0 100 88v80a8 8 0 0 0 12.24 6.78l64-40a8 8 0 0 0 0-13.56M116 153.57v-51.14L156.91 128Z"/></g></svg><span class="t">What we&rsquo;ve made</span></a>
-      <ol class="sub"><li><a href="#lessons">Five lessons</a></li><li><a href="#coach">Ryan Anthony</a></li></ol></li>
-    <li class="part" data-part="04"><a href="#library"><svg class="sk-toc-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="building" data-style="duotone"><g fill="currentColor"><path d="M245.66 129L217 157.66a8 8 0 0 1-11.3 0L168.1 120l-28 28l-32-32l28-28L80 31.78a87.81 87.81 0 0 1 98.31 18l67.35 67.89a8 8 0 0 1 0 11.33" opacity=".2"/><path d="m251.34 112l-67.46-67.92a96.1 96.1 0 0 0-135.77 0l-.09.09L34.25 58.4a8 8 0 0 0 11.49 11.13l13.73-14.18a80 80 0 0 1 18.71-13.9L124.68 88l-96 96a16 16 0 0 0 0 22.63l20.69 20.69a16 16 0 0 0 22.63 0l96-96l14.34 14.34L200 163.3a16 16 0 0 0 22.63 0l28.69-28.69a16 16 0 0 0 .02-22.61M60.68 216L40 195.31l68-68L128.68 148Zm101.66-101.68L140 136.67L119.31 116l22.35-22.35a8 8 0 0 0 0-11.32L94.32 35a80 80 0 0 1 78.23 20.41l44.22 44.51L188 128.66l-14.34-14.34a8 8 0 0 0-11.32 0m49 37.66l-12-12L228 111.25l12 12Z"/></g></svg><span class="t">What we&rsquo;d build</span></a>
+    <li class="part" data-part="02"><a href="#together"><svg class="sk-toc-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="community" data-style="duotone"><g fill="currentColor"><path d="M168 144a40 40 0 1 1-40-40a40 40 0 0 1 40 40M64 56a32 32 0 1 0 32 32a32 32 0 0 0-32-32m128 0a32 32 0 1 0 32 32a32 32 0 0 0-32-32" opacity=".2"/><path d="M244.8 150.4a8 8 0 0 1-11.2-1.6A51.6 51.6 0 0 0 192 128a8 8 0 0 1 0-16a24 24 0 1 0-23.24-30a8 8 0 1 1-15.5-4A40 40 0 1 1 219 117.51a67.94 67.94 0 0 1 27.43 21.68a8 8 0 0 1-1.63 11.21M190.92 212a8 8 0 1 1-13.85 8a57 57 0 0 0-98.15 0a8 8 0 1 1-13.84-8a72.06 72.06 0 0 1 33.74-29.92a48 48 0 1 1 58.36 0A72.06 72.06 0 0 1 190.92 212M128 176a32 32 0 1 0-32-32a32 32 0 0 0 32 32m-56-56a8 8 0 0 0-8-8a24 24 0 1 1 23.24-30a8 8 0 1 0 15.5-4A40 40 0 1 0 37 117.51a67.94 67.94 0 0 0-27.4 21.68a8 8 0 1 0 12.8 9.61A51.6 51.6 0 0 1 64 128a8 8 0 0 0 8-8"/></g></svg><span class="t">The bigger game</span></a>
+      <ol class="sub"><li><a href="#together">Playing together</a></li><li><a href="#lessons">Five lessons</a></li><li><a href="#coach">Ryan Anthony</a></li></ol></li>
+    <li class="part" data-part="03"><a href="#library"><svg class="sk-toc-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="building" data-style="duotone"><g fill="currentColor"><path d="M245.66 129L217 157.66a8 8 0 0 1-11.3 0L168.1 120l-28 28l-32-32l28-28L80 31.78a87.81 87.81 0 0 1 98.31 18l67.35 67.89a8 8 0 0 1 0 11.33" opacity=".2"/><path d="m251.34 112l-67.46-67.92a96.1 96.1 0 0 0-135.77 0l-.09.09L34.25 58.4a8 8 0 0 0 11.49 11.13l13.73-14.18a80 80 0 0 1 18.71-13.9L124.68 88l-96 96a16 16 0 0 0 0 22.63l20.69 20.69a16 16 0 0 0 22.63 0l96-96l14.34 14.34L200 163.3a16 16 0 0 0 22.63 0l28.69-28.69a16 16 0 0 0 .02-22.61M60.68 216L40 195.31l68-68L128.68 148Zm101.66-101.68L140 136.67L119.31 116l22.35-22.35a8 8 0 0 0 0-11.32L94.32 35a80 80 0 0 1 78.23 20.41l44.22 44.51L188 128.66l-14.34-14.34a8 8 0 0 0-11.32 0m49 37.66l-12-12L228 111.25l12 12Z"/></g></svg><span class="t">What we&rsquo;d build</span></a>
       <ol class="sub"><li><a href="#library">The library</a></li><li><a href="#both">What each of us brings</a></li></ol></li>
-    <li class="part" data-part="05"><a href="#stories"><svg class="sk-toc-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="stories" data-style="duotone"><g fill="currentColor"><path d="M144 69.09v101.82l-93.76 28.76A8 8 0 0 1 40 192V48a8 8 0 0 1 10.24-7.67Z" opacity=".2"/><path d="m228.54 86.66l-176.06-54A16 16 0 0 0 32 48v144a16 16 0 0 0 16 16a16 16 0 0 0 4.52-.65L136 181.73V192a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-29.9l28.54-8.75A16.09 16.09 0 0 0 240 138v-36a16.09 16.09 0 0 0-11.46-15.34M136 165l-88 27V48l88 27Zm48 27h-32v-15.18l32-9.82Zm40-54h-.11L152 160.08V79.92l71.89 22h.11v36Z"/></g></svg><span class="t">Where your name goes</span></a>
+    <li class="part" data-part="04"><a href="#stories"><svg class="sk-toc-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="stories" data-style="duotone"><g fill="currentColor"><path d="M144 69.09v101.82l-93.76 28.76A8 8 0 0 1 40 192V48a8 8 0 0 1 10.24-7.67Z" opacity=".2"/><path d="m228.54 86.66l-176.06-54A16 16 0 0 0 32 48v144a16 16 0 0 0 16 16a16 16 0 0 0 4.52-.65L136 181.73V192a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-29.9l28.54-8.75A16.09 16.09 0 0 0 240 138v-36a16.09 16.09 0 0 0-11.46-15.34M136 165l-88 27V48l88 27Zm48 27h-32v-15.18l32-9.82Zm40-54h-.11L152 160.08V79.92l71.89 22h.11v36Z"/></g></svg><span class="t">Where your name goes</span></a>
       <ol class="sub"><li><a href="#stories">Stories</a></li><li><a href="#clubs">Clubs</a></li><li><a href="#next">Tournaments</a></li><li><a href="#reach">Reach</a></li></ol></li>
-    <li class="part" data-part="06"><a href="#tiers"><svg class="sk-toc-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="goal" data-style="duotone"><g fill="currentColor"><path d="M240 104L56 168V40Z" opacity=".2"/><path d="m242.63 96.44l-184-64A8 8 0 0 0 48 40v176a8 8 0 0 0 16 0v-42.31l178.63-62.13a8 8 0 0 0 0-15.12M64 156.75V51.25L215.65 104Z"/></g></svg><span class="t">How we start</span></a>
+    <li class="part" data-part="05"><a href="#tiers"><svg class="sk-toc-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="goal" data-style="duotone"><g fill="currentColor"><path d="M240 104L56 168V40Z" opacity=".2"/><path d="m242.63 96.44l-184-64A8 8 0 0 0 48 40v176a8 8 0 0 0 16 0v-42.31l178.63-62.13a8 8 0 0 0 0-15.12M64 156.75V51.25L215.65 104Z"/></g></svg><span class="t">How we start</span></a>
       <ol class="sub"><li><a href="#tiers">The steps</a></li><li><a href="#terms">Terms</a></li><li><a href="#ask">The ask</a></li></ol></li>
   </ol>
   <a class="btn sk-toc-cta" href="mailto:hello@adapttolife.org?subject=Selkirk%20and%20Adapt%20To%20Life"><svg class="sk-btn-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="reply" data-style="bold"><path fill="currentColor" d="M224 44H32a12 12 0 0 0-12 12v136a20 20 0 0 0 20 20h176a20 20 0 0 0 20-20V56a12 12 0 0 0-12-12m-30.85 24L128 127.72L62.85 68ZM44 188V83.28l75.89 69.57a12 12 0 0 0 16.22 0L212 83.28V188Z"/></svg>Write to us</a>
@@ -618,10 +626,10 @@ fill="currentColor" stroke="none">
 </section>
 
 <!-- =========================== LESSONS ========================== -->
-<section data-part="03" class="band sk-lessons" id="lessons" aria-labelledby="skLessonsHead">
+<section data-part="02" class="band sk-lessons" id="lessons" aria-labelledby="skLessonsHead">
   <div class="wrap">
     <div class="sec-head">
-      <span class="eyebrow reveal"><svg class="ico-in" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="play" data-style="regular"><path fill="currentColor" d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m0 192a88 88 0 1 1 88-88a88.1 88.1 0 0 1-88 88m48.24-94.78l-64-40A8 8 0 0 0 100 88v80a8 8 0 0 0 12.24 6.78l64-40a8 8 0 0 0 0-13.56M116 153.57v-51.14L156.91 128Z"/></svg>03 &middot; What we&rsquo;ve made</span>
+      <span class="eyebrow reveal"><svg class="ico-in" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="play" data-style="regular"><path fill="currentColor" d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m0 192a88 88 0 1 1 88-88a88.1 88.1 0 0 1-88 88m48.24-94.78l-64-40A8 8 0 0 0 100 88v80a8 8 0 0 0 12.24 6.78l64-40a8 8 0 0 0 0-13.56M116 153.57v-51.14L156.91 128Z"/></svg>What we&rsquo;ve made</span>
       <h2 class="serif h2 reveal" id="skLessonsHead" style="margin-top:0.7rem;">Five lessons, made this month.</h2>
       <p class="prose reveal sk-lessons-lead">The hybrid lesson above, and four from the wheelchair game. Each one is short and made for a phone: the court drawn to scale, every shot slowed down and explained, with narration and captions built in.</p>
     </div>
@@ -648,7 +656,7 @@ fill="currentColor" stroke="none">
 </section>
 
 <!-- ============================ COACH =========================== -->
-<section data-part="03" class="dark band-lg sk-coach" id="coach" aria-labelledby="skCoachHead">
+<section data-part="02" class="dark band-lg sk-coach" id="coach" aria-labelledby="skCoachHead">
   <div class="wrap sk-coach-inner">
     <figure class="sk-coach-photo reveal">
       <img src="/images/selkirk/ryan-anthony.8a429185.webp" alt="Ryan Anthony in his sport wheelchair, a ball in his hand" width="640" height="786" loading="lazy" decoding="async">
@@ -676,10 +684,10 @@ fill="currentColor" stroke="none">
 </section>
 
 <!-- =========================== LIBRARY ========================== -->
-<section data-part="04" class="band sk-library" id="library" aria-labelledby="skLibraryHead">
+<section data-part="03" class="band sk-library" id="library" aria-labelledby="skLibraryHead">
   <div class="wrap">
     <div class="sec-head">
-      <span class="eyebrow reveal"><svg class="ico-in" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="building" data-style="regular"><path fill="currentColor" d="m251.34 112l-67.46-67.92a96.1 96.1 0 0 0-135.77 0l-.09.09L34.25 58.4a8 8 0 0 0 11.49 11.13l13.73-14.18a80 80 0 0 1 18.71-13.9L124.68 88l-96 96a16 16 0 0 0 0 22.63l20.69 20.69a16 16 0 0 0 22.63 0l96-96l14.34 14.34L200 163.3a16 16 0 0 0 22.63 0l28.69-28.69a16 16 0 0 0 .02-22.61M60.68 216L40 195.31l68-68L128.68 148Zm101.66-101.68L140 136.67L119.31 116l22.35-22.35a8 8 0 0 0 0-11.32L94.32 35a80 80 0 0 1 78.23 20.41l44.22 44.51L188 128.66l-14.34-14.34a8 8 0 0 0-11.32 0m49 37.66l-12-12L228 111.25l12 12Z"/></svg>04 &middot; What we&rsquo;d build with Selkirk</span>
+      <span class="eyebrow reveal"><svg class="ico-in" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="building" data-style="regular"><path fill="currentColor" d="m251.34 112l-67.46-67.92a96.1 96.1 0 0 0-135.77 0l-.09.09L34.25 58.4a8 8 0 0 0 11.49 11.13l13.73-14.18a80 80 0 0 1 18.71-13.9L124.68 88l-96 96a16 16 0 0 0 0 22.63l20.69 20.69a16 16 0 0 0 22.63 0l96-96l14.34 14.34L200 163.3a16 16 0 0 0 22.63 0l28.69-28.69a16 16 0 0 0 .02-22.61M60.68 216L40 195.31l68-68L128.68 148Zm101.66-101.68L140 136.67L119.31 116l22.35-22.35a8 8 0 0 0 0-11.32L94.32 35a80 80 0 0 1 78.23 20.41l44.22 44.51L188 128.66l-14.34-14.34a8 8 0 0 0-11.32 0m49 37.66l-12-12L228 111.25l12 12Z"/></svg>03 &middot; What we&rsquo;d build with Selkirk</span>
       <h2 class="serif h2 reveal" id="skLibraryHead" style="margin-top:0.7rem;">A library for the whole game, <em class="italic bb-o">presented by Selkirk.</em></h2>
       <p class="prose reveal sk-library-lead">Selkirk TV and Selkirk Academy teach the standing game. We&rsquo;d like to add the game we play together, one series at a time, ready for your app, your camps and your coaches.</p>
     </div>
@@ -734,7 +742,7 @@ fill="currentColor" stroke="none">
 </section>
 
 <!-- ============================ BOTH WAYS ======================= -->
-<section data-part="04" class="band tint sk-both-sec" id="both" aria-labelledby="skBothHead">
+<section data-part="03" class="band tint sk-both-sec" id="both" aria-labelledby="skBothHead">
   <div class="wrap">
     <div class="sec-head">
       <span class="eyebrow reveal"><svg class="ico-in" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="connections" data-style="regular"><path fill="currentColor" d="m254.3 107.91l-25.52-51.06a16 16 0 0 0-21.47-7.15l-24.87 12.43l-52.39-13.86a8.14 8.14 0 0 0-4.1 0L73.56 62.13L48.69 49.7a16 16 0 0 0-21.47 7.15L1.7 107.9a16 16 0 0 0 7.15 21.47l27 13.51l55.49 39.63a8.1 8.1 0 0 0 2.71 1.25l64 16a8 8 0 0 0 7.6-2.1l55.07-55.08l26.42-13.21a16 16 0 0 0 7.15-21.46Zm-54.89 33.37L165 113.72a8 8 0 0 0-10.68.61C136.51 132.27 116.66 130 104 122l43.24-42h31.81l27.21 54.41ZM41.53 64L62 74.22l-25.57 51.05L16 115.06Zm116 119.13l-58.11-14.52l-49.2-35.14l28-56L128 64.28l9.8 2.59l-45 43.68l-.08.09a16 16 0 0 0 2.72 24.81c20.56 13.13 45.37 11 64.91-5L188 152.66Zm62-57.87l-25.52-51L214.47 64L240 115.06Zm-87.75 92.67a8 8 0 0 1-7.75 6.06a8 8 0 0 1-1.95-.24l-41.67-10.42a7.9 7.9 0 0 1-2.71-1.25l-26.35-18.82a8 8 0 0 1 9.3-13l25.11 17.94L126 208.24a8 8 0 0 1 5.82 9.7Z"/></svg>Both ways</span>
@@ -761,10 +769,10 @@ fill="currentColor" stroke="none">
 </section>
 
 <!-- =========================== STORIES ========================== -->
-<section data-part="05" class="dark band-lg sk-stories" id="stories" aria-labelledby="skStoriesHead">
+<section data-part="04" class="dark band-lg sk-stories" id="stories" aria-labelledby="skStoriesHead">
   <div class="wrap">
     <div class="sec-head">
-      <span class="eyebrow orange reveal"><svg class="ico-in" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="stories" data-style="regular"><path fill="currentColor" d="m228.54 86.66l-176.06-54A16 16 0 0 0 32 48v144a16 16 0 0 0 16 16a16 16 0 0 0 4.52-.65L136 181.73V192a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-29.9l28.54-8.75A16.09 16.09 0 0 0 240 138v-36a16.09 16.09 0 0 0-11.46-15.34M136 165l-88 27V48l88 27Zm48 27h-32v-15.18l32-9.82Zm40-54h-.11L152 160.08V79.92l71.89 22h.11v36Z"/></svg>05 &middot; Where your name goes</span>
+      <span class="eyebrow orange reveal"><svg class="ico-in" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="stories" data-style="regular"><path fill="currentColor" d="m228.54 86.66l-176.06-54A16 16 0 0 0 32 48v144a16 16 0 0 0 16 16a16 16 0 0 0 4.52-.65L136 181.73V192a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-29.9l28.54-8.75A16.09 16.09 0 0 0 240 138v-36a16.09 16.09 0 0 0-11.46-15.34M136 165l-88 27V48l88 27Zm48 27h-32v-15.18l32-9.82Zm40-54h-.11L152 160.08V79.92l71.89 22h.11v36Z"/></svg>04 &middot; Where your name goes</span>
       <h2 class="serif h2 reveal" id="skStoriesHead" style="margin-top:0.7rem; color:var(--cream);">The kind your studio tells.</h2>
       <p class="prose reveal" style="margin-top:1rem; color:var(--cream-mute); max-width:56ch;">Selkirk Studios told Scott Rider&rsquo;s story in Still in Play. Here are two from the crew.</p>
     </div>
@@ -791,7 +799,7 @@ fill="currentColor" stroke="none">
 </section>
 
 <!-- ====================== WHERE WE BUILD IT ===================== -->
-<section data-part="05" class="band tint sk-build" aria-labelledby="skBuildHead" id="clubs">
+<section data-part="04" class="band tint sk-build" aria-labelledby="skBuildHead" id="clubs">
   <div class="wrap">
     <div class="sec-head">
       <span class="eyebrow reveal"><svg class="ico-in" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="courts" data-style="regular"><path fill="currentColor" d="M224 48H32a16 16 0 0 0-16 16v128a16 16 0 0 0 16 16h192a16 16 0 0 0 16-16V64a16 16 0 0 0-16-16m0 112h-8a32 32 0 0 1 0-64h8ZM32 96h8a32 32 0 0 1 0 64h-8Zm0 80h8a48 48 0 0 0 0-96h-8V64h88v128H32Zm192 16h-88V64h88v16h-8a48 48 0 0 0 0 96h8z"/></svg>Where the crew plays and builds</span>
@@ -820,7 +828,7 @@ fill="currentColor" stroke="none">
 </section>
 
 <!-- ======================== THE NEXT ONE ======================== -->
-<section data-part="05" class="dark band-lg sk-next" id="next">
+<section data-part="04" class="dark band-lg sk-next" id="next">
   <div class="wrap sk-next-inner">
     <figure class="clip sk-next-clip reveal" data-clip><video muted loop playsinline preload="none" poster="/videos/road/app-court.0625e898.webp" data-src="/videos/road/app-court.ccb1dddd.mp4" width="540" height="960" aria-hidden="true"></video><button type="button" class="clip-btn" data-state="paused" aria-label="Play the video"><svg data-when="playing" class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="pause" data-style="bold"><path fill="currentColor" d="M200 28h-40a20 20 0 0 0-20 20v160a20 20 0 0 0 20 20h40a20 20 0 0 0 20-20V48a20 20 0 0 0-20-20m-4 176h-32V52h32ZM96 28H56a20 20 0 0 0-20 20v160a20 20 0 0 0 20 20h40a20 20 0 0 0 20-20V48a20 20 0 0 0-20-20m-4 176H60V52h32Z"/></svg><svg data-when="paused" class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="resume" data-style="bold"><path fill="currentColor" d="M234.49 111.07L90.41 22.94A20 20 0 0 0 60 39.87v176.26a20 20 0 0 0 30.41 16.93l144.08-88.13a19.82 19.82 0 0 0 0-33.86M84 208.85V47.15L216.16 128Z"/></svg></button><figcaption class="clip-cap"><b>APP court 29</b><span><i class="sym sym--place" aria-hidden="true"></i>Highland Park, August 2026</span></figcaption></figure>
     <div class="sk-next-copy">
@@ -834,7 +842,7 @@ fill="currentColor" stroke="none">
 </section>
 
 <!-- ============================ REACH =========================== -->
-<section data-part="05" class="band sk-reach" aria-labelledby="skReachHead" id="reach">
+<section data-part="04" class="band sk-reach" aria-labelledby="skReachHead" id="reach">
   <div class="wrap">
     <div class="sec-head">
       <span class="eyebrow reveal">Your name, seen by new people</span>
@@ -856,10 +864,10 @@ fill="currentColor" stroke="none">
 </section>
 
 <!-- ============================ TIERS =========================== -->
-<section data-part="06" class="band tint sk-tiers" id="tiers" aria-labelledby="skTiersHead">
+<section data-part="05" class="band tint sk-tiers" id="tiers" aria-labelledby="skTiersHead">
   <div class="wrap">
     <div class="sec-head">
-      <span class="eyebrow reveal"><svg class="ico-in" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="goal" data-style="regular"><path fill="currentColor" d="m242.63 96.44l-184-64A8 8 0 0 0 48 40v176a8 8 0 0 0 16 0v-42.31l178.63-62.13a8 8 0 0 0 0-15.12M64 156.75V51.25L215.65 104Z"/></svg>06 &middot; How we start</span>
+      <span class="eyebrow reveal"><svg class="ico-in" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="goal" data-style="regular"><path fill="currentColor" d="m242.63 96.44l-184-64A8 8 0 0 0 48 40v176a8 8 0 0 0 16 0v-42.31l178.63-62.13a8 8 0 0 0 0-15.12M64 156.75V51.25L215.65 104Z"/></svg>05 &middot; How we start</span>
       <h2 class="serif h2 reveal" id="skTiersHead" style="margin-top:0.7rem;">Start with the lessons. Grow one season at a time.</h2>
     </div>
     <div class="sk-steps">
@@ -915,7 +923,7 @@ fill="currentColor" stroke="none">
 </section>
 
 <!-- ============================ TERMS =========================== -->
-<section data-part="06" class="band sk-terms" aria-labelledby="skTermsHead" id="terms">
+<section data-part="05" class="band sk-terms" aria-labelledby="skTermsHead" id="terms">
   <div class="wrap reading">
     <span class="eyebrow reveal"><svg class="ico-in" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="scope" data-style="regular"><path fill="currentColor" d="M224 128a8 8 0 0 1-8 8h-88a8 8 0 0 1 0-16h88a8 8 0 0 1 8 8m-96-56h88a8 8 0 0 0 0-16h-88a8 8 0 0 0 0 16m88 112h-88a8 8 0 0 0 0 16h88a8 8 0 0 0 0-16M82.34 42.34L56 68.69L45.66 58.34a8 8 0 0 0-11.32 11.32l16 16a8 8 0 0 0 11.32 0l32-32a8 8 0 0 0-11.32-11.32m0 64L56 132.69l-10.34-10.35a8 8 0 0 0-11.32 11.32l16 16a8 8 0 0 0 11.32 0l32-32a8 8 0 0 0-11.32-11.32m0 64L56 196.69l-10.34-10.35a8 8 0 0 0-11.32 11.32l16 16a8 8 0 0 0 11.32 0l32-32a8 8 0 0 0-11.32-11.32"/></svg>How it works</span>
     <h2 class="serif h2 reveal" id="skTermsHead" style="margin-top:0.7rem;">Simple terms, kept in writing.</h2>
@@ -932,7 +940,7 @@ fill="currentColor" stroke="none">
 </section>
 
 <!-- ============================ CLOSE =========================== -->
-<section data-part="06" class="dark band-lg sk-close" id="ask">
+<section data-part="05" class="dark band-lg sk-close" id="ask">
   <div class="wrap reading">
     <span class="eyebrow orange reveal">The ask</span>
     <h2 class="serif display reveal" style="margin-top:1rem;">Start this winter. <em class="italic bb-o">Build the rest together.</em></h2>

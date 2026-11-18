@@ -1,123 +1,124 @@
-// The /selkirk title sequence, "Center Court". A dark arena: floodlights snap
-// on one by one, a ball crosses the net, and the camera cranes up and over to
-// land straight above one court with both names painted on it, one on each
+// The /selkirk title sequence, "Center Court". A dark arena and a pickleball:
+// it drops beside the lens and bounces as the first floodlight snaps on, hangs
+// in the light, and is served across the net while the camera cranes up and
+// over to land straight above the court, both names painted on it, one on each
 // side of the net.
 //
 // update(t) draws the frame at time t (seconds), so the same code runs live,
 // as one still frame for reduced motion, and frame by frame for recordings
 // (?capture: window.__stage.seek(t) draws one exact frame).
 //
+// Built for clarity and a light load. Everything is drawn in one pass straight
+// to the screen with the GPU's own antialiasing: no grain, no glow passes. The
+// court lines are worked out per pixel, so they stay sharp up close and never
+// shimmer far away, and the names are drawn from their SVGs at the size they
+// land. Once the sequence has settled, drawing stops.
+//
 // three.js is vendored in /js/vendor/three-0.170.0 (MIT, see its LICENSE) and
 // reached through the import map in selkirk.html. The folder name carries the
 // version, so a newer three.js goes in a new folder, never over this one.
 import * as THREE from "three";
-import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
-import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
-import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
-import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js";
-import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 
 const root = document.querySelector("[data-stage]");
 const CAPTURE = new URLSearchParams(location.search).has("capture");
 const REDUCED = !CAPTURE && matchMedia("(prefers-reduced-motion: reduce)").matches;
 const MOBILE = matchMedia("(max-width: 760px)").matches;
-const DURATION = 6.4;
+const DURATION = 6.4; // the copy under the court comes in here
+const STILL = 13; // the slow push ends here; nothing moves after it, so drawing stops
 
 // A pickleball court in metres: 6.1 wide, 13.41 long, kitchen 2.13 from the net.
 const CW = 6.1, CL = 13.41, KITCHEN = 2.13, LINE = 0.06;
 const FW = 15, FL = 24; // the floor around it
-const LIGHT_ON = [1.0, 1.45, 1.9, 2.3];
+const LIGHT_ON = [1.0, 1.45, 1.9, 2.3]; // nearest the camera first
 
 // Timing ----------------------------------------------------------------------
 const clamp01 = (x) => Math.min(1, Math.max(0, x));
 const seg = (t, a, b) => clamp01((t - a) / (b - a));
-const lerp = (a, b, t) => a + (b - a) * t;
+const smooth01 = (x) => { x = clamp01(x); return x * x * (3 - 2 * x); };
 const ease = {
   outCubic: (x) => 1 - Math.pow(1 - x, 3),
   inOutCubic: (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2),
   inOutSine: (x) => -(Math.cos(Math.PI * x) - 1) / 2,
 };
-// A pulse that rises fast and decays: 0 before a, peaks at a, near 0 by a + len.
-const pulse = (t, a, len) => (t < a ? 0 : Math.exp(-((t - a) / len) * 4));
-// Deterministic randomness, so live and recorded frames match.
-function rng(seed = 1) {
-  let s = seed >>> 0;
-  return () => {
-    s = (s + 0x6d2b79f5) >>> 0;
-    let t = s;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
 
-// The film look: grain, vignette, letterbox bars, a flash, a touch of
-// chromatic aberration. Runs last, on display-space colour.
-const CinemaShader = {
+// The ball's clock runs slow while it hangs in the light, then ramps back to
+// full speed for the serve, the way a sports film holds a moment. Closed form,
+// so any frame can be drawn on its own.
+const RAMP = { a: 0.85, b: 1.12, c: 1.82, d: 2.2, slow: 0.28 };
+const rampArea = (t) => {
+  const { a, b, c, d } = RAMP;
+  const F = (x) => x * x * x - (x * x * x * x) / 2; // the integral of smoothstep
+  let s = 0;
+  if (t > a) s += (b - a) * F(clamp01((t - a) / (b - a)));
+  if (t > b) s += Math.min(t, c) - b;
+  if (t > c) { const x = clamp01((t - c) / (d - c)); s += (d - c) * (x - F(x)); }
+  return s;
+};
+const ballClock = (t) => t - (1 - RAMP.slow) * rampArea(t);
+
+// The film look: a vignette, letterbox bars, the fade from black. One overlay
+// drawn over the finished frame, so it costs a single extra draw.
+const FilmShader = {
   uniforms: {
-    tDiffuse: { value: null },
-    uTime: { value: 0 },
     uRes: { value: new THREE.Vector2(1, 1) },
-    uGrain: { value: 0.04 },
     uVignette: { value: 0.5 },
     uBars: { value: 1 },
     uBarSize: { value: 0.1 },
-    uFlash: { value: 0 },
-    uAberr: { value: 0.25 },
-    uFade: { value: 1 },
+    uFade: { value: 0 },
   },
   vertexShader: /* glsl */ `
     varying vec2 vUv;
-    void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+    void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`,
   fragmentShader: /* glsl */ `
-    uniform sampler2D tDiffuse;
-    uniform float uTime, uGrain, uVignette, uBars, uBarSize, uFlash, uAberr, uFade;
+    uniform float uVignette, uBars, uBarSize, uFade;
     uniform vec2 uRes;
     varying vec2 vUv;
-    float hash(vec2 p) { p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
     void main() {
       vec2 d = vUv - 0.5;
-      vec2 off = d * uAberr * 0.01;
-      vec3 col = vec3(texture2D(tDiffuse, vUv + off).r, texture2D(tDiffuse, vUv).g, texture2D(tDiffuse, vUv - off).b);
-      col = col * uFade + uFlash;
-      col *= 1.0 - uVignette * smoothstep(0.25, 0.9, length(d * 1.25));
-      col += (hash(floor(vUv * uRes) + fract(uTime * 7.0) * 311.0) - 0.5) * uGrain;
-      float bar = uBars * uBarSize;
-      float edge = 1.5 / uRes.y;
-      float m = smoothstep(bar - edge, bar + edge, vUv.y) * smoothstep(bar - edge, bar + edge, 1.0 - vUv.y);
-      gl_FragColor = vec4(col * m, 1.0);
+      float keep = uFade * (1.0 - uVignette * smoothstep(0.25, 0.9, length(d * 1.25)));
+      float bar = uBars * uBarSize, edge = 1.5 / uRes.y;
+      keep *= smoothstep(bar - edge, bar + edge, vUv.y) * smoothstep(bar - edge, bar + edge, 1.0 - vUv.y);
+      gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0 - keep);
     }`,
 };
 
-// The stage: renderer, camera and the post chain, sized to the section.
-function createStage({ fov, bloom, exposure }) {
+// The stage: renderer and camera, sized to the section.
+function createStage({ fov, exposure }) {
   const canvas = root.querySelector("canvas");
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance", preserveDrawingBuffer: CAPTURE });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.toneMapping = THREE.NeutralToneMapping; // keeps brand colours true; ACES turns the orange pink
   renderer.toneMappingExposure = exposure;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.setClearColor(0x040404, 1);
+  renderer.autoClear = false;
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(fov, 1, 0.1, 200);
-  const composer = new EffectComposer(renderer);
-  composer.addPass(new RenderPass(scene, camera));
-  const bloomPass = new UnrealBloomPass(new THREE.Vector2(256, 256), bloom[0], bloom[1], bloom[2]);
-  composer.addPass(bloomPass);
-  composer.addPass(new OutputPass());
-  const cinema = new ShaderPass(CinemaShader);
-  composer.addPass(cinema);
+  const filmScene = new THREE.Scene();
+  const film = new THREE.Mesh(
+    new THREE.PlaneGeometry(2, 2),
+    new THREE.ShaderMaterial({ ...FilmShader, uniforms: THREE.UniformsUtils.clone(FilmShader.uniforms), transparent: true, depthTest: false, depthWrite: false }),
+  );
+  film.frustumCulled = false;
+  filmScene.add(film);
+  const filmCam = new THREE.Camera();
 
-  const stage = { canvas, renderer, scene, camera, composer, bloomPass, cinema, width: 1, height: 1, portrait: false, onResize: null };
+  const stage = {
+    canvas, renderer, scene, camera, film: film.material.uniforms, width: 1, height: 1, portrait: false, onResize: null,
+    draw() {
+      renderer.clear();
+      renderer.render(scene, camera);
+      renderer.render(filmScene, filmCam);
+    },
+  };
   const resize = () => {
     const w = Math.max(1, root.clientWidth), h = Math.max(1, root.clientHeight);
     if (w === stage.width && h === stage.height) return;
     stage.width = w; stage.height = h; stage.portrait = w / h < 0.9;
     renderer.setSize(w, h, false);
-    composer.setSize(w, h);
     const pr = renderer.getPixelRatio();
-    bloomPass.resolution.set(w * pr * 0.5, h * pr * 0.5);
-    cinema.uniforms.uRes.value.set(w * pr, h * pr);
+    stage.film.uRes.value.set(w * pr, h * pr);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
     stage.onResize && stage.onResize();
@@ -130,21 +131,15 @@ function createStage({ fov, bloom, exposure }) {
 
 // Running: live, one still, or seekable for recordings. Returns stop().
 function run(stage, update, onSettled) {
-  const render = (t, dt) => {
-    update(t);
-    stage.cinema.uniforms.uTime.value = t;
-    stage.composer.render(dt);
-  };
+  const render = (t) => { update(t); stage.draw(); };
   if (CAPTURE) {
     // Frame exact: the copy under the court follows t too, not the clock.
-    let last = 0;
     const copy = root.querySelector(".sk-stage-copy");
     root.classList.add("is-live", "is-capture");
     window.__stage = {
       duration: DURATION,
       seek(t) {
-        render(t, Math.max(0, t - last) || 1 / 30);
-        last = t;
+        render(t);
         if (copy) {
           const k = ease.outCubic(clamp01(t - DURATION));
           copy.style.transition = "none";
@@ -159,19 +154,26 @@ function run(stage, update, onSettled) {
   }
   if (REDUCED) {
     // One still of the final frame, drawn again whenever the stage resizes.
-    stage.afterResize = () => render(DURATION + 2, 1 / 60);
+    stage.afterResize = () => render(DURATION + 2);
     stage.afterResize();
     onSettled();
     return () => {};
   }
   let t = 0, prev = performance.now(), settled = false, visible = true, raf = 0, stopped = false;
   const frame = (now) => {
+    raf = 0;
     const dt = Math.min(0.05, (now - prev) / 1000);
     prev = now;
-    t += dt;
-    render(t, dt);
+    t = Math.min(STILL, t + dt);
+    render(t);
     if (!settled && t >= DURATION) { settled = true; onSettled(); }
-    raf = visible && !stopped ? requestAnimationFrame(frame) : 0;
+    if (t >= STILL) {
+      // The last frame is up and nothing moves now: stop drawing. A resize redraws it.
+      stopped = true;
+      stage.afterResize = () => render(STILL);
+      return;
+    }
+    if (visible && !stopped) raf = requestAnimationFrame(frame);
   };
   const wake = () => {
     if (!stopped && visible && !raf && !document.hidden) { prev = performance.now(); raf = requestAnimationFrame(frame); }
@@ -194,35 +196,17 @@ async function loadLogo(url, aspect) {
   return { img, aspect };
 }
 
-// A soft round sprite, for dust and the ball's tail.
-function dotTexture(size = 64) {
+// A soft round sprite: the ball's shadow, the glow round a lamp.
+function softDot(size = 128) {
   const c = document.createElement("canvas");
   c.width = c.height = size;
   const g = c.getContext("2d");
   const grd = g.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
   grd.addColorStop(0, "rgba(255,255,255,1)");
-  grd.addColorStop(0.25, "rgba(255,255,255,0.65)");
+  grd.addColorStop(0.3, "rgba(255,255,255,0.55)");
   grd.addColorStop(1, "rgba(255,255,255,0)");
   g.fillStyle = grd;
   g.fillRect(0, 0, size, size);
-  const tex = new THREE.CanvasTexture(c);
-  tex.colorSpace = THREE.SRGBColorSpace;
-  return tex;
-}
-
-// The floor: dark, with a soft sheen where the lights pool. Painted in world
-// units, so the court plane's margin matches the floor around it exactly.
-function paintFloor(g, k, X, Z, w, h) {
-  g.fillStyle = "#0e1216"; g.fillRect(0, 0, w, h);
-  const sheen = g.createRadialGradient(X(0), Z(0), 0, X(0), Z(0), 0.6 * FL * k);
-  sheen.addColorStop(0, "rgba(255,255,255,0.05)"); sheen.addColorStop(1, "rgba(255,255,255,0)");
-  g.fillStyle = sheen; g.fillRect(0, 0, w, h);
-}
-function floorTexture() {
-  const W = 512, H = Math.round((W * FL) / FW), k = W / FW;
-  const c = document.createElement("canvas");
-  c.width = W; c.height = H;
-  paintFloor(c.getContext("2d"), k, (x) => (x + FW / 2) * k, (z) => (z + FL / 2) * k, W, H);
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   return tex;
@@ -252,52 +236,200 @@ function nameLayout(atl, sel, portrait) {
     : [place(atl, HALF * 0.51, MID), place(sel, HALF * 0.77, -MID)];
 }
 
-// The court on its own plane: the court and a margin, painted finely enough
-// that the lines and names stay sharp on a big screen. Canvas x is world x,
-// canvas y is world z (top = far).
-const PAD = 0.5, SW = CW + 2 * PAD, SL = CL + 2 * PAD;
-function courtTexture(names) {
-  const W = MOBILE ? 1024 : 1920, H = Math.round((W * SL) / SW); // stays under 4096, the safe texture size
-  const c = document.createElement("canvas");
-  c.width = W; c.height = H;
-  const g = c.getContext("2d");
-  const k = W / SW; // px per metre
-  const X = (x) => (x + SW / 2) * k, Z = (z) => (z + SL / 2) * k;
-  paintFloor(g, k, X, Z, W, H);
-  const rect = (x0, z0, x1, z1) => g.fillRect(X(x0), Z(z0), (x1 - x0) * k, (z1 - z0) * k);
-  g.fillStyle = "#1b2f47"; rect(-CW / 2, -CL / 2, CW / 2, CL / 2);
-  g.fillStyle = "#213a57"; rect(-CW / 2, -KITCHEN, CW / 2, KITCHEN);
-  const L = LINE / 2, ink = "#f2efe8";
-  g.fillStyle = ink;
+// The court's lines as rectangles (x0, z0, x1, z1) in metres. The centre lines
+// run kitchen line to baseline, and each stops short of the name in its half,
+// the way a court painter masks round a logo. The gap is the same in both
+// halves, sized to the bigger name, so the court stays symmetrical; if the
+// line left would only be a speck, it goes entirely.
+const LINE_SLOTS = 10;
+function courtLines(names) {
+  const L = LINE / 2, out = [];
   for (const s of [-1, 1]) {
-    rect(-CW / 2 - L, s * CL / 2 - L, CW / 2 + L, s * CL / 2 + L); // baseline
-    rect(s * CW / 2 - L, -CL / 2 - L, s * CW / 2 + L, CL / 2 + L); // sideline
-    rect(-CW / 2, s * KITCHEN - L, CW / 2, s * KITCHEN + L); // kitchen line
+    out.push([-CW / 2 - L, s * CL / 2 - L, CW / 2 + L, s * CL / 2 + L]); // baseline
+    out.push([s * CW / 2 - L, -CL / 2 - L, s * CW / 2 + L, CL / 2 + L]); // sideline
+    out.push([-CW / 2, s * KITCHEN - L, CW / 2, s * KITCHEN + L]); // kitchen line
   }
-  // The centre lines, kitchen line to baseline. Each stops short of the name
-  // in its half, the way a court painter masks around a logo. The gap is the
-  // same in both halves, sized to the bigger name, so the court stays
-  // symmetrical; if the line left would only be a speck, it goes entirely.
   const reach = Math.max(...names.map((n) => n.reach)) + CLEAR;
   const stub = HALF / 2 - reach;
   if (stub >= MIN_STUB) {
     for (const s of [-1, 1]) {
-      rect(-L, s * MID - reach - stub, L, s * MID - reach);
-      rect(-L, s * MID + reach, L, s * MID + reach + stub);
+      out.push([-L, s * MID - reach - stub, L, s * MID - reach]);
+      out.push([-L, s * MID + reach, L, s * MID + reach + stub]);
     }
   }
-  for (const n of names) {
-    g.save();
-    g.translate(X(0), Z(n.cz));
-    if (n.turn) g.rotate(-Math.PI / 2);
-    g.globalAlpha = 0.94;
-    g.drawImage(n.img, (-n.w * k) / 2, (-n.h * k) / 2, n.w * k, n.h * k);
-    g.restore();
-  }
+  return out;
+}
+
+// A name, painted on a patch of court colour from its SVG at the size it
+// lands, with a few pixels of court colour round it so it meets the court
+// without a seam. Returns the texture and the map from the court (x, z) to it.
+const COURT = "#1b2f47";
+function nameTexture(n, anisotropy) {
+  const PAD = 8, MAX = 4096;
+  const k = Math.min(MOBILE ? 400 : 780, (MAX - 2 * PAD) / n.w); // pixels per metre
+  const c = document.createElement("canvas");
+  c.width = Math.round(n.w * k) + 2 * PAD;
+  c.height = Math.round(n.h * k) + 2 * PAD;
+  const g = c.getContext("2d");
+  g.fillStyle = COURT;
+  g.fillRect(0, 0, c.width, c.height);
+  g.globalAlpha = 0.94;
+  g.drawImage(n.img, PAD, PAD, c.width - 2 * PAD, c.height - 2 * PAD);
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
-  tex.anisotropy = 8;
-  return tex;
+  tex.anisotropy = anisotropy;
+  // u runs along the image, v up it (three turns canvas images over).
+  const ew = c.width / k, eh = c.height / k; // the patch in metres
+  const map = n.turn
+    ? [new THREE.Vector3(0, -1 / ew, 0.5 + n.cz / ew), new THREE.Vector3(-1 / eh, 0, 0.5)] // image right = -z, down = +x
+    : [new THREE.Vector3(1 / ew, 0, 0.5), new THREE.Vector3(0, -1 / eh, 0.5 + n.cz / eh)]; // image right = +x, down = +z
+  return { tex, map };
+}
+
+// The floor and the court, one plane, coloured per pixel. Each line's colour is
+// how much of the pixel it covers, so the edges are clean up close and the
+// lines fade evenly far away instead of breaking up.
+function groundMaterial() {
+  const mat = new THREE.MeshStandardMaterial({ roughness: 0.92, metalness: 0.0, envMapIntensity: 0, dithering: true });
+  const u = {
+    uFloor: { value: new THREE.Vector3(14 / 255, 18 / 255, 22 / 255) }, // #0e1216, sRGB: the sheen mixes there
+    uSheenR: { value: 0.6 * FL },
+    uCourt: { value: new THREE.Color(COURT) },
+    uKitchen: { value: new THREE.Color("#213a57") },
+    uInk: { value: new THREE.Color("#f2efe8") },
+    uCourtRect: { value: new THREE.Vector4(-CW / 2, -CL / 2, CW / 2, CL / 2) },
+    uKitchenRect: { value: new THREE.Vector4(-CW / 2, -KITCHEN, CW / 2, KITCHEN) },
+    uLines: { value: Array.from({ length: LINE_SLOTS }, () => new THREE.Vector4()) },
+    uNameA: { value: null }, uMapA: { value: [new THREE.Vector3(), new THREE.Vector3()] },
+    uNameB: { value: null }, uMapB: { value: [new THREE.Vector3(), new THREE.Vector3()] },
+  };
+  mat.onBeforeCompile = (sh) => {
+    Object.assign(sh.uniforms, u);
+    sh.vertexShader = sh.vertexShader
+      .replace("#include <common>", "#include <common>\nvarying vec2 vGround;")
+      .replace("#include <begin_vertex>", "#include <begin_vertex>\nvGround = vec2(position.x, -position.y);");
+    sh.fragmentShader = sh.fragmentShader
+      .replace("#include <common>", /* glsl */ `#include <common>
+        varying vec2 vGround;
+        uniform vec3 uFloor, uCourt, uKitchen, uInk;
+        uniform float uSheenR;
+        uniform vec4 uCourtRect, uKitchenRect, uLines[${LINE_SLOTS}];
+        uniform sampler2D uNameA, uNameB;
+        uniform vec3 uMapA[2], uMapB[2];
+        // How much of the pixel (centre p, half size hw) the rectangle r covers.
+        float cover(vec2 p, vec2 hw, vec4 r) {
+          vec2 lo = max(r.xy, p - hw), hi = min(r.zw, p + hw);
+          vec2 c = clamp((hi - lo) / (2.0 * hw), 0.0, 1.0);
+          return c.x * c.y;
+        }
+        vec3 paintName(vec3 col, sampler2D tex, vec3 m0, vec3 m1, vec2 p) {
+          vec2 uv = vec2(dot(m0, vec3(p, 1.0)), dot(m1, vec3(p, 1.0)));
+          vec3 s = texture2D(tex, uv).rgb;
+          return mix(col, s, cover(uv, max(fwidth(uv) * 0.5, vec2(1e-6)), vec4(0.0, 0.0, 1.0, 1.0)));
+        }
+        vec3 groundColor(vec2 p) {
+          vec2 hw = max(fwidth(p) * 0.5, vec2(1e-6));
+          // The floor, with a soft sheen where the lights pool.
+          vec3 col = sRGBTransferEOTF(vec4(mix(uFloor, vec3(1.0), 0.05 * max(0.0, 1.0 - length(p) / uSheenR)), 1.0)).rgb;
+          col = mix(col, uCourt, cover(p, hw, uCourtRect));
+          col = mix(col, uKitchen, cover(p, hw, uKitchenRect));
+          col = paintName(col, uNameA, uMapA[0], uMapA[1], p);
+          col = paintName(col, uNameB, uMapB[0], uMapB[1], p);
+          for (int i = 0; i < ${LINE_SLOTS}; i++) col = mix(col, uInk, cover(p, hw, uLines[i]));
+          return col;
+        }`)
+      .replace("#include <map_fragment>", "#include <map_fragment>\ndiffuseColor.rgb = groundColor(vGround);");
+  };
+  mat.userData.u = u;
+  return mat;
+}
+
+// The ball ---------------------------------------------------------------------
+// A real outdoor pickleball: 74 mm across, 40 round holes about 7 mm wide,
+// neon yellow. The holes go right through the shell, so you see its dark
+// inside and, where two line up, out the other side.
+const BALL_R = 0.037;
+const HOLE_R = Math.asin(0.00355 / BALL_R); // a 7.1 mm hole, as an angle from the centre
+// Rings of 5, 5 and 10 on each half, the halves mirrored and turned: spaced
+// evenly and clear of the seam where the two moulded halves meet.
+function holeDirections() {
+  const rings = [[5, 27.06, 0], [5, 50.69, 105.39], [10, 77.29, 51.2]], twist = 18.08;
+  const out = [], rad = THREE.MathUtils.degToRad;
+  for (const half of [1, -1]) {
+    for (const [n, lat, phase] of rings) {
+      for (let i = 0; i < n; i++) {
+        const th = rad(lat), ph = rad(phase + (360 * i) / n + (half < 0 ? twist : 0));
+        out.push(new THREE.Vector3(Math.sin(th) * Math.cos(ph), Math.cos(th) * half, Math.sin(th) * Math.sin(ph)));
+      }
+    }
+  }
+  return out;
+}
+function ballMaterial() {
+  // The plastic is thin enough to glow a little under floodlights: a touch of
+  // its own colour, raised with the lights.
+  const mat = new THREE.MeshStandardMaterial({ color: 0xe2f53e, emissive: 0xe2f53e, emissiveIntensity: 0, roughness: 0.4, metalness: 0.0, envMapIntensity: 0, side: THREE.DoubleSide, alphaTest: 0.5, alphaToCoverage: true });
+  const u = { uHoles: { value: holeDirections() }, uHoleR: { value: HOLE_R } };
+  mat.onBeforeCompile = (sh) => {
+    Object.assign(sh.uniforms, u);
+    sh.vertexShader = sh.vertexShader
+      .replace("#include <common>", "#include <common>\nvarying vec3 vBall;")
+      .replace("#include <begin_vertex>", "#include <begin_vertex>\nvBall = position;");
+    sh.fragmentShader = sh.fragmentShader
+      .replace("#include <common>", "#include <common>\nvarying vec3 vBall;\nuniform vec3 uHoles[40];\nuniform float uHoleR;")
+      .replace("#include <color_fragment>", /* glsl */ `#include <color_fragment>
+        {
+          vec3 n = normalize(vBall);
+          float near = -1.0;
+          for (int i = 0; i < 40; i++) near = max(near, dot(n, uHoles[i]));
+          float d = acos(clamp(near, -1.0, 1.0)); // the angle to the nearest hole's centre
+          // Opaque outside a hole, open inside; the GPU's antialiasing smooths the rim.
+          diffuseColor.a = 0.5 + (d - uHoleR) / max(fwidth(d), 1e-4);
+          if (gl_FrontFacing) {
+            diffuseColor.rgb *= mix(0.8, 1.0, smoothstep(uHoleR, uHoleR * 1.4, d)); // the drilled lip
+            float seam = smoothstep(0.004, 0.004 + max(fwidth(n.y), 1e-4) * 1.5, abs(n.y));
+            diffuseColor.rgb *= mix(0.84, 1.0, seam); // where the two halves were joined
+          } else {
+            diffuseColor.rgb *= 0.24; // the inside of the shell, in its own shadow
+          }
+        }`)
+      .replace("#include <roughnessmap_fragment>", "#include <roughnessmap_fragment>\nif (!gl_FrontFacing) roughnessFactor = 1.0;")
+      .replace("#include <emissivemap_fragment>", "#include <emissivemap_fragment>\nif (!gl_FrontFacing) totalEmissiveRadiance *= 0.5;");
+  };
+  return mat;
+}
+
+// The serve, in ball time (seconds), for a server at the +z end. The server,
+// off camera, drops the ball behind the baseline on their right; it bounces as
+// the first floodlight snaps on, rises into the light and is hit as the third
+// one does, deep into the diagonal box, then bounces away into the dark.
+const G = 9.81;
+const DROP = { x: 1.45, y: 1.15, z: 7.25 };
+const LAND = { x: -1.35, z: -5.15 };
+const T_BOUNCE = 1.0, T_HIT = 1.9; // screen time
+const FLIGHT = 0.95; // paddle to the far bounce: about 30 mph
+function servePath() {
+  const tb = ballClock(T_BOUNCE), th = ballClock(T_HIT);
+  const fall = Math.sqrt((2 * (DROP.y - BALL_R)) / G);
+  const up = 0.66 * G * fall; // it keeps about two thirds of its speed off the court
+  const rise = th - tb;
+  const hitY = BALL_R + up * rise - 0.5 * G * rise * rise;
+  const flights = [
+    { t: tb - fall, end: tb, p: [DROP.x, DROP.y, DROP.z], v: [0, 0, 0] },
+    { t: tb, end: th, p: [DROP.x, BALL_R, DROP.z], v: [0, up, 0] },
+  ];
+  let f = {
+    t: th, end: th + FLIGHT, p: [DROP.x, hitY, DROP.z],
+    v: [(LAND.x - DROP.x) / FLIGHT, (BALL_R - hitY + 0.5 * G * FLIGHT * FLIGHT) / FLIGHT, (LAND.z - DROP.z) / FLIGHT],
+  };
+  flights.push(f);
+  for (let i = 0; i < 3; i++) {
+    const d = f.end - f.t;
+    const v = [f.v[0] * 0.8, -(f.v[1] - G * d) * 0.6, f.v[2] * 0.8];
+    f = { t: f.end, end: f.end + (2 * v[1]) / G, p: [f.p[0] + f.v[0] * d, BALL_R, f.p[2] + f.v[2] * d], v };
+    flights.push(f);
+  }
+  return { flights, start: flights[0].t, hit: th, land: th + FLIGHT };
 }
 
 const settle = () => root.classList.add("is-settled");
@@ -312,10 +444,10 @@ async function main() {
   if (!root || root.classList.contains("is-fallback")) return;
   root.dataset.started = "1";
 
-  const stage = createStage({ fov: 38, bloom: [0.45, 0.45, 1.0], exposure: 1.0 });
-  const { scene, camera } = stage;
-  scene.background = new THREE.Color(0x040404);
+  const stage = createStage({ fov: 38, exposure: 1.1 });
+  const { scene, camera, renderer } = stage;
   scene.fog = new THREE.Fog(0x040404, 18, 46);
+  const anisotropy = Math.min(16, renderer.capabilities.getMaxAnisotropy());
 
   const [atl, sel] = await Promise.race([
     Promise.all([
@@ -325,26 +457,31 @@ async function main() {
     timeout(12000),
   ]);
 
-  // The floor, and the court on top of it.
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(FW, FL), new THREE.MeshStandardMaterial({ map: floorTexture(), roughness: 0.92, metalness: 0.0, envMapIntensity: 0 }));
-  floor.rotation.x = -Math.PI / 2;
-  scene.add(floor);
-  const courtMat = new THREE.MeshStandardMaterial({ roughness: 0.92, metalness: 0.0, envMapIntensity: 0, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -4 });
-  const court = new THREE.Mesh(new THREE.PlaneGeometry(SW, SL), courtMat);
-  court.rotation.x = -Math.PI / 2;
-  court.position.y = 0.002;
-  scene.add(court);
-  let texPortrait = null;
-  const retexture = () => {
-    if (texPortrait === stage.portrait) return;
-    texPortrait = stage.portrait;
-    const old = courtMat.map;
-    courtMat.map = courtTexture(nameLayout(atl, sel, stage.portrait));
-    courtMat.needsUpdate = true;
-    old && old.dispose();
+  // The floor and the court, with the names.
+  const groundMat = groundMaterial();
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(FW, FL), groundMat);
+  ground.rotation.x = -Math.PI / 2;
+  scene.add(ground);
+  // The end the serve comes from: Selkirk's half, so its name is the first thing the light finds.
+  let S = 1, layoutPortrait = null;
+  const relayout = () => {
+    if (layoutPortrait === stage.portrait) return;
+    layoutPortrait = stage.portrait;
+    const names = nameLayout(atl, sel, stage.portrait);
+    const u = groundMat.userData.u, lines = courtLines(names);
+    u.uLines.value.forEach((v, i) => (lines[i] ? v.set(...lines[i]) : v.set(0, 0, 0, 0)));
+    for (const [n, key] of [[names[0], "A"], [names[1], "B"]]) {
+      const { tex, map } = nameTexture(n, anisotropy);
+      const old = u["uName" + key].value;
+      u["uName" + key].value = tex;
+      u["uMap" + key].value[0].copy(map[0]);
+      u["uMap" + key].value[1].copy(map[1]);
+      old && old.dispose();
+    }
+    S = Math.sign(names[1].cz);
   };
-  retexture();
-  stage.onResize = retexture;
+  relayout();
+  stage.onResize = relayout;
 
   // The net: posts, a dark mesh, the white tape.
   const net = new THREE.Group();
@@ -354,7 +491,7 @@ async function main() {
   tape.position.y = 0.88;
   net.add(netMesh, tape);
   for (const x of [-(CW / 2 + 0.2), CW / 2 + 0.2]) {
-    const post = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.92, 12), new THREE.MeshStandardMaterial({ color: 0x2a2e33, metalness: 0.6, roughness: 0.4 }));
+    const post = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.92, 16), new THREE.MeshStandardMaterial({ color: 0x2a2e33, metalness: 0.6, roughness: 0.4 }));
     post.position.set(x, 0.46, 0);
     net.add(post);
   }
@@ -381,91 +518,107 @@ async function main() {
   scene.add(netShadow);
 
   scene.add(new THREE.AmbientLight(0xffffff, 0.015));
+  // Light bounced off the court: a little navy on the underside of the ball.
+  const bounce = new THREE.HemisphereLight(0x000000, 0x24405e, 0);
+  scene.add(bounce);
   // Four floodlight towers, one at each corner.
-  const towers = [[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sz], i) => {
+  const dot = softDot();
+  const towers = [[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sz]) => {
     const pos = new THREE.Vector3(sx * (CW / 2 + 3.2), 8.5, sz * (CL / 2 + 2.2));
     const target = new THREE.Vector3(sx * 0.6, 0, sz * 2.4);
     const spot = new THREE.SpotLight(0xfff1e0, 0, 40, 0.62, 0.55, 1.4);
     spot.position.copy(pos); spot.target.position.copy(target);
     scene.add(spot, spot.target);
-    // The lamp head: a bright panel that blooms.
+    // The lamp head: a bright panel with a soft glow round it.
     const lamp = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.5, 0.12), new THREE.MeshBasicMaterial({ color: 0x000000 }));
     lamp.position.copy(pos);
     lamp.lookAt(target);
     scene.add(lamp);
-    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.08, 8.5, 8), new THREE.MeshStandardMaterial({ color: 0x15181b, roughness: 0.8 }));
+    const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: dot, color: 0xfff1e0, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }));
+    glow.position.copy(pos);
+    glow.scale.setScalar(3.4);
+    scene.add(glow);
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.08, 8.5, 12), new THREE.MeshStandardMaterial({ color: 0x15181b, roughness: 0.8 }));
     pole.position.set(pos.x, 4.25, pos.z);
     scene.add(pole);
     // The beam: an additive cone, brightest at the lamp.
     const dir = new THREE.Vector3().subVectors(pos, target);
     const len = dir.length();
     const cone = new THREE.Mesh(
-      new THREE.ConeGeometry(len * Math.tan(0.5), len, 48, 1, true),
+      new THREE.ConeGeometry(len * Math.tan(0.5), len, 64, 1, true),
       new THREE.ShaderMaterial({
-        transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
+        transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, dithering: true,
         uniforms: { uOn: { value: 0 }, uLen: { value: len } },
         vertexShader: `varying float vY; varying vec3 vN; varying vec3 vV;
           void main(){ vY = position.y; vec4 mv = modelViewMatrix * vec4(position,1.0); vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }`,
-        fragmentShader: `uniform float uOn, uLen; varying float vY; varying vec3 vN; varying vec3 vV;
+        fragmentShader: `#include <common>
+          #include <dithering_pars_fragment>
+          uniform float uOn, uLen; varying float vY; varying vec3 vN; varying vec3 vV;
           void main(){ float along = clamp(vY / uLen + 0.5, 0.0, 1.0); float face = pow(abs(dot(vN, vV)), 1.6);
-            float a = pow(along, 2.6) * face * 0.08 * uOn; gl_FragColor = vec4(vec3(1.0, 0.93, 0.82) * a, a); }`,
+            float a = pow(along, 2.6) * face * 0.08 * uOn;
+            gl_FragColor = vec4(vec3(1.0, 0.93, 0.82) * a * a, 1.0);
+            #include <tonemapping_fragment>
+            #include <colorspace_fragment>
+            #include <dithering_fragment>
+          }`,
       }),
     );
     cone.position.copy(pos).add(target).multiplyScalar(0.5);
     cone.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.clone().normalize());
     scene.add(cone);
-    return { spot, lamp, cone, on: LIGHT_ON[i] };
+    return { sx, sz, spot, lamp, glow, cone };
   });
 
-  // Dust hanging in the light.
-  const R = rng(5);
-  const dustN = MOBILE ? 500 : 900;
-  const dp = new Float32Array(dustN * 3), ds = new Float32Array(dustN);
-  for (let i = 0; i < dustN; i++) { dp.set([(R() - 0.5) * 14, R() * 7, (R() - 0.5) * 20], i * 3); ds[i] = R(); }
-  const dustGeo = new THREE.BufferGeometry();
-  dustGeo.setAttribute("position", new THREE.BufferAttribute(dp.slice(), 3));
-  const dust = new THREE.Points(dustGeo, new THREE.PointsMaterial({ size: 0.05, map: dotTexture(), color: 0xfff0dc, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
-  scene.add(dust);
-
-  // The ball, its trail, and its shadow.
-  const ball = new THREE.Mesh(new THREE.SphereGeometry(0.085, 24, 16), new THREE.MeshStandardMaterial({ color: 0xf6be00, emissive: 0xf6be00, emissiveIntensity: 0.9, roughness: 0.5 }));
+  // The ball and its soft shadow.
+  const ball = new THREE.Mesh(new THREE.SphereGeometry(BALL_R, 64, 48), ballMaterial());
   scene.add(ball);
-  const trailN = 26;
-  const trailGeo = new THREE.BufferGeometry();
-  trailGeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(trailN * 3), 3));
-  const trailCol = new Float32Array(trailN * 3);
-  for (let i = 0; i < trailN; i++) { const f = 1 - i / trailN; trailCol.set([1.1 * f, 0.8 * f, 0.08 * f], i * 3); }
-  trailGeo.setAttribute("color", new THREE.BufferAttribute(trailCol, 3));
-  const trail = new THREE.Points(trailGeo, new THREE.PointsMaterial({ size: 0.11, map: dotTexture(), vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
-  scene.add(trail);
-  const shadow = new THREE.Mesh(new THREE.CircleGeometry(0.16, 24), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.5, depthWrite: false }));
+  const shadow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: dot, color: 0x000000, transparent: true, opacity: 0, depthWrite: false }));
   shadow.rotation.x = -Math.PI / 2;
   scene.add(shadow);
-  // A serve from the near side over the net, one bounce deep in the far court.
-  const B0 = 2.55, B1 = 3.55, B2 = 4.35;
-  const ballAt = (t) => {
-    if (t < B0) return null;
-    if (t < B1) {
-      const u = (t - B0) / (B1 - B0);
-      return new THREE.Vector3(lerp(1.4, -0.9, u), 0.9 + Math.sin(u * Math.PI) * 2.0 - u * 0.9, lerp(5.6, -4.8, u));
-    }
-    if (t < B2) {
-      const u = (t - B1) / (B2 - B1);
-      return new THREE.Vector3(lerp(-0.9, -1.6, u), Math.sin(u * Math.PI) * 1.1, lerp(-4.8, -8.6, u));
-    }
-    const u = Math.min(1, (t - B2) / 0.8);
-    return new THREE.Vector3(lerp(-1.6, -2.0, u), Math.sin(u * Math.PI) * 0.35, lerp(-8.6, -10.8, u));
+  const serve = servePath();
+  const ballPos = new THREE.Vector3();
+  // Where the ball is at ball time b (+z server); false once it has bounced away.
+  const ballAt = (b) => {
+    const fl = serve.flights;
+    let f = fl[0];
+    if (b < f.t) { ballPos.set(...f.p); return true; }
+    for (const g of fl) if (b >= g.t) f = g;
+    if (b >= fl[fl.length - 1].end) return false;
+    const d = b - f.t;
+    ballPos.set(f.p[0] + f.v[0] * d, f.p[1] + f.v[1] * d - 0.5 * G * d * d, f.p[2] + f.v[2] * d);
+    return Math.abs(ballPos.z) < FL / 2 && Math.abs(ballPos.x) < FW / 2;
   };
+  // A slow tumble as it drops, then topspin off the paddle: about the axis
+  // up x velocity, so the top of the ball rolls forward.
+  const TUMBLE = new THREE.Vector3(0.35, 0.25, 1).normalize();
+  const hitV = serve.flights[2].v;
+  const qb = new THREE.Quaternion(), axis = new THREE.Vector3();
+  const spinAt = (b, q) => {
+    q.setFromAxisAngle(TUMBLE, 1.2 * (Math.min(b, serve.hit) - serve.start));
+    if (b > serve.hit) {
+      axis.set(hitV[2] * S, 0, -hitV[0]).normalize();
+      q.premultiply(qb.setFromAxisAngle(axis, 2 * Math.PI * 6 * (b - serve.hit)));
+    }
+    return q;
+  };
+  // The serve is worked out from the +z end. From the -z end it is mirrored end
+  // to end, so the camera stays on the +x side of the court, where a name
+  // turned for landscape reads the right way up (the server then serves from
+  // their left-hand box, which they do on an odd score).
+  const toStage = (v) => v.set(v.x, v.y, v.z * S);
 
-  // Camera: low at the net post in the dark, then a crane up and over that lands
-  // straight above the court, looking straight down, so every line sits square
-  // to the screen. It never follows a touch or the phone's tilt, so it stays
-  // square. Portrait: the far baseline is up. Landscape: the court lies across
-  // the screen with its left sideline (world -x) up.
+  // Camera: low behind the server's baseline, a metre from the drop, watching
+  // the ball. Then a crane up and over that lands straight above the court,
+  // looking straight down, so every line sits square to the screen. It never
+  // follows a touch or the phone's tilt, so it stays square. Portrait: the far
+  // baseline is up. Landscape: the court lies across the screen with its left
+  // sideline (world -x) up.
   const copyEl = root.querySelector(".sk-stage-copy");
-  const startPos = new THREE.Vector3(4.4, 0.7, 8.6), startLook = new THREE.Vector3(-1.2, 0.35, -1.5);
+  const serveDir = new THREE.Vector3(LAND.x - DROP.x, 0, LAND.z - DROP.z).normalize();
+  const serveRight = new THREE.Vector3(-serveDir.z, 0, serveDir.x);
+  const camStart = new THREE.Vector3(DROP.x, 0.3, DROP.z).addScaledVector(serveDir, -1.0).addScaledVector(serveRight, 0.2);
   const UP_PORTRAIT = new THREE.Vector3(0, 0, -1), UP_LANDSCAPE = new THREE.Vector3(-1, 0, 0);
-  const MID_PORTRAIT = new THREE.Vector3(6.5, 4.5, 9.5), MID_LANDSCAPE = new THREE.Vector3(9.0, 5.0, 5.0);
+  const MID_PORTRAIT = new THREE.Vector3(6.5, 4.5, 9.5), MID_LANDSCAPE = new THREE.Vector3(8.5, 4.8, -6.5);
   const SKY = new THREE.Vector3(0, 1, 0), dir = new THREE.Vector3();
   const endFor = () => {
     const H = stage.height, tan = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
@@ -483,35 +636,59 @@ async function main() {
     const pos = stage.portrait ? new THREE.Vector3(0, vh / (2 * tan), shift) : new THREE.Vector3(shift, vh / (2 * tan), 0);
     return { pos, look: new THREE.Vector3(pos.x, 0, pos.z), up: stage.portrait ? UP_PORTRAIT : UP_LANDSCAPE };
   };
+  const hang = new THREE.Vector3(), chase = new THREE.Vector3(), start = new THREE.Vector3();
 
   const update = (t) => {
-    // Lights snap on: on, a flicker, on.
+    // Lights snap on one by one, nearest the camera first: a clean strike, no flicker.
     let lit = 0;
     for (const L of towers) {
-      const s = t - L.on;
-      let on = s < 0 ? 0 : s < 0.07 ? 1 : s < 0.13 ? 0.25 : 1;
-      if (s > 2) on *= 0.97 + 0.03 * Math.sin(t * 9 + L.on * 7);
+      const order = (L.sz === S ? 0 : 2) + (L.sx === 1 ? 0 : 1);
+      const on = smooth01((t - LIGHT_ON[order]) / 0.08);
       lit += on;
       L.spot.intensity = on * 55;
       L.lamp.material.color.setScalar(on * 3);
+      L.glow.material.opacity = on * 0.5;
       L.cone.material.uniforms.uOn.value = on;
     }
-    const snap = LIGHT_ON.reduce((a, o) => a + pulse(t, o, 0.18), 0);
-    stage.cinema.uniforms.uFlash.value = snap * 0.04;
-    stage.bloomPass.strength = 0.45 + snap * 0.2;
-    dust.material.opacity = 0.22 * (lit / 4);
+    bounce.intensity = 0.9 * (lit / 4);
+    ball.material.emissiveIntensity = 0.2 * (lit / 4);
 
-    // The crane: from the net post, out and up, then over the court.
+    // The ball.
+    const b = ballClock(t);
+    const shown = b >= serve.start && ballAt(b);
+    ball.visible = shadow.visible = shown;
+    if (shown) {
+      ball.position.copy(toStage(ballPos));
+      spinAt(b, ball.quaternion);
+      const y = ballPos.y - BALL_R;
+      shadow.position.set(ballPos.x, 0.006, ballPos.z);
+      shadow.scale.setScalar(BALL_R * 3.2 * (1 + y * 0.9));
+      shadow.material.opacity = 0.62 * Math.max(0, 1 - y / 2.2);
+    }
+
+    // The crane: from beside the drop, out and up, then over the court.
     const end = endFor();
-    const midPos = stage.portrait ? MID_PORTRAIT : MID_LANDSCAPE;
+    const midPos = (stage.portrait ? MID_PORTRAIT : MID_LANDSCAPE).clone();
+    start.copy(camStart);
+    toStage(start);
     const c = ease.inOutCubic(seg(t, 1.7, 5.5));
     // A quadratic curve through a point out to the side, so it sweeps rather than slides.
-    const pos = startPos.clone().multiplyScalar((1 - c) * (1 - c)).addScaledVector(midPos, 2 * (1 - c) * c).addScaledVector(end.pos, c * c);
-    const look = new THREE.Vector3().lerpVectors(startLook, end.look, ease.inOutSine(seg(t, 1.9, 5.4)));
+    const pos = start.clone().multiplyScalar((1 - c) * (1 - c)).addScaledVector(midPos, 2 * (1 - c) * c).addScaledVector(end.pos, c * c);
+    // The aim: on the ball as it drops and hangs (riding a little with it), then
+    // after it as it is served, until it lands; then over to the court.
+    const by = b >= serve.start && b < serve.hit ? (ballAt(b), ballPos.y) : 0.3;
+    hang.set(DROP.x, 0.3 + 0.3 * Math.min(0.25, Math.max(-0.2, by - 0.3)), DROP.z);
+    toStage(hang);
+    // Chase the ball low, so the court it is flying over fills the frame.
+    ballAt(Math.min(Math.max(b, serve.hit), serve.land));
+    chase.copy(toStage(ballPos));
+    chase.y = 0.3 + 0.3 * (chase.y - 0.3);
+    const look = hang.clone().lerp(chase, smooth01((t - T_HIT) / 0.6));
+    look.lerp(end.look, ease.inOutSine(seg(t, 2.6, 5.4)));
     // A slight drift before the lights, as if handheld.
-    pos.y += Math.sin(t * 1.3) * 0.02 * (1 - c);
+    pos.y += Math.sin(t * 1.3) * 0.012 * (1 - c);
     // Once it lands, a slow push straight down: the court grows a touch and stays square.
-    pos.y *= 1 - 0.035 * ease.inOutSine(seg(t, 5.5, 13));
+    pos.y *= 1 - 0.035 * ease.inOutSine(seg(t, 5.5, STILL));
     // Hand the camera's up from the sky to the court as it tips to look straight
     // down, so it never rolls over and lands with the lines true.
     dir.subVectors(look, pos).normalize();
@@ -524,34 +701,8 @@ async function main() {
     scene.fog.near = Math.max(18, pos.y * 0.75);
     scene.fog.far = Math.max(46, pos.y * 2.0);
 
-    // The ball, its comet tail, its shadow.
-    const b = ballAt(t);
-    ball.visible = trail.visible = shadow.visible = !!b && t < B2 + 1.2;
-    if (b) {
-      ball.position.copy(b);
-      const tp = trailGeo.attributes.position;
-      for (let i = 0; i < trailN; i++) {
-        const q = ballAt(Math.max(B0, t - i * 0.012)) || b;
-        tp.setXYZ(i, q.x, q.y, q.z);
-      }
-      tp.needsUpdate = true;
-      shadow.position.set(b.x, 0.01, b.z);
-      shadow.material.opacity = 0.45 * Math.max(0, 1 - b.y / 3);
-      const fade = 1 - seg(t, B2 + 0.6, B2 + 1.2);
-      ball.material.emissiveIntensity = 0.9 * fade;
-      trail.material.opacity = fade;
-    }
-
-    // Dust drifts.
-    const d = dustGeo.attributes.position;
-    for (let i = 0; i < dustN; i++) {
-      d.setY(i, (dp[i * 3 + 1] + t * (0.04 + ds[i] * 0.06)) % 7);
-      d.setX(i, dp[i * 3] + Math.sin(t * 0.2 + ds[i] * 9) * 0.3);
-    }
-    d.needsUpdate = true;
-
-    stage.cinema.uniforms.uBars.value = 1 - ease.inOutCubic(seg(t, 4.9, 6.2));
-    stage.cinema.uniforms.uFade.value = ease.outCubic(seg(t, 0, 0.5));
+    stage.film.uBars.value = 1 - ease.inOutCubic(seg(t, 4.9, 6.2));
+    stage.film.uFade.value = ease.outCubic(seg(t, 0, 0.5));
   };
 
   const stop = run(stage, update, settle);

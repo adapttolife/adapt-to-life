@@ -80,7 +80,7 @@ export const GUIDES = {
     stats: [
       ["$225", "a night of court time for up to 15 athletes", "courts"], // /sponsorship
       ["$1,548", "a year of training for one athlete", "training"], // /sponsorship
-      ["335,000+", "views across Instagram and Facebook in 90 days, August to November", "stories"], // /sponsorship
+      ["335,000+", "views across Instagram and Facebook in 90 days", "stories"], // /sponsorship
     ],
     body: `
       <h2 class="serif h2">Who you&rsquo;d be sponsoring</h2>
@@ -99,7 +99,7 @@ export const GUIDES = {
 
       <h2 class="serif h2">What you get back</h2>
       <ul class="es-list">
-        <li><b>Your name, seen by new people:</b> more than 335,000 views on Instagram and Facebook in 90 days, August to November 2026, and more than 9 in 10 Instagram views come from people who don&rsquo;t follow us yet.</li>
+        <li><b>Your name, seen by new people:</b> more than 335,000 views on Instagram and Facebook in 90 days, and more than 9 in 10 Instagram views come from people who don&rsquo;t follow us yet.</li>
         <li><b>Content:</b> video and athlete spotlights with your name on them. Our seven Monster Smash posts drew more than 34,000 views across Instagram and Facebook.</li>
         <li><b>Proof, every month:</b> a short recap with attendance, views and results.</li>
       </ul>

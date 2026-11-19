@@ -51,10 +51,9 @@ import {
   requestLogin,
   sendAdminLink,
 } from "./asnm_admin_auth.js";
-import { syncGifts } from "./qr_gifts.js";
 import { CAMPAIGN_KEYS, campaignPosition } from "./fund.js";
 import { handleGivebutterWebhook } from "./givebutter_webhook.js";
-import { reconcileDonorJourney } from "./givebutter_reconcile.js";
+import { runGivebutterJobs } from "./givebutter_cron.js";
 import {
   recordIntake,
   notifyIntake,
@@ -1627,10 +1626,10 @@ export default {
 
   // Cron, every 10 minutes: archive newly signed releases to the Shared Drive
   // (compliance backlog), and pull QR-attributed gifts back from Givebutter
-  // (Spec 116 P6). Two independent jobs on one schedule — each is wrapped so a
-  // failure in either cannot stop the other, and the gift sync is idempotent
-  // on Givebutter's own transaction id, so a repeated or overlapping run can
-  // never double-count a donation.
+  // (Spec 116 P6). Each job is wrapped so a failure in one cannot stop the
+  // others, and the gift sync is idempotent on Givebutter's own transaction id,
+  // so a repeated run can never double-count a donation. The two Givebutter jobs
+  // run one after the other, never in parallel: they share a rate-limited key.
   async scheduled(event, env, ctx) {
     ctx.waitUntil(
       sweepForms(env).catch((err) => console.error("form outbox failed:", err)),
@@ -1665,30 +1664,10 @@ export default {
         console.error("shop newsletter CRM sync crashed:", err),
       ),
     );
-    ctx.waitUntil(
-      syncGifts(env).then((r) => {
-        if (!r.ok) console.error("qr gift sync failed:", r.error);
-        else if (r.written)
-          console.log(`qr gift sync: ${r.written} attributed gift(s) recorded`);
-      }),
-    );
-    // The webhook is only the fast path. This single scheduled owner polls every
-    // successful post-activation Givebutter transaction into D1 first, then closes
-    // thank-you work. A provider failure remains visible as a red receipt but
-    // cannot block recovery of work already durable in D1.
-    ctx.waitUntil(
-      reconcileDonorJourney(env)
-        .then((r) => {
-          if (!r.ok) {
-            console.error("donor journey reconciliation failed:", JSON.stringify(r));
-            return;
-          }
-          if (r.reconciliation.written || r.email.sent) {
-            console.log("donor journey reconciled:", JSON.stringify(r));
-          }
-        })
-        .catch((err) => console.error("donor journey reconciliation crashed:", err)),
-    );
+    // QR gift sync, then donor journey reconciliation, one after the other:
+    // run together they rate limited each other at Givebutter (see
+    // src/givebutter_cron.js).
+    ctx.waitUntil(runGivebutterJobs(env));
   },
 
   // Spec 32 agent email: inbound mail for *@agents.adapttolife.org (Cloudflare Email Routing).

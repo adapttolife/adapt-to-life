@@ -18,6 +18,8 @@
 // of only the attributed gifts, keyed by Givebutter's own transaction id, so
 // the sync is idempotent and re-running it can never double-count.
 
+import { givebutterFetch, GivebutterHttpError } from "./givebutter_fetch.js";
+
 const API = "https://api.givebutter.com/v1/transactions";
 const WATERMARK = "givebutter_synced_through";
 // Re-read a day back on every run. A gift can settle, or be refunded, after we
@@ -110,12 +112,24 @@ export async function syncGifts(env, opts = {}) {
     let newest = mark ? new Date(mark) : null;
 
     for (let page = 1; page <= MAX_PAGES; page++) {
-      const res = await fetch(`${API}?per_page=100&page=${page}`, {
-        headers: {
-          Authorization: `Bearer ${env.GIVEBUTTER_API_KEY}`,
-          Accept: "application/json",
-        },
-      });
+      let res;
+      try {
+        res = await givebutterFetch(
+          `${API}?per_page=100&page=${page}`,
+          {
+            headers: {
+              Authorization: `Bearer ${env.GIVEBUTTER_API_KEY}`,
+              Accept: "application/json",
+            },
+          },
+          { fetch: opts.fetch, sleep: opts.sleep },
+        );
+      } catch (err) {
+        // Still 429 after the retries: stop here as for any other bad status.
+        if (!(err instanceof GivebutterHttpError)) throw err;
+        out.error = err.message;
+        break;
+      }
       if (!res.ok) {
         out.error = `givebutter ${res.status}`;
         break;
@@ -169,7 +183,10 @@ export async function syncGifts(env, opts = {}) {
       if (rows.length < 100) break;
     }
 
-    if (newest) await writeWatermark(env, newest.toISOString());
+    // Only move the watermark after a clean read. If a later page failed (a 429
+    // that outlasted the retries, or any other bad status), the pages never read
+    // could hold gifts older than the lookback from the new mark.
+    if (newest && !out.error) await writeWatermark(env, newest.toISOString());
     out.ok = !out.error;
     return out;
   } catch (err) {

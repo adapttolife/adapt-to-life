@@ -238,7 +238,8 @@
   .sk-feature figcaption span{ font-size:0.9rem; color:var(--cream-mute); }
   /* The lessons already made: a row on a desktop, a swipe on a phone. */
   .sk-lessons-lead, .sk-library-lead{ margin:1rem auto 0; max-width:60ch; }
-  .sk-previews{ list-style:none; margin:clamp(1.6rem,3vw,2.2rem) 0 0; padding:0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(0.8rem,2vw,1.2rem); }
+  .sk-previews{ list-style:none; margin:clamp(1.6rem,3vw,2.2rem) 0 0; padding:0; display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:clamp(0.8rem,2vw,1.2rem); }
+  @media (max-width:980px){ .sk-previews{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
   @media (max-width:640px){ .sk-previews{ grid-template-columns:none; grid-auto-flow:column; grid-auto-columns:58%; gap:0.7rem; overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:0.4rem; margin-right:calc(-1 * var(--gutter, 1.25rem)); padding-right:var(--gutter, 1.25rem); } .sk-previews > li{ scroll-snap-align:start; } }
   .sk-previews figure{ margin:0; }
   .sk-previews video{ display:block; width:100%; height:auto; aspect-ratio:9/16; border-radius:18px; background:var(--canvas); border:1px solid var(--hairline); }
@@ -246,8 +247,8 @@
   .sk-previews figcaption b{ font-family:var(--font-display); font-weight:900; font-size:1.02rem; line-height:1.2; }
   .sk-previews figcaption span{ color:var(--muted); font-size:0.9rem; line-height:1.35; }
   .sk-previews-note{ margin-top:0.9rem; color:var(--muted); font-size:0.92rem; max-width:62ch; }
-  /* The newest lesson carries a New tag. Nine cards fill whole rows: three
-     across on tablets and desktops. Phones keep the swipe row. */
+  /* The newest lesson carries a New tag. Ten cards fill whole rows: five
+     across on desktops, two on tablets. Phones keep the swipe row. */
   .sk-previews .sk-new-tag{ justify-self:start; font-family:var(--font-label); font-weight:800; font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--orange-ink); }
   /* Ryan: the coach whose name goes on the lessons. */
   .sk-coach-inner{ display:grid; grid-template-columns:minmax(0,0.8fr) minmax(0,1.2fr); gap:clamp(1.8rem,4.5vw,4rem); align-items:center; }
@@ -611,7 +612,7 @@ fill="currentColor" stroke="none">
     <li class="part" data-part="01"><a href="#record"><svg class="sk-toc-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="participation" data-style="duotone"><g fill="currentColor"><path d="M200 48a24 24 0 1 1-24-24a24 24 0 0 1 24 24" opacity=".2"/><path d="M176 80a32 32 0 1 0-32-32a32 32 0 0 0 32 32m0-48a16 16 0 1 1-16 16a16 16 0 0 1 16-16m-8 136a64 64 0 1 1-64-64a8 8 0 0 1 0 16a48 48 0 1 0 48 48a8 8 0 0 1 16 0m38.19-37.07a8 8 0 0 1 1.65 6.64l-16 80A8 8 0 0 1 184 224a7.8 7.8 0 0 1-1.58-.16a8 8 0 0 1-6.27-9.41L190.24 144H128a8 8 0 0 1-6.94-12l20.06-34.9a80.09 80.09 0 0 0-88 9.17A8 8 0 1 1 42.91 94a96 96 0 0 1 113.46-6.42a8 8 0 0 1 2.57 10.69L141.82 128H200a8 8 0 0 1 6.19 2.93"/></g></svg><span class="t">Who we are</span></a>
       <ol class="sub"><li><a href="#record">The crew</a></li><li><a href="#family">Bread &amp; Butter</a></li></ol></li>
     <li class="part" data-part="02"><a href="#together"><svg class="sk-toc-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="community" data-style="duotone"><g fill="currentColor"><path d="M168 144a40 40 0 1 1-40-40a40 40 0 0 1 40 40M64 56a32 32 0 1 0 32 32a32 32 0 0 0-32-32m128 0a32 32 0 1 0 32 32a32 32 0 0 0-32-32" opacity=".2"/><path d="M244.8 150.4a8 8 0 0 1-11.2-1.6A51.6 51.6 0 0 0 192 128a8 8 0 0 1 0-16a24 24 0 1 0-23.24-30a8 8 0 1 1-15.5-4A40 40 0 1 1 219 117.51a67.94 67.94 0 0 1 27.43 21.68a8 8 0 0 1-1.63 11.21M190.92 212a8 8 0 1 1-13.85 8a57 57 0 0 0-98.15 0a8 8 0 1 1-13.84-8a72.06 72.06 0 0 1 33.74-29.92a48 48 0 1 1 58.36 0A72.06 72.06 0 0 1 190.92 212M128 176a32 32 0 1 0-32-32a32 32 0 0 0 32 32m-56-56a8 8 0 0 0-8-8a24 24 0 1 1 23.24-30a8 8 0 1 0 15.5-4A40 40 0 1 0 37 117.51a67.94 67.94 0 0 0-27.4 21.68a8 8 0 1 0 12.8 9.61A51.6 51.6 0 0 1 64 128a8 8 0 0 0 8-8"/></g></svg><span class="t">The bigger game</span></a>
-      <ol class="sub"><li><a href="#together">Playing together</a></li><li><a href="#lessons">Ten lessons</a></li><li><a href="#coach">Ryan Anthony</a></li></ol></li>
+      <ol class="sub"><li><a href="#together">Playing together</a></li><li><a href="#lessons">Eleven lessons</a></li><li><a href="#coach">Ryan Anthony</a></li></ol></li>
     <li class="part" data-part="03"><a href="#library"><svg class="sk-toc-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="building" data-style="duotone"><g fill="currentColor"><path d="M245.66 129L217 157.66a8 8 0 0 1-11.3 0L168.1 120l-28 28l-32-32l28-28L80 31.78a87.81 87.81 0 0 1 98.31 18l67.35 67.89a8 8 0 0 1 0 11.33" opacity=".2"/><path d="m251.34 112l-67.46-67.92a96.1 96.1 0 0 0-135.77 0l-.09.09L34.25 58.4a8 8 0 0 0 11.49 11.13l13.73-14.18a80 80 0 0 1 18.71-13.9L124.68 88l-96 96a16 16 0 0 0 0 22.63l20.69 20.69a16 16 0 0 0 22.63 0l96-96l14.34 14.34L200 163.3a16 16 0 0 0 22.63 0l28.69-28.69a16 16 0 0 0 .02-22.61M60.68 216L40 195.31l68-68L128.68 148Zm101.66-101.68L140 136.67L119.31 116l22.35-22.35a8 8 0 0 0 0-11.32L94.32 35a80 80 0 0 1 78.23 20.41l44.22 44.51L188 128.66l-14.34-14.34a8 8 0 0 0-11.32 0m49 37.66l-12-12L228 111.25l12 12Z"/></g></svg><span class="t">What we&rsquo;d build</span></a>
       <ol class="sub"><li><a href="#library">The library</a></li><li><a href="#both">What each of us brings</a></li></ol></li>
     <li class="part" data-part="04"><a href="#stories"><svg class="sk-toc-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="stories" data-style="duotone"><g fill="currentColor"><path d="M144 69.09v101.82l-93.76 28.76A8 8 0 0 1 40 192V48a8 8 0 0 1 10.24-7.67Z" opacity=".2"/><path d="m228.54 86.66l-176.06-54A16 16 0 0 0 32 48v144a16 16 0 0 0 16 16a16 16 0 0 0 4.52-.65L136 181.73V192a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-29.9l28.54-8.75A16.09 16.09 0 0 0 240 138v-36a16.09 16.09 0 0 0-11.46-15.34M136 165l-88 27V48l88 27Zm48 27h-32v-15.18l32-9.82Zm40-54h-.11L152 160.08V79.92l71.89 22h.11v36Z"/></g></svg><span class="t">Where your name goes</span></a>
@@ -701,13 +702,17 @@ fill="currentColor" stroke="none">
   <div class="wrap">
     <div class="sec-head">
       <span class="eyebrow reveal"><svg class="ico-in" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="play" data-style="regular"><path fill="currentColor" d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m0 192a88 88 0 1 1 88-88a88.1 88.1 0 0 1-88 88m48.24-94.78l-64-40A8 8 0 0 0 100 88v80a8 8 0 0 0 12.24 6.78l64-40a8 8 0 0 0 0-13.56M116 153.57v-51.14L156.91 128Z"/></svg>What we&rsquo;ve made</span>
-      <h2 class="serif h2 reveal" id="skLessonsHead" style="margin-top:0.7rem;">Ten lessons, already made.</h2>
-      <p class="prose reveal sk-lessons-lead">The hybrid lesson above, five more just below, and four from the wheelchair game. Each one is short and made for a phone: the court drawn to scale, every shot slowed down and explained, with narration and captions built in. We keep improving them as players and coaches tell us what works. We&rsquo;ve also put Selkirk&rsquo;s name on each one, at the start and on a closing card, so you can see them the way your viewers would. These versions are only for this proposal.</p>
+      <h2 class="serif h2 reveal" id="skLessonsHead" style="margin-top:0.7rem;">Eleven lessons, already made.</h2>
+      <p class="prose reveal sk-lessons-lead">The hybrid lesson above, six more just below, and four from the wheelchair game. Each one is short and made for a phone: the court drawn to scale, every shot slowed down and explained, with narration and captions built in. We keep improving them as players and coaches tell us what works. We&rsquo;ve also put Selkirk&rsquo;s name on each one, at the start and on a closing card, so you can see them the way your viewers would. These versions are only for this proposal.</p>
     </div>
     <ul class="sk-previews">
       <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-space.2195c565.webp" width="720" height="1280" src="/videos/lessons/hybrid-space.208fe182.mp4" aria-label="Lesson: stay connected without crowding. Hybrid doubles, 62 seconds, narrated, captions on screen."></video>
+        <figcaption><span class="sk-new-tag">New</span><b>Stay connected without crowding</b><span class="sk-meta">Our seventh hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>62 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
         <video controls playsinline preload="none" poster="/videos/lessons/hybrid-plan.4d513e7a.webp" width="720" height="1280" src="/videos/lessons/hybrid-plan.bbf5cb54.mp4" aria-label="Lesson: make a plan before the point. Hybrid doubles, 63 seconds, narrated, captions on screen."></video>
-        <figcaption><span class="sk-new-tag">New</span><b>Make a plan before the point</b><span class="sk-meta">Our sixth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>63 seconds</span></span></figcaption>
+        <figcaption><b>Make a plan before the point</b><span class="sk-meta">Our sixth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>63 seconds</span></span></figcaption>
       </figure></li>
       <li class="reveal"><figure>
         <video controls playsinline preload="none" poster="/videos/lessons/hybrid-poach.68841cd0.webp" width="720" height="1280" src="/videos/lessons/hybrid-poach.329dfb85.mp4" aria-label="Lesson: poach with a plan. Hybrid doubles, 58 seconds, narrated, captions on screen."></video>
@@ -793,7 +798,7 @@ fill="currentColor" stroke="none">
           <li>Cover the ball and give your partner time <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
           <li>Poach with a plan <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
           <li>Make a plan before the point <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Stay connected without crowding</li>
+          <li>Stay connected without crowding <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
         </ol>
       </li>
       <li class="reveal">
@@ -822,7 +827,7 @@ fill="currentColor" stroke="none">
     </ul>
     <h3 class="sk-ladder-head reveal">Where it can grow</h3>
     <ol class="sk-ladder reveal">
-      <li class="now"><svg class="sk-rung-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="play" data-style="regular"><path fill="currentColor" d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m0 192a88 88 0 1 1 88-88a88.1 88.1 0 0 1-88 88m48.24-94.78l-64-40A8 8 0 0 0 100 88v80a8 8 0 0 0 12.24 6.78l64-40a8 8 0 0 0 0-13.56M116 153.57v-51.14L156.91 128Z"/></svg><b>Lessons</b><span>Ten made so far, ready for our channels, our clinics and Adaptive Sports Near Me.</span></li>
+      <li class="now"><svg class="sk-rung-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="play" data-style="regular"><path fill="currentColor" d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m0 192a88 88 0 1 1 88-88a88.1 88.1 0 0 1-88 88m48.24-94.78l-64-40A8 8 0 0 0 100 88v80a8 8 0 0 0 12.24 6.78l64-40a8 8 0 0 0 0-13.56M116 153.57v-51.14L156.91 128Z"/></svg><b>Lessons</b><span>Eleven made so far, ready for our channels, our clinics and Adaptive Sports Near Me.</span></li>
       <li><svg class="sk-rung-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="course" data-style="regular"><path fill="currentColor" d="M208 40H48a24 24 0 0 0-24 24v112a24 24 0 0 0 24 24h160a24 24 0 0 0 24-24V64a24 24 0 0 0-24-24m8 136a8 8 0 0 1-8 8H48a8 8 0 0 1-8-8V64a8 8 0 0 1 8-8h160a8 8 0 0 1 8 8Zm-48 48a8 8 0 0 1-8 8H96a8 8 0 0 1 0-16h64a8 8 0 0 1 8 8m-3.56-110.66l-48-32A8 8 0 0 0 104 88v64a8 8 0 0 0 12.44 6.66l48-32a8 8 0 0 0 0-13.32M120 137.05V103l25.58 17Z"/></svg><b>Courses</b><span>Each series as a Selkirk TV course, beside your others.</span></li>
       <li><svg class="sk-rung-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="training" data-style="regular"><path fill="currentColor" d="M221.87 83.16A104.1 104.1 0 1 1 195.67 49l22.67-22.68a8 8 0 0 1 11.32 11.32l-96 96a8 8 0 0 1-11.32-11.32l27.72-27.72a40 40 0 1 0 17.87 31.09a8 8 0 1 1 16-.9a56 56 0 1 1-22.38-41.65l22.75-22.75a87.88 87.88 0 1 0 23.13 29.67a8 8 0 0 1 14.44-6.9"/></svg><b>Camps</b><span>A hybrid and adaptive track at Selkirk Academy camps.</span></li>
       <li><svg class="sk-rung-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="certified" data-style="regular"><path fill="currentColor" d="M128 136a8 8 0 0 1-8 8H72a8 8 0 0 1 0-16h48a8 8 0 0 1 8 8m-8-40H72a8 8 0 0 0 0 16h48a8 8 0 0 0 0-16m112 65.47V224a8 8 0 0 1-12 7l-24-13.74L172 231a8 8 0 0 1-12-7v-24H40a16 16 0 0 1-16-16V56a16 16 0 0 1 16-16h176a16 16 0 0 1 16 16v30.53a51.88 51.88 0 0 1 0 74.94M160 184v-22.53A52 52 0 0 1 216 76V56H40v128Zm56-12a51.88 51.88 0 0 1-40 0v38.22l16-9.16a8 8 0 0 1 7.94 0l16 9.16Zm16-48a36 36 0 1 0-36 36a36 36 0 0 0 36-36"/></svg><b>Certification</b><span>An adaptive and hybrid instructor certification with PCI, the way Pick It Up trains coaches for Parkinson&rsquo;s clinics.</span></li>

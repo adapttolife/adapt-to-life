@@ -47,7 +47,9 @@ test("missing columns, tables and indexes, and changed constraints fail", () => 
   assert.deepEqual(diff(live, expected).problems.sort(), [
     "t index t_a: in the schema files, missing live",
     "t.a: NOT NULL is 0 live, 1 in the schema files",
+    't.a: definition is "text" live, "text not null" in the schema files',
     't.b: default is "1" live, "0" in the schema files',
+    't.b: definition is "integer default 1" live, "integer default 0" in the schema files',
     "table u: defined in the schema files but missing live",
   ]);
 });
@@ -65,6 +67,7 @@ test("an inline UNIQUE constraint the schema files lack fails", () => {
   const live = BASE.replace("a TEXT NOT NULL", "a TEXT NOT NULL UNIQUE");
   assert.deepEqual(diff(live).problems, [
     "t unique index unique(a asc binary): live only, can reject writes",
+    't.a: definition is "text not null unique" live, "text not null" in the schema files',
   ]);
 });
 
@@ -81,13 +84,13 @@ test("an index with the right name on the wrong columns, or a different WHERE, f
 test("CHECK, REFERENCES, STRICT and generated columns are compared", () => {
   assert.match(
     diff(BASE.replace("DEFAULT 0", "DEFAULT 0 CHECK (b >= 0)")).problems.join(),
-    /CHECK constraints/,
+    /t\.b: definition/,
   );
   const withFk = `CREATE TABLE p (id TEXT PRIMARY KEY);
 CREATE TABLE c (id TEXT PRIMARY KEY, p TEXT REFERENCES p(id));`;
   assert.match(
     diff(withFk.replace(" REFERENCES p(id)", ""), withFk).problems.join(),
-    /REFERENCES/,
+    /c\.p: definition/,
   );
   assert.match(
     diff(BASE.replace(");\nCREATE", ") STRICT;\nCREATE")).problems.join(),
@@ -127,10 +130,17 @@ test("string literals keep their case and content; comments outside them do not 
   const exp = `CREATE TABLE t (id TEXT PRIMARY KEY, s TEXT DEFAULT 'ABC', u TEXT DEFAULT 'a--b');`;
   assert.deepEqual(diff(exp.replace("'ABC'", "'abc'"), exp).problems, [
     `t.s: default is "'abc'" live, "'ABC'" in the schema files`,
+    `t.s: definition is "text default 'abc'" live, "text default 'ABC'" in the schema files`,
   ]);
-  assert.deepEqual(diff(exp.replace("'a--b'", "'a'"), exp).problems, [
-    `t.u: default is "'a'" live, "'a--b'" in the schema files`,
-  ]);
+  assert.match(
+    diff(exp.replace("'a--b'", "'a'"), exp).problems.join(),
+    /t\.u: default/,
+  );
+  const dq = (v) => `CREATE TABLE t (id TEXT PRIMARY KEY, s TEXT DEFAULT "${v}");`;
+  assert.match(
+    diff(dq("abc"), dq("ABC")).problems.join(),
+    /t\.s: (default|definition)/,
+  );
   const commented = exp.replace("PRIMARY KEY,", "PRIMARY KEY, -- the id\n");
   assert.deepEqual(diff(commented, exp), { problems: [], notes: [] });
   const trig = (msg) =>
@@ -150,9 +160,28 @@ test("foreign keys are compared to the end of the clause", () => {
     ["REFERENCES p(id)", "REFERENCES p(id) MATCH SIMPLE"],
   ];
   for (const [a, b] of cases)
-    assert.match(diff(fk(b), fk(a)).problems.join(), /REFERENCES/, `${a} vs ${b}`);
+    assert.match(
+      diff(fk(b), fk(a)).problems.join(),
+      /c\.p: definition/,
+      `${a} vs ${b}`,
+    );
   assert.deepEqual(diff(fk("REFERENCES p (id)"), fk("references p(id)")), {
     problems: [],
     notes: [],
   });
+});
+
+test("a foreign key, generated expression or ON CONFLICT policy on a different column or with a different value fails", () => {
+  const P = "CREATE TABLE p (id TEXT PRIMARY KEY);\n";
+  const moved = diff(
+    `${P}CREATE TABLE c (a TEXT, b TEXT REFERENCES p(id));`,
+    `${P}CREATE TABLE c (a TEXT REFERENCES p(id), b TEXT);`,
+  ).problems.join();
+  assert.match(moved, /c\.a: definition/);
+  assert.match(moved, /c\.b: definition/);
+  const gen = (x) =>
+    `CREATE TABLE g (a INTEGER, b INTEGER, s INTEGER GENERATED ALWAYS AS (${x}) STORED);`;
+  assert.match(diff(gen("b"), gen("a")).problems.join(), /g\.s: definition/);
+  const oc = (x) => `CREATE TABLE o (a TEXT NOT NULL ON CONFLICT ${x});`;
+  assert.match(diff(oc("IGNORE"), oc("ABORT")).problems.join(), /o\.a: definition/);
 });

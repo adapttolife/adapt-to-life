@@ -10,9 +10,10 @@
 //
 // What is compared, per table: every column (incl. hidden/generated) with its
 // type, NOT NULL, default and primary key; every index with its uniqueness,
-// columns, order, collation and partial WHERE; CHECK and REFERENCES clauses and
-// STRICT / WITHOUT ROWID (read from the table's SQL, because D1 refuses
-// pragma_foreign_key_list); and every trigger and view. Column ORDER is not
+// columns, order, collation and partial WHERE; each column's whole definition
+// and the table-level constraints, read from the table's SQL (D1 refuses
+// pragma_foreign_key_list), so CHECK, REFERENCES, GENERATED, ON CONFLICT and
+// STRICT / WITHOUT ROWID are covered; and every trigger and view. Column ORDER is not
 // compared: ALTER TABLE ADD COLUMN appends, and nothing reads by position.
 import { DatabaseSync } from "node:sqlite";
 import { readFileSync } from "node:fs";
@@ -100,23 +101,25 @@ export function buildExpected(dbName, read = readLocal) {
 
 // SQL text compared in a meaning-preserving normal form: no comments, one
 // case, no optional IF NOT EXISTS, no identifier quoting, no whitespace by
-// punctuation. String literals ('...') are kept byte for byte: they are
-// swapped for placeholders first, so case-folding, comment stripping and
-// keyword scans never touch them.
+// punctuation. Quoted text ('...' and "...") keeps its case and content: it
+// is swapped for placeholders first, so case-folding, comment stripping and
+// keyword scans never touch it.
 function protect(sql) {
   const lits = [];
   let out = "";
   const src = String(sql);
   for (let i = 0; i < src.length;) {
     const ch = src[i];
-    if (ch === "'") {
+    if (ch === "'" || ch === '"') {
+      // '...' is a string; "..." is an identifier or (SQLite quirk) a
+      // string, so its case is kept too. Doubled quotes are escapes.
       let j = i + 1;
       for (; j < src.length; j++)
-        if (src[j] === "'") {
-          if (src[j + 1] === "'") j++;
+        if (src[j] === ch) {
+          if (src[j + 1] === ch) j++;
           else break;
         }
-      lits.push(src.slice(i, j + 1));
+      lits.push(ch === "'" ? src.slice(i, j + 1) : src.slice(i + 1, j));
       out += `\u0001${lits.length - 1}\u0001`;
       i = j + 1;
     } else if (ch === "-" && src[i + 1] === "-") {
@@ -135,7 +138,7 @@ function protect(sql) {
   const text = out
     .toLowerCase()
     .replace(/\bif\s+not\s+exists\b/g, " ")
-    .replace(/["`[\]]/g, "")
+    .replace(/[`[\]]/g, "")
     .replace(/\s+/g, " ")
     .replace(/\s*([(),;=<>])\s*/g, "$1")
     .trim();
@@ -163,41 +166,50 @@ function normDefault(v) {
   return s;
 }
 
-// CHECK (...) and REFERENCES ... clauses (each to the end of its clause:
-// columns, ON DELETE/UPDATE, MATCH, DEFERRABLE), and table options.
-function clauseEnd(s, i) {
-  let d = 0;
-  for (let j = i; j < s.length; j++) {
-    if (s[j] === "(") d++;
-    else if (s[j] === ")") {
-      if (d === 0) return j;
-      d--;
-    } else if (s[j] === "," && d === 0) return j;
-  }
-  return s.length;
-}
+// A table's SQL split into what each column says and what the table says.
+// Each column's whole definition is compared (type, constraints, REFERENCES
+// with its actions, GENERATED expression, ON CONFLICT, COLLATE, CHECK), keyed
+// by column name, so a column added later by ALTER TABLE still lines up. Two
+// definitions that differ only in the order of their constraints count as
+// different: a false alarm, never a false pass.
+const TABLE_CONSTRAINT = /^(constraint|primary key|unique|check|foreign key)\b/;
 function tableClauses(sql) {
   const p = protect(sql || "");
-  const s = p.text;
-  const checks = [];
-  for (let i = s.search(/\bcheck\(/); i !== -1;) {
-    let d = 0;
-    let j = i + 5;
-    for (; j < s.length; j++) {
-      if (s[j] === "(") d++;
-      else if (s[j] === ")" && --d === 0) break;
+  // DEFAULT (0) and DEFAULT 0 are the same default.
+  const s = p.text.replace(/\bdefault\((-?[\w.]+|\u0001\d+\u0001)\)/g, "default $1");
+  const open = s.indexOf("(");
+  const items = [];
+  let d = 0;
+  let start = open + 1;
+  let end = s.length;
+  for (let j = open + 1; j < s.length; j++) {
+    if (s[j] === "(") d++;
+    else if (s[j] === ")") {
+      if (d === 0) {
+        end = j;
+        break;
+      }
+      d--;
+    } else if (s[j] === "," && d === 0) {
+      items.push(s.slice(start, j).trim());
+      start = j + 1;
     }
-    checks.push(p.restore(s.slice(i, j + 1)));
-    const next = s.slice(j + 1).search(/\bcheck\(/);
-    i = next === -1 ? -1 : j + 1 + next;
   }
-  const refs = [];
-  for (const m of s.matchAll(/\breferences\b/g))
-    refs.push(p.restore(s.slice(m.index, clauseEnd(s, m.index)).trim()));
-  const tail = s.slice(s.lastIndexOf(")") + 1);
+  items.push(s.slice(start, end).trim());
+  const columnDefs = {};
+  const constraints = [];
+  for (const it of items.filter(Boolean)) {
+    if (TABLE_CONSTRAINT.test(it)) constraints.push(p.restore(it));
+    else {
+      const sp = it.search(/[\s(]/);
+      const name = p.restore(sp === -1 ? it : it.slice(0, sp)).toLowerCase();
+      columnDefs[name] = p.restore(sp === -1 ? "" : it.slice(sp).trim());
+    }
+  }
+  const tail = s.slice(end + 1);
   return {
-    checks: checks.sort(),
-    refs: refs.sort(),
+    columnDefs,
+    constraints: constraints.sort(),
     strict: /\bstrict\b/.test(tail),
     withoutRowid: /\bwithout rowid\b/.test(tail),
   };
@@ -332,19 +344,26 @@ export function diffSchema(expectedRaw, liveRaw, { ownedElsewhere = {} } = {}) {
           problems.push(`${tbl} unique index ${key}: live only, can reject writes`);
         else notes.push(`${tbl} index ${key}: live only`);
       }
-    if (e.clauses && l.clauses)
+    if (e.clauses && l.clauses) {
+      for (const [name, def] of Object.entries(e.clauses.columnDefs)) {
+        const ld = l.clauses.columnDefs[name];
+        if (ld !== undefined && ld !== def)
+          problems.push(
+            `${tbl}.${name}: definition is ${show(ld)} live, ${show(def)} in the schema files`,
+          );
+      }
       compareFields(
         tbl,
         e.clauses,
         l.clauses,
         [
-          ["checks", "CHECK constraints"],
-          ["refs", "REFERENCES (foreign keys)"],
+          ["constraints", "table constraints"],
           ["strict", "STRICT"],
           ["withoutRowid", "WITHOUT ROWID"],
         ],
         problems,
       );
+    }
   }
   for (const tbl of got.tables.keys())
     if (!exp.tables.has(tbl)) {

@@ -386,7 +386,23 @@ test("receipt with empty PDF bytes: sent without the attachment, never throws", 
     });
     assert.equal(gmail.length, 1);
     assert.doesNotMatch(gmail[0], /multipart\/mixed|application\/pdf/);
-    assert.deepEqual(failures(e), []);
+    const plain = Buffer.from(
+      gmail[0]
+        .match(
+          /text\/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n([A-Za-z0-9+/=\r\n]+?)\r\n--/,
+        )[1]
+        .replace(/\r\n/g, ""),
+      "base64",
+    ).toString();
+    assert.doesNotMatch(plain, /attached/, "never claims an attachment it lacks");
+    assert.match(plain, /on file/);
+    assert.deepEqual(failures(e), [
+      {
+        route: "receipt:waiver",
+        to_addr: "offline@example.com",
+        error: "sent without the signed PDF: no PDF bytes",
+      },
+    ]);
     const c = env();
     await sendReceiptEmail(c, {
       to: "offline@example.com",
@@ -436,6 +452,67 @@ test("Drive 404 (folder not visible): signing still ok, failure recorded once, n
   }
   assert.equal(row(e).drive_attempts, 2);
   assert.equal(failures(e).length, 1);
+});
+
+async function quietly(fn) {
+  const logged = [];
+  const origError = console.error;
+  console.error = (...a) => logged.push(a.map(String).join(" "));
+  try {
+    await fn();
+  } finally {
+    console.error = origError;
+  }
+  return logged;
+}
+
+test("Drive passing error (503) at signing: logged, not paged; paged only at the retry cap", async () => {
+  drive.mode = "down";
+  const e = env();
+  let out;
+  const logged = await quietly(async () => (out = await (await sign(e)).json()));
+  assert.equal(out.ok, true);
+  assert.ok(
+    logged.includes(
+      `waiver Drive archive failed: Drive returned 503 id=${out.id} attempt=1`,
+    ),
+    logged.join("\n"),
+  );
+  assert.deepEqual(failures(e), []);
+  e.WAIVERS_DB.sql
+    .prepare(
+      "UPDATE waivers SET drive_attempts = 19, drive_last_attempt_at = '2000-01-01T00:00:00Z'",
+    )
+    .run();
+  await quietly(() => runDriveBacklog(e));
+  assert.equal(row(e).drive_status, "failed");
+  assert.deepEqual(
+    failures(e).map((f) => f.error),
+    [`waiver Drive archive failed: Drive returned 503 id=${out.id} attempt=20`],
+  );
+});
+
+test("Drive token failure: the reason is named without Google's response body; staging is tagged", async () => {
+  const e = env({ STAGING: "1" });
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = async (input, init) =>
+    String(input) === "https://oauth2.example/token"
+      ? Response.json({
+          error: "invalid_grant",
+          error_description: "secret-ish detail",
+        })
+      : realFetch(input, init);
+  let out;
+  const logged = await quietly(async () => (out = await (await sign(e)).json()));
+  assert.equal(out.ok, true);
+  const line = `waiver Drive archive failed: service account token exchange failed id=${out.id} attempt=1 env=staging`;
+  assert.ok(logged.includes(line), logged.join("\n"));
+  assert.deepEqual(failures(e), [
+    { route: "archive:waiver", to_addr: `waiver:${out.id}`, error: line },
+  ]);
+  assert.ok(
+    !logged.some((l) => l.includes("Drive archive") && l.includes("invalid_grant")),
+  );
 });
 
 test("Drive unconfigured: capture still succeeds and the row is owed, not lost", async () => {

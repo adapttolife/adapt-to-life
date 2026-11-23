@@ -40,24 +40,16 @@ const folded = (bytes) =>
 function textPart(type, value) {
   return `Content-Type: ${type}; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n${folded(encoder.encode(value || ""))}`;
 }
-// Attachment content arrives in two shapes: bytes (Uint8Array, ArrayBuffer or
-// another typed-array view) from most callers, and a base64 string, the shape
-// the Cloudflare Email Sending binding and Resend took before Gmail. Both are
-// normalized here so the Gmail path never rejects a caller the other transport
-// accepts. A string that is not strict base64 returns null and the caller throws.
+// Attachment content is bytes: a Uint8Array, an ArrayBuffer or any typed-array
+// view. A string is refused, never guessed at: a base64 string (the old Resend
+// shape) and a plain-text body look alike, and decoding the wrong one would send
+// a corrupt file. Senders convert to bytes before calling (Nov 23 2026 incident:
+// the waiver receipt passed base64 and every Gmail receipt threw here).
 function attachmentBytes(content) {
   if (content instanceof Uint8Array) return content;
   if (content instanceof ArrayBuffer) return new Uint8Array(content);
   if (ArrayBuffer.isView(content))
     return new Uint8Array(content.buffer, content.byteOffset, content.byteLength);
-  if (typeof content === "string") {
-    const s = content.replace(/\s+/g, "");
-    if (!s || s.length % 4 || !/^[A-Za-z0-9+/]+={0,2}$/.test(s)) return null;
-    const bin = atob(s);
-    const out = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
-    return out;
-  }
   return null;
 }
 export function buildMime(message, allowedFrom) {
@@ -92,7 +84,16 @@ export function buildMime(message, allowedFrom) {
       if (!/^[a-z0-9.+-]+\/[a-z0-9.+-]+$/i.test(type))
         throw new Error("Invalid attachment type");
       const bytes = attachmentBytes(a.content);
-      if (!bytes || !bytes.byteLength) throw new Error("Attachment must contain bytes");
+      if (!bytes || !bytes.byteLength)
+        throw new Error(
+          `Attachment must contain bytes (got ${
+            typeof a.content === "string"
+              ? "a string"
+              : bytes
+                ? "0 bytes"
+                : typeof a.content
+          })`,
+        );
       const disposition = a.disposition === "inline" ? "inline" : "attachment";
       const cid = a.contentId
         ? `\r\nContent-ID: <${header(a.contentId).replace(/[<>]/g, "")}>`

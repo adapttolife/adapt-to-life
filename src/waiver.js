@@ -314,7 +314,7 @@ export async function handleWaiver(request, env) {
   // not a task to work, so it does not belong in ClickUp either.
 
   // Email a copy of the signed PDF to the signer (and the org), from hello@adapttolife.org.
-  // Best-effort; never blocks the signer. Sent via the SEND_EMAIL binding.
+  // Best-effort; never blocks the signer. Transport: see sendReceiptEmail.
   try {
     await sendReceiptEmail(env, { to: email, pdfBytes, name, doc, isMinor, minorName });
   } catch (err) {
@@ -630,10 +630,9 @@ async function buildPdf(d) {
 }
 
 // Email the signed PDF to the signer (and a copy to the org), from hello@adapttolife.org.
-// Uses Cloudflare Email Sending (src/email.js cfSend). The apex is onboarded to Email
-// Service via SPF/DKIM TXT records only — no MX change — so Google Workspace mail on the
-// root domain is unaffected. Best-effort: a send failure never blocks signing.
-// Exported for tests only.
+// Goes through src/email.js cfSend -> src/mail-transport.js sendMail: the Gmail API
+// when MAIL_TRANSPORT=gmail (production), else the Cloudflare SEND_EMAIL binding.
+// Best-effort: a send failure never blocks signing. Exported for tests only.
 export async function sendReceiptEmail(
   env,
   { to, pdfBytes, name, doc, isMinor, minorName },
@@ -642,19 +641,29 @@ export async function sendReceiptEmail(
     console.error("mail transport not configured; skipping receipt email");
     return;
   }
-  // The PDF goes as bytes. The Gmail transport (buildMime) and the Cloudflare
-  // binding both take bytes; the old base64 string was the Resend shape and made
-  // every Gmail receipt throw "Attachment must contain bytes" (Nov 23 2026).
-  // No bytes: still send the receipt, without the attachment, and say so loudly.
-  // The signed copy is safe in D1 either way.
+  // The PDF goes as bytes (an ArrayBuffer, as agent_mail sends through both
+  // transports). It used to go as a base64 string, which buildMime refuses, so
+  // every receipt on the Gmail transport failed (Nov 23 2026).
+  // No bytes: still send the receipt, without the attachment and without
+  // claiming one, and record the gap. The signed copy is safe in D1 either way.
   const hasPdf = !!(pdfBytes && pdfBytes.byteLength);
-  if (!hasPdf)
+  if (!hasPdf) {
     console.error("waiver receipt: no PDF bytes, sending without attachment");
+    await recordTransactionalFailure(
+      env,
+      "receipt:waiver",
+      to,
+      "sent without the signed PDF: no PDF bytes",
+    );
+  }
+  const copyLine = hasPdf
+    ? "is attached as a signed PDF for your records."
+    : "is signed and on file. Reply to this email and we will send you a copy.";
   const who = isMinor ? `${minorName} (signed by ${name})` : name;
   const subject = `Your signed ${doc.org} release`;
   const text =
     `Hi ${name},\n\n` +
-    `Thank you. Your ${doc.title} with ${doc.org} is attached as a signed PDF for your records.\n\n` +
+    `Thank you. Your ${doc.title} with ${doc.org} ${copyLine}\n\n` +
     `Participant: ${who}\n\n` +
     `If you ever want to withdraw permission for future use, just reply to this email or write to hello@adapttolife.org.\n\n` +
     `Adapt To Life\n501(c)(3) nonprofit, EIN 41-3213344`;
@@ -663,7 +672,7 @@ export async function sendReceiptEmail(
   // two different typefaces with two different sign-offs.
   const html = houseShell(
     `<p>Hi ${esc(name)},</p>` +
-      `<p>Thank you. Your <strong>${esc(doc.title)}</strong> with ${esc(doc.org)} is attached as a signed PDF for your records.</p>` +
+      `<p>Thank you. Your <strong>${esc(doc.title)}</strong> with ${esc(doc.org)} ${esc(copyLine)}</p>` +
       `<p style="color:#3f3d38"><strong>Participant:</strong> ${esc(who)}</p>` +
       `<p>If you ever want to withdraw permission for future use, just reply to this email or write to <a href="mailto:hello@adapttolife.org" style="color:#c2410c">hello@adapttolife.org</a>.</p>`,
   );
@@ -805,12 +814,15 @@ async function attemptDriveArchive(
   } catch (err) {
     // One structured line, no signer details, no Google response body (it
     // echoes the folder id). The row keeps the full message in drive_error.
-    const line = `waiver Drive archive failed: ${driveFailureReason(err)} id=${id} attempt=${attempts}`;
+    const { reason, needsPerson } = driveFailure(err);
+    const where = env.STAGING ? " env=staging" : "";
+    const line = `waiver Drive archive failed: ${reason} id=${id} attempt=${attempts}${where}`;
     console.error(line);
-    // Into the same feed the watchdog polls for failed receipts, so the house
-    // sees it. Only on the signing attempt and when retries run out: the
-    // 10-minute backlog would otherwise write a row per retry.
-    if (attempts <= 1 || attempts >= MAX_DRIVE_ATTEMPTS)
+    // Into the send_failures feed the watchdog polls for failed receipts, so
+    // the house sees it. A failure only a person can fix (folder access,
+    // config) is recorded at signing; anything else only when retries run out,
+    // since the 10-minute backlog usually clears a passing Drive error.
+    if ((needsPerson && attempts <= 1) || attempts >= MAX_DRIVE_ATTEMPTS)
       await recordTransactionalFailure(env, "archive:waiver", `waiver:${id}`, line);
     await markDrive(
       env,
@@ -836,13 +848,29 @@ async function attemptDriveArchive(
   return true;
 }
 
-function driveFailureReason(err) {
+// Reason text is built from the HTTP status or a known message only: other
+// errors (the token exchange, for one) can carry Google's response body.
+function driveFailure(err) {
   const status = err && err.status;
-  if (status === 404) return "folder not visible to service account (404)";
+  const message = String((err && err.message) || "");
+  if (status === 404)
+    return { reason: "folder not visible to service account (404)", needsPerson: true };
   if (status === 401 || status === 403)
-    return `service account not allowed to write the folder (${status})`;
-  if (status) return `Drive returned ${status}`;
-  return String((err && err.message) || err).slice(0, 200);
+    return {
+      reason: `service account not allowed to write the folder (${status})`,
+      needsPerson: true,
+    };
+  if (status) return { reason: `Drive returned ${status}`, needsPerson: false };
+  if (message === "Drive archive not configured")
+    return { reason: "not configured", needsPerson: true };
+  if (message.startsWith("no access_token"))
+    return { reason: "service account token exchange failed", needsPerson: true };
+  if (message === "drive upload returned no file id")
+    return { reason: "upload returned no file id", needsPerson: false };
+  return {
+    reason: `unexpected error (${(err && err.name) || "Error"})`,
+    needsPerson: false,
+  };
 }
 
 function driveHttpError(what, status, body) {

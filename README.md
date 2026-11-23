@@ -83,8 +83,10 @@ from `main` would have built against a site that did not exist. `scripts/guard-p
 now refuses a production deploy unless HEAD is `main`, the tree is clean, and `main` matches
 `origin/main`. It runs from the `build` hook, so a bare `cfrun npx wrangler deploy` hits it too.
 Staging is unguarded on purpose — it exists to look at a branch — and opts out through
-`ATL_TARGET=staging`, which `deploy:staging` and `preview` set for you. A bare
-`wrangler deploy --env staging` is refused by the guard; use `npm run deploy:staging`. Emergencies:
+`ATL_TARGET=staging`, which `deploy:staging` and `preview` set for you. Deploy staging only with `npm run deploy:staging`,
+which refuses any branch but `staging`. A bare `wrangler deploy --env staging` skips that check:
+the guard treats it as production, so it is refused off a clean, pushed `main`, and from `main`
+it would put main's code on staging. Emergencies:
 `ATL_ALLOW_UNSAFE_DEPLOY=<reason>`, which logs loudly.
 
 The Cloudflare API token is injected at runtime from 1Password through `cfrun`; no secrets live in Git. Always name the intended deployment explicitly:

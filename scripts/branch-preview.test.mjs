@@ -42,8 +42,10 @@ test("only staging deploys; every other branch builds and tests without uploadin
   assert.deepEqual(wranglerArgs("staging", { deploy: true }), ["deploy", "--env", "staging"]);
   assert.equal(wranglerArgs("staging").at(-1), "--dry-run");
   assert.equal(wranglerArgs("staging", { deploy: true, dryRun: true }).at(-1), "--dry-run");
-  for (const branch of ["picklr-mount-prospect-logo", "feature/x", "review", "main"])
-    assert.equal(wranglerArgs(branch, { deploy: true }).at(-1), "--dry-run", branch);
+  for (const branch of ["picklr-mount-prospect-logo", "feature/x", "review", "main", ""]) {
+    assert.throws(() => wranglerArgs(branch, { deploy: true }), /only the staging branch/, branch);
+    assert.equal(wranglerArgs(branch).at(-1), "--dry-run", branch);
+  }
   for (const args of [wranglerArgs("staging", { deploy: true }), wranglerArgs("main")]) {
     assert.ok(!args.includes("versions"), "no versions upload onto any Worker");
     assert.deepEqual(args.slice(1, 3), ["--env", "staging"]);

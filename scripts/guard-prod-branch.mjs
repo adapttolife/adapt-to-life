@@ -13,8 +13,10 @@
 // hit it too. A control a human has to remember to invoke is not a control.
 //
 // Staging is deliberately unguarded. Staging exists to look at a branch, and it
-// is its own Worker (adapt-to-life-staging) since 2026-11-23, so a staging
-// deploy cannot land on the production script.
+// is its own Worker (adapt-to-life-staging) since 2026-11-23, so `--env staging`
+// no longer names the production script. The ATL_TARGET=staging opt-out below
+// still skips these checks whatever the target, so only scripts/branch-preview.mjs
+// sets it, and always together with --env staging.
 import { execFileSync } from "node:child_process";
 
 // WRANGLER CANNOT TELL US THE TARGET. Measured 2026-09-10 by dry-running both:

@@ -25,7 +25,7 @@ export const STAGING_URL = `https://${STAGING_WORKER}.adapt-to-life.workers.dev`
 export const DEPLOYING_BRANCHES = new Set(["staging"]);
 
 // wrangler.jsonc with its whole-line comments removed (the file has no
-// trailing comments; scripts/staging-live.test.mjs reads it the same way).
+// trailing comments; scripts/staging-live.test.mjs reads it through here).
 export function readWranglerConfig(text = readFileSync(`${root}wrangler.jsonc`, "utf8")) {
   return JSON.parse(
     text.replace(/^\s*\/\/.*$/gm, "").replace(/,\s*([}\]])/g, "$1"),
@@ -48,8 +48,11 @@ export function assertSeparateStagingWorker(config = readWranglerConfig()) {
 }
 
 export function wranglerArgs(branch, { deploy = false, dryRun = false } = {}) {
-  const real = deploy && !dryRun && DEPLOYING_BRANCHES.has(branch);
-  return ["deploy", "--env", "staging", ...(real ? [] : ["--dry-run"])];
+  if (deploy && !DEPLOYING_BRANCHES.has(branch))
+    throw new Error(
+      `deploy:staging deploys only the staging branch, not "${branch || "(none)"}". Use npm run preview to build and test.`,
+    );
+  return ["deploy", "--env", "staging", ...(deploy && !dryRun ? [] : ["--dry-run"])];
 }
 
 export function runStaging({ deploy = process.argv.includes("--deploy") } = {}) {
@@ -63,12 +66,8 @@ export function runStaging({ deploy = process.argv.includes("--deploy") } = {}) 
   const extra = process.argv.slice(2).filter((a) => a !== "--deploy");
   if (extra.some((arg) => arg !== "--dry-run"))
     throw new Error("Only --deploy and --dry-run are supported.");
-  if (deploy && !DEPLOYING_BRANCHES.has(branch))
-    throw new Error(
-      `deploy:staging deploys only the staging branch, not "${branch || "(none)"}". Use npm run preview to build and test.`,
-    );
-  const worker = assertSeparateStagingWorker();
   const args = wranglerArgs(branch, { deploy, dryRun: extra.includes("--dry-run") });
+  const worker = assertSeparateStagingWorker();
   console.log(
     args.includes("--dry-run")
       ? `Validating branch ${branch}: build and tests only, nothing uploaded (previews go through the playground)`

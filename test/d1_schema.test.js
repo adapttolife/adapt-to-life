@@ -185,3 +185,27 @@ test("a foreign key, generated expression or ON CONFLICT policy on a different c
   const oc = (x) => `CREATE TABLE o (a TEXT NOT NULL ON CONFLICT ${x});`;
   assert.match(diff(oc("IGNORE"), oc("ABORT")).problems.join(), /o\.a: definition/);
 });
+
+test("fails closed on odd names and live-only expression indexes", () => {
+  const exprIdx = diff(
+    "CREATE TABLE t (n INTEGER);\nCREATE INDEX t_abs ON t(abs(n));",
+    "CREATE TABLE t (n INTEGER);",
+  );
+  assert.deepEqual(exprIdx.problems, [
+    "t expression index t_abs: live only, can reject writes",
+  ]);
+  const quoted = (g) =>
+    `CREATE TABLE q ("null" TEXT, g TEXT GENERATED ALWAYS AS (${g}) STORED);`;
+  assert.match(
+    diff(quoted("NULL"), quoted('"null"')).problems.join(),
+    /q\.g: definition/,
+  );
+  const proto = (n) =>
+    `CREATE TABLE p ("__proto__" TEXT CHECK(length("__proto__") <= ${n}));`;
+  assert.match(diff(proto(50), proto(5)).problems.join(), /p\.__proto__: definition/);
+  const comma = diff(
+    "CREATE TABLE c ([a,b] TEXT CHECK(length([a,b]) <= 50));",
+    'CREATE TABLE c ("a,b" TEXT CHECK(length("a,b") <= 5));',
+  );
+  assert.match(comma.problems.join(), /c\.a,b: definition/);
+});

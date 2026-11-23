@@ -110,16 +110,22 @@ function protect(sql) {
   const src = String(sql);
   for (let i = 0; i < src.length;) {
     const ch = src[i];
-    if (ch === "'" || ch === '"') {
-      // '...' is a string; "..." is an identifier or (SQLite quirk) a
-      // string, so its case is kept too. Doubled quotes are escapes.
+    if (ch === "'" || ch === '"' || ch === "`" || ch === "[") {
+      // '...' is a string, kept as written. "...", `...` and [...] are
+      // identifiers (or, a SQLite quirk, "..." may be a string): all three
+      // become "..." with their case kept, so a quoted name never merges with
+      // a bare keyword and punctuation inside a name never splits a clause.
+      const close = ch === "[" ? "]" : ch;
       let j = i + 1;
       for (; j < src.length; j++)
-        if (src[j] === ch) {
-          if (src[j + 1] === ch) j++;
+        if (src[j] === close) {
+          if (close !== "]" && src[j + 1] === close) j++;
           else break;
         }
-      lits.push(ch === "'" ? src.slice(i, j + 1) : src.slice(i + 1, j));
+      const body = src.slice(i + 1, j);
+      lits.push(
+        ch === "'" ? `'${body}'` : `"${ch === '"' ? body : body.replace(/"/g, '""')}"`,
+      );
       out += `\u0001${lits.length - 1}\u0001`;
       i = j + 1;
     } else if (ch === "-" && src[i + 1] === "-") {
@@ -138,7 +144,6 @@ function protect(sql) {
   const text = out
     .toLowerCase()
     .replace(/\bif\s+not\s+exists\b/g, " ")
-    .replace(/[`[\]]/g, "")
     .replace(/\s+/g, " ")
     .replace(/\s*([(),;=<>])\s*/g, "$1")
     .trim();
@@ -196,14 +201,18 @@ function tableClauses(sql) {
     }
   }
   items.push(s.slice(start, end).trim());
-  const columnDefs = {};
+  const columnDefs = new Map();
   const constraints = [];
   for (const it of items.filter(Boolean)) {
     if (TABLE_CONSTRAINT.test(it)) constraints.push(p.restore(it));
     else {
       const sp = it.search(/[\s(]/);
-      const name = p.restore(sp === -1 ? it : it.slice(0, sp)).toLowerCase();
-      columnDefs[name] = p.restore(sp === -1 ? "" : it.slice(sp).trim());
+      const name = p
+        .restore(sp === -1 ? it : it.slice(0, sp))
+        .replace(/^"(.*)"$/, "$1")
+        .replace(/""/g, '"')
+        .toLowerCase();
+      columnDefs.set(name, p.restore(sp === -1 ? "" : it.slice(sp).trim()));
     }
   }
   const tail = s.slice(end + 1);
@@ -340,13 +349,25 @@ export function diffSchema(expectedRaw, liveRaw, { ownedElsewhere = {} } = {}) {
     }
     for (const [key, li] of l.indexes)
       if (!e.indexes.has(key)) {
-        if (li.unique)
-          problems.push(`${tbl} unique index ${key}: live only, can reject writes`);
+        if (li.unique || li.expr || li.where)
+          problems.push(
+            `${tbl} ${li.unique ? "unique " : li.expr ? "expression " : "partial "}index ${key}: live only, can reject writes`,
+          );
         else notes.push(`${tbl} index ${key}: live only`);
       }
     if (e.clauses && l.clauses) {
-      for (const [name, def] of Object.entries(e.clauses.columnDefs)) {
-        const ld = l.clauses.columnDefs[name];
+      // Fail closed: a column whose definition could not be read on one side
+      // is drift, never a silent skip.
+      for (const name of new Set([...e.columns.keys(), ...l.columns.keys()]))
+        if (e.columns.has(name) && l.columns.has(name)) {
+          const k = name.toLowerCase();
+          if (!e.clauses.columnDefs.has(k) || !l.clauses.columnDefs.has(k))
+            problems.push(
+              `${tbl}.${name}: definition could not be read from the table SQL`,
+            );
+        }
+      for (const [name, def] of e.clauses.columnDefs) {
+        const ld = l.clauses.columnDefs.get(name);
         if (ld !== undefined && ld !== def)
           problems.push(
             `${tbl}.${name}: definition is ${show(ld)} live, ${show(def)} in the schema files`,

@@ -1,73 +1,78 @@
-// Upload a staging version using live services; never promote it to production traffic.
-import { createHash } from "node:crypto";
+// Build and test the staging configuration, and deploy it only from `staging`
+// onto its own Worker (adapt-to-life-staging). Never the production Worker.
+//
+//   npm run preview         build + tests + a wrangler dry run; uploads nothing
+//   npm run deploy:staging  the same, then deploys env.staging, from staging only
+//
+// Until 2026-11-23 env.staging carried the production script name, so every
+// staging build uploaded a version onto the production Worker. That afternoon a
+// dashboard secret edit on production deployed the newest uploaded version,
+// which was the staging build, and production ran staging code (fetch only, no
+// scheduled or email handler) for eleven minutes. Staging is now its own
+// script, and this file refuses to touch it while the names match.
 import { execFileSync, spawnSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 
-export function previewAlias(branch) {
-  if (!branch || branch === "HEAD") {
+export const STAGING_WORKER = "adapt-to-life-staging";
+export const STAGING_URL = `https://${STAGING_WORKER}.adapt-to-life.workers.dev`;
+
+// Only `staging` deploys. Every other branch is built and tested here and its
+// pull request still gets a check, but nothing is uploaded, because previews go
+// through the playground (Spec 206, three worlds).
+export const DEPLOYING_BRANCHES = new Set(["staging"]);
+
+// wrangler.jsonc with its whole-line comments removed (the file has no
+// trailing comments; scripts/staging-live.test.mjs reads it the same way).
+export function readWranglerConfig(text = readFileSync(`${root}wrangler.jsonc`, "utf8")) {
+  return JSON.parse(
+    text.replace(/^\s*\/\/.*$/gm, "").replace(/,\s*([}\]])/g, "$1"),
+  );
+}
+
+// Throws unless env.staging names its own Worker. A staging name equal to the
+// production name is exactly the 2026-11-23 incident.
+export function assertSeparateStagingWorker(config = readWranglerConfig()) {
+  const name = config.env?.staging?.name;
+  if (!name || name === config.name)
     throw new Error(
-      "Cannot determine the preview branch. Set WORKERS_CI_BRANCH to the branch name.",
+      `env.staging must name its own Worker (got "${name ?? ""}", production is "${config.name}"). Refusing to build staging.`,
     );
-  }
-  // Leave room for "-adapt-to-life" in the 63-character DNS label.
-  // Hash transformed names so feature/a and feature-a have different URLs.
-  const maxAliasLength = 63 - "-adapt-to-life".length;
-  if (
-    /^[a-z][a-z0-9-]*$/.test(branch) &&
-    !branch.endsWith("-") &&
-    branch.length <= maxAliasLength
-  )
-    return branch;
-  const hash = createHash("sha256").update(branch).digest("hex").slice(0, 8);
-  let slug = branch
-    .toLowerCase()
-    .replace(/[^a-z0-9-]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-  if (!/^[a-z]/.test(slug)) slug = `branch-${slug}`;
-  return `${slug.slice(0, maxAliasLength - hash.length - 1).replace(/-+$/g, "")}-${hash}`;
+  if (name !== STAGING_WORKER)
+    throw new Error(
+      `env.staging is "${name}", but this script and scripts/release.mjs expect "${STAGING_WORKER}".`,
+    );
+  return name;
 }
 
-// Only `staging` uploads: scripts/release.mjs follows its preview alias.
-// Every other branch is built and tested here and its pull request still gets
-// the "Workers Builds: adapt-to-life" check, but nothing is uploaded, because
-// previews go through the playground (Spec 206, three worlds). Until
-// 2026-11-13 the Cloudflare trigger was named "Validate non-production
-// branches (no upload/deploy)" yet uploaded every branch, with production
-// bindings, onto the production Worker under its own alias.
-export const UPLOADING_BRANCHES = new Set(["staging"]);
-
-export function wranglerArgs(branch, extra = []) {
-  const upload = UPLOADING_BRANCHES.has(branch) && !extra.includes("--dry-run");
-  return [
-    "versions",
-    "upload",
-    "--env",
-    "staging",
-    "--preview-alias",
-    previewAlias(branch),
-    ...(upload ? [] : ["--dry-run"]),
-  ];
+export function wranglerArgs(branch, { deploy = false, dryRun = false } = {}) {
+  const real = deploy && !dryRun && DEPLOYING_BRANCHES.has(branch);
+  return ["deploy", "--env", "staging", ...(real ? [] : ["--dry-run"])];
 }
 
-export function uploadPreview() {
+export function runStaging({ deploy = process.argv.includes("--deploy") } = {}) {
   const branch =
     process.env.WORKERS_CI_BRANCH ||
     execFileSync("git", ["branch", "--show-current"], {
       cwd: root,
       encoding: "utf8",
     }).trim();
-  // Allow local verification, but never allow callers to override the Worker,
-  // environment or alias selected here.
-  const extra = process.argv.slice(2);
+  // Never allow callers to choose another Worker, environment or command.
+  const extra = process.argv.slice(2).filter((a) => a !== "--deploy");
   if (extra.some((arg) => arg !== "--dry-run"))
-    throw new Error("Only --dry-run is supported.");
-  const args = wranglerArgs(branch, extra);
+    throw new Error("Only --deploy and --dry-run are supported.");
+  if (deploy && !DEPLOYING_BRANCHES.has(branch))
+    throw new Error(
+      `deploy:staging deploys only the staging branch, not "${branch || "(none)"}". Use npm run preview to build and test.`,
+    );
+  const worker = assertSeparateStagingWorker();
+  const args = wranglerArgs(branch, { deploy, dryRun: extra.includes("--dry-run") });
   console.log(
     args.includes("--dry-run")
       ? `Validating branch ${branch}: build and tests only, nothing uploaded (previews go through the playground)`
-      : `Uploading the ${branch} version (preview alias: ${previewAlias(branch)})`,
+      : `Deploying ${branch} to the ${worker} Worker (${STAGING_URL})`,
   );
   const result = spawnSync(
     process.execPath,
@@ -88,5 +93,5 @@ export function uploadPreview() {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  uploadPreview();
+  runStaging();
 }

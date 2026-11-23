@@ -41,9 +41,10 @@ import { checkLayout, chromiumPath } from "./check-layout.mjs";
 import { changedUrls, ping } from "./lib/indexnow.mjs";
 
 const REPO = "adapttolife/adapt-to-life";
-const STAGING = "https://staging-adapt-to-life.adapt-to-life.workers.dev";
+// Staging is its own Worker (2026-11-23): its workers.dev URL and its build check.
+const STAGING = "https://adapt-to-life-staging.adapt-to-life.workers.dev";
 const LIVE = "https://adapttolife.org";
-const CHECK = "Workers Builds: adapt-to-life";
+const CHECK = "Workers Builds: adapt-to-life-staging";
 
 const argv = process.argv.slice(2);
 // An unknown option used to be ignored and a real release ran.

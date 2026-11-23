@@ -633,11 +633,23 @@ async function buildPdf(d) {
 // Uses Cloudflare Email Sending (src/email.js cfSend). The apex is onboarded to Email
 // Service via SPF/DKIM TXT records only — no MX change — so Google Workspace mail on the
 // root domain is unaffected. Best-effort: a send failure never blocks signing.
-async function sendReceiptEmail(env, { to, pdfBytes, name, doc, isMinor, minorName }) {
+// Exported for tests only.
+export async function sendReceiptEmail(
+  env,
+  { to, pdfBytes, name, doc, isMinor, minorName },
+) {
   if (!mailConfigured(env)) {
-    console.error("SEND_EMAIL binding not configured; skipping receipt email");
+    console.error("mail transport not configured; skipping receipt email");
     return;
   }
+  // The PDF goes as bytes. The Gmail transport (buildMime) and the Cloudflare
+  // binding both take bytes; the old base64 string was the Resend shape and made
+  // every Gmail receipt throw "Attachment must contain bytes" (Nov 23 2026).
+  // No bytes: still send the receipt, without the attachment, and say so loudly.
+  // The signed copy is safe in D1 either way.
+  const hasPdf = !!(pdfBytes && pdfBytes.byteLength);
+  if (!hasPdf)
+    console.error("waiver receipt: no PDF bytes, sending without attachment");
   const who = isMinor ? `${minorName} (signed by ${name})` : name;
   const subject = `Your signed ${doc.org} release`;
   const text =
@@ -664,14 +676,16 @@ async function sendReceiptEmail(env, { to, pdfBytes, name, doc, isMinor, minorNa
       subject,
       text,
       html,
-      attachments: [
-        {
-          filename: "adapt-to-life-release.pdf",
-          content: bytesToB64(pdfBytes),
-          type: "application/pdf",
-          disposition: "attachment",
-        },
-      ],
+      attachments: hasPdf
+        ? [
+            {
+              filename: "adapt-to-life-release.pdf",
+              content: toArrayBuffer(pdfBytes),
+              type: "application/pdf",
+              disposition: "attachment",
+            },
+          ]
+        : undefined,
     });
   } catch (err) {
     console.error("receipt email failed:", err);
@@ -686,13 +700,6 @@ function esc(s) {
     /[&<>"]/g,
     (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
   );
-}
-function bytesToB64(bytes) {
-  let s = "";
-  const chunk = 0x8000;
-  for (let i = 0; i < bytes.length; i += chunk)
-    s += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
-  return btoa(s);
 }
 
 // ---------------------------------------------------------------------------
@@ -796,7 +803,15 @@ async function attemptDriveArchive(
     if (!file) file = await driveUpload(token, env.WAIVERS_DRIVE_ID, name, pdfBytes);
     if (!file || !file.id) throw new Error("drive upload returned no file id");
   } catch (err) {
-    console.error("waiver Drive archive failed:", id, err);
+    // One structured line, no signer details, no Google response body (it
+    // echoes the folder id). The row keeps the full message in drive_error.
+    const line = `waiver Drive archive failed: ${driveFailureReason(err)} id=${id} attempt=${attempts}`;
+    console.error(line);
+    // Into the same feed the watchdog polls for failed receipts, so the house
+    // sees it. Only on the signing attempt and when retries run out: the
+    // 10-minute backlog would otherwise write a row per retry.
+    if (attempts <= 1 || attempts >= MAX_DRIVE_ATTEMPTS)
+      await recordTransactionalFailure(env, "archive:waiver", `waiver:${id}`, line);
     await markDrive(
       env,
       id,
@@ -819,6 +834,21 @@ async function attemptDriveArchive(
     return false;
   }
   return true;
+}
+
+function driveFailureReason(err) {
+  const status = err && err.status;
+  if (status === 404) return "folder not visible to service account (404)";
+  if (status === 401 || status === 403)
+    return `service account not allowed to write the folder (${status})`;
+  if (status) return `Drive returned ${status}`;
+  return String((err && err.message) || err).slice(0, 200);
+}
+
+function driveHttpError(what, status, body) {
+  const err = new Error(`${what} ${status} ${body}`);
+  err.status = status;
+  return err;
 }
 
 async function markDrive(env, id, status, error) {
@@ -847,7 +877,7 @@ async function driveFind(token, folderId, filename) {
     });
   const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
   if (!res.ok)
-    throw new Error(`drive lookup ${res.status}: ${await res.text().catch(() => "")}`);
+    throw driveHttpError("drive lookup", res.status, await res.text().catch(() => ""));
   const files = (await res.json()).files || [];
   if (files.length > 1)
     console.error(
@@ -896,9 +926,7 @@ async function driveUpload(token, driveId, filename, bytes) {
     },
   );
   if (!res.ok)
-    throw new Error(
-      "drive upload " + res.status + " " + (await res.text().catch(() => "")),
-    );
+    throw driveHttpError("drive upload", res.status, await res.text().catch(() => ""));
   return await res.json();
 }
 

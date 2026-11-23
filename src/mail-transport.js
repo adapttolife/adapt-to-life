@@ -40,6 +40,26 @@ const folded = (bytes) =>
 function textPart(type, value) {
   return `Content-Type: ${type}; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n${folded(encoder.encode(value || ""))}`;
 }
+// Attachment content arrives in two shapes: bytes (Uint8Array, ArrayBuffer or
+// another typed-array view) from most callers, and a base64 string, the shape
+// the Cloudflare Email Sending binding and Resend took before Gmail. Both are
+// normalized here so the Gmail path never rejects a caller the other transport
+// accepts. A string that is not strict base64 returns null and the caller throws.
+function attachmentBytes(content) {
+  if (content instanceof Uint8Array) return content;
+  if (content instanceof ArrayBuffer) return new Uint8Array(content);
+  if (ArrayBuffer.isView(content))
+    return new Uint8Array(content.buffer, content.byteOffset, content.byteLength);
+  if (typeof content === "string") {
+    const s = content.replace(/\s+/g, "");
+    if (!s || s.length % 4 || !/^[A-Za-z0-9+/]+={0,2}$/.test(s)) return null;
+    const bin = atob(s);
+    const out = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+    return out;
+  }
+  return null;
+}
 export function buildMime(message, allowedFrom) {
   if (!allowedFrom || mailbox(message.from).address !== mailbox(allowedFrom).address)
     throw new Error("Gmail sender is not the configured authorized identity");
@@ -71,13 +91,8 @@ export function buildMime(message, allowedFrom) {
       const type = header(a.type || "application/octet-stream");
       if (!/^[a-z0-9.+-]+\/[a-z0-9.+-]+$/i.test(type))
         throw new Error("Invalid attachment type");
-      const bytes =
-        a.content instanceof Uint8Array
-          ? a.content
-          : a.content instanceof ArrayBuffer
-            ? new Uint8Array(a.content)
-            : null;
-      if (!bytes) throw new Error("Attachment must contain bytes");
+      const bytes = attachmentBytes(a.content);
+      if (!bytes || !bytes.byteLength) throw new Error("Attachment must contain bytes");
       const disposition = a.disposition === "inline" ? "inline" : "attachment";
       const cid = a.contentId
         ? `\r\nContent-ID: <${header(a.contentId).replace(/[<>]/g, "")}>`

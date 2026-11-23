@@ -229,3 +229,50 @@ test("MIME carries binary attachments and inline content IDs", () => {
     /must contain bytes/,
   );
 });
+
+// Nov 23 2026 incident: the waiver receipt passed its PDF as a base64 string
+// (the Cloudflare/Resend shape) and the Gmail path threw "Attachment must
+// contain bytes". Both shapes now produce the same MIME part.
+test("attachment content: base64 string, Uint8Array, ArrayBuffer and views give the same part", () => {
+  const pdf = new Uint8Array([37, 80, 68, 70, 45, 49, 46, 55, 0, 255, 10]);
+  const part = (content) => {
+    const mime = buildMime(
+      {
+        ...message,
+        attachments: [{ filename: "r.pdf", type: "application/pdf", content }],
+      },
+      env.GMAIL_FROM,
+    );
+    return mime.slice(mime.indexOf("filename*=UTF-8''r.pdf")).split("\r\n--mixed_")[0];
+  };
+  const want = part(pdf);
+  assert.ok(want.includes(Buffer.from(pdf).toString("base64")));
+  assert.equal(part(Buffer.from(pdf).toString("base64")), want, "base64 string");
+  assert.equal(part(pdf.buffer.slice(0)), want, "ArrayBuffer");
+  const padded = new Uint8Array(pdf.length + 4);
+  padded.set(pdf, 2);
+  assert.equal(part(new DataView(padded.buffer, 2, pdf.length)), want, "offset view");
+  assert.equal(part(padded.subarray(2, 2 + pdf.length)), want, "subarray");
+});
+
+test("attachment content: empty or non-base64 content throws before anything is sent", () => {
+  for (const content of [
+    new Uint8Array(0),
+    new ArrayBuffer(0),
+    "",
+    "not base64!",
+    "abc",
+    undefined,
+    null,
+    { bytes: [1] },
+  ])
+    assert.throws(
+      () =>
+        buildMime(
+          { ...message, attachments: [{ filename: "x.pdf", content }] },
+          env.GMAIL_FROM,
+        ),
+      /must contain bytes/,
+      String(content),
+    );
+});

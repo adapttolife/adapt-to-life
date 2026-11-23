@@ -1,14 +1,10 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import test from "node:test";
 import application from "../src/index.js";
 import staging from "../src/staging.js";
+import { readWranglerConfig } from "./branch-preview.mjs";
 
-const config = JSON.parse(
-  readFileSync(new URL("../wrangler.jsonc", import.meta.url), "utf8")
-    .replace(/^\s*\/\/.*$/gm, "")
-    .replace(/,\s*([}\]])/g, "$1"),
-);
+const config = readWranglerConfig();
 
 test("staging uses its ASNM staging binding, supports passwordless admin mail, and has no cron", () => {
   const preview = config.env.staging;

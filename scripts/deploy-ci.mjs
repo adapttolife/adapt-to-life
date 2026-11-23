@@ -1,4 +1,7 @@
-// One Workers Builds command for production and branch builds.
+// The production Worker's Workers Builds command. On main it deploys
+// production; on any other branch it only builds and tests (nothing uploaded).
+// Staging deploys from its own Worker's build (adapt-to-life-staging) with
+// `npm run deploy:staging`, never through this file.
 import { execFileSync, spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
@@ -12,8 +15,8 @@ if (!branch)
   );
 
 if (branch !== "main") {
-  const { uploadPreview } = await import("./branch-preview.mjs");
-  uploadPreview();
+  const { runStaging } = await import("./branch-preview.mjs");
+  runStaging({ deploy: false });
 } else {
   if (process.argv.length > 2)
     throw new Error("deploy:ci accepts no production arguments.");

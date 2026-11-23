@@ -6,7 +6,7 @@ const base = process.argv[2],
   out = process.argv[3];
 assert.ok(
   base === "http://localhost:8787" ||
-    base === "https://adapt-to-life.adapt-to-life.workers.dev",
+    base === "https://adapt-to-life-staging.adapt-to-life.workers.dev",
 );
 mkdirSync(out, { recursive: true });
 const browser = await chromium.launch({

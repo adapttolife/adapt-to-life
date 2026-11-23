@@ -158,11 +158,15 @@
   // Staging shares production services; only production runs scheduled jobs.
   "env": {
     "staging": {
-      // Intentionally targets versions of the existing Worker for dashboard Builds.
-      // Use npm run preview (versions upload), NEVER deploy --env staging:
-      // deploying this environment would replace production and its trigger settings.
-      // Branch URLs require --preview-alias; env names do not create aliases.
-      "name": "adapt-to-life",
+      // Staging is its OWN Worker. Until 2026-11-23 this said "adapt-to-life",
+      // so staging builds uploaded versions onto the production Worker, and a
+      // dashboard secret edit on production deployed one of them: production
+      // ran staging code (fetch only, no cron or email) for eleven minutes.
+      // Never set this to the top-level name; scripts/branch-preview.test.mjs
+      // fails if it is. Deploy with npm run deploy:staging (staging branch only).
+      // It has no routes: it answers only on its workers.dev URL,
+      // https://adapt-to-life-staging.adapt-to-life.workers.dev
+      "name": "adapt-to-life-staging",
       "main": "src/staging.js",
       "workers_dev": true,
       "preview_urls": true,

@@ -667,7 +667,10 @@ async function sendReceiptEmail(env, { to, pdfBytes, name, doc, isMinor, minorNa
       attachments: [
         {
           filename: "adapt-to-life-release.pdf",
-          content: bytesToB64(pdfBytes),
+          // Raw bytes, not base64: the Gmail transport (src/mail-transport.js)
+          // builds the MIME itself and refuses strings. A base64 string here
+          // failed every waiver receipt with "Attachment must contain bytes".
+          content: pdfBytes,
           type: "application/pdf",
           disposition: "attachment",
         },
@@ -687,14 +690,6 @@ function esc(s) {
     (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
   );
 }
-function bytesToB64(bytes) {
-  let s = "";
-  const chunk = 0x8000;
-  for (let i = 0; i < bytes.length; i += chunk)
-    s += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
-  return btoa(s);
-}
-
 // ---------------------------------------------------------------------------
 // Google Drive archive. D1 captures every signed release (audit row + PDF bytes)
 // at signing time; Drive is the long-term archive filed from that copy. The

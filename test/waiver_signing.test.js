@@ -321,19 +321,52 @@ test("Drive unconfigured: capture still succeeds and the row is owed, not lost",
   assert.equal(count(e, "waiver_documents"), 1);
 });
 
+// The live atl-waivers table as it really is (read from sqlite_master on
+// 2026-11-23): the June 2026 table, with `r2_key TEXT NOT NULL` and no default,
+// plus drive_file_id/drive_link added later. An earlier version of this test
+// guessed the old table without r2_key, so the suite passed while every real
+// signing failed on the NOT NULL column. Build from the real shape.
+const LIVE_WAIVERS_BEFORE_2026_10_03 = `CREATE TABLE waivers (
+  id TEXT PRIMARY KEY, org TEXT NOT NULL, waiver_version TEXT NOT NULL,
+  signer_name TEXT NOT NULL, signer_email TEXT NOT NULL, signed_at TEXT NOT NULL,
+  signature_type TEXT, signer_kind TEXT, minor_name TEXT, relationship TEXT,
+  program TEXT, consent INTEGER NOT NULL DEFAULT 1, ip TEXT, user_agent TEXT,
+  country TEXT, region TEXT, city TEXT, doc_sha256 TEXT, pdf_sha256 TEXT,
+  r2_key TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')));
+ALTER TABLE waivers ADD COLUMN drive_file_id TEXT;
+ALTER TABLE waivers ADD COLUMN drive_link TEXT;
+CREATE INDEX idx_waivers_email ON waivers(signer_email);
+CREATE INDEX idx_waivers_org ON waivers(org, signed_at);`;
+const CAPTURE_FIRST_MIGRATION = readFileSync(
+  new URL("../schema/migrations/2026-10-03-waiver-capture-first.sql", import.meta.url),
+  "utf8",
+);
+function liveWaiversDb() {
+  const db = sqliteD1(LIVE_WAIVERS_BEFORE_2026_10_03);
+  db.sql.exec(CAPTURE_FIRST_MIGRATION);
+  return db;
+}
+
+for (const org of ["atl", "asnm"]) {
+  test(`signing works against the live database's real table (${org})`, async () => {
+    const e = env({ WAIVERS_DB: liveWaiversDb() });
+    const res = await sign(e, { org });
+    const out = await res.json();
+    assert.equal(res.status, 200, JSON.stringify(out));
+    assert.equal(out.ok, true);
+    assert.equal(row(e).org, org);
+    assert.equal(row(e).r2_key, "");
+    assert.equal(count(e, "waiver_documents"), 1);
+  });
+}
+
 test("the live-database migration upgrades the old schema and marks legacy rows honestly", () => {
-  const db =
-    sqliteD1(`CREATE TABLE waivers (id TEXT PRIMARY KEY, org TEXT NOT NULL, waiver_version TEXT NOT NULL, signer_name TEXT NOT NULL, signer_email TEXT NOT NULL, signed_at TEXT NOT NULL, signature_type TEXT, signer_kind TEXT, minor_name TEXT, relationship TEXT, program TEXT, consent INTEGER NOT NULL DEFAULT 1, ip TEXT, user_agent TEXT, country TEXT, region TEXT, city TEXT, doc_sha256 TEXT, pdf_sha256 TEXT, drive_file_id TEXT, drive_link TEXT, created_at TEXT NOT NULL DEFAULT (datetime('now')));
-    INSERT INTO waivers (id,org,waiver_version,signer_name,signer_email,signed_at,drive_file_id) VALUES ('a','atl','v','A','a@x','t','f1'),('b','atl','v','B','b@x','t','');`);
-  db.sql.exec(
-    readFileSync(
-      new URL(
-        "../schema/migrations/2026-10-03-waiver-capture-first.sql",
-        import.meta.url,
-      ),
-      "utf8",
-    ),
+  const db = sqliteD1(
+    LIVE_WAIVERS_BEFORE_2026_10_03 +
+      "\nINSERT INTO waivers (id,org,waiver_version,signer_name,signer_email,signed_at,r2_key,drive_file_id) VALUES ('a','atl','v','A','a@x','t','k','f1'),('b','atl','v','B','b@x','t','k','');",
   );
+  db.sql.exec(CAPTURE_FIRST_MIGRATION);
   const rows = db.sql
     .prepare("SELECT id, drive_status FROM waivers ORDER BY id")
     .all()

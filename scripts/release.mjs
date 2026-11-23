@@ -11,7 +11,10 @@
 //   2. Staging is good: its build passed (a failed build is retried once,
 //      as production's is), the staging preview serves exactly
 //      that commit with no -dirty, and scripts/check-layout.mjs passes there
-//      (Chrome and Safari engines, phone and desktop).
+//      (Chrome and Safari engines, phone and desktop). Every live D1 database
+//      matches the schema files at that commit, column by column
+//      (scripts/check-d1-schema.mjs): staging and production share them, so a
+//      table that drifted from its file fails here, not on a signer.
 //   3. Open (or reuse) the staging -> main release PR and merge it, pinned to
 //      the commit that was checked (--match-head-commit).
 //   4. Production is that commit: adapttolife.org/build.txt shows the merge
@@ -34,6 +37,7 @@ import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import { checkLayout, chromiumPath } from "./check-layout.mjs";
 import { changedUrls, ping } from "./lib/indexnow.mjs";
+import { checkD1Schema } from "./check-d1-schema.mjs";
 
 const REPO = "adapttolife/adapt-to-life";
 const STAGING = "https://staging-adapt-to-life.adapt-to-life.workers.dev";
@@ -285,6 +289,22 @@ async function main() {
     if (f.length)
       fail(`staging fails ${f.length} page check(s) (above); not releasing`);
   }
+  log("checking the live D1 databases against the schema files at staging");
+  let d1Failed;
+  try {
+    d1Failed = await checkD1Schema(undefined, {
+      log: (m) => console.log(`         ${m}`),
+      read: (f) => sh("git", ["show", `${stagingSha}:${f}`]),
+    });
+  } catch (e) {
+    fail(
+      `could not read the live D1 schema (needs cfrun): ${e.message.split("\n")[0]}`,
+    );
+  }
+  if (d1Failed)
+    fail(
+      `${d1Failed} live D1 database(s) differ from the schema files (above): add the migration, apply it, then release`,
+    );
   if (DRY) {
     console.log(
       `\nDRY RUN OK: staging ${short(stagingSha)} passed its build, serves with no -dirty, and ${checked("staging")}. Run without --dry-run to release.`,

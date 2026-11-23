@@ -8,6 +8,12 @@ import { createHash, generateKeyPairSync } from "node:crypto";
 import worker from "../src/index.js";
 import { runDriveBacklog } from "../src/waiver.js";
 import { sqliteD1, formBindings } from "./helpers/form-db.js";
+import {
+  buildExpected,
+  diffSchema,
+  COLUMNS_SQL,
+  INDEXES_SQL,
+} from "../scripts/lib/d1-schema.mjs";
 
 const PNG =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==";
@@ -321,11 +327,13 @@ test("Drive unconfigured: capture still succeeds and the row is owed, not lost",
   assert.equal(count(e, "waiver_documents"), 1);
 });
 
-// The live atl-waivers table as it really is (read from sqlite_master on
+// The live atl-waivers table as it really was (read from sqlite_master on
 // 2026-11-23): the June 2026 table, with `r2_key TEXT NOT NULL` and no default,
-// plus drive_file_id/drive_link added later. An earlier version of this test
-// guessed the old table without r2_key, so the suite passed while every real
-// signing failed on the NOT NULL column. Build from the real shape.
+// plus drive_file_id/drive_link added later. The Sept 14 change dropped r2_key
+// from schema/waivers.sql and the INSERT but not from this table, and the suite
+// only ever built the file, so every real signing failed while tests passed.
+// The tests below replay the live history (this table, then every migration)
+// and require it to end exactly where schema/waivers.sql starts.
 const LIVE_WAIVERS_BEFORE_2026_10_03 = `CREATE TABLE waivers (
   id TEXT PRIMARY KEY, org TEXT NOT NULL, waiver_version TEXT NOT NULL,
   signer_name TEXT NOT NULL, signer_email TEXT NOT NULL, signed_at TEXT NOT NULL,
@@ -338,28 +346,47 @@ ALTER TABLE waivers ADD COLUMN drive_file_id TEXT;
 ALTER TABLE waivers ADD COLUMN drive_link TEXT;
 CREATE INDEX idx_waivers_email ON waivers(signer_email);
 CREATE INDEX idx_waivers_org ON waivers(org, signed_at);`;
-const CAPTURE_FIRST_MIGRATION = readFileSync(
-  new URL("../schema/migrations/2026-10-03-waiver-capture-first.sql", import.meta.url),
-  "utf8",
-);
+const migration = (f) =>
+  readFileSync(new URL(`../schema/migrations/${f}`, import.meta.url), "utf8");
+// Every migration the live waivers table has had, in order.
+const WAIVER_MIGRATIONS = [
+  "2026-10-03-waiver-capture-first.sql",
+  "2026-11-23-waivers-drop-r2-key.sql",
+].map(migration);
+const CAPTURE_FIRST_MIGRATION = WAIVER_MIGRATIONS[0];
 function liveWaiversDb() {
   const db = sqliteD1(LIVE_WAIVERS_BEFORE_2026_10_03);
-  db.sql.exec(CAPTURE_FIRST_MIGRATION);
+  for (const m of WAIVER_MIGRATIONS) db.sql.exec(m);
   return db;
 }
 
 for (const org of ["atl", "asnm"]) {
-  test(`signing works against the live database's real table (${org})`, async () => {
+  test(`signing works on the live table after its migrations (${org})`, async () => {
     const e = env({ WAIVERS_DB: liveWaiversDb() });
     const res = await sign(e, { org });
     const out = await res.json();
     assert.equal(res.status, 200, JSON.stringify(out));
     assert.equal(out.ok, true);
     assert.equal(row(e).org, org);
-    assert.equal(row(e).r2_key, "");
+    assert.equal("r2_key" in row(e), false);
     assert.equal(count(e, "waiver_documents"), 1);
   });
 }
+
+test("the live table's migrations end exactly at schema/waivers.sql", () => {
+  const db = liveWaiversDb();
+  const WAIVER_TABLES = ["waivers", "waiver_documents"];
+  const only = (rows) => rows.filter((r) => WAIVER_TABLES.includes(r.tbl));
+  const expected = buildExpected("atl-waivers");
+  const { problems } = diffSchema(
+    { columns: only(expected.columns), indexes: only(expected.indexes) },
+    {
+      columns: db.sql.prepare(COLUMNS_SQL).all(),
+      indexes: db.sql.prepare(INDEXES_SQL).all(),
+    },
+  );
+  assert.deepEqual(problems, []);
+});
 
 test("the live-database migration upgrades the old schema and marks legacy rows honestly", () => {
   const db = sqliteD1(

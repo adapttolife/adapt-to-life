@@ -59,12 +59,19 @@ afterEach(() => {
   globalThis.fetch = originalFetch;
 });
 
+// The LIVE atl-waivers table was created before capture-first and still
+// carries the R2-era `r2_key TEXT NOT NULL` column (no default) between
+// pdf_sha256 and created_at. schema/waivers.sql has no r2_key, so every test
+// here builds the live shape: that is the table the worker writes to.
+const LIVE_WAIVERS_SCHEMA = readFileSync(
+  new URL("../schema/waivers.sql", import.meta.url),
+  "utf8",
+).replace(/(pdf_sha256\s+TEXT,[^\n]*\n)/, "$1  r2_key          TEXT NOT NULL,\n");
+
 function env(extra = {}) {
   const sent = [];
   const e = {
-    WAIVERS_DB: sqliteD1(
-      readFileSync(new URL("../schema/waivers.sql", import.meta.url), "utf8"),
-    ),
+    WAIVERS_DB: sqliteD1(LIVE_WAIVERS_SCHEMA),
     INTAKE: formBindings().INTAKE,
     AGENT_MAIL_DB: sqliteD1(
       "CREATE TABLE send_failures (id TEXT PRIMARY KEY, ts INTEGER, route TEXT, to_addr TEXT, error TEXT);",
@@ -343,4 +350,20 @@ test("the live-database migration upgrades the old schema and marks legacy rows 
     ["b", "unrecoverable"],
   ]);
   assert.equal(db.sql.prepare("SELECT count(*) n FROM waiver_documents").get().n, 0);
+});
+
+// Enforcing check for the Nov 23 outage: on the live table shape (legacy
+// NOT NULL r2_key, no default) a capture INSERT that omits r2_key fails every
+// signing with a 503.
+test("live table shape: legacy NOT NULL r2_key column still accepts a signing", async () => {
+  assert.match(LIVE_WAIVERS_SCHEMA, /pdf_sha256[^\n]*\n\s+r2_key\s+TEXT NOT NULL,\n/);
+  const e = env();
+  const res = await sign(e);
+  const out = await res.json();
+  assert.equal(res.status, 200, JSON.stringify(out));
+  assert.equal(out.ok, true);
+  assert.equal(count(e, "waivers"), 1);
+  assert.equal(count(e, "waiver_documents"), 1);
+  assert.equal(row(e).r2_key, "");
+  assert.equal(docRow(e).waiver_id, out.id);
 });

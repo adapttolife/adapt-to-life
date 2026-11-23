@@ -251,12 +251,19 @@ export async function handleWaiver(request, env) {
   // work that may fail and be retried, but the release itself already exists.
   // The row starts as 'uploading' (this request is attempt 1) so the cron does
   // not race the in-flight upload below.
+  //
+  // r2_key: the live waivers table still carries the legacy `r2_key TEXT NOT
+  // NULL` column (no default) from the R2 era. Binding '' keeps inserts valid
+  // there until the table is rebuilt (tracked separately). That rebuild must
+  // drop r2_key from this INSERT in the same change. Until then a database
+  // built fresh from schema/waivers.sql (no r2_key) rejects this INSERT; the
+  // tests build the live shape (test/waiver_signing.test.js).
   try {
     await env.WAIVERS_DB.batch([
       env.WAIVERS_DB.prepare(
         `INSERT INTO waivers
-         (id, org, waiver_version, signer_name, signer_email, signed_at, signature_type, signer_kind, minor_name, relationship, program, consent, ip, user_agent, country, region, city, doc_sha256, pdf_sha256, drive_file_id, drive_link, drive_status, drive_attempts, drive_last_attempt_at)
-         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'uploading',1,?)`,
+         (id, org, waiver_version, signer_name, signer_email, signed_at, signature_type, signer_kind, minor_name, relationship, program, consent, ip, user_agent, country, region, city, doc_sha256, pdf_sha256, r2_key, drive_file_id, drive_link, drive_status, drive_attempts, drive_last_attempt_at)
+         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'uploading',1,?)`,
       ).bind(
         id,
         org,
@@ -277,6 +284,7 @@ export async function handleWaiver(request, env) {
         geo.city,
         docSha,
         pdfSha,
+        "", // r2_key (legacy, see above)
         "",
         "",
         signedAt,

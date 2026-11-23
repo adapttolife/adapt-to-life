@@ -11,7 +11,10 @@
 //   2. Staging is good: its build passed (a failed build is retried once,
 //      as production's is), the staging preview serves exactly
 //      that commit with no -dirty, and scripts/check-layout.mjs passes there
-//      (Chrome and Safari engines, phone and desktop).
+//      (Chrome and Safari engines, phone and desktop). Every live D1 database
+//      matches the schema files at that commit, column by column
+//      (scripts/check-d1-schema.mjs): staging and production share them, so a
+//      table that drifted from its file fails here, not on a signer.
 //   3. Open (or reuse) the staging -> main release PR and merge it, pinned to
 //      the commit that was checked (--match-head-commit).
 //   4. Production is that commit: adapttolife.org/build.txt shows the merge
@@ -32,6 +35,8 @@
 // result can be lost: T3 can drop the notice that wakes the session.
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import { checkLayout, chromiumPath } from "./check-layout.mjs";
 import { changedUrls, ping } from "./lib/indexnow.mjs";
 
@@ -62,6 +67,27 @@ const DEADLINE = t0 + 9 * 60e3;
 let merged = false;
 const log = (m) =>
   console.log(`[${String(Math.round((Date.now() - t0) / 1000)).padStart(4)}s] ${m}`);
+// The D1 drift check exactly as the released commit defines it: its checker,
+// its list of databases and its schema files, not the local checkout's.
+async function checkD1SchemaAt(sha) {
+  const dir = fs.mkdtempSync(`${os.tmpdir()}/atl-d1-check-`);
+  try {
+    for (const f of ["scripts/check-d1-schema.mjs", "scripts/lib/d1-schema.mjs"]) {
+      fs.mkdirSync(path.dirname(path.join(dir, f)), { recursive: true });
+      fs.writeFileSync(path.join(dir, f), sh("git", ["show", `${sha}:${f}`]));
+    }
+    const { checkD1Schema } = await import(
+      path.join(dir, "scripts/check-d1-schema.mjs")
+    );
+    return await checkD1Schema(undefined, {
+      log: (m) => console.log(`         ${m}`),
+      read: (f) => sh("git", ["show", `${sha}:${f}`]),
+    });
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+}
+
 function fail(m) {
   console.error(`\nSTOPPED: ${m}`);
   process.exit(1);
@@ -285,6 +311,19 @@ async function main() {
     if (f.length)
       fail(`staging fails ${f.length} page check(s) (above); not releasing`);
   }
+  log("checking the live D1 databases against the schema files at staging");
+  let d1Failed;
+  try {
+    d1Failed = await checkD1SchemaAt(stagingSha);
+  } catch (e) {
+    fail(
+      `could not check the live D1 schema (needs cfrun): ${e.message.split("\n")[0]}`,
+    );
+  }
+  if (d1Failed)
+    fail(
+      `${d1Failed} live D1 database(s) differ from the schema files (above): add the migration, apply it, then release`,
+    );
   if (DRY) {
     console.log(
       `\nDRY RUN OK: staging ${short(stagingSha)} passed its build, serves with no -dirty, and ${checked("staging")}. Run without --dry-run to release.`,

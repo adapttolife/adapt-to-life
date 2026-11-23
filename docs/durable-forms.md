@@ -99,9 +99,11 @@ and update that same row; duplicate IDs or drifted headers stop the writer.
 
 Apply `src/schema_forms.sql` to the already-bound WAIVERS_DB and
 `src/schema_intake_delivery.sql` to INTAKE before promoting this code. Signed
-waivers need `schema/migrations/2026-10-03-waiver-capture-first.sql` on
-WAIVERS_DB before the capture-first waiver code ships. Migrations
-are additive; do not delete existing records or replace credentials.
+waivers need `schema/migrations/2026-10-03-waiver-capture-first.sql` and
+`schema/migrations/2026-11-23-waivers-drop-r2-key.sql` on WAIVERS_DB (both
+applied to production; `cfrun node scripts/check-d1-schema.mjs` confirms every
+live table matches its schema file). Do not delete existing records or replace
+credentials.
 
 Production comes from clean, pushed main through the existing Workers Builds
 path. The main-site build keeps the latest sponsor UI, spam gates and prior

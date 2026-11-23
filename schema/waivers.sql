@@ -3,9 +3,10 @@
 -- captured in waiver_documents in the same D1 batch, before the signer is told
 -- "done"; Google Drive is the long-term archive filed from that copy (see
 -- runDriveBacklog in src/waiver.js). This is the full schema for a fresh
--- database. A LIVE database is upgraded by
--- migrations/2026-10-03-waiver-capture-first.sql, never by this file: the DROP
--- below would destroy signed releases.
+-- database. A LIVE database is upgraded by the files in migrations/ (2026-10-03
+-- capture-first, 2026-11-23 drop r2_key), never by this file: the DROP below
+-- would destroy signed releases. scripts/check-d1-schema.mjs compares this file
+-- with the live table column by column; a release fails if they differ.
 DROP TABLE IF EXISTS waiver_documents;
 DROP TABLE IF EXISTS waivers;
 CREATE TABLE waivers (

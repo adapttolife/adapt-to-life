@@ -33,6 +33,13 @@ document it points to for the job at hand.
     && npm run events && npm run guides && npm run blog && git status --porcelain
   ```
 
+- A D1 table change is three things in one PR: the schema file (`schema/*.sql`, the fresh-database
+  shape), a migration in `schema/migrations/` that takes the live table there, and
+  `cfrun node scripts/check-d1-schema.mjs` passing after the migration is applied. Staging and
+  production share the same databases, so a migration must work with the code on `main` and on
+  `staging` at once: add (columns with defaults, new tables) before the code that uses them,
+  remove only after no live code writes it. The release runs the same check and stops on any drift
+  (the Nov 2026 waiver outage was a live column the schema file had dropped).
 - Generated pages are rebuilt from their sources, never hand-edited: guides and `/links`
   (`npm run guides`), events (`npm run events`), the blog, its feed, `/llms.txt` and the
   "More from the blog" section on every page the blog collects (`npm run blog`, from

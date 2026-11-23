@@ -5,17 +5,22 @@
 // atl-waivers table had quietly drifted apart (the live table kept a June
 // column the file no longer had), and the tests only ever saw the file. This
 // module lets a test build each database from its files, and lets
-// scripts/check-d1-schema.mjs compare that build against the live database
-// column by column, so drift is caught before a release instead of by signers.
+// scripts/check-d1-schema.mjs compare that build with the live database, so
+// drift is caught before a release instead of by signers.
+//
+// What is compared, per table: every column (incl. hidden/generated) with its
+// type, NOT NULL, default and primary key; every index with its uniqueness,
+// columns, order, collation and partial WHERE; CHECK and REFERENCES clauses and
+// STRICT / WITHOUT ROWID (read from the table's SQL, because D1 refuses
+// pragma_foreign_key_list); and every trigger and view. Column ORDER is not
+// compared: ALTER TABLE ADD COLUMN appends, and nothing reads by position.
 import { DatabaseSync } from "node:sqlite";
 import { readFileSync } from "node:fs";
 
 const ROOT = new URL("../../", import.meta.url);
 
 // database_name (wrangler.jsonc) -> the files that define its tables, in apply
-// order. Tables a database has that no file here defines are reported, not
-// failed: some belong to another worker (atl-intake's `intake` table is owned
-// by the intake worker) or to Cloudflare (_cf_KV).
+// order.
 export const D1_SCHEMAS = {
   "atl-waivers": [
     "schema/waivers.sql",
@@ -35,21 +40,35 @@ export const D1_SCHEMAS = {
   "atl-intake": ["src/schema_intake_delivery.sql"],
 };
 
-// Tables a live database may carry that no schema file defines, on purpose.
+// Live tables no file here defines, on purpose, with the reason. Any other
+// live-only table fails the check: it is either a table this repo writes and
+// forgot to define, or debris someone should look at.
 export const OWNED_ELSEWHERE = {
-  "atl-intake": ["intake"],
+  "atl-intake": {
+    intake: "the intake worker's own table",
+    newsletter_delivery_claims:
+      "pre-Nov 2026 newsletter copy, read by agentos intake health",
+    newsletter_send_receipts:
+      "pre-Nov 2026 newsletter copy, read by agentos intake health",
+  },
 };
 
-// SQL that returns every column of every user table, the same shape on D1 and
-// on node:sqlite.
-export const COLUMNS_SQL = `SELECT m.name AS tbl, p.cid AS cid, p.name AS name, p.type AS type,
-  p."notnull" AS nn, p.dflt_value AS dflt, p.pk AS pk
-  FROM sqlite_master m JOIN pragma_table_info(m.name) p
-  WHERE m.type = 'table' AND m.name NOT LIKE 'sqlite_%' AND m.name NOT LIKE '_cf_%'
-  ORDER BY m.name, p.cid`;
-
-export const INDEXES_SQL = `SELECT name, tbl_name AS tbl FROM sqlite_master
-  WHERE type = 'index' AND sql IS NOT NULL ORDER BY name`;
+const USER = `m.name NOT LIKE 'sqlite_%' AND m.name NOT LIKE '_cf_%'`;
+// Each query returns the same shape on D1 and on node:sqlite.
+export const DESCRIBE_SQL = {
+  columns: `SELECT m.name AS tbl, p.name AS name, p.type AS type, p."notnull" AS nn,
+    p.dflt_value AS dflt, p.pk AS pk, p.hidden AS hidden
+    FROM sqlite_master m JOIN pragma_table_xinfo(m.name) p
+    WHERE m.type = 'table' AND ${USER}`,
+  indexes: `SELECT m.name AS tbl, il.name AS idx, il."unique" AS uq, il.origin AS origin,
+    il.partial AS partial, ii.seqno AS seqno, ii.name AS col, ii.cid AS cid,
+    ii."desc" AS dsc, ii.coll AS coll
+    FROM sqlite_master m JOIN pragma_index_list(m.name) il
+    JOIN pragma_index_xinfo(il.name) ii
+    WHERE m.type = 'table' AND ${USER} AND ii.key = 1`,
+  objects: `SELECT m.type AS type, m.name AS name, m.tbl_name AS tbl, m.sql AS sql
+    FROM sqlite_master m WHERE m.sql IS NOT NULL AND ${USER}`,
+};
 
 const readLocal = (f) => readFileSync(new URL(f, ROOT), "utf8");
 
@@ -61,90 +80,243 @@ export function schemaSql(dbName, read = readLocal) {
   return files.map((f) => read(f)).join("\n");
 }
 
+// Raw rows for an in-memory node:sqlite database.
+export function describeLocal(db) {
+  const out = {};
+  for (const [k, sql] of Object.entries(DESCRIBE_SQL))
+    out[k] = db
+      .prepare(sql)
+      .all()
+      .map((r) => ({ ...r }));
+  return out;
+}
+
 // The database exactly as its schema files build it, in memory.
 export function buildExpected(dbName, read = readLocal) {
   const db = new DatabaseSync(":memory:");
   db.exec(schemaSql(dbName, read));
+  return describeLocal(db);
+}
+
+// SQL text compared in a meaning-preserving normal form: no comments, one
+// case, no optional IF NOT EXISTS, no quoting, no whitespace by punctuation.
+export function normSql(sql) {
+  if (sql === null || sql === undefined) return null;
+  return String(sql)
+    .replace(/--[^\n]*/g, " ")
+    .replace(/\/\*[\s\S]*?\*\//g, " ")
+    .toLowerCase()
+    .replace(/\bif\s+not\s+exists\b/g, " ")
+    .replace(/["`[\]]/g, "")
+    .replace(/\s+/g, " ")
+    .replace(/\s*([(),;=<>])\s*/g, "$1")
+    .trim();
+}
+
+function balanced(s) {
+  let d = 0;
+  for (const ch of s) {
+    if (ch === "(") d++;
+    else if (ch === ")" && --d < 0) return false;
+  }
+  return d === 0;
+}
+// '0' and '(0)' are the same default.
+function normDefault(v) {
+  if (v === null || v === undefined) return null;
+  let s = normSql(v);
+  while (/^\(.*\)$/.test(s) && balanced(s.slice(1, -1))) s = s.slice(1, -1);
+  return s;
+}
+
+// CHECK (...) and REFERENCES t(cols) [ON ...] clauses, and table options.
+function tableClauses(sql) {
+  const s = normSql(sql) || "";
+  const checks = [];
+  for (let i = s.indexOf("check("); i !== -1; i = s.indexOf("check(", i + 1)) {
+    let d = 0;
+    let j = i + 5;
+    for (; j < s.length; j++) {
+      if (s[j] === "(") d++;
+      else if (s[j] === ")" && --d === 0) break;
+    }
+    checks.push(s.slice(i, j + 1));
+  }
+  const refs = [
+    ...s.matchAll(
+      /references [^(,]+\([^)]*\)(?: on (?:delete|update) [a-z ]+?(?=,|\)|$))*/g,
+    ),
+  ].map((m) => m[0].trim());
+  const tail = s.slice(s.lastIndexOf(")") + 1);
   return {
-    columns: db
-      .prepare(COLUMNS_SQL)
-      .all()
-      .map((r) => ({ ...r })),
-    indexes: db
-      .prepare(INDEXES_SQL)
-      .all()
-      .map((r) => ({ ...r })),
+    checks: checks.sort(),
+    refs: refs.sort(),
+    strict: /\bstrict\b/.test(tail),
+    withoutRowid: /\bwithout rowid\b/.test(tail),
   };
 }
 
-const norm = (v) => (v === null || v === undefined ? null : String(v).trim());
-const byTable = (rows) => {
-  const m = new Map();
-  for (const r of rows) {
-    if (!m.has(r.tbl)) m.set(r.tbl, new Map());
-    m.get(r.tbl).set(r.name, r);
+// Raw rows -> { tables: Map(tbl -> {columns, indexes, clauses}), triggers, views }.
+export function model(raw) {
+  const tables = new Map();
+  const t = (name) => {
+    if (!tables.has(name))
+      tables.set(name, { columns: new Map(), indexes: new Map(), clauses: null });
+    return tables.get(name);
+  };
+  const triggers = new Map();
+  const views = new Map();
+  const indexSql = new Map();
+  for (const o of raw.objects) {
+    if (o.type === "table") t(o.name).clauses = tableClauses(o.sql);
+    else if (o.type === "trigger")
+      triggers.set(o.name, { tbl: o.tbl, sql: normSql(o.sql) });
+    else if (o.type === "view") views.set(o.name, { tbl: null, sql: normSql(o.sql) });
+    else if (o.type === "index") indexSql.set(o.name, o.sql);
   }
-  return m;
-};
+  for (const c of raw.columns)
+    t(c.tbl).columns.set(c.name, {
+      type: normSql(c.type),
+      nn: Number(c.nn),
+      dflt: normDefault(c.dflt),
+      pk: Number(c.pk),
+      hidden: Number(c.hidden),
+    });
+  const grouped = new Map();
+  for (const r of raw.indexes) {
+    const k = `${r.tbl}\u0000${r.idx}`;
+    if (!grouped.has(k)) grouped.set(k, { ...r, cols: [] });
+    grouped.get(k).cols.push(r);
+  }
+  for (const g of grouped.values()) {
+    const expr = g.cols.some((c) => Number(c.cid) === -2);
+    const cols = g.cols
+      .sort((a, b) => a.seqno - b.seqno)
+      .map(
+        (c) =>
+          `${Number(c.cid) === -2 ? "<expr>" : c.col} ${Number(c.dsc) ? "desc" : "asc"} ${String(c.coll).toLowerCase()}`,
+      )
+      .join(",");
+    // Auto-indexes (UNIQUE / PRIMARY KEY constraints) are named by position,
+    // so they are matched by what they cover; explicit indexes by name.
+    const key =
+      g.origin === "c"
+        ? g.idx
+        : `${g.origin === "pk" ? "primary key" : "unique"}(${cols})`;
+    const sql = normSql(indexSql.get(g.idx));
+    t(g.tbl).indexes.set(key, {
+      unique: Number(g.uq),
+      cols,
+      where: Number(g.partial) && sql ? sql.slice(sql.indexOf(" where ") + 1) : null,
+      expr: expr ? sql : null,
+    });
+  }
+  return { tables, triggers, views };
+}
 
-// Compare an expected build with a live read. Column ORDER is not compared:
-// ALTER TABLE ADD COLUMN appends, so a migrated table legitimately orders
-// columns differently from a fresh one, and nothing in src/ uses SELECT * by
-// position. Everything an INSERT can trip on is compared: presence, declared
-// type, NOT NULL, default and primary key.
-export function diffSchema(expected, live, { ownedElsewhere = [] } = {}) {
+const show = (v) => JSON.stringify(v);
+function compareFields(where, a, b, fields, problems) {
+  for (const [k, label] of fields)
+    if (show(a[k]) !== show(b[k]))
+      problems.push(
+        `${where}: ${label} is ${show(b[k])} live, ${show(a[k])} in the schema files`,
+      );
+}
+
+// Compare an expected build with a live read (both raw DESCRIBE_SQL rows).
+// problems = drift that can break or silently change a write: the check fails.
+// notes = harmless differences (a live-only plain index, an allowlisted table).
+export function diffSchema(expectedRaw, liveRaw, { ownedElsewhere = {} } = {}) {
   const problems = [];
   const notes = [];
-  const exp = byTable(expected.columns);
-  const got = byTable(live.columns);
-  for (const [tbl, cols] of exp) {
-    const liveCols = got.get(tbl);
-    if (!liveCols) {
+  const exp = model(expectedRaw);
+  const got = model(liveRaw);
+  for (const [tbl, e] of exp.tables) {
+    const l = got.tables.get(tbl);
+    if (!l) {
       problems.push(`table ${tbl}: defined in the schema files but missing live`);
       continue;
     }
-    for (const [name, c] of cols) {
-      const l = liveCols.get(name);
-      if (!l) {
-        problems.push(`${tbl}.${name}: in the schema files, missing live`);
-        continue;
-      }
-      for (const [k, label] of [
-        ["type", "type"],
-        ["nn", "NOT NULL"],
-        ["dflt", "default"],
-        ["pk", "primary key"],
-      ]) {
-        if (norm(c[k]) !== norm(l[k]))
-          problems.push(
-            `${tbl}.${name}: ${label} is ${JSON.stringify(l[k])} live, ${JSON.stringify(c[k])} in the schema files`,
-          );
-      }
-    }
-    for (const [name, l] of liveCols) {
-      if (!cols.has(name))
-        problems.push(
-          `${tbl}.${name}: live only (${l.type}${l.nn ? " NOT NULL" : ""}${
-            l.dflt === null ? "" : " DEFAULT " + l.dflt
-          }), not in the schema files`,
+    for (const [name, c] of e.columns) {
+      const lc = l.columns.get(name);
+      if (!lc) problems.push(`${tbl}.${name}: in the schema files, missing live`);
+      else
+        compareFields(
+          `${tbl}.${name}`,
+          c,
+          lc,
+          [
+            ["type", "type"],
+            ["nn", "NOT NULL"],
+            ["dflt", "default"],
+            ["pk", "primary key"],
+            ["hidden", "hidden/generated"],
+          ],
+          problems,
         );
     }
-  }
-  for (const tbl of got.keys()) {
-    if (!exp.has(tbl))
-      notes.push(
-        ownedElsewhere.includes(tbl)
-          ? `table ${tbl}: live, owned by another worker (expected)`
-          : `table ${tbl}: live only, no schema file defines it`,
+    for (const [name, lc] of l.columns)
+      if (!e.columns.has(name))
+        problems.push(
+          `${tbl}.${name}: live only (${lc.type}${lc.nn ? " not null" : ""}${
+            lc.dflt === null ? "" : " default " + lc.dflt
+          }), not in the schema files`,
+        );
+    for (const [key, ei] of e.indexes) {
+      const li = l.indexes.get(key);
+      if (!li) problems.push(`${tbl} index ${key}: in the schema files, missing live`);
+      else
+        compareFields(
+          `${tbl} index ${key}`,
+          ei,
+          li,
+          [
+            ["unique", "unique"],
+            ["cols", "columns"],
+            ["where", "partial WHERE"],
+            ["expr", "expression"],
+          ],
+          problems,
+        );
+    }
+    for (const [key, li] of l.indexes)
+      if (!e.indexes.has(key)) {
+        if (li.unique)
+          problems.push(`${tbl} unique index ${key}: live only, can reject writes`);
+        else notes.push(`${tbl} index ${key}: live only`);
+      }
+    if (e.clauses && l.clauses)
+      compareFields(
+        tbl,
+        e.clauses,
+        l.clauses,
+        [
+          ["checks", "CHECK constraints"],
+          ["refs", "REFERENCES (foreign keys)"],
+          ["strict", "STRICT"],
+          ["withoutRowid", "WITHOUT ROWID"],
+        ],
+        problems,
       );
   }
-  const liveIdx = new Set(live.indexes.map((i) => i.name));
-  for (const i of expected.indexes)
-    if (!liveIdx.has(i.name))
-      problems.push(`index ${i.name} on ${i.tbl}: missing live`);
-  const expIdx = new Set(expected.indexes.map((i) => i.name));
-  for (const i of live.indexes)
-    if (!expIdx.has(i.name) && exp.has(i.tbl))
-      notes.push(`index ${i.name} on ${i.tbl}: live only`);
+  for (const tbl of got.tables.keys())
+    if (!exp.tables.has(tbl)) {
+      if (ownedElsewhere[tbl]) notes.push(`table ${tbl}: live, ${ownedElsewhere[tbl]}`);
+      else problems.push(`table ${tbl}: live only, no schema file defines it`);
+    }
+  for (const [kind, e, l] of [
+    ["trigger", exp.triggers, got.triggers],
+    ["view", exp.views, got.views],
+  ]) {
+    for (const [name, o] of e) {
+      if (!l.has(name))
+        problems.push(`${kind} ${name}: in the schema files, missing live`);
+      else if (l.get(name).sql !== o.sql)
+        problems.push(`${kind} ${name}: definition differs from the schema files`);
+    }
+    for (const [name, o] of l)
+      if (!e.has(name) && !(o.tbl && ownedElsewhere[o.tbl]))
+        problems.push(`${kind} ${name}: live only, not in the schema files`);
+  }
   return { problems, notes };
 }

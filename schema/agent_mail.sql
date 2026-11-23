@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS inboxes (
 -- Patterns are exact lowercase addresses or '@domain' suffixes. Spec 108 adds
 -- eng-intake as a separate Julia-only lane without weakening stingel@.
 CREATE TABLE IF NOT EXISTS inbox_locks (
-  inbox      TEXT NOT NULL REFERENCES inboxes(address),
+  inbox      TEXT NOT NULL, -- an inboxes.address; no FK, matching the live table
   pattern    TEXT NOT NULL,
   note       TEXT,
   created_at TEXT DEFAULT (datetime('now')), -- nullable: matches the live table

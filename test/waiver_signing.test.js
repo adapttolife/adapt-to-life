@@ -8,12 +8,8 @@ import { createHash, generateKeyPairSync } from "node:crypto";
 import worker from "../src/index.js";
 import { runDriveBacklog } from "../src/waiver.js";
 import { sqliteD1, formBindings } from "./helpers/form-db.js";
-import {
-  buildExpected,
-  diffSchema,
-  COLUMNS_SQL,
-  INDEXES_SQL,
-} from "../scripts/lib/d1-schema.mjs";
+import { readdirSync } from "node:fs";
+import { buildExpected, describeLocal, diffSchema } from "../scripts/lib/d1-schema.mjs";
 
 const PNG =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==";
@@ -348,11 +344,14 @@ CREATE INDEX idx_waivers_email ON waivers(signer_email);
 CREATE INDEX idx_waivers_org ON waivers(org, signed_at);`;
 const migration = (f) =>
   readFileSync(new URL(`../schema/migrations/${f}`, import.meta.url), "utf8");
-// Every migration the live waivers table has had, in order.
-const WAIVER_MIGRATIONS = [
+// Every migration the live waivers table has had, in order. The inventory test
+// below fails when a new migration touches the waiver tables but is not added
+// here, so the replay can never silently skip one.
+const WAIVER_MIGRATION_FILES = [
   "2026-10-03-waiver-capture-first.sql",
   "2026-11-23-waivers-drop-r2-key.sql",
-].map(migration);
+];
+const WAIVER_MIGRATIONS = WAIVER_MIGRATION_FILES.map(migration);
 const CAPTURE_FIRST_MIGRATION = WAIVER_MIGRATIONS[0];
 function liveWaiversDb() {
   const db = sqliteD1(LIVE_WAIVERS_BEFORE_2026_10_03);
@@ -373,19 +372,43 @@ for (const org of ["atl", "asnm"]) {
   });
 }
 
+test("every migration that touches the waiver tables is replayed, in order", () => {
+  const touching = readdirSync(new URL("../schema/migrations/", import.meta.url))
+    .filter((f) => f.endsWith(".sql"))
+    .filter((f) =>
+      /\b(waivers|waiver_documents)\b/.test(migration(f).replace(/--[^\n]*/g, "")),
+    )
+    .sort();
+  assert.deepEqual(touching, WAIVER_MIGRATION_FILES);
+});
+
 test("the live table's migrations end exactly at schema/waivers.sql", () => {
-  const db = liveWaiversDb();
   const WAIVER_TABLES = ["waivers", "waiver_documents"];
-  const only = (rows) => rows.filter((r) => WAIVER_TABLES.includes(r.tbl));
-  const expected = buildExpected("atl-waivers");
-  const { problems } = diffSchema(
-    { columns: only(expected.columns), indexes: only(expected.indexes) },
-    {
-      columns: db.sql.prepare(COLUMNS_SQL).all(),
-      indexes: db.sql.prepare(INDEXES_SQL).all(),
-    },
+  const only = (raw) => ({
+    columns: raw.columns.filter((r) => WAIVER_TABLES.includes(r.tbl)),
+    indexes: raw.indexes.filter((r) => WAIVER_TABLES.includes(r.tbl)),
+    objects: raw.objects.filter((r) => WAIVER_TABLES.includes(r.tbl)),
+  });
+  const out = diffSchema(
+    only(buildExpected("atl-waivers")),
+    describeLocal(liveWaiversDb().sql),
   );
-  assert.deepEqual(problems, []);
+  assert.deepEqual(out, { problems: [], notes: [] });
+});
+
+test("dropping r2_key keeps every legacy release and its values", () => {
+  const db = sqliteD1(
+    LIVE_WAIVERS_BEFORE_2026_10_03 +
+      "\nINSERT INTO waivers (id,org,waiver_version,signer_name,signer_email,signed_at,pdf_sha256,r2_key,drive_file_id,drive_link) VALUES ('a','atl','v1','A','a@x','t1','h1','waivers/atl/t1/a.pdf','f1','https://drive.example/f1');",
+  );
+  const before = db.sql.prepare("SELECT * FROM waivers").get();
+  for (const m of WAIVER_MIGRATIONS) db.sql.exec(m);
+  const after = db.sql.prepare("SELECT * FROM waivers").get();
+  const { r2_key, ...kept } = { ...before };
+  assert.equal(r2_key, "waivers/atl/t1/a.pdf");
+  for (const [k, v] of Object.entries(kept)) assert.equal(after[k], v, k);
+  assert.equal("r2_key" in after, false);
+  assert.equal(after.drive_status, "done");
 });
 
 test("the live-database migration upgrades the old schema and marks legacy rows honestly", () => {

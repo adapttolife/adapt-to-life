@@ -35,9 +35,10 @@
 // result can be lost: T3 can drop the notice that wakes the session.
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import { checkLayout, chromiumPath } from "./check-layout.mjs";
 import { changedUrls, ping } from "./lib/indexnow.mjs";
-import { checkD1Schema } from "./check-d1-schema.mjs";
 
 const REPO = "adapttolife/adapt-to-life";
 const STAGING = "https://staging-adapt-to-life.adapt-to-life.workers.dev";
@@ -66,6 +67,27 @@ const DEADLINE = t0 + 9 * 60e3;
 let merged = false;
 const log = (m) =>
   console.log(`[${String(Math.round((Date.now() - t0) / 1000)).padStart(4)}s] ${m}`);
+// The D1 drift check exactly as the released commit defines it: its checker,
+// its list of databases and its schema files, not the local checkout's.
+async function checkD1SchemaAt(sha) {
+  const dir = fs.mkdtempSync(`${os.tmpdir()}/atl-d1-check-`);
+  try {
+    for (const f of ["scripts/check-d1-schema.mjs", "scripts/lib/d1-schema.mjs"]) {
+      fs.mkdirSync(path.dirname(path.join(dir, f)), { recursive: true });
+      fs.writeFileSync(path.join(dir, f), sh("git", ["show", `${sha}:${f}`]));
+    }
+    const { checkD1Schema } = await import(
+      path.join(dir, "scripts/check-d1-schema.mjs")
+    );
+    return await checkD1Schema(undefined, {
+      log: (m) => console.log(`         ${m}`),
+      read: (f) => sh("git", ["show", `${sha}:${f}`]),
+    });
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+}
+
 function fail(m) {
   console.error(`\nSTOPPED: ${m}`);
   process.exit(1);
@@ -292,13 +314,10 @@ async function main() {
   log("checking the live D1 databases against the schema files at staging");
   let d1Failed;
   try {
-    d1Failed = await checkD1Schema(undefined, {
-      log: (m) => console.log(`         ${m}`),
-      read: (f) => sh("git", ["show", `${stagingSha}:${f}`]),
-    });
+    d1Failed = await checkD1SchemaAt(stagingSha);
   } catch (e) {
     fail(
-      `could not read the live D1 schema (needs cfrun): ${e.message.split("\n")[0]}`,
+      `could not check the live D1 schema (needs cfrun): ${e.message.split("\n")[0]}`,
     );
   }
   if (d1Failed)

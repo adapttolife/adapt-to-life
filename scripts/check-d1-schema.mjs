@@ -14,8 +14,7 @@ import { execFileSync } from "node:child_process";
 import {
   D1_SCHEMAS,
   OWNED_ELSEWHERE,
-  COLUMNS_SQL,
-  INDEXES_SQL,
+  DESCRIBE_SQL,
   buildExpected,
   diffSchema,
 } from "./lib/d1-schema.mjs";
@@ -70,15 +69,14 @@ export async function checkD1Schema(
   let failed = 0;
   for (const name of names) {
     const expected = buildExpected(name, read);
-    const live = {
-      columns: liveQuery(accountId, name, COLUMNS_SQL),
-      indexes: liveQuery(accountId, name, INDEXES_SQL),
-    };
+    const live = {};
+    for (const [k, sql] of Object.entries(DESCRIBE_SQL))
+      live[k] = liveQuery(accountId, name, sql);
     const { problems, notes } = diffSchema(expected, live, {
-      ownedElsewhere: OWNED_ELSEWHERE[name] || [],
+      ownedElsewhere: OWNED_ELSEWHERE[name] || {},
     });
     log(
-      `${problems.length ? "FAIL" : "ok  "} ${name}: ${expected.columns.length} columns checked`,
+      `${problems.length ? "FAIL" : "ok  "} ${name}: ${live.columns.length} columns, ${live.objects.length} tables/indexes/triggers checked`,
     );
     for (const p of problems) log(`       ${p}`);
     for (const n of notes) log(`       note: ${n}`);

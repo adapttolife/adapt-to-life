@@ -1,0 +1,17 @@
+-- Signed waivers: drop the retired r2_key column from the live table.
+--
+--   cfrun npx wrangler d1 execute atl-waivers --remote \
+--     --file schema/migrations/2026-11-23-waivers-drop-r2-key.sql
+-- (atl-waivers lives in the Adapt To Life Cloudflare account.)
+--
+-- The June 2026 table stored each PDF in R2 and kept its key in
+-- `r2_key TEXT NOT NULL` (no default). The Sept 14 change that retired R2
+-- removed the column from schema/waivers.sql and from the capture INSERT, but
+-- no migration removed it from the live table, so every signing failed with
+-- "NOT NULL constraint failed: waivers.r2_key" until this ran on Nov 23 2026.
+-- The worker never reads or writes r2_key, and nothing (index, trigger, view)
+-- depends on it. Every other column and row is kept.
+--
+-- Run once (SQLite has no DROP COLUMN IF EXISTS; a second run fails harmlessly).
+-- Then `cfrun node scripts/check-d1-schema.mjs` must report atl-waivers ok.
+ALTER TABLE waivers DROP COLUMN r2_key;

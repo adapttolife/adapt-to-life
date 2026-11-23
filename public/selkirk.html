@@ -247,15 +247,15 @@
   .sk-previews figcaption b{ font-family:var(--font-display); font-weight:900; font-size:1.02rem; line-height:1.2; }
   .sk-previews figcaption span{ color:var(--muted); font-size:0.9rem; line-height:1.35; }
   .sk-previews-note{ margin-top:0.9rem; color:var(--muted); font-size:0.92rem; max-width:62ch; }
-  /* The newest lesson carries a New tag and spans two columns: its video
-     stays one column wide, in line with the grid, and its caption sits in
-     the column beside it. Thirty-four cards fill thirty-five places: four
-     across on desktops (the new one and two more, then seven rows of 4 and
-     a row of 3) and three on tablets (the new one and one more, then ten
-     rows of 3 and a row of 2), so no card sits alone on a row. Phones keep
-     the swipe row, the new card first and the same size as the rest. When a
-     count would leave one card alone, drop the span or give the new card
-     the whole first row. */
+  /* The lessons run oldest first (Alec, Nov 23: the earlier ones are the
+     best). The newest lesson comes last, carries a New tag and spans two
+     columns: its video stays one column wide, in line with the grid, and its
+     caption sits in the column beside it. Thirty-four cards fill thirty-five
+     places: four across on desktops (eight rows of 4, then one card and the
+     new one) and three on tablets (eleven rows of 3, then the new one), so
+     no small card sits alone on a row. Phones keep the swipe row, the new
+     card last and the same size as the rest. When a count would leave one
+     small card alone, drop the span. */
   .sk-previews .sk-new-tag{ justify-self:start; font-family:var(--font-label); font-weight:800; font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--orange-ink); }
   .sk-previews > .sk-new{ grid-column:span 2; }
   .sk-previews .sk-new figure{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:clamp(0.8rem,2vw,1.2rem); align-items:center; }
@@ -713,146 +713,146 @@ fill="currentColor" stroke="none">
 <section data-part="02" class="band sk-lessons" id="lessons" aria-labelledby="skLessonsHead">
   <div class="wrap">
     <div class="sec-head">
-      <span class="eyebrow reveal"><svg class="ico-in" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="play" data-style="regular"><path fill="currentColor" d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m0 192a88 88 0 1 1 88-88a88.1 88.1 0 0 1-88 88m48.24-94.78l-64-40A8 8 0 0 0 100 88v80a8 8 0 0 0 12.24 6.78l64-40a8 8 0 0 0 0-13.56M116 153.57v-51.14L156.91 128Z"/></svg>What we&rsquo;ve made</span>
+      <span class="eyebrow reveal"><svg class="ico-in" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="play" data-style="regular"><path fill="currentColor" d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m0 192a88 88 0 1 1 88-88a88.1 88.1 0 0 1-88 88m48.24-94.78l-64-40A8 8 0 0 0 100 88v80a8 8 0 0 0 12.24 6.78l64-40a8 8 0 0 0 0-13.56M116 153.57v-51.14L156.91 128Z"/></svg>What we&rsquo;ve made <span class="tag tag--info">Beta</span></span>
       <h2 class="serif h2 reveal" id="skLessonsHead" style="margin-top:0.7rem;">Thirty-five lessons, already made.</h2>
-      <p class="prose reveal sk-lessons-lead">The hybrid lesson above, seventeen more just below, twelve from the wheelchair game, and five for coaches. Each one is short and made for a phone: the court drawn to scale, every shot slowed down and explained, with narration and captions built in. We keep improving them as players and coaches tell us what works. We&rsquo;ve also put Selkirk&rsquo;s name on each one, at the start and on a closing card, so you can see them the way your viewers would. These versions are only for this proposal.</p>
+      <p class="prose reveal sk-lessons-lead">These are early versions: examples of the lessons we want to make, and how far we can take them. The hybrid lesson above, seventeen more just below, twelve from the wheelchair game, and five for coaches. Each one is short and made for a phone: the court drawn to scale, every shot slowed down and explained, with narration and captions built in. We keep improving them as players and coaches tell us what works. We&rsquo;ve also put Selkirk&rsquo;s name on each one, at the start and on a closing card, so you can see them the way your viewers would. These versions are only for this proposal.</p>
     </div>
     <ul class="sk-previews">
-      <li class="reveal sk-new"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/doubles-middle.2038c02f.webp" width="720" height="1280" src="/videos/lessons/doubles-middle.5e805a96.mp4" aria-label="Lesson: hit down the middle. Wheelchair doubles, 53 seconds, narrated, captions on screen."></video>
-        <figcaption><span class="sk-new-tag">New</span><b>Hit down the middle</b><span class="sk-meta">Wheelchair doubles<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>53 seconds</span></span></figcaption>
-      </figure></li>
       <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-speedup.5673fc5e.webp" width="720" height="1280" src="/videos/lessons/hybrid-speedup.932ac8f0.mp4" aria-label="Lesson: speed up the ball that sits up. Hybrid doubles, 55 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Speed up the ball that sits up</b><span class="sk-meta">Our eighteenth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>55 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/doubles-lob.ea06fca9.webp" width="720" height="1280" src="/videos/lessons/doubles-lob.808f0e33.mp4" aria-label="Lesson: cover the lob behind the player at the line. Wheelchair doubles, 61 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Cover the lob behind the player at the line</b><span class="sk-meta">Wheelchair doubles<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>61 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-lob.b9b4dde9.webp" width="720" height="1280" src="/videos/lessons/hybrid-lob.9c41979d.mp4" aria-label="Lesson: defend the lob as a team. Hybrid doubles, 64 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Defend the lob as a team</b><span class="sk-meta">Our seventeenth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>64 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/doubles-time.bb5bc916.webp" width="720" height="1280" src="/videos/lessons/doubles-time.0b845830.mp4" aria-label="Lesson: buy time with a higher ball and the second bounce. Wheelchair doubles, 51 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Buy time with a higher ball and the second bounce</b><span class="sk-meta">Wheelchair doubles<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>51 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-stack.dfde354a.webp" width="720" height="1280" src="/videos/lessons/hybrid-stack.e3450ed8.mp4" aria-label="Lesson: stack so the chair keeps its side. Hybrid doubles, 63 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Stack so the chair keeps its side</b><span class="sk-meta">Our sixteenth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>63 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/doubles-angles.b8b462da.webp" width="720" height="1280" src="/videos/lessons/doubles-angles.900b3e64.mp4" aria-label="Lesson: cover your angle and move as a pair. Wheelchair doubles, 55 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Cover your angle and move as a pair</b><span class="sk-meta">Wheelchair doubles<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>55 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-drive-drop.53dd10d6.webp" width="720" height="1280" src="/videos/lessons/hybrid-drive-drop.11f97d92.mp4" aria-label="Lesson: drive or drop, read the return. Hybrid doubles, 59 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Drive or drop: read the return</b><span class="sk-meta">Our fifteenth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>59 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/doubles-sides.60604808.webp" width="720" height="1280" src="/videos/lessons/doubles-sides.b906ac2d.mp4" aria-label="Lesson: play from your best side. Wheelchair doubles, 72 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Play from your best side</b><span class="sk-meta">Wheelchair doubles<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>72 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-reset.b440bdfe.webp" width="720" height="1280" src="/videos/lessons/hybrid-reset.4a516e04.mp4" aria-label="Lesson: reset the hard ball into the kitchen. Hybrid doubles, 56 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Reset the hard ball into the kitchen</b><span class="sk-meta">Our fourteenth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>56 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/doubles-style.6647bb44.webp" width="720" height="1280" src="/videos/lessons/doubles-style.79da6ad1.mp4" aria-label="Lesson: pick your team&rsquo;s style, both back or one up. Wheelchair doubles, 67 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Pick your team&rsquo;s style: both back, or one up</b><span class="sk-meta">Wheelchair doubles<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>67 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-dink.d3b9f384.webp" width="720" height="1280" src="/videos/lessons/hybrid-dink.60fb1531.mp4" aria-label="Lesson: dink with patience at the kitchen line. Hybrid doubles, 58 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Dink with patience at the kitchen line</b><span class="sk-meta">Our thirteenth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>58 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/tournament-divisions.c1068d1e.webp" width="720" height="1280" src="/videos/lessons/tournament-divisions.4aa3d7d2.mp4" aria-label="Lesson: add wheelchair and hybrid divisions to a tournament. For coaches, 61 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Add wheelchair and hybrid divisions to a tournament</b><span class="sk-meta">Our fifth lesson for coaches<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>61 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/adaptive-night.d1bfeb58.webp" width="720" height="1280" src="/videos/lessons/adaptive-night.625daf38.mp4" aria-label="Lesson: start an adaptive night at your club. For coaches, 65 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Start an adaptive night at your club</b><span class="sk-meta">Our fourth lesson for coaches<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>65 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/adapt-lesson.d6eb2a02.webp" width="720" height="1280" src="/videos/lessons/adapt-lesson.0d8cd34c.mp4" aria-label="Lesson: adapt a lesson to the player in front of you. For coaches, 69 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Adapt a lesson to the player in front of you</b><span class="sk-meta">Our third lesson for coaches<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>69 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/mixed-court.6c836fbf.webp" width="720" height="1280" src="/videos/lessons/mixed-court.da7f4d52.mp4" aria-label="Lesson: run a court where chairs and standing players mix. For coaches, 63 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Run a court where chairs and standing players mix</b><span class="sk-meta">Our second lesson for coaches<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>63 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/feeding-drills.04d9ec42.webp" width="720" height="1280" src="/videos/lessons/feeding-drills.a648393f.mp4" aria-label="Lesson: feeding drills for chair movement. For coaches, 60 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Feeding drills for chair movement</b><span class="sk-meta">Our first lesson for coaches<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>60 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/push-turn-recover.c8903566.webp" width="720" height="1280" src="/videos/lessons/push-turn-recover.3d6af2c4.mp4" aria-label="Lesson: push, turn and recover with a paddle in hand. 65 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Push, turn and recover with a paddle in hand</b><span class="sk-meta">Moving the chair<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>65 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/second-bounce.85a24156.webp" width="720" height="1280" src="/videos/lessons/second-bounce.75c05f2f.mp4" aria-label="Lesson: when to use the second bounce. 73 seconds, narrated, captions on screen."></video>
-        <figcaption><b>When to use the second bounce</b><span class="sk-meta">The second bounce<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>73 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-practice.29be35ba.webp" width="720" height="1280" src="/videos/lessons/hybrid-practice.f66c2feb.mp4" aria-label="Lesson: practice one tactical problem. Hybrid doubles, 68 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Practice one tactical problem</b><span class="sk-meta">Our twelfth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>68 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-support.2b4405cc.webp" width="720" height="1280" src="/videos/lessons/hybrid-support.9a7f9cce.mp4" aria-label="Lesson: help your partner play the next point. Hybrid doubles, 58 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Help your partner play the next point</b><span class="sk-meta">Our eleventh hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>58 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-decision.bb25342a.webp" width="720" height="1280" src="/videos/lessons/hybrid-decision.6ee95fba.mp4" aria-label="Lesson: review the decision before the result. Hybrid doubles, 56 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Review the decision before the result</b><span class="sk-meta">Our tenth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>56 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-build.9fd40e2f.webp" width="720" height="1280" src="/videos/lessons/hybrid-build.7b9a0cfd.mp4" aria-label="Lesson: build the point one shot at a time. Hybrid doubles, 61 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Build the point one shot at a time</b><span class="sk-meta">Our ninth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>61 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-pattern.b6bd5ec9.webp" width="720" height="1280" src="/videos/lessons/hybrid-pattern.218e3438.mp4" aria-label="Lesson: respond when one partner gets most of the balls. Hybrid doubles, 66 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Respond when one partner gets most of the balls</b><span class="sk-meta">Our eighth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>66 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-space.2195c565.webp" width="720" height="1280" src="/videos/lessons/hybrid-space.208fe182.mp4" aria-label="Lesson: stay connected without crowding. Hybrid doubles, 62 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Stay connected without crowding</b><span class="sk-meta">Our seventh hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>62 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-plan.4d513e7a.webp" width="720" height="1280" src="/videos/lessons/hybrid-plan.bbf5cb54.mp4" aria-label="Lesson: make a plan before the point. Hybrid doubles, 63 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Make a plan before the point</b><span class="sk-meta">Our sixth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>63 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-poach.68841cd0.webp" width="720" height="1280" src="/videos/lessons/hybrid-poach.329dfb85.mp4" aria-label="Lesson: poach with a plan. Hybrid doubles, 58 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Poach with a plan</b><span class="sk-meta">Our fifth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>58 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-cover.d43fa47c.webp" width="720" height="1280" src="/videos/lessons/hybrid-cover.3630ff35.mp4" aria-label="Lesson: cover the ball and give your partner time. Hybrid doubles, 67 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Cover the ball and give your partner time</b><span class="sk-meta">Our fourth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>67 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-drop.ad7759b3.webp" width="720" height="1280" src="/videos/lessons/hybrid-drop.ffa73087.mp4" aria-label="Lesson: use the drop to move as a team. Hybrid doubles, 65 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Use the drop to move as a team</b><span class="sk-meta">Our third hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>65 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-angles.39075283.webp" width="720" height="1280" src="/videos/lessons/hybrid-angles.adda4c0a.mp4" aria-label="Lesson: see the angles from the next contact. Hybrid doubles, 69 seconds, narrated, captions on screen."></video>
-        <figcaption><b>See the angles from the next contact</b><span class="sk-meta">Our second hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>69 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/ocean-and-ponds.19839d10.webp" width="720" height="1280" src="/videos/lessons/ocean-and-ponds.575b6d43.mp4" aria-label="Lesson: Ocean and Ponds, see the court from the serve. 65 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Ocean and Ponds: see the court from the serve</b><span class="sk-meta">Reading the court<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>65 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/read-your-opponent.dcab855b.webp" width="720" height="1280" src="/videos/lessons/read-your-opponent.dc6f041b.mp4" aria-label="Lesson: read your opponent, build the point. 71 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Read your opponent, build the point</b><span class="sk-meta">The serve<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>71 seconds</span></span></figcaption>
+        <video controls playsinline preload="none" poster="/videos/lessons/third-shot-drop.5c5ee861.webp" width="720" height="1280" src="/videos/lessons/third-shot-drop.64063e0b.mp4" aria-label="Lesson: the third shot drop. 69 seconds, narrated, captions on screen."></video>
+        <figcaption><b>The third shot drop: earn your way forward</b><span class="sk-meta">The third shot<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>69 seconds</span></span></figcaption>
       </figure></li>
       <li class="reveal"><figure>
         <video controls playsinline preload="none" poster="/videos/lessons/return-of-serve.3635d02f.webp" width="720" height="1280" src="/videos/lessons/return-of-serve.33e9c616.mp4" aria-label="Lesson: return deep, cover the reply. 66 seconds, narrated, captions on screen."></video>
         <figcaption><b>Return deep, cover the reply</b><span class="sk-meta">The return<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>66 seconds</span></span></figcaption>
       </figure></li>
       <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/third-shot-drop.5c5ee861.webp" width="720" height="1280" src="/videos/lessons/third-shot-drop.64063e0b.mp4" aria-label="Lesson: the third shot drop. 69 seconds, narrated, captions on screen."></video>
-        <figcaption><b>The third shot drop: earn your way forward</b><span class="sk-meta">The third shot<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>69 seconds</span></span></figcaption>
+        <video controls playsinline preload="none" poster="/videos/lessons/read-your-opponent.dcab855b.webp" width="720" height="1280" src="/videos/lessons/read-your-opponent.dc6f041b.mp4" aria-label="Lesson: read your opponent, build the point. 71 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Read your opponent, build the point</b><span class="sk-meta">The serve<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>71 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/ocean-and-ponds.19839d10.webp" width="720" height="1280" src="/videos/lessons/ocean-and-ponds.575b6d43.mp4" aria-label="Lesson: Ocean and Ponds, see the court from the serve. 65 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Ocean and Ponds: see the court from the serve</b><span class="sk-meta">Reading the court<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>65 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-angles.39075283.webp" width="720" height="1280" src="/videos/lessons/hybrid-angles.adda4c0a.mp4" aria-label="Lesson: see the angles from the next contact. Hybrid doubles, 69 seconds, narrated, captions on screen."></video>
+        <figcaption><b>See the angles from the next contact</b><span class="sk-meta">Our second hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>69 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-drop.ad7759b3.webp" width="720" height="1280" src="/videos/lessons/hybrid-drop.ffa73087.mp4" aria-label="Lesson: use the drop to move as a team. Hybrid doubles, 65 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Use the drop to move as a team</b><span class="sk-meta">Our third hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>65 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-cover.d43fa47c.webp" width="720" height="1280" src="/videos/lessons/hybrid-cover.3630ff35.mp4" aria-label="Lesson: cover the ball and give your partner time. Hybrid doubles, 67 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Cover the ball and give your partner time</b><span class="sk-meta">Our fourth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>67 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-poach.68841cd0.webp" width="720" height="1280" src="/videos/lessons/hybrid-poach.329dfb85.mp4" aria-label="Lesson: poach with a plan. Hybrid doubles, 58 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Poach with a plan</b><span class="sk-meta">Our fifth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>58 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-plan.4d513e7a.webp" width="720" height="1280" src="/videos/lessons/hybrid-plan.bbf5cb54.mp4" aria-label="Lesson: make a plan before the point. Hybrid doubles, 63 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Make a plan before the point</b><span class="sk-meta">Our sixth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>63 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-space.2195c565.webp" width="720" height="1280" src="/videos/lessons/hybrid-space.208fe182.mp4" aria-label="Lesson: stay connected without crowding. Hybrid doubles, 62 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Stay connected without crowding</b><span class="sk-meta">Our seventh hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>62 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-pattern.b6bd5ec9.webp" width="720" height="1280" src="/videos/lessons/hybrid-pattern.218e3438.mp4" aria-label="Lesson: respond when one partner gets most of the balls. Hybrid doubles, 66 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Respond when one partner gets most of the balls</b><span class="sk-meta">Our eighth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>66 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-build.9fd40e2f.webp" width="720" height="1280" src="/videos/lessons/hybrid-build.7b9a0cfd.mp4" aria-label="Lesson: build the point one shot at a time. Hybrid doubles, 61 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Build the point one shot at a time</b><span class="sk-meta">Our ninth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>61 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-decision.bb25342a.webp" width="720" height="1280" src="/videos/lessons/hybrid-decision.6ee95fba.mp4" aria-label="Lesson: review the decision before the result. Hybrid doubles, 56 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Review the decision before the result</b><span class="sk-meta">Our tenth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>56 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-support.2b4405cc.webp" width="720" height="1280" src="/videos/lessons/hybrid-support.9a7f9cce.mp4" aria-label="Lesson: help your partner play the next point. Hybrid doubles, 58 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Help your partner play the next point</b><span class="sk-meta">Our eleventh hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>58 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-practice.29be35ba.webp" width="720" height="1280" src="/videos/lessons/hybrid-practice.f66c2feb.mp4" aria-label="Lesson: practice one tactical problem. Hybrid doubles, 68 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Practice one tactical problem</b><span class="sk-meta">Our twelfth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>68 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/second-bounce.85a24156.webp" width="720" height="1280" src="/videos/lessons/second-bounce.75c05f2f.mp4" aria-label="Lesson: when to use the second bounce. 73 seconds, narrated, captions on screen."></video>
+        <figcaption><b>When to use the second bounce</b><span class="sk-meta">The second bounce<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>73 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/push-turn-recover.c8903566.webp" width="720" height="1280" src="/videos/lessons/push-turn-recover.3d6af2c4.mp4" aria-label="Lesson: push, turn and recover with a paddle in hand. 65 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Push, turn and recover with a paddle in hand</b><span class="sk-meta">Moving the chair<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>65 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/feeding-drills.04d9ec42.webp" width="720" height="1280" src="/videos/lessons/feeding-drills.a648393f.mp4" aria-label="Lesson: feeding drills for chair movement. For coaches, 60 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Feeding drills for chair movement</b><span class="sk-meta">Our first lesson for coaches<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>60 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/mixed-court.6c836fbf.webp" width="720" height="1280" src="/videos/lessons/mixed-court.da7f4d52.mp4" aria-label="Lesson: run a court where chairs and standing players mix. For coaches, 63 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Run a court where chairs and standing players mix</b><span class="sk-meta">Our second lesson for coaches<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>63 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/adapt-lesson.d6eb2a02.webp" width="720" height="1280" src="/videos/lessons/adapt-lesson.0d8cd34c.mp4" aria-label="Lesson: adapt a lesson to the player in front of you. For coaches, 69 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Adapt a lesson to the player in front of you</b><span class="sk-meta">Our third lesson for coaches<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>69 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/adaptive-night.d1bfeb58.webp" width="720" height="1280" src="/videos/lessons/adaptive-night.625daf38.mp4" aria-label="Lesson: start an adaptive night at your club. For coaches, 65 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Start an adaptive night at your club</b><span class="sk-meta">Our fourth lesson for coaches<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>65 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/tournament-divisions.c1068d1e.webp" width="720" height="1280" src="/videos/lessons/tournament-divisions.4aa3d7d2.mp4" aria-label="Lesson: add wheelchair and hybrid divisions to a tournament. For coaches, 61 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Add wheelchair and hybrid divisions to a tournament</b><span class="sk-meta">Our fifth lesson for coaches<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>61 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-dink.d3b9f384.webp" width="720" height="1280" src="/videos/lessons/hybrid-dink.60fb1531.mp4" aria-label="Lesson: dink with patience at the kitchen line. Hybrid doubles, 58 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Dink with patience at the kitchen line</b><span class="sk-meta">Our thirteenth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>58 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/doubles-style.6647bb44.webp" width="720" height="1280" src="/videos/lessons/doubles-style.79da6ad1.mp4" aria-label="Lesson: pick your team&rsquo;s style, both back or one up. Wheelchair doubles, 67 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Pick your team&rsquo;s style: both back, or one up</b><span class="sk-meta">Wheelchair doubles<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>67 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-reset.b440bdfe.webp" width="720" height="1280" src="/videos/lessons/hybrid-reset.4a516e04.mp4" aria-label="Lesson: reset the hard ball into the kitchen. Hybrid doubles, 56 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Reset the hard ball into the kitchen</b><span class="sk-meta">Our fourteenth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>56 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/doubles-sides.60604808.webp" width="720" height="1280" src="/videos/lessons/doubles-sides.b906ac2d.mp4" aria-label="Lesson: play from your best side. Wheelchair doubles, 72 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Play from your best side</b><span class="sk-meta">Wheelchair doubles<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>72 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-drive-drop.53dd10d6.webp" width="720" height="1280" src="/videos/lessons/hybrid-drive-drop.11f97d92.mp4" aria-label="Lesson: drive or drop, read the return. Hybrid doubles, 59 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Drive or drop: read the return</b><span class="sk-meta">Our fifteenth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>59 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/doubles-angles.b8b462da.webp" width="720" height="1280" src="/videos/lessons/doubles-angles.900b3e64.mp4" aria-label="Lesson: cover your angle and move as a pair. Wheelchair doubles, 55 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Cover your angle and move as a pair</b><span class="sk-meta">Wheelchair doubles<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>55 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-stack.dfde354a.webp" width="720" height="1280" src="/videos/lessons/hybrid-stack.e3450ed8.mp4" aria-label="Lesson: stack so the chair keeps its side. Hybrid doubles, 63 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Stack so the chair keeps its side</b><span class="sk-meta">Our sixteenth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>63 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/doubles-time.bb5bc916.webp" width="720" height="1280" src="/videos/lessons/doubles-time.0b845830.mp4" aria-label="Lesson: buy time with a higher ball and the second bounce. Wheelchair doubles, 51 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Buy time with a higher ball and the second bounce</b><span class="sk-meta">Wheelchair doubles<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>51 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-lob.b9b4dde9.webp" width="720" height="1280" src="/videos/lessons/hybrid-lob.9c41979d.mp4" aria-label="Lesson: defend the lob as a team. Hybrid doubles, 64 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Defend the lob as a team</b><span class="sk-meta">Our seventeenth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>64 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/doubles-lob.ea06fca9.webp" width="720" height="1280" src="/videos/lessons/doubles-lob.808f0e33.mp4" aria-label="Lesson: cover the lob behind the player at the line. Wheelchair doubles, 61 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Cover the lob behind the player at the line</b><span class="sk-meta">Wheelchair doubles<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>61 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-speedup.5673fc5e.webp" width="720" height="1280" src="/videos/lessons/hybrid-speedup.932ac8f0.mp4" aria-label="Lesson: speed up the ball that sits up. Hybrid doubles, 55 seconds, narrated, captions on screen."></video>
+        <figcaption><b>Speed up the ball that sits up</b><span class="sk-meta">Our eighteenth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>55 seconds</span></span></figcaption>
+      </figure></li>
+      <li class="reveal sk-new"><figure>
+        <video controls playsinline preload="none" poster="/videos/lessons/doubles-middle.2038c02f.webp" width="720" height="1280" src="/videos/lessons/doubles-middle.5e805a96.mp4" aria-label="Lesson: hit down the middle. Wheelchair doubles, 53 seconds, narrated, captions on screen."></video>
+        <figcaption><span class="sk-new-tag">New</span><b>Hit down the middle</b><span class="sk-meta">Wheelchair doubles<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>53 seconds</span></span></figcaption>
       </figure></li>
     </ul>
     <p class="sk-previews-note reveal">Tap to play, with sound. Captions are on screen, and the narration is a synthetic voice. Each lesson draws on USA Pickleball&rsquo;s rules and on coaching from pros, Selkirk&rsquo;s own included, and the teaching guide behind each one notes what changes for the chair.</p>

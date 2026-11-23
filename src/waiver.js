@@ -251,12 +251,19 @@ export async function handleWaiver(request, env) {
   // work that may fail and be retried, but the release itself already exists.
   // The row starts as 'uploading' (this request is attempt 1) so the cron does
   // not race the in-flight upload below.
+  // r2_key is written as '' on purpose. The live atl-waivers table still has
+  // the June 2026 column `r2_key TEXT NOT NULL` (no default) from when PDFs
+  // went to R2. The Sept 14 change that retired R2 dropped the column from this
+  // INSERT but not from the live table, so every signing on both sites failed
+  // with a NOT NULL error until Nov 23. SQLite cannot drop NOT NULL in place,
+  // so the column stays and this INSERT fills it. Don't remove it.
+  // test/waiver_signing.test.js signs against the live table's exact shape.
   try {
     await env.WAIVERS_DB.batch([
       env.WAIVERS_DB.prepare(
         `INSERT INTO waivers
-         (id, org, waiver_version, signer_name, signer_email, signed_at, signature_type, signer_kind, minor_name, relationship, program, consent, ip, user_agent, country, region, city, doc_sha256, pdf_sha256, drive_file_id, drive_link, drive_status, drive_attempts, drive_last_attempt_at)
-         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'uploading',1,?)`,
+         (id, org, waiver_version, signer_name, signer_email, signed_at, signature_type, signer_kind, minor_name, relationship, program, consent, ip, user_agent, country, region, city, doc_sha256, pdf_sha256, r2_key, drive_file_id, drive_link, drive_status, drive_attempts, drive_last_attempt_at)
+         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'',?,?,'uploading',1,?)`,
       ).bind(
         id,
         org,

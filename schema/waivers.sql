@@ -28,6 +28,7 @@ CREATE TABLE waivers (
   city            TEXT,
   doc_sha256      TEXT,                    -- hash of the exact text agreed to
   pdf_sha256      TEXT,                    -- hash of the stored PDF (tamper-evidence)
+  r2_key          TEXT NOT NULL DEFAULT '', -- retired (R2 era, June 2026). The live table has it NOT NULL with no default; src/waiver.js writes ''. Keep it so fresh and live match.
   drive_file_id   TEXT,
   drive_link      TEXT,
   drive_status    TEXT NOT NULL DEFAULT 'pending', -- uploading | pending | done | failed | unrecoverable

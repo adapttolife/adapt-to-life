@@ -99,18 +99,52 @@ export function buildExpected(dbName, read = readLocal) {
 }
 
 // SQL text compared in a meaning-preserving normal form: no comments, one
-// case, no optional IF NOT EXISTS, no quoting, no whitespace by punctuation.
-export function normSql(sql) {
-  if (sql === null || sql === undefined) return null;
-  return String(sql)
-    .replace(/--[^\n]*/g, " ")
-    .replace(/\/\*[\s\S]*?\*\//g, " ")
+// case, no optional IF NOT EXISTS, no identifier quoting, no whitespace by
+// punctuation. String literals ('...') are kept byte for byte: they are
+// swapped for placeholders first, so case-folding, comment stripping and
+// keyword scans never touch them.
+function protect(sql) {
+  const lits = [];
+  let out = "";
+  const src = String(sql);
+  for (let i = 0; i < src.length;) {
+    const ch = src[i];
+    if (ch === "'") {
+      let j = i + 1;
+      for (; j < src.length; j++)
+        if (src[j] === "'") {
+          if (src[j + 1] === "'") j++;
+          else break;
+        }
+      lits.push(src.slice(i, j + 1));
+      out += `\u0001${lits.length - 1}\u0001`;
+      i = j + 1;
+    } else if (ch === "-" && src[i + 1] === "-") {
+      const j = src.indexOf("\n", i);
+      out += " ";
+      i = j === -1 ? src.length : j;
+    } else if (ch === "/" && src[i + 1] === "*") {
+      const j = src.indexOf("*/", i + 2);
+      out += " ";
+      i = j === -1 ? src.length : j + 2;
+    } else {
+      out += ch;
+      i++;
+    }
+  }
+  const text = out
     .toLowerCase()
     .replace(/\bif\s+not\s+exists\b/g, " ")
     .replace(/["`[\]]/g, "")
     .replace(/\s+/g, " ")
     .replace(/\s*([(),;=<>])\s*/g, "$1")
     .trim();
+  return { text, restore: (t) => t.replace(/\u0001(\d+)\u0001/g, (_, n) => lits[+n]) };
+}
+export function normSql(sql) {
+  if (sql === null || sql === undefined) return null;
+  const p = protect(sql);
+  return p.restore(p.text);
 }
 
 function balanced(s) {
@@ -129,24 +163,37 @@ function normDefault(v) {
   return s;
 }
 
-// CHECK (...) and REFERENCES t(cols) [ON ...] clauses, and table options.
+// CHECK (...) and REFERENCES ... clauses (each to the end of its clause:
+// columns, ON DELETE/UPDATE, MATCH, DEFERRABLE), and table options.
+function clauseEnd(s, i) {
+  let d = 0;
+  for (let j = i; j < s.length; j++) {
+    if (s[j] === "(") d++;
+    else if (s[j] === ")") {
+      if (d === 0) return j;
+      d--;
+    } else if (s[j] === "," && d === 0) return j;
+  }
+  return s.length;
+}
 function tableClauses(sql) {
-  const s = normSql(sql) || "";
+  const p = protect(sql || "");
+  const s = p.text;
   const checks = [];
-  for (let i = s.indexOf("check("); i !== -1; i = s.indexOf("check(", i + 1)) {
+  for (let i = s.search(/\bcheck\(/); i !== -1;) {
     let d = 0;
     let j = i + 5;
     for (; j < s.length; j++) {
       if (s[j] === "(") d++;
       else if (s[j] === ")" && --d === 0) break;
     }
-    checks.push(s.slice(i, j + 1));
+    checks.push(p.restore(s.slice(i, j + 1)));
+    const next = s.slice(j + 1).search(/\bcheck\(/);
+    i = next === -1 ? -1 : j + 1 + next;
   }
-  const refs = [
-    ...s.matchAll(
-      /references [^(,]+\([^)]*\)(?: on (?:delete|update) [a-z ]+?(?=,|\)|$))*/g,
-    ),
-  ].map((m) => m[0].trim());
+  const refs = [];
+  for (const m of s.matchAll(/\breferences\b/g))
+    refs.push(p.restore(s.slice(m.index, clauseEnd(s, m.index)).trim()));
   const tail = s.slice(s.lastIndexOf(")") + 1);
   return {
     checks: checks.sort(),

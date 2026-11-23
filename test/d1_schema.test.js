@@ -122,3 +122,37 @@ test("an unknown live table fails; an allowlisted one is a note", () => {
   assert.deepEqual(out.problems, ["table stray: live only, no schema file defines it"]);
   assert.deepEqual(out.notes, ["table intake: live, another worker's table"]);
 });
+
+test("string literals keep their case and content; comments outside them do not count", () => {
+  const exp = `CREATE TABLE t (id TEXT PRIMARY KEY, s TEXT DEFAULT 'ABC', u TEXT DEFAULT 'a--b');`;
+  assert.deepEqual(diff(exp.replace("'ABC'", "'abc'"), exp).problems, [
+    `t.s: default is "'abc'" live, "'ABC'" in the schema files`,
+  ]);
+  assert.deepEqual(diff(exp.replace("'a--b'", "'a'"), exp).problems, [
+    `t.u: default is "'a'" live, "'a--b'" in the schema files`,
+  ]);
+  const commented = exp.replace("PRIMARY KEY,", "PRIMARY KEY, -- the id\n");
+  assert.deepEqual(diff(commented, exp), { problems: [], notes: [] });
+  const trig = (msg) =>
+    `${exp}\nCREATE TRIGGER t_no BEFORE DELETE ON t BEGIN SELECT RAISE(ABORT, '${msg}'); END;`;
+  assert.deepEqual(diff(trig("No"), trig("no")).problems, [
+    "trigger t_no: definition differs from the schema files",
+  ]);
+});
+
+test("foreign keys are compared to the end of the clause", () => {
+  const P = "CREATE TABLE p (id TEXT PRIMARY KEY);\n";
+  const fk = (ref) => `${P}CREATE TABLE c (id TEXT PRIMARY KEY, p TEXT ${ref});`;
+  const cases = [
+    ["REFERENCES p", "REFERENCES p(id)"],
+    ["REFERENCES p(id)", "REFERENCES p(id) ON DELETE CASCADE"],
+    ["REFERENCES p(id)", "REFERENCES p(id) DEFERRABLE INITIALLY DEFERRED"],
+    ["REFERENCES p(id)", "REFERENCES p(id) MATCH SIMPLE"],
+  ];
+  for (const [a, b] of cases)
+    assert.match(diff(fk(b), fk(a)).problems.join(), /REFERENCES/, `${a} vs ${b}`);
+  assert.deepEqual(diff(fk("REFERENCES p (id)"), fk("references p(id)")), {
+    problems: [],
+    notes: [],
+  });
+});

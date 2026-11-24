@@ -1,5 +1,7 @@
 # Gmail site-mail candidate
 
+> **Superseded Nov 24 2026 by [EMAIL.md](EMAIL.md).** Kept as the record of the September Gmail setup. The Gmail token it describes stopped working on Nov 23 2026, when the move to the nonprofit Google Workspace deleted the old hello@ user.
+
 Coordinated staging reviews: [ATL #135](https://github.com/adapttolife/adapt-to-life/pull/135) and [ASNM #25](https://github.com/adapttolife/adaptivesportsnearme/pull/25). Alec authorized standardizing both repositories on feature branches from staging, PRs into staging, and separately reviewed staging-to-main releases. ATL staging was initialized from main at `b0d4b7260f3faa0bc132734b39e12e4189890b04`, also the existing repair base; full staging ancestry is verified without rewriting code history. The PRs are parallel companions, not a Git stack; neither imports the other.
 
 This branch prepares Gmail sending for the existing site-mail paths. It is not deployed; dedicated runtime credentials have now been provisioned separately as documented below. Git `staging` now exists. The existing Wrangler `env.staging` remains a separate, front-end-only Worker; creating a Git branch does not provision backend staging or prove Gmail form delivery. See CONTRIBUTING.md for the shared integration standard.

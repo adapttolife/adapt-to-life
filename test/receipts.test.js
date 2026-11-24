@@ -13,7 +13,37 @@
 // the other tests here.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { sendContactReceipt, sendApplyReceipt } from "../src/receipts.js";
+import {
+  sendContactReceipt,
+  sendApplyReceipt,
+  renderReceipt,
+} from "../src/receipts.js";
+
+test("the outbox render carries the submission key and receipt tags, and sends nothing", async () => {
+  const id = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
+  let sends = 0;
+  const env = {
+    SEND_EMAIL: { send: () => sends++ },
+    INTAKE_SEPARATE_NOTIFICATION: true,
+    INTAKE_SUBMISSION_ID: id,
+  };
+  const sub = { name: "Alec T", email: "someone@example.com", message: "hi", roles: ["Coach"] };
+  for (const kind of ["contact", "apply", "volunteer"]) {
+    const m = await renderReceipt(env, kind, sub);
+    assert.equal(m.idempotencyKey, `receipt-${kind}-${id}`);
+    assert.deepEqual(m.tags, { brand: "adapttolife", kind: `receipt-${kind}` });
+    assert.equal(m.from, "Adapt To Life <hello@mail.adapttolife.org>");
+    assert.equal(m.replyTo, "hello@adapttolife.org");
+    assert.ok(m.text.includes(`Reference: ${id}`));
+    // Only the contact receipt keeps the house BCC once intake notifies separately.
+    assert.equal(m.bcc, kind === "contact" ? "hello@adapttolife.org" : undefined);
+  }
+  assert.equal(sends, 0);
+  await assert.rejects(
+    renderReceipt({ INTAKE_SUBMISSION_ID: "not-an-id" }, "contact", sub),
+    /Invalid intake reference/,
+  );
+});
 
 function stubEnv({ throws = false } = {}) {
   const sent = [];
@@ -45,7 +75,7 @@ test("contact receipt sends to the person and bccs the house address", async () 
   assert.equal(m.to, "someone@example.com");
   assert.equal(m.bcc, "hello@adapttolife.org");
   assert.equal(m.replyTo, "hello@adapttolife.org");
-  assert.match(m.from, /hello@adapttolife\.org/);
+  assert.equal(m.from, "Adapt To Life <hello@mail.adapttolife.org>");
   assert.ok(m.subject.length > 0);
   assert.ok(m.text.includes("Alec"), "greets by first name only");
   assert.ok(!m.text.includes("Tranel"), "does not use the full name in the greeting");

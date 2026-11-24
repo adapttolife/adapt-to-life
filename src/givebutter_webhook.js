@@ -2,6 +2,7 @@ import { mailConfigured } from "./mail-transport.js";
 import {
   cfSend,
   esc,
+  HOUSE_BRAND,
   houseShell,
   houseSignoff,
   HOUSE_FROM,
@@ -193,8 +194,20 @@ export async function claimAndThank(env, gift) {
   const attemptNumber = number(state?.attempt_count);
 
   try {
-    await sendDonorThankYou(env, gift);
+    const sent = await sendDonorThankYou(env, gift);
     const sentAt = new Date().toISOString();
+    if (sent?.dropped) {
+      // Outside production a non-team address is never mailed: nothing is owed.
+      await env.WAIVERS_DB.prepare(
+        `UPDATE donor_gifts
+            SET email_status = 'no_email', next_attempt_at = NULL, last_error = ?,
+                lease_token = NULL, updated_at = ?
+          WHERE transaction_id = ? AND lease_token = ? AND email_status = 'sending'`,
+      )
+        .bind(`Not sent: dropped outside production (${sent.reason})`, sentAt, gift.transactionId, leaseToken)
+        .run();
+      return { emailed: false, dropped: true };
+    }
     const completed = await env.WAIVERS_DB.prepare(
       `UPDATE donor_gifts
           SET email_status = ?, email_sent_at = ?, next_attempt_at = NULL,
@@ -208,8 +221,12 @@ export async function claimAndThank(env, gift) {
       : { emailed: false, obsolete: true };
   } catch (err) {
     const failedAt = new Date().toISOString();
+    // Resend says whether a retry is safe; a refused send (bad address, From,
+    // a reused key with a different body) never gets better by retrying.
     const terminal =
-      env.MAIL_TRANSPORT === "gmail" || attemptNumber >= MAX_EMAIL_ATTEMPTS;
+      env.MAIL_TRANSPORT === "gmail" ||
+      (env.MAIL_TRANSPORT === "resend" && err?.retryable !== true) ||
+      attemptNumber >= MAX_EMAIL_ATTEMPTS;
     const retryAt = terminal
       ? null
       : new Date(Date.now() + retryDelayMs(attemptNumber)).toISOString();
@@ -236,8 +253,10 @@ export async function claimAndThank(env, gift) {
 
 // The production Worker already wakes every ten minutes. Reclaiming a stale
 // lease here closes the process-death gap between claiming a row and recording
-// the email outcome. Cloudflare Email Sending has no idempotency key, so this is
-// deliberately at-least-once after a crash rather than silently at-most-once.
+// the email outcome. On Resend the send carries the Idempotency-Key
+// donor-thanks-<transaction id> over a body built only from the gift row, and
+// every attempt falls well inside Resend's 24-hour window (four attempts, the
+// last about two hours after the first), so a reclaim cannot email twice.
 export async function recoverDonorEmails(env) {
   if (!env.WAIVERS_DB)
     return {
@@ -365,6 +384,8 @@ export async function sendDonorThankYou(env, gift) {
     subject: "Thank you for putting an athlete in the game",
     text: textBody,
     html,
+    idempotencyKey: `donor-thanks-${gift.transactionId}`,
+    tags: { brand: HOUSE_BRAND, kind: "donor-thanks" },
   });
 }
 

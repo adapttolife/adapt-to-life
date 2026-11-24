@@ -7,7 +7,6 @@ import { readFileSync } from "node:fs";
 import { createHash, generateKeyPairSync } from "node:crypto";
 import worker from "../src/index.js";
 import { runDriveBacklog } from "../src/waiver.js";
-import { buildMime } from "../src/mail-transport.js";
 import { sqliteD1, formBindings } from "./helpers/form-db.js";
 import { readdirSync } from "node:fs";
 import { buildExpected, describeLocal, diffSchema } from "../scripts/lib/d1-schema.mjs";
@@ -26,10 +25,14 @@ const SA = JSON.stringify({
 let drive;
 let originalFetch;
 beforeEach(() => {
-  drive = { files: new Map(), uploads: 0, lookups: 0, mode: "ok" };
+  drive = { files: new Map(), uploads: 0, lookups: 0, mode: "ok", resend: [] };
   originalFetch = globalThis.fetch;
   globalThis.fetch = async (input, init = {}) => {
     const url = String(input);
+    if (url === "https://api.resend.com/emails") {
+      drive.resend.push({ headers: init.headers, body: JSON.parse(init.body) });
+      return Response.json({ id: "resend-" + drive.resend.length });
+    }
     if (url === "https://oauth2.example/token")
       return Response.json({ access_token: "tok" });
     if (url.startsWith("https://www.googleapis.com/upload/drive/v3/files")) {
@@ -109,8 +112,14 @@ const docRow = (e) => e.WAIVERS_DB.sql.prepare("SELECT * FROM waiver_documents")
 const count = (e, t) => e.WAIVERS_DB.sql.prepare(`SELECT count(*) n FROM ${t}`).get().n;
 const sha = (b) => createHash("sha256").update(b).digest("hex");
 
+const RESEND = {
+  MAIL_TRANSPORT: "resend",
+  RESEND_API_KEY: "test-key",
+  MAIL_FROM_DOMAINS: "mail.adapttolife.org",
+  ENV_NAME: "production",
+};
 test("happy path: row and PDF bytes captured, archived to Drive once, receipt sent", async () => {
-  const e = env();
+  const e = env(RESEND);
   const res = await sign(e);
   const out = await res.json();
   assert.equal(res.status, 200);
@@ -131,15 +140,25 @@ test("happy path: row and PDF bytes captured, archived to Drive once, receipt se
     0,
     "a fresh id cannot exist in Drive yet, so no lookup at signing",
   );
-  assert.equal(e.sent.length, 1);
-  assert.equal(e.sent[0].attachments.length, 1);
-  // The live transport is Gmail, which builds the MIME itself. The exact
-  // message the waiver hands over must survive that builder with the PDF intact.
-  const mime = buildMime(e.sent[0], "hello@adapttolife.org");
-  assert.match(mime, /application\/pdf/);
-  assert.ok(
-    mime.includes(Buffer.from(docRow(e).pdf).toString("base64").slice(0, 60)),
-    "the signed PDF bytes are in the Gmail MIME",
+  // The live transport is Resend, which base64s the bytes itself. The exact
+  // message the waiver hands over must reach Resend with the PDF intact.
+  assert.equal(drive.resend.length, 1);
+  const { headers, body } = drive.resend[0];
+  assert.equal(body.from, "Adapt To Life <hello@mail.adapttolife.org>");
+  assert.deepEqual(body.bcc, ["hello@adapttolife.org"]);
+  assert.deepEqual(body.reply_to, ["hello@adapttolife.org"]);
+  assert.equal(headers["Idempotency-Key"], `waiver-${out.id}`);
+  assert.deepEqual(body.tags, [
+    { name: "brand", value: "adapttolife" },
+    { name: "kind", value: "waiver" },
+    { name: "env", value: "production" },
+  ]);
+  assert.equal(body.attachments.length, 1);
+  assert.equal(body.attachments[0].content_type, "application/pdf");
+  assert.equal(
+    body.attachments[0].content,
+    Buffer.from(docRow(e).pdf).toString("base64"),
+    "the signed PDF bytes are in the Resend request",
   );
   assert.equal(e.INTAKE.sql.prepare("SELECT count(*) n FROM intake").get().n, 1);
 });

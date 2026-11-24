@@ -37,6 +37,7 @@ export const D1_SCHEMAS = {
     "schema/agent_mail.sql",
     "src/schema_newsletter.sql",
     "schema/migrations/2026-11-07-newsletter-welcome.sql",
+    "schema/resend_events.sql",
   ],
   "atl-intake": ["src/schema_intake_delivery.sql"],
 };

@@ -10,12 +10,17 @@ import { mailConfigured } from "./mail-transport.js";
 //
 // So this lives in the Worker rather than in Airtable: same code path as the
 // write, visible in the diff, and reachable by the standing site check. The
-// send is via Cloudflare's native SEND_EMAIL binding, the same cfSend path the
-// waiver receipt has used in production all along — no API key, sender domain
-// already onboarded with SPF/DKIM.
+// send goes through the one mail module (src/mail-transport.js), the same
+// cfSend path the waiver receipt uses.
 //
 // The bcc does double duty on purpose: the person hears back, and the house is
 // told a submission arrived, in one send with one failure mode instead of two.
+//
+// Since Nov 2026 the send goes through Resend (docs/EMAIL.md). The form outbox
+// (src/forms.js) calls renderReceipt() once, stores the exact message, and
+// resends that same message under the same Idempotency-Key
+// (receipt-<kind>-<submission id>), so a retry can never email someone twice
+// and a moved fund total can never change a receipt between attempts.
 //
 // HARD RULE: a receipt must never fail a submission. By the time these run the
 // record is already saved, and a bounced confirmation is a far smaller problem
@@ -23,6 +28,7 @@ import { mailConfigured } from "./mail-transport.js";
 // here swallows its error and logs it.
 import {
   cfSend,
+  HOUSE_BRAND,
   HOUSE_FROM,
   HOUSE_INBOX,
   houseShell,
@@ -50,7 +56,61 @@ const FUND_URL = "https://adapttolife.org/hustle-and-heart";
 // hello@ on purpose: those are ordinary correspondence.
 const grantsInbox = (env) => env.GRANTS_INBOX || HOUSE_INBOX;
 
+const RECEIPT_KIND = {
+  "contact receipt": "contact",
+  "apply receipt": "apply",
+  "volunteer receipt": "volunteer",
+};
+const SUBMISSION_ID =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+// The exact message that goes out: audience, reference line, key and tags.
+function prepare(env, msg, label) {
+  const kind = RECEIPT_KIND[label];
+  // Contact acknowledgments are part of the house correspondence record,
+  // not a second notification service. Keep their original-content BCC.
+  // Other forms retain their existing audience/privacy boundary.
+  if (env.INTAKE_SEPARATE_NOTIFICATION && label !== "contact receipt") {
+    msg = { ...msg };
+    delete msg.bcc;
+  }
+  let id = "";
+  if (env.INTAKE_SUBMISSION_ID) {
+    id = String(env.INTAKE_SUBMISSION_ID);
+    if (!SUBMISSION_ID.test(id)) throw Error("Invalid intake reference");
+    msg = {
+      ...msg,
+      text: `${msg.text}\n\nReference: ${id}`,
+      html: `${msg.html}<p style="font-size:12px;color:#6b6b70">Reference: ${esc(id)}</p>`,
+      headers: {
+        ...msg.headers,
+        "X-ATL-Intake-ID": id,
+        "Auto-Submitted": "auto-generated",
+      },
+    };
+  }
+  return {
+    ...msg,
+    // Outside the outbox (the staging preview) there is no retry to protect.
+    idempotencyKey: `receipt-${kind}-${id || crypto.randomUUID()}`,
+    tags: { brand: HOUSE_BRAND, kind: `receipt-${kind}` },
+  };
+}
+
+// For the form outbox: the rendered receipt, not sent. Errors are thrown, not
+// swallowed, because the outbox owns the outcome.
+export async function renderReceipt(env, kind, sub) {
+  const fn = {
+    contact: sendContactReceipt,
+    apply: sendApplyReceipt,
+    volunteer: sendVolunteerReceipt,
+  }[kind];
+  if (!fn) throw Error("Unsupported receipt");
+  return fn({ ...env, RECEIPT_RENDER_ONLY: true }, sub);
+}
+
 async function send(env, msg, label) {
+  if (env.RECEIPT_RENDER_ONLY) return prepare(env, msg, label);
   try {
     if (!mailConfigured(env)) {
       // Staging has no send_email binding and MAIL_TRANSPORT "none" by design,
@@ -59,36 +119,16 @@ async function send(env, msg, label) {
       // NOT recorded as a failure: staging is supposed to look like this, and a
       // ledger that cries wolf on every staging deploy gets ignored on the day
       // it is right.
-      console.log(`${label}: SEND_EMAIL not bound, skipping`);
+      console.log(`${label}: mail not configured, skipping`);
       return false;
     }
-    // Contact acknowledgments are part of the house correspondence record,
-    // not a second notification service. Keep their original-content BCC.
-    // Other forms retain their existing audience/privacy boundary.
-    if (env.INTAKE_SEPARATE_NOTIFICATION && label !== "contact receipt") {
-      msg = { ...msg };
-      delete msg.bcc;
-    }
-    if (env.INTAKE_SUBMISSION_ID) {
-      const id = String(env.INTAKE_SUBMISSION_ID);
-      if (
-        !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-          id,
-        )
-      )
-        throw Error("Invalid intake reference");
-      msg = {
-        ...msg,
-        text: `${msg.text}\n\nReference: ${id}`,
-        html: `${msg.html}<p style="font-size:12px;color:#6b6b70">Reference: ${esc(id)}</p>`,
-        headers: {
-          ...msg.headers,
-          "X-ATL-Intake-ID": id,
-          "Auto-Submitted": "auto-generated",
-        },
-      };
-    }
+    msg = prepare(env, msg, label);
     const result = await cfSend(env, msg);
+    if (result?.dropped) {
+      // Outside production, a non-team address is never mailed. Not a failure.
+      console.log(`${label}: not sent (${result.reason})`);
+      return false;
+    }
     if (env.INTAKE_CAPTURE_RECEIPT) {
       if (typeof result?.messageId !== "string" || !result.messageId.trim()) {
         throw Error("Email send returned no provider identifier; verify before retry");

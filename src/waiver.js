@@ -7,7 +7,14 @@ import { mailConfigured } from "./mail-transport.js";
 // download link. No external server, no SMTP.
 
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
-import { cfSend, houseShell, recordTransactionalFailure } from "./email.js";
+import {
+  cfSend,
+  HOUSE_BRAND,
+  HOUSE_FROM,
+  HOUSE_INBOX,
+  houseShell,
+  recordTransactionalFailure,
+} from "./email.js";
 import { verifyTurnstile } from "./turnstile.js";
 import { getGoogleAccessToken } from "./google.js";
 import { recordIntake } from "./intake.js";
@@ -313,10 +320,10 @@ export async function handleWaiver(request, env) {
   // Shared Drive archive. There is deliberately no fourth mirror: a signed release is a record to retrieve,
   // not a task to work, so it does not belong in ClickUp either.
 
-  // Email a copy of the signed PDF to the signer (and the org), from hello@adapttolife.org.
-  // Best-effort; never blocks the signer. Sent via the SEND_EMAIL binding.
+  // Email a copy of the signed PDF to the signer (and the org), from
+  // hello@mail.adapttolife.org. Best-effort; never blocks the signer.
   try {
-    await sendReceiptEmail(env, { to: email, pdfBytes, name, doc, isMinor, minorName });
+    await sendReceiptEmail(env, { id, to: email, pdfBytes, name, doc, isMinor, minorName });
   } catch (err) {
     // sendReceiptEmail records its own failures (it swallows them internally).
     // This guards only against an unexpected throw on the way in.
@@ -629,13 +636,13 @@ async function buildPdf(d) {
   return await pdf.save();
 }
 
-// Email the signed PDF to the signer (and a copy to the org), from hello@adapttolife.org.
-// Uses Cloudflare Email Sending (src/email.js cfSend). The apex is onboarded to Email
-// Service via SPF/DKIM TXT records only — no MX change — so Google Workspace mail on the
-// root domain is unaffected. Best-effort: a send failure never blocks signing.
-async function sendReceiptEmail(env, { to, pdfBytes, name, doc, isMinor, minorName }) {
+// Email the signed PDF to the signer (and a copy to the org) through the one mail
+// module (src/email.js cfSend; Resend in production, from hello@mail.adapttolife.org
+// with Reply-To hello@, docs/EMAIL.md). Keyed by the waiver id, so a repeat can never
+// mail the same release twice. Best-effort: a send failure never blocks signing.
+async function sendReceiptEmail(env, { id, to, pdfBytes, name, doc, isMinor, minorName }) {
   if (!mailConfigured(env)) {
-    console.error("SEND_EMAIL binding not configured; skipping receipt email");
+    console.error("Mail transport not configured; skipping receipt email");
     return;
   }
   const who = isMinor ? `${minorName} (signed by ${name})` : name;
@@ -657,10 +664,12 @@ async function sendReceiptEmail(env, { to, pdfBytes, name, doc, isMinor, minorNa
   );
   try {
     await cfSend(env, {
-      from: "Adapt To Life <hello@adapttolife.org>",
+      from: HOUSE_FROM,
       to,
-      bcc: "hello@adapttolife.org",
-      replyTo: "hello@adapttolife.org",
+      bcc: HOUSE_INBOX,
+      replyTo: HOUSE_INBOX,
+      idempotencyKey: `waiver-${id}`,
+      tags: { brand: HOUSE_BRAND, kind: "waiver" },
       subject,
       text,
       html,

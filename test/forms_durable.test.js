@@ -117,7 +117,7 @@ test("all independent channels complete once and double dispatch cannot double-s
   await sweepForms(e);
   assert(states(e).every((r) => r[1] === "done"));
   assert.equal(sent.length, 2);
-  assert.equal(sent[0].bcc, "hello@adapttolife.org");
+  assert.equal(sent.find((m) => m.to === sub.email).bcc, "hello@adapttolife.org");
   assert.equal(e.INTAKE.sql.prepare("SELECT count(*) n FROM intake").get().n, 1);
 });
 test("no form creates or attempts ClickUp work; every step completes with the network forbidden", async () => {

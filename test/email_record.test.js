@@ -61,7 +61,12 @@ test("email can recover the sponsor note and tier without ClickUp or CRM", async
     .prepare("SELECT * FROM form_deliveries WHERE channel='receipt'")
     .get();
   const receipt = JSON.parse(row.receipt);
-  assert.equal(receipt.messageId, "offline-provider-1");
+  // The receipt keeps the id its own send returned (the original copy to
+  // hello@ runs alongside it, so send order is not fixed).
+  assert.equal(
+    receipt.messageId,
+    "offline-provider-" + (mail.findIndex((x) => x.to === sub.email) + 1),
+  );
   assert.equal(receipt.status, "accepted");
   assert.equal(receipt.bcc, "hello@adapttolife.org");
   assert.equal(row.state, "done");
@@ -95,7 +100,7 @@ test("duplicate dispatch retains one acknowledgment and its actual ID", async ()
         .prepare("SELECT receipt FROM form_deliveries WHERE channel='receipt'")
         .get().receipt,
     ).messageId,
-    "offline-provider-1",
+    "offline-provider-" + (mail.findIndex((x) => x.to === sub.email) + 1),
   );
 });
 test("grant and volunteer receipt audience is not widened by the sponsor change", async () => {

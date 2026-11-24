@@ -11,10 +11,12 @@ test("staging uses its ASNM staging binding, supports passwordless admin mail, a
   assert.deepEqual(preview.ratelimits, config.ratelimits);
   assert.equal(preview.d1_databases.at(-1).database_name, "asnm-db-staging");
   assert.deepEqual(preview.send_email, [{ name: "SEND_EMAIL" }]);
-  assert.equal(preview.vars.MAIL_TRANSPORT, "gmail");
+  assert.equal(preview.vars.MAIL_TRANSPORT, "resend");
+  // Staging carries production's vars; only its name and its mail allow list
+  // (team addresses only, src/mail-transport.js) differ.
+  assert.ok(preview.vars.MAIL_ALLOW);
   for (const [key, value] of Object.entries(config.vars)) {
-    if (key !== "ENV_NAME" && key !== "MAIL_TRANSPORT")
-      assert.equal(preview.vars[key], value, key);
+    if (key !== "ENV_NAME") assert.equal(preview.vars[key], value, key);
   }
   assert.deepEqual(preview.triggers.crons, []);
   assert.ok(config.triggers.crons.length > 0);

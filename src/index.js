@@ -14,7 +14,8 @@ import {
   normalizeEmail,
 } from "./newsletter-series.js";
 import { acceptForm, sweepForms } from "./forms.js";
-import { sendMail } from "./mail-transport.js";
+import { sendMail, keyHash } from "./mail-transport.js";
+import { handleResendEvents } from "./resend_events.js";
 // Adapt To Life — Worker entry.
 // Serves the static site (env.ASSETS) and handles form submissions at /api/contact,
 // /api/apply and /api/volunteer through the durable form outbox (src/forms.js): a
@@ -1161,12 +1162,14 @@ export async function sendBetaTesterInvitation(env, { email, name, siteUrl }) {
     `<p style="margin-top:28px;color:#6b6b70;font-size:14px">` +
     `Adapt To Life<br>501(c)(3) nonprofit &middot; EIN 41-3213344</p></div>`;
   return sendMail(env, {
-    from: `Adapt To Life <${env.GMAIL_FROM || "hello@adapttolife.org"}>`,
+    from: "Adapt To Life <hello@mail.adapttolife.org>",
     to: email,
-    replyTo: env.GMAIL_FROM || "hello@adapttolife.org",
+    replyTo: "hello@adapttolife.org",
     subject: "You are invited to the Adaptive Sports Near Me beta",
     text,
     html,
+    idempotencyKey: `beta-invite-${await keyHash(email)}-${Math.floor(Date.now() / 600000)}`,
+    tags: { brand: "adapttolife", kind: "beta-invite" },
   });
 }
 
@@ -1525,6 +1528,13 @@ export default {
     // through a bounded delivery lease.
     if (url.pathname === "/api/givebutter-webhook") {
       return handleGivebutterWebhook(request, env, ctx);
+    }
+
+    // Resend delivery events (Svix-signed), for the mail this Worker sends.
+    // Not rate limited per IP: Resend posts from a few addresses, and the
+    // signature check is the gate. See src/resend_events.js.
+    if (url.pathname === "/api/resend-events") {
+      return handleResendEvents(request, env);
     }
 
     // Public fundraising total for the site thermometer (Givebutter live + offline gifts).

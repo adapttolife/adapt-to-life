@@ -117,7 +117,12 @@
     "ROAD_NAMED": "0",
     "ROAD_NAMED_ONLINE": "0",
     "R2_ACCESS_KEY_ID": "d27b427aadef63a7ec1e05eaec108bc0",
-    "MAIL_TRANSPORT": "gmail",
+    // Site mail goes through Resend (docs/EMAIL.md; src/mail-transport.js).
+    // Secrets: RESEND_API_KEY (this Worker's own key) and RESEND_WEBHOOK_SECRET
+    // (POST /api/resend-events). A From outside MAIL_FROM_DOMAINS is refused.
+    // GMAIL_FROM stays only until the Gmail transport is deleted.
+    "MAIL_TRANSPORT": "resend",
+    "MAIL_FROM_DOMAINS": "mail.adapttolife.org,mail.adaptbodyshop.com",
     "GMAIL_FROM": "hello@adapttolife.org",
     "RESEND_SEGMENT_ID": "a2640e82-34df-446d-b5f8-0ad6f31d352e",
     // The welcome series (src/newsletter-series.js). "off" stops new emails
@@ -188,9 +193,12 @@
         "ROAD_NAMED": "0",
         "ROAD_NAMED_ONLINE": "0",
         "R2_ACCESS_KEY_ID": "d27b427aadef63a7ec1e05eaec108bc0",
-        // "none" is not a supported transport, so mailConfigured() is false and
-        // staging sends no mail of its own (src/mail-transport.js).
-        "MAIL_TRANSPORT": "gmail",
+        // Same transport as production, but only to team addresses: anything
+        // else is dropped before Resend is called (src/mail-transport.js).
+        // Without its own RESEND_API_KEY secret, staging sends nothing at all.
+        "MAIL_TRANSPORT": "resend",
+        "MAIL_FROM_DOMAINS": "mail.adapttolife.org,mail.adaptbodyshop.com",
+        "MAIL_ALLOW": "hello@adapttolife.org,@adapttolife.org,@adaptivesportsnearme.com,@faisaln.com,alec@alecability.com",
         "GMAIL_FROM": "hello@adapttolife.org",
         "TURNSTILE_MODE": "off",
         "ASNM_ADMIN_ORIGIN": "https://staging-adaptivesportsnearme.adapt-to-life.workers.dev",

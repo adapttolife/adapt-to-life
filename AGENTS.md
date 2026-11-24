@@ -57,6 +57,9 @@ document it points to for the job at hand.
   branch by its own Workers Build (`npm run deploy:staging`). Never set `env.staging.name` to the
   production name and never give staging a route or custom domain: on Nov 23 2026 a shared name
   let a production secret edit deploy the staging build to adapttolife.org.
+- Staging shares production's databases, so it holds only the Givebutter read key for the
+  fundraising total; mail, sign-in and every other credential stay off it (README, Staging).
+  Adding one needs the owner's yes. Production keeps `preview_urls: false`.
 - Changed an outside system ahead of the site (Givebutter, email, social)? Ship the matching site
   change in the same step, or say exactly what is out of sync and until when.
 

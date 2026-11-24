@@ -38,6 +38,10 @@ test("staging has no routes or custom domains, so no production domain", () => {
   assert.equal(STAGING_URL, "https://adapt-to-life-staging.adapt-to-life.workers.dev");
 });
 
+test("production serves no preview URLs, so no old alias runs on production bindings", () => {
+  assert.equal(readWranglerConfig().preview_urls, false);
+});
+
 test("only staging deploys; every other branch builds and tests without uploading", () => {
   assert.deepEqual(wranglerArgs("staging", { deploy: true }), ["deploy", "--env", "staging"]);
   assert.equal(wranglerArgs("staging").at(-1), "--dry-run");

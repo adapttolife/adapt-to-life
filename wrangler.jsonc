@@ -42,7 +42,11 @@
     { "pattern": "sign.adapttolife.org", "custom_domain": true }
   ],
   "workers_dev": false,
-  "preview_urls": true,
+  // No preview URLs on production. Staging is its own Worker now, and previews
+  // go through the playground, so nothing needs one. With them on, the old
+  // staging alias kept serving a staging build on production bindings at
+  // staging-adapt-to-life.adapt-to-life.workers.dev after 2026-11-23.
+  "preview_urls": false,
   "assets": {
     "directory": "./public",
     "binding": "ASSETS",

@@ -136,6 +136,36 @@ Each site has one mail module (`src/mail-transport.js`, kept the same in both re
   allow list of team addresses (`MAIL_ALLOW`). Anything else is logged and dropped, so a test can
   never email a real applicant or donor.
 
+### The send contract (both repos)
+
+`src/mail-transport.js` is the same file in `adapt-to-life` and `adaptivesportsnearme`. Its
+`resend` transport:
+
+- **Selected by** `MAIL_TRANSPORT=resend`. Config: `RESEND_API_KEY` (secret), `MAIL_FROM_DOMAINS`
+  (comma list, for example `mail.adapttolife.org,mail.adaptbodyshop.com`), `ENV_NAME`, and on any
+  environment that is not `production`, `MAIL_ALLOW` (comma list of full addresses or `@domain`).
+- **`sendMail(env, message)`** takes `{ from, to, cc?, bcc?, replyTo?, subject, text, html?,
+  headers?, attachments?, idempotencyKey, tags: { brand, kind } }`. `idempotencyKey` and both tags
+  are required; a send without them throws before the network.
+- **Checks before the network:** From's domain is in `MAIL_FROM_DOMAINS`; no header value carries
+  CR or LF; custom headers are limited to `List-Unsubscribe`, `List-Unsubscribe-Post`,
+  `In-Reply-To`, `References`, `Auto-Submitted` and `X-*`; tag values match `[A-Za-z0-9_-]{1,256}`.
+- **Outside production,** every to, cc and bcc must match `MAIL_ALLOW`. If one does not, nothing is
+  sent and it returns `{ dropped: true, reason: "not-allowed" }`, which the caller records as done
+  and not sent.
+- **Calls** `POST https://api.resend.com/emails` with the `Idempotency-Key` header, the env tag added
+  (`env: <ENV_NAME>`), and attachments as `{ filename, content: <base64>, content_type,
+  content_id? }` built from bytes (a Uint8Array or ArrayBuffer; a string is refused).
+- **Returns** `{ id, messageId: id, provider: "resend", accepted: true }`.
+- **Errors carry `retryable`.** 429, 5xx and a network timeout are `retryable: true`; any other
+  4xx, including 409 (the same key reused with a different body), is `retryable: false`. It never
+  falls back to another provider.
+- Gmail and Cloudflare stay as transports until every Worker runs `resend`, then they are deleted.
+
+`/api/resend-events` verifies Svix signatures with WebCrypto (HMAC-SHA256 over
+`svix-id.svix-timestamp.body`, secret `RESEND_WEBHOOK_SECRET` after its `whsec_` prefix, base64),
+refuses timestamps more than 5 minutes off, and stores each `svix-id` once.
+
 A receipt still never fails a submission: the record is saved first, and the outbox owns the send.
 **Every** automated email goes through the outbox, including the ones that today send once and
 forget: the waiver email (`src/waiver.js`), the Body Shop auto reply and notice

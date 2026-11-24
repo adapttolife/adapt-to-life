@@ -14,7 +14,7 @@ import {
   normalizeEmail,
 } from "./newsletter-series.js";
 import { acceptForm, sweepForms } from "./forms.js";
-import { sendMail, keyHash } from "./mail-transport.js";
+import { sendMail } from "./mail-transport.js";
 import { handleResendEvents } from "./resend_events.js";
 // Adapt To Life — Worker entry.
 // Serves the static site (env.ASSETS) and handles form submissions at /api/contact,
@@ -1172,7 +1172,9 @@ export async function sendBetaTesterInvitation(env, { email, name, siteUrl }) {
     subject: "You are invited to the Adaptive Sports Near Me beta",
     text,
     html,
-    idempotencyKey: `beta-invite-${await keyHash(`${email}\n${text}`)}`,
+    // Sent only when an admin asks (sendInvitation) and never retried, so each
+    // request is its own send: a deliberate resend really goes out.
+    idempotencyKey: `beta-invite-${crypto.randomUUID()}`,
     tags: { brand: "adapttolife", kind: "beta-invite" },
   });
 }

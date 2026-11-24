@@ -10,7 +10,7 @@ import {
   recordTransactionalFailure,
 } from "./email.js";
 import { recordIntake, notifyIntake } from "./intake.js";
-import { RETRY_WINDOW_MS, windowOpen, nextAttemptAt } from "./mail-window.js";
+import { RETRY_WINDOW_MS, windowRefusal, nextAttemptAt } from "./mail-window.js";
 
 const MAX_EMAIL_ATTEMPTS = 4;
 const MAX_WEBHOOK_BYTES = 64 * 1024;
@@ -112,10 +112,9 @@ export async function recordGift(env, transaction) {
   // every charge itself, and the same thank-you from us every month reads like
   // a machine. A later charge is still recorded (Givebutter is the money
   // record), as "no_email": no ATL email is owed for it.
-  const initialStatus =
-    !gift.email || (gift.recurring && (await monthlyAlreadyThanked(env, gift)))
-      ? "no_email"
-      : "pending";
+  const earlier =
+    gift.email && gift.recurring ? await monthlyAlreadyThanked(env, gift) : null;
+  const initialStatus = !gift.email || earlier ? "no_email" : "pending";
   const result = await env.WAIVERS_DB.prepare(
     `INSERT INTO donor_gifts
       (transaction_id, contact_id, first_name, last_name, email, amount, donated,
@@ -142,22 +141,45 @@ export async function recordGift(env, transaction) {
       now,
     )
     .run();
-  return { ...gift, inserted: Boolean(result?.meta?.changes) };
+  const inserted = Boolean(result?.meta?.changes);
+  // The donor's first thank you is closed for review and may have gone out, so
+  // this charge sends none (a second one would read like a machine) and a
+  // person decides.
+  if (inserted && earlier === "review")
+    await recordTransactionalFailure(
+      env,
+      "givebutter-thank-you",
+      gift.email,
+      new Error(
+        `Monthly charge ${gift.transactionId}: no thank you sent; the donor's first thank you is under review and may have gone out`,
+      ),
+    );
+  return { ...gift, inserted };
 }
 
+// The note that opens last_error on a thank you closed for a person to check:
+// it may already have gone out, so nothing resends it automatically.
+const REVIEW_NOTE = "Review before resending:";
+
 // An earlier monthly charge from the same donor to the same campaign that was
-// thanked, or is about to be. A first thank-you that failed doesn't count, so
-// the next charge carries it instead.
+// thanked, or is about to be: "thanked". One closed for review (it may have
+// gone out): "review", so this charge skips its thank you and a person is
+// told. A first thank-you that plainly failed doesn't count, so the next
+// charge carries it instead.
 async function monthlyAlreadyThanked(env, gift) {
   const row = await env.WAIVERS_DB.prepare(
-    `SELECT 1 AS earlier_thanks FROM donor_gifts
+    `SELECT CASE WHEN email_status = 'failed' THEN 'review' ELSE 'thanked' END AS earlier_thanks
+       FROM donor_gifts
       WHERE email = ? AND campaign_id = ? AND recurring = 1 AND transaction_id <> ?
-        AND email_status IN ('pending', 'sending', 'retry', 'sent')
+        AND (email_status IN ('pending', 'sending', 'retry', 'sent')
+          OR (email_status = 'failed' AND last_error LIKE ?))
+      ORDER BY CASE WHEN email_status = 'failed' THEN 1 ELSE 0 END
       LIMIT 1`,
   )
-    .bind(gift.email, gift.campaignId, gift.transactionId)
+    .bind(gift.email, gift.campaignId, gift.transactionId, `${REVIEW_NOTE}%`)
     .first();
-  return Boolean(row);
+  if (!row) return null;
+  return row.earlier_thanks === "review" ? "review" : "thanked";
 }
 
 export async function claimAndThank(env, gift) {
@@ -208,11 +230,13 @@ export async function claimAndThank(env, gift) {
   const firstAttemptedAt = state?.first_attempted_at;
 
   try {
-    // Past 23 hours the same key is a new send to Resend: never send.
-    if (!windowOpen(firstAttemptedAt)) {
-      const closed = new Error(
-        "Retry window closed (23 hours from the first attempt); check Resend's log before resending",
-      );
+    // Past 23 hours the same key is a new send to Resend, and with no clock (a
+    // lost lease reads none) nobody can say when it first went out: never send.
+    // A lost lease's row belongs to the other worker, so the fenced update
+    // below changes nothing; a row that really has no clock is closed for review.
+    const refusal = windowRefusal(firstAttemptedAt);
+    if (refusal) {
+      const closed = new Error(`${REVIEW_NOTE} ${refusal}`);
       closed.windowClosed = true;
       throw closed;
     }

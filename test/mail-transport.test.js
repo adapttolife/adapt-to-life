@@ -531,7 +531,10 @@ test("resendRequest and keyHash are stable", async () => {
   const a = resendRequest(resendEnv, resendMessage);
   const b = resendRequest(resendEnv, resendMessage);
   assert.deepEqual(a, b);
-  assert.equal(await keyHash(" Alec@Example.org "), await keyHash("alec@example.org"));
+  // Exactly as given: a corrected name must make a new key, never a 409.
+  assert.notEqual(await keyHash("Dana"), await keyHash("dana"));
+  assert.notEqual(await keyHash(" x"), await keyHash("x"));
+  assert.equal(await keyHash("Dana"), await keyHash("Dana"));
   assert.match(await keyHash("x"), /^[0-9a-f]{64}$/);
 });
 

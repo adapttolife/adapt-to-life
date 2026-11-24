@@ -35,7 +35,7 @@ function db() {
             const row = gifts.get(String(args[0]));
             return row ? { email_status: row.email_status } : null;
           }
-          if (/AS earlier_thanks FROM donor_gifts/.test(sql)) {
+          if (/AS earlier_thanks\s+FROM donor_gifts/.test(sql)) {
             const [email, campaignId, transactionId] = args;
             for (const row of gifts.values())
               if (

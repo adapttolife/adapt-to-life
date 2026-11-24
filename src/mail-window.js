@@ -14,11 +14,22 @@ export const RETRY_WINDOW_MS = 23 * 60 * 60 * 1000;
 export const retryDelayMs = (attempts) =>
   Math.min(10 * 60e3 * 2 ** Math.max(0, attempts - 1), 3 * 60 * 60e3);
 
-// True while a send may still go out under the same key.
+// True while a send may still go out under the same key. Fails closed: with
+// no clock (or an unreadable one) nobody can say when the first send went out,
+// so nothing is sent.
 export function windowOpen(firstAttemptedAt, now = Date.now()) {
-  if (!firstAttemptedAt) return true;
+  if (!firstAttemptedAt) return false;
   const start = Date.parse(firstAttemptedAt);
   return Number.isFinite(start) && now - start < RETRY_WINDOW_MS;
+}
+
+// Why a send must not go out now, or null when it may. Callers send the row to
+// review with this message and alert.
+export function windowRefusal(firstAttemptedAt, now = Date.now()) {
+  if (windowOpen(firstAttemptedAt, now)) return null;
+  return firstAttemptedAt && Number.isFinite(Date.parse(firstAttemptedAt))
+    ? "Retry window closed (23 hours from the first attempt); check Resend's log by tag before resending"
+    : "No retry clock (first_attempted_at missing); check Resend's log by tag before resending";
 }
 
 // When the next try may run, clamped a minute inside the cutoff. Null when no

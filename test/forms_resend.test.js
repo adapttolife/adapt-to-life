@@ -8,7 +8,12 @@ import { DatabaseSync } from "node:sqlite";
 import { readFileSync } from "node:fs";
 import { formBindings, sqliteD1 } from "./helpers/form-db.js";
 import { acceptForm, processForm, sweepForms, retryDelayMs } from "../src/forms.js";
-import { claimAndThank, recoverDonorEmails } from "../src/givebutter_webhook.js";
+import {
+  claimAndThank,
+  recordGift,
+  recoverDonorEmails,
+} from "../src/givebutter_webhook.js";
+import { windowOpen, windowRefusal } from "../src/mail-window.js";
 import { sendBetaTesterInvitation } from "../src/index.js";
 import { sendMail } from "../src/mail-transport.js";
 import { sendAdminLink } from "../src/asnm_admin_auth.js";
@@ -544,6 +549,10 @@ const gift = {
   donated: 60,
   firstName: "Dee",
 };
+const failureDb = () =>
+  sqliteD1(
+    "CREATE TABLE send_failures (id TEXT PRIMARY KEY, ts INTEGER, route TEXT, to_addr TEXT, error TEXT);",
+  );
 const donorEnv = (db) => ({ ...RESEND, ENV_NAME: "production", WAIVERS_DB: db });
 const status = (s) =>
   s.prepare("SELECT email_status, last_error FROM donor_gifts").get();
@@ -665,6 +674,100 @@ test("donor thank you: the first attempt starts the clock and a retry is clamped
   assert.ok(Date.parse(row.next_attempt_at) <= Date.parse(late) + 23 * HOUR - 60e3);
 });
 
+test("no clock means no send: windowOpen and windowRefusal fail closed", () => {
+  assert.equal(windowOpen(undefined), false);
+  assert.equal(windowOpen(null), false);
+  assert.equal(windowOpen("not a date"), false);
+  assert.equal(windowOpen(ago(HOUR)), true);
+  assert.equal(windowOpen(ago(23 * HOUR + 1000)), false);
+  assert.match(windowRefusal(null), /^No retry clock/);
+  assert.match(windowRefusal(ago(23 * HOUR + 1000)), /^Retry window closed/);
+  assert.equal(windowRefusal(ago(HOUR)), null);
+});
+
+// The donor table, with the claim's read-back replaced: `readback(s)` runs in
+// place of the "SELECT attempt_count, first_attempted_at" query.
+function donorDbWithReadback(readback) {
+  const base = donorDb();
+  const prepare = base.db.prepare.bind(base.db);
+  base.db.prepare = (sql) =>
+    /SELECT attempt_count, first_attempted_at/.test(sql)
+      ? { bind: () => ({ first: async () => readback(base.s) }) }
+      : prepare(sql);
+  return base;
+}
+
+test("donor thank you: a lost lease reads no clock, sends nothing and leaves the other worker's row alone", async () => {
+  // Between the claim and its read-back, another worker reclaimed the row.
+  const { s, db } = donorDbWithReadback((sql) => {
+    sql.prepare("UPDATE donor_gifts SET lease_token='other-worker'").run();
+    return null;
+  });
+  const out = await claimAndThank(
+    { ...donorEnv(db), AGENT_MAIL_DB: failureDb() },
+    gift,
+  );
+  assert.equal(calls.length, 0, "ZERO sends");
+  assert.equal(out.obsolete, true);
+  assert.equal(
+    status(s).email_status,
+    "sending",
+    "the row stays with whoever holds the lease",
+  );
+});
+
+test("donor thank you: a claimed row with no clock is closed for review with an alert, never sent", async () => {
+  const { s, db } = donorDbWithReadback(() => ({
+    attempt_count: 1,
+    first_attempted_at: null,
+  }));
+  const failures = failureDb();
+  const out = await claimAndThank({ ...donorEnv(db), AGENT_MAIL_DB: failures }, gift);
+  assert.equal(calls.length, 0, "ZERO sends");
+  assert.equal(out.failed, true);
+  assert.equal(status(s).email_status, "failed");
+  assert.match(status(s).last_error, /^Review before resending: No retry clock/);
+  assert.equal(failures.sql.prepare("SELECT count(*) n FROM send_failures").get().n, 1);
+});
+
+test("monthly donor: a first thank you under review counts as possibly sent, so the next charge skips it and alerts", async () => {
+  const { s, db } = donorDb();
+  s.prepare(
+    "UPDATE donor_gifts SET recurring=1, campaign_id='683765', email_status='failed', last_error=?",
+  ).run("Review before resending: attempted before the Resend move");
+  const failures = failureDb();
+  const env = { ...donorEnv(db), AGENT_MAIL_DB: failures };
+  const charge = (id) => ({
+    id,
+    email: "donor@example.com",
+    first_name: "Dee",
+    amount: 60,
+    donated: 60,
+    campaign_id: "683765",
+    plan_id: "plan-1",
+    transacted_at: "2026-12-24T12:00:00Z",
+  });
+  const next = await recordGift(env, charge("tx-2"));
+  assert.equal(next.inserted, true);
+  const row = s.prepare("SELECT * FROM donor_gifts WHERE transaction_id='tx-2'").get();
+  assert.equal(row.email_status, "no_email", "no second thank you");
+  const alerts = failures.sql.prepare("SELECT * FROM send_failures").all();
+  assert.equal(alerts.length, 1);
+  assert.match(alerts[0].error, /under review and may have gone out/);
+  // A first thank you that plainly failed (not under review) is still carried
+  // by the next charge, as before.
+  s.prepare(
+    "UPDATE donor_gifts SET last_error='email unavailable' WHERE transaction_id='tx-1'",
+  ).run();
+  await recordGift(env, charge("tx-3"));
+  assert.equal(
+    s.prepare("SELECT email_status FROM donor_gifts WHERE transaction_id='tx-3'").get()
+      .email_status,
+    "pending",
+  );
+  assert.equal(calls.length, 0);
+});
+
 test("admin sign-in link: the key is a digest of the link, so a new link is never refused as a reused key", async () => {
   const env = { ...RESEND, ENV_NAME: "production" };
   const link = (t) => `https://adapttolife.org/admin/auth/verify?token=${t}`;
@@ -683,18 +786,21 @@ test("admin sign-in link: the key is a digest of the link, so a new link is neve
   assert.equal(a.body.tags.find((t) => t.name === "kind").value, "signin");
 });
 
-test("beta invite on Resend: house From, tags, and a key from a digest of what it says", async () => {
+test("beta invite on Resend: each admin request is its own send, so a deliberate resend really goes out", async () => {
   const env = { ...RESEND, ENV_NAME: "production" };
   const invite = (name, siteUrl = "https://adaptivesportsnearme.com/") =>
     sendBetaTesterInvitation(env, { email: "tester@example.com", name, siteUrl });
-  await invite("Dana");
-  await invite("Dana");
-  await invite("Dana R");
+  await invite("dana");
+  await invite("Dana"); // a corrected name
+  await invite("Dana"); // the admin asks to resend the identical invite
   const [a, b, c] = calls;
-  assert.match(a.key, /^beta-invite-[0-9a-f]{64}$/);
+  assert.equal(calls.length, 3);
+  for (const call of calls) assert.match(call.key, /^beta-invite-[0-9a-f-]{36}$/);
   assert.ok(!a.key.includes("tester"), "no address in the key");
-  assert.equal(a.key, b.key, "the same invite twice is one key (no duplicate)");
-  assert.notEqual(a.key, c.key, "a changed invite is a new key, never a 409");
+  // A key shared with a different body would be a 409 (and a 503 for the
+  // admin); one shared with the same body would be Resend's cached 200 with
+  // nothing sent while the page says "invited". Every request is a new key.
+  assert.equal(new Set([a.key, b.key, c.key]).size, 3);
   assert.equal(a.body.from, "Adapt To Life <hello@mail.adapttolife.org>");
   assert.deepEqual(a.body.to, ["tester@example.com"]);
   assert.deepEqual(a.body.reply_to, ["hello@adapttolife.org"]);

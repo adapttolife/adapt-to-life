@@ -317,11 +317,10 @@ async function sendResend(env, message) {
 export async function keyHash(value) {
   const digest = await crypto.subtle.digest(
     "SHA-256",
-    encoder.encode(
-      String(value ?? "")
-        .trim()
-        .toLowerCase(),
-    ),
+    // Exactly as given: a key must change whenever the body does (a corrected
+    // name must not reuse the old key, or Resend refuses it with a 409). Lower
+    // an email address yourself where the key is meant to ignore case.
+    encoder.encode(String(value ?? "")),
   );
   return Array.from(new Uint8Array(digest), (b) =>
     b.toString(16).padStart(2, "0"),

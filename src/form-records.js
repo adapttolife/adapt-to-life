@@ -14,7 +14,7 @@ import {
   houseShell,
   recordTransactionalFailure,
 } from "./email.js";
-import { RETRY_WINDOW_MS, windowOpen, nextAttemptAt } from "./mail-window.js";
+import { RETRY_WINDOW_MS, windowRefusal, nextAttemptAt } from "./mail-window.js";
 const now = () => new Date().toISOString();
 const ownEnv = (env) => env.ENV_NAME || "production";
 export function queueOriginal(db, id, payload, envName = "production") {
@@ -94,11 +94,10 @@ export async function processOriginal(env, id) {
         .first();
       firstAttemptedAt = stamped?.first_attempted_at;
     }
-    if (!windowOpen(firstAttemptedAt)) {
+    const refusal = windowRefusal(firstAttemptedAt);
+    if (refusal) {
       windowClosed = true;
-      throw Error(
-        "Retry window closed (23 hours from the first attempt); check Resend's log by tag before resending",
-      );
+      throw Error(refusal);
     }
     // Whitelist accepted contact fields, never forward challenge tokens or raw extras.
     const fields = {

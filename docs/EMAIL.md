@@ -106,7 +106,19 @@ the ATL list also silently removes someone from Adaptive Sports Near Me. The tar
 - **Joining is recorded before Resend is called,** and a sweep finishes any signup whose contact,
   Topic or welcome step did not complete. Today a signup that fails after the contact is made
   answers "already on the list" for ever and never gets a welcome.
-- Beta tester groups (ASNM) stay Topics, as they are now.
+- Beta tester groups (ASNM) stay Topics, as they are now. **The beta admin code only lists and
+  changes Topics whose name starts `ASNM Beta`.** Today `src/resend_topics.js` lists every Topic in
+  the team as a beta group and, on save, opts the tester out of every Topic not ticked, which would
+  silently unsubscribe testers from brand news (and shows `AlecTranel.com` as a group).
+- **Someone already in the team who joins another brand** (Resend answers 409, contact exists)
+  still gets that brand's Topic and that brand's welcome. If they had unsubscribed from everything
+  and now join a brand, the team wide flag is cleared; that is safe because every brand Topic is
+  `opt_out`, so it only re-opens mail they have each said yes to.
+- **The unsubscribe link carries the brand** in its signed token, and **a GET only shows a page with
+  one button**; the change happens on POST (the button, or the one click header per RFC 8058). Mail
+  scanners that open links must not unsubscribe people.
+- Brand Topics are `public`, so Resend's own preference page shows the three nonprofit lists; beta
+  groups and `AlecTranel.com` are `private` and stay hidden.
 - A setting a person changes on the site (the ASNM profile's newsletter switch) is written to
   Resend too, not only to D1. Today it never reaches Resend.
 
@@ -115,12 +127,13 @@ the ATL list also silently removes someone from Adaptive Sports Near Me. The tar
 Each site has one mail module (`src/mail-transport.js`, kept the same in both repos) with a
 `resend` transport. Every send:
 
-- **Has a stable Idempotency-Key and a frozen body.** The key is, for example,
+- **Has a stable Idempotency-Key and a frozen body, both written before the first call.** The key is, for example,
   `apply-receipt:<submission id>`. Resend returns the first result for a repeat of the same key
   and body for 24 hours, so a retry after a timeout cannot email someone twice. The outbox stores
   the rendered email (subject, body, recipients) on the first attempt and resends exactly that,
   because a changed body under the same key is refused (the grant receipt reads the live fund
-  total, which can move between attempts). The outbox retries by itself for 23 hours; after that
+  total, which can move between attempts). The 23 hour window counts from an immutable `first_attempted_at` (a retry never resets it). The
+  outbox retries by itself, with backoff, for those 23 hours; after that
   an unconfirmed send goes to `review` and is checked against Resend's log by its tag before
   anyone resends it.
 - **Is tagged** `brand`, `kind` (for example `receipt-apply`, `waiver`, `welcome`) and `env`, so
@@ -157,20 +170,39 @@ Each site has one mail module (`src/mail-transport.js`, kept the same in both re
   (`env: <ENV_NAME>`), and attachments as `{ filename, content: <base64>, content_type,
   content_id? }` built from bytes (a Uint8Array or ArrayBuffer; a string is refused).
 - **Returns** `{ id, messageId: id, provider: "resend", accepted: true }`.
-- **Errors carry `retryable`.** 429, 5xx and a network timeout are `retryable: true`; any other
-  4xx, including 409 (the same key reused with a different body), is `retryable: false`. It never
-  falls back to another provider.
-- Gmail and Cloudflare stay as transports until every Worker runs `resend`, then they are deleted.
+- **Errors carry `retryable`.** 429, 5xx, a network timeout and 409 `concurrent_idempotent_requests`
+  (the same key still in flight) are `retryable: true`. 409 `invalid_idempotent_request` (the same
+  key with a different body) and every other 4xx are `retryable: false`. Tell the two 409s apart
+  by the error `name` in the body. It never falls back to another provider.
+- **Wire shapes:** keys are 1 to 256 characters; Resend wants `reply_to`, `tags: [{ name, value }]`
+  and attachments `{ filename, content, content_type, content_id }`. Callers keep the module's own
+  names (`replyTo`, `type`, `contentId`); the transport maps them.
+- **Sign-in links are not retried.** A link that expires in 15 minutes is sent once; on failure the
+  person is told to ask again. Only receipts, notices and thank yous use the outbox.
+- Gmail and Cloudflare stay as transports. Agent mail (`/api/agent-mail/*`) and the staging
+  `/preview/receipt` page pick the Cloudflare transport explicitly; Gmail is deleted once no
+  Worker selects it.
+- **Nothing sends around this module.** The welcome series (`sendSeriesEmail`) calls Resend
+  directly today; it moves onto `sendMail` so it gets the allow list, tags and checks too.
 
-`/api/resend-events` verifies Svix signatures with WebCrypto (HMAC-SHA256 over
-`svix-id.svix-timestamp.body`, secret `RESEND_WEBHOOK_SECRET` after its `whsec_` prefix, base64),
-refuses timestamps more than 5 minutes off, and stores each `svix-id` once.
+`/api/resend-events` verifies Svix signatures with WebCrypto: the key is the base64 decoding of
+`RESEND_WEBHOOK_SECRET` after its `whsec_` prefix (decoded to bytes, never UTF-8 encoded); the
+signed content is `svix-id.svix-timestamp.<raw body>` (timestamp in Unix seconds) with HMAC-SHA256;
+`svix-signature` holds space separated `v1,<base64>` entries and any one matching, compared in
+constant time, passes. It refuses timestamps more than 5 minutes off and stores each `svix-id` once.
+Broadcast events carry no custom tags, so a Broadcast event is matched to its brand by the From
+domain instead.
 
 A receipt still never fails a submission: the record is saved first, and the outbox owns the send.
-**Every** automated email goes through the outbox, including the ones that today send once and
-forget: the waiver email (`src/waiver.js`), the Body Shop auto reply and notice
+Helpers return the transport's error (with `retryable`) to the outbox instead of swallowing it
+into `false`, so a passing timeout is retried and not parked for a person. **Every** automated
+email goes through the outbox, including the ones that today send once and forget: the waiver email (`src/waiver.js`), the Body Shop auto reply and notice
 (`src/shop_contact.js`) and the contact form's original-message copy to hello@
-(`src/form-records.js`).
+(`src/form-records.js`), the ASNM beta invitation the ATL Worker sends (`src/index.js`), and the
+donor thank you, whose `donor_gifts` state today stops retrying after about two hours and has no
+`review` state. The signed waiver PDF is not copied into the frozen body (D1 rows top out at 2 MB);
+the outbox reads it from `waiver_documents`, and the 30 day purge skips a document whose email is
+not yet sent.
 
 Out of scope: agent mail (`agents.adapttolife.org`, `src/agent_mail.js`) is the bots' own mailbox,
 not site mail, and keeps its own path.
@@ -190,14 +222,20 @@ in October, and the meter only writes to its own log.
 - **One alert that reaches a person the same day.** Any new `send_failures` row, or the intake
   meter going red, pages through the fleet alert path that reaches Alec. A failure nobody hears
   about counts as an outage.
-- **DMARC.** All three roots are `p=none` with reports to dmarc@amelioration.is. After 30 days of
-  clean reports, move each to `p=quarantine`.
+- **DMARC.** All three roots are `p=none` with reports to dmarc@amelioration.is. A root policy
+  also covers its subdomains (`agents.adapttolife.org`, Shopify's mail for adaptbodyshop.com), so
+  before moving any root to `p=quarantine`, confirm in the reports that every sender on it passes,
+  or set `sp=` for subdomains separately.
+- **Reputation.** Receipts and the newsletter share `mail.<brand>` for now (low volume). If
+  complaints or Promotions placement start to hurt receipts, move list mail to `news.<brand>`.
 
 ## Keys and where they live
 
 - One Resend API key per Worker, named `<site> <env> <yyyy-mm-dd>`, for example
-  `adapttolife.org production 2026-11-24`. A Worker that only sends gets a sending-only key limited
-  to its brand's domain; a Worker that also manages contacts gets full access.
+  `adapttolife.org production 2026-11-24`. Both site Workers manage contacts and Topics, which
+  needs `full_access` (Resend's sending-only keys cover one domain or all, and no contacts), so
+  each key is full access; a future Worker that only sends gets a sending-only key on its one
+  domain.
 - Every key, and every webhook signing secret, is saved in the 1Password Engineering vault in an
   item named after the Worker, then set as a Worker secret. Never in the repo, a PR or chat.
 - Rotate by making the new key, setting it, checking one send, then deleting the old key.
@@ -211,8 +249,11 @@ in October, and the meter only writes to its own log.
 A change to mail is done when a real message arrives, not when tests pass. For each row in the
 confirmation table: submit it once from a phone on production, using a team inbox, and on staging
 where staging serves that form (it blocks the newsletter, waiver and donation routes today), then
-check the inbox (not spam), the From, Reply-To, the unsubscribe link and the
-Resend delivery event. Record the Resend message id in the PR.
+check the inbox (not spam), the From, Reply-To, the unsubscribe link and the Resend delivery event. Record the Resend message id in the PR.
+
+Staging today still lets `/unsubscribe`, `/api/shop-contact` and the contact, apply and volunteer
+forms write to production Resend and the CRM. PR A closes that, and until it does, test those
+forms on production with a team inbox.
 
 ## Order of work
 

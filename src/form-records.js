@@ -14,11 +14,9 @@ import {
   houseShell,
   recordTransactionalFailure,
 } from "./email.js";
+import { RETRY_WINDOW_MS, windowOpen, nextAttemptAt } from "./mail-window.js";
 const now = () => new Date().toISOString();
 const ownEnv = (env) => env.ENV_NAME || "production";
-const RETRY_WINDOW_MS = 23 * 60 * 60 * 1000;
-const retryDelayMs = (attempts) =>
-  Math.min(10 * 60e3 * 2 ** Math.max(0, attempts - 1), 3 * 60 * 60e3);
 export function queueOriginal(db, id, payload, envName = "production") {
   return db
     .prepare(
@@ -61,15 +59,18 @@ export async function processOriginal(env, id) {
   const at = now();
   const claim = await db
     .prepare(
-      "UPDATE form_record_deliveries SET state='running',attempts=attempts+1,started_at=?,first_attempted_at=COALESCE(first_attempted_at,?),error=NULL WHERE submission_id=? AND state='pending' AND env=? AND (next_attempt_at IS NULL OR next_attempt_at<=?) RETURNING attempts,first_attempted_at",
+      "UPDATE form_record_deliveries SET state='running',attempts=attempts+1,started_at=?,error=NULL WHERE submission_id=? AND state='pending' AND env=? AND (next_attempt_at IS NULL OR next_attempt_at<=?) RETURNING attempts,first_attempted_at",
     )
-    .bind(at, at, id, ownEnv(env), at)
+    .bind(at, id, ownEnv(env), at)
     .first();
   if (!claim) {
     await reconcileOriginal(env, id);
     return;
   }
   let externalStarted = false;
+  let windowClosed = false;
+  let firstAttemptedAt = claim.first_attempted_at;
+  const firstExternal = !claim.first_attempted_at;
   try {
     const row = await db
       .prepare("SELECT * FROM form_submissions WHERE id=?")
@@ -82,6 +83,23 @@ export async function processOriginal(env, id) {
       throw Error("Invalid case reference");
     const sub = JSON.parse(row.payload);
     if (!mailConfigured(env)) throw Error("Original-record mail binding missing");
+    // The retry clock starts here, once a send can actually happen, and never
+    // moves. Past 23 hours the same key is a new send to Resend: never send.
+    if (!firstAttemptedAt) {
+      const stamped = await db
+        .prepare(
+          "UPDATE form_record_deliveries SET first_attempted_at=COALESCE(first_attempted_at,?) WHERE submission_id=? RETURNING first_attempted_at",
+        )
+        .bind(now(), id)
+        .first();
+      firstAttemptedAt = stamped?.first_attempted_at;
+    }
+    if (!windowOpen(firstAttemptedAt)) {
+      windowClosed = true;
+      throw Error(
+        "Retry window closed (23 hours from the first attempt); check Resend's log by tag before resending",
+      );
+    }
     // Whitelist accepted contact fields, never forward challenge tokens or raw extras.
     const fields = {
       Reference: id,
@@ -151,22 +169,19 @@ export async function processOriginal(env, id) {
       )
       .run();
   } catch (e) {
-    const age = Date.now() - Date.parse(claim.first_attempted_at || at);
-    const retry = !externalStarted || (e?.retryable === true && age < RETRY_WINDOW_MS);
+    const next =
+      externalStarted && e?.retryable === true
+        ? nextAttemptAt(firstAttemptedAt, claim.attempts)
+        : null;
+    const retry = windowClosed ? false : !externalStarted || !!next;
     await db
       .prepare(
         "UPDATE form_record_deliveries SET state=?,error=?,next_attempt_at=? WHERE submission_id=? AND state='running'",
       )
-      .bind(
-        retry ? "pending" : "review",
-        String(e.message).slice(0, 400),
-        retry && externalStarted
-          ? new Date(Date.now() + retryDelayMs(claim.attempts)).toISOString()
-          : null,
-        id,
-      )
+      .bind(retry ? "pending" : "review", String(e.message).slice(0, 400), next, id)
       .run();
-    if (externalStarted && (!retry || claim.attempts === 1))
+    // A person hears about it: on the first failed send, and when it stops.
+    if (windowClosed || (externalStarted && (!retry || firstExternal)))
       await recordTransactionalFailure(env, "receipt:contact original", HOUSE_INBOX, e);
     return;
   }
@@ -179,15 +194,24 @@ export async function recoverOriginals(env) {
   // Resend collapses a repeat of the same key and body for 24 hours, so an
   // interrupted Resend send inside the window can go again; others need review.
   const windowStart = new Date(Date.now() - RETRY_WINDOW_MS).toISOString();
-  await db
+  const interrupted = await db
     .prepare(
       `UPDATE form_record_deliveries SET
          state=CASE WHEN ?=1 AND first_attempted_at>? THEN 'pending' ELSE 'review' END,
          error='Interrupted original send: verify provider before retry'
-       WHERE state='running' AND started_at<? AND env=?`,
+       WHERE state='running' AND started_at<? AND env=?
+       RETURNING submission_id,state`,
     )
     .bind(env.MAIL_TRANSPORT === "resend" ? 1 : 0, windowStart, cut, ownEnv(env))
-    .run();
+    .all();
+  for (const r of interrupted.results || [])
+    if (r.state === "review")
+      await recordTransactionalFailure(
+        env,
+        "receipt:interrupted contact original",
+        HOUSE_INBOX,
+        Error(`Interrupted original copy for ${r.submission_id}; inspect before retry`),
+      );
   const rows = await db
     .prepare(
       "SELECT submission_id FROM form_record_deliveries WHERE env=? AND ((state='pending' AND (next_attempt_at IS NULL OR next_attempt_at<=?)) OR (state='done' AND mirrored_at IS NULL)) ORDER BY submission_id LIMIT 25",

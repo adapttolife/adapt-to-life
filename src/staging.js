@@ -15,15 +15,21 @@ import application from "./index.js";
 // - /api/shop-contact: the storefront posts only to production; a staging row
 //   (message or footer sign-up) would be filed to the CRM sheet by production's
 //   cron, since the tables are shared.
-// The contact, apply and volunteer forms stay open on staging: their outbox
-// rows belong to staging (src/forms.js), stay out of the shared intake and CRM,
-// and mail only the MAIL_ALLOW team addresses (src/mail-transport.js).
+// - /api/contact, /api/apply, /api/volunteer: their outbox rows go into the
+//   shared form tables. This branch tags each row with its environment and
+//   sends only its own, but the code on main (production) sweeps every pending
+//   row, so a staging submission could be mailed and filed to the CRM by
+//   production. They stay closed here until main filters by env; reopen them
+//   in a later PR (docs/EMAIL.md, "Testing before it counts").
 const PRODUCTION_ONLY = new Set([
   "/api/givebutter-webhook",
   "/api/subscribe",
   "/api/waiver",
   "/unsubscribe",
   "/api/shop-contact",
+  "/api/contact",
+  "/api/apply",
+  "/api/volunteer",
 ]);
 
 export default {

@@ -34,7 +34,6 @@ test("staging delegates writes, backend routes and HTML without modifying contro
   const ctx = { waitUntil() {} };
   for (const [method, path] of [
     ["GET", "/contact"],
-    ["POST", "/api/contact"],
     ["GET", "/api/waiver/doc"],
     ["GET", "/api/raised"],
     ["GET", "/admin/api/codes"],
@@ -66,12 +65,16 @@ test("real application routes remain available with normal validation and authen
     REPORT_LINK_BASE: "https://reports.amelioration.is",
     ASSETS: { fetch: async () => new Response("admin") },
   };
-  const contact = await staging.fetch(
-    new Request("https://staging.example/api/contact"),
-    env,
-    {},
-  );
-  assert.equal(contact.status, 405); // Normal application method validation, not staging's blanket 403/404.
+  // The form routes are production only until main filters the shared outbox
+  // by environment (src/staging.js); everything else keeps normal validation.
+  for (const path of ["/api/contact", "/api/apply", "/api/volunteer"]) {
+    const closed = await staging.fetch(
+      new Request("https://staging.example" + path),
+      env,
+      {},
+    );
+    assert.equal(closed.status, 404, path);
+  }
   const admin = await staging.fetch(
     new Request("https://staging.example/admin/app"),
     env,

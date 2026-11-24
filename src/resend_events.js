@@ -64,12 +64,8 @@ export async function verifySvix({
   const now = nowSeconds ?? Math.floor(Date.now() / 1000);
   if (Math.abs(now - Number(timestamp)) > TOLERANCE_SECONDS)
     return { ok: false, why: "stale" };
-  let keyBytes;
-  try {
-    keyBytes = fromBase64(String(secret).replace(/^whsec_/, ""));
-  } catch {
-    return { ok: false, why: "secret" };
-  }
+  const keyBytes = webhookKey(secret);
+  if (!keyBytes) return { ok: false, why: "secret" };
   const key = await crypto.subtle.importKey(
     "raw",
     keyBytes,
@@ -112,12 +108,29 @@ export function eventTags(data) {
 const clip = (v, n = 500) =>
   v === undefined || v === null ? null : String(v).slice(0, n);
 
+// The signing key: the base64 after "whsec_", as bytes. Null when it is empty
+// or not base64 (an HMAC key of zero bytes cannot be imported).
+export function webhookKey(secret) {
+  try {
+    const bytes = fromBase64(String(secret || "").replace(/^whsec_/, ""));
+    return bytes.length ? bytes : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function handleResendEvents(request, env) {
   if (request.method !== "POST")
     return reply(405, { ok: false, error: "Method not allowed" });
   // 503 makes Resend retry later instead of dropping the event.
   if (!env.RESEND_WEBHOOK_SECRET || !env.AGENT_MAIL_DB)
     return reply(503, { ok: false, error: "Not configured" });
+  if (!webhookKey(env.RESEND_WEBHOOK_SECRET)) {
+    console.error(
+      "RESEND_WEBHOOK_SECRET is not a whsec_ secret with a base64 key; set it from the Resend webhook page",
+    );
+    return reply(500, { ok: false, error: "Webhook secret is invalid" });
+  }
   const declared = Number(request.headers.get("Content-Length") || 0);
   if (declared > MAX_BODY_BYTES) return reply(413, { ok: false, error: "Too large" });
   const body = await request.text();
@@ -173,7 +186,9 @@ export async function handleResendEvents(request, env) {
         detail,
       ),
   ];
-  if (FAILURES.has(type)) {
+  // send_failures (agent-mail) is production's alert ledger, and staging shares
+  // the database: a staging bounce is kept in resend_events (env=staging) only.
+  if (FAILURES.has(type) && env.ENV_NAME === "production") {
     // The id is derived from the svix-id, so a replay can never add a second row.
     statements.push(
       db

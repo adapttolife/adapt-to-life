@@ -1,0 +1,17 @@
+-- Donor thank you retry clock for the Resend move (docs/EMAIL.md).
+--
+--   cfrun npx wrangler d1 execute atl-waivers --remote \
+--     --file schema/migrations/2026-11-24-donor-gifts-first-attempt.sql
+-- (atl-waivers lives in the Adapt To Life Cloudflare account.)
+--
+-- Additive only: one nullable column, so the code on main and on staging keeps
+-- working. first_attempted_at is stamped on the first claim and never reset;
+-- src/givebutter_webhook.js makes no attempt, and schedules none, 23 hours
+-- after it, because Resend forgets an Idempotency-Key after 24. Rows already
+-- attempted before this exists keep NULL and are closed for review, never
+-- resent automatically.
+--
+-- Run once, BEFORE the code that uses it deploys (a second run fails
+-- harmlessly). Then `cfrun node scripts/check-d1-schema.mjs atl-waivers` must
+-- report ok.
+ALTER TABLE donor_gifts ADD COLUMN first_attempted_at TEXT;

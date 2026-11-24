@@ -10,6 +10,7 @@ import {
   recordTransactionalFailure,
 } from "./email.js";
 import { recordIntake, notifyIntake } from "./intake.js";
+import { RETRY_WINDOW_MS, windowOpen, nextAttemptAt } from "./mail-window.js";
 
 const MAX_EMAIL_ATTEMPTS = 4;
 const MAX_WEBHOOK_BYTES = 64 * 1024;
@@ -160,17 +161,27 @@ async function monthlyAlreadyThanked(env, gift) {
 }
 
 export async function claimAndThank(env, gift) {
+  // A missing key or binding is local: nothing was sent, so nothing is claimed
+  // and the gift stays owed for the next run, never marked failed.
+  if (!mailConfigured(env)) return { emailed: false, notConfigured: true };
   // The conditional update is the one-way gate. Concurrent or retried webhook
   // deliveries can all reach here, but only one can claim pending -> sending.
+  // It also starts the retry clock (first_attempted_at, never reset) and
+  // refuses a row whose window has closed, or one attempted before the clock
+  // existed (Gmail era): nobody can say when that one first went out.
   const claimedAt = new Date().toISOString();
   const staleBefore = new Date(Date.now() - 15 * 60 * 1000).toISOString();
+  const windowStart = new Date(Date.now() - RETRY_WINDOW_MS).toISOString();
   const leaseToken = crypto.randomUUID();
   const claim = await env.WAIVERS_DB.prepare(
     `UPDATE donor_gifts
         SET email_status = 'sending', email_attempted_at = ?, updated_at = ?,
-            lease_token = ?, attempt_count = attempt_count + 1
+            lease_token = ?, attempt_count = attempt_count + 1,
+            first_attempted_at = COALESCE(first_attempted_at, ?)
       WHERE transaction_id = ? AND attempt_count < ?
         ${env.MAIL_TRANSPORT === "gmail" ? "AND email_status = 'pending' AND attempt_count = 0" : ""}
+        AND (attempt_count = 0 OR first_attempted_at IS NOT NULL)
+        AND (first_attempted_at IS NULL OR first_attempted_at > ?)
         AND (email_status = 'pending'
           OR (email_status = 'sending' AND email_attempted_at < ?)
           OR (email_status = 'retry' AND next_attempt_at <= ?))`,
@@ -179,21 +190,32 @@ export async function claimAndThank(env, gift) {
       claimedAt,
       claimedAt,
       leaseToken,
+      claimedAt,
       gift.transactionId,
       MAX_EMAIL_ATTEMPTS,
+      windowStart,
       staleBefore,
       claimedAt,
     )
     .run();
   if (!claim?.meta?.changes) return { emailed: false, duplicate: true };
   const state = await env.WAIVERS_DB.prepare(
-    "SELECT attempt_count FROM donor_gifts WHERE transaction_id = ? AND lease_token = ?",
+    "SELECT attempt_count, first_attempted_at FROM donor_gifts WHERE transaction_id = ? AND lease_token = ?",
   )
     .bind(gift.transactionId, leaseToken)
     .first();
   const attemptNumber = number(state?.attempt_count);
+  const firstAttemptedAt = state?.first_attempted_at;
 
   try {
+    // Past 23 hours the same key is a new send to Resend: never send.
+    if (!windowOpen(firstAttemptedAt)) {
+      const closed = new Error(
+        "Retry window closed (23 hours from the first attempt); check Resend's log before resending",
+      );
+      closed.windowClosed = true;
+      throw closed;
+    }
     const sent = await sendDonorThankYou(env, gift);
     const sentAt = new Date().toISOString();
     if (sent?.dropped) {
@@ -228,13 +250,16 @@ export async function claimAndThank(env, gift) {
     const failedAt = new Date().toISOString();
     // Resend says whether a retry is safe; a refused send (bad address, From,
     // a reused key with a different body) never gets better by retrying.
-    const terminal =
-      env.MAIL_TRANSPORT === "gmail" ||
-      (env.MAIL_TRANSPORT === "resend" && err?.retryable !== true) ||
-      attemptNumber >= MAX_EMAIL_ATTEMPTS;
-    const retryAt = terminal
-      ? null
-      : new Date(Date.now() + retryDelayMs(attemptNumber)).toISOString();
+    // No retry is ever scheduled past the window's cutoff.
+    let retryAt = null;
+    if (
+      !err?.windowClosed &&
+      env.MAIL_TRANSPORT !== "gmail" &&
+      !(env.MAIL_TRANSPORT === "resend" && err?.retryable !== true) &&
+      attemptNumber < MAX_EMAIL_ATTEMPTS
+    )
+      retryAt = nextAttemptAt(firstAttemptedAt, attemptNumber, { delay: retryDelayMs });
+    const terminal = !retryAt;
     const updated = await env.WAIVERS_DB.prepare(
       `UPDATE donor_gifts
           SET email_status = ?, next_attempt_at = ?, last_error = ?,
@@ -260,8 +285,10 @@ export async function claimAndThank(env, gift) {
 // lease here closes the process-death gap between claiming a row and recording
 // the email outcome. On Resend the send carries the Idempotency-Key
 // donor-thanks-<transaction id> over a body built only from the gift row, and
-// every attempt falls well inside Resend's 24-hour window (four attempts, the
-// last about two hours after the first), so a reclaim cannot email twice.
+// no attempt is made or scheduled more than 23 hours after the first
+// (src/mail-window.js), so a reclaim cannot email twice. Rows outside that
+// rule are closed as failed with a "Review" note, since this table has no
+// review state.
 export async function recoverDonorEmails(env) {
   if (!env.WAIVERS_DB)
     return {
@@ -295,6 +322,29 @@ export async function recoverDonorEmails(env) {
       .bind(now, staleBefore)
       .run();
   }
+  // Attempted before the retry clock existed, or past the window: a person
+  // checks Resend's log (or hello@'s Sent mail) before anything is resent.
+  const windowStart = new Date(Date.now() - RETRY_WINDOW_MS).toISOString();
+  const parked = await env.WAIVERS_DB.prepare(
+    `UPDATE donor_gifts SET email_status = 'failed', lease_token = NULL, updated_at = ?,
+        last_error = CASE WHEN first_attempted_at IS NULL
+          THEN 'Review before resending: attempted before the Resend move'
+          ELSE 'Review before resending: retry window (23 hours) closed' END
+      WHERE (email_status IN ('pending', 'retry')
+             OR (email_status = 'sending' AND email_attempted_at < ?))
+        AND attempt_count > 0
+        AND (first_attempted_at IS NULL OR first_attempted_at <= ?)
+      RETURNING transaction_id, email`,
+  )
+    .bind(now, staleBefore, windowStart)
+    .all();
+  for (const row of parked?.results || [])
+    await recordTransactionalFailure(
+      env,
+      "givebutter-thank-you",
+      row.email,
+      new Error(`Thank you for ${row.transaction_id} needs review before any resend`),
+    );
   await env.WAIVERS_DB.prepare(
     `UPDATE donor_gifts
         SET email_status = 'failed', lease_token = NULL,

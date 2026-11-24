@@ -137,6 +137,9 @@ test("a new beta tester is created with their requested Topic memberships", asyn
     if (path === "/contacts/tester%40example.test/topics") {
       return response({ error: "Contact not found" }, 404);
     }
+    if (path === "/contacts/tester%40example.test" && !options.method) {
+      return response({ error: "Contact not found" }, 404);
+    }
     if (path === "/contacts" && options.method === "POST") {
       return response({ id: "contact-1" }, 201);
     }
@@ -158,6 +161,48 @@ test("a new beta tester is created with their requested Topic memberships", asyn
       ],
     });
     assert.equal(calls.filter((call) => call.options.method === "PATCH").length, 0);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("an existing contact with no beta groups is never re-created (that would clear a team-wide unsubscribe)", async () => {
+  const originalFetch = globalThis.fetch;
+  const calls = [];
+  globalThis.fetch = async (url, options = {}) => {
+    const path = new URL(String(url)).pathname;
+    calls.push({ path, options });
+    if (path === "/topics") {
+      return response({
+        data: [
+          { id: "topic-a", name: "ASNM Beta Tester Group 1" },
+          { id: "topic-news", name: "Adapt To Life news" },
+        ],
+      });
+    }
+    if (path === "/contacts/tester%40example.test/topics") {
+      // Subscribed to brand news only: no beta groups yet.
+      return response({ data: [{ id: "topic-news", subscription: "opt_in" }] });
+    }
+    if (path === "/contacts/tester%40example.test" && !options.method) {
+      return response({ id: "c-1", email: "tester@example.test", unsubscribed: true });
+    }
+    if (options.method === "PATCH") return response({ data: [] });
+    throw new Error(`Unexpected request: ${options.method || "GET"} ${path}`);
+  };
+  try {
+    await setContactTopics({ RESEND_API_KEY: "test" }, "tester@example.test", [
+      "topic-a",
+    ]);
+    assert.equal(
+      calls.filter((c) => c.path === "/contacts" && c.options.method === "POST").length,
+      0,
+      "no POST /contacts for a contact that exists",
+    );
+    const patch = calls.find((c) => c.options.method === "PATCH");
+    assert.deepEqual(JSON.parse(String(patch.options.body)), [
+      { id: "topic-a", subscription: "opt_in" },
+    ]);
   } finally {
     globalThis.fetch = originalFetch;
   }

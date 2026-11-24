@@ -328,7 +328,10 @@ export async function keyHash(value) {
   ).join("");
 }
 export async function sendMail(env, message) {
-  if (!mailConfigured(env)) throw new Error("Mail transport is not configured");
+  // Local configuration (a missing key or binding): nothing was sent, so a
+  // later try is safe once it is fixed.
+  if (!mailConfigured(env))
+    throw new MailError("Mail transport is not configured", { retryable: true });
   if (env.MAIL_TRANSPORT === "resend") return sendResend(env, message);
   // The older transports have no use for these two; never hand them on.
   const { idempotencyKey, tags, ...legacy } = message;

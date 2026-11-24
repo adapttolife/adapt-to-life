@@ -119,6 +119,19 @@ export async function topicsForContact(env, email, pacing) {
     .map((topic) => topic.id);
 }
 
+// Whether the team already has this contact. Only a missing one is created:
+// creating sends unsubscribed:false, which must never touch an existing
+// contact who unsubscribed from everything.
+async function contactExists(env, email) {
+  const { response, body } = await resend(
+    env,
+    `/contacts/${encodeURIComponent(email)}`,
+  );
+  if (response.status === 404) return false;
+  if (!response.ok) throw errorFor(response, "look up the beta tester contact", body);
+  return true;
+}
+
 async function ensureContact(env, email, topicIds) {
   const { response, body } = await resend(env, "/contacts", {
     method: "POST",
@@ -139,7 +152,7 @@ export async function setContactTopics(env, email, topicIds) {
   const requested = [...new Set(topicIds.map(String).filter((id) => beta.has(id)))];
   let current = (await topicsForContact(env, email)).filter((id) => beta.has(id));
 
-  if (!current.length && requested.length) {
+  if (!current.length && requested.length && !(await contactExists(env, email))) {
     const created = await ensureContact(env, email, requested);
     if (created) return;
     current = (await topicsForContact(env, email)).filter((id) => beta.has(id));

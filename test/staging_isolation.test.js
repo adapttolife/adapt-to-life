@@ -254,6 +254,28 @@ const VALID_BODIES = {
     program: "staging-test",
     cf_token: "test",
   },
+  // The durable form routes (src/forms.js): valid bodies for each handler.
+  "/api/contact": {
+    name: "Staging Tester",
+    email: "tester@example.test",
+    message: "Hello",
+    type: "General question",
+    cf_token: "test",
+  },
+  "/api/apply": {
+    name: "Staging Tester",
+    email: "tester@example.test",
+    sport: "Pickleball",
+    need: "Chair",
+    about: "Story",
+    cf_token: "test",
+  },
+  "/api/volunteer": {
+    name: "Staging Tester",
+    email: "tester@example.test",
+    roles: ["Event crew"],
+    cf_token: "test",
+  },
   // handleUnsubscribe (src/index.js): the one click POST from the mail header.
   "/unsubscribe": { e: "subscriber@example.test" },
   // handleShopContact (src/shop_contact.js): a storefront message.
@@ -321,6 +343,9 @@ for (const route of [
   "/api/waiver",
   "/unsubscribe",
   "/api/shop-contact",
+  "/api/contact",
+  "/api/apply",
+  "/api/volunteer",
 ]) {
   test(`staging returns 404 for ${route} and never calls an outside service`, async () => {
     const { dbCalls, fetchCalls, statuses } = await probe(

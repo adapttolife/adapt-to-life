@@ -138,7 +138,7 @@ export async function sendAdminLink(env, email, link) {
     subject: "Your Adapt To Life admin sign-in link",
     text: `Use this one-time link to open the Adapt To Life admin dashboard:\n\n${link}\n\nIt expires in 15 minutes.`,
     html: `<p>Use this one-time link to open the Adapt To Life admin dashboard:</p><p><a href="${link}">Open the dashboard</a></p><p>It expires in 15 minutes.</p>`,
-    idempotencyKey: `signin-${await hash(email)}-${Math.floor(Date.now() / 600000)}`,
+    idempotencyKey: `signin-${await hash(link)}`,
     tags: { brand: "adapttolife", kind: "signin" },
   });
 }

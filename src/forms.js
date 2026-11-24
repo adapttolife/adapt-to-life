@@ -20,16 +20,19 @@ import {
 } from "./form-records.js";
 import { renderReceipt } from "./receipts.js";
 import { recordTransactionalFailure } from "./email.js";
+import {
+  RETRY_WINDOW_MS,
+  retryDelayMs,
+  windowOpen,
+  nextAttemptAt,
+} from "./mail-window.js";
 
 const KINDS = new Set(["contact", "apply", "volunteer"]);
 const now = () => new Date().toISOString();
 // The environment that owns a row. Rows written before `env` existed default to
 // 'production' in the table, and so does a Worker without ENV_NAME.
 export const ownEnv = (env) => env.ENV_NAME || "production";
-export const RETRY_WINDOW_MS = 23 * 60 * 60 * 1000;
-// 10, 20, 40, 80, 160 minutes, then every 3 hours until the window closes.
-export const retryDelayMs = (attempts) =>
-  Math.min(10 * 60e3 * 2 ** Math.max(0, attempts - 1), 3 * 60 * 60e3);
+export { RETRY_WINDOW_MS, retryDelayMs };
 const pending = (db, id, channel, envName) =>
   db
     .prepare(
@@ -182,6 +185,7 @@ async function frozenReceipt(env, db, id, row, sub, claim) {
     return {
       msg: JSON.parse(claim.rendered),
       firstAttemptedAt: claim.first_attempted_at,
+      first: false,
     };
   const msg = await renderReceipt(
     { ...env, INTAKE_SEPARATE_NOTIFICATION: true, INTAKE_SUBMISSION_ID: id },
@@ -205,6 +209,7 @@ async function frozenReceipt(env, db, id, row, sub, claim) {
   return {
     msg: JSON.parse(saved.rendered),
     firstAttemptedAt: saved.first_attempted_at,
+    first: !claim.first_attempted_at,
   };
 }
 
@@ -231,6 +236,8 @@ export async function processForm(env, id) {
     let externalStarted = false;
     let msg;
     let firstAttemptedAt;
+    let firstExternal = false;
+    let windowClosed = false;
     try {
       let receipt;
       let note = null;
@@ -242,7 +249,23 @@ export async function processForm(env, id) {
           note = `Not mirrored: ${ownEnv(env)} rows stay out of the shared intake and CRM`;
       } else {
         if (!mailConfigured(env)) throw Error("Receipt mail binding missing");
-        ({ msg, firstAttemptedAt } = await frozenReceipt(env, db, id, row, sub, claim));
+        let first;
+        ({ msg, firstAttemptedAt, first } = await frozenReceipt(
+          env,
+          db,
+          id,
+          row,
+          sub,
+          claim,
+        ));
+        // Past 23 hours the same key is a new send to Resend: never send.
+        if (!windowOpen(firstAttemptedAt)) {
+          windowClosed = true;
+          throw Error(
+            "Retry window closed (23 hours from the first attempt); check Resend's log by tag before resending",
+          );
+        }
+        firstExternal = first;
         externalStarted = true;
         const sent = await sendMail(env, msg);
         if (sent?.dropped) {
@@ -268,25 +291,24 @@ export async function processForm(env, id) {
     } catch (e) {
       const error = String(e.message).slice(0, 400);
       // Local failures before any send retry automatically. After a send began,
-      // only an idempotent (Resend) retryable failure retries, inside the window;
-      // anything ambiguous stays reviewable rather than duplicating mail.
-      const age = Date.now() - Date.parse(firstAttemptedAt || at);
-      const retry =
-        !externalStarted ||
-        (e?.retryable === true && !!msg?.idempotencyKey && age < RETRY_WINDOW_MS);
+      // only an idempotent (Resend) retryable failure retries, and only while a
+      // try still fits inside the window; anything else stays reviewable rather
+      // than duplicating mail.
+      let next = null;
+      if (externalStarted && e?.retryable === true && msg?.idempotencyKey)
+        next = nextAttemptAt(firstAttemptedAt, claim.attempts);
+      const pendingAgain = windowClosed ? false : !externalStarted || !!next;
       await finish(
         db,
         id,
         channel,
-        retry ? "pending" : "review",
+        pendingAgain ? "pending" : "review",
         null,
         error,
-        retry && externalStarted
-          ? new Date(Date.now() + retryDelayMs(claim.attempts)).toISOString()
-          : null,
+        next,
       );
       // A person hears about it: on the first failed send, and when it stops.
-      if (externalStarted && (!retry || claim.attempts === 1))
+      if (windowClosed || (externalStarted && (!pendingAgain || firstExternal)))
         await recordTransactionalFailure(
           env,
           `receipt:${row.kind} receipt`,
@@ -301,6 +323,14 @@ export async function processForm(env, id) {
     deliver("receipt"),
     deliver("intake"),
   ]);
+}
+
+function safeTo(rendered) {
+  try {
+    return JSON.parse(rendered)?.to || "";
+  } catch {
+    return "";
+  }
 }
 
 export async function sweepForms(env) {
@@ -319,17 +349,27 @@ export async function sweepForms(env) {
   // An interrupted Resend receipt with its frozen copy is safe to send again
   // inside the window (same key, same body); anything else needs a person.
   const windowStart = new Date(Date.now() - RETRY_WINDOW_MS).toISOString();
-  await db
+  const interrupted = await db
     .prepare(
       `UPDATE form_deliveries SET state=CASE
          WHEN channel='intake' THEN 'pending'
          WHEN ?=1 AND rendered IS NOT NULL AND first_attempted_at>? THEN 'pending'
          ELSE 'review' END,
        error='Interrupted delivery; inspect destination before retry'
-       WHERE state='running' AND started_at<? AND env=?`,
+       WHERE state='running' AND started_at<? AND env=?
+       RETURNING submission_id,channel,state,rendered`,
     )
     .bind(env.MAIL_TRANSPORT === "resend" ? 1 : 0, windowStart, cut, ownEnv(env))
-    .run();
+    .all();
+  // A send parked for a person is a failure someone must hear about.
+  for (const r of interrupted.results || [])
+    if (r.state === "review")
+      await recordTransactionalFailure(
+        env,
+        `receipt:interrupted ${r.channel}`,
+        safeTo(r.rendered),
+        Error(`Interrupted ${r.channel} for ${r.submission_id}; inspect before retry`),
+      );
   const rows = await db
     .prepare(
       "SELECT DISTINCT submission_id FROM form_deliveries WHERE state='pending' AND env=? AND (next_attempt_at IS NULL OR next_attempt_at<=?) ORDER BY submission_id LIMIT 25",

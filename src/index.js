@@ -1172,7 +1172,7 @@ export async function sendBetaTesterInvitation(env, { email, name, siteUrl }) {
     subject: "You are invited to the Adaptive Sports Near Me beta",
     text,
     html,
-    idempotencyKey: `beta-invite-${await keyHash(email)}-${Math.floor(Date.now() / 600000)}`,
+    idempotencyKey: `beta-invite-${await keyHash(`${email}\n${text}`)}`,
     tags: { brand: "adapttolife", kind: "beta-invite" },
   });
 }

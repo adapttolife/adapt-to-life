@@ -5,11 +5,12 @@
 import { test, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { DatabaseSync } from "node:sqlite";
-import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { formBindings, sqliteD1 } from "./helpers/form-db.js";
 import { acceptForm, processForm, sweepForms, retryDelayMs } from "../src/forms.js";
-import { claimAndThank } from "../src/givebutter_webhook.js";
+import { claimAndThank, recoverDonorEmails } from "../src/givebutter_webhook.js";
+import { sendBetaTesterInvitation } from "../src/index.js";
+import { sendMail } from "../src/mail-transport.js";
 import { sendAdminLink } from "../src/asnm_admin_auth.js";
 import { notifyIntakeRow } from "../src/intake.js";
 import {
@@ -195,8 +196,16 @@ test("the receipt is rendered once and every retry sends exactly that, under one
   const [first, second] = receiptCalls();
   assert.equal(first.key, `receipt-apply-${a.id}`);
   assert.equal(second.key, first.key);
+  // The second send is the stored copy, field for field, not a fresh render.
   assert.match(second.body.text, /^Hi Offline,\n\nFROZEN COPY\./);
-  assert.deepEqual(second.body, stored.body ?? second.body);
+  assert.equal(second.body.text, stored.text);
+  assert.equal(second.body.html, stored.html);
+  assert.equal(second.body.subject, stored.subject);
+  assert.notEqual(
+    second.body.text,
+    first.body.text,
+    "a fresh render would not say FROZEN",
+  );
   const receipt = JSON.parse(r.receipt);
   assert.equal(receipt.messageId, "re-" + (calls.indexOf(second) + 1));
   assert.equal(receipt.provider, "resend");
@@ -216,29 +225,91 @@ test("an unchanged row resends byte-identical JSON", async () => {
   assert.equal(receiptRow(e).state, "done");
 });
 
-test("a retryable failure past 23 hours from the first attempt goes to review", async () => {
+const ago = (ms) => new Date(Date.now() - ms).toISOString();
+const HOUR = 3600e3;
+
+test("past 23 hours from the first attempt, a due receipt is never sent: it goes to review", async () => {
   const e = env();
   const a = await acceptForm(e, "contact", sub);
-  plan = [429];
+  plan = [503];
   await processForm(e, a.id);
+  assert.equal(receiptCalls().length, 1);
+  // The row is due again, but its window has closed.
   e.WAIVERS_DB.sql
     .prepare(
       "UPDATE form_deliveries SET first_attempted_at=?, next_attempt_at=? WHERE channel='receipt'",
     )
-    .run(
-      new Date(Date.now() - 23 * 3600e3 - 60e3).toISOString(),
-      new Date(Date.now() - 1000).toISOString(),
-    );
-  plan = [500];
+    .run(ago(23 * HOUR + 1000), ago(1000));
   await sweepForms(e);
+  assert.equal(receiptCalls().length, 1, "ZERO sends after 23 hours");
   const r = receiptRow(e);
   assert.equal(r.state, "review");
+  assert.match(r.error, /Retry window closed/);
   assert.equal(r.next_attempt_at, null);
-  assert.match(r.error, /500/);
+  assert.ok(
+    failures(e).some((f) => /Retry window closed/.test(f.error)),
+    "the person who reviews it is told",
+  );
+});
+
+test("a retry is never scheduled past the cutoff, and none is scheduled when no time is left", async () => {
+  const e = env();
+  const a = await acceptForm(e, "contact", sub);
+  plan = ["throw"];
+  await processForm(e, a.id);
+  // Fail again at 22h50m: a 20-minute backoff would land past 23 hours.
+  const first = ago(22 * HOUR + 50 * 60e3);
+  e.WAIVERS_DB.sql
+    .prepare(
+      "UPDATE form_deliveries SET first_attempted_at=?, next_attempt_at=? WHERE channel='receipt'",
+    )
+    .run(first, ago(1000));
+  plan = [503];
+  await sweepForms(e);
+  let r = receiptRow(e);
+  assert.equal(r.state, "pending");
+  assert.ok(
+    Date.parse(r.next_attempt_at) <= Date.parse(first) + 23 * HOUR - 60e3,
+    "clamped a minute inside the cutoff",
+  );
+  // Fail at 22h59m30s: no try fits, so review now, not a doomed schedule.
+  e.WAIVERS_DB.sql
+    .prepare(
+      "UPDATE form_deliveries SET first_attempted_at=?, next_attempt_at=? WHERE channel='receipt'",
+    )
+    .run(ago(23 * HOUR - 30e3), ago(1000));
+  plan = [503];
+  await sweepForms(e);
+  r = receiptRow(e);
+  assert.equal(r.state, "review");
+  assert.equal(r.next_attempt_at, null);
+});
+
+test("the clock starts only once mail is configured, and the first failed send alerts whatever the attempt number", async () => {
+  const e = env({ RESEND_API_KEY: "" });
+  const a = await acceptForm(e, "contact", sub);
+  await processForm(e, a.id);
+  let r = receiptRow(e);
+  assert.equal(r.state, "pending");
+  assert.equal(r.first_attempted_at, null, "no clock while nothing could be sent");
+  assert.equal(r.rendered, null);
+  const original = () =>
+    e.WAIVERS_DB.sql.prepare("SELECT * FROM form_record_deliveries").get();
+  assert.equal(original().first_attempted_at, null);
+  assert.equal(calls.length, 0);
+  // Configured now; attempt 2 is the first real send, and it fails.
+  e.RESEND_API_KEY = "re_test";
+  plan = [503];
+  await processForm(e, a.id);
+  r = receiptRow(e);
+  assert.equal(r.attempts, 2);
+  assert.ok(r.first_attempted_at);
+  assert.equal(r.state, "pending");
+  assert.ok(original().first_attempted_at);
   assert.equal(
-    failures(e).length,
-    2,
-    "the first failure and the give-up are both reported",
+    failures(e).filter((f) => f.route === "receipt:contact receipt").length,
+    1,
+    "alerted on the first failed send although it was attempt 2",
   );
 });
 
@@ -263,30 +334,64 @@ test("backoff doubles from ten minutes and is capped at three hours", () => {
   assert.equal(retryDelayMs(9), 3 * 3600e3);
 });
 
-test("an interrupted Resend receipt with its frozen copy retries; one without goes to review", async () => {
-  for (const [rendered, expected] of [
-    [true, "pending"],
-    [false, "review"],
-  ]) {
-    const e = env();
-    const a = await acceptForm(e, "contact", sub);
-    const old = new Date(Date.now() - 20 * 60e3).toISOString();
-    e.WAIVERS_DB.sql
-      .prepare(
-        "UPDATE form_deliveries SET state='running', started_at=?, first_attempted_at=?, rendered=? WHERE channel='receipt'",
-      )
-      .run(old, old, rendered ? JSON.stringify({ x: 1 }) : null);
-    // Stop the sweep from also re-sending, so the state it set can be read.
-    e.WAIVERS_DB.sql.exec(
-      "UPDATE form_deliveries SET next_attempt_at='9999' WHERE channel='intake'",
-    );
-    globalThis.fetch = async () => {
-      throw Error("no send in this test");
-    };
-    await sweepForms({ ...e, MAIL_TRANSPORT: "resend", RESEND_API_KEY: "" });
-    assert.equal(receiptRow(e).state, expected, String(rendered));
-    void a;
-  }
+test("an interrupted Resend receipt with its frozen copy is delivered once on the next sweep", async () => {
+  const e = env();
+  const a = await acceptForm(e, "contact", sub);
+  // Attempt 1 froze the copy and then the isolate died mid-send.
+  plan = ["throw"];
+  await processForm(e, a.id);
+  const frozen = receiptRow(e).rendered;
+  e.WAIVERS_DB.sql
+    .prepare(
+      "UPDATE form_deliveries SET state='running', started_at=?, next_attempt_at=NULL WHERE channel='receipt'",
+    )
+    .run(ago(20 * 60e3));
+  await sweepForms(e);
+  const sends = receiptCalls();
+  assert.equal(sends.length, 2, "the interrupted receipt went out on this sweep");
+  assert.equal(sends[1].key, sends[0].key, "under the same key");
+  assert.equal(sends[1].body.text, JSON.parse(frozen).text, "the frozen copy");
+  assert.equal(receiptRow(e).state, "done");
+  assert.equal(failures(e).filter((f) => /interrupted/.test(f.route)).length, 0);
+});
+
+test("an interrupted send with no frozen copy goes to review, and a person is told", async () => {
+  const e = env();
+  const a = await acceptForm(e, "contact", sub);
+  e.WAIVERS_DB.sql
+    .prepare(
+      "UPDATE form_deliveries SET state='running', started_at=? WHERE channel='receipt'",
+    )
+    .run(ago(20 * 60e3));
+  e.WAIVERS_DB.sql
+    .prepare("UPDATE form_record_deliveries SET state='running', started_at=?")
+    .run(ago(20 * 60e3));
+  await sweepForms(e);
+  assert.equal(receiptRow(e).state, "review");
+  assert.equal(receiptCalls().length, 0);
+  const routes = failures(e)
+    .map((f) => f.route)
+    .sort();
+  assert.deepEqual(routes, [
+    "receipt:interrupted contact original",
+    "receipt:interrupted receipt",
+  ]);
+  void a;
+});
+
+test("past 23 hours, the contact original copy is never sent either", async () => {
+  const e = env();
+  const a = await acceptForm(e, "contact", sub);
+  e.WAIVERS_DB.sql
+    .prepare("UPDATE form_record_deliveries SET first_attempted_at=?")
+    .run(ago(23 * HOUR + 1000));
+  // Keep the receipt out of it.
+  e.WAIVERS_DB.sql.exec("UPDATE form_deliveries SET next_attempt_at='9999'");
+  await processForm(e, a.id);
+  assert.equal(calls.filter((c) => c.key.startsWith("contact-original-")).length, 0);
+  const o = e.WAIVERS_DB.sql.prepare("SELECT * FROM form_record_deliveries").get();
+  assert.equal(o.state, "review");
+  assert.match(o.error, /Retry window closed/);
 });
 
 test("the contact original copy retries a retryable failure with backoff", async () => {
@@ -320,26 +425,45 @@ test("the contact original copy retries a retryable failure with backoff", async
   );
 });
 
-test("the migration takes the live tables exactly to the schema files", () => {
-  for (const [db, migration] of [
-    ["atl-waivers", "schema/migrations/2026-11-24-form-outbox-resend.sql"],
-    ["agent-mail", "schema/migrations/2026-11-24-resend-events.sql"],
-  ]) {
-    const live = new DatabaseSync(":memory:");
-    for (const file of D1_SCHEMAS[db]) {
-      let sql;
-      try {
-        // The shape before this change, as committed on the base branch.
-        sql = execFileSync("git", ["show", `660d2c54:${file}`], {
-          encoding: "utf8",
-          stdio: ["ignore", "pipe", "ignore"],
-        });
-      } catch {
-        continue; // a file this change adds
-      }
-      live.exec(sql);
-    }
-    live.exec(readFileSync(new URL(`../${migration}`, import.meta.url), "utf8"));
+// The live shape before this PR: today's files, with checked-in snapshots for
+// the two this PR changes and without the table it adds. No git in tests:
+// Workers Builds runs npm test on a shallow clone.
+const fixture = (name) =>
+  readFileSync(new URL(`./fixtures/${name}`, import.meta.url), "utf8");
+const BEFORE = {
+  "src/schema_forms.sql": () => fixture("schema_forms.before-resend.sql"),
+  "schema/donor_gifts.sql": () => fixture("donor_gifts.before-resend.sql"),
+  "schema/resend_events.sql": () => "",
+};
+const MIGRATIONS = {
+  "atl-waivers": [
+    "schema/migrations/2026-11-24-form-outbox-resend.sql",
+    "schema/migrations/2026-11-24-donor-gifts-first-attempt.sql",
+  ],
+  "agent-mail": ["schema/migrations/2026-11-24-resend-events.sql"],
+};
+function liveBefore(db) {
+  const live = new DatabaseSync(":memory:");
+  for (const file of D1_SCHEMAS[db])
+    live.exec(
+      BEFORE[file]
+        ? BEFORE[file]()
+        : readFileSync(new URL(`../${file}`, import.meta.url), "utf8"),
+    );
+  return live;
+}
+
+test("the migrations take the live tables exactly to the schema files", () => {
+  for (const [db, migrations] of Object.entries(MIGRATIONS)) {
+    const live = liveBefore(db);
+    // Before them, the drift check must see the gap (so the fixture is real).
+    assert.notDeepEqual(
+      diffSchema(buildExpected(db), describeLocal(live)).problems,
+      [],
+      db,
+    );
+    for (const m of migrations)
+      live.exec(readFileSync(new URL(`../${m}`, import.meta.url), "utf8"));
     assert.deepEqual(
       diffSchema(buildExpected(db), describeLocal(live)).problems,
       [],
@@ -349,11 +473,8 @@ test("the migration takes the live tables exactly to the schema files", () => {
 });
 
 test("the migration keeps existing rows and gives them env='production'", () => {
-  const before = execFileSync("git", ["show", "660d2c54:src/schema_forms.sql"], {
-    encoding: "utf8",
-  });
   const live = new DatabaseSync(":memory:");
-  live.exec(before);
+  live.exec(fixture("schema_forms.before-resend.sql"));
   live.exec(
     "INSERT INTO form_submissions VALUES ('s1','contact','{}','2026-11-01');" +
       "INSERT INTO form_deliveries (submission_id,channel,state) VALUES ('s1','receipt','review');" +
@@ -391,7 +512,7 @@ function donorDb() {
     `INSERT INTO donor_gifts(transaction_id,email,amount,donated,transacted_at,email_status,created_at,updated_at)
      VALUES ('tx-1','donor@example.com',60,60,'2026-11-24','pending','2026-11-24','2026-11-24')`,
   ).run();
-  return { s, db: sqliteD1("").constructor ? wrap(s) : null };
+  return { s, db: wrap(s) };
 }
 function wrap(s) {
   return {
@@ -459,19 +580,132 @@ test("donor thank you: keyed by transaction, retryable failures retry, refusals 
   assert.match(status(s).last_error, /dropped outside production/);
 });
 
-test("admin sign-in link: house From, signin key from a hash of the address and a 10-minute bucket", async () => {
-  await sendAdminLink(
-    { ...RESEND, ENV_NAME: "production" },
-    "alec@adapttolife.org",
-    "https://adapttolife.org/admin/auth/verify?token=x",
+function donorRow(s, fields) {
+  const cols = Object.keys(fields);
+  s.prepare(`UPDATE donor_gifts SET ${cols.map((c) => `${c}=?`).join(",")}`).run(
+    ...cols.map((c) => fields[c]),
   );
-  const [c] = calls;
-  assert.match(c.key, /^signin-[0-9a-f]{64}-\d+$/);
-  assert.ok(!c.key.includes("alec"), "no address in the key");
-  assert.equal(Number(c.key.split("-").at(-1)), Math.floor(Date.now() / 600000));
-  assert.equal(c.body.from, "Adapt To Life <hello@mail.adapttolife.org>");
-  assert.deepEqual(c.body.reply_to, ["hello@adapttolife.org"]);
-  assert.equal(c.body.tags.find((t) => t.name === "kind").value, "signin");
+}
+
+test("donor thank you: a missing key never claims or fails the gift", async () => {
+  const { s, db } = donorDb();
+  const out = await claimAndThank({ ...donorEnv(db), RESEND_API_KEY: "" }, gift);
+  assert.deepEqual(out, { emailed: false, notConfigured: true });
+  const row = s.prepare("SELECT * FROM donor_gifts").get();
+  assert.equal(row.email_status, "pending");
+  assert.equal(row.attempt_count, 0);
+  assert.equal(row.first_attempted_at, null);
+  assert.equal(calls.length, 0);
+  // And the transport itself says so as a retryable, local error.
+  await assert.rejects(
+    sendMail({ MAIL_TRANSPORT: "resend" }, {}),
+    (e) => e.name === "MailError" && e.retryable === true,
+  );
+});
+
+test("donor thank you: a Gmail-era retry (no clock) is closed for review, never resent", async () => {
+  const { s, db } = donorDb();
+  donorRow(s, {
+    email_status: "retry",
+    attempt_count: 1,
+    email_attempted_at: ago(HOUR),
+    next_attempt_at: ago(1000),
+  });
+  assert.equal((await claimAndThank(donorEnv(db), gift)).duplicate, true);
+  const r = await recoverDonorEmails(donorEnv(db));
+  assert.equal(calls.length, 0, "ZERO sends");
+  assert.equal(r.failed, 1);
+  assert.match(
+    status(s).last_error,
+    /^Review before resending: attempted before the Resend move/,
+  );
+  assert.equal(status(s).email_status, "failed");
+});
+
+test("donor thank you: past 23 hours from the first attempt, a due retry is never sent", async () => {
+  const { s, db } = donorDb();
+  donorRow(s, {
+    email_status: "retry",
+    attempt_count: 1,
+    first_attempted_at: ago(23 * HOUR + 1000),
+    email_attempted_at: ago(HOUR),
+    next_attempt_at: ago(1000),
+  });
+  await recoverDonorEmails(donorEnv(db));
+  assert.equal(calls.length, 0, "ZERO sends after 23 hours");
+  assert.equal(status(s).email_status, "failed");
+  assert.match(status(s).last_error, /retry window \(23 hours\) closed/);
+});
+
+test("donor thank you: the first attempt starts the clock and a retry is clamped inside it", async () => {
+  const { s, db } = donorDb();
+  plan = [503];
+  await claimAndThank(donorEnv(db), gift);
+  let row = s.prepare("SELECT * FROM donor_gifts").get();
+  assert.ok(row.first_attempted_at);
+  assert.equal(row.email_status, "retry");
+  const first = row.first_attempted_at;
+  // A later attempt keeps the same clock.
+  donorRow(s, { next_attempt_at: ago(1000) });
+  plan = [503];
+  await claimAndThank(donorEnv(db), gift);
+  row = s.prepare("SELECT * FROM donor_gifts").get();
+  assert.equal(row.first_attempted_at, first, "never reset");
+  // Near the end of the window, the next try is clamped to the cutoff.
+  const late = ago(23 * HOUR - 5 * 60e3);
+  donorRow(s, {
+    first_attempted_at: late,
+    next_attempt_at: ago(1000),
+    attempt_count: 1,
+  });
+  plan = [503];
+  await claimAndThank(donorEnv(db), gift);
+  row = s.prepare("SELECT * FROM donor_gifts").get();
+  assert.equal(row.email_status, "retry");
+  assert.ok(Date.parse(row.next_attempt_at) <= Date.parse(late) + 23 * HOUR - 60e3);
+});
+
+test("admin sign-in link: the key is a digest of the link, so a new link is never refused as a reused key", async () => {
+  const env = { ...RESEND, ENV_NAME: "production" };
+  const link = (t) => `https://adapttolife.org/admin/auth/verify?token=${t}`;
+  await sendAdminLink(env, "alec@adapttolife.org", link("first"));
+  await sendAdminLink(env, "alec@adapttolife.org", link("second"));
+  await sendAdminLink(env, "alec@adapttolife.org", link("second"));
+  const [a, b, c] = calls;
+  assert.match(a.key, /^signin-[0-9a-f]{64}$/);
+  assert.ok(!a.key.includes("alec"), "no address in the key");
+  // A second request inside ten minutes has a new token: a new key, not a 409.
+  assert.notEqual(a.key, b.key);
+  // The same link sent twice (a retry) is the same key: Resend collapses it.
+  assert.equal(b.key, c.key);
+  assert.equal(a.body.from, "Adapt To Life <hello@mail.adapttolife.org>");
+  assert.deepEqual(a.body.reply_to, ["hello@adapttolife.org"]);
+  assert.equal(a.body.tags.find((t) => t.name === "kind").value, "signin");
+});
+
+test("beta invite on Resend: house From, tags, and a key from a digest of what it says", async () => {
+  const env = { ...RESEND, ENV_NAME: "production" };
+  const invite = (name, siteUrl = "https://adaptivesportsnearme.com/") =>
+    sendBetaTesterInvitation(env, { email: "tester@example.com", name, siteUrl });
+  await invite("Dana");
+  await invite("Dana");
+  await invite("Dana R");
+  const [a, b, c] = calls;
+  assert.match(a.key, /^beta-invite-[0-9a-f]{64}$/);
+  assert.ok(!a.key.includes("tester"), "no address in the key");
+  assert.equal(a.key, b.key, "the same invite twice is one key (no duplicate)");
+  assert.notEqual(a.key, c.key, "a changed invite is a new key, never a 409");
+  assert.equal(a.body.from, "Adapt To Life <hello@mail.adapttolife.org>");
+  assert.deepEqual(a.body.to, ["tester@example.com"]);
+  assert.deepEqual(a.body.reply_to, ["hello@adapttolife.org"]);
+  assert.deepEqual(
+    a.body.tags.map((t) => [t.name, t.value]),
+    [
+      ["brand", "adapttolife"],
+      ["kind", "beta-invite"],
+      ["env", "production"],
+    ],
+  );
 });
 
 test("staff notice: keyed by intake id and tagged", async () => {

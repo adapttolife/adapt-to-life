@@ -273,6 +273,73 @@ test("a Broadcast (no custom tags) is matched to its brand by the From domain, o
   assert.deepEqual(await res.json(), { ok: true, ignored: true });
 });
 
+test("a multi-entry svix-signature passes when any one v1 entry matches, and only then", async () => {
+  const body = JSON.stringify(event());
+  const id = "msg_multi";
+  const ts = String(Math.floor(Date.now() / 1000));
+  const good = sign(id, ts, body);
+  const bad = sign(id, ts, body, randomBytes(24));
+  const verify = (signature) =>
+    verifySvix({ id, timestamp: ts, signature, body, secret: SECRET });
+  // Resend rotates secrets by sending one entry per active key.
+  assert.equal((await verify(`${bad} ${good}`)).ok, true, "good entry second");
+  assert.equal((await verify(`${good} ${bad}`)).ok, true, "good entry first");
+  assert.equal(
+    (await verify(`v2,${good.slice(3)} ${bad}`)).ok,
+    false,
+    "a matching v2 entry does not count",
+  );
+  assert.equal(
+    (await verify(`${bad} ${sign(id, ts, body, randomBytes(24))}`)).ok,
+    false,
+  );
+  const e = env();
+  const res = await handleResendEvents(
+    request(event(), {
+      id,
+      ts,
+      signature: `${bad} ${sign(id, ts, JSON.stringify(event()))}`,
+    }),
+    e,
+  );
+  assert.equal(res.status, 200);
+});
+
+test("a secret that is only whsec_ (no key) is a clear 500, not a crash", async () => {
+  const logged = [];
+  const old = console.error;
+  console.error = (...a) => logged.push(a.join(" "));
+  try {
+    for (const secret of ["whsec_", "whsec_!!!not-base64"]) {
+      const res = await handleResendEvents(
+        request(event()),
+        env({ RESEND_WEBHOOK_SECRET: secret }),
+      );
+      assert.equal(res.status, 500, secret);
+      assert.deepEqual(await res.json(), {
+        ok: false,
+        error: "Webhook secret is invalid",
+      });
+    }
+  } finally {
+    console.error = old;
+  }
+  assert.ok(logged.some((l) => /RESEND_WEBHOOK_SECRET/.test(l)));
+});
+
+test("staging keeps its bounces in resend_events but never writes production's send_failures", async () => {
+  const s = env({ ENV_NAME: "staging" });
+  const res = await handleResendEvents(
+    request(
+      event("email.bounced", { brand: "adapttolife", kind: "signin", env: "staging" }),
+    ),
+    s,
+  );
+  assert.equal((await res.json()).recorded, true);
+  assert.equal(rows(s, "resend_events")[0].env, "staging");
+  assert.equal(rows(s, "send_failures").length, 0);
+});
+
 test("without its secret or database the route asks Resend to retry later", async () => {
   assert.equal(
     (await handleResendEvents(request(event()), env({ RESEND_WEBHOOK_SECRET: "" })))

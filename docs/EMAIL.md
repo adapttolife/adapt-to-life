@@ -249,9 +249,11 @@ in October, and the meter only writes to its own log.
 A change to mail is done when a real message arrives, not when tests pass. For each row in the
 confirmation table: submit it once from a phone on production, using a team inbox, and on staging
 where staging serves that form (it blocks the newsletter, waiver and donation routes today), then
-(staging today still lets `/unsubscribe`, `/api/shop-contact` and the contact, apply and volunteer
-forms write to production Resend and the CRM; PR A closes that) check the inbox (not spam), the From, Reply-To, the unsubscribe link and the
-Resend delivery event. Record the Resend message id in the PR.
+check the inbox (not spam), the From, Reply-To, the unsubscribe link and the Resend delivery event. Record the Resend message id in the PR.
+
+Staging today still lets `/unsubscribe`, `/api/shop-contact` and the contact, apply and volunteer
+forms write to production Resend and the CRM. PR A closes that, and until it does, test those
+forms on production with a team inbox.
 
 ## Order of work
 

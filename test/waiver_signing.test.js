@@ -26,13 +26,28 @@ let drive;
 let gmail; // raw MIME of each message the mocked Gmail API accepted
 let originalFetch;
 beforeEach(() => {
-  drive = { files: new Map(), uploads: 0, lookups: 0, mode: "ok" };
+  drive = {
+    files: new Map(),
+    uploads: 0,
+    lookups: 0,
+    downloads: 0,
+    jwtClaims: [],
+    mode: "ok",
+  };
   gmail = [];
   originalFetch = globalThis.fetch;
   globalThis.fetch = async (input, init = {}) => {
     const url = String(input);
-    if (url === "https://oauth2.example/token")
+    if (url === "https://oauth2.example/token") {
+      const assertion = new URLSearchParams(String(init.body || "")).get("assertion");
+      if (assertion) {
+        const [, payload] = assertion.split(".");
+        drive.jwtClaims.push(
+          JSON.parse(Buffer.from(payload, "base64url").toString("utf8")),
+        );
+      }
       return Response.json({ access_token: "tok" });
+    }
     if (url === "https://oauth2.googleapis.com/token")
       return Response.json({ access_token: "gmail-tok", token_type: "Bearer" });
     if (url === "https://gmail.googleapis.com/gmail/v1/users/me/messages/send") {
@@ -49,10 +64,27 @@ beforeEach(() => {
           { error: { code: 404, message: `File not found: ${FOLDER}.` } },
           { status: 404 },
         );
-      const text = new TextDecoder("latin1").decode(init.body);
+      if (drive.mode === "quota")
+        return Response.json(
+          {
+            error: {
+              code: 403,
+              message:
+                "Service Accounts do not have storage quota. Leverage shared drives, or use OAuth delegation.",
+              errors: [{ reason: "storageQuotaExceeded" }],
+            },
+          },
+          { status: 403 },
+        );
+      const raw = new Uint8Array(init.body);
+      const text = new TextDecoder("latin1").decode(raw);
       const name = JSON.parse(text.match(/\r\n\r\n(\{.*?\})\r\n/)[1]).name;
+      const pdfMarker = "Content-Type: application/pdf\r\n\r\n";
+      const pdfStart = text.indexOf(pdfMarker) + pdfMarker.length;
+      const pdfEnd = text.lastIndexOf("\r\n--atlbnd");
+      const bytes = raw.slice(pdfStart, pdfEnd);
       const id = `file-${drive.files.size + 1}`;
-      drive.files.set(id, { id, name });
+      drive.files.set(id, { id, name, bytes });
       // "lost": Drive stored the file, but the response never made it back.
       if (drive.mode === "lost")
         return new Response("gateway timeout", { status: 504 });
@@ -67,6 +99,26 @@ beforeEach(() => {
         files: [...drive.files.values()]
           .filter((f) => f.name === name)
           .map((f) => ({ id: f.id, webViewLink: `https://drive.example/${f.id}` })),
+      });
+    }
+    if (url.startsWith("https://www.googleapis.com/drive/v3/files/")) {
+      drive.downloads++;
+      const parsed = new URL(url);
+      assert.equal(parsed.searchParams.get("alt"), "media");
+      assert.equal(
+        parsed.searchParams.get("supportsAllDrives"),
+        "true",
+        "Drive media fetch must pass supportsAllDrives=true",
+      );
+      if (drive.mode === "down") return new Response("backend error", { status: 503 });
+      const fileId = decodeURIComponent(
+        parsed.pathname.slice("/drive/v3/files/".length),
+      );
+      const found = drive.files.get(fileId);
+      if (!found) return new Response("not found", { status: 404 });
+      return new Response(found.bytes, {
+        status: 200,
+        headers: { "Content-Type": "application/pdf" },
       });
     }
     throw new Error("Offline test forbids live network: " + url);
@@ -521,6 +573,113 @@ test("Drive unconfigured: capture still succeeds and the row is owed, not lost",
   assert.equal(row(e).drive_status, "pending");
   assert.match(row(e).drive_error, /not configured/);
   assert.equal(count(e, "waiver_documents"), 1);
+});
+
+test("WAIVERS_DRIVE_SUBJECT sets JWT sub for Domain-Wide Delegation; omitted leaves sub unset", async () => {
+  const withSub = env({ WAIVERS_DRIVE_SUBJECT: "alec@alecability.com" });
+  assert.equal((await (await sign(withSub)).json()).ok, true);
+  assert.equal(drive.jwtClaims.length, 1);
+  assert.equal(drive.jwtClaims[0].sub, "alec@alecability.com");
+
+  drive.jwtClaims = [];
+  const noSub = env();
+  assert.equal((await (await sign(noSub)).json()).ok, true);
+  assert.equal(drive.jwtClaims.length, 1);
+  assert.equal("sub" in drive.jwtClaims[0], false);
+});
+
+test("Drive 403 storageQuotaExceeded: names My Drive quota issue without leaking Google body", async () => {
+  drive.mode = "quota";
+  const e = env();
+  let out;
+  const logged = await quietly(async () => (out = await (await sign(e)).json()));
+  assert.equal(out.ok, true);
+  const line = `waiver Drive archive failed: service account has no My Drive storage quota; set WAIVERS_DRIVE_SUBJECT or use a Shared Drive (403) id=${out.id} attempt=1`;
+  assert.ok(logged.includes(line), logged.join("\n"));
+  assert.deepEqual(failures(e), [
+    { route: "archive:waiver", to_addr: `waiver:${out.id}`, error: line },
+  ]);
+  assert.ok(
+    !logged.some((l) => l.includes("Drive archive") && l.includes("Leverage shared")),
+  );
+});
+
+test("waiver download & verify stream PDF bytes (never redirect to private Drive) before and after D1 retention", async () => {
+  const e = env({ WAIVERS_DRIVE_SUBJECT: "alec@alecability.com" });
+  const out = await (await sign(e)).json();
+  assert.equal(out.ok, true);
+  const r = row(e);
+  assert.equal(r.drive_status, "done");
+
+  // Immediately after signing (while D1 retains waiver_documents): serves PDF bytes
+  // directly (not a 302 to drive.google.com) without touching Drive.
+  const dl1 = await worker.fetch(
+    new Request(`https://adapttolife.org${out.download}`),
+    e,
+  );
+  assert.equal(dl1.status, 200);
+  assert.equal(dl1.headers.get("Content-Type"), "application/pdf");
+  assert.equal(dl1.headers.get("X-Content-Type-Options"), "nosniff");
+  assert.equal(dl1.headers.get("X-Robots-Tag"), "noindex, nofollow");
+  assert.equal(sha(new Uint8Array(await dl1.arrayBuffer())), r.pdf_sha256);
+  assert.equal(drive.downloads, 0, "served from D1 while retained");
+
+  // After the 30-day D1 retention purge: streams directly from Drive using
+  // supportsAllDrives=true and WAIVERS_DRIVE_SUBJECT.
+  e.WAIVERS_DB.sql.prepare("DELETE FROM waiver_documents").run();
+  drive.jwtClaims = [];
+  const dl2 = await worker.fetch(
+    new Request(`https://adapttolife.org${out.download}`),
+    e,
+  );
+  assert.equal(dl2.status, 200);
+  assert.equal(dl2.headers.get("Content-Type"), "application/pdf");
+  assert.equal(sha(new Uint8Array(await dl2.arrayBuffer())), r.pdf_sha256);
+  assert.equal(drive.downloads, 1);
+  assert.equal(drive.jwtClaims[0].sub, "alec@alecability.com");
+
+  // Verify endpoint also reads from Drive with supportsAllDrives=true and matches hash.
+  const vf = await (
+    await worker.fetch(new Request(`https://adapttolife.org${out.verify}`), e)
+  ).json();
+  assert.equal(vf.ok, true);
+  assert.equal(vf.intact, true);
+  assert.equal(drive.downloads, 2);
+
+  // If D1 copy is gone and Drive has a transient 503, download answers 503, not 404.
+  drive.mode = "down";
+  const dlDown = await quietly(async () =>
+    worker.fetch(new Request(`https://adapttolife.org${out.download}`), e),
+  );
+  assert.ok(dlDown.some((l) => l.includes("waiver drive download failed")));
+  const origError = console.error;
+  console.error = () => {};
+  try {
+    const res503 = await worker.fetch(
+      new Request(`https://adapttolife.org${out.download}`),
+      e,
+    );
+    assert.equal(res503.status, 503);
+  } finally {
+    console.error = origError;
+  }
+});
+
+test("wrangler.jsonc configures WAIVERS_DRIVE_ID and WAIVERS_DRIVE_SUBJECT in prod and staging", () => {
+  const raw = readFileSync(new URL("../wrangler.jsonc", import.meta.url), "utf8");
+  const clean = raw
+    .replace(/"(?:\\.|[^"\\])*"|\/\/[^\n]*|\/\*[\s\S]*?\*\//g, (m) =>
+      m.startsWith('"') ? m : "",
+    )
+    .replace(/,\s*([}\]])/g, "$1");
+  const cfg = JSON.parse(clean);
+  assert.equal(cfg.vars.WAIVERS_DRIVE_ID, "1NAW-FAeJKJnGgmMgzgRGS78CxE5WYo-p");
+  assert.equal(cfg.vars.WAIVERS_DRIVE_SUBJECT, "alec@alecability.com");
+  assert.equal(
+    cfg.env.staging.vars.WAIVERS_DRIVE_ID,
+    "1NAW-FAeJKJnGgmMgzgRGS78CxE5WYo-p",
+  );
+  assert.equal(cfg.env.staging.vars.WAIVERS_DRIVE_SUBJECT, "alec@alecability.com");
 });
 
 // The live atl-waivers table as it really was (read from sqlite_master on

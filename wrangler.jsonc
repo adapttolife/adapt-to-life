@@ -70,14 +70,16 @@
   "vars": {
     "ENV_NAME": "production",
     "INTAKE_INBOX": "hello@adapttolife.org",
-    // Google Shared Drive ("Adapt To Life") for the signed-release archive.
-    // The service account JSON is a secret: cfrun wrangler secret put GOOGLE_SA_JSON
+    // Alec's Google Drive folder ("My Drive / Work / Adapt To Life / Legal / Signed Waivers")
+    // for the signed-release archive. Because a service account owns no My Drive
+    // storage of its own, uploads impersonate WAIVERS_DRIVE_SUBJECT via
+    // Domain-Wide Delegation using GOOGLE_SA_JSON ("Google Service Account JSON"
+    // in 1Password Engineering, julia-agent@openclaw-julia-491219.iam.gserviceaccount.com).
     // That SAME credential also mirrors Adapt Body Shop contact-form messages
-    // into the "Adapt To Life CRM" sheet ("Shop Messages" tab). That sheet is in
-    // Alec's PERSONAL Drive and the service account reaches it only because the
-    // file is shared with it as an editor — Shared Drive membership buys nothing
-    // there. See src/google.js.
+    // into the "Adapt To Life CRM" sheet ("Shop Messages" tab) in Alec's Drive.
+    // See src/google.js.
     "WAIVERS_DRIVE_ID": "1NAW-FAeJKJnGgmMgzgRGS78CxE5WYo-p",
+    "WAIVERS_DRIVE_SUBJECT": "alec@alecability.com",
     // POST /api/shop-contact is the Adapt Body Shop storefront's contact form
     // (a separate Worker with no database and no mail binding). The shared
     // secret both Workers hold is SHOP_CONTACT_KEY, a secret and never a var:
@@ -175,6 +177,7 @@
         "STAGING": "1",
         "INTAKE_INBOX": "hello@adapttolife.org",
         "WAIVERS_DRIVE_ID": "1NAW-FAeJKJnGgmMgzgRGS78CxE5WYo-p",
+        "WAIVERS_DRIVE_SUBJECT": "alec@alecability.com",
         "AGENT_MAIL_DOMAIN": "agents.adapttolife.org",
         "REPORT_LINK_BASE": "https://reports.amelioration.is",
         "GRANTS_INBOX": "hello@adapttolife.org",

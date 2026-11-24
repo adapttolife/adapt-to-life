@@ -51,6 +51,10 @@ export const OWNED_ELSEWHERE = {
       "pre-Nov 2026 newsletter copy, read by agentos intake health",
     newsletter_send_receipts:
       "pre-Nov 2026 newsletter copy, read by agentos intake health",
+    send_failures:
+      "ASNM mail ledger, adaptivesportsnearme migration 0028_mail_ledger",
+    resend_events:
+      "ASNM mail ledger, adaptivesportsnearme migration 0028_mail_ledger",
   },
 };
 

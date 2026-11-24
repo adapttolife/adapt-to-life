@@ -33,6 +33,8 @@ const PER_PAGE = {
   "amp.html": "amp",
   "bread-and-butter.html": "bread-and-butter",
   "selkirk.html": "selkirk",
+  "spooky-spokes.html": "spooky-spokes",
+  "spooky-spokes-proposal.html": "spooky-spokes-proposal",
   "karen.html": "karen",
   // Guides are written by scripts/build-guides.mjs with their own cards;
   // listed here so this script keeps them instead of resetting to _default.
@@ -82,6 +84,10 @@ const ALT = {
   "bread-and-butter":
     "Three Locos. Four medals. Adapt To Life. Juan Ortiz in his sport wheelchair, paddle up, on a dark indoor court.",
   selkirk: "Adapt To Life and Selkirk. The two logos, one above the other, with a yellow X between them, on a dark background.",
+  "spooky-spokes":
+    "Spooky Spokes set the standard. Adapt To Life. A wheelchair pickleball player drives across an indoor court.",
+  "spooky-spokes-proposal":
+    "Adapt To Life and Spooky Spokes. The two logos, one above the other, with a yellow X between them, on a dark background.",
   juan: "Juan Ortiz. Adapt To Life. Juan, a wheelchair pickleball player in glasses, tosses the ball to serve from his sport wheelchair.",
 };
 
@@ -99,6 +105,8 @@ const FILE = {
   juan: "juan-v2-serve.jpg",
   "bread-and-butter": "bread-and-butter-v4-medals.jpg",
   selkirk: "selkirk-v5-x.jpg",
+  "spooky-spokes": "spooky-spokes-v1-cincy.jpg",
+  "spooky-spokes-proposal": "spooky-spokes-proposal-v1-x.jpg",
   karen: "karen-v1-water.jpg",
   "guide-sport-wheelchair-cost": "guide-sport-wheelchair-cost-v1-card.jpg",
   "guide-sponsor-adaptive-athletes": "guide-sponsor-adaptive-athletes-v1-card.jpg",

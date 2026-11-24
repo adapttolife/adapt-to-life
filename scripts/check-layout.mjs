@@ -4,7 +4,7 @@
 // browser, Brave and Chrome included, runs on Safari's engine). Two sizes: an
 // iPhone profile and a 1280px desktop.
 //
-//   node scripts/check-layout.mjs https://staging-adapt-to-life.adapt-to-life.workers.dev
+//   node scripts/check-layout.mjs https://adapt-to-life-staging.adapt-to-life.workers.dev
 //   node scripts/check-layout.mjs https://adapttolife.org --all          # every page in the sitemap
 //   node scripts/check-layout.mjs <base> --pages /,/events --shots /tmp/shots
 //   node scripts/check-layout.mjs http://localhost:8791 --local          # a static server: /x -> /x.html

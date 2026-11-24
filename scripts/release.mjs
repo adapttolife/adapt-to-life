@@ -41,9 +41,11 @@ import { checkLayout, chromiumPath } from "./check-layout.mjs";
 import { changedUrls, ping } from "./lib/indexnow.mjs";
 
 const REPO = "adapttolife/adapt-to-life";
-const STAGING = "https://staging-adapt-to-life.adapt-to-life.workers.dev";
+// Staging is its own Worker (2026-11-23): its workers.dev URL and its build check.
+const STAGING = "https://adapt-to-life-staging.adapt-to-life.workers.dev";
 const LIVE = "https://adapttolife.org";
-const CHECK = "Workers Builds: adapt-to-life";
+const LIVE_CHECK = "Workers Builds: adapt-to-life";
+const STAGING_CHECK = "Workers Builds: adapt-to-life-staging";
 
 const argv = process.argv.slice(2);
 // An unknown option used to be ignored and a real release ran.
@@ -108,11 +110,11 @@ async function stamp(base) {
   }
 }
 
-function checkRun(sha) {
+function checkRun(sha, name) {
   const runs = gh(["api", `repos/${REPO}/commits/${sha}/check-runs`]).check_runs || [];
   return (
     runs
-      .filter((r) => r.name === CHECK)
+      .filter((r) => r.name === name)
       .sort((a, b) => (b.started_at || "").localeCompare(a.started_at || ""))[0] || null
   );
 }
@@ -187,7 +189,7 @@ async function verifyLive(sha, stagingDigest) {
       const s = await stamp(LIVE);
       if (s && s.sha === sha) return s;
       if (!retried) {
-        const run = checkRun(sha);
+        const run = checkRun(sha, LIVE_CHECK);
         if (run && run.status === "completed" && run.conclusion !== "success") {
           log(
             `production build ${run.conclusion}; retrying the same commit once through Cloudflare`,
@@ -274,7 +276,7 @@ async function main() {
   // 2. Staging is good.
   log("waiting for the staging build to pass");
   const run = await waitFor("the staging build", () => {
-    const r = checkRun(stagingSha);
+    const r = checkRun(stagingSha, STAGING_CHECK);
     return r && r.status === "completed" ? r : null;
   });
   let failedRun = null;
@@ -292,7 +294,7 @@ async function main() {
   await waitFor(`staging to serve ${short(stagingSha)}`, async () => {
     const s = await stamp(STAGING);
     if (s && s.sha === stagingSha) return true;
-    const r = failedRun && checkRun(stagingSha);
+    const r = failedRun && checkRun(stagingSha, STAGING_CHECK);
     if (
       r &&
       r.id !== failedRun &&

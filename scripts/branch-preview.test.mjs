@@ -1,55 +1,62 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { previewAlias, wranglerArgs } from "./branch-preview.mjs";
+import {
+  STAGING_URL,
+  STAGING_WORKER,
+  assertSeparateStagingWorker,
+  readWranglerConfig,
+  wranglerArgs,
+} from "./branch-preview.mjs";
+import { readFileSync } from "node:fs";
 
-test("simple branches keep their expected stable URLs", () => {
-  assert.equal(previewAlias("staging"), "staging");
-  assert.equal(previewAlias("main"), "main");
+const pkg = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
+
+test("env.staging names its own Worker, never the production one", () => {
+  const config = readWranglerConfig();
+  assert.ok(config.env.staging.name, "env.staging needs a name");
+  assert.notEqual(
+    config.env.staging.name,
+    config.name,
+    "env.staging must not share the production Worker name (2026-11-23 incident)",
+  );
+  assert.equal(config.env.staging.name, STAGING_WORKER);
+  assert.equal(assertSeparateStagingWorker(config), STAGING_WORKER);
 });
 
-test("branch aliases are valid DNS labels, bounded and deterministic", () => {
-  for (const branch of [
-    "feature/new-page",
-    "123",
-    "UPPERCASE",
-    "日本語",
-    "fix/" + "x".repeat(100),
-    "trailing-",
-  ]) {
-    const alias = previewAlias(branch);
-    assert.match(alias, /^[a-z][a-z0-9-]*[a-z0-9]$/);
-    assert.ok(`${alias}-adapt-to-life`.length <= 63);
-    assert.equal(previewAlias(branch), alias);
+test("the guard refuses a staging name that matches production or is missing", () => {
+  assert.throws(() =>
+    assertSeparateStagingWorker({ name: "adapt-to-life", env: { staging: { name: "adapt-to-life" } } }),
+  );
+  assert.throws(() => assertSeparateStagingWorker({ name: "adapt-to-life", env: { staging: {} } }));
+  assert.throws(() => assertSeparateStagingWorker({ name: "adapt-to-life" }));
+});
+
+test("staging has no routes or custom domains, so no production domain", () => {
+  const config = readWranglerConfig();
+  assert.deepEqual(config.env.staging.routes, []);
+  assert.equal(config.env.staging.workers_dev, true);
+  assert.equal(STAGING_URL, "https://adapt-to-life-staging.adapt-to-life.workers.dev");
+});
+
+test("production serves no preview URLs, so no old alias runs on production bindings", () => {
+  assert.equal(readWranglerConfig().preview_urls, false);
+});
+
+test("only staging deploys; every other branch builds and tests without uploading", () => {
+  assert.deepEqual(wranglerArgs("staging", { deploy: true }), ["deploy", "--env", "staging"]);
+  assert.equal(wranglerArgs("staging").at(-1), "--dry-run");
+  assert.equal(wranglerArgs("staging", { deploy: true, dryRun: true }).at(-1), "--dry-run");
+  for (const branch of ["picklr-mount-prospect-logo", "feature/x", "review", "main", ""]) {
+    assert.throws(() => wranglerArgs(branch, { deploy: true }), /only the staging branch/, branch);
+    assert.equal(wranglerArgs(branch).at(-1), "--dry-run", branch);
+  }
+  for (const args of [wranglerArgs("staging", { deploy: true }), wranglerArgs("main")]) {
+    assert.ok(!args.includes("versions"), "no versions upload onto any Worker");
+    assert.deepEqual(args.slice(1, 3), ["--env", "staging"]);
   }
 });
 
-test("normalization does not merge common distinct branch names", () => {
-  const branches = [
-    "feature/a",
-    "feature-a",
-    "feature_a",
-    "Feature/a",
-    "fix/" + "x".repeat(100),
-    "fix/" + "x".repeat(99) + "y",
-  ];
-  assert.equal(new Set(branches.map(previewAlias)).size, branches.length);
-});
-
-test("missing branch information fails instead of overwriting another alias", () => {
-  assert.throws(() => previewAlias(""));
-  assert.throws(() => previewAlias("HEAD"));
-});
-
-test("only staging uploads; every other branch builds and tests without uploading", () => {
-  assert.deepEqual(wranglerArgs("staging"), [
-    "versions",
-    "upload",
-    "--env",
-    "staging",
-    "--preview-alias",
-    "staging",
-  ]);
-  for (const branch of ["picklr-mount-prospect-logo", "feature/x", "review", "main"])
-    assert.equal(wranglerArgs(branch).at(-1), "--dry-run", branch);
-  assert.equal(wranglerArgs("staging", ["--dry-run"]).at(-1), "--dry-run");
+test("npm scripts: preview only validates, deploy:staging is the one deploying entry", () => {
+  assert.equal(pkg.scripts.preview, "node scripts/branch-preview.mjs");
+  assert.equal(pkg.scripts["deploy:staging"], "node scripts/branch-preview.mjs --deploy");
 });

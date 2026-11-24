@@ -51,6 +51,12 @@ test("admin login links reject unapproved explicit origins", () => {
   );
 });
 
+test("admin login links accept the staging Worker's own workers.dev origin", () => {
+  const origin = "https://adapt-to-life-staging.adapt-to-life.workers.dev";
+  const request = new Request(`${origin}/admin/auth/request-link`);
+  assert.equal(adminLoginOrigin(request, new URL(request.url), origin), origin);
+});
+
 test("admin login links fall back to the request URL when the host is invalid", () => {
   const request = new Request(
     "https://adapt-to-life.adapt-to-life.workers.dev/admin/auth/request-link",

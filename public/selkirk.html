@@ -236,32 +236,39 @@
   .sk-feature figcaption{ margin-top:0.8rem; display:grid; gap:0.2rem; text-align:center; }
   .sk-feature figcaption b{ font-family:var(--font-display); font-weight:900; font-size:1.1rem; line-height:1.2; color:var(--cream); }
   .sk-feature figcaption span{ font-size:0.9rem; color:var(--cream-mute); }
-  /* The lessons already made: a row on a desktop, a swipe on a phone. */
-  .sk-lessons-lead, .sk-library-lead{ margin:1rem auto 0; max-width:60ch; }
-  .sk-previews{ list-style:none; margin:clamp(1.6rem,3vw,2.2rem) 0 0; padding:0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:clamp(0.8rem,2vw,1.2rem); }
-  @media (max-width:980px){ .sk-previews{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
-  @media (max-width:640px){ .sk-previews{ grid-template-columns:none; grid-auto-flow:column; grid-auto-columns:58%; gap:0.7rem; overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:0.4rem; margin-right:calc(-1 * var(--gutter, 1.25rem)); padding-right:var(--gutter, 1.25rem); } .sk-previews > li{ scroll-snap-align:start; } }
+  /* The library: three shelves, one per series, each a swipe row on every
+     screen (oldest lesson first; Alec, Nov 23: the earlier ones are the best).
+     Arrows show on wider screens when a shelf has more than fits. A new
+     lesson goes at the end of its shelf with the small New tag. */
+  .sk-library-lead{ margin:1rem auto 0; max-width:62ch; }
+  .sk-lib-facts{ list-style:none; margin:clamp(1.4rem,3vw,1.9rem) auto 0; padding:0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:0.6rem; max-width:760px; }
+  .sk-lib-facts li{ display:grid; gap:0.1rem; align-content:center; padding:0.75rem 1rem; border-radius:16px; background:var(--paper); border:1px solid var(--hairline); text-align:center; font-size:0.86rem; color:var(--muted); }
+  .sk-lib-facts b{ font-family:var(--font-display); font-weight:900; font-size:1.3rem; line-height:1.1; color:var(--ink); }
+  @media (max-width:560px){ .sk-lib-facts{ grid-template-columns:repeat(2,minmax(0,1fr)); } .sk-lib-facts b{ font-size:1.12rem; } }
+  .sk-shelf{ margin-top:clamp(2.2rem,4.4vw,3.2rem); }
+  .sk-shelf-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:1rem; padding-bottom:0.9rem; border-bottom:1px solid var(--hairline); }
+  .sk-shelf-head .sk-step-n{ display:block; }
+  .sk-shelf-head h3{ margin-top:0.3rem; font-size:clamp(1.45rem,2.8vw,1.85rem); }
+  .sk-shelf-head .who{ margin-top:0.2rem; color:var(--muted); font-size:0.95rem; }
+  .sk-shelf-nav{ display:flex; gap:0.45rem; flex:none; }
+  .sk-shelf-nav[hidden]{ display:none; }
+  .sk-shelf-btn{ width:44px; height:44px; border-radius:999px; border:1px solid var(--hairline); background:var(--paper); color:var(--ink); font-size:1.1rem; cursor:pointer; display:grid; place-items:center; transition:background .15s, opacity .15s; }
+  .sk-shelf-btn:hover{ background:var(--orange); color:var(--night); border-color:var(--orange); }
+  .sk-shelf-btn:disabled{ opacity:0.35; cursor:default; background:var(--paper); color:var(--ink); border-color:var(--hairline); }
+  .sk-shelf-btn .sk-back{ transform:rotate(180deg); }
+  @media (max-width:640px){ .sk-shelf-nav{ display:none !important; } }
+  .sk-previews{ --gap:clamp(0.7rem,1.6vw,1rem); list-style:none; margin:1.1rem 0 0; padding:0 0 0.6rem; display:grid; grid-auto-flow:column; grid-auto-columns:calc((100% - 4 * var(--gap)) / 5); gap:var(--gap); overflow-x:auto; scroll-snap-type:x mandatory; scroll-behavior:smooth; overscroll-behavior-x:contain; scrollbar-width:thin; }
+  @media (max-width:980px){ .sk-previews{ grid-auto-columns:calc((100% - 3 * var(--gap)) / 3.4); } }
+  @media (max-width:640px){ .sk-previews{ --gap:0.7rem; grid-auto-columns:58%; margin-right:calc(-1 * var(--gutter, 1.25rem)); padding-right:var(--gutter, 1.25rem); } }
+  @media (prefers-reduced-motion: reduce){ .sk-previews{ scroll-behavior:auto; } }
+  .sk-previews > li{ scroll-snap-align:start; }
   .sk-previews figure{ margin:0; }
   .sk-previews video{ display:block; width:100%; height:auto; aspect-ratio:9/16; border-radius:18px; background:var(--canvas); border:1px solid var(--hairline); }
   .sk-previews figcaption{ margin-top:0.55rem; display:grid; gap:0.15rem; }
   .sk-previews figcaption b{ font-family:var(--font-display); font-weight:900; font-size:1.02rem; line-height:1.2; }
   .sk-previews figcaption span{ color:var(--muted); font-size:0.9rem; line-height:1.35; }
-  .sk-previews-note{ margin-top:0.9rem; color:var(--muted); font-size:0.92rem; max-width:62ch; }
-  /* The newest lesson carries a New tag and spans two columns: its video
-     stays one column wide, in line with the grid, and its caption sits in
-     the column beside it. Thirty-four cards fill thirty-five places: four
-     across on desktops (the new one and two more, then seven rows of 4 and
-     a row of 3) and three on tablets (the new one and one more, then ten
-     rows of 3 and a row of 2), so no card sits alone on a row. Phones keep
-     the swipe row, the new card first and the same size as the rest. When a
-     count would leave one card alone, drop the span or give the new card
-     the whole first row. */
   .sk-previews .sk-new-tag{ justify-self:start; font-family:var(--font-label); font-weight:800; font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--orange-ink); }
-  .sk-previews > .sk-new{ grid-column:span 2; }
-  .sk-previews .sk-new figure{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:clamp(0.8rem,2vw,1.2rem); align-items:center; }
-  .sk-previews .sk-new figcaption{ margin-top:0; gap:0.35rem; }
-  .sk-previews .sk-new figcaption b{ font-size:clamp(1.15rem,2vw,1.45rem); line-height:1.15; text-wrap:balance; }
-  @media (max-width:640px){ .sk-previews > .sk-new{ grid-column:auto; } .sk-previews .sk-new figure{ display:block; } .sk-previews .sk-new figcaption{ margin-top:0.55rem; gap:0.15rem; } .sk-previews .sk-new figcaption b{ font-size:1.02rem; line-height:1.2; } }
+  .sk-previews-note{ margin-top:clamp(1.6rem,3vw,2rem); color:var(--muted); font-size:0.92rem; max-width:62ch; }
   /* Ryan: the coach whose name goes on the lessons. */
   .sk-coach-inner{ display:grid; grid-template-columns:minmax(0,0.8fr) minmax(0,1.2fr); gap:clamp(1.8rem,4.5vw,4rem); align-items:center; }
   @media (max-width:880px){ .sk-coach-inner{ grid-template-columns:1fr; } }
@@ -275,16 +282,7 @@
   .sk-wins span{ font-size:0.92rem; line-height:1.4; color:var(--cream); }
   .sk-coach .bb-q{ margin-top:1.4rem !important; }
   .sk-q-src{ margin-top:0.55rem; padding-left:1rem; font-family:var(--font-label); font-weight:800; font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--cream-mute); }
-  /* The library: three series, then where it can grow. */
-  .sk-series{ list-style:none; margin:clamp(1.8rem,3.4vw,2.4rem) 0 0; padding:0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
-  @media (max-width:900px){ .sk-series{ grid-template-columns:1fr; } }
-  .sk-series > li{ background:var(--paper); border:1px solid var(--hairline); border-radius:22px; padding:clamp(1.2rem,2.8vw,1.6rem); display:grid; gap:0.55rem; align-content:start; }
-  .sk-series .sk-step-n{ display:block; }
-  .sk-series h3{ font-size:clamp(1.35rem,2.6vw,1.6rem); }
-  .sk-series .who{ color:var(--muted); font-size:0.95rem; }
-  .sk-series ol{ margin:0.3rem 0 0; padding-left:1.25rem; display:grid; gap:0.4rem; color:var(--ink-soft); }
-  .sk-series ol li::marker{ color:var(--orange-ink); font-weight:800; }
-  .sk-made{ display:inline-block; margin-left:0.35rem; padding:0.2rem 0.5rem; border-radius:999px; background:var(--orange); color:var(--night); font-family:var(--font-label); font-weight:800; font-size:0.58rem; letter-spacing:0.14em; text-transform:uppercase; line-height:1.2; vertical-align:0.12em; }
+  /* Where it can grow. */
   .sk-ladder-head{ margin-top:clamp(2.2rem,4vw,3rem); font-family:var(--font-label); font-weight:800; font-size:0.74rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); }
   .sk-ladder{ list-style:none; margin:0.9rem 0 0; padding:0; display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; counter-reset:step; }
   @media (max-width:980px){ .sk-ladder{ grid-template-columns:1fr; } }
@@ -411,7 +409,6 @@
   .sk-fact-ic{ width:1.35rem; height:1.35rem; color:var(--orange); }
   .sk-card-head{ display:grid; grid-template-columns:44px minmax(0,1fr); gap:0.9rem; align-items:center; }
   .sk-card-head h3{ margin-top:0.15rem; }
-  .sk-made .sym{ width:1.15em; height:1.15em; margin-right:0.25em; vertical-align:-0.3em; }
   .sk-rung-ic{ width:1.5rem; height:1.5rem; color:var(--orange-ink); }
   @media (max-width:980px){ .sk-ladder li{ grid-template-columns:1.5rem minmax(0,1fr); column-gap:0.75rem; } .sk-rung-ic{ grid-row:span 2; margin-top:0.05rem; } }
   ul.ticks.ic li{ grid-template-columns:1.35rem minmax(0,1fr); gap:0.7rem; }
@@ -624,9 +621,9 @@ fill="currentColor" stroke="none">
     <li class="part" data-part="01"><a href="#record"><svg class="sk-toc-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="participation" data-style="duotone"><g fill="currentColor"><path d="M200 48a24 24 0 1 1-24-24a24 24 0 0 1 24 24" opacity=".2"/><path d="M176 80a32 32 0 1 0-32-32a32 32 0 0 0 32 32m0-48a16 16 0 1 1-16 16a16 16 0 0 1 16-16m-8 136a64 64 0 1 1-64-64a8 8 0 0 1 0 16a48 48 0 1 0 48 48a8 8 0 0 1 16 0m38.19-37.07a8 8 0 0 1 1.65 6.64l-16 80A8 8 0 0 1 184 224a7.8 7.8 0 0 1-1.58-.16a8 8 0 0 1-6.27-9.41L190.24 144H128a8 8 0 0 1-6.94-12l20.06-34.9a80.09 80.09 0 0 0-88 9.17A8 8 0 1 1 42.91 94a96 96 0 0 1 113.46-6.42a8 8 0 0 1 2.57 10.69L141.82 128H200a8 8 0 0 1 6.19 2.93"/></g></svg><span class="t">Who we are</span></a>
       <ol class="sub"><li><a href="#record">The crew</a></li><li><a href="#family">Bread &amp; Butter</a></li></ol></li>
     <li class="part" data-part="02"><a href="#together"><svg class="sk-toc-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="community" data-style="duotone"><g fill="currentColor"><path d="M168 144a40 40 0 1 1-40-40a40 40 0 0 1 40 40M64 56a32 32 0 1 0 32 32a32 32 0 0 0-32-32m128 0a32 32 0 1 0 32 32a32 32 0 0 0-32-32" opacity=".2"/><path d="M244.8 150.4a8 8 0 0 1-11.2-1.6A51.6 51.6 0 0 0 192 128a8 8 0 0 1 0-16a24 24 0 1 0-23.24-30a8 8 0 1 1-15.5-4A40 40 0 1 1 219 117.51a67.94 67.94 0 0 1 27.43 21.68a8 8 0 0 1-1.63 11.21M190.92 212a8 8 0 1 1-13.85 8a57 57 0 0 0-98.15 0a8 8 0 1 1-13.84-8a72.06 72.06 0 0 1 33.74-29.92a48 48 0 1 1 58.36 0A72.06 72.06 0 0 1 190.92 212M128 176a32 32 0 1 0-32-32a32 32 0 0 0 32 32m-56-56a8 8 0 0 0-8-8a24 24 0 1 1 23.24-30a8 8 0 1 0 15.5-4A40 40 0 1 0 37 117.51a67.94 67.94 0 0 0-27.4 21.68a8 8 0 1 0 12.8 9.61A51.6 51.6 0 0 1 64 128a8 8 0 0 0 8-8"/></g></svg><span class="t">The bigger game</span></a>
-      <ol class="sub"><li><a href="#together">Playing together</a></li><li><a href="#lessons">Thirty-five lessons</a></li><li><a href="#coach">Ryan Anthony</a></li></ol></li>
-    <li class="part" data-part="03"><a href="#library"><svg class="sk-toc-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="building" data-style="duotone"><g fill="currentColor"><path d="M245.66 129L217 157.66a8 8 0 0 1-11.3 0L168.1 120l-28 28l-32-32l28-28L80 31.78a87.81 87.81 0 0 1 98.31 18l67.35 67.89a8 8 0 0 1 0 11.33" opacity=".2"/><path d="m251.34 112l-67.46-67.92a96.1 96.1 0 0 0-135.77 0l-.09.09L34.25 58.4a8 8 0 0 0 11.49 11.13l13.73-14.18a80 80 0 0 1 18.71-13.9L124.68 88l-96 96a16 16 0 0 0 0 22.63l20.69 20.69a16 16 0 0 0 22.63 0l96-96l14.34 14.34L200 163.3a16 16 0 0 0 22.63 0l28.69-28.69a16 16 0 0 0 .02-22.61M60.68 216L40 195.31l68-68L128.68 148Zm101.66-101.68L140 136.67L119.31 116l22.35-22.35a8 8 0 0 0 0-11.32L94.32 35a80 80 0 0 1 78.23 20.41l44.22 44.51L188 128.66l-14.34-14.34a8 8 0 0 0-11.32 0m49 37.66l-12-12L228 111.25l12 12Z"/></g></svg><span class="t">What we&rsquo;d build</span></a>
-      <ol class="sub"><li><a href="#library">The library</a></li><li><a href="#both">What each of us brings</a></li></ol></li>
+      <ol class="sub"><li><a href="#together">Playing together</a></li><li><a href="#coach">Ryan Anthony</a></li></ol></li>
+    <li class="part" data-part="03"><a href="#library"><svg class="sk-toc-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="building" data-style="duotone"><g fill="currentColor"><path d="M245.66 129L217 157.66a8 8 0 0 1-11.3 0L168.1 120l-28 28l-32-32l28-28L80 31.78a87.81 87.81 0 0 1 98.31 18l67.35 67.89a8 8 0 0 1 0 11.33" opacity=".2"/><path d="m251.34 112l-67.46-67.92a96.1 96.1 0 0 0-135.77 0l-.09.09L34.25 58.4a8 8 0 0 0 11.49 11.13l13.73-14.18a80 80 0 0 1 18.71-13.9L124.68 88l-96 96a16 16 0 0 0 0 22.63l20.69 20.69a16 16 0 0 0 22.63 0l96-96l14.34 14.34L200 163.3a16 16 0 0 0 22.63 0l28.69-28.69a16 16 0 0 0 .02-22.61M60.68 216L40 195.31l68-68L128.68 148Zm101.66-101.68L140 136.67L119.31 116l22.35-22.35a8 8 0 0 0 0-11.32L94.32 35a80 80 0 0 1 78.23 20.41l44.22 44.51L188 128.66l-14.34-14.34a8 8 0 0 0-11.32 0m49 37.66l-12-12L228 111.25l12 12Z"/></g></svg><span class="t">The library</span></a>
+      <ol class="sub"><li><a href="#library">Thirty-five lessons</a></li><li><a href="#both">What each of us brings</a></li></ol></li>
     <li class="part" data-part="04"><a href="#stories"><svg class="sk-toc-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="stories" data-style="duotone"><g fill="currentColor"><path d="M144 69.09v101.82l-93.76 28.76A8 8 0 0 1 40 192V48a8 8 0 0 1 10.24-7.67Z" opacity=".2"/><path d="m228.54 86.66l-176.06-54A16 16 0 0 0 32 48v144a16 16 0 0 0 16 16a16 16 0 0 0 4.52-.65L136 181.73V192a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-29.9l28.54-8.75A16.09 16.09 0 0 0 240 138v-36a16.09 16.09 0 0 0-11.46-15.34M136 165l-88 27V48l88 27Zm48 27h-32v-15.18l32-9.82Zm40-54h-.11L152 160.08V79.92l71.89 22h.11v36Z"/></g></svg><span class="t">Where your name goes</span></a>
       <ol class="sub"><li><a href="#stories">Stories</a></li><li><a href="#clubs">Clubs</a></li><li><a href="#next">Tournaments</a></li><li><a href="#reach">Reach</a></li></ol></li>
     <li class="part" data-part="05"><a href="#tiers"><svg class="sk-toc-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="goal" data-style="duotone"><g fill="currentColor"><path d="M240 104L56 168V40Z" opacity=".2"/><path d="m242.63 96.44l-184-64A8 8 0 0 0 48 40v176a8 8 0 0 0 16 0v-42.31l178.63-62.13a8 8 0 0 0 0-15.12M64 156.75V51.25L215.65 104Z"/></g></svg><span class="t">How we start</span></a>
@@ -643,7 +640,7 @@ fill="currentColor" stroke="none">
     <div class="bb-hero-copy">
       <span class="eyebrow orange reveal"><svg class="ico-in" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false" data-icon="pickleball" data-style="regular"><path fill="currentColor" d="M9.377 16.721q-.846 0-1.64-.312T6.31 15.47l-3.608-3.62q-.348-.348-.525-.785T2 10.169t.177-.907t.525-.816l3.783-3.802q.348-.348.785-.525t.896-.177t.907.177t.816.545L13.47 8.27q.635.639.952 1.437q.318.798.318 1.65q0 .887-.351 1.761t-1.02 1.562l5.251 5.252q.146.146.156.347t-.156.366t-.354.165t-.353-.165l-5.253-5.252q-.686.67-1.548.998q-.862.33-1.736.33m9.754-7.953q-1.197 0-2.029-.845q-.833-.846-.833-2.043t.833-2.039T19.131 3t2.043.846t.845 2.042t-.845 2.039t-2.043.842"/></svg>For Selkirk Sport</span>
       <h1 class="serif display reveal">Let&rsquo;s grow the game we play <em class="italic bb-o">together.</em></h1>
-      <p class="lead sub reveal" style="color:var(--cream-mute);">In pickleball, a player in a wheelchair and a standing player can share a court, and even a team. Adapt To Life has started making lessons for that game. We have a national champion coach, and a crew of wheelchair players who bring home medals.</p>
+      <p class="lead sub reveal" style="color:var(--cream-mute);">In pickleball, a player in a wheelchair and a standing player can share a court, and even a team. Adapt To Life has already made thirty-five short lessons for that game. We have a national champion coach, and a crew of wheelchair players who bring home medals.</p>
       <p class="sk-lede-2 reveal">We&rsquo;re not just asking for money. We&rsquo;d like a partnership that&rsquo;s good for both of us.</p>
       <div class="actions reveal">
         <a class="btn" href="#together"><svg class="sk-btn-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="play" data-style="bold"><path fill="currentColor" d="M176 128a12 12 0 0 1-5.17 9.87l-52 36A12 12 0 0 1 100 164V92a12 12 0 0 1 18.83-9.87l52 36A12 12 0 0 1 176 128m60 0A108 108 0 1 1 128 20a108.12 108.12 0 0 1 108 108m-24 0a84 84 0 1 0-84 84a84.09 84.09 0 0 0 84-84"/></svg>Watch the first lesson</a>
@@ -709,156 +706,6 @@ fill="currentColor" stroke="none">
   </div>
 </section>
 
-<!-- =========================== LESSONS ========================== -->
-<section data-part="02" class="band sk-lessons" id="lessons" aria-labelledby="skLessonsHead">
-  <div class="wrap">
-    <div class="sec-head">
-      <span class="eyebrow reveal"><svg class="ico-in" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="play" data-style="regular"><path fill="currentColor" d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m0 192a88 88 0 1 1 88-88a88.1 88.1 0 0 1-88 88m48.24-94.78l-64-40A8 8 0 0 0 100 88v80a8 8 0 0 0 12.24 6.78l64-40a8 8 0 0 0 0-13.56M116 153.57v-51.14L156.91 128Z"/></svg>What we&rsquo;ve made</span>
-      <h2 class="serif h2 reveal" id="skLessonsHead" style="margin-top:0.7rem;">Thirty-five lessons, already made.</h2>
-      <p class="prose reveal sk-lessons-lead">The hybrid lesson above, seventeen more just below, twelve from the wheelchair game, and five for coaches. Each one is short and made for a phone: the court drawn to scale, every shot slowed down and explained, with narration and captions built in. We keep improving them as players and coaches tell us what works. We&rsquo;ve also put Selkirk&rsquo;s name on each one, at the start and on a closing card, so you can see them the way your viewers would. These versions are only for this proposal.</p>
-    </div>
-    <ul class="sk-previews">
-      <li class="reveal sk-new"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/doubles-middle.2038c02f.webp" width="720" height="1280" src="/videos/lessons/doubles-middle.5e805a96.mp4" aria-label="Lesson: hit down the middle. Wheelchair doubles, 53 seconds, narrated, captions on screen."></video>
-        <figcaption><span class="sk-new-tag">New</span><b>Hit down the middle</b><span class="sk-meta">Wheelchair doubles<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>53 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-speedup.5673fc5e.webp" width="720" height="1280" src="/videos/lessons/hybrid-speedup.932ac8f0.mp4" aria-label="Lesson: speed up the ball that sits up. Hybrid doubles, 55 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Speed up the ball that sits up</b><span class="sk-meta">Our eighteenth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>55 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/doubles-lob.ea06fca9.webp" width="720" height="1280" src="/videos/lessons/doubles-lob.808f0e33.mp4" aria-label="Lesson: cover the lob behind the player at the line. Wheelchair doubles, 61 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Cover the lob behind the player at the line</b><span class="sk-meta">Wheelchair doubles<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>61 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-lob.b9b4dde9.webp" width="720" height="1280" src="/videos/lessons/hybrid-lob.9c41979d.mp4" aria-label="Lesson: defend the lob as a team. Hybrid doubles, 64 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Defend the lob as a team</b><span class="sk-meta">Our seventeenth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>64 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/doubles-time.bb5bc916.webp" width="720" height="1280" src="/videos/lessons/doubles-time.0b845830.mp4" aria-label="Lesson: buy time with a higher ball and the second bounce. Wheelchair doubles, 51 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Buy time with a higher ball and the second bounce</b><span class="sk-meta">Wheelchair doubles<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>51 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-stack.dfde354a.webp" width="720" height="1280" src="/videos/lessons/hybrid-stack.e3450ed8.mp4" aria-label="Lesson: stack so the chair keeps its side. Hybrid doubles, 63 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Stack so the chair keeps its side</b><span class="sk-meta">Our sixteenth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>63 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/doubles-angles.b8b462da.webp" width="720" height="1280" src="/videos/lessons/doubles-angles.900b3e64.mp4" aria-label="Lesson: cover your angle and move as a pair. Wheelchair doubles, 55 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Cover your angle and move as a pair</b><span class="sk-meta">Wheelchair doubles<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>55 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-drive-drop.53dd10d6.webp" width="720" height="1280" src="/videos/lessons/hybrid-drive-drop.11f97d92.mp4" aria-label="Lesson: drive or drop, read the return. Hybrid doubles, 59 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Drive or drop: read the return</b><span class="sk-meta">Our fifteenth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>59 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/doubles-sides.60604808.webp" width="720" height="1280" src="/videos/lessons/doubles-sides.b906ac2d.mp4" aria-label="Lesson: play from your best side. Wheelchair doubles, 72 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Play from your best side</b><span class="sk-meta">Wheelchair doubles<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>72 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-reset.b440bdfe.webp" width="720" height="1280" src="/videos/lessons/hybrid-reset.4a516e04.mp4" aria-label="Lesson: reset the hard ball into the kitchen. Hybrid doubles, 56 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Reset the hard ball into the kitchen</b><span class="sk-meta">Our fourteenth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>56 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/doubles-style.6647bb44.webp" width="720" height="1280" src="/videos/lessons/doubles-style.79da6ad1.mp4" aria-label="Lesson: pick your team&rsquo;s style, both back or one up. Wheelchair doubles, 67 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Pick your team&rsquo;s style: both back, or one up</b><span class="sk-meta">Wheelchair doubles<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>67 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-dink.d3b9f384.webp" width="720" height="1280" src="/videos/lessons/hybrid-dink.60fb1531.mp4" aria-label="Lesson: dink with patience at the kitchen line. Hybrid doubles, 58 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Dink with patience at the kitchen line</b><span class="sk-meta">Our thirteenth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>58 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/tournament-divisions.c1068d1e.webp" width="720" height="1280" src="/videos/lessons/tournament-divisions.4aa3d7d2.mp4" aria-label="Lesson: add wheelchair and hybrid divisions to a tournament. For coaches, 61 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Add wheelchair and hybrid divisions to a tournament</b><span class="sk-meta">Our fifth lesson for coaches<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>61 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/adaptive-night.d1bfeb58.webp" width="720" height="1280" src="/videos/lessons/adaptive-night.625daf38.mp4" aria-label="Lesson: start an adaptive night at your club. For coaches, 65 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Start an adaptive night at your club</b><span class="sk-meta">Our fourth lesson for coaches<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>65 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/adapt-lesson.d6eb2a02.webp" width="720" height="1280" src="/videos/lessons/adapt-lesson.0d8cd34c.mp4" aria-label="Lesson: adapt a lesson to the player in front of you. For coaches, 69 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Adapt a lesson to the player in front of you</b><span class="sk-meta">Our third lesson for coaches<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>69 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/mixed-court.6c836fbf.webp" width="720" height="1280" src="/videos/lessons/mixed-court.da7f4d52.mp4" aria-label="Lesson: run a court where chairs and standing players mix. For coaches, 63 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Run a court where chairs and standing players mix</b><span class="sk-meta">Our second lesson for coaches<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>63 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/feeding-drills.04d9ec42.webp" width="720" height="1280" src="/videos/lessons/feeding-drills.a648393f.mp4" aria-label="Lesson: feeding drills for chair movement. For coaches, 60 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Feeding drills for chair movement</b><span class="sk-meta">Our first lesson for coaches<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>60 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/push-turn-recover.c8903566.webp" width="720" height="1280" src="/videos/lessons/push-turn-recover.3d6af2c4.mp4" aria-label="Lesson: push, turn and recover with a paddle in hand. 65 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Push, turn and recover with a paddle in hand</b><span class="sk-meta">Moving the chair<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>65 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/second-bounce.85a24156.webp" width="720" height="1280" src="/videos/lessons/second-bounce.75c05f2f.mp4" aria-label="Lesson: when to use the second bounce. 73 seconds, narrated, captions on screen."></video>
-        <figcaption><b>When to use the second bounce</b><span class="sk-meta">The second bounce<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>73 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-practice.29be35ba.webp" width="720" height="1280" src="/videos/lessons/hybrid-practice.f66c2feb.mp4" aria-label="Lesson: practice one tactical problem. Hybrid doubles, 68 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Practice one tactical problem</b><span class="sk-meta">Our twelfth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>68 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-support.2b4405cc.webp" width="720" height="1280" src="/videos/lessons/hybrid-support.9a7f9cce.mp4" aria-label="Lesson: help your partner play the next point. Hybrid doubles, 58 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Help your partner play the next point</b><span class="sk-meta">Our eleventh hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>58 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-decision.bb25342a.webp" width="720" height="1280" src="/videos/lessons/hybrid-decision.6ee95fba.mp4" aria-label="Lesson: review the decision before the result. Hybrid doubles, 56 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Review the decision before the result</b><span class="sk-meta">Our tenth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>56 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-build.9fd40e2f.webp" width="720" height="1280" src="/videos/lessons/hybrid-build.7b9a0cfd.mp4" aria-label="Lesson: build the point one shot at a time. Hybrid doubles, 61 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Build the point one shot at a time</b><span class="sk-meta">Our ninth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>61 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-pattern.b6bd5ec9.webp" width="720" height="1280" src="/videos/lessons/hybrid-pattern.218e3438.mp4" aria-label="Lesson: respond when one partner gets most of the balls. Hybrid doubles, 66 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Respond when one partner gets most of the balls</b><span class="sk-meta">Our eighth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>66 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-space.2195c565.webp" width="720" height="1280" src="/videos/lessons/hybrid-space.208fe182.mp4" aria-label="Lesson: stay connected without crowding. Hybrid doubles, 62 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Stay connected without crowding</b><span class="sk-meta">Our seventh hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>62 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-plan.4d513e7a.webp" width="720" height="1280" src="/videos/lessons/hybrid-plan.bbf5cb54.mp4" aria-label="Lesson: make a plan before the point. Hybrid doubles, 63 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Make a plan before the point</b><span class="sk-meta">Our sixth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>63 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-poach.68841cd0.webp" width="720" height="1280" src="/videos/lessons/hybrid-poach.329dfb85.mp4" aria-label="Lesson: poach with a plan. Hybrid doubles, 58 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Poach with a plan</b><span class="sk-meta">Our fifth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>58 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-cover.d43fa47c.webp" width="720" height="1280" src="/videos/lessons/hybrid-cover.3630ff35.mp4" aria-label="Lesson: cover the ball and give your partner time. Hybrid doubles, 67 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Cover the ball and give your partner time</b><span class="sk-meta">Our fourth hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>67 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-drop.ad7759b3.webp" width="720" height="1280" src="/videos/lessons/hybrid-drop.ffa73087.mp4" aria-label="Lesson: use the drop to move as a team. Hybrid doubles, 65 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Use the drop to move as a team</b><span class="sk-meta">Our third hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>65 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/hybrid-angles.39075283.webp" width="720" height="1280" src="/videos/lessons/hybrid-angles.adda4c0a.mp4" aria-label="Lesson: see the angles from the next contact. Hybrid doubles, 69 seconds, narrated, captions on screen."></video>
-        <figcaption><b>See the angles from the next contact</b><span class="sk-meta">Our second hybrid lesson<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>69 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/ocean-and-ponds.19839d10.webp" width="720" height="1280" src="/videos/lessons/ocean-and-ponds.575b6d43.mp4" aria-label="Lesson: Ocean and Ponds, see the court from the serve. 65 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Ocean and Ponds: see the court from the serve</b><span class="sk-meta">Reading the court<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>65 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/read-your-opponent.dcab855b.webp" width="720" height="1280" src="/videos/lessons/read-your-opponent.dc6f041b.mp4" aria-label="Lesson: read your opponent, build the point. 71 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Read your opponent, build the point</b><span class="sk-meta">The serve<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>71 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/return-of-serve.3635d02f.webp" width="720" height="1280" src="/videos/lessons/return-of-serve.33e9c616.mp4" aria-label="Lesson: return deep, cover the reply. 66 seconds, narrated, captions on screen."></video>
-        <figcaption><b>Return deep, cover the reply</b><span class="sk-meta">The return<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>66 seconds</span></span></figcaption>
-      </figure></li>
-      <li class="reveal"><figure>
-        <video controls playsinline preload="none" poster="/videos/lessons/third-shot-drop.5c5ee861.webp" width="720" height="1280" src="/videos/lessons/third-shot-drop.64063e0b.mp4" aria-label="Lesson: the third shot drop. 69 seconds, narrated, captions on screen."></video>
-        <figcaption><b>The third shot drop: earn your way forward</b><span class="sk-meta">The third shot<span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>69 seconds</span></span></figcaption>
-      </figure></li>
-    </ul>
-    <p class="sk-previews-note reveal">Tap to play, with sound. Captions are on screen, and the narration is a synthetic voice. Each lesson draws on USA Pickleball&rsquo;s rules and on coaching from pros, Selkirk&rsquo;s own included, and the teaching guide behind each one notes what changes for the chair.</p>
-  </div>
-</section>
-
 <!-- ============================ COACH =========================== -->
 <section data-part="02" class="dark band-lg sk-coach" id="coach" aria-labelledby="skCoachHead">
   <div class="wrap sk-coach-inner">
@@ -891,65 +738,176 @@ fill="currentColor" stroke="none">
 <section data-part="03" class="band sk-library" id="library" aria-labelledby="skLibraryHead">
   <div class="wrap">
     <div class="sec-head">
-      <span class="eyebrow reveal"><svg class="ico-in" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="building" data-style="regular"><path fill="currentColor" d="m251.34 112l-67.46-67.92a96.1 96.1 0 0 0-135.77 0l-.09.09L34.25 58.4a8 8 0 0 0 11.49 11.13l13.73-14.18a80 80 0 0 1 18.71-13.9L124.68 88l-96 96a16 16 0 0 0 0 22.63l20.69 20.69a16 16 0 0 0 22.63 0l96-96l14.34 14.34L200 163.3a16 16 0 0 0 22.63 0l28.69-28.69a16 16 0 0 0 .02-22.61M60.68 216L40 195.31l68-68L128.68 148Zm101.66-101.68L140 136.67L119.31 116l22.35-22.35a8 8 0 0 0 0-11.32L94.32 35a80 80 0 0 1 78.23 20.41l44.22 44.51L188 128.66l-14.34-14.34a8 8 0 0 0-11.32 0m49 37.66l-12-12L228 111.25l12 12Z"/></svg>03 &middot; What we&rsquo;d build with Selkirk</span>
-      <h2 class="serif h2 reveal" id="skLibraryHead" style="margin-top:0.7rem;">A library for the whole game, <em class="italic bb-o">presented by Selkirk.</em></h2>
-      <p class="prose reveal sk-library-lead">Selkirk TV and Selkirk Academy teach the standing game. We&rsquo;d like to add the game we play together, one series at a time, ready for your app, your camps and your coaches.</p>
+      <span class="eyebrow reveal"><svg class="ico-in" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="play" data-style="regular"><path fill="currentColor" d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m0 192a88 88 0 1 1 88-88a88.1 88.1 0 0 1-88 88m48.24-94.78l-64-40A8 8 0 0 0 100 88v80a8 8 0 0 0 12.24 6.78l64-40a8 8 0 0 0 0-13.56M116 153.57v-51.14L156.91 128Z"/></svg>03 &middot; The library <span class="tag tag--info">Beta</span></span>
+      <h2 class="serif h2 reveal" id="skLibraryHead" style="margin-top:0.7rem;">Thirty-five lessons, <em class="italic bb-o">already made.</em></h2>
+      <p class="prose reveal sk-library-lead">Selkirk TV and Selkirk Academy teach the standing game. These lessons teach the rest: playing together, the wheelchair game, and coaching both. They&rsquo;re a beta: early versions that show the lessons we want to make, and how far we can take them. We&rsquo;ve put Selkirk&rsquo;s name on each one, at the start and on a closing card, so you can see them the way your viewers would. These versions are only for this proposal.</p>
+      <ul class="sk-lib-facts reveal" aria-label="The library at a glance"><li><b>35</b>lessons</li><li><b>3</b>series</li><li><b>Under 90 seconds</b>each</li><li><b>Phone first</b>narrated, with captions</li></ul>
     </div>
-    <ul class="sk-series">
-      <li class="reveal">
-        <div class="sk-card-head"><span class="ix-tile sm" aria-hidden="true"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="community" data-style="duotone"><g fill="currentColor"><path d="M168 144a40 40 0 1 1-40-40a40 40 0 0 1 40 40M64 56a32 32 0 1 0 32 32a32 32 0 0 0-32-32m128 0a32 32 0 1 0 32 32a32 32 0 0 0-32-32" opacity=".2"/><path d="M244.8 150.4a8 8 0 0 1-11.2-1.6A51.6 51.6 0 0 0 192 128a8 8 0 0 1 0-16a24 24 0 1 0-23.24-30a8 8 0 1 1-15.5-4A40 40 0 1 1 219 117.51a67.94 67.94 0 0 1 27.43 21.68a8 8 0 0 1-1.63 11.21M190.92 212a8 8 0 1 1-13.85 8a57 57 0 0 0-98.15 0a8 8 0 1 1-13.84-8a72.06 72.06 0 0 1 33.74-29.92a48 48 0 1 1 58.36 0A72.06 72.06 0 0 1 190.92 212M128 176a32 32 0 1 0-32-32a32 32 0 0 0 32 32m-56-56a8 8 0 0 0-8-8a24 24 0 1 1 23.24-30a8 8 0 1 0 15.5-4A40 40 0 1 0 37 117.51a67.94 67.94 0 0 0-27.4 21.68a8 8 0 1 0 12.8 9.61A51.6 51.6 0 0 1 64 128a8 8 0 0 0 8-8"/></g></svg></span><div><span class="sk-step-n">Series 1</span><h3 class="serif">Play together</h3></div></div>
-        <p class="who">For standing players with a partner, or an opponent, in a chair.</p>
-        <ol>
-          <li>Your return sets up your partner <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>See the angles from the next contact <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Use the drop to move as a team <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Cover the ball and give your partner time <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Poach with a plan <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Make a plan before the point <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Stay connected without crowding <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Respond when one partner gets most of the balls <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Build the point one shot at a time <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Review the decision before the result <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Help your partner play the next point <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Practice one tactical problem <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Dink with patience at the kitchen line <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Reset the hard ball into the kitchen <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Drive or drop: read the return <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Stack so the chair keeps its side <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Defend the lob as a team <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Speed up the ball that sits up <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-        </ol>
-      </li>
-      <li class="reveal">
-        <div class="sk-card-head"><span class="ix-tile sm" aria-hidden="true"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="participation" data-style="duotone"><g fill="currentColor"><path d="M200 48a24 24 0 1 1-24-24a24 24 0 0 1 24 24" opacity=".2"/><path d="M176 80a32 32 0 1 0-32-32a32 32 0 0 0 32 32m0-48a16 16 0 1 1-16 16a16 16 0 0 1 16-16m-8 136a64 64 0 1 1-64-64a8 8 0 0 1 0 16a48 48 0 1 0 48 48a8 8 0 0 1 16 0m38.19-37.07a8 8 0 0 1 1.65 6.64l-16 80A8 8 0 0 1 184 224a7.8 7.8 0 0 1-1.58-.16a8 8 0 0 1-6.27-9.41L190.24 144H128a8 8 0 0 1-6.94-12l20.06-34.9a80.09 80.09 0 0 0-88 9.17A8 8 0 1 1 42.91 94a96 96 0 0 1 113.46-6.42a8 8 0 0 1 2.57 10.69L141.82 128H200a8 8 0 0 1 6.19 2.93"/></g></svg></span><div><span class="sk-step-n">Series 2</span><h3 class="serif">The wheelchair game</h3></div></div>
-        <p class="who">For players in a chair, from first games to tournaments.</p>
-        <ol>
-          <li>Ocean and Ponds <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Read your opponent, build the point <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Return deep, cover the reply <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>The third shot drop <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Push, turn and recover with a paddle in hand <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>When to use the second bounce <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Pick your team&rsquo;s style: both back, or one up <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Play from your best side <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Cover your angle and move as a pair <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Buy time with a higher ball and the second bounce <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Cover the lob behind the player at the line <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Hit down the middle <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-        </ol>
-      </li>
-      <li class="reveal">
-        <div class="sk-card-head"><span class="ix-tile sm" aria-hidden="true"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="coaching" data-style="duotone"><g fill="currentColor"><path d="M192 80v96h-88a32 32 0 1 0-32-32h-8V80Z" opacity=".2"/><path d="M216 40H40a16 16 0 0 0-16 16v144a16 16 0 0 0 16 16h13.39a8 8 0 0 0 7.23-4.57a48 48 0 0 1 86.76 0a8 8 0 0 0 7.23 4.57H216a16 16 0 0 0 16-16V56a16 16 0 0 0-16-16M80 144a24 24 0 1 1 24 24a24 24 0 0 1-24-24m136 56h-56.57a64.4 64.4 0 0 0-28.83-26.16a40 40 0 1 0-53.2 0A64.4 64.4 0 0 0 48.57 200H40V56h176ZM56 96V80a8 8 0 0 1 8-8h128a8 8 0 0 1 8 8v96a8 8 0 0 1-8 8h-16a8 8 0 0 1 0-16h8V88H72v8a8 8 0 0 1-16 0"/></g></svg></span><div><span class="sk-step-n">Series 3</span><h3 class="serif">Coach it</h3></div></div>
-        <p class="who">For coaches, club pros and volunteers.</p>
-        <ol>
-          <li>Run a court where chairs and standing players mix <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Feeding drills for chair movement <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Adapt a lesson to the player in front of you <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Start an adaptive night at your club <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-          <li>Add wheelchair and hybrid divisions to a tournament <span class="sk-made"><i class="sym sym--check" aria-hidden="true"></i>Made</span></li>
-        </ol>
-      </li>
-    </ul>
+    <div class="sk-shelf reveal" id="lessons">
+      <div class="sk-shelf-head">
+        <div><span class="sk-step-n">Series 1 &middot; 18 lessons</span><h3 class="serif">Play together</h3><p class="who">For standing players with a partner, or an opponent, in a chair.</p></div>
+        <div class="sk-shelf-nav" hidden><button type="button" class="sk-shelf-btn" data-dir="-1" aria-label="Earlier lessons in Play together"><span class="arrow sk-back"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></button><button type="button" class="sk-shelf-btn" data-dir="1" aria-label="More lessons in Play together"><span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></button></div>
+      </div>
+      <ul class="sk-previews" aria-label="Play together lessons">
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/hybrid-return.71555387.webp" width="720" height="1280" src="/videos/lessons/hybrid-return.1ec43b08.mp4" aria-label="Lesson: your return sets up your partner. Hybrid doubles, 84 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Your return sets up your partner</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>84 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/hybrid-angles.39075283.webp" width="720" height="1280" src="/videos/lessons/hybrid-angles.adda4c0a.mp4" aria-label="Lesson: see the angles from the next contact. Hybrid doubles, 69 seconds, narrated, captions on screen."></video>
+          <figcaption><b>See the angles from the next contact</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>69 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/hybrid-drop.ad7759b3.webp" width="720" height="1280" src="/videos/lessons/hybrid-drop.ffa73087.mp4" aria-label="Lesson: use the drop to move as a team. Hybrid doubles, 65 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Use the drop to move as a team</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>65 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/hybrid-cover.d43fa47c.webp" width="720" height="1280" src="/videos/lessons/hybrid-cover.3630ff35.mp4" aria-label="Lesson: cover the ball and give your partner time. Hybrid doubles, 67 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Cover the ball and give your partner time</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>67 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/hybrid-poach.68841cd0.webp" width="720" height="1280" src="/videos/lessons/hybrid-poach.329dfb85.mp4" aria-label="Lesson: poach with a plan. Hybrid doubles, 58 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Poach with a plan</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>58 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/hybrid-plan.4d513e7a.webp" width="720" height="1280" src="/videos/lessons/hybrid-plan.bbf5cb54.mp4" aria-label="Lesson: make a plan before the point. Hybrid doubles, 63 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Make a plan before the point</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>63 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/hybrid-space.2195c565.webp" width="720" height="1280" src="/videos/lessons/hybrid-space.208fe182.mp4" aria-label="Lesson: stay connected without crowding. Hybrid doubles, 62 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Stay connected without crowding</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>62 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/hybrid-pattern.b6bd5ec9.webp" width="720" height="1280" src="/videos/lessons/hybrid-pattern.218e3438.mp4" aria-label="Lesson: respond when one partner gets most of the balls. Hybrid doubles, 66 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Respond when one partner gets most of the balls</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>66 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/hybrid-build.9fd40e2f.webp" width="720" height="1280" src="/videos/lessons/hybrid-build.7b9a0cfd.mp4" aria-label="Lesson: build the point one shot at a time. Hybrid doubles, 61 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Build the point one shot at a time</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>61 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/hybrid-decision.bb25342a.webp" width="720" height="1280" src="/videos/lessons/hybrid-decision.6ee95fba.mp4" aria-label="Lesson: review the decision before the result. Hybrid doubles, 56 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Review the decision before the result</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>56 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/hybrid-support.2b4405cc.webp" width="720" height="1280" src="/videos/lessons/hybrid-support.9a7f9cce.mp4" aria-label="Lesson: help your partner play the next point. Hybrid doubles, 58 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Help your partner play the next point</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>58 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/hybrid-practice.29be35ba.webp" width="720" height="1280" src="/videos/lessons/hybrid-practice.f66c2feb.mp4" aria-label="Lesson: practice one tactical problem. Hybrid doubles, 68 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Practice one tactical problem</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>68 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/hybrid-dink.d3b9f384.webp" width="720" height="1280" src="/videos/lessons/hybrid-dink.60fb1531.mp4" aria-label="Lesson: dink with patience at the kitchen line. Hybrid doubles, 58 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Dink with patience at the kitchen line</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>58 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/hybrid-reset.b440bdfe.webp" width="720" height="1280" src="/videos/lessons/hybrid-reset.4a516e04.mp4" aria-label="Lesson: reset the hard ball into the kitchen. Hybrid doubles, 56 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Reset the hard ball into the kitchen</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>56 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/hybrid-drive-drop.53dd10d6.webp" width="720" height="1280" src="/videos/lessons/hybrid-drive-drop.11f97d92.mp4" aria-label="Lesson: drive or drop, read the return. Hybrid doubles, 59 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Drive or drop: read the return</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>59 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/hybrid-stack.dfde354a.webp" width="720" height="1280" src="/videos/lessons/hybrid-stack.e3450ed8.mp4" aria-label="Lesson: stack so the chair keeps its side. Hybrid doubles, 63 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Stack so the chair keeps its side</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>63 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/hybrid-lob.b9b4dde9.webp" width="720" height="1280" src="/videos/lessons/hybrid-lob.9c41979d.mp4" aria-label="Lesson: defend the lob as a team. Hybrid doubles, 64 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Defend the lob as a team</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>64 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/hybrid-speedup.5673fc5e.webp" width="720" height="1280" src="/videos/lessons/hybrid-speedup.932ac8f0.mp4" aria-label="Lesson: speed up the ball that sits up. Hybrid doubles, 55 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Speed up the ball that sits up</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>55 seconds</span></span></figcaption>
+        </figure></li>
+      </ul>
+    </div>
+    <div class="sk-shelf reveal" id="wheelchair-game">
+      <div class="sk-shelf-head">
+        <div><span class="sk-step-n">Series 2 &middot; 12 lessons</span><h3 class="serif">The wheelchair game</h3><p class="who">For players in a chair, from first games to tournaments.</p></div>
+        <div class="sk-shelf-nav" hidden><button type="button" class="sk-shelf-btn" data-dir="-1" aria-label="Earlier lessons in The wheelchair game"><span class="arrow sk-back"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></button><button type="button" class="sk-shelf-btn" data-dir="1" aria-label="More lessons in The wheelchair game"><span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></button></div>
+      </div>
+      <ul class="sk-previews" aria-label="The wheelchair game lessons">
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/ocean-and-ponds.19839d10.webp" width="720" height="1280" src="/videos/lessons/ocean-and-ponds.575b6d43.mp4" aria-label="Lesson: Ocean and Ponds, see the court from the serve. 65 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Ocean and Ponds: see the court from the serve</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>65 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/read-your-opponent.dcab855b.webp" width="720" height="1280" src="/videos/lessons/read-your-opponent.dc6f041b.mp4" aria-label="Lesson: read your opponent, build the point. 71 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Read your opponent, build the point</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>71 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/return-of-serve.3635d02f.webp" width="720" height="1280" src="/videos/lessons/return-of-serve.33e9c616.mp4" aria-label="Lesson: return deep, cover the reply. 66 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Return deep, cover the reply</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>66 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/third-shot-drop.5c5ee861.webp" width="720" height="1280" src="/videos/lessons/third-shot-drop.64063e0b.mp4" aria-label="Lesson: the third shot drop. 69 seconds, narrated, captions on screen."></video>
+          <figcaption><b>The third shot drop: earn your way forward</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>69 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/push-turn-recover.c8903566.webp" width="720" height="1280" src="/videos/lessons/push-turn-recover.3d6af2c4.mp4" aria-label="Lesson: push, turn and recover with a paddle in hand. 65 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Push, turn and recover with a paddle in hand</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>65 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/second-bounce.85a24156.webp" width="720" height="1280" src="/videos/lessons/second-bounce.75c05f2f.mp4" aria-label="Lesson: when to use the second bounce. 73 seconds, narrated, captions on screen."></video>
+          <figcaption><b>When to use the second bounce</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>73 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/doubles-style.6647bb44.webp" width="720" height="1280" src="/videos/lessons/doubles-style.79da6ad1.mp4" aria-label="Lesson: pick your team&rsquo;s style, both back or one up. Wheelchair doubles, 67 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Pick your team&rsquo;s style: both back, or one up</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>67 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/doubles-sides.60604808.webp" width="720" height="1280" src="/videos/lessons/doubles-sides.b906ac2d.mp4" aria-label="Lesson: play from your best side. Wheelchair doubles, 72 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Play from your best side</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>72 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/doubles-angles.b8b462da.webp" width="720" height="1280" src="/videos/lessons/doubles-angles.900b3e64.mp4" aria-label="Lesson: cover your angle and move as a pair. Wheelchair doubles, 55 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Cover your angle and move as a pair</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>55 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/doubles-time.bb5bc916.webp" width="720" height="1280" src="/videos/lessons/doubles-time.0b845830.mp4" aria-label="Lesson: buy time with a higher ball and the second bounce. Wheelchair doubles, 51 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Buy time with a higher ball and the second bounce</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>51 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/doubles-lob.ea06fca9.webp" width="720" height="1280" src="/videos/lessons/doubles-lob.808f0e33.mp4" aria-label="Lesson: cover the lob behind the player at the line. Wheelchair doubles, 61 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Cover the lob behind the player at the line</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>61 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/doubles-middle.2038c02f.webp" width="720" height="1280" src="/videos/lessons/doubles-middle.5e805a96.mp4" aria-label="Lesson: hit down the middle. Wheelchair doubles, 53 seconds, narrated, captions on screen."></video>
+          <figcaption><span class="sk-new-tag">New</span><b>Hit down the middle</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>53 seconds</span></span></figcaption>
+        </figure></li>
+      </ul>
+    </div>
+    <div class="sk-shelf reveal" id="coach-it">
+      <div class="sk-shelf-head">
+        <div><span class="sk-step-n">Series 3 &middot; 5 lessons</span><h3 class="serif">Coach it</h3><p class="who">For coaches, club pros and volunteers.</p></div>
+        <div class="sk-shelf-nav" hidden><button type="button" class="sk-shelf-btn" data-dir="-1" aria-label="Earlier lessons in Coach it"><span class="arrow sk-back"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></button><button type="button" class="sk-shelf-btn" data-dir="1" aria-label="More lessons in Coach it"><span class="arrow"><svg class="ix-svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="arrow" data-style="bold"><path fill="currentColor" d="m224.49 136.49l-72 72a12 12 0 0 1-17-17L187 140H40a12 12 0 0 1 0-24h147l-51.49-51.52a12 12 0 0 1 17-17l72 72a12 12 0 0 1-.02 17.01"/></svg></span></button></div>
+      </div>
+      <ul class="sk-previews" aria-label="Coach it lessons">
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/feeding-drills.04d9ec42.webp" width="720" height="1280" src="/videos/lessons/feeding-drills.a648393f.mp4" aria-label="Lesson: feeding drills for chair movement. For coaches, 60 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Feeding drills for chair movement</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>60 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/mixed-court.6c836fbf.webp" width="720" height="1280" src="/videos/lessons/mixed-court.da7f4d52.mp4" aria-label="Lesson: run a court where chairs and standing players mix. For coaches, 63 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Run a court where chairs and standing players mix</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>63 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/adapt-lesson.d6eb2a02.webp" width="720" height="1280" src="/videos/lessons/adapt-lesson.0d8cd34c.mp4" aria-label="Lesson: adapt a lesson to the player in front of you. For coaches, 69 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Adapt a lesson to the player in front of you</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>69 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/adaptive-night.d1bfeb58.webp" width="720" height="1280" src="/videos/lessons/adaptive-night.625daf38.mp4" aria-label="Lesson: start an adaptive night at your club. For coaches, 65 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Start an adaptive night at your club</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>65 seconds</span></span></figcaption>
+        </figure></li>
+        <li><figure>
+          <video controls playsinline preload="none" poster="/videos/lessons/tournament-divisions.c1068d1e.webp" width="720" height="1280" src="/videos/lessons/tournament-divisions.4aa3d7d2.mp4" aria-label="Lesson: add wheelchair and hybrid divisions to a tournament. For coaches, 61 seconds, narrated, captions on screen."></video>
+          <figcaption><b>Add wheelchair and hybrid divisions to a tournament</b><span class="sk-meta"><span class="sk-dur-w"><i class="sym sym--time sk-dur" aria-hidden="true"></i>61 seconds</span></span></figcaption>
+        </figure></li>
+      </ul>
+    </div>
+    <p class="sk-previews-note reveal">Tap to play, with sound. The court is drawn to scale and every shot is slowed down and explained. The narration is a synthetic voice. Each lesson draws on USA Pickleball&rsquo;s rules and on coaching from pros, Selkirk&rsquo;s own included, and the teaching guide behind each one notes what changes for the chair. We keep improving them as players and coaches tell us what works.</p>
     <h3 class="sk-ladder-head reveal">Where it can grow</h3>
     <ol class="sk-ladder reveal">
       <li class="now"><svg class="sk-rung-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="play" data-style="regular"><path fill="currentColor" d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m0 192a88 88 0 1 1 88-88a88.1 88.1 0 0 1-88 88m48.24-94.78l-64-40A8 8 0 0 0 100 88v80a8 8 0 0 0 12.24 6.78l64-40a8 8 0 0 0 0-13.56M116 153.57v-51.14L156.91 128Z"/></svg><b>Lessons</b><span>Thirty-five made so far, ready for our channels, our clinics and Adaptive Sports Near Me.</span></li>
@@ -971,7 +929,7 @@ fill="currentColor" stroke="none">
     </div>
     <div class="sk-both">
       <div class="reveal"><h3>Adapt To Life brings</h3><ul class="ticks ic">
-        <li><svg class="sk-li-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="play" data-style="regular"><path fill="currentColor" d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m0 192a88 88 0 1 1 88-88a88.1 88.1 0 0 1-88 88m48.24-94.78l-64-40A8 8 0 0 0 100 88v80a8 8 0 0 0 12.24 6.78l64-40a8 8 0 0 0 0-13.56M116 153.57v-51.14L156.91 128Z"/></svg><span>Lessons already in the making, and a national champion coach behind them.</span></li>
+        <li><svg class="sk-li-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="play" data-style="regular"><path fill="currentColor" d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m0 192a88 88 0 1 1 88-88a88.1 88.1 0 0 1-88 88m48.24-94.78l-64-40A8 8 0 0 0 100 88v80a8 8 0 0 0 12.24 6.78l64-40a8 8 0 0 0 0-13.56M116 153.57v-51.14L156.91 128Z"/></svg><span>Thirty-five lessons already made, and a national champion coach behind the new ones.</span></li>
         <li><svg class="sk-li-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="win" data-style="regular"><path fill="currentColor" d="M216 96a88 88 0 1 0-144 67.83V240a8 8 0 0 0 11.58 7.16L128 225l44.43 22.21a8.1 8.1 0 0 0 3.57.79a8 8 0 0 0 8-8v-76.17A87.85 87.85 0 0 0 216 96M56 96a72 72 0 1 1 72 72a72.08 72.08 0 0 1-72-72m112 131.06l-36.43-18.21a8 8 0 0 0-7.16 0L88 227.06v-52.69a87.89 87.89 0 0 0 80 0ZM128 152a56 56 0 1 0-56-56a56.06 56.06 0 0 0 56 56m0-96a40 40 0 1 1-40 40a40 40 0 0 1 40-40"/></svg><span>Athletes with US Open medals, and their stories.</span></li>
         <li><svg class="sk-li-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="courts" data-style="regular"><path fill="currentColor" d="M224 48H32a16 16 0 0 0-16 16v128a16 16 0 0 0 16 16h192a16 16 0 0 0 16-16V64a16 16 0 0 0-16-16m0 112h-8a32 32 0 0 1 0-64h8ZM32 96h8a32 32 0 0 1 0 64h-8Zm0 80h8a48 48 0 0 0 0-96h-8V64h88v128H32Zm192 16h-88V64h88v16h-8a48 48 0 0 0 0 96h8z"/></svg><span>Play and clinics at three Open Court clubs, beside the clubs&rsquo; own members.</span></li>
         <li><svg class="sk-li-ic" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false" data-icon="stories" data-style="regular"><path fill="currentColor" d="m228.54 86.66l-176.06-54A16 16 0 0 0 32 48v144a16 16 0 0 0 16 16a16 16 0 0 0 4.52-.65L136 181.73V192a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-29.9l28.54-8.75A16.09 16.09 0 0 0 240 138v-36a16.09 16.09 0 0 0-11.46-15.34M136 165l-88 27V48l88 27Zm48 27h-32v-15.18l32-9.82Zm40-54h-.11L152 160.08V79.92l71.89 22h.11v36Z"/></svg><span>An audience that&rsquo;s mostly new: 9 in 10 of our recent Instagram views came from people who don&rsquo;t follow us yet.</span></li>
@@ -1417,6 +1375,35 @@ fill="currentColor" stroke="none">
   })();
 </script>
 
+<script>
+  /* Library shelves: arrows on wider screens, only when a shelf has more
+     than fits; and one lesson plays at a time. */
+  (function(){
+    document.querySelectorAll('.sk-shelf').forEach(function(shelf){
+      var row = shelf.querySelector('.sk-previews'), nav = shelf.querySelector('.sk-shelf-nav');
+      if (!row || !nav) return;
+      var prev = nav.querySelector('[data-dir="-1"]'), next = nav.querySelector('[data-dir="1"]');
+      function sync(){
+        var max = row.scrollWidth - row.clientWidth;
+        nav.hidden = max < 4;
+        prev.disabled = row.scrollLeft < 4;
+        next.disabled = row.scrollLeft > max - 4;
+      }
+      nav.addEventListener('click', function(e){
+        var b = e.target.closest('.sk-shelf-btn');
+        if (b) row.scrollBy({ left: Number(b.getAttribute('data-dir')) * row.clientWidth * 0.8 });
+      });
+      row.addEventListener('scroll', function(){ requestAnimationFrame(sync); }, { passive:true });
+      window.addEventListener('resize', sync);
+      sync();
+    });
+    document.addEventListener('play', function(e){
+      var t = e.target;
+      if (!t.closest || !t.closest('.sk-previews, .sk-feature')) return;
+      document.querySelectorAll('.sk-previews video, .sk-feature video').forEach(function(v){ if (v !== t) v.pause(); });
+    }, true);
+  })();
+</script>
 <script src="/js/clips.js?v=06abad23" defer></script>
 <script src="/js/subscribe.js?v=7efaf550" defer></script>
 <script src="/js/turnstile-lazy.js?v=b44abebb" defer></script>

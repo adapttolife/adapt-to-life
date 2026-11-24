@@ -13,6 +13,7 @@ import {
   extractChartBlocks,
 } from "../src/chart_png.js";
 import { resolveMarkdownBody } from "../src/md_render.js";
+import { buildMime } from "../src/mail-transport.js";
 
 before(async () => {
   await initChartAssets({
@@ -193,4 +194,25 @@ test("extractChartBlocks walks fences exactly like md_render: non-chart fences d
   assert.equal(blocks.length, 1);
   assert.equal(blocks[0].ordinal, 0);
   assert.equal(blocks[0].headers.type, "line");
+});
+
+// The chart parts ride the same send as caller attachments; on the Gmail
+// transport they go through buildMime, which takes bytes only (no strings).
+test("inline chart PNG parts build into a Gmail MIME as inline bytes", async () => {
+  const res = await renderMarkdownChartPngs(chartMd(LINE_BLOCK));
+  const att = res.attachments[0];
+  assert.ok(att.content instanceof Uint8Array, "PNG content is bytes");
+  const mime = buildMime(
+    {
+      from: "hello@agents.adapttolife.org",
+      to: "x@example.test",
+      subject: "chart",
+      text: "t",
+      html: `<img src="cid:${att.contentId}">`,
+      attachments: res.attachments,
+    },
+    "hello@agents.adapttolife.org",
+  );
+  assert.match(mime, /Content-Type: image\/png\r\nContent-Disposition: inline/);
+  assert.ok(mime.includes(`Content-ID: <${att.contentId}>`));
 });

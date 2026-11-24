@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS form_deliveries (
   -- the environment that wrote the row (each Worker sends only its own), the
   -- retry clock, and the receipt exactly as rendered on the first attempt.
   env TEXT NOT NULL DEFAULT 'production',
-  first_attempt_at TEXT,
+  first_attempted_at TEXT,
   next_attempt_at TEXT,
   rendered TEXT,
   PRIMARY KEY(submission_id,channel)
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS form_record_deliveries (
   error TEXT,
   mirrored_at TEXT,
   env TEXT NOT NULL DEFAULT 'production',
-  first_attempt_at TEXT,
+  first_attempted_at TEXT,
   next_attempt_at TEXT
 );
 CREATE INDEX IF NOT EXISTS form_records_pending ON form_record_deliveries(state,mirrored_at);

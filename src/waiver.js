@@ -323,7 +323,15 @@ export async function handleWaiver(request, env) {
   // Email a copy of the signed PDF to the signer (and the org), from
   // hello@mail.adapttolife.org. Best-effort; never blocks the signer.
   try {
-    await sendReceiptEmail(env, { id, to: email, pdfBytes, name, doc, isMinor, minorName });
+    await sendReceiptEmail(env, {
+      id,
+      to: email,
+      pdfBytes,
+      name,
+      doc,
+      isMinor,
+      minorName,
+    });
   } catch (err) {
     // sendReceiptEmail records its own failures (it swallows them internally).
     // This guards only against an unexpected throw on the way in.
@@ -640,7 +648,10 @@ async function buildPdf(d) {
 // module (src/email.js cfSend; Resend in production, from hello@mail.adapttolife.org
 // with Reply-To hello@, docs/EMAIL.md). Keyed by the waiver id, so a repeat can never
 // mail the same release twice. Best-effort: a send failure never blocks signing.
-async function sendReceiptEmail(env, { id, to, pdfBytes, name, doc, isMinor, minorName }) {
+async function sendReceiptEmail(
+  env,
+  { id, to, pdfBytes, name, doc, isMinor, minorName },
+) {
   if (!mailConfigured(env)) {
     console.error("Mail transport not configured; skipping receipt email");
     return;

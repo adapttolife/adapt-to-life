@@ -1,4 +1,11 @@
 const RESEND_API = "https://api.resend.com";
+// One Resend team holds every brand's Topics (Adapt To Life news, Adaptive
+// Sports Near Me news, Adapt Body Shop news, AlecTranel.com). Beta tester groups
+// are only the Topics named "ASNM Beta ..."; this file never lists or changes
+// any other, so saving a tester can never opt them out of brand news.
+// docs/EMAIL.md, "Contacts, lists and unsubscribing".
+const BETA_TOPIC_PREFIX = "ASNM Beta";
+const isBetaTopic = (topic) => String(topic?.name || "").startsWith(BETA_TOPIC_PREFIX);
 
 function topicEntries(body) {
   if (Array.isArray(body?.data)) return body.data;
@@ -90,6 +97,7 @@ export async function listResendTopics(env, pacing) {
 
   return topicEntries(body)
     .filter((topic) => topic && typeof topic.id === "string")
+    .filter(isBetaTopic)
     .map((topic) => ({ id: topic.id, name: String(topic.name || topic.id) }));
 }
 
@@ -127,13 +135,14 @@ async function ensureContact(env, email, topicIds) {
 }
 
 export async function setContactTopics(env, email, topicIds) {
-  const requested = [...new Set(topicIds.map(String).filter(Boolean))];
-  let current = await topicsForContact(env, email);
+  const beta = new Set((await listResendTopics(env)).map((topic) => topic.id));
+  const requested = [...new Set(topicIds.map(String).filter((id) => beta.has(id)))];
+  let current = (await topicsForContact(env, email)).filter((id) => beta.has(id));
 
   if (!current.length && requested.length) {
     const created = await ensureContact(env, email, requested);
     if (created) return;
-    current = await topicsForContact(env, email);
+    current = (await topicsForContact(env, email)).filter((id) => beta.has(id));
   }
 
   const updates = [...new Set([...current, ...requested])].map((id) => ({
@@ -174,10 +183,11 @@ export async function betaTesterTopicGroups(env, testers, pacing) {
   const emails = [
     ...new Set(testers.map((tester) => String(tester.email).toLowerCase())),
   ];
+  const betaIds = new Set(topics.map((topic) => topic.id));
   const memberships = topics.length
     ? await mapWithConcurrency(emails, MEMBERSHIP_CONCURRENCY, async (email) => [
         email,
-        await topicsForContact(env, email, pacing),
+        (await topicsForContact(env, email, pacing)).filter((id) => betaIds.has(id)),
       ])
     : emails.map((email) => [email, []]);
   const idsByEmail = Object.fromEntries(memberships);

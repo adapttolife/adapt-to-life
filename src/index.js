@@ -36,6 +36,10 @@ import {
 } from "./receipts.js";
 import { verifyTurnstile, overFormLimit, RATE_LIMITED } from "./turnstile.js";
 import { handleEmail, handleAgentMailApi } from "./agent_mail.js";
+// Agent mail (agents.adapttolife.org) is the bots' own mailbox, not site mail:
+// it keeps the Cloudflare Email Sending binding whatever MAIL_TRANSPORT the site
+// mail uses (docs/EMAIL.md). src/agent_mail.js itself is unchanged.
+const agentMailEnv = (env) => ({ ...env, MAIL_TRANSPORT: "cloudflare" });
 import {
   handleShopContact,
   runShopCrmBacklog,
@@ -1563,7 +1567,7 @@ export default {
 
     // Spec 32 agent email: authenticated API the agentos MCP calls (list/read/reply/status).
     if (url.pathname.startsWith("/api/agent-mail/")) {
-      return handleAgentMailApi(request, env, url);
+      return handleAgentMailApi(request, agentMailEnv(env), url);
     }
 
     // Spec 116: durable QR redirects. A sticker on a chair outlives any vendor,
@@ -1682,7 +1686,7 @@ export default {
 
   // Spec 32 agent email: inbound mail for *@agents.adapttolife.org (Cloudflare Email Routing).
   async email(message, env, ctx) {
-    await handleEmail(message, env, ctx);
+    await handleEmail(message, agentMailEnv(env), ctx);
   },
 };
 

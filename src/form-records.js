@@ -28,6 +28,16 @@ export function queueOriginal(db, id, payload, envName = "production") {
     .bind(envName, id, payload);
 }
 export async function reconcileOriginal(env, id) {
+  // Outside production there is no shared intake row to stamp (src/forms.js
+  // keeps staging rows out of it); just close the step.
+  if (ownEnv(env) !== "production") {
+    await env.WAIVERS_DB.prepare(
+      "UPDATE form_record_deliveries SET mirrored_at=COALESCE(mirrored_at,?) WHERE submission_id=? AND state='done'",
+    )
+      .bind(now(), id)
+      .run();
+    return;
+  }
   const d = await env.WAIVERS_DB.prepare(
     "SELECT completed_at FROM form_record_deliveries WHERE submission_id=? AND state='done'",
   )
@@ -51,7 +61,7 @@ export async function processOriginal(env, id) {
   const at = now();
   const claim = await db
     .prepare(
-      "UPDATE form_record_deliveries SET state='running',attempts=attempts+1,started_at=?,first_attempt_at=COALESCE(first_attempt_at,?),error=NULL WHERE submission_id=? AND state='pending' AND env=? AND (next_attempt_at IS NULL OR next_attempt_at<=?) RETURNING attempts,first_attempt_at",
+      "UPDATE form_record_deliveries SET state='running',attempts=attempts+1,started_at=?,first_attempted_at=COALESCE(first_attempted_at,?),error=NULL WHERE submission_id=? AND state='pending' AND env=? AND (next_attempt_at IS NULL OR next_attempt_at<=?) RETURNING attempts,first_attempted_at",
     )
     .bind(at, at, id, ownEnv(env), at)
     .first();
@@ -141,7 +151,7 @@ export async function processOriginal(env, id) {
       )
       .run();
   } catch (e) {
-    const age = Date.now() - Date.parse(claim.first_attempt_at || at);
+    const age = Date.now() - Date.parse(claim.first_attempted_at || at);
     const retry = !externalStarted || (e?.retryable === true && age < RETRY_WINDOW_MS);
     await db
       .prepare(
@@ -172,7 +182,7 @@ export async function recoverOriginals(env) {
   await db
     .prepare(
       `UPDATE form_record_deliveries SET
-         state=CASE WHEN ?=1 AND first_attempt_at>? THEN 'pending' ELSE 'review' END,
+         state=CASE WHEN ?=1 AND first_attempted_at>? THEN 'pending' ELSE 'review' END,
          error='Interrupted original send: verify provider before retry'
        WHERE state='running' AND started_at<? AND env=?`,
     )

@@ -27,7 +27,12 @@ test("the outbox render carries the submission key and receipt tags, and sends n
     INTAKE_SEPARATE_NOTIFICATION: true,
     INTAKE_SUBMISSION_ID: id,
   };
-  const sub = { name: "Alec T", email: "someone@example.com", message: "hi", roles: ["Coach"] };
+  const sub = {
+    name: "Alec T",
+    email: "someone@example.com",
+    message: "hi",
+    roles: ["Coach"],
+  };
   for (const kind of ["contact", "apply", "volunteer"]) {
     const m = await renderReceipt(env, kind, sub);
     assert.equal(m.idempotencyKey, `receipt-${kind}-${id}`);

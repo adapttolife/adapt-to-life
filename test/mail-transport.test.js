@@ -233,7 +233,7 @@ test("MIME carries binary attachments and inline content IDs", () => {
 // ---------------------------------------------------------------------------
 // Resend transport: docs/EMAIL.md, "The send contract (both repos)".
 // ---------------------------------------------------------------------------
-import { mailAllowed, resendPayload, keyHash } from "../src/mail-transport.js";
+import { mailAllowed, resendRequest, keyHash } from "../src/mail-transport.js";
 const resendEnv = {
   MAIL_TRANSPORT: "resend",
   RESEND_API_KEY: "re_test",
@@ -256,7 +256,11 @@ const resendMessage = {
     "X-ATL-Form": "contact",
   },
   attachments: [
-    { filename: "waiver.pdf", type: "application/pdf", content: new Uint8Array([0, 255, 12]) },
+    {
+      filename: "waiver.pdf",
+      type: "application/pdf",
+      content: new Uint8Array([0, 255, 12]),
+    },
     {
       filename: "logo.png",
       type: "image/png",
@@ -316,7 +320,12 @@ test("resend: one POST with the key, tags (env added), arrays, headers and base6
   ]);
   assert.deepEqual(body.attachments, [
     { filename: "waiver.pdf", content: "AP8M", content_type: "application/pdf" },
-    { filename: "logo.png", content: "iVA=", content_type: "image/png", content_id: "logo" },
+    {
+      filename: "logo.png",
+      content: "iVA=",
+      content_type: "image/png",
+      content_id: "logo",
+    },
   ]);
   assert.equal(body.idempotencyKey, undefined);
 });
@@ -340,16 +349,23 @@ test("resend: a send without a key or both tags throws before the network", asyn
 test("resend: From off MAIL_FROM_DOMAINS, line breaks and unknown headers are refused", async () => {
   await noNetwork(async () => {
     const cases = [
-      [{ from: "Adapt To Life <hello@adapttolife.org>" }, /sending domain/],
-      [{ from: "x@evil.example" }, /sending domain/],
+      [{ from: "Adapt To Life <hello@adapttolife.org>" }, /mail domain/],
+      [{ from: "x@evil.example" }, /mail domain/],
       [{ subject: "Hi\r\nBcc: a@b.test" }, /Unsafe mail header/],
       [{ to: "a@b.test\r\nBcc: c@d.test" }, /Unsafe mail header/],
       [{ replyTo: "a@b.test\nX: y" }, /Unsafe mail header/],
-      [{ headers: { "List-Unsubscribe": "<x>\r\nBcc: a@b.test" } }, /Unsafe mail header/],
+      [
+        { headers: { "List-Unsubscribe": "<x>\r\nBcc: a@b.test" } },
+        /Unsafe mail header/,
+      ],
       [{ headers: { To: "other@example.test" } }, /Unsupported custom/],
       [{ headers: { "Reply-To": "other@example.test" } }, /Unsupported custom/],
       [{ attachments: [{ filename: "a.pdf", content: "QUJD" }] }, /must contain bytes/],
-      [{ to: [] }, /no recipient/],
+      [{ to: [] }, /needs a recipient/],
+      [
+        { attachments: [{ filename: "a.pdf", content: new Uint8Array() }] },
+        /got 0 bytes/,
+      ],
     ];
     for (const [change, why] of cases)
       await assert.rejects(
@@ -364,12 +380,18 @@ test("resend outside production: only MAIL_ALLOW addresses; anything else is dro
   const staging = {
     ...resendEnv,
     ENV_NAME: "staging",
-    MAIL_ALLOW: "hello@adapttolife.org,@adapttolife.org,@faisaln.com,alec@alecability.com",
+    MAIL_ALLOW:
+      "hello@adapttolife.org,@adapttolife.org,@faisaln.com,alec@alecability.com",
   };
-  assert.equal(mailAllowed("someone@adapttolife.org", staging.MAIL_ALLOW), true);
-  assert.equal(mailAllowed("Alec@AlecAbility.com", staging.MAIL_ALLOW), true);
-  assert.equal(mailAllowed("x@mail.adapttolife.org", staging.MAIL_ALLOW), false);
-  assert.equal(mailAllowed("adapttolife.org@evil.test", staging.MAIL_ALLOW), false);
+  assert.equal(mailAllowed(staging, "someone@adapttolife.org"), true);
+  assert.equal(mailAllowed(staging, "Alec T <Alec@AlecAbility.com>"), true);
+  assert.equal(mailAllowed(staging, "x@mail.adapttolife.org"), false);
+  assert.equal(mailAllowed(staging, "adapttolife.org@evil.test"), false);
+  assert.equal(
+    mailAllowed(resendEnv, "anyone@example.com"),
+    true,
+    "production mails anyone",
+  );
   await noNetwork(async () => {
     // One outside address anywhere (to, cc or bcc) drops the whole send.
     for (const change of [
@@ -378,23 +400,37 @@ test("resend outside production: only MAIL_ALLOW addresses; anything else is dro
       { to: "hello@adapttolife.org", bcc: "donor@example.com" },
     ])
       assert.deepEqual(
-        await sendMail(staging, { ...resendMessage, cc: undefined, bcc: undefined, ...change }),
-        { dropped: true, reason: "not-allowed" },
+        await sendMail(staging, {
+          ...resendMessage,
+          cc: undefined,
+          bcc: undefined,
+          ...change,
+        }),
+        { dropped: true, reason: "not-allowed", provider: "resend", accepted: false },
       );
     // No allow list at all outside production: nothing goes.
     assert.deepEqual(
       await sendMail(
         { ...resendEnv, ENV_NAME: "preview" },
-        { ...resendMessage, to: "hello@adapttolife.org", cc: undefined, bcc: undefined },
+        {
+          ...resendMessage,
+          to: "hello@adapttolife.org",
+          cc: undefined,
+          bcc: undefined,
+        },
       ),
-      { dropped: true, reason: "not-allowed" },
+      { dropped: true, reason: "not-allowed", provider: "resend", accepted: false },
     );
   });
   let sent = 0;
   await mocked(
     async (url, init) => {
       sent++;
-      assert.ok(JSON.parse(init.body).tags.some((t) => t.name === "env" && t.value === "staging"));
+      assert.ok(
+        JSON.parse(init.body).tags.some(
+          (t) => t.name === "env" && t.value === "staging",
+        ),
+      );
       return Response.json({ id: "ok" });
     },
     async () => {
@@ -416,7 +452,6 @@ test("resend errors say whether a retry is safe, keep no provider text and never
     [429, true],
     [500, true],
     [503, true],
-    [409, false],
     [422, false],
     [403, false],
     [400, false],
@@ -424,7 +459,10 @@ test("resend errors say whether a retry is safe, keep no provider text and never
   for (const [status, retryable] of cases)
     await mocked(
       async () =>
-        Response.json({ name: "some_error", message: "SECRET person@example.test" }, { status }),
+        Response.json(
+          { name: "some_error", message: "SECRET person@example.test" },
+          { status },
+        ),
       async () => {
         await assert.rejects(sendMail(env, resendMessage), (e) => {
           assert.equal(e.retryable, retryable, String(status));
@@ -433,6 +471,22 @@ test("resend errors say whether a retry is safe, keep no provider text and never
           assert.match(e.message, new RegExp(`\\(${status} some_error\\)`));
           return true;
         });
+      },
+    );
+  // The two 409s: the same key still in flight is worth another try; the same
+  // key with a different body never gets better.
+  for (const [name, retryable] of [
+    ["concurrent_idempotent_requests", true],
+    ["invalid_idempotent_request", false],
+    ["", false],
+  ])
+    await mocked(
+      async () => Response.json({ name, message: "x" }, { status: 409 }),
+      async () => {
+        await assert.rejects(
+          sendMail(env, resendMessage),
+          (e) => e.retryable === retryable,
+        );
       },
     );
   // A timeout or dropped connection is ambiguous: retryable (same key, same body).
@@ -454,11 +508,14 @@ test("resend errors say whether a retry is safe, keep no provider text and never
   assert.equal(legacy, 0);
 });
 
-test("resend is configured only with its key, its sending domains and ENV_NAME", () => {
+test("resend is configured with its key and sending domains; without ENV_NAME it is not production", async () => {
   assert.equal(mailConfigured(resendEnv), true);
   assert.equal(mailConfigured({ ...resendEnv, RESEND_API_KEY: "" }), false);
   assert.equal(mailConfigured({ ...resendEnv, MAIL_FROM_DOMAINS: "" }), false);
-  assert.equal(mailConfigured({ ...resendEnv, ENV_NAME: "" }), false);
+  await noNetwork(async () => {
+    const r = await sendMail({ ...resendEnv, ENV_NAME: "" }, resendMessage);
+    assert.equal(r.dropped, true);
+  });
 });
 
 test("the older transports get the message without the Resend-only fields", async () => {
@@ -470,9 +527,9 @@ test("the older transports get the message without the Resend-only fields", asyn
   assert.deepEqual(captured, message);
 });
 
-test("resendPayload and keyHash are stable", async () => {
-  const a = resendPayload(resendEnv, resendMessage);
-  const b = resendPayload(resendEnv, resendMessage);
+test("resendRequest and keyHash are stable", async () => {
+  const a = resendRequest(resendEnv, resendMessage);
+  const b = resendRequest(resendEnv, resendMessage);
   assert.deepEqual(a, b);
   assert.equal(await keyHash(" Alec@Example.org "), await keyHash("alec@example.org"));
   assert.match(await keyHash("x"), /^[0-9a-f]{64}$/);

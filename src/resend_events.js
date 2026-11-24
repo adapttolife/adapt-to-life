@@ -10,11 +10,29 @@
 // Only events tagged with a brand this Worker sends for (Adapt To Life and
 // Adapt Body Shop) AND this Worker's own ENV_NAME are kept: staging and
 // production share the database, and one Resend team sends for other brands.
+// A Broadcast carries no custom tags, so its brand comes from the From domain;
+// Broadcasts go only to the production lists, so only production keeps them.
 // Bounces, complaints and failures are written to send_failures once, which is
 // the table the fleet alert path reads.
 const TOLERANCE_SECONDS = 5 * 60;
 const MAX_BODY_BYTES = 256 * 1024;
 const BRANDS = new Set(["adapttolife", "bodyshop"]);
+const BROADCAST_DOMAINS = {
+  "mail.adapttolife.org": "adapttolife",
+  "mail.adaptbodyshop.com": "bodyshop",
+};
+
+// The brand, kind and environment an event belongs to: from our tags, or for a
+// Broadcast (no custom tags) from the From domain.
+export function eventOwner(data) {
+  const tags = eventTags(data);
+  if (Object.keys(tags).length) return tags;
+  const domain = String(data?.from || "")
+    .match(/@([^\s>]+)>?\s*$/)?.[1]
+    ?.toLowerCase();
+  const brand = BROADCAST_DOMAINS[domain];
+  return brand ? { brand, kind: "broadcast", env: "production" } : {};
+}
 const FAILURES = new Set(["email.bounced", "email.complained", "email.failed"]);
 const encoder = new TextEncoder();
 
@@ -33,7 +51,14 @@ function fromBase64(s) {
 
 // True when one of the v1 signatures in the header matches. crypto.subtle.verify
 // compares in constant time.
-export async function verifySvix({ id, timestamp, signature, body, secret, nowSeconds }) {
+export async function verifySvix({
+  id,
+  timestamp,
+  signature,
+  body,
+  secret,
+  nowSeconds,
+}) {
   if (!id || !timestamp || !signature || !secret) return { ok: false, why: "missing" };
   if (!/^\d{1,12}$/.test(timestamp)) return { ok: false, why: "timestamp" };
   const now = nowSeconds ?? Math.floor(Date.now() / 1000);
@@ -73,17 +98,23 @@ export function eventTags(data) {
   const tags = data?.tags;
   if (Array.isArray(tags))
     return Object.fromEntries(
-      tags.filter((t) => t && typeof t.name === "string").map((t) => [t.name, String(t.value ?? "")]),
+      tags
+        .filter((t) => t && typeof t.name === "string")
+        .map((t) => [t.name, String(t.value ?? "")]),
     );
   if (tags && typeof tags === "object")
-    return Object.fromEntries(Object.entries(tags).map(([k, v]) => [k, String(v ?? "")]));
+    return Object.fromEntries(
+      Object.entries(tags).map(([k, v]) => [k, String(v ?? "")]),
+    );
   return {};
 }
 
-const clip = (v, n = 500) => (v === undefined || v === null ? null : String(v).slice(0, n));
+const clip = (v, n = 500) =>
+  v === undefined || v === null ? null : String(v).slice(0, n);
 
 export async function handleResendEvents(request, env) {
-  if (request.method !== "POST") return reply(405, { ok: false, error: "Method not allowed" });
+  if (request.method !== "POST")
+    return reply(405, { ok: false, error: "Method not allowed" });
   // 503 makes Resend retry later instead of dropping the event.
   if (!env.RESEND_WEBHOOK_SECRET || !env.AGENT_MAIL_DB)
     return reply(503, { ok: false, error: "Not configured" });
@@ -111,7 +142,7 @@ export async function handleResendEvents(request, env) {
   }
   const type = typeof event?.type === "string" ? event.type.slice(0, 64) : "";
   const data = event?.data || {};
-  const tags = eventTags(data);
+  const tags = eventOwner(data);
   // Someone else's mail (another brand, or the other environment): acknowledge
   // so Resend stops retrying, and keep nothing.
   if (!type || !BRANDS.has(tags.brand) || tags.env !== env.ENV_NAME)

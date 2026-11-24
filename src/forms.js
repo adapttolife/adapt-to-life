@@ -174,10 +174,15 @@ async function finish(db, id, channel, state, receipt, error, nextAttemptAt = nu
     .run();
 }
 
-// The receipt exactly as it will be sent on every attempt. Rendered on the first
-// attempt only; a later attempt reads the stored copy back.
-async function frozenReceipt(env, db, id, row, sub, stored) {
-  if (stored) return JSON.parse(stored);
+// The receipt exactly as it will be sent on every attempt, and the start of its
+// retry window. Both are written together, before the first call to the
+// provider, and never change after: a later attempt reads them back.
+async function frozenReceipt(env, db, id, row, sub, claim) {
+  if (claim.rendered && claim.first_attempted_at)
+    return {
+      msg: JSON.parse(claim.rendered),
+      firstAttemptedAt: claim.first_attempted_at,
+    };
   const msg = await renderReceipt(
     { ...env, INTAKE_SEPARATE_NOTIFICATION: true, INTAKE_SUBMISSION_ID: id },
     row.kind,
@@ -185,16 +190,22 @@ async function frozenReceipt(env, db, id, row, sub, stored) {
   );
   await db
     .prepare(
-      "UPDATE form_deliveries SET rendered=? WHERE submission_id=? AND channel='receipt' AND rendered IS NULL",
+      "UPDATE form_deliveries SET rendered=COALESCE(rendered,?),first_attempted_at=COALESCE(first_attempted_at,?) WHERE submission_id=? AND channel='receipt'",
     )
-    .bind(JSON.stringify(msg), id)
+    .bind(JSON.stringify(msg), now(), id)
     .run();
   const saved = await db
-    .prepare("SELECT rendered FROM form_deliveries WHERE submission_id=? AND channel='receipt'")
+    .prepare(
+      "SELECT rendered,first_attempted_at FROM form_deliveries WHERE submission_id=? AND channel='receipt'",
+    )
     .bind(id)
     .first();
-  if (!saved?.rendered) throw Error("Rendered receipt was not stored");
-  return JSON.parse(saved.rendered);
+  if (!saved?.rendered || !saved.first_attempted_at)
+    throw Error("Rendered receipt was not stored");
+  return {
+    msg: JSON.parse(saved.rendered),
+    firstAttemptedAt: saved.first_attempted_at,
+  };
 }
 
 export async function processForm(env, id) {
@@ -212,20 +223,26 @@ export async function processForm(env, id) {
     const at = now();
     const claim = await db
       .prepare(
-        "UPDATE form_deliveries SET state='running',attempts=attempts+1,started_at=?,first_attempt_at=COALESCE(first_attempt_at,?),error=NULL WHERE submission_id=? AND channel=? AND state='pending' AND env=? AND (next_attempt_at IS NULL OR next_attempt_at<=?) RETURNING attempts,first_attempt_at,rendered",
+        "UPDATE form_deliveries SET state='running',attempts=attempts+1,started_at=?,error=NULL WHERE submission_id=? AND channel=? AND state='pending' AND env=? AND (next_attempt_at IS NULL OR next_attempt_at<=?) RETURNING attempts,first_attempted_at,rendered",
       )
-      .bind(at, at, id, channel, ownEnv(env), at)
+      .bind(at, id, channel, ownEnv(env), at)
       .first();
     if (!claim) return;
     let externalStarted = false;
     let msg;
+    let firstAttemptedAt;
     try {
       let receipt;
       let note = null;
-      if (channel === "intake") receipt = await mirror(env, row, sub);
-      else {
+      if (channel === "intake") {
+        // The shared intake table feeds the CRM sheet. A staging test must never
+        // land there, so outside production the step is closed with a note.
+        if (ownEnv(env) === "production") receipt = await mirror(env, row, sub);
+        else
+          note = `Not mirrored: ${ownEnv(env)} rows stay out of the shared intake and CRM`;
+      } else {
         if (!mailConfigured(env)) throw Error("Receipt mail binding missing");
-        msg = await frozenReceipt(env, db, id, row, sub, claim.rendered);
+        ({ msg, firstAttemptedAt } = await frozenReceipt(env, db, id, row, sub, claim));
         externalStarted = true;
         const sent = await sendMail(env, msg);
         if (sent?.dropped) {
@@ -253,10 +270,10 @@ export async function processForm(env, id) {
       // Local failures before any send retry automatically. After a send began,
       // only an idempotent (Resend) retryable failure retries, inside the window;
       // anything ambiguous stays reviewable rather than duplicating mail.
-      const age = Date.now() - Date.parse(claim.first_attempt_at || at);
+      const age = Date.now() - Date.parse(firstAttemptedAt || at);
       const retry =
         !externalStarted ||
-        (e?.retryable === true && msg?.idempotencyKey && age < RETRY_WINDOW_MS);
+        (e?.retryable === true && !!msg?.idempotencyKey && age < RETRY_WINDOW_MS);
       await finish(
         db,
         id,
@@ -270,7 +287,12 @@ export async function processForm(env, id) {
       );
       // A person hears about it: on the first failed send, and when it stops.
       if (externalStarted && (!retry || claim.attempts === 1))
-        await recordTransactionalFailure(env, `receipt:${row.kind} receipt`, msg?.to, e);
+        await recordTransactionalFailure(
+          env,
+          `receipt:${row.kind} receipt`,
+          msg?.to,
+          e,
+        );
     }
   }
   // Correspondence and the shared intake record run independently.
@@ -301,7 +323,7 @@ export async function sweepForms(env) {
     .prepare(
       `UPDATE form_deliveries SET state=CASE
          WHEN channel='intake' THEN 'pending'
-         WHEN ?=1 AND rendered IS NOT NULL AND first_attempt_at>? THEN 'pending'
+         WHEN ?=1 AND rendered IS NOT NULL AND first_attempted_at>? THEN 'pending'
          ELSE 'review' END,
        error='Interrupted delivery; inspect destination before retry'
        WHERE state='running' AND started_at<? AND env=?`,

@@ -13,7 +13,9 @@ const KEY = randomBytes(24);
 const SECRET = "whsec_" + KEY.toString("base64");
 
 function sign(id, ts, body, key = KEY) {
-  return "v1," + createHmac("sha256", key).update(`${id}.${ts}.${body}`).digest("base64");
+  return (
+    "v1," + createHmac("sha256", key).update(`${id}.${ts}.${body}`).digest("base64")
+  );
 }
 function db() {
   return sqliteD1(
@@ -22,9 +24,17 @@ function db() {
   );
 }
 function env(extra = {}) {
-  return { RESEND_WEBHOOK_SECRET: SECRET, AGENT_MAIL_DB: db(), ENV_NAME: "production", ...extra };
+  return {
+    RESEND_WEBHOOK_SECRET: SECRET,
+    AGENT_MAIL_DB: db(),
+    ENV_NAME: "production",
+    ...extra,
+  };
 }
-function event(type = "email.delivered", tags = { brand: "adapttolife", kind: "receipt-apply", env: "production" }) {
+function event(
+  type = "email.delivered",
+  tags = { brand: "adapttolife", kind: "receipt-apply", env: "production" },
+) {
   return {
     type,
     created_at: "2026-11-24T18:00:00.000Z",
@@ -40,7 +50,10 @@ function event(type = "email.delivered", tags = { brand: "adapttolife", kind: "r
     },
   };
 }
-function request(body, { id = "msg_" + randomBytes(6).toString("hex"), ts, signature } = {}) {
+function request(
+  body,
+  { id = "msg_" + randomBytes(6).toString("hex"), ts, signature } = {},
+) {
   const raw = typeof body === "string" ? body : JSON.stringify(body);
   const stamp = String(ts ?? Math.floor(Date.now() / 1000));
   return new Request("https://adapttolife.org/api/resend-events", {
@@ -110,9 +123,20 @@ test("a stale or future timestamp is refused even with a valid signature", async
     const res = await handleResendEvents(request(event(), { ts }), e);
     assert.equal(res.status, 401, String(ts));
   }
-  assert.equal((await handleResendEvents(request(event(), { ts: now - 290 }), e)).status, 200);
   assert.equal(
-    (await verifySvix({ id: "a", timestamp: "abc", signature: "v1,x", body: "", secret: SECRET })).why,
+    (await handleResendEvents(request(event(), { ts: now - 290 }), e)).status,
+    200,
+  );
+  assert.equal(
+    (
+      await verifySvix({
+        id: "a",
+        timestamp: "abc",
+        signature: "v1,x",
+        body: "",
+        secret: SECRET,
+      })
+    ).why,
     "timestamp",
   );
 });
@@ -126,7 +150,11 @@ test("a replayed svix-id is stored once and its failure is written once", async 
   for (let i = 0; i < 3; i++) {
     const again = await handleResendEvents(request(body, { id }), e);
     assert.equal(again.status, 200);
-    assert.deepEqual(await again.json(), { ok: true, recorded: false, duplicate: true });
+    assert.deepEqual(await again.json(), {
+      ok: true,
+      recorded: false,
+      duplicate: true,
+    });
   }
   assert.equal(rows(e, "resend_events").length, 1);
   const failures = rows(e, "send_failures");
@@ -139,10 +167,17 @@ test("a replayed svix-id is stored once and its failure is written once", async 
 
 test("complaints and failures reach send_failures; delays do not", async () => {
   const e = env();
-  for (const type of ["email.complained", "email.failed", "email.delivery_delayed", "email.delivered"])
+  for (const type of [
+    "email.complained",
+    "email.failed",
+    "email.delivery_delayed",
+    "email.delivered",
+  ])
     assert.equal((await handleResendEvents(request(event(type)), e)).status, 200);
   assert.deepEqual(
-    rows(e, "send_failures").map((r) => r.route).sort(),
+    rows(e, "send_failures")
+      .map((r) => r.route)
+      .sort(),
     ["resend:complained", "resend:failed"],
   );
   assert.equal(rows(e, "resend_events").length, 4);
@@ -151,7 +186,13 @@ test("complaints and failures reach send_failures; delays do not", async () => {
 test("Body Shop mail is ours; another brand or the other environment is ignored", async () => {
   const e = env();
   const shop = await handleResendEvents(
-    request(event("email.delivered", { brand: "bodyshop", kind: "receipt-shop", env: "production" })),
+    request(
+      event("email.delivered", {
+        brand: "bodyshop",
+        kind: "receipt-shop",
+        env: "production",
+      }),
+    ),
     e,
   );
   assert.deepEqual(await shop.json(), { ok: true, recorded: true, duplicate: false });
@@ -160,7 +201,6 @@ test("Body Shop mail is ours; another brand or the other environment is ignored"
     { brand: "alectranel", kind: "newsletter", env: "production" },
     { brand: "adapttolife", kind: "receipt-apply", env: "staging" },
     { kind: "receipt-apply", env: "production" },
-    {},
   ]) {
     const res = await handleResendEvents(request(event("email.bounced", tags)), e);
     assert.equal(res.status, 200);
@@ -172,21 +212,78 @@ test("Body Shop mail is ours; another brand or the other environment is ignored"
     { name: "kind", value: "waiver" },
     { name: "env", value: "production" },
   ]);
-  assert.equal((await (await handleResendEvents(request(listForm), e)).json()).recorded, true);
+  assert.equal(
+    (await (await handleResendEvents(request(listForm), e)).json()).recorded,
+    true,
+  );
   assert.equal(rows(e, "resend_events").length, 2);
   assert.equal(rows(e, "send_failures").length, 0);
   // Staging keeps staging's events.
   const s = env({ ENV_NAME: "staging" });
   const staged = await handleResendEvents(
-    request(event("email.delivered", { brand: "adapttolife", kind: "signin", env: "staging" })),
+    request(
+      event("email.delivered", {
+        brand: "adapttolife",
+        kind: "signin",
+        env: "staging",
+      }),
+    ),
     s,
   );
   assert.equal((await staged.json()).recorded, true);
 });
 
+test("a Broadcast (no custom tags) is matched to its brand by the From domain, on production only", async () => {
+  const broadcast = (from) => ({
+    type: "email.bounced",
+    created_at: "2026-11-24T18:00:00.000Z",
+    data: {
+      email_id: "re-b-1",
+      broadcast_id: "b-1",
+      from,
+      to: ["reader@example.test"],
+      subject: "News",
+    },
+  });
+  const e = env();
+  for (const [from, brand] of [
+    ["Alec at Adapt To Life <hello@mail.adapttolife.org>", "adapttolife"],
+    ["Adapt Body Shop <hello@mail.adaptbodyshop.com>", "bodyshop"],
+  ]) {
+    const res = await handleResendEvents(request(broadcast(from)), e);
+    assert.equal((await res.json()).recorded, true, from);
+    assert.equal(rows(e, "resend_events").at(-1).brand, brand);
+    assert.equal(rows(e, "resend_events").at(-1).kind, "broadcast");
+  }
+  for (const from of [
+    "Adaptive Sports Near Me <hello@mail.adaptivesportsnearme.com>",
+    "Alec <alec@alectranel.com>",
+    "",
+  ]) {
+    const res = await handleResendEvents(request(broadcast(from)), e);
+    assert.deepEqual(await res.json(), { ok: true, ignored: true }, from);
+  }
+  assert.equal(rows(e, "send_failures").length, 2);
+  // Staging never keeps a Broadcast event.
+  const s = env({ ENV_NAME: "staging" });
+  const res = await handleResendEvents(
+    request(broadcast("Adapt To Life <hello@mail.adapttolife.org>")),
+    s,
+  );
+  assert.deepEqual(await res.json(), { ok: true, ignored: true });
+});
+
 test("without its secret or database the route asks Resend to retry later", async () => {
-  assert.equal((await handleResendEvents(request(event()), env({ RESEND_WEBHOOK_SECRET: "" }))).status, 503);
-  assert.equal((await handleResendEvents(request(event()), env({ AGENT_MAIL_DB: undefined }))).status, 503);
+  assert.equal(
+    (await handleResendEvents(request(event()), env({ RESEND_WEBHOOK_SECRET: "" })))
+      .status,
+    503,
+  );
+  assert.equal(
+    (await handleResendEvents(request(event()), env({ AGENT_MAIL_DB: undefined })))
+      .status,
+    503,
+  );
   const get = new Request("https://adapttolife.org/api/resend-events");
   assert.equal((await handleResendEvents(get, env())).status, 405);
 });

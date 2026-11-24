@@ -52,6 +52,13 @@ export const OWNED_ELSEWHERE = {
       "pre-Nov 2026 newsletter copy, read by agentos intake health",
     newsletter_send_receipts:
       "pre-Nov 2026 newsletter copy, read by agentos intake health",
+    // The Resend move (Nov 2026): the ASNM Worker's mail ledger lives in this
+    // database (adaptivesportsnearme repo, db/migrations/0028_mail_ledger.sql).
+    // Ours are in agent-mail (send_failures, schema/resend_events.sql).
+    send_failures:
+      "the adaptivesportsnearme repo's mail ledger (db/migrations/0028_mail_ledger.sql)",
+    resend_events:
+      "the adaptivesportsnearme repo's delivery events (db/migrations/0028_mail_ledger.sql)",
   },
 };
 

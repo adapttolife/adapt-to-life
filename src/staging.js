@@ -11,10 +11,19 @@ import application from "./index.js";
 //   welcome series to that address.
 // - /api/waiver: signing writes a real release into the production waiver
 //   record and uploads it to the production Google Shared Drive archive.
+// - /unsubscribe: changes the real contact in the production Resend team.
+// - /api/shop-contact: the storefront posts only to production; a staging row
+//   (message or footer sign-up) would be filed to the CRM sheet by production's
+//   cron, since the tables are shared.
+// The contact, apply and volunteer forms stay open on staging: their outbox
+// rows belong to staging (src/forms.js), stay out of the shared intake and CRM,
+// and mail only the MAIL_ALLOW team addresses (src/mail-transport.js).
 const PRODUCTION_ONLY = new Set([
   "/api/givebutter-webhook",
   "/api/subscribe",
   "/api/waiver",
+  "/unsubscribe",
+  "/api/shop-contact",
 ]);
 
 export default {

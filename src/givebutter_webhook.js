@@ -204,7 +204,12 @@ export async function claimAndThank(env, gift) {
                 lease_token = NULL, updated_at = ?
           WHERE transaction_id = ? AND lease_token = ? AND email_status = 'sending'`,
       )
-        .bind(`Not sent: dropped outside production (${sent.reason})`, sentAt, gift.transactionId, leaseToken)
+        .bind(
+          `Not sent: dropped outside production (${sent.reason})`,
+          sentAt,
+          gift.transactionId,
+          leaseToken,
+        )
         .run();
       return { emailed: false, dropped: true };
     }

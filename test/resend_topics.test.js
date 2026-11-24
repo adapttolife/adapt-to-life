@@ -21,13 +21,21 @@ test("beta tester groups include each Resend Topic and its beta tester emails", 
     if (path === "/topics") {
       return response({
         data: [
-          { id: "topic-athletes", name: "Athletes" },
-          { id: "topic-coaches", name: "Coaches" },
+          { id: "topic-athletes", name: "ASNM Beta Athletes" },
+          { id: "topic-coaches", name: "ASNM Beta Coaches" },
+          // Brand lists in the same team are never shown as beta groups.
+          { id: "topic-atl-news", name: "Adapt To Life news" },
+          { id: "topic-alec", name: "AlecTranel.com" },
         ],
       });
     }
     if (path === "/contacts/athlete%40example.test/topics") {
-      return response({ data: [{ id: "topic-athletes", subscription: "opt_in" }] });
+      return response({
+        data: [
+          { id: "topic-athletes", subscription: "opt_in" },
+          { id: "topic-atl-news", subscription: "opt_in" },
+        ],
+      });
     }
     if (path === "/contacts/coach%40example.test/topics") {
       return response({ data: [{ id: "topic-coaches", subscription: "opt_in" }] });
@@ -41,8 +49,16 @@ test("beta tester groups include each Resend Topic and its beta tester emails", 
       { email: "coach@example.test" },
     ]);
     assert.deepEqual(result.groups, [
-      { id: "topic-athletes", name: "Athletes", emails: ["athlete@example.test"] },
-      { id: "topic-coaches", name: "Coaches", emails: ["coach@example.test"] },
+      {
+        id: "topic-athletes",
+        name: "ASNM Beta Athletes",
+        emails: ["athlete@example.test"],
+      },
+      {
+        id: "topic-coaches",
+        name: "ASNM Beta Coaches",
+        emails: ["coach@example.test"],
+      },
     ]);
     assert.deepEqual(result.idsByEmail, {
       "athlete@example.test": ["topic-athletes"],
@@ -59,9 +75,26 @@ test("moving a beta tester updates every affected Resend Topic membership", asyn
   globalThis.fetch = async (url, options = {}) => {
     const path = new URL(String(url)).pathname;
     calls.push({ path, options });
+    if (path === "/topics" && !options.method) {
+      return response({
+        data: [
+          { id: "topic-old", name: "ASNM Beta Old" },
+          { id: "topic-new", name: "ASNM Beta New" },
+          { id: "topic-athletes", name: "ASNM Beta Athletes" },
+          { id: "topic-coaches", name: "ASNM Beta Coaches" },
+          { id: "topic-current", name: "ASNM Beta Current" },
+          { id: "topic-atl-news", name: "Adapt To Life news" },
+        ],
+      });
+    }
     if (options.method === "PATCH") return response({ data: [] });
     if (path === "/contacts/tester%40example.test/topics") {
-      return response({ data: [{ id: "topic-old", subscription: "opt_in" }] });
+      return response({
+        data: [
+          { id: "topic-old", subscription: "opt_in" },
+          { id: "topic-atl-news", subscription: "opt_in" },
+        ],
+      });
     }
     throw new Error(`Unexpected request: ${path}`);
   };
@@ -69,9 +102,11 @@ test("moving a beta tester updates every affected Resend Topic membership", asyn
   try {
     await setContactTopics({ RESEND_API_KEY: "test" }, "tester@example.test", [
       "topic-new",
+      "topic-atl-news",
     ]);
     const patch = calls.find((call) => call.options.method === "PATCH");
     assert.equal(patch.options.headers["User-Agent"], "Adapt-To-Life-ASNM-Admin/1.0");
+    // Brand news is neither opted out (unticked) nor opted in (not a beta group).
     assert.deepEqual(JSON.parse(String(patch.options.body)), [
       { id: "topic-old", subscription: "opt_out" },
       { id: "topic-new", subscription: "opt_in" },
@@ -87,6 +122,18 @@ test("a new beta tester is created with their requested Topic memberships", asyn
   globalThis.fetch = async (url, options = {}) => {
     const path = new URL(String(url)).pathname;
     calls.push({ path, options });
+    if (path === "/topics" && !options.method) {
+      return response({
+        data: [
+          { id: "topic-old", name: "ASNM Beta Old" },
+          { id: "topic-new", name: "ASNM Beta New" },
+          { id: "topic-athletes", name: "ASNM Beta Athletes" },
+          { id: "topic-coaches", name: "ASNM Beta Coaches" },
+          { id: "topic-current", name: "ASNM Beta Current" },
+          { id: "topic-atl-news", name: "Adapt To Life news" },
+        ],
+      });
+    }
     if (path === "/contacts/tester%40example.test/topics") {
       return response({ error: "Contact not found" }, 404);
     }
@@ -119,10 +166,23 @@ test("a new beta tester is created with their requested Topic memberships", asyn
 test("Topic update errors retain Resend's validation message", async () => {
   const originalFetch = globalThis.fetch;
   globalThis.fetch = async (url, options = {}) => {
+    const path = new URL(String(url)).pathname;
+    if (path === "/topics" && !options.method) {
+      return response({
+        data: [
+          { id: "topic-old", name: "ASNM Beta Old" },
+          { id: "topic-new", name: "ASNM Beta New" },
+          { id: "topic-athletes", name: "ASNM Beta Athletes" },
+          { id: "topic-coaches", name: "ASNM Beta Coaches" },
+          { id: "topic-current", name: "ASNM Beta Current" },
+          { id: "topic-atl-news", name: "Adapt To Life news" },
+        ],
+      });
+    }
     if (options.method === "PATCH") {
       return response({ message: "Unknown Topic ID." }, 422);
     }
-    if (new URL(String(url)).pathname === "/contacts/tester%40example.test/topics") {
+    if (path === "/contacts/tester%40example.test/topics") {
       return response({ data: [{ id: "topic-current", subscription: "opt_in" }] });
     }
     throw new Error("Unexpected request");
@@ -160,7 +220,7 @@ test("beta tester groups stay under Resend's rate limit and retry a 429", async 
     await new Promise((resolve) => setImmediate(resolve));
     inFlight -= 1;
     if (path === "/topics") {
-      return response({ data: [{ id: "topic-one", name: "Group 1" }] });
+      return response({ data: [{ id: "topic-one", name: "ASNM Beta Group 1" }] });
     }
     if (path === "/contacts/tester5%40example.test/topics" && !throttledOnce) {
       throttledOnce = true;
@@ -195,7 +255,7 @@ test("beta tester groups stay under Resend's rate limit and retry a 429", async 
     );
     assert.deepEqual(sleeps, [1000], "the 429 waits for Resend's retry-after");
     assert.deepEqual(result.groups, [
-      { id: "topic-one", name: "Group 1", emails: ["tester3@example.test"] },
+      { id: "topic-one", name: "ASNM Beta Group 1", emails: ["tester3@example.test"] },
     ]);
     assert.equal(Object.keys(result.idsByEmail).length, testers.length);
   } finally {
@@ -210,7 +270,7 @@ test("a persistent 429 still surfaces after bounded retries", async () => {
   globalThis.fetch = async (url) => {
     calls += 1;
     if (new URL(String(url)).pathname === "/topics") {
-      return response({ data: [{ id: "topic-one", name: "Group 1" }] });
+      return response({ data: [{ id: "topic-one", name: "ASNM Beta Group 1" }] });
     }
     return new Response(JSON.stringify({ message: "Too many requests" }), {
       status: 429,

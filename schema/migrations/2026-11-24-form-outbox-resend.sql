@@ -12,7 +12,7 @@
 --   env              the environment that wrote the row; each Worker sends only
 --                    its own, so a staging submission is never mailed by
 --                    production's cron
---   first_attempt_at when the first send began: the 23-hour retry clock
+--   first_attempted_at when the first send began: the 23-hour retry clock
 --   next_attempt_at  when a retryable failure may try again (backoff)
 --   rendered         the receipt exactly as first rendered (JSON), resent
 --                    byte-identical under the same Idempotency-Key
@@ -21,11 +21,11 @@
 -- NOT EXISTS; a second run fails harmlessly on the first ALTER). Then
 -- `cfrun node scripts/check-d1-schema.mjs atl-waivers` must report ok.
 ALTER TABLE form_deliveries ADD COLUMN env TEXT NOT NULL DEFAULT 'production';
-ALTER TABLE form_deliveries ADD COLUMN first_attempt_at TEXT;
+ALTER TABLE form_deliveries ADD COLUMN first_attempted_at TEXT;
 ALTER TABLE form_deliveries ADD COLUMN next_attempt_at TEXT;
 ALTER TABLE form_deliveries ADD COLUMN rendered TEXT;
 CREATE INDEX IF NOT EXISTS form_deliveries_due ON form_deliveries(env,state,next_attempt_at);
 ALTER TABLE form_record_deliveries ADD COLUMN env TEXT NOT NULL DEFAULT 'production';
-ALTER TABLE form_record_deliveries ADD COLUMN first_attempt_at TEXT;
+ALTER TABLE form_record_deliveries ADD COLUMN first_attempted_at TEXT;
 ALTER TABLE form_record_deliveries ADD COLUMN next_attempt_at TEXT;
 CREATE INDEX IF NOT EXISTS form_records_due ON form_record_deliveries(env,state,next_attempt_at);

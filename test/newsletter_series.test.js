@@ -367,6 +367,8 @@ async function withFetch(fetch, fn) {
 const envWith = (db, donors = fakeDonors()) => ({
   WELCOME_SERIES: "on",
   RESEND_API_KEY: "re_test",
+  MAIL_FROM_DOMAINS: "mail.adapttolife.org,mail.adaptbodyshop.com",
+  ENV_NAME: "production",
   AGENT_MAIL_DB: db,
   WAIVERS_DB: donors,
   NEWSLETTER_FROM: "Alec at Adapt To Life <hello@mail.adapttolife.org>",
@@ -385,7 +387,7 @@ test("the email goes to Resend from mail.adapttolife.org with one click unsubscr
   assert.equal(call.headers.Authorization, "Bearer re_test");
   assert.match(call.headers["Idempotency-Key"], /^welcome-welcome-[0-9a-f]{32}$/);
   assert.equal(call.body.from, "Alec at Adapt To Life <hello@mail.adapttolife.org>");
-  assert.equal(call.body.reply_to, "hello@adapttolife.org");
+  assert.deepEqual(call.body.reply_to, ["hello@adapttolife.org"]);
   assert.deepEqual(call.body.to, ["fan@example.com"]);
   assert.equal(call.body.subject, "Welcome to Adapt To Life");
   assert.match(
@@ -397,8 +399,11 @@ test("the email goes to Resend from mail.adapttolife.org with one click unsubscr
     "List-Unsubscribe=One-Click",
   );
   assert.deepEqual(call.body.tags, [
+    { name: "brand", value: "adapttolife" },
+    { name: "kind", value: "welcome" },
     { name: "series", value: "welcome" },
     { name: "step", value: "welcome" },
+    { name: "env", value: "production" },
   ]);
   assert.ok(call.body.html && call.body.text);
 });

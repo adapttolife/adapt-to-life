@@ -181,15 +181,17 @@ test("staging mails only the team allow list; production has none", async () => 
       idempotencyKey: "k-1",
       tags: { brand: "adapttolife", kind: "test" },
     };
-    assert.deepEqual(await sendMail(env, { ...base, to: "applicant@example.com" }), {
-      dropped: true,
-      reason: "not-allowed",
-    });
+    const dropped = await sendMail(env, { ...base, to: "applicant@example.com" });
+    assert.equal(dropped.dropped, true);
+    assert.equal(dropped.reason, "not-allowed");
     assert.equal(calls.length, 0, "a non-team address never reaches Resend");
     const ok = await sendMail(env, { ...base, to: "someone@faisaln.com" });
     assert.equal(ok.id, "staging-accepted");
     const tags = JSON.parse(calls[0][1].body).tags;
-    assert.deepEqual(tags.find((t) => t.name === "env"), { name: "env", value: "staging" });
+    assert.deepEqual(
+      tags.find((t) => t.name === "env"),
+      { name: "env", value: "staging" },
+    );
   } finally {
     globalThis.fetch = old;
   }
@@ -220,7 +222,9 @@ test("staging receipt preview renders from the capturing stub and never reaches 
   } finally {
     globalThis.fetch = old;
   }
-  const mailHosts = fetchCalls.filter((u) => /googleapis\.com|gmail|resend\.com/.test(u));
+  const mailHosts = fetchCalls.filter((u) =>
+    /googleapis\.com|gmail|resend\.com/.test(u),
+  );
   assert.deepEqual(mailHosts, []);
 });
 
@@ -249,6 +253,15 @@ const VALID_BODIES = {
     signature_type: "drawn",
     program: "staging-test",
     cf_token: "test",
+  },
+  // handleUnsubscribe (src/index.js): the one click POST from the mail header.
+  "/unsubscribe": { e: "subscriber@example.test" },
+  // handleShopContact (src/shop_contact.js): a storefront message.
+  "/api/shop-contact": {
+    name: "Shop Tester",
+    email: "buyer@example.test",
+    topic: "Sizing help",
+    message: "Which size?",
   },
 };
 
@@ -303,7 +316,12 @@ async function probe(path, methods, body) {
   return { dbCalls, fetchCalls, statuses };
 }
 
-for (const route of ["/api/subscribe", "/api/waiver"]) {
+for (const route of [
+  "/api/subscribe",
+  "/api/waiver",
+  "/unsubscribe",
+  "/api/shop-contact",
+]) {
   test(`staging returns 404 for ${route} and never calls an outside service`, async () => {
     const { dbCalls, fetchCalls, statuses } = await probe(
       route,

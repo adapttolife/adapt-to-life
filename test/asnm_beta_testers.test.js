@@ -156,9 +156,27 @@ test("changing beta tester groups does not overwrite the tester profile", async 
   const requests = [];
   t.mock.method(globalThis, "fetch", async (url, options = {}) => {
     requests.push({ url: String(url), options });
+    // The team's Topic list: two beta groups and a brand list.
+    if (String(url).endsWith("/topics") && !String(url).includes("/contacts/")) {
+      return new Response(
+        JSON.stringify({
+          data: [
+            { id: "topic-a", name: "ASNM Beta A" },
+            { id: "topic-b", name: "ASNM Beta B" },
+            { id: "topic-news", name: "Adapt To Life news" },
+          ],
+        }),
+        { status: 200 },
+      );
+    }
     if (String(url).endsWith("/topics")) {
       return new Response(
-        JSON.stringify({ data: [{ id: "topic-a", subscription: "opt_in" }] }),
+        JSON.stringify({
+          data: [
+            { id: "topic-a", subscription: "opt_in" },
+            { id: "topic-news", subscription: "opt_in" },
+          ],
+        }),
         {
           status: 200,
         },
@@ -183,9 +201,9 @@ test("changing beta tester groups does not overwrite the tester profile", async 
   assert.equal(response.status, 200);
   assert.equal(calls.length, 1);
   assert.match(calls[0].sql, /SELECT email FROM beta_testers/i);
-  assert.equal(requests.length, 2);
-  assert.equal(requests[1].options.method, "PATCH");
-  assert.deepEqual(JSON.parse(String(requests[1].options.body)), [
+  assert.equal(requests.length, 3);
+  assert.equal(requests[2].options.method, "PATCH");
+  assert.deepEqual(JSON.parse(String(requests[2].options.body)), [
     { id: "topic-a", subscription: "opt_out" },
     { id: "topic-b", subscription: "opt_in" },
   ]);

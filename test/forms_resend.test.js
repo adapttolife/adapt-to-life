@@ -12,7 +12,12 @@ import { acceptForm, processForm, sweepForms, retryDelayMs } from "../src/forms.
 import { claimAndThank } from "../src/givebutter_webhook.js";
 import { sendAdminLink } from "../src/asnm_admin_auth.js";
 import { notifyIntakeRow } from "../src/intake.js";
-import { D1_SCHEMAS, buildExpected, describeLocal, diffSchema } from "../scripts/lib/d1-schema.mjs";
+import {
+  D1_SCHEMAS,
+  buildExpected,
+  describeLocal,
+  diffSchema,
+} from "../scripts/lib/d1-schema.mjs";
 
 const sub = {
   name: "Offline Applicant",
@@ -38,14 +43,16 @@ beforeEach(() => {
   plan = [];
   originalFetch = globalThis.fetch;
   globalThis.fetch = async (url, init) => {
-    if (url !== "https://api.resend.com/emails") throw Error("Offline test forbids " + url);
+    if (url !== "https://api.resend.com/emails")
+      throw Error("Offline test forbids " + url);
     const key = init.headers["Idempotency-Key"];
     calls.push({ key, body: JSON.parse(init.body), raw: init.body });
     // The plan applies to everything but the contact form's original copy,
     // which runs alongside the receipt in no fixed order.
     const next = key.startsWith("contact-original-") ? undefined : plan.shift();
     if (next === "throw") throw new DOMException("timed out", "TimeoutError");
-    if (typeof next === "number") return Response.json({ name: "err" }, { status: next });
+    if (typeof next === "number")
+      return Response.json({ name: "err" }, { status: next });
     return Response.json({ id: "re-" + calls.length });
   };
 });
@@ -65,9 +72,12 @@ function env(extra = {}) {
   };
 }
 const receiptRow = (e) =>
-  e.WAIVERS_DB.sql.prepare("SELECT * FROM form_deliveries WHERE channel='receipt'").get();
+  e.WAIVERS_DB.sql
+    .prepare("SELECT * FROM form_deliveries WHERE channel='receipt'")
+    .get();
 const receiptCalls = () => calls.filter((c) => c.key.startsWith("receipt-"));
-const failures = (e) => e.AGENT_MAIL_DB.sql.prepare("SELECT * FROM send_failures").all();
+const failures = (e) =>
+  e.AGENT_MAIL_DB.sql.prepare("SELECT * FROM send_failures").all();
 
 test("a row records the environment that wrote it, and only that environment sends it", async () => {
   const staging = env({
@@ -116,6 +126,27 @@ test("a row records the environment that wrote it, and only that environment sen
   );
 });
 
+test("a staging submission stays out of the shared intake (and so the CRM)", async () => {
+  const staging = env({ ENV_NAME: "staging", MAIL_ALLOW: "@adapttolife.org" });
+  const a = await acceptForm(staging, "contact", sub);
+  await processForm(staging, a.id);
+  const intake = staging.WAIVERS_DB.sql
+    .prepare("SELECT * FROM form_deliveries WHERE channel='intake'")
+    .get();
+  assert.equal(intake.state, "done");
+  assert.match(intake.error, /^Not mirrored: staging rows stay out/);
+  assert.equal(staging.INTAKE.sql.prepare("SELECT count(*) n FROM intake").get().n, 0);
+  assert.equal(
+    staging.INTAKE.sql.prepare("SELECT count(*) n FROM intake_delivery_claims").get().n,
+    0,
+  );
+  const original = staging.WAIVERS_DB.sql
+    .prepare("SELECT * FROM form_record_deliveries")
+    .get();
+  assert.equal(original.state, "done");
+  assert.ok(original.mirrored_at, "closed without touching the shared intake");
+});
+
 test("rows written before the env column count as production's", async () => {
   const e = env();
   const a = await acceptForm(e, "volunteer", { ...sub, roles: ["Event crew"] });
@@ -139,7 +170,7 @@ test("the receipt is rendered once and every retry sends exactly that, under one
   let r = receiptRow(e);
   assert.equal(r.state, "pending");
   assert.equal(r.attempts, 1);
-  assert.ok(r.first_attempt_at);
+  assert.ok(r.first_attempted_at);
   assert.ok(r.rendered, "the rendered email is stored on the first attempt");
   const due = Date.parse(r.next_attempt_at) - Date.now();
   assert.ok(due > 9 * 60e3 && due <= 10 * 60e3, "backs off ten minutes");
@@ -153,7 +184,9 @@ test("the receipt is rendered once and every retry sends exactly that, under one
   const stored = JSON.parse(r.rendered);
   stored.text = stored.text.replace("Your application reached us.", "FROZEN COPY.");
   e.WAIVERS_DB.sql
-    .prepare("UPDATE form_deliveries SET rendered=?, next_attempt_at=? WHERE channel='receipt'")
+    .prepare(
+      "UPDATE form_deliveries SET rendered=?, next_attempt_at=? WHERE channel='receipt'",
+    )
     .run(JSON.stringify(stored), new Date(Date.now() - 1000).toISOString());
   await sweepForms(e);
   r = receiptRow(e);
@@ -190,7 +223,7 @@ test("a retryable failure past 23 hours from the first attempt goes to review", 
   await processForm(e, a.id);
   e.WAIVERS_DB.sql
     .prepare(
-      "UPDATE form_deliveries SET first_attempt_at=?, next_attempt_at=? WHERE channel='receipt'",
+      "UPDATE form_deliveries SET first_attempted_at=?, next_attempt_at=? WHERE channel='receipt'",
     )
     .run(
       new Date(Date.now() - 23 * 3600e3 - 60e3).toISOString(),
@@ -202,7 +235,11 @@ test("a retryable failure past 23 hours from the first attempt goes to review", 
   assert.equal(r.state, "review");
   assert.equal(r.next_attempt_at, null);
   assert.match(r.error, /500/);
-  assert.equal(failures(e).length, 2, "the first failure and the give-up are both reported");
+  assert.equal(
+    failures(e).length,
+    2,
+    "the first failure and the give-up are both reported",
+  );
 });
 
 test("a non-retryable failure goes straight to review", async () => {
@@ -236,11 +273,13 @@ test("an interrupted Resend receipt with its frozen copy retries; one without go
     const old = new Date(Date.now() - 20 * 60e3).toISOString();
     e.WAIVERS_DB.sql
       .prepare(
-        "UPDATE form_deliveries SET state='running', started_at=?, first_attempt_at=?, rendered=? WHERE channel='receipt'",
+        "UPDATE form_deliveries SET state='running', started_at=?, first_attempted_at=?, rendered=? WHERE channel='receipt'",
       )
       .run(old, old, rendered ? JSON.stringify({ x: 1 }) : null);
     // Stop the sweep from also re-sending, so the state it set can be read.
-    e.WAIVERS_DB.sql.exec("UPDATE form_deliveries SET next_attempt_at='9999' WHERE channel='intake'");
+    e.WAIVERS_DB.sql.exec(
+      "UPDATE form_deliveries SET next_attempt_at='9999' WHERE channel='intake'",
+    );
     globalThis.fetch = async () => {
       throw Error("no send in this test");
     };
@@ -258,14 +297,17 @@ test("the contact original copy retries a retryable failure with backoff", async
   globalThis.fetch = async (url, init) => {
     const key = init.headers["Idempotency-Key"];
     calls.push({ key, body: JSON.parse(init.body) });
-    if (key.startsWith("contact-original-") && calls.filter((c) => c.key === key).length === 1)
+    if (
+      key.startsWith("contact-original-") &&
+      calls.filter((c) => c.key === key).length === 1
+    )
       return Response.json({}, { status: 502 });
     return Response.json({ id: "re-" + calls.length });
   };
   await processForm(e, a.id);
   let o = e.WAIVERS_DB.sql.prepare("SELECT * FROM form_record_deliveries").get();
   assert.equal(o.state, "pending");
-  assert.ok(o.next_attempt_at && o.first_attempt_at);
+  assert.ok(o.next_attempt_at && o.first_attempted_at);
   e.WAIVERS_DB.sql.exec(
     `UPDATE form_record_deliveries SET next_attempt_at='${new Date(Date.now() - 1).toISOString()}'`,
   );
@@ -298,7 +340,11 @@ test("the migration takes the live tables exactly to the schema files", () => {
       live.exec(sql);
     }
     live.exec(readFileSync(new URL(`../${migration}`, import.meta.url), "utf8"));
-    assert.deepEqual(diffSchema(buildExpected(db), describeLocal(live)).problems, [], db);
+    assert.deepEqual(
+      diffSchema(buildExpected(db), describeLocal(live)).problems,
+      [],
+      db,
+    );
   }
 });
 
@@ -313,14 +359,27 @@ test("the migration keeps existing rows and gives them env='production'", () => 
       "INSERT INTO form_deliveries (submission_id,channel,state) VALUES ('s1','receipt','review');" +
       "INSERT INTO form_record_deliveries (submission_id) VALUES ('s1');",
   );
-  live.exec(readFileSync(new URL("../schema/migrations/2026-11-24-form-outbox-resend.sql", import.meta.url), "utf8"));
+  live.exec(
+    readFileSync(
+      new URL(
+        "../schema/migrations/2026-11-24-form-outbox-resend.sql",
+        import.meta.url,
+      ),
+      "utf8",
+    ),
+  );
   const row = live.prepare("SELECT * FROM form_deliveries").get();
   assert.equal(row.state, "review");
   assert.equal(row.env, "production");
   assert.equal(row.rendered, null);
-  assert.equal(live.prepare("SELECT env FROM form_record_deliveries").get().env, "production");
+  assert.equal(
+    live.prepare("SELECT env FROM form_record_deliveries").get().env,
+    "production",
+  );
   // Code on main still inserts without the new columns.
-  live.exec("INSERT INTO form_deliveries (submission_id,channel) VALUES ('s1','intake')");
+  live.exec(
+    "INSERT INTO form_deliveries (submission_id,channel) VALUES ('s1','intake')",
+  );
 });
 
 // --- the other send paths -------------------------------------------------
@@ -357,9 +416,16 @@ function wrap(s) {
     },
   };
 }
-const gift = { transactionId: "tx-1", email: "donor@example.com", amount: 60, donated: 60, firstName: "Dee" };
+const gift = {
+  transactionId: "tx-1",
+  email: "donor@example.com",
+  amount: 60,
+  donated: 60,
+  firstName: "Dee",
+};
 const donorEnv = (db) => ({ ...RESEND, ENV_NAME: "production", WAIVERS_DB: db });
-const status = (s) => s.prepare("SELECT email_status, last_error FROM donor_gifts").get();
+const status = (s) =>
+  s.prepare("SELECT email_status, last_error FROM donor_gifts").get();
 
 test("donor thank you: keyed by transaction, retryable failures retry, refusals stop", async () => {
   let { s, db } = donorDb();
@@ -383,7 +449,11 @@ test("donor thank you: keyed by transaction, retryable failures retry, refusals 
   assert.equal(status(s).email_status, "failed");
 
   ({ s, db } = donorDb());
-  const staging = { ...donorEnv(db), ENV_NAME: "staging", MAIL_ALLOW: "@adapttolife.org" };
+  const staging = {
+    ...donorEnv(db),
+    ENV_NAME: "staging",
+    MAIL_ALLOW: "@adapttolife.org",
+  };
   assert.equal((await claimAndThank(staging, gift)).dropped, true);
   assert.equal(status(s).email_status, "no_email");
   assert.match(status(s).last_error, /dropped outside production/);
@@ -414,5 +484,8 @@ test("staff notice: keyed by intake id and tagged", async () => {
   assert.equal(await notifyIntakeRow(e, row), true);
   assert.equal(calls[0].key, "intake-notice-in-1");
   assert.equal(calls[0].body.from, "Adapt To Life Intake <hello@mail.adapttolife.org>");
-  assert.equal(calls[0].body.tags.find((t) => t.name === "kind").value, "notice-intake");
+  assert.equal(
+    calls[0].body.tags.find((t) => t.name === "kind").value,
+    "notice-intake",
+  );
 });

@@ -4,7 +4,7 @@ The one page for how our sites send email. It covers all three brands, because a
 Adapt To Life NFP, share one Google Workspace and one Resend team. Read it before you add, change or
 debug any email. It replaces `docs/gmail-site-mail.md` (the September 2026 Gmail setup).
 
-Status: **design, Nov 24 2026.** Sections marked *today* describe what runs now; the rest is the
+Status: **design agreed Nov 24 2026** (decisions at the end). Sections marked *today* describe what runs now; the rest is the
 target. Change this page in the same PR as any code that changes the picture.
 
 ## The rule
@@ -201,9 +201,12 @@ Resend delivery event. Record the Resend message id in the PR.
 4. **Resend team:** Topics, webhooks, one named key per Worker in 1Password, old keys deleted.
 5. **Prove it** with the test list above, then retire the Gmail token.
 
-## Decisions (Alec)
+## Decisions (Alec, Nov 24 2026)
 
-1. Send from `hello@mail.<brand>` (recommended above) or from the root `hello@<brand>`.
-2. The postal address for newsletter footers. The law requires a real one; a PO box works.
-3. Move alectranel.com (Alec's personal newsletter) out of the nonprofit's Resend team into its
-   own, so the nonprofit's contacts, reputation and keys are only the nonprofit's.
+1. **Send from `hello@mail.<brand>`**, with the brand name in the From and Reply-To `hello@<brand>`.
+2. **Postal address in every list email footer:** Adapt To Life NFP, 1509 N Milwaukee Ave,
+   Libertyville, IL 60048 (the same address Givebutter has). Body Shop and ASNM footers name Adapt
+   To Life NFP at that address.
+3. **alectranel.com stays in the same Resend team.** Its own Topic (`AlecTranel.com`) and Segment
+   keep it apart; the nonprofit's code never reads or writes that Topic or Segment.
+4. **The ASNM side is built as one PR into Faisal's repo**, and Faisal reviews and merges it.

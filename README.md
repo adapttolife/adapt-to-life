@@ -129,7 +129,10 @@ Workers Builds, one build per Worker:
 | `adapt-to-life-staging` | `staging` | `npm run deploy:staging` | Off |
 
 Build command is empty for both (Wrangler's build hook builds and tests) and the
-root directory is the repository root. Pushing changes to `package.json` does not
+root directory is the repository root. Merging into `main` requires the check
+`Workers Builds: adapt-to-life-staging` on the release PR's head: that build
+tested exactly the commit being released. Production's own build skips
+`staging`, so requiring its check there would block every release. Pushing changes to `package.json` does not
 update the commands saved in Cloudflare; change them in each Worker's
 **Settings > Builds**.
 

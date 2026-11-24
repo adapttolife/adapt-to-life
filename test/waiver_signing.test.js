@@ -7,6 +7,7 @@ import { readFileSync } from "node:fs";
 import { createHash, generateKeyPairSync } from "node:crypto";
 import worker from "../src/index.js";
 import { runDriveBacklog } from "../src/waiver.js";
+import { buildMime } from "../src/mail-transport.js";
 import { sqliteD1, formBindings } from "./helpers/form-db.js";
 import { readdirSync } from "node:fs";
 import { buildExpected, describeLocal, diffSchema } from "../scripts/lib/d1-schema.mjs";
@@ -132,6 +133,14 @@ test("happy path: row and PDF bytes captured, archived to Drive once, receipt se
   );
   assert.equal(e.sent.length, 1);
   assert.equal(e.sent[0].attachments.length, 1);
+  // The live transport is Gmail, which builds the MIME itself. The exact
+  // message the waiver hands over must survive that builder with the PDF intact.
+  const mime = buildMime(e.sent[0], "hello@adapttolife.org");
+  assert.match(mime, /application\/pdf/);
+  assert.ok(
+    mime.includes(Buffer.from(docRow(e).pdf).toString("base64").slice(0, 60)),
+    "the signed PDF bytes are in the Gmail MIME",
+  );
   assert.equal(e.INTAKE.sql.prepare("SELECT count(*) n FROM intake").get().n, 1);
 });
 

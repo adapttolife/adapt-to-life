@@ -534,3 +534,73 @@ test("resendRequest and keyHash are stable", async () => {
   assert.equal(await keyHash(" Alec@Example.org "), await keyHash("alec@example.org"));
   assert.match(await keyHash("x"), /^[0-9a-f]{64}$/);
 });
+
+// Nov 23 2026 incident: the waiver receipt passed its PDF as a base64 string
+// and the Gmail path threw "Attachment must contain bytes". Every bytes shape
+// gives the same part; strings are refused with a clear message, never decoded
+// (a base64 string and a plain-text body look alike).
+test("attachment content: Uint8Array, ArrayBuffer and offset views give the same part", () => {
+  const pdf = new Uint8Array([37, 80, 68, 70, 45, 49, 46, 55, 0, 255, 10]);
+  const part = (content) => {
+    const mime = buildMime(
+      {
+        ...message,
+        attachments: [{ filename: "r.pdf", type: "application/pdf", content }],
+      },
+      env.GMAIL_FROM,
+    );
+    return mime.slice(mime.indexOf("filename*=UTF-8''r.pdf")).split("\r\n--mixed_")[0];
+  };
+  const want = part(pdf);
+  assert.ok(want.includes(Buffer.from(pdf).toString("base64")));
+  assert.equal(part(pdf.buffer.slice(0)), want, "ArrayBuffer");
+  const padded = new Uint8Array(pdf.length + 4);
+  padded.set(pdf, 2);
+  assert.equal(part(new DataView(padded.buffer, 2, pdf.length)), want, "offset view");
+  assert.equal(part(padded.subarray(2, 2 + pdf.length)), want, "subarray");
+});
+
+test("attachment content: strings, empty bytes and non-bytes throw before anything is sent", () => {
+  const pdf = new Uint8Array([37, 80, 68, 70]);
+  assert.throws(
+    () =>
+      buildMime(
+        {
+          ...message,
+          attachments: [
+            { filename: "r.pdf", content: Buffer.from(pdf).toString("base64") },
+          ],
+        },
+        env.GMAIL_FROM,
+      ),
+    /must contain bytes \(got a string\)/,
+  );
+  assert.throws(
+    () =>
+      buildMime(
+        {
+          ...message,
+          attachments: [{ filename: "r.pdf", content: new Uint8Array(0) }],
+        },
+        env.GMAIL_FROM,
+      ),
+    /must contain bytes \(got 0 bytes\)/,
+  );
+  for (const content of [
+    new ArrayBuffer(0),
+    "",
+    "test",
+    undefined,
+    null,
+    { bytes: [1] },
+  ])
+    assert.throws(
+      () =>
+        buildMime(
+          { ...message, attachments: [{ filename: "x.pdf", content }] },
+          env.GMAIL_FROM,
+        ),
+      /must contain bytes/,
+      String(content),
+    );
+});

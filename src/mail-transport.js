@@ -40,6 +40,18 @@ const folded = (bytes) =>
 function textPart(type, value) {
   return `Content-Type: ${type}; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n${folded(encoder.encode(value || ""))}`;
 }
+// Attachment content is bytes: a Uint8Array, an ArrayBuffer or any typed-array
+// view. A string is refused, never guessed at: a base64 string (the old Resend
+// shape) and a plain-text body look alike, and decoding the wrong one would send
+// a corrupt file. Senders convert to bytes before calling (Nov 23 2026 incident:
+// the waiver receipt passed base64 and every Gmail receipt threw here).
+function attachmentBytes(content) {
+  if (content instanceof Uint8Array) return content;
+  if (content instanceof ArrayBuffer) return new Uint8Array(content);
+  if (ArrayBuffer.isView(content))
+    return new Uint8Array(content.buffer, content.byteOffset, content.byteLength);
+  return null;
+}
 export function buildMime(message, allowedFrom) {
   if (!allowedFrom || mailbox(message.from).address !== mailbox(allowedFrom).address)
     throw new Error("Gmail sender is not the configured authorized identity");
@@ -71,13 +83,17 @@ export function buildMime(message, allowedFrom) {
       const type = header(a.type || "application/octet-stream");
       if (!/^[a-z0-9.+-]+\/[a-z0-9.+-]+$/i.test(type))
         throw new Error("Invalid attachment type");
-      const bytes =
-        a.content instanceof Uint8Array
-          ? a.content
-          : a.content instanceof ArrayBuffer
-            ? new Uint8Array(a.content)
-            : null;
-      if (!bytes) throw new Error("Attachment must contain bytes");
+      const bytes = attachmentBytes(a.content);
+      if (!bytes || !bytes.byteLength)
+        throw new Error(
+          `Attachment must contain bytes (got ${
+            typeof a.content === "string"
+              ? "a string"
+              : bytes
+                ? "0 bytes"
+                : typeof a.content
+          })`,
+        );
       const disposition = a.disposition === "inline" ? "inline" : "attachment";
       const cid = a.contentId
         ? `\r\nContent-ID: <${header(a.contentId).replace(/[<>]/g, "")}>`

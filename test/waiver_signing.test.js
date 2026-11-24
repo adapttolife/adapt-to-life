@@ -6,7 +6,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { createHash, generateKeyPairSync } from "node:crypto";
 import worker from "../src/index.js";
-import { runDriveBacklog } from "../src/waiver.js";
+import { runDriveBacklog, sendReceiptEmail } from "../src/waiver.js";
 import { sqliteD1, formBindings } from "./helpers/form-db.js";
 import { readdirSync } from "node:fs";
 import { buildExpected, describeLocal, diffSchema } from "../scripts/lib/d1-schema.mjs";
@@ -23,17 +23,32 @@ const SA = JSON.stringify({
 
 // Fake Drive: files by id; `mode` controls what the next upload does.
 let drive;
+let gmail; // raw MIME of each message the mocked Gmail API accepted
 let originalFetch;
 beforeEach(() => {
   drive = { files: new Map(), uploads: 0, lookups: 0, mode: "ok" };
+  gmail = [];
   originalFetch = globalThis.fetch;
   globalThis.fetch = async (input, init = {}) => {
     const url = String(input);
     if (url === "https://oauth2.example/token")
       return Response.json({ access_token: "tok" });
+    if (url === "https://oauth2.googleapis.com/token")
+      return Response.json({ access_token: "gmail-tok", token_type: "Bearer" });
+    if (url === "https://gmail.googleapis.com/gmail/v1/users/me/messages/send") {
+      gmail.push(
+        Buffer.from(JSON.parse(init.body).raw, "base64url").toString("latin1"),
+      );
+      return Response.json({ id: "gm-" + gmail.length, threadId: "t" });
+    }
     if (url.startsWith("https://www.googleapis.com/upload/drive/v3/files")) {
       drive.uploads++;
       if (drive.mode === "down") return new Response("backend error", { status: 503 });
+      if (drive.mode === "notfound")
+        return Response.json(
+          { error: { code: 404, message: `File not found: ${FOLDER}.` } },
+          { status: 404 },
+        );
       const text = new TextDecoder("latin1").decode(init.body);
       const name = JSON.parse(text.match(/\r\n\r\n(\{.*?\})\r\n/)[1]).name;
       const id = `file-${drive.files.size + 1}`;
@@ -312,6 +327,191 @@ test("receipt failure stays best-effort and is recorded", async () => {
   assert.deepEqual(
     f.map((x) => [x.route, x.to_addr]),
     [["receipt:waiver", "offline@example.com"]],
+  );
+});
+
+const GMAIL = {
+  MAIL_TRANSPORT: "gmail",
+  GMAIL_FROM: "hello@adapttolife.org",
+  GMAIL_CLIENT_ID: "test-client",
+  GMAIL_CLIENT_SECRET: "test-secret",
+  GMAIL_REFRESH_TOKEN: "test-refresh",
+};
+const failures = (e) =>
+  e.AGENT_MAIL_DB.sql
+    .prepare("SELECT route, to_addr, error FROM send_failures")
+    .all()
+    .map((r) => ({ ...r }));
+
+// Nov 23 2026 incident: every receipt on the Gmail transport threw
+// "Attachment must contain bytes" because the PDF went as a base64 string.
+test("Gmail transport: the receipt goes out with the signed PDF attached", async () => {
+  const e = env(GMAIL);
+  const out = await (await sign(e)).json();
+  assert.equal(out.ok, true);
+  assert.equal(e.sent.length, 0, "Cloudflare binding not used");
+  assert.equal(gmail.length, 1);
+  assert.deepEqual(failures(e), []);
+  const mime = gmail[0];
+  assert.match(mime, /multipart\/mixed/);
+  assert.match(mime, /To: offline@example.com/);
+  assert.match(mime, /Bcc: hello@adapttolife.org/);
+  const m = mime.match(
+    /Content-Type: application\/pdf\r\nContent-Disposition: attachment; filename\*=UTF-8''adapt-to-life-release\.pdf\r\nContent-Transfer-Encoding: base64\r\n\r\n([A-Za-z0-9+/=\r\n]+?)\r\n--/,
+  );
+  assert.ok(m, "PDF part present");
+  const pdf = Buffer.from(m[1].replace(/\r\n/g, ""), "base64");
+  assert.equal(pdf.subarray(0, 5).toString(), "%PDF-");
+  assert.equal(sha(pdf), row(e).pdf_sha256, "the attached PDF is the captured one");
+});
+
+test("Cloudflare transport: the receipt PDF goes as bytes, not a base64 string", async () => {
+  const e = env();
+  await sign(e);
+  const att = e.sent[0].attachments[0];
+  assert.ok(att.content instanceof ArrayBuffer);
+  assert.equal(sha(new Uint8Array(att.content)), row(e).pdf_sha256);
+});
+
+test("receipt with empty PDF bytes: sent without the attachment, never throws", async () => {
+  const doc = { org: "Adapt To Life", title: "Release" };
+  for (const pdfBytes of [new Uint8Array(0), undefined]) {
+    const e = env(GMAIL);
+    gmail = [];
+    await sendReceiptEmail(e, {
+      to: "offline@example.com",
+      pdfBytes,
+      name: "Offline Signer",
+      doc,
+    });
+    assert.equal(gmail.length, 1);
+    assert.doesNotMatch(gmail[0], /multipart\/mixed|application\/pdf/);
+    const plain = Buffer.from(
+      gmail[0]
+        .match(
+          /text\/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n([A-Za-z0-9+/=\r\n]+?)\r\n--/,
+        )[1]
+        .replace(/\r\n/g, ""),
+      "base64",
+    ).toString();
+    assert.doesNotMatch(plain, /attached/, "never claims an attachment it lacks");
+    assert.match(plain, /on file/);
+    assert.deepEqual(failures(e), [
+      {
+        route: "receipt:waiver",
+        to_addr: "offline@example.com",
+        error: "sent without the signed PDF: no PDF bytes",
+      },
+    ]);
+    const c = env();
+    await sendReceiptEmail(c, {
+      to: "offline@example.com",
+      pdfBytes,
+      name: "Offline Signer",
+      doc,
+    });
+    assert.equal(c.sent.length, 1);
+    assert.equal(c.sent[0].attachments, undefined);
+  }
+});
+
+test("Drive 404 (folder not visible): signing still ok, failure recorded once, no PII", async () => {
+  drive.mode = "notfound";
+  const e = env(GMAIL);
+  const logged = [];
+  const origError = console.error;
+  console.error = (...a) => logged.push(a.map(String).join(" "));
+  let res;
+  try {
+    res = await sign(e);
+  } finally {
+    console.error = origError;
+  }
+  const out = await res.json();
+  assert.equal(res.status, 200);
+  assert.equal(out.ok, true);
+  assert.equal(row(e).drive_status, "pending", "owed to the backlog");
+  assert.equal(count(e, "waiver_documents"), 1, "bytes kept");
+  assert.equal(gmail.length, 1, "receipt still sent");
+  const line = `waiver Drive archive failed: folder not visible to service account (404) id=${out.id} attempt=1`;
+  assert.ok(logged.includes(line), logged.join("\n"));
+  assert.deepEqual(failures(e), [
+    { route: "archive:waiver", to_addr: `waiver:${out.id}`, error: line },
+  ]);
+  for (const l of logged.filter((l) => l.includes("Drive archive")))
+    assert.ok(!/offline|Offline|folder-test/.test(l), l);
+  // A backlog retry below the cap does not add another failure row.
+  e.WAIVERS_DB.sql
+    .prepare("UPDATE waivers SET drive_last_attempt_at = '2000-01-01T00:00:00Z'")
+    .run();
+  console.error = () => {};
+  try {
+    await runDriveBacklog(e);
+  } finally {
+    console.error = origError;
+  }
+  assert.equal(row(e).drive_attempts, 2);
+  assert.equal(failures(e).length, 1);
+});
+
+async function quietly(fn) {
+  const logged = [];
+  const origError = console.error;
+  console.error = (...a) => logged.push(a.map(String).join(" "));
+  try {
+    await fn();
+  } finally {
+    console.error = origError;
+  }
+  return logged;
+}
+
+test("Drive passing error (503) at signing: logged, not paged; paged only at the retry cap", async () => {
+  drive.mode = "down";
+  const e = env();
+  let out;
+  const logged = await quietly(async () => (out = await (await sign(e)).json()));
+  assert.equal(out.ok, true);
+  assert.ok(
+    logged.includes(
+      `waiver Drive archive failed: Drive returned 503 id=${out.id} attempt=1`,
+    ),
+    logged.join("\n"),
+  );
+  assert.deepEqual(failures(e), []);
+  e.WAIVERS_DB.sql
+    .prepare(
+      "UPDATE waivers SET drive_attempts = 19, drive_last_attempt_at = '2000-01-01T00:00:00Z'",
+    )
+    .run();
+  await quietly(() => runDriveBacklog(e));
+  assert.equal(row(e).drive_status, "failed");
+  assert.deepEqual(
+    failures(e).map((f) => f.error),
+    [`waiver Drive archive failed: Drive returned 503 id=${out.id} attempt=20`],
+  );
+});
+
+test("Drive token failure: the reason is named without Google's response body; staging is tagged", async () => {
+  const e = env({ STAGING: "1" });
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = async (input, init) =>
+    String(input) === "https://oauth2.example/token"
+      ? Response.json({
+          error: "invalid_grant",
+          error_description: "secret-ish detail",
+        })
+      : realFetch(input, init);
+  let out;
+  const logged = await quietly(async () => (out = await (await sign(e)).json()));
+  assert.equal(out.ok, true);
+  const line = `waiver Drive archive failed: service account token exchange failed id=${out.id} attempt=1 env=staging`;
+  assert.ok(logged.includes(line), logged.join("\n"));
+  assert.deepEqual(failures(e), [
+    { route: "archive:waiver", to_addr: `waiver:${out.id}`, error: line },
+  ]);
+  assert.ok(
+    !logged.some((l) => l.includes("Drive archive") && l.includes("invalid_grant")),
   );
 });
 

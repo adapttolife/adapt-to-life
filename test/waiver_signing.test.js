@@ -518,7 +518,7 @@ async function quietly(fn) {
   return logged;
 }
 
-test("Drive passing error (503) at signing: logged, not paged; paged only at the retry cap", async () => {
+test("Drive passing error (503) at signing: logged, not recorded; recorded only at the retry cap", async () => {
   drive.mode = "down";
   const e = env();
   let out;

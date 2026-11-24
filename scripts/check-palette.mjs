@@ -205,6 +205,13 @@ const ART = new Set([
   "0075e7", // Picklr blue, from their Mount Prospect logo
   "3d96f5", // the same blue, lifted for words on night (6:1)
   "0060c0", // the same blue, deepened for small words on the page (5:1)
+  // The Pickle Lodge's own brand colours, on /spooky-spokes & proposal (Alec,
+  // Nov 24 2026: "incorporate spooky spokes and the pickle lodge brand into
+  // this page - this is the place to celebrate them so lean into it").
+  "2b3252", // The Pickle Lodge signature navy (from thepicklelodge.com)
+  "171c33", // The Pickle Lodge deep arena navy
+  "74cf29", // The Pickle Lodge lime pickleball green
+  "73c0d2", // Lunken Landing runway teal
   "dff23d", // the pickleball in the partner x mark
   "fcffe6", // its shine
   "d9904f", // the bronze medal

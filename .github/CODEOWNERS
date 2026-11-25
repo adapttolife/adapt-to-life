@@ -1,0 +1,5 @@
+# Changes that decide what deploys, with which secrets, and how CI runs need
+# Faisal's review once the branch ruleset turns on "require code owner review" (F-006).
+/wrangler*.json*   @faisalnjs
+/scripts/          @faisalnjs
+/.github/          @faisalnjs

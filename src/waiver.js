@@ -18,6 +18,12 @@ import {
 import { verifyTurnstile } from "./turnstile.js";
 import { getGoogleAccessToken } from "./google.js";
 import { recordIntake } from "./intake.js";
+import {
+  RETRY_WINDOW_MS,
+  retryDelayMs,
+  windowRefusal,
+  nextAttemptAt,
+} from "./mail-window.js";
 
 // ---------------------------------------------------------------------------
 // Document model — SINGLE SOURCE OF TRUTH for both the on-screen text and the
@@ -291,6 +297,8 @@ export async function handleWaiver(request, env) {
       env.WAIVERS_DB.prepare(
         "INSERT INTO waiver_documents (waiver_id, pdf, pdf_sha256, byte_length, created_at) VALUES (?,?,?,?,?)",
       ).bind(id, toArrayBuffer(pdfBytes), pdfSha, pdfBytes.byteLength, signedAt),
+      // The signer's email is owed from the same moment the release exists.
+      queueWaiverEmail(env.WAIVERS_DB, id, env, signedAt),
     ]);
   } catch (err) {
     console.error("waiver D1 capture failed:", err);
@@ -321,23 +329,10 @@ export async function handleWaiver(request, env) {
   // not a task to work, so it does not belong in ClickUp either.
 
   // Email a copy of the signed PDF to the signer (and the org), from
-  // hello@mail.adapttolife.org. Best-effort; never blocks the signer.
-  // Transport: see sendReceiptEmail.
-  try {
-    await sendReceiptEmail(env, {
-      id,
-      to: email,
-      pdfBytes,
-      name,
-      doc,
-      isMinor,
-      minorName,
-    });
-  } catch (err) {
-    // sendReceiptEmail records its own failures (it swallows them internally).
-    // This guards only against an unexpected throw on the way in.
-    console.error("waiver email failed:", err);
-  }
+  // hello@mail.adapttolife.org. The first attempt runs now; the outbox
+  // (waiver_emails, sweepWaiverEmails on the cron) owns every retry. Never
+  // blocks the signer: processWaiverEmail writes its outcome and never throws.
+  await processWaiverEmail(env, id);
 
   // Recorded in the shared intake table so a signed release appears alongside
   // every other submission, and stamped as already notified: the receipt above
@@ -460,6 +455,18 @@ async function storedPdf(env, id) {
     console.error("waiver stored copy lookup failed:", err);
     return null;
   }
+}
+
+// The outbox's read of the stored PDF. Unlike storedPdf (whose callers fall back
+// to Drive), a D1 error here throws, so a passing hiccup is retried instead of
+// being taken for "no PDF" and frozen into the email for good.
+async function outboxPdf(env, id) {
+  const doc = await env.WAIVERS_DB.prepare(
+    "SELECT pdf FROM waiver_documents WHERE waiver_id = ?",
+  )
+    .bind(id)
+    .first();
+  return doc && doc.pdf ? blobBytes(doc.pdf) : null;
 }
 
 // ---------------------------------------------------------------------------
@@ -652,35 +659,34 @@ async function buildPdf(d) {
   return await pdf.save();
 }
 
-// Email the signed PDF to the signer (and a copy to the org). Goes through
-// src/email.js cfSend -> src/mail-transport.js sendMail: Resend in production
-// (MAIL_TRANSPORT=resend), from hello@mail.adapttolife.org with Reply-To hello@
-// (docs/EMAIL.md). Keyed by the waiver id, so a repeat can never mail the same
-// release twice. Best-effort: a send failure never blocks signing. Exported for
-// tests only.
-export async function sendReceiptEmail(
-  env,
-  { id, to, pdfBytes, name, doc, isMinor, minorName },
-) {
-  if (!mailConfigured(env)) {
-    console.error("mail transport not configured; skipping receipt email");
-    return;
-  }
-  // The PDF goes as bytes (an ArrayBuffer, as agent_mail sends through both
-  // transports). It used to go as a base64 string, which buildMime refuses, so
-  // every receipt on the Gmail transport failed (Nov 23 2026).
-  // No bytes: still send the receipt, without the attachment and without
-  // claiming one, and record the gap. The signed copy is safe in D1 either way.
-  const hasPdf = !!(pdfBytes && pdfBytes.byteLength);
-  if (!hasPdf) {
-    console.error("waiver receipt: no PDF bytes, sending without attachment");
-    await recordTransactionalFailure(
-      env,
-      "receipt:waiver",
-      to,
-      "sent without the signed PDF: no PDF bytes",
-    );
-  }
+// ---------------------------------------------------------------------------
+// The signed-waiver email: an outbox, like the form receipts (docs/EMAIL.md,
+// "How a site sends"). It used to be sent once from the signing request, so a
+// passing failure lost it for good.
+//
+// - The row in waiver_emails is written in the same D1 batch as the release, so
+//   a captured release always owes its email.
+// - The message is rendered once and stored in `rendered` (without the PDF:
+//   D1 rows top out at 2 MB). Every attempt sends exactly that, with the PDF read
+//   back from waiver_documents, under the same Idempotency-Key, so Resend
+//   collapses a retry after a lost response instead of mailing the signer twice.
+// - A retryable failure (429, 5xx, timeout) goes back to pending with backoff
+//   for up to 23 hours from the first attempt, then to review. Anything else
+//   goes to review. A person hears about it (send_failures) on the first failed
+//   send and when it stops.
+// - Each Worker sends only its own rows (`env`); staging and production share
+//   this database.
+// - The 30 day purge of waiver_documents skips a release whose email is not done.
+// ---------------------------------------------------------------------------
+const ownEnv = (env) => env.ENV_NAME || "production";
+const nowIso = () => new Date().toISOString();
+const WAIVER_PDF_NAME = "adapt-to-life-release.pdf";
+// Failures before any send retry with backoff (about a day), then go to review.
+const MAX_WAIVER_PRESEND_ATTEMPTS = 10;
+
+// The email for one signed release, exactly as it will go out on every attempt,
+// minus the PDF bytes. `hasPdf` decides the copy line and the attachment.
+export function renderWaiverEmail({ id, to, name, doc, isMinor, minorName, hasPdf }) {
   const copyLine = hasPdf
     ? "is attached as a signed PDF for your records."
     : "is signed and on file. Reply to this email and we will send you a copy.";
@@ -692,44 +698,270 @@ export async function sendReceiptEmail(
     `Participant: ${who}\n\n` +
     `If you ever want to withdraw permission for future use, just reply to this email or write to hello@adapttolife.org.\n\n` +
     `Adapt To Life\n501(c)(3) nonprofit, EIN 41-3213344`;
-  // Same house shell as the contact and grant-application receipts. These three
-  // are the only automated mail we send from hello@, and they used to arrive in
-  // two different typefaces with two different sign-offs.
+  // Same house shell as the contact and grant-application receipts.
   const html = houseShell(
     `<p>Hi ${esc(name)},</p>` +
       `<p>Thank you. Your <strong>${esc(doc.title)}</strong> with ${esc(doc.org)} ${esc(copyLine)}</p>` +
       `<p style="color:#3f3d38"><strong>Participant:</strong> ${esc(who)}</p>` +
       `<p>If you ever want to withdraw permission for future use, just reply to this email or write to <a href="mailto:hello@adapttolife.org" style="color:#c2410c">hello@adapttolife.org</a>.</p>`,
   );
+  return {
+    from: HOUSE_FROM,
+    to,
+    bcc: HOUSE_INBOX,
+    replyTo: HOUSE_INBOX,
+    idempotencyKey: `waiver-${id}`,
+    tags: { brand: HOUSE_BRAND, kind: "waiver" },
+    subject,
+    text,
+    html,
+    // Bytes are added at send time from waiver_documents.
+    pdf: hasPdf ? { filename: WAIVER_PDF_NAME, type: "application/pdf" } : null,
+  };
+}
+
+// The queue row, for the capture batch in handleWaiver.
+export function queueWaiverEmail(db, id, env, at) {
+  return db
+    .prepare(
+      "INSERT OR IGNORE INTO waiver_emails (waiver_id, env, created_at) VALUES (?,?,?)",
+    )
+    .bind(id, ownEnv(env), at);
+}
+
+async function finishWaiverEmail(db, id, state, receipt, error, next = null) {
+  await db
+    .prepare(
+      "UPDATE waiver_emails SET state=?, completed_at=?, receipt=?, error=?, next_attempt_at=? WHERE waiver_id=? AND state='running'",
+    )
+    .bind(
+      state,
+      state === "done" ? nowIso() : null,
+      receipt || null,
+      error ? String(error).slice(0, 400) : null,
+      next,
+      id,
+    )
+    .run();
+}
+
+// The message and the start of its retry window, written together before the
+// first call to the provider and never changed after.
+async function frozenWaiverEmail(env, db, id, claim) {
+  if (claim.rendered && claim.first_attempted_at)
+    return {
+      msg: JSON.parse(claim.rendered),
+      firstAttemptedAt: claim.first_attempted_at,
+      first: false,
+    };
+  const w = await db
+    .prepare(
+      "SELECT id, org, signer_name, signer_email, signer_kind, minor_name FROM waivers WHERE id = ?",
+    )
+    .bind(id)
+    .first();
+  if (!w) throw new Error("Waiver row missing");
+  const bytes = await outboxPdf(env, id);
+  const hasPdf = !!bytes?.byteLength;
+  if (!hasPdf)
+    await recordTransactionalFailure(
+      env,
+      "receipt:waiver",
+      w.signer_email,
+      "sent without the signed PDF: no PDF bytes",
+    );
+  const msg = renderWaiverEmail({
+    id,
+    to: w.signer_email,
+    name: w.signer_name,
+    doc: DOCS[w.org] || DOC,
+    isMinor: w.signer_kind === "guardian",
+    minorName: w.minor_name,
+    hasPdf,
+  });
+  await db
+    .prepare(
+      "UPDATE waiver_emails SET rendered=COALESCE(rendered,?), first_attempted_at=COALESCE(first_attempted_at,?) WHERE waiver_id=?",
+    )
+    .bind(JSON.stringify(msg), nowIso(), id)
+    .run();
+  const saved = await db
+    .prepare("SELECT rendered, first_attempted_at FROM waiver_emails WHERE waiver_id=?")
+    .bind(id)
+    .first();
+  if (!saved?.rendered || !saved.first_attempted_at)
+    throw new Error("Rendered waiver email was not stored");
+  return {
+    msg: JSON.parse(saved.rendered),
+    firstAttemptedAt: saved.first_attempted_at,
+    first: true,
+    bytes,
+  };
+}
+
+// One attempt at one release's email, if it is due and this Worker owns it.
+// Never throws: the outcome is written to the row.
+export async function processWaiverEmail(env, id) {
+  const db = env.WAIVERS_DB;
+  const at = nowIso();
+  let claim;
   try {
-    await cfSend(env, {
-      from: HOUSE_FROM,
-      to,
-      bcc: HOUSE_INBOX,
-      replyTo: HOUSE_INBOX,
-      // Without a waiver id (a direct test call) there is no retry to protect.
-      idempotencyKey: `waiver-${id || crypto.randomUUID()}`,
-      tags: { brand: HOUSE_BRAND, kind: "waiver" },
-      subject,
-      text,
-      html,
-      attachments: hasPdf
-        ? [
-            {
-              filename: "adapt-to-life-release.pdf",
-              content: toArrayBuffer(pdfBytes),
-              type: "application/pdf",
-              disposition: "attachment",
-            },
-          ]
-        : undefined,
-    });
+    claim = await db
+      .prepare(
+        "UPDATE waiver_emails SET state='running', attempts=attempts+1, started_at=?, error=NULL WHERE waiver_id=? AND state='pending' AND env=? AND (next_attempt_at IS NULL OR next_attempt_at<=?) RETURNING attempts, first_attempted_at, rendered",
+      )
+      .bind(at, id, ownEnv(env), at)
+      .first();
   } catch (err) {
-    console.error("receipt email failed:", err);
-    // Recorded HERE, not at the call site: this catch swallows the error and
-    // never rethrows, so a hook on the caller's try/catch would be dead code.
-    await recordTransactionalFailure(env, "receipt:waiver", to, err);
+    console.error("waiver email claim failed:", err?.message || err);
+    return { state: "error" };
   }
+  if (!claim) return { state: "skipped" };
+  let msg;
+  let firstAttemptedAt;
+  let firstExternal = false;
+  let externalStarted = false;
+  let windowClosed = false;
+  try {
+    if (!mailConfigured(env)) throw new Error("Waiver mail transport not configured");
+    let first;
+    let bytes;
+    ({ msg, firstAttemptedAt, first, bytes } = await frozenWaiverEmail(
+      env,
+      db,
+      id,
+      claim,
+    ));
+    // Past 23 hours the same key is a new send to Resend: never send.
+    const refusal = windowRefusal(firstAttemptedAt);
+    if (refusal) {
+      windowClosed = true;
+      throw new Error(refusal);
+    }
+    const { pdf, ...message } = msg;
+    if (pdf) {
+      // Read once per attempt (the first attempt already has them).
+      if (!bytes) bytes = await outboxPdf(env, id);
+      // The body must match the first attempt. Without the bytes it cannot.
+      if (!bytes?.byteLength) {
+        windowClosed = true;
+        throw new Error("Signed PDF no longer stored; resend by hand");
+      }
+      message.attachments = [
+        {
+          filename: pdf.filename,
+          content: toArrayBuffer(bytes),
+          type: pdf.type,
+          disposition: "attachment",
+        },
+      ];
+    }
+    firstExternal = first;
+    externalStarted = true;
+    const sent = await cfSend(env, message);
+    if (sent?.dropped) {
+      await finishWaiverEmail(
+        db,
+        id,
+        "done",
+        JSON.stringify({ dropped: true, reason: sent.reason }),
+        `Not sent: dropped outside production (${sent.reason})`,
+      );
+      return { state: "done", dropped: true };
+    }
+    const messageId = sent?.messageId || sent?.id;
+    if (typeof messageId !== "string" || !messageId.trim())
+      throw new Error(
+        "Email acceptance uncertain; review delivery ledger before retry",
+      );
+    await finishWaiverEmail(
+      db,
+      id,
+      "done",
+      JSON.stringify({
+        messageId,
+        status: "accepted",
+        provider: sent.provider || "cloudflare",
+      }),
+      null,
+    );
+    return { state: "done" };
+  } catch (err) {
+    const error = String(err?.message || err).slice(0, 400);
+    // After a send began, only an idempotent (Resend) retryable failure
+    // retries, and only inside the window. Before any send (no mail transport, a
+    // D1 hiccup) it tries again with backoff, up to a cap, so a stuck row neither
+    // spins every sweep nor starves the rows behind it.
+    let next = null;
+    if (windowClosed) next = null;
+    else if (externalStarted)
+      next =
+        err?.retryable === true && env.MAIL_TRANSPORT === "resend"
+          ? nextAttemptAt(firstAttemptedAt, claim.attempts)
+          : null;
+    else if (claim.attempts < MAX_WAIVER_PRESEND_ATTEMPTS)
+      next = new Date(Date.now() + retryDelayMs(claim.attempts)).toISOString();
+    const pendingAgain = !!next;
+    const state = pendingAgain ? "pending" : "review";
+    try {
+      await finishWaiverEmail(db, id, state, null, error, next);
+    } catch (e) {
+      console.error("waiver email state write failed:", e?.message || e);
+    }
+    console.error("waiver email failed:", error);
+    // A person hears: when it stops, on the first failed send, and on the first
+    // failure before any send (a missing mail setup is an outage too).
+    if (
+      state === "review" ||
+      (externalStarted && firstExternal) ||
+      (!externalStarted && claim.attempts === 1)
+    )
+      await recordTransactionalFailure(env, "receipt:waiver", msg?.to, err);
+    return { state };
+  }
+}
+
+// Cron: interrupted sends, then everything due. Same rules as sweepForms.
+export async function sweepWaiverEmails(env) {
+  const db = env.WAIVERS_DB;
+  if (!db) return { processed: 0 };
+  const cut = new Date(Date.now() - 15 * 60e3).toISOString();
+  const windowStart = new Date(Date.now() - RETRY_WINDOW_MS).toISOString();
+  // A send cut off mid flight is safe to repeat only on Resend, with its frozen
+  // copy, inside the window (same key, same body). Anything else needs a person.
+  const interrupted = await db
+    .prepare(
+      `UPDATE waiver_emails SET state=CASE
+         WHEN rendered IS NULL THEN 'pending'
+         WHEN ?=1 AND rendered IS NOT NULL AND first_attempted_at>? THEN 'pending'
+         ELSE 'review' END,
+       error='Interrupted delivery; inspect destination before retry'
+       WHERE state='running' AND started_at<? AND env=?
+       RETURNING waiver_id, state, rendered`,
+    )
+    .bind(env.MAIL_TRANSPORT === "resend" ? 1 : 0, windowStart, cut, ownEnv(env))
+    .all();
+  for (const r of interrupted.results || [])
+    if (r.state === "review") {
+      let to = "";
+      try {
+        to = JSON.parse(r.rendered)?.to || "";
+      } catch {}
+      await recordTransactionalFailure(
+        env,
+        "receipt:waiver interrupted",
+        to,
+        new Error(`Interrupted waiver email for ${r.waiver_id}; inspect before retry`),
+      );
+    }
+  const due = await db
+    .prepare(
+      "SELECT waiver_id FROM waiver_emails WHERE state='pending' AND env=? AND (next_attempt_at IS NULL OR next_attempt_at<=?) ORDER BY created_at LIMIT 10",
+    )
+    .bind(ownEnv(env), nowIso())
+    .all();
+  for (const r of due.results || []) await processWaiverEmail(env, r.waiver_id);
+  return { processed: (due.results || []).length };
 }
 
 function esc(s) {
@@ -816,7 +1048,8 @@ export async function runDriveBacklog(env) {
 
   try {
     await env.WAIVERS_DB.prepare(
-      `DELETE FROM waiver_documents WHERE waiver_id IN (SELECT id FROM waivers WHERE drive_status = 'done' AND drive_file_id <> '' AND julianday(drive_done_at) < julianday('now', '-${DOC_RETENTION_DAYS} days'))`,
+      // A release whose email is not done keeps its PDF: the outbox reads it.
+      `DELETE FROM waiver_documents WHERE waiver_id IN (SELECT id FROM waivers WHERE drive_status = 'done' AND drive_file_id <> '' AND julianday(drive_done_at) < julianday('now', '-${DOC_RETENTION_DAYS} days')) AND NOT EXISTS (SELECT 1 FROM waiver_emails e WHERE e.waiver_id = waiver_documents.waiver_id AND e.state <> 'done')`,
     ).run();
   } catch (err) {
     console.error("Drive backlog retention sweep failed:", err);

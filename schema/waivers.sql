@@ -4,9 +4,10 @@
 -- "done"; Google Drive is the long-term archive filed from that copy (see
 -- runDriveBacklog in src/waiver.js). This is the full schema for a fresh
 -- database. A LIVE database is upgraded by the files in migrations/ (2026-10-03
--- capture-first, 2026-11-23 drop r2_key), never by this file: the DROP below
+-- capture-first, 2026-11-23 drop r2_key, 2026-11-25 waiver email outbox), never by this file: the DROP below
 -- would destroy signed releases. scripts/check-d1-schema.mjs compares this file
 -- with the live table column by column; a release fails if they differ.
+DROP TABLE IF EXISTS waiver_emails;
 DROP TABLE IF EXISTS waiver_documents;
 DROP TABLE IF EXISTS waivers;
 CREATE TABLE waivers (
@@ -51,3 +52,25 @@ CREATE TABLE waiver_documents (
   byte_length INTEGER NOT NULL,
   created_at  TEXT NOT NULL
 );
+
+-- The signer's email for each release: an outbox (src/waiver.js,
+-- processWaiverEmail; docs/EMAIL.md "How a site sends"). Written in the same
+-- batch as the release. `rendered` is the email exactly as first rendered, without
+-- the PDF (read back from waiver_documents on each attempt); first_attempted_at
+-- starts the 23 hour retry window and never changes; env is the Worker that owns
+-- the row (staging and production share this database).
+CREATE TABLE waiver_emails (
+  waiver_id          TEXT PRIMARY KEY REFERENCES waivers(id),
+  env                TEXT NOT NULL DEFAULT 'production',
+  state              TEXT NOT NULL DEFAULT 'pending' CHECK(state IN ('pending','running','done','review')),
+  attempts           INTEGER NOT NULL DEFAULT 0,
+  created_at         TEXT NOT NULL,
+  started_at         TEXT,
+  completed_at       TEXT,
+  first_attempted_at TEXT,
+  next_attempt_at    TEXT,
+  rendered           TEXT,
+  receipt            TEXT,
+  error              TEXT
+);
+CREATE INDEX waiver_emails_due ON waiver_emails(env, state, next_attempt_at);

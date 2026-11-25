@@ -1,14 +1,13 @@
 import { isVideoRequest, serveVideo } from "./video_range.js";
-import { safeNewsletterSubscribe } from "./newsletter.js";
+import { safeNewsletterSubscribe, sweepSignups } from "./newsletter.js";
 import {
   betaTesterTopicGroups,
   ResendTopicsError,
   setContactTopics,
 } from "./resend_topics.js";
 import {
-  startWelcome,
   runWelcomeSeries,
-  validUnsubscribe,
+  verifyUnsubscribe,
   unsubscribe,
   unsubscribePage,
   normalizeEmail,
@@ -16,6 +15,7 @@ import {
 import { acceptForm, sweepForms } from "./forms.js";
 import { sendMail } from "./mail-transport.js";
 import { handleResendEvents } from "./resend_events.js";
+import { recordTransactionalFailure } from "./email.js";
 // Adapt To Life — Worker entry.
 // Serves the static site (env.ASSETS) and handles form submissions at /api/contact,
 // /api/apply and /api/volunteer through the durable form outbox (src/forms.js): a
@@ -28,6 +28,7 @@ import {
   handleWaiverVerify,
   handleWaiverDoc,
   runDriveBacklog,
+  sweepWaiverEmails,
 } from "./waiver.js";
 import {
   sendContactReceipt,
@@ -1662,6 +1663,19 @@ export default {
     );
 
     ctx.waitUntil(runDriveBacklog(env));
+    // Signed-waiver emails still owed (src/waiver.js, the waiver_emails outbox).
+    ctx.waitUntil(
+      sweepWaiverEmails(env).catch((err) =>
+        console.error("waiver email outbox failed:", err?.message || err),
+      ),
+    );
+    // Newsletter signups with a step still to finish: contact, Topic, welcome
+    // (src/newsletter.js).
+    ctx.waitUntil(
+      sweepSignups(env).catch((err) =>
+        console.error("newsletter signup sweep failed:", err?.message || err),
+      ),
+    );
     // The newsletter welcome series: whatever is due (src/newsletter-series.js).
     ctx.waitUntil(
       runWelcomeSeries(env)
@@ -2109,17 +2123,14 @@ async function handleSubscribe(request, env, ctx) {
     );
   }
   const source = str(data.source).slice(0, 80) || "adapttolife.org";
-  const result = await safeNewsletterSubscribe(env, email, source);
+  // The join is recorded before Resend is called; the contact, the Topic and
+  // the welcome follow after the response, and the cron finishes any step that
+  // did not (src/newsletter.js).
+  const result = await safeNewsletterSubscribe(env, email, source, {
+    brand: "atl",
+    ctx,
+  });
   if (!result.ok) return json({ ok: false, error: result.error }, result.status);
-  // A new subscriber starts the welcome series: email 1 now, the rest on the
-  // cron. Someone already on the list does not start it again.
-  if (!result.existing)
-    after(
-      ctx,
-      startWelcome(env, email, { contactId: result.contactId || null }).catch((err) =>
-        console.error("welcome series could not start:", err?.message || err),
-      ),
-    );
   // The intake row is how a signup reaches the CRM (Intake Register). Resend
   // holds the list, so a signup whose row was never written is on the list
   // but invisible to the CRM, and the sweep cron cannot recover a row that
@@ -2132,39 +2143,63 @@ async function handleSubscribe(request, env, ctx) {
   return json({ ok: true, ...(result.existing ? { existing: true } : {}) });
 }
 
+// GET shows the page with one button and changes nothing: mail scanners open
+// links, and must not unsubscribe anyone. POST makes the change: the button, or
+// the one click unsubscribe a mail app sends from the List-Unsubscribe header
+// (RFC 8058, body "List-Unsubscribe=One-Click"), which wants an empty 200.
+// Either way only that brand's Topic changes (docs/EMAIL.md).
 async function handleUnsubscribe(request, env, url) {
   const email = normalizeEmail(url.searchParams.get("e"));
+  const brandParam = url.searchParams.get("b") || "";
   const token = url.searchParams.get("t") || "";
-  const page = (ok, status = 200) =>
-    new Response(unsubscribePage({ ok, email }), {
+  const action = url.pathname + url.search;
+  if (request.method !== "GET" && request.method !== "POST")
+    return new Response("Method not allowed", {
+      status: 405,
+      headers: { Allow: "GET, POST" },
+    });
+  let brand = null;
+  try {
+    brand = await verifyUnsubscribe(env, email, brandParam, token);
+  } catch {
+    brand = null;
+  }
+  const page = (state, status = 200) =>
+    new Response(unsubscribePage({ state, email, brand: brand || "atl", action }), {
       status,
       headers: {
         "Content-Type": "text/html; charset=utf-8",
         "Cache-Control": "no-store",
         "X-Robots-Tag": "noindex",
+        "Referrer-Policy": "no-referrer",
       },
     });
-  if (request.method !== "GET" && request.method !== "POST")
-    return new Response("Method not allowed", { status: 405 });
-  let valid = false;
-  try {
-    valid = await validUnsubscribe(env, email, token);
-  } catch {
-    valid = false;
+  let oneClick = false;
+  if (request.method === "POST") {
+    try {
+      const form = await request.formData();
+      oneClick = form.get("List-Unsubscribe") === "One-Click";
+    } catch {
+      oneClick = false;
+    }
   }
-  if (!valid)
-    return request.method === "POST"
+  if (!brand)
+    return oneClick
       ? new Response("Invalid unsubscribe link", { status: 400 })
-      : page(false, 400);
+      : page("invalid", 400);
+  if (request.method === "GET") return page("confirm");
   try {
-    await unsubscribe(env, email);
+    await unsubscribe(env, email, brand);
   } catch (err) {
     console.error("unsubscribe failed:", err?.message || err);
-    return request.method === "POST"
+    // Someone asked to leave and Resend did not take it: a person must hear the
+    // same day (Gmail and Yahoo expect one click opt outs honoured in 2 days).
+    await recordTransactionalFailure(env, `unsubscribe:${brand}`, email, err);
+    return oneClick
       ? new Response("Try again later", { status: 503 })
-      : page(false, 503);
+      : page("error", 503);
   }
-  return request.method === "POST" ? new Response("", { status: 200 }) : page(true);
+  return oneClick ? new Response("", { status: 200 }) : page("done");
 }
 
 // Public fundraising total for the site thermometer: Givebutter's live "raised" for the

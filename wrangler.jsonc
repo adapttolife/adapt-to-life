@@ -131,6 +131,14 @@
     "MAIL_FROM_DOMAINS": "mail.adapttolife.org,mail.adaptbodyshop.com",
     "GMAIL_FROM": "hello@adapttolife.org",
     "RESEND_SEGMENT_ID": "a2640e82-34df-446d-b5f8-0ad6f31d352e",
+    // Each brand's list (src/newsletter-brands.js; docs/EMAIL.md): its Segment
+    // (where they signed up) and its Topic (their permission for that brand's
+    // mail). Unsubscribing opts out of the brand's Topic only. Unsubscribe links
+    // are signed with the NEWSLETTER_LINK_SECRET secret, which must be set before
+    // this ships (until it is, welcomes wait and the sweep retries them).
+    "RESEND_TOPIC_ATL": "40930021-28d6-4ecb-84c4-e256e3dbf60a",
+    "RESEND_SEGMENT_BODYSHOP": "afc10feb-f9ae-47f6-a705-997ea5204429",
+    "RESEND_TOPIC_BODYSHOP": "aee5646e-9e4e-4f9c-8202-a350a22c57c0",
     // The welcome series (src/newsletter-series.js). "off" stops new emails
     // without a code change; the sender is the domain verified in Resend.
     "WELCOME_SERIES": "on",
@@ -210,6 +218,9 @@
         "TURNSTILE_MODE": "off",
         "ASNM_ADMIN_ORIGIN": "https://staging-adaptivesportsnearme.adapt-to-life.workers.dev",
         "RESEND_SEGMENT_ID": "a2640e82-34df-446d-b5f8-0ad6f31d352e",
+        "RESEND_TOPIC_ATL": "40930021-28d6-4ecb-84c4-e256e3dbf60a",
+        "RESEND_SEGMENT_BODYSHOP": "afc10feb-f9ae-47f6-a705-997ea5204429",
+        "RESEND_TOPIC_BODYSHOP": "aee5646e-9e4e-4f9c-8202-a350a22c57c0",
         // Mirrors production; inert here (staging has no Resend key or cron).
         "WELCOME_SERIES": "on",
         "NEWSLETTER_FROM": "Alec at Adapt To Life <hello@mail.adapttolife.org>",

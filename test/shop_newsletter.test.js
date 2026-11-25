@@ -8,7 +8,8 @@
 //   2. One row per address. A repeat sign-up (any case) is the same success
 //      and writes nothing, and the first sign-up's time and page are kept.
 //   3. A sign-up is not a contact message: no auto-reply, no hello@ notice, no
-//      shop_messages row.
+//      shop_messages row. It joins the Body Shop list in Resend (its Segment,
+//      its Topic) and gets the Body Shop welcome (src/newsletter.js).
 //   4. Every gate the contact form has still applies: shop key, honeypot,
 //      Turnstile.
 //   5. The Sheet mirror goes to its own "Shop Newsletter" tab and marks rows
@@ -23,6 +24,12 @@ import { readFileSync } from "node:fs";
 import { generateKeyPairSync } from "node:crypto";
 import { sqliteD1 } from "./helpers/form-db.js";
 import { handleShopContact, runShopNewsletterBacklog } from "../src/shop_contact.js";
+import {
+  fakeResend,
+  newsletterEnv,
+  TOPIC_SHOP,
+  SEG_SHOP,
+} from "./helpers/fake-resend.js";
 
 const KEY = "test-shared-key";
 const MIGRATION = readFileSync(
@@ -34,10 +41,16 @@ const BASE_SCHEMA = readFileSync(
   "utf8",
 );
 
+// Resend is faked for the whole file; the Sheets tests swap their own in.
+const resend = { current: fakeResend() };
+globalThis.fetch = (...a) => resend.current.fetch(...a);
+
 function setup({ db = sqliteD1(BASE_SCHEMA), turnstileOff = true } = {}) {
   const sent = [];
   const jobs = [];
+  resend.current = fakeResend();
   const env = {
+    ...newsletterEnv(),
     SHOP_CONTACT_KEY: KEY,
     WAIVERS_DB: db,
     SEND_EMAIL: {
@@ -136,9 +149,38 @@ test("a sign-up sends no auto-reply, no shop notice, and is not a message", asyn
   const { db, env, ctx, sent, jobs } = setup();
   await handleShopContact(post(SIGNUP), env, ctx);
   await Promise.all(jobs);
-  assert.equal(jobs.length, 0);
-  assert.equal(sent.length, 0);
+  assert.equal(sent.length, 0, "nothing through the contact form's mail");
   assert.equal(db.sql.prepare("SELECT COUNT(*) AS n FROM shop_messages").get().n, 0);
+});
+
+test("a sign-up joins the Body Shop list in Resend and gets the Body Shop welcome", async () => {
+  const { env, ctx, jobs } = setup();
+  const res = await handleShopContact(post(SIGNUP), env, ctx);
+  assert.deepEqual(await res.json(), { ok: true, subscribed: true });
+  const row = env.AGENT_MAIL_DB.sql.prepare("SELECT * FROM newsletter_signups").get();
+  assert.equal(row.brand, "bodyshop");
+  assert.equal(row.email, "reader@example.com", "recorded before the answer");
+  await Promise.all(jobs);
+  const c = resend.current.contacts.get("reader@example.com");
+  assert.ok(c.segments.has(SEG_SHOP));
+  assert.equal(c.topics.get(TOPIC_SHOP), "opt_in");
+  assert.equal(resend.current.emails.length, 1);
+  const [mail] = resend.current.emails;
+  assert.equal(mail.from, "Adapt Body Shop <hello@mail.adaptbodyshop.com>");
+  assert.deepEqual(mail.reply_to, ["hello@adaptbodyshop.com"]);
+  assert.equal(mail.subject, "You’re on the list");
+  // A repeat sign-up is the same answer and no second welcome.
+  await handleShopContact(post(SIGNUP), env, ctx);
+  await Promise.all(jobs);
+  assert.equal(resend.current.emails.length, 1);
+});
+
+test("if the join cannot be recorded, the storefront is never told subscribed", async () => {
+  const { env, ctx } = setup();
+  env.AGENT_MAIL_DB.sql.exec("DROP TABLE newsletter_signups");
+  const res = await handleShopContact(post(SIGNUP), env, ctx);
+  assert.equal(res.status, 502);
+  assert.equal((await res.json()).subscribed, undefined);
 });
 
 test("a contact message still goes the contact way", async () => {

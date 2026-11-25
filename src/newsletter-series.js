@@ -1,5 +1,8 @@
 import { sendMail } from "./mail-transport.js";
-// src/newsletter-series.js — the welcome email every new subscriber gets.
+import { BRANDS, brandFor, topicIdFor } from "./newsletter-brands.js";
+// src/newsletter-series.js — the welcome email every new subscriber gets, the
+// unsubscribe link and page, for each brand this Worker keeps a list for
+// (src/newsletter-brands.js: Adapt To Life and Adapt Body Shop).
 //
 // Alec, Nov 7 2026: "Let's make sure resend is working as intended and we
 // created the emails." I built a five email series; seeing it, he said: "Let's
@@ -7,37 +10,34 @@ import { sendMail } from "./mail-transport.js";
 // ones... but don't use them. Let's just keep one email for now. Keep it super
 // simple."
 //
-// So, today, when someone signs up:
-//   1. /api/subscribe adds them to the Adapt To Life segment in Resend
-//      (src/newsletter.js), exactly as before.
-//   2. startWelcome() records them in newsletter_journey (agent-mail D1) and
-//      sends one plain letter from Alec straight away, so "Watch your inbox" is
-//      true. That is all. After that they hear from us through the newsletter,
-//      written and sent as a Broadcast in Resend.
+// So, today, when someone signs up (src/newsletter.js):
+//   1. The join is recorded in newsletter_signups (agent-mail D1) before Resend
+//      is called. Then the contact is made (or found) in the brand's Segment,
+//      opted in to the brand's Topic, and sent one plain welcome, "You're on the
+//      list". The cron sweep finishes any of those steps that did not complete.
+//   2. After that they hear from us through the newsletter, written and sent as
+//      a Broadcast in Resend to the brand's Topic.
 //
-// The other emails are kept below in SAVED_FOR_LATER and nothing sends them.
-// The series machinery (the journey row, the ten minute cron in
-// runWelcomeSeries) stays, so bringing one back is moving it into WELCOME.
+// The other Adapt To Life emails are kept below in SAVED_FOR_LATER and nothing
+// sends them. The series machinery (the newsletter_journey row and the ten
+// minute cron in runWelcomeSeries) stays, so bringing one back is moving it into
+// WELCOME: the signup sends WELCOME[0] and hands the rest to the journey.
 //
-// Every email goes out through Resend from mail.adapttolife.org (the domain
-// verified there), with replies to hello@adapttolife.org. Every email carries an
-// unsubscribe link and the one click List-Unsubscribe headers Gmail and Yahoo
-// ask for. Unsubscribing stops this series and marks the contact unsubscribed
-// in Resend, so Broadcasts skip them too.
+// Every list email (docs/EMAIL.md, "Two kinds of email") goes out through Resend
+// from the brand's mail. domain, with replies to its hello@, and carries: the
+// unsubscribe link near the top and in the footer, the one click
+// List-Unsubscribe headers Gmail and Yahoo ask for, why they are getting it, and
+// the postal address. Before every send the brand Topic is checked in Resend:
+// someone who left that list, or everything, gets nothing more. Unsubscribing
+// opts them out of that brand's Topic only, never the team wide flag, which
+// would also stop the other brands' mail.
 //
-// Before any later send the contact is checked in Resend (someone who
-// unsubscribed from a Broadcast gets nothing more), and an email marked
-// skipForDonors is skipped for anyone who has already given (donor_gifts in
-// atl-waivers).
-//
-// Copy follows the Adapt To Life voice (skills: adapt-to-life-brand-voice):
-// short, plain, warm, no dashes, no rhetorical questions, facts from the site.
-// Every money button says Donate (test/one_cta.test.js holds the pages to that;
-// test/newsletter_series.test.js holds these emails to it).
+// Copy follows the Adapt To Life voice (skills: adapt-to-life-brand-voice; Body
+// Shop borrows it): short, plain, warm, no dashes, no rhetorical questions,
+// facts from the site. Every money button says Donate (test/one_cta.test.js
+// holds the pages to that; test/newsletter_series.test.js holds these emails).
 
 const SITE = "https://adapttolife.org";
-const DEFAULT_FROM = "Alec at Adapt To Life <hello@mail.adapttolife.org>";
-const DEFAULT_REPLY_TO = "hello@adapttolife.org";
 const SERIES = "welcome";
 const LEASE_MS = 5 * 60 * 1000;
 const MAX_ATTEMPTS = 6;
@@ -57,12 +57,14 @@ export function link(path, content) {
 // a person is also what mail apps most often put in the main inbox rather than
 // a promotions tab. The opening follows his own published welcome ("We're here
 // to expand access to adaptive sports so athletes can find their place.").
+// Nov 25 2026 (docs/EMAIL.md): the subject is "You're on the list", and the
+// small print up top says why it came and how to leave.
 export const WELCOME = [
   {
     key: "welcome",
     day: 0,
     plain: true,
-    subject: "Welcome to Adapt To Life",
+    subject: "You’re on the list",
     preheader: "Thanks for signing up.",
     paragraphs: [
       "Thanks for signing up.",
@@ -72,13 +74,40 @@ export const WELCOME = [
       },
       "We’ll write when there’s something worth sharing.",
     ],
+    signature: ["Alec", "Founder, Adapt To Life"],
   },
 ];
+
+// The Adapt Body Shop welcome: the same plain letter, from the shop.
+export const SHOP_WELCOME = {
+  key: "welcome",
+  brand: "bodyshop",
+  day: 0,
+  plain: true,
+  subject: "You’re on the list",
+  preheader: "Thanks for signing up.",
+  paragraphs: [
+    "Thanks for signing up.",
+    {
+      text: "Adapt Body Shop is the shop for Adapt To Life, a nonprofit that expands access to adaptive sports.",
+      link: {
+        label: "Adapt Body Shop",
+        href: "https://adaptbodyshop.com/",
+        external: true,
+      },
+    },
+    "We’ll write when there’s something new in the shop.",
+  ],
+  signature: ["Adapt Body Shop"],
+};
+
+// The welcome each brand sends at signup.
+export const WELCOME_FOR = { atl: WELCOME[0], bodyshop: SHOP_WELCOME };
 
 // SAVED FOR LATER, NOT SENT (Alec, Nov 7: "Save these other ones... but don't
 // use them"). The designed series he reviewed that day: the first welcome
 // (photo and button), then day 2, 5, 9 and 14. Nothing reads this list;
-// startWelcome and runWelcomeSeries walk WELCOME only. Facts are the site's
+// the signup outbox and runWelcomeSeries walk WELCOME only. Facts are the site's
 // own, checked Nov 7 2026: index.html, tim.html, juan.html, pickleball.html,
 // numbers.html, promise.html, sponsorship.html, campaigns.js.
 export const SAVED_FOR_LATER = [
@@ -251,14 +280,21 @@ function paraText(para, step) {
 
 // THE PLAIN LETTER: what a person would send. No header, no photo, no button,
 // no background colour (the mail app's own, so dark mode reads it too). One
-// typeface, the text, Alec's name, and the small print every email must carry.
+// typeface, the text, the signature, and the small print every list email must
+// carry: why it came and how to leave (at the top and again at the foot), and
+// the postal address.
 function renderPlain(step, { unsubscribeUrl }) {
+  const brand = brandFor(step.brand || "atl");
   // The link takes the mail app's own colour, like any personal email: no one
   // orange reads on both a white page and a dark mode page.
   const linkStyle = "text-decoration:underline";
+  const small = "font-size:13px;line-height:1.55;opacity:0.7";
+  const unsub = `<a href="${esc(unsubscribeUrl)}" style="color:inherit;text-decoration:underline">Unsubscribe</a>`;
   const para = (html, extra = "") =>
     `<p style="margin:0 0 16px;font-size:17px;line-height:1.55;${extra}">${html}</p>`;
   const body = (step.paragraphs || []).map((x) => para(paraHtml(x, step, linkStyle)));
+  const [name, ...role] = step.signature || [brand.name];
+  const why = `You signed up for ${brand.list} at ${brand.site}.`;
   const html = [
     `<!doctype html><html lang="en"><head><meta charset="utf-8">`,
     `<meta name="viewport" content="width=device-width,initial-scale=1">`,
@@ -266,24 +302,29 @@ function renderPlain(step, { unsubscribeUrl }) {
     `<body style="margin:0;padding:0">`,
     `<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent">${esc(step.preheader)}${"&#8199;&#65279;&#847; ".repeat(30)}</div>`,
     `<div style="max-width:560px;padding:24px 20px;font-family:${FONT}">`,
+    `<p style="margin:0 0 24px;${small}">${esc(why)} ${unsub}</p>`,
     body.join(""),
     para(
-      `Alec<br><span style="font-size:15px;opacity:0.75">Founder, Adapt To Life</span>`,
+      `${esc(name)}${role.map((r) => `<br><span style="font-size:15px;opacity:0.75">${esc(r)}</span>`).join("")}`,
       "margin-top:24px",
     ),
-    `<p style="margin:32px 0 0;font-size:13px;line-height:1.55;opacity:0.7">`,
-    `You’re getting this because you signed up at adapttolife.org. <a href="${esc(unsubscribeUrl)}" style="color:inherit;text-decoration:underline">Unsubscribe</a><br>`,
-    `Adapt To Life NFP, a 501(c)(3) nonprofit. EIN 41-3213344.`,
+    `<p style="margin:32px 0 0;${small}">`,
+    `You’re getting this because you signed up at ${esc(brand.site)}. ${unsub}<br>`,
+    `${esc(brand.postal)}<br>`,
+    `A 501(c)(3) nonprofit, EIN 41-3213344.`,
     `</p></div></body></html>`,
   ].join("");
   const text = [
-    ...(step.paragraphs || []).flatMap((x) => [paraText(x, step), ""]),
-    "Alec",
-    "Founder, Adapt To Life",
+    `${why} Unsubscribe: ${unsubscribeUrl}`,
     "",
-    "You’re getting this because you signed up at adapttolife.org.",
+    ...(step.paragraphs || []).flatMap((x) => [paraText(x, step), ""]),
+    name,
+    ...role,
+    "",
+    `You’re getting this because you signed up at ${brand.site}.`,
     `Unsubscribe: ${unsubscribeUrl}`,
-    "Adapt To Life NFP, a 501(c)(3) nonprofit. EIN 41-3213344.",
+    brand.postal,
+    "A 501(c)(3) nonprofit, EIN 41-3213344.",
   ].join("\n");
   return { subject: step.subject, html, text };
 }
@@ -354,7 +395,8 @@ export function renderEmail(
     `<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px"><tr><td style="padding:20px 28px 8px;font-family:${FONT};font-size:13px;line-height:1.6;color:${C.muted}">`,
     `You’re getting this because you signed up at adapttolife.org. <a href="${esc(unsubscribeUrl)}" style="color:${C.muted};text-decoration:underline">Unsubscribe</a><br>`,
     `Reply any time, or write to <a href="mailto:hello@adapttolife.org" style="color:${C.muted}">hello@adapttolife.org</a>.<br>`,
-    `Adapt To Life NFP, a 501(c)(3) nonprofit. EIN 41-3213344.`,
+    `${esc(BRANDS.atl.postal)}<br>`,
+    `A 501(c)(3) nonprofit, EIN 41-3213344.`,
     `</td></tr></table>`,
     `</td></tr></table></body></html>`,
   ].join("");
@@ -379,17 +421,24 @@ export function renderEmail(
   lines.push(
     "You’re getting this because you signed up at adapttolife.org.",
     `Unsubscribe: ${unsubscribeUrl}`,
-    "Adapt To Life NFP, a 501(c)(3) nonprofit. EIN 41-3213344.",
+    BRANDS.atl.postal,
+    "A 501(c)(3) nonprofit, EIN 41-3213344.",
   );
 
   return { subject: step.subject, html, text: lines.join("\n") };
 }
 
 // ---------------------------------------------------------------------------
-// Unsubscribe links. An HMAC of the address, so a link works only for the
-// person it was sent to. The key is the Resend key the worker already holds
-// (or NEWSLETTER_LINK_SECRET if one is ever set), with its own prefix so the
-// signature means nothing anywhere else.
+// Unsubscribe links. An HMAC of the brand and the address, so a link works only
+// for the person and the list it was sent for, signed with its own secret
+// (NEWSLETTER_LINK_SECRET), never the Resend key: rotating the key must not
+// break a link already sent (docs/EMAIL.md).
+//
+//   v2 (now):   /unsubscribe?e=<email>&b=<brand>&t=<hmac of v2:brand:email>
+//   v1 (before Nov 25 2026): /unsubscribe?e=<email>&t=<hmac of v1:email>,
+//               signed with NEWSLETTER_LINK_SECRET or, as it was in practice, the
+//               Resend key. Only Adapt To Life sent them, so they mean Adapt To
+//               Life news. Accepted until the last one is a year old (Nov 2027).
 // ---------------------------------------------------------------------------
 const enc = new TextEncoder();
 const b64url = (bytes) =>
@@ -398,9 +447,7 @@ const b64url = (bytes) =>
     .replace(/\//g, "_")
     .replace(/=+$/, "");
 
-async function hmac(env, message) {
-  const secret = env.NEWSLETTER_LINK_SECRET || env.RESEND_API_KEY;
-  if (!secret) throw new Error("no key for newsletter links");
+async function hmac(secret, message) {
   const key = await crypto.subtle.importKey(
     "raw",
     enc.encode(secret),
@@ -414,30 +461,59 @@ async function hmac(env, message) {
   );
 }
 
+function sameToken(want, got) {
+  const g = String(got || "");
+  if (want.length !== g.length) return false;
+  let diff = 0;
+  for (let i = 0; i < want.length; i++) diff |= want.charCodeAt(i) ^ g.charCodeAt(i);
+  return diff === 0;
+}
+
 export const normalizeEmail = (s) =>
   String(s || "")
     .trim()
     .toLowerCase();
 
-export async function unsubscribeToken(env, email) {
-  return hmac(env, `newsletter-unsubscribe:v1:${normalizeEmail(email)}`);
+export class LinkSecretMissing extends Error {
+  constructor() {
+    super("NEWSLETTER_LINK_SECRET is not set; no unsubscribe link can be made");
+    this.name = "LinkSecretMissing";
+  }
 }
 
-export async function unsubscribeUrl(env, email) {
+export async function unsubscribeToken(env, email, brandKey = "atl") {
+  if (!env.NEWSLETTER_LINK_SECRET) throw new LinkSecretMissing();
+  if (!brandFor(brandKey)) throw new Error(`Unknown list: ${brandKey}`);
+  return hmac(
+    env.NEWSLETTER_LINK_SECRET,
+    `newsletter-unsubscribe:v2:${brandKey}:${normalizeEmail(email)}`,
+  );
+}
+
+export async function unsubscribeUrl(env, email, brandKey = "atl") {
   const url = new URL("/unsubscribe", SITE);
   url.searchParams.set("e", normalizeEmail(email));
-  url.searchParams.set("t", await unsubscribeToken(env, email));
+  url.searchParams.set("b", brandKey);
+  url.searchParams.set("t", await unsubscribeToken(env, email, brandKey));
   return url.toString();
 }
 
-export async function validUnsubscribe(env, email, token) {
-  if (!email || !token) return false;
-  const want = await unsubscribeToken(env, email);
-  if (want.length !== String(token).length) return false;
-  let diff = 0;
-  for (let i = 0; i < want.length; i++)
-    diff |= want.charCodeAt(i) ^ String(token).charCodeAt(i);
-  return diff === 0;
+// The brand a link is good for, or null. A link with a brand must carry a v2
+// signature; one without is an old v1 link and means Adapt To Life news.
+export async function verifyUnsubscribe(env, email, brandParam, token) {
+  const address = normalizeEmail(email);
+  if (!address || !token) return null;
+  if (brandParam) {
+    if (!brandFor(brandParam) || !env.NEWSLETTER_LINK_SECRET) return null;
+    const want = await unsubscribeToken(env, address, brandParam);
+    return sameToken(want, token) ? brandParam : null;
+  }
+  for (const secret of [env.NEWSLETTER_LINK_SECRET, env.RESEND_API_KEY]) {
+    if (!secret) continue;
+    const want = await hmac(secret, `newsletter-unsubscribe:v1:${address}`);
+    if (sameToken(want, token)) return "atl";
+  }
+  return null;
 }
 
 // ---------------------------------------------------------------------------
@@ -449,51 +525,110 @@ const resendHeaders = (env, extra = {}) => ({
   ...extra,
 });
 
+// A refused Resend call says whether trying again later is safe, like the
+// transport's MailError: 429, 5xx and a network failure are; other 4xx are not.
+export class ResendCallError extends Error {
+  constructor(message, { retryable = false, status = null } = {}) {
+    super(message);
+    this.name = "ResendCallError";
+    this.retryable = retryable;
+    this.status = status;
+  }
+}
+
+export async function resendCall(env, method, path, body) {
+  let res;
+  try {
+    res = await fetch(`https://api.resend.com${path}`, {
+      method,
+      headers: resendHeaders(env),
+      signal: AbortSignal.timeout(10000),
+      ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+    });
+  } catch (error) {
+    throw new ResendCallError(`Resend unreachable (${error?.name || "error"})`, {
+      retryable: true,
+    });
+  }
+  return res;
+}
+
+export async function refused(res, what) {
+  // Only Resend's error name is kept; its message can echo the request.
+  let name = "";
+  try {
+    name = String((await res.json())?.name || "");
+  } catch {}
+  if (!/^[a-z_]{1,60}$/.test(name)) name = "";
+  return new ResendCallError(
+    `Resend could not ${what} (${res.status}${name ? ` ${name}` : ""})`,
+    {
+      retryable: res.status === 429 || res.status >= 500 || name === "resource_locked",
+      status: res.status,
+    },
+  );
+}
+
 async function sha256Hex(s) {
   const d = await crypto.subtle.digest("SHA-256", enc.encode(s));
   return [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-export async function sendSeriesEmail(env, email, step, opts = {}) {
+// A list email exactly as it goes to the transport. Kept whole so the signup
+// outbox can store it and resend it byte for byte under the same key.
+export async function listMessage(env, email, step, opts = {}) {
+  const brand = brandFor(step.brand || "atl");
   const address = normalizeEmail(email);
-  const unsub = await unsubscribeUrl(env, address);
+  const unsub = await unsubscribeUrl(env, address, brand.key);
   const rendered = renderEmail(step, { ...opts, unsubscribeUrl: unsub });
-  const idempotency = `${SERIES}-${step.key}-${(await sha256Hex(address)).slice(0, 32)}${opts.idempotencySuffix || ""}`;
-  // Through the one mail module like every other send (docs/EMAIL.md, "Nothing
-  // sends around this module"), so the welcome gets the From check, the tags and
-  // the allow list outside production. The series is Resend-only by design.
-  const out = await sendMail(
-    { ...env, MAIL_TRANSPORT: "resend" },
-    {
-      from: env.NEWSLETTER_FROM || DEFAULT_FROM,
-      to: address,
-      replyTo: env.NEWSLETTER_REPLY_TO || DEFAULT_REPLY_TO,
-      subject: rendered.subject,
-      html: rendered.html,
-      text: rendered.text,
-      headers: {
-        "List-Unsubscribe": `<${unsub}>, <mailto:hello@adapttolife.org?subject=Unsubscribe>`,
-        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-      },
-      idempotencyKey: idempotency,
-      tags: { brand: "adapttolife", kind: "welcome", series: SERIES, step: step.key },
+  return {
+    from: brand.from(env),
+    to: address,
+    replyTo: brand.replyTo(env),
+    subject: rendered.subject,
+    html: rendered.html,
+    text: rendered.text,
+    headers: {
+      "List-Unsubscribe": `<${unsub}>, <mailto:${brand.inbox}?subject=Unsubscribe>`,
+      "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
     },
-  );
-  if (out?.dropped) return { id: null, dropped: true };
+    idempotencyKey: `${SERIES}-${brand.key}-${step.key}-${(await sha256Hex(address)).slice(0, 32)}${opts.idempotencySuffix || ""}`,
+    tags: { brand: brand.tag, kind: "welcome", series: SERIES, step: step.key },
+  };
+}
+
+// Through the one mail module like every other send (docs/EMAIL.md, "Nothing
+// sends around this module"), so a list email gets the From check, the tags and
+// the allow list outside production. List mail is Resend only by design.
+export async function sendListMessage(env, message) {
+  const out = await sendMail({ ...env, MAIL_TRANSPORT: "resend" }, message);
+  if (out?.dropped) return { id: null, dropped: true, reason: out.reason };
   return { id: out?.id || null };
 }
 
-// The contact as Resend has it now. Someone who unsubscribed from a Broadcast,
-// or was deleted, must not get the rest of the series.
-async function contactStatus(env, email) {
-  const res = await fetch(
-    `https://api.resend.com/contacts/${encodeURIComponent(normalizeEmail(email))}`,
-    { headers: resendHeaders(env), signal: AbortSignal.timeout(10000) },
-  );
+export async function sendSeriesEmail(env, email, step, opts = {}) {
+  return sendListMessage(env, await listMessage(env, email, step, opts));
+}
+
+// Whether this person may get this brand's list mail now: the contact exists,
+// has not left everything (the team wide flag), and is opted in to the brand's
+// Topic. "gone" when Resend has no such contact.
+export async function brandStatus(env, email, brandKey = "atl") {
+  const brand = brandFor(brandKey);
+  const topic = topicIdFor(env, brand);
+  if (!topic) throw new ResendCallError(`${brand.topicVar} is not set`);
+  const address = encodeURIComponent(normalizeEmail(email));
+  const res = await resendCall(env, "GET", `/contacts/${address}`);
   if (res.status === 404) return "gone";
-  if (!res.ok) throw new Error(`Resend contact lookup failed (${res.status})`);
+  if (!res.ok) throw await refused(res, "look up the contact");
   const contact = await res.json();
-  return contact?.unsubscribed ? "unsubscribed" : "subscribed";
+  if (contact?.unsubscribed) return "unsubscribed";
+  const topics = await resendCall(env, "GET", `/contacts/${address}/topics?limit=100`);
+  if (topics.status === 404) return "gone";
+  if (!topics.ok) throw await refused(topics, "look up the contact's Topics");
+  const list = (await topics.json())?.data;
+  const mine = Array.isArray(list) ? list.find((t) => t?.id === topic) : null;
+  return mine?.subscription === "opt_in" ? "subscribed" : "unsubscribed";
 }
 
 async function isDonor(env, email) {
@@ -507,11 +642,12 @@ async function isDonor(env, email) {
 }
 
 // ---------------------------------------------------------------------------
-// The journey. One row per subscriber in agent-mail D1
+// The journey (Adapt To Life only). One row per subscriber in agent-mail D1
 // (schema/migrations/2026-11-07-newsletter-welcome.sql). `step` is the index of
 // the NEXT email; `next_at` is when it is due. A row is leased before it is
 // worked so two cron runs cannot send the same email, and Resend's idempotency
-// key backs that up for 24 hours.
+// key backs that up for 24 hours. The signup outbox sends WELCOME[0] and then
+// records the journey at step 1 (continueSeries).
 // ---------------------------------------------------------------------------
 const iso = (ms) => new Date(ms).toISOString();
 const dueAt = (startedAt, index) =>
@@ -522,25 +658,49 @@ export const seriesEnabled = (env) =>
   Boolean(env.RESEND_API_KEY) &&
   Boolean(env.AGENT_MAIL_DB);
 
-// Called right after a NEW signup. Sends email 1 now; the cron does the rest.
-export async function startWelcome(
+// Whether this address already had the Adapt To Life welcome (a journey row
+// with a send): someone on the list before Nov 25 2026 who signs up again.
+export async function hadWelcome(env, email) {
+  if (!env.AGENT_MAIL_DB) return false;
+  const row = await env.AGENT_MAIL_DB.prepare(
+    "SELECT 1 AS yes FROM newsletter_journey WHERE email = ? AND last_sent_at IS NOT NULL",
+  )
+    .bind(normalizeEmail(email))
+    .first();
+  return Boolean(row);
+}
+
+// Called by the signup outbox once WELCOME[0] went out: the rest of the series,
+// if it ever has more than one email, continues from step 1 on the cron.
+export async function continueSeries(
   env,
   email,
-  { contactId = null, now = Date.now(), assetOrigin } = {},
+  { contactId = null, now = Date.now() } = {},
 ) {
-  if (!seriesEnabled(env)) return { started: false, reason: "disabled" };
-  const address = normalizeEmail(email);
+  if (!env.AGENT_MAIL_DB) return { recorded: false };
   const started = iso(now);
-  const inserted = await env.AGENT_MAIL_DB.prepare(
-    "INSERT OR IGNORE INTO newsletter_journey (email, contact_id, series, step, status, started_at, next_at, attempts) VALUES (?, ?, ?, 0, 'active', ?, ?, 0) RETURNING email",
+  const more = WELCOME.length > 1;
+  const out = await env.AGENT_MAIL_DB.prepare(
+    // An older row (a pre ledger journey still at step 0) moves on too, so the
+    // cron never sends the welcome a second time.
+    `INSERT INTO newsletter_journey (email, contact_id, series, step, status, started_at, next_at, last_sent_at, attempts) VALUES (?, ?, ?, 1, ?, ?, ?, ?, 0)
+     ON CONFLICT(email) DO UPDATE SET step = MAX(step, 1),
+       status = CASE WHEN status = 'active' AND step < 1 THEN excluded.status ELSE status END,
+       next_at = CASE WHEN step < 1 THEN excluded.next_at ELSE next_at END,
+       last_sent_at = COALESCE(last_sent_at, excluded.last_sent_at), claimed_until = NULL
+     RETURNING email`,
   )
-    .bind(address, contactId, SERIES, started, started)
+    .bind(
+      normalizeEmail(email),
+      contactId,
+      SERIES,
+      more ? "active" : "done",
+      started,
+      more ? dueAt(started, 1) : started,
+      started,
+    )
     .first();
-  if (!inserted) return { started: false, reason: "already-in-series" };
-  const row = await claimRow(env, address, now);
-  if (!row) return { started: true, sent: false };
-  const result = await workRow(env, row, { now, assetOrigin, fresh: true });
-  return { started: true, ...result };
+  return { recorded: Boolean(out) };
 }
 
 async function claimRow(env, email, now) {
@@ -560,11 +720,7 @@ async function finish(env, email, fields) {
     .run();
 }
 
-async function workRow(
-  env,
-  row,
-  { now = Date.now(), assetOrigin, fresh = false } = {},
-) {
+async function workRow(env, row, { now = Date.now(), assetOrigin } = {}) {
   const index = Number(row.step) || 0;
   const step = WELCOME[index];
   if (!step) {
@@ -572,15 +728,14 @@ async function workRow(
     return { sent: false, done: true };
   }
   try {
-    // Email 1 goes out the moment they sign up; later ones check Resend first.
-    if (!fresh) {
-      const status = await contactStatus(env, row.email);
-      if (status !== "subscribed") {
-        await finish(env, row.email, {
-          status: status === "gone" ? "stopped" : "unsubscribed",
-        });
-        return { sent: false, stopped: status };
-      }
+    // Every send checks the brand Topic first: someone who left Adapt To Life
+    // news, or everything, gets nothing more.
+    const status = await brandStatus(env, row.email, "atl");
+    if (status !== "subscribed") {
+      await finish(env, row.email, {
+        status: status === "gone" ? "stopped" : "unsubscribed",
+      });
+      return { sent: false, stopped: status };
     }
     const donor =
       step.skipForDonors || step.psForNonDonors ? await isDonor(env, row.email) : false;
@@ -630,7 +785,7 @@ async function workRow(
 }
 
 // The cron: everything due, a handful at a time (Resend allows a few requests
-// a second, and each row is one or two calls).
+// a second, and each row is a few calls).
 export async function runWelcomeSeries(env, { now = Date.now(), limit = 20 } = {}) {
   if (!seriesEnabled(env)) return { ok: true, skipped: "disabled" };
   const { results = [] } = await env.AGENT_MAIL_DB.prepare(
@@ -650,37 +805,96 @@ export async function runWelcomeSeries(env, { now = Date.now(), limit = 20 } = {
   return { ok: true, due: results.length, sent, failed };
 }
 
-// Unsubscribe: stop the series and tell Resend, so Broadcasts skip them too.
-export async function unsubscribe(env, email) {
+// Unsubscribe from one brand's list: opt out of that brand's Topic in Resend,
+// and stop what this Worker would still send for it. Never the team wide
+// `unsubscribed` flag: that stops every brand's Broadcasts (docs/EMAIL.md).
+export async function unsubscribe(env, email, brandKey = "atl") {
+  const brand = brandFor(brandKey);
+  if (!brand) throw new Error(`Unknown list: ${brandKey}`);
+  const topic = topicIdFor(env, brand);
+  if (!topic) throw new Error(`${brand.topicVar} is not set`);
   const address = normalizeEmail(email);
-  if (env.AGENT_MAIL_DB)
+  const now = iso(Date.now());
+  if (env.AGENT_MAIL_DB) {
+    if (brand.key === "atl")
+      await env.AGENT_MAIL_DB.prepare(
+        "UPDATE newsletter_journey SET status = 'unsubscribed', claimed_until = NULL WHERE email = ?",
+      )
+        .bind(address)
+        .run();
+    // A signup still owed a step stops here (processSignup honours
+    // unsubscribed_at, so it never opts them back in); a later signup opts in
+    // again. A row mid run is left to its owner, which sees unsubscribed_at on
+    // its next claim and checks the Topic before any welcome.
     await env.AGENT_MAIL_DB.prepare(
-      "UPDATE newsletter_journey SET status = 'unsubscribed', claimed_until = NULL WHERE email = ?",
+      "UPDATE newsletter_signups SET topic_at = NULL, unsubscribed_at = ?, state = CASE WHEN state = 'running' THEN state ELSE 'done' END, next_attempt_at = NULL WHERE env = ? AND brand = ? AND email = ?",
     )
-      .bind(address)
+      .bind(now, env.ENV_NAME || "production", brand.key, address)
       .run();
-  const res = await fetch(
-    `https://api.resend.com/contacts/${encodeURIComponent(address)}`,
-    {
-      method: "PATCH",
-      headers: resendHeaders(env),
-      signal: AbortSignal.timeout(10000),
-      body: JSON.stringify({ unsubscribed: true }),
-    },
+  }
+  const res = await resendCall(
+    env,
+    "PATCH",
+    `/contacts/${encodeURIComponent(address)}/topics`,
+    [{ id: topic, subscription: "opt_out" }],
   );
+  // No contact: nothing to opt out of, and nothing will be sent.
   if (!res.ok && res.status !== 404)
-    throw new Error(`Resend could not unsubscribe the contact (${res.status})`);
-  return { ok: true };
+    throw await refused(res, "unsubscribe the contact");
+  return { ok: true, brand: brand.key };
 }
 
 // The page the unsubscribe link lands on. Small and self contained, with
 // relative links so it works on whichever host served it.
-export function unsubscribePage({ ok, email = "" }) {
-  const title = ok ? "You’re unsubscribed" : "That link didn’t work";
-  const body = ok
-    ? `<p>${esc(email)} won’t get any more emails from us. If that was a mistake, you can sign up again any time at <a href="/subscribe">adapttolife.org/subscribe</a>.</p>`
-    : `<p>We couldn’t confirm that unsubscribe link. Reply to any of our emails, or write to <a href="mailto:hello@adapttolife.org">hello@adapttolife.org</a>, and we’ll take you off the list.</p>`;
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><meta name="theme-color" content="#0f0e0d"><title>${title} | Adapt To Life</title>
-<style>body{margin:0;background:#EFE8DC;color:#26231F;font-family:'Sofia Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:18px;line-height:1.6}header{background:#0f0e0d;padding:18px 24px}main{max-width:560px;margin:48px auto;padding:0 24px}h1{font-size:34px;line-height:1.1;margin:0 0 18px;color:#171513}a{color:#B9391E;font-weight:700}</style></head>
-<body><header><a href="/"><img src="/images/email/atl-logo-cream.png" width="209" height="52" alt="Adapt To Life"></a></header><main><h1>${title}</h1>${body}<p><a href="/">Back to adapttolife.org</a></p></main></body></html>`;
+//   confirm  GET: one button; nothing changes until it is pressed (mail
+//            scanners open links, and must not unsubscribe anyone)
+//   done     after the POST
+//   invalid  a link that does not verify
+//   error    Resend did not take the change; try again
+export function unsubscribePage({
+  state,
+  email = "",
+  brand: brandKey = "atl",
+  action = "",
+}) {
+  const brand = brandFor(brandKey) || BRANDS.atl;
+  const inbox = `<a href="mailto:${esc(brand.inbox)}">${esc(brand.inbox)}</a>`;
+  const signup =
+    brand.key === "atl"
+      ? `<a href="/subscribe">adapttolife.org/subscribe</a>`
+      : `<a href="${esc(brand.signupUrl)}">${esc(brand.site)}</a>`;
+  const pages = {
+    confirm: {
+      title: `Unsubscribe from ${brand.list}`,
+      body:
+        `<p>Press the button and ${esc(email)} won’t get ${esc(brand.list)} any more.</p>` +
+        `<form method="post" action="${esc(action)}"><button type="submit">Unsubscribe</button></form>`,
+    },
+    done: {
+      title: "You’re unsubscribed",
+      body: `<p>${esc(email)} won’t get ${esc(brand.list)} any more. If that was a mistake, you can sign up again any time at ${signup}.</p>`,
+    },
+    invalid: {
+      title: "That link didn’t work",
+      body: `<p>We couldn’t confirm that unsubscribe link. Reply to any of our emails, or write to ${inbox}, and we’ll take you off the list.</p>`,
+    },
+    error: {
+      title: "That didn’t go through",
+      body:
+        `<p>We couldn’t unsubscribe ${esc(email)} just now. Please press the button again in a minute, or write to ${inbox} and we’ll do it for you.</p>` +
+        `<form method="post" action="${esc(action)}"><button type="submit">Unsubscribe</button></form>`,
+    },
+  };
+  const { title, body } = pages[state] || pages.invalid;
+  const header =
+    brand.key === "atl"
+      ? `<a href="/"><img src="/images/email/atl-logo-cream.png" width="209" height="52" alt="Adapt To Life"></a>`
+      : `<a class="word" href="${esc(brand.signupUrl)}">${esc(brand.name)}</a>`;
+  const home =
+    brand.key === "atl"
+      ? `<a href="/">Back to adapttolife.org</a>`
+      : `<a href="${esc(brand.signupUrl)}">Back to ${esc(brand.site)}</a>`;
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><meta name="theme-color" content="#0f0e0d"><title>${title} | ${esc(brand.name)}</title>
+<style>body{margin:0;background:#EFE8DC;color:#26231F;font-family:'Sofia Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:18px;line-height:1.6}header{background:#0f0e0d;padding:18px 24px}header img{display:block}.word{display:inline-block;padding:14px 0;font-family:'Space Mono',ui-monospace,Menlo,monospace;font-size:14px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:#F9F7F2;text-decoration:none}main{max-width:560px;margin:48px auto;padding:0 24px}h1{font-size:34px;line-height:1.1;margin:0 0 18px;color:#171513}a{color:#B9391E;font-weight:700}p{overflow-wrap:anywhere}form{margin:28px 0}button{font:inherit;font-weight:700;font-size:18px;line-height:1;color:#F9F7F2;background:#B9391E;border:0;border-radius:999px;padding:16px 30px;min-height:48px;cursor:pointer}button:focus-visible{outline:3px solid #171513;outline-offset:3px}</style></head>
+<body><header>${header}</header><main><h1>${title}</h1>${body}<p>${home}</p></main></body></html>`;
 }

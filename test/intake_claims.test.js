@@ -134,3 +134,40 @@ test("covered receipts and retired canaries do not send again", async () => {
     "disabled-by-owner",
   );
 });
+test("a retryable failure goes back to pending and the next sweep sends it", async () => {
+  const { e, row } = await setup();
+  const sent = [];
+  let fail = true;
+  e.SEND_EMAIL = {
+    send: async (m) => {
+      if (fail) throw Object.assign(Error("provider busy"), { retryable: true });
+      sent.push(m);
+    },
+  };
+  assert.equal(await notifyIntakeRow(e, row), false);
+  const claim = () =>
+    e.INTAKE.sql.prepare("SELECT state,error FROM intake_delivery_claims").get();
+  assert.equal(claim().state, "pending");
+  assert.match(
+    e.INTAKE.sql.prepare("SELECT notify_error FROM intake").get().notify_error,
+    /^Will retry: provider busy/,
+  );
+  fail = false;
+  await sweepIntake(e);
+  assert.equal(sent.length, 1);
+  assert.equal(claim().state, "done");
+});
+test("a retryable failure past the 23-hour window goes to review, not pending", async () => {
+  const { e, row } = await setup();
+  e.SEND_EMAIL = {
+    send: async () => {
+      throw Object.assign(Error("provider busy"), { retryable: true });
+    },
+  };
+  const old = { ...row, received_at: new Date(Date.now() - 24 * 3600e3).toISOString() };
+  await notifyIntakeRow(e, old);
+  assert.equal(
+    e.INTAKE.sql.prepare("SELECT state FROM intake_delivery_claims").get().state,
+    "review",
+  );
+});

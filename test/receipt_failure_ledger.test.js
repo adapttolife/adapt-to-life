@@ -104,13 +104,13 @@ test("the waiver receipt records too — its catch never rethrows", async () => 
   const src = await import("node:fs").then((fs) =>
     fs.readFileSync(new URL("../src/waiver.js", import.meta.url), "utf8"),
   );
-  // The record call must sit inside sendReceiptEmail, after its own console.error,
-  // not in the caller's catch block.
-  const fn = src.slice(src.indexOf("async function sendReceiptEmail"));
+  // The record call must sit inside processWaiverEmail (the outbox), where the
+  // error is caught, not in the caller's catch block.
+  const fn = src.slice(src.indexOf("async function processWaiverEmail"));
   assert.match(
     fn.slice(0, fn.indexOf("\n}\n")),
     /recordTransactionalFailure\(env, "receipt:waiver"/,
-    "waiver failures must be recorded inside sendReceiptEmail, where the error is actually caught",
+    "waiver failures must be recorded inside processWaiverEmail, where the error is actually caught",
   );
 });
 

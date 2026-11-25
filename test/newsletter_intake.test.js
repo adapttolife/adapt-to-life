@@ -6,28 +6,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import worker from "../src/index.js";
-
-function signupDb() {
-  const claims = new Set();
-  return {
-    prepare(sql) {
-      return {
-        bind: (...values) => ({
-          async first() {
-            if (sql.startsWith("INSERT OR IGNORE INTO newsletter_delivery_claims")) {
-              if (claims.has(values[0])) return null;
-              claims.add(values[0]);
-              return { claim_key: values[0] };
-            }
-            return null;
-          },
-          async run() { return {}; },
-          async all() { return { results: [] }; },
-        }),
-      };
-    },
-  };
-}
+import { newsletterEnv, fakeResend } from "./helpers/fake-resend.js";
 
 function intakeDb({ fail = false } = {}) {
   const rows = [];
@@ -49,10 +28,8 @@ function intakeDb({ fail = false } = {}) {
 
 function env(INTAKE) {
   return {
-    AGENT_MAIL_DB: signupDb(),
+    ...newsletterEnv(),
     INTAKE,
-    RESEND_API_KEY: "re_test",
-    RESEND_SEGMENT_ID: "seg",
     TURNSTILE_MODE: "off",
     WELCOME_SERIES: "off",
     FORM_LIMITER: { limit: async () => ({ success: true }) },
@@ -62,10 +39,7 @@ function env(INTAKE) {
 
 async function signup(e, ctx, email = "new@example.com") {
   const original = globalThis.fetch;
-  globalThis.fetch = async (url) => {
-    if (String(url) === "https://api.resend.com/contacts") return Response.json({ object: "contact", id: "c-new" });
-    return new Response("{}", { status: 200 });
-  };
+  globalThis.fetch = fakeResend().fetch;
   try {
     return await worker.fetch(
       new Request("https://adapttolife.org/api/subscribe", {

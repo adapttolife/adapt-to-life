@@ -23,6 +23,11 @@ CREATE TABLE IF NOT EXISTS donor_gifts (
   next_attempt_at       TEXT,
   last_error            TEXT,
   lease_token           TEXT,
+  -- When the first send began; never reset. No attempt is made or scheduled
+  -- 23 hours after it (src/mail-window.js). NULL on a row attempted before the
+  -- Resend move: that one is reviewed, never resent automatically.
+  -- Live: schema/migrations/2026-11-24-donor-gifts-first-attempt.sql.
+  first_attempted_at    TEXT,
   created_at            TEXT NOT NULL,
   updated_at            TEXT NOT NULL
 );

@@ -1,17 +1,41 @@
 import { mailConfigured } from "./mail-transport.js";
 // Independent internal correspondence for contact/sponsor forms only.
 // No historical backfill; no customer resend; no grant/volunteer audience expansion.
-import { cfSend, HOUSE_FROM, HOUSE_INBOX, esc, houseShell } from "./email.js";
+// Same mail rules as the form outbox (src/forms.js): each row belongs to the
+// environment that wrote it, the send carries a stable Idempotency-Key
+// (contact-original-<submission id>) over a body built only from the stored
+// record, and a retryable failure retries with backoff inside the 23-hour window.
+import {
+  cfSend,
+  HOUSE_BRAND,
+  HOUSE_FROM,
+  HOUSE_INBOX,
+  esc,
+  houseShell,
+  recordTransactionalFailure,
+} from "./email.js";
+import { RETRY_WINDOW_MS, windowRefusal, nextAttemptAt } from "./mail-window.js";
 const now = () => new Date().toISOString();
-export function queueOriginal(db, id, payload) {
+const ownEnv = (env) => env.ENV_NAME || "production";
+export function queueOriginal(db, id, payload, envName = "production") {
   return db
     .prepare(
-      `INSERT OR IGNORE INTO form_record_deliveries(submission_id)
-    SELECT id FROM form_submissions WHERE id=? AND kind='contact' AND payload=?`,
+      `INSERT OR IGNORE INTO form_record_deliveries(submission_id,env)
+    SELECT id,? FROM form_submissions WHERE id=? AND kind='contact' AND payload=?`,
     )
-    .bind(id, payload);
+    .bind(envName, id, payload);
 }
 export async function reconcileOriginal(env, id) {
+  // Outside production there is no shared intake row to stamp (src/forms.js
+  // keeps staging rows out of it); just close the step.
+  if (ownEnv(env) !== "production") {
+    await env.WAIVERS_DB.prepare(
+      "UPDATE form_record_deliveries SET mirrored_at=COALESCE(mirrored_at,?) WHERE submission_id=? AND state='done'",
+    )
+      .bind(now(), id)
+      .run();
+    return;
+  }
   const d = await env.WAIVERS_DB.prepare(
     "SELECT completed_at FROM form_record_deliveries WHERE submission_id=? AND state='done'",
   )
@@ -32,17 +56,21 @@ export async function reconcileOriginal(env, id) {
 }
 export async function processOriginal(env, id) {
   const db = env.WAIVERS_DB;
+  const at = now();
   const claim = await db
     .prepare(
-      "UPDATE form_record_deliveries SET state='running',attempts=attempts+1,started_at=?,error=NULL WHERE submission_id=? AND state='pending' RETURNING submission_id",
+      "UPDATE form_record_deliveries SET state='running',attempts=attempts+1,started_at=?,error=NULL WHERE submission_id=? AND state='pending' AND env=? AND (next_attempt_at IS NULL OR next_attempt_at<=?) RETURNING attempts,first_attempted_at",
     )
-    .bind(now(), id)
+    .bind(at, id, ownEnv(env), at)
     .first();
   if (!claim) {
     await reconcileOriginal(env, id);
     return;
   }
   let externalStarted = false;
+  let windowClosed = false;
+  let firstAttemptedAt = claim.first_attempted_at;
+  const firstExternal = !claim.first_attempted_at;
   try {
     const row = await db
       .prepare("SELECT * FROM form_submissions WHERE id=?")
@@ -55,6 +83,22 @@ export async function processOriginal(env, id) {
       throw Error("Invalid case reference");
     const sub = JSON.parse(row.payload);
     if (!mailConfigured(env)) throw Error("Original-record mail binding missing");
+    // The retry clock starts here, once a send can actually happen, and never
+    // moves. Past 23 hours the same key is a new send to Resend: never send.
+    if (!firstAttemptedAt) {
+      const stamped = await db
+        .prepare(
+          "UPDATE form_record_deliveries SET first_attempted_at=COALESCE(first_attempted_at,?) WHERE submission_id=? RETURNING first_attempted_at",
+        )
+        .bind(now(), id)
+        .first();
+      firstAttemptedAt = stamped?.first_attempted_at;
+    }
+    const refusal = windowRefusal(firstAttemptedAt);
+    if (refusal) {
+      windowClosed = true;
+      throw Error(refusal);
+    }
     // Whitelist accepted contact fields, never forward challenge tokens or raw extras.
     const fields = {
       Reference: id,
@@ -97,31 +141,47 @@ export async function processOriginal(env, id) {
         "X-ATL-Record": "original-request",
         "X-ATL-Intake-ID": id,
       },
+      idempotencyKey: `contact-original-${id}`,
+      tags: { brand: HOUSE_BRAND, kind: "contact-original" },
     });
-    if (typeof result.messageId !== "string" || !result.messageId.trim())
+    const dropped = !!result?.dropped;
+    if (!dropped && (typeof result?.messageId !== "string" || !result.messageId.trim()))
       throw Error("Original-record acceptance uncertain: missing provider ID");
     await db
       .prepare(
-        "UPDATE form_record_deliveries SET state='done',completed_at=?,receipt=?,error=NULL WHERE submission_id=? AND state='running'",
+        "UPDATE form_record_deliveries SET state='done',completed_at=?,receipt=?,error=?,next_attempt_at=NULL WHERE submission_id=? AND state='running'",
       )
       .bind(
         now(),
-        JSON.stringify({
-          messageId: result.messageId,
-          provider: result.provider || "cloudflare",
-          status: "accepted",
-          to: HOUSE_INBOX,
-        }),
+        JSON.stringify(
+          dropped
+            ? { dropped: true, reason: result.reason }
+            : {
+                messageId: result.messageId,
+                provider: result.provider || "cloudflare",
+                status: "accepted",
+                to: HOUSE_INBOX,
+              },
+        ),
+        dropped ? `Not sent: dropped outside production (${result.reason})` : null,
         id,
       )
       .run();
   } catch (e) {
+    const next =
+      externalStarted && e?.retryable === true
+        ? nextAttemptAt(firstAttemptedAt, claim.attempts)
+        : null;
+    const retry = windowClosed ? false : !externalStarted || !!next;
     await db
       .prepare(
-        "UPDATE form_record_deliveries SET state=?,error=? WHERE submission_id=? AND state='running'",
+        "UPDATE form_record_deliveries SET state=?,error=?,next_attempt_at=? WHERE submission_id=? AND state='running'",
       )
-      .bind(externalStarted ? "review" : "pending", String(e.message).slice(0, 400), id)
+      .bind(retry ? "pending" : "review", String(e.message).slice(0, 400), next, id)
       .run();
+    // A person hears about it: on the first failed send, and when it stops.
+    if (windowClosed || (externalStarted && (!retry || firstExternal)))
+      await recordTransactionalFailure(env, "receipt:contact original", HOUSE_INBOX, e);
     return;
   }
   // Cross-DB projection can retry after success without ever re-sending mail.
@@ -130,16 +190,32 @@ export async function processOriginal(env, id) {
 export async function recoverOriginals(env) {
   const db = env.WAIVERS_DB,
     cut = new Date(Date.now() - 15 * 60e3).toISOString();
-  await db
+  // Resend collapses a repeat of the same key and body for 24 hours, so an
+  // interrupted Resend send inside the window can go again; others need review.
+  const windowStart = new Date(Date.now() - RETRY_WINDOW_MS).toISOString();
+  const interrupted = await db
     .prepare(
-      "UPDATE form_record_deliveries SET state='review',error='Interrupted original send: verify provider before retry' WHERE state='running' AND started_at<?",
+      `UPDATE form_record_deliveries SET
+         state=CASE WHEN ?=1 AND first_attempted_at>? THEN 'pending' ELSE 'review' END,
+         error='Interrupted original send: verify provider before retry'
+       WHERE state='running' AND started_at<? AND env=?
+       RETURNING submission_id,state`,
     )
-    .bind(cut)
-    .run();
+    .bind(env.MAIL_TRANSPORT === "resend" ? 1 : 0, windowStart, cut, ownEnv(env))
+    .all();
+  for (const r of interrupted.results || [])
+    if (r.state === "review")
+      await recordTransactionalFailure(
+        env,
+        "receipt:interrupted contact original",
+        HOUSE_INBOX,
+        Error(`Interrupted original copy for ${r.submission_id}; inspect before retry`),
+      );
   const rows = await db
     .prepare(
-      "SELECT submission_id FROM form_record_deliveries WHERE state='pending' OR (state='done' AND mirrored_at IS NULL) ORDER BY submission_id LIMIT 25",
+      "SELECT submission_id FROM form_record_deliveries WHERE env=? AND ((state='pending' AND (next_attempt_at IS NULL OR next_attempt_at<=?)) OR (state='done' AND mirrored_at IS NULL)) ORDER BY submission_id LIMIT 25",
     )
+    .bind(ownEnv(env), now())
     .all();
   await Promise.allSettled(
     (rows.results || []).map((r) => processOriginal(env, r.submission_id)),

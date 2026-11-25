@@ -1,25 +1,21 @@
 import test from "node:test";
+import PostalMime from "postal-mime";
+import { buildMime } from "../src/mail-transport.js";
 import assert from "node:assert/strict";
 import { DatabaseSync } from "node:sqlite";
 import { readFileSync } from "node:fs";
-import PostalMime from "postal-mime";
-import { buildMime } from "../src/mail-transport.js";
 import { sendContactReceipt } from "../src/receipts.js";
-test("contact receipt works without SEND_EMAIL and preserves Gmail provider/house BCC", async () => {
+test("contact receipt goes through Resend with the house BCC, reference, key and tags", async () => {
   const original = globalThis.fetch;
-  let parsed;
+  let call;
   globalThis.fetch = async (url, init) => {
-    if (url.includes("oauth2"))
-      return Response.json({ access_token: "x", token_type: "Bearer" });
-    parsed = await PostalMime.parse(
-      Buffer.from(JSON.parse(init.body).raw, "base64url"),
-    );
+    call = { url, init, body: JSON.parse(init.body) };
     return Response.json({ id: "contact-accepted" });
   };
   try {
     const result = await sendContactReceipt(
       {
-        ...gmail,
+        ...resend,
         INTAKE_CAPTURE_RECEIPT: true,
         INTAKE_SUBMISSION_ID: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
       },
@@ -30,18 +26,33 @@ test("contact receipt works without SEND_EMAIL and preserves Gmail provider/hous
         type: "question",
       },
     );
-    assert.equal(result.provider, "gmail");
+    assert.equal(result.provider, "resend");
     assert.equal(result.messageId, "contact-accepted");
-    assert.equal(parsed.bcc[0].address, "hello@adapttolife.org");
-    assert.ok(
-      parsed.headers.some(
-        (h) => h.key === "auto-submitted" && h.value === "auto-generated",
-      ),
+    assert.equal(call.url, "https://api.resend.com/emails");
+    assert.equal(
+      call.init.headers["Idempotency-Key"],
+      "receipt-contact-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
     );
+    assert.deepEqual(call.body.bcc, ["hello@adapttolife.org"]);
+    assert.deepEqual(call.body.reply_to, ["hello@adapttolife.org"]);
+    assert.equal(call.body.from, "Adapt To Life <hello@mail.adapttolife.org>");
+    assert.equal(call.body.headers["Auto-Submitted"], "auto-generated");
+    assert.deepEqual(call.body.tags, [
+      { name: "brand", value: "adapttolife" },
+      { name: "kind", value: "receipt-contact" },
+      { name: "env", value: "production" },
+    ]);
+    assert.ok(call.body.text.includes("Zoë"));
   } finally {
     globalThis.fetch = original;
   }
 });
+const resend = {
+  MAIL_TRANSPORT: "resend",
+  RESEND_API_KEY: "test-key",
+  MAIL_FROM_DOMAINS: "mail.adapttolife.org,mail.adaptbodyshop.com",
+  ENV_NAME: "production",
+};
 import { claimAndThank, recoverDonorEmails } from "../src/givebutter_webhook.js";
 function database() {
   const s = new DatabaseSync(":memory:");
@@ -71,9 +82,11 @@ function database() {
     },
   };
 }
+// The Gmail transport sends only as GMAIL_FROM; these tests are about its lease
+// rules, so it is set to the house From the donor thank you now uses.
 const gmail = {
   MAIL_TRANSPORT: "gmail",
-  GMAIL_FROM: "hello@adapttolife.org",
+  GMAIL_FROM: "hello@mail.adapttolife.org",
   GMAIL_CLIENT_ID: "test",
   GMAIL_CLIENT_SECRET: "test",
   GMAIL_REFRESH_TOKEN: "test",
@@ -142,7 +155,7 @@ test("Gmail donor claimant rejects stale lease even outside the cron recovery pa
 test("independent MIME parser preserves Unicode, reply identity, PDF bytes and inline image", async () => {
   const raw = buildMime(
     {
-      from: "Adapt To Life <hello@adapttolife.org>",
+      from: "Adapt To Life <hello@mail.adapttolife.org>",
       to: "Person <person@example.test>",
       replyTo: "hello@adapttolife.org",
       subject: "Hello — Zoë",

@@ -5,8 +5,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { DatabaseSync } from "node:sqlite";
+import { readFileSync } from "node:fs";
 import {
   D1_SCHEMAS,
+  OWNED_ELSEWHERE,
   buildExpected,
   describeLocal,
   diffSchema,
@@ -124,6 +126,44 @@ test("an unknown live table fails; an allowlisted one is a note", () => {
   });
   assert.deepEqual(out.problems, ["table stray: live only, no schema file defines it"]);
   assert.deepEqual(out.notes, ["table intake: live, another worker's table"]);
+});
+
+test("atl-intake: the ASNM mail ledger (0028_mail_ledger.sql) is a note, not a failure", () => {
+  // The exact tables the adaptivesportsnearme repo adds to atl-intake.
+  const asnm = `CREATE TABLE IF NOT EXISTS send_failures (
+    id TEXT PRIMARY KEY, ts INTEGER NOT NULL, route TEXT NOT NULL, to_addr TEXT, error TEXT);
+  CREATE INDEX IF NOT EXISTS idx_send_failures_ts ON send_failures(ts);
+  CREATE TABLE IF NOT EXISTS resend_events (svix_id TEXT PRIMARY KEY, received_at TEXT NOT NULL,
+    type TEXT NOT NULL, email_id TEXT, kind TEXT, env TEXT);
+  CREATE INDEX IF NOT EXISTS idx_resend_events_email ON resend_events(email_id);`;
+  const live = new DatabaseSync(":memory:");
+  live.exec(
+    readFileSync(new URL("../src/schema_intake_delivery.sql", import.meta.url), "utf8"),
+  );
+  live.exec(
+    "CREATE TABLE intake (id TEXT PRIMARY KEY); CREATE TABLE newsletter_delivery_claims (id TEXT); CREATE TABLE newsletter_send_receipts (id TEXT);",
+  );
+  live.exec(asnm);
+  const out = diffSchema(buildExpected("atl-intake"), describeLocal(live), {
+    ownedElsewhere: OWNED_ELSEWHERE["atl-intake"],
+  });
+  assert.deepEqual(out.problems, []);
+  assert.ok(
+    out.notes.some((n) =>
+      n.startsWith("table send_failures: live, the adaptivesportsnearme repo"),
+    ),
+  );
+  assert.ok(
+    out.notes.some((n) =>
+      n.startsWith("table resend_events: live, the adaptivesportsnearme repo"),
+    ),
+  );
+  // Without the allowlist entry the release gate would stop on it.
+  assert.ok(
+    diffSchema(buildExpected("atl-intake"), describeLocal(live)).problems.some((p) =>
+      p.startsWith("table send_failures: live only"),
+    ),
+  );
 });
 
 test("string literals keep their case and content; comments outside them do not count", () => {

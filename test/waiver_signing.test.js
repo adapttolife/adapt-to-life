@@ -33,11 +33,16 @@ beforeEach(() => {
     downloads: 0,
     jwtClaims: [],
     mode: "ok",
+    resend: [],
   };
   gmail = [];
   originalFetch = globalThis.fetch;
   globalThis.fetch = async (input, init = {}) => {
     const url = String(input);
+    if (url === "https://api.resend.com/emails") {
+      drive.resend.push({ headers: init.headers, body: JSON.parse(init.body) });
+      return Response.json({ id: "resend-" + drive.resend.length });
+    }
     if (url === "https://oauth2.example/token") {
       const assertion = new URLSearchParams(String(init.body || "")).get("assertion");
       if (assertion) {
@@ -175,8 +180,14 @@ const docRow = (e) => e.WAIVERS_DB.sql.prepare("SELECT * FROM waiver_documents")
 const count = (e, t) => e.WAIVERS_DB.sql.prepare(`SELECT count(*) n FROM ${t}`).get().n;
 const sha = (b) => createHash("sha256").update(b).digest("hex");
 
+const RESEND = {
+  MAIL_TRANSPORT: "resend",
+  RESEND_API_KEY: "test-key",
+  MAIL_FROM_DOMAINS: "mail.adapttolife.org",
+  ENV_NAME: "production",
+};
 test("happy path: row and PDF bytes captured, archived to Drive once, receipt sent", async () => {
-  const e = env();
+  const e = env(RESEND);
   const res = await sign(e);
   const out = await res.json();
   assert.equal(res.status, 200);
@@ -197,8 +208,26 @@ test("happy path: row and PDF bytes captured, archived to Drive once, receipt se
     0,
     "a fresh id cannot exist in Drive yet, so no lookup at signing",
   );
-  assert.equal(e.sent.length, 1);
-  assert.equal(e.sent[0].attachments.length, 1);
+  // The live transport is Resend, which base64s the bytes itself. The exact
+  // message the waiver hands over must reach Resend with the PDF intact.
+  assert.equal(drive.resend.length, 1);
+  const { headers, body } = drive.resend[0];
+  assert.equal(body.from, "Adapt To Life <hello@mail.adapttolife.org>");
+  assert.deepEqual(body.bcc, ["hello@adapttolife.org"]);
+  assert.deepEqual(body.reply_to, ["hello@adapttolife.org"]);
+  assert.equal(headers["Idempotency-Key"], `waiver-${out.id}`);
+  assert.deepEqual(body.tags, [
+    { name: "brand", value: "adapttolife" },
+    { name: "kind", value: "waiver" },
+    { name: "env", value: "production" },
+  ]);
+  assert.equal(body.attachments.length, 1);
+  assert.equal(body.attachments[0].content_type, "application/pdf");
+  assert.equal(
+    body.attachments[0].content,
+    Buffer.from(docRow(e).pdf).toString("base64"),
+    "the signed PDF bytes are in the Resend request",
+  );
   assert.equal(e.INTAKE.sql.prepare("SELECT count(*) n FROM intake").get().n, 1);
 });
 
@@ -382,9 +411,11 @@ test("receipt failure stays best-effort and is recorded", async () => {
   );
 });
 
+// The Gmail transport sends only as GMAIL_FROM; it is set to the house From
+// the receipt now uses, so these tests stay about the PDF bytes.
 const GMAIL = {
   MAIL_TRANSPORT: "gmail",
-  GMAIL_FROM: "hello@adapttolife.org",
+  GMAIL_FROM: "hello@mail.adapttolife.org",
   GMAIL_CLIENT_ID: "test-client",
   GMAIL_CLIENT_SECRET: "test-secret",
   GMAIL_REFRESH_TOKEN: "test-refresh",

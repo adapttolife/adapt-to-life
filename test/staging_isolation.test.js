@@ -63,6 +63,7 @@ const SHARED_SECRETS = {
   GMAIL_CLIENT_ID: "test-client",
   GMAIL_CLIENT_SECRET: "test-secret",
   GMAIL_REFRESH_TOKEN: "test-refresh",
+  RESEND_API_KEY: "test-resend",
   GIVEBUTTER_WEBHOOK_SECRET: "test-webhook-secret",
 };
 
@@ -140,14 +141,60 @@ test("staging returns 404 for the Givebutter webhook and never touches the donor
 });
 
 test("staging supports the passwordless admin mail transport", async () => {
-  assert.equal(staging.vars.MAIL_TRANSPORT, "gmail");
+  assert.equal(staging.vars.MAIL_TRANSPORT, "resend");
   assert.deepEqual(staging.send_email, [{ name: "SEND_EMAIL" }]);
-  assert.equal(atl.vars.MAIL_TRANSPORT, "gmail");
+  assert.equal(atl.vars.MAIL_TRANSPORT, "resend");
+  assert.equal(staging.vars.MAIL_FROM_DOMAINS, atl.vars.MAIL_FROM_DOMAINS);
 });
 
-test("staging mail uses the configured Gmail transport", async () => {
+test("staging mail uses the configured Resend transport", async () => {
   const env = { ...staging.vars, ...SHARED_SECRETS };
   assert.equal(mailConfigured(env), true);
+});
+
+test("staging mails only the team allow list; production has none", async () => {
+  assert.equal(staging.vars.ENV_NAME, "staging");
+  assert.equal(atl.vars.ENV_NAME, "production");
+  assert.equal(atl.vars.MAIL_ALLOW, undefined);
+  const allow = staging.vars.MAIL_ALLOW.split(",");
+  for (const entry of [
+    "hello@adapttolife.org",
+    "@adapttolife.org",
+    "@adaptivesportsnearme.com",
+    "@faisaln.com",
+    "alec@alecability.com",
+  ])
+    assert.ok(allow.includes(entry), entry);
+  // Every admin sign-in domain is on the list, so staging admin links still go.
+  const calls = [];
+  const old = globalThis.fetch;
+  globalThis.fetch = async (url, init) => {
+    calls.push([String(url), init]);
+    return Response.json({ id: "staging-accepted" });
+  };
+  try {
+    const env = { ...staging.vars, ...SHARED_SECRETS };
+    const base = {
+      from: "Adapt To Life <hello@mail.adapttolife.org>",
+      subject: "s",
+      text: "t",
+      idempotencyKey: "k-1",
+      tags: { brand: "adapttolife", kind: "test" },
+    };
+    const dropped = await sendMail(env, { ...base, to: "applicant@example.com" });
+    assert.equal(dropped.dropped, true);
+    assert.equal(dropped.reason, "not-allowed");
+    assert.equal(calls.length, 0, "a non-team address never reaches Resend");
+    const ok = await sendMail(env, { ...base, to: "someone@faisaln.com" });
+    assert.equal(ok.id, "staging-accepted");
+    const tags = JSON.parse(calls[0][1].body).tags;
+    assert.deepEqual(
+      tags.find((t) => t.name === "env"),
+      { name: "env", value: "staging" },
+    );
+  } finally {
+    globalThis.fetch = old;
+  }
 });
 
 test("staging receipt preview renders from the capturing stub and never reaches a mail provider", async () => {
@@ -175,7 +222,9 @@ test("staging receipt preview renders from the capturing stub and never reaches 
   } finally {
     globalThis.fetch = old;
   }
-  const mailHosts = fetchCalls.filter((u) => /googleapis\.com|gmail/.test(u));
+  const mailHosts = fetchCalls.filter((u) =>
+    /googleapis\.com|gmail|resend\.com/.test(u),
+  );
   assert.deepEqual(mailHosts, []);
 });
 
@@ -204,6 +253,37 @@ const VALID_BODIES = {
     signature_type: "drawn",
     program: "staging-test",
     cf_token: "test",
+  },
+  // The durable form routes (src/forms.js): valid bodies for each handler.
+  "/api/contact": {
+    name: "Staging Tester",
+    email: "tester@example.test",
+    message: "Hello",
+    type: "General question",
+    cf_token: "test",
+  },
+  "/api/apply": {
+    name: "Staging Tester",
+    email: "tester@example.test",
+    sport: "Pickleball",
+    need: "Chair",
+    about: "Story",
+    cf_token: "test",
+  },
+  "/api/volunteer": {
+    name: "Staging Tester",
+    email: "tester@example.test",
+    roles: ["Event crew"],
+    cf_token: "test",
+  },
+  // handleUnsubscribe (src/index.js): the one click POST from the mail header.
+  "/unsubscribe": { e: "subscriber@example.test" },
+  // handleShopContact (src/shop_contact.js): a storefront message.
+  "/api/shop-contact": {
+    name: "Shop Tester",
+    email: "buyer@example.test",
+    topic: "Sizing help",
+    message: "Which size?",
   },
 };
 
@@ -258,7 +338,15 @@ async function probe(path, methods, body) {
   return { dbCalls, fetchCalls, statuses };
 }
 
-for (const route of ["/api/subscribe", "/api/waiver"]) {
+for (const route of [
+  "/api/subscribe",
+  "/api/waiver",
+  "/unsubscribe",
+  "/api/shop-contact",
+  "/api/contact",
+  "/api/apply",
+  "/api/volunteer",
+]) {
   test(`staging returns 404 for ${route} and never calls an outside service`, async () => {
     const { dbCalls, fetchCalls, statuses } = await probe(
       route,

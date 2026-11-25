@@ -1,6 +1,7 @@
 import { sendMail } from "./mail-transport.js";
-// Transactional mail through the explicitly selected transport. Gmail is opt-in
-// and fails closed; the cfSend name is retained for caller compatibility.
+// Transactional mail through the selected transport (MAIL_TRANSPORT; resend in
+// production, see docs/EMAIL.md). The cfSend name is retained for caller
+// compatibility.
 export async function cfSend(env, message) {
   return sendMail(env, message);
 }
@@ -18,8 +19,14 @@ export async function cfSend(env, message) {
 // have to survive any mail client without a layout engine behind it. The
 // newsletter is where design lives; this is where trust does.
 // ---------------------------------------------------------------------------
-export const HOUSE_FROM = "Adapt To Life <hello@adapttolife.org>";
+//
+// Sites send through Resend from the mail. subdomain; people answer in Google
+// Workspace, because Reply-To is the brand's hello@ (docs/EMAIL.md). The From
+// shows the brand name, which is what people read. Resend refuses a From that is
+// not on MAIL_FROM_DOMAINS, so this line and wrangler.jsonc change together.
+export const HOUSE_FROM = "Adapt To Life <hello@mail.adapttolife.org>";
 export const HOUSE_INBOX = "hello@adapttolife.org";
+export const HOUSE_BRAND = "adapttolife";
 
 export const esc = (s) =>
   String(s ?? "").replace(
@@ -116,14 +123,14 @@ export async function recordTransactionalFailure(env, route, toAddr, err) {
 // shirt money went somewhere" is the single most valuable thing this footer can
 // say and it is true.
 export const SHOP_NAME = "Adapt Body Shop";
+// Internal notices go to the one mailbox; hello@adaptbodyshop.com is an alias
+// of it, and is what a customer sees and replies to.
 export const SHOP_INBOX = "hello@adapttolife.org";
-// FROM stays on the onboarded apex (Alec, 2026-09-04). adaptbodyshop.com is a
-// Google Workspace alias domain but is NOT onboarded to Cloudflare Email
-// Sending, so a From: on it would leave here unsigned. Reply-To and internal
-// notifications use hello@adapttolife.org, the owner-selected organizational inbox.
-// To flip the From later: onboard the zone (cf-bounce MX + SPF + DKIM, the exact three
-// records adapttolife.org already has) and change this one line.
-export const SHOP_FROM = `Adapt Body Shop <${HOUSE_INBOX}>`;
+export const SHOP_REPLY_TO = "hello@adaptbodyshop.com";
+export const SHOP_BRAND = "bodyshop";
+// Sent through Resend from mail.adaptbodyshop.com (docs/EMAIL.md). That domain
+// must be verified in Resend before this ships, or every shop email is refused.
+export const SHOP_FROM = "Adapt Body Shop <hello@mail.adaptbodyshop.com>";
 
 export function shopShell(bodyHtml) {
   return (

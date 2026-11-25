@@ -32,8 +32,10 @@ import { mailConfigured } from "./mail-transport.js";
 
 import {
   cfSend,
+  SHOP_BRAND,
   SHOP_FROM,
   SHOP_INBOX,
+  SHOP_REPLY_TO,
   shopShell,
   houseQuote,
   houseLabel,
@@ -332,7 +334,7 @@ export async function sendShopReceipt(env, row) {
     {
       from: SHOP_FROM,
       to: row.email,
-      replyTo: SHOP_INBOX,
+      replyTo: SHOP_REPLY_TO,
       subject,
       text,
       html,
@@ -341,6 +343,8 @@ export async function sendShopReceipt(env, row) {
         "X-ABS-Topic": row.topic,
         "X-ABS-Id": row.id,
       },
+      idempotencyKey: `shop-receipt-${row.id}`,
+      tags: { brand: SHOP_BRAND, kind: "receipt-shop" },
     },
     "shop contact receipt",
   );
@@ -398,6 +402,8 @@ async function notifyShop(env, row) {
       text,
       html,
       headers: { "X-ABS-Form": "contact-internal", "X-ABS-Id": row.id },
+      idempotencyKey: `shop-notice-${row.id}`,
+      tags: { brand: SHOP_BRAND, kind: "notice-shop" },
     },
     "shop contact notification",
   );
@@ -408,10 +414,15 @@ async function notifyShop(env, row) {
 async function send(env, msg, label) {
   try {
     if (!mailConfigured(env)) {
-      console.log(`${label}: SEND_EMAIL not bound, skipping`);
+      console.log(`${label}: mail not configured, skipping`);
       return false;
     }
-    await cfSend(env, msg);
+    const result = await cfSend(env, msg);
+    if (result?.dropped) {
+      // Outside production, a non-team address is never mailed. Not a failure.
+      console.log(`${label}: not sent (${result.reason})`);
+      return false;
+    }
     return true;
   } catch (err) {
     console.error(`${label} failed:`, err);

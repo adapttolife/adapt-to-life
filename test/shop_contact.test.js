@@ -243,7 +243,7 @@ test("the customer copy carries the promise and the shop copy replies to them", 
   const [customer, shop] = sent;
 
   assert.equal(customer.to, "dana@example.com");
-  assert.equal(customer.replyTo, "hello@adapttolife.org");
+  assert.equal(customer.replyTo, "hello@adaptbodyshop.com");
   assert.match(customer.subject, /order #1042/);
   assert.match(customer.text, new RegExp(REPLY_WINDOW));
   assert.match(customer.html, new RegExp(REPLY_WINDOW));
@@ -271,14 +271,49 @@ test("customer text is escaped into the HTML body", async () => {
   }
 });
 
-test("both sends are from the onboarded apex with the shop's name on them", async () => {
+test("both sends are from the shop's mail. domain, keyed and tagged as Body Shop mail", async () => {
   const { env, sent } = stubEnv();
   const { ctx, settle } = ctxCollector();
   await handleShopContact(post(GOOD), env, ctx);
   await settle();
-  for (const msg of sent) {
-    assert.match(msg.from, /^Adapt Body Shop <hello@adapttolife\.org>$/);
+  assert.equal(sent.length, 2);
+  for (const msg of sent)
+    assert.equal(msg.from, "Adapt Body Shop <hello@mail.adaptbodyshop.com>");
+});
+
+test("on Resend, both shop sends carry their own key and the bodyshop tags", async () => {
+  const { env } = stubEnv();
+  Object.assign(env, {
+    MAIL_TRANSPORT: "resend",
+    RESEND_API_KEY: "test-key",
+    MAIL_FROM_DOMAINS: "mail.adapttolife.org,mail.adaptbodyshop.com",
+    ENV_NAME: "production",
+  });
+  const calls = [];
+  const old = globalThis.fetch;
+  globalThis.fetch = async (url, init) => {
+    if (url !== "https://api.resend.com/emails") throw Error("unexpected " + url);
+    calls.push({ key: init.headers["Idempotency-Key"], body: JSON.parse(init.body) });
+    return Response.json({ id: "r-" + calls.length });
+  };
+  try {
+    const { ctx, settle } = ctxCollector();
+    await handleShopContact(post(GOOD), env, ctx);
+    await settle();
+  } finally {
+    globalThis.fetch = old;
   }
+  assert.equal(calls.length, 2);
+  const customer = calls.find((c) => c.body.to[0] !== "hello@adapttolife.org");
+  const shop = calls.find((c) => c.body.to[0] === "hello@adapttolife.org");
+  assert.match(customer.key, /^shop-receipt-/);
+  assert.match(shop.key, /^shop-notice-/);
+  assert.deepEqual(customer.body.reply_to, ["hello@adaptbodyshop.com"]);
+  const tag = (c, n) => c.body.tags.find((t) => t.name === n)?.value;
+  assert.equal(tag(customer, "brand"), "bodyshop");
+  assert.equal(tag(customer, "kind"), "receipt-shop");
+  assert.equal(tag(shop, "kind"), "notice-shop");
+  assert.equal(tag(shop, "env"), "production");
 });
 
 test("the topic list and the order-required subset stay in agreement", () => {

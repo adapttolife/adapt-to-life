@@ -2,6 +2,7 @@ import { mailConfigured } from "./mail-transport.js";
 import {
   cfSend,
   esc,
+  HOUSE_BRAND,
   houseShell,
   houseSignoff,
   HOUSE_FROM,
@@ -9,6 +10,7 @@ import {
   recordTransactionalFailure,
 } from "./email.js";
 import { recordIntake, notifyIntake } from "./intake.js";
+import { RETRY_WINDOW_MS, windowRefusal, nextAttemptAt } from "./mail-window.js";
 
 const MAX_EMAIL_ATTEMPTS = 4;
 const MAX_WEBHOOK_BYTES = 64 * 1024;
@@ -110,10 +112,9 @@ export async function recordGift(env, transaction) {
   // every charge itself, and the same thank-you from us every month reads like
   // a machine. A later charge is still recorded (Givebutter is the money
   // record), as "no_email": no ATL email is owed for it.
-  const initialStatus =
-    !gift.email || (gift.recurring && (await monthlyAlreadyThanked(env, gift)))
-      ? "no_email"
-      : "pending";
+  const earlier =
+    gift.email && gift.recurring ? await monthlyAlreadyThanked(env, gift) : null;
+  const initialStatus = !gift.email || earlier ? "no_email" : "pending";
   const result = await env.WAIVERS_DB.prepare(
     `INSERT INTO donor_gifts
       (transaction_id, contact_id, first_name, last_name, email, amount, donated,
@@ -140,36 +141,69 @@ export async function recordGift(env, transaction) {
       now,
     )
     .run();
-  return { ...gift, inserted: Boolean(result?.meta?.changes) };
+  const inserted = Boolean(result?.meta?.changes);
+  // The donor's first thank you is closed for review and may have gone out, so
+  // this charge sends none (a second one would read like a machine) and a
+  // person decides.
+  if (inserted && earlier === "review")
+    await recordTransactionalFailure(
+      env,
+      "givebutter-thank-you",
+      gift.email,
+      new Error(
+        `Monthly charge ${gift.transactionId}: no thank you sent; the donor's first thank you is under review and may have gone out`,
+      ),
+    );
+  return { ...gift, inserted };
 }
 
+// The note that opens last_error on a thank you closed for a person to check:
+// it may already have gone out, so nothing resends it automatically.
+const REVIEW_NOTE = "Review before resending:";
+
 // An earlier monthly charge from the same donor to the same campaign that was
-// thanked, or is about to be. A first thank-you that failed doesn't count, so
-// the next charge carries it instead.
+// thanked, or is about to be: "thanked". One closed for review (it may have
+// gone out): "review", so this charge skips its thank you and a person is
+// told. A first thank-you that plainly failed doesn't count, so the next
+// charge carries it instead.
 async function monthlyAlreadyThanked(env, gift) {
   const row = await env.WAIVERS_DB.prepare(
-    `SELECT 1 AS earlier_thanks FROM donor_gifts
+    `SELECT CASE WHEN email_status = 'failed' THEN 'review' ELSE 'thanked' END AS earlier_thanks
+       FROM donor_gifts
       WHERE email = ? AND campaign_id = ? AND recurring = 1 AND transaction_id <> ?
-        AND email_status IN ('pending', 'sending', 'retry', 'sent')
+        AND (email_status IN ('pending', 'sending', 'retry', 'sent')
+          OR (email_status = 'failed' AND last_error LIKE ?))
+      ORDER BY CASE WHEN email_status = 'failed' THEN 1 ELSE 0 END
       LIMIT 1`,
   )
-    .bind(gift.email, gift.campaignId, gift.transactionId)
+    .bind(gift.email, gift.campaignId, gift.transactionId, `${REVIEW_NOTE}%`)
     .first();
-  return Boolean(row);
+  if (!row) return null;
+  return row.earlier_thanks === "review" ? "review" : "thanked";
 }
 
 export async function claimAndThank(env, gift) {
+  // A missing key or binding is local: nothing was sent, so nothing is claimed
+  // and the gift stays owed for the next run, never marked failed.
+  if (!mailConfigured(env)) return { emailed: false, notConfigured: true };
   // The conditional update is the one-way gate. Concurrent or retried webhook
   // deliveries can all reach here, but only one can claim pending -> sending.
+  // It also starts the retry clock (first_attempted_at, never reset) and
+  // refuses a row whose window has closed, or one attempted before the clock
+  // existed (Gmail era): nobody can say when that one first went out.
   const claimedAt = new Date().toISOString();
   const staleBefore = new Date(Date.now() - 15 * 60 * 1000).toISOString();
+  const windowStart = new Date(Date.now() - RETRY_WINDOW_MS).toISOString();
   const leaseToken = crypto.randomUUID();
   const claim = await env.WAIVERS_DB.prepare(
     `UPDATE donor_gifts
         SET email_status = 'sending', email_attempted_at = ?, updated_at = ?,
-            lease_token = ?, attempt_count = attempt_count + 1
+            lease_token = ?, attempt_count = attempt_count + 1,
+            first_attempted_at = COALESCE(first_attempted_at, ?)
       WHERE transaction_id = ? AND attempt_count < ?
         ${env.MAIL_TRANSPORT === "gmail" ? "AND email_status = 'pending' AND attempt_count = 0" : ""}
+        AND (attempt_count = 0 OR first_attempted_at IS NOT NULL)
+        AND (first_attempted_at IS NULL OR first_attempted_at > ?)
         AND (email_status = 'pending'
           OR (email_status = 'sending' AND email_attempted_at < ?)
           OR (email_status = 'retry' AND next_attempt_at <= ?))`,
@@ -178,23 +212,53 @@ export async function claimAndThank(env, gift) {
       claimedAt,
       claimedAt,
       leaseToken,
+      claimedAt,
       gift.transactionId,
       MAX_EMAIL_ATTEMPTS,
+      windowStart,
       staleBefore,
       claimedAt,
     )
     .run();
   if (!claim?.meta?.changes) return { emailed: false, duplicate: true };
   const state = await env.WAIVERS_DB.prepare(
-    "SELECT attempt_count FROM donor_gifts WHERE transaction_id = ? AND lease_token = ?",
+    "SELECT attempt_count, first_attempted_at FROM donor_gifts WHERE transaction_id = ? AND lease_token = ?",
   )
     .bind(gift.transactionId, leaseToken)
     .first();
   const attemptNumber = number(state?.attempt_count);
+  const firstAttemptedAt = state?.first_attempted_at;
 
   try {
-    await sendDonorThankYou(env, gift);
+    // Past 23 hours the same key is a new send to Resend, and with no clock (a
+    // lost lease reads none) nobody can say when it first went out: never send.
+    // A lost lease's row belongs to the other worker, so the fenced update
+    // below changes nothing; a row that really has no clock is closed for review.
+    const refusal = windowRefusal(firstAttemptedAt);
+    if (refusal) {
+      const closed = new Error(`${REVIEW_NOTE} ${refusal}`);
+      closed.windowClosed = true;
+      throw closed;
+    }
+    const sent = await sendDonorThankYou(env, gift);
     const sentAt = new Date().toISOString();
+    if (sent?.dropped) {
+      // Outside production a non-team address is never mailed: nothing is owed.
+      await env.WAIVERS_DB.prepare(
+        `UPDATE donor_gifts
+            SET email_status = 'no_email', next_attempt_at = NULL, last_error = ?,
+                lease_token = NULL, updated_at = ?
+          WHERE transaction_id = ? AND lease_token = ? AND email_status = 'sending'`,
+      )
+        .bind(
+          `Not sent: dropped outside production (${sent.reason})`,
+          sentAt,
+          gift.transactionId,
+          leaseToken,
+        )
+        .run();
+      return { emailed: false, dropped: true };
+    }
     const completed = await env.WAIVERS_DB.prepare(
       `UPDATE donor_gifts
           SET email_status = ?, email_sent_at = ?, next_attempt_at = NULL,
@@ -208,11 +272,18 @@ export async function claimAndThank(env, gift) {
       : { emailed: false, obsolete: true };
   } catch (err) {
     const failedAt = new Date().toISOString();
-    const terminal =
-      env.MAIL_TRANSPORT === "gmail" || attemptNumber >= MAX_EMAIL_ATTEMPTS;
-    const retryAt = terminal
-      ? null
-      : new Date(Date.now() + retryDelayMs(attemptNumber)).toISOString();
+    // Resend says whether a retry is safe; a refused send (bad address, From,
+    // a reused key with a different body) never gets better by retrying.
+    // No retry is ever scheduled past the window's cutoff.
+    let retryAt = null;
+    if (
+      !err?.windowClosed &&
+      env.MAIL_TRANSPORT !== "gmail" &&
+      !(env.MAIL_TRANSPORT === "resend" && err?.retryable !== true) &&
+      attemptNumber < MAX_EMAIL_ATTEMPTS
+    )
+      retryAt = nextAttemptAt(firstAttemptedAt, attemptNumber, { delay: retryDelayMs });
+    const terminal = !retryAt;
     const updated = await env.WAIVERS_DB.prepare(
       `UPDATE donor_gifts
           SET email_status = ?, next_attempt_at = ?, last_error = ?,
@@ -236,8 +307,12 @@ export async function claimAndThank(env, gift) {
 
 // The production Worker already wakes every ten minutes. Reclaiming a stale
 // lease here closes the process-death gap between claiming a row and recording
-// the email outcome. Cloudflare Email Sending has no idempotency key, so this is
-// deliberately at-least-once after a crash rather than silently at-most-once.
+// the email outcome. On Resend the send carries the Idempotency-Key
+// donor-thanks-<transaction id> over a body built only from the gift row, and
+// no attempt is made or scheduled more than 23 hours after the first
+// (src/mail-window.js), so a reclaim cannot email twice. Rows outside that
+// rule are closed as failed with a "Review" note, since this table has no
+// review state.
 export async function recoverDonorEmails(env) {
   if (!env.WAIVERS_DB)
     return {
@@ -271,6 +346,29 @@ export async function recoverDonorEmails(env) {
       .bind(now, staleBefore)
       .run();
   }
+  // Attempted before the retry clock existed, or past the window: a person
+  // checks Resend's log (or hello@'s Sent mail) before anything is resent.
+  const windowStart = new Date(Date.now() - RETRY_WINDOW_MS).toISOString();
+  const parked = await env.WAIVERS_DB.prepare(
+    `UPDATE donor_gifts SET email_status = 'failed', lease_token = NULL, updated_at = ?,
+        last_error = CASE WHEN first_attempted_at IS NULL
+          THEN 'Review before resending: attempted before the Resend move'
+          ELSE 'Review before resending: retry window (23 hours) closed' END
+      WHERE (email_status IN ('pending', 'retry')
+             OR (email_status = 'sending' AND email_attempted_at < ?))
+        AND attempt_count > 0
+        AND (first_attempted_at IS NULL OR first_attempted_at <= ?)
+      RETURNING transaction_id, email`,
+  )
+    .bind(now, staleBefore, windowStart)
+    .all();
+  for (const row of parked?.results || [])
+    await recordTransactionalFailure(
+      env,
+      "givebutter-thank-you",
+      row.email,
+      new Error(`Thank you for ${row.transaction_id} needs review before any resend`),
+    );
   await env.WAIVERS_DB.prepare(
     `UPDATE donor_gifts
         SET email_status = 'failed', lease_token = NULL,
@@ -365,6 +463,8 @@ export async function sendDonorThankYou(env, gift) {
     subject: "Thank you for putting an athlete in the game",
     text: textBody,
     html,
+    idempotencyKey: `donor-thanks-${gift.transactionId}`,
+    tags: { brand: HOUSE_BRAND, kind: "donor-thanks" },
   });
 }
 

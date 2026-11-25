@@ -685,6 +685,14 @@ test("/unsubscribe: when Resend refuses, the person is told to try again, and no
     assert.equal(res.status, 503);
     assert.match(await res.text(), /didn’t go through[\s\S]*<button/);
   });
+  // A person hears about it the same day.
+  const f = env.AGENT_MAIL_DB.sql
+    .prepare("SELECT route,to_addr FROM send_failures")
+    .all();
+  assert.deepEqual(
+    f.map((x) => [x.route, x.to_addr]),
+    [["unsubscribe:atl", "busy@example.com"]],
+  );
 });
 
 test("a new signup through /api/subscribe is recorded and welcomed; a second one is existing and gets no second welcome", async () => {

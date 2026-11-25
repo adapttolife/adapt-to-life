@@ -576,6 +576,53 @@ test("each Worker sends only its own waiver emails (staging and production share
   assert.equal(drive.resend.length, 1);
 });
 
+test("a failure before any send (no mail setup) backs off, is reported once, and goes to review at the cap", async () => {
+  const e = env({ ...RESEND, RESEND_API_KEY: "" });
+  const out = await (await sign(e)).json();
+  let r = email(e, out.id);
+  assert.equal(r.state, "pending");
+  assert.ok(Date.parse(r.next_attempt_at) > Date.now(), "backoff, not every sweep");
+  assert.equal(r.rendered, null, "nothing frozen before the transport exists");
+  assert.equal(failures(e).length, 1, "a missing mail setup is reported");
+  for (let i = 0; i < 9; i++) {
+    makeDue(e);
+    await sweepWaiverEmails(e);
+  }
+  r = email(e, out.id);
+  assert.equal(r.state, "review");
+  assert.equal(r.attempts, 10);
+  assert.equal(failures(e).length, 2, "reported again when it stops");
+  assert.equal(drive.resend.length, 0);
+});
+
+test("a D1 hiccup reading the PDF is retried, never frozen as an email without the PDF", async () => {
+  const e = env(RESEND);
+  const realPrepare = e.WAIVERS_DB.prepare;
+  let hiccup = true;
+  e.WAIVERS_DB.prepare = (sql) => {
+    if (hiccup && sql.startsWith("SELECT pdf FROM waiver_documents"))
+      return {
+        bind: () => ({
+          first: async () => {
+            throw new Error("D1_ERROR: network connection lost");
+          },
+        }),
+      };
+    return realPrepare(sql);
+  };
+  const out = await (await sign(e)).json();
+  let r = email(e, out.id);
+  assert.equal(r.state, "pending");
+  assert.equal(r.rendered, null);
+  hiccup = false;
+  makeDue(e);
+  await sweepWaiverEmails(e);
+  r = email(e, out.id);
+  assert.equal(r.state, "done");
+  assert.ok(JSON.parse(r.rendered).pdf, "the PDF is attached");
+  assert.equal(drive.resend[0].body.attachments.length, 1);
+});
+
 test("retention keeps the PDF of a release whose email is not done", async () => {
   const e = env(RESEND);
   drive.resendFail = 503;

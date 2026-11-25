@@ -33,6 +33,7 @@ import {
   normalizeEmail,
   refused,
   resendCall,
+  ResendCallError,
   sendListMessage,
 } from "./newsletter-series.js";
 import {
@@ -77,36 +78,52 @@ export async function safeNewsletterSubscribe(
   const db = env.AGENT_MAIL_DB;
   const email = normalizeEmail(input);
   const first = typeof name === "string" ? name.trim().slice(0, 60) : "";
+  const where = "env=? AND brand=? AND email=?";
+  const key = [ownEnv(env), brandKey, email];
+  let existing = false;
   try {
     const inserted = await db
       .prepare(
-        "INSERT INTO newsletter_signups (brand,email,name,source,env,joined_at) VALUES (?,?,?,?,?,?) ON CONFLICT(brand,email) DO NOTHING RETURNING email",
+        "INSERT INTO newsletter_signups (env,brand,email,name,source,joined_at) VALUES (?,?,?,?,?,?) ON CONFLICT(env,brand,email) DO NOTHING RETURNING email",
       )
-      .bind(
-        brandKey,
-        email,
-        first || null,
-        String(source || "").slice(0, 80),
-        ownEnv(env),
-        nowIso(),
-      )
+      .bind(...key, first || null, String(source || "").slice(0, 80), nowIso())
       .first();
     if (!inserted) {
       const row = await db
         .prepare(
-          "SELECT state,contact_at,topic_at FROM newsletter_signups WHERE brand=? AND email=?",
+          `SELECT state,contact_at,topic_at FROM newsletter_signups WHERE ${where}`,
         )
-        .bind(brandKey, email)
+        .bind(...key)
         .first();
-      if (row?.contact_at && row?.topic_at) return { ok: true, existing: true };
-      // Half finished, parked for a person, or unsubscribed since: finish it
-      // again now. A running row is left to its owner (the sweep recovers it).
-      await db
-        .prepare(
-          "UPDATE newsletter_signups SET state='pending',next_attempt_at=NULL,unsubscribed_at=NULL,attempts=0,error=NULL WHERE brand=? AND email=? AND state<>'running'",
-        )
-        .bind(brandKey, email)
-        .run();
+      if (row?.contact_at && row?.topic_at) {
+        existing = true;
+        // On the list as far as this ledger knows. They may have left since
+        // through Resend's own preference page, which this ledger never hears
+        // about, so a finished signup re-checks its Topic (no second welcome:
+        // welcome_at is kept). One in progress is left to finish.
+        if (row.state !== "done") return { ok: true, existing: true };
+        await db
+          .prepare(
+            `UPDATE newsletter_signups SET topic_at=NULL,state='pending',next_attempt_at=NULL,attempts=0,error=NULL WHERE ${where} AND state='done'`,
+          )
+          .bind(...key)
+          .run();
+      } else {
+        // Half finished, parked for a person, or unsubscribed since: finish it
+        // again now. A running row is left to its owner (the sweep recovers it).
+        // A welcome first tried more than 24 hours ago is past Resend's memory
+        // of its key, so this new signup gets a fresh copy and a fresh window.
+        const stale = new Date(Date.now() - 24 * 3600e3).toISOString();
+        await db
+          .prepare(
+            `UPDATE newsletter_signups SET state='pending',next_attempt_at=NULL,unsubscribed_at=NULL,attempts=0,error=NULL,
+               welcome_rendered=CASE WHEN welcome_at IS NULL AND welcome_first_attempted_at<? THEN NULL ELSE welcome_rendered END,
+               welcome_first_attempted_at=CASE WHEN welcome_at IS NULL AND welcome_first_attempted_at<? THEN NULL ELSE welcome_first_attempted_at END
+             WHERE ${where} AND state<>'running'`,
+          )
+          .bind(stale, stale, ...key)
+          .run();
+      }
     }
   } catch (error) {
     console.error("newsletter signup not recorded", {
@@ -123,7 +140,7 @@ export async function safeNewsletterSubscribe(
   );
   if (ctx && typeof ctx.waitUntil === "function") ctx.waitUntil(run);
   else await run;
-  return { ok: true };
+  return existing ? { ok: true, existing: true } : { ok: true };
 }
 
 const enc = encodeURIComponent;
@@ -140,8 +157,10 @@ async function ensureContact(env, brand, email, name) {
     const made = await resendCall(env, "POST", "/contacts", body);
     if (made.ok) {
       const contact = await made.json().catch(() => null);
-      if (!contact?.id) throw await refused(made, "confirm the new contact");
-      return contact.id;
+      // Accepted without an id: unclear, and safe to look again later.
+      if (!contact?.id)
+        throw new ResendCallError("Resend returned no contact id", { retryable: true });
+      return { id: contact.id, created: true };
     }
     if (made.status !== 409) throw await refused(made, "create the contact");
   } else if (!found.ok) {
@@ -154,17 +173,19 @@ async function ensureContact(env, brand, email, name) {
   );
   if (!joined.ok && joined.status !== 409)
     throw await refused(joined, "add the contact to the brand's Segment");
-  return null;
+  return { id: null, created: false };
 }
 
 // Step 2: opted in to the brand's Topic, and the team wide flag cleared if they
 // had left everything (docs/EMAIL.md: safe, every brand Topic is opt_out).
-async function optIn(env, brand, email) {
+async function optIn(env, brand, email, { justCreated = false } = {}) {
   const topic = topicIdFor(env, brand);
   const res = await resendCall(env, "PATCH", `/contacts/${enc(email)}/topics`, [
     { id: topic, subscription: "opt_in" },
   ]);
   if (!res.ok) throw await refused(res, "opt the contact in to the brand's Topic");
+  // A contact made a moment ago with unsubscribed:false needs no second look.
+  if (justCreated) return;
   const contact = await resendCall(env, "GET", `/contacts/${enc(email)}`);
   if (!contact.ok) throw await refused(contact, "look up the contact");
   if ((await contact.json())?.unsubscribed) {
@@ -175,19 +196,22 @@ async function optIn(env, brand, email) {
   }
 }
 
-async function save(db, brand, email, fields) {
+// Writes to this Worker's row. `onlyRunning` keeps a late write from undoing a
+// state another path already settled (a finished send, an unsubscribe).
+async function save(db, key, fields, { onlyRunning = false } = {}) {
   const keys = Object.keys(fields);
   await db
     .prepare(
-      `UPDATE newsletter_signups SET ${keys.map((k) => `${k}=?`).join(",")} WHERE brand=? AND email=?`,
+      `UPDATE newsletter_signups SET ${keys.map((k) => `${k}=?`).join(",")} WHERE env=? AND brand=? AND email=?${onlyRunning ? " AND state='running'" : ""}`,
     )
-    .bind(...keys.map((k) => fields[k]), brand, email)
+    .bind(...keys.map((k) => fields[k]), key.env, key.brand, key.email)
     .run();
 }
 
 // The welcome as it will go out on every attempt, and the start of its window,
 // written together before the first call to Resend and never changed after.
 async function frozenWelcome(env, db, brand, email, claim) {
+  const key = [ownEnv(env), brand.key, email];
   if (claim.welcome_rendered && claim.welcome_first_attempted_at)
     return {
       msg: JSON.parse(claim.welcome_rendered),
@@ -197,15 +221,15 @@ async function frozenWelcome(env, db, brand, email, claim) {
   const msg = await listMessage(env, email, WELCOME_FOR[brand.key]);
   await db
     .prepare(
-      "UPDATE newsletter_signups SET welcome_rendered=COALESCE(welcome_rendered,?),welcome_first_attempted_at=COALESCE(welcome_first_attempted_at,?) WHERE brand=? AND email=?",
+      "UPDATE newsletter_signups SET welcome_rendered=COALESCE(welcome_rendered,?),welcome_first_attempted_at=COALESCE(welcome_first_attempted_at,?) WHERE env=? AND brand=? AND email=?",
     )
-    .bind(JSON.stringify(msg), nowIso(), brand.key, email)
+    .bind(JSON.stringify(msg), nowIso(), ...key)
     .run();
   const saved = await db
     .prepare(
-      "SELECT welcome_rendered,welcome_first_attempted_at FROM newsletter_signups WHERE brand=? AND email=?",
+      "SELECT welcome_rendered,welcome_first_attempted_at FROM newsletter_signups WHERE env=? AND brand=? AND email=?",
     )
-    .bind(brand.key, email)
+    .bind(...key)
     .first();
   if (!saved?.welcome_rendered || !saved.welcome_first_attempted_at)
     throw new Error("Rendered welcome was not stored");
@@ -225,13 +249,28 @@ export async function processSignup(env, brandKey, input) {
   const at = nowIso();
   const claim = await db
     .prepare(
-      "UPDATE newsletter_signups SET state='running',attempts=attempts+1,started_at=?,error=NULL WHERE brand=? AND email=? AND env=? AND state='pending' AND (next_attempt_at IS NULL OR next_attempt_at<=?) RETURNING *",
+      "UPDATE newsletter_signups SET state='running',attempts=attempts+1,started_at=?,error=NULL WHERE env=? AND brand=? AND email=? AND state='pending' AND (next_attempt_at IS NULL OR next_attempt_at<=?) RETURNING *",
     )
-    .bind(at, brandKey, email, ownEnv(env), at)
+    .bind(at, ownEnv(env), brandKey, email, at)
     .first();
   if (!claim) return { state: "skipped" };
+  const key = { env: ownEnv(env), brand: brandKey, email };
   const done = (fields = {}) =>
-    save(db, brandKey, email, { state: "done", next_attempt_at: null, ...fields });
+    save(db, key, { state: "done", next_attempt_at: null, ...fields });
+  // Whether they left this list while this pass was running (the row's
+  // unsubscribed_at, set by unsubscribe()). Checked before any step that
+  // would opt them in or mail them.
+  const leftSince = async () =>
+    Boolean(
+      (
+        await db
+          .prepare(
+            "SELECT unsubscribed_at FROM newsletter_signups WHERE env=? AND brand=? AND email=?",
+          )
+          .bind(key.env, key.brand, key.email)
+          .first()
+      )?.unsubscribed_at,
+    );
 
   // They left this brand's list after joining: the open steps stop here. Without
   // this the topic step would opt them back in. Signing up again clears it.
@@ -255,15 +294,19 @@ export async function processSignup(env, brandKey, input) {
   let sendStarted = false;
   let windowClosed = false;
   try {
-    let contactId = null;
+    let contact = { id: null, created: false };
     if (!claim.contact_at) {
-      contactId = await ensureContact(env, brand, email, claim.name);
-      await save(db, brandKey, email, { contact_at: nowIso() });
+      contact = await ensureContact(env, brand, email, claim.name);
+      await save(db, key, { contact_at: nowIso() });
     }
     step = "topic";
     if (!claim.topic_at) {
-      await optIn(env, brand, email);
-      await save(db, brandKey, email, { topic_at: nowIso() });
+      if (await leftSince()) {
+        await done({ note: "unsubscribed before the signup finished" });
+        return { state: "done", unsubscribed: true };
+      }
+      await optIn(env, brand, email, { justCreated: contact.created });
+      await save(db, key, { topic_at: nowIso() });
     }
     step = "welcome";
     if (!claim.welcome_at) {
@@ -312,7 +355,11 @@ export async function processSignup(env, brandKey, input) {
           retryable: true,
         });
       await done({ welcome_at: nowIso(), welcome_id: sent.id });
-      if (brand.key === "atl") await continueSeries(env, email, { contactId });
+      // The send is settled; a hiccup recording the journey must not undo it.
+      if (brand.key === "atl")
+        await continueSeries(env, email, { contactId: contact.id }).catch((e) =>
+          console.error("welcome journey not recorded", String(e?.message || e)),
+        );
       return { state: "done", welcome: "sent", id: sent.id };
     }
     await done();
@@ -333,7 +380,7 @@ export async function processSignup(env, brandKey, input) {
     else if (err?.retryable !== false && claim.attempts < MAX_SIGNUP_ATTEMPTS)
       next = new Date(Date.now() + retryDelayMs(claim.attempts)).toISOString();
     const state = next ? "pending" : "review";
-    await save(db, brandKey, email, { state, next_attempt_at: next, error });
+    await save(db, key, { state, next_attempt_at: next, error }, { onlyRunning: true });
     console.error("newsletter signup step failed", {
       brand: brandKey,
       step,
@@ -369,6 +416,7 @@ export async function sweepSignups(env, { limit = 10 } = {}) {
   const interrupted = await db
     .prepare(
       `UPDATE newsletter_signups SET state=CASE
+         WHEN unsubscribed_at IS NOT NULL THEN 'done'
          WHEN welcome_at IS NOT NULL OR welcome_first_attempted_at IS NULL THEN 'pending'
          WHEN welcome_rendered IS NOT NULL AND welcome_first_attempted_at>? THEN 'pending'
          ELSE 'review' END,

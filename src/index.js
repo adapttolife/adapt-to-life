@@ -15,6 +15,7 @@ import {
 import { acceptForm, sweepForms } from "./forms.js";
 import { sendMail } from "./mail-transport.js";
 import { handleResendEvents } from "./resend_events.js";
+import { recordTransactionalFailure } from "./email.js";
 // Adapt To Life — Worker entry.
 // Serves the static site (env.ASSETS) and handles form submissions at /api/contact,
 // /api/apply and /api/volunteer through the durable form outbox (src/forms.js): a
@@ -2191,6 +2192,9 @@ async function handleUnsubscribe(request, env, url) {
     await unsubscribe(env, email, brand);
   } catch (err) {
     console.error("unsubscribe failed:", err?.message || err);
+    // Someone asked to leave and Resend did not take it: a person must hear the
+    // same day (Gmail and Yahoo expect one click opt outs honoured in 2 days).
+    await recordTransactionalFailure(env, `unsubscribe:${brand}`, email, err);
     return oneClick
       ? new Response("Try again later", { status: 503 })
       : page("error", 503);

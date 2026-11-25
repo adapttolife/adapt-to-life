@@ -31,6 +31,6 @@ CREATE TABLE IF NOT EXISTS newsletter_signups (
   unsubscribed_at TEXT,
   note TEXT,
   error TEXT,
-  PRIMARY KEY (brand, email)
+  PRIMARY KEY (env, brand, email)
 );
 CREATE INDEX IF NOT EXISTS newsletter_signups_due ON newsletter_signups(env, state, next_attempt_at);

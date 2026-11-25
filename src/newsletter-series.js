@@ -681,7 +681,14 @@ export async function continueSeries(
   const started = iso(now);
   const more = WELCOME.length > 1;
   const out = await env.AGENT_MAIL_DB.prepare(
-    "INSERT OR IGNORE INTO newsletter_journey (email, contact_id, series, step, status, started_at, next_at, last_sent_at, attempts) VALUES (?, ?, ?, 1, ?, ?, ?, ?, 0) RETURNING email",
+    // An older row (a pre ledger journey still at step 0) moves on too, so the
+    // cron never sends the welcome a second time.
+    `INSERT INTO newsletter_journey (email, contact_id, series, step, status, started_at, next_at, last_sent_at, attempts) VALUES (?, ?, ?, 1, ?, ?, ?, ?, 0)
+     ON CONFLICT(email) DO UPDATE SET step = MAX(step, 1),
+       status = CASE WHEN status = 'active' AND step < 1 THEN excluded.status ELSE status END,
+       next_at = CASE WHEN step < 1 THEN excluded.next_at ELSE next_at END,
+       last_sent_at = COALESCE(last_sent_at, excluded.last_sent_at), claimed_until = NULL
+     RETURNING email`,
   )
     .bind(
       normalizeEmail(email),
@@ -820,9 +827,9 @@ export async function unsubscribe(env, email, brandKey = "atl") {
     // again. A row mid run is left to its owner, which sees unsubscribed_at on
     // its next claim and checks the Topic before any welcome.
     await env.AGENT_MAIL_DB.prepare(
-      "UPDATE newsletter_signups SET topic_at = NULL, unsubscribed_at = ?, state = CASE WHEN state = 'running' THEN state ELSE 'done' END, next_attempt_at = NULL WHERE brand = ? AND email = ?",
+      "UPDATE newsletter_signups SET topic_at = NULL, unsubscribed_at = ?, state = CASE WHEN state = 'running' THEN state ELSE 'done' END, next_attempt_at = NULL WHERE env = ? AND brand = ? AND email = ?",
     )
-      .bind(now, brand.key, address)
+      .bind(now, env.ENV_NAME || "production", brand.key, address)
       .run();
   }
   const res = await resendCall(

@@ -7,7 +7,8 @@ CREATE TABLE IF NOT EXISTS newsletter_delivery_claims (claim_key TEXT PRIMARY KE
 -- exactly as first rendered, resent under the same Idempotency-Key, and
 -- welcome_first_attempted_at starts its 23 hour retry window. unsubscribed_at is
 -- set (and topic_at cleared) when they leave that brand's list. env is the
--- Worker that owns the row; staging and production share this database.
+-- Worker that owns the row, and part of the key: staging and production share
+-- this database, and a staging test must never shadow a real signup.
 CREATE TABLE IF NOT EXISTS newsletter_signups (
   brand TEXT NOT NULL,
   email TEXT NOT NULL,
@@ -28,6 +29,6 @@ CREATE TABLE IF NOT EXISTS newsletter_signups (
   unsubscribed_at TEXT,
   note TEXT,
   error TEXT,
-  PRIMARY KEY (brand, email)
+  PRIMARY KEY (env, brand, email)
 );
 CREATE INDEX IF NOT EXISTS newsletter_signups_due ON newsletter_signups(env, state, next_attempt_at);

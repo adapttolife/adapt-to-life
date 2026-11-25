@@ -28,7 +28,7 @@ newsletter, already on Resend, kept working. Workspace is built for people, not 
 |---|---|---|---|---|
 | Adapt To Life | `Adapt To Life <hello@mail.adapttolife.org>`; the newsletter signs as `Alec at Adapt To Life` | `hello@adapttolife.org` | `mail.adapttolife.org`, verified | `adapt-to-life` repo |
 | Adaptive Sports Near Me | `Adaptive Sports Near Me <hello@mail.adaptivesportsnearme.com>` | `hello@adaptivesportsnearme.com` | `mail.adaptivesportsnearme.com`, verified | `adaptivesportsnearme` repo (Faisal) |
-| Adapt Body Shop | `Adapt Body Shop <hello@mail.adaptbodyshop.com>` | `hello@adaptbodyshop.com` | `mail.adaptbodyshop.com`, **to add** | `adapt-to-life` repo (`src/shop_contact.js`) and the storefront |
+| Adapt Body Shop | `Adapt Body Shop <hello@mail.adaptbodyshop.com>` | `hello@adaptbodyshop.com` | `mail.adaptbodyshop.com`, verified | `adapt-to-life` repo (`src/shop_contact.js`) and the storefront |
 
 All three `hello@` addresses reach the one hello@adapttolife.org mailbox (the other two are aliases).
 
@@ -110,7 +110,11 @@ welcomes and the unsubscribe page in `src/newsletter-series.js`. The rules:
   it no new link can be made, so welcomes wait (the sweep retries them) and send_failures says why.
 - **Joining is recorded before Resend is called,** and a sweep finishes any signup whose contact,
   Topic or welcome step did not complete. Only a signup whose contact and Topic steps are done
-  answers "already on the list"; signing up again finishes a half done one. Contact and Topic steps
+  answers "already on the list", and even then its Topic is opted in again (they may have left
+  through Resend's own preference page, which the site never hears about); signing up again
+  finishes a half done one. Unsubscribing stops any step still owed, so nobody is opted back in.
+  Rows are keyed by env as well as brand and address, so a staging test never shadows a real
+  signup. Contact and Topic steps
   are safe to repeat (backoff, up to ten tries, then `review`); the welcome is frozen and keyed like
   any outbox send. Someone on the ATL list before the ledger who joins again gets the Topic, not a
   second welcome.

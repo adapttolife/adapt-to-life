@@ -18,7 +18,12 @@ import {
 import { verifyTurnstile } from "./turnstile.js";
 import { getGoogleAccessToken } from "./google.js";
 import { recordIntake } from "./intake.js";
-import { RETRY_WINDOW_MS, windowRefusal, nextAttemptAt } from "./mail-window.js";
+import {
+  RETRY_WINDOW_MS,
+  retryDelayMs,
+  windowRefusal,
+  nextAttemptAt,
+} from "./mail-window.js";
 
 // ---------------------------------------------------------------------------
 // Document model — SINGLE SOURCE OF TRUTH for both the on-screen text and the
@@ -452,6 +457,18 @@ async function storedPdf(env, id) {
   }
 }
 
+// The outbox's read of the stored PDF. Unlike storedPdf (whose callers fall back
+// to Drive), a D1 error here throws, so a passing hiccup is retried instead of
+// being taken for "no PDF" and frozen into the email for good.
+async function outboxPdf(env, id) {
+  const doc = await env.WAIVERS_DB.prepare(
+    "SELECT pdf FROM waiver_documents WHERE waiver_id = ?",
+  )
+    .bind(id)
+    .first();
+  return doc && doc.pdf ? blobBytes(doc.pdf) : null;
+}
+
 // ---------------------------------------------------------------------------
 // PDF — a clean, branded signed record (not a fillable paper form).
 // Page 1+: header band, the release text, the signature block.
@@ -664,6 +681,8 @@ async function buildPdf(d) {
 const ownEnv = (env) => env.ENV_NAME || "production";
 const nowIso = () => new Date().toISOString();
 const WAIVER_PDF_NAME = "adapt-to-life-release.pdf";
+// Failures before any send retry with backoff (about a day), then go to review.
+const MAX_WAIVER_PRESEND_ATTEMPTS = 10;
 
 // The email for one signed release, exactly as it will go out on every attempt,
 // minus the PDF bytes. `hasPdf` decides the copy line and the attachment.
@@ -742,7 +761,8 @@ async function frozenWaiverEmail(env, db, id, claim) {
     .bind(id)
     .first();
   if (!w) throw new Error("Waiver row missing");
-  const hasPdf = !!(await storedPdf(env, id))?.byteLength;
+  const bytes = await outboxPdf(env, id);
+  const hasPdf = !!bytes?.byteLength;
   if (!hasPdf)
     await recordTransactionalFailure(
       env,
@@ -775,6 +795,7 @@ async function frozenWaiverEmail(env, db, id, claim) {
     msg: JSON.parse(saved.rendered),
     firstAttemptedAt: saved.first_attempted_at,
     first: true,
+    bytes,
   };
 }
 
@@ -804,7 +825,13 @@ export async function processWaiverEmail(env, id) {
   try {
     if (!mailConfigured(env)) throw new Error("Waiver mail transport not configured");
     let first;
-    ({ msg, firstAttemptedAt, first } = await frozenWaiverEmail(env, db, id, claim));
+    let bytes;
+    ({ msg, firstAttemptedAt, first, bytes } = await frozenWaiverEmail(
+      env,
+      db,
+      id,
+      claim,
+    ));
     // Past 23 hours the same key is a new send to Resend: never send.
     const refusal = windowRefusal(firstAttemptedAt);
     if (refusal) {
@@ -813,7 +840,8 @@ export async function processWaiverEmail(env, id) {
     }
     const { pdf, ...message } = msg;
     if (pdf) {
-      const bytes = await storedPdf(env, id);
+      // Read once per attempt (the first attempt already has them).
+      if (!bytes) bytes = await outboxPdf(env, id);
       // The body must match the first attempt. Without the bytes it cannot.
       if (!bytes?.byteLength) {
         windowClosed = true;
@@ -860,12 +888,20 @@ export async function processWaiverEmail(env, id) {
     return { state: "done" };
   } catch (err) {
     const error = String(err?.message || err).slice(0, 400);
-    // Before any send: try again on the next sweep. After a send began, only an
-    // idempotent (Resend) retryable failure retries, and only inside the window.
+    // After a send began, only an idempotent (Resend) retryable failure
+    // retries, and only inside the window. Before any send (no mail transport, a
+    // D1 hiccup) it tries again with backoff, up to a cap, so a stuck row neither
+    // spins every sweep nor starves the rows behind it.
     let next = null;
-    if (externalStarted && err?.retryable === true && env.MAIL_TRANSPORT === "resend")
-      next = nextAttemptAt(firstAttemptedAt, claim.attempts);
-    const pendingAgain = windowClosed ? false : !externalStarted || !!next;
+    if (windowClosed) next = null;
+    else if (externalStarted)
+      next =
+        err?.retryable === true && env.MAIL_TRANSPORT === "resend"
+          ? nextAttemptAt(firstAttemptedAt, claim.attempts)
+          : null;
+    else if (claim.attempts < MAX_WAIVER_PRESEND_ATTEMPTS)
+      next = new Date(Date.now() + retryDelayMs(claim.attempts)).toISOString();
+    const pendingAgain = !!next;
     const state = pendingAgain ? "pending" : "review";
     try {
       await finishWaiverEmail(db, id, state, null, error, next);
@@ -873,7 +909,13 @@ export async function processWaiverEmail(env, id) {
       console.error("waiver email state write failed:", e?.message || e);
     }
     console.error("waiver email failed:", error);
-    if (windowClosed || (externalStarted && (!pendingAgain || firstExternal)))
+    // A person hears: when it stops, on the first failed send, and on the first
+    // failure before any send (a missing mail setup is an outage too).
+    if (
+      state === "review" ||
+      (externalStarted && firstExternal) ||
+      (!externalStarted && claim.attempts === 1)
+    )
       await recordTransactionalFailure(env, "receipt:waiver", msg?.to, err);
     return { state };
   }
@@ -890,6 +932,7 @@ export async function sweepWaiverEmails(env) {
   const interrupted = await db
     .prepare(
       `UPDATE waiver_emails SET state=CASE
+         WHEN rendered IS NULL THEN 'pending'
          WHEN ?=1 AND rendered IS NOT NULL AND first_attempted_at>? THEN 'pending'
          ELSE 'review' END,
        error='Interrupted delivery; inspect destination before retry'
@@ -1006,7 +1049,7 @@ export async function runDriveBacklog(env) {
   try {
     await env.WAIVERS_DB.prepare(
       // A release whose email is not done keeps its PDF: the outbox reads it.
-      `DELETE FROM waiver_documents WHERE waiver_id IN (SELECT id FROM waivers WHERE drive_status = 'done' AND drive_file_id <> '' AND julianday(drive_done_at) < julianday('now', '-${DOC_RETENTION_DAYS} days')) AND waiver_id NOT IN (SELECT waiver_id FROM waiver_emails WHERE state <> 'done')`,
+      `DELETE FROM waiver_documents WHERE waiver_id IN (SELECT id FROM waivers WHERE drive_status = 'done' AND drive_file_id <> '' AND julianday(drive_done_at) < julianday('now', '-${DOC_RETENTION_DAYS} days')) AND NOT EXISTS (SELECT 1 FROM waiver_emails e WHERE e.waiver_id = waiver_documents.waiver_id AND e.state <> 'done')`,
     ).run();
   } catch (err) {
     console.error("Drive backlog retention sweep failed:", err);

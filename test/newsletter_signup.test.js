@@ -71,7 +71,7 @@ test("a new signup: recorded, made a contact in the brand Segment, opted in to t
   );
 });
 
-test("idempotent: a second signup answers existing and sends nothing; a repeat pass does nothing", async () => {
+test("idempotent: a second signup answers existing, only re-checks the Topic, and sends nothing; a repeat pass does nothing", async () => {
   const env = newsletterEnv();
   const resend = fakeResend();
   await withFetch(resend.fetch, async () => {
@@ -81,13 +81,140 @@ test("idempotent: a second signup answers existing and sends nothing; a repeat p
       ok: true,
       existing: true,
     });
+    const again = resend.calls.slice(calls).map((c) => `${c.method} ${c.path}`);
+    assert.deepEqual(again, [
+      "PATCH /contacts/twice%40example.com/topics",
+      "GET /contacts/twice%40example.com",
+    ]);
+    const settled = resend.calls.length;
     assert.deepEqual(await processSignup(env, "atl", "twice@example.com"), {
       state: "skipped",
     });
     assert.deepEqual(await sweepSignups(env), { processed: 0 });
-    assert.equal(resend.calls.length, calls, "no Resend call at all");
+    assert.equal(resend.calls.length, settled, "no Resend call at all");
   });
   assert.equal(resend.emails.length, 1);
+  assert.equal(row(env, "twice@example.com").state, "done");
+});
+
+test("someone who left through Resend's own preference page can join again: the Topic is re-opted in, no second welcome", async () => {
+  const env = newsletterEnv();
+  const resend = fakeResend();
+  await withFetch(resend.fetch, () => safeNewsletterSubscribe(env, "pref@example.com"));
+  // Resend's hosted page: the Topic is opted out, and this ledger never hears.
+  resend.contacts.get("pref@example.com").topics.set(TOPIC_ATL, "opt_out");
+  await withFetch(resend.fetch, () => safeNewsletterSubscribe(env, "pref@example.com"));
+  assert.equal(resend.contacts.get("pref@example.com").topics.get(TOPIC_ATL), "opt_in");
+  assert.equal(resend.emails.length, 1);
+});
+
+test("a staging row for the same address never shadows a real production signup", async () => {
+  const sql = newsletterEnv().AGENT_MAIL_DB;
+  const staging = newsletterEnv({
+    ENV_NAME: "staging",
+    MAIL_ALLOW: "@adapttolife.org",
+    AGENT_MAIL_DB: sql,
+  });
+  const prod = newsletterEnv({ AGENT_MAIL_DB: sql });
+  const resend = fakeResend();
+  await withFetch(resend.fetch, async () => {
+    await safeNewsletterSubscribe(staging, "same@example.com");
+    assert.equal(resend.calls.length, 0, "staging writes nothing to Resend for it");
+    assert.deepEqual(await safeNewsletterSubscribe(prod, "same@example.com"), {
+      ok: true,
+    });
+  });
+  const rows = sql.sql
+    .prepare(
+      "SELECT env,state,topic_at FROM newsletter_signups WHERE email='same@example.com' ORDER BY env",
+    )
+    .all()
+    .map((r) => [r.env, r.state, Boolean(r.topic_at)]);
+  assert.deepEqual(rows, [
+    ["production", "done", true],
+    ["staging", "done", false],
+  ]);
+  assert.equal(resend.emails.length, 1);
+});
+
+test("a fresh signup long after an unfinished welcome gets a fresh window, not review", async () => {
+  const env = newsletterEnv();
+  let sendDown = true;
+  const resend = fakeResend({
+    fail: (m, p) => (sendDown && p === "/emails" ? 500 : null),
+  });
+  await withFetch(resend.fetch, async () => {
+    await safeNewsletterSubscribe(env, "again@example.com");
+    await unsubscribe(env, "again@example.com", "atl");
+  });
+  env.AGENT_MAIL_DB.sql
+    .prepare("UPDATE newsletter_signups SET welcome_first_attempted_at=?")
+    .run(new Date(Date.now() - 30 * 3600e3).toISOString());
+  sendDown = false;
+  await withFetch(resend.fetch, () =>
+    safeNewsletterSubscribe(env, "again@example.com"),
+  );
+  const r = row(env, "again@example.com");
+  assert.equal(r.state, "done");
+  assert.ok(
+    Date.now() - Date.parse(r.welcome_first_attempted_at) < 60e3,
+    "a new clock",
+  );
+  assert.equal(resend.emails.length, 1);
+});
+
+test("a welcome that went out stays done even if recording the journey fails", async () => {
+  const env = newsletterEnv();
+  env.AGENT_MAIL_DB.sql.exec(
+    "CREATE TRIGGER journey_down BEFORE INSERT ON newsletter_journey BEGIN SELECT RAISE(FAIL, 'D1 hiccup'); END;",
+  );
+  const resend = fakeResend();
+  await withFetch(resend.fetch, () =>
+    safeNewsletterSubscribe(env, "journey@example.com"),
+  );
+  assert.equal(row(env, "journey@example.com").state, "done");
+  assert.equal(resend.emails.length, 1);
+  assert.deepEqual(failures(env), []);
+});
+
+test("a journey still at step 0 from before the ledger moves past the welcome once the signup sends it", async () => {
+  const env = newsletterEnv();
+  const t0 = new Date().toISOString();
+  env.AGENT_MAIL_DB.sql
+    .prepare(
+      "INSERT INTO newsletter_journey (email,series,step,status,started_at,next_at,attempts) VALUES ('legacy@example.com','welcome',0,'active',?,?,2)",
+    )
+    .run(t0, t0);
+  const resend = fakeResend();
+  await withFetch(resend.fetch, () =>
+    safeNewsletterSubscribe(env, "legacy@example.com"),
+  );
+  const j = env.AGENT_MAIL_DB.sql.prepare("SELECT * FROM newsletter_journey").get();
+  assert.equal(j.step, 1);
+  assert.equal(j.status, "done");
+  assert.equal(resend.emails.length, 1);
+});
+
+test("the migration builds exactly the newsletter_signups table the schema file defines", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { describeLocal, diffSchema } = await import("../scripts/lib/d1-schema.mjs");
+  const { DatabaseSync } = await import("node:sqlite");
+  const build = (file) => {
+    const db = new DatabaseSync(":memory:");
+    db.exec(readFileSync(new URL(`../${file}`, import.meta.url), "utf8"));
+    const raw = describeLocal(db);
+    const only = (rows) => rows.filter((r) => r.tbl === "newsletter_signups");
+    return {
+      columns: only(raw.columns),
+      indexes: only(raw.indexes),
+      objects: only(raw.objects),
+    };
+  };
+  const out = diffSchema(
+    build("src/schema_newsletter.sql"),
+    build("schema/migrations/2026-11-25-newsletter-signups.sql"),
+  );
+  assert.deepEqual(out, { problems: [], notes: [] });
 });
 
 test("409: someone already in the team gets this brand's Topic and welcome; the team wide flag is cleared, other Topics untouched", async () => {
@@ -473,4 +600,26 @@ test("someone who unsubscribes while their welcome is still owed is never opted 
   );
   assert.equal(c.topics.get(TOPIC_ATL), "opt_in");
   assert.equal(row(env, "quick@example.com").unsubscribed_at, null);
+});
+
+test("an unsubscribe that lands while a signup is mid run stops it before the Topic step", async () => {
+  const env = newsletterEnv();
+  let leftMidRun = false;
+  const resend = fakeResend({
+    fail: (method, path) => {
+      // The person unsubscribes while the contact step is in flight.
+      if (!leftMidRun && method === "POST" && path === "/contacts") {
+        leftMidRun = true;
+        env.AGENT_MAIL_DB.sql
+          .prepare("UPDATE newsletter_signups SET topic_at=NULL, unsubscribed_at=?")
+          .run(new Date().toISOString());
+      }
+      return null;
+    },
+  });
+  await withFetch(resend.fetch, () => safeNewsletterSubscribe(env, "mid@example.com"));
+  assert.ok(leftMidRun);
+  assert.ok(!resend.calls.some((c) => c.path.endsWith("/topics")), "never opted in");
+  assert.equal(resend.emails.length, 0);
+  assert.equal(row(env, "mid@example.com").state, "done");
 });

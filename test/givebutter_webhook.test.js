@@ -35,7 +35,7 @@ function db() {
             const row = gifts.get(String(args[0]));
             return row ? { email_status: row.email_status } : null;
           }
-          if (/AS earlier_thanks FROM donor_gifts/.test(sql)) {
+          if (/AS earlier_thanks\s+FROM donor_gifts/.test(sql)) {
             const [email, campaignId, transactionId] = args;
             for (const row of gifts.values())
               if (
@@ -48,15 +48,50 @@ function db() {
                 return { earlier_thanks: 1 };
             return null;
           }
-          if (/SELECT attempt_count FROM donor_gifts/.test(sql)) {
+          if (
+            /SELECT attempt_count(, first_attempted_at)? FROM donor_gifts/.test(sql)
+          ) {
             const row = gifts.get(String(args[0]));
             return row && row.lease_token === args[1]
-              ? { attempt_count: row.attempt_count }
+              ? {
+                  attempt_count: row.attempt_count,
+                  first_attempted_at: row.first_attempted_at ?? null,
+                }
               : null;
           }
           return null;
         },
         async all() {
+          // The recovery sweep that closes rows with no clock, or past the
+          // window, for review (src/givebutter_webhook.js).
+          if (/Review before resending/.test(sql)) {
+            const [now, staleBefore, windowStart] = args;
+            const results = [];
+            for (const row of gifts.values()) {
+              const open =
+                ["pending", "retry"].includes(row.email_status) ||
+                (row.email_status === "sending" &&
+                  row.email_attempted_at < staleBefore);
+              const first = row.first_attempted_at ?? null;
+              if (
+                open &&
+                row.attempt_count > 0 &&
+                (first === null || first <= windowStart)
+              ) {
+                Object.assign(row, {
+                  email_status: "failed",
+                  lease_token: null,
+                  updated_at: now,
+                  last_error:
+                    first === null
+                      ? "Review before resending: attempted before the Resend move"
+                      : "Review before resending: retry window (23 hours) closed",
+                });
+                results.push({ transaction_id: row.transaction_id, email: row.email });
+              }
+            }
+            return { results };
+          }
           if (/FROM donor_gifts/.test(sql)) {
             const [maxAttempts, staleBefore, now] = args;
             return {
@@ -121,12 +156,17 @@ function db() {
             return { meta: { changes } };
           }
           if (/SET email_status = 'sending'/.test(sql)) {
-            const row = gifts.get(String(args[3]));
+            // binds: attempted, updated, lease, first, id, max, windowStart, stale, now
+            const row = gifts.get(String(args[4]));
+            const first = row?.first_attempted_at ?? null;
             const reclaimable =
               row?.email_status === "pending" ||
-              (row?.email_status === "sending" && row.email_attempted_at < args[5]) ||
-              (row?.email_status === "retry" && row.next_attempt_at <= args[6]);
-            if (!reclaimable || row.attempt_count >= args[4])
+              (row?.email_status === "sending" && row.email_attempted_at < args[7]) ||
+              (row?.email_status === "retry" && row.next_attempt_at <= args[8]);
+            const clockOk =
+              (row?.attempt_count === 0 || first !== null) &&
+              (first === null || first > args[6]);
+            if (!reclaimable || !clockOk || row.attempt_count >= args[5])
               return { meta: { changes: 0 } };
             Object.assign(row, {
               email_status: "sending",
@@ -134,6 +174,7 @@ function db() {
               updated_at: args[1],
               lease_token: args[2],
               attempt_count: row.attempt_count + 1,
+              first_attempted_at: first ?? args[3],
             });
             return { meta: { changes: 1 } };
           }
@@ -408,7 +449,11 @@ test("a monthly gift is thanked once, on its first charge", async () => {
   s.scheduled.length = 0;
   await handleGivebutterWebhook(
     signedRequest(
-      payload({ id: "tx_124", plan_id: "plan_1", transacted_at: "2026-09-08T23:00:00Z" }),
+      payload({
+        id: "tx_124",
+        plan_id: "plan_1",
+        transacted_at: "2026-09-08T23:00:00Z",
+      }),
     ),
     s.env,
     s.ctx,
@@ -482,6 +527,10 @@ test("the ten-minute recovery path reclaims a stale sending lease", async () => 
     email_status: "sending",
     email_attempted_at: "2020-01-01T00:00:00Z",
     attempt_count: 1,
+    // Its first attempt was 20 minutes ago, inside the 23-hour window. A row
+    // with no clock (attempted before the Resend move) is closed for review
+    // instead (test/forms_resend.test.js).
+    first_attempted_at: new Date(Date.now() - 20 * 60e3).toISOString(),
     next_attempt_at: null,
     last_error: null,
     created_at: "2020-01-01T00:00:00Z",

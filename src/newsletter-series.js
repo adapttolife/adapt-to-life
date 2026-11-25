@@ -1,3 +1,4 @@
+import { sendMail } from "./mail-transport.js";
 // src/newsletter-series.js — the welcome email every new subscriber gets.
 //
 // Alec, Nov 7 2026: "Let's make sure resend is working as intended and we
@@ -457,38 +458,29 @@ export async function sendSeriesEmail(env, email, step, opts = {}) {
   const address = normalizeEmail(email);
   const unsub = await unsubscribeUrl(env, address);
   const rendered = renderEmail(step, { ...opts, unsubscribeUrl: unsub });
-  const body = {
-    from: env.NEWSLETTER_FROM || DEFAULT_FROM,
-    to: [address],
-    reply_to: env.NEWSLETTER_REPLY_TO || DEFAULT_REPLY_TO,
-    subject: rendered.subject,
-    html: rendered.html,
-    text: rendered.text,
-    headers: {
-      "List-Unsubscribe": `<${unsub}>, <mailto:hello@adapttolife.org?subject=Unsubscribe>`,
-      "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-    },
-    tags: [
-      { name: "series", value: SERIES },
-      { name: "step", value: step.key },
-    ],
-  };
   const idempotency = `${SERIES}-${step.key}-${(await sha256Hex(address)).slice(0, 32)}${opts.idempotencySuffix || ""}`;
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: resendHeaders(env, { "Idempotency-Key": idempotency }),
-    signal: AbortSignal.timeout(15000),
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) {
-    let detail = "";
-    try {
-      detail = (await res.text()).slice(0, 300);
-    } catch {}
-    throw new Error(`Resend rejected the email (${res.status}) ${detail}`);
-  }
-  const out = await res.json().catch(() => ({}));
-  return { id: out.id || null };
+  // Through the one mail module like every other send (docs/EMAIL.md, "Nothing
+  // sends around this module"), so the welcome gets the From check, the tags and
+  // the allow list outside production. The series is Resend-only by design.
+  const out = await sendMail(
+    { ...env, MAIL_TRANSPORT: "resend" },
+    {
+      from: env.NEWSLETTER_FROM || DEFAULT_FROM,
+      to: address,
+      replyTo: env.NEWSLETTER_REPLY_TO || DEFAULT_REPLY_TO,
+      subject: rendered.subject,
+      html: rendered.html,
+      text: rendered.text,
+      headers: {
+        "List-Unsubscribe": `<${unsub}>, <mailto:hello@adapttolife.org?subject=Unsubscribe>`,
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      },
+      idempotencyKey: idempotency,
+      tags: { brand: "adapttolife", kind: "welcome", series: SERIES, step: step.key },
+    },
+  );
+  if (out?.dropped) return { id: null, dropped: true };
+  return { id: out?.id || null };
 }
 
 // The contact as Resend has it now. Someone who unsubscribed from a Broadcast,

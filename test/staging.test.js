@@ -31,10 +31,12 @@ test("staging serves forms, widgets, scripts and outbound links unchanged", asyn
   }
 });
 
-test("staging backend routes use normal method validation rather than a blanket denial", async () => {
+test("staging closes the form routes until main filters the shared outbox by environment", async () => {
+  // Their rows go into tables production's sweep reads, and the code on main
+  // does not yet skip staging's rows (src/staging.js).
   for (const path of ["/api/contact", "/api/apply", "/api/volunteer"]) {
     const response = await worker.fetch(request(path), env, {});
-    assert.equal(response.status, 405, path);
+    assert.equal(response.status, 404, path);
   }
 });
 

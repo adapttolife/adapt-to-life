@@ -107,6 +107,158 @@ test("OAuth rejection exposes no provider body or credential", async () => {
     },
   );
 });
+// Nov 23 2026: every ATL send failed with a bare "rejected (400)" because the
+// Google reply was thrown away. Name the error; never the credentials.
+async function rejected(status, body, run, e = env) {
+  const out = [];
+  const saved = {};
+  for (const k of ["log", "info", "warn", "error", "debug"]) {
+    saved[k] = console[k];
+    console[k] = (...a) => out.push(a.map(String).join(" "));
+  }
+  let err;
+  try {
+    await mocked(
+      async () => new Response(body, { status }),
+      async () => {
+        await sendMail(e, message).catch((x) => (err = x));
+      },
+    );
+  } finally {
+    Object.assign(console, saved);
+  }
+  assert.ok(err, "sendMail must throw");
+  await run(err.message, out);
+}
+test("OAuth rejection names Google's error and error_description", async () => {
+  await rejected(
+    400,
+    JSON.stringify({
+      error: "invalid_grant",
+      error_description: "Token has been expired or revoked.",
+    }),
+    (msg, out) => {
+      assert.equal(
+        msg,
+        "Gmail authorization rejected (400 invalid_grant: Token has been expired or revoked.); no mail submitted",
+      );
+      assert.deepEqual(out, [msg], "one log line, the same text");
+    },
+  );
+  await rejected(401, JSON.stringify({ error: "invalid_client" }), (msg) =>
+    assert.equal(
+      msg,
+      "Gmail authorization rejected (401 invalid_client); no mail submitted",
+    ),
+  );
+  await rejected(
+    400,
+    JSON.stringify({ error: "invalid_grant", error_description: "y ".repeat(400) }),
+    (msg) => {
+      const desc = msg.match(/invalid_grant: (.*)\); no mail submitted$/)[1];
+      assert.ok(desc.length <= 200, "description capped");
+    },
+  );
+});
+test("OAuth rejection never surfaces the refresh token or client secret, even if Google echoes them", async () => {
+  const real = {
+    ...env,
+    GMAIL_CLIENT_ID: "123456789012-abcdefghijklmnopqrstuv.apps.googleusercontent.com",
+    GMAIL_CLIENT_SECRET: "GOCSPX-Zz9Yy8Xx7Ww6Vv5Uu4Tt3Ss2Rr1",
+    GMAIL_REFRESH_TOKEN: "1//0gAbCdEfGhIjKlMnOpQrStUvWxYz0123456789-_AbCdEfGh",
+  };
+  const creds = [
+    real.GMAIL_CLIENT_ID,
+    real.GMAIL_CLIENT_SECRET,
+    real.GMAIL_REFRESH_TOKEN,
+  ];
+  // Short fixture values, which the long-run rule alone would not catch.
+  const short = { ...env, GMAIL_CLIENT_SECRET: "s3cr3t", GMAIL_REFRESH_TOKEN: "rt-42" };
+  const shortCreds = [
+    short.GMAIL_CLIENT_SECRET,
+    short.GMAIL_REFRESH_TOKEN,
+    short.GMAIL_CLIENT_ID,
+  ];
+  const echo = (c) => [
+    {
+      error: "invalid_grant",
+      error_description: `bad token ${c[2]} for client ${c[0]} secret ${c[1]}`,
+    },
+    {
+      error: "invalid_grant",
+      error_description: `${c[1]}${c[2]}`,
+      refresh_token: c[2],
+      client_secret: c[1],
+      request: `refresh_token=${c[2]}&client_secret=${c[1]}`,
+    },
+    { error: c[2], error_description: c[1] },
+    { error: `invalid_grant ${c[1]}`, error_description: "x" },
+    {
+      error: "invalid_grant",
+      error_description: `line1\n${c[2]}\r\nclient_secret=${c[1]}`,
+    },
+    { error: "invalid_grant", error_description: `${"a ".repeat(90)}${c[2]}` },
+    { error: "invalid_grant", error_description: encodeURIComponent(c[2]) },
+  ];
+  for (const [e, c] of [
+    [real, creds],
+    [short, shortCreds],
+  ])
+    for (const body of echo(c))
+      await rejected(
+        400,
+        JSON.stringify(body),
+        (msg, out) => {
+          for (const text of [msg, ...out])
+            for (const v of c)
+              assert.ok(!text.includes(v), `credential leaked into: ${text}`);
+          assert.match(
+            msg,
+            /^Gmail authorization rejected \(400( invalid_grant(: [^\r\n]*)?)?\); no mail submitted$/,
+          );
+        },
+        e,
+      );
+});
+test("OAuth rejection redacts a partial credential echo (long token-like runs)", async () => {
+  const real = {
+    ...env,
+    GMAIL_CLIENT_SECRET: "GOCSPX-Zz9Yy8Xx7Ww6Vv5Uu4Tt3Ss2Rr1",
+    GMAIL_REFRESH_TOKEN: "1//0gAbCdEfGhIjKlMnOpQrStUvWxYz0123456789-_AbCdEfGh",
+  };
+  const parts = [
+    real.GMAIL_REFRESH_TOKEN.slice(0, 30),
+    real.GMAIL_CLIENT_SECRET.slice(0, 24),
+  ];
+  await rejected(
+    400,
+    JSON.stringify({
+      error: "invalid_grant",
+      error_description: `Bad token ${parts[0]}... with ${parts[1]}...`,
+    }),
+    (msg, out) => {
+      for (const text of [msg, ...out])
+        for (const p of parts)
+          assert.ok(!text.includes(p), `partial credential leaked: ${text}`);
+      assert.match(msg, /invalid_grant: Bad token \[redacted\]/);
+    },
+    real,
+  );
+});
+test("OAuth rejection with a non-JSON or field-less body reports the status only", async () => {
+  for (const body of [
+    "<html>Bad Request</html>",
+    "",
+    "null",
+    "[]",
+    JSON.stringify({ message: "nope" }),
+    JSON.stringify({ error: { code: 400 } }),
+  ])
+    await rejected(400, body, (msg, out) => {
+      assert.equal(msg, "Gmail authorization rejected (400); no mail submitted");
+      assert.deepEqual(out, [msg]);
+    });
+});
 test("accepted HTTP without a Gmail message ID is ambiguous and must not be marked sent", async () => {
   let n = 0;
   await mocked(
@@ -228,6 +380,314 @@ test("MIME carries binary attachments and inline content IDs", () => {
       ),
     /must contain bytes/,
   );
+});
+
+// ---------------------------------------------------------------------------
+// Resend transport: docs/EMAIL.md, "The send contract (both repos)".
+// ---------------------------------------------------------------------------
+import { mailAllowed, resendRequest, keyHash } from "../src/mail-transport.js";
+const resendEnv = {
+  MAIL_TRANSPORT: "resend",
+  RESEND_API_KEY: "re_test",
+  MAIL_FROM_DOMAINS: "mail.adapttolife.org, mail.adaptbodyshop.com",
+  ENV_NAME: "production",
+};
+const resendMessage = {
+  from: "Adapt To Life <hello@mail.adapttolife.org>",
+  to: "Person <person@example.test>",
+  cc: ["cc@example.test"],
+  bcc: "hello@adapttolife.org",
+  replyTo: "hello@adapttolife.org",
+  subject: "Welcome — Zoë",
+  text: "Hello Zoë",
+  html: "<p>Hello Zoë</p>",
+  headers: {
+    "List-Unsubscribe": "<https://adapttolife.org/unsubscribe?t=x>",
+    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+    "Auto-Submitted": "auto-generated",
+    "X-ATL-Form": "contact",
+  },
+  attachments: [
+    {
+      filename: "waiver.pdf",
+      type: "application/pdf",
+      content: new Uint8Array([0, 255, 12]),
+    },
+    {
+      filename: "logo.png",
+      type: "image/png",
+      contentId: "logo",
+      content: new Uint8Array([137, 80]).buffer,
+    },
+  ],
+  idempotencyKey: "receipt-contact-1234",
+  tags: { brand: "adapttolife", kind: "receipt-contact" },
+};
+async function noNetwork(run) {
+  let calls = 0;
+  await mocked(async () => {
+    calls++;
+    throw Error("unexpected network");
+  }, run);
+  assert.equal(calls, 0, "refused before the network");
+}
+
+test("resend: one POST with the key, tags (env added), arrays, headers and base64 attachments", async () => {
+  const calls = [];
+  await mocked(
+    async (url, init) => {
+      calls.push([url, init]);
+      return Response.json({ id: "re-msg-1" });
+    },
+    async () => {
+      const result = await sendMail(resendEnv, resendMessage);
+      assert.deepEqual(result, {
+        id: "re-msg-1",
+        messageId: "re-msg-1",
+        provider: "resend",
+        accepted: true,
+      });
+    },
+  );
+  assert.equal(calls.length, 1);
+  const [url, init] = calls[0];
+  assert.equal(url, "https://api.resend.com/emails");
+  assert.equal(init.method, "POST");
+  assert.equal(init.headers.Authorization, "Bearer re_test");
+  assert.equal(init.headers["Idempotency-Key"], "receipt-contact-1234");
+  const body = JSON.parse(init.body);
+  assert.equal(body.from, "Adapt To Life <hello@mail.adapttolife.org>");
+  assert.deepEqual(body.to, ["Person <person@example.test>"]);
+  assert.deepEqual(body.cc, ["cc@example.test"]);
+  assert.deepEqual(body.bcc, ["hello@adapttolife.org"]);
+  assert.deepEqual(body.reply_to, ["hello@adapttolife.org"]);
+  assert.equal(body.subject, "Welcome — Zoë");
+  assert.equal(body.text, "Hello Zoë");
+  assert.equal(body.html, "<p>Hello Zoë</p>");
+  assert.deepEqual(body.headers, resendMessage.headers);
+  assert.deepEqual(body.tags, [
+    { name: "brand", value: "adapttolife" },
+    { name: "kind", value: "receipt-contact" },
+    { name: "env", value: "production" },
+  ]);
+  assert.deepEqual(body.attachments, [
+    { filename: "waiver.pdf", content: "AP8M", content_type: "application/pdf" },
+    {
+      filename: "logo.png",
+      content: "iVA=",
+      content_type: "image/png",
+      content_id: "logo",
+    },
+  ]);
+  assert.equal(body.idempotencyKey, undefined);
+});
+
+test("resend: a send without a key or both tags throws before the network", async () => {
+  await noNetwork(async () => {
+    const { idempotencyKey, ...noKey } = resendMessage;
+    for (const m of [
+      noKey,
+      { ...resendMessage, idempotencyKey: "" },
+      { ...resendMessage, idempotencyKey: "a\r\nb" },
+      { ...resendMessage, tags: undefined },
+      { ...resendMessage, tags: { brand: "adapttolife" } },
+      { ...resendMessage, tags: { kind: "receipt-contact" } },
+      { ...resendMessage, tags: { brand: "adapt to life", kind: "x" } },
+    ])
+      await assert.rejects(sendMail(resendEnv, m), (e) => e.retryable === false);
+  });
+});
+
+test("resend: From off MAIL_FROM_DOMAINS, line breaks and unknown headers are refused", async () => {
+  await noNetwork(async () => {
+    const cases = [
+      [{ from: "Adapt To Life <hello@adapttolife.org>" }, /mail domain/],
+      [{ from: "x@evil.example" }, /mail domain/],
+      [{ subject: "Hi\r\nBcc: a@b.test" }, /Unsafe mail header/],
+      [{ to: "a@b.test\r\nBcc: c@d.test" }, /Unsafe mail header/],
+      [{ replyTo: "a@b.test\nX: y" }, /Unsafe mail header/],
+      [
+        { headers: { "List-Unsubscribe": "<x>\r\nBcc: a@b.test" } },
+        /Unsafe mail header/,
+      ],
+      [{ headers: { To: "other@example.test" } }, /Unsupported custom/],
+      [{ headers: { "Reply-To": "other@example.test" } }, /Unsupported custom/],
+      [{ attachments: [{ filename: "a.pdf", content: "QUJD" }] }, /must contain bytes/],
+      [{ to: [] }, /needs a recipient/],
+      [
+        { attachments: [{ filename: "a.pdf", content: new Uint8Array() }] },
+        /got 0 bytes/,
+      ],
+    ];
+    for (const [change, why] of cases)
+      await assert.rejects(
+        sendMail(resendEnv, { ...resendMessage, ...change }),
+        (e) => why.test(e.message) && e.retryable === false,
+        why.source,
+      );
+  });
+});
+
+test("resend outside production: only MAIL_ALLOW addresses; anything else is dropped, not sent", async () => {
+  const staging = {
+    ...resendEnv,
+    ENV_NAME: "staging",
+    MAIL_ALLOW:
+      "hello@adapttolife.org,@adapttolife.org,@faisaln.com,alec@alecability.com",
+  };
+  assert.equal(mailAllowed(staging, "someone@adapttolife.org"), true);
+  assert.equal(mailAllowed(staging, "Alec T <Alec@AlecAbility.com>"), true);
+  assert.equal(mailAllowed(staging, "x@mail.adapttolife.org"), false);
+  assert.equal(mailAllowed(staging, "adapttolife.org@evil.test"), false);
+  assert.equal(
+    mailAllowed(resendEnv, "anyone@example.com"),
+    true,
+    "production mails anyone",
+  );
+  await noNetwork(async () => {
+    // One outside address anywhere (to, cc or bcc) drops the whole send.
+    for (const change of [
+      { to: "applicant@example.com" },
+      { to: "hello@adapttolife.org", cc: "donor@example.com" },
+      { to: "hello@adapttolife.org", bcc: "donor@example.com" },
+    ])
+      assert.deepEqual(
+        await sendMail(staging, {
+          ...resendMessage,
+          cc: undefined,
+          bcc: undefined,
+          ...change,
+        }),
+        { dropped: true, reason: "not-allowed", provider: "resend", accepted: false },
+      );
+    // No allow list at all outside production: nothing goes.
+    assert.deepEqual(
+      await sendMail(
+        { ...resendEnv, ENV_NAME: "preview" },
+        {
+          ...resendMessage,
+          to: "hello@adapttolife.org",
+          cc: undefined,
+          bcc: undefined,
+        },
+      ),
+      { dropped: true, reason: "not-allowed", provider: "resend", accepted: false },
+    );
+  });
+  let sent = 0;
+  await mocked(
+    async (url, init) => {
+      sent++;
+      assert.ok(
+        JSON.parse(init.body).tags.some(
+          (t) => t.name === "env" && t.value === "staging",
+        ),
+      );
+      return Response.json({ id: "ok" });
+    },
+    async () => {
+      await sendMail(staging, {
+        ...resendMessage,
+        to: "someone@faisaln.com",
+        cc: undefined,
+        bcc: "hello@adapttolife.org",
+      });
+    },
+  );
+  assert.equal(sent, 1);
+});
+
+test("resend errors say whether a retry is safe, keep no provider text and never fall back", async () => {
+  let legacy = 0;
+  const env = { ...resendEnv, SEND_EMAIL: { send: () => legacy++ } };
+  const cases = [
+    [429, true],
+    [500, true],
+    [503, true],
+    [422, false],
+    [403, false],
+    [400, false],
+  ];
+  for (const [status, retryable] of cases)
+    await mocked(
+      async () =>
+        Response.json(
+          { name: "some_error", message: "SECRET person@example.test" },
+          { status },
+        ),
+      async () => {
+        await assert.rejects(sendMail(env, resendMessage), (e) => {
+          assert.equal(e.retryable, retryable, String(status));
+          assert.equal(e.status, status);
+          assert.doesNotMatch(e.message, /SECRET|person@/);
+          assert.match(e.message, new RegExp(`\\(${status} some_error\\)`));
+          return true;
+        });
+      },
+    );
+  // The two 409s: the same key still in flight is worth another try; the same
+  // key with a different body never gets better.
+  for (const [name, retryable] of [
+    ["concurrent_idempotent_requests", true],
+    ["invalid_idempotent_request", false],
+    ["", false],
+  ])
+    await mocked(
+      async () => Response.json({ name, message: "x" }, { status: 409 }),
+      async () => {
+        await assert.rejects(
+          sendMail(env, resendMessage),
+          (e) => e.retryable === retryable,
+        );
+      },
+    );
+  // A timeout or dropped connection is ambiguous: retryable (same key, same body).
+  await mocked(
+    async () => {
+      throw new DOMException("The operation timed out.", "TimeoutError");
+    },
+    async () => {
+      await assert.rejects(sendMail(env, resendMessage), (e) => e.retryable === true);
+    },
+  );
+  // Accepted without an id: never recorded as sent; retryable under the same key.
+  await mocked(
+    async () => Response.json({}),
+    async () => {
+      await assert.rejects(sendMail(env, resendMessage), (e) => e.retryable === true);
+    },
+  );
+  assert.equal(legacy, 0);
+});
+
+test("resend is configured with its key and sending domains; without ENV_NAME it is not production", async () => {
+  assert.equal(mailConfigured(resendEnv), true);
+  assert.equal(mailConfigured({ ...resendEnv, RESEND_API_KEY: "" }), false);
+  assert.equal(mailConfigured({ ...resendEnv, MAIL_FROM_DOMAINS: "" }), false);
+  await noNetwork(async () => {
+    const r = await sendMail({ ...resendEnv, ENV_NAME: "" }, resendMessage);
+    assert.equal(r.dropped, true);
+  });
+});
+
+test("the older transports get the message without the Resend-only fields", async () => {
+  let captured;
+  await sendMail(
+    { SEND_EMAIL: { send: (m) => (captured = m) } },
+    { ...message, idempotencyKey: "k", tags: { brand: "adapttolife", kind: "x" } },
+  );
+  assert.deepEqual(captured, message);
+});
+
+test("resendRequest and keyHash are stable", async () => {
+  const a = resendRequest(resendEnv, resendMessage);
+  const b = resendRequest(resendEnv, resendMessage);
+  assert.deepEqual(a, b);
+  // Exactly as given: a corrected name must make a new key, never a 409.
+  assert.notEqual(await keyHash("Dana"), await keyHash("dana"));
+  assert.notEqual(await keyHash(" x"), await keyHash("x"));
+  assert.equal(await keyHash("Dana"), await keyHash("Dana"));
+  assert.match(await keyHash("x"), /^[0-9a-f]{64}$/);
 });
 
 // Nov 23 2026 incident: the waiver receipt passed its PDF as a base64 string

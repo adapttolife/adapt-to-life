@@ -161,7 +161,7 @@ test("staging uses the ASNM staging database, sends passwordless admin links, an
   assert.deepEqual(atl.env.staging.r2_buckets, []);
   assert.deepEqual(atl.env.staging.send_email, [{ name: "SEND_EMAIL" }]);
   assert.deepEqual(atl.env.staging.triggers.crons, []);
-  assert.equal(atl.env.staging.vars.MAIL_TRANSPORT, "gmail");
+  assert.equal(atl.env.staging.vars.MAIL_TRANSPORT, "resend");
   assert.notEqual(
     atl.vars.TURNSTILE_MODE,
     "off",

@@ -132,11 +132,13 @@ export async function consumeLogin(db, raw, secret, { secure = true } = {}) {
 
 export async function sendAdminLink(env, email, link) {
   return sendMail(env, {
-    from: `Adapt To Life <${env.GMAIL_FROM || "hello@adapttolife.org"}>`,
+    from: "Adapt To Life <hello@mail.adapttolife.org>",
     to: email,
-    replyTo: env.GMAIL_FROM || "hello@adapttolife.org",
+    replyTo: "hello@adapttolife.org",
     subject: "Your Adapt To Life admin sign-in link",
     text: `Use this one-time link to open the Adapt To Life admin dashboard:\n\n${link}\n\nIt expires in 15 minutes.`,
     html: `<p>Use this one-time link to open the Adapt To Life admin dashboard:</p><p><a href="${link}">Open the dashboard</a></p><p>It expires in 15 minutes.</p>`,
+    idempotencyKey: `signin-${await hash(link)}`,
+    tags: { brand: "adapttolife", kind: "signin" },
   });
 }

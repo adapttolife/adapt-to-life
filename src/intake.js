@@ -23,7 +23,9 @@ import { mailConfigured, sendMail } from "./mail-transport.js";
 // prove delivery into an inbox that is actually readable from the box, which is
 // the only way this path gets verified rather than assumed.
 export const INTAKE_INBOX_DEFAULT = "hello@adapttolife.org";
-export const INTAKE_FROM = "Adapt To Life Intake <hello@adapttolife.org>";
+// Sent through Resend from the mail. subdomain (docs/EMAIL.md); the notice goes to
+// hello@, and Reply-To is the visitor.
+export const INTAKE_FROM = "Adapt To Life Intake <hello@mail.adapttolife.org>";
 export const intakeInbox = (env) => (env && env.INTAKE_INBOX) || INTAKE_INBOX_DEFAULT;
 
 const esc = (s) =>
@@ -175,6 +177,8 @@ export async function notifyIntakeRow(env, row) {
       subject: row.summary,
       text,
       html,
+      idempotencyKey: `intake-notice-${row.id}`,
+      tags: { brand: "adapttolife", kind: "notice-intake" },
     });
     const now = new Date().toISOString();
     await env.INTAKE.batch([

@@ -15,6 +15,7 @@ import {
 } from "./newsletter-series.js";
 import { acceptForm, sweepForms } from "./forms.js";
 import { sendMail } from "./mail-transport.js";
+import { handleResendEvents } from "./resend_events.js";
 // Adapt To Life — Worker entry.
 // Serves the static site (env.ASSETS) and handles form submissions at /api/contact,
 // /api/apply and /api/volunteer through the durable form outbox (src/forms.js): a
@@ -35,6 +36,10 @@ import {
 } from "./receipts.js";
 import { verifyTurnstile, overFormLimit, RATE_LIMITED } from "./turnstile.js";
 import { handleEmail, handleAgentMailApi } from "./agent_mail.js";
+// Agent mail (agents.adapttolife.org) is the bots' own mailbox, not site mail:
+// it keeps the Cloudflare Email Sending binding whatever MAIL_TRANSPORT the site
+// mail uses (docs/EMAIL.md). src/agent_mail.js itself is unchanged.
+const agentMailEnv = (env) => ({ ...env, MAIL_TRANSPORT: "cloudflare" });
 import {
   handleShopContact,
   runShopCrmBacklog,
@@ -1161,12 +1166,16 @@ export async function sendBetaTesterInvitation(env, { email, name, siteUrl }) {
     `<p style="margin-top:28px;color:#6b6b70;font-size:14px">` +
     `Adapt To Life<br>501(c)(3) nonprofit &middot; EIN 41-3213344</p></div>`;
   return sendMail(env, {
-    from: `Adapt To Life <${env.GMAIL_FROM || "hello@adapttolife.org"}>`,
+    from: "Adapt To Life <hello@mail.adapttolife.org>",
     to: email,
-    replyTo: env.GMAIL_FROM || "hello@adapttolife.org",
+    replyTo: "hello@adapttolife.org",
     subject: "You are invited to the Adaptive Sports Near Me beta",
     text,
     html,
+    // Sent only when an admin asks (sendInvitation) and never retried, so each
+    // request is its own send: a deliberate resend really goes out.
+    idempotencyKey: `beta-invite-${crypto.randomUUID()}`,
+    tags: { brand: "adapttolife", kind: "beta-invite" },
   });
 }
 
@@ -1527,6 +1536,13 @@ export default {
       return handleGivebutterWebhook(request, env, ctx);
     }
 
+    // Resend delivery events (Svix-signed), for the mail this Worker sends.
+    // Not rate limited per IP: Resend posts from a few addresses, and the
+    // signature check is the gate. See src/resend_events.js.
+    if (url.pathname === "/api/resend-events") {
+      return handleResendEvents(request, env);
+    }
+
     // Public fundraising total for the site thermometer (Givebutter live + offline gifts).
     if (url.pathname === "/api/raised") {
       return handleRaised(request, env);
@@ -1553,7 +1569,7 @@ export default {
 
     // Spec 32 agent email: authenticated API the agentos MCP calls (list/read/reply/status).
     if (url.pathname.startsWith("/api/agent-mail/")) {
-      return handleAgentMailApi(request, env, url);
+      return handleAgentMailApi(request, agentMailEnv(env), url);
     }
 
     // Spec 116: durable QR redirects. A sticker on a chair outlives any vendor,
@@ -1672,7 +1688,7 @@ export default {
 
   // Spec 32 agent email: inbound mail for *@agents.adapttolife.org (Cloudflare Email Routing).
   async email(message, env, ctx) {
-    await handleEmail(message, env, ctx);
+    await handleEmail(message, agentMailEnv(env), ctx);
   },
 };
 

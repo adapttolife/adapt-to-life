@@ -107,6 +107,158 @@ test("OAuth rejection exposes no provider body or credential", async () => {
     },
   );
 });
+// Nov 23 2026: every ATL send failed with a bare "rejected (400)" because the
+// Google reply was thrown away. Name the error; never the credentials.
+async function rejected(status, body, run, e = env) {
+  const out = [];
+  const saved = {};
+  for (const k of ["log", "info", "warn", "error", "debug"]) {
+    saved[k] = console[k];
+    console[k] = (...a) => out.push(a.map(String).join(" "));
+  }
+  let err;
+  try {
+    await mocked(
+      async () => new Response(body, { status }),
+      async () => {
+        await sendMail(e, message).catch((x) => (err = x));
+      },
+    );
+  } finally {
+    Object.assign(console, saved);
+  }
+  assert.ok(err, "sendMail must throw");
+  await run(err.message, out);
+}
+test("OAuth rejection names Google's error and error_description", async () => {
+  await rejected(
+    400,
+    JSON.stringify({
+      error: "invalid_grant",
+      error_description: "Token has been expired or revoked.",
+    }),
+    (msg, out) => {
+      assert.equal(
+        msg,
+        "Gmail authorization rejected (400 invalid_grant: Token has been expired or revoked.); no mail submitted",
+      );
+      assert.deepEqual(out, [msg], "one log line, the same text");
+    },
+  );
+  await rejected(401, JSON.stringify({ error: "invalid_client" }), (msg) =>
+    assert.equal(
+      msg,
+      "Gmail authorization rejected (401 invalid_client); no mail submitted",
+    ),
+  );
+  await rejected(
+    400,
+    JSON.stringify({ error: "invalid_grant", error_description: "y ".repeat(400) }),
+    (msg) => {
+      const desc = msg.match(/invalid_grant: (.*)\); no mail submitted$/)[1];
+      assert.ok(desc.length <= 200, "description capped");
+    },
+  );
+});
+test("OAuth rejection never surfaces the refresh token or client secret, even if Google echoes them", async () => {
+  const real = {
+    ...env,
+    GMAIL_CLIENT_ID: "123456789012-abcdefghijklmnopqrstuv.apps.googleusercontent.com",
+    GMAIL_CLIENT_SECRET: "GOCSPX-Zz9Yy8Xx7Ww6Vv5Uu4Tt3Ss2Rr1",
+    GMAIL_REFRESH_TOKEN: "1//0gAbCdEfGhIjKlMnOpQrStUvWxYz0123456789-_AbCdEfGh",
+  };
+  const creds = [
+    real.GMAIL_CLIENT_ID,
+    real.GMAIL_CLIENT_SECRET,
+    real.GMAIL_REFRESH_TOKEN,
+  ];
+  // Short fixture values, which the long-run rule alone would not catch.
+  const short = { ...env, GMAIL_CLIENT_SECRET: "s3cr3t", GMAIL_REFRESH_TOKEN: "rt-42" };
+  const shortCreds = [
+    short.GMAIL_CLIENT_SECRET,
+    short.GMAIL_REFRESH_TOKEN,
+    short.GMAIL_CLIENT_ID,
+  ];
+  const echo = (c) => [
+    {
+      error: "invalid_grant",
+      error_description: `bad token ${c[2]} for client ${c[0]} secret ${c[1]}`,
+    },
+    {
+      error: "invalid_grant",
+      error_description: `${c[1]}${c[2]}`,
+      refresh_token: c[2],
+      client_secret: c[1],
+      request: `refresh_token=${c[2]}&client_secret=${c[1]}`,
+    },
+    { error: c[2], error_description: c[1] },
+    { error: `invalid_grant ${c[1]}`, error_description: "x" },
+    {
+      error: "invalid_grant",
+      error_description: `line1\n${c[2]}\r\nclient_secret=${c[1]}`,
+    },
+    { error: "invalid_grant", error_description: `${"a ".repeat(90)}${c[2]}` },
+    { error: "invalid_grant", error_description: encodeURIComponent(c[2]) },
+  ];
+  for (const [e, c] of [
+    [real, creds],
+    [short, shortCreds],
+  ])
+    for (const body of echo(c))
+      await rejected(
+        400,
+        JSON.stringify(body),
+        (msg, out) => {
+          for (const text of [msg, ...out])
+            for (const v of c)
+              assert.ok(!text.includes(v), `credential leaked into: ${text}`);
+          assert.match(
+            msg,
+            /^Gmail authorization rejected \(400( invalid_grant(: [^\r\n]*)?)?\); no mail submitted$/,
+          );
+        },
+        e,
+      );
+});
+test("OAuth rejection redacts a partial credential echo (long token-like runs)", async () => {
+  const real = {
+    ...env,
+    GMAIL_CLIENT_SECRET: "GOCSPX-Zz9Yy8Xx7Ww6Vv5Uu4Tt3Ss2Rr1",
+    GMAIL_REFRESH_TOKEN: "1//0gAbCdEfGhIjKlMnOpQrStUvWxYz0123456789-_AbCdEfGh",
+  };
+  const parts = [
+    real.GMAIL_REFRESH_TOKEN.slice(0, 30),
+    real.GMAIL_CLIENT_SECRET.slice(0, 24),
+  ];
+  await rejected(
+    400,
+    JSON.stringify({
+      error: "invalid_grant",
+      error_description: `Bad token ${parts[0]}... with ${parts[1]}...`,
+    }),
+    (msg, out) => {
+      for (const text of [msg, ...out])
+        for (const p of parts)
+          assert.ok(!text.includes(p), `partial credential leaked: ${text}`);
+      assert.match(msg, /invalid_grant: Bad token \[redacted\]/);
+    },
+    real,
+  );
+});
+test("OAuth rejection with a non-JSON or field-less body reports the status only", async () => {
+  for (const body of [
+    "<html>Bad Request</html>",
+    "",
+    "null",
+    "[]",
+    JSON.stringify({ message: "nope" }),
+    JSON.stringify({ error: { code: 400 } }),
+  ])
+    await rejected(400, body, (msg, out) => {
+      assert.equal(msg, "Gmail authorization rejected (400); no mail submitted");
+      assert.deepEqual(out, [msg]);
+    });
+});
 test("accepted HTTP without a Gmail message ID is ambiguous and must not be marked sent", async () => {
   let n = 0;
   await mocked(

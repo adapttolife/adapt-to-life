@@ -518,8 +518,10 @@ export async function ringBell(
 
 // Spec 33 §6 — send-failure ledger. A failed outbound step (cfSend, agent bell)
 // used to be loud in Worker logs but paged no one; every
-// such failure path lands one row here, and the fleet watchdog polls
-// GET /send-failures to page per row. Fail-open by contract: a failed insert
+// such failure path lands one row here. GET /send-failures exposes the rows,
+// but nothing polls it today (the agentos probe was retired), so a row is
+// recorded, not paged; the Cloudflare log issue on the console.error line is
+// what reaches a person. Fail-open by contract: a failed insert
 // console.errors and never breaks the send flow it rides on.
 export async function recordSendFailure(
   env,

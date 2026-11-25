@@ -331,6 +331,23 @@ const CARDS = {
     out: "public/images/og/selkirk-v5-x.jpg",
     page: "selkirk.html",
   },
+  // /spooky-spokes: public spotlight for Spooky Spokes in Cincinnati.
+  "spooky-spokes": {
+    ...ATHLETE,
+    photo: "chair-drive",
+    size: 68,
+    measure: "13ch",
+    out: "public/images/og/spooky-spokes-v1-cincy.jpg",
+    page: "spooky-spokes.html",
+    headline: "Spooky <em>Spokes</em>",
+  },
+  // /spooky-spokes-proposal: unlisted proposal for Tom Crutchfield & Spooky Spokes.
+  "spooky-spokes-proposal": {
+    variant: "logos",
+    logos: { partner: "assets/logos/spooky-spokes-light.png", alt: "Spooky Spokes" },
+    out: "public/images/og/spooky-spokes-proposal-v1-x.jpg",
+    page: "spooky-spokes-proposal.html",
+  },
   // Guides (scripts/build-guides.mjs): each card is the guide's h1.
   "sport-wheelchair-cost": {
     ...ATHLETE,

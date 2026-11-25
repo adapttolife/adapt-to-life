@@ -129,7 +129,10 @@ Workers Builds, one build per Worker:
 | `adapt-to-life-staging` | `staging` | `npm run deploy:staging` | Off |
 
 Build command is empty for both (Wrangler's build hook builds and tests) and the
-root directory is the repository root. Pushing changes to `package.json` does not
+root directory is the repository root. Merging into `main` requires the check
+`Workers Builds: adapt-to-life-staging` on the release PR's head: that build
+tested exactly the commit being released. Production's own build skips
+`staging`, so requiring its check there would block every release. Pushing changes to `package.json` does not
 update the commands saved in Cloudflare; change them in each Worker's
 **Settings > Builds**.
 
@@ -140,17 +143,23 @@ the commit with the pushed commit.
 Review previews go through the playground, not staging (see `AGENTS.md`). Only
 the `staging` branch deploys, so one build at a time lands there.
 
-Staging uses live production databases, email, newsletter, waiver storage,
-and payment services. Inputs, submissions, widgets, external links, and application
-routes use the normal application behavior. Existing validation, Turnstile, rate
-limits, and authentication still apply. Preview hosts must be allowed by the
-Turnstile widget and any authentication provider being tested.
+Staging uses the live production databases. It is a copy for looking, not
+for doing: it holds one secret, the Givebutter read key that fills the
+fundraising total, so its pages match production. It has no mail, newsletter,
+agent mail, report link, Body Shop contact or admin sign-in credentials, so
+those routes fail closed there (no mail sent, no outside system written), and `src/staging.js` blocks the Givebutter webhook, the
+newsletter sign-up and waiver signing outright. Adding a secret to staging
+means production credentials on a second Worker that writes to production
+data, so it needs the owner's yes. Forms still write to the shared databases;
+test them on production or locally.
 
 Staging exports only the HTTP handler and has an empty cron list. Production
 continues to own scheduled jobs. Non-inherited Wrangler vars and bindings are
 repeated under `env.staging`; keep their service settings aligned with production.
 Secrets are set on the `adapt-to-life-staging` Worker itself (it no longer
-inherits production's), never in committed vars.
+inherits production's), never in committed vars. Production has
+`preview_urls: false`: nothing should run on production bindings except
+production.
 
 Every wrangler invocation stamps `public/build.txt` through the `build` hook in `wrangler.jsonc`,
 including a bare `cfrun npx wrangler deploy`, and `check-site.mjs` fails if the build it reaches is

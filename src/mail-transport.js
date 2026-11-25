@@ -326,6 +326,34 @@ export async function keyHash(value) {
     b.toString(16).padStart(2, "0"),
   ).join("");
 }
+// Names a rejected token refresh without leaking it. Only Google's `error` code
+// (lowercase snake_case only) and `error_description` (credentials and any long
+// token-like run redacted, control chars stripped, capped) are kept; the rest
+// of the body, the request and the headers never leave this function. Anything
+// unexpected (not JSON, no `error`, unreadable) yields "" so the caller logs the
+// status alone.
+const MAX_AUTH_BODY = 16384;
+const MAX_REASON = 200;
+async function googleAuthReason(res, credentials) {
+  try {
+    const text = await res.text();
+    if (text.length > MAX_AUTH_BODY) return "";
+    const body = JSON.parse(text);
+    const code = typeof body?.error === "string" ? body.error : "";
+    if (!/^[a-z_]{1,40}$/.test(code)) return ""; // RFC 6749 codes: lowercase snake_case
+    if (credentials.some((c) => c && code.includes(c))) return "";
+    let desc = typeof body.error_description === "string" ? body.error_description : "";
+    for (const c of credentials) if (c) desc = desc.split(c).join("[redacted]");
+    desc = desc
+      .replace(/[A-Za-z0-9_\-./+=~%]{20,}/g, "[redacted]")
+      .replace(/[\u0000-\u001f\u007f]+/g, " ")
+      .trim()
+      .slice(0, MAX_REASON);
+    return ` ${code}${desc ? `: ${desc}` : ""}`;
+  } catch {
+    return "";
+  }
+}
 export async function sendMail(env, message) {
   // Local configuration (a missing key or binding): nothing was sent, so a
   // later try is safe once it is fixed.
@@ -349,8 +377,16 @@ export async function sendMail(env, message) {
     }),
     signal: AbortSignal.timeout(10000),
   });
-  if (!auth.ok)
-    throw new Error(`Gmail authorization rejected (${auth.status}); no mail submitted`);
+  if (!auth.ok) {
+    const reason = await googleAuthReason(auth, [
+      env.GMAIL_CLIENT_ID,
+      env.GMAIL_CLIENT_SECRET,
+      env.GMAIL_REFRESH_TOKEN,
+    ]);
+    const msg = `Gmail authorization rejected (${auth.status}${reason}); no mail submitted`;
+    console.error(msg);
+    throw new Error(msg);
+  }
   const token = await auth.json();
   if (!token.access_token || token.token_type?.toLowerCase() !== "bearer")
     throw new Error("Invalid Gmail authorization response; no mail submitted");

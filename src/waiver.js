@@ -375,9 +375,7 @@ export async function handleWaiverDownload(request, env, id) {
   if (!isUuid(id)) return new Response("Not found", { status: 404 });
   let row;
   try {
-    row = await env.WAIVERS_DB.prepare(
-      "SELECT drive_link, drive_file_id FROM waivers WHERE id = ?",
-    )
+    row = await env.WAIVERS_DB.prepare("SELECT drive_file_id FROM waivers WHERE id = ?")
       .bind(id)
       .first();
   } catch (err) {
@@ -385,20 +383,29 @@ export async function handleWaiverDownload(request, env, id) {
     return new Response("Error", { status: 500 });
   }
   if (!row) return new Response("Not found", { status: 404 });
-  if (row.drive_link || row.drive_file_id) {
-    const target =
-      row.drive_link || `https://drive.google.com/file/d/${row.drive_file_id}/view`;
-    return Response.redirect(target, 302);
+  // Serve the PDF bytes directly: from D1 while retained (30 days), then
+  // streamed from Google Drive via the Worker's credentials. Never 302 to a
+  // private drive.google.com URL — signers cannot open it and browsers block
+  // framing drive.google.com inside #waiverFrame.
+  let bytes = await storedPdf(env, id);
+  if (!bytes && row.drive_file_id) {
+    try {
+      bytes = await fetchDrivePdf(env, row.drive_file_id);
+    } catch (err) {
+      console.error("waiver drive download failed:", id, err);
+      if (err && err.status !== 404) {
+        return new Response("Temporarily unavailable", { status: 503 });
+      }
+    }
   }
-  // Not archived to Drive yet: serve the captured copy, so the signer's
-  // download link works the moment they are told the release is signed.
-  const bytes = await storedPdf(env, id);
   if (!bytes) return new Response("Not found", { status: 404 });
   return new Response(bytes, {
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": `inline; filename="release-${id.slice(0, 8)}.pdf"`,
       "Cache-Control": "private, no-store",
+      "X-Content-Type-Options": "nosniff",
+      "X-Robots-Tag": "noindex, nofollow",
     },
   });
 }
@@ -827,7 +834,7 @@ async function attemptDriveArchive(
   try {
     if (!env.GOOGLE_SA_JSON || !env.WAIVERS_DRIVE_ID)
       throw new Error("Drive archive not configured");
-    const token = await getGoogleAccessToken(env);
+    const token = await getGoogleAccessToken(env, undefined, env.WAIVERS_DRIVE_SUBJECT);
     const name = `release-${id}.pdf`;
     if (lookupFirst) file = await driveFind(token, env.WAIVERS_DRIVE_ID, name);
     if (!file) file = await driveUpload(token, env.WAIVERS_DRIVE_ID, name, pdfBytes);
@@ -839,10 +846,10 @@ async function attemptDriveArchive(
     const where = env.STAGING ? " env=staging" : "";
     const line = `waiver Drive archive failed: ${reason} id=${id} attempt=${attempts}${where}`;
     console.error(line);
-    // Into the send_failures feed the watchdog polls for failed receipts, so
-    // the house sees it. A failure only a person can fix (folder access,
-    // config) is recorded at signing; anything else only when retries run out,
-    // since the 10-minute backlog usually clears a passing Drive error.
+    // Recorded in send_failures alongside failed receipts. A failure only a
+    // person can fix (folder access, quota, config) is recorded at signing;
+    // anything else only when retries run out, since the 10-minute backlog
+    // usually clears a passing Drive error.
     if ((needsPerson && attempts <= 1) || attempts >= MAX_DRIVE_ATTEMPTS)
       await recordTransactionalFailure(env, "archive:waiver", `waiver:${id}`, line);
     await markDrive(
@@ -876,6 +883,12 @@ function driveFailure(err) {
   const message = String((err && err.message) || "");
   if (status === 404)
     return { reason: "folder not visible to service account (404)", needsPerson: true };
+  if (status === 403 && /storageQuotaExceeded|do not have storage quota/i.test(message))
+    return {
+      reason:
+        "service account has no My Drive storage quota; set WAIVERS_DRIVE_SUBJECT or use a Shared Drive (403)",
+      needsPerson: true,
+    };
   if (status === 401 || status === 403)
     return {
       reason: `service account not allowed to write the folder (${status})`,
@@ -939,16 +952,18 @@ async function driveFind(token, folderId, filename) {
 
 async function fetchDrivePdf(env, fileId) {
   if (!fileId) throw new Error("missing drive file id");
-  const token = await getGoogleAccessToken(env);
+  const token = await getGoogleAccessToken(env, undefined, env.WAIVERS_DRIVE_SUBJECT);
   const res = await fetch(
-    `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,
+    `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}?alt=media&supportsAllDrives=true`,
     {
       headers: { Authorization: `Bearer ${token}` },
     },
   );
   if (!res.ok)
-    throw new Error(
-      `drive media fetch ${res.status}: ${await res.text().catch(() => "")}`,
+    throw driveHttpError(
+      "drive media fetch",
+      res.status,
+      await res.text().catch(() => ""),
     );
   return new Uint8Array(await res.arrayBuffer());
 }

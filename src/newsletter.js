@@ -233,6 +233,13 @@ export async function processSignup(env, brandKey, input) {
   const done = (fields = {}) =>
     save(db, brandKey, email, { state: "done", next_attempt_at: null, ...fields });
 
+  // They left this brand's list after joining: the open steps stop here. Without
+  // this the topic step would opt them back in. Signing up again clears it.
+  if (claim.unsubscribed_at) {
+    await done({ note: "unsubscribed before the signup finished" });
+    return { state: "done", unsubscribed: true };
+  }
+
   // Outside production only team addresses reach Resend at all.
   if (!mailAllowed(env, email)) {
     await done({

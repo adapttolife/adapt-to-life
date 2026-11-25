@@ -815,9 +815,12 @@ export async function unsubscribe(env, email, brandKey = "atl") {
       )
         .bind(address)
         .run();
-    // A signup still owed its welcome stops here; a later signup opts in again.
+    // A signup still owed a step stops here (processSignup honours
+    // unsubscribed_at, so it never opts them back in); a later signup opts in
+    // again. A row mid run is left to its owner, which sees unsubscribed_at on
+    // its next claim and checks the Topic before any welcome.
     await env.AGENT_MAIL_DB.prepare(
-      "UPDATE newsletter_signups SET topic_at = NULL, unsubscribed_at = ? WHERE brand = ? AND email = ?",
+      "UPDATE newsletter_signups SET topic_at = NULL, unsubscribed_at = ?, state = CASE WHEN state = 'running' THEN state ELSE 'done' END, next_attempt_at = NULL WHERE brand = ? AND email = ?",
     )
       .bind(now, brand.key, address)
       .run();

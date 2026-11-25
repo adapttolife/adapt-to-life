@@ -5,6 +5,7 @@
 // files) and a stateful fake Resend; no network.
 import test from "node:test";
 import assert from "node:assert/strict";
+import { unsubscribe } from "../src/newsletter-series.js";
 import {
   safeNewsletterSubscribe,
   processSignup,
@@ -446,4 +447,30 @@ test("not configured (no key, Segment or Topic): 503 and nothing recorded", asyn
     ).status,
     503,
   );
+});
+
+test("someone who unsubscribes while their welcome is still owed is never opted back in or welcomed; joining again opts in", async () => {
+  const env = newsletterEnv();
+  let sendDown = true;
+  const resend = fakeResend({
+    fail: (m, p) => (sendDown && p === "/emails" ? 500 : null),
+  });
+  await withFetch(resend.fetch, async () => {
+    await safeNewsletterSubscribe(env, "quick@example.com");
+    assert.equal(row(env, "quick@example.com").state, "pending");
+    await unsubscribe(env, "quick@example.com", "atl");
+    sendDown = false;
+    due(env);
+    await sweepSignups(env);
+  });
+  const c = resend.contacts.get("quick@example.com");
+  assert.equal(c.topics.get(TOPIC_ATL), "opt_out", "not opted back in");
+  assert.equal(resend.emails.length, 0);
+  assert.equal(row(env, "quick@example.com").state, "done");
+  // Joining again is an explicit yes: back on the list.
+  await withFetch(resend.fetch, () =>
+    safeNewsletterSubscribe(env, "quick@example.com"),
+  );
+  assert.equal(c.topics.get(TOPIC_ATL), "opt_in");
+  assert.equal(row(env, "quick@example.com").unsubscribed_at, null);
 });

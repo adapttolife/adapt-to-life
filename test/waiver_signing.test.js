@@ -696,7 +696,7 @@ test("waiver download & verify stream PDF bytes (never redirect to private Drive
   }
 });
 
-test("wrangler.jsonc configures WAIVERS_DRIVE_ID and WAIVERS_DRIVE_SUBJECT in prod and staging", () => {
+test("wrangler.jsonc points WAIVERS_DRIVE_ID at the Shared Drive without DWD in prod and staging", () => {
   const raw = readFileSync(new URL("../wrangler.jsonc", import.meta.url), "utf8");
   const clean = raw
     .replace(/"(?:\\.|[^"\\])*"|\/\/[^\n]*|\/\*[\s\S]*?\*\//g, (m) =>
@@ -704,13 +704,10 @@ test("wrangler.jsonc configures WAIVERS_DRIVE_ID and WAIVERS_DRIVE_SUBJECT in pr
     )
     .replace(/,\s*([}\]])/g, "$1");
   const cfg = JSON.parse(clean);
-  assert.equal(cfg.vars.WAIVERS_DRIVE_ID, "1NAW-FAeJKJnGgmMgzgRGS78CxE5WYo-p");
-  assert.equal(cfg.vars.WAIVERS_DRIVE_SUBJECT, "alec@alecability.com");
-  assert.equal(
-    cfg.env.staging.vars.WAIVERS_DRIVE_ID,
-    "1NAW-FAeJKJnGgmMgzgRGS78CxE5WYo-p",
-  );
-  assert.equal(cfg.env.staging.vars.WAIVERS_DRIVE_SUBJECT, "alec@alecability.com");
+  assert.equal(cfg.vars.WAIVERS_DRIVE_ID, "0AA9qW-Oa5hPWUk9PVA");
+  assert.equal(cfg.vars.WAIVERS_DRIVE_SUBJECT, undefined);
+  assert.equal(cfg.env.staging.vars.WAIVERS_DRIVE_ID, "0AA9qW-Oa5hPWUk9PVA");
+  assert.equal(cfg.env.staging.vars.WAIVERS_DRIVE_SUBJECT, undefined);
 });
 
 // The live atl-waivers table as it really was (read from sqlite_master on

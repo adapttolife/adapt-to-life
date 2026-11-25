@@ -1,4 +1,5 @@
 import { mailConfigured, sendMail } from "./mail-transport.js";
+import { windowOpen } from "./mail-window.js";
 // Intake — every form submission across every Adapt To Life property lands here,
 // and Alec gets an email about it.
 //
@@ -191,16 +192,22 @@ export async function notifyIntakeRow(env, row) {
     ]);
     return true;
   } catch (e) {
-    // A transport exception or failed post-send stamp is ambiguous. Keep it
-    // reviewable; automatically resending can duplicate the visitor's message.
+    // A transport exception or failed post-send stamp is ambiguous: keep it
+    // reviewable, because resending can duplicate the visitor's message. The
+    // exception is a failure the transport marks retryable (nothing sent, or a
+    // keyed Resend send that the same key makes safe to repeat). That goes back
+    // to pending for the next sweep while the 23-hour window, counted from
+    // received_at (never later than the first try), is still open. An outage
+    // then becomes a delay, not a pile of rows for a person to find.
     const error = String(e.message).slice(0, 300);
+    const retry = e?.retryable === true && windowOpen(row.received_at);
     await env.INTAKE.batch([
       env.INTAKE.prepare(
-        "UPDATE intake_delivery_claims SET state='review',error=? WHERE intake_id=? AND state='sending'",
-      ).bind(error, row.id),
+        "UPDATE intake_delivery_claims SET state=?,error=? WHERE intake_id=? AND state='sending'",
+      ).bind(retry ? "pending" : "review", error, row.id),
       env.INTAKE.prepare(
         "UPDATE intake SET notify_attempts=notify_attempts+1,notify_error=? WHERE id=? AND notified_at IS NULL",
-      ).bind("Needs review: " + error, row.id),
+      ).bind((retry ? "Will retry: " : "Needs review: ") + error, row.id),
     ]);
     return false;
   }

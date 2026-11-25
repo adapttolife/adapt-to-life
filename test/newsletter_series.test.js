@@ -8,21 +8,32 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { createHmac } from "node:crypto";
 import {
   WELCOME,
   SAVED_FOR_LATER,
+  SHOP_WELCOME,
   renderEmail,
   sendSeriesEmail,
-  startWelcome,
+  continueSeries,
   runWelcomeSeries,
   unsubscribeUrl,
-  validUnsubscribe,
+  verifyUnsubscribe,
   unsubscribe,
 } from "../src/newsletter-series.js";
+import {
+  fakeResend as statefulResend,
+  newsletterEnv,
+  withFetch,
+  TOPIC_ATL,
+  TOPIC_SHOP,
+  TOPIC_ASNM,
+} from "./helpers/fake-resend.js";
 
 const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), "utf8");
 const DAY = 24 * 60 * 60 * 1000;
 const ALL = [...WELCOME, ...SAVED_FOR_LATER];
+const POSTAL = "Adapt To Life NFP, 1509 N Milwaukee Ave, Libertyville, IL 60048";
 const UNSUB = "https://adapttolife.org/unsubscribe?e=a%40b.co&t=tok";
 
 // ---- the copy -------------------------------------------------------------
@@ -52,7 +63,8 @@ test("one plain email, sent at signup; the rest are saved and never sent", () =>
     !welcome.image && !welcome.cta && !welcome.ps,
     "no photo, no button, no P.S.",
   );
-  assert.equal(welcome.subject, "Welcome to Adapt To Life");
+  // docs/EMAIL.md, "One confirmation for every action": "You're on the list".
+  assert.equal(welcome.subject, "You’re on the list");
   assert.ok(welcome.paragraphs.length <= 4, "super simple");
   assert.deepEqual(
     SAVED_FOR_LATER.map((s) => s.key),
@@ -63,7 +75,7 @@ test("one plain email, sent at signup; the rest are saved and never sent", () =>
 });
 
 test("the copy keeps the Adapt To Life voice: no dashes, no questions, no GLASA", () => {
-  for (const s of ALL)
+  for (const s of [...ALL, SHOP_WELCOME])
     for (const line of copyOf(s)) {
       assert.ok(
         !/[‒-―-]/.test(line.replace(/@adapt_to_life_org/, "")),
@@ -163,6 +175,11 @@ test("every email renders with the unsubscribe link and a plain text twin", () =
     assert.ok(text.includes(`Unsubscribe: ${UNSUB}`), `${s.key}: unsubscribe in text`);
     assert.ok(html.includes(s.preheader), `${s.key}: preheader`);
     assert.ok(html.includes("EIN 41-3213344"), `${s.key}: legal line`);
+    // Every list email: why they are getting it, and the postal address.
+    for (const out of [html, text]) {
+      assert.ok(out.includes("signed up at adapttolife.org"), `${s.key}: why`);
+      assert.ok(out.includes(POSTAL), `${s.key}: postal address`);
+    }
     for (const img of html.match(/<img [^>]*>/g) || [])
       assert.match(img, /alt="[^"]+"/);
     for (const m of html.matchAll(/href="([^"]+)"/g)) {
@@ -183,26 +200,72 @@ test("every email renders with the unsubscribe link and a plain text twin", () =
   assert.throws(() => renderEmail(WELCOME[0], {}), /unsubscribe/);
 });
 
-test("the plain welcome reads as a letter, with one link, and its text twin says the same", () => {
+test("the plain welcome reads as a letter: unsubscribe up top and at the foot, one link in the body", () => {
   const { html, text } = renderEmail(WELCOME[0], { unsubscribeUrl: UNSUB });
   const links = [...html.matchAll(/<a href="([^"]+)"/g)].map((m) => m[1]);
-  assert.equal(links.length, 2, "the crew link and the unsubscribe link");
-  assert.match(
+  assert.equal(links.length, 3, "unsubscribe, the crew link, unsubscribe");
+  assert.equal(
     links[0],
+    UNSUB.replace(/&/g, "&amp;"),
+    "the unsubscribe link comes first",
+  );
+  assert.equal(links[2], UNSUB.replace(/&/g, "&amp;"));
+  assert.match(
+    links[1],
     /^https:\/\/adapttolife\.org\/pickleball\?utm_source=newsletter/,
   );
   assert.ok(html.includes(">Chicago Pickleball: Wheelie Big Dills</a>"));
   assert.ok(
+    html.indexOf("You signed up for Adapt To Life news at adapttolife.org.") <
+      html.indexOf(">Thanks for signing up.</p>"),
+    "why they are getting it, before the letter",
+  );
+  assert.ok(
     !html.includes("background:"),
     "the mail app's own background, dark mode included",
   );
-  assert.ok(text.startsWith("Thanks for signing up."));
+  assert.ok(
+    text.startsWith(
+      `You signed up for Adapt To Life news at adapttolife.org. Unsubscribe: ${UNSUB}\n\nThanks for signing up.`,
+    ),
+  );
   assert.ok(
     text.includes(
       "Chicago Pickleball: Wheelie Big Dills (https://adapttolife.org/pickleball?",
     ),
   );
   assert.ok(text.includes("\nAlec\nFounder, Adapt To Life\n"));
+  assert.ok(
+    text.endsWith(
+      `Unsubscribe: ${UNSUB}\n${POSTAL}\nA 501(c)(3) nonprofit, EIN 41-3213344.`,
+    ),
+  );
+});
+
+test("the Body Shop welcome: the same plain letter, from the shop, naming Adapt To Life NFP at the address", () => {
+  const unsub = "https://adapttolife.org/unsubscribe?e=a%40b.co&b=bodyshop&t=tok";
+  const { subject, html, text } = renderEmail(SHOP_WELCOME, { unsubscribeUrl: unsub });
+  assert.equal(subject, "You’re on the list");
+  assert.ok(SHOP_WELCOME.paragraphs.length <= 4, "super simple");
+  assert.ok(
+    text.startsWith(
+      `You signed up for Adapt Body Shop news at adaptbodyshop.com. Unsubscribe: ${unsub}`,
+    ),
+  );
+  assert.ok(
+    text.includes(
+      "\nAdapt Body Shop\n\nYou’re getting this because you signed up at adaptbodyshop.com.",
+    ),
+  );
+  assert.ok(
+    text.includes(
+      "Adapt Body Shop is part of Adapt To Life NFP, 1509 N Milwaukee Ave, Libertyville, IL 60048",
+    ),
+  );
+  assert.ok(!/Alec|Founder/.test(text), "signed by the shop");
+  assert.ok(!/every shirt/i.test(text), "no absolutes in money copy");
+  assert.equal((html.match(/unsubscribe\?e=/g) || []).length, 2);
+  assert.ok(html.includes('href="https://adaptbodyshop.com/"'));
 });
 
 test("donors do not get the P.S. asking them to give (saved email)", () => {
@@ -230,169 +293,101 @@ test("every image the saved emails use is on the site", () => {
 });
 
 // ---- unsubscribe links --------------------------------------------------------
-test("an unsubscribe link works only for the address it was made for", async () => {
-  const env = { RESEND_API_KEY: "re_test" };
-  const url = new URL(await unsubscribeUrl(env, " Person@Example.com "));
+test("a link carries its brand, is signed with NEWSLETTER_LINK_SECRET, and works only for that address and list", async () => {
+  const env = { NEWSLETTER_LINK_SECRET: "link-secret", RESEND_API_KEY: "re_test" };
+  const url = new URL(await unsubscribeUrl(env, " Person@Example.com ", "bodyshop"));
   assert.equal(url.origin + url.pathname, "https://adapttolife.org/unsubscribe");
   assert.equal(url.searchParams.get("e"), "person@example.com");
+  assert.equal(url.searchParams.get("b"), "bodyshop");
   const t = url.searchParams.get("t");
-  assert.ok(await validUnsubscribe(env, "person@example.com", t));
-  assert.ok(!(await validUnsubscribe(env, "someone@else.com", t)));
-  assert.ok(!(await validUnsubscribe(env, "person@example.com", t.slice(0, -1) + "x")));
-  assert.ok(
-    !(await validUnsubscribe({ RESEND_API_KEY: "other" }, "person@example.com", t)),
+  assert.equal(
+    await verifyUnsubscribe(env, "person@example.com", "bodyshop", t),
+    "bodyshop",
+  );
+  assert.equal(
+    await verifyUnsubscribe(env, "person@example.com", "atl", t),
+    null,
+    "not another list",
+  );
+  assert.equal(await verifyUnsubscribe(env, "someone@else.com", "bodyshop", t), null);
+  assert.equal(
+    await verifyUnsubscribe(
+      env,
+      "person@example.com",
+      "bodyshop",
+      t.slice(0, -1) + "x",
+    ),
+    null,
+  );
+  assert.equal(await verifyUnsubscribe(env, "person@example.com", "nope", t), null);
+  // Never the Resend key: rotating it must not break a link already sent.
+  assert.equal(
+    await verifyUnsubscribe(
+      { ...env, RESEND_API_KEY: "rotated" },
+      "person@example.com",
+      "bodyshop",
+      t,
+    ),
+    "bodyshop",
+  );
+  assert.equal(
+    await verifyUnsubscribe(
+      { ...env, NEWSLETTER_LINK_SECRET: "other" },
+      "person@example.com",
+      "bodyshop",
+      t,
+    ),
+    null,
+  );
+  await assert.rejects(
+    () => unsubscribeUrl({ RESEND_API_KEY: "re_test" }, "a@b.co"),
+    /NEWSLETTER_LINK_SECRET/,
   );
 });
 
-// ---- a fake Resend and a fake D1 ------------------------------------------------
-function fakeResend({ contact = { unsubscribed: false }, sendStatus = 200 } = {}) {
-  const calls = [];
-  const fetch = async (url, init = {}) => {
-    const u = String(url);
-    calls.push({
-      url: u,
-      method: init.method || "GET",
-      headers: init.headers,
-      body: init.body ? JSON.parse(init.body) : null,
-    });
-    if (u === "https://api.resend.com/emails")
-      return sendStatus === 200
-        ? Response.json({ id: `email-${calls.length}` })
-        : new Response("nope", { status: sendStatus });
-    if (u.startsWith("https://api.resend.com/contacts/")) {
-      if (init.method === "PATCH")
-        return Response.json({ object: "contact", id: "c1" });
-      return contact
-        ? Response.json({ object: "contact", ...contact })
-        : new Response("not found", { status: 404 });
-    }
-    throw new Error("unexpected fetch " + u);
-  };
-  return {
-    fetch,
-    calls,
-    sent: () => calls.filter((c) => c.url === "https://api.resend.com/emails"),
-  };
-}
+// The link every welcome carried before Nov 25 2026: no brand, v1, signed with
+// the Resend key (NEWSLETTER_LINK_SECRET was never set on production).
+const v1Token = (secret, email) =>
+  createHmac("sha256", secret)
+    .update(`newsletter-unsubscribe:v1:${email}`)
+    .digest("base64url")
+    .slice(0, 32);
 
-function fakeD1() {
-  const rows = new Map();
-  const stmt = (sql, values) => ({
-    async first() {
-      if (sql.startsWith("INSERT OR IGNORE INTO newsletter_journey")) {
-        const [email, contact_id, series, started_at, next_at] = values;
-        if (rows.has(email)) return null;
-        rows.set(email, {
-          email,
-          contact_id,
-          series,
-          step: 0,
-          status: "active",
-          started_at,
-          next_at,
-          claimed_until: null,
-          attempts: 0,
-          last_error: null,
-          last_sent_at: null,
-        });
-        return { email };
-      }
-      if (sql.startsWith("UPDATE newsletter_journey SET claimed_until = ?")) {
-        const [until, email, now] = values;
-        const r = rows.get(email);
-        if (!r || r.status !== "active" || (r.claimed_until && r.claimed_until >= now))
-          return null;
-        r.claimed_until = until;
-        return { ...r };
-      }
-      throw new Error("unexpected first() " + sql);
-    },
-    async all() {
-      if (sql.startsWith("SELECT email FROM newsletter_journey")) {
-        const [now, now2, limit] = values;
-        const results = [...rows.values()]
-          .filter(
-            (r) =>
-              r.status === "active" &&
-              r.next_at <= now &&
-              (!r.claimed_until || r.claimed_until < now2),
-          )
-          .sort((a, b) => a.next_at.localeCompare(b.next_at))
-          .slice(0, limit)
-          .map((r) => ({ email: r.email }));
-        return { results };
-      }
-      throw new Error("unexpected all() " + sql);
-    },
-    async run() {
-      if (sql.startsWith("UPDATE newsletter_journey SET status = 'unsubscribed'")) {
-        const r = rows.get(values[0]);
-        if (r) Object.assign(r, { status: "unsubscribed", claimed_until: null });
-        return {};
-      }
-      if (sql.startsWith("UPDATE newsletter_journey SET")) {
-        const keys = [...sql.matchAll(/(\w+) = \?/g)].map((m) => m[1]);
-        const email = values[values.length - 1];
-        const r = rows.get(email);
-        keys.forEach((k, i) => (r[k] = values[i]));
-        r.claimed_until = null;
-        return {};
-      }
-      throw new Error("unexpected run() " + sql);
-    },
-  });
-  return { rows, prepare: (sql) => ({ bind: (...values) => stmt(sql, values) }) };
-}
-
-function fakeDonors(emails = []) {
-  return {
-    prepare: () => ({
-      bind: (email) => ({
-        first: async () => (emails.includes(email) ? { yes: 1 } : null),
-      }),
-    }),
-  };
-}
-
-async function withFetch(fetch, fn) {
-  const original = globalThis.fetch;
-  globalThis.fetch = fetch;
-  try {
-    return await fn();
-  } finally {
-    globalThis.fetch = original;
-  }
-}
-
-const envWith = (db, donors = fakeDonors()) => ({
-  WELCOME_SERIES: "on",
-  RESEND_API_KEY: "re_test",
-  MAIL_FROM_DOMAINS: "mail.adapttolife.org,mail.adaptbodyshop.com",
-  ENV_NAME: "production",
-  AGENT_MAIL_DB: db,
-  WAIVERS_DB: donors,
-  NEWSLETTER_FROM: "Alec at Adapt To Life <hello@mail.adapttolife.org>",
-  NEWSLETTER_REPLY_TO: "hello@adapttolife.org",
+test("old links (no brand, signed with the Resend key) still verify, as Adapt To Life news", async () => {
+  const env = { NEWSLETTER_LINK_SECRET: "link-secret", RESEND_API_KEY: "re_test" };
+  const old = v1Token("re_test", "old@example.com");
+  assert.equal(await verifyUnsubscribe(env, "old@example.com", "", old), "atl");
+  assert.equal(await verifyUnsubscribe(env, "other@example.com", "", old), null);
+  assert.equal(
+    await verifyUnsubscribe(
+      { ...env, RESEND_API_KEY: "rotated" },
+      "old@example.com",
+      "",
+      old,
+    ),
+    null,
+  );
+  // An old token cannot be passed off as a v2 link for a brand.
+  assert.equal(await verifyUnsubscribe(env, "old@example.com", "atl", old), null);
 });
 
 // ---- sending ---------------------------------------------------------------------
-test("the email goes to Resend from mail.adapttolife.org with one click unsubscribe headers", async () => {
-  const resend = fakeResend();
-  const env = envWith(fakeD1());
+test("a list email goes to Resend from the brand's mail. domain with one click unsubscribe headers and tags", async () => {
+  const resend = statefulResend();
+  const env = newsletterEnv();
   await withFetch(resend.fetch, () =>
     sendSeriesEmail(env, "Fan@Example.com", WELCOME[0]),
   );
-  const [call] = resend.sent();
-  assert.equal(call.method, "POST");
+  const [call] = resend.calls.filter((c) => c.path === "/emails");
   assert.equal(call.headers.Authorization, "Bearer re_test");
-  assert.match(call.headers["Idempotency-Key"], /^welcome-welcome-[0-9a-f]{32}$/);
+  assert.match(call.headers["Idempotency-Key"], /^welcome-atl-welcome-[0-9a-f]{32}$/);
   assert.equal(call.body.from, "Alec at Adapt To Life <hello@mail.adapttolife.org>");
   assert.deepEqual(call.body.reply_to, ["hello@adapttolife.org"]);
   assert.deepEqual(call.body.to, ["fan@example.com"]);
-  assert.equal(call.body.subject, "Welcome to Adapt To Life");
+  assert.equal(call.body.subject, "You’re on the list");
   assert.match(
     call.body.headers["List-Unsubscribe"],
-    /^<https:\/\/adapttolife\.org\/unsubscribe\?e=fan%40example\.com&t=[\w-]+>, <mailto:hello@adapttolife\.org\?subject=Unsubscribe>$/,
+    /^<https:\/\/adapttolife\.org\/unsubscribe\?e=fan%40example\.com&b=atl&t=[\w-]+>, <mailto:hello@adapttolife\.org\?subject=Unsubscribe>$/,
   );
   assert.equal(
     call.body.headers["List-Unsubscribe-Post"],
@@ -408,197 +403,301 @@ test("the email goes to Resend from mail.adapttolife.org with one click unsubscr
   assert.ok(call.body.html && call.body.text);
 });
 
-// ---- the journey ---------------------------------------------------------------------
-test("a new subscriber gets the welcome at once, and nothing after it", async () => {
-  const db = fakeD1();
-  const env = envWith(db);
-  const resend = fakeResend();
-  const t0 = Date.parse("2026-11-07T15:00:00Z");
+// ---- the journey (later emails, if WELCOME ever grows) -------------------------
+const journey = (env, email) =>
+  env.AGENT_MAIL_DB.sql
+    .prepare("SELECT * FROM newsletter_journey WHERE email=?")
+    .get(email);
+const legacyRow = (env, email, at) =>
+  env.AGENT_MAIL_DB.sql
+    .prepare(
+      "INSERT INTO newsletter_journey (email,series,step,status,started_at,next_at,attempts) VALUES (?, 'welcome', 0, 'active', ?, ?, 0)",
+    )
+    .run(email, at, at);
+
+test("after the welcome the journey is recorded at step 1, and with one email nothing more is sent", async () => {
+  const env = newsletterEnv();
+  const resend = statefulResend();
+  const t0 = Date.parse("2026-11-25T15:00:00Z");
+  await continueSeries(env, "fan@example.com", { now: t0 });
+  assert.equal(journey(env, "fan@example.com").step, 1);
+  assert.equal(journey(env, "fan@example.com").status, "done");
   await withFetch(resend.fetch, async () => {
-    const out = await startWelcome(env, "fan@example.com", {
-      contactId: "c1",
-      now: t0,
-    });
-    assert.equal(out.started, true);
-    assert.equal(out.sent, true);
     for (const day of [1, 2, 5, 9, 14, 30])
       assert.equal(
-        (await runWelcomeSeries(env, { now: t0 + day * DAY })).sent,
+        (await runWelcomeSeries(env, { now: t0 + day * DAY })).sent ?? 0,
         0,
         `day ${day}`,
       );
   });
-  assert.equal(resend.sent().length, 1);
-  assert.equal(db.rows.get("fan@example.com").status, "done");
-  // Starting again does nothing: one welcome per person.
-  await withFetch(resend.fetch, async () => {
-    assert.equal(
-      (await startWelcome(env, "fan@example.com", { now: t0 + 20 * DAY })).started,
-      false,
-    );
+  assert.equal(resend.emails.length, 0);
+});
+
+test("a journey send checks the brand Topic first: someone who left Adapt To Life news gets nothing", async () => {
+  const env = newsletterEnv();
+  const t0 = Date.parse("2026-11-07T15:00:00Z");
+  legacyRow(env, "gone@example.com", new Date(t0).toISOString());
+  legacyRow(env, "still@example.com", new Date(t0).toISOString());
+  const resend = statefulResend({
+    contacts: {
+      // Opted out of the Topic only; the team wide flag is not set.
+      "gone@example.com": {
+        topics: { [TOPIC_ATL]: "opt_out", [TOPIC_ASNM]: "opt_in" },
+      },
+      "still@example.com": { topics: { [TOPIC_ATL]: "opt_in" } },
+    },
   });
-});
-
-test("donors get the welcome too: there is no ask in it", async () => {
-  const db = fakeD1();
-  const env = envWith(db, fakeDonors(["donor@example.com"]));
-  const resend = fakeResend();
-  await withFetch(resend.fetch, () =>
-    startWelcome(env, "donor@example.com", { now: Date.parse("2026-11-07T15:00:00Z") }),
+  await withFetch(resend.fetch, () => runWelcomeSeries(env, { now: t0 + DAY }));
+  assert.equal(journey(env, "gone@example.com").status, "unsubscribed");
+  assert.deepEqual(
+    resend.emails.map((m) => m.to[0]),
+    ["still@example.com"],
   );
-  assert.equal(resend.sent().length, 1);
-  assert.equal(db.rows.get("donor@example.com").status, "done");
+  // Left everything (the team wide flag): nothing either.
+  const env2 = newsletterEnv();
+  legacyRow(env2, "all@example.com", new Date(t0).toISOString());
+  const r2 = statefulResend({
+    contacts: {
+      "all@example.com": { unsubscribed: true, topics: { [TOPIC_ATL]: "opt_in" } },
+    },
+  });
+  await withFetch(r2.fetch, () => runWelcomeSeries(env2, { now: t0 + DAY }));
+  assert.equal(r2.emails.length, 0);
 });
 
-test("a retry checks Resend first: someone who unsubscribed meanwhile gets nothing", async () => {
-  const db = fakeD1();
-  const env = envWith(db);
+test("a failed journey send is retried later, and gives up after six tries", async () => {
+  const env = newsletterEnv();
   const t0 = Date.parse("2026-11-07T15:00:00Z");
-  await withFetch(fakeResend({ sendStatus: 500 }).fetch, () =>
-    startWelcome(env, "gone@example.com", { now: t0 }),
-  );
-  const later = fakeResend({ contact: { unsubscribed: true } });
-  await withFetch(later.fetch, () => runWelcomeSeries(env, { now: t0 + 3 * DAY }));
-  assert.equal(later.sent().length, 0);
-  assert.equal(db.rows.get("gone@example.com").status, "unsubscribed");
-});
-
-test("a failed send is retried later, and gives up after six tries", async () => {
-  const db = fakeD1();
-  const env = envWith(db);
-  const t0 = Date.parse("2026-11-07T15:00:00Z");
-  const failing = fakeResend({ sendStatus: 500 });
-  await withFetch(failing.fetch, () =>
-    startWelcome(env, "retry@example.com", { now: t0 }),
-  );
-  const row = db.rows.get("retry@example.com");
-  assert.equal(row.step, 0, "still on the welcome");
-  assert.equal(row.attempts, 1);
-  assert.ok(Date.parse(row.next_at) > t0, "retry is scheduled");
+  legacyRow(env, "retry@example.com", new Date(t0).toISOString());
+  const failing = statefulResend({
+    contacts: { "retry@example.com": { topics: { [TOPIC_ATL]: "opt_in" } } },
+    fail: (m, p) => (p === "/emails" ? 500 : null),
+  });
   await withFetch(failing.fetch, async () => {
-    for (let i = 0; i < 6; i++) {
-      const now = Date.parse(db.rows.get("retry@example.com").next_at) + 1000;
-      await runWelcomeSeries(env, { now });
-    }
+    await runWelcomeSeries(env, { now: t0 });
+    const row = journey(env, "retry@example.com");
+    assert.equal(row.step, 0);
+    assert.equal(row.attempts, 1);
+    for (let i = 0; i < 6; i++)
+      await runWelcomeSeries(env, {
+        now: Date.parse(journey(env, "retry@example.com").next_at) + 1000,
+      });
   });
-  assert.equal(db.rows.get("retry@example.com").status, "stopped");
+  assert.equal(journey(env, "retry@example.com").status, "stopped");
 });
 
-test("the email is off unless WELCOME_SERIES is on", async () => {
-  const db = fakeD1();
-  const env = { ...envWith(db), WELCOME_SERIES: "off" };
-  const resend = fakeResend();
+test("the series is off unless WELCOME_SERIES is on", async () => {
+  const env = newsletterEnv({ WELCOME_SERIES: "off" });
+  const resend = statefulResend();
   await withFetch(resend.fetch, async () => {
-    assert.equal((await startWelcome(env, "x@example.com")).started, false);
     assert.equal((await runWelcomeSeries(env)).skipped, "disabled");
   });
   assert.equal(resend.calls.length, 0);
-  // On for the live site (top-level vars). Staging mirrors the vars
-  // (scripts/staging-live.test.mjs) but has no Resend key, so it stays inert.
   const cfg = read("wrangler.jsonc");
   assert.ok(cfg.slice(0, cfg.indexOf('"env": {')).includes('"WELCOME_SERIES": "on"'));
-  assert.equal(
-    (await startWelcome({ WELCOME_SERIES: "on", AGENT_MAIL_DB: db }, "y@example.com"))
-      .started,
-    false,
-  );
 });
 
-test("unsubscribing stops it and marks the contact unsubscribed in Resend", async () => {
-  const db = fakeD1();
-  const env = envWith(db);
-  const resend = fakeResend();
-  await withFetch(resend.fetch, async () => {
-    await startWelcome(env, "bye@example.com", {
-      now: Date.parse("2026-11-07T15:00:00Z"),
-    });
-    await unsubscribe(env, "Bye@Example.com");
+// ---- unsubscribing -----------------------------------------------------------------
+test("unsubscribing opts out of that brand's Topic only: never the team wide flag, never another Topic", async () => {
+  const env = newsletterEnv();
+  const t0 = new Date().toISOString();
+  legacyRow(env, "bye@example.com", t0);
+  env.AGENT_MAIL_DB.sql
+    .prepare(
+      "INSERT INTO newsletter_signups (brand,email,env,joined_at,state,contact_at,topic_at) VALUES ('atl','bye@example.com','production',?,'done',?,?)",
+    )
+    .run(t0, t0, t0);
+  const resend = statefulResend({
+    contacts: {
+      "bye@example.com": {
+        topics: {
+          [TOPIC_ATL]: "opt_in",
+          [TOPIC_SHOP]: "opt_in",
+          [TOPIC_ASNM]: "opt_in",
+        },
+      },
+    },
   });
-  assert.equal(db.rows.get("bye@example.com").status, "unsubscribed");
-  const patch = resend.calls.find((c) => c.method === "PATCH");
-  assert.equal(patch.url, "https://api.resend.com/contacts/bye%40example.com");
-  assert.deepEqual(patch.body, { unsubscribed: true });
+  await withFetch(resend.fetch, () => unsubscribe(env, "Bye@Example.com", "atl"));
+  const c = resend.contacts.get("bye@example.com");
+  assert.equal(c.topics.get(TOPIC_ATL), "opt_out");
+  assert.equal(c.topics.get(TOPIC_SHOP), "opt_in");
+  assert.equal(c.topics.get(TOPIC_ASNM), "opt_in");
+  assert.equal(c.unsubscribed, false);
+  const writes = resend.calls.filter((x) => x.method !== "GET");
+  assert.deepEqual(
+    writes.map((x) => [x.method, x.path, x.body]),
+    [
+      [
+        "PATCH",
+        "/contacts/bye%40example.com/topics",
+        [{ id: TOPIC_ATL, subscription: "opt_out" }],
+      ],
+    ],
+  );
+  assert.equal(journey(env, "bye@example.com").status, "unsubscribed");
+  const signup = env.AGENT_MAIL_DB.sql
+    .prepare("SELECT * FROM newsletter_signups")
+    .get();
+  assert.equal(signup.topic_at, null);
+  assert.ok(signup.unsubscribed_at);
+  // Body Shop: its own Topic, and the Adapt To Life journey is left alone.
+  const env2 = newsletterEnv();
+  legacyRow(env2, "bye@example.com", t0);
+  await withFetch(resend.fetch, () => unsubscribe(env2, "bye@example.com", "bodyshop"));
+  assert.equal(c.topics.get(TOPIC_SHOP), "opt_out");
+  assert.equal(journey(env2, "bye@example.com").status, "active");
+  // No such contact: nothing to opt out of; not an error.
+  await withFetch(resend.fetch, () => unsubscribe(env2, "nobody@example.com", "atl"));
 });
 
 // ---- through the worker -------------------------------------------------------------
 async function worker() {
   return (await import("../src/index.js")).default;
 }
+const ctx = { waitUntil() {} };
 
-test("/unsubscribe: the link unsubscribes, one click POST answers 200, a forged link is refused", async () => {
+test("/unsubscribe GET shows one button and changes nothing; the button POST unsubscribes from that brand", async () => {
   const w = await worker();
-  const db = fakeD1();
-  const env = { ...envWith(db), ASSETS: { fetch: async () => new Response("asset") } };
-  const resend = fakeResend();
-  const good = await unsubscribeUrl(env, "click@example.com");
-  await withFetch(resend.fetch, async () => {
-    const page = await w.fetch(new Request(good), env, { waitUntil() {} });
-    assert.equal(page.status, 200);
-    assert.match(await page.text(), /You’re unsubscribed/);
-    const oneClick = await w.fetch(
-      new Request(good, { method: "POST", body: "List-Unsubscribe=One-Click" }),
-      env,
-      { waitUntil() {} },
-    );
-    assert.equal(oneClick.status, 200);
-    const forged = await w.fetch(
-      new Request(good.replace("click%40", "other%40")),
-      env,
-      {
-        waitUntil() {},
+  const env = {
+    ...newsletterEnv(),
+    ASSETS: { fetch: async () => new Response("asset") },
+  };
+  const resend = statefulResend({
+    contacts: {
+      "click@example.com": {
+        topics: { [TOPIC_ATL]: "opt_in", [TOPIC_SHOP]: "opt_in" },
       },
-    );
-    assert.equal(forged.status, 400);
-    assert.match(await forged.text(), /didn’t work/);
+    },
   });
-  assert.equal(resend.calls.filter((c) => c.method === "PATCH").length, 2);
+  const good = await unsubscribeUrl(env, "click@example.com", "bodyshop");
+  await withFetch(resend.fetch, async () => {
+    // Mail scanners open links: a GET, however many, never unsubscribes.
+    for (let i = 0; i < 3; i++) {
+      const page = await w.fetch(new Request(good), env, ctx);
+      assert.equal(page.status, 200);
+      const html = await page.text();
+      assert.match(html, /Unsubscribe from Adapt Body Shop news/);
+      assert.match(
+        html,
+        /<form method="post" action="\/unsubscribe\?e=click%40example\.com&amp;b=bodyshop&amp;t=[\w-]+"><button type="submit">Unsubscribe<\/button><\/form>/,
+      );
+    }
+    assert.equal(resend.calls.length, 0, "no Resend call on GET");
+    const done = await w.fetch(
+      new Request(good, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "",
+      }),
+      env,
+      ctx,
+    );
+    assert.equal(done.status, 200);
+    assert.match(
+      await done.text(),
+      /You’re unsubscribed[\s\S]*won’t get Adapt Body Shop news any more/,
+    );
+  });
+  const c = resend.contacts.get("click@example.com");
+  assert.equal(c.topics.get(TOPIC_SHOP), "opt_out");
+  assert.equal(
+    c.topics.get(TOPIC_ATL),
+    "opt_in",
+    "the other brand's list is untouched",
+  );
+  assert.equal(c.unsubscribed, false);
 });
 
-test("a new signup through /api/subscribe gets the welcome; an existing one does not", async () => {
+test("/unsubscribe one click POST (RFC 8058) answers an empty 200; forged links are refused; old links still work", async () => {
+  const w = await worker();
+  const env = {
+    ...newsletterEnv(),
+    ASSETS: { fetch: async () => new Response("asset") },
+  };
+  const resend = statefulResend({
+    contacts: {
+      "one@example.com": { topics: { [TOPIC_ATL]: "opt_in" } },
+      "old@example.com": { topics: { [TOPIC_ATL]: "opt_in" } },
+    },
+  });
+  const good = await unsubscribeUrl(env, "one@example.com", "atl");
+  const oneClick = (url) =>
+    w.fetch(
+      new Request(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "List-Unsubscribe=One-Click",
+      }),
+      env,
+      ctx,
+    );
+  await withFetch(resend.fetch, async () => {
+    const res = await oneClick(good);
+    assert.equal(res.status, 200);
+    assert.equal(await res.text(), "");
+    assert.equal(
+      resend.contacts.get("one@example.com").topics.get(TOPIC_ATL),
+      "opt_out",
+    );
+
+    const forged = good.replace("one%40", "other%40");
+    assert.equal((await oneClick(forged)).status, 400);
+    const page = await w.fetch(new Request(forged), env, ctx);
+    assert.equal(page.status, 400);
+    assert.match(await page.text(), /didn’t work/);
+    // A link re-pointed at another list fails too.
+    assert.equal((await oneClick(good.replace("b=atl", "b=bodyshop"))).status, 400);
+
+    const old = `https://adapttolife.org/unsubscribe?e=old%40example.com&t=${v1Token("re_test", "old@example.com")}`;
+    assert.match(
+      await (await w.fetch(new Request(old), env, ctx)).text(),
+      /Unsubscribe from Adapt To Life news/,
+    );
+    assert.equal((await oneClick(old)).status, 200);
+    assert.equal(
+      resend.contacts.get("old@example.com").topics.get(TOPIC_ATL),
+      "opt_out",
+    );
+  });
+  assert.ok(
+    !resend.calls.some(
+      (c) => c.method === "PATCH" && /^\/contacts\/[^/]+$/.test(c.path),
+    ),
+    "never the team wide flag",
+  );
+});
+
+test("/unsubscribe: when Resend refuses, the person is told to try again, and nothing claims success", async () => {
+  const w = await worker();
+  const env = {
+    ...newsletterEnv(),
+    ASSETS: { fetch: async () => new Response("asset") },
+  };
+  const resend = statefulResend({ fail: () => 503 });
+  const good = await unsubscribeUrl(env, "busy@example.com", "atl");
+  await withFetch(resend.fetch, async () => {
+    const res = await w.fetch(
+      new Request(good, { method: "POST", body: "" }),
+      env,
+      ctx,
+    );
+    assert.equal(res.status, 503);
+    assert.match(await res.text(), /didn’t go through[\s\S]*<button/);
+  });
+});
+
+test("a new signup through /api/subscribe is recorded and welcomed; a second one is existing and gets no second welcome", async () => {
   const w = await worker();
   const waits = [];
-  const ctx = { waitUntil: (p) => waits.push(p) };
-  const journey = fakeD1();
-  const claims = new Set();
-  // agent-mail holds both the signup claims and the journey.
-  const db = {
-    prepare(sql) {
-      if (sql.includes("newsletter_journey")) return journey.prepare(sql);
-      return {
-        bind: (...values) => ({
-          async first() {
-            if (sql.startsWith("INSERT OR IGNORE INTO newsletter_delivery_claims")) {
-              if (claims.has(values[0])) return null;
-              claims.add(values[0]);
-              return { claim_key: values[0] };
-            }
-            return null;
-          },
-          async run() {
-            return {};
-          },
-        }),
-      };
-    },
-  };
+  const c = { waitUntil: (p) => waits.push(p) };
   const env = {
-    ...envWith(db),
-    RESEND_SEGMENT_ID: "seg",
+    ...newsletterEnv(),
     TURNSTILE_MODE: "off",
     FORM_LIMITER: { limit: async () => ({ success: true }) },
     ASSETS: { fetch: async () => new Response("asset") },
   };
-  const sent = [];
-  const fetch = async (url, init = {}) => {
-    const u = String(url);
-    if (u === "https://api.resend.com/contacts")
-      return Response.json({ object: "contact", id: "c-new" });
-    if (u === "https://api.resend.com/emails") {
-      sent.push(JSON.parse(init.body));
-      return Response.json({ id: "e1" });
-    }
-    return new Response("{}", { status: 200 });
-  };
+  const resend = statefulResend();
   const signup = () =>
     w.fetch(
       new Request("https://adapttolife.org/api/subscribe", {
@@ -607,18 +706,18 @@ test("a new signup through /api/subscribe gets the welcome; an existing one does
         body: JSON.stringify({ em: "new@example.com", source: "test" }),
       }),
       env,
-      ctx,
+      c,
     );
-  await withFetch(fetch, async () => {
+  await withFetch(resend.fetch, async () => {
     const first = await signup();
     assert.equal(first.status, 200);
+    assert.deepEqual(await first.json(), { ok: true });
     await Promise.allSettled(waits.splice(0));
-    assert.equal(sent.length, 1, "the welcome went out");
-    assert.equal(sent[0].subject, "Welcome to Adapt To Life");
-    assert.equal(journey.rows.get("new@example.com").contact_id, "c-new");
+    assert.equal(resend.emails.length, 1, "the welcome went out");
+    assert.equal(resend.emails[0].subject, "You’re on the list");
     const again = await signup();
     assert.deepEqual(await again.json(), { ok: true, existing: true });
     await Promise.allSettled(waits.splice(0));
-    assert.equal(sent.length, 1, "no second welcome");
+    assert.equal(resend.emails.length, 1, "no second welcome");
   });
 });

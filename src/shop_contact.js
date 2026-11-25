@@ -44,6 +44,7 @@ import {
 } from "./email.js";
 import { getGoogleAccessToken, SHEETS_SCOPE } from "./google.js";
 import { verifyTurnstile } from "./turnstile.js";
+import { safeNewsletterSubscribe } from "./newsletter.js";
 
 // How long we tell a customer they will wait. Alec's call, 2026-09-04: two
 // business days. It is a promise printed on a public page and repeated in every
@@ -122,7 +123,8 @@ export async function handleShopContact(request, env, ctx) {
 
   // The footer newsletter sign-up shares this door (and every gate above) but
   // not the contact form's validation, record or mail. See handleShopNewsletter.
-  if (str(data.kind) === "newsletter") return handleShopNewsletter(request, env, data);
+  if (str(data.kind) === "newsletter")
+    return handleShopNewsletter(request, env, data, ctx);
 
   const name = str(data.name, 120);
   const email = str(data.email, 200).toLowerCase();
@@ -223,20 +225,24 @@ export async function handleShopContact(request, env, ctx) {
 // an email and nothing else, so the contact form's name/message checks do not
 // apply.
 //
+// Two writes, both before the answer: the shop_subscribers row (the cron copies
+// it to the "Shop Newsletter" tab), and the join in newsletter_signups, which
+// puts them in Resend: the "Adapt To Life Shop" Segment, the "Adapt Body Shop
+// news" Topic, and the Body Shop welcome from hello@mail.adaptbodyshop.com
+// (src/newsletter.js; docs/EMAIL.md). Mirroring into Shopify as a customer with
+// email marketing consent is Spec 197 P3, which waits on Alec's consent settings.
+//
 // What it deliberately does NOT do: send the contact auto-reply ("your message
 // is in, a person will answer within two business days") or the hello@ shop
-// notice. Neither is true of a sign-up. The only side effect is the row; the
-// cron copies it to the "Shop Newsletter" tab, and mirroring it into Shopify as
-// a customer with email marketing consent is Spec 197 P3, which waits on
-// Alec's consent settings.
+// notice. Neither is true of a sign-up.
 //
 // The storefront (adapt-body-shop-storefront app/lib/newsletter.ts) shows
 // "you are on the list" only for {ok:true, subscribed:true}, so that pair is
-// returned only after the write. A repeat address is the same answer and no
+// returned only after both writes. A repeat address is the same answer and no
 // new row (ON CONFLICT DO NOTHING); the response does not say which, so the
 // form cannot be used to test whether someone is subscribed.
 // ---------------------------------------------------------------------------
-async function handleShopNewsletter(request, env, data) {
+async function handleShopNewsletter(request, env, data, ctx) {
   const email = str(data.email, 200).toLowerCase();
   if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
     return json({ ok: false, error: "A valid email address is required." }, 422);
@@ -266,6 +272,15 @@ async function handleShopNewsletter(request, env, data) {
       502,
     );
   }
+  const joined = await safeNewsletterSubscribe(env, email, str(data.source, 80), {
+    brand: "bodyshop",
+    ctx,
+  });
+  if (!joined.ok)
+    return json(
+      { ok: false, error: "Could not save your sign-up. Please try again." },
+      joined.status || 502,
+    );
   return json({ ok: true, subscribed: true });
 }
 

@@ -6,7 +6,11 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { createHash, generateKeyPairSync } from "node:crypto";
 import worker from "../src/index.js";
-import { runDriveBacklog, sendReceiptEmail } from "../src/waiver.js";
+import {
+  runDriveBacklog,
+  processWaiverEmail,
+  sweepWaiverEmails,
+} from "../src/waiver.js";
 import { sqliteD1, formBindings } from "./helpers/form-db.js";
 import { readdirSync } from "node:fs";
 import { buildExpected, describeLocal, diffSchema } from "../scripts/lib/d1-schema.mjs";
@@ -41,6 +45,8 @@ beforeEach(() => {
     const url = String(input);
     if (url === "https://api.resend.com/emails") {
       drive.resend.push({ headers: init.headers, body: JSON.parse(init.body) });
+      if (drive.resendFail)
+        return Response.json({ name: "application_error" }, { status: drive.resendFail });
       return Response.json({ id: "resend-" + drive.resend.length });
     }
     if (url === "https://oauth2.example/token") {
@@ -409,6 +415,8 @@ test("receipt failure stays best-effort and is recorded", async () => {
     f.map((x) => [x.route, x.to_addr]),
     [["receipt:waiver", "offline@example.com"]],
   );
+  // No idempotency on this transport: a person checks before any resend.
+  assert.equal(e.WAIVERS_DB.sql.prepare("SELECT state FROM waiver_emails").get().state, "review");
 });
 
 // The Gmail transport sends only as GMAIL_FROM; it is set to the house From
@@ -456,17 +464,150 @@ test("Cloudflare transport: the receipt PDF goes as bytes, not a base64 string",
   assert.equal(sha(new Uint8Array(att.content)), row(e).pdf_sha256);
 });
 
-test("receipt with empty PDF bytes: sent without the attachment, never throws", async () => {
-  const doc = { org: "Adapt To Life", title: "Release" };
-  for (const pdfBytes of [new Uint8Array(0), undefined]) {
-    const e = env(GMAIL);
+// ---- the waiver email outbox (docs/EMAIL.md, "How a site sends") -------------
+const email = (e, id) =>
+  e.WAIVERS_DB.sql.prepare("SELECT * FROM waiver_emails WHERE waiver_id = ?").get(id);
+const makeDue = (e) =>
+  e.WAIVERS_DB.sql
+    .prepare("UPDATE waiver_emails SET next_attempt_at = '2000-01-01T00:00:00Z' WHERE state = 'pending'")
+    .run();
+
+test("the waiver email is owed from the moment the release is captured, and marked done once Resend takes it", async () => {
+  const e = env(RESEND);
+  const out = await (await sign(e)).json();
+  const r = email(e, out.id);
+  assert.equal(r.state, "done");
+  assert.equal(r.env, "production");
+  assert.equal(r.attempts, 1);
+  assert.equal(JSON.parse(r.receipt).messageId, "resend-1");
+  const frozen = JSON.parse(r.rendered);
+  assert.equal(frozen.idempotencyKey, `waiver-${out.id}`);
+  assert.deepEqual(frozen.pdf, { filename: "adapt-to-life-release.pdf", type: "application/pdf" });
+  assert.ok(!r.rendered.includes("JVBER"), "the PDF bytes are never copied into the row");
+  // Done is done: the sweep never sends it again.
+  await sweepWaiverEmails(e);
+  assert.equal(drive.resend.length, 1);
+});
+
+test("a passing Resend failure at signing is retried by the sweep: same key, same body, the PDF attached", async () => {
+  const e = env(RESEND);
+  drive.resendFail = 503;
+  const out = await (await sign(e)).json();
+  assert.equal(out.ok, true, "the signer is never blocked");
+  let r = email(e, out.id);
+  assert.equal(r.state, "pending");
+  assert.ok(Date.parse(r.next_attempt_at) > Date.now(), "backoff, not a tight loop");
+  assert.ok(r.first_attempted_at && r.rendered);
+  assert.deepEqual(failures(e).map((f) => f.route), ["receipt:waiver"], "the first failed send is reported");
+  drive.resendFail = 0;
+  await sweepWaiverEmails(e);
+  assert.equal(drive.resend.length, 1, "not before its backoff");
+  makeDue(e);
+  await sweepWaiverEmails(e);
+  r = email(e, out.id);
+  assert.equal(r.state, "done");
+  assert.equal(r.attempts, 2);
+  const [first, second] = drive.resend;
+  assert.equal(second.headers["Idempotency-Key"], first.headers["Idempotency-Key"]);
+  assert.deepEqual(second.body, first.body, "byte for byte, so Resend can collapse a repeat");
+  assert.equal(second.body.attachments[0].content, Buffer.from(docRow(e).pdf).toString("base64"));
+  assert.equal(failures(e).length, 1, "not reported again");
+});
+
+test("after the 23 hour window the waiver email is not resent: review, and a person hears", async () => {
+  const e = env(RESEND);
+  drive.resendFail = 500;
+  const out = await (await sign(e)).json();
+  drive.resendFail = 0;
+  e.WAIVERS_DB.sql
+    .prepare("UPDATE waiver_emails SET first_attempted_at = ?, next_attempt_at = NULL")
+    .run(new Date(Date.now() - 23.5 * 3600e3).toISOString());
+  await sweepWaiverEmails(e);
+  const r = email(e, out.id);
+  assert.equal(r.state, "review");
+  assert.match(r.error, /Retry window closed/);
+  assert.equal(drive.resend.length, 1, "only the first try");
+  assert.equal(failures(e).length, 2);
+});
+
+test("a refusal Resend calls final goes to review at once and is not retried", async () => {
+  const e = env(RESEND);
+  drive.resendFail = 422;
+  const out = await (await sign(e)).json();
+  assert.equal(email(e, out.id).state, "review");
+  makeDue(e);
+  await sweepWaiverEmails(e);
+  assert.equal(drive.resend.length, 1);
+});
+
+test("an interrupted send is resent only on Resend, with its frozen copy, inside the window", async () => {
+  const e = env(RESEND);
+  drive.resendFail = 503;
+  const a = (await (await sign(e)).json()).id;
+  const b = (await (await sign(e, { em: "second@example.com" })).json()).id;
+  drive.resendFail = 0;
+  const old = new Date(Date.now() - 20 * 60e3).toISOString();
+  e.WAIVERS_DB.sql
+    .prepare("UPDATE waiver_emails SET state='running', started_at=?, next_attempt_at=NULL")
+    .run(old);
+  e.WAIVERS_DB.sql
+    .prepare("UPDATE waiver_emails SET first_attempted_at=? WHERE waiver_id=?")
+    .run(new Date(Date.now() - 30 * 3600e3).toISOString(), b);
+  await sweepWaiverEmails(e);
+  assert.equal(email(e, a).state, "done");
+  assert.equal(email(e, b).state, "review");
+  // On a transport without idempotency an interrupted send always needs a person.
+  const c = env();
+  await sign(c);
+  c.WAIVERS_DB.sql.prepare("UPDATE waiver_emails SET state='running', started_at=?").run(old);
+  await sweepWaiverEmails(c);
+  assert.equal(c.WAIVERS_DB.sql.prepare("SELECT state FROM waiver_emails").get().state, "review");
+});
+
+test("each Worker sends only its own waiver emails (staging and production share the table)", async () => {
+  const e = env(RESEND);
+  drive.resendFail = 503;
+  const id = (await (await sign(e)).json()).id;
+  drive.resendFail = 0;
+  e.WAIVERS_DB.sql.prepare("UPDATE waiver_emails SET env='staging'").run();
+  makeDue(e);
+  await sweepWaiverEmails(e);
+  assert.equal(email(e, id).state, "pending");
+  assert.equal(drive.resend.length, 1);
+});
+
+test("retention keeps the PDF of a release whose email is not done", async () => {
+  const e = env(RESEND);
+  drive.resendFail = 503;
+  await sign(e);
+  e.WAIVERS_DB.sql.prepare("UPDATE waivers SET drive_done_at = '2000-01-01T00:00:00Z'").run();
+  await runDriveBacklog(e);
+  assert.equal(count(e, "waiver_documents"), 1, "the outbox still needs it");
+  drive.resendFail = 0;
+  makeDue(e);
+  await sweepWaiverEmails(e);
+  await runDriveBacklog(e);
+  assert.equal(count(e, "waiver_documents"), 0);
+});
+
+test("receipt with no stored PDF bytes: sent without the attachment, never claims one, recorded", async () => {
+  for (const transport of [GMAIL, {}]) {
+    const e = env(transport);
     gmail = [];
-    await sendReceiptEmail(e, {
-      to: "offline@example.com",
-      pdfBytes,
-      name: "Offline Signer",
-      doc,
-    });
+    // A release whose bytes are gone (or were never stored) but whose email is owed.
+    e.WAIVERS_DB.sql.exec(
+      "INSERT INTO waivers (id,org,waiver_version,signer_name,signer_email,signed_at) VALUES ('w-nobytes','atl','v','Offline Signer','offline@example.com','2026-11-25T00:00:00Z');" +
+        "INSERT INTO waiver_emails (waiver_id,env,created_at) VALUES ('w-nobytes','production','2026-11-25T00:00:00Z');",
+    );
+    await processWaiverEmail(e, "w-nobytes");
+    assert.equal(email(e, "w-nobytes").state, "done");
+    if (transport !== GMAIL) {
+      assert.equal(e.sent.length, 1);
+      assert.equal(e.sent[0].attachments, undefined);
+      assert.match(e.sent[0].text, /on file/);
+      assert.equal(failures(e).length, 1, "the missing PDF is recorded");
+      continue;
+    }
     assert.equal(gmail.length, 1);
     assert.doesNotMatch(gmail[0], /multipart\/mixed|application\/pdf/);
     const plain = Buffer.from(
@@ -486,15 +627,6 @@ test("receipt with empty PDF bytes: sent without the attachment, never throws", 
         error: "sent without the signed PDF: no PDF bytes",
       },
     ]);
-    const c = env();
-    await sendReceiptEmail(c, {
-      to: "offline@example.com",
-      pdfBytes,
-      name: "Offline Signer",
-      doc,
-    });
-    assert.equal(c.sent.length, 1);
-    assert.equal(c.sent[0].attachments, undefined);
   }
 });
 
@@ -740,6 +872,7 @@ const migration = (f) =>
 const WAIVER_MIGRATION_FILES = [
   "2026-10-03-waiver-capture-first.sql",
   "2026-11-23-waivers-drop-r2-key.sql",
+  "2026-11-25-waiver-email-outbox.sql",
 ];
 const WAIVER_MIGRATIONS = WAIVER_MIGRATION_FILES.map(migration);
 const CAPTURE_FIRST_MIGRATION = WAIVER_MIGRATIONS[0];
@@ -773,7 +906,7 @@ test("every migration that touches the waiver tables is replayed, in order", () 
 });
 
 test("the live table's migrations end exactly at schema/waivers.sql", () => {
-  const WAIVER_TABLES = ["waivers", "waiver_documents"];
+  const WAIVER_TABLES = ["waivers", "waiver_documents", "waiver_emails"];
   const only = (raw) => ({
     columns: raw.columns.filter((r) => WAIVER_TABLES.includes(r.tbl)),
     indexes: raw.indexes.filter((r) => WAIVER_TABLES.includes(r.tbl)),

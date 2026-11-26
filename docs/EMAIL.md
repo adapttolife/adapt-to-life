@@ -31,7 +31,8 @@ Change this page in the same PR as any code that changes the picture.
   [#157](https://github.com/adapttolife/adaptivesportsnearme/pull/157)) is merged to ASNM's
   `staging`. Production waits on Faisal
   ([#158](https://github.com/adapttolife/adaptivesportsnearme/issues/158)) and on moving ASNM's
-  staging to Cloudflare Workers Previews (`npx wrangler preview`). Until then, mail that ASNM's own
+  staging to Cloudflare Workers Previews (`npx wrangler preview`, PR
+  [#159](https://github.com/adapttolife/adaptivesportsnearme/pull/159)). Until then, mail that ASNM's own
   Worker sends still fails, as it has since Nov 23.
 
 ## The rule
@@ -332,10 +333,10 @@ reopens them.
    migrations applied. The storefront's footer form (#17) is deployed.
 3. **adaptivesportsnearme (Faisal's repo, Faisal merges). Merged to staging, not live:** #155,
    #156 and #157 bring the same transport file, a welcome that really sends, `/unsubscribe` with
-   the headers and the Topic, the staging and preview allow list, a ledger for swallowed
-   confirmations and `/api/resend-events`. Next: Faisal's cutover (#158), with the Worker secrets
-   #155 lists, and ASNM staging on Workers Previews. Not in #155 or #156: the profile switch
-   reaching Resend.
+   the headers and the Topic, the profile newsletter switch writing to Resend, the staging and
+   preview allow list, a ledger for swallowed confirmations and `/api/resend-events`. Next:
+   Faisal's cutover (#158), with the Worker secrets #155 lists, and ASNM staging on Workers
+   Previews (#159).
 4. **Resend team. Done:** Topics, the adapttolife.org webhook, unused keys deleted (seven active
    remain).
 5. **Prove it** with the test list above, then retire the Gmail token and the OAuth client.

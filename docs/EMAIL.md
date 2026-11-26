@@ -4,8 +4,36 @@ The one page for how our sites send email. It covers all three brands, because a
 Adapt To Life NFP, share one Google Workspace and one Resend team. Read it before you add, change or
 debug any email. It replaces `docs/gmail-site-mail.md` (the September 2026 Gmail setup).
 
-Status: **design agreed Nov 24 2026** (decisions at the end). Sections marked *today* describe what runs now; the rest is the
-target. Change this page in the same PR as any code that changes the picture.
+Status, **Nov 25 2026**: adapttolife.org and adaptbodyshop.com send through Resend in production.
+adaptivesportsnearme.com is built and waits on its production cutover. The design was agreed Nov 24
+(decisions at the end). Anything marked *today* describes what runs now; the rest is the target.
+Change this page in the same PR as any code that changes the picture.
+
+## Where each site stands (Nov 25)
+
+- **adapttolife.org: live on Resend.** PR A ([#437](https://github.com/adapttolife/adapt-to-life/pull/437)),
+  the intake notice retries ([#449](https://github.com/adapttolife/adapt-to-life/pull/449)) and PR B
+  ([#450](https://github.com/adapttolife/adapt-to-life/pull/450), released in
+  [#453](https://github.com/adapttolife/adapt-to-life/pull/453), live at `6a3ee8f`) are all in
+  production: grant, contact and volunteer receipts, signed waivers, Givebutter thank yous, admin
+  sign-in links, staff notices, the newsletter signup ledger and welcome, signed `/unsubscribe` per
+  brand, and `/api/resend-events`. `NEWSLETTER_LINK_SECRET` is set. The Gmail secrets are gone from
+  the `adapt-to-life` Worker.
+- **adaptbodyshop.com: live on Resend,** through adapttolife.org's `/api/shop-contact`. Storefront
+  PR [#17](https://github.com/adapttolife/adapt-body-shop-storefront/pull/17) is deployed to
+  `adapt-body-shop`: the footer form posts to `/newsletter`, which records the signup in
+  `shop_subscribers`, adds it to the Body Shop Segment and Topic, and sends the Body Shop welcome.
+  Its unsubscribe links land on adapttolife.org's signed `/unsubscribe`.
+- **adaptivesportsnearme.com: built, not live.** `mail.adaptivesportsnearme.com` is verified and all
+  19 subscribers are on the `Adaptive Sports Near Me news` Topic. The Resend code
+  ([#155](https://github.com/adapttolife/adaptivesportsnearme/pull/155),
+  [#156](https://github.com/adapttolife/adaptivesportsnearme/pull/156),
+  [#157](https://github.com/adapttolife/adaptivesportsnearme/pull/157)) is merged to ASNM's
+  `staging`. Production waits on Faisal
+  ([#158](https://github.com/adapttolife/adaptivesportsnearme/issues/158)) and on moving ASNM's
+  staging to Cloudflare Workers Previews (`npx wrangler preview`, PR
+  [#159](https://github.com/adapttolife/adaptivesportsnearme/pull/159)). Until then, mail that ASNM's own
+  Worker sends still fails, as it has since Nov 23.
 
 ## The rule
 
@@ -32,6 +60,17 @@ newsletter, already on Resend, kept working. Workspace is built for people, not 
 
 All three `hello@` addresses reach the one hello@adapttolife.org mailbox (the other two are aliases).
 
+Two of Alec's own sites share the Resend team. The nonprofit's code never reads or writes their
+contacts, Segments or Topics, but Resend's team wide `unsubscribed` flag covers them too (see
+Contacts below).
+
+- **alectranel.com:** `mail.alectranel.com` verified, with a private `AlecTranel.com` Segment and
+  Topic. Its newsletter, `/api/contact` notices and sender confirmations are live on Resend (its PRs
+  #11 to #14).
+- **amazingplacetorent.com:** `mail.amazingplacetorent.com` verified, with its own sending-only key
+  (`amazingplacetorent.com 2026-11-25`). Tenant intake notices, confirmations and alarms are live on
+  Resend (its PRs #18 and #19, live at `9ef1220`).
+
 Why a `mail.` subdomain and not the root:
 
 - The root domains stay Google's. Resend's DNS records (DKIM, return path) sit only on the
@@ -57,22 +96,22 @@ and every one carries:
 
 ## One confirmation for every action
 
-| Someone… | Gets | From | Today (Nov 23) |
+| Someone… | Gets | From | Today (Nov 25) |
 |---|---|---|---|
-| applies for a Hustle & Heart grant | "Your application reached us": what we have, the honest picture, no promise | ATL | Written; failing since Nov 23 (Gmail) |
-| sends the contact form | "We got your message", with what they sent | ATL | Written; failing since Nov 23 |
-| offers to volunteer | "Thanks for offering to help", with the roles they picked | ATL | Written; failing since Nov 23 |
-| signs a waiver (ATL or ASNM) | The signed PDF for their records | ATL | Never delivered: waiver outage, then a code bug (fixed in #433), then Gmail. Now an outbox (`waiver_emails`) with the 23 hour retry (PR B) |
-| gives through Givebutter | Thank you, where the money goes | ATL | Written; failing since Nov 23 |
-| joins the ATL newsletter | "You're on the list", with an unsubscribe link up top | ATL | Working (Resend); PR B: recorded first, Topic, tightened copy, keyed retry |
-| joins the ASNM list | "You're on the list" | ASNM | Nothing is sent: the welcome is written but never called, and there is no unsubscribe link, header or page, though the site promises one |
-| submits a program, organization, event or listing fix (ASNM) | "We received your submission" | ASNM | Written; failing since Nov 23; failures only reach the log |
-| updates their ASNM profile | "Your profile was updated" | ASNM | Failing since Nov 23; sends on every save, even with no change |
-| is invited to the ASNM beta | The invitation | ASNM | Failing since Nov 23 |
-| joins the Body Shop list | "You're on the list" | Body Shop | Nothing was sent; PR B puts them in Resend (Segment, Topic) with their own welcome |
-| sends the Body Shop contact form | "We got your message" | Body Shop | Failing since Nov 23 (Gmail) |
-| asks for a sign-in link (ATL admin; ASNM admin, beta, organization, profile) | The link | ATL / ASNM | Failing since Nov 23: nobody can sign in |
-| submits anything | Staff notice to hello@ | each | Failing since Nov 23 |
+| applies for a Hustle & Heart grant | "Your application reached us": what we have, the honest picture, no promise | ATL | Live (Resend, outbox) |
+| sends the contact form | "We got your message", with what they sent | ATL | Live (Resend, outbox) |
+| offers to volunteer | "Thanks for offering to help", with the roles they picked | ATL | Live (Resend, outbox) |
+| signs a waiver (ATL or ASNM) | The signed PDF for their records | ATL | Live (Resend): its own outbox (`waiver_emails`) with the 23 hour retry (PR B). Before that it never arrived: the waiver outage, a code bug (fixed in #434), then Gmail |
+| gives through Givebutter | Thank you, where the money goes | ATL | Live (Resend), retried for 23 hours |
+| joins the ATL newsletter | "You're on the list", with an unsubscribe link up top | ATL | Live (Resend): recorded first, Topic, the tightened welcome, keyed retry, signed unsubscribe |
+| joins the ASNM list | "You're on the list" | ASNM | Not live. Production sends nothing and has no unsubscribe link, header or page, though the site promises one. #155 fixes all of it at cutover |
+| submits a program, organization, event or listing fix (ASNM) | "We received your submission" | ASNM | Failing since Nov 23 until ASNM's cutover; failures only reach the log until then |
+| updates their ASNM profile | "Your profile was updated" | ASNM | Failing since Nov 23 until cutover; after it, sent only when a save changed something |
+| is invited to the ASNM beta | The invitation | ATL / ASNM | Live when sent from the ATL Worker's admin (Resend, sent once); ASNM's own invite fails until cutover |
+| joins the Body Shop list | "You're on the list" | Body Shop | Live: storefront `/newsletter` (#17) into `shop_subscribers`, the Segment and Topic, and the Body Shop welcome (PR B) |
+| sends the Body Shop contact form | "We got your message" | Body Shop | Live (Resend), sent once |
+| asks for a sign-in link (ATL admin; ASNM admin, beta, organization, profile) | The link | ATL / ASNM | ATL admin: live (Resend). ASNM's links fail until cutover |
+| submits anything | Staff notice to hello@ | each | ATL: live, retried (#449). Body Shop: live, sent once. ASNM: failing until cutover |
 
 Copy lives with the code that sends it (`src/receipts.js`, `src/newsletter-series.js` (both
 welcomes, the unsubscribe page), `src/waiver.js`, `src/givebutter_webhook.js`, `src/shop_contact.js`),
@@ -81,9 +120,9 @@ in the house shells in `src/email.js`. Follow the brand voice skills; a new emai
 ## Contacts, lists and unsubscribing
 
 One Resend team holds every contact, and **Resend's `unsubscribed` flag is team wide**: it stops
-every Broadcast from every brand. Until PR B, `/unsubscribe` on adapttolife.org set that flag, so
-leaving the ATL list also silently removed someone from Adaptive Sports Near Me. On adapttolife.org
-(PR B) the brands, their Segment and Topic vars, From and footer live in `src/newsletter-brands.js`;
+every Broadcast from every brand. Before PR B went live (Nov 25), `/unsubscribe` on adapttolife.org
+set that flag, so leaving the ATL list also silently removed someone from Adaptive Sports Near Me.
+On adapttolife.org the brands, their Segment and Topic vars, From and footer live in `src/newsletter-brands.js`;
 the join and its steps in `src/newsletter.js` (`newsletter_signups`, agent-mail D1); links, the
 welcomes and the unsubscribe page in `src/newsletter-series.js`. The rules:
 
@@ -98,7 +137,7 @@ welcomes and the unsubscribe page in `src/newsletter-series.js`. The rules:
 - Resend suppresses hard bounces and complaints by itself. We never re-add a suppressed address.
 - **Brand Topics are created with `default_subscription: opt_out`**, Resend's "only people who
   joined" setting, which cannot be changed later. Everyone already in a brand's Segment who has not
-  unsubscribed is added to that Topic once, at cutover (Nov 24: ATL 4, ASNM 19, Body Shop 1).
+  unsubscribed is added to that Topic once. Done for all three: ATL 4, Body Shop 1, ASNM 19.
 - **Every list email checks the brand Topic first,** including the welcome, which goes through
   `/emails` and not a Broadcast. The site checks it itself (`brandStatus`: the team wide flag, then
   the Topic) before every send. Resend's `/emails` also takes a `topic_id` that makes Resend skip an
@@ -106,8 +145,9 @@ welcomes and the unsubscribe page in `src/newsletter-series.js`. The rules:
 - **Unsubscribe links are signed with their own secret** (`NEWSLETTER_LINK_SECRET`), never the
   Resend key. Links sent before PR B have no brand and were signed with the Resend key (the secret
   was never set); they still verify, as ATL news, until the last one is a year old (Nov 2027), and
-  only while the Worker holds the key that signed them. Set the secret before PR B ships: without
-  it no new link can be made, so welcomes wait (the sweep retries them) and send_failures says why.
+  only while the Worker holds the key that signed them. The secret is set on production. A Worker
+  without it can make no new link, so welcomes wait (the sweep retries them) and send_failures says
+  why.
 - **Joining is recorded before Resend is called,** and a sweep finishes any signup whose contact,
   Topic or welcome step did not complete. Only a signup whose contact and Topic steps are done
   answers "already on the list", and even then its Topic is opted in again (they may have left
@@ -134,7 +174,7 @@ welcomes and the unsubscribe page in `src/newsletter-series.js`. The rules:
 - Brand Topics are `public`, so Resend's own preference page shows the three nonprofit lists; beta
   groups and `AlecTranel.com` are `private` and stay hidden.
 - A setting a person changes on the site (the ASNM profile's newsletter switch) is written to
-  Resend too, not only to D1. Today it never reaches Resend.
+  Resend too, not only to D1. On ASNM's live site today it never reaches Resend.
 
 ## How a site sends
 
@@ -194,10 +234,11 @@ Each site has one mail module (`src/mail-transport.js`, kept the same in both re
 - **Sign-in links are not retried.** A link that expires in 15 minutes is sent once; on failure the
   person is told to ask again. Only receipts, notices and thank yous use the outbox.
 - Gmail and Cloudflare stay as transports. Agent mail (`/api/agent-mail/*`) and the staging
-  `/preview/receipt` page pick the Cloudflare transport explicitly; Gmail is deleted once no
-  Worker selects it.
-- **Nothing sends around this module.** The welcome series (`sendSeriesEmail`) calls Resend
-  directly today; it moves onto `sendMail` so it gets the allow list, tags and checks too.
+  `/preview/receipt` page pick the Cloudflare transport explicitly. No adapttolife.org Worker
+  selects Gmail any more (its secrets are gone); the Gmail code is deleted once ASNM's production
+  is off it too.
+- **Nothing sends around this module.** The welcome series (`sendSeriesEmail`) goes through
+  `sendMail` too, so it gets the allow list, tags and checks.
 
 `/api/resend-events` verifies Svix signatures with WebCrypto: the key is the base64 decoding of
 `RESEND_WEBHOOK_SECRET` after its `whsec_` prefix (decoded to bytes, never UTF-8 encoded); the
@@ -211,11 +252,12 @@ A receipt still never fails a submission: the record is saved first, and the out
 Helpers return the transport's error (with `retryable`) to the outbox instead of swallowing it
 into `false`, so a passing timeout is retried and not parked for a person. **Every** automated
 email goes through the outbox. The waiver email has its own since PR B (`waiver_emails`, written
-in the same batch as the release, swept by the cron). Still sent once and forgotten: the Body Shop auto reply and notice
-(`src/shop_contact.js`) and the contact form's original-message copy to hello@
-(`src/form-records.js`), the ASNM beta invitation the ATL Worker sends (`src/index.js`), and the
-donor thank you, whose `donor_gifts` state today stops retrying after about two hours and has no
-`review` state. The signed waiver PDF is not copied into the frozen body (D1 rows top out at 2 MB);
+in the same batch as the release, swept by the cron), and the contact form's original-message copy
+to hello@ (`src/form-records.js`) retries inside the same 23 hour window. The donor thank you
+retries for 23 hours under its key too, but `donor_gifts` has no `review` state, so an unconfirmed
+one is closed as `failed` with a "Review" note. Still sent once and forgotten: the Body Shop auto
+reply and notice (`src/shop_contact.js`), and the ASNM beta invitation the ATL Worker sends
+(`src/index.js`, deliberately: each request is its own send). The signed waiver PDF is not copied into the frozen body (D1 rows top out at 2 MB);
 the outbox reads it from `waiver_documents`, and the 30 day purge skips a document whose email is
 not done.
 
@@ -233,7 +275,8 @@ in October, and the meter only writes to its own log.
   signature on the raw body, keeps only events tagged with a brand and environment it sends for
   (the ATL Worker sends for Adapt To Life and Adapt Body Shop), ignores an event id it has already
   stored (Resend retries and replays deliveries), records the outcome against the message, and
-  writes bounces, complaints and failures to `send_failures` once.
+  writes bounces, complaints and failures to `send_failures` once. *Today* adapttolife.org's is
+  live; ASNM's comes with its cutover.
 - **One alert that reaches a person the same day.** Any new `send_failures` row, or the intake
   meter going red, pages through the fleet alert path that reaches Alec. A failure nobody hears
   about counts as an outage.
@@ -249,15 +292,16 @@ in October, and the meter only writes to its own log.
 - One Resend API key per Worker, named `<site> <env> <yyyy-mm-dd>`, for example
   `adapttolife.org production 2026-11-24`. Both site Workers manage contacts and Topics, which
   needs `full_access` (Resend's sending-only keys cover one domain or all, and no contacts), so
-  each key is full access; a future Worker that only sends gets a sending-only key on its one
-  domain.
+  each key is full access. A Worker that only sends gets a sending-only key on its one domain, as
+  amazingplacetorent.com does.
 - Every key, and every webhook signing secret, is saved in the 1Password Engineering vault in an
   item named after the Worker, then set as a Worker secret. Never in the repo, a PR or chat.
 - Rotate by making the new key, setting it, checking one send, then deleting the old key.
-- Delete keys nobody uses. As of Nov 24 the team has eight; `v1` and `atl-worker-send` were last
-  used in June.
-- Once every send is on Resend, remove `GMAIL_CLIENT_ID`, `GMAIL_CLIENT_SECRET` and
-  `GMAIL_REFRESH_TOKEN` from every Worker and delete the OAuth client.
+- Delete keys nobody uses. On Nov 25 four unused keys (`v1`, `atl-worker-send`, `asnm`, `atl`) were
+  deleted; seven active keys remain.
+- `GMAIL_CLIENT_ID`, `GMAIL_CLIENT_SECRET` and `GMAIL_REFRESH_TOKEN` are removed from the
+  `adapt-to-life` Worker. Remove them from the ASNM Worker at its cutover, then delete the OAuth
+  client.
 
 ## Testing before it counts
 
@@ -266,29 +310,36 @@ confirmation table: submit it once from a phone on production, using a team inbo
 where staging serves that form (it blocks the newsletter, waiver and donation routes today), then
 check the inbox (not spam), the From, Reply-To, the unsubscribe link and the Resend delivery event. Record the Resend message id in the PR.
 
-Staging today still lets `/unsubscribe`, `/api/shop-contact` and the contact, apply and volunteer
-forms write to production Resend and the CRM. PR A closes that, and until it does, test those
-forms on production with a team inbox.
+Staging (`adapt-to-life-staging`) has no Resend key, so it sends nothing, and since PR A it refuses
+`/unsubscribe`, `/api/subscribe`, `/api/waiver`, `/api/givebutter-webhook`, `/api/shop-contact` and
+the contact, apply and volunteer forms (`src/staging.js`), because they would write to production
+Resend, the shared tables and the CRM. Test those on production with a team inbox until a later PR
+reopens them.
 
 ## Order of work
 
-1. **Restore.** New Gmail token on the ATL and ASNM Workers (it carries mail until step 2 ships),
-   the waiver PDF fix (#433), the new waivers Shared Drive folder. Then settle what Gmail owes:
-   for each receipt, notice and donor thank you parked in `review` or `failed` since Nov 23, look
-   it up in hello@'s Sent mail. Mark it done if it went; otherwise, for a real person (not a team
-   test), send it once on purpose. Never bulk reset them, because Resend cannot know what Gmail
-   already sent.
-2. **adapttolife.org PRs:** PR A (#437): the `resend` transport and idempotent retries, staging
-   allow list, `/api/resend-events`, `mail.adaptbodyshop.com`. PR B: brand Topics on signup, Topic
-   based unsubscribe, the tightened welcome, the signup ledger and sweep, Body Shop signups into
-   Resend with their own welcome, the waiver email outbox. Before PR B releases: set
-   `NEWSLETTER_LINK_SECRET`, and apply `schema/migrations/2026-11-25-newsletter-signups.sql`
-   (agent-mail) and `2026-11-25-waiver-email-outbox.sql` (atl-waivers).
-3. **adaptivesportsnearme PR (Faisal's repo, Faisal merges):** the same transport file; actually
-   send the welcome; `/unsubscribe`, the headers and the Topic; the profile switch reaches Resend;
-   staging and preview allow list; a ledger for swallowed confirmations; `/api/resend-events`.
-4. **Resend team:** Topics, webhooks, one named key per Worker in 1Password, old keys deleted.
-5. **Prove it** with the test list above, then retire the Gmail token.
+1. **Restore. Done:** the waiver PDF fix (#434) and the Signed Waivers Shared Drive (#452); Resend
+   replaced the Gmail token on adapttolife.org. Before calling it closed, settle what Gmail owes:
+   for each
+   receipt, notice and donor thank you parked in `review` or `failed` since Nov 23, look it up in
+   hello@'s Sent mail. Mark it done if it went; otherwise, for a real person (not a team test),
+   send it once on purpose. Never bulk reset them, because Resend cannot know what Gmail already
+   sent.
+2. **adapttolife.org PRs. Done, live Nov 25:** PR A (#437): the `resend` transport and idempotent
+   retries, the staging allow list, `/api/resend-events`, `mail.adaptbodyshop.com`. The intake
+   notice retries (#449). PR B (#450, released in #453): brand Topics on signup, Topic based
+   unsubscribe, the tightened welcome, the signup ledger and sweep, Body Shop signups into Resend
+   with their own welcome, the waiver email outbox; `NEWSLETTER_LINK_SECRET` set and both
+   migrations applied. The storefront's footer form (#17) is deployed.
+3. **adaptivesportsnearme (Faisal's repo, Faisal merges). Merged to staging, not live:** #155,
+   #156 and #157 bring the same transport file, a welcome that really sends, `/unsubscribe` with
+   the headers and the Topic, the profile newsletter switch writing to Resend, the staging and
+   preview allow list, a ledger for swallowed confirmations and `/api/resend-events`. Next:
+   Faisal's cutover (#158), with the Worker secrets #155 lists, and ASNM staging on Workers
+   Previews (#159).
+4. **Resend team. Done:** Topics, the adapttolife.org webhook, unused keys deleted (seven active
+   remain).
+5. **Prove it** with the test list above, then retire the Gmail token and the OAuth client.
 
 ## Decisions (Alec, Nov 24 2026)
 

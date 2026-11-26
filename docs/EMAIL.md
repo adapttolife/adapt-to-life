@@ -4,8 +4,9 @@ The one page for how our sites send email. It covers all three brands, because a
 Adapt To Life NFP, share one Google Workspace and one Resend team. Read it before you add, change or
 debug any email. It replaces `docs/gmail-site-mail.md` (the September 2026 Gmail setup).
 
-Status, **Nov 25 2026**: adapttolife.org and adaptbodyshop.com send through Resend in production.
-adaptivesportsnearme.com is built and waits on its production cutover. The design was agreed Nov 24
+Status, **Nov 25 2026**: all three nonprofit brands (`adapttolife.org`, `adaptbodyshop.com`,
+`adaptivesportsnearme.com`) and both of Alec's personal sites (`alectranel.com`,
+`amazingplacetorent.com`) send through Resend in production. The design was agreed Nov 24
 (decisions at the end). Anything marked *today* describes what runs now; the rest is the target.
 Change this page in the same PR as any code that changes the picture.
 
@@ -19,21 +20,24 @@ Change this page in the same PR as any code that changes the picture.
   sign-in links, staff notices, the newsletter signup ledger and welcome, signed `/unsubscribe` per
   brand, and `/api/resend-events`. `NEWSLETTER_LINK_SECRET` is set. The Gmail secrets are gone from
   the `adapt-to-life` Worker.
-- **adaptbodyshop.com: live on Resend,** through adapttolife.org's `/api/shop-contact`. Storefront
+- **adaptbodyshop.com: live on Resend (beta storefront),** through adapttolife.org's `/api/shop-contact`. Storefront
   PR [#17](https://github.com/adapttolife/adapt-body-shop-storefront/pull/17) is deployed to
   `adapt-body-shop`: the footer form posts to `/newsletter`, which records the signup in
   `shop_subscribers`, adds it to the Body Shop Segment and Topic, and sends the Body Shop welcome.
   Its unsubscribe links land on adapttolife.org's signed `/unsubscribe`.
-- **adaptivesportsnearme.com: built, not live.** `mail.adaptivesportsnearme.com` is verified and all
-  19 subscribers are on the `Adaptive Sports Near Me news` Topic. The Resend code
+- **adaptivesportsnearme.com: live on Resend + Cloudflare Workers Previews.** `mail.adaptivesportsnearme.com`
+  is verified and all 19 subscribers are on the `Adaptive Sports Near Me news` Topic. The Resend code
   ([#155](https://github.com/adapttolife/adaptivesportsnearme/pull/155),
   [#156](https://github.com/adapttolife/adaptivesportsnearme/pull/156),
-  [#157](https://github.com/adapttolife/adaptivesportsnearme/pull/157)) is merged to ASNM's
-  `staging`. Production waits on Faisal
-  ([#158](https://github.com/adapttolife/adaptivesportsnearme/issues/158)) and on moving ASNM's
-  staging to Cloudflare Workers Previews (`npx wrangler preview`, PR
-  [#159](https://github.com/adapttolife/adaptivesportsnearme/pull/159)). Until then, mail that ASNM's own
-  Worker sends still fails, as it has since Nov 23.
+  [#157](https://github.com/adapttolife/adaptivesportsnearme/pull/157)) and Workers Previews config
+  ([#159](https://github.com/adapttolife/adaptivesportsnearme/pull/159)) are live on production
+  (`adaptivesportsnearme` version `9f9370ef`, `asnm-gate` version `37a9e5ff`, `staging` Preview live on
+  both `workers.dev` and `staging.adaptivesportsnearme.com`). `db/migrations/0028_mail_ledger.sql` is
+  applied on `asnm-db-staging` and `atl-intake`; `NEWSLETTER_LINK_SECRET`, `RESEND_WEBHOOK_SECRET`, and
+  the `asnm-gate` Resend key are set; retired `AIRTABLE_TOKEN` and `BEEHIIV_API_KEY` are removed from
+  `asnm-gate`. Production and staging delivery (`01a21549…` and `01a2154c…`), `/api/resend-events`, and
+  signed `/unsubscribe` are verified live. GitHub sync still waits on review of `#159` and `staging -> main`
+  under ruleset `27000329`.
 
 ## The rule
 
@@ -104,14 +108,14 @@ and every one carries:
 | signs a waiver (ATL or ASNM) | The signed PDF for their records | ATL | Live (Resend): its own outbox (`waiver_emails`) with the 23 hour retry (PR B). Before that it never arrived: the waiver outage, a code bug (fixed in #434), then Gmail |
 | gives through Givebutter | Thank you, where the money goes | ATL | Live (Resend), retried for 23 hours |
 | joins the ATL newsletter | "You're on the list", with an unsubscribe link up top | ATL | Live (Resend): recorded first, Topic, the tightened welcome, keyed retry, signed unsubscribe |
-| joins the ASNM list | "You're on the list" | ASNM | Not live. Production sends nothing and has no unsubscribe link, header or page, though the site promises one. #155 fixes all of it at cutover |
-| submits a program, organization, event or listing fix (ASNM) | "We received your submission" | ASNM | Failing since Nov 23 until ASNM's cutover; failures only reach the log until then |
-| updates their ASNM profile | "Your profile was updated" | ASNM | Failing since Nov 23 until cutover; after it, sent only when a save changed something |
-| is invited to the ASNM beta | The invitation | ATL / ASNM | Live when sent from the ATL Worker's admin (Resend, sent once); ASNM's own invite fails until cutover |
+| joins the ASNM list | "You're on the list" | ASNM | Live (Resend via `asnm-gate`, Topic opt-in, welcome + signed `/unsubscribe`) |
+| submits a program, organization, event or listing fix (ASNM) | "We received your submission" | ASNM | Live (Resend, failures ledgered in `atl-intake.send_failures`) |
+| updates their ASNM profile | "Your profile was updated" | ASNM | Live (Resend, sent only when a save changed something; newsletter switch syncs Topic) |
+| is invited to the ASNM beta | The invitation | ATL / ASNM | Live (Resend from both ATL admin and ASNM) |
 | joins the Body Shop list | "You're on the list" | Body Shop | Live: storefront `/newsletter` (#17) into `shop_subscribers`, the Segment and Topic, and the Body Shop welcome (PR B) |
 | sends the Body Shop contact form | "We got your message" | Body Shop | Live (Resend), sent once |
-| asks for a sign-in link (ATL admin; ASNM admin, beta, organization, profile) | The link | ATL / ASNM | ATL admin: live (Resend). ASNM's links fail until cutover |
-| submits anything | Staff notice to hello@ | each | ATL: live, retried (#449). Body Shop: live, sent once. ASNM: failing until cutover |
+| asks for a sign-in link (ATL admin; ASNM beta, organization, profile) | The link | ATL / ASNM | Live (Resend); `/admin` on ASNM redirects to `adapttolife.org/admin` |
+| submits anything | Staff notice to hello@ | each | ATL: live, retried (#449). Body Shop: live, sent once. ASNM: live, retried via `asnm-gate` |
 
 Copy lives with the code that sends it (`src/receipts.js`, `src/newsletter-series.js` (both
 welcomes, the unsubscribe page), `src/waiver.js`, `src/givebutter_webhook.js`, `src/shop_contact.js`),
@@ -298,10 +302,10 @@ in October, and the meter only writes to its own log.
   item named after the Worker, then set as a Worker secret. Never in the repo, a PR or chat.
 - Rotate by making the new key, setting it, checking one send, then deleting the old key.
 - Delete keys nobody uses. On Nov 25 four unused keys (`v1`, `atl-worker-send`, `asnm`, `atl`) were
-  deleted; seven active keys remain.
+  deleted and a dedicated `asnm-gate production 2026-11-25` key was added; eight active keys remain.
 - `GMAIL_CLIENT_ID`, `GMAIL_CLIENT_SECRET` and `GMAIL_REFRESH_TOKEN` are removed from the
-  `adapt-to-life` Worker. Remove them from the ASNM Worker at its cutover, then delete the OAuth
-  client.
+  `adapt-to-life` Worker. They stay on `adaptivesportsnearme` until Gmail fallback is dropped from
+  `config/production-secrets.json`, after which remove them from ASNM and delete the OAuth client.
 
 ## Testing before it counts
 
@@ -319,27 +323,27 @@ reopens them.
 ## Order of work
 
 1. **Restore. Done:** the waiver PDF fix (#434) and the Signed Waivers Shared Drive (#452); Resend
-   replaced the Gmail token on adapttolife.org. Before calling it closed, settle what Gmail owes:
-   for each
-   receipt, notice and donor thank you parked in `review` or `failed` since Nov 23, look it up in
-   hello@'s Sent mail. Mark it done if it went; otherwise, for a real person (not a team test),
-   send it once on purpose. Never bulk reset them, because Resend cannot know what Gmail already
-   sent.
+   replaced the Gmail token on all sites. Nov 23–25 owed receipts audit is closed: both real Nov 24
+   Hustle & Heart grant applicants received their receipts via Resend (`01a2132f-ffba…` and
+   `01a2132f-ffbf…`), and `donor_gifts`, `waiver_emails`, and `intake_delivery_claims` have zero
+   unsent/owed real rows.
 2. **adapttolife.org PRs. Done, live Nov 25:** PR A (#437): the `resend` transport and idempotent
    retries, the staging allow list, `/api/resend-events`, `mail.adaptbodyshop.com`. The intake
    notice retries (#449). PR B (#450, released in #453): brand Topics on signup, Topic based
    unsubscribe, the tightened welcome, the signup ledger and sweep, Body Shop signups into Resend
    with their own welcome, the waiver email outbox; `NEWSLETTER_LINK_SECRET` set and both
    migrations applied. The storefront's footer form (#17) is deployed.
-3. **adaptivesportsnearme (Faisal's repo, Faisal merges). Merged to staging, not live:** #155,
-   #156 and #157 bring the same transport file, a welcome that really sends, `/unsubscribe` with
-   the headers and the Topic, the profile newsletter switch writing to Resend, the staging and
-   preview allow list, a ledger for swallowed confirmations and `/api/resend-events`. Next:
-   Faisal's cutover (#158), with the Worker secrets #155 lists, and ASNM staging on Workers
-   Previews (#159).
-4. **Resend team. Done:** Topics, the adapttolife.org webhook, unused keys deleted (seven active
-   remain).
-5. **Prove it** with the test list above, then retire the Gmail token and the OAuth client.
+3. **adaptivesportsnearme. Done live Nov 25 (GitHub PR sync pending review):** #155, #156 and #157
+   (Resend transport, welcome, `/unsubscribe`, profile newsletter switch, `MAIL_ALLOW`, failure
+   ledger, `/api/resend-events`) plus Workers Previews (#159) are deployed live (`adaptivesportsnearme`
+   `9f9370ef`, `asnm-gate` `37a9e5ff`, `staging` Preview live, `0028_mail_ledger.sql` applied on
+   `asnm-db-staging` and `atl-intake`, retired `AIRTABLE_TOKEN` and `BEEHIIV_API_KEY` removed from
+   `asnm-gate`). Remaining on GitHub: approve/merge `#159` into `staging` and `staging -> main` under
+   ruleset `27000329`.
+4. **Resend team. Done:** Topics, webhooks for both `adapttolife.org` and `adaptivesportsnearme.com`,
+   unused keys deleted (eight active remain).
+5. **Prove it. Done live Nov 25;** follow-up: drop Gmail fallback from ASNM's
+   `config/production-secrets.json`, remove `GMAIL_*` from ASNM, and delete the Gmail OAuth client.
 
 ## Decisions (Alec, Nov 24 2026)
 
